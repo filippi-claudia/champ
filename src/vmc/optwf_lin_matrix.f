@@ -1,3 +1,27 @@
+      module optwf_lin_matrix
+      use error, only: fatal_error
+      use optwf_lib, only: sort
+      interface !LAPACK interface
+      SUBROUTINE DGEEV( JOBVL, JOBVR, N, A, LDA, WR, WI, VL, LDVL, VR,
+     $                  LDVR, WORK, LWORK, INFO )
+*  -- LAPACK driver routine (version 3.1) --
+*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*     November 2006
+      CHARACTER          JOBVL, JOBVR
+      INTEGER            INFO, LDA, LDVL, LDVR, LWORK, N
+      DOUBLE PRECISION   A( LDA, * ), VL( LDVL, * ), VR( LDVR, * ),
+     $                   WI( * ), WORK( * ), WR( * )
+      END SUBROUTINE
+      SUBROUTINE DSYEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO )
+*  -- LAPACK driver routine (version 3.1) --
+*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*     November 2006
+      CHARACTER          JOBZ, UPLO
+      INTEGER            INFO, LDA, LWORK, N
+      DOUBLE PRECISION   A( LDA, * ), W( * ), WORK( * )
+      END SUBROUTINE
+      end interface
+      contains
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
       use linear_norm, only: oav
@@ -17,7 +41,8 @@
       integer :: isort_ovr, iter, j, k
       integer :: lwork, mparmx, nparm
       integer, dimension(nparmall) :: isort
-      real(dp) :: MWORK, add_diag, anorm_orth, anorm_orth_min, bot
+      integer  :: MWORK
+      real(dp) :: add_diag, anorm_orth, anorm_orth_min, bot
       real(dp) :: de_range, dmult, eig_min
       real(dp) :: emax, emin, scale
       real(dp), dimension(mparmx,*) :: h
@@ -639,3 +664,4 @@ c minus sign because variation is subtracted when computing new parameters
 
       end
 c-----------------------------------------------------------------------
+      end module

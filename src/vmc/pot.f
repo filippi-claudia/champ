@@ -1,3 +1,5 @@
+      module pot
+      contains
       subroutine pot_nn(cent,znuc,iwctype,ncent,pecent)
 c Written by Cyrus Umrigar
 c get nuclear potential energy
@@ -9,6 +11,7 @@ c get nuclear potential energy
       use force_analy, only: iforce_analy
       use da_pseudo, only: da_pecent, da_vps
       use precision_kinds, only: dp
+      use pw_ewald, only: pot_nn_ewald
 
       implicit none
 
@@ -67,3 +70,4 @@ c get nuclear potential energy
 
       return
       end
+      end module

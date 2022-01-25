@@ -1,3 +1,7 @@
+      module basis_fns_vgl_mod
+      use splfit_mod, only: splfit
+      use slm_mod, only: slm
+      contains
       subroutine basis_fns_vgl(x,rvec_en,r_en)
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c routine to calculate the values of the basis functions and their derivatives
@@ -589,3 +593,4 @@ c-------------------------------------------------------------------
 
       return
       end
+      end module

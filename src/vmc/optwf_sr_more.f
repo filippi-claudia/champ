@@ -1,3 +1,33 @@
+      module sr_more
+      interface !LAPACK interface
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+        DOUBLE PRECISION FUNCTION ddot(N,DX,INCX,DY,INCY)
+!*  -- Reference BLAS level1 routine --
+          INTEGER incx,incy,n
+          DOUBLE PRECISION dx(*),dy(*)
+        END FUNCTION
+        SUBROUTINE dgemv(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
+!*  -- Reference BLAS level2 routine --
+          DOUBLE PRECISION ALPHA,BETA
+          INTEGER INCX,INCY,LDA,M,N
+          CHARACTER TRANS
+          DOUBLE PRECISION A(LDA,*),X(*),Y(*)
+        END SUBROUTINE
+        SUBROUTINE daxpy(N,DA,DX,INCX,DY,INCY)
+! -- Reference BLAS level1 routine --
+          DOUBLE PRECISION DA
+          INTEGER INCX,INCY,N
+          DOUBLE PRECISION DX(*),DY(*)
+        END SUBROUTINE
+        SUBROUTINE dscal(N,DA,DX,INCX)
+! -- Reference BLAS level1 routine --
+          DOUBLE PRECISION DA
+          INTEGER INCX,N
+          DOUBLE PRECISION DX(*)
+        END SUBROUTINE
+        end interface
+      contains
       subroutine pcg(n,b,x,i,imax,imod,eps)
 c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
@@ -10,7 +40,7 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
       integer :: n, imax, imod, i, j
       real*8 b(*),x(*),eps
       real*8 r(m_parm_opt),d(m_parm_opt),q(m_parm_opt),s(m_parm_opt)
-      real*8 delta_0,delta_new,delta_old,alpha,beta,ddot
+      real*8 delta_0,delta_new,delta_old,alpha,beta
 
       if(n.gt.m_parm_opt) stop 'nparm > m_parm_opt'
 
@@ -105,7 +135,7 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
       integer :: i, i0, i1, iconf, istate
       integer :: k, n, nmparm_jasci, nparm_jasci
-      real(dp) :: aux0, aux2, aux3, aux4, ddot
+      real(dp) :: aux0, aux2, aux3, aux4
       real(dp) :: hoz, oz, oz_orb, var
       real(dp) :: wts
       real(dp), dimension(*) :: z
@@ -227,3 +257,4 @@ c endif idtask.eq.0
 
       return
       end
+      end module

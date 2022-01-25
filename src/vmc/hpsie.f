@@ -1,3 +1,5 @@
+      module hpsie
+      contains
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 c Written by Claudia Filippi by modifying hpsi
 
@@ -13,12 +15,18 @@ c Written by Claudia Filippi by modifying hpsi
       use const, only: nelec
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use distances_mod, only: distances
+      use jastrowe_mod, only: jastrowe
+      use error, only: fatal_error
+      use determinante_mod, only: determinante
+      use multideterminante_mod, only: multideterminante
+      use determinante_psit_mod, only: determinante_psit
 
       implicit none
 
       integer :: iel, iflag, ipass, istate
       real(dp) :: apsi_now, aref_now, check_apsi, check_apsi_min, check_dref
-      real(dp) :: d2j, psij, x
+      real(dp) :: d2j, psij, x(3,nelec)
       real(dp), dimension(3, nelec) :: coord
       real(dp), dimension(MSTATES) :: psid
 
@@ -77,3 +85,4 @@ c combine determinantal quantities to obtain trial wave function
 
       return
       end
+      end module 

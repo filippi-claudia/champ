@@ -1,3 +1,13 @@
+      module readps_tm_mod
+      use error, only: fatal_error
+      interface !LAPACK interface
+        SUBROUTINE DGESV( N, NRHS, A, LDA, IPIV, B, LDB, INFO )
+          INTEGER            INFO, LDA, LDB, N, NRHS
+          INTEGER            IPIV( * )
+          DOUBLE PRECISION   A( LDA, * ), B( LDB, * )
+        END SUBROUTINE
+      end interface
+      contains
       subroutine readps_tm
 c Written by Claudia Filippi
 c read Troullier-Martins pseudopotentials
@@ -18,6 +28,8 @@ c Modified by F. Schautz to use fancy file names
       use general, only: filename, filenames_ps_tm
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use spline2_mod, only: spline2
+      use rotqua_mod, only: gesqua
       implicit none
 
       integer :: i, ic, icoef, ii, index
@@ -287,3 +299,4 @@ c cubic spline interpolation
 
       return
       end
+      end module

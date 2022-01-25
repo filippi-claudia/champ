@@ -100,6 +100,8 @@ contains
 
 end module prp003
 
+module m_prop
+contains
 subroutine allocate_m_prop()
     use prp001, only: allocate_prp001
     use prp002, only: allocate_prp002
@@ -119,3 +121,4 @@ subroutine deallocate_m_prop()
     call deallocate_prp002()
     call deallocate_prp003()
 end subroutine deallocate_m_prop
+end module

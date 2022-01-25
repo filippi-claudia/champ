@@ -1,3 +1,5 @@
+      module rotqua_mod
+      contains
 	subroutine gesqua(nq,xq,yq,zq,wq)
 c Written by Lubos Mitas
 
@@ -413,3 +415,4 @@ c       zu3=zz3*u2
  4	continue
 	return
 	end
+      end module 

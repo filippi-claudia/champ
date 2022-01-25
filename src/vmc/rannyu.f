@@ -1,3 +1,5 @@
+      module rannyu_mod
+      contains
       subroutine setrn(iseed)
 c NYU linear congruential random number generator.
 c Uses 48 bits, rather than the usual 32 bits.
@@ -85,3 +87,4 @@ c-----------------------------------------------------------------------
       enddo
       return
       end
+      end module

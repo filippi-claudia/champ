@@ -1,3 +1,5 @@
+      module strech_mod
+      contains
       subroutine strech(x,xstrech,ajacob,ifr,istrech_el)
 c Written by Cyrus Umrigar and Claudia Filippi
 c Modified by A. Amovilli for forces in PCM
@@ -31,6 +33,10 @@ c rigidly with that nucleus
       use pcm_inda, only: inda
       use optwf_contrl, only: ioptwf
       use contrl_file,    only: ounit
+      use matinv_mod, only: matinv
+      use error, only: fatal_error
+      use pot, only: pot_nn
+      use pcm_mod, only: sigma_R
 
       implicit none
 
@@ -395,3 +401,4 @@ c        deltot(ifl)=sign(dsqrt(deltot(ifl)*ncent),rsq-rsq1)
 
       return
       end
+      end module

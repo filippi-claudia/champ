@@ -74,6 +74,8 @@ contains
 
 end module sr_mat_n
 
+module m_sr
+contains
 subroutine allocate_m_sr()
     use sr_mat_n, only: allocate_sr_mat_n
 
@@ -86,3 +88,4 @@ subroutine deallocate_m_sr()
 
     call deallocate_sr_mat_n()
 end subroutine deallocate_m_sr
+end module 

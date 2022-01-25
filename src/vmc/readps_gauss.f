@@ -1,3 +1,5 @@
+      module readps_gauss
+      contains
 c-----------------------------------------------------------------------
 
 c compute gauss-pseudopotential for electron iel
@@ -94,3 +96,4 @@ c-----------------------------------------------------------------------
       dvpot=dv
       return
       end
+      end module

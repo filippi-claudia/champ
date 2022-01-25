@@ -372,6 +372,8 @@ contains
     end subroutine deallocate_derivest
  end module derivest
 
+module m_deriv
+contains
 subroutine allocate_m_deriv()
     use da_energy_sumcum, only: allocate_da_energy_sumcum
     use da_jastrow4val, only: allocate_da_jastrow4val
@@ -427,3 +429,4 @@ subroutine deallocate_m_deriv()
     call deallocate_dorb_m()
     call deallocate_ijasnonlin()
 end subroutine deallocate_m_deriv
+end module

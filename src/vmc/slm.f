@@ -1,3 +1,5 @@
+      module slm_mod
+      contains
       subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,iforce_analy)
 
 c   l   |   1  2  3  4    5      6     7    8    9   10  11  12  13  14  15  16  17  18  19
@@ -293,3 +295,4 @@ c There are 10 f functions as in GAMESS
       return
 
       end
+      end module

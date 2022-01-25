@@ -1,3 +1,13 @@
+      module optwf_matrix_corsamp_mod
+      use error, only: fatal_error
+      interface ! Let linking decide between dmc/vmc
+        subroutine qmc
+        end subroutine
+        subroutine reset_configs_start
+        end subroutine
+      end interface
+
+      contains
       subroutine optwf_matrix_corsamp
 c written by Claudia Filippi
       use precision_kinds, only: dp
@@ -19,6 +29,14 @@ c written by Claudia Filippi
       use gradhess_all, only: grad, h, s
       use optwf_corsam, only: add_diag
       use contrl_file,    only: ounit
+      use optwf_handle_wf, only: write_wf_best, save_wf_best
+      use optwf_handle_wf, only: save_wf, write_wf, set_nparms
+      use optwf_handle_wf, only: restore_wf, test_solution_parm
+      use optwf_handle_wf, only: save_nparms, copy_zex, setup_wf
+      use optwf_handle_wf, only: compute_parameters
+      use optwf_lin_matrix, only: compute_dparm, setup_optimization
+      use set_input_data, only: set_displace_zero
+      use read_bas_num_mod, only: read_bas_num
       implicit none
 
       integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk
@@ -572,6 +590,8 @@ c-----------------------------------------------------------------------
       use optwf_corsam, only: add_diag, energy, force, force_err
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
+      use optwf_lib, only: chlsky, lxb, uxb
+      use read_bas_num_mod, only: read_bas_num
       implicit none
 
       integer :: i, ierr, iwadd_diag, j, k
@@ -814,3 +834,4 @@ c 185    write(ounit,'(''s= '',1000d12.5)') (s(i,j),j=1,nparm+1)
 
       return
       end
+      end module

@@ -350,6 +350,8 @@ contains
 
 end module contrl_file
 
+module m_control
+contains
 subroutine allocate_m_control()
     use contrldmc, only: allocate_contrldmc
 
@@ -367,3 +369,4 @@ subroutine deallocate_m_control()
     call deallocate_contrldmc()
 
 end subroutine deallocate_m_control
+end module

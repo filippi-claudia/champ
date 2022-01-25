@@ -1,3 +1,5 @@
+      module efield_f_mod
+      contains
       subroutine efield_extpot_ene(coord,nelec,efield_pot)
 
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
@@ -75,3 +77,4 @@ c      write(ounit,*) 'znuc=',znuc(1:8)
       return
       end
 c-----------------------------------------------------------------------
+      end module

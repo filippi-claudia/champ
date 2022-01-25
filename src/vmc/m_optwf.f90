@@ -189,6 +189,8 @@ contains
 
 end module optwf_wjas
 
+module m_optwf
+contains
 subroutine allocate_m_optwf()
     use optwf_corsam, only: allocate_optwf_corsam
     ! use optwf_nparmj, only: allocate_optwf_nparmj
@@ -208,3 +210,4 @@ subroutine deallocate_m_optwf()
     call deallocate_optwf_nparmj()
     call deallocate_optwf_wjas()
 end subroutine deallocate_m_optwf
+end module 

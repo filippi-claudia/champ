@@ -1,3 +1,5 @@
+      module splfit_mod
+      contains
       subroutine splfit(r,irb,ic,iwf,wfv,ider)
 c Written by Claudia Filippi
 c get spline_fit at r of basis fn irb of center ic and force iwf
@@ -96,3 +98,4 @@ c cubic spline interpolation
 
       return
       end
+      end module

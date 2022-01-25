@@ -1,3 +1,5 @@
+      module deriv_jastrow4_mod
+      contains
       subroutine deriv_jastrow4(x,v,d2,value)
 c Written by Cyrus Umrigar and Claudia Filippi
       use vmc_mod, only: nordj
@@ -28,6 +30,8 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use cuspmat4, only: d, iwc4
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
+      use scale_dist_mod, only: scale_dist2, switch_scale2
+      use jastrow4_mod, only: da_jastrow4
       implicit none
 
       integer :: i, ic, id, ideriv, ij
@@ -633,3 +637,4 @@ c     write(ounit,*) 'asym',asymp_r,asymp_jasa(1),asymp_jasb(1)
 
       return
       end
+      end module

@@ -1,3 +1,6 @@
+      module readps_champ_mod
+      use error, only: fatal_error
+      contains
       subroutine readps_champ
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c for the moment always assume that highest component is the local
@@ -29,6 +32,8 @@ c The prefered grid is 3.
       use general, only: filename, filenames_ps_champ
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use spline2_mod, only: spline2
+      use rotqua_mod, only: gesqua
       implicit none
 
       integer :: i, i2, i5, ict, ir
@@ -424,3 +429,4 @@ c cubic spline interpolation
         enddo
         return
       end subroutine
+      end module

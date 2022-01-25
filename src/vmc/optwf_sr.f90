@@ -20,6 +20,11 @@ module optwf_sr_mod
     use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
     use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
     use contrl_file,    only: ounit
+    use error, only: fatal_error
+    use optwf_handle_wf, only : set_nparms_tot, save_nparms, test_solution_parm
+    use optwf_handle_wf, only : compute_parameters, write_wf, save_wf
+    use optwf_handle_wf, only : set_nparms
+    use optgeo_lib, only: write_geometry, compute_positions
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -33,7 +38,32 @@ module optwf_sr_mod
     private
     public :: optwf_sr, sr, sr_hs, izvzb, i_sr_rescale
     save
+    interface !interface to LAPACK
+! -- LAPACK routine (version 3.1) --
+!    Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+!    November 2006
+      SUBROUTINE DGETRF( M, N, A, LDA, IPIV, INFO )
+        INTEGER            INFO, LDA, M, N
+        INTEGER            IPIV( * )
+        DOUBLE PRECISION   A( LDA, * )
+      END SUBROUTINE
+      SUBROUTINE DGETRI( N, A, LDA, IPIV, WORK, LWORK, INFO )
+        INTEGER            INFO, LDA, LWORK, N
+        INTEGER            IPIV( * )
+        DOUBLE PRECISION   A( LDA, * ), WORK( * )
+      END SUBROUTINE
+        SUBROUTINE dscal(N,DA,DX,INCX)
+! -- Reference BLAS level1 routine --
+          DOUBLE PRECISION DA
+          INTEGER INCX,N
+          DOUBLE PRECISION DX(*)
+        END SUBROUTINE
+    end interface 
 
+    interface ! Let linking decide between dmc/vmc
+      subroutine qmc
+      end subroutine
+    end interface
 contains
 
     subroutine optwf_sr
@@ -202,6 +232,7 @@ contains
     subroutine sr(nparm, deltap, sr_adiag, sr_eps, i)
 
         ! solve S*deltap=h_sr (call in optwf)
+        use sr_more, only: pcg
         use sr_mat_n, only: h_sr
         use contrl_file,    only: ounit
         implicit none
@@ -530,6 +561,7 @@ contains
         use sr_mat_n, only: sr_o, wtg
         use sr_index, only: jelo
         use contrl_file,    only: ounit
+        use error, only: fatal_error
 
         implicit none
 

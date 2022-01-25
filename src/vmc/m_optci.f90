@@ -278,6 +278,8 @@ contains
 
 end module ci010_blk
 
+module m_optci
+contains
 subroutine allocate_m_optci()
     use ci001_blk, only: allocate_ci001_blk
     use ci002_blk, only: allocate_ci002_blk
@@ -321,3 +323,4 @@ subroutine deallocate_m_optci()
     call deallocate_ci009_blk()
     call deallocate_ci010_blk()
 end subroutine deallocate_m_optci
+end module

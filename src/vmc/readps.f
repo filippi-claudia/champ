@@ -1,3 +1,6 @@
+      module readps_mod
+      use error, only: fatal_error
+      contains
       subroutine readps
 c Written by Claudia Filippi
       use pseudo_mod, only: MPS_GRID
@@ -10,6 +13,7 @@ c Written by Claudia Filippi
 
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
       use contrl_file,    only: ounit
+      use rotqua_mod, only: gesqua
 
       implicit none
 
@@ -143,3 +147,4 @@ c non-local pseudopotential
 
       return
       end
+      end module 

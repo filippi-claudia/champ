@@ -1,3 +1,16 @@
+      module optwf_handle_wf
+      use error, only: fatal_error
+      use jastrow4_mod,       only: nterms4
+      interface ! LAPACK interface
+        SUBROUTINE dcopy(N,DX,INCX,DY,INCY)
+!*  -- Reference BLAS level1 routine --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+          INTEGER INCX,INCY,N
+          DOUBLE PRECISION DX(*),DY(*)
+        end subroutine
+      end interface
+      contains
 c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
 
@@ -55,14 +68,6 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
 
       implicit none
-
-      interface
-        function nterms4(nord)
-            implicit none
-            integer, intent(in) :: nord
-            integer :: nterms4
-        end function nterms4
-      end interface
 
       integer :: i, ict, index, iwf_fit, mparmja
       integer :: mparmjb, mparmjc
@@ -125,6 +130,7 @@ c-----------------------------------------------------------------------
       use orbval, only: nadorb
       use inputflags, only: scalecoef
       use precision_kinds, only: dp
+      use basis_norm_mod, only: basis_norm
 
       implicit none
 
@@ -288,14 +294,6 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      interface
-        function nterms4(nord)
-            implicit none
-            integer, intent(in) :: nord
-            integer :: nterms4
-        end function nterms4
-      end interface
-
       integer :: i, iadiag, ict, mparmja, mparmjb
       integer :: mparmjc
       real(dp), allocatable, save :: a4_save(:,:,:)
@@ -401,6 +399,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
       use dets, only: cdet, ndet
+      use set_input_data, only: multideterminants_define
 
       implicit none
 
@@ -473,14 +472,6 @@ c-----------------------------------------------------------------------
       use jaspar4, only: a4, norda, nordb, nordc
 
       implicit none
-
-      interface
-        function nterms4(nord)
-            implicit none
-            integer, intent(in) :: nord
-            integer :: nterms4
-        end function nterms4
-      end interface
 
       integer :: i, iadiag, ict, mparmja, mparmjb
       integer :: mparmjc
@@ -576,14 +567,6 @@ c-----------------------------------------------------------------------
       use jaspar4, only: a4, norda, nordb, nordc
 
       implicit none
-
-      interface
-        function nterms4(nord)
-            implicit none
-            integer, intent(in) :: nord
-            integer :: nterms4
-        end function nterms4
-      end interface
 
       integer :: i, ict, mparmja, mparmjb, mparmjc
       real(dp), allocatable, save :: a4_best(:,:,:)
@@ -689,6 +672,7 @@ c-----------------------------------------------------------------------
       use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
       use dets, only: cdet, ndet
+      use set_input_data, only: multideterminants_define
 
       implicit none
 
@@ -784,6 +768,8 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
+      use cuspinit4_mod, only: cuspinit4
+      use cuspexact4_mod, only: cuspexact4
 
       implicit none
 
@@ -1082,7 +1068,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
       return
       end
 c-----------------------------------------------------------------------
-      subroutine optwf_store(l,wt,psid,energy)
+      subroutine optwf_store(l,wt,psid,energy, izvzb, i_sr_rescale)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use sr_mod, only: mparm, mconf
@@ -1102,13 +1088,15 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use ci001_blk, only: ci_o
       use ci003_blk, only: ci_e
       use method_opt, only: method
-      use optwf_sr_mod, only: izvzb, i_sr_rescale
+      !use optwf_sr_mod, only: izvzb, i_sr_rescale
       use precision_kinds, only: dp
+      use optgeo_lib, only: force_store
 
       implicit none
 
       integer :: i0, ii, ijasci, istate, j
       integer :: l, ntmp
+      integer :: izvzb, i_sr_rescale
       real(dp), dimension(nparmj) :: tmp_ho
       real(dp), dimension(*) :: wt
       real(dp), dimension(*) :: psid
@@ -1162,3 +1150,4 @@ c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secu
       return
       end
 c-----------------------------------------------------------------------
+      end module

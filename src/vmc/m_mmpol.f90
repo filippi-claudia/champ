@@ -317,6 +317,8 @@ module mmpol_pot
     save
 end module mmpol_pot
 
+module m_mmpol
+contains
 subroutine allocate_m_mmpol()
     use mmpol_dipol, only: allocate_mmpol_dipol
     use mmpol_hpsi, only: allocate_mmpol_hpsi
@@ -360,3 +362,4 @@ subroutine deallocate_m_mmpol()
     call deallocate_mmpol_field()
     call deallocate_mmpol_inds()
 end subroutine deallocate_m_mmpol
+end module 

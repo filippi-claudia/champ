@@ -1,3 +1,6 @@
+module set_input_data
+use error, only: fatal_error
+contains
 subroutine inputzex
     ! Set the exponents to one when using a numerical basis
     use force_mod, only: MWF
@@ -374,15 +377,9 @@ subroutine inputjastrow()
     use wfsec, only: nwftype
     use atom, only: ncent, nctype
     use precision_kinds,    only: dp
+    use jastrow4_mod,       only: nterms4
 
       implicit none
-
-      interface
-      function nterms4(nord)
-          integer, intent(in) :: nord
-          integer :: nterms4
-      end function nterms4
-      end interface
 
       integer :: iparm, isp, it, iwft, mparmja
       integer :: mparmjb, mparmjc
@@ -493,3 +490,4 @@ subroutine hessian_zmat_define
 
     return
 end subroutine hessian_zmat_define
+end module 

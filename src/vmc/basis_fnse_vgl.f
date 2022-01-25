@@ -1,3 +1,8 @@
+      module basis_fnse_vgl_mod
+      use error, only: fatal_error
+      use splfit_mod, only: splfit
+      use basis_fns_vgl_mod, only: n0_inc
+      contains
       subroutine basis_fnse_vgl(k,rvec_en,r_en)
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c routine to calculate the values of the basis functions and their derivatives
@@ -1151,3 +1156,4 @@ c d states
 
       return
       end
+      end module

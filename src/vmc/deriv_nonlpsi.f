@@ -1,3 +1,5 @@
+      module deriv_nonlpsi
+      contains
       function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
@@ -13,6 +15,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use cuspmat4, only: d, iwc4
       use precision_kinds, only: dp
+      use scale_dist_mod, only: switch_scale
       implicit none
 
       integer :: id, ideriv, iparm, it, jj
@@ -248,3 +251,4 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 
       return
       end
+      end module 

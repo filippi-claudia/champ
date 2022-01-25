@@ -1,3 +1,5 @@
+      module determinant_psit_mod
+      contains
       subroutine determinant_psit(determ,istate)
 
       use dets, only: cdet, ndet
@@ -19,3 +21,4 @@
 
       return
       end
+      end module

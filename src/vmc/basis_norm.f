@@ -1,3 +1,5 @@
+      module basis_norm_mod
+      contains
       subroutine basis_norm(iwf,anorm,iflag)
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt routine
 c Set normalization of basis fns.
@@ -200,3 +202,4 @@ c Set normalization of basis fns.
 
       return
       end
+      end module

@@ -249,6 +249,8 @@ contains
 
 end module kinet
 
+module m_sampling
+contains
 subroutine allocate_m_sampling()
     use config, only: allocate_config
     use step, only: allocate_step
@@ -268,3 +270,4 @@ subroutine deallocate_m_sampling()
     call deallocate_step()
     call deallocate_kinet()
 end subroutine deallocate_m_sampling
+end module 

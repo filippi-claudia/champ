@@ -1,5 +1,51 @@
+      module grid3d_orbitals
 c Orbitals on a 3d grid with spline fit
 c Written by A. Scemama, adapted from C. Umrigar's 2D routines
+      use error, only: fatal_error
+      use basis_fnse_vgl_mod, only: basis_fnse_vgl
+      interface ! pspline interface
+      subroutine fvtricub(ict,ivec,ivecd,
+     >   fval,ii,jj,kk,xparam,yparam,zparam,
+     >   hx,hxi,hy,hyi,hz,hzi,
+     >   fin,inf2,inf3,nz)
+        implicit none
+        integer ict(10)
+        integer ivec  
+        integer ivecd  
+        integer ii,jj,kk
+        real*8 xparam,yparam,zparam
+        real*8 hx,hy,hz 
+        real*8 hxi,hyi,hzi 
+        integer inf2,inf3,nz
+        real fin(0:7,inf2,inf3,nz)  
+        real*8 fval(10)     
+      end subroutine
+      subroutine mktricubw(x,nx,y,ny,z,nz,f,nf2,nf3,
+     >                    ibcxmin,bcxmin,ibcxmax,bcxmax,inb1x,
+     >                    ibcymin,bcymin,ibcymax,bcymax,inb1y,
+     >                    ibczmin,bczmin,ibczmax,bczmax,inb1z,
+     >                    wk,nwk,ilinx,iliny,ilinz,ier)
+      integer nx, ny, nz
+      real x(nx), y(ny), z(nz) 
+      integer nf2,nf3
+      real f(8,nf2,nf3,nz)            
+      integer inb1x, inb1y, inb1z
+      integer ibcxmin,ibcxmax
+      integer ibcymin,ibcymax
+      integer ibczmin,ibczmax
+      real bcxmin(inb1x,nz),bcxmax(inb1x,nz)
+      real bcymin(inb1y,nz),bcymax(inb1y,nz)
+      real bczmin(inb1z,ny),bczmax(inb1z,ny)
+      integer nwk   
+      real wk(nwk)  
+      integer ilinx 
+      integer iliny 
+      integer ilinz 
+      integer ier
+      end subroutine
+      end interface
+      
+      contains
 
       subroutine setup_3dsplorb
 
@@ -21,6 +67,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use distance_mod, only: r_en, rvec_en
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use basis_fnse_v_mod, only: basis_fnse_v
       implicit none
 
       integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin
@@ -308,20 +355,10 @@ c----------------------------------------------------------------------
       use grid_mod, only: cart_from_int
       use insout, only: inout, inside
       use grid3d_param, only: nstep3d, step3d
+      use grid3d, only: int_from_cart
       implicit none
 
-      interface
-      function int_from_cart(value, iaxis)
-        use precision_kinds, only: dp
-        real(dp), intent(in) :: value
-        integer, intent(in) :: iaxis
-        integer :: int_from_cart
-      end function int_from_cart
-      end interface
-
-
       integer :: i
-
 
 c     Input:
       integer   iorb    ! Index of the MO to spline
@@ -1147,3 +1184,4 @@ c-----------------------------------------------------------------------
 
       end
 c-----------------------------------------------------------------------
+      end module 

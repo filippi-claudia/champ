@@ -1,3 +1,25 @@
+      module mmpol
+      use error, only: fatal_error
+      interface !LAPACK interface
+        SUBROUTINE dgetrf( M, N, A, LDA, IPIV, INFO )
+!*  -- LAPACK computational routine --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+          INTEGER            INFO, LDA, M, N
+          INTEGER            IPIV( * )
+          DOUBLE PRECISION   A( LDA, * )
+        END SUBROUTINE
+        SUBROUTINE DGETRI( N, A, LDA, IPIV, WORK, LWORK, INFO )
+!*  -- LAPACK routine (version 3.1) --
+!*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+!*     November 2006
+          INTEGER            INFO, LDA, LWORK, N
+          INTEGER            IPIV( * )
+          DOUBLE PRECISION   A( LDA, * ), WORK( * )
+        END SUBROUTINE
+      end interface
+      contains
+
       subroutine mmpol_extpot_read
 
 c Written by Amovilli-Floris
@@ -912,3 +934,4 @@ c        ...exit
       return
 
       end
+      end module

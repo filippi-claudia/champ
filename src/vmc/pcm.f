@@ -1,3 +1,24 @@
+      module pcm_mod
+      use error, only: fatal_error
+      interface !LAPACK interface
+        SUBROUTINE dgetrf( M, N, A, LDA, IPIV, INFO )
+!*  -- LAPACK computational routine --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+          INTEGER            INFO, LDA, M, N
+          INTEGER            IPIV( * )
+          DOUBLE PRECISION   A( LDA, * )
+        END SUBROUTINE
+        SUBROUTINE DGETRI( N, A, LDA, IPIV, WORK, LWORK, INFO )
+!*  -- LAPACK routine (version 3.1) --
+!*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+!*     November 2006
+          INTEGER            INFO, LDA, LWORK, N
+          INTEGER            IPIV( * )
+          DOUBLE PRECISION   A( LDA, * ), WORK( * )
+        END SUBROUTINE
+      end interface
+      contains
 c......................................................
       subroutine pcm_extpot_read(fcol,npmax)
 c Written by Amovilli-Floris
@@ -536,6 +557,7 @@ c......................................................
       use contrl_file,    only: ounit
       use pcm_pot, only: penups, penupv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
+      use pcm_3dgrid_mod, only: spline_pcm, pcm_extpot_ene_elec
       use precision_kinds, only: dp
       implicit none
 
@@ -589,67 +611,6 @@ c       endif
       return
       end
 
-      subroutine pcm_extpot_ene_elec(x,pepol_s,pepol_v)
-c Written by Amovilli-Floris
-c......................................................
-c       Calculate e-qpol interactions (pcm)
-c       and adds nuclei-qpol interactions
-c......................................................
-
-      use pcm_parms, only: ch, nch, nchs
-      use pcm_parms, only: xpol
-
-      use pcm_fdc, only: rcol, rcolv
-      use precision_kinds, only: dp
-      implicit none
-
-      integer :: j
-      real(dp) :: AV, GC, PI, pepol_s, pepol_v
-      real(dp) :: r2, repol, xx, yy
-      real(dp) :: zz
-      real(dp), dimension(3) :: x
-
-
-
-      DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
-
-      pepol_s=0.0d0
-c......................................................
-c     interaction with surface point charges
-c......................................................
-      do j=1,nchs
-        xx=(x(1)-xpol(1,j))**2.0d0
-        yy=(x(2)-xpol(2,j))**2.0d0
-        zz=(x(3)-xpol(3,j))**2.0d0
-        r2=xx+yy+zz
-        repol=dsqrt(r2)
-c......................................................
-c    corrections for collisions electrons-qpol
-c......................................................
-        if (repol.lt.rcol) repol=rcol
-        pepol_s=pepol_s-0.5d0*ch(j)/repol
-      enddo
-
-c......................................................
-c     interaction with volume point charges
-c......................................................
-      pepol_v=0.0d0
-      do j=nchs+1,nch
-        xx=(x(1)-xpol(1,j))**2.0d0
-        yy=(x(2)-xpol(2,j))**2.0d0
-        zz=(x(3)-xpol(3,j))**2.0d0
-        r2=xx+yy+zz
-        repol=dsqrt(r2)
-c......................................................
-c    corrections for collisions electrons-qpol
-
-c......................................................
-        if (repol.lt.rcolv) repol=rcolv
-        pepol_v=pepol_v-0.5d0*ch(j)/repol
-      enddo
-
-      return
-      end
 c......................................................
 c    AVERAGES   subroutines
 c......................................................
@@ -862,7 +823,7 @@ c..................................................
 c................................................................
 c     da modificare per stati eccitati
 c................................................................
-      subroutine qpcm_charges2(enfpcm_ave,enfpcm_err,qpol)
+      subroutine qpcm_charges2(enfpcm_ave,enfpcm_err,qpol) ! Never Called
 
       use pcm, only: MCHS
       use pcm_parms, only: ch, nch, nchs
@@ -876,10 +837,11 @@ c................................................................
 
       integer :: i, j, k, l
       real(dp) :: bhe, cc, cc1, cc2, cc3
-      real(dp) :: enfpcm_ave, enfpcm_err, qpol, rr2
+      real(dp) :: enfpcm_err, qpol, rr2
       real(dp) :: rr3, xx, yy, zz
       real(dp), dimension(MCHS) :: ch_new
       real(dp), dimension(MCHS) :: env
+      real(dp), dimension(*) :: enfpcm_ave
 
 
 
@@ -1707,3 +1669,4 @@ c     surface charges recomputed for the new stretched cavity
       return
       END
 
+      end module 

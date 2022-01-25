@@ -1,3 +1,13 @@
+module read_bas_num_mod
+use error, only: fatal_error
+interface !LAPACK interface
+  SUBROUTINE DGESV( N, NRHS, A, LDA, IPIV, B, LDB, INFO )
+    INTEGER            INFO, LDA, LDB, N, NRHS
+    INTEGER            IPIV( * )
+    DOUBLE PRECISION   A( LDA, * ), B( LDB, * )
+  END SUBROUTINE
+end interface
+contains
       subroutine read_bas_num(iwf)
 
       use custom_broadcast,   only: bcast
@@ -25,6 +35,7 @@
       use general, 			      only: pooldir, bas_id
       use contrl_file,        only: ounit, errunit
       use precision_kinds,    only: dp
+      use spline2_mod, only: spline2
 
       implicit none
 
@@ -247,6 +258,7 @@ subroutine readps_gauss
   use qua, only: nquad, wq, xq0, yq0, zq0
   use general, only: pooldir, filename, pp_id, filenames_ps_gauss
   use contrl_file,        only: ounit, errunit
+  use rotqua_mod, only: gesqua
 
   use precision_kinds, only: dp
   implicit none
@@ -508,3 +520,4 @@ end subroutine readps_gauss
 !   return
 ! end subroutine readps_gauss
 
+end module

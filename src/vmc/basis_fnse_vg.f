@@ -1,3 +1,5 @@
+      module basis_fnse_vg_mod
+      contains
       subroutine basis_fnse_vg(k,rvec_en,r_en)
 c Written by Claudia Filippi by modifying basis_fns
 c routine to calculate basis functions and derivatives for electron k
@@ -17,6 +19,9 @@ c vg -> value,gradient
       use const, only: nelec
 
       use precision_kinds, only: dp
+
+      use basis_fns_vgl_mod, only: n0_inc
+      use splfit_mod, only: splfit
       implicit none
 
       integer :: i, iabs, ic, ider, irb
@@ -447,3 +452,4 @@ c d states
 
       return
       end
+      end module

@@ -1,3 +1,5 @@
+      module write_orb_loc_mod
+      contains
       subroutine write_orb_loc
 c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt's routine
 c Reads in localized orbitals, in either
@@ -13,6 +15,7 @@ c 2) a gaussian basis
       use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
       use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
       use contrl_file,    only: ounit, errunit
+      use error, only: fatal_error
 
       use precision_kinds, only: dp
       implicit none
@@ -375,3 +378,4 @@ C      write (iu, 212) TODO : print out the symmetry
 
       return
       end
+      end module

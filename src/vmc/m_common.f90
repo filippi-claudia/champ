@@ -1113,6 +1113,8 @@ contains
 
 end module zmatrix_grad
 
+module m_common
+contains
 subroutine allocate_m_common()
 
     use atom, only: allocate_atom
@@ -1261,3 +1263,4 @@ subroutine deallocate_m_common()
     call deallocate_zmatrix()
     call deallocate_zmatrix_grad()
 end subroutine deallocate_m_common
+end module 

@@ -209,6 +209,8 @@ end module forcepar
 
  end module force_mat_n
 
+ module m_force
+ contains
  subroutine allocate_m_force()
      use forcest, only: allocate_forcest
     !  use forcestr, only: allocate_forcestr
@@ -244,3 +246,4 @@ end module forcepar
      call deallocate_force_mat_n()
      call deallocate_forcepar()
  end subroutine deallocate_m_force
+ end module 

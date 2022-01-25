@@ -177,6 +177,8 @@ contains
 
 end module orbital_num_lag
 
+module m_grid
+contains
 subroutine allocate_m_grid()
     use grid_mod, only: allocate_grid_mod
     use grid_spline_mod, only: allocate_grid_spline_mod
@@ -208,3 +210,4 @@ subroutine deallocate_m_grid()
     call deallocate_grid3d_param()
     call deallocate_orbital_num_lag()
 end subroutine deallocate_m_grid
+end module 

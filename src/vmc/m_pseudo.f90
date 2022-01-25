@@ -170,6 +170,8 @@ contains
 
 end module pseudo_tm
 
+module m_pseudo
+contains
 subroutine allocate_m_pseudo()
     use pseudo, only: allocate_pseudo
     use pseudo_champ, only: allocate_pseudo_champ
@@ -193,4 +195,4 @@ subroutine deallocate_m_pseudo()
     call deallocate_pseudo_fahy()
     call deallocate_pseudo_tm()
 end subroutine deallocate_m_pseudo
-
+end module

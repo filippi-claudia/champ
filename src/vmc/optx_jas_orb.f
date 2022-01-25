@@ -1,3 +1,5 @@
+      module optx_jas_orb
+      contains
       subroutine optx_jas_orb_sum(wtg_new,wtg_old,iflag)
 
       use csfs, only: nstates
@@ -154,7 +156,7 @@ c-----------------------------------------------------------------------
       ! I think this one is not needed ...
       ! use gradhess_jas, only: grad_jas
       use precision_kinds, only: dp
-
+      use error, only: fatal_error
       implicit none
 
       integer :: i, istate, j
@@ -272,3 +274,4 @@ c Hamiltonian orb_jas
 
       return
       end
+      end module

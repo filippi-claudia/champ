@@ -1,3 +1,5 @@
+      module deriv_jastrow_mod
+      contains
       subroutine deriv_jastrow(x,v,d2,div_vj,value)
 c Written by Claudia Filippi
 
@@ -25,3 +27,4 @@ c Written by Claudia Filippi
 
       return
       end
+      end module

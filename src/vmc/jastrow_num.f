@@ -1,3 +1,5 @@
+      module jastrow_num_mod
+      contains
       subroutine jastrow_num(x,v,d2,value)
 c Written by Cyrus Umrigar
 
@@ -270,3 +272,4 @@ c           anti-parallel spins
 
       return
       end
+      end module

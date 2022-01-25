@@ -1,3 +1,6 @@
+      module psi_mod
+      use scale_dist_mod, only: scale_dist, switch_scale
+      contains
       function psi(rij,ri,rj,it)
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c **Warning** This routine needs to be upgraded to check rshifts
@@ -199,3 +202,4 @@ c-----------------------------------------------------------------------
 
       return
       end
+      end module

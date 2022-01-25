@@ -29,7 +29,6 @@ if (MPI_Fortran_FOUND)
     dumper.f
     dumper_more.f
 	  efield.f
-    error.f
     fetch_parameters.f
     fin_reduce.f
     finwrt.f
@@ -203,6 +202,7 @@ if (MPI_Fortran_FOUND)
   # - shared_objects: rest of shared objects (.f90/.f).
   # --------------------------------------------------------------------
   set(SHARED_MODULES
+    error.f90
     m_kinds.f90
     m_basis.f90
     m_common.f90
@@ -343,9 +343,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optci_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optjas_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/error.f)
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f)
 
   # --------------------------------------------------------------------
   # Remove objects to share depending on CMAKE options:

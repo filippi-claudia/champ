@@ -1,3 +1,20 @@
+      module orbitals_mod
+      interface !LAPACK interface
+        SUBROUTINE dgemm(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
+! *  -- Reference BLAS level3 routine --
+! *  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+! *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+          DOUBLE PRECISION ALPHA,BETA
+          INTEGER K,LDA,LDB,LDC,M,N
+          CHARACTER TRANSA,TRANSB
+          DOUBLE PRECISION A(LDA,*),B(LDB,*),C(LDC,*)
+        END SUBROUTINE
+        SUBROUTINE dcopy(N,DX,INCX,DY,INCY)
+          INTEGER INCX,INCY,N
+          DOUBLE PRECISION DX(*),DY(*)
+        END SUBROUTINE
+      end interface
+      contains
       subroutine orbitals(x,rvec_en,r_en)
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
@@ -14,6 +31,11 @@ c Modified by A. Scemama
       use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
+      use grid3d_orbitals, only: spline_mo
+      use grid3d_orbitals, only: lagrange_mos, lagrange_mos_grad
+      use basis_fnse_vgl_mod, only: basis_fnse_vgl
+      use basis_fns_vgl_mod, only: basis_fns_vgl
+      use pw_orbitals, only: orbitals_pw
       implicit none
 
       integer :: i, ier, iorb, k, m
@@ -305,6 +327,11 @@ c-------------------------------------------------------------------------------
       use multislatern, only: ddorbn, dorbn, orbn
       use const, only: nelec
       use precision_kinds, only: dp
+      use grid3d_orbitals, only: spline_mo, lagrange_mose
+      use grid3d_orbitals, only: lagrange_mos_grade
+      use basis_fnse_vg_mod, only: basis_fnse_vg
+      use basis_fnse_vgl_mod, only: basis_fnse_vgl
+      use pw_orbitals, only: orbitals_pw_grade
 
       implicit none
 
@@ -392,3 +419,4 @@ c           do 25 m=1,nbasis
       return
       end
 c------------------------------------------------------------------------------------
+      end module

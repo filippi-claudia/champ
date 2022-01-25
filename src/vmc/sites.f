@@ -1,3 +1,6 @@
+      module sites_mod
+      use error, only: fatal_error
+      contains
       subroutine sites(x,nelec,nsite)
 c Written by Cyrus Umrigar
       use atom, only: znuc, cent, iwctype, ncent
@@ -58,3 +61,4 @@ c sample position from exponentials around center
       if (l.lt.nelec) call fatal_error('SITES: bad input')
       return
       end
+      end module

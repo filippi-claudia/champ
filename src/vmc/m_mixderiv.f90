@@ -101,6 +101,8 @@ module mix_jas_ci
 
  end module mix_orb_ci
 
+ module m_mixderiv
+ contains
  subroutine allocate_m_mixderiv()
      use mix_jas_ci, only: allocate_mix_jas_ci
      use mix_jas_orb, only: allocate_mix_jas_orb
@@ -120,3 +122,4 @@ module mix_jas_ci
      call deallocate_mix_jas_orb()
      call deallocate_mix_orb_ci()
  end subroutine deallocate_m_mixderiv
+ end module 

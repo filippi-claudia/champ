@@ -1,3 +1,5 @@
+module get_norbterm_mod
+contains
 subroutine get_norbterm
   !> This subroutine computes the number of orbital parameters needed for
   !> the allocations of the arrays.
@@ -23,6 +25,7 @@ subroutine get_norbterm
     use orbval, only: nadorb, ndetorb, orb
     use optwf_contrl, only: ncore, no_active
     use contrl_file,    only: ounit, errunit
+    use error, only: fatal_error
 
     implicit none
 
@@ -221,3 +224,4 @@ subroutine get_norbterm
     norbterm = local_norbterm
     return
 end subroutine get_norbterm
+end module

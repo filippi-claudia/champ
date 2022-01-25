@@ -1,3 +1,5 @@
+      module basis_fnse_v_mod
+      contains
       subroutine basis_fnse_v(k,rvec_en,r_en)
 c Written by Claudia Filippi by modifying basis_fns
 c routine to calculate basis functions for electron k
@@ -13,6 +15,9 @@ c routine to calculate basis functions for electron k
       use const, only: nelec
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use splfit_mod, only: splfit
+      use slm_mod, only: slm
+      use basis_fns_vgl_mod, only: n0_inc, phi_combine, phie_combine
       implicit none
 
       integer :: i, ic, irb, iwlbas0, j
@@ -104,3 +109,4 @@ c loop over all atoms
 
       return
       end
+      end module

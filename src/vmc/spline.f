@@ -1,3 +1,5 @@
+      module spline_mod
+      contains
       SUBROUTINE SPLINE(X,Y,N,YP1,YPN,Y2)
       use precision_kinds, only: dp
 !  From Numerical Recipes
@@ -59,6 +61,7 @@ c-----------------------------------------------------------------------
       SUBROUTINE SPLINT(XA,YA,Y2A,N,X,Y)
 !  From Numerical Recipes
       use precision_kinds, only: dp
+      use error, only: fatal_error
       implicit none
 
 
@@ -94,4 +97,4 @@ c-----------------------------------------------------------------------
       RETURN
       END
 
-
+      end module
