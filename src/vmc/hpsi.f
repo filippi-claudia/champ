@@ -1,4 +1,4 @@
-      module hspi_mod
+      module hpsi_mod
       contains
       subroutine hpsi(coord,psid,psij,energy,ipass,ifr)
 

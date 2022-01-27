@@ -1,3 +1,5 @@
+      module averages
+      contains
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
 
       use forcepar, only: nforce
@@ -121,3 +123,4 @@ c      write(ounit,*)'test deriv ',ifr,derivtotave
       enddo
       return
       end
+      end module

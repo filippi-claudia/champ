@@ -1,3 +1,5 @@
+      module optci_reduce_mod
+      contains
       subroutine optci_reduce
 
       use precision_kinds, only: dp
@@ -147,3 +149,4 @@ c     max does not work with g77
 
       return
       end
+      end module

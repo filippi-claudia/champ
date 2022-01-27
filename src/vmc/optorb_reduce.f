@@ -1,3 +1,5 @@
+      module optorb_reduce_mod
+      contains
       subroutine optorb_reduce
 
       use optorb_mod, only: nmatdim
@@ -142,3 +144,4 @@ c only the master writes to output and dumper
 
       return
       end
+      end module

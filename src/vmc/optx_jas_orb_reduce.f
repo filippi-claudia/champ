@@ -1,3 +1,5 @@
+      module optx_jas_orb_reduce_mod
+      contains
       subroutine optx_jas_orb_reduce
 c Written by Claudia Filippi
 
@@ -74,3 +76,4 @@ c Written by Claudia Filippi
 
       return
       end
+      end module

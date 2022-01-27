@@ -1,3 +1,5 @@
+      module optjas_reduce_mod
+      contains
       subroutine optjas_reduce
 c Written by Claudia Filippi
       use mpi
@@ -225,3 +227,4 @@ c only the master writes to output and dumper
 
       return
       end
+      end module

@@ -1,3 +1,5 @@
+      module nonloc_grid_mod
+      contains
       subroutine nonloc_grid(iel,iw,x,psid,imove)
 
       use const, only: nelec
@@ -13,16 +15,11 @@
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use distances_mod, only: distances
+      use nonloc_pot_mod, only: nonloc_pot
+      use multideterminant_tmove_mod, only: multideterminant_tmove
+      use rannyu_mod, only: rannyu
       implicit none
-
-      interface
-         function rannyu(idum)
-          use precision_kinds, only: dp
-         implicit none
-         integer,intent(in) :: idum
-         real(dp) :: rannyu
-         end function rannyu
-      end interface
 
       integer :: i, i1, i2, ic, ic_good
       integer :: iel, iel_good, ii, imove
@@ -185,3 +182,4 @@ c-----------------------------------------------------------------------
 
       return
       end
+      end module

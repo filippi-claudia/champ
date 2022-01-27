@@ -1,3 +1,5 @@
+      module acues1_gpop_mod
+      contains
       subroutine acues1_gpop
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
@@ -22,6 +24,7 @@ c routine to accumulate estimators for energy etc.
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
       use mpi
       use contrl_file,    only: ounit
+      use redistribute_mod, only: redistribute
       implicit none
 
       integer :: ierr, ifr, ipmod, mod, iabs, nfpro
@@ -140,3 +143,4 @@ c zero out step averages
 
       return
       end
+      end module

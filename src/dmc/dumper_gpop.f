@@ -1,3 +1,5 @@
+      module dumper_gpop_mod
+      contains
       subroutine dumper_gpop
 c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
@@ -44,6 +46,9 @@ c job where it left off
       use mpi
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+
+      use strech_mod, only: strech
+      use rannyu_mod, only: savern
       implicit none
 
       integer :: i, ib, ic, id, ierr
@@ -186,3 +191,4 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
 
       return
       end
+      end module

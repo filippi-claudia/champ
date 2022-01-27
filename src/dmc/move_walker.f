@@ -1,3 +1,5 @@
+      module move_walker
+      contains
       subroutine send_walker(irecv)
 c Written by Claudia Filippi
 
@@ -11,6 +13,9 @@ c Written by Claudia Filippi
       use jacobsave, only: ajacold
       use velratio, only: fratio
       use mpi
+      use prop_reduce_mod, only: prop_send, prop_recv
+      use mmpol_reduce_mod,only: mmpol_send, mmpol_recv
+      use pcm_reduce_mod,  only: pcm_send, pcm_recv
 
       implicit none
 
@@ -115,3 +120,4 @@ c     call recv_jas(itag,isend)
 
       return
       end
+      end module

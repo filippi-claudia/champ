@@ -1,3 +1,5 @@
+      module mmpol_dmc
+      contains
       subroutine mmpol_prt(iblk,wgcum,wgcm2)
 
       use force_mod, only: MFORCE
@@ -206,3 +208,4 @@ c-----------------------------------------------------------------------
 
       return
       end
+      end module

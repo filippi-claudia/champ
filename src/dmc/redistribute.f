@@ -1,3 +1,5 @@
+      module redistribute_mod
+      contains
       subroutine redistribute
 c Figure out who communicates a walker to whom to achieve load balance.
 c It communicates only 1 walker at a time between processors, but it does
@@ -18,6 +20,9 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use branch, only: nwalk
       use mpi
       use contrl_file,    only: ounit
+      use move_walker, only: send_walker, recv_walker
+      use walksav_det_mod, only: send_det, recv_det
+      use walksav_jas_mod, only: send_jas, recv_jas
       implicit none
 
       integer :: i, icomm, ido_again, ierr, ihi
@@ -130,3 +135,4 @@ c and to update the values of nwalk on each processor
 
       return
       end
+      end module

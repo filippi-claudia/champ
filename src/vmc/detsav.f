@@ -1,3 +1,5 @@
+      module detsav_mod
+      contains
       subroutine detsav(iel,iflag)
 c Written by Claudia Filippi
 
@@ -83,3 +85,4 @@ c Written by Claudia Filippi
 
       return
       end
+      end module
