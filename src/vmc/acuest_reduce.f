@@ -1,3 +1,5 @@
+      module acuest_reduce_mod
+      contains
       subroutine acuest_reduce(enow)
 c Written by Claudia Filippi
 
@@ -16,10 +18,16 @@ c Written by Claudia Filippi
       use forcewt, only: wcum
       use mpiconf, only: nproc, wid
       use mpi
+      use error, only: fatal_error
 
       ! this in not even in the master as the line
       ! is commented in optorb.h !
       use optorb_cblock, only: iorbprt, iorbprt_sav
+
+      use prop_reduce_mod, only: prop_reduce
+      use acuest_write_mod, only: acuest_write
+      use pcm_mod, only: qpcm_update_vol, pcm_compute_penupv
+      use pcm_reduce_mod, only: pcm_reduce_chvol
 
       implicit none
 
@@ -234,3 +242,4 @@ c optorb reduced at the end of the run: set printout to 0
       return
 
       end
+      end module

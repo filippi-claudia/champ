@@ -6,6 +6,8 @@ c Written by Claudia Filippi
       use const, only: nelec
 
       use precision_kinds, only: dp
+
+      use deriv_jastrow4_mod, only: deriv_jastrow4
       implicit none
 
       integer :: i

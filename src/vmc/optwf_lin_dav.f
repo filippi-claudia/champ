@@ -1,3 +1,5 @@
+      module optwf_lin_dav
+      contains
       subroutine optwf_lin_d
 
       use sr_mod, only: mparm
@@ -14,7 +16,19 @@
       use method_opt, only: method
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
+
+      use optwf_handle_wf,only: set_nparms_tot, save_nparms, write_wf
+      use optwf_handle_wf,only: set_nparms, save_wf, compute_parameters
+      use optwf_handle_wf,only: test_solution_parm
+      use error, only: fatal_error
+      use optgeo_lib, only: write_geometry, compute_positions
+      use sr_more, only: dscal
+      use optwf_lin_dav_more, only: lin_d
       implicit none
+      interface
+      subroutine qmc
+      end subroutine
+      end interface
 
       integer :: iflag, iforce_analy_sav, inc_nblk, ioptci_sav, ioptjas_sav
       integer :: ioptorb_sav, iter, miter, nstates_sav
@@ -168,71 +182,5 @@ c enddo iteration
 
       return
       end
-
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine h_psi_lin_d(ndim,nvec,psi,hpsi)
-
-      use sr_mod, only: mparm
-      use optwf_func, only: ifunc_omega
-      use precision_kinds, only: dp
-
-      implicit none
-
-      integer :: ndim, nvec
-      real(dp), dimension(mparm,*) :: psi
-      real(dp), dimension(mparm,*) :: hpsi
-
-      if(ifunc_omega.eq.0) then
-        call h_psi_energymin(ndim,nvec,psi,hpsi)
-       elseif(ifunc_omega.le.2) then
-        call h_psi_varmin(ndim,nvec,psi,hpsi)
-       else
-        call h_psi_omegamin(ndim,nvec,psi,hpsi)
-      endif
-
-      return
-      end
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-      subroutine s_psi_lin_d(ndim,nvec,psi,spsi)
-
-      use sr_mod, only: mparm
-      use optwf_func, only: ifunc_omega
-      use precision_kinds, only: dp
-
-      implicit none
-
-      integer :: ndim, nvec
-      real(dp), dimension(mparm,*) :: psi
-      real(dp), dimension(mparm,*) :: spsi
-
-      if(ifunc_omega.le.2) then
-        call s_psi_energymin(ndim,nvec,psi,spsi )
-       else
-        call s_psi_omegamin(ndim,nvec,psi,spsi )
-      endif
-
-      return
-      end
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine select_ci_root(iroot)
-
-      use csfs, only: ccsf, ncsf
-      use dets, only: cdet, ndet
-
-      implicit none
-
-      integer :: i, iadiag, icsf, iroot
-
-
-      do i=1,ndet
-        cdet(i,1,1)=cdet(i,iroot,1)
-      enddo
-
-      do icsf=1,ncsf
-        ccsf(icsf,1,iadiag)=ccsf(icsf,iroot,1)
-      enddo
-
-      return
-      end
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      end module

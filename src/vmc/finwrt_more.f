@@ -1,3 +1,5 @@
+      module finwrt_more_mod
+      contains
       subroutine finwrt_more
 c written by Claudia Filippi
 
@@ -33,3 +35,4 @@ c written by Claudia Filippi
       return
       end
 
+      end module

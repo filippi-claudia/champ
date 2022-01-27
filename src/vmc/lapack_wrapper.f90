@@ -2,6 +2,59 @@ module lapack_wrapper
 
   use precision_kinds, only: dp
   implicit none
+  interface!LAPACK interface
+!*  -- LAPACK driver routine (version 3.1) --
+     SUBROUTINE DSYSV( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, WORK, LWORK, INFO )
+        CHARACTER          UPLO
+        INTEGER            INFO, LDA, LDB, LWORK, N, NRHS
+        INTEGER            IPIV( * )
+        DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), WORK( * ) 
+      END SUBROUTINE
+      SUBROUTINE DGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
+        DOUBLE PRECISION ALPHA,BETA
+        INTEGER INCX,INCY,LDA,M,N
+        CHARACTER TRANS
+        DOUBLE PRECISION A(LDA,*),X(*),Y(*)
+      END SUBROUTINE
+      SUBROUTINE DGEQRF( M, N, A, LDA, TAU, WORK, LWORK, INFO )
+        INTEGER            INFO, LDA, LWORK, M, N
+        DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+      END SUBROUTINE
+      SUBROUTINE DSYEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO )
+        CHARACTER          JOBZ, UPLO
+        INTEGER            INFO, LDA, LWORK, N
+        DOUBLE PRECISION   A( LDA, * ), W( * ), WORK( * )
+      END SUBROUTINE
+      SUBROUTINE DSYGV( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK, LWORK, INFO )
+        CHARACTER          JOBZ, UPLO
+        INTEGER            INFO, ITYPE, LDA, LDB, LWORK, N
+        DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), W( * ), WORK( * )
+      END SUBROUTINE
+      SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
+        DOUBLE PRECISION ALPHA,BETA
+        INTEGER K,LDA,LDB,LDC,M,N
+        CHARACTER TRANSA,TRANSB
+        DOUBLE PRECISION A(LDA,*),B(LDB,*),C(LDC,*)
+      END SUBROUTINE
+      SUBROUTINE DLASRT( ID, N, D, INFO )
+        CHARACTER          ID
+        INTEGER            INFO, N
+        DOUBLE PRECISION   D( * )
+      END SUBROUTINE
+      SUBROUTINE DSYGVX( ITYPE, JOBZ, RANGE, UPLO, N, A, LDA, B, LDB, &
+                         VL, VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK,  &
+                         LWORK, IWORK, IFAIL, INFO )
+        CHARACTER          JOBZ, RANGE, UPLO
+        INTEGER            IL, INFO, ITYPE, IU, LDA, LDB, LDZ, LWORK, M, N
+        DOUBLE PRECISION   ABSTOL, VL, VU
+        INTEGER            IFAIL( * ), IWORK( * )
+        DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), W( * ), WORK( * ), Z( LDZ, * )
+      END SUBROUTINE
+      SUBROUTINE DORGQR( M, N, K, A, LDA, TAU, WORK, LWORK, INFO )
+        INTEGER            INFO, K, LDA, LWORK, M, N
+        DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+      END SUBROUTINE
+  end interface
 
   !> \private
   private

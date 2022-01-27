@@ -1,3 +1,6 @@
+      module pcm_reduce_mod
+      use error, only: fatal_error
+      contains
       subroutine pcm_reduce
 
       use pcm, only: MCHS
@@ -146,3 +149,4 @@ c     write(ounit,*) ' *** pcm update *** ',(idispl(i),i=0,nproc-1)
 
       return
       end
+      end module

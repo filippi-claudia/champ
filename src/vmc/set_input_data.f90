@@ -70,29 +70,18 @@ subroutine multideterminants_define(iflag, icheck)
 
     ! not sure about that one either ....
     use wfsec, only: nwftype
+    use multideterminant_mod, only: idiff
 
     implicit none
 
-
-    interface
-    function idiff(j, i, iab)
-        integer, intent(in) :: j
-        integer, intent(in) :: i
-        integer, intent(in) :: iab
-        integer :: idiff
-    endfunction
-    end interface
-
-      integer :: i, iab, icheck, icsf, idist
-      integer :: iflag, in, iphase, iref
-      integer :: irep, isav, ish, istate
-      integer :: isub, iw, iwf, iwref
-      integer :: j, k, kref_old, l
-      integer :: ndet_dist, nel
-      integer, dimension(nelec) :: iswapped
-      integer, dimension(ndet) :: itotphase
-
-
+    integer :: i, iab, icheck, icsf, idist
+    integer :: iflag, in, iphase, iref
+    integer :: irep, isav, ish, istate
+    integer :: isub, iw, iwf, iwref
+    integer :: j, k, kref_old, l
+    integer :: ndet_dist, nel
+    integer, dimension(nelec) :: iswapped
+    integer, dimension(ndet) :: itotphase
 
     save kref_old
 

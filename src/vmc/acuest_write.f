@@ -1,3 +1,5 @@
+      module acuest_write_mod
+      contains
       subroutine acuest_write(enow, nproc)
 c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
@@ -18,6 +20,9 @@ c routine to write out estimators for energy etc.
       use precision_kinds, only: i2b
       use contrl_file,    only: ounit, errunit
       use precision_kinds, only: dp
+      use properties_mod, only: prop_prt
+      use optci_mod, only: optci_prt
+      use pcm_vmc, only: pcm_prt
       implicit none
 
       integer :: i, ieerr, iferr, ifr, index
@@ -115,3 +120,4 @@ c different meaning of last argument: 0 acuest, 1 finwrt
 
       return
       end
+      end module

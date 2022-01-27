@@ -24,6 +24,7 @@ program main
     use precision_kinds,    only: dp
     use contrl_file,    only: ounit
     use mpitimer,    only: time, time_start, time_check1, time_final
+    use parser_mod,  only: parser
 
     implicit None
     integer :: ierr

@@ -6,16 +6,8 @@ c Written by Cyrus Umrigar
       use atom, only: znuc, cent, iwctype, ncent
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use rannyu_mod, only: rannyu
       implicit none
-
-      interface
-         function rannyu(idum)
-          use precision_kinds, only: dp
-         implicit none
-         integer,intent(in) :: idum
-         real(dp) :: rannyu
-         end function rannyu
-      end interface
 
       integer :: i, ic, ispin, j, ju
       integer :: l, nelec

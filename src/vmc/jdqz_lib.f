@@ -1,3 +1,5 @@
+      module jdqz_lib
+      contains
       subroutine error (m)
 c
 c     Coded by Diederik R. Fokkema
@@ -1809,3 +1811,4 @@ c     --- Return
 c
       end
 
+      end module

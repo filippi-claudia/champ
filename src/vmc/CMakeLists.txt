@@ -44,8 +44,6 @@ if (MPI_Fortran_FOUND)
     jastrow4e.f
 	  jastrow_num.f
     jastrowe.f
-    jdqz_lib.f
-    jdqz_main.f
     matinv.f
 	  mc_configs.f
     metrop_mov1_slat.f
@@ -72,6 +70,7 @@ if (MPI_Fortran_FOUND)
 	  optwf_lib.f
     optwf_lin_dav.f
     optwf_lin_dav_more.f
+    optwf_lin_dav_extra.f
     optwf_lin_matrix.f
 	  optwf_matrix_corsamp.f
     optwf_mix_sa.f

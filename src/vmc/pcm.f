@@ -919,17 +919,9 @@ C     ***************************************************************
       use pcm_inda, only: inda
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
+      use rannyu_mod, only: rannyu
 
       implicit none
-
-      interface
-        function rannyu(idum)
-          use precision_kinds, only: dp
-          implicit none
-          integer,intent(in) :: idum
-          real(dp) :: rannyu
-        end function rannyu
-      end interface
 
       integer :: i, i1, i2, icheck_sphere, icount
       integer :: icount2, ii, ij, imax
@@ -1206,17 +1198,9 @@ c..................................................
       use spc, only: nsf, num
       use spc1, only: csf, rsf
       use precision_kinds, only: dp
+      use rannyu_mod, only: rannyu
 
       implicit none
-
-      interface
-         function rannyu(idum)
-         use precision_kinds, only: dp
-         implicit none
-         integer,intent(in) :: idum
-         real(dp) :: rannyu
-         end function rannyu
-      end interface
 
       integer :: i, icount, imax, isf, j
       integer :: k, maxit, ncyc, ncyc1
@@ -1356,17 +1340,9 @@ c     f1=r0*dsin(theta)
       use spc, only: nsf, num
       use spc1, only: csf, rsf
       use precision_kinds, only: dp
+      use rannyu_mod, only: rannyu
 
       implicit none
-
-      interface
-        function rannyu(idum)
-         use precision_kinds, only: dp
-         implicit none
-         integer,intent(in) :: idum
-         real(dp) :: rannyu
-        end function rannyu
-      end interface
 
       integer :: i, icount, imax, isf, j
       integer :: k, maxit, ncyc, ncyc1

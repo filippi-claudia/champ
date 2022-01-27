@@ -23,25 +23,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use pw_find_image, only: find_image3
       use scale_dist_mod, only: scale_dist, scale_dist1
       use deriv_nonlpsi, only: deriv_psibnl, deriv_psinl, deriv_psianl
+      use nonlpsi, only: dpsianl, dpsibnl
       implicit none
-
-      interface
-      function dpsibnl(u,isb,ipar)
-        use precision_kinds, only: dp
-        real(dp), intent(in) :: u
-        integer, intent(in) :: isb
-        integer, intent(in) :: ipar
-        real(dp) :: dpsibnl
-      endfunction dpsibnl
-
-      function dpsianl(rr,it)
-        use precision_kinds, only: dp
-        real(dp), intent(in) :: rr
-        integer, intent(in) :: it
-        real(dp) :: dpsianl
-      endfunction dpsianl
-
-      end interface
 
       integer :: i, ic, iel, ipar, ipara
       integer :: iparm, iparm0, isb, it

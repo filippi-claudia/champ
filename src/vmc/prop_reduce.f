@@ -1,3 +1,5 @@
+      module prop_reduce_mod
+      contains
       subroutine prop_reduce
 
       use properties, only: MAXPROP
@@ -39,3 +41,4 @@
 
       return
       end
+      end module

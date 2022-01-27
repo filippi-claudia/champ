@@ -3,6 +3,7 @@ c Orbitals on a 3d grid with spline fit
 c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use error, only: fatal_error
       use basis_fnse_vgl_mod, only: basis_fnse_vgl
+      use grid3d, only: int_from_cart
       interface ! pspline interface
       subroutine fvtricub(ict,ivec,ivecd,
      >   fval,ii,jj,kk,xparam,yparam,zparam,
@@ -355,7 +356,6 @@ c----------------------------------------------------------------------
       use grid_mod, only: cart_from_int
       use insout, only: inout, inside
       use grid3d_param, only: nstep3d, step3d
-      use grid3d, only: int_from_cart
       implicit none
 
       integer :: i
@@ -666,16 +666,6 @@ c
       use precision_kinds, only: dp
       implicit none
 
-
-      interface
-      function int_from_cart(value, iaxis)
-        use precision_kinds, only: dp
-        real(dp), intent(in) :: value
-        integer, intent(in) :: iaxis
-        integer :: int_from_cart
-      end function int_from_cart
-      end interface
-
       integer :: i, i1, i2, i3, iel
       integer :: ier, igrid, iorb, j
       integer, dimension(3) :: ix
@@ -764,15 +754,6 @@ c
 
       use precision_kinds, only: dp
       implicit none
-
-      interface
-      function int_from_cart(value, iaxis)
-        use precision_kinds, only: dp
-        real(dp), intent(in) :: value
-        integer, intent(in) :: iaxis
-        integer :: int_from_cart
-      end function int_from_cart
-      end interface
 
       integer :: i, i1, i2, i3, iaxis
       integer :: iel, ier, igrid, iorb
@@ -864,16 +845,6 @@ c
       use precision_kinds, only: dp
       implicit none
 
-      interface
-      function int_from_cart(value, iaxis)
-        use precision_kinds, only: dp
-        real(dp), intent(in) :: value
-        integer, intent(in) :: iaxis
-        integer :: int_from_cart
-      end function int_from_cart
-      end interface
-
-
       integer :: i, i1, i2, i3, ier
       integer :: igrid, iorb, j
       integer, dimension(3) :: ix
@@ -961,16 +932,6 @@ c
 
       use precision_kinds, only: dp
       implicit none
-
-      interface
-      function int_from_cart(value, iaxis)
-        use precision_kinds, only: dp
-        real(dp), intent(in) :: value
-        integer, intent(in) :: iaxis
-        integer :: int_from_cart
-      end function int_from_cart
-      end interface
-
 
       integer :: i, i1, i2, i3, iaxis
       integer :: ier, igrid, iorb, j

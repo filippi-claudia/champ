@@ -55,10 +55,11 @@ c Written by Lubos Mitas
 	icase=icasem
 	nq=iq(icase)
 
-	do 5 ic=1,ncase
-	  do 5 k=1,ntypm
-	    ww(ic,k)=0.d0
- 5	continue
+      do ic=1,ncase
+       do k=1,ntypm
+         ww(ic,k)=0.d0
+        end do
+      end do
 	do 7 j=1,npoint
 	  xq(j)=0.d0
 	  yq(j)=0.d0
@@ -337,17 +338,8 @@ c-----------------------------------------------------------------------
 c Written by Lubos Mitas
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
       use precision_kinds, only: dp
+      use rannyu_mod, only: rannyu
       implicit none
-
-	  interface
-		function rannyu(idum)
-		use precision_kinds, only: dp
-		implicit none
-		integer,intent(in) :: idum
-		real(dp) :: rannyu
-		end function rannyu
-      end interface
-
 
       integer :: iq
       real(dp) :: cfi, sfi

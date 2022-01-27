@@ -1,3 +1,5 @@
+      module dumper_more_mod
+      contains
       subroutine dumper_more
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
@@ -41,17 +43,29 @@ c job where it left off
       ! it was in master as part of the include optorb.h
       use optorb_cblock, only: ns_current
       use precision_kinds, only: dp
+
+      use optorb_f_mod, only: optorb_save, optorb_rstrt
+      use optci_mod,    only: optci_save, optci_rstrt
+      use optjas_mod,   only: optjas_dump, optjas_rstrt, optjas_save
+      use prop_vmc,     only: prop_save
+      use pcm_mod,      only: pcm_rstrt, pcm_dump
+      use nodes_distance_mod,   only: nodes_distance
+      use determinante_mod, only: compute_determinante_grad
+      use error, only: fatal_error
+      use optorb_f_mod,   only: optorb_dump
+      use optci_mod,      only: optci_dump
+      use nodes_distance_mod, only: rnorm_nodes_num
+      use determinant_psig_mod, only: determinant_psig
+      use hpsi_mod, only: hpsi
+      use strech_mod, only: strech, setup_force
+      use optx_orb_ci, only: optx_orb_ci_rstrt, optx_orb_ci_dump
+      use optx_jas_ci, only: optx_jas_ci_rstrt, optx_jas_ci_dump
+      use optx_jas_orb, only: optx_jas_orb_rstrt, optx_jas_orb_dump
+      use force_analytic, only: force_analy_rstrt, force_analy_dump
+      use multiple_states, only: efficiency_rstrt, efficiency_dump
+      use properties_mod, only: prop_rstrt, prop_dump
+      
       implicit none
-
-      interface
-        function rnorm_nodes_num(distance_node, epsilon)
-            use precision_kinds, only: dp
-            real(dp), intent(in) :: distance_node
-            real(dp), intent(in) :: epsilon
-            real(dp) :: rnorm_nodes_num
-        end function rnorm_nodes_num
-      end interface
-
 
       integer :: i, ib, ic, ifr, istate
       integer :: j, jel, k, nbasx
@@ -314,7 +328,7 @@ c rewrite psi2o if you are sampling guiding
 
       if(node_cutoff.gt.0) then
         do jel=1,nelec
-          call compute_determinante_grad(jel,psido,psido,vold(1,jel),1)
+          call compute_determinante_grad(jel,psido(1),psido,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
@@ -366,3 +380,4 @@ c rewrite psi2o if you are sampling guiding
 
       return
       end
+      end module

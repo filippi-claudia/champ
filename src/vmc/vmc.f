@@ -1,3 +1,5 @@
+      module vmc_f_mod
+      contains
       subroutine vmc
 c Written by Cyrus Umrigar and Claudia Filippi
 
@@ -26,6 +28,15 @@ c and sa, pa, da asymptotic functions
       use contrl_file,    only: ounit
 
       use precision_kinds, only: dp
+      use strech_mod, only: setup_force
+      use dumper_mod, only: dumper, startr
+      use mc_configs, only: mc_configs_start, mc_configs_write
+      use acuest_mod, only: zerest
+      use error, only: fatal_error
+      use finwrt_mod, only: finwrt
+      use rotqua_mod, only: rotqua
+      use acuest_mod, only: acuest
+      use metrop_mov1_slat, only: metrop6
       implicit none
 
       integer :: i, ii, j, jj, l
@@ -192,3 +203,4 @@ c if dump flag is on then dump out data for a restart
 
       return
       end
+      end module
