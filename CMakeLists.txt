@@ -125,7 +125,7 @@ gitinfo(${CMAKE_SOURCE_DIR})
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O3" "-cpp" "-g"
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-none" "-g"
        "-Werror=implicit-interface" "-fimplicit-none" )
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")

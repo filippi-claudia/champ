@@ -1438,9 +1438,9 @@ contains
      real(kind=dbl), dimension(:), allocatable      :: work2
      real(kind=dbl), dimension(:), allocatable      :: work3
 
-     allocate(work1(nx,ny,nz), source=0.0_dbl)
-     allocate(work2(nz), source=0.0_dbl)
-     allocate(work3((2*kz-1)*nz) , source=0.0_dbl)
+     allocate(work1(nx,ny,nz), source=0.0_dp)
+     allocate(work2(nz), source=0.0_dp)
+     allocate(work3((2*kz-1)*nz) , source=0.0_dp)
 
     call spli3d(zvec,ldf,mdf,xyzdata,zknot,nz,kz,nx,ny,work2,work3,work1,     &
          &     nx,ny,nz)
