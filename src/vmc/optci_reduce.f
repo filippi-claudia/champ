@@ -13,11 +13,13 @@
       use ci010_blk, only: ci_ooe_cum
       use method_opt, only: method
       use mpi
+      use optorb_mod, only: nmatdim
+      use optorb_cblock, only: norbterm
 
       implicit none
 
       integer :: i, ierr, j, matdim
-      real(dp) :: nmatdim, MXORBTERM
+      ! real(dp) :: nmatdim, MXORBTERM
 
 c     parameter(MXTMP=max(MXORBTERM,nmatdim))
 c     max does not work with g77
@@ -30,8 +32,8 @@ c     max does not work with g77
 
       ! defined like that in reference branch
       ! https://github.com/filippi-claudia/champ/blob/847f0e5e94d77035d957158406aac47c3e27af54/src/vmc/optci_reduce.f#L16
-      MXTMP = mxciterm + ncimatdim
-      ! MXTMP=max(MXORBTERM,nmatdim)
+      ! MXTMP = mxciterm + ncimatdim
+      MXTMP=max(norbterm,ncimatdim)
 
       allocate(optci_reduce_collect(MXTMP), source=0.0_dp)
       allocate(optci_reduce_collect2(mxciterm,mxcireduced), source=0.0_dp)
