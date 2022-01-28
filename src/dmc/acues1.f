@@ -24,7 +24,7 @@ c routine to accumulate estimators for energy etc.
 
       integer :: ifr, ipmod, nfpro
       real(dp) :: wgdsum1
-      real(dp) :: eisum = 0.0_dp  !eisum was uninit causing issue on line 64 (check with claudia)
+
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
@@ -61,7 +61,7 @@ c collect block averages
       wgdsum=wgdsum+wgdsum1
       esum_dmc=esum_dmc+esum1_dmc(1)
       efsum=efsum+efsum1
-      eisum=eisum+wfsum1/wdsum1
+
       do ifr=1,nforce
         wgsum(ifr)=wgsum(ifr)+wgsum1(ifr)
         egsum(ifr)=egsum(ifr)+egsum1(ifr)
