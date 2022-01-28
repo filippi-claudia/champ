@@ -20,15 +20,13 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use contrl_file,    only: ounit
       use coefs, only: norb
       use precision_kinds, only: dp
+      use pw_ewald, only: cossin_psi_g, cossin_psi_k
       implicit none
 
       integer :: iband, iel, ig, ik, ikvec
       integer :: iorb, iv, jorb, k
-      real(dp) :: cos_g, cos_ip, cos_k, cos_rp, dcos_g
-      real(dp) :: dcos_k, ddcos_g, ddcos_ip, ddcos_k
-      real(dp) :: ddcos_rp, ddsin_g, ddsin_im, ddsin_k
-      real(dp) :: ddsin_rm, dsin_g, dsin_k, sin_g
-      real(dp) :: sin_im, sin_k, sin_rm
+      real(dp) :: cos_ip, cos_rp, ddcos_ip, ddcos_rp
+      real(dp) :: ddsin_im, ddsin_rm, sin_im, sin_rm
       real(dp), dimension(3,nelec) :: x
       real(dp), dimension(nelec,*) :: orb
       real(dp), dimension(3,nelec,*) :: dorb

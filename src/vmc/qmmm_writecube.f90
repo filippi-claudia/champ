@@ -1,3 +1,5 @@
+module qmmm_writecube_mod
+contains
 	subroutine qmmm_writecube(filename,title,n_atoms,x0,n_x,n_y,n_z, &
                 delta,x_atom,id_atom,chrg_atom,pot)
         
@@ -35,5 +37,4 @@
 
         return
         end
-
-
+end module
