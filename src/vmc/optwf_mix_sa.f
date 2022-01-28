@@ -11,6 +11,7 @@
       use mstates_ctrl, only: iguiding
       use method_opt, only: method
       use optwf_sr_mod, only: sr
+      use optwf_corsam, only: sigma
       use force_analy, only: iforce_analy
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_contrl, only: iroot_geo
@@ -30,7 +31,7 @@
       integer, dimension(5,MSTATES) :: index_more
       real(dp) :: adiag, alin_adiag_sav, denergy, denergy_err, diffene
       real(dp) :: dparm_norm, energy_err_sav, energy_sav, errdiff
-      real(dp) :: sigma, sigma_sav, sr_adiag_sav
+      real(dp) :: sigma_sav, sr_adiag_sav
       real(dp), dimension(mparm*MSTATES) :: deltap
       real(dp), dimension(mparm*MSTATES,5) :: deltap_more
       real(dp), dimension(MSTATES) :: energy_old

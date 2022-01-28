@@ -39,6 +39,7 @@ module optwf_contrl
     character(20) :: dl_alg
     real(dp) :: dl_mom
 
+
     private
     public :: ioptwf
     public :: idl_flag, ilbfgs_flag, ilbfgs_m
@@ -67,10 +68,12 @@ module optwf_corsam
     real(dp), dimension(:), allocatable :: energy_err !(MFORCE)
     real(dp), dimension(:), allocatable :: force !(MFORCE)
     real(dp), dimension(:), allocatable :: force_err !(MFORCE)
+    real(dp) :: sigma
 
     private
     public :: add_diag, add_diag_tmp, energy, energy_err, force, force_err
     public :: allocate_optwf_corsam, deallocate_optwf_corsam
+    public :: sigma
     save
 contains
     subroutine allocate_optwf_corsam()

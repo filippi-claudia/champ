@@ -6,7 +6,7 @@
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: energy, energy_err
+      use optwf_corsam, only: energy, energy_err, sigma
       use optwf_func, only: ifunc_omega, omega, omega0, n_omegaf, n_omegat
       !use contrl, only: nblk, nblk_max
       use control_vmc, only: vmc_nblk, vmc_nblk_max
@@ -20,7 +20,7 @@
       integer :: ioptorb_sav, iter, miter, nstates_sav
       integer, dimension(5,MSTATES) :: index_more
       real(dp) :: adiag, alin_adiag_sav, alpha_omega, denergy, denergy_err
-      real(dp) :: dparm_norm, energy_err_sav, energy_sav, sigma
+      real(dp) :: dparm_norm, energy_err_sav, energy_sav
       real(dp) :: sigma_sav
       real(dp), dimension(mparm*MSTATES) :: grad
       real(dp), dimension(mparm*MSTATES,5) :: grad_more
@@ -147,8 +147,8 @@ c         if(-denergy.gt.3*denergy_err) alfgeo=alfgeo/1.2
 
         energy_sav=energy(1)
         energy_err_sav=energy_err(1)
-        ! sigma_sav=sigma
-        sigma_sav=0 ! sigma is not initialized and never changed ...
+        sigma_sav=sigma
+        ! sigma_sav=0 ! sigma is not initialized and never changed ...
       enddo
 c enddo iteration
 
