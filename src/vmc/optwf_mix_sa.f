@@ -7,6 +7,7 @@
       use sa_check, only: energy_all, energy_err_all
 !      use contrl, only: nblk, nblk_max, nblk_ci
       use control_vmc, only: vmc_nblk, vmc_nblk_max, vmc_nblk_ci
+      use orbval, only: nadorb
       use force_analy, only: iforce_analy, alfgeo
       use mstates_ctrl, only: iguiding
       use method_opt, only: method
@@ -24,7 +25,7 @@
       integer :: i, iflag, iforce_analy_sav, iguiding_sav, inc_nblk
       integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iqmc_again
       integer :: iqmc_check, istate, istate0, iter
-      integer :: miter, nblk_sav, nparmci, nstates_sav
+      integer :: miter, nblk_sav, nparmci, nstates_sav, nadorb_sav
       integer, dimension(MSTATES) :: i_deltap
       integer, dimension(5) :: index_min_energy
       integer, dimension(5,MSTATES) :: index_more
@@ -74,6 +75,8 @@
       ioptjas_sav=ioptjas
       ioptorb_sav=ioptorb
       ioptci_sav=ioptci
+
+      nadorb_sav=nadorb
 
       call save_nparms
       call write_geometry(0)
@@ -259,6 +262,7 @@ c enddo iteration
 
       call qmc
 
+      nadorb=nadorb_sav
       call write_wf(1,-1)
       call write_geometry(-1)
 

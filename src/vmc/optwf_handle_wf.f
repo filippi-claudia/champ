@@ -1002,11 +1002,12 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm, nreduced
       use ci000, only: nciterm
       use contrl_file,    only: ounit
+      use orbval, only: nadorb
       implicit none
 
-      integer :: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav
+      integer :: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav, nadorb_sav
 
-      save nparmj_sav,norbterm_sav,nciterm_sav,nparmd_sav,nreduced_sav
+      save nparmj_sav,norbterm_sav,nciterm_sav,nparmd_sav,nreduced_sav, nadorb_sav
 
       nparmj_sav=nparmj
       norbterm_sav=norbterm
@@ -1014,6 +1015,7 @@ c-----------------------------------------------------------------------
       nciterm_sav=nciterm
       nparmd=max(nciterm-1,0)
       nparmd_sav=nparmd
+      nadorb_sav=nadorb
 
       write(ounit,'(''Saved max number of parameters, nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
       return
@@ -1025,11 +1027,13 @@ c-----------------------------------------------------------------------
       norbterm=norbterm_sav
       nreduced=nreduced_sav
       nciterm=nciterm_sav
+      nadorb=nadorb_sav
 
       if(ioptjas.eq.0) nparmj=0
       if(ioptorb.eq.0) then
         norbterm=0
         nreduced=0
+        nadorb=0
       endif
       if(ioptci.eq.0) then
         nciterm=0

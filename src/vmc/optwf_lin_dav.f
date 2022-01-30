@@ -6,6 +6,7 @@
       use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use orbval, only: nadorb
       use optwf_corsam, only: energy, energy_err
       use optwf_func, only: ifunc_omega, omega, omega0, n_omegaf, n_omegat
       !use contrl, only: nblk, nblk_max
@@ -17,7 +18,7 @@
       implicit none
 
       integer :: iflag, iforce_analy_sav, inc_nblk, ioptci_sav, ioptjas_sav
-      integer :: ioptorb_sav, iter, miter, nstates_sav
+      integer :: ioptorb_sav, iter, miter, nstates_sav,nadorb_sav
       integer, dimension(5,MSTATES) :: index_more
       real(dp) :: adiag, alin_adiag_sav, alpha_omega, denergy, denergy_err
       real(dp) :: dparm_norm, energy_err_sav, energy_sav, sigma
@@ -162,6 +163,7 @@ c enddo iteration
 
       call qmc
 
+      nadorb_sav=nadorb
       call write_wf(1,-1)
       call write_geometry(-1)
 

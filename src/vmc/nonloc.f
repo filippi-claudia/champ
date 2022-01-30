@@ -359,10 +359,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use orbval, only: ddorb, nadorb
       use precision_kinds, only: dp
+      use method_opt, only: method
+      use optwf_contrl, only: ioptorb
+
       implicit none
 
       integer :: ic, iel, ier, iforce_analy, ii
       integer :: iorb, k, m, m0
+      integer :: nadorb_sav
 
       real(dp), dimension(3) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
@@ -372,11 +376,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(3,ncent_tot,*) :: da_orbn
       real(dp), dimension(3) :: dtmp
 
+      nadorb_sav=nadorb
 
-
-
-
-
+      if(ioptorb.eq.0.or.method(1:3).ne.'lin') nadorb=0
 
       ! call resize_tensor(coef, norb+nadorb, 2)
 
@@ -457,6 +459,8 @@ c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,1,iel)
         call orbitals_pwe(iel,x,orbn)
 
       endif
+
+      nadorb = nadorb_sav
 
       return
       end
