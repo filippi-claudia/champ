@@ -58,7 +58,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use strech_mod,     only: strech
       use rannyu_mod,     only: rannyu
       use jassav_mod,     only: jassav
-      use detsav_mod,     only: detsav 
+      use detsav_mod,     only: detsav
       use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
       use determinante_mod,only: compute_determinante_grad
       use optorb_f_mod,        only: check_orbitals_reset, check_orbitals
@@ -102,6 +102,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp), dimension(MSTATES) :: psidn
       real(dp), dimension(MSTATES) :: wtg
       real(dp), parameter :: zero = 0.d0
+      real(dp), dimension(MSTATES) :: zero_array = 0.0_dp
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: four = 4.d0
@@ -742,11 +743,11 @@ c use 'new' not 'old' value
       call prop_sum(wtg(1),0.d0)
       call force_analy_sum(wtg(1),0.d0,eold(1,1),0.0d0)
 
-      call optjas_sum(wtg,(/0.d0/),eold(1,1),eold(1,1),0)
-      call optorb_sum(wtg,(/0.d0/),eold(1,1),eold(1,1),0)
+      call optjas_sum(wtg,zero_array,eold(1,1),eold(1,1),0)
+      call optorb_sum(wtg,zero_array,eold(1,1),eold(1,1),0)
       call optci_sum(wtg(1),0.d0,eold(1,1),eold(1,1))
 
-      call optx_jas_orb_sum(wtg(1),(/0.d0/),0)
+      call optx_jas_orb_sum(wtg(1),zero_array,0)
       call optx_jas_ci_sum(wtg(1),0.d0,eold(1,1),eold(1,1))
       call optx_orb_ci_sum(wtg(1),0.d0)
 
