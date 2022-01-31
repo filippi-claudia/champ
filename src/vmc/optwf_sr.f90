@@ -71,7 +71,7 @@ contains
         use sr_mod, only: mparm
         use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
         use mstates_mod, only: MSTATES
-        use optwf_corsam, only: energy, energy_err
+        use optwf_corsam, only: energy, energy_err, sigma
         use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
         !use contrl, only: nblk
         use control_vmc, only: vmc_nblk
@@ -83,7 +83,7 @@ contains
         implicit none
 
         real(dp) :: adiag, denergy, alpha_omega, denergy_err, dparm_norm
-        real(dp) :: energy_sav, energy_err_sav, omega, sigma, sigma_sav
+        real(dp) :: energy_sav, energy_err_sav, omega, sigma_sav
         integer :: i, iflag, iter, miter
 
         sigma_sav = 0.0
