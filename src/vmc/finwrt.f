@@ -20,7 +20,7 @@ c routine to print out final results
       use forcewt, only: wcum
       use grdntspar, only: igrdtype, ngradnts
       use header, only: title
-      use optwf_corsam, only: energy, energy_err, force, force_err
+      use optwf_corsam, only: energy, energy_err, force, force_err, sigma
       use sa_weights, only: weights
       use step, only: rprob, suc, try
       use tmpnode, only: distance_node_sum
@@ -50,7 +50,7 @@ c routine to print out final results
       real(dp) :: eerr1s, eerr_p, efin, efin_p
       real(dp) :: err, err1, ferr, ffin
       real(dp) :: passes, peerr, pefin, r2err
-      real(dp) :: r2fin, rtpass, sigma, sucsum
+      real(dp) :: r2fin, rtpass, sucsum
       real(dp) :: tcsq, term, tjferr, tjffin
       real(dp) :: tpberr, tpbfin, trysum, x
       real(dp) :: x2
