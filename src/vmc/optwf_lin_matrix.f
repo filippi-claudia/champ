@@ -15,9 +15,9 @@
       integer :: i, i0, i1, i_ovr, idx
       integer :: ii, imag, ireal, is
       integer :: isort_ovr, iter, j, k
-      integer :: lwork, mparmx, nparm
+      integer :: MWORK, lwork, mparmx, nparm
       integer, dimension(nparmall) :: isort
-      real(dp) :: MWORK, add_diag, anorm_orth, anorm_orth_min, bot
+      real(dp) :: add_diag, anorm_orth, anorm_orth_min, bot
       real(dp) :: de_range, dmult, eig_min
       real(dp) :: emax, emin, scale
       real(dp), dimension(mparmx,*) :: h

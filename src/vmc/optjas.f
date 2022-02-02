@@ -352,7 +352,9 @@ c Written by Claudia Filippi
       implicit none
 
       integer :: i, istate
-      real(dp) :: dble, eb, enow, gnow, wsum
+      real(dp) :: dble, eb, gnow, wsum
+      real(dp), dimension(*) :: enow
+      real(dp), dimension(*) :: wsum
       real(dp), dimension(83) :: dj_e_b
       real(dp), dimension(83) :: dj_b
 
@@ -370,8 +372,8 @@ c Written by Claudia Filippi
 
       e_bsum(istate)=e_bsum(istate)+enow(istate)
       do i=1,nparmj
-        dj_e_bsum(i,istate)=dj_e_bsum(i,istate)+dj_e_b(i)/wsum
-        dj_bsum(i,istate)=dj_bsum(i,istate)+dj_b(i)/wsum
+        dj_e_bsum(i,istate)=dj_e_bsum(i,istate)+dj_e_b(i)/wsum(istate)
+        dj_bsum(i,istate)=dj_bsum(i,istate)+dj_b(i)/wsum(istate)
       enddo
 
       do i=1,nparmj
