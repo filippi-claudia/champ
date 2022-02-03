@@ -392,8 +392,8 @@ c get the value from the 3d-interpolated orbitals
 
         if(ier.eq.1) then
 c get basis functions for electron iel
-          ider=1
-          if(iforce_analy.gt.0) ider=2
+          ider=0
+          if(iforce_analy.gt.0) ider=1
           call basis_fns(iel,iel,rvec_en,r_en,ider)
 
 ! Vectorization dependent code selection
