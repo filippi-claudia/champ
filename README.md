@@ -203,7 +203,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		mpirun -s all -np "n process" -machinefile "machinefile"
 		```
 * **Ubuntu desktop**:
-	- Ubuntu 18.04:
+	- Ubuntu 20:
 		Install the required packages:
 		```
 		sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev
@@ -220,8 +220,8 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```
 		mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
 		```
-	- Ubuntu 20.04:
-	We are still working on the CHAMP built on the latest Unbuntu release using a OpenMPI v4.X version. The code compiles but fails to run the test in parallel. For the time being, we urge the user to use an older version of Ubuntu, as shown above.
+	- Ubuntu 18:
+	Install the dependencies using conda instead of apt
 
 ------------------------------------------------------------------------
 
