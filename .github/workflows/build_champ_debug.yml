@@ -102,12 +102,6 @@ jobs:
         cmake --build build -- -j2
         ulimit -s unlimited
 
-
-      - check-self-hosted
-      - create-module-library
-      - debug_intel
-      - feature/debug-ci
-
 jobs:
   build_champ:
     name: Build CHAMP with Intel OneAPI self-hosted runner ccpgate/ccp01
