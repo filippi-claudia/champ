@@ -13,7 +13,7 @@ on:
 
 jobs:
   debug_build_test_champ:
-    name: Buid Champ and run tests with ${{ matrix.toolchain }} in DEBUG mode
+    name: Buid Champ and run tests with ${{ matrix.toolchain }} NOT in DEBUG mode
     runs-on: ubuntu-latest
     timeout-minutes: 200
     strategy:
@@ -86,7 +86,8 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_BUILD_TYPE=DEBUG
+        # cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_BUILD_TYPE=DEBUG
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
         cmake --build build -- -j2
         ulimit -s unlimited
 
@@ -98,7 +99,8 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
+        # cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
         cmake --build build -- -j2
         ulimit -s unlimited
 
