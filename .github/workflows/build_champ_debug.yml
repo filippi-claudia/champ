@@ -103,30 +103,133 @@ jobs:
         ulimit -s unlimited
 
 
-    - name: "Run all VMC-H2 tests"
-      # if: github.event_name != 'workflow_dispatch'
+      - check-self-hosted
+      - create-module-library
+      - debug_intel
+      - feature/debug-ci
+
+jobs:
+  build_champ:
+    name: Build CHAMP with Intel OneAPI self-hosted runner ccpgate/ccp01
+    runs-on: self-hosted
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash --noprofile --norc {0}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Compile the CHAMP code
       run: |
-        cd build
-        ctest --output-on-failure -V -L VMC-H2
+        module load compiler-rt/latest compiler/latest icc/latest mkl/latest mpi/latest python3/latest tbb/latest
+        module load hdf5/1.12.1-intel trexio/2.0.0-intel
+        which mpirun
+        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+        /software/cmake-3.22.1/bin/cmake --version
+        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp
+        /software/cmake-3.22.1/bin/cmake --build build -- -j2
 
-    # - name: "Run tests with tag: ${{ github.event.inputs.tags }}"
-    #   if: github.event_name == 'workflow_dispatch'
-    #   run: |
-    #     cd build
-    #     ctest --output-on-failure -V -L ${{ github.event.inputs.tags }}
+    - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
+      run: |
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
 
-#     - name: "Zip the test reults"
-#       run: |
-#         echo "Compressing the test results from workflow"
-#         cd tests/
-#         tar -czvf workflow_artifacts.tar.gz CI_test/
+        echo "Running the optimization calculation"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
 
-#- name: Upload calculation result artifacts
-#      uses: actions/upload-artifact@v2
-#      with:
-#        name: results-workflow-actions
-#        path: tests/workflow_artifacts.tar.gz
-#        retention-days: 2
+        echo "Comparing the energy with the reference one (total E = -1.0059842 +-  0.0070988) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_single.out "total E" -1.0059842   0.0070988
+
+    - name: "Test 02 (H2) sto basis optimize jastrow sr_n method on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0108635 +-  0.0054667) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_double.out "total E" -1.0108635  0.0054667
+
+    - name: "Test 03 (H2) sto basis optimize wf+jastrow using lin_d method on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0629156 +-  0.0032473) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0629156  0.0032473
+
+    - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0588247 +-  0.0022854) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0588247  0.0022854
+
+    - name: "Test 05 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0608157 +-  0.0026295) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0608157  0.0026295
+
+    - name: "Test 06 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0578796 +-  0.0018813) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0578796  0.0018813
+
+    - name: "Test 07 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
+
+        echo "Comparing the energy with the reference one (Current energy = -1.0247271 +-  0.0114836 ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0247271   0.0114836
+
+        echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0018"
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0018 0.0114836
+
+    - name: "Test 08 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
+
+        echo "Comparing the energy with the reference one (Current energy = -1.0173833 +-  0.0082930) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0173833   0.0082930
+
+        echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0008"
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0008 0.0085151
+
+
 
 
 
