@@ -100,7 +100,7 @@ jobs:
         echo "mpirun used is " $MPIRUN
         cmake --version
         # cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DVECTORIZED=no
         cmake --build build -- -j2
         ulimit -s unlimited
 
