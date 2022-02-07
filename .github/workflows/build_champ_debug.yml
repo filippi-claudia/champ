@@ -26,7 +26,6 @@ jobs:
         shell: bash --noprofile --norc {0}
     steps:
     - uses: actions/checkout@v2
-Only necessary in github environment, not ccp runner
     - name: setup repo
       if: matrix.toolchain == 'intel'
       run: |
