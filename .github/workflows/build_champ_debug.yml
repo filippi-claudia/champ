@@ -108,7 +108,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
+        mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0059842 +-  0.0070988) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_single.out "total E" -1.0059842   0.0070988
@@ -120,7 +120,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
+        mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0108635 +-  0.0054667) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_double.out "total E" -1.0108635  0.0054667
@@ -132,7 +132,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
+        mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0629156 +-  0.0032473) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0629156  0.0032473
@@ -144,7 +144,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
+        mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0588247 +-  0.0022854) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0588247  0.0022854
@@ -156,7 +156,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
+        mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0608157 +-  0.0026295) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0608157  0.0026295
@@ -168,7 +168,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
+        mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0578796 +-  0.0018813) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0578796  0.0018813
@@ -180,7 +180,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
+        mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
 
         echo "Comparing the energy with the reference one (Current energy = -1.0247271 +-  0.0114836 ) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0247271   0.0114836
@@ -195,7 +195,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
+        mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
 
         echo "Comparing the energy with the reference one (Current energy = -1.0173833 +-  0.0082930) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0173833   0.0082930
