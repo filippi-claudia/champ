@@ -14,7 +14,6 @@ on:
 jobs:
   debug_build_test_champ:
     name: Buid Champ and run tests with ${{ matrix.toolchain }} in DEBUG mode
-    # runs-on: self-hosted
     runs-on: ubuntu-latest
     timeout-minutes: 200
     strategy:
@@ -104,17 +103,17 @@ jobs:
         ulimit -s unlimited
 
 
-    - name: "Run all short tests"
-      if: github.event_name != 'workflow_dispatch'
+    - name: "Run all VMC-H2 tests"
+      # if: github.event_name != 'workflow_dispatch'
       run: |
         cd build
-        ctest --output-on-failure -V -L short
+        ctest --output-on-failure -V -L VMC-H2
 
-    - name: "Run tests with tag: ${{ github.event.inputs.tags }}"
-      if: github.event_name == 'workflow_dispatch'
-      run: |
-        cd build
-        ctest --output-on-failure -V -L ${{ github.event.inputs.tags }}
+    # - name: "Run tests with tag: ${{ github.event.inputs.tags }}"
+    #   if: github.event_name == 'workflow_dispatch'
+    #   run: |
+    #     cd build
+    #     ctest --output-on-failure -V -L ${{ github.event.inputs.tags }}
 
 #     - name: "Zip the test reults"
 #       run: |
