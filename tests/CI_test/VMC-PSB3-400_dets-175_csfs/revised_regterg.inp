@@ -42,7 +42,7 @@ load symmetry        ci66_BFD-Da_sa2.sym
     multiple_adiag 0
     ncore         0
     nextorb       600
-    nblk_max      500
+    nblk_max      200
     no_active     1
     nopt_iter     1
     isample_cmat  0
@@ -50,7 +50,7 @@ load symmetry        ci66_BFD-Da_sa2.sym
 %endmodule
 
 %module blocking_vmc
-    vmc_nstep     1
+    vmc_nstep     20
     vmc_nblk      200
     vmc_nblkeq    1
     vmc_nconf_new 0

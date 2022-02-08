@@ -37,7 +37,7 @@ load jastrow_der     jastrow.der
     multiple_adiag 0
     ncore         0
     nextorb       280
-    nblk_max      500
+    nblk_max      200
     no_active     0
     nopt_iter     2
     sr_tau        0.05
@@ -53,8 +53,8 @@ load jastrow_der     jastrow.der
 %endmodule
 
 %module blocking_vmc
-    vmc_nstep     5
-    vmc_nblk      100
+    vmc_nstep     20
+    vmc_nblk      200
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule
