@@ -160,11 +160,7 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
-<<<<<<< HEAD
     list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
-=======
-    list(APPEND Fortran_FLAGS "-diag-enable=all" "-traceback" "-g" "-fpe0" )
->>>>>>> main
   else()
   endif()
   if (TREXIO_FOUND)
