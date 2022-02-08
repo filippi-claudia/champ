@@ -152,6 +152,7 @@ jobs:
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0588247  0.0022854 --no_assert
 
     - name: "Test 05 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
+      if: matrix.toolchain == 'intel'
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. H2 "
