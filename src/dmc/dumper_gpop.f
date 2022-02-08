@@ -37,6 +37,7 @@ c job where it left off
       use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: newghostype, nghostcent
+      use jaspar1, only: cjas1, cjas2
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
@@ -179,6 +180,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) (ndyza(i),i=1,nctype)
       write(10) (cdet(i,1,1),i=1,ndet)
       write(10) ndet,nup,ndn
+      write(10) cjas1(1),cjas2(1)
       close (unit=10)
       write(ounit,'(1x,''successful dump to unit 10'')')
 

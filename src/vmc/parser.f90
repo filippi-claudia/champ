@@ -42,110 +42,114 @@ subroutine parser
   use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
-  use vmc_mod, 		      only: norb_tot, mterms
-  use atom, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-  use jaspar, 		      only: nspin1, nspin2, is
-  use ghostatom, 	      only: newghostype, nghostcent
-  use const, 		        only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-  use general, 		      only: pooldir, pp_id, bas_id
-  use general, 		      only: filenames_bas_num
-  use csfs, 		        only: cxdet, ncsf, nstates
-  use dets, 		        only: cdet, ndet
-  use elec, 		        only: ndn, nup
-  use forcepar, 	      only: nforce
-  use grdntspar, 	      only: igrdtype, ngradnts
-  use header, 		      only: title
-  use jaspar3, 		      only: b, c, scalek
-  use jaspar4, 		      only: a4, norda, nordb, nordc
-  use jaspar6, 		      only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
-  use jaspar6, 		      only: cutjas, cutjasi, allocate_jaspar6
-  use numbas, 		      only: numr
-  use numbas1, 		      only: nbastyp
-  use numbas2, 		      only: ibas0, ibas1
+  use vmc_mod, 			    only: norb_tot, mterms
+  use atom, 			      only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+  use jaspar, 			    only: nspin1, nspin2, is
+  use ghostatom, 		    only: newghostype, nghostcent
+  use const, 			      only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+  use jaspar1, 			    only: cjas1, cjas2
+  use general, 			    only: pooldir, pp_id, bas_id
+  use general, 			    only: filenames_bas_num, wforce
+  use csfs, 			      only: cxdet, ncsf, nstates
+  use dets, 			      only: cdet, ndet
+  use elec, 			      only: ndn, nup
+  use forcepar, 		    only: nforce
+  use grdntspar, 		    only: igrdtype, ngradnts
+  use header, 			    only: title
+  use jaspar2, 			    only: a1, a2
+  use jaspar3, 			    only: a, b, c, nord, scalek
+  use jaspar4, 			    only: a4, norda, nordb, nordc
+  use jaspar6, 			    only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
+  use jaspar6, 			    only: cutjas, cutjasi, allocate_jaspar6
+  use numbas, 			    only: numr
+  use numbas1, 			    only: nbastyp
+  use numbas2, 			    only: ibas0, ibas1
   use optwf_contrl, 	  only: ioptci, ioptjas, ioptorb, ioptwf, nparm
   use optwf_contrl, 	  only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
   use optwf_contrl, 	  only: ibeta, ratio_j, iapprox, ncore
   use optwf_contrl, 	  only: iuse_orbeigv
   use optwf_contrl, 	  only: no_active
-  use optwf_parms, 	    only: nparmj
+  use optwf_parms, 		  only: nparmj
   use optwf_sr_mod, 	  only: i_sr_rescale, izvzb
-  use sa_weights, 	    only: iweight, nweight, weights
-  use wfsec, 		        only: nwftype
-  use zmatrix, 		      only: izmatrix
-  use bparm, 		        only: nocuspb, nspin2b
-  use casula, 		      only: i_vpsp, icasula
-  use coefs, 		        only: coef, nbasis, norb, next_max
-  use const2, 		      only: deltar, deltat
-  use contr2, 		      only: ianalyt_lap, ijas
-  use contr2, 		      only: isc
-  use contrldmc, 	      only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
-  use contrldmc, 	      only: itau_eff, nfprod, rttau, tau
+  use pars, 			      only: Z, a20, a21
+  use sa_weights, 		  only: iweight, nweight, weights
+  use wfsec, 			      only: nwftype
+  use zmatrix, 			    only: izmatrix
+  use bparm, 			      only: nocuspb, nspin2b
+  use casula, 			    only: i_vpsp, icasula
+  use coefs, 			      only: coef, nbasis, norb, next_max
+  use const2, 			    only: deltar, deltat
+  use contr2, 			    only: ianalyt_lap, ijas
+  use contr2, 			    only: isc
+  use contrldmc, 		    only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
+  use contrldmc, 		    only: itau_eff, nfprod, rttau, tau
 
 ! Note the additions: Ravindra
-  use control_vmc, 	    only: vmc_idump,  vmc_irstar, vmc_isite, vmc_nconf, vmc_nblk, vmc_nblk_max
-  use control_vmc, 	    only: vmc_nblkeq, vmc_nconf_new, vmc_nstep, vmc_icharged_atom, vmc_nblk_ci
+  use control_vmc, 		  only: vmc_idump,  vmc_irstar, vmc_isite, vmc_nconf, vmc_nblk, vmc_nblk_max
+  use control_vmc, 		  only: vmc_nblkeq, vmc_nconf_new, vmc_nstep, vmc_icharged_atom, vmc_nblk_ci
 ! Note the additions: Ravindra
-  use control_dmc, 	    only: dmc_idump, dmc_irstar, dmc_isite, dmc_nconf, dmc_nblk
-  use control_dmc, 	    only: dmc_nblkeq, dmc_nconf_new, dmc_nstep
+  use control_dmc, 		  only: dmc_idump, dmc_irstar, dmc_isite, dmc_nconf, dmc_nblk, dmc_nblk_max
+  use control_dmc, 		  only: dmc_nblkeq, dmc_nconf_new, dmc_nstep, dmc_icharged_atom, dmc_nblk_ci
 
-  use dorb_m, 		      only: iworbd
-  use contrl_per, 	    only: iperiodic, ibasis
-  use force_analy, 	    only: iforce_analy, iuse_zmat, alfgeo
-  use force_dmc, 	      only: itausec, nwprod
+  use dorb_m, 			    only: iworbd
+  use contrl_per, 		  only: iperiodic, ibasis
+  use force_analy, 		  only: iforce_analy, iuse_zmat, alfgeo
+  use force_dmc, 		    only: itausec, nwprod
   use forcestr,         only: delc
   use wfsec,            only: iwftype
-  use pseudo, 		      only: nloc
+  use pseudo, 			    only: nloc
   use optorb_cblock, 	  only: idump_blockav
-  use gradjerrb, 	      only: ngrad_jas_blocks
-  use qua, 		          only: nquad, wq, xq, yq, zq
-  use mmpol_cntrl, 	    only: ich_mmpol, immpol, immpolprt, isites_mmpol
-  use mmpol_parms, 	    only: chmm
-  use mmpol_fdc, 	      only: a_cutoff, rcolm
-  use grid3dflag, 	    only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
-  use grid_mod, 	      only: UNDEFINED, IUNDEFINED
-  use efield, 		      only: iefield, ncharges
+  use gradjerrb, 		    only: ngrad_jas_blocks
+  use qua, 				      only: nquad, wq, xq, yq, zq
+  use mmpol_cntrl, 		  only: ich_mmpol, immpol, immpolprt, isites_mmpol
+  use mmpol_parms, 		  only: chmm
+  use mmpol_fdc, 		    only: a_cutoff, rcolm
+  use grid3dflag, 		  only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
+  use grid_mod, 		    only: UNDEFINED, IUNDEFINED
+  use efield, 			    only: iefield, ncharges
   use mstates_ctrl, 	  only: iefficiency, iguiding, nstates_psig
-  use mstates3, 	      only: iweight_g, weights_g
-  use ci000, 		        only: iciprt, nciprim, nciterm
-  use pcm_cntrl, 	      only: ichpol, ipcm, ipcmprt, isurf
-  use pcm_unit, 	      only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
-  use pcm_parms, 	      only: eps_solv, iscov
-  use pcm_parms, 	      only: ncopcm, nscv, nvopcm
-  use prp000, 		      only: iprop, ipropprt, nprop
-  use pcm_fdc, 		      only: qfree, rcolv
+  use mstates3, 		    only: iweight_g, weights_g
+  use ci000, 			      only: iciprt, nciprim, nciterm
+  use pcm_cntrl, 		    only: ichpol, ipcm, ipcmprt, isurf
+  use pcm_unit, 		    only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
+  use pcm_parms, 		    only: eps_solv, iscov
+  use pcm_parms, 		    only: ncopcm, nscv, nvopcm
+  use prp000, 			    only: iprop, ipropprt, nprop
+  use pcm_fdc, 			    only: qfree, rcolv
   use pcm_grid3d_contrl,only: ipcm_3dgrid
   use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d, pcm_origin, pcm_endpt, allocate_pcm_grid3d_param
-  use pcm_3dgrid, 	    only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED
-  use prp003, 		      only: cc_nuc
-  use method_opt, 	    only: method
+  use pcm_3dgrid, 		  only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED
+  use prp003, 			    only: cc_nuc
+  use method_opt, 		  only: method
   use optorb_cblock, 	  only: nefp_blocks, isample_cmat, iorbsample
-  use orbval, 		      only: ddorb, dorb, nadorb, ndetorb, orb
+  use orbval, 			    only: ddorb, dorb, nadorb, ndetorb, orb
   use array_resize_utils, only: resize_tensor
   use grid3d_param, 	  only: endpt, nstep3d, origin, step3d
-  use inputflags, 	    only: node_cutoff, eps_node_cutoff, dmc_node_cutoff, dmc_eps_node_cutoff, iqmmm, scalecoef
+  use inputflags, 		  only: node_cutoff, eps_node_cutoff, dmc_node_cutoff, dmc_eps_node_cutoff, iqmmm, scalecoef
   use optwf_contrl, 	  only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
   use optwf_contrl, 	  only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
   use optwf_contrl, 	  only: ilastvmc, iroot_geo
   use optwf_contrl, 	  only: sr_tau , sr_adiag, sr_eps
-  use optwf_func, 	    only: ifunc_omega, omega0, n_omegaf, n_omegat
+  use optwf_func, 		  only: ifunc_omega, omega0, n_omegaf, n_omegat
   use optwf_corsam, 	  only: add_diag
-  use dmc_mod, 		      only: mwalk, set_mwalk
+  use dmc_mod, 			    only: mwalk, set_mwalk
 
   use optorb_mix,       only: norbopt, norbvirt
   use optorb_cblock,    only: norbterm
 
-  use grdntspar, 	      only: delgrdxyz, igrdtype, ngradnts
-  use grdntspar, 	      only: delgrdba, delgrdbl, delgrdda, ngradnts
+  use grdntspar, 		    only: delgrdxyz, igrdtype, ngradnts
+  use grdntspar, 		    only: delgrdba, delgrdbl, delgrdda, ngradnts
 
-  use inputflags, 	    only: iznuc, igeometry, ibasis_num, ilcao, iexponents
-  use inputflags, 	    only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
-  use inputflags, 	    only: ici_def, iforces, icsfs, icharge_efield
-  use inputflags, 	    only: imultideterminants, imodify_zmat, izmatrix_check
+  use inputflags, 		  only: iznuc, igeometry, ibasis_num, ilcao, iexponents
+  use inputflags, 		  only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
+  use inputflags, 		  only: ici_def, iforces, icsfs, icharge_efield
+  use inputflags, 		  only: imultideterminants, imodify_zmat, izmatrix_check
   use inputflags,       only: ioptorb_mixvirt, ihessian_zmat, igradients
   use basis,            only: zex
 
   use precision_kinds,  only: dp
 ! Note the following modules are new additions
+
 
 !
   implicit none
@@ -163,7 +167,7 @@ subroutine parser
 
   character(len=72)          :: fname, key
   character(len=20)          :: temp1, temp2, temp3, temp4, temp5
-  integer                    :: ratio, isavebl
+  integer                    :: ifock , ratio, isavebl
   real(dp)                   :: cutjas_tmp
 
   real(dp)                   :: wsum
@@ -259,7 +263,6 @@ subroutine parser
   if (trex_backend == "hdf5") backend = TREXIO_HDF5
   if (trex_backend == "text") backend = TREXIO_TEXT
 #endif
-
 ! %module electrons (complete)
   nelec       = fdf_get('nelec', 1)
   nup         = fdf_get('nup', 1)
@@ -274,6 +277,7 @@ subroutine parser
   isc         = fdf_get('isc', 2)
   nspin1      = fdf_get('nspin1', 1)
   nspin2      = fdf_get('nspin2', 1)
+  ifock       = fdf_get('ifock', 0)
   ianalyt_lap = fdf_get('ianalyt_lap',1)
 
 ! %module optgeo (complete)
@@ -322,7 +326,7 @@ subroutine parser
   vmc_irstar    = fdf_get('vmc_irstar', 0)
   vmc_isite     = fdf_get('vmc_isite', 1)
   vmc_icharged_atom     = fdf_get('vmc_icharged_atom', 0)
-  vmc_nblk_ci   = fdf_get('vmc_nblk_ci', vmc_nblk)
+  vmc_nblk_ci       = fdf_get('vmc_nblk_ci', vmc_nblk)
 
 !module dmc (complete)
   idmc        = fdf_get('idmc', 2)
@@ -346,11 +350,14 @@ subroutine parser
   dmc_nstep     = fdf_get('dmc_nstep', 1)
   dmc_nblk      = fdf_get('dmc_nblk', 1)
   dmc_nblkeq    = fdf_get('dmc_nblkeq', 2)
+  dmc_nblk_max  = fdf_get('dmc_nblk_max', dmc_nblk)
   dmc_nconf     = fdf_get('dmc_nconf', 1)
   dmc_nconf_new = fdf_get('dmc_nconf_new', 1)
   dmc_idump     = fdf_get('dmc_idump', 1)
   dmc_irstar    = fdf_get('dmc_irstar', 0)
   dmc_isite     = fdf_get('dmc_isite', 1)
+  dmc_icharged_atom     = fdf_get('dmc_icharged_atom', 0)
+  dmc_nblk_ci       = fdf_get('dmc_nblk_ci', dmc_nblk)
 
 
 !optimization flags vmc/dmc
@@ -409,8 +416,11 @@ subroutine parser
   nefp_blocks   = fdf_get('force_blocks',1)
   iorbsample    = fdf_get('iorbsample',1)
 
+
+
 ! %module ci (complete)
   iciprt        = fdf_get('iciprt',0)
+
 
 !%module pcm (complete)
 
@@ -466,29 +476,29 @@ subroutine parser
 
 
   ! Filenames parsing
-  file_trexio     	    = fdf_load_filename('trexio', 		'default.hdf5')
-  file_basis        	    = fdf_load_filename('basis', 		'default.bas')
-  file_molecule     	    = fdf_load_filename('molecule', 		'default.xyz')
-  file_determinants 	    = fdf_load_filename('determinants', 	'default.det')
-  file_symmetry     	    = fdf_load_filename('symmetry', 		'default.sym')
-  file_jastrow      	    = fdf_load_filename('jastrow', 		'default.jas')
-  file_jastrow_der  	    = fdf_load_filename('jastrow_der', 		'default.jasder')
-  file_orbitals     	    = fdf_load_filename('orbitals', 		'default.orb')
-  file_exponents    	    = fdf_load_filename('exponents', 		'exponents.exp')
-  file_pseudo 		    = fdf_load_filename('pseudo', 		'default.psp')
+  file_trexio     		      = fdf_load_filename('trexio', 		'default.hdf5')
+  file_basis        		    = fdf_load_filename('basis', 			'default.bas')
+  file_molecule     		    = fdf_load_filename('molecule', 		'default.xyz')
+  file_determinants 		    = fdf_load_filename('determinants', 	'default.det')
+  file_symmetry     		    = fdf_load_filename('symmetry', 		'default.sym')
+  file_jastrow      		    = fdf_load_filename('jastrow', 			'default.jas')
+  file_jastrow_der  		    = fdf_load_filename('jastrow_der', 		'default.jasder')
+  file_orbitals     		    = fdf_load_filename('orbitals', 		'default.orb')
+  file_exponents    		    = fdf_load_filename('exponents', 		'exponents.exp')
+  file_pseudo 			        = fdf_load_filename('pseudo', 			'default.psp')
   file_optorb_mixvirt       = fdf_load_filename('optorb_mixvirt', 	'default.mix')
-  file_multideterminants    = fdf_load_filename('multideterminants',    'default.mdet')
-  file_forces       	    = fdf_load_filename('forces', 		'default.for')
-  file_eigenvalues	    = fdf_load_filename('eigenvalues', 		'default.eig')
+  file_multideterminants    = fdf_load_filename('multideterminants', 'default.mdet')
+  file_forces       		    = fdf_load_filename('forces', 			'default.for')
+  file_eigenvalues	       	= fdf_load_filename('eigenvalues', 		'default.eig')
   file_basis_num_info       = fdf_load_filename('basis_num_info', 	'default.bni')
-  file_dmatrix		    = fdf_load_filename('dmatrix', 		'default.dmat')
+  file_dmatrix		       	  = fdf_load_filename('dmatrix', 			'default.dmat')
   file_cavity_spheres       = fdf_load_filename('cavity_spheres', 	'default.cav')
-  file_gradients_zmatrix    = fdf_load_filename('gradients_zmatrix',    'default.gzmat')
-  file_gradients_cartesian  = fdf_load_filename('gradients_cartesian',  'default.gcart')
+  file_gradients_zmatrix    = fdf_load_filename('gradients_zmatrix','default.gzmat')
+  file_gradients_cartesian  = fdf_load_filename('gradients_cartesian', 'default.gcart')
   file_modify_zmatrix       = fdf_load_filename('modify_zmatrix', 	'default.mzmat')
   file_hessian_zmatrix      = fdf_load_filename('hessian_zmatrix', 	'default.hzmat')
-  file_zmatrix_connection   = fdf_load_filename('zmatrix_connection',   'default.zmcon')
-  file_efield	       	    = fdf_load_filename('efield', 		'default.efield')
+  file_zmatrix_connection   = fdf_load_filename('zmatrix_connection', 'default.zmcon')
+  file_efield	       		    = fdf_load_filename('efield', 			'default.efield')
 
   call header_printing()
 
@@ -1053,6 +1063,13 @@ subroutine parser
     call read_orb_pw_tm
   endif
 ! Basis information section ends here
+
+! get normalization for basis functions
+  if(numr.eq.0) then
+    do iwft=1,nwftype
+      call basis_norm(iwft,anorm,0)
+    enddo
+  endif
 
 ! check if the orbitals coefficients are to be multiplied by a constant parameter
   if(scalecoef.ne.1.0d0) then
@@ -1726,7 +1743,7 @@ subroutine parser
 !   %block csf
 !   jastrow_parameter 1
 !    5  5  0           norda,nordb,nordc
-!     0.60000000   0.00000000     scalek
+!     0.60000000   0.00000000     scalek,a21
 !     0.00000000   0.00000000   0.05946443  -0.68575835   0.42250502  -0.10845009 (a(iparmj),iparmj=1,nparma)
 !     0.00000000   0.00000000  -0.13082284  -0.06620300   0.18687803  -0.08503472 (a(iparmj),iparmj=1,nparma)
 !     0.50000000   0.38065787   0.16654238  -0.05430118   0.00399345   0.00429553 (b(iparmj),iparmj=1,nparmb)
@@ -1768,6 +1785,8 @@ subroutine parser
       if ((pline%id(2) .eq. "r") .and. (pline%id(4) .eq. "r") .and. (pline%id(1) .eq. "n") .and. (pline%id(3) .eq. "n")) then
         scalek(iwft) = fdf_bvalues(pline, 1) ! 1st integer in the line
         print*, "scalek ", scalek(iwft)
+        a21          = fdf_bvalues(pline, 2) ! 2nd integer in the line
+        print*, "a21 ", a21
       endif
 
       !print*, "check all the ids ", pline%id(1:6)

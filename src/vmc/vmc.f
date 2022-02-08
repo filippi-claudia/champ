@@ -15,6 +15,7 @@ c and sa, pa, da asymptotic functions
       use config, only: psido, psijo
       use config, only: xold
       use forcepar, only: nforce
+      use jaspar2, only: a1
       use wfsec, only: iwftype, nwftype
       use coefs, only: coef, nbasis
 !      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
@@ -79,6 +80,8 @@ c        ndet   = number of determinants of molecular orbitals
 c                 used
 c        nup    = number of up spin electrons
 c        ndn    = number of down spin electrons
+c   /jaspar/
+c        Jastrow function is dexp(cjas1*rij/(1+cjas2*rij)) if ijas=1
 
       if(nforce.gt.1) then
 c force parameters
