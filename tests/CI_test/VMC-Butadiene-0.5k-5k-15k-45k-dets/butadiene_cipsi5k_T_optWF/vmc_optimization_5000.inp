@@ -33,7 +33,7 @@ load symmetry        cas1010.sym
     ncore         0
     nextorb       280
     no_active     0
-    nblk_max      200
+    nblk_max      100
     nopt_iter     2
     sr_tau        0.025
     sr_eps        0.001
@@ -43,7 +43,7 @@ load symmetry        cas1010.sym
 %endmodule
 
 %module blocking_vmc
-    vmc_nstep     10
+    vmc_nstep     20
     vmc_nblk      100
     vmc_nblkeq    1
     vmc_nconf_new 0
