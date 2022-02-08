@@ -25,7 +25,7 @@ jobs:
         shell: bash --noprofile --norc {0}
     steps:
     - uses: actions/checkout@v2
-    - name: setup repo
+    - name: Get Intel Key
       if: matrix.toolchain == 'intel'
       run: |
         wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
