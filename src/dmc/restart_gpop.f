@@ -39,6 +39,7 @@
       use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: nghostcent
+      use jaspar1, only: cjas1, cjas2
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
@@ -73,7 +74,7 @@
       integer, dimension(ncent_tot) :: ndxyax
       integer, dimension(ncent_tot) :: ndxzax
       integer, dimension(ncent_tot) :: ndyzax
-      real(dp) :: different, fmt
+      real(dp) :: cjas1x, cjas2x, different, fmt
       real(dp) :: fratio_id, hbx, taux, wq_id
       real(dp) :: wt_id, xold_dmc_id, xq_id, yq_id
       real(dp) :: zq_id
@@ -226,6 +227,9 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       if (ndetx.ne.ndet) call fatal_error('STARTR: ndet')
       if (nupx.ne.nup) call fatal_error('STARTR: nup')
       if (ndnx.ne.ndn) call fatal_error('STARTR: ndn')
+      read(10) cjas1x,cjas2x
+      if (dabs(cjas1x-cjas1(1)).gt.small) call fatal_error('STARTR: cjas1')
+      if (dabs(cjas2x-cjas2(1)).gt.small) call fatal_error('STARTR: cjas2')
       write(ounit,'(1x,''succesful read from unit 10'')')
       write(ounit,'(t5,''egnow'',t15,''egave'',t21
      &,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55

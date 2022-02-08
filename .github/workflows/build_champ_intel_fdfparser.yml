@@ -1,0 +1,804 @@
+name: Intel OneAPI Build and Testing
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build_champ:
+    name: Build CHAMP with Intel OneAPI
+    runs-on: ubuntu-20.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash --noprofile --norc {0}
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup repo
+      run: |
+        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+        sudo apt-get update
+
+    - name: Install Cmake and HDF5
+      run: |
+        sudo apt-get install -y cmake
+        sudo apt-get install -y libhdf5-serial-dev
+
+    - name: install Intel oneapi components
+      run: |
+        sudo apt-get install -y intel-oneapi-common-vars
+        sudo apt-get install -y intel-oneapi-compiler-fortran-2021.3.0
+        sudo apt-get install -y intel-oneapi-mkl-2021.3.0
+        sudo apt-get install -y intel-oneapi-mkl-devel-2021.3.0
+        sudo apt-get install -y intel-oneapi-mpi-2021.3.0
+        sudo apt-get install -y intel-oneapi-mpi-devel-2021.3.0
+
+    - name: Install Trexio
+      run: |
+        sudo apt-get install -y cmake
+        sudo apt-get install -y libhdf5-serial-dev
+        sudo apt-get install -y gfortran
+        sudo apt-get install -y gcc
+        wget https://github.com/TREX-CoE/trexio/releases/download/v1.0/trexio-1.0.0.tar.gz
+        tar -xzf trexio-1.0.0.tar.gz
+        cd trexio-1.0.0/
+        ./configure FC=gfortran CC=gcc
+        make all
+        make check
+        sudo make install
+        sudo cp include/* /usr/local/include/
+
+    - name: Compile the CHAMP code
+      run: |
+        source /opt/intel/oneapi/setvars.sh
+        printenv >> $GITHUB_ENV
+        which mpiifort
+        MPIRUN=`which mpirun`
+        echo "mpirun used is " $MPIRUN
+        cmake --version
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+        cmake --build build -- -j2
+        ulimit -s unlimited
+
+    - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0059842 +-  0.0070186) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_single.out "total E" -1.0059842  0.0070186
+    # - name: "Upload results of test 01"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-01
+    #     path: tests/CI_test/VMC-H2/revised_vmc_single.out
+    #     retention-days: 3
+
+    - name: "Test 02 (H2) sto basis optimize jastrow sr_n method on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0108635 +-  0.0050540) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_double.out "total E" -1.0108635  0.0050540
+    # - name: "Upload results of test 02"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-02
+    #     path: tests/CI_test/VMC-H2/revised_vmc_double.out
+    #     retention-days: 3
+
+    - name: "Test 03 (H2) sto basis optimize wf+jastrow using lin_d method on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0568201 +-  0.0037025) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0568201  0.0037025
+    # - name: "Upload results of test 03"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-03
+    #     path: tests/CI_test/VMC-H2/revised_vmc_davidson_check_single.out
+    #     retention-days: 3
+
+    - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0603592 +-  0.0021138) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0603592  0.0021138
+    # - name: "Upload results of test 04"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-04
+    #     path: tests/CI_test/VMC-H2/revised_vmc_davidson_check_double.out
+    #     retention-days: 3
+
+    - name: "Test 05 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0557158 +-  0.0032097) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0557158  0.0032097
+    # - name: "Upload results of test 05"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-05
+    #     path: tests/CI_test/VMC-H2/revised_vmc_lin_single.out
+    #     retention-days: 3
+
+    - name: "Test 06 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
+
+        echo "Comparing the energy with the reference one (total E = -1.0573439 +-  0.0020286) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0573439  0.0020286
+    # - name: "Upload results of test 06"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-06
+    #     path: tests/CI_test/VMC-H2/revised_vmc_lin_double.out
+    #     retention-days: 3
+
+    - name: "Test 07 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
+
+        echo "Comparing the energy with the reference one (Current energy = -1.0247271 +-  0.0114836) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0247271  0.0114836
+
+        echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0018"
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0018 0.0114836
+    # - name: "Upload results of test 07"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-07
+    #     path: tests/CI_test/VMC-H2/revised_vmc_corsamp_single.out
+    #     retention-days: 3
+
+    - name: "Test 08 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. H2 "
+        cd tests/CI_test/VMC-H2
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
+
+        echo "Comparing the energy with the reference one (Current energy = -1.0173833 +-  0.0085151) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0173833  0.0085151
+
+        echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0591"
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0008 0.0085151
+    # - name: "Upload results of test 08"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-08
+    #     path: tests/CI_test/VMC-H2/revised_vmc_corsamp_double.out
+    #     retention-days: 3
+
+    # - name: "Test 09 (Butadiene) DMC on 1 processor"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the DMC tests using the new parser. Butadiene DMC single core"
+    #     cd tests/CI_test/butadiene-dmc/butadiene_500_DMC_pablo
+
+    #     echo "Running the dmc.mov1 on one processor"
+    #     mpirun -np 1  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_single_core.out  -e dmc_single_core.error
+
+    #     echo "Comparing the energy with the reference one (total energy (  100) = -26.3320038 +-  0.0393365) "
+    #     $HOME/work/champ/champ/tools/compare_value.py dmc_single_core.out "total energy (  100)" -26.3320038  0.0393365
+    # - name: "Upload results of test 09"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-09
+    #     path: tests/CI_test/butadiene-dmc/butadiene_500_DMC_pablo/dmc_single_core.out
+    #     retention-days: 3
+
+
+    # - name: "Test 10 (Butadiene) DMC on 2 processors"
+    #   run: |
+    #     ulimit -s unlimited
+    #     echo "Running the DMC tests using the new parser. Butadiene DMC two cores"
+    #     cd tests/CI_test/butadiene-dmc/butadiene_500_DMC_pablo
+
+    #     echo "Running the dmc.mov1 on two processors"
+    #     mpirun -np 2  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_double_core.out  -e dmc_double_core.error
+
+    #     echo "Comparing the energy with the reference one (total energy (  100) = -26.3187227 +-  0.0257183) "
+    #     $HOME/work/champ/champ/tools/compare_value.py dmc_double_core.out "total energy (  100)" -26.3187227  0.0257183
+    # - name: "Upload results of test 10"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-10
+    #     path: tests/CI_test/butadiene-dmc/butadiene_500_DMC_pablo/dmc_double_core.out
+    #     retention-days: 3
+
+    - name: "Test 09 (Butadiene) Workload DMC on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the DMC tests using the new parser. Butadiene DMC from workload single core"
+        cd tests/CI_test/DMC-Butadiene-cipsi500
+
+        echo "Running the dmc.mov1 on one processor"
+        mpirun -np 1  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_single.out  -e dmc_single_core.error
+
+        echo "Comparing the energy with the reference one (total energy (  100) = -26.2963582 +-  0.0147048) "
+        $HOME/work/champ/champ/tools/compare_value.py dmc_workload_single.out "total energy (  100)" -26.2963582  0.0147048
+    # - name: "Upload results of test 09"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-09
+    #     path: tests/CI_test/DMC-Butadiene-cipsi500/dmc_workload_single.out
+    #     retention-days: 3
+
+    - name: "Test 10 (Butadiene) Workload DMC on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the DMC tests using the new parser. Butadiene DMC  from workload two cores"
+        cd tests/CI_test/DMC-Butadiene-cipsi500
+
+        echo "Running the dmc.mov1 on two processors"
+        mpirun -np 2  $HOME/work/champ/champ/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_double.out  -e dmc_double_core.error
+
+        echo "Comparing the energy with the reference one (total energy (  100) = -26.2894638 +-  0.0108990) "
+        $HOME/work/champ/champ/tools/compare_value.py dmc_workload_double.out "total energy (  100)" -26.2894638  0.0108990
+    # - name: "Upload results of test 10"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-10
+    #     path: tests/CI_test/DMC-Butadiene-cipsi500/dmc_workload_double.out
+    #     retention-days: 3
+
+
+
+    - name: "Test 11 (Butadiene cas44) VMC only on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene/no_optimization_20_dets_12_csf_CAS44
+
+        echo "Running the calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_noopt_cas44.inp  -o vmc_noopt_cas44_single.out  -e error
+
+        echo "Comparing the energy with the reference one (total E = -26.1744949  0.0371834) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_noopt_cas44_single.out "total E" -26.1744949  0.0371834
+    # - name: "Upload results of test 11"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-11
+    #     path: tests/CI_test/VMC-Butadiene/no_optimization_20_dets_12_csf_CAS44/vmc_noopt_cas44_single.out
+    #     retention-days: 3
+
+    - name: "Test 12 (Butadiene cas44) VMC only on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene/no_optimization_20_dets_12_csf_CAS44
+
+        echo "Running the calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_noopt_cas44.inp  -o vmc_noopt_cas44_double.out  -e error
+
+        echo "Comparing the energy with the reference one (total E = -26.1772303  0.0308416) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_noopt_cas44_double.out "total E" -26.1772303  0.0308416 --no_assert
+    # - name: "Upload results of test 12"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-12
+    #     path: tests/CI_test/VMC-Butadiene/no_optimization_20_dets_12_csf_CAS44/vmc_noopt_cas44_double.out
+    #     retention-days: 3
+
+    # - name: "Test 15 (Butadiene) VMC optimization all using sr_n (500 determinants) on 1 processor"
+    #   run: |
+    #     echo "Running the tests using the new parser. Butadiene VMC "
+    #     cd tests/CI_test/VMC-Butadiene/optimize_wf_ci_jastrow_orb
+
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
+
+    #     echo "Comparing the energy with the reference one (total E = -24.1918086 +-  0.1923460) "
+    #     $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -24.1918086  0.1923460
+    # - name: "Upload results of test 15"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-15
+    #     path: tests/CI_test/VMC-Butadiene/optimize_wf_ci_jastrow_orb/vmc_optimization.out
+    #     retention-days: 3
+
+
+    # - name: "Test 16 (Butadiene) VMC optimization all using sr_n (500 determinants) on 2 processors"
+    #   run: |
+    #     echo "Running the tests using the new parser. Butadiene VMC "
+    #     cd tests/CI_test/VMC-Butadiene/optimize_wf_ci_jastrow_orb
+
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization.inp  -o vmc_optimization.out  -e error_vmc_optimization > screen
+
+    #     echo "Comparing the energy with the reference one (total E = -24.9698661 +-  0.0928388) "
+    #     $HOME/work/champ/champ/tools/compare_value.py vmc_optimization.out "total E" -24.9698661  0.0928388
+    # - name: "Upload results of test 16"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-16
+    #     path: tests/CI_test/VMC-Butadiene/optimize_wf_ci_jastrow_orb/vmc_optimization.out
+    #     retention-days: 3
+
+
+    - name: "Test 13 (Butadiene) VMC optimization + node cutoff including geometry and csfmap using sr_n (500 determinants) on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene/optimize_ci_jas_orb_geom_20_dets
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
+
+        echo "Comparing the energy with the reference one (total E = -25.5736581 +-  0.0637334) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.5736581  0.0637334 --no_assert
+    # - name: "Upload results of test 13"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-13
+    #     path: tests/CI_test/VMC-Butadiene/optimize_ci_jas_orb_geom_20_dets/vmc_sr_opt_geom.out
+    #     retention-days: 3
+
+    - name: "Test 14 (Butadiene) VMC optimization + node cutoff including geometry and csfmap using sr_n (500 determinants) on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene/optimize_ci_jas_orb_geom_20_dets
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_sr_opt_geom.inp  -o vmc_sr_opt_geom.out  -e error_vmc_sr_opt_geom
+
+        echo "Comparing the energy with the reference one (total E = -25.2188005 +-  0.0379450) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_sr_opt_geom.out "total E" -25.2188005  0.0379450 --no_assert
+    # - name: "Upload results of test 14"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-14
+    #     path: tests/CI_test/VMC-Butadiene/optimize_ci_jas_orb_geom_20_dets/vmc_sr_opt_geom.out
+    #     retention-days: 3
+
+
+    - name: "Test 15 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi500_T_optWF
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500.out  -e error_vmc_optimization_500
+
+        echo "Comparing the energy with the reference one (total E = -26.2164721 +-  0.0280294) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.2164721  0.0280294
+    # - name: "Upload results of test 15"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-15
+    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi500_T_optWF/vmc_optimization_500.out
+    #     retention-days: 3
+
+
+    - name: "Test 16 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi500_T_optWF
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500.out  -e error_vmc_optimization_500
+
+        echo "Comparing the energy with the reference one (total E = -26.1862817 +-  0.0180068 ) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500.out "total E" -26.1862817  0.0180068
+    # - name: "Upload results of test 16"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-16
+    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi500_T_optWF/vmc_optimization_500.out
+    #     retention-days: 3
+
+    - name: "Test 17 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi5k_T_optWF
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000_single.out  -e error_vmc_optimization_5000
+
+        echo "Comparing the energy with the reference one (total E = -26.2075156 +-  0.0244621) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000_single.out "total E" -26.2075156  0.0244621
+    # - name: "Upload results of test 17"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-17
+    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi5k_T_optWF/vmc_optimization_5000_single.out
+    #     retention-days: 3
+
+
+    - name: "Test 18 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi5k_T_optWF
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000_double.out  -e error_vmc_optimization_5000
+
+        echo "Comparing the energy with the reference one (total E = -26.2371411 +-  0.0248033) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_5000_double.out "total E" -26.2371411  0.0248033
+    # - name: "Upload results of test 18"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-18
+    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi5k_T_optWF/vmc_optimization_5000_double.out
+    #     retention-days: 3
+
+
+    - name: "Test 19 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
+
+        echo "Comparing the energy with the reference one (total E = -26.2860258 +-  0.0252445) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2860258 0.0252445
+    # - name: "Upload results of test 19"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-19
+    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF/vmc_optimization_15000.out
+    #     retention-days: 3
+
+
+    - name: "Test 20 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000.out  -e error_vmc_optimization_15000
+
+        echo "Comparing the energy with the reference one (total E = -26.2344421 +-  0.0238496) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000.out "total E" -26.2344421  0.0238496
+    # - name: "Upload results of test 20"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-20
+    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF/vmc_optimization_15000.out
+    #     retention-days: 3
+
+    - name: "Test 21 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF_3body
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
+
+        echo "Comparing the energy with the reference one (total E = -26.2212899 +-  0.0238787) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2212899  0.0238787
+    # - name: "Upload results of test 21"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-21
+    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF_3body/vmc_optimization_15000_3body.out
+    #     retention-days: 3
+
+
+    - name: "Test 22 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF_3body
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
+
+        echo "Comparing the energy with the reference one (total E = -26.2045494 +-  0.0167864) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_15000_3body.out "total E" -26.2045494  0.0167864
+    # - name: "Upload results of test 22"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-22
+    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_cipsi15k_T_optWF_3body/vmc_optimization_15000_3body.out
+    #     retention-days: 3
+
+    - name: "Test 23 (Butadiene) Workload VMC optimization all using sr_n (45000 dets, 8300 csf, 426 orbs) on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_ras1022_Q_optWF+geo
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_45000.inp  -o vmc_optimization_45000_single.out  -e error
+
+        echo "Comparing the energy with the reference one (total E = -25.9951404 +-  0.0523977) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_45000_single.out "total E" -25.9951404  0.0523977
+    # - name: "Upload results of test 23"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-23
+    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_ras1022_Q_optWF+geo/vmc_optimization_45000_single.out
+    #     retention-days: 3
+
+    - name: "Test 24 (Butadiene) Workload VMC optimization all using sr_n (45000 dets, 8300 csf, 426 orbs) on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC "
+        cd tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_ras1022_Q_optWF+geo
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_45000.inp  -o vmc_optimization_45000_double.out  -e error
+
+        echo "Comparing the energy with the reference one (total E = -26.0818466 +-  0.0368988) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_45000_double.out "total E" -26.0818466  0.0368988
+    # - name: "Upload results of test 24"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-24
+    #     path: tests/CI_test/VMC-Butadiene-0.5k-5k-15k-45k-dets/butadiene_ras1022_Q_optWF+geo/vmc_optimization_45000_double.out
+    #     retention-days: 3
+
+
+    - name: "Test 25 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. PSB3 "
+        cd tests/CI_test/VMC-PSB3-400_dets-175_csfs
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_single.out -e error
+
+        echo "Comparing the energy with the reference one (total E of second state = -42.551463 +-  0.0447015  ) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_sr_n_single.out "total E" -42.551463  0.0447015
+
+    # - name: "Upload results of test 25"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-25
+    #     path: tests/CI_test/VMC-PSB3-400_dets-175_csfs/revised_sr_n_single.out
+    #     retention-days: 3
+
+    - name: "Test 26 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. PSB3 "
+        cd tests/CI_test/VMC-PSB3-400_dets-175_csfs
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_sr_n.inp -o revised_sr_n_double.out -e error
+
+        echo "Comparing the energy with the reference one (total E of second state = -42.5843775 +-  0.0307300) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_sr_n_double.out "total E" -42.5843775  0.0307300
+
+    # - name: "Upload results of test 26"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-26
+    #     path: tests/CI_test/VMC-PSB3-400_dets-175_csfs/revised_sr_n_double.out
+    #     retention-days: 3
+
+    - name: "Test 27 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. PSB3 "
+        cd tests/CI_test/VMC-PSB3-400_dets-175_csfs
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_single.out -e error
+
+        echo "Comparing the energy with the reference one (total E of second state = -41.1372264 +-  0.0908603 ) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_single.out "total E" -41.1372264  0.0908603
+
+    # - name: "Upload results of test 27"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-27
+    #     path: tests/CI_test/VMC-PSB3-400_dets-175_csfs/revised_regterg_single.out
+    #     retention-days: 3
+
+    - name: "Test 28 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 2 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. PSB3 "
+        ulimit -s unlimited
+        cd tests/CI_test/VMC-PSB3-400_dets-175_csfs
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_double.out -e error
+
+        echo "Comparing the energy with the reference one (total E of second state = -41.0184285 +-  0.0637987  ) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_regterg_double.out "total E" -41.0184285  0.0637987
+
+    # - name: "Upload results of test 28"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-28
+    #     path: tests/CI_test/VMC-PSB3-400_dets-175_csfs/revised_regterg_double.out
+    #     retention-days: 3
+
+    # - name: "Test 29 (psb3) optimize wavefunction and ci using lin_d method Davidson Calculation (400 determinants, 2 states, csfmap) on 1 processor"
+    #   run: |
+    #     echo "Running the tests using the new parser. PSB3 "
+    #     ulimit -s unlimited
+    #     cd tests/CI_test/VMC-PSB3-400_dets-175_csfs
+
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_free.inp -o revised_free_single.out -e error
+
+    #     echo "Comparing the energy with the reference one (eigenvalue[1] = -44.148262860328295) "
+    #     $HOME/work/champ/champ/tools/compare_value.py revised_free_single.out "eigenvalue            1" -44.148262860328295
+
+    # - name: "Upload results of test 29"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-29
+    #     path: tests/CI_test/VMC-PSB3-400_dets-175_csfs/revised_free_single.out
+    #     retention-days: 3
+
+    # - name: "Test 30 (psb3) optimize wavefunction and ci using lin_d method Davidson Calculation (400 determinants, 2 states, csfmap) on 2 processors"
+    #   run: |
+    #     echo "Running the tests using the new parser. PSB3 "
+    #     ulimit -s unlimited
+    #     cd tests/CI_test/VMC-PSB3-400_dets-175_csfs
+
+    #     echo "Running the optimization calculation"
+    #     mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_free.inp -o revised_free_double.out -e error
+
+    #     echo "Comparing the energy with the reference one (eigenvalue[1] = -50.815236723338842) "
+    #     $HOME/work/champ/champ/tools/compare_value.py revised_free_double.out "eigenvalue            1" -50.815236723338842
+
+    # - name: "Upload results of test 30"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-30
+    #     path: tests/CI_test/VMC-PSB3-400_dets-175_csfs/revised_free_double.out
+    #     retention-days: 3
+
+    - name: "Test 29 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. PSB2 "
+        cd tests/CI_test/VMC-PSB2-36_dets-20_csfs
+
+        echo "Running the optimization calculation"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
+
+        echo "Comparing the energy with the reference one ("total E" -29.6957339 +-  0.0395116) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.6957339  0.0395116
+
+    # - name: "Upload results of test 29"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-29
+    #     path: tests/CI_test/VMC-PSB2-36_dets-20_csfs/revised_psb2_mix_n_single.out
+    #     retention-days: 3
+
+    - name: "Test 30 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 2 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. PSB2 "
+        cd tests/CI_test/VMC-PSB2-36_dets-20_csfs
+
+        echo "Running the optimization calculation"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
+
+        echo "Comparing the energy with the reference one ("total E" -29.8666018 +-  0.0301539) "
+        $HOME/work/champ/champ/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.8666018  0.0301539
+
+    # - name: "Upload results of test 30"
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: test-results-30
+    #     path: tests/CI_test/VMC-PSB2-36_dets-20_csfs/revised_psb2_mix_n_double.out
+    #     retention-days: 3
+
+    - name: "Test 31 (Butadiene) TREXIO interface testing with HDF5 backend on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC 500 dets"
+        cd tests/CI_test/TREXIO
+
+        echo "Running the calculation with trexio library linked"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_single.out  -e error
+
+        echo "Comparing the energy with the reference one (total E = -26.2164721 +-  0.0280294) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_hdf5_single.out "total E" -26.2164721  0.0280294
+
+    - name: "Test 32 (Butadiene) TREXIO interface testing with HDF5 backend on 2 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC 500 dets"
+        cd tests/CI_test/TREXIO
+
+        echo "Running the calculation with trexio library linked"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_double.out  -e error
+
+        echo "Comparing the energy with the reference one (total E = 26.2044165 +-  0.0180068) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_hdf5_double.out "total E" -26.2044165  0.0180068
+
+    - name: "Test 33 (Butadiene) TREXIO interface testing with TEXT backend on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC 500 dets"
+        cd tests/CI_test/TREXIO
+
+        echo "Running the calculation with trexio library linked"
+        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500_text.inp  -o vmc_optimization_500_text_single.out  -e error
+
+        echo "Comparing the energy with the reference one (total E = -26.2265231 +-  0.0280294) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_text_single.out "total E" -26.2265231  0.0280294
+
+    - name: "Test 34 (Butadiene) TREXIO interface testing with TEXT backend on 2 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the tests using the new parser. Butadiene VMC 500 dets"
+        cd tests/CI_test/TREXIO
+
+        echo "Running the calculation with trexio library linked"
+        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i vmc_optimization_500_text.inp  -o vmc_optimization_500_text_double.out  -e error
+
+        echo "Comparing the energy with the reference one (total E = -26.2044165 +-  0.0180068) "
+        $HOME/work/champ/champ/tools/compare_value.py vmc_optimization_500_text_double.out "total E" -26.2044165  0.0180068
+
+
+    - name: "Zip the test reults"
+      run: |
+        echo "Compressing the test results from workflow"
+        cd tests/
+        tar -czvf workflow_artifacts.tar.gz CI_test/
+
+    - name: Upload calculation result artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: results-workflow-actions
+        path: tests/workflow_artifacts.tar.gz
+        retention-days: 2
+
+
+

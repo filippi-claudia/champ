@@ -1,0 +1,57 @@
+# namelist definitions
+LIST general title unit mass iperiodic ibasis nforce nwftype seed ipr pool
+     basis pseudopot i3dsplorb i3dlagorb scalecoef 
+
+LIST vmc imetro deltar deltat delta fbias node_cutoff enode_cutoff
+
+LIST dmc idmc tau etrial nfprod ipq itau_eff
+     iacc_rej icross icuspg idiv_v icut_br icut_e
+     icasula node_cutoff enode_cutoff ibranch_elec icircular
+     idrifdifgfunc mode_dmc
+
+LIST startend idump irstar isite icharged_atom
+
+LIST blocking_vmc nstep nblk nblkeq nconf_new nconf
+
+LIST blocking_dmc nstep nblk nblkeq nconf_new nconf
+
+LIST periodic norb npoly np cutg cutg_sim cutg_big cutg_sim_big
+
+LIST electrons nelec nup
+
+LIST pseudo nloc nquad
+
+LIST atoms nctype natom addghostype nghostcent 
+
+LIST jastrow ianalyt_lap ijas isc nspin1 nspin2 ifock
+
+LIST optgeo iforce_analy iuse_zmat alfgeo izvzb  iroot_geo
+
+LIST mstates iguiding iefficiency
+
+LIST optwf ioptwf idl_flag ilbfgs_flag ilbfgs_m method nopt_iter 
+     ioptjas ioptorb ioptci multiple_adiag add_diag
+     ngrad_jas_blocks nblk_max nblk_ci dl_alg
+     iorbprt isample_cmat istddev limit_cmat e_shift
+     save_blocks force_blocks iorbsample
+     iuse_trafo iuse_orbeigv ncore nextorb no_active
+     approx approx_mix energy_tol
+     sr_tau sr_eps sr_adiag micro_iter_sr dl_mom
+     lin_eps lin_adiag lin_nvec lin_nvecx lin_jdav
+     func_omega omega n_omegaf n_omegat
+     sr_rescale
+
+LIST ci iciprt
+
+LIST qmmm iqmmm
+
+LIST strech alfstr
+
+LIST properties sample print
+
+LIST 3dgrid stepx stepy stepz x0 y0 z0 xn yn zn
+
+LIST forces istrech alfstr nwprod itausec
+
+LIST gradients ngradnts igrdtype
+     delgrdxyz delgrdbl delgrdba delgrdda

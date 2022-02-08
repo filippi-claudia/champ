@@ -18,6 +18,11 @@ c compute gauss-pseudopotential for electron iel
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
 
+
+
+
+
+
       do ic=1,ncent
         ict=iwctype(ic)
 

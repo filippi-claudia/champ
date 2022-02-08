@@ -13,7 +13,7 @@ c routine to print out final results
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
-      use forcepar, only: nforce
+      use forcepar, only: deltot, nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum
       use grdntspar, only: igrdtype, ngradnts
@@ -149,7 +149,7 @@ c is precisely what is being reflected when we get T_corr < 1.
         efin=ecum(istate,ifr)/wcum(istate,ifr)
         eerr=err(ecum(istate,ifr),ecm2(istate,ifr),istate,ifr)
         ffin=ecum(istate,1)/wcum(istate,1)-efin
-        ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)
+        ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)/abs(deltot(ifr))
 
 c save energy, force, and, energy and force error for optimization
         energy(ifr)=energy(ifr)+weights(istate)*efin
@@ -170,7 +170,7 @@ c Done by Omar Valsson 2008-12-01
         endif
 
         write(ounit,'(''total E ='',t17,f12.7,'' +-'',f11.7,f9.5)') efin,eerr,eerr*rtpass
-        write(ounit,'(''force   ='',t17,e19.10,'' +-'',e16.8,f9.5)') ffin,ferr,ferr*rtpass
+        write(ounit,'(''force   ='',t17,e19.10,'' +-'',e16.8,f9.5)') ffin/deltot(ifr),ferr,ferr*rtpass
       enddo
       write(ounit,'(''potential E ='',t17,f12.7,'' +-'',f11.7,f9.5)') pefin,peerr,peerr*rtpass
       write(ounit,'(''jf kinetic E ='',t17,f12.7,'' +-'',f11.7,f9.5)') tjffin,tjferr,tjferr*rtpass

@@ -35,13 +35,13 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       endif
       do i=i1,i2
         if(nloc.eq.1) then
-c         call getvps(r_en,i)
+          call getvps(r_en,i)
          elseif(nloc.eq.2.or.nloc.eq.3) then
           call getvps_tm(r_en,i)
          elseif(nloc.eq.4) then
           call getvps_gauss(rvec_en,r_en,i)
          elseif(nloc.eq.5) then
-c         call getvps_champ(r_en,i)
+          call getvps_champ(r_en,i)
         endif
       enddo
       
