@@ -42,7 +42,6 @@ c compute all determinants
 
       call determinante(iel,x,rvec_en,r_en,iflag)
 
-
       if(detn(kref).eq.0.d0) then
         do istate=1,nstates
           psid(istate)=0.d0

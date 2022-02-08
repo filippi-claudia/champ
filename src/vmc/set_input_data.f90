@@ -366,10 +366,10 @@ subroutine inputjastrow()
     ! Set the jastrow to be equal
 
     use jaspar, only: nspin1, nspin2
-    use jaspar3, only: a, b, c, scalek
+    use jaspar3, only: b, c, scalek
     use jaspar4, only: a4, norda, nordb, nordc
     use bparm, only: nspin2b
-    use contr2, only: ifock, ijas
+    use contr2, only: ijas
     use contr2, only: isc
     use wfsec, only: nwftype
     use atom, only: ncent, nctype
