@@ -1,4 +1,4 @@
-      subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,iforce_analy)
+      subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
 
 c   l   |   1  2  3  4    5      6     7    8    9   10  11  12  13  14  15  16  17  18  19
 c ------+-------------------------------------------------------------------------------------
@@ -8,7 +8,7 @@ c
       use precision_kinds, only: dp
       implicit none
 
-      integer :: i, iforce_analy, j, l
+      integer :: i, j, l, ider
       real(dp) :: cd1, cd2, cf, cf2, cf3
       real(dp) :: cp, cs, ddy_lap
       real(dp) :: r2, y
@@ -32,7 +32,7 @@ c cf=sqrt(7/(4*pi)),cf2=cf*sqrt(5),cf3=cf*sqrt(15)
         enddo
       enddo
 
-      if(iforce_analy.eq.1) goto 200
+      if(ider.eq.3) goto 200
 
       go to (101,102,103,104,105,106,107,108,109,110
      &      ,111,112,113,114,115,116,117,118,119) l
