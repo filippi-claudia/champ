@@ -240,7 +240,7 @@ c-----------------------------------------------------------------------
 
       integer :: l
       real(dp) :: costh, yl0
-     
+
       yl0 = 0.0
 
       if(l.eq.1) then
@@ -263,8 +263,8 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: l
-      real(dp) :: costh, dyl0 
-      
+      real(dp) :: costh, dyl0
+
       dyl0 = 0.0
 
       if(l.eq.1) then
@@ -364,7 +364,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       implicit none
 
-      integer :: ic, iel, ier, iforce_analy, ii
+      integer :: ic, iel, ider, ier, iforce_analy, ii
       integer :: iorb, k, m, m0
       integer :: nadorb_sav
 
@@ -402,7 +402,9 @@ c get the value from the 3d-interpolated orbitals
 
         if(ier.eq.1) then
 c get basis functions for electron iel
-          call basis_fnse_v(iel,rvec_en,r_en)
+          ider=0
+          if(iforce_analy.gt.0) ider=1
+          call basis_fns(iel,iel,rvec_en,r_en,ider)
 
 ! Vectorization dependent code selection
 #ifdef VECTORIZATION
@@ -416,7 +418,6 @@ c get basis functions for electron iel
 #else
           do iorb=1,norb+nadorb
             orbn(iorb)=0.d0
-c           do 25 m=1,nbasis
             do m0=1,n0_nbasis(iel)
               m=n0_ibasis(m0,iel)
               orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
@@ -425,7 +426,6 @@ c           do 25 m=1,nbasis
 #endif
 
           if(iforce_analy.gt.0) then
-
             do iorb=1,norb
               do ic=1,ncent
                 do k=1,3

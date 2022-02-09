@@ -19,7 +19,7 @@
       use coefs, only: nbasis
       use numexp, only: ae, ce, allocate_numexp
       use pseudo, only: nloc
-      use general, only: filename, filenames_bas_num, wforce
+      use general, only: filename, filenames_bas_num
 
       use atom, 			        only: atomtyp
       use general, 			      only: pooldir, bas_id

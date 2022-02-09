@@ -3,9 +3,8 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
       use const, only: nelec, ipr
-      use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
-      use phifun, only: phin
       use wfsec, only: iwf
+      use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
@@ -13,23 +12,18 @@ c Modified by A. Scemama
       use atom, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file,only: ounit
       implicit none
 
-      integer :: i, ier, iorb, k, m
+      integer :: i, ier, ider, iorb, k, m
       integer :: m0
 
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
-      real(dp), dimension(nelec,nbasis) :: bhin
-      real(dp), dimension(3*nelec,nbasis) :: dbhin
-      real(dp), dimension(nelec,nbasis) :: d2bhin
-
-
-      ! call resize_matrix(orb, norb+nadorb, 2)
-      ! call resize_matrix(ddorb, norb+nadorb, 2)
-      ! call resize_tensor(dorb, norb+nadorb, 3)
+c     real(dp), dimension(nelec,nbasis) :: bhin
+c     real(dp), dimension(3*nelec,nbasis) :: dbhin
+c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
       ier=1
       if(iperiodic.eq.0) then
@@ -47,14 +41,13 @@ c spline interpolation
             enddo
 
             if(ier.eq.1) then
-              call basis_fnse_vgl(i,rvec_en,r_en)
+              call basis_fns(i,i,rvec_en,r_en,2)
               do iorb=1,norb+nadorb
                 orb(i,iorb)=0.d0
                 dorb(1,i,iorb)=0.d0
                 dorb(2,i,iorb)=0.d0
                 dorb(3,i,iorb)=0.d0
                 ddorb(i,iorb)=0.d0
-c               do 22 m=1,nbasis
                 do m0=1,n0_nbasis(i)
                   m=n0_ibasis(m0,i)
                   orb(i,iorb)=orb(i,iorb)+coef(m,iorb,iwf)*phin(m,i)
@@ -78,14 +71,13 @@ c Lagrange interpolation
            call lagrange_mos(5,x(1,i),ddorb,i,ier)
 
            if(ier.eq.1) then
-             call basis_fnse_vgl(i,rvec_en,r_en)
+             call basis_fns(i,i,rvec_en,r_en,2)
              do iorb=1,norb+nadorb
                orb(i,iorb)=0.d0
                dorb(1,i,iorb)=0.d0
                dorb(2,i,iorb)=0.d0
                dorb(3,i,iorb)=0.d0
                ddorb(i,iorb)=0.d0
-c              do 24 m=1,nbasis
                do m0=1,n0_nbasis(i)
                  m=n0_ibasis(m0,i)
                  orb(i,iorb)=orb(i,iorb)+coef(m,iorb,iwf)*phin(m,i)
@@ -100,8 +92,11 @@ c              do 24 m=1,nbasis
 
 c no 3d interpolation
         else
+
 c get basis functions for all electrons
-         call basis_fns_vgl(x,rvec_en,r_en)
+         ider=2
+         if(iforce_analy.eq.1) ider=3
+         call basis_fns(1,nelec,rvec_en,r_en,ider)
 
 c in alternativa al loop 26
 c        do jbasis=1,nbasis
@@ -147,7 +142,6 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
             dorb(2,i,iorb)=0
             dorb(3,i,iorb)=0
             ddorb(i,iorb)=0
-c           do 26 m=1,nbasis
             do m0=1,n0_nbasis(i)
              m=n0_ibasis(m0,i)
              orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
@@ -207,13 +201,8 @@ c assuming that basis function values in phin are up to date
 
       if (nadorb.eq.0.or.(ioptorb.eq.0.and.ioptci.eq.0)) return
 
-c primary geometry only:
+c primary geometry only
       iwf=1
-c      if(norb+nadorb.gt.norb_tot) then
-c        write(ounit,'(''VIRTUAL_ORB: Too many orbitals, norb + nadorb='',
-c     &  i4,'' > norb_tot='',i4)') norb+nadorb,norb_tot
-c        call fatal_error('Aborted')
-c      endif
 
       do i=1,nelec
         call dcopy(nbasis,phin(1,i),1,bhin(i,1),nelec)
@@ -308,7 +297,7 @@ c-------------------------------------------------------------------------------
 
       implicit none
 
-      integer :: iel, ier, iflag, iorb, m
+      integer :: iel, ier, ider, iflag, iorb, m
       integer :: m0
 
       real(dp), dimension(3,*) :: x
@@ -342,12 +331,9 @@ c Lagrange interpolation
         if(ier.eq.1) then
 c get basis functions for electron iel
 
-          if(iflag.eq.0) then
-            call basis_fnse_vg(iel,rvec_en,r_en)
-           else
-            call basis_fnse_vgl(iel,rvec_en,r_en)
-          endif
-
+         ider=1
+         if(iflag.gt.0) ider=2
+         call basis_fns(iel,iel,rvec_en,r_en,ider)
 
 !       Vectorization dependent code. useful for AVX512 and AVX2
 #ifdef VECTORIZATION
@@ -373,7 +359,6 @@ c get basis functions for electron iel
             dorbn(2,iorb)=0
             dorbn(3,iorb)=0
             ddorbn(iorb)=0
-c           do 25 m=1,nbasis
             do m0=1,n0_nbasis(iel)
              m=n0_ibasis(m0,iel)
              orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
