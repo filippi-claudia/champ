@@ -2010,20 +2010,11 @@ subroutine read_basis_num_info_file(file_basis_num_info)
             nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i)
 
             if (numr .gt. 0) then
-                if (n2s(i) .ne. 0 .or. n3s(i) .ne. 0 .or. n4s(i) .ne. 0 .or. &
-                    n3p(1, i) .ne. 0 .or. n3p(2, i) .ne. 0 .or. n3p(3, i) .ne. 0 .or. &
-                    n4p(1, i) .ne. 0 .or. n4p(2, i) .ne. 0 .or. n4p(3, i) .ne. 0 .or. &
-                    nsa(i) .ne. 0 .or. npa(1, i) .ne. 0 .or. npa(2, i) .ne. 0 .or. &
-                    npa(3, i) .ne. 0 .or. ndzra(i) .ne. 0 .or. ndx2a(i) .ne. 0 .or. &
-                    ndxya(i) .ne. 0 .or. ndxza(i) .ne. 0 .or. ndyza(i) .ne. 0) &
-                    call fatal_error('BASIS: n1s,n2p,n3d only for numerical basis')
-
-                nbastyp(i) = iabs(n1s(i)) &
-                                + iabs(n2p(1, i)) + iabs(n2p(2, i)) + iabs(n2p(3, i)) &
-                                + iabs(n3dzr(i)) + iabs(n3dx2(i)) &
-                                + iabs(n3dxy(i)) + iabs(n3dxz(i)) + iabs(n3dyz(i)) &
-                                + iabs(n4fxxx(i)) + iabs(n4fyyy(i)) + iabs(n4fzzz(i)) + iabs(n4fxxy(i)) + iabs(n4fxxz(i)) &
-                                + iabs(n4fyyx(i)) + iabs(n4fyyz(i)) + iabs(n4fzzx(i)) + iabs(n4fzzy(i)) + iabs(n4fxyz(i))
+                nbastyp(i) =    ns(i) &
+                            +   np(1, i) + np(2, i) + np(3, i) &
+                            +   ndxx(i)  + ndxy(i)  +  ndxz(i) + ndyy(i)  + ndyz(i) + ndzz(i) &
+                            +   nfxxx(i) + nfxxy(i) + nfxxz(i) + nfxyy(i) + nfxyz(i) &
+                            +   nfxzz(i) + nfyyy(i) + nfyyz(i) + nfyzz(i) + nfzzz(i)
 
                 if (nbastyp(i) .gt. MRWF) call fatal_error('BASIS: nbastyp > MRWF')
 
@@ -2031,12 +2022,8 @@ subroutine read_basis_num_info_file(file_basis_num_info)
                 if (iostat /= 0) call fatal_error( "Error in reading basis num info file")
                 write(ounit, '(100i3)') (iwrwf(ib, i), ib=1, nbastyp(i))
                 write(ounit, *)
-
             else
-                if (n4fxxx(i) .ne. 0 .or. n4fyyy(i) .ne. 0 .or. n4fzzz(i) .ne. 0 .or. &
-                    n4fxxy(i) .ne. 0 .or. n4fxxz(i) .ne. 0 .or. n4fyyx(i) .ne. 0 .or. &
-                    n4fyyz(i) .ne. 0 .or. n4fzzx(i) .ne. 0 .or. n4fzzy(i) .ne. 0 .or. &
-                    n4fxyz(i) .ne. 0) call fatal_error('BASIS: n4f only for numerical basis')
+                call fatal_error('BASIS: numerical basis functions not supported')
             endif
         enddo
 
@@ -2044,81 +2031,85 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
             do i = 1, nctype + newghostype
                 jj = 0
-                do j = 1, iabs(n1s(i))
+                do j = 1, ns(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 1
                 enddo
-                do j = 1, iabs(n2p(1, i))
+                do j = 1, np(1, i)
                     jj = jj + 1
                     iwlbas(jj, i) = 2
                 enddo
-                do j = 1, iabs(n2p(2, i))
+                do j = 1, np(2, i)
                     jj = jj + 1
                     iwlbas(jj, i) = 3
                 enddo
-                do j = 1, iabs(n2p(3, i))
+                do j = 1, np(3, i)
                     jj = jj + 1
                     iwlbas(jj, i) = 4
                 enddo
-                do j = 1, iabs(n3dzr(i))
+                do j = 1, ndxx(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 5
                 enddo
-                do j = 1, iabs(n3dx2(i))
+                do j = 1, ndxy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 6
                 enddo
-                do j = 1, iabs(n3dxy(i))
+                do j = 1, ndxz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 7
                 enddo
-                do j = 1, iabs(n3dxz(i))
+                do j = 1, ndyy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 8
                 enddo
-                do j = 1, iabs(n3dyz(i))
+                do j = 1, ndyz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 9
                 enddo
-                do j = 1, iabs(n4fxxx(i))
+                do j = 1, ndzz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 10
                 enddo
-                do j = 1, iabs(n4fyyy(i))
+                do j = 1, nfxxx(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 11
                 enddo
-                do j = 1, iabs(n4fzzz(i))
+                do j = 1, nfxxy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 12
                 enddo
-                do j = 1, iabs(n4fxxy(i))
+                do j = 1, nfxxz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 13
                 enddo
-                do j = 1, iabs(n4fxxz(i))
+                do j = 1, nfxyy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 14
                 enddo
-                do j = 1, iabs(n4fyyx(i))
+                do j = 1, nfxyz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 15
                 enddo
-                do j = 1, iabs(n4fyyz(i))
+                do j = 1, nfxzz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 16
                 enddo
-                do j = 1, iabs(n4fzzx(i))
+                do j = 1, nfyyy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 17
                 enddo
-                do j = 1, iabs(n4fzzy(i))
+                do j = 1, nfyyz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 18
                 enddo
-                do j = 1, iabs(n4fxyz(i))
+                do j = 1, nfyzz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 19
+                enddo
+                do j = 1, nfzzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 20
                 enddo
 
             enddo
@@ -2130,36 +2121,24 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     call bcast(iwlbas)
     call bcast(iwrwf)
     call bcast(nbastyp)
-    call bcast(n1s)
-    call bcast(n2s)
-    call bcast(n2p)
-    call bcast(n3s)
-    call bcast(n3p)
-    call bcast(n3dzr)
-    call bcast(n3dx2)
-    call bcast(n3dxy)
-    call bcast(n3dxz)
-    call bcast(n3dyz)
-    call bcast(n4s)
-    call bcast(n4p)
-    call bcast(n4fxxx)
-    call bcast(n4fyyy)
-    call bcast(n4fzzz)
-    call bcast(n4fxxy)
-    call bcast(n4fxxz)
-    call bcast(n4fyyx)
-    call bcast(n4fyyz)
-    call bcast(n4fzzx)
-    call bcast(n4fzzy)
-    call bcast(n4fxyz)
-    call bcast(nsa)
-    call bcast(npa)
-    call bcast(ndzra)
-    call bcast(ndz2a)
-    call bcast(ndxya)
-    call bcast(ndxza)
-    call bcast(ndx2a)
-    call bcast(ndyza)
+    call bcast(ns)
+    call bcast(np)
+    call bcast(ndxx)
+    call bcast(ndxy)
+    call bcast(ndxz)
+    call bcast(ndyy)
+    call bcast(ndyz)
+    call bcast(ndzz)
+    call bcast(nfxxx)
+    call bcast(nfxxy)
+    call bcast(nfxxz)
+    call bcast(nfxyy)
+    call bcast(nfxyz)
+    call bcast(nfxzz)
+    call bcast(nfyyy)
+    call bcast(nfyyz)
+    call bcast(nfyzz)
+    call bcast(nfzzz)
 
     ibasis_num = 1
     call bcast(ibasis_num)
