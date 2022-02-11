@@ -1913,15 +1913,15 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     use numbas_mod, only: MRWF
     use numbas, only: iwrwf, numr
     use numbas1, only: iwlbas, nbastyp
-    use basis, only: n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
-    use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
-    use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a, ndz2a
+    use basis, only: ns, np, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
+    use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
     use inputflags, only: ibasis_num
     use coefs, only: nbasis
     use general, only: pooldir
 
     use atom, only: nctype
     use ghostatom, only: newghostype
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1970,37 +1970,25 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
 
-    allocate (nbastyp(nctot), source=0)
-    allocate (n1s(nctot),     source=0)
-    allocate (n2s(nctot),     source=0)
-    allocate (n2p(3, nctot),  source=0)
-    allocate (n3s(nctot),     source=0)
-    allocate (n3p(3, nctot),  source=0)
-    allocate (n3dzr(nctot),   source=0)
-    allocate (n3dx2(nctot),   source=0)
-    allocate (n3dxy(nctot),   source=0)
-    allocate (n3dxz(nctot),   source=0)
-    allocate (n3dyz(nctot),   source=0)
-    allocate (n4s(nctot),     source=0)
-    allocate (n4p(3, nctot),  source=0)
-    allocate (n4fxxx(nctot),  source=0)
-    allocate (n4fyyy(nctot),  source=0)
-    allocate (n4fzzz(nctot),  source=0)
-    allocate (n4fxxy(nctot),  source=0)
-    allocate (n4fxxz(nctot),  source=0)
-    allocate (n4fyyx(nctot),  source=0)
-    allocate (n4fyyz(nctot),  source=0)
-    allocate (n4fzzx(nctot),  source=0)
-    allocate (n4fzzy(nctot),  source=0)
-    allocate (n4fxyz(nctot),  source=0)
-    allocate (nsa(nctot),     source=0)
-    allocate (npa(3, nctot),  source=0)
-    allocate (ndzra(nctot),   source=0)
-    allocate (ndz2a(nctot),   source=0)
-    allocate (ndxya(nctot),   source=0)
-    allocate (ndxza(nctot),   source=0)
-    allocate (ndx2a(nctot),   source=0)
-    allocate (ndyza(nctot),   source=0)
+    allocate (nbastyp(nctot),   source=0)
+    allocate (ns(nctot),        source=0)
+    allocate (np(3, nctot),     source=0)
+    allocate (ndxx(nctot),      source=0)
+    allocate (ndxy(nctot),      source=0)
+    allocate (ndxz(nctot),      source=0)
+    allocate (ndyy(nctot),      source=0)
+    allocate (ndyz(nctot),      source=0)
+    allocate (ndzz(nctot),      source=0)
+    allocate (nfxxx(nctot),     source=0)
+    allocate (nfxxy(nctot),     source=0)
+    allocate (nfxxz(nctot),     source=0)
+    allocate (nfxyy(nctot),     source=0)
+    allocate (nfxyz(nctot),     source=0)
+    allocate (nfxzz(nctot),     source=0)
+    allocate (nfyyy(nctot),     source=0)
+    allocate (nfyyz(nctot),     source=0)
+    allocate (nfyzz(nctot),     source=0)
+    allocate (nfzzz(nctot),     source=0)
 
     if (nbasis .eq. 0) then
         call fatal_error('Please Load LCAO before basis info in the input file')
@@ -2011,24 +1999,15 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     if (wid) then
         do i = 1, nctype + newghostype
-            read (iunit, *, iostat=iostat) n1s(i), n2s(i), (n2p(j, i), j=1, 3), &
-                n3s(i), (n3p(j, i), j=1, 3), &
-                n3dzr(i), n3dx2(i), n3dxy(i), n3dxz(i), n3dyz(i), &
-                n4s(i), (n4p(j, i), j=1, 3), &
-                n4fxxx(i), n4fyyy(i), n4fzzz(i), n4fxxy(i), n4fxxz(i), &
-                n4fyyx(i), n4fyyz(i), n4fzzx(i), n4fzzy(i), n4fxyz(i), &
-                nsa(i), (npa(j, i), j=1, 3), &
-                ndzra(i), ndx2a(i), ndxya(i), ndxza(i), ndyza(i)
+            read (iunit, *, iostat=iostat) ns(i), (np(j, i), j=1, 3), &
+                ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
+                nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
+                nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i)
             if (iostat /= 0) call fatal_error( "Error in reading basis num info file")
-            write (ounit, '(100i3)') n1s(i), n2s(i), (n2p(j, i), j=1, 3), &
-                n3s(i), (n3p(j, i), j=1, 3), &
-                n3dzr(i), n3dx2(i), n3dxy(i), n3dxz(i), n3dyz(i), &
-                n4s(i), (n4p(j, i), j=1, 3), &
-                n4fxxx(i), n4fyyy(i), n4fzzz(i), n4fxxy(i), n4fxxz(i), &
-                n4fyyx(i), n4fyyz(i), n4fzzx(i), n4fzzy(i), n4fxyz(i), &
-                nsa(i), (npa(j, i), j=1, 3), &
-                ndzra(i), ndx2a(i), ndxya(i), ndxza(i), ndyza(i)
-
+            write (ounit, '(100i3)') ns(i), (np(j, i), j=1, 3), &
+            ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
+            nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
+            nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i)
 
             if (numr .gt. 0) then
                 if (n2s(i) .ne. 0 .or. n3s(i) .ne. 0 .or. n4s(i) .ne. 0 .or. &

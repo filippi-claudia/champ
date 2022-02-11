@@ -1,136 +1,112 @@
 module basis
-    !> Arguments: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz, n4s, n4p,
-    !> n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz, n4fzzx, n4fzzy, n4fxyz, nsa, npa,
-    !> ndzra, ndz2a, ndxya, ndxza, ndyza
+    !>  ncent  = number of centers
+    !>  zex    = screening constants for each basis function
+    !>  betaq  =
+    !>  cent   = positions of each center
+    !>
+    !>  ns     = number of 1s functions at each center
+    !>
+    !>  np     = number of 2p functions of each type at each center
+    !>
+    !>  ndxx   = number of XY d functions at each center
+    !>  ndxy   = number of XZ d functions at each center
+    !>  ndxz   = number of YZ d functions at each center
+    !>  ndyy   = number of YY d functions at each center
+    !>  ndyz   = number of YZ d functions at each center
+    !>  ndzz   = number of ZZ d functions at each center
+    !>
+    !>  nfxxx  = number of XYX f functions at each center
+    !>  nfxxy  = number of XZX f functions at each center
+    !>  nfxxz  = number of YZX f functions at each center
+    !>  nfxyy  = number of YYY f functions at each center
+    !>  nfxyz  = number of YZY f functions at each center
+    !>  nfxzz  = number of ZZX f functions at each center
+    !>  nfyyy  = number of YYY f functions at each center
+    !>  nfyyz  = number of YZY f functions at each center
+    !>  nfyzz  = number of ZZY f functions at each center
+    !>  nfzzz  = number of ZZZ f functions at each center
+
+
+
     use precision_kinds, only: dp
 
     implicit none
 
-    !  ncent  = number of centers
-    !  zex    = screening constants for each basis function
-    !  cent   = positions of each center
-    !  pecent = potential energy of the centers
-    !  znuc   = charge of the nuclei (centers)
-    !  n1s    = number of 1s functions at each center
-    !  n2s    = number of 2s functions at each center
-    !  n2p    = number of 2p functions of each type at each center
-    !  n3s    = number of 3s functions at each center
-    !  n3p    = number of 3p functions of each type at each center
-    !  n3dzr  = number of z**2-r**2 d functions at each center
-    !  n3dx2  = number of x**2-y**2 d functions at each center
-    !  n3dxy  = number of xy d functions at each center
-    !  n3dxz  = number of xz d functions at each center
-    !  n3dyz  = number of yz d functions at each center
-    !  n4s    = number of 4s functions at each center
-    !  n4p    = number of 4p functions of each type at each center
-
     real(dp), dimension(:, :), allocatable :: zex !(MBASIS,MWF)
     real(dp) :: betaq
-    integer, dimension(:), allocatable :: n1s !(MCTYPE)
-    integer, dimension(:), allocatable :: n2s !(MCTYPE)
-    integer, dimension(:, :), allocatable :: n2p !(3,MCTYPE)
-    integer, dimension(:), allocatable :: n3s !(MCTYPE)
-    integer, dimension(:, :), allocatable :: n3p !(3,MCTYPE)
-    integer, dimension(:), allocatable :: n3dzr !(MCTYPE)
-    integer, dimension(:), allocatable :: n3dx2 !(MCTYPE)
-    integer, dimension(:), allocatable :: n3dxy !(MCTYPE)
-    integer, dimension(:), allocatable :: n3dxz !(MCTYPE)
-    integer, dimension(:), allocatable :: n3dyz !(MCTYPE)
-    integer, dimension(:), allocatable :: n4s !(MCTYPE)
-    integer, dimension(:, :), allocatable :: n4p !(3,MCTYPE)
-    integer, dimension(:), allocatable :: n4fxxx !(MCTYPE)
-    integer, dimension(:), allocatable :: n4fyyy !(MCTYPE)
-    integer, dimension(:), allocatable :: n4fzzz !(MCTYPE)
-    integer, dimension(:), allocatable :: n4fxxy !(MCTYPE)
-    integer, dimension(:), allocatable :: n4fxxz !(MCTYPE)
-    integer, dimension(:), allocatable :: n4fyyx !(MCTYPE)
-    integer, dimension(:), allocatable :: n4fyyz !(MCTYPE)
-    integer, dimension(:), allocatable :: n4fzzx !(MCTYPE)
-    integer, dimension(:), allocatable :: n4fzzy !(MCTYPE)
-    integer, dimension(:), allocatable :: n4fxyz !(MCTYPE)
-    integer, dimension(:), allocatable :: nsa !(MCTYPE)
-    integer, dimension(:, :), allocatable :: npa !(3,MCTYPE)
-    integer, dimension(:), allocatable :: ndzra !(MCTYPE)
-    integer, dimension(:), allocatable :: ndz2a !(MCTYPE)
-    integer, dimension(:), allocatable :: ndxya !(MCTYPE)
-    integer, dimension(:), allocatable :: ndxza !(MCTYPE)
-    integer, dimension(:), allocatable :: ndx2a !(MCTYPE)
-    integer, dimension(:), allocatable :: ndyza !(MCTYPE)
+    integer, dimension(:), allocatable :: ns !(MCTYPE)
+    integer, dimension(:, :), allocatable :: np !(3,MCTYPE)
+    integer, dimension(:), allocatable :: ndxx !(MCTYPE)
+    integer, dimension(:), allocatable :: ndxy !(MCTYPE)
+    integer, dimension(:), allocatable :: ndxz !(MCTYPE)
+    integer, dimension(:), allocatable :: ndyy !(MCTYPE)
+    integer, dimension(:), allocatable :: ndyz !(MCTYPE)
+    integer, dimension(:), allocatable :: ndzz !(MCTYPE)
+    integer, dimension(:), allocatable :: nfxxx !(MCTYPE)
+    integer, dimension(:), allocatable :: nfxxy !(MCTYPE)
+    integer, dimension(:), allocatable :: nfxxz !(MCTYPE)
+    integer, dimension(:), allocatable :: nfxyy !(MCTYPE)
+    integer, dimension(:), allocatable :: nfxyz !(MCTYPE)
+    integer, dimension(:), allocatable :: nfxzz !(MCTYPE)
+    integer, dimension(:), allocatable :: nfyyy !(MCTYPE)
+    integer, dimension(:), allocatable :: nfyyz !(MCTYPE)
+    integer, dimension(:), allocatable :: nfyzz !(MCTYPE)
+    integer, dimension(:), allocatable :: nfzzz !(MCTYPE)
 
     private
-    public :: zex, betaq, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
-    public :: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
-    public :: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndz2a, ndxya, ndxza, ndyza
-    public :: ndx2a
+    public :: zex, betaq
+    public :: ns, np, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
+    public :: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
     public :: allocate_basis, deallocate_basis
     save
 contains
     subroutine allocate_basis()
 
-        ! if (.not. allocated(zex)) allocate (zex(MBASIS, MWF), source=0.0_dp)
-        ! if (.not. allocated(n1s)) allocate (n1s(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n2s)) allocate (n2s(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n2p)) allocate (n2p(3, MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n3s)) allocate (n3s(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n3p)) allocate (n3p(3, MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n3dzr)) allocate (n3dzr(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n3dx2)) allocate (n3dx2(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n3dxy)) allocate (n3dxy(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n3dxz)) allocate (n3dxz(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n3dyz)) allocate (n3dyz(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4s)) allocate (n4s(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4p)) allocate (n4p(3, MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4fxxx)) allocate (n4fxxx(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4fyyy)) allocate (n4fyyy(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4fzzz)) allocate (n4fzzz(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4fxxy)) allocate (n4fxxy(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4fxxz)) allocate (n4fxxz(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4fyyx)) allocate (n4fyyx(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4fyyz)) allocate (n4fyyz(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4fzzx)) allocate (n4fzzx(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4fzzy)) allocate (n4fzzy(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(n4fxyz)) allocate (n4fxyz(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(nsa)) allocate (nsa(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(npa)) allocate (npa(3, MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(ndzra)) allocate (ndzra(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(ndz2a)) allocate (ndz2a(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(ndxya)) allocate (ndxya(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(ndxza)) allocate (ndxza(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(ndx2a)) allocate (ndx2a(MCTYPE), source=0.0_dp)
-        ! if (.not. allocated(ndyza)) allocate (ndyza(MCTYPE), source=0.0_dp)
+        ! if (.not. allocated(zex)) allocate(zex(nbasis,MWF))
+        ! if (.not. allocated(ns)) allocate(ns(nctype), source=0)
+        ! if (.not. allocated(np)) allocate(np(3,nctype), source=0)
+        ! if (.not. allocated(ndxx)) allocate(ndxx(nctype), source=0)
+        ! if (.not. allocated(ndxy)) allocate(ndxy(nctype), source=0)
+        ! if (.not. allocated(ndxz)) allocate(ndxz(nctype), source=0)
+        ! if (.not. allocated(ndyy)) allocate(ndyy(nctype), source=0)
+        ! if (.not. allocated(ndyz)) allocate(ndyz(nctype), source=0)
+        ! if (.not. allocated(ndzz)) allocate(ndzz(nctype), source=0)
+        ! if (.not. allocated(nfxxx)) allocate(nfxxx(nctype), source=0)
+        ! if (.not. allocated(nfxxy)) allocate(nfxxy(nctype), source=0)
+        ! if (.not. allocated(nfxxz)) allocate(nfxxz(nctype), source=0)
+        ! if (.not. allocated(nfxyy)) allocate(nfxyy(nctype), source=0)
+        ! if (.not. allocated(nfxyz)) allocate(nfxyz(nctype), source=0)
+        ! if (.not. allocated(nfxzz)) allocate(nfxzz(nctype), source=0)
+        ! if (.not. allocated(nfyyy)) allocate(nfyyy(nctype), source=0)
+        ! if (.not. allocated(nfyyz)) allocate(nfyyz(nctype), source=0)
+        ! if (.not. allocated(nfyzz)) allocate(nfyzz(nctype), source=0)
+        ! if (.not. allocated(nfzzz)) allocate(nfzzz(nctype), source=0)
+
     end subroutine allocate_basis
 
     subroutine deallocate_basis()
-        if (allocated(ndyza)) deallocate (ndyza)
-        if (allocated(ndx2a)) deallocate (ndx2a)
-        if (allocated(ndxza)) deallocate (ndxza)
-        if (allocated(ndxya)) deallocate (ndxya)
-        if (allocated(ndz2a)) deallocate (ndz2a)
-        if (allocated(ndzra)) deallocate (ndzra)
-        if (allocated(npa)) deallocate (npa)
-        if (allocated(nsa)) deallocate (nsa)
-        if (allocated(n4fxyz)) deallocate (n4fxyz)
-        if (allocated(n4fzzy)) deallocate (n4fzzy)
-        if (allocated(n4fzzx)) deallocate (n4fzzx)
-        if (allocated(n4fyyz)) deallocate (n4fyyz)
-        if (allocated(n4fyyx)) deallocate (n4fyyx)
-        if (allocated(n4fxxz)) deallocate (n4fxxz)
-        if (allocated(n4fxxy)) deallocate (n4fxxy)
-        if (allocated(n4fzzz)) deallocate (n4fzzz)
-        if (allocated(n4fyyy)) deallocate (n4fyyy)
-        if (allocated(n4fxxx)) deallocate (n4fxxx)
-        if (allocated(n4p)) deallocate (n4p)
-        if (allocated(n4s)) deallocate (n4s)
-        if (allocated(n3dyz)) deallocate (n3dyz)
-        if (allocated(n3dxz)) deallocate (n3dxz)
-        if (allocated(n3dxy)) deallocate (n3dxy)
-        if (allocated(n3dx2)) deallocate (n3dx2)
-        if (allocated(n3dzr)) deallocate (n3dzr)
-        if (allocated(n3p)) deallocate (n3p)
-        if (allocated(n3s)) deallocate (n3s)
-        if (allocated(n2p)) deallocate (n2p)
-        if (allocated(n2s)) deallocate (n2s)
-        if (allocated(n1s)) deallocate (n1s)
+
+        if (allocated(nfzzz)) deallocate (nfzzz)
+        if (allocated(nfyzz)) deallocate (nfyzz)
+        if (allocated(nfyyz)) deallocate (nfyyz)
+        if (allocated(nfyyy)) deallocate (nfyyy)
+        if (allocated(nfxzz)) deallocate (nfxzz)
+        if (allocated(nfxyz)) deallocate (nfxyz)
+        if (allocated(nfxyy)) deallocate (nfxyy)
+        if (allocated(nfxxz)) deallocate (nfxxz)
+        if (allocated(nfxxy)) deallocate (nfxxy)
+        if (allocated(nfxxx)) deallocate (nfxxx)
+
+        if (allocated(ndzz)) deallocate (ndzz)
+        if (allocated(ndyz)) deallocate (ndyz)
+        if (allocated(ndyy)) deallocate (ndyy)
+        if (allocated(ndxz)) deallocate (ndxz)
+        if (allocated(ndxy)) deallocate (ndxy)
+        if (allocated(ndxx)) deallocate (ndxx)
+
+        if (allocated(np)) deallocate (np)
+        if (allocated(ns)) deallocate (ns)
+
         if (allocated(zex)) deallocate (zex)
     end subroutine deallocate_basis
 
