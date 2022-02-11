@@ -1913,7 +1913,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     use numbas_mod, only: MRWF
     use numbas, only: iwrwf, numr
     use numbas1, only: iwlbas, nbastyp
-    use basis, only: ns, np, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
+    use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
     use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
     use inputflags, only: ibasis_num
     use coefs, only: nbasis
@@ -1972,7 +1972,9 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     allocate (nbastyp(nctot),   source=0)
     allocate (ns(nctot),        source=0)
-    allocate (np(3, nctot),     source=0)
+    allocate (npx(nctot),       source=0)
+    allocate (npy(nctot),       source=0)
+    allocate (npz(nctot),       source=0)
     allocate (ndxx(nctot),      source=0)
     allocate (ndxy(nctot),      source=0)
     allocate (ndxz(nctot),      source=0)
@@ -1999,19 +2001,19 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     if (wid) then
         do i = 1, nctype + newghostype
-            read (iunit, *, iostat=iostat) ns(i), (np(j, i), j=1, 3), &
+            read (iunit, *, iostat=iostat) ns(i), npx(i), npy(i), npz(i), &
                 ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
                 nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
                 nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i)
             if (iostat /= 0) call fatal_error( "Error in reading basis num info file")
-            write (ounit, '(100i3)') ns(i), (np(j, i), j=1, 3), &
+            write (ounit, '(100i3)') ns(i), npx(i), npy(i), npz(i), &
             ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
             nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
             nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i)
 
             if (numr .gt. 0) then
                 nbastyp(i) =    ns(i) &
-                            +   np(1, i) + np(2, i) + np(3, i) &
+                            +   npx(i) + npy(i) + npz(i) &
                             +   ndxx(i)  + ndxy(i)  +  ndxz(i) + ndyy(i)  + ndyz(i) + ndzz(i) &
                             +   nfxxx(i) + nfxxy(i) + nfxxz(i) + nfxyy(i) + nfxyz(i) &
                             +   nfxzz(i) + nfyyy(i) + nfyyz(i) + nfyzz(i) + nfzzz(i)
@@ -2035,15 +2037,15 @@ subroutine read_basis_num_info_file(file_basis_num_info)
                     jj = jj + 1
                     iwlbas(jj, i) = 1
                 enddo
-                do j = 1, np(1, i)
+                do j = 1, npx(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 2
                 enddo
-                do j = 1, np(2, i)
+                do j = 1, npy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 3
                 enddo
-                do j = 1, np(3, i)
+                do j = 1, npz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 4
                 enddo
@@ -2122,7 +2124,9 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     call bcast(iwrwf)
     call bcast(nbastyp)
     call bcast(ns)
-    call bcast(np)
+    call bcast(npx)
+    call bcast(npy)
+    call bcast(npz)
     call bcast(ndxx)
     call bcast(ndxy)
     call bcast(ndxz)

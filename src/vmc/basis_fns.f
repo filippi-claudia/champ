@@ -119,9 +119,9 @@ c-------------------------------------------------------------------
           wfvn(1)=wfv(1)
         elseif(l.lt.5) then
           wfvn(1)=wfv(1)*ri
-        elseif(l.lt.10) then
+        elseif(l.lt.11) then
           wfvn(1)=wfv(1)*ri2
-        elseif(l.lt.20) then
+        elseif(l.lt.21) then
           ri3=ri*ri2
           wfvn(1)=wfv(1)*ri3
         else
@@ -141,10 +141,10 @@ c-------------------------------------------------------------------
         elseif(l.lt.5) then
           wfvn(2)=-wfv(1)*ri2+wfv(2)*ri
           wfvn(1)=wfv(1)*ri
-        elseif(l.lt.10) then
+        elseif(l.lt.11) then
           wfvn(2)=(-two*wfv(1)*ri+wfv(2))*ri2
           wfvn(1)=wfv(1)*ri2
-        elseif(l.lt.20) then
+        elseif(l.lt.21) then
           ri3=ri*ri2
           wfvn(2)=(-three*wfv(1)*ri+wfv(2))*ri3
           wfvn(1)=wfv(1)*ri3
@@ -170,11 +170,11 @@ c-------------------------------------------------------------------
           wfvn(3)=ri*(wfv(3)+two*ri*(wfv(1)*ri-wfv(2)))
           wfvn(2)=-wfv(1)*ri2+wfv(2)*ri
           wfvn(1)=wfv(1)*ri
-        elseif(l.lt.10) then
+        elseif(l.lt.11) then
           wfvn(3)=ri2*(wfv(3)+two*ri*(three*wfv(1)*ri-two*wfv(2)))
           wfvn(2)=(-two*wfv(1)*ri+wfv(2))*ri2
           wfvn(1)=wfv(1)*ri2
-        elseif(l.lt.20) then
+        elseif(l.lt.21) then
           ri3=ri*ri2
           wfvn(3)=ri3*(wfv(3)+six*ri*(two*wfv(1)*ri-wfv(2)))
           wfvn(2)=(-three*wfv(1)*ri+wfv(2))*ri3
@@ -198,9 +198,9 @@ c-------------------------------------------------------------------
             wfvn(4)=wfv(4)
           elseif(l.lt.5) then
             wfvn(4)=-ri*wfvn(3)+ri*(wfv(4)-two*ri*(two*wfv(1)*ri2-two*wfv(2)*ri+wfv(3)))
-          elseif(l.lt.10) then
+          elseif(l.lt.11) then
             wfvn(4)=-two*ri*wfvn(3)+ri2*(wfv(4)-two*ri*(six*wfv(1)*ri2-five*wfv(2)*ri+two*wfv(3)))
-          elseif(l.lt.20) then
+          elseif(l.lt.21) then
             wfvn(4)=-three*ri*wfvn(3)+ri3*(wfv(4)-six*ri*(four*wfv(1)*ri2-three*wfv(2)*ri+wfv(3)))
           else
            stop 'to fix for >f functions'

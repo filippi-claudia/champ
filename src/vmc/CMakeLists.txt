@@ -104,7 +104,7 @@ if (MPI_Fortran_FOUND)
     rotqua.f
     scale_dist.f
     sites.f
-    slm.f
+    slm.f90
     splfit.f
     spline2.f
     store_diag_hs.f
@@ -205,7 +205,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f
     ${CMAKE_CURRENT_SOURCE_DIR}/strech.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/slm.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/slm.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jassav.f
     ${CMAKE_CURRENT_SOURCE_DIR}/gammai.f
