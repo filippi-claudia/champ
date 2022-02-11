@@ -3,7 +3,7 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use forcest, only: fgcm2, fgcum
-      use forcepar, only: deltot, nforce
+      use forcepar, only: nforce
       use age, only: ioldest, ioldestmx
       use estcum, only: iblk
       use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
@@ -174,13 +174,11 @@ c xerr = current error of x
           fgcum(ifr)=fgcum(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))
           fgcm2(ifr)=fgcm2(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
           fgave=egcum(1)/wgcum(1)-egcum(ifr)/wgcum(ifr)
-          fgave=fgave/deltot(ifr)
           if(iblk.eq.1) then
             fgerr=0
             ifgerr=0
            else
             fgerr=errg(fgcum(ifr),fgcm2(ifr),1)
-            fgerr=fgerr/abs(deltot(ifr))
             ifgerr=nint(100000* fgerr)
           endif
           egave1=egcum(1)/wgcum(1)

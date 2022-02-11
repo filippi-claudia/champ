@@ -18,11 +18,6 @@ c 1st and 2nd derivs also calculated if ider=1.
       real(dp), dimension(4) :: wfv
       real(dp), parameter :: sixth = 1.d0/6.d0
 
-
-
-
-
-
       if(igrid(ic).eq.1)then
         xr=(r-r0(ic))/arg(ic)+1
         jx=int(xr)
@@ -53,7 +48,7 @@ c use small radius polynomial
         do ii=2,NCOEF
           wfv(1)=wfv(1)+ce(ii,irb,ic,iwf)*r**(ii-1)
         enddo
-        if(ider.eq.1) then
+        if(ider.ge.1) then
           wfv(2)=0.d0
           wfv(3)=0.d0
           wfv(4)=0.d0
@@ -68,7 +63,7 @@ c use small radius polynomial
 c use large radius exponential
 
         wfv(1)=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*r)
-        if(ider.eq.1) then
+        if(ider.ge.1) then
           wfv(2)=-ae(2,irb,ic,iwf)*wfv(1)
           wfv(3)=-ae(2,irb,ic,iwf)*wfv(2)
           wfv(4)=-ae(2,irb,ic,iwf)*wfv(3)
@@ -85,7 +80,7 @@ c cubic spline interpolation
         wfv(1)=aa*rwf(jx,irb,ic,iwf)+bb*rwf(jx+1,irb,ic,iwf)+
      &         cc*d2rwf(jx,irb,ic,iwf)+dd*d2rwf(jx+1,irb,ic,iwf)
 
-        if(ider.eq.1) then
+        if(ider.ge.1) then
           wfv(2)=(rwf(jx+1,irb,ic,iwf)-rwf(jx,irb,ic,iwf))*delhi+
      &    (-(3.d0*aa**2-1.d0)*d2rwf(jx,irb,ic,iwf)
      &     +(3.d0*bb**2-1.d0)*d2rwf(jx+1,irb,ic,iwf))*delh*sixth
