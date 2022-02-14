@@ -104,7 +104,6 @@ if (MPI_Fortran_FOUND)
     rotqua.f
     scale_dist.f
     sites.f
-    slm.f90
     splfit.f
     spline2.f
     store_diag_hs.f
@@ -138,6 +137,7 @@ if (MPI_Fortran_FOUND)
     read_bas_num.f90
     regterg.f90
     set_input_data.f90
+    slm.f90
 	  )
 
   set_property(

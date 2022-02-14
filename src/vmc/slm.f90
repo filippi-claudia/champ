@@ -23,8 +23,7 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
      implicit none
 
      integer :: i, j, l, ider
-     real(dp) :: cd1, cd2, cf, cf2, cf3
-     real(dp) :: cp, cs, ddy_lap
+     real(dp) :: ddy_lap
      real(dp) :: r2, y
      real(dp), dimension(3) :: rvec
      real(dp), dimension(3) :: dy

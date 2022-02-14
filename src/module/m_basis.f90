@@ -6,7 +6,9 @@ module basis
     !>
     !>  ns     = number of 1s functions at each center
     !>
-    !>  np     = number of 2p functions of each type at each center
+    !>  npx    = number of 2px functions of each type at each center
+    !>  npy    = number of 2py functions of each type at each center
+    !>  npz    = number of 2pz functions of each type at each center
     !>
     !>  ndxx   = number of XY d functions at each center
     !>  ndxy   = number of XZ d functions at each center
@@ -35,7 +37,9 @@ module basis
     real(dp), dimension(:, :), allocatable :: zex !(MBASIS,MWF)
     real(dp) :: betaq
     integer, dimension(:), allocatable :: ns !(MCTYPE)
-    integer, dimension(:, :), allocatable :: np !(3,MCTYPE)
+    integer, dimension(:), allocatable :: npx !(MCTYPE)
+    integer, dimension(:), allocatable :: npy !(MCTYPE)
+    integer, dimension(:), allocatable :: npz !(MCTYPE)
     integer, dimension(:), allocatable :: ndxx !(MCTYPE)
     integer, dimension(:), allocatable :: ndxy !(MCTYPE)
     integer, dimension(:), allocatable :: ndxz !(MCTYPE)
@@ -55,7 +59,7 @@ module basis
 
     private
     public :: zex, betaq
-    public :: ns, np, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
+    public :: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
     public :: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
     public :: allocate_basis, deallocate_basis
     save
@@ -104,7 +108,9 @@ contains
         if (allocated(ndxy)) deallocate (ndxy)
         if (allocated(ndxx)) deallocate (ndxx)
 
-        if (allocated(np)) deallocate (np)
+        if (allocated(npz)) deallocate (npz)
+        if (allocated(npy)) deallocate (npy)
+        if (allocated(npx)) deallocate (npx)
         if (allocated(ns)) deallocate (ns)
 
         if (allocated(zex)) deallocate (zex)
