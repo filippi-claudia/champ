@@ -54,16 +54,16 @@
       integer :: nf_id, nghostcentx, nprock, nq_id
       integer :: num, nupx, nwalk_id
       integer, dimension(4, 0:NPROCX) :: irn
-      integer, dimension(nctype_tot) :: nsx
-      integer, dimension(nctype_tot) :: npxx
-      integer, dimension(nctype_tot) :: npyx
-      integer, dimension(nctype_tot) :: npzx
-      integer, dimension(nctype_tot) :: ndxxx
-      integer, dimension(nctype_tot) :: ndxyx
-      integer, dimension(nctype_tot) :: ndxzx
-      integer, dimension(nctype_tot) :: ndyyx
-      integer, dimension(nctype_tot) :: ndyzx
-      integer, dimension(nctype_tot) :: ndzzx
+      integer, dimension(ncent_tot) :: nsx
+      integer, dimension(ncent_tot) :: npxx
+      integer, dimension(ncent_tot) :: npyx
+      integer, dimension(ncent_tot) :: npzx
+      integer, dimension(ncent_tot) :: ndxxx
+      integer, dimension(ncent_tot) :: ndxyx
+      integer, dimension(ncent_tot) :: ndxzx
+      integer, dimension(ncent_tot) :: ndyyx
+      integer, dimension(ncent_tot) :: ndyzx
+      integer, dimension(ncent_tot) :: ndzzx
       real(dp) :: different, fmt
       real(dp) :: fratio_id, hbx, taux, wq_id
       real(dp) :: wt_id, xold_dmc_id, xq_id, yq_id
