@@ -77,7 +77,6 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
                     ! Dxx type
                     y = cd2*rvec(1)*rvec(1)
                     dy(1) = 2.d0*cd2*rvec(1)
-                    ddy(1,1) = 2.d0*cd2
                     return
 
                case(6)
@@ -85,8 +84,6 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
                     y = cd2*rvec(1)*rvec(2)
                     dy(1) = cd2*rvec(2)
                     dy(2) = cd2*rvec(1)
-                    ddy(1,2) = cd2
-                    ddy(2,1) = cd2
                     return
 
                case(7)
@@ -94,15 +91,12 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
                     y = cd2*rvec(1)*rvec(3)
                     dy(1) = cd2*rvec(3)
                     dy(3) = cd2*rvec(1)
-                    ddy(1,3) = cd2
-                    ddy(3,1) = cd2
                     return
 
                case(8)
                     ! Dyy type
                     y = cd2*rvec(2)*rvec(2)
                     dy(2) = 2.d0*cd2*rvec(2)
-                    ddy(2,2) = 2.d0*cd2
                     return
 
                case(9)
@@ -110,15 +104,12 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
                     y = cd2*rvec(2)*rvec(3)
                     dy(2) = cd2*rvec(3)
                     dy(3) = cd2*rvec(2)
-                    ddy(2,3) = cd2
-                    ddy(3,2) = cd2
                     return
 
                case(10)
                     ! Dzz type
                     y = cd2*rvec(3)*rvec(3)
                     dy(3) = 2.d0*cd2*rvec(3)
-                    ddy(3,3) = 2.d0*cd2
                     return
 
                case(11)
