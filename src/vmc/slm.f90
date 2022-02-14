@@ -141,83 +141,62 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
                     ! Fxxz type
                     y=cf2*rvec(1)*rvec(1)*rvec(3)
                     dy(1)=cf2*2.0d0*rvec(1)*rvec(3)
-                    dy(3)=cf2*2.0d0*rvec(1)*rvec(1)
-                    ddy(1,3)=cf*rvec(3)
-                    ddy(3,1)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    dy(3)=cf2*rvec(1)*rvec(1)
+                    ddy_lap=cf2*2.0d0*rvec(3)
                     return
 
                case(14)
                     ! Fxyy type
-                    y=cf*rvec(1)*rvec(2)*rvec(2)
-                    dy(1)=cf*rvec(2)*rvec(2)
-                    dy(2)=cf*rvec(1)*rvec(1)
-                    ddy(1,2)=cf*rvec(2)
-                    ddy(2,1)=cf*rvec(2)
-                    ddy_lap=cf*rvec(2)
+                    y=cf2*rvec(1)*rvec(2)*rvec(2)
+                    dy(1)=cf2*rvec(2)*rvec(2)
+                    dy(2)=cf2*2.0d0*rvec(1)*rvec(2)
+                    ddy_lap=cf2*2.0d0*rvec(2)
                     return
 
                case(15)
                     ! Fxyz type
-                    y=cf*rvec(1)*rvec(2)*rvec(3)
-                    dy(1)=cf*rvec(3)*rvec(3)
-                    dy(2)=cf*rvec(2)*rvec(2)
-                    dy(3)=cf*rvec(1)*rvec(1)
-                    ddy(1,3)=cf*rvec(3)
-                    ddy(2,3)=cf*rvec(3)
-                    ddy(3,1)=cf*rvec(3)
-                    ddy(3,2)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    y=cf3*rvec(1)*rvec(2)*rvec(3)
+                    dy(1)=cf3*rvec(2)*rvec(3)
+                    dy(2)=cf3*rvec(1)*rvec(3)
+                    dy(3)=cf3*rvec(1)*rvec(2)
                     return
 
                case(16)
                     ! Fxzz type
-                    y=cf*rvec(1)*rvec(3)*rvec(3)
-                    dy(1)=cf*rvec(3)*rvec(3)
-                    dy(3)=cf*rvec(1)*rvec(1)
-                    ddy(1,3)=cf*rvec(3)
-                    ddy(3,1)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    y=cf2*rvec(1)*rvec(3)*rvec(3)
+                    dy(1)=cf2*rvec(3)*rvec(3)
+                    dy(3)=cf2*2.0d0*rvec(3)*rvec(1)
+                    ddy_lap=cf2*2.0d0*rvec(1)
                     return
 
                case(17)
                     ! Fyyy type
                     y=cf*rvec(2)*rvec(2)*rvec(2)
-                    dy(2)=cf*rvec(2)*rvec(2)
-                    dy(2)=cf*rvec(1)*rvec(1)
-                    ddy(2,2)=cf*rvec(2)
-                    ddy(2,1)=cf*rvec(2)
-                    ddy_lap=cf*rvec(2)
+                    dy(2)=cf*3.0d0*rvec(2)*rvec(2)
+                    ddy_lap=cf*6.0d0*rvec(2)
                     return
 
                case(18)
                     ! Fyyz type
-                    y=cf*rvec(2)*rvec(2)*rvec(3)
-                    dy(2)=cf*rvec(3)*rvec(3)
-                    dy(3)=cf*rvec(2)*rvec(2)
-                    ddy(2,3)=cf*rvec(3)
-                    ddy(3,2)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    y=cf2*rvec(2)*rvec(2)*rvec(3)
+                    dy(2)=cf2*2.0d0*rvec(3)*rvec(3)
+                    dy(3)=cf2*rvec(2)*rvec(2)
+                    ddy_lap=cf2*2.0d0*rvec(3)
                     return
 
                case(19)
                     ! Fyzz type
-                    y=cf*rvec(2)*rvec(3)*rvec(3)
-                    dy(2)=cf*rvec(3)*rvec(3)
-                    dy(3)=cf*rvec(2)*rvec(2)
-                    ddy(2,3)=cf*rvec(3)
-                    ddy(3,2)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    y=cf2*rvec(2)*rvec(3)*rvec(3)
+                    dy(2)=cf2*rvec(3)*rvec(3)
+                    dy(3)=cf2*2.0d0*rvec(3)*rvec(2)
+                    ddy_lap=cf2*2.0d0*rvec(2)
                     return
 
                case(20)
                     ! Fzzz type
                     y=cf*rvec(3)*rvec(3)*rvec(3)
-                    dy(3)=cf*rvec(3)*rvec(3)
-                    dy(3)=cf*rvec(2)*rvec(2)
-                    ddy(3,3)=cf*rvec(3)
-                    ddy(3,2)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    dy(3)=cf*3.0d0*rvec(3)*rvec(3)
+                    ddy_lap=cf*6.0d0*rvec(3)
                     return
 
                case default
@@ -302,6 +281,8 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
                     y=cf*rvec(1)*rvec(1)*rvec(1)
                     dy(1)=cf*3.d0*rvec(1)*rvec(1)
                     ddy_lap=cf*6.d0*rvec(1)
+                    ddy(1,1)=ddy_lap
+                    dlapy(1)=cf*6.0d0
                     return
 
                case(12)
@@ -310,89 +291,102 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
                     dy(1)=cf2*2.0d0*rvec(1)*rvec(2)
                     dy(2)=cf2*rvec(1)*rvec(1)
                     ddy_lap=cf2*2.0d0*rvec(2)
+                    ddy(1,1)=ddy_lap
+                    ddy(1,2)=cf2*2.0d0*rvec(1)
+                    ddy(2,1)=ddy(1,2)
+                    dlapy(2)=cf2*2.0d0
                     return
 
                case(13)
                     ! Fxxz type
                     y=cf2*rvec(1)*rvec(1)*rvec(3)
                     dy(1)=cf2*2.0d0*rvec(1)*rvec(3)
-                    dy(3)=cf2*2.0d0*rvec(1)*rvec(1)
-                    ddy(1,3)=cf*rvec(3)
-                    ddy(3,1)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    dy(3)=cf2*rvec(1)*rvec(1)
+                    ddy_lap=cf2*2.0d0*rvec(3)
+                    ddy(1,1)=ddy_lap
+                    ddy(1,3)=cf2*2.0d0*rvec(1)
+                    ddy(3,1)=ddy(1,3)
+                    dlapy(3)=cf2*2.0d0
                     return
 
                case(14)
                     ! Fxyy type
-                    y=cf*rvec(1)*rvec(2)*rvec(2)
-                    dy(1)=cf*rvec(2)*rvec(2)
-                    dy(2)=cf*rvec(1)*rvec(1)
-                    ddy(1,2)=cf*rvec(2)
-                    ddy(2,1)=cf*rvec(2)
-                    ddy_lap=cf*rvec(2)
+                    y=cf2*rvec(1)*rvec(2)*rvec(2)
+                    dy(1)=cf2*rvec(2)*rvec(2)
+                    dy(2)=cf2*2.0d0*rvec(1)*rvec(2)
+                    ddy_lap=cf2*2.0d0*rvec(1)
+                    ddy(2,2)=ddy_lap
+                    ddy(1,2)=cf2*2.0d0*rvec(2)
+                    ddy(2,1)=ddy(1,2)
+                    dlapy(1)=cf2*2.0d0
                     return
 
                case(15)
                     ! Fxyz type
-                    y=cf*rvec(1)*rvec(2)*rvec(3)
-                    dy(1)=cf*rvec(3)*rvec(3)
-                    dy(2)=cf*rvec(2)*rvec(2)
-                    dy(3)=cf*rvec(1)*rvec(1)
-                    ddy(1,3)=cf*rvec(3)
-                    ddy(2,3)=cf*rvec(3)
-                    ddy(3,1)=cf*rvec(3)
-                    ddy(3,2)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    y=cf3*rvec(1)*rvec(2)*rvec(3)
+                    dy(1)=cf3*rvec(2)*rvec(3)
+                    dy(2)=cf3*rvec(1)*rvec(3)
+                    dy(3)=cf3*rvec(1)*rvec(2)
+                    ddy(1,2)=cf3*rvec(3)
+                    ddy(2,1)=ddy(1,2)
+                    ddy(1,3)=cf3*rvec(2)
+                    ddy(3,1)=ddy(1,3)
+                    ddy(2,3)=cf3*rvec(1)
+                    ddy(3,2)=ddy(2,3)
                     return
 
                case(16)
                     ! Fxzz type
-                    y=cf*rvec(1)*rvec(3)*rvec(3)
-                    dy(1)=cf*rvec(3)*rvec(3)
-                    dy(3)=cf*rvec(1)*rvec(1)
-                    ddy(1,3)=cf*rvec(3)
-                    ddy(3,1)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    y=cf2*rvec(1)*rvec(3)*rvec(3)
+                    dy(1)=cf2*rvec(3)*rvec(3)
+                    dy(3)=cf2*2.0d0*rvec(3)*rvec(1)
+                    ddy_lap=cf2*2.0d0*rvec(1)
+                    ddy(3,3)=ddy_lap
+                    ddy(1,3)=cf2*2.0d0*rvec(3)
+                    ddy(3,1)=ddy(1,3)
+                    dlapy(1)=cf2*2.0d0
                     return
 
                case(17)
                     ! Fyyy type
                     y=cf*rvec(2)*rvec(2)*rvec(2)
-                    dy(2)=cf*rvec(2)*rvec(2)
-                    dy(2)=cf*rvec(1)*rvec(1)
-                    ddy(2,2)=cf*rvec(2)
-                    ddy(2,1)=cf*rvec(2)
-                    ddy_lap=cf*rvec(2)
+                    dy(2)=cf*3.0d0*rvec(2)*rvec(2)
+                    ddy_lap=cf*6.0d0*rvec(2)
+                    ddy(2,2)=ddy_lap
+                    dlapy(2)=cf*6.0d0
                     return
 
                case(18)
                     ! Fyyz type
-                    y=cf*rvec(2)*rvec(2)*rvec(3)
-                    dy(2)=cf*rvec(3)*rvec(3)
-                    dy(3)=cf*rvec(2)*rvec(2)
-                    ddy(2,3)=cf*rvec(3)
-                    ddy(3,2)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    y=cf2*rvec(2)*rvec(2)*rvec(3)
+                    dy(2)=cf2*2.0d0*rvec(2)*rvec(3)
+                    dy(3)=cf2*rvec(2)*rvec(2)
+                    ddy_lap=cf2*2.0d0*rvec(3)
+                    ddy(2,2)=ddy_lap
+                    ddy(2,3)=cf2*2.0d0*rvec(2)
+                    ddy(3,2)=ddy(2,3)
+                    dlapy(3)=cf2*2.0d0
                     return
 
                case(19)
                     ! Fyzz type
-                    y=cf*rvec(2)*rvec(3)*rvec(3)
-                    dy(2)=cf*rvec(3)*rvec(3)
-                    dy(3)=cf*rvec(2)*rvec(2)
-                    ddy(2,3)=cf*rvec(3)
-                    ddy(3,2)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    y=cf2*rvec(2)*rvec(3)*rvec(3)
+                    dy(2)=cf2*rvec(3)*rvec(3)
+                    dy(3)=cf2*rvec(3)*rvec(2)
+                    ddy_lap=cf2*2.0d0*rvec(2)
+                    ddy(3,3)=ddy_lap
+                    ddy(2,3)=cf2*2.0d0*rvec(3)
+                    ddy(3,2)=ddy(2,3)
+                    dlapy(2)=cf2*2.0d0
                     return
 
                case(20)
                     ! Fzzz type
                     y=cf*rvec(3)*rvec(3)*rvec(3)
                     dy(3)=cf*rvec(3)*rvec(3)
-                    dy(3)=cf*rvec(2)*rvec(2)
-                    ddy(3,3)=cf*rvec(3)
-                    ddy(3,2)=cf*rvec(3)
-                    ddy_lap=cf*rvec(3)
+                    ddy_lap=cf*6.0d0*rvec(3)
+                    ddy(3,3)=ddy_lap
+                    dlapy(3)=cf*6.0d0
                     return
 
                case default
