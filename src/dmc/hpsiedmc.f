@@ -14,7 +14,7 @@ c Written by Claudia Filippi
 
       integer :: i, ic, idum, iel, iflag
       integer :: iw
-      real(dp) :: psid(MSTATES), psij
+      real(dp) :: psid(*), psij
       real(dp), dimension(3) :: coord
       real(dp), dimension(3, nelec) :: x
 

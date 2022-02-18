@@ -11,16 +11,8 @@ c backward compatibility generate just 1.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use const, only: pi
       use precision_kinds, only: dp
+      use rannyu_mod, only: rannyu
       implicit none
-
-      interface
-         function rannyu(idum)
-          use precision_kinds, only: dp
-         implicit none
-         integer,intent(in) :: idum
-         real(dp) :: rannyu
-         end function rannyu
-      end interface
 
       real(dp) :: gauss
 

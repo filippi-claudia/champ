@@ -22,13 +22,17 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
 
       use strech_mod,     only: setup_force
       use dumper_mod,     only: dumper
-      use mc_configs_mod, only: mc_configs
-      use averages,       only: init_averages_index, average
+      use mc_configs_mod, only: mc_configs, mc_configs_write
+      use averages,       only: init_averages_index, average, average_write
       use init_mod,       only: init
       use zerest_mod,     only: zerest
       use rotqua_mod,     only: rotqua
       use error,          only: fatal_error
       use dmc_ps_mov1,    only: dmc_ps
+      use acues1_mod,     only: acues1
+      use acuest_mod,     only: acuest
+      use acues1_reduce_mod,only: acues1_reduce
+      use finwrt_mod,     only: finwrt
       implicit none
 
       integer :: i, j
