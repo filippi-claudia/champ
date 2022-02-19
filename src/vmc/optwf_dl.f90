@@ -2,7 +2,7 @@
 !        Optimization routine using ML inspired optimizers
 !------------------------------------------------------------------------------
 !> @author
-!> Claudia Filippi
+!> Jesse van Rhijn
 !
 ! DESCRIPTION:
 !> Opitmize the wave function parameters using the ADAM optimizer
@@ -42,6 +42,7 @@ use optwf_contrl, only: idl_flag
         use optwf_corsam, only: energy, energy_err
         use optwf_contrl, only: dparm_norm_min, nopt_iter
         use optwf_contrl, only: sr_adiag
+        use orbval, only: nadorb
 !        use contrl, only: nblk, nblk_max
         use control_vmc, only: vmc_nblk, vmc_nblk_max
         use method_opt, only: method
@@ -54,14 +55,15 @@ use optwf_contrl, only: idl_flag
         use sr_more, only: dscal
         implicit None
 
-        integer :: iter, iflag
+        integer :: iter, iflag, nadorb_sav
         real(dp) :: dparm_norm
         real(dp) :: denergy, energy_sav, denergy_err, energy_err_sav
         real(dp), dimension(mparm) :: parameters
 
         write (ounit, '(''Started dl optimization'')')
 
-        call set_nparms_tot
+        nadorb_sav=nadorb
+        call set_nparms
 
         call sanity_check()
         write (ounit, '(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
@@ -114,15 +116,15 @@ use optwf_contrl, only: idl_flag
 
         write (ounit, '(/,''Check last iteration'')')
 
-        ! Why ??!!
         ioptjas = 0
         ioptorb = 0
         ioptci = 0
 
-        call set_nparms_tot
+        call set_nparms
 
         call qmc
 
+        nadorb=nadorb_sav
         call write_wf(1, -1)
 
         call deallocate_arrays()

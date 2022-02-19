@@ -2,10 +2,10 @@
 !        Optimization routine using stochastic reconfiguration
 !------------------------------------------------------------------------------
 !> @author
-!> Claudia Filippi
+!> Saverio Moroni, Claudia Filippi
 !
 ! DESCRIPTION:
-!> Opitmize the wave function parameters using the ADAM optimizer
+!> Opitmize the wave function parameters using the SR method
 !
 ! URL           : https://github.com/filippi-claudia/champ
 !---------------------------------------------------------------------------
@@ -19,6 +19,7 @@ module optwf_sr_mod
     use control_vmc, only: vmc_nblk_max
     use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
     use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
+    use orbval, only: nadorb
     use contrl_file,    only: ounit
     use error, only: fatal_error
     use optwf_handle_wf, only : set_nparms_tot, save_nparms, test_solution_parm
@@ -78,17 +79,20 @@ contains
         use force_analy, only: alfgeo
         use optwf_contrl, only: nparm
         use method_opt, only: method
+        use orbval, only: nadorb
         use contrl_file,    only: ounit
 
         implicit none
 
         real(dp) :: adiag, denergy, alpha_omega, denergy_err, dparm_norm
-        real(dp) :: energy_sav, energy_err_sav, omega, sigma_sav
+        real(dp) :: energy_sav, energy_err_sav, omega, sigma, sigma_sav, nadorb_sav
         integer :: i, iflag, iter, miter
 
         sigma_sav = 0.0
         energy_sav= 0.0
         allocate (deltap(mparm*MSTATES), source=0.0_dp)
+
+        nadorb_sav = nadorb
 
         if (method .ne. 'sr_n') return
 
@@ -211,6 +215,7 @@ contains
 
         call qmc
 
+        nadorb_sav=nadorb
         call write_wf(1, -1)
         call write_geometry(-1)
 

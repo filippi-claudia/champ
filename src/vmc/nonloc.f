@@ -244,7 +244,7 @@ c-----------------------------------------------------------------------
 
       integer :: l
       real(dp) :: costh, yl0
-     
+
       yl0 = 0.0
 
       if(l.eq.1) then
@@ -267,8 +267,8 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: l
-      real(dp) :: costh, dyl0 
-      
+      real(dp) :: costh, dyl0
+
       dyl0 = 0.0
 
       if(l.eq.1) then
@@ -366,12 +366,15 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use orbval, only: ddorb, nadorb
       use precision_kinds, only: dp
       use grid3d_orbitals, only: spline_mo, lagrange_mose
-      use basis_fnse_v_mod, only: basis_fnse_v
+      use basis_fns_mod, only: basis_fns
       use pw_orbitals_e, only: orbitals_pwe
+      use method_opt, only: method
+      use optwf_contrl, only: ioptorb
       implicit none
 
-      integer :: ic, iel, ier, iforce_analy, ii
+      integer :: ic, iel, ider, ier, iforce_analy, ii
       integer :: iorb, k, m, m0
+      integer :: nadorb_sav
 
       real(dp), dimension(3) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
@@ -381,11 +384,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(3,ncent_tot,*) :: da_orbn
       real(dp), dimension(3) :: dtmp
 
+      nadorb_sav=nadorb
 
-
-
-
-
+      if(ioptorb.eq.0.or.method(1:3).ne.'lin') nadorb=0
 
       ! call resize_tensor(coef, norb+nadorb, 2)
 
@@ -409,7 +410,9 @@ c get the value from the 3d-interpolated orbitals
 
         if(ier.eq.1) then
 c get basis functions for electron iel
-          call basis_fnse_v(iel,rvec_en,r_en)
+          ider=0
+          if(iforce_analy.gt.0) ider=1
+          call basis_fns(iel,iel,rvec_en,r_en,ider)
 
 ! Vectorization dependent code selection
 #ifdef VECTORIZATION
@@ -423,7 +426,6 @@ c get basis functions for electron iel
 #else
           do iorb=1,norb+nadorb
             orbn(iorb)=0.d0
-c           do 25 m=1,nbasis
             do m0=1,n0_nbasis(iel)
               m=n0_ibasis(m0,iel)
               orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
@@ -432,7 +434,6 @@ c           do 25 m=1,nbasis
 #endif
 
           if(iforce_analy.gt.0) then
-
             do iorb=1,norb
               do ic=1,ncent
                 do k=1,3
@@ -466,6 +467,8 @@ c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,1,iel)
         call orbitals_pwe(iel,x,orbn)
 
       endif
+
+      nadorb = nadorb_sav
 
       return
       end

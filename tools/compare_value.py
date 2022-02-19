@@ -19,8 +19,8 @@ def compare_values(data, keyword, ref_values, tolerance=0.0, kw_col=0, val_col=N
     for l in data[::-1]:
         l = l.split()
         if l[kw_col:kw_col+len(keyword)] == keyword:
-            print("Comparing ", float(l[val_col]), " with ",  float(ref_values),  "+-" ,float(tolerance))
-            # The results should be within +- standard deviation (or two times the tolerance)
+            print('Comparing ', float(l[val_col]), ' with ',  float(ref_values),  '+-' ,float(tolerance))
+            print('The results should be within +- standard deviation (or two times the tolerance)')
             return ( abs(float(l[val_col]) - float(ref_values)) <= 2.0*float(tolerance) )
     print('Warning : keyword not found')
     return False
@@ -45,5 +45,5 @@ if __name__ == "__main__":
             print('Value Error : Reference and test values are different')
     else:
         # Strict comparison :: use assert
-        # assert(compare_values(data, args.keyword, args.values, args.tolerance))
-        compare_values(data, args.keyword, args.values, args.tolerance) # delete after testing. Ravindra
+        assert(compare_values(data, args.keyword, args.values, args.tolerance))
+        #compare_values(data, args.keyword, args.values, args.tolerance) # delete after testing. Ravindra

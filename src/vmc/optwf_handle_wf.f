@@ -60,18 +60,17 @@ c-----------------------------------------------------------------------
 
       use atom, only: nctype
       use jaspar, only: nspin1, nspin2
-      use jaspar3, only: a, b, c, scalek
+      use jaspar3, only: b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
-      use contr2, only: ianalyt_lap, ijas, ifock, isc
+      use contr2, only: ianalyt_lap, ijas, isc
       use precision_kinds, only: dp
 
       implicit none
 
       integer :: i, ict, index, iwf_fit, mparmja
       integer :: mparmjb, mparmjc
-      real(dp) :: a21
       character*50 fmt
       character*40 filename,filetype
 
@@ -82,13 +81,12 @@ c-----------------------------------------------------------------------
       open(2,file=filename,status='unknown')
 
       write(2,'(''&jastrow ianalyt_lap'',i2,'' ijas'',i2,'' isc'',i2,
-     &'' nspin1'',i2,'' nspin2'',i2,'' ifock'',i2)') ianalyt_lap,ijas,isc,nspin1,nspin2,ifock
+     &'' nspin1'',i2,'' nspin2'',i2)') ianalyt_lap,ijas,isc,nspin1,nspin2
       write(2,*)
       write(2,'(''jastrow_parameter'',i4)') iwf_fit
       write(2,'(3i3,a28)') norda,nordb,nordc,' norda,nordb,nordc'
 c tmp
-      a21=0
-      write(2,'(2f13.8,a15)') scalek(1),a21,' scalek,a21'
+      write(2,'(f13.8,a15)') scalek(1),' scalek'
       mparmja=2+max(0,norda-1)
       mparmjb=2+max(0,nordb-1)
       mparmjc=nterms4(nordc)
@@ -135,7 +133,6 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, index, iwf_fit, j
-      real(dp), dimension(nbasis) :: anorm
       character*40 filename,filetype
 
       ! call resize_tensor(coef, norb+nadorb, 2)
@@ -146,16 +143,9 @@ c-----------------------------------------------------------------------
       open(2,file=filename,status='unknown')
       write(2,'(''lcao '',3i4)') norb+nadorb,nbasis,iwf_fit
 
-      if(numr.gt.0) then
-        do i=1,norb+nadorb
-          write(2,'(1000e20.8)') (coef(j,i,1)/scalecoef,j=1,nbasis)
-        enddo
-      else
-        call basis_norm(1,anorm,1)
-        do i=1,norb+nadorb
-          write(2,'(1000e20.8)') (coef(j,i,1)/(anorm(j)*scalecoef),j=1,nbasis)
-        enddo
-      endif
+      do i=1,norb+nadorb
+        write(2,'(1000e20.8)') (coef(j,i,1)/scalecoef,j=1,nbasis)
+      enddo
 
       write(2,'(''end'')')
       close(2)
@@ -988,11 +978,12 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm, nreduced
       use ci000, only: nciterm
       use contrl_file,    only: ounit
+      use orbval, only: nadorb
       implicit none
 
-      integer :: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav
+      integer :: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav, nadorb_sav
 
-      save nparmj_sav,norbterm_sav,nciterm_sav,nparmd_sav,nreduced_sav
+      save nparmj_sav,norbterm_sav,nciterm_sav,nparmd_sav,nreduced_sav, nadorb_sav
 
       nparmj_sav=nparmj
       norbterm_sav=norbterm
@@ -1000,6 +991,7 @@ c-----------------------------------------------------------------------
       nciterm_sav=nciterm
       nparmd=max(nciterm-1,0)
       nparmd_sav=nparmd
+      nadorb_sav=nadorb
 
       write(ounit,'(''Saved max number of parameters, nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
       return
@@ -1011,11 +1003,13 @@ c-----------------------------------------------------------------------
       norbterm=norbterm_sav
       nreduced=nreduced_sav
       nciterm=nciterm_sav
+      nadorb=nadorb_sav
 
       if(ioptjas.eq.0) nparmj=0
       if(ioptorb.eq.0) then
         norbterm=0
         nreduced=0
+        nadorb=0
       endif
       if(ioptci.eq.0) then
         nciterm=0

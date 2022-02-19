@@ -127,7 +127,6 @@ c compute reference determinant, its derivatives, and kinetic contribution to B_
 
       call compute_bmatrices_kin
 
-
 c compute pseudo-potential contribution
 c nonloc_pot must be called after determinant because slater matrices are needed
 

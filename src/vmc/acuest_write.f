@@ -11,7 +11,7 @@ c routine to write out estimators for energy etc.
       use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2
       use estcum, only: ecum, iblk, pecum, tjfcum, tpbcum
       use estsum, only: acc
-      use forcepar, only: deltot, nforce
+      use forcepar, only: nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum
       use contr3, only: mode
@@ -108,8 +108,8 @@ c different meaning of last argument: 0 acuest, 1 finwrt
 
 
          else
-          fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))/deltot(ifr)
-          ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)/abs(deltot(ifr))
+          fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))
+          ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)
           iferr=nint(1.0d9*ferr)
           write(ounit,'(f10.5,f10.5,''('',i5,'')'',51x,f14.9,''('',i9,'')'')
      &    ') enow(istate,ifr),eave,ieerr,fave,iferr

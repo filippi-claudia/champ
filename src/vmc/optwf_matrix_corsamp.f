@@ -17,6 +17,7 @@ c written by Claudia Filippi
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
       use wfsec, only: iwftype, nwftype
+      use orbval, only: nadorb
 
 !     use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite
@@ -40,7 +41,7 @@ c written by Claudia Filippi
       implicit none
 
       integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk
-      integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iter
+      integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, nadorb_sav, iter
       integer :: iwft, k, k_demax, k_demin
       integer :: lwork, lwork_all_save, lwork_ci_save, nblk_sav
       real(dp) :: add_diag_sav, de_worse1, de_worse2
@@ -91,7 +92,6 @@ c Set up basis functions for test run
       endif
       call set_displace_zero(3)
 
-
 c Number of iterations
       write(ounit,'(/,''Number of iterations'',i3)') nopt_iter
       if(ioptci.eq.1.and.ioptjas.eq.0.and.ioptorb.eq.0) then
@@ -113,6 +113,7 @@ c Set dparm_norm_min
       ioptjas_sav=ioptjas
       ioptorb_sav=ioptorb
       ioptci_sav=ioptci
+      nadorb_sav=nadorb
       call save_nparms
 
       increase_nblk=0
@@ -518,6 +519,7 @@ c end of optimization loop
  970  ioptjas=ioptjas_sav
       ioptorb=ioptorb_sav
       ioptci=ioptci_sav
+      nadorb_sav=nadorb
 
       call write_wf_best
 

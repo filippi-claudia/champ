@@ -316,7 +316,7 @@ c-----------------------------------------------------------------------
       subroutine force_analy_fin(wcum,iblk,eave)
 
       use atom, only: ncent
-      use force_fin, only: da_energy_ave, da_energy_err
+      use force_fin, only: da_energy_ave
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
       use force_analy, only: iforce_analy
       use precision_kinds, only: dp
@@ -326,6 +326,7 @@ c-----------------------------------------------------------------------
       integer :: iblk, ic, k
       real(dp) :: eave, err, rtpass, wcum, x
       real(dp) :: x2
+      real(dp), dimension(3) :: da_energy_err
 
       err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 

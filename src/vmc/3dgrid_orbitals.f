@@ -82,9 +82,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       real(dp), dimension(3) :: r
       real(dp), dimension(3) :: df
 
-
-
-
       real*4  bc(MXNSTEP,MXNSTEP,3:8,nelec/2+1), wk(80*MXNSTEP3)
 
 c     Note:
@@ -98,8 +95,6 @@ c     yz_min = 2+3 = 5
 c     xy_max = 1+2+3 = 6
 c     xz_max = 1+3+3 = 7
 c     yz_max = 2+3+3 = 8
-
-
 
       iwf=1
       iok=1
@@ -176,7 +171,7 @@ c           r_en(1,ic)=dsqrt(r_en(1,ic))
 c          enddo
 c
 c          Calculate the value and the gradient of the orbital
-c          call basis_fnse(1,rvec_en,r_en)
+c          call basis_fns(1,1,rvec_en,r_en,1)
 c
 c          do iorb=1,norb
 c           orb_num_spl(1,ixyz(1),ixyz(2),ixyz(3),iorb)=0.d0
@@ -271,7 +266,7 @@ c         Check that no atom is exactly on a grid point
           endif
 
 c         Calculate the value of the orbital
-          call basis_fnse_v(1,rvec_en,r_en)
+          call basis_fns(1,1,rvec_en,r_en,0)
 
           do iorb=1,norb
            orb_num_spl(1,ix,iy,iz,iorb)=0.d0
@@ -285,7 +280,6 @@ c         Calculate the value of the orbital
          enddo
         enddo
        enddo
-
 
        nwk=80*nstep3d(1)*nstep3d(2)*nstep3d(3)
        ier=0
@@ -327,12 +321,11 @@ c DEBUG
            r_en(1,ic)=dsqrt(r_en(1,ic))
           enddo
 
-          call basis_fnse_v(1,rvec_en,r_en)
+          call basis_fns(1,1,rvec_en,r_en,0)
 
            value=0.
            do m=1,nbasis
-            value=value+
-     &        coef(m,norb,iwf)*phin(m,1)
+            value=value+coef(m,norb,iwf)*phin(m,1)
            enddo
 
         ddf=0.
@@ -540,7 +533,7 @@ c         Check that no atom is exactly on a grid point
           endif
 
 c         Calculate the grids
-          call basis_fnse_vgl(1,rvec_en,r_en)
+          call basis_fns(1,1,rvec_en,r_en,2)
 
           do iorb=1,norb
            orb_num_lag(1,ix,iy,iz,iorb)=0.d0
@@ -616,14 +609,13 @@ c DEBUG
            r_en(1,ic)=dsqrt(r_en(1,ic))
           enddo
 
-          call basis_fnse_vgl(1,rvec_en,r_en)
+          call basis_fns(1,1,rvec_en,r_en,0)
 
           value=0.
           do j=1,norb
            value2=0.
            do m=1,nbasis
-            value2=value2 +
-     &        coef(m,j,iwf)*phin(m,1)
+            value2=value2 + coef(m,j,iwf)*phin(m,1)
            enddo
            value = value + value2
           enddo

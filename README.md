@@ -14,8 +14,10 @@
  ____________________________________________________________________
 ```
 ------
+![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.png?raw=true)
 
-[![Intel OneAPI build](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel_fdfparser.yml/badge.svg?branch=new-parser)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel_fdfparser.yml)
+
+[![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ_intel_fdfparser.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ_intel_fdfparser.yml)
 
 [![CI using Doxygen generated doc](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml)
 
@@ -77,6 +79,15 @@ CHAMP relies on various other program packages:
 4. MOLCAS_Interface: recently added thanks to Csaba Daday and Monika Dash
 
 ------------------------------------------------------------------------
+
+### Requirements
+1. cmake >= 3.21
+2. gfortran/gcc >= 9.3.0 or Intel Fortran 2020 onwards
+3. BLAS/LAPACK or Intel MKL
+4. openMPI >= 3.0 or Intel MPI
+5. [Optional] TREXIO library >= 2.0.0
+6. [Optional] doxygen (for documentation)
+
 
 ### Installation Using CMake
 To install **Champ** using [cmake](https://cmake.org/) you need to run the following commands:
@@ -192,7 +203,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		mpirun -s all -np "n process" -machinefile "machinefile"
 		```
 * **Ubuntu desktop**:
-	- Ubuntu 18.04:
+	- Ubuntu 20:
 		Install the required packages:
 		```
 		sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev
@@ -209,8 +220,8 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```
 		mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
 		```
-	- Ubuntu 20.04:
-	We are still working on the CHAMP built on the latest Unbuntu release using a OpenMPI v4.X version. The code compiles but fails to run the test in parallel. For the time being, we urge the user to use an older version of Ubuntu, as shown above.
+	- Ubuntu 18:
+	Install the dependencies using conda instead of apt
 
 ------------------------------------------------------------------------
 

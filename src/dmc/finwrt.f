@@ -8,7 +8,7 @@ c routine to print out final results
       use vmc_mod, only: delri
       use const, only: etrial, ipr, nelec
       use forcest, only: fgcm2, fgcum
-      use forcepar, only: deltot, nforce
+      use forcepar, only: nforce
       use age, only: iage, ioldest, ioldestmx
       use contrl_per, only: iperiodic
       use contrldmc, only: idmc, nfprod, tau
@@ -277,8 +277,6 @@ c Done by Omar Valsson 2008-12-01
           ffin_grdnts(ifr-1)=fgave
           ferr_grdnts(ifr-1)=fgerr
         endif
-        fgave=fgave/deltot(ifr)
-        fgerr=fgerr/abs(deltot(ifr))
         write(ounit,'(''force config'',i2,t24,e19.10
      &  ,'' +-'',e16.8,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
         force(ifr)=fgave

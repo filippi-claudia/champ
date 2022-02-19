@@ -41,8 +41,6 @@ c Modified by A. Scemama
       real(dp), parameter :: half = 0.5d0
 
 
-
-
 c compute orbitals
       call orbitals(x,rvec_en,r_en)
 

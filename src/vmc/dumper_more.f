@@ -13,7 +13,6 @@ c job where it left off
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino, tjfo
       use config, only: vold, xnew, xold
-      use jaspar1, only: cjas1, cjas2
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use dets, only: cdet, ndet
@@ -91,7 +90,7 @@ c job where it left off
       integer, dimension(nctype_tot) :: ndxyax
       integer, dimension(nctype_tot) :: ndxzax
       integer, dimension(nctype_tot) :: ndyzax
-      real(dp) :: ajacob, cjas1x, cjas2x, deltarx
+      real(dp) :: ajacob, deltarx
       real(dp) :: deltatx, deltax, dist, distance_node
       real(dp) :: pecx, psidg, rnorm_nodes
       real(dp), dimension(nbasis,norb_tot) :: coefx
@@ -159,7 +158,6 @@ c job where it left off
       write(10) (ndyza(i),i=1,nctype)
       write(10) (cdet(i,1,1),i=1,ndet)
       write(10) ndet,nup,ndn
-      write(10) cjas1(1),cjas2(1)
 
       call optjas_dump(10)
       call optx_jas_orb_dump(10)
@@ -279,9 +277,6 @@ c-----------------------------------------------------------------------
       if (ndetx.ne.ndet) call fatal_error('STARTR: ndet')
       if (nupx.ne.nup) call fatal_error('STARTR: nup')
       if (ndnx.ne.ndn) call fatal_error('STARTR: ndn')
-      read(10) cjas1x,cjas2x
-      if (dabs(cjas1x-cjas1(1)).gt.small) call fatal_error('STARTR: cjas1')
-      if (dabs(cjas2x-cjas2(1)).gt.small) call fatal_error('STARTR: cjas2')
 
       call optjas_rstrt(10)
       call optx_jas_orb_rstrt(10)
