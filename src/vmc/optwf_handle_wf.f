@@ -128,7 +128,6 @@ c-----------------------------------------------------------------------
       use orbval, only: nadorb
       use inputflags, only: scalecoef
       use precision_kinds, only: dp
-      use basis_norm_mod, only: basis_norm
 
       implicit none
 

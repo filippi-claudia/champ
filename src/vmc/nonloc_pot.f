@@ -13,10 +13,8 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use pseudo, only: lpot, nloc, vps
 
       use precision_kinds, only: dp
-      use readps_mod, only: getvps
       use readps_gauss, only: getvps_gauss
       use readps_tm_mod, only: getvps_tm
-      use readps_champ_mod, only: getvps_champ
       use nonloc_mod, only: nonloc
       implicit none
 

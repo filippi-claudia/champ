@@ -2,7 +2,7 @@
 c Orbitals on a 3d grid with spline fit
 c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use error, only: fatal_error
-      use basis_fnse_vgl_mod, only: basis_fnse_vgl
+      use basis_fns_mod, only: basis_fns
       use grid3d, only: int_from_cart
       interface ! pspline interface
       subroutine fvtricub(ict,ivec,ivecd,
@@ -68,7 +68,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use distance_mod, only: r_en, rvec_en
       use precision_kinds, only: dp
       use contrl_file, only: ounit
-      use basis_fnse_v_mod, only: basis_fnse_v
+      use basis_fns_mod, only: basis_fns
       implicit none
 
       integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin

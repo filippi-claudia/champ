@@ -173,7 +173,6 @@ subroutine parser
   use verify_orbitals_mod, only: verify_orbitals
   use grid3d_orbitals,  only: setup_3dsplorb, setup_3dlagorb
   use grid3d,           only: setup_grid
-  use basis_norm_mod,   only: basis_norm
   use pw_read,          only: read_orb_pw_tm
   use read_bas_num_mod, only: read_bas_num
   use write_orb_loc_mod,only: write_orb_loc

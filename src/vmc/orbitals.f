@@ -32,8 +32,7 @@ c Modified by A. Scemama
       use contrl_file,    only: ounit
       use grid3d_orbitals, only: spline_mo
       use grid3d_orbitals, only: lagrange_mos, lagrange_mos_grad
-      use basis_fnse_vgl_mod, only: basis_fnse_vgl
-      use basis_fns_vgl_mod, only: basis_fns_vgl
+      use basis_fns_mod, only: basis_fns
       use pw_orbitals, only: orbitals_pw
       implicit none
 
@@ -318,8 +317,7 @@ c-------------------------------------------------------------------------------
       use precision_kinds, only: dp
       use grid3d_orbitals, only: spline_mo, lagrange_mose
       use grid3d_orbitals, only: lagrange_mos_grade
-      use basis_fnse_vg_mod, only: basis_fnse_vg
-      use basis_fnse_vgl_mod, only: basis_fnse_vgl
+      use basis_fns_mod, only: basis_fns
       use pw_orbitals, only: orbitals_pw_grade
 
       implicit none

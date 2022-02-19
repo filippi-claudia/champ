@@ -43,6 +43,7 @@ if (MPI_Fortran_FOUND)
     m_grdnt.f90
     m_allocation.f90
     m_state_avrg.f90
+    m_error.f90
     ${CMAKE_PARSER_DIR}/fdf.F90
     ${CMAKE_PARSER_DIR}/io_fdf.F90
     ${CMAKE_PARSER_DIR}/parse.F90

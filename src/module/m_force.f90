@@ -36,7 +36,8 @@ module wfsec
 
     private
     public :: iwf, iwftype, nwftype
-    public :: allocate_wfsec, deallocate_wfsec
+    !public :: allocate_wfsec
+    public :: deallocate_wfsec
     save
 contains
     ! subroutine allocate_wfsec()

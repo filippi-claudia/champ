@@ -72,7 +72,7 @@ contains
         use sr_mod, only: mparm
         use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
         use mstates_mod, only: MSTATES
-        use optwf_corsam, only: energy, energy_err, sigma
+        use optwf_corsam, only: energy, energy_err
         use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
         !use contrl, only: nblk
         use control_vmc, only: vmc_nblk
