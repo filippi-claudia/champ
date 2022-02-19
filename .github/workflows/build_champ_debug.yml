@@ -94,14 +94,15 @@ jobs:
       if: matrix.toolchain == 'gnu'
       run: |
         module load compiler-rt/latest compiler/latest mpi/latest
-        which mpif90
+        which mpifort
         /software/cmake-3.22.1/bin/cmake -H. -Bbuild \
-        -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
+        -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_BUILD_TYPE=DEBUG
         /software/cmake-3.22.1/bin/cmake --build build -- -j2
 
     - name: "Run all short tests"
       if: github.event_name != 'workflow_dispatch'
       run: |
+        module load mkl/latest mpi/latest 
         cd build
         ctest --output-on-failure -L short
 
