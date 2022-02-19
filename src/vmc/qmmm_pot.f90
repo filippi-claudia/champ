@@ -1,4 +1,5 @@
 module qmmm_pot
+  integer, parameter :: dbl = kind(1.0d0)
 contains
 !*********************************************************************
         subroutine qmmm_extpot_read
@@ -18,9 +19,10 @@ contains
         read (12,*) n_x,delta(1),tmp(2),tmp(3)
         read (12,*) n_y,tmp(1),delta(2),tmp(3)
         read (12,*) n_z,tmp(1),tmp(2),delta(3)
-        allocate(x_atom(n_atoms,3),id_atom(n_atoms), source=0.0_dp)
-        allocate(chrg_atom(n_atoms), source=0.0_dp)
-        allocate(pot(n_x,n_y,n_z), source=0.0_dp)
+        allocate(x_atom(n_atoms,3), source=0.0_dbl)
+        allocate(id_atom(n_atoms), source=0)
+        allocate(chrg_atom(n_atoms), source=0.0_dbl)
+        allocate(pot(n_x,n_y,n_z), source=0.0_dbl)
         do i=1,n_atoms
           read(12,*) id_atom(i),chrg_atom(i),x_atom(i,:)
         enddo
@@ -32,7 +34,7 @@ contains
           enddo
         enddo
 
-        allocate(xdata(n_x),ydata(n_y),zdata(n_z), source=0.0_dp)
+        allocate(xdata(n_x),ydata(n_y),zdata(n_z), source=0.0_dbl)
          do i = 1, n_x
             xdata(i) = x0(1)+dble(i-1)*delta(1)
 !           write (6,*) xdata(i)
@@ -84,8 +86,8 @@ contains
         nyknot=n_y+kyord
         nzknot=n_z+kzord
 
-        allocate(bscoef(n_x,n_y,n_z), source=0.0_dp)
-        allocate(xknot(nxknot),yknot(nyknot),zknot(nzknot), source=0.0_dp)
+        allocate(bscoef(n_x,n_y,n_z), source=0.0_dbl)
+        allocate(xknot(nxknot),yknot(nyknot),zknot(nzknot), source=0.0_dbl)
 
 !        generate knots
 
@@ -228,8 +230,8 @@ contains
         nyvec=83
         nzvec=83
 
-        allocate(value(nxvec,nyvec,nzvec), source=0.0_dp)
-        allocate(xvec(nxvec),yvec(nyvec),zvec(nzvec), source=0.0_dp)
+        allocate(value(nxvec,nyvec,nzvec), source=0.0_dbl)
+        allocate(xvec(nxvec),yvec(nyvec),zvec(nzvec), source=0.0_dbl)
 
 
 !     write (6,99999)
