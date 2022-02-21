@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 200
     strategy:
       matrix:
-        toolchain: ['intel','gnu']
+        toolchain: ['gnu']
       fail-fast: false
     defaults:
       run:
@@ -94,22 +94,45 @@ jobs:
       if: matrix.toolchain == 'gnu'
       run: |
         module load compiler-rt/latest compiler/latest mpi/latest
+        module load hdf5/1.12.1-intel trexio/2.0.0-intel
         which mpifort
         /software/cmake-3.22.1/bin/cmake -H. -Bbuild \
         -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_BUILD_TYPE=DEBUG
         /software/cmake-3.22.1/bin/cmake --build build -- -j2
 
-    - name: "Run all short tests"
+    - name: "Run all short tests gnu"
       if: github.event_name != 'workflow_dispatch'
+      if: matrix.toolchain == 'gnu'
       run: |
-        module load mkl/latest mpi/latest 
+        module load compiler-rt/latest compiler/latest  mpi/latest 
+        module load hdf5/1.12.1-intel trexio/2.0.0-intel
         cd build
         ctest --output-on-failure -L short
 
-    - name: "Run tests with tag: ${{ github.event.inputs.tags }}"
-      if: github.event_name == 'workflow_dispatch'
+    - name: "Run all short tests intel"
+      if: github.event_name != 'workflow_dispatch'
+      if: matrix.toolchain == 'intel'
       run: |
         module load compiler-rt/latest compiler/latest icc/latest mkl/latest mpi/latest python3/latest tbb/latest
+        module load hdf5/1.12.1-intel trexio/2.0.0-intel
+        cd build
+        ctest --output-on-failure -L short
+
+    - name: "Run gnu tests with tag: ${{ github.event.inputs.tags }}"
+      if: github.event_name == 'workflow_dispatch'
+      if: matrix.toolchain == 'gnu'
+      run: |
+        module load compiler-rt/latest compiler/latest  mpi/latest 
+        module load hdf5/1.12.1-intel trexio/2.0.0-intel
+        cd build
+        ctest --output-on-failure -L ${{ github.event.inputs.tags }}
+
+    - name: "Run intel tests with tag: ${{ github.event.inputs.tags }}"
+      if: github.event_name == 'workflow_dispatch'
+      if: matrix.toolchain == 'intel'
+      run: |
+        module load compiler-rt/latest compiler/latest icc/latest mkl/latest mpi/latest python3/latest tbb/latest
+        module load hdf5/1.12.1-intel trexio/2.0.0-intel
         cd build
         ctest --output-on-failure -L ${{ github.event.inputs.tags }}
 
