@@ -103,8 +103,8 @@ jobs:
     - name: "Run all short tests gnu"
       if: ( github.event_name != 'workflow_dispatch' ) && ( matrix.toolchain == 'gnu' )
       run: |
-#        module load compiler-rt/latest compiler/latest  mpi/latest 
-#        module load hdf5/1.12.1-intel trexio/2.0.0-intel
+        #        module load compiler-rt/latest compiler/latest  mpi/latest 
+        #        module load hdf5/1.12.1-intel trexio/2.0.0-intel
         cd build
         ctest --output-on-failure -L short
 
@@ -119,7 +119,7 @@ jobs:
     - name: "Run gnu tests with tag: ${{ github.event.inputs.tags }}"
       if: ( github.event_name != 'workflow_dispatch' ) && ( matrix.toolchain == 'gnu' )
       run: |
-#module load compiler-rt/latest compiler/latest  mpi/latest
+        #module load compiler-rt/latest compiler/latest  mpi/latest
         cd build
         ctest --output-on-failure -L ${{ github.event.inputs.tags }}
 
