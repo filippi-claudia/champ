@@ -101,8 +101,7 @@ jobs:
         /software/cmake-3.22.1/bin/cmake --build build -- -j2
 
     - name: "Run all short tests gnu"
-      if: github.event_name != 'workflow_dispatch'
-      if: matrix.toolchain == 'gnu'
+      if: ( github.event_name != 'workflow_dispatch' ) && ( matrix.toolchain == 'gnu' )
       run: |
         module load compiler-rt/latest compiler/latest  mpi/latest 
         module load hdf5/1.12.1-intel trexio/2.0.0-intel
@@ -110,8 +109,7 @@ jobs:
         ctest --output-on-failure -L short
 
     - name: "Run all short tests intel"
-      if: github.event_name != 'workflow_dispatch'
-      if: matrix.toolchain == 'intel'
+      if: ( github.event_name != 'workflow_dispatch' ) && ( matrix.toolchain == 'intel' )
       run: |
         module load compiler-rt/latest compiler/latest icc/latest mkl/latest mpi/latest python3/latest tbb/latest
         module load hdf5/1.12.1-intel trexio/2.0.0-intel
@@ -119,8 +117,7 @@ jobs:
         ctest --output-on-failure -L short
 
     - name: "Run gnu tests with tag: ${{ github.event.inputs.tags }}"
-      if: github.event_name == 'workflow_dispatch'
-      if: matrix.toolchain == 'gnu'
+      if: ( github.event_name != 'workflow_dispatch' ) && ( matrix.toolchain == 'gnu' )
       run: |
         module load compiler-rt/latest compiler/latest  mpi/latest 
         module load hdf5/1.12.1-intel trexio/2.0.0-intel
@@ -128,8 +125,7 @@ jobs:
         ctest --output-on-failure -L ${{ github.event.inputs.tags }}
 
     - name: "Run intel tests with tag: ${{ github.event.inputs.tags }}"
-      if: github.event_name == 'workflow_dispatch'
-      if: matrix.toolchain == 'intel'
+      if: ( github.event_name != 'workflow_dispatch' ) && ( matrix.toolchain == 'intel' )
       run: |
         module load compiler-rt/latest compiler/latest icc/latest mkl/latest mpi/latest python3/latest tbb/latest
         module load hdf5/1.12.1-intel trexio/2.0.0-intel
