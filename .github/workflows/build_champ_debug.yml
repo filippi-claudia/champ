@@ -93,8 +93,8 @@ jobs:
     - name: Compile with GNU
       if: matrix.toolchain == 'gnu'
       run: |
-#        module load compiler-rt/latest compiler/latest mpi/latest
-#        module load hdf5/1.12.1-intel trexio/2.0.0-intel
+        #        module load compiler-rt/latest compiler/latest mpi/latest
+        #        module load hdf5/1.12.1-intel trexio/2.0.0-intel
         which mpifort
         /software/cmake-3.22.1/bin/cmake -H. -Bbuild \
         -DCMAKE_Fortran_COMPILER=mpifort -DCMAKE_BUILD_TYPE=DEBUG
