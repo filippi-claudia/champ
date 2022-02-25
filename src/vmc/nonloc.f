@@ -219,12 +219,19 @@ c end loop quadrature points
 
 c elseif iskip
            elseif(i_vpsp.ne.0)then
-            do iq=1,nquad
-              t_vpsp(ic,iq,i)=0.d0
-              do iorb=1,norb
-                b_t(iorb,iq,ic,i)=0.d0
+            if(index(mode,'dmc').ne.0) then
+              do iq=1,nquad
+                t_vpsp(ic,iq,i)=0.d0
+                do iorb=1,norb
+                  b_t(iorb,iq,ic,i)=0.d0
+                enddo
               enddo
-            enddo
+            else
+              do iq=1,nquad
+                t_vpsp(ic,iq,i)=0.d0
+              enddo
+c endif dmc
+            endif 
 c endif iskip
           endif
 c end loop nelec, ncent

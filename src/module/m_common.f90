@@ -1,34 +1,3 @@
-module b_tmove
-    !> Arguments: b_t, iskip
-    use pseudo_mod, only: MPS_QUAD
-    use precision_kinds, only: dp
-    use vmc_mod, only: norb_tot
-
-    implicit none
-
-    real(dp), dimension(:, :, :, :), allocatable :: b_t !(norb_tot,MPS_QUAD,MCENT,MELEC)
-    integer, dimension(:, :), allocatable :: iskip !(MELEC,MCENT)
-
-    private
-    public :: b_t, iskip
-    public :: allocate_b_tmove, deallocate_b_tmove
-    save
-contains
-    subroutine allocate_b_tmove()
-        use const, only: nelec
-        use atom, only: ncent_tot
-        use pseudo_mod, only: MPS_QUAD
-        use vmc_mod, only: norb_tot
-        if (.not. allocated(b_t)) allocate (b_t(norb_tot, MPS_QUAD, ncent_tot, nelec), source=0.0_dp)
-        if (.not. allocated(iskip)) allocate (iskip(nelec, ncent_tot), source=0)
-    end subroutine allocate_b_tmove
-
-    subroutine deallocate_b_tmove()
-        if (allocated(iskip)) deallocate (iskip)
-        if (allocated(b_t)) deallocate (b_t)
-    end subroutine deallocate_b_tmove
-
-end module b_tmove
 
 module Bloc
     !> Arguments: b, tildem, xmat
@@ -685,6 +654,40 @@ contains
 
 end module qua
 
+module b_tmove
+    !> Arguments: b_t, iskip
+    use pseudo_mod, only: MPS_QUAD
+    use precision_kinds, only: dp
+    use vmc_mod, only: norb_tot
+
+    implicit none
+
+    real(dp), dimension(:, :, :, :), allocatable :: b_t !(norb_tot,MPS_QUAD,MCENT,MELEC)
+    integer, dimension(:, :), allocatable :: iskip !(MELEC,MCENT)
+
+    private
+    public :: b_t, iskip
+    public :: allocate_b_tmove, deallocate_b_tmove
+    save
+contains
+    subroutine allocate_b_tmove()
+        use const, only: nelec
+        use atom, only: ncent_tot
+        use vmc_mod, only: norb_tot
+        use qua, only: nquad
+        use contr3, only: mode
+        if(index(mode,'dmc').ne.0) then
+          if (.not. allocated(b_t)) allocate (b_t(norb_tot, nquad, ncent_tot, nelec), source=0.0_dp)
+        endif
+        if (.not. allocated(iskip)) allocate (iskip(nelec, ncent_tot), source=0)
+    end subroutine allocate_b_tmove
+
+    subroutine deallocate_b_tmove()
+        if (allocated(iskip)) deallocate (iskip)
+        if (allocated(b_t)) deallocate (b_t)
+    end subroutine deallocate_b_tmove
+
+end module b_tmove
 
 module scale_more
     !> Arguments: dd3
