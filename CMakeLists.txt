@@ -131,15 +131,15 @@ gitinfo(${CMAKE_SOURCE_DIR})
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-none" "-g"
-       "-Werror=implicit-interface" "-fimplicit-none" )
+       "-Werror=implicit-interface" "-fimplicit-none" 
+        "-Wall" "-Wextra"
+        "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
+        "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
+        "-Wno-c-binding-type" "-Wno-function-elimination")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
-        "-Wall" "-Wextra"
-        "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
-        "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
-        "-Wno-c-binding-type" "-Wno-function-elimination"
         )
   endif()
   if (TREXIO_FOUND)
