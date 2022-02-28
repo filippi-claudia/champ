@@ -222,7 +222,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```
 	- Ubuntu 18:
 	Install the dependencies using conda instead of apt
-	- WSL
+	- WSL:
 	The code also compiles on WSL.
 ------------------------------------------------------------------------
 
