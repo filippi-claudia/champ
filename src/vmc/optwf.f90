@@ -19,6 +19,9 @@ contains
         use optwf_mix_sa, only: optwf_mix
         use optwf_matrix_corsamp_mod, only: optwf_matrix_corsamp
         use vmc_f_mod,    only: vmc
+        use inputflags,  only: iase
+        use ase_mod,     only: export_forces
+        use mpiconf, only: wid
 
         implicit None
 
@@ -39,6 +42,12 @@ contains
         else
             call vmc
         endif
+
+        ! if ASE is enabled, export forces
+        if(iase.gt.0) then
+            if(wid) call export_forces()
+        endif
+    
 
     end subroutine optwf
 

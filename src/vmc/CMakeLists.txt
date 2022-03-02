@@ -117,6 +117,7 @@ if (MPI_Fortran_FOUND)
   file(GLOB VMC90_SOURCE
     array_resize_utils.f90
     array_utils.f90
+    ase.f90
     davidson.f90
     davidson_wrap.f90
     get_norbterm.f90

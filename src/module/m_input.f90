@@ -16,7 +16,7 @@ module inputflags
     !             ideterminants,ijastrow_parameter, ioptorb_def,ilattice,
     !             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
     !             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
-    !             ihessian_zmat, node_cutoff, eps_node_cutoff, scalecoef, iqmmm
+    !             ihessian_zmat, node_cutoff, eps_node_cutoff, scalecoef, iqmmm, iase
     use precision_kinds, only: dp
 
     implicit none
@@ -45,6 +45,7 @@ module inputflags
     real(dp) :: eps_node_cutoff, dmc_eps_node_cutoff
     real(dp) :: scalecoef
     integer :: iqmmm
+    integer :: iase
  ! dmc specifics:
     real(dp) :: enode_cutoff
     integer :: icircular
@@ -59,7 +60,7 @@ module inputflags
     public :: ihessian_zmat
     public :: node_cutoff, dmc_node_cutoff, eps_node_cutoff, dmc_eps_node_cutoff, scalecoef
     public :: enode_cutoff, icircular, idrifdifgfunc, ibranch_elec
-    public :: iqmmm
+    public :: iqmmm, iase
     save
 end module inputflags
 

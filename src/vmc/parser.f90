@@ -143,7 +143,7 @@ subroutine parser
   use inputflags, 	    only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
   use inputflags, 	    only: ici_def, iforces, icsfs, icharge_efield
   use inputflags, 	    only: imultideterminants, imodify_zmat, izmatrix_check
-  use inputflags,       only: ioptorb_mixvirt, ihessian_zmat, igradients
+  use inputflags,       only: ioptorb_mixvirt, ihessian_zmat, igradients, iase
   use basis,            only: zex
 
   use pot,              only: pot_nn
@@ -492,6 +492,8 @@ subroutine parser
   nquad         = fdf_get('nquad',6)
 ! %module qmmm (complete)
 !  iqmm          = fdf_get('iqmm',0)
+! %module ase
+  iase          = fdf_get('iase', 0)
 
 ! attention please. The following line moved here because next_max was not defined yet.
   nadorb        = fdf_get('nextorb', -1)  ! the default should be next_max
@@ -1298,6 +1300,16 @@ subroutine parser
   !   write(ounit,'(a)' ) "QMMM external potential "
   !   call qmmm_extpot_read
   ! endif
+
+! ASE MD
+  if(iase.gt.0) then
+    if(iforce_analy.eq.0) then
+      write(errunit,'(a)') "Error:: iase in enabled while iforce_analy is disabled!"
+      error stop
+    else
+      write(ounit, '(a)') " Coupling to ASE"
+    endif
+  endif
 
 ! Read in point charges
   if(iefield.gt.0) then
