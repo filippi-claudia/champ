@@ -36,6 +36,7 @@ if (MPI_Fortran_FOUND)
     m_efield.f90
     m_gradhess.f90
     m_optwf.f90
+    m_optwf_func.f90
     m_estimators.f90
     m_deriv.f90
     m_mixderiv.f90
