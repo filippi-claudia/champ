@@ -1096,7 +1096,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use ci001_blk, only: ci_o
       use ci003_blk, only: ci_e
       use method_opt, only: method
-      use optwf_sr_mod, only: izvzb, i_sr_rescale
+      use sr_mod, only: izvzb, i_sr_rescale
       use precision_kinds, only: dp
 
       implicit none
