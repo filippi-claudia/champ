@@ -26,6 +26,7 @@ module optwf_sr_mod
     use optwf_handle_wf, only : compute_parameters, write_wf, save_wf
     use optwf_handle_wf, only : set_nparms
     use optgeo_lib, only: write_geometry, compute_positions
+    use sr_mod, only: izvzb, i_sr_rescale
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -34,10 +35,9 @@ module optwf_sr_mod
 
     integer :: ioptjas_sav, ioptorb_sav, ioptci_sav, iforce_analy_sav
     real(dp), dimension(:), allocatable :: deltap
-    integer :: i_sr_rescale, izvzb
 
     private
-    public :: optwf_sr, sr, sr_hs, izvzb, i_sr_rescale
+    public :: optwf_sr, sr, sr_hs
     save
     interface !interface to LAPACK
 ! -- LAPACK routine (version 3.1) --

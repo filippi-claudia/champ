@@ -70,7 +70,7 @@ subroutine parser
   use optwf_contrl, 	  only: iuse_orbeigv
   use optwf_contrl, 	  only: no_active
   use optwf_parms, 	    only: nparmj
-  use optwf_sr_mod, 	  only: i_sr_rescale, izvzb
+  use sr_mod,           only: i_sr_rescale, izvzb
   use sa_weights, 	    only: iweight, nweight, weights
   use wfsec, 		        only: nwftype
   use zmatrix, 		      only: izmatrix

@@ -1061,7 +1061,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
       return
       end
 c-----------------------------------------------------------------------
-      subroutine optwf_store(l,wt,psid,energy, izvzb, i_sr_rescale)
+      subroutine optwf_store(l,wt,psid,energy)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use sr_mod, only: mparm, mconf
@@ -1126,10 +1126,8 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       nconf_n=l
 
-      if(method.eq.'sr_n'.and.i_sr_rescale.eq.0.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
-
+      if (.not.allocated(sr_ho)) return
 c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secular problem
-
       do j=1,nparmj
         tmp_ho(j)=denergy(j,1)+gvalue(j)*energy(1)
       enddo
