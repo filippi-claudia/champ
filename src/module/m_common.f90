@@ -28,14 +28,18 @@ contains
     subroutine allocate_Bloc()
         use const, only: nelec
         use coefs, only: norb
-        use atom, only: ncent_tot
+        use atom, only: ncent_tot, ncent
         use vmc_mod, only: norb_tot
+        use coefs, only: norb
         use optwf_parms, only: nparmj
+        use force_analy, only: iforce_analy
         if (.not. allocated(b)) allocate (b(norb_tot, nelec), source=0.0_dp)
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2), source=0.0_dp)
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2), source=0.0_dp)
-        if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb_tot, ncent_tot), source=0.0_dp)
-        if (.not. allocated(db)) allocate (db(3, nelec, norb_tot, ncent_tot), source=0.0_dp)
+        if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb, ncent), source=0.0_dp)
+        if(iforce_analy.ne.0) then
+          if (.not. allocated(db)) allocate (db(3, nelec, norb, ncent), source=0.0_dp)
+        endif
         if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj), source=0.0_dp)
     end subroutine allocate_Bloc
 

@@ -21,6 +21,7 @@ module optwf_sr_mod
     use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
     use orbval, only: nadorb
     use contrl_file,    only: ounit
+    use sr_mod, only: izvzb, i_sr_rescale
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -29,10 +30,9 @@ module optwf_sr_mod
 
     integer :: ioptjas_sav, ioptorb_sav, ioptci_sav, iforce_analy_sav
     real(dp), dimension(:), allocatable :: deltap
-    integer :: i_sr_rescale, izvzb
 
     private
-    public :: optwf_sr, sr, sr_hs, izvzb, i_sr_rescale
+    public :: optwf_sr, sr, sr_hs
     save
 
 contains

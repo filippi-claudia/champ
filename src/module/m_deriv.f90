@@ -83,11 +83,16 @@ module da_orbval
 contains
     subroutine allocate_da_orbval()
         use const, only: nelec
-        use atom, only: ncent_tot
+        use atom, only: ncent_tot, ncent
         use vmc_mod, only: norb_tot
-        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, norb_tot, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, norb_tot, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, norb_tot, ncent_tot), source=0.0_dp)
+        use coefs, only: norb
+        use force_analy, only: iforce_analy
+        if (.not. allocated(da_d2orb)) allocate (da_d2orb(1, 1, norb, ncent), source=0.0_dp)
+        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, 1, ncent), source=0.0_dp)
+        !if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, norb_tot, ncent_tot), source=0.0_dp)
+        if (iforce_analy.ne.0) then
+          if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, norb, ncent), source=0.0_dp)
+        endif
     end subroutine allocate_da_orbval
 
     subroutine deallocate_da_orbval()
