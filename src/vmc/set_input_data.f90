@@ -17,9 +17,9 @@ subroutine inputzex
 
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(zex)) allocate (zex(nbasis, 3), source=0.0_dp)
+        if (.not. allocated(zex)) allocate (zex(nbasis, 3))
     else
-        if (.not. allocated(zex)) allocate (zex(nbasis, nwftype), source=0.0_dp)
+        if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
     endif
 
     if (numr .eq. 0 .and. iperiodic .eq. 0) &
@@ -290,7 +290,7 @@ subroutine inputforces
     implicit none
     integer             :: i
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce), source=0.0_dp)
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
     if (.not. allocated(iwftype)) allocate (iwftype(nforce), source=0)
 
     call set_displace_zero(nforce)
@@ -321,9 +321,9 @@ subroutine inputdet()
     integer             :: iwft, k
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(cdet)) allocate(cdet(ndet,nstates,3), source=0.0_dp)
+        if (.not. allocated(cdet)) allocate(cdet(ndet,nstates,3))
     else
-        if (.not. allocated(cdet)) allocate(cdet(ndet,nstates,nwftype), source=0.0_dp)
+        if (.not. allocated(cdet)) allocate(cdet(ndet,nstates,nwftype))
     endif
 
     do iwft = 2, nwftype
@@ -347,9 +347,9 @@ subroutine inputlcao()
 
 
     if( (method(1:3) == 'lin')) then
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3), source=0.0_dp)
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
     else
-        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype), source=0.0_dp)
+        if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
     endif
 
     do iwft = 2, nwftype
@@ -388,16 +388,16 @@ subroutine inputjastrow()
       integer :: mparmjb, mparmjc
 
 
-    if (.not. allocated(scalek)) allocate (scalek(nwftype), source=0.0_dp)
+    if (.not. allocated(scalek)) allocate (scalek(nwftype))
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
         mparmja = 2 + max(0, norda - 1)
         mparmjb = 2 + max(0, nordb - 1)
         mparmjc = nterms4(nordc)
 
-        if (.not. allocated(a4)) allocate (a4(mparmja, nctype, nwftype), source=0.0_dp)
-        if (.not. allocated(b))  allocate (b(mparmjb, 2, nwftype), source=0.0_dp)
-        if (.not. allocated(c))  allocate (c(mparmjc, nctype, nwftype), source=0.0_dp)
+        if (.not. allocated(a4)) allocate (a4(mparmja, nctype, nwftype))
+        if (.not. allocated(b))  allocate (b(mparmjb, 2, nwftype))
+        if (.not. allocated(c))  allocate (c(mparmjc, nctype, nwftype))
 
         do iwft = 2, nwftype
             scalek(iwft) = scalek(1)
@@ -436,11 +436,11 @@ subroutine set_displace_zero(nforce_tmp)
     implicit none
     integer         :: i, j, nforce_tmp
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce_tmp), source=0.0_dp)
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce_tmp))
 
     delc = 0.d0
 
-    if (.not. allocated(sch_s)) allocate (sch_s(MCHS, nforce_tmp), source=0.0_dp)
+    if (.not. allocated(sch_s)) allocate (sch_s(MCHS, nforce_tmp))
 
     if (ipcm .eq. 3) then
         do i = 1, nforce_tmp
@@ -483,7 +483,7 @@ subroutine hessian_zmat_define
 
     integer :: ic, k
 
-    if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent), source=0.0_dp)
+    if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent))
 
     do ic = 1, ncent
         do k = 1, 3

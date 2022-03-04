@@ -44,12 +44,12 @@ module efield_mod
  contains
      subroutine allocate_efield_blk()
          use efield_mod, only: MCHARGES
-         if (.not. allocated(ascreen)) allocate (ascreen(MCHARGES), source=0.0_dp)
-         if (.not. allocated(bscreen)) allocate (bscreen(MCHARGES), source=0.0_dp)
-         if (.not. allocated(qcharge)) allocate (qcharge(MCHARGES), source=0.0_dp)
-         if (.not. allocated(xcharge)) allocate (xcharge(MCHARGES), source=0.0_dp)
-         if (.not. allocated(ycharge)) allocate (ycharge(MCHARGES), source=0.0_dp)
-         if (.not. allocated(zcharge)) allocate (zcharge(MCHARGES), source=0.0_dp)
+         if (.not. allocated(ascreen)) allocate (ascreen(MCHARGES))
+         if (.not. allocated(bscreen)) allocate (bscreen(MCHARGES))
+         if (.not. allocated(qcharge)) allocate (qcharge(MCHARGES))
+         if (.not. allocated(xcharge)) allocate (xcharge(MCHARGES))
+         if (.not. allocated(ycharge)) allocate (ycharge(MCHARGES))
+         if (.not. allocated(zcharge)) allocate (zcharge(MCHARGES))
      end subroutine allocate_efield_blk
 
      subroutine deallocate_efield_blk()

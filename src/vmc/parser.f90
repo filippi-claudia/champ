@@ -380,7 +380,7 @@ subroutine parser
   energy_tol    = fdf_get('energy_tol', 1.d-3)
   dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
 ! attention needed here.
-  if (.not. allocated(add_diag)) allocate (add_diag(MFORCE), source=0.0_dp)
+  if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
   add_diag(1)   = fdf_get('add_diag',1.d-6)
 
   nopt_iter     = fdf_get('nopt_iter',6)
@@ -785,7 +785,7 @@ subroutine parser
   endif
 
 
-! Jastrow derivative Parameters (either block or from a file) 
+! Jastrow derivative Parameters (either block or from a file)
 
   if ( fdf_load_defined('jastrow_der') ) then
     call read_jasderiv_file(file_jastrow_der)
@@ -988,9 +988,9 @@ subroutine parser
     error stop
   else
     if( (method(1:3) == 'lin')) then
-      if (.not. allocated(zex)) allocate (zex(nbasis, 3), source=0.0_dp)
+      if (.not. allocated(zex)) allocate (zex(nbasis, 3))
     else
-      if (.not. allocated(zex)) allocate (zex(nbasis, nwftype), source=0.0_dp)
+      if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
     endif
     zex = 1   ! debug check condition about numr == 0
   endif
@@ -1209,7 +1209,7 @@ subroutine parser
       write(ounit, *) "Guiding function: square root of sum of squares"
 
       ! Part which handles the guiding weights
-      if (.not. allocated(weights_g)) allocate (weights_g(MSTATES), source=0.0_dp)
+      if (.not. allocated(weights_g)) allocate (weights_g(MSTATES))
       if (.not. allocated(iweight_g)) allocate (iweight_g(MSTATES), source=0)
 
       if ( fdf_islreal('weights_guiding') .and. fdf_islist('weights_guiding') &
@@ -1320,7 +1320,7 @@ subroutine parser
 
 ! Part which handles the weights. needs modifications for guiding
 
-  if (.not. allocated(weights)) allocate (weights(MSTATES), source=0.0_dp)
+  if (.not. allocated(weights)) allocate (weights(MSTATES))
   if (.not. allocated(iweight)) allocate (iweight(MSTATES), source=0)
 
 
@@ -1554,7 +1554,7 @@ subroutine parser
         write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
       endif
 
-      if (.not. allocated(cent)) allocate(cent(3,ncent), source=0.0_dp)
+      if (.not. allocated(cent)) allocate(cent(3,ncent))
       if (.not. allocated(symbol)) allocate(symbol(ncent))
       if (.not. allocated(iwctype)) allocate(iwctype(ncent), source=0)
       if (.not. allocated(unique)) allocate(unique(ncent))
@@ -1588,7 +1588,7 @@ subroutine parser
     write(ounit,*)
 
     if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))
-    if (.not. allocated(znuc)) allocate(znuc(nctype), source=0.0_dp)
+    if (.not. allocated(znuc)) allocate(znuc(nctype))
 
     ! get the correspondence for each atom according to the rule defined for atomtypes
     do j = 1, ncent
@@ -1635,7 +1635,7 @@ subroutine parser
     type(parsed_line), pointer :: pline
     integer                    :: i,j,k
 
-    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce), source=0.0_dp)
+    if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
     if (.not. allocated(iwftype)) allocate (iwftype(nforce), source=0)
 
     i = 1; j = 1
@@ -1688,9 +1688,9 @@ subroutine parser
     nstates = fdf_bintegers(bfdf%mark%pline, 2) ! 2nd integer in the line
 
     if( (method(1:3) == 'lin')) then
-      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, 3), source=0.0_dp)
+      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, 3))
     else
-      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype), source=0.0_dp)
+      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
     endif
 
     j = 1
@@ -1734,9 +1734,9 @@ subroutine parser
 
 
     if( (method(1:3) == 'lin')) then
-      allocate (scalek(3), source=0.0_dp)
+      allocate (scalek(3))
     else
-      allocate (scalek(nwftype), source=0.0_dp)
+      allocate (scalek(nwftype))
     endif
 
     j = 1

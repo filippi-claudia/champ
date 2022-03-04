@@ -13,8 +13,8 @@ module sa_check
  contains
      subroutine allocate_sa_check()
          use mstates_mod, only: MSTATES
-         if (.not. allocated(energy_all)) allocate (energy_all(MSTATES), source=0.0_dp)
-         if (.not. allocated(energy_err_all)) allocate (energy_err_all(MSTATES), source=0.0_dp)
+         if (.not. allocated(energy_all)) allocate (energy_all(MSTATES))
+         if (.not. allocated(energy_err_all)) allocate (energy_err_all(MSTATES))
      end subroutine allocate_sa_check
 
      subroutine deallocate_sa_check()
@@ -41,7 +41,7 @@ module sa_check
      subroutine allocate_sa_weights()
          use mstates_mod, only: MSTATES
          if (.not. allocated(iweight)) allocate (iweight(MSTATES), source=0)
-         if (.not. allocated(weights)) allocate (weights(MSTATES), source=0.0_dp)
+         if (.not. allocated(weights)) allocate (weights(MSTATES))
      end subroutine allocate_sa_weights
 
      subroutine deallocate_sa_weights()

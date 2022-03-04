@@ -348,10 +348,10 @@ subroutine readps_gauss
     if (wid) close(iunit)
   enddo
 
-  if (.not. allocated(wq)) allocate (wq(MPS_QUAD), source=0.0_dp)
-  if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD), source=0.0_dp)
-  if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD), source=0.0_dp)
-  if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD), source=0.0_dp)
+  if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
+  if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
+  if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
+  if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
 
   call gesqua(nquad,xq0,yq0,zq0,wq)
   call bcast(wq)
@@ -439,7 +439,7 @@ end subroutine readps_gauss
 !     endif
 !     call bcast(label)
 !     ! max projector
-!     if (.not. allocated(lpot)) allocate (lpot(nctype), source=0.0_dp)
+!     if (.not. allocated(lpot)) allocate (lpot(nctype))
 
 !     if (wid) then
 !       read(iunit,*,iostat=iostat) lpot(ic)
@@ -495,10 +495,10 @@ end subroutine readps_gauss
 !     if (wid) close(iunit)
 !   enddo
 
-!   if (.not. allocated(wq)) allocate (wq(MPS_QUAD), source=0.0_dp)
-!   if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD), source=0.0_dp)
-!   if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD), source=0.0_dp)
-!   if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD), source=0.0_dp)
+!   if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
+!   if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
+!   if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
+!   if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
 
 !   call gesqua(nquad,xq0,yq0,zq0,wq)
 !   call bcast(wq)

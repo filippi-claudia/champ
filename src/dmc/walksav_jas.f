@@ -23,11 +23,11 @@ c Written by Claudia Filippi
       real(dp), allocatable, save :: fjow(:, :, :)
       real(dp), allocatable, save :: vjw(:, :, :)
 
-      if(.not.allocated(fsow)) allocate(fsow(nelec, nelec, MWALK), source=0.0_dp)
-      if(.not.allocated(fijow)) allocate(fijow(3, nelec, nelec, MWALK), source=0.0_dp)
-      if(.not.allocated(fsumow)) allocate(fsumow(MWALK), source=0.0_dp)
-      if(.not.allocated(fjow)) allocate(fjow(3, nelec, MWALK), source=0.0_dp)
-      if(.not.allocated(vjw)) allocate(vjw(3, nelec, MWALK), source=0.0_dp)
+      if(.not.allocated(fsow)) allocate(fsow(nelec, nelec, MWALK))
+      if(.not.allocated(fijow)) allocate(fijow(3, nelec, nelec, MWALK))
+      if(.not.allocated(fsumow)) allocate(fsumow(MWALK))
+      if(.not.allocated(fjow)) allocate(fjow(3, nelec, MWALK))
+      if(.not.allocated(vjw)) allocate(vjw(3, nelec, MWALK))
 
       ! real(dp), dimension(nelec, nelec, MWALK) :: fsow
       ! real(dp), dimension(3, nelec, nelec, MWALK) :: fijow

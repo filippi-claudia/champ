@@ -112,7 +112,7 @@ c-----------------------------------------------------------------------
       real(dp), allocatable, save :: ymat_tmp(:,:)
       if (.not. allocated(ymat_tmp)) then
         ! CF : ymat_tmp(norb_tot,nelec) max value of # orb
-        allocate(ymat_tmp(norb_tot,nelec), source=0.0_dp)
+        allocate(ymat_tmp(norb_tot,nelec))
       endif
 
       ! save ymat_tmp

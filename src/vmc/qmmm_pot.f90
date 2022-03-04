@@ -1,7 +1,7 @@
 !*********************************************************************
         subroutine qmmm_extpot_read
 !*********************************************************************
-     
+
         use qmmm_extpot
 
         implicit none
@@ -16,9 +16,9 @@
         read (12,*) n_x,delta(1),tmp(2),tmp(3)
         read (12,*) n_y,tmp(1),delta(2),tmp(3)
         read (12,*) n_z,tmp(1),tmp(2),delta(3)
-        allocate(x_atom(n_atoms,3),id_atom(n_atoms), source=0.0_dp)
-        allocate(chrg_atom(n_atoms), source=0.0_dp)
-        allocate(pot(n_x,n_y,n_z), source=0.0_dp)
+        allocate(x_atom(n_atoms,3),id_atom(n_atoms))
+        allocate(chrg_atom(n_atoms))
+        allocate(pot(n_x,n_y,n_z))
         do i=1,n_atoms
           read(12,*) id_atom(i),chrg_atom(i),x_atom(i,:)
         enddo
@@ -30,7 +30,7 @@
           enddo
         enddo
 
-        allocate(xdata(n_x),ydata(n_y),zdata(n_z), source=0.0_dp)
+        allocate(xdata(n_x),ydata(n_y),zdata(n_z))
          do i = 1, n_x
             xdata(i) = x0(1)+dble(i-1)*delta(1)
 !           write (6,*) xdata(i)
@@ -73,7 +73,7 @@
         use qmmm_bspline
 
         implicit none
-      
+
         kxord=5
         kyord=5
         kzord=5
@@ -82,8 +82,8 @@
         nyknot=n_y+kyord
         nzknot=n_z+kzord
 
-        allocate(bscoef(n_x,n_y,n_z), source=0.0_dp)
-        allocate(xknot(nxknot),yknot(nyknot),zknot(nzknot), source=0.0_dp)
+        allocate(bscoef(n_x,n_y,n_z))
+        allocate(xknot(nxknot),yknot(nyknot),zknot(nzknot))
 
 !        generate knots
 
@@ -92,7 +92,7 @@
         call dbsnak (n_z, zdata, kzord, zknot)
 
 !        interpolate
-        write (6,*) 
+        write (6,*)
         write (6,'(a50,3i4)') &
      &  'Interpolating with 3D spline of order (x,y,z) : '  &
      &  ,kxord,kyord,kzord
@@ -100,7 +100,7 @@
         call dbs3in (n_x, xdata, n_y, ydata, n_z, zdata, pot,  &
      &            n_x, n_y, kxord, kyord, kzord, xknot, yknot, zknot,   &
      &            bscoef)
-  
+
       write (6,*) 'Interpolation done.'
       nxcoef = n_x
       nycoef = n_y
@@ -156,16 +156,16 @@
        use qmmm_bspline
 
        implicit none
- 
+
        integer :: nelec
        double precision :: coord(3,nelec), ext_ene
        integer :: n
        double precision :: point(3),valuep(1,1,1),x1(3)
-     
+
        x1(1)=x0(1)+(n_x-1)*delta(1)
        x1(2)=x0(2)+(n_y-1)*delta(2)
        x1(3)=x0(3)+(n_z-1)*delta(3)
-       ext_ene=0.d0 
+       ext_ene=0.d0
        do n=1, nelec
          point(:)=coord(:,n)
 ! check if the point is out of the potential box
@@ -178,8 +178,8 @@
          else
            ext_ene = 0.d0
            nout = nout + 1
-         endif 
-       enddo 
+         endif
+       enddo
        ncount = ncount + 1
        ave = ave + ext_ene
        ave2 = ave2 + ext_ene*ext_ene
@@ -190,16 +190,16 @@
 !*********************************************************************
         subroutine qmmm_extpot_final(nelec)
 !*********************************************************************
-        
+
         use qmmm_extpot
 
         implicit none
-      
+
         integer :: nelec
- 
+
         ave = ave /ncount
         err = dsqrt((ave2/ncount - ave**2)/ncount)
-        
+
         write (6,'(''QMMM - 1proc Total number of N-el evaluations: '',i6)') ncount
         write (6,'(''QMMM - 1proc Rate of out of box electrons: '',d12.6)') nout/dble(ncount*nelec)
         write (6,'(''QMMM - 1proc Average QMC/MM energy: '',f12.6,''('',f12.6,'')'')') ave,err
@@ -219,19 +219,19 @@
 
         implicit none
         integer :: i
-      
+
         double precision ::  f
- 
+
         nxvec=83
         nyvec=83
         nzvec=83
 
-        allocate(value(nxvec,nyvec,nzvec), source=0.0_dp)
-        allocate(xvec(nxvec),yvec(nyvec),zvec(nzvec), source=0.0_dp)
+        allocate(value(nxvec,nyvec,nzvec))
+        allocate(xvec(nxvec),yvec(nyvec),zvec(nzvec))
 
 
 !     write (6,99999)
- 
+
         deltavec(1)=delta(1)/dble(nxvec-1)*dble(n_x-1)
         deltavec(2)=delta(2)/dble(nyvec-1)*dble(n_y-1)
         deltavec(3)=delta(3)/dble(nzvec-1)*dble(n_z-1)
