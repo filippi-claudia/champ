@@ -25,6 +25,7 @@
       use optgeo_lib, only: write_geometry, compute_positions
       use sr_more, only: dscal
       use optwf_lin_dav_more, only: lin_d
+      use inputflags,  only: iase
       implicit none
       interface
       subroutine qmc
@@ -142,7 +143,7 @@ c Here I should save the old parameters
 
           call save_wf
 
-          if(iforce_analy.gt.0) then
+          if(iforce_analy.gt.0 .AND. iase.eq.0) then
             call compute_positions
             call write_geometry(iter)
           endif

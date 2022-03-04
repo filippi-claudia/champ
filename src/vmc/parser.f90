@@ -1303,11 +1303,12 @@ subroutine parser
 
 ! ASE MD
   if(iase.gt.0) then
-    if(iforce_analy.eq.0) then
-      write(errunit,'(a)') "Error:: iase in enabled while iforce_analy is disabled!"
+    if(iforce_analy.eq.1) then
+      write(errunit,'(a)') "Error:: iase in enabled while iforce_analy is enabled!"
       error stop
     else
       write(ounit, '(a)') " Coupling to ASE"
+      iforce_analy = 1
     endif
   endif
 

@@ -33,6 +33,7 @@
       use optwf_lin_dav_extra, only: select_ci_root
       use optwf_lin_dav_more,  only: lin_d
       use sr_more, only: dscal
+      use inputflags,  only: iase
       implicit none
       interface
       subroutine qmc
@@ -237,10 +238,12 @@ c enddo micro_iteration
 
           call set_nparms
           call qmc
-
-          call compute_positions
-          call write_geometry(iter)
-
+          
+          if(iase.eq.0) then
+            call compute_positions
+            call write_geometry(iter)
+          endif
+          
           nstates=nstates_sav
           iguiding=iguiding_sav
 

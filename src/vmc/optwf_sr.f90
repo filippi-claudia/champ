@@ -26,6 +26,7 @@ module optwf_sr_mod
     use optwf_handle_wf, only : compute_parameters, write_wf, save_wf
     use optwf_handle_wf, only : set_nparms
     use optgeo_lib, only: write_geometry, compute_positions
+    use inputflags,  only: iase
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -181,8 +182,10 @@ contains
 
                     if (izvzb .gt. 0) call forces_zvzb(nparm)
 
-                    call compute_positions
-                    call write_geometry(iter)
+                    if(iase.eq.0) then
+                        call compute_positions
+                        call write_geometry(iter)
+                    endif
                 endif
             enddo
             ! enddo micro_iteration
