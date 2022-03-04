@@ -24,7 +24,7 @@ contains
         old_dim = size(arr, 1)
 
         if (old_dim .lt. new_size) then
-            allocate (tmp_array(new_size), source=0.0_dp)
+            allocate (tmp_array(new_size))
             tmp_array(:old_dim) = arr
 
             deallocate (arr)
@@ -56,11 +56,11 @@ contains
 
             if (index_dim .eq. 1) then
                 dim1 = new_size
-                allocate (tmp_array(dim1, dim2), source=0.0_dp)
+                allocate (tmp_array(dim1, dim2))
                 tmp_array(:old_dim, :) = mat
             else
                 dim2 = new_size
-                allocate (tmp_array(dim1, dim2), source=0.0_dp)
+                allocate (tmp_array(dim1, dim2))
                 tmp_array(:, :old_dim) = mat
             endif
 
@@ -94,15 +94,15 @@ contains
 
             if (index_dim .eq. 1) then
                 dim1 = new_size
-                allocate (tmp_array(dim1, dim2, dim3), source=0.0_dp)
+                allocate (tmp_array(dim1, dim2, dim3))
                 tmp_array(:old_dim, :, :) = mat
             elseif (index_dim .eq. 2) then
                 dim2 = new_size
-                allocate (tmp_array(dim1, dim2, dim3), source=0.0_dp)
+                allocate (tmp_array(dim1, dim2, dim3))
                 tmp_array(:, :old_dim, :) = mat
             else
                 dim3 = new_size
-                allocate (tmp_array(dim1, dim2, dim3), source=0.0_dp)
+                allocate (tmp_array(dim1, dim2, dim3))
                 tmp_array(:, :, :old_dim) = mat
             endif
 

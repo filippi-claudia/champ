@@ -60,7 +60,7 @@ contains
 
         sigma_sav = 0.0
         energy_sav= 0.0
-        allocate (deltap(mparm*MSTATES), source=0.0_dp)
+        allocate (deltap(mparm*MSTATES))
 
         nadorb_sav = nadorb
 
@@ -292,8 +292,8 @@ contains
         real(dp) :: sr_adiag, var, wts, aux, den, dum1, dum2, smax
         real(dp), parameter :: eps_eigval = 0.d0 ! in the original implementation, it is not used
 
-        allocate (obs_wtg(MSTATES), source=0.0_dp)
-        allocate (obs_wtg_tot(MSTATES), source=0.0_dp)
+        allocate (obs_wtg(MSTATES))
+        allocate (obs_wtg_tot(MSTATES))
 
         nstates_eff = nstates
         if (method .eq. 'lin_d') nstates_eff = 1
@@ -552,13 +552,13 @@ contains
         real(dp) :: dum, energy_tot, force_tmp, wtoti
 
         wtoti = 0.0
-        allocate (cloc(MTEST, MTEST), source=0.0_dp)
-        allocate (c(MTEST, MTEST), source=0.0_dp)
-        allocate (oloc(mparm), source=0.0_dp)
-        allocate (o(mparm), source=0.0_dp)
-        allocate (p(mparm), source=0.0_dp)
-        allocate (tmp(mparm), source=0.0_dp)
-        allocate (work(MTEST), source=0.0_dp)
+        allocate (cloc(MTEST, MTEST))
+        allocate (c(MTEST, MTEST))
+        allocate (oloc(mparm))
+        allocate (o(mparm))
+        allocate (p(mparm))
+        allocate (tmp(mparm))
+        allocate (work(MTEST))
         allocate (ipvt(MTEST), source=0)
 
         if (nparm .gt. MTEST) stop 'mparm>MTEST'

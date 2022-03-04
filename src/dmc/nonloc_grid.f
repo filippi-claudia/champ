@@ -157,7 +157,7 @@ c-----------------------------------------------------------------------
 
       real(dp), allocatable, save :: t_vpsp_save(:, :, :)
 
-      if (.not.allocated(t_vpsp_save)) allocate(t_vpsp_save(ncent_tot, MPS_QUAD, nelec), source=0.0_dp)
+      if (.not.allocated(t_vpsp_save)) allocate(t_vpsp_save(ncent_tot, MPS_QUAD, nelec))
 
       ! real(dp), dimension(ncent_tot, MPS_QUAD, nelec) :: t_vpsp_save
       ! save t_vpsp_save
