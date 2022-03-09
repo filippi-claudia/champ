@@ -54,7 +54,7 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
     real(dp), dimension(:, :), allocatable :: hpsi, spsi, ritz_vectors
 
 
-    allocate (ritz_vectors(nparm, nvec), source=0.0_dp)
+    allocate (ritz_vectors(nparm, nvec))
 
     call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
     call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)

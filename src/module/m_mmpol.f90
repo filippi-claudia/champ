@@ -38,8 +38,8 @@ module mmpol_dipol
 contains
     subroutine allocate_mmpol_dipol()
         use mmpol_mod, only: MCHMM
-        if (.not. allocated(alfa)) allocate (alfa(MCHMM), source=0.0_dp)
-        if (.not. allocated(dipo)) allocate (dipo(3, MCHMM), source=0.0_dp)
+        if (.not. allocated(alfa)) allocate (alfa(MCHMM))
+        if (.not. allocated(dipo)) allocate (dipo(3, MCHMM))
     end subroutine allocate_mmpol_dipol
 
     subroutine deallocate_mmpol_dipol()
@@ -65,7 +65,7 @@ module mmpol_hpsi
 contains
     subroutine allocate_mmpol_hpsi()
         use mmpol_mod, only: MCHMM
-        if (.not. allocated(eek_pol)) allocate (eek_pol(3, MCHMM), source=0.0_dp)
+        if (.not. allocated(eek_pol)) allocate (eek_pol(3, MCHMM))
     end subroutine allocate_mmpol_hpsi
 
     subroutine deallocate_mmpol_hpsi()
@@ -91,9 +91,9 @@ module mmpol_parms
 contains
     subroutine allocate_mmpol_parms()
         use mmpol_mod, only: MCHMM
-        if (.not. allocated(chmm)) allocate (chmm(MCHMM), source=0.0_dp)
-        if (.not. allocated(rqq)) allocate (rqq(MCHMM, MCHMM), source=0.0_dp)
-        if (.not. allocated(x_mmpol)) allocate (x_mmpol(3, MCHMM), source=0.0_dp)
+        if (.not. allocated(chmm)) allocate (chmm(MCHMM))
+        if (.not. allocated(rqq)) allocate (rqq(MCHMM, MCHMM))
+        if (.not. allocated(x_mmpol)) allocate (x_mmpol(3, MCHMM))
     end subroutine allocate_mmpol_parms
 
     subroutine deallocate_mmpol_parms()
@@ -129,12 +129,12 @@ module mmpolo
 contains
     subroutine allocate_mmpolo()
         use mmpol_mod, only: MCHMM
-        if (.not. allocated(eeko)) allocate(eeko(3, MCHMM), source=0.0_dp)
-        if (.not. allocated(cmmpolo_dmc)) allocate(cmmpolo_dmc(mwalk), source=0.0_dp)
-        if (.not. allocated(dmmpolo_dmc)) allocate(dmmpolo_dmc(mwalk), source=0.0_dp)
-        if (.not. allocated(eeko1)) allocate(eeko1(mwalk,MCHMM), source=0.0_dp)
-        if (.not. allocated(eeko2)) allocate(eeko2(mwalk,MCHMM), source=0.0_dp)
-        if (.not. allocated(eeko3)) allocate(eeko3(mwalk,MCHMM), source=0.0_dp)
+        if (.not. allocated(eeko)) allocate(eeko(3, MCHMM))
+        if (.not. allocated(cmmpolo_dmc)) allocate(cmmpolo_dmc(mwalk))
+        if (.not. allocated(dmmpolo_dmc)) allocate(dmmpolo_dmc(mwalk))
+        if (.not. allocated(eeko1)) allocate(eeko1(mwalk,MCHMM))
+        if (.not. allocated(eeko2)) allocate(eeko2(mwalk,MCHMM))
+        if (.not. allocated(eeko3)) allocate(eeko3(mwalk,MCHMM))
     end subroutine allocate_mmpolo
 
     subroutine deallocate_mmpolo()
@@ -163,8 +163,8 @@ module mmpol_ahpol
 contains
     subroutine allocate_mmpol_ahpol()
         use mmpol_mod, only: MCHMM
-        if (.not. allocated(ah_pol)) allocate (ah_pol(3*MCHMM, 3*MCHMM), source=0.0_dp)
-        if (.not. allocated(bh_pol)) allocate (bh_pol(3*MCHMM), source=0.0_dp)
+        if (.not. allocated(ah_pol)) allocate (ah_pol(3*MCHMM, 3*MCHMM))
+        if (.not. allocated(bh_pol)) allocate (bh_pol(3*MCHMM))
     end subroutine allocate_mmpol_ahpol
 
     subroutine deallocate_mmpol_ahpol()
@@ -202,13 +202,13 @@ module mmpol_averages
 contains
     subroutine allocate_mmpol_averages()
         use mmpol_mod, only: MCHMM
-        if (.not. allocated(eek1_cm2)) allocate (eek1_cm2(MCHMM), source=0.0_dp)
-        if (.not. allocated(eek1_cum)) allocate (eek1_cum(MCHMM), source=0.0_dp)
-        if (.not. allocated(eek2_cm2)) allocate (eek2_cm2(MCHMM), source=0.0_dp)
-        if (.not. allocated(eek2_cum)) allocate (eek2_cum(MCHMM), source=0.0_dp)
-        if (.not. allocated(eek3_cm2)) allocate (eek3_cm2(MCHMM), source=0.0_dp)
-        if (.not. allocated(eek3_cum)) allocate (eek3_cum(MCHMM), source=0.0_dp)
-        if (.not. allocated(eek_sum)) allocate (eek_sum(3, MCHMM), source=0.0_dp)
+        if (.not. allocated(eek1_cm2)) allocate (eek1_cm2(MCHMM))
+        if (.not. allocated(eek1_cum)) allocate (eek1_cum(MCHMM))
+        if (.not. allocated(eek2_cm2)) allocate (eek2_cm2(MCHMM))
+        if (.not. allocated(eek2_cum)) allocate (eek2_cum(MCHMM))
+        if (.not. allocated(eek3_cm2)) allocate (eek3_cm2(MCHMM))
+        if (.not. allocated(eek3_cum)) allocate (eek3_cum(MCHMM))
+        if (.not. allocated(eek_sum)) allocate (eek_sum(3, MCHMM))
     end subroutine allocate_mmpol_averages
 
     subroutine deallocate_mmpol_averages()
@@ -240,8 +240,8 @@ module mmpol_fdc
 contains
     subroutine allocate_mmpol_fdc()
         use mmpol_mod, only: MCHMM
-        if (.not. allocated(screen1)) allocate (screen1(MCHMM, MCHMM), source=0.0_dp)
-        if (.not. allocated(screen2)) allocate (screen2(MCHMM, MCHMM), source=0.0_dp)
+        if (.not. allocated(screen1)) allocate (screen1(MCHMM, MCHMM))
+        if (.not. allocated(screen2)) allocate (screen2(MCHMM, MCHMM))
     end subroutine allocate_mmpol_fdc
 
     subroutine deallocate_mmpol_fdc()
@@ -266,8 +266,8 @@ module mmpol_field
 contains
     subroutine allocate_mmpol_field()
         use mmpol_mod, only: MCHMM
-        if (.not. allocated(enk_pol)) allocate (enk_pol(3, MCHMM), source=0.0_dp)
-        if (.not. allocated(eqk_pol)) allocate (eqk_pol(3, MCHMM), source=0.0_dp)
+        if (.not. allocated(enk_pol)) allocate (enk_pol(3, MCHMM))
+        if (.not. allocated(eqk_pol)) allocate (eqk_pol(3, MCHMM))
     end subroutine allocate_mmpol_field
 
     subroutine deallocate_mmpol_field()

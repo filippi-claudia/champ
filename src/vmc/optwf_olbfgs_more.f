@@ -20,8 +20,8 @@
       real(dp), dimension(1), allocatable :: parameters_old(:)
       real(dp), dimension(1), allocatable :: parms_lbfgs(:)
 
-      allocate(parameters_old(nparm), source=0.0_dp)
-      allocate(parms_lbfgs(nparm), source=0.0_dp)
+      allocate(parameters_old(nparm))
+      allocate(parms_lbfgs(nparm))
 
       parms_lbfgs = parameters(1:nparm)
       parameters_old = parms_lbfgs
@@ -30,7 +30,7 @@
 c we only need h_sr = - grad_parm E
       call sr_hs(nparm,sr_adiag)
 
-      if(idtask.eq.0) then 
+      if(idtask.eq.0) then
 c update stored Hessian approximation
         call update_hessian(parms_lbfgs, -h_sr)
 

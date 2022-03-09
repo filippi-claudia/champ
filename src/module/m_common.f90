@@ -13,14 +13,13 @@ module Bloc
 
     !> Former Bloc_da
     real(dp), dimension(:, :, :, :), allocatable :: b_da !(3,MELEC,norb_tot,MCENT)
-    real(dp), dimension(:, :, :, :), allocatable :: db !(3,MELEC,norb_tot,MCENT)
 
     !> former Bloc_dj
     real(dp), dimension(:, :, :), allocatable :: b_dj !(norb_tot,MELEC,nparmj)
 
     private
     public :: b, tildem, xmat
-    public :: b_da, db
+    public :: b_da
     public :: b_dj
     public :: allocate_Bloc, deallocate_Bloc
     save
@@ -32,20 +31,15 @@ contains
         use vmc_mod, only: norb_tot
         use coefs, only: norb
         use optwf_parms, only: nparmj
-        use force_analy, only: iforce_analy
-        if (.not. allocated(b)) allocate (b(norb_tot, nelec), source=0.0_dp)
-        if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2), source=0.0_dp)
-        if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2), source=0.0_dp)
-        if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb, ncent), source=0.0_dp)
-        if(iforce_analy.ne.0) then
-          if (.not. allocated(db)) allocate (db(3, nelec, norb, ncent), source=0.0_dp)
-        endif
-        if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj), source=0.0_dp)
+        if (.not. allocated(b)) allocate (b(norb_tot, nelec))
+        if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2))
+        if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
+        if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb_tot, ncent_tot))
+        if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj))
     end subroutine allocate_Bloc
 
     subroutine deallocate_Bloc()
         if (allocated(b_dj)) deallocate (b_dj)
-        if (allocated(db)) deallocate (db)
         if (allocated(b_da)) deallocate (b_da)
         if (allocated(xmat)) deallocate (xmat)
         if (allocated(tildem)) deallocate (tildem)
@@ -87,7 +81,7 @@ contains
         use const, only: nelec
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
-        if (.not. allocated(t_vpsp)) allocate (t_vpsp(ncent_tot, MPS_QUAD, nelec), source=0.0_dp)
+        if (.not. allocated(t_vpsp)) allocate (t_vpsp(ncent_tot, MPS_QUAD, nelec))
     end subroutine allocate_casula
 
     subroutine deallocate_casula()
@@ -121,11 +115,11 @@ contains
         use const, only: nelec
         use atom, only: ncent_tot
         use vmc_mod, only: nmat_dim2
-        if (.not. allocated(r_en)) allocate (r_en(nelec, ncent_tot), source=0.0_dp)
-        if (.not. allocated(rvec_en)) allocate (rvec_en(3, nelec, ncent_tot), source=0.0_dp)
-        if (.not. allocated(r_ee)) allocate (r_ee(nmat_dim2), source=0.0_dp)
-        if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, nmat_dim2), source=0.0_dp)
-        if (.not. allocated(rshift)) allocate (rshift(3, nelec, ncent_tot), source=0.0_dp)
+        if (.not. allocated(r_en)) allocate (r_en(nelec, ncent_tot))
+        if (.not. allocated(rvec_en)) allocate (rvec_en(3, nelec, ncent_tot))
+        if (.not. allocated(r_ee)) allocate (r_ee(nmat_dim2))
+        if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, nmat_dim2))
+        if (.not. allocated(rshift)) allocate (rshift(3, nelec, ncent_tot))
     end subroutine allocate_distance_mod
 
     subroutine deallocate_distance_mod()
@@ -158,11 +152,11 @@ contains
     subroutine allocate_distances_sav()
         use const, only: nelec
         use atom, only: ncent_tot
-        if (.not. allocated(r_ee_sav)) allocate (r_ee_sav(nelec), source=0.0_dp)
-        if (.not. allocated(r_en_sav)) allocate (r_en_sav(ncent_tot), source=0.0_dp)
-        if (.not. allocated(rshift_sav)) allocate (rshift_sav(3, ncent_tot), source=0.0_dp)
-        if (.not. allocated(rvec_ee_sav)) allocate (rvec_ee_sav(3, nelec), source=0.0_dp)
-        if (.not. allocated(rvec_en_sav)) allocate (rvec_en_sav(3, ncent_tot), source=0.0_dp)
+        if (.not. allocated(r_ee_sav)) allocate (r_ee_sav(nelec))
+        if (.not. allocated(r_en_sav)) allocate (r_en_sav(ncent_tot))
+        if (.not. allocated(rshift_sav)) allocate (rshift_sav(3, ncent_tot))
+        if (.not. allocated(rvec_ee_sav)) allocate (rvec_ee_sav(3, nelec))
+        if (.not. allocated(rvec_en_sav)) allocate (rvec_en_sav(3, ncent_tot))
     end subroutine allocate_distances_sav
 
     subroutine deallocate_distances_sav()
@@ -232,8 +226,8 @@ contains
     subroutine allocate_gauss_ecp()
         use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MGAUSS
-        if (.not. allocated(ecp_coef)) allocate (ecp_coef(MGAUSS, MPS_L, nctype_tot), source=0.0_dp)
-        if (.not. allocated(ecp_exponent)) allocate (ecp_exponent(MGAUSS, MPS_L, nctype_tot), source=0.0_dp)
+        if (.not. allocated(ecp_coef)) allocate (ecp_coef(MGAUSS, MPS_L, nctype_tot))
+        if (.not. allocated(ecp_exponent)) allocate (ecp_exponent(MGAUSS, MPS_L, nctype_tot))
         if (.not. allocated(necp_power)) allocate (necp_power(MGAUSS, MPS_L, nctype_tot), source=0)
         if (.not. allocated(necp_term)) allocate (necp_term(MPS_L, nctype_tot), source=0)
     end subroutine allocate_gauss_ecp
@@ -294,8 +288,8 @@ module jd_scratch
 contains
     subroutine allocate_jd_scratch()
         use sr_mod, only: mparm
-        if (.not. allocated(qr)) allocate (qr(mparm), source=0.0_dp)
-        if (.not. allocated(rr)) allocate (rr(mparm), source=0.0_dp)
+        if (.not. allocated(qr)) allocate (qr(mparm))
+        if (.not. allocated(rr)) allocate (rr(mparm))
     end subroutine allocate_jd_scratch
 
     subroutine deallocate_jd_scratch()
@@ -322,8 +316,8 @@ module linear_norm
 contains
     subroutine allocate_linear_norm()
         use optci, only: mxciterm
-        if (.not. allocated(oav)) allocate (oav(mxciterm), source=0.0_dp)
-        if (.not. allocated(ci_oav)) allocate (ci_oav(mxciterm), source=0.0_dp)
+        if (.not. allocated(oav)) allocate (oav(mxciterm))
+        if (.not. allocated(ci_oav)) allocate (ci_oav(mxciterm))
     end subroutine allocate_linear_norm
 
     subroutine deallocate_linear_norm()
@@ -393,8 +387,8 @@ contains
         use coefs, only: norb
         use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aa)) allocate (aa(nelec, norb_tot, 2), source=0.0_dp)
-        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, ndet, 2), source=0.0_dp)
+        if (.not. allocated(aa)) allocate (aa(nelec, norb_tot, 2))
+        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, ndet, 2))
     end subroutine allocate_multimat
 
     subroutine deallocate_multimat()
@@ -423,8 +417,8 @@ contains
         use dets, only: ndet
         use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aan)) allocate (aan(nelec, norb_tot), source=0.0_dp)
-        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, ndet), source=0.0_dp)
+        if (.not. allocated(aan)) allocate (aan(nelec, norb_tot))
+        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, ndet))
     end subroutine allocate_multimatn
 
     subroutine deallocate_multimatn()
@@ -453,9 +447,9 @@ module multislater
 contains
     subroutine allocate_multislater()
         use dets, only: ndet
-        if (.not. allocated(detiab)) allocate(detiab(ndet, 2), source=0.0_dp)
-        if (.not. allocated(detu)) allocate(detu(ndet), source=0.0_dp)
-        if (.not. allocated(detd)) allocate(detd(ndet), source=0.0_dp)
+        if (.not. allocated(detiab)) allocate(detiab(ndet, 2))
+        if (.not. allocated(detu)) allocate(detu(ndet))
+        if (.not. allocated(detd)) allocate(detd(ndet))
     end subroutine allocate_multislater
 
     subroutine deallocate_multislater()
@@ -487,10 +481,10 @@ contains
         use dets, only: ndet
         use coefs, only: norb
         use vmc_mod, only: norb_tot
-        if (.not. allocated(ddorbn)) allocate (ddorbn(norb_tot), source=0.0_dp)
-        if (.not. allocated(detn)) allocate (detn(ndet), source=0.0_dp)
-        if (.not. allocated(dorbn)) allocate (dorbn(3, norb_tot), source=0.0_dp)
-        if (.not. allocated(orbn)) allocate (orbn(norb_tot), source=0.0_dp)
+        if (.not. allocated(ddorbn)) allocate (ddorbn(norb_tot))
+        if (.not. allocated(detn)) allocate (detn(ndet))
+        if (.not. allocated(dorbn)) allocate (dorbn(3, norb_tot))
+        if (.not. allocated(orbn)) allocate (orbn(norb_tot))
     end subroutine allocate_multislatern
 
     subroutine deallocate_multislatern()
@@ -555,9 +549,9 @@ contains
         use const, only: nelec
         use coefs, only: norb
         use precision_kinds, only: dp
-        if (.not. allocated(ddorb)) allocate (ddorb(nelec, norb_tot), source=0.0_dp)
-        if (.not. allocated(dorb)) allocate (dorb(3, nelec, norb_tot), source=0.0_dp)
-        if (.not. allocated(orb)) allocate (orb(nelec, norb_tot), source=0.0_dp)
+        if (.not. allocated(ddorb)) allocate (ddorb(nelec, norb_tot))
+        if (.not. allocated(dorb)) allocate (dorb(3, nelec, norb_tot))
+        if (.not. allocated(orb)) allocate (orb(nelec, norb_tot))
     end subroutine allocate_orbval
 
     subroutine deallocate_orbval()
@@ -591,14 +585,14 @@ contains
     subroutine allocate_phifun()
         use const, only: nelec
         use coefs, only: nbasis
-        if (.not. allocated(d2phin)) allocate (d2phin(nbasis, nelec), source=0.0_dp)
-        if (.not. allocated(d2phin_all)) allocate (d2phin_all(3, 3, nbasis, nelec), source=0.0_dp)
-        if (.not. allocated(d3phin)) allocate (d3phin(3, nbasis, nelec), source=0.0_dp)
-        if (.not. allocated(dphin)) allocate (dphin(3, nbasis, nelec), source=0.0_dp)
+        if (.not. allocated(d2phin)) allocate (d2phin(nbasis, nelec))
+        if (.not. allocated(d2phin_all)) allocate (d2phin_all(3, 3, nbasis, nelec))
+        if (.not. allocated(d3phin)) allocate (d3phin(3, nbasis, nelec))
+        if (.not. allocated(dphin)) allocate (dphin(3, nbasis, nelec))
         if (.not. allocated(n0_ibasis)) allocate (n0_ibasis(nbasis, nelec), source=0)
         if (.not. allocated(n0_ic)) allocate (n0_ic(nbasis, nelec), source=0)
         if (.not. allocated(n0_nbasis)) allocate (n0_nbasis(nelec), source=0)
-        if (.not. allocated(phin)) allocate (phin(nbasis, nelec), source=0.0_dp)
+        if (.not. allocated(phin)) allocate (phin(nbasis, nelec))
     end subroutine allocate_phifun
 
     subroutine deallocate_phifun()
@@ -637,13 +631,13 @@ module qua
 contains
     subroutine allocate_qua()
         use pseudo_mod, only: MPS_QUAD
-        if (.not. allocated(wq)) allocate (wq(MPS_QUAD), source=0.0_dp)
-        if (.not. allocated(xq)) allocate (xq(MPS_QUAD), source=0.0_dp)
-        if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD), source=0.0_dp)
-        if (.not. allocated(yq)) allocate (yq(MPS_QUAD), source=0.0_dp)
-        if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD), source=0.0_dp)
-        if (.not. allocated(zq)) allocate (zq(MPS_QUAD), source=0.0_dp)
-        if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD), source=0.0_dp)
+        if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
+        if (.not. allocated(xq)) allocate (xq(MPS_QUAD))
+        if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
+        if (.not. allocated(yq)) allocate (yq(MPS_QUAD))
+        if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
+        if (.not. allocated(zq)) allocate (zq(MPS_QUAD))
+        if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
     end subroutine allocate_qua
 
     subroutine deallocate_qua()
@@ -681,7 +675,7 @@ contains
         use qua, only: nquad
         use contr3, only: mode
         if(index(mode,'dmc').ne.0) then
-          if (.not. allocated(b_t)) allocate (b_t(norb_tot, nquad, ncent_tot, nelec), source=0.0_dp)
+          if (.not. allocated(b_t)) allocate (b_t(norb_tot, nquad, ncent_tot, nelec))
         endif
         if (.not. allocated(iskip)) allocate (iskip(nelec, ncent_tot), source=0)
     end subroutine allocate_b_tmove
@@ -725,8 +719,8 @@ contains
         use const, only: nelec
         use dets, only: ndet
         use vmc_mod, only: norb_tot
-        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2), source=0.0_dp)
-        if (.not. allocated(dtildem)) allocate (dtildem(nelec, norb_tot, 2), source=0.0_dp)
+        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
+        if (.not. allocated(dtildem)) allocate (dtildem(nelec, norb_tot, 2))
     end subroutine allocate_scratch
 
     subroutine deallocate_scratch()
@@ -767,17 +761,17 @@ contains
     subroutine allocate_slater()
         use const, only: nelec
         use vmc_mod, only: nmat_dim
-        if (.not. allocated(d2dx2)) allocate(d2dx2(nelec), source=0.0_dp)
-        if (.not. allocated(ddx)) allocate(ddx(3, nelec), source=0.0_dp)
-        if (.not. allocated(fp)) allocate(fp(3, nmat_dim, 2), source=0.0_dp)
-        if (.not. allocated(fpp)) allocate(fpp(nmat_dim, 2), source=0.0_dp)
-        if (.not. allocated(slmi)) allocate(slmi(nmat_dim, 2), source=0.0_dp)
-        if (.not. allocated(fpd))  allocate(fpd(3,nmat_dim), source=0.0_dp)
-        if (.not. allocated(fppd)) allocate(fppd(nmat_dim), source=0.0_dp)
-        if (.not. allocated(fppu)) allocate(fppu(nmat_dim), source=0.0_dp)
-        if (.not. allocated(fpu))  allocate(fpu(3,nmat_dim), source=0.0_dp)
-        if (.not. allocated(slmui)) allocate(slmui(nmat_dim), source=0.0_dp)
-        if (.not. allocated(slmdi)) allocate(slmdi(nmat_dim), source=0.0_dp)
+        if (.not. allocated(d2dx2)) allocate(d2dx2(nelec))
+        if (.not. allocated(ddx)) allocate(ddx(3, nelec))
+        if (.not. allocated(fp)) allocate(fp(3, nmat_dim, 2))
+        if (.not. allocated(fpp)) allocate(fpp(nmat_dim, 2))
+        if (.not. allocated(slmi)) allocate(slmi(nmat_dim, 2))
+        if (.not. allocated(fpd))  allocate(fpd(3,nmat_dim))
+        if (.not. allocated(fppd)) allocate(fppd(nmat_dim))
+        if (.not. allocated(fppu)) allocate(fppu(nmat_dim))
+        if (.not. allocated(fpu))  allocate(fpu(3,nmat_dim))
+        if (.not. allocated(slmui)) allocate(slmui(nmat_dim))
+        if (.not. allocated(slmdi)) allocate(slmdi(nmat_dim))
     end subroutine allocate_slater
 
     subroutine deallocate_slater()
@@ -812,7 +806,7 @@ module slatn
 contains
     subroutine allocate_slatn()
         use vmc_mod, only: nmat_dim
-        if (.not. allocated(slmin)) allocate (slmin(nmat_dim), source=0.0_dp)
+        if (.not. allocated(slmin)) allocate (slmin(nmat_dim))
     end subroutine allocate_slatn
 
     subroutine deallocate_slatn()
@@ -850,7 +844,7 @@ contains
     subroutine allocate_vardep()
         use atom, only: nctype_tot
         use vmc_mod, only: neqsx
-        if (.not. allocated(cdep)) allocate (cdep(neqsx, 83, nctype_tot), source=0.0_dp)
+        if (.not. allocated(cdep)) allocate (cdep(neqsx, 83, nctype_tot))
         if (.not. allocated(iwdepend)) allocate (iwdepend(neqsx, 83, nctype_tot), source=0)
         if (.not. allocated(nvdepend)) allocate (nvdepend(neqsx, nctype_tot), source=0)
     end subroutine allocate_vardep
@@ -879,8 +873,8 @@ module velocity_jastrow
 contains
     subroutine allocate_velocity_jastrow()
         use const, only: nelec
-        if (.not. allocated(vj)) allocate (vj(3, nelec), source=0.0_dp)
-        if (.not. allocated(vjn)) allocate (vjn(3, nelec), source=0.0_dp)
+        if (.not. allocated(vj)) allocate (vj(3, nelec))
+        if (.not. allocated(vjn)) allocate (vjn(3, nelec))
     end subroutine allocate_velocity_jastrow
 
     subroutine deallocate_velocity_jastrow()
@@ -910,8 +904,8 @@ contains
         use const, only: nelec
         use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
-        if (.not. allocated(dymat)) allocate (dymat(norb_tot, nelec, 2, MSTATES), source=0.0_dp)
-        if (.not. allocated(ymat)) allocate (ymat(norb_tot, nelec, 2, MSTATES), source=0.0_dp)
+        if (.not. allocated(dymat)) allocate (dymat(norb_tot, nelec, 2, MSTATES))
+        if (.not. allocated(ymat)) allocate (ymat(norb_tot, nelec, 2, MSTATES))
     end subroutine allocate_ycompact
 
     subroutine deallocate_ycompact()
@@ -940,7 +934,7 @@ contains
         use const, only: nelec
         use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
-        if (.not. allocated(ymatn)) allocate (ymatn(norb_tot, nelec, MSTATES), source=0.0_dp)
+        if (.not. allocated(ymatn)) allocate (ymatn(norb_tot, nelec, MSTATES))
     end subroutine allocate_ycompactn
 
     subroutine deallocate_ycompactn()
@@ -971,10 +965,10 @@ contains
         use const, only: nelec
         use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
-        if (.not. allocated(aaz)) allocate (aaz(nelec, nelec, 2, MSTATES), source=0.0_dp)
-        if (.not. allocated(dzmat)) allocate (dzmat(norb_tot, nelec, 2, MSTATES), source=0.0_dp)
-        if (.not. allocated(emz)) allocate (emz(nelec, nelec, 2, MSTATES), source=0.0_dp)
-        if (.not. allocated(zmat)) allocate (zmat(norb_tot, nelec, 2, MSTATES), source=0.0_dp)
+        if (.not. allocated(aaz)) allocate (aaz(nelec, nelec, 2, MSTATES))
+        if (.not. allocated(dzmat)) allocate (dzmat(norb_tot, nelec, 2, MSTATES))
+        if (.not. allocated(emz)) allocate (emz(nelec, nelec, 2, MSTATES))
+        if (.not. allocated(zmat)) allocate (zmat(norb_tot, nelec, 2, MSTATES))
     end subroutine allocate_zcompact
 
     subroutine deallocate_zcompact()
@@ -1005,9 +999,9 @@ module zmatrix
 contains
     subroutine allocate_zmatrix()
         use atom, only: ncent_tot
-        if (.not. allocated(czcart)) allocate (czcart(3, ncent_tot), source=0.0_dp)
-        if (.not. allocated(czint)) allocate (czint(3, ncent_tot), source=0.0_dp)
-        if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3), source=0.0_dp)
+        if (.not. allocated(czcart)) allocate (czcart(3, ncent_tot))
+        if (.not. allocated(czint)) allocate (czint(3, ncent_tot))
+        if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3))
         if (.not. allocated(izcmat)) allocate (izcmat(3, ncent_tot), source=0)
     end subroutine allocate_zmatrix
 
@@ -1037,7 +1031,7 @@ contains
     subroutine allocate_zmatrix_grad()
         use vmc_mod, only: ncent3
 
-        if (.not. allocated(transform_grd)) allocate (transform_grd(ncent3, ncent3), source=0.0_dp)
+        if (.not. allocated(transform_grd)) allocate (transform_grd(ncent3, ncent3))
     end subroutine allocate_zmatrix_grad
 
     subroutine deallocate_zmatrix_grad()

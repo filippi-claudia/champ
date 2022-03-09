@@ -13,7 +13,7 @@ module grdnthes
  contains
      subroutine allocate_grdnthes()
         use atom, only: ncent_tot
-         if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent_tot), source=0.0_dp)
+         if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent_tot))
      end subroutine allocate_grdnthes
 
      subroutine deallocate_grdnthes()

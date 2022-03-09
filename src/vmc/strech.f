@@ -70,9 +70,9 @@ c rigidly with that nucleus
       real(dp), ALLOCATABLE, save :: xpolsav(:,:)
 
 
-      if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot), source=0.0_dp)
-      if(.not.allocated(pecentn)) allocate(pecentn(MFORCE), source=0.0_dp)
-      if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV), source=0.0_dp)
+      if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
+      if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
+      if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV))
 
 c set center and n-n potential for secondary geometries
       pecent=pecentn(ifr)
@@ -197,9 +197,9 @@ c end loop over electrons
 c Set up n-n potential energy (and PCM related quantities) at displaced positions
       entry setup_force
 
-      if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot), source=0.0_dp)
-      if(.not.allocated(pecentn)) allocate(pecentn(MFORCE), source=0.0_dp)
-      if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV), source=0.0_dp)
+      if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
+      if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
+      if(.not.allocated(xpolsav)) allocate(xpolsav(3,MCHV))
 
       write(ounit,'(''istrech,alfstr ='',i4,2f10.5)') istrech,alfstr
 

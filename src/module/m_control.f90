@@ -115,7 +115,7 @@ module contrldmc
 contains
     subroutine allocate_contrldmc()
         use force_mod, only: MFORCE
-        if (.not. allocated(taueff)) allocate (taueff(MFORCE), source=0.0_dp)
+        if (.not. allocated(taueff)) allocate (taueff(MFORCE))
     end subroutine allocate_contrldmc
 
     subroutine deallocate_contrldmc()

@@ -180,9 +180,9 @@ contains
         update_proj = .false.
 
         ! Diagonal of the arrays
-        allocate (diag_mtx(parameters%nparm), source=0.0_dp)
-        allocate (diag_mtx_cpy(parameters%nparm), source=0.0_dp)
-        allocate (diag_stx(parameters%nparm), source=0.0_dp)
+        allocate (diag_mtx(parameters%nparm))
+        allocate (diag_mtx_cpy(parameters%nparm))
+        allocate (diag_stx(parameters%nparm))
 
         if (idtask == 0) call store_diag_hs(parameters%nparm, diag_mtx, diag_stx)
 
@@ -204,8 +204,8 @@ contains
         if (idtask == 0) write(ounit, '(''DAV: Setup subspace problem'')')
 
         ! allocate mtxV and stxV
-        allocate (mtxV(parameters%nparm, parameters%basis_size), source=0.0_dp)
-        allocate (stxV(parameters%nparm, parameters%basis_size), source=0.0_dp)
+        allocate (mtxV(parameters%nparm, parameters%basis_size))
+        allocate (stxV(parameters%nparm, parameters%basis_size))
 
         ! Calculation of HV and SV
         ! after the call only
@@ -252,14 +252,14 @@ contains
                 ! reallocate eigenpairs of the small system
                 call check_deallocate_vector(eigenvalues_sub)
                 call check_deallocate_matrix(eigenvectors_sub)
-                allocate (eigenvalues_sub(parameters%basis_size), source=0.0_dp)
-                allocate (eigenvectors_sub(parameters%basis_size, parameters%basis_size), source=0.0_dp)
+                allocate (eigenvalues_sub(parameters%basis_size))
+                allocate (eigenvectors_sub(parameters%basis_size, parameters%basis_size))
 
                 ! deallocate the corection/residues
                 call check_deallocate_matrix(residues)
                 call check_deallocate_matrix(correction)
-                allocate (residues(parameters%nparm, size_update), source=0.0_dp)
-                allocate (correction(parameters%nparm, size_update), source=0.0_dp)
+                allocate (residues(parameters%nparm, size_update))
+                allocate (correction(parameters%nparm, size_update))
 
                 ! deallocate ritz vectors
                 call check_deallocate_matrix(ritz_vectors)
@@ -358,7 +358,7 @@ contains
                 call MPI_BCAST(sizeV, 1, MPI_INT, 0, MPI_COMM_WORLD, ier)
                 if (idtask > 0) then
                     call check_deallocate_matrix(V)
-                    allocate (V(parameters%nparm, sizeV), source=0.0_dp)
+                    allocate (V(parameters%nparm, sizeV))
                 end if
                 call MPI_BCAST(V, parameters%nparm*sizeV, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
             endif
@@ -462,7 +462,7 @@ contains
         old_dim = size(mtx_proj, 1)
 
         ! move to temporal array
-        allocate (tmp_array(nvec, nvec), source=0.0_dp)
+        allocate (tmp_array(nvec, nvec))
         tmp_array(:old_dim, :old_dim) = mtx_proj
         tmp_array(:, old_dim + 1:) = lapack_matmul('T', 'N', V, mtxV(:, old_dim + 1:))
         tmp_array(old_dim + 1:, :old_dim) = transpose(tmp_array(:old_dim, old_dim + 1:))
@@ -630,8 +630,8 @@ contains
         real(dp), dimension(:, :), allocatable :: mtx
         real(dp), dimension(:, :), allocatable :: stx
 
-        allocate (mtx(parameters%nparm, parameters%nparm), source=0.0_dp)
-        allocate (stx(parameters%nparm, parameters%nparm), source=0.0_dp)
+        allocate (mtx(parameters%nparm, parameters%nparm))
+        allocate (stx(parameters%nparm, parameters%nparm))
 
         I = eye(parameters%nparm, parameters%nparm)
 

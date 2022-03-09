@@ -52,21 +52,15 @@ contains
         use sr_mod, only: mparm, mobs, mconf, izvzb, i_sr_rescale
         use optwf_func, only: ifunc_omega
         use mstates_mod, only: MSTATES
-        use method_opt, only: method
-        if (.not. allocated(elocal)) allocate (elocal(mconf, MSTATES), source=0.0_dp)
-        if (.not. allocated(h_sr)) allocate (h_sr(mparm), source=0.0_dp)
-        if (.not. allocated(obs)) allocate (obs(mobs, MSTATES), source=0.0_dp)
-        if (.not. allocated(s_diag)) allocate (s_diag(mparm, MSTATES), source=0.0_dp)
-        if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(mparm), source=0.0_dp)
-        if (.not.((method       .eq. 'sr_n') .and.  &
-                  (i_sr_rescale .eq. 0     ) .and.  &
-                  (izvzb        .eq. 0     ) .and.  &
-                  (ifunc_omega  .eq. 0     ))) then
-          if (.not. allocated(sr_ho)) allocate (sr_ho(mparm, mconf), source=0.0_dp)
-        endif
-        if (.not. allocated(sr_o)) allocate (sr_o(mparm, mconf), source=0.0_dp)
-        if (.not. allocated(wtg)) allocate (wtg(mconf, MSTATES), source=0.0_dp)
-        if (.not. allocated(obs_tot)) allocate (obs_tot(mobs, MSTATES), source=0.0_dp)
+        if (.not. allocated(elocal)) allocate (elocal(mconf, MSTATES))
+        if (.not. allocated(h_sr)) allocate (h_sr(mparm))
+        if (.not. allocated(obs)) allocate (obs(mobs, MSTATES))
+        if (.not. allocated(s_diag)) allocate (s_diag(mparm, MSTATES))
+        if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(mparm))
+        if (.not. allocated(sr_ho)) allocate (sr_ho(mparm, mconf))
+        if (.not. allocated(sr_o)) allocate (sr_o(mparm, mconf))
+        if (.not. allocated(wtg)) allocate (wtg(mconf, MSTATES))
+        if (.not. allocated(obs_tot)) allocate (obs_tot(mobs, MSTATES))
     end subroutine allocate_sr_mat_n
 
     subroutine deallocate_sr_mat_n()

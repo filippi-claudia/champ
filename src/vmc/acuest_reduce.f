@@ -48,8 +48,8 @@ c Written by Claudia Filippi
 
 
       mobs = MSTATES*(8+5*MFORCE)+10
-      allocate(local_obs(mobs), source=0.0_dp)
-      allocate(collect(mobs), source=0.0_dp)
+      allocate(local_obs(mobs))
+      allocate(collect(mobs))
 
 
       ! ipudate was not declared anywhere

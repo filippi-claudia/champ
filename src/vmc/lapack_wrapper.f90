@@ -98,16 +98,16 @@ contains
     gev = present(stx)
 
     ! local copy of the matrices
-    allocate(mtx_copy(dim,dim), source=0.0_dp)
+    allocate(mtx_copy(dim,dim))
     mtx_copy = mtx
 
     if (gev) then
-      allocate(stx_copy(dim,dim), source=0.0_dp)
+      allocate(stx_copy(dim,dim))
       stx_copy = stx
     end if
 
     ! Query size of the optimal workspace
-    allocate(work(1), source=0.0_dp)
+    allocate(work(1))
 
     if (gev) then
       call DSYGV(itype,"V", "U", dim, mtx_copy, dim, stx_copy, dim, eigenvalues_work, work, -1, info)
@@ -120,7 +120,7 @@ contains
     ! Allocate memory for the workspace
     lwork = max(1, int(work(1)))
     deallocate(work)
-    allocate(work(lwork), source=0.0_dp)
+    allocate(work(lwork))
 
     ! Compute Eigenvalues
     if (gev) then
@@ -183,10 +183,10 @@ contains
     dim = size(mtx, 1)
 
     ! local copy of the matrices
-    allocate(mtx_copy(dim,dim), source=0.0_dp)
+    allocate(mtx_copy(dim,dim))
     mtx_copy = mtx
 
-    allocate(stx_copy(dim,dim), source=0.0_dp)
+    allocate(stx_copy(dim,dim))
     stx_copy = stx
 
     ! LAPACK SAYS: If range = 'A' or 'I', vl and vu are not referenced
@@ -196,7 +196,7 @@ contains
     ! Absolute tolerance
 
     ! Query size of the optimal workspace
-    allocate(work(1), source=0.0_dp)
+    allocate(work(1))
     allocate(iwork(1), source=0)
 
     call DSYGVX(itype,"V", "I", "U", dim, mtx_copy, dim, stx_copy, dim, vl, vu, &
@@ -207,7 +207,7 @@ contains
     ! Allocate memory for the workspace
     lwork = max(1, int(work(1)))
     deallocate(work, iwork)
-    allocate(work(lwork), source=0.0_dp)
+    allocate(work(lwork))
     allocate(iwork(lwork), source=0)
 
     ! Compute Eigenvalues
@@ -255,14 +255,14 @@ contains
 
     ! 1. Call the QR decomposition
     ! 1.1 Query size of the workspace (Check lapack documentation)
-    allocate(work(1), source=0.0_dp)
+    allocate(work(1))
     call DGEQRF(m, n, basis, m, tau, work, -1, info)
     call check_lapack_call(info, "DGEQRF")
 
     ! 1.2 Allocate memory for the workspace
     lwork = max(1, int(work(1)))
     deallocate(work)
-    allocate(work(lwork), source=0.0_dp)
+    allocate(work(lwork))
 
     ! 1.3 Call QR factorization
     call DGEQRF(m, n, basis, m, tau, work, lwork, info)
@@ -271,14 +271,14 @@ contains
 
     ! 2. Generates an orthonormal matrix
     ! 2.1 Query size of the workspace (Check lapack documentation)
-    allocate(work(1), source=0.0_dp)
+    allocate(work(1))
     call DORGQR(m, n, min(m, n), basis, m, tau, work, -1, info)
     call check_lapack_call(info, "DORGQR")
 
     ! 2.2 Allocate memory fo the workspace
     lwork = max(1, int(work(1)))
     deallocate(work)
-    allocate(work(lwork), source=0.0_dp)
+    allocate(work(lwork))
 
     ! 2.3 compute the matrix Q
     call DORGQR(m, n, min(m, n), basis, m, tau, work, lwork, info)
@@ -307,14 +307,14 @@ contains
     n = size(arr, 1)
 
     ! query spacework size
-    allocate(work(1), source=0.0_dp)
+    allocate(work(1))
     call DSYSV("U", n, 1, arr, n, ipiv, brr, n, work, -1, info)
     call check_lapack_call(info, "DSYSV")
 
     ! Allocate memory fo the workspace
     lwork = max(1, int(work(1)))
     deallocate(work)
-    allocate(work(lwork), source=0.0_dp)
+    allocate(work(lwork))
 
     ! run linear solver
     call DSYSV("U", n, 1, arr, n, ipiv, brr, n, work, lwork, info)
@@ -374,7 +374,7 @@ contains
     end if
 
     ! resulting array
-    allocate(mtx(m, n), source=0.0_dp)
+    allocate(mtx(m, n))
     mtx = 0.d0
 
     call DGEMM(transA, transB, m, n, k, x, arr, lda, brr, ldb, 0.d0, mtx, m)
@@ -410,7 +410,7 @@ contains
     m = size(mtx, 1)
     n = size(mtx, 2)
 
-    allocate(rs(m), source=0.0_dp)
+    allocate(rs(m))
     rs = 0.d0
 
     call DGEMV(transA, m, n, scalar, mtx, m, vector, 1, 0.d0, rs, 1)
@@ -455,9 +455,9 @@ contains
     integer :: info
     character(len=*), intent(in) :: name
 
-    if (info .ne. 0) then
-       write(errunit,*) "call to subroutine: ", name, " has failed!"
-       write(errunit,*) "info: ", info
+    if (info /= 0) then
+       print *, "call to subroutine: ", name, " has failed!"
+       print *, "info: ", info
        error stop
     end if
 

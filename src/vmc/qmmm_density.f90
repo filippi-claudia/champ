@@ -5,26 +5,25 @@ contains
         subroutine qmmm_density_ini(znuc,cent,iwctype,mctype,mcent, &
       &  ncent)
 !*********************************************************************
-     
+
         use qmmm_density
-        
+
         implicit none
 
         integer :: mctype,mcent,ncent
         integer :: iwctype(mcent)
         double precision :: znuc(mctype),cent(3,mcent),tmp
         integer :: i
-       
+
         title_dens(1)='Variational Monte Carlo Density'
         title_dens(2)=''
         n_atomsd=ncent
-        allocate(x_atomd(n_atomsd,3), source=0.0_dbl)
-        allocate(id_atomd(n_atomsd), source=0)
-        allocate(chrg_atomd(n_atomsd), source=0.0_dbl)
-      
-        cc_nuc(:)=0.d0 
-        cc_ele(:)=0.d0 
-        cc_ele2(:)=0.d0 
+        allocate(x_atomd(n_atomsd,3),id_atomd(n_atomsd))
+        allocate(chrg_atomd(n_atomsd))
+
+        cc_nuc(:)=0.d0
+        cc_ele(:)=0.d0
+        cc_ele2(:)=0.d0
         dipole(:)=0.d0
         dipole2(:)=0.d0
         cdipole=0
@@ -34,7 +33,7 @@ contains
 !         write (*,*) i,iwctype(i),znuc(iwctype(i))
           id_atomd(i)=znuc(iwctype(i))
           if(znuc(iwctype(i)).gt.2) id_atomd(i)=znuc(iwctype(i))+2
-          chrg_atomd(i)=0.d0 
+          chrg_atomd(i)=0.d0
           cc_nuc(:)=cc_nuc(:)+znuc(iwctype(i))*cent(:,i)
           tmp=tmp+znuc(iwctype(i))
         enddo
@@ -58,8 +57,8 @@ contains
 !       deltad(2)=.516129
 !       deltad(3)=.516129
 
-        allocate(dens(n_xd,n_yd,n_zd), source=0.0_dbl)
-        allocate(sme(n_xd,n_yd,n_zd), source=0.0_dbl)
+        allocate(dens(n_xd,n_yd,n_zd))
+        allocate(sme(n_xd,n_yd,n_zd))
         dens(:,:,:)=0.d0
         sme(:,:,:)=0.d0
         outofbox=0.d0
@@ -69,10 +68,10 @@ contains
 
 !        call qmmm_writecube("test.cube",title_dens,n_atomsd,x0d, &
 !     &   n_xd,n_yd,n_zd,deltad,x_atomd,id_atomd,chrg_atomd,dens)
-        
+
         return
         end
-         
+
 !*********************************************************************
         subroutine qmmm_density_accu(nelec,xold,weight)
 !*********************************************************************
@@ -106,15 +105,15 @@ contains
              sumw=sumw+weight
           if(ix.lt.1 .or. iy.lt.1 .or. iz.lt.1 .or. &
 &            ix.gt.n_xd .or. iy.gt.n_yd .or. iz.gt.n_zd ) then
-!            write (45,*) 'Walker out of the density box! ',xold(:,n) 
+!            write (45,*) 'Walker out of the density box! ',xold(:,n)
              outofbox=outofbox+weight
              outofboxs=outofboxs+weight
           else
              inofbox=inofbox+weight
              dens(ix,iy,iz)=dens(ix,iy,iz)+weight
 ! smearing
-! La densita' dell'elettrone viene sparsa sui primi vicini 
-! moltiplicata per un fattore gaussiano e poi rinormalizzata 
+! La densita' dell'elettrone viene sparsa sui primi vicini
+! moltiplicata per un fattore gaussiano e poi rinormalizzata
 
              ssme=deltad(1)*1.0
              in=0
@@ -124,9 +123,9 @@ contains
                win=0.d0
                wout=0.d0
                value(:)=0.d0
-               do jx=ix-2,ix+2 
-                 do jy=iy-2,iy+2 
-                   do jz=iz-2,iz+2 
+               do jx=ix-2,ix+2
+                 do jy=iy-2,iy+2
+                   do jz=iz-2,iz+2
                      if(jx.lt.1 .or. jy.lt.1 .or. jz.lt.1 .or. &
 &                    jx.gt.n_xd .or. jy.gt.n_yd .or. jz.gt.n_zd ) then
                        x_center(1) = x0d(1)+ deltad(1)*(jx-1)
@@ -140,12 +139,12 @@ contains
                        ind(1,in)=jx
                        ind(2,in)=jy
                        ind(3,in)=jz
-                       x_center(1) = x0d(1)+ deltad(1)*(jx-1) 
-                       x_center(2) = x0d(2)+ deltad(2)*(jy-1) 
-                       x_center(3) = x0d(3)+ deltad(3)*(jz-1) 
+                       x_center(1) = x0d(1)+ deltad(1)*(jx-1)
+                       x_center(2) = x0d(2)+ deltad(2)*(jy-1)
+                       x_center(3) = x0d(3)+ deltad(3)*(jz-1)
                        dist=dsqrt(dot_product(xold(:,n)-x_center(:), &
 &                                           xold(:,n)-x_center(:)))
-                       value(in)=exp(-((dist/ssme)**2)) 
+                       value(in)=exp(-((dist/ssme)**2))
                        win=win+value(in)
 !                   write (*,'(a5,4i4,3f12.8)') 'XXX', in, ind(1,in),ind(2,in),ind(3,in),dist,dist/ssme,value(in)
 !                  write (*,'(7f8.3)') xold(:,n),x_center(:),dist
@@ -161,7 +160,7 @@ contains
               do k=1,in
                 sme(ind(1,k),ind(2,k),ind(3,k)) = &
 &                sme(ind(1,k),ind(2,k),ind(3,k)) + value(k)
-              enddo 
+              enddo
              endif
           endif
         enddo
@@ -171,7 +170,7 @@ contains
         cdipole=cdipole+1
 !       write (*,*) 'DIPOLE ==',dipole(:)
 !      write (999,*) (cc_nuc(:)-cc_dip(:)/sumw)*nelec*2.5417
-        
+
         return
         end
 
@@ -187,18 +186,18 @@ contains
         integer :: nelec,id
         double precision :: norm,deltav,totnorm,totnorms,tmp(3)
         character (len=80) :: file,files
- 
+
         if(id.eq.0) then
           file = "density_vmc.cube"
           files = "densitys_vmc.cube"
-        else 
+        else
           file = "density_dmc.cube"
           files = "densitys_dmc.cube"
         endif
 
         deltav=deltad(1)*deltad(2)*deltad(3)
         write (*,*) 'deltav =', deltav
-        
+
 ! Density
         norm =sum(sum(sum(dens(:,:,:),1),1),1)
         write(*,*) 'number of points inside the box:',inofbox
@@ -231,14 +230,14 @@ contains
 !...............Correct Dipole
         dipole(:)=dipole(:)/cdipole
         dipole2(:)=dipole2(:)/cdipole
-        tmp(:)=dsqrt((dipole2(:)-dipole(:)**2)/cdipole)        
+        tmp(:)=dsqrt((dipole2(:)-dipole(:)**2)/cdipole)
         write (*,*) 'Mixed Average: Dipole moment (Debye) (x,y,z,|.|)'
         write(*,'(a12,4f12.6)') 'Dipole: ', dipole(:), &
      &               dsqrt(dot_product(dipole(:),dipole(:)))
         write(*,'(a12,4f12.6)') 'Dip. err.: ', tmp(:)
-        write(*,'(a32,i16)') 'Total number of dipoles sampled:  ',cdipole 
+        write(*,'(a32,i16)') 'Total number of dipoles sampled:  ',cdipole
 !.........................
- 
+
 !       cc_ele(:)=cc_ele(:)/totnorm
 !       cc_ele2(:)=cc_ele2(:)/totnorm
 !       tmp(:)=dsqrt((cc_ele2(:)-cc_ele(:)**2)/totnorm)
@@ -266,7 +265,7 @@ contains
 !       double precision :: znuc(mctype),cent(3,mcent)
 !       double precision :: cc_nuc(3), tmp
 !       integer :: i,id
-!       
+!
 !       cc_nuc(:)=0.d0
 !       tmp=0.d0
 !       do i=1,ncent
