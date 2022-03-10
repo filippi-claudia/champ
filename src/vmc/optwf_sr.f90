@@ -284,7 +284,7 @@ contains
         use contrl_file,    only: ounit
         implicit none
 
-        real(dp), DIMENSION(:), allocatable :: obs
+        real(dp), DIMENSION(:, :), allocatable :: obs
         real(dp), DIMENSION(:), allocatable :: obs_wtg
         real(dp), DIMENSION(:), allocatable :: obs_wtg_tot
         integer :: i, j, k, kk, ish, istate, nparm, iconf
