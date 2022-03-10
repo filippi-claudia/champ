@@ -51,7 +51,7 @@ module Bloc
 
     private
     public :: b, tildem, xmat
-    public :: b_da, db
+    public :: b_da
     public :: b_dj
     public :: allocate_Bloc, deallocate_Bloc
     save
@@ -66,13 +66,11 @@ contains
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2), source=0.0_dp)
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2), source=0.0_dp)
         if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb_tot, ncent_tot), source=0.0_dp)
-        if (.not. allocated(db)) allocate (db(3, nelec, norb_tot, ncent_tot), source=0.0_dp)
         if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj), source=0.0_dp)
     end subroutine allocate_Bloc
 
     subroutine deallocate_Bloc()
         if (allocated(b_dj)) deallocate (b_dj)
-        if (allocated(db)) deallocate (db)
         if (allocated(b_da)) deallocate (b_da)
         if (allocated(xmat)) deallocate (xmat)
         if (allocated(tildem)) deallocate (tildem)
