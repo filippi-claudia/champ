@@ -436,26 +436,26 @@ module multislater
 
     real(dp), dimension(:, :), allocatable :: detiab !(MDET,2)
     !> DMC variables:
-    real(dp), dimension(:), allocatable :: detu !(MDET)
-    real(dp), dimension(:), allocatable :: detd !(MDET)
+    ! real(dp), dimension(:), allocatable :: detu !(MDET)
+    ! real(dp), dimension(:), allocatable :: detd !(MDET)
 
     private
     public :: detiab
-    public :: detu, detd
+    ! public :: detu, detd
     public :: allocate_multislater, deallocate_multislater
     save
 contains
     subroutine allocate_multislater()
         use dets, only: ndet
         if (.not. allocated(detiab)) allocate(detiab(ndet, 2))
-        if (.not. allocated(detu)) allocate(detu(ndet))
-        if (.not. allocated(detd)) allocate(detd(ndet))
+        ! if (.not. allocated(detu)) allocate(detu(ndet))
+        ! if (.not. allocated(detd)) allocate(detd(ndet))
     end subroutine allocate_multislater
 
     subroutine deallocate_multislater()
         if (allocated(detiab)) deallocate (detiab)
-        if (allocated(detu)) deallocate(detu)
-        if (allocated(detd)) deallocate(detd)
+        ! if (allocated(detu)) deallocate(detu)
+        ! if (allocated(detd)) deallocate(detd)
     end subroutine deallocate_multislater
 
 end module multislater
