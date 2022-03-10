@@ -248,10 +248,11 @@ module gradjerrb
     integer :: nbj_current
     integer :: ngrad_jas_bcum
     integer :: ngrad_jas_blocks
-    integer :: njb_current
+    ! integer :: njb_current
 
     private
-    public :: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
+    public :: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks
+    ! public njb_current
     save
 end module gradjerrb
 
