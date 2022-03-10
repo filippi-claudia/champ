@@ -531,7 +531,7 @@ contains
         use force_fin, only: da_energy_ave
         use force_mat_n, only: force_o
         use mpiconf, only: idtask
-        use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs, sr_ho
+        use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs_tot, sr_ho
         use sr_mat_n, only: sr_o, wtg
         use sr_index, only: jelo
         use contrl_file,    only: ounit
@@ -600,12 +600,12 @@ contains
 
         if (idtask .eq. 0) then
 
-            wtoti = 1.d0/obs(1, 1)
+            wtoti = 1.d0/obs_tot(1, 1)
             do i = 1, nparm
-                dum = (obs(jhfj + i - 1, 1) - obs(jefj + i - 1, 1))
+                dum = (obs_tot(jhfj + i - 1, 1) - obs_tot(jefj + i - 1, 1))
                 c(i, i) = c(i, i)*wtoti - dum*dum
                 do j = i + 1, nparm
-                    c(i, j) = c(i, j)*wtoti - dum*(obs(jhfj + j - 1, 1) - obs(jefj + j - 1, 1))
+                    c(i, j) = c(i, j)*wtoti - dum*(obs_tot(jhfj + j - 1, 1) - obs_tot(jefj + j - 1, 1))
                     c(j, i) = c(i, j)
                 enddo
             enddo
@@ -619,12 +619,12 @@ contains
             call dgetri(nparm, c, MTEST, ipvt, work, MTEST, info)
 
             do iparm = 1, nparm
-                tmp(iparm) = obs(jhfj + iparm - 1, 1) - obs(jefj + iparm - 1, 1)
+                tmp(iparm) = obs_tot(jhfj + iparm - 1, 1) - obs_tot(jefj + iparm - 1, 1)
             enddo
 
         endif
 
-        energy_tot = obs(2, 1)
+        energy_tot = obs_tot(2, 1)
 
         call MPI_BCAST(energy_tot, 1, MPI_REAL8, 0, MPI_COMM_WORLD, j)
 
@@ -648,7 +648,7 @@ contains
                 if (idtask .eq. 0) then
 
                     do i = 1, nparm
-                        o(i) = o(i)*wtoti - (obs(jhfj + i - 1, 1) - obs(jefj + i - 1, 1))*da_energy_ave(k, icent)
+                        o(i) = o(i)*wtoti - (obs_tot(jhfj + i - 1, 1) - obs_tot(jefj + i - 1, 1))*da_energy_ave(k, icent)
                     enddo
 
                     do iparm = 1, nparm
