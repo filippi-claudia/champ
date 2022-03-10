@@ -748,12 +748,13 @@ module slater
     real(dp), dimension(:), allocatable :: fppd !(nmat_dim)
     real(dp), dimension(:), allocatable :: fppu !(nmat_dim)
     real(dp), dimension(:,:), allocatable :: fpu !(3,nmat_dim)
-    real(dp), dimension(:), allocatable :: slmui !(nmat_dim)
-    real(dp), dimension(:), allocatable :: slmdi !(nmat_dim)
+    ! real(dp), dimension(:), allocatable :: slmui !(nmat_dim)
+    ! real(dp), dimension(:), allocatable :: slmdi !(nmat_dim)
 
     private
     public :: d2dx2, ddx, fp, fpp, slmi
-    public :: fpd, fppd, fppu, fpu, slmui, slmdi
+    public :: fpd, fppd, fppu, fpu
+    ! public :: slmui, slmdi
     public :: allocate_slater, deallocate_slater
     save
 
@@ -770,8 +771,8 @@ contains
         if (.not. allocated(fppd)) allocate(fppd(nmat_dim))
         if (.not. allocated(fppu)) allocate(fppu(nmat_dim))
         if (.not. allocated(fpu))  allocate(fpu(3,nmat_dim))
-        if (.not. allocated(slmui)) allocate(slmui(nmat_dim))
-        if (.not. allocated(slmdi)) allocate(slmdi(nmat_dim))
+        ! if (.not. allocated(slmui)) allocate(slmui(nmat_dim))
+        ! if (.not. allocated(slmdi)) allocate(slmdi(nmat_dim))
     end subroutine allocate_slater
 
     subroutine deallocate_slater()
@@ -784,8 +785,8 @@ contains
         if (allocated(fppd)) deallocate(fppd)
         if (allocated(fppu)) deallocate(fppu)
         if (allocated(fpu))  deallocate(fpu)
-        if (allocated(slmui)) deallocate(slmui)
-        if (allocated(slmdi)) deallocate(slmdi)
+        ! if (allocated(slmui)) deallocate(slmui)
+        ! if (allocated(slmdi)) deallocate(slmdi)
     end subroutine deallocate_slater
 
 end module slater
