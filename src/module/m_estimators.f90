@@ -13,7 +13,7 @@ module estcum
      real(dp) :: r2cum
      real(dp), dimension(:), allocatable :: tjfcum !(MSTATES)
      real(dp), dimension(:), allocatable :: tpbcum !(MSTATES)
-     real(dp), dimension(:), allocatable :: avcum !(MSTATES*3)
+    !  real(dp), dimension(:), allocatable :: avcum !(MSTATES*3)
      !> DMC variables:
      real(dp) :: ecum1_dmc
      real(dp) :: ecum_dmc
@@ -46,7 +46,8 @@ module estcum
      integer :: ipass
 
      private
-     public :: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
+     public :: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+    !  public avcum
      public :: allocate_estcum, deallocate_estcum
      !> DMC variables:
      public :: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum
@@ -65,11 +66,11 @@ module estcum
          if (.not. allocated(pecum)) allocate (pecum(MSTATES))
          if (.not. allocated(tjfcum)) allocate (tjfcum(MSTATES))
          if (.not. allocated(tpbcum)) allocate (tpbcum(MSTATES))
-         if (.not. allocated(avcum)) allocate (avcum(MSTATES*3))
+        !  if (.not. allocated(avcum)) allocate (avcum(MSTATES*3))
      end subroutine allocate_estcum
 
      subroutine deallocate_estcum()
-         if (allocated(avcum)) deallocate (avcum)
+        !  if (allocated(avcum)) deallocate (avcum)
          if (allocated(tpbcum)) deallocate (tpbcum)
          if (allocated(tjfcum)) deallocate (tjfcum)
          if (allocated(pecum)) deallocate (pecum)
