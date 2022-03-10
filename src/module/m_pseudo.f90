@@ -57,13 +57,14 @@ module pseudo_tm
     real(dp), dimension(:, :, :), allocatable :: d2pot !(MPS_GRID,MCTYPE,MPS_L)
     integer, dimension(:), allocatable :: nr_ps !(MCTYPE)
     real(dp), dimension(:), allocatable :: r0 !(MCTYPE)
-    real(dp), dimension(:), allocatable :: r0_ps !(MCTYPE)
+    ! real(dp), dimension(:), allocatable :: r0_ps !(MCTYPE)
     real(dp), dimension(:), allocatable :: rmax !(MCTYPE)
-    real(dp), dimension(:), allocatable :: rmax_ps !(MCTYPE)
+    ! real(dp), dimension(:), allocatable :: rmax_ps !(MCTYPE)
     real(dp), dimension(:, :, :), allocatable :: vpseudo !(MPS_GRID,MCTYPE,MPS_L)
 
     private
-    public :: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
+    public :: arg, arg_ps, d2pot, nr_ps, r0, rmax, vpseudo
+    ! public rmax_ps, r0_ps
     public :: allocate_pseudo_tm, deallocate_pseudo_tm
     save
 contains
@@ -76,17 +77,17 @@ contains
         if (.not. allocated(d2pot)) allocate (d2pot(MPS_GRID, nctype_tot, MPS_L))
         if (.not. allocated(nr_ps)) allocate (nr_ps(nctype_tot), source=0)
         if (.not. allocated(r0)) allocate (r0(nctype_tot))
-        if (.not. allocated(r0_ps)) allocate (r0_ps(nctype_tot))
+        ! if (.not. allocated(r0_ps)) allocate (r0_ps(nctype_tot))
         if (.not. allocated(rmax)) allocate (rmax(nctype_tot))
-        if (.not. allocated(rmax_ps)) allocate (rmax_ps(nctype_tot))
+        ! if (.not. allocated(rmax_ps)) allocate (rmax_ps(nctype_tot))
         if (.not. allocated(vpseudo)) allocate (vpseudo(MPS_GRID, nctype_tot, MPS_L))
     end subroutine allocate_pseudo_tm
 
     subroutine deallocate_pseudo_tm()
         if (allocated(vpseudo)) deallocate (vpseudo)
-        if (allocated(rmax_ps)) deallocate (rmax_ps)
+        ! if (allocated(rmax_ps)) deallocate (rmax_ps)
         if (allocated(rmax)) deallocate (rmax)
-        if (allocated(r0_ps)) deallocate (r0_ps)
+        ! if (allocated(r0_ps)) deallocate (r0_ps)
         if (allocated(r0)) deallocate (r0)
         if (allocated(nr_ps)) deallocate (nr_ps)
         if (allocated(d2pot)) deallocate (d2pot)
