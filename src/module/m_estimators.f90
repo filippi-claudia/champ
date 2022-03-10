@@ -280,7 +280,7 @@ module estcum
      real(dp) :: r2cm2
      real(dp), dimension(:), allocatable :: tjfcm2 !(MSTATES)
      real(dp), dimension(:), allocatable :: tpbcm2 !(MSTATES)
-     real(dp), dimension(:), allocatable :: avcm2 !(MSTATES*3)
+    !  real(dp), dimension(:), allocatable :: avcm2 !(MSTATES*3)
      !> DMC variables:
      real(dp) :: ecm21_dmc
      real(dp) :: ecm2_dmc
@@ -307,7 +307,8 @@ module estcum
      real(dp) :: wgdcm2
 
      private
-     public :: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2, avcm2
+     public :: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
+    ! public  avcm2
      public :: allocate_est2cm, deallocate_est2cm
      public :: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2
      public :: ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc
@@ -325,11 +326,11 @@ module estcum
          if (.not. allocated(pecm2))  allocate(pecm2(MSTATES))
          if (.not. allocated(tjfcm2)) allocate(tjfcm2(MSTATES))
          if (.not. allocated(tpbcm2)) allocate(tpbcm2(MSTATES))
-         if (.not. allocated(avcm2))  allocate(avcm2(MSTATES*3))
+        !  if (.not. allocated(avcm2))  allocate(avcm2(MSTATES*3))
      end subroutine allocate_est2cm
 
      subroutine deallocate_est2cm()
-         if (allocated(avcm2))  deallocate(avcm2)
+        !  if (allocated(avcm2))  deallocate(avcm2)
          if (allocated(tpbcm2)) deallocate(tpbcm2)
          if (allocated(tjfcm2)) deallocate(tjfcm2)
          if (allocated(pecm2))  deallocate(pecm2)
