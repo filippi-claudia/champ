@@ -472,9 +472,9 @@ contains
 
         endif
 
-        deallocate (obs_wtg(MSTATES))
-        deallocate (obs_wtg_tot(MSTATES))
-        deallocate (obs(MOBS, MSTATES))
+        deallocate (obs_wtg)
+        deallocate (obs_wtg_tot)
+        deallocate (obs)
 
         return
     end
