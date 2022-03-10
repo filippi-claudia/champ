@@ -277,13 +277,14 @@ contains
         use optwf_func, only: ifunc_omega, omega
         use sa_weights, only: weights
         use sr_index, only: jelo, jelo2, jelohfj
-        use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
+        use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho
         use sr_mat_n, only: sr_o, wtg, obs_tot
         use optorb_cblock, only: norbterm
         use method_opt, only: method
         use contrl_file,    only: ounit
         implicit none
 
+        real(dp), DIMENSION(:), allocatable :: obs
         real(dp), DIMENSION(:), allocatable :: obs_wtg
         real(dp), DIMENSION(:), allocatable :: obs_wtg_tot
         integer :: i, j, k, kk, ish, istate, nparm, iconf
@@ -294,6 +295,7 @@ contains
 
         allocate (obs_wtg(MSTATES))
         allocate (obs_wtg_tot(MSTATES))
+        allocate (obs(MOBS, MSTATES))
 
         nstates_eff = nstates
         if (method .eq. 'lin_d') nstates_eff = 1
@@ -469,6 +471,10 @@ contains
             endif
 
         endif
+
+        deallocate (obs_wtg(MSTATES))
+        deallocate (obs_wtg_tot(MSTATES))
+        deallocate (obs(MOBS, MSTATES))
 
         return
     end
