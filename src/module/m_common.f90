@@ -306,7 +306,7 @@ module linear_norm
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: oav !(mxciterm)
+    ! real(dp), dimension(:), allocatable :: oav !(mxciterm)
     real(dp), dimension(:), allocatable :: ci_oav !(mxciterm)
 
     private
@@ -316,13 +316,13 @@ module linear_norm
 contains
     subroutine allocate_linear_norm()
         use optci, only: mxciterm
-        if (.not. allocated(oav)) allocate (oav(mxciterm))
+        ! if (.not. allocated(oav)) allocate (oav(mxciterm))
         if (.not. allocated(ci_oav)) allocate (ci_oav(mxciterm))
     end subroutine allocate_linear_norm
 
     subroutine deallocate_linear_norm()
         if (allocated(ci_oav)) deallocate (ci_oav)
-        if (allocated(oav)) deallocate (oav)
+        ! if (allocated(oav)) deallocate (oav)
     end subroutine deallocate_linear_norm
 
 end module linear_norm

@@ -438,7 +438,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, ncsf
       use dets, only: cdet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
-      use linear_norm, only: oav, ci_oav
+      use linear_norm, only: ci_oav
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use ci000, only: iciprt, nciterm
 
@@ -458,6 +458,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(ncimatdim) :: ooeav
       real(dp), dimension(mxciterm) :: oelocav
       real(dp), dimension(mxciterm) :: eav
+      real(dp), dimension(mxciterm) :: oav
 
 
 
@@ -571,7 +572,6 @@ c h_0,0, h_0,ci, h_ci,0, s_0,ci, s_ci,0
 c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
       use optci, only: mxciterm, mxcireduced, ncimatdim
-      use linear_norm, only: oav
       use optwf_contrl, only: ioptci
       use ci000, only: iciprt, nciterm
       use m_icount, only: icount_ci
@@ -585,6 +585,7 @@ c-----------------------------------------------------------------------
       integer, dimension(5) :: itemp_print
       real(dp) :: w
       real(dp), dimension(mxciterm) :: deav
+      real(dp), dimension(mxciterm) :: oav
       real(dp), dimension(mxciterm, mxcireduced) :: oeav
       real(dp), dimension(mxciterm, mxcireduced) :: oeerr
       real(dp), dimension(ncimatdim) :: ooav
