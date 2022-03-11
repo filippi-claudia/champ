@@ -11,7 +11,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use elec, only: ndn, nup
       use mmpol_hpsi, only: peQMdp, peQMq
       use multidet, only: iactv, ivirt, kref
-      use pcm_hpsi, only: pepcms, pepcmv
+      use pcm_hpsi, only: pcms, pcmv
       use wfsec, only: iwf, iwftype
       use ycompact, only: ymat
       use casula, only: i_vpsp, t_vpsp
@@ -75,10 +75,10 @@ c external charges
 
 c PCM polarization charges
       if(ipcm.gt.1) then
-        pepcms=0
-        pepcmv=0
-        call pcm_extpot_ene(coord,nelec,pepcms,pepcmv)
-        pepcm=pepcms+pepcmv
+        pcms=0
+        pcmv=0
+        call pcm_extpot_ene(coord,nelec,pcms,pcmv)
+        pepcm=pcms+pcmv
         pe_local=pe_local+pepcm
       endif
 
