@@ -63,7 +63,7 @@ endif()
 # Finds LAPACK/BLAS optionnally via MKL
 find_package(BLAS COMPONENTS Fortran QUIET)
 find_package(LAPACK COMPONENTS Fortran QUIET)
-find_package(MKL QUIET)
+find_package(MKL COMPONENTS Fortran QUIET)
 
  # Decides which algebra library to use
  if(MKL_FOUND)
