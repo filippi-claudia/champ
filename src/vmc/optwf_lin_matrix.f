@@ -1,6 +1,6 @@
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
-      use linear_norm, only: oav
+      use linear_norm, only: ci_oav
       use optwf_contrl, only: ioptjas, ioptorb, multiple_adiag
       use optwf_corsam, only: energy, energy_err
       use optwf_parms, only: nparmd, nparmj
@@ -118,7 +118,7 @@ c use semiorthogonal basis and compute minimum norm in direction orthogonal to p
         ireal=ireal+1
         bot=1.d0
         do j=1,nparmd
-          bot=bot-eig_vec(j+nparmj+is,i)*oav(j+1)/eig_vec(1,i)
+          bot=bot-eig_vec(j+nparmj+is,i)*ci_oav(j+1)/eig_vec(1,i)
         enddo
         idx=0
         anorm_orth=0.d0
@@ -349,7 +349,7 @@ c-----------------------------------------------------------------------
       use optci, only: mxciterm, ncimatdim
       use csfs, only: ccsf, ncsf, nstates
       use dets, only: cdet
-      use linear_norm, only: oav
+      use linear_norm, only: ci_oav
       use optwf_contrl, only: ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use gradhess_all, only: nparmall
@@ -464,7 +464,7 @@ c use semiorthogonal basis and compute minimum norm in direction orthogonal to p
 
           bot=1.d0
           do j=1,nparmd
-             bot=bot-eig_vec(nparmj+is+j,i)*oav(j+1)/eig_vec(1,i)
+             bot=bot-eig_vec(nparmj+is+j,i)*ci_oav(j+1)/eig_vec(1,i)
           enddo
           idx=0
           anorm_orth=0.d0
@@ -518,7 +518,7 @@ c             if(j.ne.1.and.k.ne.1) then
 
         bot=1
         do i=1,nparmd
-          bot=bot-cdelta(nparmj+i)*oav(i+1)
+          bot=bot-cdelta(nparmj+i)*ci_oav(i+1)
         enddo
 
 c minus sign because variation is subtracted when computing new parameters
