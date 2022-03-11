@@ -51,9 +51,6 @@ option(ENABLE_QMMM "enable_qmmm" off)
 option(ENABLE_PERIODIC "enable_periodic" off)
 
 ## External packages
-# Include function to Load MKL
-message("")
-
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   if (BLA_STATIC MATCHES "ON")
     set(BLA_VENDOR Intel10_64lp)
@@ -63,22 +60,29 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
 # write elseif part here for non-intel compilers
 endif()
 
-find_package(BLAS COMPONENTS Fortran REQUIRED QUIET)
-find_package(LAPACK COMPONENTS Fortran REQUIRED QUIET)
+# Finds LAPACK/BLAS optionnally via MKL
+find_package(BLAS COMPONENTS Fortran QUIET)
+find_package(LAPACK COMPONENTS Fortran QUIET)
+find_package(MKL QUIET)
 
-if (BLAS_FOUND AND LAPACK_FOUND)
+ # Decides which algebra library to use
+ if(MKL_FOUND)
+  message(STATUS "Using MKL for the linear algebra calculations!")
+  foreach(lib ${MKL_LIBRARIES})
+    message("                                    :: " ${lib})
+  endforeach(lib)
+  set(LINEAR_ALGEBRA ${MKL_LIBRARIES})
+elseif (BLAS_FOUND AND LAPACK_FOUND)
   message(STATUS "Using BLAS and LAPACK for the linear algebra calculations!")
-  # Printing individual libraries in the list
   message(STATUS "BLAS and LAPACK LIBRARIES          : ")
   foreach(lib ${BLAS_LIBRARIES})
     message("                                    :: " ${lib})
   endforeach(lib)
+  set(LINEAR_ALGEBRA ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+else()
+  message(FATAL_ERROR "No LAPACK/BLAS found please install LAPACK and BLAS")
 endif()
-
-set(LINEAR_ALGEBRA ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 link_libraries(${LINEAR_ALGEBRA})
-
-# LibFDF is built-in in the src/parser folder
 
 # Find HDF5 library
 find_package(HDF5 QUIET)
@@ -112,7 +116,6 @@ if (BUILD_DOC)
   find_package(DOXYGEN)
 endif(BUILD_DOC)
 
-
 # Find MPI
 if (ENABLE_MPI)
   find_package(MPI COMPONENTS Fortran REQUIRED)
@@ -128,11 +131,13 @@ find_package(SystemInfo)
 find_package(GitInfo)
 gitinfo(${CMAKE_SOURCE_DIR})
 
-## Compiler FLAGS
+# GNU COMPILER FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-132")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
+
+  # DEBUG MODE
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
         "-g" "-ffpe-trap=invalid,zero,overflow" "-Wall" "-Wextra"
@@ -141,44 +146,48 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
         "-Wno-c-binding-type" "-Wno-function-elimination"
         )
   endif()
+
+  # ADD TREXIO
   if (TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
 
+  # Fixed format flags
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
 
-  if (MKL_FOUND)
-    #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
-    list(APPEND Fortran_FLAGS "-m64")
-  endif()
-  #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
-
+# INTEl COMPILER FLAGS
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-O2")
 	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
+
+  # DEBUG MODE
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
-  else()
   endif()
+
+  # ADD TREX IO
   if (TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
 
+  # FIXED FORMAT FLAG
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
+
+  # old MKL flag we use to set
   #if (MKL_FOUND)
+  #    list(APPEND Fortran_FLAGS "-fdefault-integer-8")
+  #    list(APPEND Fortran_FLAGS "-m64")
   #    list(APPEND Fortran_FLAGS "-i8")
   #endif()
 
-  # debug
-  #list(APPEND Fortran_FLAGS "-g" "-O0" "-debug" "-traceback")
-
-
+# PGI COMPILER FLAGS
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()
 
+# Recap of the compiler flags
 message("")
 message(STATUS "Fortran compiler flags   : " )
 foreach(flag ${Fortran_FLAGS})
