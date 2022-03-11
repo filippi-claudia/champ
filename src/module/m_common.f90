@@ -310,7 +310,8 @@ module linear_norm
     real(dp), dimension(:), allocatable :: ci_oav !(mxciterm)
 
     private
-    public :: oav, ci_oav
+    public :: ci_oav
+    ! public :: oav
     public :: allocate_linear_norm, deallocate_linear_norm
     save
 contains
