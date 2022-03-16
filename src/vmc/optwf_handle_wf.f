@@ -80,9 +80,6 @@ c-----------------------------------------------------------------------
 
       open(2,file=filename,status='unknown')
 
-      write(2,'(''&jastrow ianalyt_lap'',i2,'' ijas'',i2,'' isc'',i2,
-     &'' nspin1'',i2,'' nspin2'',i2)') ianalyt_lap,ijas,isc,nspin1,nspin2
-      write(2,*)
       write(2,'(''jastrow_parameter'',i4)') iwf_fit
       write(2,'(3i3,a28)') norda,nordb,nordc,' norda,nordb,nordc'
 c tmp
@@ -173,7 +170,6 @@ c-----------------------------------------------------------------------
       filename='det'//filetype(1:index(filetype,' ')-1)
       open(2,file=filename,status='unknown')
 
-      write(2,'(''&electrons nelec '',i4,'' nup '',i4)') nelec,nup
       write(2,'(''# kref'',i4)') kref
       do istate=1,nstates
       write(2,'(''# State '',i4)') istate
