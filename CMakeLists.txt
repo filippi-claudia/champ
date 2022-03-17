@@ -147,10 +147,6 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
         )
   endif()
 
-  # ADD TREXIO
-  if (TREXIO_FOUND)
-    list(APPEND Fortran_FLAGS "-ltrexio")
-  endif()
 
   # Fixed format flags
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
@@ -167,10 +163,6 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
     list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
   endif()
 
-  # ADD TREX IO
-  if (TREXIO_FOUND)
-    list(APPEND Fortran_FLAGS "-ltrexio")
-  endif()
 
   # FIXED FORMAT FLAG
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
@@ -187,12 +179,23 @@ elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()
 
+
+# ADD TREXIO
+if (TREXIO_FOUND)
+  list(APPEND Fortran_FLAGS "-ltrexio")
+endif()
+
+
 # Recap of the compiler flags
 message("")
 message(STATUS "Fortran compiler flags   : " )
 foreach(flag ${Fortran_FLAGS})
   message("                                    :: " ${flag})
 endforeach(flag)
+
+if (TREXIO_FOUND)
+  list(APPEND TREX_LIBS ${TREXIO_LIBRARY})
+endif()
 
 
 ## Subdirectories
