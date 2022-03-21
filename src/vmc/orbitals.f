@@ -51,9 +51,9 @@ c spline interpolation
                 do m0=1,n0_nbasis(i)
                   m=n0_ibasis(m0,i)
                   orb(i,iorb)=orb(i,iorb)+coef(m,iorb,iwf)*phin(m,i)
-                  dorb(1,i,iorb)=dorb(1,i,iorb)+coef(m,iorb,iwf)*dphin(1,m,i)
-                  dorb(2,i,iorb)=dorb(2,i,iorb)+coef(m,iorb,iwf)*dphin(2,m,i)
-                  dorb(3,i,iorb)=dorb(3,i,iorb)+coef(m,iorb,iwf)*dphin(3,m,i)
+                  dorb(1,i,iorb)=dorb(1,i,iorb)+coef(m,iorb,iwf)*dphin(m,i,1)
+                  dorb(2,i,iorb)=dorb(2,i,iorb)+coef(m,iorb,iwf)*dphin(m,i,2)
+                  dorb(3,i,iorb)=dorb(3,i,iorb)+coef(m,iorb,iwf)*dphin(m,i,3)
                   ddorb(i,iorb)=ddorb(i,iorb)+coef(m,iorb,iwf)*d2phin(m,i)
                 enddo
               enddo
@@ -81,9 +81,9 @@ c Lagrange interpolation
                do m0=1,n0_nbasis(i)
                  m=n0_ibasis(m0,i)
                  orb(i,iorb)=orb(i,iorb)+coef(m,iorb,iwf)*phin(m,i)
-                 dorb(1,i,iorb)=dorb(1,i,iorb)+coef(m,iorb,iwf)*dphin(1,m,i)
-                 dorb(2,i,iorb)=dorb(2,i,iorb)+coef(m,iorb,iwf)*dphin(2,m,i)
-                 dorb(3,i,iorb)=dorb(3,i,iorb)+coef(m,iorb,iwf)*dphin(3,m,i)
+                 dorb(1,i,iorb)=dorb(1,i,iorb)+coef(m,iorb,iwf)*dphin(m,i,1)
+                 dorb(2,i,iorb)=dorb(2,i,iorb)+coef(m,iorb,iwf)*dphin(m,i,2)
+                 dorb(3,i,iorb)=dorb(3,i,iorb)+coef(m,iorb,iwf)*dphin(m,i,3)
                  ddorb(i,iorb)=ddorb(i,iorb)+coef(m,iorb,iwf)*d2phin(m,i)
                enddo
              enddo
@@ -105,7 +105,7 @@ c         do ielec=1,nelec
 c          bhin(ielec,jbasis)=phin(jbasis,ielec)
 c          do l=1,3
 c           i=i+1
-c           dbhin(i,jbasis)=dphin(l,jbasis,ielec)
+c           dbhin(i,jbasis)=dphin(jbasis,ielec,l)
 c          enddo
 c          d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
 c         enddo
@@ -126,9 +126,9 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
               ddorb(i,iorb)=0
               do m=1,nbasis
                 orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
-                dorb (1,i,iorb)=dorb (1,i,iorb)+coef(m,iorb,iwf)*dphin (1,m,i)
-                dorb (2,i,iorb)=dorb (2,i,iorb)+coef(m,iorb,iwf)*dphin (2,m,i)
-                dorb (3,i,iorb)=dorb (3,i,iorb)+coef(m,iorb,iwf)*dphin (3,m,i)
+                dorb (1,i,iorb)=dorb (1,i,iorb)+coef(m,iorb,iwf)*dphin (m,i,1)
+                dorb (2,i,iorb)=dorb (2,i,iorb)+coef(m,iorb,iwf)*dphin (m,i,2)
+                dorb (3,i,iorb)=dorb (3,i,iorb)+coef(m,iorb,iwf)*dphin (m,i,3)
                 ddorb(  i,iorb)=ddorb(  i,iorb)+coef(m,iorb,iwf)*d2phin( m,i)
               enddo
             enddo
@@ -145,9 +145,9 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
             do m0=1,n0_nbasis(i)
              m=n0_ibasis(m0,i)
              orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
-             dorb (1,i,iorb)=dorb (1,i,iorb)+coef(m,iorb,iwf)*dphin (1,m,i)
-             dorb (2,i,iorb)=dorb (2,i,iorb)+coef(m,iorb,iwf)*dphin (2,m,i)
-             dorb (3,i,iorb)=dorb (3,i,iorb)+coef(m,iorb,iwf)*dphin (3,m,i)
+             dorb (1,i,iorb)=dorb (1,i,iorb)+coef(m,iorb,iwf)*dphin (m,i,1)
+             dorb (2,i,iorb)=dorb (2,i,iorb)+coef(m,iorb,iwf)*dphin (m,i,2)
+             dorb (3,i,iorb)=dorb (3,i,iorb)+coef(m,iorb,iwf)*dphin (m,i,3)
              ddorb(  i,iorb)=ddorb(  i,iorb)+coef(m,iorb,iwf)*d2phin( m,i)
             enddo
            enddo
@@ -206,9 +206,9 @@ c primary geometry only
 
       do i=1,nelec
         call dcopy(nbasis,phin(1,i),1,bhin(i,1),nelec)
-        call dcopy(nbasis,dphin(1,1,i),3,dbhin(1,i,1),3*nelec)
-        call dcopy(nbasis,dphin(2,1,i),3,dbhin(2,i,1),3*nelec)
-        call dcopy(nbasis,dphin(3,1,i),3,dbhin(3,i,1),3*nelec)
+        call dcopy(nbasis,dphin(1,i,1),3,dbhin(1,i,1),3*nelec)
+        call dcopy(nbasis,dphin(1,i,2),3,dbhin(2,i,1),3*nelec)
+        call dcopy(nbasis,dphin(1,i,3),3,dbhin(3,i,1),3*nelec)
         call dcopy(nbasis,d2phin(1,i),1,d2bhin(i,1),nelec)
       enddo
       call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,  bhin,  nelec,coef(1,norb+1,iwf),nbasis,0.d0,  orb(  1,norb+1),  nelec)
@@ -224,9 +224,9 @@ c         dorb(3,i,iorb)=0.d0
 c         ddorb(i,iorb)=0.d0
 c         do 25 m=1,nbasis
 c           orb(i,iorb)=orb(i,iorb)+coef(m,iorb,iwf)*phin(m,i)
-c           dorb(1,i,iorb)=dorb(1,i,iorb)+coef(m,iorb,iwf)*dphin(1,m,i)
-c           dorb(2,i,iorb)=dorb(2,i,iorb)+coef(m,iorb,iwf)*dphin(2,m,i)
-c           dorb(3,i,iorb)=dorb(3,i,iorb)+coef(m,iorb,iwf)*dphin(3,m,i)
+c           dorb(1,i,iorb)=dorb(1,i,iorb)+coef(m,iorb,iwf)*dphin(m,i,1)
+c           dorb(2,i,iorb)=dorb(2,i,iorb)+coef(m,iorb,iwf)*dphin(m,i,2)
+c           dorb(3,i,iorb)=dorb(3,i,iorb)+coef(m,iorb,iwf)*dphin(m,i,3)
 c           ddorb(i,iorb)=ddorb(i,iorb)+coef(m,iorb,iwf)*d2phin(m,i)
 c25   continue
 
@@ -260,7 +260,7 @@ c-------------------------------------------------------------------------------
        do ielec=1,nelec
         do l=1,3
          i=i+1
-         tphin(i,ibasis)=dphin(l,ibasis,ielec)
+         tphin(i,ibasis)=dphin(ibasis,ielec,l)
          t3phin(i,ibasis)=d3phin(l,ibasis,ielec)
          do k=1,3
           j=j+1
@@ -345,9 +345,9 @@ c get basis functions for electron iel
             ddorbn(iorb)=0
             do m=1,nbasis
               orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-              dorbn(1,iorb)=dorbn(1,iorb)+coef(m,iorb,iwf)*dphin(1,m,iel)
-              dorbn(2,iorb)=dorbn(2,iorb)+coef(m,iorb,iwf)*dphin(2,m,iel)
-              dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(3,m,iel)
+              dorbn(1,iorb)=dorbn(1,iorb)+coef(m,iorb,iwf)*dphin(m,iel,1)
+              dorbn(2,iorb)=dorbn(2,iorb)+coef(m,iorb,iwf)*dphin(m,iel,2)
+              dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(m,iel,3)
               if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
             enddo
           enddo
@@ -362,9 +362,9 @@ c get basis functions for electron iel
             do m0=1,n0_nbasis(iel)
              m=n0_ibasis(m0,iel)
              orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-             dorbn(1,iorb)=dorbn(1,iorb)+coef(m,iorb,iwf)*dphin(1,m,iel)
-             dorbn(2,iorb)=dorbn(2,iorb)+coef(m,iorb,iwf)*dphin(2,m,iel)
-             dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(3,m,iel)
+             dorbn(1,iorb)=dorbn(1,iorb)+coef(m,iorb,iwf)*dphin(m,iel,1)
+             dorbn(2,iorb)=dorbn(2,iorb)+coef(m,iorb,iwf)*dphin(m,iel,2)
+             dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(m,iel,3)
              if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
             enddo
           enddo
