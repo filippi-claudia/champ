@@ -186,7 +186,7 @@ c    >           +coef(m,iorb,iwf)*phin(m,1)
 c            Gradient:
 c            bc(ixyz(iaxis(1)),ixyz(iaxis(2)),iaxis(1)+iaxis(2)+ii,iorb)=
 c    >        bc(ixyz(iaxis(1)),ixyz(iaxis(2)),iaxis(1)+iaxis(2)+ii,iorb)
-c    >          +coef(m,iorb,iwf)*dphin(iaxis(3),m,1)
+c    >          +coef(m,iorb,iwf)*dphin(m,1,iaxis(3))
 c           enddo
 
 c          enddo !iorb
@@ -545,11 +545,11 @@ c         Calculate the grids
             orb_num_lag(1,ix,iy,iz,iorb)=
      >        orb_num_lag(1,ix,iy,iz,iorb)+coef(m,iorb,iwf)*phin(m,1)
             orb_num_lag(2,ix,iy,iz,iorb)=
-     >        orb_num_lag(2,ix,iy,iz,iorb)+coef(m,iorb,iwf)*dphin(1,m,1)
+     >        orb_num_lag(2,ix,iy,iz,iorb)+coef(m,iorb,iwf)*dphin(m,1,1)
             orb_num_lag(3,ix,iy,iz,iorb)=
-     >        orb_num_lag(3,ix,iy,iz,iorb)+coef(m,iorb,iwf)*dphin(2,m,1)
+     >        orb_num_lag(3,ix,iy,iz,iorb)+coef(m,iorb,iwf)*dphin(m,1,2)
             orb_num_lag(4,ix,iy,iz,iorb)=
-     >        orb_num_lag(4,ix,iy,iz,iorb)+coef(m,iorb,iwf)*dphin(3,m,1)
+     >        orb_num_lag(4,ix,iy,iz,iorb)+coef(m,iorb,iwf)*dphin(m,1,3)
             orb_num_lag(5,ix,iy,iz,iorb)=
      >        orb_num_lag(5,ix,iy,iz,iorb)+coef(m,iorb,iwf)*d2phin(m,1)
            enddo

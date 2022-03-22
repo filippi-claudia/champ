@@ -452,7 +452,7 @@ c get basis functions for electron iel
                 ic=n0_ic(m0,iel)
                 ii=iwctype(ic)
                 do k=1,3
-                  da_orbn(k,ic,iorb)=da_orbn(k,ic,iorb)-coef(m,iorb,iwf)*dphin(k,m,iel)
+                  da_orbn(k,ic,iorb)=da_orbn(k,ic,iorb)-coef(m,iorb,iwf)*dphin(m,iel,k)
                 enddo
               enddo
               do k=1,3
@@ -466,7 +466,7 @@ c get basis functions for electron iel
             enddo
           endif
 c         write(ounit,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
-c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,1,iel)
+c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
         endif
 
        else

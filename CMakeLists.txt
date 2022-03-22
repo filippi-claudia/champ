@@ -1,6 +1,6 @@
 ## Ravindra Shinde (2021) (c) TREX-CoE
 
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 # Project's name
 project(CHAMP VERSION 2.0.5 LANGUAGES Fortran CXX C)
