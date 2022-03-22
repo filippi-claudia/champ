@@ -138,7 +138,7 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
 !        Vectorization dependent code selection
 #ifdef VECTORIZATION
 !     Following loop changed for better vectorization AVX512/AVX2
-          do iorb=1,norb+nadorb
+          do concurrent (iorb=1:norb+nadorb)
             do i=1,nelec
               orb(i,iorb)=0
               dorb(1,i,iorb)=0
@@ -166,9 +166,7 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
             do m0=1,n0_nbasis(i)
              m=n0_ibasis(m0,i)
              orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
-             dorb (1,i,iorb)=dorb (1,i,iorb)+coef(m,iorb,iwf)*dphin (m,i,1)
-             dorb (2,i,iorb)=dorb (2,i,iorb)+coef(m,iorb,iwf)*dphin (m,i,2)
-             dorb (3,i,iorb)=dorb (3,i,iorb)+coef(m,iorb,iwf)*dphin (m,i,3)
+             dorb (:,i,iorb)=dorb (:,i,iorb)+coef(m,iorb,iwf)*dphin (:,m,i)
              ddorb(  i,iorb)=ddorb(  i,iorb)+coef(m,iorb,iwf)*d2phin( m,i)
             enddo
            enddo

@@ -50,17 +50,15 @@ option(ENABLE_QMMM "enable_qmmm" off)
 # Periodic option
 option(ENABLE_PERIODIC "enable_periodic" off)
 
+# MKL option for non intel compilers
+option(USE_MKL "mkl for non intel compilers" off)
+
 ## External packages
 # Include function to Load MKL
 message("")
 
-if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  if (BLA_STATIC MATCHES "ON")
-    set(BLA_VENDOR Intel10_64lp)
-  else()
-    set(BLA_VENDOR Intel10_64_dyn)
-  endif()
-# write elseif part here for non-intel compilers
+if((CMAKE_Fortran_COMPILER_ID MATCHES "Intel") OR USE_MKL)
+  set(BLA_VENDOR Intel10_64lp_seq)
 endif()
 
 find_package(BLAS COMPONENTS Fortran REQUIRED QUIET)
@@ -130,8 +128,8 @@ gitinfo(${CMAKE_SOURCE_DIR})
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-none" "-g"
-       "-Werror=implicit-interface" "-fimplicit-none" 
+  list(APPEND Fortran_FLAGS "-O3" "-funroll-loops" "-cpp" "-ffree-line-length-none" "-g"
+       "-Werror=implicit-interface" "-fimplicit-none" #"-flto"
         "-Wall" "-Wextra"
         "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
         "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
@@ -155,10 +153,8 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O2" "-g") 
-	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel"
-      "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" 
-      "-g" 
+  list(APPEND Fortran_FLAGS "-O3" "-g") 
+	list(APPEND Fortran_FLAGS "-fpp" "-shared-intel" "-g" 
       "-warn" "all" "-diag-disable=8889,7712")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
