@@ -50,9 +50,6 @@ option(ENABLE_QMMM "enable_qmmm" off)
 # Periodic option
 option(ENABLE_PERIODIC "enable_periodic" off)
 
-# MKL option for non intel compilers
-option(USE_MKL "mkl for non intel compilers" off)
-
 ## External packages
 # Include function to Load MKL
 message("")
