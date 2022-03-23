@@ -1,57 +1,45 @@
 # Source files
-file(GLOB DMC_SOURCE
-  acues1_reduce.f
-  averages.f
-  dumper.f
-  gauss.f
-  main.f
-  mmpol_reduce.f
-  nonloc_grid.f
-  pcm_reduce.f
-  redistribute.f
-  splitj.f
-  zerest.f
-  acues1.f
-  acuest.f
-  dmc.f
-  dumper_gpop.f
-  hpsiedmc.f
-  mc_configs.f
-  move_walker.f
-  optwf_dmc.f
-  prop_dmc.f
-  restart.f
-  walksav_det.f
-  acues1_gpop.f
-  acuest_gpop.f
-  dmc_ps_mov1.f
-  finwrt.f
-  init.f
-  mmpol_dmc.f
-  multideterminant_tmove.f
-  pcm_dmc.f
-  prop_reduce.f
-  restart_gpop.f
-  walksav_jas.f
-  )
+file(GLOB DMC_SOURCE "*.f")
 
 find_package(FortranFormat)
 formatFortran("${DMC_SOURCE}") # Set Fixed format property
+
+#-------------------------------------------------------------
+# Compile shared library for VMC
+#-------------------------------------------------------------
+formatFortran("${SHARED_OBJECTS_F}") # Set Fixed format property
+add_library(shared_objects_dmc OBJECT ${SHARED_OBJECTS})
+
+#  Add headers
+target_include_directories(shared_objects_dmc
+  PUBLIC
+  ${CMAKE_SOURCE_DIR}/build/src/module
+  ${CMAKE_BINARY_DIR}/src/parser
+)
+
+target_compile_options(shared_objects_dmc
+  PRIVATE
+  ${Fortran_FLAGS}
+  "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+)
+
+add_dependencies(shared_objects_dmc shared_modules)
 
 # --------------------------------------------------------------------
 
 # executable dependencies
 add_executable(dmc.mov1
   $<TARGET_OBJECTS:shared_modules>
-  $<TARGET_OBJECTS:shared_objects>
+  $<TARGET_OBJECTS:shared_objects_dmc>
   # DMC source code
   ${DMC_SOURCE})
 
 #  Add headers
 target_include_directories(dmc.mov1
   PUBLIC
-  ${CMAKE_SOURCE_DIR}/build/src/vmc
-  ${CMAKE_SOURCE_DIR}/build/src/module
+  ${CMAKE_BINARY_DIR}/src/parser
+  ${CMAKE_BINARY_DIR}/src/shared
+  ${CMAKE_BINARY_DIR}/src/module
   )
 
 # compilation
