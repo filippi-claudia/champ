@@ -1,12 +1,2 @@
-#!/bin/bash
-set -e
-if [ $# -eq 0 ]; then
-  echo "No argument supplied, running with default of 1 processor"
-  nproc=1
-else
-nproc=$1
-fi 
-filename=revised_free
-
-mpirun -n $nproc ../../../bin/vmc.mov1 -i ${filename}.inp \
-         > ${filename}.$nproc.out 2> >(tee ${filename}.$nproc.err >&2)
+mpirun -np 1 ../../../bin/vmc.mov1 -i revised_free.inp -o revised_free_single.out -e error 
+mpirun -np 2 ../../../bin/vmc.mov1 -i revised_free.inp -o revised_free_double.out -e error 
