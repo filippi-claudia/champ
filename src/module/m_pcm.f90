@@ -246,8 +246,6 @@ module pcm_hpsi
     use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: enfpcm !(MCHS)
-    ! real(dp) :: pepcms
-    ! real(dp) :: pepcmv
     real(dp) :: qopcm
     !> DMC variables:
     real(dp) :: pcms
@@ -255,7 +253,6 @@ module pcm_hpsi
 
     private
     public :: enfpcm, qopcm
-    ! public :: pepcms, pepcmv
     public :: pcms, pcmv
     public :: allocate_pcm_hpsi, deallocate_pcm_hpsi
     save
