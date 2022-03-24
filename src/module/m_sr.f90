@@ -33,7 +33,6 @@ module sr_mat_n
     integer :: jfj
     integer :: jhfj
     integer :: nconf_n
-    ! real(dp), dimension(:, :), allocatable :: obs !(mobs,MSTATES)
     real(dp), dimension(:, :), allocatable :: s_diag !(mparm,MSTATES)
     real(dp), dimension(:), allocatable :: s_ii_inv !(mparm)
     real(dp), dimension(:, :), allocatable :: sr_ho !(mparm,mconf)
@@ -52,7 +51,6 @@ contains
         use mstates_mod, only: MSTATES
         if (.not. allocated(elocal)) allocate (elocal(mconf, MSTATES))
         if (.not. allocated(h_sr)) allocate (h_sr(mparm))
-        ! if (.not. allocated(obs)) allocate (obs(mobs, MSTATES))
         if (.not. allocated(s_diag)) allocate (s_diag(mparm, MSTATES))
         if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(mparm))
         if (.not. allocated(sr_ho)) allocate (sr_ho(mparm, mconf))
@@ -68,7 +66,6 @@ contains
         if (allocated(sr_ho)) deallocate (sr_ho)
         if (allocated(s_ii_inv)) deallocate (s_ii_inv)
         if (allocated(s_diag)) deallocate (s_diag)
-        ! if (allocated(obs)) deallocate (obs)
         if (allocated(h_sr)) deallocate (h_sr)
         if (allocated(elocal)) deallocate (elocal)
     end subroutine deallocate_sr_mat_n
