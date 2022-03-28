@@ -103,7 +103,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(3) :: vd
       real(dp), dimension(3) :: vref
       real(dp), dimension(3) :: vd_s
-      real(dp), dimension(3, norb) :: dorb_tmp
+      real(dp), dimension(norb,3) :: dorb_tmp
 
       ! NR : ymat_tmp was not saved ....
       ! it has the save keywoprd in the dev branch ...
@@ -125,21 +125,22 @@ c-----------------------------------------------------------------------
 
       psi2g=psig*psig
       psi2gi=1.d0/psi2g
-
+c      print*,"norb",norb,"norb_tot",norb_tot
+      
 c All quantities saved (old) avaliable
       if(iflag_move.eq.1) then
 
         do kk=1,3
           do iorb=1,norb
-            dorb_tmp(kk,iorb)=dorb(kk,iel,iorb)
+            dorb_tmp(iorb,kk)=dorb(kk,iel,iorb)
           enddo
         enddo
-
-        call determinante_ref_grad(iel,slmi(1,iab),dorb_tmp,vref)
+        
+        call determinante_ref_grad(iel,slmi(1,iab),dorb_tmp,norb,vref)
 
         if(iguiding.eq.0) then
           detratio=detiab(kref,1)*detiab(kref,2)/psid(1)
-          call multideterminante_grad(iel,dorb_tmp,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat(1,1,iab,1),vd)
+          call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat(1,1,iab,1),vd)
 
           do kk=1,3
             vd(kk)=vd(kk)+vref(kk)
@@ -152,7 +153,7 @@ c All quantities saved (old) avaliable
             istate=iweight_g(i)
 
             detratio=detiab(kref,1)*detiab(kref,2)/psid(istate)
-            call multideterminante_grad(iel,dorb_tmp,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat(1,1,iab,istate),vd_s)
+            call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat(1,1,iab,istate),vd_s)
 
             do kk=1,3
               vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))
@@ -174,7 +175,7 @@ c       write(ounit,*) 'VD',(vd(kk),kk=1,3)
 c Within single-electron move - quantities of electron iel not saved
        elseif(iflag_move.eq.0) then
 
-        call determinante_ref_grad(iel,slmin,dorbn,vref)
+        call determinante_ref_grad(iel,slmin,dorbn,norb_tot,vref)
 
         if(iguiding.eq.0) then
 
@@ -183,7 +184,7 @@ c Within single-electron move - quantities of electron iel not saved
            else
             detratio=detiab(kref,1)*detn(kref)/psid(1)
           endif
-          call multideterminante_grad(iel,dorbn,detratio,slmin,aan,wfmatn,ymatn,vd)
+          call multideterminante_grad(iel,dorbn,norb_tot,detratio,slmin,aan,wfmatn,ymatn,vd)
 
           do kk=1,3
             vd(kk)=vd(kk)+vref(kk)
@@ -202,7 +203,7 @@ c Within single-electron move - quantities of electron iel not saved
              else
               detratio=detiab(kref,1)*detn(kref)/psid(istate)
             endif
-            call multideterminante_grad(iel,dorbn,detratio,slmin,aan,wfmatn,ymatn(1,1,istate),vd_s)
+            call multideterminante_grad(iel,dorbn,norb_tot,detratio,slmin,aan,wfmatn,ymatn(1,1,istate),vd_s)
 
             do kk=1,3
               vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))
@@ -226,7 +227,7 @@ c       write(ounit,*) 'VD',(vd(kk),kk=1,3)
 c Within single-electron move - iel not equal to electron moved - quantities of electron iel not saved
         do kk=1,3
           do iorb=1,norb
-            dorb_tmp(kk,iorb)=dorb(kk,iel,iorb)
+            dorb_tmp(iorb,kk)=dorb(kk,iel,iorb)
           enddo
         enddo
 
@@ -240,9 +241,9 @@ c iel has same spin as electron moved
             detratio=detiab(kref,1)*detn(kref)/psid(1)
           endif
 
-          call determinante_ref_grad(iel,slmin,dorb_tmp,vref)
+          call determinante_ref_grad(iel,slmin,dorb_tmp,norb,vref)
 
-          call multideterminante_grad(iel,dorb_tmp,detratio,slmin,aan,wfmatn,ymatn,vd)
+          call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmin,aan,wfmatn,ymatn,vd)
 
 c iel has different spin than the electron moved
          else
@@ -252,13 +253,13 @@ c iel has different spin than the electron moved
             detratio=detn(kref)*detiab(kref,2)/psid(1)
           endif
 
-          call determinante_ref_grad(iel,slmi(1,iab),dorb_tmp,vref)
+          call determinante_ref_grad(iel,slmi(1,iab),dorb_tmp,norb,vref)
 
           if(iel.eq.1) call compute_ymat(1,detiab(1,1),detn,wfmat(1,1,1),ymat_tmp,1)
 
           if(iel.eq.nup+1) call compute_ymat(2,detn,detiab(1,2),wfmat(1,1,2),ymat_tmp,1)
 
-          call multideterminante_grad(iel,dorb_tmp,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat_tmp(1,1),vd)
+          call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat_tmp(1,1),vd)
         endif
 
         vd(1)=vjn(1,iel)+vd(1)+vref(1)
@@ -270,7 +271,7 @@ c iel has different spin than the electron moved
       return
       end
 c-----------------------------------------------------------------------
-      subroutine determinante_ref_grad(iel,slmi,dorb,ddx_ref)
+      subroutine determinante_ref_grad(iel,slmi,dorb,norbs,ddx_ref)
 
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
@@ -281,14 +282,15 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      integer :: iel, ik, ish, j, jel
+      integer :: iel, ik, ish, j, jel, norbs
       integer :: nel
 
       real(dp), dimension(nmat_dim) :: slmi
-      real(dp), dimension(3, norb_tot) :: dorb
+      real(dp), dimension(norbs,3) :: dorb
       real(dp), dimension(3) :: ddx_ref
 
 
+      
       ddx_ref(1)=0
       ddx_ref(2)=0
       ddx_ref(3)=0
@@ -305,9 +307,9 @@ c-----------------------------------------------------------------------
 
       ik=(jel-1)*nel
       do j=1,nel
-        ddx_ref(1)=ddx_ref(1)+slmi(j+ik)*dorb(1,iworbd(j+ish,kref))
-        ddx_ref(2)=ddx_ref(2)+slmi(j+ik)*dorb(2,iworbd(j+ish,kref))
-        ddx_ref(3)=ddx_ref(3)+slmi(j+ik)*dorb(3,iworbd(j+ish,kref))
+        ddx_ref(1)=ddx_ref(1)+slmi(j+ik)*dorb(iworbd(j+ish,kref),1)
+        ddx_ref(2)=ddx_ref(2)+slmi(j+ik)*dorb(iworbd(j+ish,kref),2)
+        ddx_ref(3)=ddx_ref(3)+slmi(j+ik)*dorb(iworbd(j+ish,kref),3)
       enddo
 
       return

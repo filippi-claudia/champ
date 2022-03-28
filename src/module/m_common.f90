@@ -462,7 +462,7 @@ module multislatern
 
     real(dp), dimension(:), allocatable :: ddorbn !(norb_tot)
     real(dp), dimension(:), allocatable :: detn !(MDET)
-    real(dp), dimension(:, :), allocatable :: dorbn !(3,norb_tot)
+    real(dp), dimension(:, :), allocatable :: dorbn !(norb_tot, 3)
     real(dp), dimension(:), allocatable :: orbn !(norb_tot)
     private
 
@@ -476,7 +476,7 @@ contains
         use vmc_mod, only: norb_tot
         if (.not. allocated(ddorbn)) allocate (ddorbn(norb_tot))
         if (.not. allocated(detn)) allocate (detn(ndet))
-        if (.not. allocated(dorbn)) allocate (dorbn(3, norb_tot))
+        if (.not. allocated(dorbn)) allocate (dorbn(norb_tot, 3))
         if (.not. allocated(orbn)) allocate (orbn(norb_tot))
     end subroutine allocate_multislatern
 

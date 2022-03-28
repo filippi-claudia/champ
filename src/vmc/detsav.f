@@ -66,9 +66,9 @@ c Written by Claudia Filippi
         enddo
 
         do j=1,nel
-          fp(1,j+ikel,iab)=dorbn(1,iworbd(j+ish,kref))
-          fp(2,j+ikel,iab)=dorbn(2,iworbd(j+ish,kref))
-          fp(3,j+ikel,iab)=dorbn(3,iworbd(j+ish,kref))
+          fp(1,j+ikel,iab)=dorbn(iworbd(j+ish,kref),1)
+          fp(2,j+ikel,iab)=dorbn(iworbd(j+ish,kref),2)
+          fp(3,j+ikel,iab)=dorbn(iworbd(j+ish,kref),3)
         enddo
         do k=1,ndet
           detiab(k,iab)=detn(k)
@@ -77,7 +77,7 @@ c Written by Claudia Filippi
          do iorb=1,norb
            orb(iel,iorb)=orbn(iorb)
            do kk=1,3
-             dorb(kk,iel,iorb)=dorbn(kk,iorb)
+             dorb(kk,iel,iorb)=dorbn(iorb,kk)
            enddo
          enddo
 

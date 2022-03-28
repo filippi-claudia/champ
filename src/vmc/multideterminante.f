@@ -121,7 +121,7 @@ c compute wave function
       end
 
 c-----------------------------------------------------------------------
-      subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
+      subroutine multideterminante_grad(iel,b,norbs,detratio,slmi,aa,wfmat,ymat,velocity)
 
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
@@ -136,21 +136,19 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      integer :: iab, iel, iorb, irep, ish
+      integer :: iab, iel, iorb, irep, ish, norbs
       integer :: j, jel, jrep, k
       integer :: kk, nel
       real(dp) :: detratio, dum
       real(dp), dimension(nelec, norb_tot) :: aa
       real(dp), dimension(MEXCIT**2, ndet) :: wfmat
       real(dp), dimension(norb_tot, nelec) :: ymat
-      real(dp), dimension(norb_tot, 3) :: b
-      real(dp), dimension(3, norb_tot) :: dorb
+      real(dp), dimension(norbs, 3) :: b
       real(dp), dimension(nelec, norb_tot, 3) :: gmat
       real(dp), dimension(3) :: velocity
       real(dp), dimension(nmat_dim) :: slmi
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
-
 
 
 
@@ -171,23 +169,15 @@ c-----------------------------------------------------------------------
 
       jel=iel-ish
 
-c TMP to fix
-      do kk=1,3
-        do iorb=1,norb
-          b(iorb,kk)=dorb(kk,iorb)
-        enddo
-      enddo
-
 
       do kk=1,3
 
         do jrep=ivirt(iab),norb
           dum=0
           do j=1,nel
-            dum=dum+b(iworbd(j+ish,kref),kk)*aa(j,jrep)
+             dum=dum+b(iworbd(j+ish,kref),kk)*aa(j,jrep)
           enddo
           dum=b(jrep,kk)-dum
-
           do irep=iactv(iab),nel
             gmat(irep,jrep,kk)=dum*slmi(irep+(jel-1)*nel)
           enddo
