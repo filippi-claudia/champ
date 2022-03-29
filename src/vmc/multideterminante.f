@@ -68,9 +68,7 @@ c temporarely copy orbn to orb
       enddo
 
 c compute wave function
-      do k=1,ndet
-
-        if(k.ne.kref) then
+      do k=1,kref-1
 
         if(iwundet(k,iab).eq.k) then
 
@@ -98,7 +96,37 @@ c compute wave function
 
         endif
 
+      enddo
+
+      do k=kref+1,ndet
+
+
+        if(iwundet(k,iab).eq.k) then
+
+          ndim=numrep_det(k,iab)
+
+          jj=0
+          do jrep=1,ndim
+            jorb=ireporb_det(jrep,k,iab)
+            do irep=1,ndim
+              iorb=irepcol_det(irep,k,iab)
+              jj=jj+1
+
+              wfmatn(jj,k)=aan(iorb,jorb)
+            enddo
+          enddo
+
+
+          call matinv(wfmatn(1,k),ndim,det)
+
+          detn(k)=det
+
+         else
+          index_det=iwundet(k,iab)
+          detn(k)=detn(index_det)
+
         endif
+
 
       enddo
 
