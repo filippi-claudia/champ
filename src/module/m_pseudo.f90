@@ -1,6 +1,6 @@
 module pseudo_mod
     !>Arguments : MPS_L, MPS_QUAD, MPS_GRID, MGAUSS
-    integer, parameter :: MPS_L = 4
+    integer, parameter :: MPS_L = 5
     integer, parameter :: MPS_QUAD = 86
     integer, parameter :: MPS_GRID = 1200
     ! for gauss ecp
