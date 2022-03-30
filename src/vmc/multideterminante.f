@@ -121,7 +121,7 @@ c compute wave function
       end
 
 c-----------------------------------------------------------------------
-      subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,wfmat,ymat,velocity)
+      subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,ymat,velocity)
 
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
@@ -141,7 +141,6 @@ c-----------------------------------------------------------------------
       integer :: kk, nel
       real(dp) :: detratio, dum
       real(dp), dimension(nelec, norb_tot) :: aa
-      real(dp), dimension(MEXCIT**2, ndet) :: wfmat
       real(dp), dimension(norb_tot, nelec) :: ymat
       real(dp), dimension(norb_tot, 3) :: b
       real(dp), dimension(3, norb_tot) :: dorb
