@@ -70,7 +70,7 @@ module optwf_corsam
     real(dp) :: sigma
 
     private
-    public :: add_diag, add_diag_tmp, energy, energy_err, force, force_err
+    public :: add_diag, energy, energy_err, force, force_err
     public :: allocate_optwf_corsam, deallocate_optwf_corsam
     public :: sigma
     save
