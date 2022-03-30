@@ -409,7 +409,7 @@ c get the value from the 3d-interpolated orbitals
             dtmp(1)=0   ! Don't compute the gradients
             dtmp(2)=0   ! Don't compute the gradients
             dtmp(3)=0   ! Don't compute the gradients
-            call spline_mo(x,iorb,orbn(iorb),dtmp,0d0,ier) 
+            call spline_mo(x,iorb,orbn(iorb),dtmp,ddorb(iel,iorb),ier) 
           enddo
          elseif(i3dlagorb.ge.1) then
           call lagrange_mose(1,x,orbn,ier)
