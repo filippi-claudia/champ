@@ -63,7 +63,6 @@ module optwf_corsam
     use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: add_diag !(MFORCE)
-    real(dp), dimension(:), allocatable :: add_diag_tmp !(MFORCE)
     real(dp), dimension(:), allocatable :: energy !(MFORCE)
     real(dp), dimension(:), allocatable :: energy_err !(MFORCE)
     real(dp), dimension(:), allocatable :: force !(MFORCE)
@@ -80,7 +79,6 @@ contains
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
         if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
-        if (.not. allocated(add_diag_tmp)) allocate (add_diag_tmp(MFORCE))
         if (.not. allocated(energy)) allocate (energy(MFORCE))
         if (.not. allocated(energy_err)) allocate (energy_err(MFORCE))
         if (.not. allocated(force)) allocate (force(MFORCE))
@@ -92,7 +90,6 @@ contains
         if (allocated(force)) deallocate (force)
         if (allocated(energy_err)) deallocate (energy_err)
         if (allocated(energy)) deallocate (energy)
-        if (allocated(add_diag_tmp)) deallocate (add_diag_tmp)
         if (allocated(add_diag)) deallocate (add_diag)
     end subroutine deallocate_optwf_corsam
 
@@ -180,11 +177,9 @@ module m_optwf
 contains
 subroutine allocate_m_optwf()
     use optwf_corsam, only: allocate_optwf_corsam
-    ! use optwf_nparmj, only: allocate_optwf_nparmj
     use optwf_wjas, only: allocate_optwf_wjas
 
     call allocate_optwf_corsam()
-    ! call allocate_optwf_nparmj()
     call allocate_optwf_wjas()
 end subroutine allocate_m_optwf
 

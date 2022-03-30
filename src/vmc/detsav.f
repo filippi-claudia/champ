@@ -58,19 +58,30 @@ c Written by Claudia Filippi
         enddo
       enddo
 
-        do k=1,ndet
-          if(k.eq.kref) go to 50
-          ndim=numrep_det(k,iab)
+      do k=1,kref-1
+     
+         ndim=numrep_det(k,iab)
           do i=1,ndim*ndim
-              wfmat(i,k,iab)=wfmatn(i,k)
+             wfmat(i,k,iab)=wfmatn(i,k)
           enddo
-   50   continue
-        enddo
+
+      enddo
+
+
+      do k=kref+1,ndet
+         
+         ndim=numrep_det(k,iab)
+         do i=1,ndim*ndim
+            wfmat(i,k,iab)=wfmatn(i,k)
+         enddo
+         
+      enddo
+      
 
         do j=1,nel
-          fp(1,j+ikel,iab)=dorbn(1,iworbd(j+ish,kref))
-          fp(2,j+ikel,iab)=dorbn(2,iworbd(j+ish,kref))
-          fp(3,j+ikel,iab)=dorbn(3,iworbd(j+ish,kref))
+          fp(1,j+ikel,iab)=dorbn(iworbd(j+ish,kref),1)
+          fp(2,j+ikel,iab)=dorbn(iworbd(j+ish,kref),2)
+          fp(3,j+ikel,iab)=dorbn(iworbd(j+ish,kref),3)
         enddo
         do k=1,ndet
           detiab(k,iab)=detn(k)
@@ -79,7 +90,7 @@ c Written by Claudia Filippi
          do iorb=1,norb
            orb(iel,iorb)=orbn(iorb)
            do kk=1,3
-             dorb(kk,iel,iorb)=dorbn(kk,iorb)
+             dorb(kk,iel,iorb)=dorbn(iorb,kk)
            enddo
          enddo
 

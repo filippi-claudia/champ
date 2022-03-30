@@ -249,10 +249,11 @@ module gradjerrb
     integer :: nbj_current
     integer :: ngrad_jas_bcum
     integer :: ngrad_jas_blocks
-    integer :: njb_current
+
 
     private
-    public :: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks, njb_current
+    public :: nbj_current, ngrad_jas_bcum, ngrad_jas_blocks
+
     save
 end module gradjerrb
 
@@ -306,23 +307,21 @@ module linear_norm
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: oav !(mxciterm)
     real(dp), dimension(:), allocatable :: ci_oav !(mxciterm)
 
     private
-    public :: oav, ci_oav
+    public :: ci_oav
+    ! public :: oav
     public :: allocate_linear_norm, deallocate_linear_norm
     save
 contains
     subroutine allocate_linear_norm()
         use optci, only: mxciterm
-        if (.not. allocated(oav)) allocate (oav(mxciterm))
         if (.not. allocated(ci_oav)) allocate (ci_oav(mxciterm))
     end subroutine allocate_linear_norm
 
     subroutine deallocate_linear_norm()
         if (allocated(ci_oav)) deallocate (ci_oav)
-        if (allocated(oav)) deallocate (oav)
     end subroutine deallocate_linear_norm
 
 end module linear_norm
@@ -436,26 +435,21 @@ module multislater
 
     real(dp), dimension(:, :), allocatable :: detiab !(MDET,2)
     !> DMC variables:
-    real(dp), dimension(:), allocatable :: detu !(MDET)
-    real(dp), dimension(:), allocatable :: detd !(MDET)
+
 
     private
     public :: detiab
-    public :: detu, detd
+    ! public :: detu, detd
     public :: allocate_multislater, deallocate_multislater
     save
 contains
     subroutine allocate_multislater()
         use dets, only: ndet
         if (.not. allocated(detiab)) allocate(detiab(ndet, 2))
-        if (.not. allocated(detu)) allocate(detu(ndet))
-        if (.not. allocated(detd)) allocate(detd(ndet))
     end subroutine allocate_multislater
 
     subroutine deallocate_multislater()
         if (allocated(detiab)) deallocate (detiab)
-        if (allocated(detu)) deallocate(detu)
-        if (allocated(detd)) deallocate(detd)
     end subroutine deallocate_multislater
 
 end module multislater
@@ -469,7 +463,7 @@ module multislatern
 
     real(dp), dimension(:), allocatable :: ddorbn !(norb_tot)
     real(dp), dimension(:), allocatable :: detn !(MDET)
-    real(dp), dimension(:, :), allocatable :: dorbn !(3,norb_tot)
+    real(dp), dimension(:, :), allocatable :: dorbn !(norb_tot, 3)
     real(dp), dimension(:), allocatable :: orbn !(norb_tot)
     private
 
@@ -483,7 +477,7 @@ contains
         use vmc_mod, only: norb_tot
         if (.not. allocated(ddorbn)) allocate (ddorbn(norb_tot))
         if (.not. allocated(detn)) allocate (detn(ndet))
-        if (.not. allocated(dorbn)) allocate (dorbn(3, norb_tot))
+        if (.not. allocated(dorbn)) allocate (dorbn(norb_tot, 3))
         if (.not. allocated(orbn)) allocate (orbn(norb_tot))
     end subroutine allocate_multislatern
 
@@ -748,12 +742,12 @@ module slater
     real(dp), dimension(:), allocatable :: fppd !(nmat_dim)
     real(dp), dimension(:), allocatable :: fppu !(nmat_dim)
     real(dp), dimension(:,:), allocatable :: fpu !(3,nmat_dim)
-    real(dp), dimension(:), allocatable :: slmui !(nmat_dim)
-    real(dp), dimension(:), allocatable :: slmdi !(nmat_dim)
+
 
     private
     public :: d2dx2, ddx, fp, fpp, slmi
-    public :: fpd, fppd, fppu, fpu, slmui, slmdi
+    public :: fpd, fppd, fppu, fpu
+    ! public :: slmui, slmdi
     public :: allocate_slater, deallocate_slater
     save
 
@@ -770,8 +764,7 @@ contains
         if (.not. allocated(fppd)) allocate(fppd(nmat_dim))
         if (.not. allocated(fppu)) allocate(fppu(nmat_dim))
         if (.not. allocated(fpu))  allocate(fpu(3,nmat_dim))
-        if (.not. allocated(slmui)) allocate(slmui(nmat_dim))
-        if (.not. allocated(slmdi)) allocate(slmdi(nmat_dim))
+
     end subroutine allocate_slater
 
     subroutine deallocate_slater()
@@ -784,8 +777,7 @@ contains
         if (allocated(fppd)) deallocate(fppd)
         if (allocated(fppu)) deallocate(fppu)
         if (allocated(fpu))  deallocate(fpu)
-        if (allocated(slmui)) deallocate(slmui)
-        if (allocated(slmdi)) deallocate(slmdi)
+
     end subroutine deallocate_slater
 
 end module slater

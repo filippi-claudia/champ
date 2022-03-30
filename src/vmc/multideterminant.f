@@ -285,28 +285,80 @@ c-----------------------------------------------------------------------
         enddo
       enddo
 
-      do k=1,ndet
-        if(k.eq.kref) goto 300
+      if(iab.eq.1) then
+         do k=1,kref-1
+            
+            cdet_equiv(k)=0
+            dcdet_equiv(k)=0
 
-        cdet_equiv(k)=0
-        dcdet_equiv(k)=0
+            if(iwundet(k,iab).eq.kref) goto 300
+            
+            kk=iwundet(k,iab)
+            
+            detall=detrefi*detu(kk)*detd(k)
+            
+            cdet_equiv(kk)=cdet_equiv(kk)+cdet(k,istate,iwf)*detall
+            dcdet_equiv(kk)=dcdet_equiv(kk)+cdet(k,istate,iwf)*detall*(denergy_det(k,1)+denergy_det(k,2))
+            
+ 300        continue
+         enddo
 
-        if(iwundet(k,iab).eq.kref) goto 300
+         do k=kref+1,ndet
+                        
+            cdet_equiv(k)=0
+            dcdet_equiv(k)=0
 
-        kk=k
-        if(iwundet(k,iab).ne.k) kk=iwundet(k,iab)
+            if(iwundet(k,iab).eq.kref) goto 401
+            
+            kk=iwundet(k,iab)
+            
+            detall=detrefi*detu(kk)*detd(k)
+            
+            cdet_equiv(kk)=cdet_equiv(kk)+cdet(k,istate,iwf)*detall
+            dcdet_equiv(kk)=dcdet_equiv(kk)+cdet(k,istate,iwf)*detall*(denergy_det(k,1)+denergy_det(k,2))
+            
+ 401        continue
+         enddo
+         
+      else
+         
+         do k=1,kref-1
 
-        if(iab.eq.1) then
-          detall=detrefi*detu(kk)*detd(k)
-         else
-          detall=detrefi*detd(kk)*detu(k)
-        endif
 
-        cdet_equiv(kk)=cdet_equiv(kk)+cdet(k,istate,iwf)*detall
-        dcdet_equiv(kk)=dcdet_equiv(kk)+cdet(k,istate,iwf)*detall*(denergy_det(k,1)+denergy_det(k,2))
+            cdet_equiv(k)=0
+            dcdet_equiv(k)=0
+            
+            if(iwundet(k,iab).eq.kref) goto 301
+            
+            kk=iwundet(k,iab)
 
- 300  continue
-      enddo
+            detall=detrefi*detd(kk)*detu(k)
+            
+            cdet_equiv(kk)=cdet_equiv(kk)+cdet(k,istate,iwf)*detall
+            dcdet_equiv(kk)=dcdet_equiv(kk)+cdet(k,istate,iwf)*detall*(denergy_det(k,1)+denergy_det(k,2))
+            
+ 301        continue
+         enddo
+
+         do k=kref+1,ndet
+
+
+            cdet_equiv(k)=0
+            dcdet_equiv(k)=0
+            
+            if(iwundet(k,iab).eq.kref) goto 402
+            
+            kk=iwundet(k,iab)
+
+            detall=detrefi*detd(kk)*detu(k)
+            
+            cdet_equiv(kk)=cdet_equiv(kk)+cdet(k,istate,iwf)*detall
+            dcdet_equiv(kk)=dcdet_equiv(kk)+cdet(k,istate,iwf)*detall*(denergy_det(k,1)+denergy_det(k,2))
+            
+ 402        continue
+         enddo
+         
+      endif
 
       do kk=1,ndet
 
