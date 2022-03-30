@@ -233,13 +233,7 @@ contains
                     endif
 
                 case ('-o', '-ou', '-out', '-output', '--output')
-                    if ((index(arg(i+1), ".out") /= 0) .or. (index(arg(i+1), ".log") /= 0) .or. &
-                        (index(arg(i+1), ".dat") /= 0) ) then
-                        file_output = arg(i+1)
-                    else
-                        write(error_unit,*) "output file should have an extention .log / .out / .dat"
-                        stop
-                    endif
+                    file_output = arg(i+1)
                     if (.not. wid ) then
                         file_output = '/dev/null'
                         close (6)
@@ -249,14 +243,7 @@ contains
                     if (iostat /= 0) error stop "error in opening output unit"
 
                 case ('-e', '-er', '-err', '-error', '--error')
-                    if ((index(arg(i+1), "error") /= 0) .or. (index(arg(i+1), ".err") /= 0) .or. &
-                        (index(arg(i+1), ".e") /= 0) ) then
-                        file_error = arg(i+1)
-                    else
-                        write(error_unit,*) "error file should be named 'error' or should have &
-                                            &an extention .e / .err to the filename"
-                        stop
-                    endif
+                    file_error = arg(i+1)
                     open (newunit=errunit,file=file_error, iostat=iostat, action='write' )
 
                 case ('-h', '--help')
