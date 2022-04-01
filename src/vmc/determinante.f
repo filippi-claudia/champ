@@ -255,9 +255,9 @@ c iel has different spin than the electron moved
 
           call determinante_ref_grad(iel,slmi(1,iab),dorb_tmp,norb,vref)
 
-          if(iel.eq.1) call compute_ymat(1,detiab(1,1),detn,wfmat(1,1,1),ymat_tmp,1)
+          if(iel.eq.1) call compute_ymat(1,detiab(1,1),detn,wfmat(:,:,1),ymat_tmp,1)
 
-          if(iel.eq.nup+1) call compute_ymat(2,detn,detiab(1,2),wfmat(1,1,2),ymat_tmp,1)
+          if(iel.eq.nup+1) call compute_ymat(2,detn,detiab(1,2),wfmat(:,:,2),ymat_tmp,1)
 
           call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),ymat_tmp(1,1),vd)
         endif

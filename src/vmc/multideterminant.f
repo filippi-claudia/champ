@@ -23,7 +23,7 @@
 
       integer :: i, iab, iel, index_det, iorb
       integer :: irep, ish, istate, jorb
-      integer :: jrep, k, ndim, nel
+      integer :: jrep, k, ndim, nel, ndim2
       real(dp) :: det, dum1, dum2, dum3
       real(dp), dimension(ndet, 2) :: eloc_det
       real(dp), dimension(3, nelec) :: vj
@@ -132,11 +132,8 @@ c     endif
 
       do k=1,ndet
 
-        if(k.eq.kref) then
-c         write(ounit,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
-          goto 200
-        endif
-
+        if(k.eq.kref) goto 200
+        
         do iab=1,2
 
           if(iwundet(k,iab).eq.k) then
@@ -148,25 +145,27 @@ c         write(ounit,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
               nel=ndn
             endif
             ndim=numrep_det(k,iab)
-
+            ndim2=ndim*ndim
+            
             do irep=1,ndim
               iorb=irepcol_det(irep,k,iab)
               do jrep=1,ndim
                 jorb=ireporb_det(jrep,k,iab)
 
-                wfmat(irep+(jrep-1)*ndim,k,iab)=aa(iorb,jorb,iab)
+                wfmat(k,irep+(jrep-1)*ndim,iab)=aa(iorb,jorb,iab)
               enddo
             enddo
 
 c           if(kref.ne.1.and.k.eq.405) then
 c           write(ounit,'('' AA det'',3i6)') k, iab,ndim
 c           do irep=1,ndim
-c             write(ounit,'(''AA'',10d12.4)') (wfmat(irep+(jrep-1)*ndim,k,iab),jrep=1,ndim)
+c             write(ounit,'(''AA'',10d12.4)') (wfmat(k,irep+(jrep-1)*ndim,iab),jrep=1,ndim)
 c           enddo
 c           endif
 
 c           write(ounit,*) 'B HELLO',k,ndim,(irepcol_det(irep,k,iab),irep=1,ndim),(ireporb_det(jrep,k,iab),jrep=1,ndim)
-            call matinv(wfmat(1,k,iab),ndim,det)
+c     call matinv(wfmat(k,:,iab),ndim,det)
+            call matinv(wfmat(k,1:ndim2,iab),ndim,det)
 
 c           write(ounit,*) 'A HELLO',k,det
             detiab(k,iab)=det
@@ -174,7 +173,7 @@ c           write(ounit,*) 'A HELLO',k,det
 c           if(kref.ne.1.and.k.eq.405) then
 c           write(ounit,'('' AA det'',i6,d12.4)') k, det
 c           do irep=1,ndim
-c             write(ounit,'(''AA'',10d12.4)') (wfmat(irep+(jrep-1)*ndim,k,iab),jrep=1,ndim)
+c             write(ounit,'(''AA'',10d12.4)') (wfmat(k,irep+(jrep-1)*ndim,iab),jrep=1,ndim)
 c           enddo
 c           endif
 
@@ -183,7 +182,7 @@ c           endif
               iorb=irepcol_det(irep,k,iab)
               do jrep=1,ndim
                 jorb=ireporb_det(jrep,k,iab)
-                denergy_det(k,iab)=denergy_det(k,iab)+wfmat(jrep+(irep-1)*ndim,k,iab)*tildem(iorb,jorb,iab)
+                denergy_det(k,iab)=denergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab)*tildem(iorb,jorb,iab)
               enddo
             enddo
 
@@ -206,14 +205,21 @@ c       write(ounit,*) 'energy_det',eloc_det(k,1),eloc_det(k,2)
  200  continue
       enddo
 
-      do k=1,ndet
-        if(k.eq.kref) goto 400
+      do k=1,kref-1
         do iab=1,2
           if(iwundet(k,iab).ne.kref) then
             detiab(k,iab)=detiab(k,iab)*detiab(kref,iab)
           endif
         enddo
- 400  continue
+
+      enddo
+
+      do k=kref+1,ndet
+        do iab=1,2
+          if(iwundet(k,iab).ne.kref) then
+            detiab(k,iab)=detiab(k,iab)*detiab(kref,iab)
+          endif
+        enddo
       enddo
 
 
@@ -221,12 +227,12 @@ c compute Ymat for future use
 
       do istate=1,nstates
 
-        call compute_ymat(1,detiab(1,1),detiab(1,2),wfmat(1,1,1),ymat(1,1,1,istate),istate)
+        call compute_ymat(1,detiab(1,1),detiab(1,2),wfmat(:,:,1),ymat(1,1,1,istate),istate)
 !        if(iforce_analy.gt.0.or.(ioptorb.gt.0.and.(method(1:3) == 'lin'))) call compute_dymat(1,dymat(1,1,1,istate))
         if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_dymat(1,dymat(1,1,1,istate))
 
         if(ndn.gt.0) then
-          call compute_ymat(2,detiab(1,1),detiab(1,2),wfmat(1,1,2),ymat(1,1,2,istate),istate)
+          call compute_ymat(2,detiab(1,1),detiab(1,2),wfmat(:,:,2),ymat(1,1,2,istate),istate)
 !          if(iforce_analy.gt.0.or.(ioptorb.gt.0.and.(method(1:3) == 'lin'))) call compute_dymat(2,dymat(1,1,2,istate))
           if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_dymat(2,dymat(1,1,2,istate))
         endif
@@ -262,7 +268,7 @@ c-----------------------------------------------------------------------
       real(dp) :: detall, detrefi
       real(dp), dimension(ndet) :: detu
       real(dp), dimension(ndet) :: detd
-      real(dp), dimension(MEXCIT**2, ndet) :: wfmat
+      real(dp), dimension(ndet, MEXCIT**2) :: wfmat
       real(dp), dimension(norb_tot, nelec) :: ymat
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
@@ -356,9 +362,9 @@ c-----------------------------------------------------------------------
          
       endif
 
-      do kk=1,ndet
+      do kk=1,kref-1
 
-        if(kk.eq.kref.or.iwundet(kk,iab).ne.kk) goto 400
+        if(iwundet(kk,iab).ne.kk) goto 400
 
         ndim=numrep_det(kk,iab)
 
@@ -367,11 +373,31 @@ c-----------------------------------------------------------------------
           do jrep=1,ndim
             jorb=ireporb_det(jrep,kk,iab)
 
-            ymat(jorb,iorb)=ymat(jorb,iorb)+cdet_equiv(kk)*wfmat(jrep+(irep-1)*ndim,kk)
+            ymat(jorb,iorb)=ymat(jorb,iorb)+cdet_equiv(kk)*wfmat(kk,jrep+(irep-1)*ndim)
           enddo
         enddo
 
  400  continue
+      enddo
+
+      do kk=kref+1,ndet
+
+c     if(iwundet(kk,iab).ne.kk) goto 410
+        if(iwundet(kk,iab).eq.kk) then
+
+        ndim=numrep_det(kk,iab)
+
+        do irep=1,ndim
+          iorb=irepcol_det(irep,kk,iab)
+          do jrep=1,ndim
+            jorb=ireporb_det(jrep,kk,iab)
+
+            ymat(jorb,iorb)=ymat(jorb,iorb)+cdet_equiv(kk)*wfmat(kk,jrep+(irep-1)*ndim)
+          enddo
+       enddo
+       
+        endif
+ 
       enddo
 
       return
@@ -421,7 +447,7 @@ c-----------------------------------------------------------------------
              dmat1(jj)=0.d0
              do lrep=1,ndim
                lorb=irepcol_det(lrep,kk,iab)
-               dmat1(jj)=dmat1(jj)+wfmat(jrep+(lrep-1)*ndim,kk,iab)*tildem(lorb,iorb,iab)
+               dmat1(jj)=dmat1(jj)+wfmat(kk,jrep+(lrep-1)*ndim,iab)*tildem(lorb,iorb,iab)
              enddo
           enddo
         enddo
@@ -431,7 +457,7 @@ c-----------------------------------------------------------------------
               dmat2(jj)=0.d0
               do lrep=1,ndim
                  ll=jrep+(lrep-1)*ndim
-                 dmat2(jj)=dmat2(jj)+dmat1(ll)*wfmat(lrep+(irep-1)*ndim,kk,iab)
+                 dmat2(jj)=dmat2(jj)+dmat1(ll)*wfmat(kk,lrep+(irep-1)*ndim,iab)
               enddo
            enddo
         enddo
@@ -442,7 +468,7 @@ c-----------------------------------------------------------------------
             jorb=ireporb_det(jrep,kk,iab)
 
             jj=jrep+(irep-1)*ndim
-            dymat(jorb,iorb)=dymat(jorb,iorb)+wfmat(jj,kk,iab)*dcdet_equiv(kk)-cdet_equiv(kk)*dmat2(jj)
+            dymat(jorb,iorb)=dymat(jorb,iorb)+wfmat(kk,jj,iab)*dcdet_equiv(kk)-cdet_equiv(kk)*dmat2(jj)
           enddo
         enddo
 
@@ -546,12 +572,12 @@ c-----------------------------------------------------------------------
       endif
 
       do istate=1,nstates
- 100    call compute_ymat(iab,detiab(1,1),detiab(1,2),wfmat(1,1,iab),ymat(1,1,iab,istate),istate)
+ 100    call compute_ymat(iab,detiab(1,1),detiab(1,2),wfmat(:,:,iab),ymat(1,1,iab,istate),istate)
       enddo
 
 c     write(ounit,*) 'DU',(detiab(k,1),k=1,56)
 c     write(ounit,*) 'DD',(detiab(k,2),k=1,56)
-c     write(ounit,*) 'WF',((wfmat(i,k,iab),i=1,9),k=1,56)
+c     write(ounit,*) 'WF',((wfmat(k,i,iab),i=1,9),k=1,56)
 c     do j=1,13
 c     if(iab.eq.2) write(ounit,*) j,'YMAT 1',(ymat(i,j,iab,1),i=1,96)
 c     enddo

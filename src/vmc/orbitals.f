@@ -303,7 +303,6 @@ c-------------------------------------------------------------------------------
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
-      real(dp), dimension(3) :: dorbn_tmp
       
       if(iperiodic.eq.0) then
 
@@ -313,14 +312,11 @@ c spline interplolation
         if(i3dsplorb.ge.1) then
           do iorb=1,norb
             ddorbn(iorb)=0    ! Don't compute the laplacian
-            dorbn_tmp(1)=1   ! compute the gradients
-            dorbn_tmp(2)=1   ! compute the gradients
-            dorbn_tmp(3)=1   ! compute the gradients
-            call spline_mo (x(1,iel),iorb,orbn(iorb),dorbn_tmp(1),ddorbn(iorb),ier)
-            dorbn(iorb,1)=dorbn_tmp(1)   ! compute the gradients
-            dorbn(iorb,2)=dorbn_tmp(2)   ! compute the gradients
-            dorbn(iorb,3)=dorbn_tmp(3)   ! compute the gradients
-          enddo
+            dorbn(iorb,1)=1   ! compute the gradients
+            dorbn(iorb,2)=1   ! compute the gradients
+            dorbn(iorb,3)=1     ! compute the gradients
+            call spline_mo (x(1,iel),iorb,orbn(iorb),dorbn(iorb,:),ddorbn(iorb),ier)
+         enddo
 
 c Lagrange interpolation
          elseif(i3dlagorb.ge.1) then

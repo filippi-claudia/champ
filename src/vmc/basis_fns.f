@@ -26,7 +26,6 @@ c ider = 3 -> value, gradient, laplacian, forces
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
       real(dp), dimension(3) :: dy
-      real(dp), dimension(3) :: dtest
       real(dp), dimension(3, 3) :: ddy
       real(dp), dimension(3) :: dlapy
       real(dp), dimension(4, MRWF) :: wfv
@@ -77,23 +76,10 @@ c compute sml and combine to generate molecular orbitals
               iwlbas0=iwlbas(ll,it)
               call slm(iwlbas0,xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
             endif
-            
-            dtest(1)=dphin(l,k,1)
-            dtest(2)=dphin(l,k,2)
-            dtest(3)=dphin(l,k,3)
-            
+
             call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),y,dy,ddy,ddy_lap,dlapy,
-     &           phin(l,k),dtest,d2phin(l,k),d2phin_all(1,1,l,k),d3phin(1,l,k),ider)
-            
-c            call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),y,dy,ddy,ddy_lap,dlapy,
-c     &           phin(l,k),dphin(l,k,1),d2phin(l,k),d2phin_all(1,1,l,k),d3phin(1,l,k),ider)
-c            print *,"dphin",dphin(l,k,:)
-c     stop "stop here"
-            
-            dphin(l,k,1)=dtest(1)
-            dphin(l,k,2)=dtest(2)
-            dphin(l,k,3)=dtest(3)
-            
+     &           phin(l,k),dphin(l,k,:),d2phin(l,k),d2phin_all(1,1,l,k),d3phin(1,l,k),ider)
+                       
             
             call n0_inc(l,k,ic)
           enddo

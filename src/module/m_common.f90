@@ -372,7 +372,7 @@ module multimat
     implicit none
 
     real(dp), dimension(:, :, :), allocatable :: aa !(MELEC,norb_tot,2)
-    real(dp), dimension(:, :, :), allocatable :: wfmat !(MEXCIT**2,MDET,2)
+    real(dp), dimension(:, :, :), allocatable :: wfmat !(MDET,MEXCIT**2,2)
 
     private
     public :: aa, wfmat
@@ -386,7 +386,7 @@ contains
         use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
         if (.not. allocated(aa)) allocate (aa(nelec, norb_tot, 2))
-        if (.not. allocated(wfmat)) allocate (wfmat(MEXCIT**2, ndet, 2))
+        if (.not. allocated(wfmat)) allocate (wfmat(ndet, MEXCIT**2, 2))
     end subroutine allocate_multimat
 
     subroutine deallocate_multimat()
@@ -403,7 +403,7 @@ module multimatn
     implicit none
 
     real(dp), dimension(:, :), allocatable :: aan !(MELEC,norb_tot)
-    real(dp), dimension(:, :), allocatable :: wfmatn !(MEXCIT**2,MDET)
+    real(dp), dimension(:, :), allocatable :: wfmatn !(MDET, MEXCIT**2)
 
     private
     public :: aan, wfmatn
@@ -416,7 +416,7 @@ contains
         use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
         if (.not. allocated(aan)) allocate (aan(nelec, norb_tot))
-        if (.not. allocated(wfmatn)) allocate (wfmatn(MEXCIT**2, ndet))
+        if (.not. allocated(wfmatn)) allocate (wfmatn(ndet,MEXCIT**2))
     end subroutine allocate_multimatn
 
     subroutine deallocate_multimatn()
