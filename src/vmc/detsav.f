@@ -22,16 +22,16 @@ c Written by Claudia Filippi
       use slater, only: fp, slmi
 
       use multislater, only: detiab
+
+      use vmc_mod, only: MEXCIT
+
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iab, iel, iflag, ikel
       integer :: iorb, ish, istate, j
-      integer :: k, kk, ndim, nel
-
-
-
-
-
+      integer :: k, kk, ndim, nel, ndim2
+c      integer, dimension(ndet) :: auxdim
 
 
 
@@ -58,24 +58,27 @@ c Written by Claudia Filippi
         enddo
       enddo
 
+c      print*,"start iteration"
+c      do k=1,ndet
+c         ndim=numrep_det(k,iab) 
+c         auxdim(k)=ndim*ndim
+c         print*,"k",k,auxdim(k)
+c      enddo
+
+      
       do k=1,kref-1
-     
          ndim=numrep_det(k,iab)
-          do i=1,ndim*ndim
-             wfmat(i,k,iab)=wfmatn(i,k)
-          enddo
-
+         ndim2=ndim*ndim
+         wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
       enddo
-
+      
 
       do k=kref+1,ndet
-         
          ndim=numrep_det(k,iab)
-         do i=1,ndim*ndim
-            wfmat(i,k,iab)=wfmatn(i,k)
-         enddo
-         
+         ndim2=ndim*ndim
+         wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
       enddo
+
       
 
         do j=1,nel

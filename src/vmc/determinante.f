@@ -86,7 +86,7 @@ c-----------------------------------------------------------------------
       use ycompactn, only: ymatn
       use coefs, only: norb
       use multimat, only: aa, wfmat
-      use multimatn, only: aan, wfmatn
+      use multimatn, only: aan
       use velocity_jastrow, only: vj, vjn
       use mstates_ctrl, only: iguiding
       use mstates3, only: iweight_g, weights_g
@@ -145,7 +145,7 @@ c All quantities saved (old) avaliable
 
         if(iguiding.eq.0) then
           detratio=detiab(kref,1)*detiab(kref,2)/psid(1)
-          call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat(1,1,iab,1),vd)
+          call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),ymat(1,1,iab,1),vd)
 
           do kk=1,3
             vd(kk)=vd(kk)+vref(kk)
@@ -158,7 +158,7 @@ c All quantities saved (old) avaliable
             istate=iweight_g(i)
 
             detratio=detiab(kref,1)*detiab(kref,2)/psid(istate)
-            call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat(1,1,iab,istate),vd_s)
+            call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),ymat(1,1,iab,istate),vd_s)
 
             do kk=1,3
               vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))
@@ -189,7 +189,7 @@ c Within single-electron move - quantities of electron iel not saved
            else
             detratio=detiab(kref,1)*detn(kref)/psid(1)
           endif
-          call multideterminante_grad(iel,dorbn,norb_tot,detratio,slmin,aan,wfmatn,ymatn,vd)
+          call multideterminante_grad(iel,dorbn,norb_tot,detratio,slmin,aan,ymatn,vd)
 
           do kk=1,3
             vd(kk)=vd(kk)+vref(kk)
@@ -208,7 +208,7 @@ c Within single-electron move - quantities of electron iel not saved
              else
               detratio=detiab(kref,1)*detn(kref)/psid(istate)
             endif
-            call multideterminante_grad(iel,dorbn,norb_tot,detratio,slmin,aan,wfmatn,ymatn(1,1,istate),vd_s)
+            call multideterminante_grad(iel,dorbn,norb_tot,detratio,slmin,aan,ymatn(1,1,istate),vd_s)
 
             do kk=1,3
               vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))
@@ -248,7 +248,7 @@ c iel has same spin as electron moved
 
           call determinante_ref_grad(iel,slmin,dorb_tmp,norb,vref)
 
-          call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmin,aan,wfmatn,ymatn,vd)
+          call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmin,aan,ymatn,vd)
 
 c iel has different spin than the electron moved
          else
@@ -260,11 +260,11 @@ c iel has different spin than the electron moved
 
           call determinante_ref_grad(iel,slmi(1,iab),dorb_tmp,norb,vref)
 
-          if(iel.eq.1) call compute_ymat(1,detiab(1,1),detn,wfmat(1,1,1),ymat_tmp,1)
+          if(iel.eq.1) call compute_ymat(1,detiab(1,1),detn,wfmat(:,:,1),ymat_tmp,1)
 
-          if(iel.eq.nup+1) call compute_ymat(2,detn,detiab(1,2),wfmat(1,1,2),ymat_tmp,1)
+          if(iel.eq.nup+1) call compute_ymat(2,detn,detiab(1,2),wfmat(:,:,2),ymat_tmp,1)
 
-          call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),wfmat(1,1,iab),ymat_tmp(1,1),vd)
+          call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),ymat_tmp(1,1),vd)
         endif
 
         vd(1)=vjn(1,iel)+vd(1)+vref(1)

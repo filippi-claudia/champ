@@ -33,7 +33,7 @@ c Written by Claudia Filippi
       integer :: irequest, irequest_array, isend, istate
       integer :: istatus, itag, iw, iw2
       integer :: j, k, kk
-      integer :: ndim, nel
+      integer :: ndim, nel, ndim2
 
       integer, allocatable, save :: krefw(:)
       real(dp), allocatable, save :: slmuiw(:, :)
@@ -56,7 +56,7 @@ c Written by Claudia Filippi
       dimension irequest_array(MPI_STATUS_SIZE)
 
       if(.not.allocated(aaw)) allocate(aaw(nelec,norb_tot,mwalk,2))
-      if(.not.allocated(wfmatw)) allocate(wfmatw(MEXCIT**2,ndet,mwalk,2))
+      if(.not.allocated(wfmatw)) allocate(wfmatw(ndet,MEXCIT**2,mwalk,2))
       if(.not.allocated(ymatw)) allocate(ymatw(norb_tot,nelec,mwalk,2,MSTATES))
       if(.not.allocated(orbw)) allocate(orbw(nelec,norb_tot,mwalk))
       if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,norb_tot,mwalk))
@@ -110,13 +110,15 @@ c Written by Claudia Filippi
             aaw(i,j,iw,iab)=aa(i,j,iab)
           enddo
          enddo
-          do k=1,ndet
-            if(k.ne.kref) then
+         do k=1,kref-1
               ndim=numrep_det(k,iab)
-              do i=1,ndim*ndim
-                wfmatw(i,k,iw,iab)=wfmat(i,k,iab)
-              enddo
-            endif
+              ndim2=ndim*ndim
+              wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab)
+         enddo
+         do k=kref+1,ndet
+            ndim=numrep_det(k,iab)
+            ndim2=ndim*ndim
+            wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab)
           enddo
        enddo
 
@@ -168,13 +170,15 @@ c Written by Claudia Filippi
             aa(i,j,iab)=aaw(i,j,iw,iab)
           enddo
          enddo
-          do k=1,ndet
-            if(k.ne.kref) then
+          do k=1,kref-1
+             ndim=numrep_det(k,iab)
+             ndim2=ndim*ndim
+             wfmat(k,1:ndim2,iab)=wfmatw(k,1:ndim2,iw,iab)
+          enddo
+          do k=kref+1,ndet
               ndim=numrep_det(k,iab)
-              do i=1,ndim*ndim
-                wfmat(i,k,iab)=wfmatw(i,k,iw,iab)
-              enddo
-            endif
+              ndim2=ndim*ndim
+              wfmat(k,1:ndim2,iab)=wfmatw(k,1:ndim2,iw,iab)
           enddo
        enddo
 
@@ -226,13 +230,15 @@ c Written by Claudia Filippi
             aaw(i,j,iw2,iab)=aaw(i,j,iw,iab)
           enddo
          enddo
-          do k=1,ndet
-            if(k.ne.krefw(iw)) then
+          do k=1,krefw(iw)-1
               ndim=numrep_det(k,iab)
-              do i=1,ndim*ndim
-                wfmatw(i,k,iw2,iab)=wfmatw(i,k,iw,iab)
-              enddo
-            endif
+              ndim2=ndim*ndim
+              wfmatw(k,1:ndim2,iw2,iab)=wfmatw(k,1:ndim2,iw,iab)
+          enddo
+          do k=krefw(iw)+1,ndet
+              ndim=numrep_det(k,iab)
+              ndim2=ndim*ndim
+              wfmatw(k,1:ndim2,iw2,iab)=wfmatw(k,1:ndim2,iw,iab)
           enddo
        enddo
 
@@ -289,7 +295,7 @@ c Written by Claudia Filippi
           ndim=numrep_det(k,iab)
           if(k.ne.krefw(nwalk).and.ndim.gt.0) then
             itag=itag+1
-            call mpi_isend(wfmatw(1,k,nwalk,iab),ndim*ndim,mpi_double_precision
+            call mpi_isend(wfmatw(k,:,nwalk,iab),ndim*ndim,mpi_double_precision
      &     ,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
           endif
         enddo
@@ -345,7 +351,7 @@ c Written by Claudia Filippi
           ndim=numrep_det(k,iab)
           if(k.ne.krefw(nwalk).and.ndim.gt.0) then
             itag=itag+1
-            call mpi_recv(wfmatw(1,k,nwalk,iab),ndim*ndim,mpi_double_precision
+            call mpi_recv(wfmatw(k,:,nwalk,iab),ndim*ndim,mpi_double_precision
      &     ,isend,itag,MPI_COMM_WORLD,istatus,ierr)
         endif
         enddo
