@@ -57,7 +57,7 @@ subroutine multideterminants_define(iflag, icheck)
     use vmc_mod, only: neqsx
     use const, only: nelec
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use dets, only: cdet, ndet
+    use dets, only: cdet, ndet, nmap
     use elec, only: ndn, nup
     use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, allocate_multidet
     use coefs, only: norb
@@ -87,7 +87,7 @@ subroutine multideterminants_define(iflag, icheck)
       integer :: j, k, kref_old, l
       integer :: ndet_dist, nel
       integer, dimension(nelec) :: iswapped
-      integer, dimension(ndet) :: itotphase
+      integer, dimension(nmap) :: itotphase
 
 
 
