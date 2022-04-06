@@ -2,7 +2,7 @@
     title           'butadiene'
     pool            'pool/'
     pseudopot       BFD
-    basis           BFD-T-normf0
+    basis           BFD-T
     mode            vmc
     backend         'hdf5'
 %endmodule
@@ -11,10 +11,10 @@ load trexio          gamess_butadiene.hdf5
 load basis_num_info  $pool/BFD-T.bfinfo
 
 load determinants    TZ_1M_500.det
-load orbitals        TZ_1M_15k.orb
+load orbitals        ci1010_pVTZ_1_orbitals.lcao
 load jastrow         jastrow_good_b3lyp.0
 load jastrow_der     jastrow.der
-load symmetry        cas1010.sym
+load symmetry        ci1010_pVTZ_1_symmetry.sym
 
 %module optwf
     ioptwf        1
@@ -37,7 +37,7 @@ load symmetry        cas1010.sym
 
 %module blocking_vmc
     vmc_nstep     20
-    vmc_nblk      50
+    vmc_nblk      100
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule
