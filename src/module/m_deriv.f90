@@ -17,11 +17,11 @@ module da_energy_sumcum
 contains
     subroutine allocate_da_energy_sumcum()
         use atom, only: ncent_tot
-        if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, ncent_tot), source=0.0_dp)
+        if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, ncent_tot))
+        if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, ncent_tot))
+        if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, ncent_tot))
+        if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, ncent_tot))
+        if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, ncent_tot))
     end subroutine allocate_da_energy_sumcum
 
     subroutine deallocate_da_energy_sumcum()
@@ -52,9 +52,9 @@ contains
     subroutine allocate_da_jastrow4val()
         use const, only: nelec
         use atom, only: ncent_tot
-        if (.not. allocated(da_d2j)) allocate (da_d2j(3, nelec, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_j)) allocate (da_j(3, nelec, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_vj)) allocate (da_vj(3, 3, nelec, ncent_tot), source=0.0_dp)
+        if (.not. allocated(da_d2j)) allocate (da_d2j(3, nelec, ncent_tot))
+        if (.not. allocated(da_j)) allocate (da_j(3, nelec, ncent_tot))
+        if (.not. allocated(da_vj)) allocate (da_vj(3, 3, nelec, ncent_tot))
     end subroutine allocate_da_jastrow4val
 
     subroutine deallocate_da_jastrow4val()
@@ -85,9 +85,9 @@ contains
         use const, only: nelec
         use atom, only: ncent_tot
         use vmc_mod, only: norb_tot
-        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, norb_tot, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, norb_tot, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, norb_tot, ncent_tot), source=0.0_dp)
+        if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, norb_tot, ncent_tot))
+        if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, norb_tot, ncent_tot))
+        if (.not. allocated(da_orb)) allocate (da_orb(3, nelec, norb_tot, ncent_tot))
     end subroutine allocate_da_orbval
 
     subroutine deallocate_da_orbval()
@@ -119,9 +119,9 @@ contains
         use const, only: nelec
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_L
-        if (.not. allocated(da_pecent)) allocate (da_pecent(3, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_vps)) allocate (da_vps(3, nelec, ncent_tot, MPS_L), source=0.0_dp)
-        if (.not. allocated(da_nonloc)) allocate (da_nonloc(3, ncent_tot), source=0.0_dp)
+        if (.not. allocated(da_pecent)) allocate (da_pecent(3, ncent_tot))
+        if (.not. allocated(da_vps)) allocate (da_vps(3, nelec, ncent_tot, MPS_L))
+        if (.not. allocated(da_nonloc)) allocate (da_nonloc(3, ncent_tot))
 
         da_nonloc = 0.0D0
 
@@ -151,8 +151,8 @@ module da_energy_now
 contains
     subroutine allocate_da_energy_now()
         use atom, only: ncent_tot
-        if (.not. allocated(da_energy)) allocate (da_energy(3, ncent_tot), source=0.0_dp)
-        if (.not. allocated(da_psi)) allocate (da_psi(3, ncent_tot), source=0.0_dp)
+        if (.not. allocated(da_energy)) allocate (da_energy(3, ncent_tot))
+        if (.not. allocated(da_psi)) allocate (da_psi(3, ncent_tot))
     end subroutine allocate_da_energy_now
 
     subroutine deallocate_da_energy_now()
@@ -180,7 +180,7 @@ contains
     subroutine allocate_deloc_dj_m()
         use optwf_parms, only: nparmj
         use mstates_mod, only: MSTATES
-        if (.not. allocated(denergy)) allocate (denergy(nparmj, MSTATES), source=0.0_dp)
+        if (.not. allocated(denergy)) allocate (denergy(nparmj, MSTATES))
     end subroutine allocate_deloc_dj_m
 
     subroutine deallocate_deloc_dj_m()
@@ -204,7 +204,7 @@ module denergy_det_m
 contains
     subroutine allocate_denergy_det_m()
         use dets, only: ndet
-        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2), source=0.0_dp)
+        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
     end subroutine allocate_denergy_det_m
 
     subroutine deallocate_denergy_det_m()
@@ -230,8 +230,8 @@ module denupdn
 contains
     subroutine allocate_denupdn()
         use vmc_mod, only: nrad
-        if (.not. allocated(rprobdn)) allocate (rprobdn(nrad), source=0.0_dp)
-        if (.not. allocated(rprobup)) allocate (rprobup(nrad), source=0.0_dp)
+        if (.not. allocated(rprobdn)) allocate (rprobdn(nrad))
+        if (.not. allocated(rprobup)) allocate (rprobup(nrad))
     end subroutine allocate_denupdn
 
     subroutine deallocate_denupdn()
@@ -261,10 +261,10 @@ contains
     subroutine allocate_derivjas()
         use const, only: nelec
         use optwf_parms, only: nparmj
-        if (.not. allocated(d2g)) allocate (d2g(nparmj), source=0.0_dp)
-        if (.not. allocated(g)) allocate (g(3, nelec, nparmj), source=0.0_dp)
-        if (.not. allocated(go)) allocate (go(nelec, nelec, nparmj), source=0.0_dp)
-        if (.not. allocated(gvalue)) allocate (gvalue(nparmj), source=0.0_dp)
+        if (.not. allocated(d2g)) allocate (d2g(nparmj))
+        if (.not. allocated(g)) allocate (g(3, nelec, nparmj))
+        if (.not. allocated(go)) allocate (go(nelec, nelec, nparmj))
+        if (.not. allocated(gvalue)) allocate (gvalue(nparmj))
     end subroutine allocate_derivjas
 
     subroutine deallocate_derivjas()
@@ -321,10 +321,10 @@ module ijasnonlin
 contains
     subroutine allocate_ijasnonlin()
         use atom, only: nctype_tot
-        if (.not. allocated(d1d2a)) allocate (d1d2a(nctype_tot), source=0.0_dp)
-        if (.not. allocated(d1d2b)) allocate (d1d2b(2), source=0.0_dp)
-        if (.not. allocated(d2d2a)) allocate (d2d2a(nctype_tot), source=0.0_dp)
-        if (.not. allocated(d2d2b)) allocate (d2d2b(2), source=0.0_dp)
+        if (.not. allocated(d1d2a)) allocate (d1d2a(nctype_tot))
+        if (.not. allocated(d1d2b)) allocate (d1d2b(2))
+        if (.not. allocated(d2d2a)) allocate (d2d2a(nctype_tot))
+        if (.not. allocated(d2d2b)) allocate (d2d2b(2))
     end subroutine allocate_ijasnonlin
 
     subroutine deallocate_ijasnonlin()
@@ -358,10 +358,10 @@ module derivest
 
 contains
     subroutine allocate_derivest()
-        if (.not. allocated(derivcm2)) allocate(derivcm2(MFORCE), source=0.0_dp)
-        if (.not. allocated(derivcum)) allocate(derivcum(10,MFORCE), source=0.0_dp)
-        if (.not. allocated(derivsum)) allocate(derivsum(10,MFORCE), source=0.0_dp)
-        if (.not. allocated(derivtotave_num_old)) allocate(derivtotave_num_old(MFORCE), source=0.0_dp)
+        if (.not. allocated(derivcm2)) allocate(derivcm2(MFORCE))
+        if (.not. allocated(derivcum)) allocate(derivcum(10,MFORCE))
+        if (.not. allocated(derivsum)) allocate(derivsum(10,MFORCE))
+        if (.not. allocated(derivtotave_num_old)) allocate(derivtotave_num_old(MFORCE))
     end subroutine allocate_derivest
 
     subroutine deallocate_derivest

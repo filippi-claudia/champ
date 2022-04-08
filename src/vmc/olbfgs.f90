@@ -1,8 +1,8 @@
 module olbfgs
 implicit none
 
-    private 
-    
+    private
+
         integer, parameter :: dp = kind(0.d0)
         real(dp), allocatable :: s(:, :)
         real(dp), allocatable :: y(:, :)
@@ -16,16 +16,16 @@ implicit none
 
 contains
 
-    subroutine initialize_olbfgs(num_pars, history_size) 
+    subroutine initialize_olbfgs(num_pars, history_size)
         integer, intent(in) :: num_pars
         integer, intent(in) :: history_size
         integer :: i
 
         ! initial setup upon first call
-        allocate(s(history_size, num_pars), source=0.0_dp)
-        allocate(y(history_size, num_pars), source=0.0_dp)
-        allocate(gradient_prev(num_pars), source=0.0_dp)
-        allocate(parms_prev(num_pars), source=0.0_dp)
+        allocate(s(history_size, num_pars))
+        allocate(y(history_size, num_pars))
+        allocate(gradient_prev(num_pars))
+        allocate(parms_prev(num_pars))
 
         gradient_prev = (/(eps_zero, i=1, num_pars)/)
         parms_prev = (/(eps_zero, i=1, num_pars)/)
@@ -39,12 +39,12 @@ contains
         integer, intent(in) :: iteration
 
         integer :: n
-        
+
         ! local data
         real(dp), allocatable :: p(:)
 
         n = size(s(1, :))
-        allocate(p(n), source=0.0_dp)
+        allocate(p(n))
 
 
         ! compute initial search direction
@@ -75,7 +75,7 @@ contains
     end subroutine
 
     function initial_direction(gradient, iteration)
-        real(dp), allocatable :: initial_direction(:) 
+        real(dp), allocatable :: initial_direction(:)
         real(dp), intent(in) :: gradient(:)
         integer, intent(in) :: iteration
 
@@ -87,10 +87,10 @@ contains
         m = size(s(:, 1)) ! history size
 
         ! allocate return value
-        allocate(initial_direction(n), source=0.0_dp)
+        allocate(initial_direction(n))
 
         ! allocate local data
-        allocate(alphas(min(m, iteration)), source=0.0_dp)
+        allocate(alphas(min(m, iteration)))
 
         ! perform hessian approximation using history
         initial_direction = -gradient(1:n)
@@ -126,7 +126,7 @@ contains
             end do
         end if
 
-    end function 
+    end function
 
     function transform_index(index, iteration)
         integer, intent(in) :: index, iteration
@@ -138,7 +138,7 @@ contains
 
         ! determine true index into s, y
         if (iteration <= m) then
-            transform_index = index 
+            transform_index = index
         else
             transform_index = mod(index + curvature_index, m) + 1
         end if

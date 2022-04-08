@@ -227,6 +227,7 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use contrl_file,    only: ounit
       use coefs, only: norb
       use precision_kinds, only: dp
+      use vmc_mod, only: norb_tot
       implicit none
 
       integer :: iband, iel, ig, ikvec, iorb
@@ -235,7 +236,7 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       real(dp) :: ddsin_rm, sin_im, sin_rm
       real(dp), dimension(3) :: x
       real(dp), dimension(*) :: orb
-      real(dp), dimension(3,*) :: dorb
+      real(dp), dimension(norb_tot,3) :: dorb
       real(dp), dimension(*) :: ddorb
       real(dp), dimension(3) :: dcos_rp
       real(dp), dimension(3) :: dsin_rm
@@ -255,19 +256,15 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       real(dp), dimension(IVOL_RATIO) :: ddsin_k
 
 
-
-
-
-
-
+      do k=1,3
+          do iorb=1,norb
+            dorb(iorb,k)=0
+          enddo
+      enddo
 
       do iorb=1,norb
-c       do 5 iel=1,nelec
-          orb(iorb)=0
-          ddorb(iorb)=0
-          do k=1,3
-            dorb(k,iorb)=0
-          enddo
+         orb(iorb)=0
+         ddorb(iorb)=0
       enddo
 
 c     do 130 iel=1,nelec
@@ -351,7 +348,7 @@ c    &)
      & iel,iorb,orb(iorb),cos_k(ikvec),sin_k(ikvec),c_rp(1,jorb),c_ip(1,jorb),cos_rp,cos_ip,sin_rm,sin_im
 
             do k=1,3
-              dorb(k,iorb)=dcos_k(k,ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
+              dorb(iorb,k)=dcos_k(k,ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                    -dsin_k(k,ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
      &                    +cos_k(ikvec)*(dcos_rp(k)-dsin_im(k))
      &                    -sin_k(ikvec)*(dsin_rm(k)+dcos_ip(k))
@@ -364,7 +361,7 @@ c    &)
 c      write(ounit,'(''ddcos_k(ikvec),ddsin_k(ikvec),cos_k(ikvec),ddcos_rp,sin_k(ikvec),ddsin_rm='',9f9.4)')
 c    &ddcos_k(ikvec),ddsin_k(ikvec),cos_k(ikvec),ddcos_rp,sin_k(ikvec),ddsin_rm
 
-c           write(ounit,'(''orb'',2i5,9d12.4)') iel,iorb,orb(iorb),(dorb(k,iorb),k=1,3)
+c           write(ounit,'(''orb'',2i5,9d12.4)') iel,iorb,orb(iorb),(dorb(iorb,k),k=1,3)
             do k=1,3
               ddorb(iorb)=ddorb(iorb)
      &                   +2*(dcos_k(k,ikvec)*(dcos_rp(k)-dsin_im(k))
@@ -385,7 +382,7 @@ c           if(k_inv(ikvec).eq.1) goto 130
      &               +sin_k(ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
 
             do k=1,3
-              dorb(k,iorb)=dcos_k(k,ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
+              dorb(iorb,k)=dcos_k(k,ikvec)*(c_ip(1,jorb)+sin_rm+cos_ip)
      &                    +dsin_k(k,ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                    +cos_k(ikvec)*(dsin_rm(k)+dcos_ip(k))
      &                    +sin_k(ikvec)*(dcos_rp(k)-dsin_im(k))
@@ -395,7 +392,7 @@ c           if(k_inv(ikvec).eq.1) goto 130
      &                 +ddsin_k(ikvec)*(c_rp(1,jorb)+cos_rp-sin_im)
      &                 +cos_k(ikvec)*(ddsin_rm+ddcos_ip)
      &                 +sin_k(ikvec)*(ddcos_rp-ddsin_im)
-c           write(ounit,'(''orb2'',2i5,9d12.4)') iel,iorb,orb(iorb),(dorb(k,iorb),k=1,3)
+c           write(ounit,'(''orb2'',2i5,9d12.4)') iel,iorb,orb(iorb),(dorb(iorb,k),k=1,3)
             do k=1,3
               ddorb(iorb)=ddorb(iorb)
      &                   +2*(dcos_k(k,ikvec)*(dsin_rm(k)+dcos_ip(k))

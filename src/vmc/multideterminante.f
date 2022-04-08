@@ -20,7 +20,7 @@
 
       integer :: i, iab, iel, index_det, iorb
       integer :: irep, ish, istate, jj
-      integer :: jorb, jrep, k, ndim
+      integer :: jorb, jrep, k, ndim, ndim2
       integer :: nel
       real(dp) :: det, dum1
       real(dp), dimension(nelec, norb_tot, 3) :: gmat
@@ -68,14 +68,13 @@ c temporarely copy orbn to orb
       enddo
 
 c compute wave function
-      do k=1,ndet
-
-        if(k.ne.kref) then
+      do k=1,kref-1
 
         if(iwundet(k,iab).eq.k) then
 
           ndim=numrep_det(k,iab)
-
+          ndim2=ndim*ndim
+          
           jj=0
           do jrep=1,ndim
             jorb=ireporb_det(jrep,k,iab)
@@ -83,12 +82,12 @@ c compute wave function
               iorb=irepcol_det(irep,k,iab)
               jj=jj+1
 
-              wfmatn(jj,k)=aan(iorb,jorb)
+              wfmatn(k,jj)=aan(iorb,jorb)
             enddo
           enddo
 
 
-          call matinv(wfmatn(1,k),ndim,det)
+          call matinv(wfmatn(k,1:ndim2),ndim,det)
 
           detn(k)=det
 
@@ -98,15 +97,58 @@ c compute wave function
 
         endif
 
+      enddo
+
+      do k=kref+1,ndet
+
+
+        if(iwundet(k,iab).eq.k) then
+
+          ndim=numrep_det(k,iab)
+          ndim2=ndim*ndim
+          
+          jj=0
+          do jrep=1,ndim
+            jorb=ireporb_det(jrep,k,iab)
+            do irep=1,ndim
+              iorb=irepcol_det(irep,k,iab)
+              jj=jj+1
+
+              wfmatn(k,jj)=aan(iorb,jorb)
+            enddo
+          enddo
+
+
+          call matinv(wfmatn(k,1:ndim2),ndim,det)
+          
+          detn(k)=det
+
+         else
+          index_det=iwundet(k,iab)
+          detn(k)=detn(index_det)
+
         endif
+
 
       enddo
 
-      do k=1,ndet
-        if(k.ne.kref.and.iwundet(k,iab).ne.kref) then
+      do k=1,kref-1
+        if(iwundet(k,iab).ne.kref) then
           detn(k)=detn(k)*detn(kref)
         endif
       enddo
+
+      do k=kref+1,ndet
+        if(iwundet(k,iab).ne.kref) then
+          detn(k)=detn(k)*detn(kref)
+        endif
+      enddo
+
+c      do k=1,ndet
+c        if(k.ne.kref.and.iwundet(k,iab).ne.kref) then
+c          detn(k)=detn(k)*detn(kref)
+c        endif
+c      enddo
 
       do istate=1,nstates
         if(iab.eq.1) call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
@@ -121,7 +163,8 @@ c compute wave function
       end
 
 c-----------------------------------------------------------------------
-      subroutine multideterminante_grad(iel,dorb,detratio,slmi,aa,ymat,velocity)
+
+      subroutine multideterminante_grad(iel,b,norbs,detratio,slmi,aa,ymat,velocity)
 
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
@@ -136,20 +179,18 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      integer :: iab, iel, iorb, irep, ish
+      integer :: iab, iel, iorb, irep, ish, norbs
       integer :: j, jel, jrep, k
       integer :: kk, nel
       real(dp) :: detratio, dum
       real(dp), dimension(nelec, norb_tot) :: aa
       real(dp), dimension(norb_tot, nelec) :: ymat
-      real(dp), dimension(norb_tot, 3) :: b
-      real(dp), dimension(3, norb_tot) :: dorb
+      real(dp), dimension(norbs, 3) :: b
       real(dp), dimension(nelec, norb_tot, 3) :: gmat
       real(dp), dimension(3) :: velocity
       real(dp), dimension(nmat_dim) :: slmi
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
-
 
 
 
@@ -170,23 +211,15 @@ c-----------------------------------------------------------------------
 
       jel=iel-ish
 
-c TMP to fix
-      do kk=1,3
-        do iorb=1,norb
-          b(iorb,kk)=dorb(kk,iorb)
-        enddo
-      enddo
-
 
       do kk=1,3
 
         do jrep=ivirt(iab),norb
           dum=0
           do j=1,nel
-            dum=dum+b(iworbd(j+ish,kref),kk)*aa(j,jrep)
+             dum=dum+b(iworbd(j+ish,kref),kk)*aa(j,jrep)
           enddo
           dum=b(jrep,kk)-dum
-
           do irep=iactv(iab),nel
             gmat(irep,jrep,kk)=dum*slmi(irep+(jel-1)*nel)
           enddo

@@ -26,7 +26,6 @@ c ider = 3 -> value, gradient, laplacian, forces
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
       real(dp), dimension(3) :: dy
-      real(dp), dimension(3) :: dtest
       real(dp), dimension(3, 3) :: ddy
       real(dp), dimension(3) :: dlapy
       real(dp), dimension(4, MRWF) :: wfv
@@ -76,18 +75,12 @@ c compute sml and combine to generate molecular orbitals
               k0=k
               iwlbas0=iwlbas(ll,it)
               call slm(iwlbas0,xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
-           endif
 
-           dtest(1)=dphin(l,k,1)
-           dtest(2)=dphin(l,k,2)
-           dtest(3)=dphin(l,k,3)
-           
+            endif
+
             call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),y,dy,ddy,ddy_lap,dlapy,
-     &          phin(l,k),dtest,d2phin(l,k),d2phin_all(1,1,l,k),d3phin(1,l,k),ider)
-            
-            dphin(l,k,1)=dtest(1)
-            dphin(l,k,2)=dtest(2)
-            dphin(l,k,3)=dtest(3)
+     &           phin(l,k),dphin(l,k,:),d2phin(l,k),d2phin_all(1,1,l,k),d3phin(1,l,k),ider)
+                       
             
             call n0_inc(l,k,ic)
           enddo
@@ -188,7 +181,9 @@ c-------------------------------------------------------------------
 
       integer :: ic, k, l
 
-      if(abs(phin(l,k))+abs(dphin(l, k, 1))+abs(dphin(l, k, 2))+abs(dphin(l, k, 3)).gt.1.d-20)then
+
+      if(abs(phin(l,k))+abs(dphin(l,k,1))+abs(dphin(l,k,2))+abs(dphin(l,k,3)).gt.1.d-20)then
+
        n0_nbasis(k)=n0_nbasis(k)+1
        n0_ibasis(n0_nbasis(k),k)=l
        n0_ic(n0_nbasis(k),k)=ic

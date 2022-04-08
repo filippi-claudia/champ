@@ -119,10 +119,10 @@ module grid3d_param
     save
 contains
     subroutine allocate_grid3d_param()
-        if (.not. allocated(endpt)) allocate (endpt(3), source=0.0_dp)
+        if (.not. allocated(endpt)) allocate (endpt(3))
         if (.not. allocated(nstep3d)) allocate (nstep3d(3), source=0)
-        if (.not. allocated(origin)) allocate (origin(3), source=0.0_dp)
-        if (.not. allocated(step3d)) allocate (step3d(3), source=0.0_dp)
+        if (.not. allocated(origin)) allocate (origin(3))
+        if (.not. allocated(step3d)) allocate (step3d(3))
     end subroutine allocate_grid3d_param
 
     subroutine deallocate_grid3d_param()
@@ -166,8 +166,8 @@ module orbital_num_lag
 contains
     subroutine allocate_orbital_num_lag()
         use grid_lagrange_mod, only: LAGSTART, LAGEND
-        if (.not. allocated(denom)) allocate (denom(LAGSTART:LAGEND, 3), source=0.0_dp)
-        if (.not. allocated(step_inv)) allocate (step_inv(3, 3), source=0.0_dp)
+        if (.not. allocated(denom)) allocate (denom(LAGSTART:LAGEND, 3))
+        if (.not. allocated(step_inv)) allocate (step_inv(3, 3))
     end subroutine allocate_orbital_num_lag
 
     subroutine deallocate_orbital_num_lag()

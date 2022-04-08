@@ -21,7 +21,7 @@ contains
     !     use force_mod, only: MWF
     !     use precision_kinds, only: dp
     !     use vmc_mod, only: norb_tot, MBASIS
-    !     if (.not. allocated(coef)) allocate (coef(MBASIS, norb_tot, MWF), source=0.0_dp)
+    !     if (.not. allocated(coef)) allocate (coef(MBASIS, norb_tot, MWF))
     ! end subroutine allocate_coefs
 
     subroutine deallocate_coefs()
@@ -41,7 +41,7 @@ contains
     !     if (dim2 .lt. new_size) then
     !         dim1 = size(coef, 1)
     !         dim3 = size(coef, 3)
-    !         allocate (tmp_array(dim1, new_size, dim3), source=0.0_dp)
+    !         allocate (tmp_array(dim1, new_size, dim3))
     !         tmp_array(:, :dim2, :) = coef
     !         deallocate (coef)
     !         call move_alloc(tmp_array, coef)
