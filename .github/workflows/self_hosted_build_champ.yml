@@ -14,6 +14,8 @@ on:
     branches:
       - 'releases/**'
       - main
+      - cartesian_d
+      - cartesian_d_qmckl
       - debug_intel
       - feature/debug-ci
 
