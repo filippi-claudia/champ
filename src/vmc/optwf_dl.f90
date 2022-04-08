@@ -137,11 +137,11 @@ use optwf_contrl, only: idl_flag
         use optwf_contrl, only: nparm
 
         !> allocate
-        allocate (deltap(nparm), source=0.0_dp)
-        allocate (dl_momentum(nparm), source=0.0_dp)  !< 'momentum' variable
-        allocate (dl_EG_sq(nparm), source=0.0_dp)     !< moving average of past squared gradient
-        allocate (dl_EG(nparm), source=0.0_dp)        !< moving average of past gradient
-        allocate (parameters(nparm), source=0.0_dp)   !< vector of wave function parameter
+        allocate (deltap(nparm))
+        allocate (dl_momentum(nparm))  !< 'momentum' variable
+        allocate (dl_EG_sq(nparm))     !< moving average of past squared gradient
+        allocate (dl_EG(nparm))        !< moving average of past gradient
+        allocate (parameters(nparm))   !< vector of wave function parameter
 
         !> init
         dl_momentum(:) = 0.d0

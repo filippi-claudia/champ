@@ -73,12 +73,12 @@ module branch
 
 contains
    subroutine allocate_branch()
-      if (.not. allocated(eold)) allocate(eold(mwalk,MFORCE), source=0.0_dp)
-      if (.not. allocated(ff)) allocate(ff(0:MFPRD1), source=0.0_dp)
-      if (.not. allocated(pwt)) allocate(pwt(mwalk,MFORCE), source=0.0_dp)
-      if (.not. allocated(wt)) allocate(wt(mwalk), source=0.0_dp)
-      if (.not. allocated(wtgen)) allocate(wtgen(0:MFPRD1), source=0.0_dp)
-      if (.not. allocated(wthist)) allocate(wthist(mwalk,0:MFORCE_WT_PRD,MFORCE), source=0.0_dp)
+      if (.not. allocated(eold)) allocate(eold(mwalk,MFORCE))
+      if (.not. allocated(ff)) allocate(ff(0:MFPRD1))
+      if (.not. allocated(pwt)) allocate(pwt(mwalk,MFORCE))
+      if (.not. allocated(wt)) allocate(wt(mwalk))
+      if (.not. allocated(wtgen)) allocate(wtgen(0:MFPRD1))
+      if (.not. allocated(wthist)) allocate(wthist(mwalk,0:MFORCE_WT_PRD,MFORCE))
    end subroutine allocate_branch
 
 !splitj.f:      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eold(mwalk,MFORCE),
@@ -114,11 +114,11 @@ module c_averages
 
 contains
    subroutine allocate_c_averages()
-      if (.not. allocated(prop)) allocate(prop(mprop), source=0.0_dp)
-      if (.not. allocated(wprop)) allocate(wprop(mprop), source=0.0_dp)
-      if (.not. allocated(cum_av)) allocate(cum_av(mprop), source=0.0_dp)
-      if (.not. allocated(cum_av2)) allocate(cum_av2(mprop), source=0.0_dp)
-      if (.not. allocated(cum_w)) allocate(cum_w(mprop), source=0.0_dp)
+      if (.not. allocated(prop)) allocate(prop(mprop))
+      if (.not. allocated(wprop)) allocate(wprop(mprop))
+      if (.not. allocated(cum_av)) allocate(cum_av(mprop))
+      if (.not. allocated(cum_av2)) allocate(cum_av2(mprop))
+      if (.not. allocated(cum_w)) allocate(cum_w(mprop))
    end subroutine allocate_c_averages
 
    subroutine deallocate_c_averages()
@@ -172,7 +172,7 @@ module jacobsave
 
 contains
    subroutine allocate_jacobsave()
-      if (.not. allocated(ajacold)) allocate(ajacold(mwalk, MFORCE), source=0.0_dp)
+      if (.not. allocated(ajacold)) allocate(ajacold(mwalk, MFORCE))
    end subroutine allocate_jacobsave
 
    subroutine deallocate_jacobsave()
@@ -202,8 +202,8 @@ contains
       use dmc_mod, only: mwalk
       use force_mod, only: MFORCE
       use const, only: nelec
-      if (.not. allocated(fratio)) allocate(fratio(mwalk, MFORCE), source=0.0_dp)
-      if (.not. allocated(xdrifted)) allocate(xdrifted(3, nelec, mwalk, MFORCE), source=0.0_dp)
+      if (.not. allocated(fratio)) allocate(fratio(mwalk, MFORCE))
+      if (.not. allocated(xdrifted)) allocate(xdrifted(3, nelec, mwalk, MFORCE))
    end subroutine allocate_velratio
 
    subroutine deallocate_velratio()

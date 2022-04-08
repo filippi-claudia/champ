@@ -60,7 +60,7 @@ contains
 
         sigma_sav = 0.0
         energy_sav= 0.0
-        allocate (deltap(mparm*MSTATES), source=0.0_dp)
+        allocate (deltap(mparm*MSTATES))
 
         nadorb_sav = nadorb
 
@@ -277,13 +277,14 @@ contains
         use optwf_func, only: ifunc_omega, omega
         use sa_weights, only: weights
         use sr_index, only: jelo, jelo2, jelohfj
-        use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
+        use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho
         use sr_mat_n, only: sr_o, wtg, obs_tot
         use optorb_cblock, only: norbterm
         use method_opt, only: method
         use contrl_file,    only: ounit
         implicit none
 
+        real(dp), DIMENSION(:, :), allocatable :: obs
         real(dp), DIMENSION(:), allocatable :: obs_wtg
         real(dp), DIMENSION(:), allocatable :: obs_wtg_tot
         integer :: i, j, k, kk, ish, istate, nparm, iconf
@@ -292,8 +293,9 @@ contains
         real(dp) :: sr_adiag, var, wts, aux, den, dum1, dum2, smax
         real(dp), parameter :: eps_eigval = 0.d0 ! in the original implementation, it is not used
 
-        allocate (obs_wtg(MSTATES), source=0.0_dp)
-        allocate (obs_wtg_tot(MSTATES), source=0.0_dp)
+        allocate (obs_wtg(MSTATES))
+        allocate (obs_wtg_tot(MSTATES))
+        allocate (obs(MOBS, MSTATES))
 
         nstates_eff = nstates
         if (method .eq. 'lin_d') nstates_eff = 1
@@ -470,6 +472,10 @@ contains
 
         endif
 
+        deallocate (obs_wtg)
+        deallocate (obs_wtg_tot)
+        deallocate (obs)
+
         return
     end
 
@@ -531,7 +537,7 @@ contains
         use force_fin, only: da_energy_ave
         use force_mat_n, only: force_o
         use mpiconf, only: idtask
-        use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs, sr_ho
+        use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs_tot, sr_ho
         use sr_mat_n, only: sr_o, wtg
         use sr_index, only: jelo
         use contrl_file,    only: ounit
@@ -552,13 +558,13 @@ contains
         real(dp) :: dum, energy_tot, force_tmp, wtoti
 
         wtoti = 0.0
-        allocate (cloc(MTEST, MTEST), source=0.0_dp)
-        allocate (c(MTEST, MTEST), source=0.0_dp)
-        allocate (oloc(mparm), source=0.0_dp)
-        allocate (o(mparm), source=0.0_dp)
-        allocate (p(mparm), source=0.0_dp)
-        allocate (tmp(mparm), source=0.0_dp)
-        allocate (work(MTEST), source=0.0_dp)
+        allocate (cloc(MTEST, MTEST))
+        allocate (c(MTEST, MTEST))
+        allocate (oloc(mparm))
+        allocate (o(mparm))
+        allocate (p(mparm))
+        allocate (tmp(mparm))
+        allocate (work(MTEST))
         allocate (ipvt(MTEST), source=0)
 
         if (nparm .gt. MTEST) stop 'mparm>MTEST'
@@ -600,12 +606,12 @@ contains
 
         if (idtask .eq. 0) then
 
-            wtoti = 1.d0/obs(1, 1)
+            wtoti = 1.d0/obs_tot(1, 1)
             do i = 1, nparm
-                dum = (obs(jhfj + i - 1, 1) - obs(jefj + i - 1, 1))
+                dum = (obs_tot(jhfj + i - 1, 1) - obs_tot(jefj + i - 1, 1))
                 c(i, i) = c(i, i)*wtoti - dum*dum
                 do j = i + 1, nparm
-                    c(i, j) = c(i, j)*wtoti - dum*(obs(jhfj + j - 1, 1) - obs(jefj + j - 1, 1))
+                    c(i, j) = c(i, j)*wtoti - dum*(obs_tot(jhfj + j - 1, 1) - obs_tot(jefj + j - 1, 1))
                     c(j, i) = c(i, j)
                 enddo
             enddo
@@ -619,12 +625,12 @@ contains
             call dgetri(nparm, c, MTEST, ipvt, work, MTEST, info)
 
             do iparm = 1, nparm
-                tmp(iparm) = obs(jhfj + iparm - 1, 1) - obs(jefj + iparm - 1, 1)
+                tmp(iparm) = obs_tot(jhfj + iparm - 1, 1) - obs_tot(jefj + iparm - 1, 1)
             enddo
 
         endif
 
-        energy_tot = obs(2, 1)
+        energy_tot = obs_tot(2, 1)
 
         call MPI_BCAST(energy_tot, 1, MPI_REAL8, 0, MPI_COMM_WORLD, j)
 
@@ -648,7 +654,7 @@ contains
                 if (idtask .eq. 0) then
 
                     do i = 1, nparm
-                        o(i) = o(i)*wtoti - (obs(jhfj + i - 1, 1) - obs(jefj + i - 1, 1))*da_energy_ave(k, icent)
+                        o(i) = o(i)*wtoti - (obs_tot(jhfj + i - 1, 1) - obs_tot(jefj + i - 1, 1))*da_energy_ave(k, icent)
                     enddo
 
                     do iparm = 1, nparm

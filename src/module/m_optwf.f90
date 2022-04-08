@@ -62,7 +62,6 @@ module optwf_corsam
     use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: add_diag !(MFORCE)
-    real(dp), dimension(:), allocatable :: add_diag_tmp !(MFORCE)
     real(dp), dimension(:), allocatable :: energy !(MFORCE)
     real(dp), dimension(:), allocatable :: energy_err !(MFORCE)
     real(dp), dimension(:), allocatable :: force !(MFORCE)
@@ -76,12 +75,11 @@ contains
     subroutine allocate_optwf_corsam()
         use force_mod, only: MFORCE
         use precision_kinds, only: dp
-        if (.not. allocated(add_diag)) allocate (add_diag(MFORCE), source=0.0_dp)
-        if (.not. allocated(add_diag_tmp)) allocate (add_diag_tmp(MFORCE), source=0.0_dp)
-        if (.not. allocated(energy)) allocate (energy(MFORCE), source=0.0_dp)
-        if (.not. allocated(energy_err)) allocate (energy_err(MFORCE), source=0.0_dp)
-        if (.not. allocated(force)) allocate (force(MFORCE), source=0.0_dp)
-        if (.not. allocated(force_err)) allocate (force_err(MFORCE), source=0.0_dp)
+        if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
+        if (.not. allocated(energy)) allocate (energy(MFORCE))
+        if (.not. allocated(energy_err)) allocate (energy_err(MFORCE))
+        if (.not. allocated(force)) allocate (force(MFORCE))
+        if (.not. allocated(force_err)) allocate (force_err(MFORCE))
     end subroutine allocate_optwf_corsam
 
     subroutine deallocate_optwf_corsam()
@@ -89,7 +87,6 @@ contains
         if (allocated(force)) deallocate (force)
         if (allocated(energy_err)) deallocate (energy_err)
         if (allocated(energy)) deallocate (energy)
-        if (allocated(add_diag_tmp)) deallocate (add_diag_tmp)
         if (allocated(add_diag)) deallocate (add_diag)
     end subroutine deallocate_optwf_corsam
 
@@ -191,11 +188,9 @@ end module optwf_wjas
 
 subroutine allocate_m_optwf()
     use optwf_corsam, only: allocate_optwf_corsam
-    ! use optwf_nparmj, only: allocate_optwf_nparmj
     use optwf_wjas, only: allocate_optwf_wjas
 
     call allocate_optwf_corsam()
-    ! call allocate_optwf_nparmj()
     call allocate_optwf_wjas()
 end subroutine allocate_m_optwf
 

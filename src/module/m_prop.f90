@@ -32,7 +32,7 @@ module prp001
 contains
     subroutine allocate_prp001()
         use properties, only: MAXPROP
-        if (.not. allocated(vprop)) allocate (vprop(MAXPROP), source=0.0_dp)
+        if (.not. allocated(vprop)) allocate (vprop(MAXPROP))
     end subroutine allocate_prp001
 
     subroutine deallocate_prp001()
@@ -57,8 +57,8 @@ module prp002
 contains
     subroutine allocate_prp002()
         use properties, only: MAXPROP
-        if (.not. allocated(vprop_old)) allocate (vprop_old(MAXPROP, mwalk), source=0.0_dp)
-        if (.not. allocated(vprop_old2)) allocate (vprop_old2(MAXPROP), source=0.0_dp)
+        if (.not. allocated(vprop_old)) allocate (vprop_old(MAXPROP, mwalk))
+        if (.not. allocated(vprop_old2)) allocate (vprop_old2(MAXPROP))
     end subroutine allocate_prp002
 
     subroutine deallocate_prp002()
@@ -85,10 +85,10 @@ module prp003
 contains
     subroutine allocate_prp003()
         use properties, only: MAXPROP
-        if (.not. allocated(cc_nuc)) allocate (cc_nuc(3), source=0.0_dp)
-        if (.not. allocated(vprop_cm2)) allocate (vprop_cm2(MAXPROP), source=0.0_dp)
-        if (.not. allocated(vprop_cum)) allocate (vprop_cum(MAXPROP), source=0.0_dp)
-        if (.not. allocated(vprop_sum)) allocate (vprop_sum(MAXPROP), source=0.0_dp)
+        if (.not. allocated(cc_nuc)) allocate (cc_nuc(3))
+        if (.not. allocated(vprop_cm2)) allocate (vprop_cm2(MAXPROP))
+        if (.not. allocated(vprop_cum)) allocate (vprop_cum(MAXPROP))
+        if (.not. allocated(vprop_sum)) allocate (vprop_sum(MAXPROP))
     end subroutine allocate_prp003
 
     subroutine deallocate_prp003()

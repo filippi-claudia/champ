@@ -303,7 +303,7 @@ c-------------------------------------------------------------------------------
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
-
+      
       if(iperiodic.eq.0) then
 
 c get the value and gradients from the 3d-interpolated orbitals
@@ -312,11 +312,11 @@ c spline interplolation
         if(i3dsplorb.ge.1) then
           do iorb=1,norb
             ddorbn(iorb)=0    ! Don't compute the laplacian
-            dorbn(1,iorb)=1   ! compute the gradients
-            dorbn(2,iorb)=1   ! compute the gradients
-            dorbn(3,iorb)=1   ! compute the gradients
-            call spline_mo (x(1,iel),iorb,orbn(iorb),dorbn(1,iorb),ddorbn(iorb),ier)
-          enddo
+            dorbn(iorb,1)=1   ! compute the gradients
+            dorbn(iorb,2)=1   ! compute the gradients
+            dorbn(iorb,3)=1     ! compute the gradients
+            call spline_mo (x(1,iel),iorb,orbn(iorb),dorbn(iorb,:),ddorbn(iorb),ier)
+         enddo
 
 c Lagrange interpolation
          elseif(i3dlagorb.ge.1) then
@@ -339,15 +339,16 @@ c get basis functions for electron iel
 #ifdef VECTORIZATION
           do iorb=1,norb
             orbn(iorb)=0
-            dorbn(1,iorb)=0
-            dorbn(2,iorb)=0
-            dorbn(3,iorb)=0
+            dorbn(iorb,1)=0
+            dorbn(iorb,2)=0
+            dorbn(iorb,3)=0
             ddorbn(iorb)=0
             do m=1,nbasis
               orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-              dorbn(1,iorb)=dorbn(1,iorb)+coef(m,iorb,iwf)*dphin(m,iel,1)
-              dorbn(2,iorb)=dorbn(2,iorb)+coef(m,iorb,iwf)*dphin(m,iel,2)
-              dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(m,iel,3)
+              dorbn(iorb,1)=dorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+              dorbn(iorb,2)=dorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
+              dorbn(iorb,3)=dorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
+
               if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
             enddo
           enddo
@@ -355,16 +356,17 @@ c get basis functions for electron iel
 !         Keep the localization for the non-vectorized code
           do iorb=1,norb
             orbn(iorb)=0
-            dorbn(1,iorb)=0
-            dorbn(2,iorb)=0
-            dorbn(3,iorb)=0
+            dorbn(iorb,1)=0
+            dorbn(iorb,2)=0
+            dorbn(iorb,3)=0
             ddorbn(iorb)=0
             do m0=1,n0_nbasis(iel)
              m=n0_ibasis(m0,iel)
              orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-             dorbn(1,iorb)=dorbn(1,iorb)+coef(m,iorb,iwf)*dphin(m,iel,1)
-             dorbn(2,iorb)=dorbn(2,iorb)+coef(m,iorb,iwf)*dphin(m,iel,2)
-             dorbn(3,iorb)=dorbn(3,iorb)+coef(m,iorb,iwf)*dphin(m,iel,3)
+             dorbn(iorb,1)=dorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+             dorbn(iorb,2)=dorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
+             dorbn(iorb,3)=dorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
+
              if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
             enddo
           enddo

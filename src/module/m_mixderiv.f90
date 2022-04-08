@@ -16,10 +16,10 @@ module mix_jas_ci
      subroutine allocate_mix_jas_ci()
          use optwf_parms, only: nparmj
          use dets, only: ndet
-         if (.not. allocated(de_o_ci)) allocate (de_o_ci(nparmj, ndet), source=0.0_dp)
-         if (.not. allocated(dj_de_ci)) allocate (dj_de_ci(nparmj, ndet), source=0.0_dp)
-         if (.not. allocated(dj_o_ci)) allocate (dj_o_ci(nparmj, ndet), source=0.0_dp)
-         if (.not. allocated(dj_oe_ci)) allocate (dj_oe_ci(nparmj, ndet), source=0.0_dp)
+         if (.not. allocated(de_o_ci)) allocate (de_o_ci(nparmj, ndet))
+         if (.not. allocated(dj_de_ci)) allocate (dj_de_ci(nparmj, ndet))
+         if (.not. allocated(dj_o_ci)) allocate (dj_o_ci(nparmj, ndet))
+         if (.not. allocated(dj_oe_ci)) allocate (dj_oe_ci(nparmj, ndet))
      end subroutine allocate_mix_jas_ci
 
      subroutine deallocate_mix_jas_ci()
@@ -52,10 +52,10 @@ module mix_jas_ci
          use optorb_mod, only: mxreduced
          use optwf_parms, only: nparmj
          use mstates_mod, only: MSTATES
-         if (.not. allocated(de_o)) allocate (de_o(nparmj, mxreduced, MSTATES), source=0.0_dp)
-         if (.not. allocated(dj_ho)) allocate (dj_ho(nparmj, mxreduced, MSTATES), source=0.0_dp)
-         if (.not. allocated(dj_o)) allocate (dj_o(nparmj, mxreduced, MSTATES), source=0.0_dp)
-         if (.not. allocated(dj_oe)) allocate (dj_oe(nparmj, mxreduced, MSTATES), source=0.0_dp)
+         if (.not. allocated(de_o)) allocate (de_o(nparmj, mxreduced, MSTATES))
+         if (.not. allocated(dj_ho)) allocate (dj_ho(nparmj, mxreduced, MSTATES))
+         if (.not. allocated(dj_o)) allocate (dj_o(nparmj, mxreduced, MSTATES))
+         if (.not. allocated(dj_oe)) allocate (dj_oe(nparmj, mxreduced, MSTATES))
      end subroutine allocate_mix_jas_orb
 
      subroutine deallocate_mix_jas_orb()
@@ -86,10 +86,10 @@ module mix_jas_ci
      subroutine allocate_mix_orb_ci()
          use optorb_mod, only: mxreduced
          use optci, only: mxciterm
-         if (.not. allocated(ci_de_o)) allocate (ci_de_o(mxciterm, mxreduced), source=0.0_dp)
-         if (.not. allocated(ci_o_ho)) allocate (ci_o_ho(mxciterm, mxreduced), source=0.0_dp)
-         if (.not. allocated(ci_o_o)) allocate (ci_o_o(mxciterm, mxreduced), source=0.0_dp)
-         if (.not. allocated(ci_o_oe)) allocate (ci_o_oe(mxciterm, mxreduced), source=0.0_dp)
+         if (.not. allocated(ci_de_o)) allocate (ci_de_o(mxciterm, mxreduced))
+         if (.not. allocated(ci_o_ho)) allocate (ci_o_ho(mxciterm, mxreduced))
+         if (.not. allocated(ci_o_o)) allocate (ci_o_o(mxciterm, mxreduced))
+         if (.not. allocated(ci_o_oe)) allocate (ci_o_oe(mxciterm, mxreduced))
      end subroutine allocate_mix_orb_ci
 
      subroutine deallocate_mix_orb_ci()

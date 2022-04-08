@@ -7,7 +7,7 @@ endif()
 
 function (banner)
   if(UNIX AND NOT APPLE)
-    message("${BoldYellow} ${ARGV0} ${ColourReset}")
+    message("${BoldYellow} ${ARGV0} ${ColorReset}")
   else()
     message("${ARGV0}")
   endif()

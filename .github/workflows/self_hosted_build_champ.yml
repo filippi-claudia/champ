@@ -14,6 +14,8 @@ on:
     branches:
       - 'releases/**'
       - main
+      - cartesian_d
+      - cartesian_d_qmckl
       - debug_intel
       - feature/debug-ci
 
@@ -22,7 +24,7 @@ jobs:
     name: Build CHAMP with Intel OneAPI self-hosted runner ccpgate/ccp01
     runs-on: self-hosted
     timeout-minutes: 120
-    continue-on-error: true
+    # continue-on-error: true
     defaults:
       run:
         shell: bash --noprofile --norc {0}

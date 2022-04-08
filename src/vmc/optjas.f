@@ -87,51 +87,79 @@ C       enddo
 
         denergy_det(kref,1)=0.d0
         denergy_det(kref,2)=0.d0
-        do k=1,ndet
 
-          if(k.ne.kref) then
 
-          do iab=1,2
+        do iab=1,2
+        
+           do k=1,kref-1
+              
+              if(iwundet(k,iab).eq.k) then
+                    
+                 iel=0
+                 nel=nup
+                 if(iab.eq.2) then
+                    iel=nup
+                    nel=ndn
+                 endif
+                 ndim=numrep_det(k,iab)
+                    
+                 denergy_det(k,iab)=0
+                 do irep=1,ndim
+                    iorb=irepcol_det(irep,k,iab)
+                    do jrep=1,ndim
+                       jorb=ireporb_det(jrep,k,iab)
+                       denergy_det(k,iab)=denergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab)*dtildem(iorb,jorb,iab)
+                    enddo
+                 enddo
+                    
+              else
+                 index_det=iwundet(k,iab)                   
+                 denergy_det(k,iab)=denergy_det(index_det,iab)
+              endif
+                 
+           enddo          
+              
 
-          if(iwundet(k,iab).eq.k) then
-
-            iel=0
-            nel=nup
-            if(iab.eq.2) then
-              iel=nup
-              nel=ndn
-            endif
-            ndim=numrep_det(k,iab)
-
-            denergy_det(k,iab)=0
-            do irep=1,ndim
-              iorb=irepcol_det(irep,k,iab)
-              do jrep=1,ndim
-                jorb=ireporb_det(jrep,k,iab)
-                denergy_det(k,iab)=denergy_det(k,iab)+wfmat(jrep+(irep-1)*ndim,k,iab)*dtildem(iorb,jorb,iab)
-              enddo
-            enddo
-
-          else
-            index_det=iwundet(k,iab)
-
-            denergy_det(k,iab)=denergy_det(index_det,iab)
-          endif
-
-          enddo
-
-          deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref
-
-          do istate=1,nstates
-             denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detiab(k,1)*detiab(k,2)
-          enddo
-
-          endif
-c endif k.ne.kref
-
+           do k=kref+1,ndet
+                         
+              if(iwundet(k,iab).eq.k) then
+                    
+                 iel=0
+                 nel=nup
+                 if(iab.eq.2) then
+                    iel=nup
+                    nel=ndn
+                 endif
+                 ndim=numrep_det(k,iab)
+                    
+                 denergy_det(k,iab)=0
+                 do irep=1,ndim
+                    iorb=irepcol_det(irep,k,iab)
+                    do jrep=1,ndim
+                       jorb=ireporb_det(jrep,k,iab)
+                       denergy_det(k,iab)=denergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab)*dtildem(iorb,jorb,iab)
+                    enddo
+                 enddo
+                    
+              else
+                 index_det=iwundet(k,iab)
+                 denergy_det(k,iab)=denergy_det(index_det,iab)
+              endif
+                 
+           enddo   
+           
         enddo
 
-        endif
+        
+        do k=1,ndet
+           deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref             
+           do istate=1,nstates
+              denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detiab(k,1)*detiab(k,2)
+           enddo
+        enddo
+
+        
+      endif
 c endif ndet.gt.1
 
 c d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J

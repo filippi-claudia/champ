@@ -55,7 +55,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
       real(dp), dimension(nparmj) :: dpsij_ratio
       real(dp), dimension(norb_tot) :: orbn
-      real(dp), dimension(3,norb_tot) :: dorbn
+      real(dp), dimension(norb_tot,3) :: dorbn
       real(dp), dimension(3,ncent_tot,norb_tot) :: da_orbn
       real(dp), dimension(3) :: term_radial_da_vps
       real(dp), dimension(3) :: vjn
@@ -215,12 +215,19 @@ c end loop quadrature points
 
 c elseif iskip
            elseif(i_vpsp.ne.0)then
-            do iq=1,nquad
-              t_vpsp(ic,iq,i)=0.d0
-              do iorb=1,norb
-                b_t(iorb,iq,ic,i)=0.d0
+            if(index(mode,'dmc').ne.0) then
+              do iq=1,nquad
+                t_vpsp(ic,iq,i)=0.d0
+                do iorb=1,norb
+                  b_t(iorb,iq,ic,i)=0.d0
+                enddo
               enddo
-            enddo
+            else
+              do iq=1,nquad
+                t_vpsp(ic,iq,i)=0.d0
+              enddo
+c endif dmc
+            endif 
 c endif iskip
           endif
 c end loop nelec, ncent
@@ -365,7 +372,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use precision_kinds, only: dp
       use method_opt, only: method
       use optwf_contrl, only: ioptorb
-
+      use vmc_mod, only: norb_tot
+      
       implicit none
 
       integer :: ic, iel, ider, ier, iforce_analy, ii
@@ -376,7 +384,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(*) :: orbn
-      real(dp), dimension(3,*) :: dorbn
+      real(dp), dimension(norb_tot, 3) :: dorbn
       real(dp), dimension(3,ncent_tot,*) :: da_orbn
       real(dp), dimension(3) :: dtmp
 
@@ -445,11 +453,11 @@ c get basis functions for electron iel
                 enddo
               enddo
               do k=1,3
-                dorbn(k,iorb)=0.d0
+                dorbn(iorb,k)=0.d0
               enddo
               do ic=1,ncent
                 do k=1,3
-                   dorbn(k,iorb)=dorbn(k,iorb)-da_orbn(k,ic,iorb)
+                   dorbn(iorb,k)=dorbn(iorb,k)-da_orbn(k,ic,iorb)
                 enddo
               enddo
             enddo
@@ -723,7 +731,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(3,ncent_tot) :: rvec_en_sav
       real(dp), dimension(ncent_tot) :: r_en_sav
       real(dp), dimension(norb_tot) :: orbn
-      real(dp), dimension(3,norb_tot) :: dorbn
+      real(dp), dimension(norb_tot, 3) :: dorbn
       real(dp), dimension(3) :: vjn
       real(dp), dimension(3,ncent_tot,norb_tot) :: da_orbn
       real(dp), dimension(3,ncent_tot) :: da_ratio_jn
@@ -762,9 +770,9 @@ c-----------------------------------------------------------------------
      &                   +da_term_radial*(-zq(iq)*r_en_savi+costh*rvec_en_sav(3,ic)*r_en_savi2)*orbn(iorb)
 
 
-         db_tmp1=term_radial*(dorbn(1,iorb)+orbn(iorb)*vjn(1))
-         db_tmp2=term_radial*(dorbn(2,iorb)+orbn(iorb)*vjn(2))
-         db_tmp3=term_radial*(dorbn(3,iorb)+orbn(iorb)*vjn(3))
+         db_tmp1=term_radial*(dorbn(iorb,1)+orbn(iorb)*vjn(1))
+         db_tmp2=term_radial*(dorbn(iorb,2)+orbn(iorb)*vjn(2))
+         db_tmp3=term_radial*(dorbn(iorb,3)+orbn(iorb)*vjn(3))
 
          dum=xq(iq)*db_tmp1+yq(iq)*db_tmp2+zq(iq)*db_tmp3
 

@@ -933,7 +933,7 @@ c
       real(dp) :: orb1, orb2
       real(dp), dimension(3) :: r
       real(dp), dimension(3) :: dr
-      real(dp), dimension(3,norb_tot) :: orb
+      real(dp), dimension(norb_tot, 3) :: orb
       real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
@@ -974,7 +974,7 @@ c Compute displacements
        enddo
 
        do iorb=1,norb
-         orb(iaxis,iorb) = 0.d0
+         orb(iorb,iaxis) = 0.d0
          do i3=LAGSTART, LAGEND !z interpolation
            orb2 = 0.d0
            do i2=LAGSTART, LAGEND !y interpolation
@@ -985,7 +985,7 @@ c Compute displacements
              enddo !x interpolation
              orb2 = orb2 + num(i2,2) * orb1
            enddo !y interpolation
-           orb(iaxis,iorb) = orb(iaxis,iorb) + num(i3,3) * orb2
+           orb(iorb,iaxis) = orb(iorb,iaxis) + num(i3,3) * orb2
          enddo !z interpolation
        enddo ! iorb
 

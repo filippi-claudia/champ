@@ -20,16 +20,16 @@ c Written by Claudia Filippi
       use slater, only: fp, slmi
 
       use multislater, only: detiab
+
+      use vmc_mod, only: MEXCIT
+
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iab, iel, iflag, ikel
       integer :: iorb, ish, istate, j
-      integer :: k, kk, ndim, nel
-
-
-
-
-
+      integer :: k, kk, ndim, nel, ndim2
+c      integer, dimension(ndet) :: auxdim
 
 
 
@@ -56,19 +56,33 @@ c Written by Claudia Filippi
         enddo
       enddo
 
-        do k=1,ndet
-          if(k.eq.kref) go to 50
-          ndim=numrep_det(k,iab)
-          do i=1,ndim*ndim
-              wfmat(i,k,iab)=wfmatn(i,k)
-          enddo
-   50   continue
-        enddo
+c      print*,"start iteration"
+c      do k=1,ndet
+c         ndim=numrep_det(k,iab) 
+c         auxdim(k)=ndim*ndim
+c         print*,"k",k,auxdim(k)
+c      enddo
+
+      
+      do k=1,kref-1
+         ndim=numrep_det(k,iab)
+         ndim2=ndim*ndim
+         wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
+      enddo
+      
+
+      do k=kref+1,ndet
+         ndim=numrep_det(k,iab)
+         ndim2=ndim*ndim
+         wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
+      enddo
+
+      
 
         do j=1,nel
-          fp(1,j+ikel,iab)=dorbn(1,iworbd(j+ish,kref))
-          fp(2,j+ikel,iab)=dorbn(2,iworbd(j+ish,kref))
-          fp(3,j+ikel,iab)=dorbn(3,iworbd(j+ish,kref))
+          fp(1,j+ikel,iab)=dorbn(iworbd(j+ish,kref),1)
+          fp(2,j+ikel,iab)=dorbn(iworbd(j+ish,kref),2)
+          fp(3,j+ikel,iab)=dorbn(iworbd(j+ish,kref),3)
         enddo
         do k=1,ndet
           detiab(k,iab)=detn(k)
@@ -77,7 +91,7 @@ c Written by Claudia Filippi
          do iorb=1,norb
            orb(iel,iorb)=orbn(iorb)
            do kk=1,3
-             dorb(kk,iel,iorb)=dorbn(kk,iorb)
+             dorb(kk,iel,iorb)=dorbn(iorb,kk)
            enddo
          enddo
 
