@@ -49,6 +49,7 @@ c-----------------------------------------------------------------------
       use jaspar, only: nspin1, nspin2
       use jaspar3, only: b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nspin2b
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use contr2, only: ianalyt_lap, ijas, isc
@@ -64,7 +65,7 @@ c-----------------------------------------------------------------------
         end function nterms4
       end interface
 
-      integer :: i, ict, index, iwf_fit, mparmja
+      integer :: i, isp, ict, index, iwf_fit, mparmja
       integer :: mparmjb, mparmjc
       character*50 fmt
       character*40 filename,filetype
@@ -99,7 +100,9 @@ c tmp
        else
         write(fmt,'(''(a28)'')')
       endif
-      write(2,fmt) (b(i,1,1),i=1,mparmjb),' (b(iparmj),iparmj=1,nparmb)'
+      do isp=1,nspin2b
+        write(2,fmt) (b(i,isp,1),i=1,mparmjb),' (b(iparmj),iparmj=1,nparmb)'
+      enddo
 
       if(mparmjc.gt.0) then
         write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjc
@@ -275,6 +278,7 @@ c-----------------------------------------------------------------------
       use wfsec, only: nwftype
       use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nspin2b
 
       implicit none
 
@@ -286,7 +290,7 @@ c-----------------------------------------------------------------------
         end function nterms4
       end interface
 
-      integer :: i, iadiag, ict, mparmja, mparmjb
+      integer :: i, isp, iadiag, ict, mparmja, mparmjb
       integer :: mparmjc
       real(dp), allocatable, save :: a4_save(:,:,:)
       real(dp), allocatable, save :: b_save(:,:,:)
@@ -313,8 +317,10 @@ c Save parameters corresponding to run generating hessian
           a4_save(i,ict,1)=a4(i,ict,1)
         enddo
       enddo
-      do i=1,mparmjb
-        b_save(i,1,1)=b(i,1,1)
+      do isp=1,nspin2b
+        do i=1,mparmjb
+          b_save(i,isp,1)=b(i,isp,1)
+        enddo
       enddo
       do ict=1,nctype
         do i=1,mparmjc
@@ -336,8 +342,10 @@ c Restore parameters corresponding to run generating hessian
           a4(i,ict,iadiag)=a4_save(i,ict,1)
         enddo
       enddo
-      do i=1,mparmjb
-        b(i,1,iadiag)=b_save(i,1,1)
+      do isp=1,nspin2b
+        do i=1,mparmjb
+          b(i,isp,iadiag)=b_save(i,isp,1)
+        enddo
       enddo
       do ict=1,nctype
         do i=1,mparmjc
@@ -461,6 +469,7 @@ c-----------------------------------------------------------------------
       use atom, only: nctype
       use jaspar3, only: b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nspin2b
 
       implicit none
 
@@ -472,7 +481,7 @@ c-----------------------------------------------------------------------
         end function nterms4
       end interface
 
-      integer :: i, iadiag, ict, mparmja, mparmjb
+      integer :: i, isp, iadiag, ict, mparmja, mparmjb
       integer :: mparmjc
 
       mparmja=2+max(0,norda-1)
@@ -485,8 +494,10 @@ c-----------------------------------------------------------------------
           a4(i,ict,iadiag)=a4(i,ict,1)
         enddo
       enddo
-      do i=1,mparmjb
-        b(i,1,iadiag)=b(i,1,1)
+      do isp=1,nspin2b
+        do i=1,mparmjb
+          b(i,isp,iadiag)=b(i,isp,1)
+        enddo
       enddo
       do ict=1,nctype
         do i=1,mparmjc
@@ -564,6 +575,7 @@ c-----------------------------------------------------------------------
       use wfsec, only: nwftype
       use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nspin2b
 
       implicit none
 
@@ -575,7 +587,7 @@ c-----------------------------------------------------------------------
         end function nterms4
       end interface
 
-      integer :: i, ict, mparmja, mparmjb, mparmjc
+      integer :: i, isp, ict, mparmja, mparmjb, mparmjc
       real(dp), allocatable, save :: a4_best(:,:,:)
       real(dp), allocatable, save :: b_best(:,:,:)
       real(dp), allocatable, save :: c_best(:,:,:)
@@ -601,8 +613,10 @@ c Save parameters corresponding to run generating hessian
           a4_best(i,ict,1)=a4(i,ict,1)
         enddo
       enddo
-      do i=1,mparmjb
-        b_best(i,1,1)=b(i,1,1)
+      do isp=1,nspin2b
+        do i=1,mparmjb
+          b_best(i,isp,1)=b(i,isp,1)
+        enddo
       enddo
       do ict=1,nctype
         do i=1,mparmjc
@@ -623,8 +637,10 @@ c Restore parameters corresponding to run generating hessian
           a4(i,ict,1)=a4_best(i,ict,1)
         enddo
       enddo
-      do i=1,mparmjb
-        b(i,1,1)=b_best(i,1,1)
+      do isp=1,nspin2b
+        do i=1,mparmjb
+          b(i,isp,1)=b_best(i,isp,1)
+        enddo
       enddo
       do ict=1,nctype
         do i=1,mparmjc
@@ -770,6 +786,7 @@ c-----------------------------------------------------------------------
       use atom, only: nctype
       use jaspar3, only: b, c
       use jaspar4, only: a4
+      use bparm, only: nspin2b
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
@@ -777,7 +794,7 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      integer :: i, iadiag, ict, iflag, iparm
+      integer :: i, isp, iadiag, ict, iflag, iparm
       real(dp), dimension(*) :: dparm
 
       if(ioptjas.eq.0) return
@@ -793,9 +810,11 @@ c Add change to old parameters
           a4(iwjasa(i,ict),ict,iadiag)=a4(iwjasa(i,ict),ict,iadiag)-dparm(iparm)
         enddo
       enddo
-      do i=1,nparmb(1)
-        iparm=iparm+1
-        b(iwjasb(i,1),1,iadiag)=b(iwjasb(i,1),1,iadiag)-dparm(iparm)
+      do isp=1,nspin2b
+        do i=1,nparmb(1)
+          iparm=iparm+1
+          b(iwjasb(i,isp),isp,iadiag)=b(iwjasb(i,isp),isp,iadiag)-dparm(iparm)
+        enddo
       enddo
       do ict=1,nctype
         do i=1,nparmc(ict)
@@ -920,6 +939,7 @@ c-----------------------------------------------------------------------
       use atom, only: nctype
       use jaspar3, only: b, scalek
       use jaspar4, only: a4
+      use bparm, only: nspin2b
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
       use precision_kinds, only: dp
@@ -927,7 +947,7 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      integer :: i, ict, iflag, iflaga, iflagb
+      integer :: i, isp, ict, iflag, iflaga, iflagb
       real(dp) :: scalem
 
       iflag=0
@@ -945,8 +965,10 @@ c-----------------------------------------------------------------------
           write(ounit,'(''a2 < -scalek'',f10.5)') a4(2,ict,1)
         enddo
       endif
-      do i=1,nparmb(1)
-        if(iwjasb(i,1).eq.2.and.b(2,1,1).le.scalem) iflagb=1
+      do isp=1,nspin2b
+        do i=1,nparmb(1)
+          if(iwjasb(i,isp).eq.2.and.b(2,isp,1).le.scalem) iflagb=1
+        enddo
       enddo
       if(iflagb.eq.1) write(ounit,'(''b2 < -scalek'',f10.5)') b(2,1,1)
 

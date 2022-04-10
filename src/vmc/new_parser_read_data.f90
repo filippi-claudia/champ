@@ -1565,17 +1565,17 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
         do it = 1, nctype
             if (wid) read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
-            write(ounit, '(A,10i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
+            write(ounit, '(A,30i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
         enddo
         call bcast(iwjasa)
         do isp = nspin1, nspin2b
             if (wid) read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
-            write(ounit, '(A,10i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+            write(ounit, '(A,30i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
         enddo
         call bcast(iwjasb)
         do it = 1, nctype
             if (wid) read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
-            write(ounit, '(A,10i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
+            write(ounit, '(A,30i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
         enddo
         call bcast(iwjasc)
             ! end of reading the jasderiv file block
