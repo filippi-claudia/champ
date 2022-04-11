@@ -392,8 +392,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_double.out -e error
 
-        echo "Comparing the energy with the reference one (total E of second state = -41.7813289 +-  0.0341687  ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_double.out "total E" -41.7813289  0.0341687
+        echo "Comparing the energy with the reference one (total E of second state = -41.7813289 +-  0.06  ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_double.out "total E" -41.7813289  0.06
 
 
     - name: "Test 29 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
@@ -405,8 +405,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
 
-        echo "Comparing the energy with the reference one ("total E" -29.9833598 +-  0.0223088) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.9833598  0.0223088
+        echo "Comparing the energy with the reference one ("total E" -29.9833598 +-  0.223088) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.9833598  0.223088
 
 
     - name: "Test 30 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 2 processor"
@@ -418,8 +418,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
 
-        echo "Comparing the energy with the reference one ("total E" -29.9795838 +-  0.0162210) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.9795838  0.0162210
+        echo "Comparing the energy with the reference one ("total E" -29.9795838 +-  0.162210) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.9795838  0.162210
 
     # # - name: "Test 31 (Butadiene) TREXIO interface testing with HDF5 backend on 1 processor"
     # #   run: |
