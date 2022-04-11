@@ -73,25 +73,23 @@ c compute wave function
         if(iwundet(k,iab).eq.k) then
 
           ndim=numrep_det(k,iab)
+
           ndim2=ndim*ndim
-          
           jj=0
           do jrep=1,ndim
-            jorb=ireporb_det(jrep,k,iab)
-            do irep=1,ndim
-              iorb=irepcol_det(irep,k,iab)
-              jj=jj+1
-
-              wfmatn(k,jj)=aan(iorb,jorb)
-            enddo
+             jorb=ireporb_det(jrep,k,iab)
+             do irep=1,ndim
+                iorb=irepcol_det(irep,k,iab)
+                jj=jj+1
+                wfmatn(k,jj)=aan(iorb,jorb)
+             enddo
           enddo
-
-
           call matinv(wfmatn(k,1:ndim2),ndim,det)
 
+          
           detn(k)=det
 
-         else
+       else
           index_det=iwundet(k,iab)
           detn(k)=detn(index_det)
 
@@ -105,28 +103,29 @@ c compute wave function
         if(iwundet(k,iab).eq.k) then
 
           ndim=numrep_det(k,iab)
-          ndim2=ndim*ndim
           
+          ndim2=ndim*ndim
           jj=0
           do jrep=1,ndim
-            jorb=ireporb_det(jrep,k,iab)
-            do irep=1,ndim
-              iorb=irepcol_det(irep,k,iab)
-              jj=jj+1
-
-              wfmatn(k,jj)=aan(iorb,jorb)
-            enddo
+             jorb=ireporb_det(jrep,k,iab)
+             do irep=1,ndim
+                iorb=irepcol_det(irep,k,iab)
+                jj=jj+1
+                
+                wfmatn(k,jj)=aan(iorb,jorb)
+             enddo
           enddo
-
-
           call matinv(wfmatn(k,1:ndim2),ndim,det)
+          
+
+          
           
           detn(k)=det
 
-         else
+       else
           index_det=iwundet(k,iab)
           detn(k)=detn(index_det)
-
+          
         endif
 
 
@@ -150,20 +149,29 @@ c          detn(k)=detn(k)*detn(kref)
 c        endif
 c      enddo
 
-      do istate=1,nstates
-        if(iab.eq.1) call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
-        if(iab.eq.2) call compute_ymat(iab,detiab(1,1),detn,wfmatn,ymatn(1,1,istate),istate)
-      enddo
+c      do istate=1,nstates
+c        if(iab.eq.1) call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
+c        if(iab.eq.2) call compute_ymat(iab,detiab(1,1),detn,wfmatn,ymatn(1,1,istate),istate)
+c      enddo
 
+      if (iab.eq.1) then
+         do istate=1,nstates
+            call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
+         enddo
+      else
+         do istate=1,nstates
+            call compute_ymat(iab,detiab(1,1),detn,wfmatn,ymatn(1,1,istate),istate)
+         enddo
+      endif
+      
       do iorb=1,norb
         orb(iel,iorb)=orb_sav(iorb)
       enddo
-
+      
       return
       end
 
 c-----------------------------------------------------------------------
-
       subroutine multideterminante_grad(iel,b,norbs,detratio,slmi,aa,ymat,velocity)
 
       use precision_kinds, only: dp
