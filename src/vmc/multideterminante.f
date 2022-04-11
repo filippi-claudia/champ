@@ -163,6 +163,7 @@ c      enddo
       end
 
 c-----------------------------------------------------------------------
+
       subroutine multideterminante_grad(iel,b,norbs,detratio,slmi,aa,ymat,velocity)
 
       use precision_kinds, only: dp

@@ -2,7 +2,6 @@
     title        'H2'
     pool         './pool/'
     basis        sto_cvb1
-    weights      [ 1.0d0,  1.0d0 , 1.0d0]
     mode         'vmc_one_mpi1'
     nloc        0
 %endmodule

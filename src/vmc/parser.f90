@@ -785,7 +785,7 @@ subroutine parser
   endif
 
 
-! Jastrow derivative Parameters (either block or from a file)
+! Jastrow derivative Parameters (either block or from a file) 
 
   if ( fdf_load_defined('jastrow_der') ) then
     call read_jasderiv_file(file_jastrow_der)

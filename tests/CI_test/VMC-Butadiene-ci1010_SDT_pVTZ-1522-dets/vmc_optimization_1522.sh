@@ -1,0 +1,2 @@
+mpirun -np 1  ../../../bin/vmc.mov1 -i vmc_optimization_1522.inp  -o vmc_optimization_1522_single.out  -e error_vmc_optimization_1522
+mpirun -np 2  ../../../bin/vmc.mov1 -i vmc_optimization_1522.inp  -o vmc_optimization_1522_double.out  -e error_vmc_optimization_1522

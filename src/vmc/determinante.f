@@ -140,6 +140,7 @@ c All quantities saved (old) avaliable
 
         if(iguiding.eq.0) then
           detratio=detiab(kref,1)*detiab(kref,2)/psid(1)
+
           call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),ymat(1,1,iab,1),vd)
 
           do kk=1,3
@@ -153,6 +154,7 @@ c All quantities saved (old) avaliable
             istate=iweight_g(i)
 
             detratio=detiab(kref,1)*detiab(kref,2)/psid(istate)
+
             call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),ymat(1,1,iab,istate),vd_s)
 
             do kk=1,3
@@ -184,7 +186,9 @@ c Within single-electron move - quantities of electron iel not saved
            else
             detratio=detiab(kref,1)*detn(kref)/psid(1)
           endif
+
           call multideterminante_grad(iel,dorbn,norb_tot,detratio,slmin,aan,ymatn,vd)
+
 
           do kk=1,3
             vd(kk)=vd(kk)+vref(kk)
@@ -203,6 +207,7 @@ c Within single-electron move - quantities of electron iel not saved
              else
               detratio=detiab(kref,1)*detn(kref)/psid(istate)
             endif
+
             call multideterminante_grad(iel,dorbn,norb_tot,detratio,slmin,aan,ymatn(1,1,istate),vd_s)
 
             do kk=1,3
@@ -245,6 +250,7 @@ c iel has same spin as electron moved
 
           call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmin,aan,ymatn,vd)
 
+
 c iel has different spin than the electron moved
          else
           if(iab.eq.1) then
@@ -260,6 +266,7 @@ c iel has different spin than the electron moved
           if(iel.eq.nup+1) call compute_ymat(2,detn,detiab(1,2),wfmat(:,:,2),ymat_tmp,1)
 
           call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),ymat_tmp(1,1),vd)
+
         endif
 
         vd(1)=vjn(1,iel)+vd(1)+vref(1)

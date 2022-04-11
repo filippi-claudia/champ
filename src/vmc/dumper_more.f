@@ -30,9 +30,9 @@ c job where it left off
       use const2, only: deltar, deltat
 !      use contrl, only: nstep
       use control_vmc, only: vmc_nstep
-      use basis, only: zex, n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
-      use basis, only: n4s, n4p
-      use basis, only: nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a
+      use basis, only: zex
+      use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
+      use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
       use mstates_ctrl, only: iguiding
       use inputflags, only: node_cutoff, eps_node_cutoff
       use contrl_file,    only: ounit, errunit
@@ -57,25 +57,17 @@ c job where it left off
       integer :: ncentx, nctypex, ndetx, ndnx
       integer :: newghostypex, nghostcentx, norbx, nstepx
       integer :: nupx
-      integer, dimension(nctype_tot) :: n1sx
-      integer, dimension(nctype_tot) :: n2sx
-      integer, dimension(3,nctype_tot) :: n2px
-      integer, dimension(nctype_tot) :: n3sx
-      integer, dimension(3,nctype_tot) :: n3px
-      integer, dimension(nctype_tot) :: n3dzrx
-      integer, dimension(nctype_tot) :: n3dx2x
-      integer, dimension(nctype_tot) :: n3dxyx
-      integer, dimension(nctype_tot) :: n3dxzx
-      integer, dimension(nctype_tot) :: n3dyzx
-      integer, dimension(nctype_tot) :: n4sx
-      integer, dimension(3,nctype_tot) :: n4px
-      integer, dimension(nctype_tot) :: nsax
-      integer, dimension(3,nctype_tot) :: npax
-      integer, dimension(nctype_tot) :: ndzrax
-      integer, dimension(nctype_tot) :: ndx2ax
-      integer, dimension(nctype_tot) :: ndxyax
-      integer, dimension(nctype_tot) :: ndxzax
-      integer, dimension(nctype_tot) :: ndyzax
+      integer, dimension(nctype_tot) :: nsx
+      integer, dimension(nctype_tot) :: npxx
+      integer, dimension(nctype_tot) :: npyx
+      integer, dimension(nctype_tot) :: npzx
+      integer, dimension(nctype_tot) :: ndxxx
+      integer, dimension(nctype_tot) :: ndxyx
+      integer, dimension(nctype_tot) :: ndxzx
+      integer, dimension(nctype_tot) :: ndyyx
+      integer, dimension(nctype_tot) :: ndyzx
+      integer, dimension(nctype_tot) :: ndzzx
+
       real(dp) :: ajacob, deltarx
       real(dp) :: deltatx, deltax, dist, distance_node
       real(dp) :: pecx, psidg, rnorm_nodes
@@ -123,25 +115,16 @@ c job where it left off
       write(10) ((cent(k,ic),k=1,3),ic=1,ncent+nghostcent)
       write(10) pecent
       write(10) (znuc(i),i=1,nctype)
-      write(10) (n1s(i),i=1,nctype)
-      write(10) (n2s(i),i=1,nctype)
-      write(10) ((n2p(k,i),k=1,3),i=1,nctype)
-      write(10) (n3s(i),i=1,nctype)
-      write(10) ((n3p(k,i),k=1,3),i=1,nctype)
-      write(10) (n3dzr(i),i=1,nctype)
-      write(10) (n3dx2(i),i=1,nctype)
-      write(10) (n3dxy(i),i=1,nctype)
-      write(10) (n3dxz(i),i=1,nctype)
-      write(10) (n3dyz(i),i=1,nctype)
-      write(10) (n4s(i),i=1,nctype)
-      write(10) ((n4p(k,i),k=1,3),i=1,nctype)
-      write(10) (nsa(i),i=1,nctype)
-      write(10) ((npa(k,i),k=1,3),i=1,nctype)
-      write(10) (ndzra(i),i=1,nctype)
-      write(10) (ndx2a(i),i=1,nctype)
-      write(10) (ndxya(i),i=1,nctype)
-      write(10) (ndxza(i),i=1,nctype)
-      write(10) (ndyza(i),i=1,nctype)
+      write(10) (ns(i),i=1,nctype)
+      write(10) (npx(i),i=1,nctype)
+      write(10) (npy(i),i=1,nctype)
+      write(10) (npz(i),i=1,nctype)
+      write(10) (ndxx(i),i=1,nctype)
+      write(10) (ndxy(i),i=1,nctype)
+      write(10) (ndxz(i),i=1,nctype)
+      write(10) (ndyy(i),i=1,nctype)
+      write(10) (ndyz(i),i=1,nctype)
+      write(10) (ndzz(i),i=1,nctype)
       write(10) (cdet(i,1,1),i=1,ndet)
       write(10) ndet,nup,ndn
 
@@ -198,25 +181,16 @@ c-----------------------------------------------------------------------
       read(10) ((centx(k,ic),k=1,3),ic=1,ncentx+nghostcentx)
       read(10) pecx
       read(10) (znucx(i),i=1,nctype)
-      read(10) (n1sx(i),i=1,nctype)
-      read(10) (n2sx(i),i=1,nctype)
-      read(10) ((n2px(k,i),k=1,3),i=1,nctype)
-      read(10) (n3sx(i),i=1,nctype)
-      read(10) ((n3px(k,i),k=1,3),i=1,nctype)
-      read(10) (n3dzrx(i),i=1,nctype)
-      read(10) (n3dx2x(i),i=1,nctype)
-      read(10) (n3dxyx(i),i=1,nctype)
-      read(10) (n3dxzx(i),i=1,nctype)
-      read(10) (n3dyzx(i),i=1,nctype)
-      read(10) (n4sx(i),i=1,nctype)
-      read(10) ((n4px(k,i),k=1,3),i=1,nctype)
-      read(10) (nsax(i),i=1,nctype)
-      read(10) ((npax(k,i),k=1,3),i=1,nctype)
-      read(10) (ndzrax(i),i=1,nctype)
-      read(10) (ndx2ax(i),i=1,nctype)
-      read(10) (ndxyax(i),i=1,nctype)
-      read(10) (ndxzax(i),i=1,nctype)
-      read(10) (ndyzax(i),i=1,nctype)
+      read(10) (nsx(i),i=1,nctype)
+      read(10) (npxx(i),i=1,nctype)
+      read(10) (npyx(i),i=1,nctype)
+      read(10) (npzx(i),i=1,nctype)
+      read(10) (ndxxx(i),i=1,nctype)
+      read(10) (ndxyx(i),i=1,nctype)
+      read(10) (ndxzx(i),i=1,nctype)
+      read(10) (ndyyx(i),i=1,nctype)
+      read(10) (ndyzx(i),i=1,nctype)
+      read(10) (ndzzx(i),i=1,nctype)
       do j=1,norb
         do i=1,nbasis
           if (dabs(coefx(i,j)-coef(i,j,1)).gt.small) call fatal_error('STARTR: coef')
@@ -233,27 +207,16 @@ c-----------------------------------------------------------------------
       if (pecx.ne.pecent) call fatal_error('STARTR: pec')
       do i=1,nctype
         if (dabs(znucx(i)-znuc(i)).gt.small) call fatal_error('STARTR: znuc')
-        if (n1s(i).ne.n1sx(i)) call fatal_error('STARTR: n1s')
-        if (n2s(i).ne.n2sx(i)) call fatal_error('STARTR: n2s')
-        if (n3s(i).ne.n3sx(i)) call fatal_error('STARTR: n3s')
-        if (n3dzr(i).ne.n3dzrx(i)) call fatal_error('STARTR: n3dzrx')
-        if (n3dx2(i).ne.n3dx2x(i)) call fatal_error('STARTR: n3dx2x')
-        if (n3dxy(i).ne.n3dxyx(i)) call fatal_error('STARTR: n3dxy')
-        if (n3dxz(i).ne.n3dxzx(i)) call fatal_error('STARTR: n3dxzx')
-        if (n3dyz(i).ne.n3dyzx(i)) call fatal_error('STARTR: n3dyz')
-        if (n4s(i).ne.n4sx(i)) call fatal_error('STARTR: n4s')
-        if (nsa(i).ne.nsax(i)) call fatal_error('STARTR: nsa')
-        if (ndzra(i).ne.ndzrax(i)) call fatal_error('STARTR: ndzra')
-        if (ndx2a(i).ne.ndx2ax(i)) call fatal_error('STARTR: ndx2a')
-        if (ndxya(i).ne.ndxyax(i)) call fatal_error('STARTR: ndxya')
-        if (ndxza(i).ne.ndxzax(i)) call fatal_error('STARTR: ndxza')
-        if (ndyza(i).ne.ndyzax(i)) call fatal_error('STARTR: ndyza')
-        do k=1,3
-          if (n2p(k,i).ne.n2px(k,i)) call fatal_error('STARTR: n2p')
-          if (n3p(k,i).ne.n3px(k,i)) call fatal_error('STARTR: n3p')
-          if (n4p(k,i).ne.n4px(k,i)) call fatal_error('STARTR: n4p')
-          if (npa(k,i).ne.npax(k,i)) call fatal_error('STARTR: npa')
-        enddo
+        if (ns(i).ne.nsx(i)) call fatal_error('STARTR: ns')
+        if (npx(i).ne.npxx(i)) call fatal_error('STARTR: npx')
+        if (npy(i).ne.npyx(i)) call fatal_error('STARTR: npy')
+        if (npz(i).ne.npzx(i)) call fatal_error('STARTR: npz')
+        if (ndxx(i).ne.ndxxx(i)) call fatal_error('STARTR: ndxx')
+        if (ndxy(i).ne.ndxyx(i)) call fatal_error('STARTR: ndxy')
+        if (ndxz(i).ne.ndxzx(i)) call fatal_error('STARTR: ndxz')
+        if (ndyy(i).ne.ndyyx(i)) call fatal_error('STARTR: ndyy')
+        if (ndyz(i).ne.ndyzx(i)) call fatal_error('STARTR: ndyz')
+        if (ndzz(i).ne.ndzzx(i)) call fatal_error('STARTR: ndzz')
       enddo
       read(10) (cdetx(i),i=1,ndet)
       read(10) ndetx,nupx,ndnx
