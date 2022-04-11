@@ -302,7 +302,7 @@ jobs:
         cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-15000-dets-3body-jastrow
 
         echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000_3body_single.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body_single.out  -e error_vmc_optimization_15000_3body
 
         echo "Comparing the energy with the reference one (total E = -26.1973837 +-  0.0239627) "
         $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_3body_single.out "total E" -26.1973837  0.0239627
@@ -315,7 +315,7 @@ jobs:
         cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-15000-dets-3body-jastrow
 
         echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000_3body_double.inp  -o vmc_optimization_15000_3body.out  -e error_vmc_optimization_15000_3body
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000_3body.inp  -o vmc_optimization_15000_3body_double.out  -e error_vmc_optimization_15000_3body
 
         echo "Comparing the energy with the reference one (total E = -26.2158519 +-  0.0183005) "
         $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_3body_double.out "total E" -26.2158519   0.0183005
