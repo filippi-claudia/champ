@@ -44,7 +44,7 @@ c----------------------------------------------
       call random_seed(size = size)
 
       ! allocate the new seed
-      allocate(new_seed(size), source=0)
+      allocate(new_seed(size))
 
       ! input the seed
       do i=1,min(size,4)
