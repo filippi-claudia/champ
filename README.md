@@ -206,7 +206,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	- Ubuntu 20:
 		Install the required packages:
 		```
-		sudo apt install gfortran openmpi-bin gawk libblacs-mpi-dev liblapack-dev
+		sudo apt install gfortran openmpi-bin libopenmpi-dev gawk libblacs-mpi-dev liblapack-dev
 		```
 		Set-up the build:
 		```
@@ -222,7 +222,8 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```
 	- Ubuntu 18:
 	Install the dependencies using conda instead of apt
-
+	- WSL:
+	The code also compiles on WSL.
 ------------------------------------------------------------------------
 
 ### Documentation
