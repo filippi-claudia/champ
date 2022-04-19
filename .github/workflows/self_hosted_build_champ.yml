@@ -348,7 +348,7 @@ jobs:
     - name: "Test 25 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 1 processor"
       run: |
         ulimit -s unlimited
-        echo "Running the testsuite:: Test : . PSB3 "
+        echo "Running the testsuite:: Test : . PSB3 sr_n"
         cd tests/CI_test/VMC-PSB3-400_dets-175_csfs_ci66_BFD-Da
 
         echo "Running the optimization calculation"
@@ -360,7 +360,7 @@ jobs:
     - name: "Test 26 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 2 processors"
       run: |
         ulimit -s unlimited
-        echo "Running the testsuite:: Test : . PSB3 "
+        echo "Running the testsuite:: Test : . PSB3 sr_n"
         cd tests/CI_test/VMC-PSB3-400_dets-175_csfs_ci66_BFD-Da
 
         echo "Running the optimization calculation"
@@ -370,30 +370,30 @@ jobs:
         $GITHUB_WORKSPACE/tools/compare_value.py revised_sr_n_double.out "total E" -42.5663845  0.0314211
 
 
-    # - name: "Test 27 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 1 processor"
-    #   run: |
-    #     ulimit -s unlimited
-    #     echo "Running the testsuite:: Test : . PSB3 "
-    #     cd tests/CI_test/VMC-PSB3-400_dets-175_csfs_ci66_BFD-Da
+    - name: "Test 27 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 1 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the testsuite:: Test : . PSB3 lin_d regterg "
+        cd tests/CI_test/VMC-PSB3-400_dets-175_csfs_ci66_BFD-Da
 
-    #     echo "Running the optimization calculation"
-    #     /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_single.out -e error
+        echo "Running the optimization calculation"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_single.out -e error
 
-    #     echo "Comparing the energy with the reference one (total E of second state = -42.0357372 +-  0.0451464 ) "
-    #     $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_single.out "total E" -42.0357372   0.0451464
+        echo "Comparing the energy with the reference one (total E of second state = -41.5596008 +-  0.593365 ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_single.out "total E" -41.5596008  0.593365
 
     # - name: "Test 28 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 2 processors"
     #   run: |
     #     ulimit -s unlimited
-    #     echo "Running the testsuite:: Test : . PSB3 "
+    #     echo "Running the testsuite:: Test : . PSB3 lin_d regterg "
     #     ulimit -s unlimited
     #     cd tests/CI_test/VMC-PSB3-400_dets-175_csfs_ci66_BFD-Da
 
     #     echo "Running the optimization calculation"
     #     /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_double.out -e error
 
-    #     echo "Comparing the energy with the reference one (total E of second state = -41.7813289 +-  0.06  ) "
-    #     $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_double.out "total E" -41.7813289  0.06
+    #     echo "Comparing the energy with the reference one (total E of second state = -41.5146982 +-  0.642114  ) "
+    #     $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_double.out "total E" -41.5146982  0.642114
 
 
     - name: "Test 29 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"

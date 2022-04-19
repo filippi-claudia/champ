@@ -37,7 +37,7 @@ load symmetry        ci66_BFD-Da_sa2.sym
     lin_eps       0.001
     lin_adiag     0.01
     lin_jdav      0
-    lin_nvec      10
+    lin_nvec      5
     lin_nvecx     100
     multiple_adiag 0
     ncore         0
@@ -50,7 +50,7 @@ load symmetry        ci66_BFD-Da_sa2.sym
 %endmodule
 
 %module blocking_vmc
-    vmc_nstep     20
+    vmc_nstep     10
     vmc_nblk      200
     vmc_nblkeq    1
     vmc_nconf_new 0
