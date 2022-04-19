@@ -59,6 +59,8 @@ check.*
 tape8
 walkalize.*
 *.vscode
+config/
+*.i
 
 #local testing of workflow
 .github/workflows/test_locally.yml

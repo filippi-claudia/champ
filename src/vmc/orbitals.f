@@ -373,6 +373,7 @@ c get basis functions for electron iel
               dorbn(iorb,1)=dorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
               dorbn(iorb,2)=dorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
               dorbn(iorb,3)=dorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
+
               if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
             enddo
           enddo
@@ -390,6 +391,7 @@ c get basis functions for electron iel
              dorbn(iorb,1)=dorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
              dorbn(iorb,2)=dorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
              dorbn(iorb,3)=dorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
+
              if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
             enddo
           enddo

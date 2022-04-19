@@ -39,6 +39,7 @@ c routine to calculate inverse and determinant of matrix a
 c assumed to be dimensioned a(nsub,nsub).
 c the matrix a is replaced by its inverse.
 
+      if(nsub.eq.0) return
 
       if(nsub.eq.1) then
         determinant=a(1,1)

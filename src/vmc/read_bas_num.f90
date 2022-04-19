@@ -300,7 +300,7 @@ subroutine readps_gauss
     endif
     call bcast(label)
     ! max projector
-    if (.not. allocated(lpot)) allocate (lpot(nctype), source=0)
+    if (.not. allocated(lpot)) allocate (lpot(nctype))
 
     if (wid) then
       read(iunit,*,iostat=iostat) lpot(ic)

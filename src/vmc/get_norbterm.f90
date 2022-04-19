@@ -60,8 +60,8 @@ subroutine get_norbterm
     local_norbterm    = norbterm
     local_nreduced    = nreduced
 
-    if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norb_tot, norb_tot), source=0)
-    if (.not. allocated(irrep)) allocate (irrep(norb_tot), source=0)
+    if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norb_tot, norb_tot))
+    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
 
     ! check the following condition against known cases
     if (method .eq. "linear") irrep = 0   !initialize irrep array to 0

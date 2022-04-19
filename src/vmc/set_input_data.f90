@@ -106,10 +106,10 @@ subroutine multideterminants_define(iflag, icheck)
     endif
     kref_old = kref
 
-    if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2), source=0)
-    if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2), source=0)
-    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2), source=0)
-    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2), source=0)
+    if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
+    if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
+    if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
+    if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2))
 
     do iab = 1, 2
         numrep_det(kref, iab) = 0
@@ -283,7 +283,7 @@ subroutine inputforces
     integer             :: i
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
-    if (.not. allocated(iwftype)) allocate (iwftype(nforce), source=0)
+    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
 
     call set_displace_zero(nforce)
 
@@ -448,7 +448,7 @@ subroutine modify_zmat_define
     integer :: ic, k
 
 
-    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent), source=0)
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
 
     do ic = 1, ncent
         do k = 1, 3

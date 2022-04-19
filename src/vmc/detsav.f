@@ -30,41 +30,34 @@ c Written by Claudia Filippi
 
       integer :: i, iab, iel, iflag, ikel
       integer :: iorb, ish, istate, j
-      integer :: k, kk, ndim, nel, ndim2
-c      integer, dimension(ndet) :: auxdim
+      integer :: k, kk, ndim, nel, ndim2, kn
+      integer, dimension(ndet) :: ku
+      integer, dimension(ndet) :: auxdim
 
-
-
+      
       if(iel.le.nup) then
-        iab=1
-        nel=nup
-        ish=0
-       else
-        iab=2
-        nel=ndn
-        ish=nup
+         iab=1
+         nel=nup
+         ish=0
+      else
+         iab=2
+         nel=ndn
+         ish=nup
       endif
-
+      
       ikel=nel*(iel-ish-1)
       do j=1,nel*nel
-        slmi(j,iab)=slmin(j)
+         slmi(j,iab)=slmin(j)
       enddo
       do j=ivirt(iab),norb
-        do i=1,nel
-          do istate=1,nstates
-            ymat(j,i,iab,istate)=ymatn(j,i,istate)
-          enddo
-        aa(i,j,iab)=aan(i,j)
-        enddo
+         do i=1,nel
+            do istate=1,nstates
+               ymat(j,i,iab,istate)=ymatn(j,i,istate)
+            enddo
+            aa(i,j,iab)=aan(i,j)
+         enddo
       enddo
-
-c      print*,"start iteration"
-c      do k=1,ndet
-c         ndim=numrep_det(k,iab) 
-c         auxdim(k)=ndim*ndim
-c         print*,"k",k,auxdim(k)
-c      enddo
-
+      
       
       do k=1,kref-1
          ndim=numrep_det(k,iab)
@@ -72,31 +65,32 @@ c      enddo
          wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
       enddo
       
-
+      
+      
       do k=kref+1,ndet
          ndim=numrep_det(k,iab)
          ndim2=ndim*ndim
          wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
       enddo
-
       
-
-        do j=1,nel
-          fp(1,j+ikel,iab)=dorbn(iworbd(j+ish,kref),1)
-          fp(2,j+ikel,iab)=dorbn(iworbd(j+ish,kref),2)
-          fp(3,j+ikel,iab)=dorbn(iworbd(j+ish,kref),3)
-        enddo
-        do k=1,ndet
-          detiab(k,iab)=detn(k)
-        enddo
-
-         do iorb=1,norb
-           orb(iel,iorb)=orbn(iorb)
-           do kk=1,3
-             dorb(kk,iel,iorb)=dorbn(iorb,kk)
-           enddo
+      
+      
+      do j=1,nel
+         fp(1,j+ikel,iab)=dorbn(iworbd(j+ish,kref),1)
+         fp(2,j+ikel,iab)=dorbn(iworbd(j+ish,kref),2)
+         fp(3,j+ikel,iab)=dorbn(iworbd(j+ish,kref),3)
+      enddo
+      do k=1,ndet
+         detiab(k,iab)=detn(k)
+      enddo
+      
+      do iorb=1,norb
+         orb(iel,iorb)=orbn(iorb)
+         do kk=1,3
+            dorb(kk,iel,iorb)=dorbn(iorb,kk)
          enddo
-
+      enddo
+       
       return
       end
       end module

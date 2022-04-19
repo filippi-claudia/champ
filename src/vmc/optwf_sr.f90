@@ -597,7 +597,7 @@ contains
         allocate (p(mparm))
         allocate (tmp(mparm))
         allocate (work(MTEST))
-        allocate (ipvt(MTEST), source=0)
+        allocate (ipvt(MTEST))
 
         if (nparm .gt. MTEST) stop 'mparm>MTEST'
 

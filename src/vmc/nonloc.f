@@ -260,7 +260,7 @@ c-----------------------------------------------------------------------
         yl0=3.d0*costh
        elseif(l.eq.3) then
         yl0=2.5d0*(3*costh*costh-1)
-       elseif(l.eq.3) then
+       elseif(l.eq.4) then
         yl0=3.5d0*(5*costh*costh*costh-3*costh)
        else
         call fatal_error('YL0: implemented to l=4 only')

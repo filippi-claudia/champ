@@ -177,7 +177,7 @@ subroutine read_molecule_file(file_molecule)
 
     if (.not. allocated(cent)) allocate(cent(3,ncent))
     if (.not. allocated(symbol)) allocate(symbol(ncent))
-    if (.not. allocated(iwctype)) allocate(iwctype(ncent), source=0)
+    if (.not. allocated(iwctype)) allocate(iwctype(ncent))
     if (.not. allocated(unique)) allocate(unique(ncent))
     unique = ''
     symbol = ''
@@ -327,7 +327,7 @@ subroutine read_trexio_molecule_file(file_trexio)
     ! Do the allocations based on the ncent
     if (.not. allocated(cent))    allocate(cent(3,ncent))
     if (.not. allocated(symbol))  allocate(symbol(ncent))
-    if (.not. allocated(iwctype)) allocate(iwctype(ncent), source=0)
+    if (.not. allocated(iwctype)) allocate(iwctype(ncent))
     if (.not. allocated(unique))  allocate(unique(ncent))
 
     if (wid) then
@@ -499,7 +499,7 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,1,1), i=1,ndet)
 
 !       allocate the orbital mapping array
-    if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet), source=0)
+    if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
 
     if (wid) then
         do i = 1, ndet
@@ -580,10 +580,10 @@ subroutine read_multideterminants_file(file_multideterminants)
         endif
     endif
 
-    if (.not. allocated(iwundet)) allocate(iwundet(ndet, 2), source=0)
-    if (.not. allocated(numrep_det)) allocate(numrep_det(ndet, 2), source=0)
-    if (.not. allocated(irepcol_det)) allocate(irepcol_det(nelec, ndet, 2), source=0)
-    if (.not. allocated(ireporb_det)) allocate(ireporb_det(nelec, ndet, 2), source=0)
+    if (.not. allocated(iwundet)) allocate(iwundet(ndet, 2))
+    if (.not. allocated(numrep_det)) allocate(numrep_det(ndet, 2))
+    if (.not. allocated(irepcol_det)) allocate(irepcol_det(nelec, ndet, 2))
+    if (.not. allocated(ireporb_det)) allocate(ireporb_det(nelec, ndet, 2))
 
     if (wid) then
         do k = 2, ndet_local
@@ -1232,9 +1232,9 @@ subroutine read_csfmap_file(file_determinants)
         ! No csfmap information present. One to one mapping cdet == ccsf
         nmap = ndet
         if (.not. allocated(cxdet)) allocate (cxdet(nmap))
-        if (.not. allocated(iadet)) allocate (iadet(ndet), source=0)
-        if (.not. allocated(ibdet)) allocate (ibdet(ndet), source=0)
-        if (.not. allocated(icxdet)) allocate (icxdet(nmap), source=0)
+        if (.not. allocated(iadet)) allocate (iadet(ndet))
+        if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+        if (.not. allocated(icxdet)) allocate (icxdet(nmap))
 
         do i = 1, ncsf
             iadet(i) = i
@@ -1259,9 +1259,9 @@ subroutine read_csfmap_file(file_determinants)
         call bcast(nmap_check)
 
         if (.not. allocated(cxdet)) allocate (cxdet(nmap_check))
-        if (.not. allocated(iadet)) allocate (iadet(ndet), source=0)
-        if (.not. allocated(ibdet)) allocate (ibdet(ndet), source=0)
-        if (.not. allocated(icxdet)) allocate (icxdet(nmap_check), source=0)
+        if (.not. allocated(iadet)) allocate (iadet(ndet))
+        if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+        if (.not. allocated(icxdet)) allocate (icxdet(nmap_check))
 
         nptr = 1
         do i = 1, ncsf
@@ -1450,18 +1450,18 @@ subroutine read_jasderiv_file(file_jastrow_der)
     na2 = nctype
     nctyp3x = max(3, nctype_tot)
 
-    if (.not. allocated(nparma)) allocate (nparma(nctyp3x), source=0)
-    if (.not. allocated(nparmb)) allocate (nparmb(3), source=0)
-    if (.not. allocated(nparmc)) allocate (nparmc(nctype), source=0)
-    if (.not. allocated(nparmf)) allocate (nparmf(nctype), source=0)
+    if (.not. allocated(nparma)) allocate (nparma(nctyp3x))
+    if (.not. allocated(nparmb)) allocate (nparmb(3))
+    if (.not. allocated(nparmc)) allocate (nparmc(nctype))
+    if (.not. allocated(nparmf)) allocate (nparmf(nctype))
 
-    if (.not. allocated(iwjasa)) allocate (iwjasa(83, nctyp3x), source=0)
-    if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3), source=0)
-    if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype), source=0)
-    if (.not. allocated(iwjasf)) allocate (iwjasf(15, nctype), source=0)
+    if (.not. allocated(iwjasa)) allocate (iwjasa(83, nctyp3x))
+    if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3))
+    if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype))
+    if (.not. allocated(iwjasf)) allocate (iwjasf(15, nctype))
 
-    if (.not. allocated(npoint)) allocate (npoint(nctyp3x), source=0)
-    if (.not. allocated(npointa)) allocate (npointa(3*nctyp3x), source=0)
+    if (.not. allocated(npoint)) allocate (npoint(nctyp3x))
+    if (.not. allocated(npointa)) allocate (npointa(3*nctyp3x))
 
     ! to escape the comments before the "jasderiv" line
     if (wid) then
@@ -1568,17 +1568,17 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
         do it = 1, nctype
             if (wid) read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
-            write(ounit, '(A,10i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
+            write(ounit, '(A,30i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
         enddo
         call bcast(iwjasa)
         do isp = nspin1, nspin2b
             if (wid) read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
-            write(ounit, '(A,10i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+            write(ounit, '(A,30i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
         enddo
         call bcast(iwjasb)
         do it = 1, nctype
             if (wid) read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
-            write(ounit, '(A,10i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
+            write(ounit, '(A,30i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
         enddo
         call bcast(iwjasc)
             ! end of reading the jasderiv file block
@@ -1636,7 +1636,7 @@ subroutine read_forces_file(file_forces)
     endif
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
-    if (.not. allocated(iwftype)) allocate (iwftype(nforce), source=0)
+    if (.not. allocated(iwftype)) allocate (iwftype(nforce))
 
     if (wid) then
         read (iunit, *, iostat=iostat) (iwftype(i), i=1, nforce)
@@ -1737,7 +1737,7 @@ subroutine read_symmetry_file(file_symmetry)
     write(ounit, *) temp2
 
     ! safe allocate
-    if (.not. allocated(irrep)) allocate (irrep(norb_tot), source=0)
+    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
 
     ! read data
     if (wid) then
@@ -1811,7 +1811,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     call bcast(norbvirt)
 
 
-    if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norbopt, norbvirt), source=0)
+    if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norbopt, norbvirt))
 
     do io = 1, norbopt
         if (wid) then
@@ -1916,15 +1916,15 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     use numbas_mod, only: MRWF
     use numbas, only: iwrwf, numr
     use numbas1, only: iwlbas, nbastyp
-    use basis, only: n1s, n2s, n2p, n3s, n3p, n3dzr, n3dx2, n3dxy, n3dxz, n3dyz
-    use basis, only: n4s, n4p, n4fxxx, n4fyyy, n4fzzz, n4fxxy, n4fxxz, n4fyyx, n4fyyz
-    use basis, only: n4fzzx, n4fzzy, n4fxyz, nsa, npa, ndzra, ndxya, ndxza, ndyza, ndx2a, ndz2a
+    use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
+    use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
     use inputflags, only: ibasis_num
     use coefs, only: nbasis
     use general, only: pooldir
 
     use atom, only: nctype
     use ghostatom, only: newghostype
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1973,81 +1973,53 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
 
-    allocate (nbastyp(nctot), source=0)
-    allocate (n1s(nctot),     source=0)
-    allocate (n2s(nctot),     source=0)
-    allocate (n2p(3, nctot),  source=0)
-    allocate (n3s(nctot),     source=0)
-    allocate (n3p(3, nctot),  source=0)
-    allocate (n3dzr(nctot),   source=0)
-    allocate (n3dx2(nctot),   source=0)
-    allocate (n3dxy(nctot),   source=0)
-    allocate (n3dxz(nctot),   source=0)
-    allocate (n3dyz(nctot),   source=0)
-    allocate (n4s(nctot),     source=0)
-    allocate (n4p(3, nctot),  source=0)
-    allocate (n4fxxx(nctot),  source=0)
-    allocate (n4fyyy(nctot),  source=0)
-    allocate (n4fzzz(nctot),  source=0)
-    allocate (n4fxxy(nctot),  source=0)
-    allocate (n4fxxz(nctot),  source=0)
-    allocate (n4fyyx(nctot),  source=0)
-    allocate (n4fyyz(nctot),  source=0)
-    allocate (n4fzzx(nctot),  source=0)
-    allocate (n4fzzy(nctot),  source=0)
-    allocate (n4fxyz(nctot),  source=0)
-    allocate (nsa(nctot),     source=0)
-    allocate (npa(3, nctot),  source=0)
-    allocate (ndzra(nctot),   source=0)
-    allocate (ndz2a(nctot),   source=0)
-    allocate (ndxya(nctot),   source=0)
-    allocate (ndxza(nctot),   source=0)
-    allocate (ndx2a(nctot),   source=0)
-    allocate (ndyza(nctot),   source=0)
+    allocate (nbastyp(nctot))
+    allocate (ns(nctot))
+    allocate (npx(nctot))
+    allocate (npy(nctot))
+    allocate (npz(nctot))
+    allocate (ndxx(nctot))
+    allocate (ndxy(nctot))
+    allocate (ndxz(nctot))
+    allocate (ndyy(nctot))
+    allocate (ndyz(nctot))
+    allocate (ndzz(nctot))
+    allocate (nfxxx(nctot))
+    allocate (nfxxy(nctot))
+    allocate (nfxxz(nctot))
+    allocate (nfxyy(nctot))
+    allocate (nfxyz(nctot))
+    allocate (nfxzz(nctot))
+    allocate (nfyyy(nctot))
+    allocate (nfyyz(nctot))
+    allocate (nfyzz(nctot))
+    allocate (nfzzz(nctot))
 
     if (nbasis .eq. 0) then
         call fatal_error('Please Load LCAO before basis info in the input file')
     endif
 
-    allocate (iwlbas(nbasis, nctot), source=0)
-    allocate (iwrwf(nbasis, nctot), source=0)
+    allocate (iwlbas(nbasis, nctot))
+    allocate (iwrwf(nbasis, nctot))
 
     if (wid) then
         do i = 1, nctype + newghostype
-            read (iunit, *, iostat=iostat) n1s(i), n2s(i), (n2p(j, i), j=1, 3), &
-                n3s(i), (n3p(j, i), j=1, 3), &
-                n3dzr(i), n3dx2(i), n3dxy(i), n3dxz(i), n3dyz(i), &
-                n4s(i), (n4p(j, i), j=1, 3), &
-                n4fxxx(i), n4fyyy(i), n4fzzz(i), n4fxxy(i), n4fxxz(i), &
-                n4fyyx(i), n4fyyz(i), n4fzzx(i), n4fzzy(i), n4fxyz(i), &
-                nsa(i), (npa(j, i), j=1, 3), &
-                ndzra(i), ndx2a(i), ndxya(i), ndxza(i), ndyza(i)
+            read (iunit, *, iostat=iostat) ns(i), npx(i), npy(i), npz(i), &
+                ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
+                nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
+                nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i)
             if (iostat /= 0) call fatal_error( "Error in reading basis num info file")
-            write (ounit, '(100i3)') n1s(i), n2s(i), (n2p(j, i), j=1, 3), &
-                n3s(i), (n3p(j, i), j=1, 3), &
-                n3dzr(i), n3dx2(i), n3dxy(i), n3dxz(i), n3dyz(i), &
-                n4s(i), (n4p(j, i), j=1, 3), &
-                n4fxxx(i), n4fyyy(i), n4fzzz(i), n4fxxy(i), n4fxxz(i), &
-                n4fyyx(i), n4fyyz(i), n4fzzx(i), n4fzzy(i), n4fxyz(i), &
-                nsa(i), (npa(j, i), j=1, 3), &
-                ndzra(i), ndx2a(i), ndxya(i), ndxza(i), ndyza(i)
-
+            write (ounit, '(100i3)') ns(i), npx(i), npy(i), npz(i), &
+            ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
+            nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
+            nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i)
 
             if (numr .gt. 0) then
-                if (n2s(i) .ne. 0 .or. n3s(i) .ne. 0 .or. n4s(i) .ne. 0 .or. &
-                    n3p(1, i) .ne. 0 .or. n3p(2, i) .ne. 0 .or. n3p(3, i) .ne. 0 .or. &
-                    n4p(1, i) .ne. 0 .or. n4p(2, i) .ne. 0 .or. n4p(3, i) .ne. 0 .or. &
-                    nsa(i) .ne. 0 .or. npa(1, i) .ne. 0 .or. npa(2, i) .ne. 0 .or. &
-                    npa(3, i) .ne. 0 .or. ndzra(i) .ne. 0 .or. ndx2a(i) .ne. 0 .or. &
-                    ndxya(i) .ne. 0 .or. ndxza(i) .ne. 0 .or. ndyza(i) .ne. 0) &
-                    call fatal_error('BASIS: n1s,n2p,n3d only for numerical basis')
-
-                nbastyp(i) = iabs(n1s(i)) &
-                                + iabs(n2p(1, i)) + iabs(n2p(2, i)) + iabs(n2p(3, i)) &
-                                + iabs(n3dzr(i)) + iabs(n3dx2(i)) &
-                                + iabs(n3dxy(i)) + iabs(n3dxz(i)) + iabs(n3dyz(i)) &
-                                + iabs(n4fxxx(i)) + iabs(n4fyyy(i)) + iabs(n4fzzz(i)) + iabs(n4fxxy(i)) + iabs(n4fxxz(i)) &
-                                + iabs(n4fyyx(i)) + iabs(n4fyyz(i)) + iabs(n4fzzx(i)) + iabs(n4fzzy(i)) + iabs(n4fxyz(i))
+                nbastyp(i) =    ns(i) &
+                            +   npx(i) + npy(i) + npz(i) &
+                            +   ndxx(i)  + ndxy(i)  +  ndxz(i) + ndyy(i)  + ndyz(i) + ndzz(i) &
+                            +   nfxxx(i) + nfxxy(i) + nfxxz(i) + nfxyy(i) + nfxyz(i) &
+                            +   nfxzz(i) + nfyyy(i) + nfyyz(i) + nfyzz(i) + nfzzz(i)
 
                 if (nbastyp(i) .gt. MRWF) call fatal_error('BASIS: nbastyp > MRWF')
 
@@ -2055,12 +2027,8 @@ subroutine read_basis_num_info_file(file_basis_num_info)
                 if (iostat /= 0) call fatal_error( "Error in reading basis num info file")
                 write(ounit, '(100i3)') (iwrwf(ib, i), ib=1, nbastyp(i))
                 write(ounit, *)
-
             else
-                if (n4fxxx(i) .ne. 0 .or. n4fyyy(i) .ne. 0 .or. n4fzzz(i) .ne. 0 .or. &
-                    n4fxxy(i) .ne. 0 .or. n4fxxz(i) .ne. 0 .or. n4fyyx(i) .ne. 0 .or. &
-                    n4fyyz(i) .ne. 0 .or. n4fzzx(i) .ne. 0 .or. n4fzzy(i) .ne. 0 .or. &
-                    n4fxyz(i) .ne. 0) call fatal_error('BASIS: n4f only for numerical basis')
+                call fatal_error('BASIS: numerical basis functions not supported')
             endif
         enddo
 
@@ -2068,81 +2036,85 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
             do i = 1, nctype + newghostype
                 jj = 0
-                do j = 1, iabs(n1s(i))
+                do j = 1, ns(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 1
                 enddo
-                do j = 1, iabs(n2p(1, i))
+                do j = 1, npx(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 2
                 enddo
-                do j = 1, iabs(n2p(2, i))
+                do j = 1, npy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 3
                 enddo
-                do j = 1, iabs(n2p(3, i))
+                do j = 1, npz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 4
                 enddo
-                do j = 1, iabs(n3dzr(i))
+                do j = 1, ndxx(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 5
                 enddo
-                do j = 1, iabs(n3dx2(i))
+                do j = 1, ndxy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 6
                 enddo
-                do j = 1, iabs(n3dxy(i))
+                do j = 1, ndxz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 7
                 enddo
-                do j = 1, iabs(n3dxz(i))
+                do j = 1, ndyy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 8
                 enddo
-                do j = 1, iabs(n3dyz(i))
+                do j = 1, ndyz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 9
                 enddo
-                do j = 1, iabs(n4fxxx(i))
+                do j = 1, ndzz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 10
                 enddo
-                do j = 1, iabs(n4fyyy(i))
+                do j = 1, nfxxx(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 11
                 enddo
-                do j = 1, iabs(n4fzzz(i))
+                do j = 1, nfxxy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 12
                 enddo
-                do j = 1, iabs(n4fxxy(i))
+                do j = 1, nfxxz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 13
                 enddo
-                do j = 1, iabs(n4fxxz(i))
+                do j = 1, nfxyy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 14
                 enddo
-                do j = 1, iabs(n4fyyx(i))
+                do j = 1, nfxyz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 15
                 enddo
-                do j = 1, iabs(n4fyyz(i))
+                do j = 1, nfxzz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 16
                 enddo
-                do j = 1, iabs(n4fzzx(i))
+                do j = 1, nfyyy(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 17
                 enddo
-                do j = 1, iabs(n4fzzy(i))
+                do j = 1, nfyyz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 18
                 enddo
-                do j = 1, iabs(n4fxyz(i))
+                do j = 1, nfyzz(i)
                     jj = jj + 1
                     iwlbas(jj, i) = 19
+                enddo
+                do j = 1, nfzzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 20
                 enddo
 
             enddo
@@ -2154,36 +2126,26 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     call bcast(iwlbas)
     call bcast(iwrwf)
     call bcast(nbastyp)
-    call bcast(n1s)
-    call bcast(n2s)
-    call bcast(n2p)
-    call bcast(n3s)
-    call bcast(n3p)
-    call bcast(n3dzr)
-    call bcast(n3dx2)
-    call bcast(n3dxy)
-    call bcast(n3dxz)
-    call bcast(n3dyz)
-    call bcast(n4s)
-    call bcast(n4p)
-    call bcast(n4fxxx)
-    call bcast(n4fyyy)
-    call bcast(n4fzzz)
-    call bcast(n4fxxy)
-    call bcast(n4fxxz)
-    call bcast(n4fyyx)
-    call bcast(n4fyyz)
-    call bcast(n4fzzx)
-    call bcast(n4fzzy)
-    call bcast(n4fxyz)
-    call bcast(nsa)
-    call bcast(npa)
-    call bcast(ndzra)
-    call bcast(ndz2a)
-    call bcast(ndxya)
-    call bcast(ndxza)
-    call bcast(ndx2a)
-    call bcast(ndyza)
+    call bcast(ns)
+    call bcast(npx)
+    call bcast(npy)
+    call bcast(npz)
+    call bcast(ndxx)
+    call bcast(ndxy)
+    call bcast(ndxz)
+    call bcast(ndyy)
+    call bcast(ndyz)
+    call bcast(ndzz)
+    call bcast(nfxxx)
+    call bcast(nfxxy)
+    call bcast(nfxxz)
+    call bcast(nfxyy)
+    call bcast(nfxyz)
+    call bcast(nfxzz)
+    call bcast(nfyyy)
+    call bcast(nfyyz)
+    call bcast(nfyzz)
+    call bcast(nfzzz)
 
     ibasis_num = 1
     call bcast(ibasis_num)
@@ -2253,12 +2215,12 @@ subroutine read_dmatrix_file(file_dmatrix)
 
 
     allocate (dmat(norb_tot))
-    allocate (iwdmat(nstates), source=0)
+    allocate (iwdmat(nstates))
 
     if (ndetorb .gt. norb) call fatal_error( 'READ_DMATRIX: wrong number of orbitals')
 
     allocate (weights(nstates))
-    allocate (iweight(nstates), source=0)
+    allocate (iweight(nstates))
 
 
     if (wid) read (iunit, *) (iwdmat(i), i=1, nweight)
@@ -2429,9 +2391,9 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_CARTESIAN: (2*ngradnts+1)  /=  nforce')
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE))
-    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE), source=0)
-    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE), source=0)
-    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent), source=0)
+    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
+    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
 
     ! initialize the values to zero
 
@@ -2531,9 +2493,9 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     if ((2*ngradnts + 1) .ne. nforce) call fatal_error('GRADIENTS_ZMATRIX: (2*ngradnts+1)  /=  nforce')
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, MFORCE))
-    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE), source=0)
-    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE), source=0)
-    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent), source=0)
+    if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE))
+    if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE))
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
 
     ! initialize the values to zero
 
@@ -2622,7 +2584,7 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     endif
 
 
-    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent), source=0)
+    if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent))
 
     if (wid) then
         do ic = 1, ncent
@@ -2774,7 +2736,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     if (.not. allocated(czcart)) allocate (czcart(3, ncent))
     if (.not. allocated(czint)) allocate (czint(3, ncent))
     if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3))
-    if (.not. allocated(izcmat)) allocate (izcmat(3, ncent), source=0)
+    if (.not. allocated(izcmat)) allocate (izcmat(3, ncent))
 
     czcart_ref = cent
 

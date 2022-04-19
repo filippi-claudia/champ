@@ -197,7 +197,7 @@ contains
 
     ! Query size of the optimal workspace
     allocate(work(1))
-    allocate(iwork(1), source=0)
+    allocate(iwork(1))
 
     call DSYGVX(itype,"V", "I", "U", dim, mtx_copy, dim, stx_copy, dim, vl, vu, &
          1, lowest, abstol, m, eigenvalues_work, eigenvectors_work, &
@@ -208,7 +208,7 @@ contains
     lwork = max(1, int(work(1)))
     deallocate(work, iwork)
     allocate(work(lwork))
-    allocate(iwork(lwork), source=0)
+    allocate(iwork(lwork))
 
     ! Compute Eigenvalues
 

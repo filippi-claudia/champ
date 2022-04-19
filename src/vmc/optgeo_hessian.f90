@@ -108,7 +108,7 @@ module optgeo_hessian
 
     ! initializes
     num = size (h, 1)
-    allocate (u(num, num), source=0.0_8)
+    allocate (u(num, num))
     u = 0d0
 
     ! second term, eq. 44, u = h.outer(dx, dx).h / inner(dx, h.dx)

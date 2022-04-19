@@ -31,11 +31,13 @@ contains
         use vmc_mod, only: norb_tot
         use coefs, only: norb
         use optwf_parms, only: nparmj
+        
         if (.not. allocated(b)) allocate (b(norb_tot, nelec))
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
         if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb_tot, ncent_tot))
         if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj))
+
     end subroutine allocate_Bloc
 
     subroutine deallocate_Bloc()
@@ -579,6 +581,7 @@ contains
     subroutine allocate_phifun()
         use const, only: nelec
         use coefs, only: nbasis
+
         if (.not. allocated(d2phin)) allocate (d2phin(nbasis, nelec))
         if (.not. allocated(d2phin_all)) allocate (d2phin_all(3, 3, nbasis, nelec))
         if (.not. allocated(d3phin)) allocate (d3phin(3, nbasis, nelec))
