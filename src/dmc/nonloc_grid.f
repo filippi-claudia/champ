@@ -118,7 +118,10 @@ c     enddo
         iel=iel_good
         if(icasula.lt.0) call distances(iel,xold_dmc(1,1,iw,1))
         ri=one/r_en(iel,ic)
-
+        costh=rvec_en(1,iel,ic)*xq(iq)
+     &       +rvec_en(2,iel,ic)*yq(iq)
+     &       +rvec_en(3,iel,ic)*zq(iq)
+        costh=costh*ri
 
         if(iperiodic.eq.0) then
           x(1)=r_en(iel,ic)*xq(iq)+cent(1,ic)
