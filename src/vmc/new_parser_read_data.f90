@@ -1915,6 +1915,8 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     use numbas1, only: iwlbas, nbastyp
     use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
     use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
+    use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
+    use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
     use inputflags, only: ibasis_num
     use coefs, only: nbasis
     use general, only: pooldir
@@ -1991,6 +1993,21 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     allocate (nfyyz(nctot))
     allocate (nfyzz(nctot))
     allocate (nfzzz(nctot))
+    allocate (ngxxxx(nctot))
+    allocate (ngxxxy(nctot))
+    allocate (ngxxxz(nctot))
+    allocate (ngxxyy(nctot))
+    allocate (ngxxyz(nctot))
+    allocate (ngxxzz(nctot))
+    allocate (ngxyyy(nctot))
+    allocate (ngxyyz(nctot))
+    allocate (ngxyzz(nctot))
+    allocate (ngxzzz(nctot))
+    allocate (ngyyyy(nctot))
+    allocate (ngyyyz(nctot))
+    allocate (ngyyzz(nctot))
+    allocate (ngyzzz(nctot))
+    allocate (ngzzzz(nctot))
 
     if (nbasis .eq. 0) then
         call fatal_error('Please Load LCAO before basis info in the input file')
@@ -2004,19 +2021,29 @@ subroutine read_basis_num_info_file(file_basis_num_info)
             read (iunit, *, iostat=iostat) ns(i), npx(i), npy(i), npz(i), &
                 ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
                 nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
-                nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i)
+                nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i), &
+                ngxxxx(i), ngxxxy(i), ngxxxz(i), ngxxyy(i), ngxxyz(i), &
+                ngxxzz(i), ngxyyy(i), ngxyyz(i), ngxyzz(i), ngxzzz(i), &
+                ngyyyy(i), ngyyyz(i), ngyyzz(i), ngyzzz(i), ngzzzz(i)
+
             if (iostat /= 0) call fatal_error( "Error in reading basis num info file")
             write (ounit, '(100i3)') ns(i), npx(i), npy(i), npz(i), &
             ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
             nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
-            nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i)
+            nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i), &
+            ngxxxx(i), ngxxxy(i), ngxxxz(i), ngxxyy(i), ngxxyz(i), &
+            ngxxzz(i), ngxyyy(i), ngxyyz(i), ngxyzz(i), ngxzzz(i), &
+            ngyyyy(i), ngyyyz(i), ngyyzz(i), ngyzzz(i), ngzzzz(i)
 
             if (numr .gt. 0) then
                 nbastyp(i) =    ns(i) &
                             +   npx(i) + npy(i) + npz(i) &
                             +   ndxx(i)  + ndxy(i)  +  ndxz(i) + ndyy(i)  + ndyz(i) + ndzz(i) &
                             +   nfxxx(i) + nfxxy(i) + nfxxz(i) + nfxyy(i) + nfxyz(i) &
-                            +   nfxzz(i) + nfyyy(i) + nfyyz(i) + nfyzz(i) + nfzzz(i)
+                            +   nfxzz(i) + nfyyy(i) + nfyyz(i) + nfyzz(i) + nfzzz(i) &
+                            +   ngxxxx(i) + ngxxxy(i) + ngxxxz(i) + ngxxyy(i) + ngxxyz(i) &
+                            +   ngxxzz(i) + ngxyyy(i) + ngxyyz(i) + ngxyzz(i) + ngxzzz(i) &
+                            +   ngyyyy(i) + ngyyyz(i) + ngyyzz(i) + ngyzzz(i) + ngzzzz(i)
 
                 if (nbastyp(i) .gt. MRWF) call fatal_error('BASIS: nbastyp > MRWF')
 
@@ -2113,6 +2140,67 @@ subroutine read_basis_num_info_file(file_basis_num_info)
                     jj = jj + 1
                     iwlbas(jj, i) = 20
                 enddo
+                do j = 1, ngxxxx(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 21
+                enddo
+                do j = 1, ngxxxy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 22
+                enddo
+                do j = 1, ngxxxz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 23
+                enddo
+                do j = 1, ngxxyy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 24
+                enddo
+                do j = 1, ngxxyz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 25
+                enddo
+                do j = 1, ngxxzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 26
+                enddo
+                do j = 1, ngxyyy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 27
+                enddo
+                do j = 1, ngxyyz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 28
+                enddo
+                do j = 1, ngxyzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 29
+                enddo
+                do j = 1, ngxzzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 30
+                enddo
+                do j = 1, ngyyyy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 31
+                enddo
+                do j = 1, ngyyyz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 32
+                enddo
+                do j = 1, ngyyzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 33
+                enddo
+                do j = 1, ngyzzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 34
+                enddo
+                do j = 1, ngzzzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 35
+                enddo
+
 
             enddo
         endif
@@ -2143,6 +2231,21 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     call bcast(nfyyz)
     call bcast(nfyzz)
     call bcast(nfzzz)
+    call bcast(ngxxxx)
+    call bcast(ngxxxy)
+    call bcast(ngxxxz)
+    call bcast(ngxxyy)
+    call bcast(ngxxyz)
+    call bcast(ngxxzz)
+    call bcast(ngxyyy)
+    call bcast(ngxyyz)
+    call bcast(ngxyzz)
+    call bcast(ngxzzz)
+    call bcast(ngyyyy)
+    call bcast(ngyyyz)
+    call bcast(ngyyzz)
+    call bcast(ngyzzz)
+    call bcast(ngzzzz)
 
     ibasis_num = 1
     call bcast(ibasis_num)
