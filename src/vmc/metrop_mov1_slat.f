@@ -85,7 +85,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp) :: g52zer, p, phitry, phizer
       real(dp) :: psidg, psig, psijn, q
       real(dp) :: r, ratio, raver, ravern
-      real(dp) :: rbot, rmax1, rmax2, rnew
+      real(dp) :: rbot, rmax1, rmax2 = 0d0, rnew
       real(dp) :: rnorm, rnorm_nodes, rold, root
       real(dp) :: rratio, rtest, rtest2, rtop
       real(dp) :: rtry, rzero, sintht, term
@@ -248,8 +248,6 @@ c Determine the maximum value of radial function for rejection sampling
           if(rmax2.gt.rtop) rmax2=rtop
           fmax2=sqrt(rmax2)*abs(one+co*rmax2)*dexp(-zeta*rmax2)
           fmax=max(fmax,fmax2)
-        else
-          rmax2=0.0_dp
         endif
 
 c   Sample sqrt(r_f)*abs(1+co*r_f)*exp(-zeta*r_f) by rejection
