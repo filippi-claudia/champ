@@ -1,27 +1,16 @@
 module mpiconf
-    !> Arguments: idtask, nproc, wid, NPROCX
-    integer, parameter :: NPROCX = 1524
+    !> Arguments: idtask, nproc, wid
     integer  :: idtask
     integer  :: nproc
     integer  :: ierr
     logical  :: wid
 
     private
-    public :: NPROCX
     public :: idtask, nproc, wid
     public :: mpiconf_init
     save
 contains
     subroutine mpiconf_init()
-        use, intrinsic :: iso_fortran_env 
-        use mpi
-        !cant call fatal error here due to circular dependency, just use it
-        !manually
-        if(nproc.gt.NPROCX) then
-          write(output_unit,'(''Fatal error: '',a)') 'MAIN: nproc > NPROCX'
-          write(error_unit,'(''Fatal error: '',a)') 'MAIN: nproc > NPROCX'
-          call mpi_abort(MPI_COMM_WORLD,0,ierr)
-        end if
         wid = (idtask .eq. 0)
     end subroutine mpiconf_init
 end module mpiconf

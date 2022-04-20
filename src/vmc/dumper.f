@@ -5,7 +5,6 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
 
-      use mpiconf, only: NPROCX
       use vmc_mod, only: nrad
       use const, only: nelec
       use config, only: xold
@@ -44,11 +43,11 @@ c job where it left off
       integer :: ifr, istate, j, k
       integer :: nelecx, nforcex, nlocx, nproco
       integer :: nq_id, nqd_id, nqx, nscounts
-      integer, dimension(4,0:NPROCX) :: irn
+      integer, dimension(4,0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(4,0:NPROCX) :: irn_tmp
-      integer, dimension(0:NPROCX) :: ircounts
-      integer, dimension(0:NPROCX) :: idispls
+      integer, dimension(4,0:nproc) :: irn_tmp
+      integer, dimension(0:nproc) :: ircounts
+      integer, dimension(0:nproc) :: idispls
       real(dp) :: rnd, wq_id, x_id, xq_id, yq_id
       real(dp) :: zq_id
 

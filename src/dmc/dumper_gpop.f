@@ -29,7 +29,7 @@ c job where it left off
       use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcum
       use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
@@ -53,9 +53,9 @@ c job where it left off
       integer :: i, ib, ic, id, ierr
       integer :: ifr, irequest, iw, j
       integer :: k, nscounts
-      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(4, 0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(4, 0:NPROCX) :: irn_tmp
+      integer, dimension(4, 0:nproc) :: irn_tmp
 
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0

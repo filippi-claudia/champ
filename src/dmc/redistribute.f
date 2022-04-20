@@ -16,7 +16,7 @@ c nhi                 # of processors that should have nwalk_av_int+1 walkers
 c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
 
       use const, only: ipr
-      use mpiconf, only: idtask, nproc, NPROCX
+      use mpiconf, only: idtask, nproc
       use branch, only: nwalk
       use mpi
       use contrl_file,    only: ounit
@@ -28,9 +28,9 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       integer :: i, icomm, ido_again, ierr, ihi
       integer :: ilo, nhi, nlo, nwalk_av_int
       integer :: nwalk_stack, nwalk_sum
-      integer, dimension(0:NPROCX) :: nwalk_all
-      integer, dimension(0:NPROCX) :: icommunicate_all
-      integer, dimension(NPROCX) :: iwalk_stack
+      integer, dimension(0:nproc) :: nwalk_all
+      integer, dimension(0:nproc) :: icommunicate_all
+      integer, dimension(nproc) :: iwalk_stack
 
 
 

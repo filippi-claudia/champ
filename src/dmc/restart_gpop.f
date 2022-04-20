@@ -30,7 +30,7 @@
       use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcum, derivsum
       use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
@@ -70,7 +70,7 @@
       integer :: ndetx, ndnx, nelecx, newghostypex
       integer :: nf_id, nghostcentx, nprock, nq_id
       integer :: num, nupx, nwalk_id
-      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(4, 0:nproc) :: irn
       integer, dimension(ncent_tot) :: nsx
       integer, dimension(ncent_tot) :: npxx
       integer, dimension(ncent_tot) :: npyx

@@ -90,7 +90,6 @@
       subroutine pcm_reduce_chvol
 
       use pcm, only: MCHV
-      use mpiconf, only: NPROCX
       use mpiconf, only: nproc
       use pcm_xv_new, only: xv_new
       use pcm_cntrl, only: ipcm
@@ -104,10 +103,10 @@
       implicit none
 
       integer :: i, ierr, nchv3
-      integer, dimension(0:NPROCX) :: nchv_proc
-      integer, dimension(0:NPROCX) :: icount
-      integer, dimension(0:NPROCX) :: idispl
-      real(dp), dimension(NPROCX) :: charge
+      integer, dimension(0:nproc) :: nchv_proc
+      integer, dimension(0:nproc) :: icount
+      integer, dimension(0:nproc) :: idispl
+      real(dp), dimension(nproc) :: charge
 
       if(ipcm.eq.0) return
 
