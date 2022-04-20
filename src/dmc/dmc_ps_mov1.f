@@ -355,8 +355,7 @@ c Not needed if itau_eff <=0 and in practice we have never needed it even
 c otherwise
           if(iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
 
-          ! pp=pp*p
-          pp = p*p ! <= double check that with Claudia
+          pp=pp*p
           p=dmin1(one,p)
   160     q=one-p
 
