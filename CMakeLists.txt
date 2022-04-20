@@ -54,8 +54,12 @@ option(ENABLE_PERIODIC "enable_periodic" off)
 # Include function to Load MKL
 message("")
 
-if((CMAKE_Fortran_COMPILER_ID MATCHES "Intel") OR USE_MKL)
-  set(BLA_VENDOR Intel10_64lp_seq)
+if((CMAKE_Fortran_COMPILER_ID MATCHES "Intel") OR ENABLE_MKL)
+  if (BLA_STATIC MATCHES "ON")
+    set(BLA_VENDOR Intel10_64lp)
+  else()
+    set(BLA_VENDOR Intel10_64_dyn)
+  endif()
 endif()
 
 find_package(BLAS COMPONENTS Fortran REQUIRED QUIET)
