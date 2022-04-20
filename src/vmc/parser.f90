@@ -765,7 +765,7 @@ subroutine parser
       if(iperiodic.eq.0.and.ilcao.ne.nwftype) then
         write(ounit,*) "Warning INPUT: block lcao missing for one wave function"
         write(ounit,*) "Warning INPUT: lcao blocks equal for all wave functions"
-        call inputlcao
+        call inputlcao(nwftype)
       endif
     endif
   endif
@@ -811,7 +811,7 @@ subroutine parser
       if(ijastrow_parameter.ne.nwftype) then
         write(ounit,*) "INPUT: block jastrow_parameter missing for one wave function"
         write(ounit,*) "INPUT: jastrow_parameter blocks equal for all wave functions"
-        call inputjastrow
+        call inputjastrow(nwftype)
       endif
     endif
   endif
@@ -921,7 +921,7 @@ subroutine parser
       if(ideterminants.ne.nwftype) then
         write(ounit,*) "Warning INPUT: block determinants missing for one wave function"
         write(ounit,*) "Warning INPUT: determinants blocks equal for all wave functions"
-        call inputdet
+        call inputdet(nwftype)
       endif
     endif
   endif
