@@ -68,7 +68,6 @@ c Calculates energy
 
 
       iwf=iwftype(ifr)
-      dvpsp_dj = 0.0_dp
 
 c pe_ee computed in distances (called from distances if iperiodic != 0)
 c pe_en(loc) computed in distances if nloc=0 or called from distances if iperiodic!=0
