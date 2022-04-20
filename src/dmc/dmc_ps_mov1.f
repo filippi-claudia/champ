@@ -254,7 +254,7 @@ c Sample Green function for forward move
         endif
 
         dwt=1
-        pp = 1.
+
         do i=1,nelec
 
           if(i.le.nup) then
@@ -355,8 +355,8 @@ c Not needed if itau_eff <=0 and in practice we have never needed it even
 c otherwise
           if(iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
 
-          pp=pp*p
-          ! pp = p*p ! <= double check that with Claudia
+          ! pp=pp*p
+          pp = p*p ! <= double check that with Claudia
           p=dmin1(one,p)
   160     q=one-p
 
@@ -597,8 +597,14 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
      &    wt(iw),enew(1)-etrial,eold(iw,ifr)-etrial,(xnew(ii),ii=1,3)
 
           eold(iw,ifr)=enew(1)
-          peo_dmc(iw,ifr)=pen
-          d2o(iw,ifr)=d2n
+          ! peo_dmc(iw,ifr)=pen <= pen is undefined, could be den mispelled ?
+          if(icut_e .ne. 0) then  ! <= check that with claudia
+            peo_dmc(iw,ifr)=den
+          else
+            peo_dmc(iw,ifr)=0.0_dp
+          end if
+          ! d2o(iw,ifr)=d2n <= dn2 is not initialized I don't think it' s mispelled
+          d2o(iw,ifr)=0.0_dp ! I set it to 0 but we must check with Claudia
           psido_dmc(iw,ifr)=psidn(1)
           psijo_dmc(iw,ifr)=psijn
           fratio(iw,ifr)=fration
