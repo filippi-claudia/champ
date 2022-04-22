@@ -54,12 +54,13 @@ option(ENABLE_PERIODIC "enable_periodic" off)
 # Include function to Load MKL
 message("")
 
-if((CMAKE_Fortran_COMPILER_ID MATCHES "Intel") OR ENABLE_MKL)
+if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   if (BLA_STATIC MATCHES "ON")
     set(BLA_VENDOR Intel10_64lp)
   else()
     set(BLA_VENDOR Intel10_64_dyn)
   endif()
+# write elseif part here for non-intel compilers
 endif()
 
 find_package(BLAS COMPONENTS Fortran REQUIRED QUIET)
@@ -129,16 +130,15 @@ gitinfo(${CMAKE_SOURCE_DIR})
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O3" "-funroll-loops" "-cpp" "-ffree-line-length-none" "-g"
-       "-Werror=implicit-interface" "-fimplicit-none" #"-flto"
-        "-Wall" "-Wextra"
-        "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
-        "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
-        "-Wno-c-binding-type" "-Wno-function-elimination")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-132")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
+        "-g" "-ffpe-trap=invalid,zero,overflow" "-Wall" "-Wextra"
+        "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
+        "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
+        "-Wno-c-binding-type" "-Wno-function-elimination"
         )
   endif()
   if (TREXIO_FOUND)
@@ -154,13 +154,12 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O3" "-g") 
-	list(APPEND Fortran_FLAGS "-fpp" "-shared-intel" "-g" 
-      "-warn" "all" "-diag-disable=8889,7712")
+  list(APPEND Fortran_FLAGS "-O2")
+	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
-    list(APPEND Fortran_FLAGS "-traceback")
+    list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
   else()
   endif()
   if (TREXIO_FOUND)
