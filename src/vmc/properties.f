@@ -1,3 +1,5 @@
+      module properties_mod
+      contains
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c     additional properties
 c     Friedemann Schautz
@@ -266,3 +268,5 @@ c....dipole
 
         return
         end
+
+      end module

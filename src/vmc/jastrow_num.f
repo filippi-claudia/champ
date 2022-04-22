@@ -1,3 +1,5 @@
+      module jastrow_num_mod
+      contains
       subroutine jastrow_num(x,v,d2,value)
 c Written by Cyrus Umrigar
 
@@ -17,34 +19,9 @@ c numerical Laplacian for periodic systems.
       use contr2, only: ijas
       use distance_mod, only: r_en, r_ee
       use precision_kinds, only: dp
+      use psi_mod, only: psia, psib, psi
 
       implicit none
-
-      interface
-        function psi(rij,ri,rj,it)
-            use precision_kinds, only: dp
-            implicit none
-            integer, intent(in) ::it
-            real(dp), intent(in) :: rij, ri, rj
-            real(dp) :: psi
-        end function psi
-
-        function psia(ri, it)
-            use precision_kinds, only: dp
-            implicit none
-            integer, intent(in) ::it
-            real(dp), intent(in) :: ri
-            real(dp) :: psia
-        end function psia
-
-        function psib(rij, isb, ipar)
-            use precision_kinds, only: dp
-            implicit none
-            integer, intent(in) :: isb, ipar
-            real(dp), intent(in) :: rij
-            real(dp) :: psib
-        end function psib
-      end interface
 
       integer :: i, ic, ij, im1, ipar
       integer :: isb, it, j, jk
@@ -270,3 +247,4 @@ c           anti-parallel spins
 
       return
       end
+      end module

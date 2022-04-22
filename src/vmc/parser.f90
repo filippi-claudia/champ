@@ -1,4 +1,6 @@
-
+module parser_mod
+use error, only: fatal_error
+contains
 subroutine parser
   !> This subroutine parses the input file using the modified libfdf parser
   !> and assigns the values to variables and arrays of different modules.
@@ -68,7 +70,7 @@ subroutine parser
   use optwf_contrl, 	  only: iuse_orbeigv
   use optwf_contrl, 	  only: no_active
   use optwf_parms, 	    only: nparmj
-  use optwf_sr_mod, 	  only: i_sr_rescale, izvzb
+  use sr_mod,           only: i_sr_rescale, izvzb
   use sa_weights, 	    only: iweight, nweight, weights
   use wfsec, 		        only: nwftype
   use zmatrix, 		      only: izmatrix
@@ -144,18 +146,47 @@ subroutine parser
   use inputflags,       only: ioptorb_mixvirt, ihessian_zmat, igradients
   use basis,            only: zex
 
+  use pot,              only: pot_nn
+  use parser_read_data, only: read_efield_file, read_zmatrix_connection_file
+  use parser_read_data, only: read_hessian_zmatrix_file, read_modify_zmatrix_file
+  use parser_read_data, only: read_gradients_zmatrix_file, read_gradients_cartesian_file
+  use parser_read_data, only: read_optorb_mixvirt_file, read_dmatrix_file
+  use parser_read_data, only: read_forces_file, read_eigenvalues_file
+  use parser_read_data, only: read_exponents_file, read_multideterminants_file
+  use parser_read_data, only: read_csf_file, read_csfmap_file
+  use parser_read_data, only: read_determinants_file, read_jasderiv_file 
+  use parser_read_data, only: read_jastrow_file, read_basis_num_info_file
+  use parser_read_data, only: read_symmetry_file, read_orbitals_file
+  use parser_read_data, only: read_trexio_molecule_file, read_molecule_file
+  use parser_read_data, only: read_trexio_orbitals_file
+  use parser_read_data, only: header_printing
+  use misc_grdnts,      only: inpwrt_zmatrix, inpwrt_grdnts_zmat, inpwrt_grdnts_cart
+  use set_input_data,   only: hessian_zmat_define, modify_zmat_define
+  use set_input_data,   only: inputforces, multideterminants_define
+  use set_input_data,   only: inputdet, inputlcao, inputjastrow
+  use jastrow4_mod,     only: nterms4
+  use properties_mod,   only: prop_cc_nuc
+  use efield_f_mod,     only: efield_compute_extint
+  use cuspinit4_mod,    only: cuspinit4
+  use optci_mod,        only: optci_define
+  use optorb_f_mod,     only: optorb_define
+  use verify_orbitals_mod, only: verify_orbitals
+  use grid3d_orbitals,  only: setup_3dsplorb, setup_3dlagorb
+  use grid3d,           only: setup_grid
+  use pw_read,          only: read_orb_pw_tm
+  use read_bas_num_mod, only: read_bas_num
+  use write_orb_loc_mod,only: write_orb_loc
+  use optwf_handle_wf,  only: set_nparms_tot
+  use get_norbterm_mod, only: get_norbterm
+  use scale_dist_mod,   only: set_scale_dist
+  use rannyu_mod,       only: setrn
+  use read_bas_num_mod, only: readps_gauss
+
   use precision_kinds,  only: dp
 ! Note the following modules are new additions
 
 !
   implicit none
-
-  interface
-  function nterms4(nord)
-      integer, intent(in) :: nord
-      integer :: nterms4
-  end function nterms4
-  end interface
 
 !--------------------------------------------------------------- Local Variables
   integer, parameter         :: maxa = 100
@@ -212,7 +243,8 @@ subroutine parser
   character(len=10)          :: eunit
   character(len=16)          :: cseed
   integer                    :: irn(4), cent_tmp(3), nefpterm, nstates_g
-  integer, allocatable       :: anorm(:) ! dimensions = nbasis
+!  integer, allocatable       :: anorm(:) ! dimensions = nbasis
+  real(dp), allocatable       :: anorm(:) ! dimensions = nbasis
 
 ! local counter variables
   integer                    :: i,j,k, iostat
@@ -733,7 +765,7 @@ subroutine parser
       if(iperiodic.eq.0.and.ilcao.ne.nwftype) then
         write(ounit,*) "Warning INPUT: block lcao missing for one wave function"
         write(ounit,*) "Warning INPUT: lcao blocks equal for all wave functions"
-        call inputlcao(nwftype)
+        call inputlcao
       endif
     endif
   endif
@@ -779,7 +811,7 @@ subroutine parser
       if(ijastrow_parameter.ne.nwftype) then
         write(ounit,*) "INPUT: block jastrow_parameter missing for one wave function"
         write(ounit,*) "INPUT: jastrow_parameter blocks equal for all wave functions"
-        call inputjastrow(nwftype)
+        call inputjastrow
       endif
     endif
   endif
@@ -889,7 +921,7 @@ subroutine parser
       if(ideterminants.ne.nwftype) then
         write(ounit,*) "Warning INPUT: block determinants missing for one wave function"
         write(ounit,*) "Warning INPUT: determinants blocks equal for all wave functions"
-        call inputdet(nwftype)
+        call inputdet
       endif
     endif
   endif
@@ -1715,13 +1747,14 @@ subroutine parser
   end subroutine fdf_read_csf_block
 
   subroutine fdf_read_jastrow_block(bfdf)
+    use jastrow4_mod,   only: nterms4
 
     implicit none
 
     type(block_fdf)            :: bfdf
     type(parsed_line), pointer :: pline
     integer                    :: i,j,k, iwft
-    integer                    :: mparmja, mparmjb, mparmjc, nterms4
+    integer                    :: mparmja, mparmjb, mparmjc
 !   Format of the jastrow block
 !   %block csf
 !   jastrow_parameter 1
@@ -1849,3 +1882,4 @@ subroutine compute_mat_size_new()
   ! call set_sr_size
 
 end subroutine compute_mat_size_new
+end module

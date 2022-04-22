@@ -1,9 +1,12 @@
+      module misc_grdnts
 c -----------------------------------------------------------------------
 c   Various subroutines used when energy gradients for atoms are
 c   calculated.
 c
 c   Written by Omar Valsson
 c -----------------------------------------------------------------------
+      use m_zmat_tools, only: zmat2cart_rc
+      contains
 
 
 c   Subroutine which at the start up prints out information about the
@@ -701,3 +704,4 @@ c     enddo
       return
       end
 c -----------------------------------------------------------------------
+      end module

@@ -1,3 +1,5 @@
+      module pot_local_mod
+      contains
       subroutine pot_local(pe)
       use atom, only: znuc, pecent, iwctype, ncent
       use ghostatom, only: nghostcent
@@ -7,6 +9,7 @@
       use pseudo, only: nloc
       use contrl_file, only:ounit
       use precision_kinds, only: dp
+      use pw_ewald, only: pot_en_ewald, pot_ee_ewald
       implicit none
 
       integer :: i, ic, ij, j
@@ -37,3 +40,4 @@ c  pe from nucleus-nucleus repulsion
       if(ipr.ge.3) write(ounit,'(''pe,pe_en(loc),pe_ee'',9f9.5)') pe,pe_en,pe_ee
       return
       end
+      end module

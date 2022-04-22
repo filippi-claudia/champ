@@ -1,3 +1,5 @@
+      module cuspinit4_mod
+      contains
       subroutine cuspinit4(iprin)
 c Written by Cyrus Umrigar
       use vmc_mod, only: mterms
@@ -170,3 +172,4 @@ c indirectly on all the independent variables that are being varied.
       return
       end
 
+      end module

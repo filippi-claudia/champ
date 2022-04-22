@@ -1,3 +1,5 @@
+      module scale_dist_mod
+      contains
       subroutine set_scale_dist(ipr)
 c Written by Cyrus Umrigar
       use atom, only: nctype
@@ -760,3 +762,4 @@ c that appropriate for C terms, for dist and 1st two derivs.
       return
       end
 c-----------------------------------------------------------------------
+      end module 

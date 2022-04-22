@@ -1,3 +1,5 @@
+module slm_mod
+contains
 subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
 !> @brief Compute the zero-th, first, second, and third derivatives of a Ylm function
 !> @param[in] l The descriptor for angular momentum quantum number
@@ -400,3 +402,4 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
      endif
 
 end subroutine
+end module

@@ -1,3 +1,5 @@
+      module pw_ewald
+      contains
       subroutine set_ewald
 c Written by Cyrus Umrigar
 
@@ -2826,3 +2828,4 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
       return
       end
 c-----------------------------------------------------------------------
+      end module

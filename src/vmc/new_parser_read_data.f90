@@ -1,4 +1,6 @@
-
+module parser_read_data
+use error, only : fatal_error
+contains
 subroutine header_printing()
     !> This subroutine prints the header in each output file. It contains some
     !! useful information about the compilers, version of the code, input and output file names.
@@ -634,13 +636,14 @@ subroutine read_jastrow_file(file_jastrow)
     use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
     use general,            only: pooldir
     use method_opt,         only: method
+    use jastrow4_mod,       only: nterms4
     implicit none
 
     !   local use
     character(len=72), intent(in)   :: file_jastrow
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iunit, iostat, it, isp, iparm, iwft
-    integer                         :: mparmja, mparmjb, mparmjc, nterms4
+    integer                         :: mparmja, mparmjb, mparmjc
     logical                         :: exist
     real(dp)                        :: cutjas_tmp
     integer                         :: i, j
@@ -2448,6 +2451,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     use general, only:pooldir
     use atom, only: ncent
     use precision_kinds,    only: dp
+    use misc_grdnts, only: grdzmat_displ
 
     implicit none
 
@@ -2689,6 +2693,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
     use inputflags, only: izmatrix_check
     use precision_kinds,    only: dp
+    use m_zmat_tools, only: cart2zmat, zmat2cart_rc
 
     implicit none
 
@@ -2846,3 +2851,4 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
 
     if (wid) close(iunit)
 end subroutine read_efield_file
+end module 

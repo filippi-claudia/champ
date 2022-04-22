@@ -1,3 +1,5 @@
+      module spline2_mod
+      contains
       subroutine spline2(x, y, n, yp1, ypn, y2, work)
 C Cubic spline routine based on p. 88 of Numerical Recipes.
 C Given arrays x and y of length n containing y=f(x) with x's in
@@ -78,3 +80,4 @@ c     Backsubstitution loop of tridiagonal algorithm:
 
       return
       end
+      end module

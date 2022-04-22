@@ -1,3 +1,58 @@
+      module pcm_3dgrid_mod
+      use error, only: fatal_error
+      interface !interface to pspline
+      subroutine r8fvtricub(ict,ivec,ivecd,
+     >  fval,ii,jj,kk,xparam,yparam,zparam,
+     >  hx,hxi,hy,hyi,hz,hzi,
+     >  fin,inf2,inf3,nz)
+        IMPLICIT NONE
+        INTEGER inf3,nz,inf2
+        integer ict(10)                   ! requested output control
+        integer ivec                      ! vector length
+        integer ivecd                     ! vector dimension (1st dim of fval)
+        integer ii,jj,kk ! target cells (i,j,k)
+        REAL*8 xparam,yparam,zparam ! normalized displacements from (i,j,k) corners
+        REAL*8 hx,hy,hz   ! grid spacing, and
+        REAL*8 hxi,hyi,hzi ! inverse grid spacing
+                           ! 1/(x(i+1)-x(i)) & 1/(y(j+1)-y(j)) & 1/(z(k+1)-z(i))
+        REAL*8 fin(0:7,inf2,inf3,nz)        ! interpolant data (cf "evtricub")
+        REAL*8 fval(10)               ! output returned
+      end subroutine
+
+      subroutine r8mktricubw(x,nx,y,ny,z,nz,f,nf2,nf3,
+     >                    ibcxmin,bcxmin,ibcxmax,bcxmax,inb1x,
+     >                    ibcymin,bcymin,ibcymax,bcymax,inb1y,
+     >                    ibczmin,bczmin,ibczmax,bczmax,inb1z,
+     >                    wk,nwk,ilinx,iliny,ilinz,ier)
+
+      IMPLICIT NONE
+      integer nx                        ! length of x vector
+      integer ny                        ! length of y vector
+      integer nz                        ! length of z vector
+      REAL*8 x(nx)                        ! x vector, strict ascending
+      REAL*8 y(ny)                        ! y vector, strict ascending
+      REAL*8 z(nz)                        ! z vector, strict ascending
+      integer nf2                       ! 2nd dim. of f array, nf2.ge.nx
+      integer nf3                       ! 3rd dim. of f array, nf3.ge.ny
+      REAL*8 f(8,nf2,nf3,nz)              ! data and spline coefficients
+      integer inb1x                     ! 1st dim of xmin & xmax bc arrays
+      integer inb1y                     ! 1st dim of ymin & ymax bc arrays
+      integer inb1z                     ! 1st dim of zmin & zmax bc arrays
+      integer ibcxmin,ibcxmax           ! BC type flag @xmin, xmax
+      integer ibcymin,ibcymax           ! BC type flag @ymin, ymax
+      integer ibczmin,ibczmax           ! BC type flag @zmin, zmax
+      REAL*8 bcxmin(inb1x,nz),bcxmax(inb1x,nz) ! xmin & xmax BC data, ny x nz
+      REAL*8 bcymin(inb1y,nz),bcymax(inb1y,nz) ! ymin & ymax BC data, nx x nz
+      REAL*8 bczmin(inb1z,ny),bczmax(inb1z,ny) ! zmin & zmax BC data, nx x ny
+      integer nwk                       ! size of workspace
+      REAL*8 wk(nwk)                      ! workspace array
+      integer ilinx                     ! x vector equal spacing flag
+      integer iliny                     ! y vector equal spacing flag
+      integer ilinz                     ! z vector equal spacing flag
+      integer ier                       ! exit code
+      end subroutine
+      end interface
+      contains
 c 3d grid module
 c Created by Amovilli/Floris following subroutines by Scemama
 c Example of input:
@@ -231,7 +286,6 @@ c             call pcm_extpot_ene_elec(r,pepol_s,pepol_v)
 c             call spline_pcm(r,value,ier)
 c  30         write(ounit,*) 'DEBUG',pepol_s+pepol_v, value
 c      stop
-
       end ! subroutine pcm_setup_3dspl
 
 c----------------------------------------------------------------------
@@ -246,7 +300,7 @@ c----------------------------------------------------------------------
 
       implicit none
 
-      integer :: i, ipcm_grid, ipcm_int_from_cart, iu, j
+      integer :: i, ipcm_grid, iu, j
       integer :: k, l
 
 c     Input:
@@ -299,7 +353,6 @@ c     Work:
 
         f=fval(1)
       endif
-
       end ! subroutine spline_pcm
 
 c-----------------------------------------------------------------------
@@ -374,3 +427,66 @@ c-----------------------------------------------------------------------
       enddo
       end
 c-----------------------------------------------------------------------
+      subroutine pcm_extpot_ene_elec(x,pepol_s,pepol_v)
+c Written by Amovilli-Floris
+c......................................................
+c       Calculate e-qpol interactions (pcm)
+c       and adds nuclei-qpol interactions
+c......................................................
+
+      use pcm_parms, only: ch, nch, nchs
+      use pcm_parms, only: xpol
+
+      use pcm_fdc, only: rcol, rcolv
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: j
+      real(dp) :: AV, GC, PI, pepol_s, pepol_v
+      real(dp) :: r2, repol, xx, yy
+      real(dp) :: zz
+      real(dp), dimension(3) :: x
+
+
+
+      DATA PI/3.1415927D0/,GC/1.9872159D0/,AV/0.60228D0/
+
+      pepol_s=0.0d0
+c......................................................
+c     interaction with surface point charges
+c......................................................
+      do j=1,nchs
+        xx=(x(1)-xpol(1,j))**2.0d0
+        yy=(x(2)-xpol(2,j))**2.0d0
+        zz=(x(3)-xpol(3,j))**2.0d0
+        r2=xx+yy+zz
+        repol=dsqrt(r2)
+c......................................................
+c    corrections for collisions electrons-qpol
+c......................................................
+        if (repol.lt.rcol) repol=rcol
+        pepol_s=pepol_s-0.5d0*ch(j)/repol
+      enddo
+
+c......................................................
+c     interaction with volume point charges
+c......................................................
+      pepol_v=0.0d0
+      do j=nchs+1,nch
+        xx=(x(1)-xpol(1,j))**2.0d0
+        yy=(x(2)-xpol(2,j))**2.0d0
+        zz=(x(3)-xpol(3,j))**2.0d0
+        r2=xx+yy+zz
+        repol=dsqrt(r2)
+c......................................................
+c    corrections for collisions electrons-qpol
+
+c......................................................
+        if (repol.lt.rcolv) repol=rcolv
+        pepol_v=pepol_v-0.5d0*ch(j)/repol
+      enddo
+
+      return
+      end
+c-----------------------------------------------------------------------
+      end module

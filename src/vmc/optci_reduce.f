@@ -1,7 +1,9 @@
+      module optci_reduce_mod
+      contains
       subroutine optci_reduce
 
       use precision_kinds, only: dp
-      use optci, only: mxciterm, mxcireduced
+      use optci, only: mxciterm, mxcireduced, ncimatdim
       use optwf_contrl, only: ioptci
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
@@ -13,11 +15,13 @@
       use ci010_blk, only: ci_ooe_cum
       use method_opt, only: method
       use mpi
+      use optorb_mod, only: nmatdim
+      use optorb_cblock, only: norbterm
 
       implicit none
 
       integer :: i, ierr, j, matdim
-      real(dp) :: nmatdim, MXORBTERM
+      ! real(dp) :: nmatdim, MXORBTERM
 
 c     parameter(MXTMP=max(MXORBTERM,nmatdim))
 c     max does not work with g77
@@ -28,7 +32,10 @@ c     max does not work with g77
       real(dp), DIMENSION(:), ALLOCATABLE :: optci_reduce_collect
       real(dp), DIMENSION(:, :), ALLOCATABLE :: optci_reduce_collect2
 
-      MXTMP=max(MXORBTERM,nmatdim)
+      ! defined like that in reference branch
+      ! https://github.com/filippi-claudia/champ/blob/847f0e5e94d77035d957158406aac47c3e27af54/src/vmc/optci_reduce.f#L16
+      ! MXTMP = mxciterm + ncimatdim
+      MXTMP=max(norbterm,ncimatdim)
 
       allocate(optci_reduce_collect(MXTMP))
       allocate(optci_reduce_collect2(mxciterm,mxcireduced))
@@ -144,3 +151,4 @@ c     max does not work with g77
 
       return
       end
+      end module

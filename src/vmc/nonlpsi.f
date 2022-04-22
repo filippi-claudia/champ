@@ -1,3 +1,6 @@
+      module nonlpsi
+      use error, only: fatal_error
+      contains
       function psinl(u,rshifti,rshiftj,rri,rrj,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
@@ -8,6 +11,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use wfsec, only: iwf
       use contr2, only: ijas
       use precision_kinds, only: dp
+      use scale_dist_mod, only: switch_scale
 
       implicit none
 
@@ -208,3 +212,4 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 
       return
       end
+      end module 

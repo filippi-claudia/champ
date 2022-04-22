@@ -1,3 +1,5 @@
+      module olbfgs_more_mod
+      contains
       subroutine olbfgs_more(iter, nparm, deltap, parameters)
 
       use olbfgs, only: update_hessian, olbfgs_iteration
@@ -48,3 +50,4 @@ c Update parameter changes
 
       return
       end
+      end module

@@ -190,8 +190,9 @@ contains
         character(len=10), dimension(12)        :: extensions
         character(len=100)                      :: string_format  = '(A, T40, A)'
 
-        ! Make sure ounit default is stdout
+        ! Make sure ounit default is stdout, and errunit is stderr
         ounit = output_unit
+        errunit = error_unit
         ! Get all the command line arguments
 ! The next line is commented as all mpi processes read this information. old style
 
@@ -232,13 +233,7 @@ contains
                     endif
 
                 case ('-o', '-ou', '-out', '-output', '--output')
-                    if ((index(arg(i+1), ".out") /= 0) .or. (index(arg(i+1), ".log") /= 0) .or. &
-                        (index(arg(i+1), ".dat") /= 0) ) then
-                        file_output = arg(i+1)
-                    else
-                        write(error_unit,*) "output file should have an extention .log / .out / .dat"
-                        stop
-                    endif
+                    file_output = arg(i+1)
                     if (.not. wid ) then
                         file_output = '/dev/null'
                         close (6)
@@ -248,14 +243,7 @@ contains
                     if (iostat /= 0) error stop "error in opening output unit"
 
                 case ('-e', '-er', '-err', '-error', '--error')
-                    if ((index(arg(i+1), "error") /= 0) .or. (index(arg(i+1), ".err") /= 0) .or. &
-                        (index(arg(i+1), ".e") /= 0) ) then
-                        file_error = arg(i+1)
-                    else
-                        write(error_unit,*) "error file should be named 'error' or should have &
-                                            &an extention .e / .err to the filename"
-                        stop
-                    endif
+                    file_error = arg(i+1)
                     open (newunit=errunit,file=file_error, iostat=iostat, action='write' )
 
                 case ('-h', '--help')
@@ -267,8 +255,6 @@ contains
                     extensions(5) = ".log" ; extensions(6) = ".err" ; extensions(7) = ".e"   ; extensions(8) = "error"
 
                     ! default error file if not mentioned.
-                    file_error = "error"
-                    open (newunit=errunit,file=file_error, iostat=iostat, action='write' )
                     do j = 1, 8
                         if (index(arg(i+1), extensions(j)) /= 0) then
                             write(output_unit, '(2a)') 'unrecognised command-line option: ', arg(i)
@@ -315,6 +301,8 @@ contains
 
 end module contrl_file
 
+module m_control
+contains
 subroutine allocate_m_control()
     use contrldmc, only: allocate_contrldmc
 
@@ -332,3 +320,4 @@ subroutine deallocate_m_control()
     call deallocate_contrldmc()
 
 end subroutine deallocate_m_control
+end module

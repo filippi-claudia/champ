@@ -1,3 +1,5 @@
+      module fin_reduce_mod
+      contains
       subroutine fin_reduce
 c MPI version written by Claudia Filippi
 
@@ -17,6 +19,25 @@ c MPI version written by Claudia Filippi
       use mpi
       use custom_broadcast,   only: bcast
       use precision_kinds, only: dp
+
+      use force_analytic, only: force_analy_fin
+      use force_analy_reduce_mod, only: force_analy_reduce
+      use optjas_reduce_mod, only: optjas_reduce
+      use optorb_reduce_mod, only: optorb_reduce
+      use optci_reduce_mod, only: optci_reduce
+      use optx_jas_orb_reduce_mod, only: optx_jas_orb_reduce
+      use optx_jas_ci_reduce_mod, only: optx_jas_ci_reduce
+      use optx_orb_ci_reduce_mod, only: optx_orb_ci_reduce
+      use pcm_reduce_mod, only: pcm_reduce
+      use mmpol_vmc, only: mmpol_fin
+      use mmpol_reduce_mod, only: mmpol_reduce
+      use pcm_vmc, only: pcm_fin
+      use optx_orb_ci, only: optx_orb_ci_fin
+      use optx_jas_orb, only: optx_jas_orb_fin
+      use optx_jas_ci, only: optx_jas_ci_fin
+      use optorb_f_mod,only: optorb_fin
+      use optci_mod, only:optci_fin
+      use optjas_mod, only: optjas_fin
       implicit none
 
       integer :: i, id, ierr, istate
@@ -134,3 +155,4 @@ c reduce analytical forces
 
       return
       end
+      end module

@@ -1,9 +1,13 @@
+      module jastrow_mod
+      contains
       subroutine jastrow(x,v,d2,value,ifr)
 c Written by Cyrus Umrigar
 
       use const, only: nelec
       use optwf_contrl, only: ioptjas
       use precision_kinds, only: dp
+      use jastrow4_mod, only: jastrow4
+      use deriv_jastrow4_mod, only: deriv_jastrow4
 
       implicit none
 
@@ -29,3 +33,4 @@ c Written by Cyrus Umrigar
 
       return
       end
+      end module

@@ -1,3 +1,6 @@
+module qmm_density
+  integer, parameter :: dbl = kind(1.0d0)
+contains
 !*********************************************************************
         subroutine qmmm_density_ini(znuc,cent,iwctype,mctype,mcent, &
       &  ncent)
@@ -177,6 +180,7 @@
 !*********************************************************************
 
         use qmmm_density
+        use qmmm_writecube_mod, only: qmmm_writecube
 
         implicit none
         integer :: nelec,id
@@ -276,3 +280,4 @@
 !       return
 !       end
 
+end module

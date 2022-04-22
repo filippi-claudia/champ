@@ -70,6 +70,8 @@ contains
 
 end module mstates3
 
+module m_mstates
+contains
 subroutine allocate_m_mstates()
     use mstates2, only: allocate_mstates2
     use mstates3, only: allocate_mstates3
@@ -85,3 +87,4 @@ subroutine deallocate_m_mstates()
     call deallocate_mstates2()
     call deallocate_mstates3()
 end subroutine deallocate_m_mstates
+end module 

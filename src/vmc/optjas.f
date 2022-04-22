@@ -1,3 +1,5 @@
+      module optjas_mod
+      contains
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
       use optwf_parms, only: nparmj
@@ -20,6 +22,7 @@
       use multislater, only: detiab
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
+      use bxmatrices, only: bxmatrix
 
       implicit none
 
@@ -396,7 +399,7 @@ c Written by Claudia Filippi
         dj_b(i)=dj(i,istate)-dj_save(i,istate)
       enddo
 
-      e_bsum(istate)=e_bsum(istate)+enow(istate)
+      e_bsum(istate)=e_bsum(istate)+enow
       do i=1,nparmj
         dj_e_bsum(i,istate)=dj_e_bsum(i,istate)+dj_e_b(i)/wsum
         dj_bsum(i,istate)=dj_bsum(i,istate)+dj_b(i)/wsum
@@ -729,3 +732,4 @@ c Overlap s = <dj dj>/<psi|psi>
 
       return
       end
+      end module

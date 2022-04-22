@@ -238,6 +238,9 @@ contains
 
 end module cuspmat4
 
+module m_jastrow
+contains
+
 subroutine allocate_m_jastrow()
     use jasn, only: allocate_jasn
     use jaso, only: allocate_jaso
@@ -274,3 +277,4 @@ subroutine deallocate_m_jastrow()
     call deallocate_jaspar6()
     call deallocate_jaspointer()
 end subroutine deallocate_m_jastrow
+end module

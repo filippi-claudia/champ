@@ -1,3 +1,5 @@
+      module restart_gpop
+      contains
       subroutine startr_gpop
 
       use vmc_mod, only: norb_tot
@@ -28,7 +30,7 @@
       use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcum, derivsum
       use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
@@ -45,6 +47,21 @@
       use mpi
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+
+      use error,           only: fatal_error
+      use mmpol,           only: mmpol_init
+      use mmpol_dmc,       only: mmpol_save
+      use pcm_dmc,         only: pcm_save
+      use prop_dmc,        only: prop_save_dmc
+      use pcm_mod,         only: pcm_init
+      use properties_mod,  only: prop_init
+      use nonloc_grid_mod, only: t_vpsp_sav
+      use rannyu_mod,      only: setrn
+      use strech_mod,      only: strech
+      use hpsi_mod,        only: hpsi
+      use determinante_mod,only: compute_determinante_grad
+      use walksav_det_mod, only: walksav_det
+      use walksav_jas_mod, only: walksav_jas
       implicit none
 
       integer :: i, iage_id, ib, ic, id
@@ -53,7 +70,7 @@
       integer :: ndetx, ndnx, nelecx, newghostypex
       integer :: nf_id, nghostcentx, nprock, nq_id
       integer :: num, nupx, nwalk_id
-      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(4, 0:nproc) :: irn
       integer, dimension(ncent_tot) :: nsx
       integer, dimension(ncent_tot) :: npxx
       integer, dimension(ncent_tot) :: npyx
@@ -291,3 +308,4 @@ c zero out xsum variables for metrop
 
       return
       end
+      end module

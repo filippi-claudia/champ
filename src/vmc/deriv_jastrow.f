@@ -1,9 +1,13 @@
+      module deriv_jastrow_mod
+      contains
       subroutine deriv_jastrow(x,v,d2,div_vj,value)
 c Written by Claudia Filippi
 
       use const, only: nelec
 
       use precision_kinds, only: dp
+
+      use deriv_jastrow4_mod, only: deriv_jastrow4
       implicit none
 
       integer :: i
@@ -25,3 +29,4 @@ c Written by Claudia Filippi
 
       return
       end
+      end module

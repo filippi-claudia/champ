@@ -41,7 +41,14 @@ module coords_int
   public :: coords_compute_step
   public :: coords_transform_step
 
-
+  interface !interface to LAPACK
+    SUBROUTINE dgelsd( M, N, NRHS, A, LDA, B, LDB, S, RCOND, RANK, WORK, LWORK, IWORK, INFO )
+       INTEGER            INFO, LDA, LDB, LWORK, M, N, NRHS, RANK
+       DOUBLE PRECISION   RCOND
+       INTEGER            IWORK( * )
+       DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), S( * ), WORK( * )
+    end subroutine
+  end interface 
 
   contains
 
@@ -436,6 +443,7 @@ module coords_int
   !!
   subroutine coords_transform_step (int_coords2d, cart_coords2d, connectivities)
     use contrl_file,    only: ounit
+    use m_zmat_tools, only: cart2zmat
     real(kind=8), dimension(:,:), intent(inout) :: cart_coords2d
     real(kind=8), dimension(:,:), intent(inout) :: int_coords2d
     integer, dimension(:,:), intent(in) :: connectivities

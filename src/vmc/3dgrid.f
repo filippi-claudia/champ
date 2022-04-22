@@ -1,3 +1,6 @@
+      module grid3d
+      use error, only: fatal_error
+      contains
 c 3d grid module
 c Written by Anthony Scemama
 c
@@ -195,3 +198,4 @@ c    Values
 
       end
 
+      end module

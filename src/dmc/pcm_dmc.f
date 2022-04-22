@@ -1,3 +1,5 @@
+      module pcm_dmc
+      contains
       subroutine pcm_prt(iblk,wgcum,wgcm2)
 
       use force_mod, only: MFORCE
@@ -203,3 +205,4 @@ c-----------------------------------------------------------------------
 
       return
       end
+      end module

@@ -1,3 +1,5 @@
+      module determinant_psig_mod
+      contains
       subroutine determinant_psig(psid,psig)
 
       use csfs, only: nstates
@@ -27,3 +29,4 @@
 
       return
       end
+      end module

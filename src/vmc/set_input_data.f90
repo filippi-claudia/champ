@@ -1,3 +1,6 @@
+module set_input_data
+use error, only: fatal_error
+contains
 subroutine inputzex
     ! Set the exponents to one when using a numerical basis
     use force_mod, only: MWF
@@ -67,29 +70,18 @@ subroutine multideterminants_define(iflag, icheck)
 
     ! not sure about that one either ....
     use wfsec, only: nwftype
+    use multideterminant_mod, only: idiff
 
     implicit none
 
-
-    interface
-    function idiff(j, i, iab)
-        integer, intent(in) :: j
-        integer, intent(in) :: i
-        integer, intent(in) :: iab
-        integer :: idiff
-    endfunction
-    end interface
-
-      integer :: i, iab, icheck, icsf, idist
-      integer :: iflag, in, iphase, iref
-      integer :: irep, isav, ish, istate
-      integer :: isub, iw, iwf, iwref
-      integer :: j, k, kref_old, l
-      integer :: ndet_dist, nel
-      integer, dimension(nelec) :: iswapped
-      integer, dimension(ndet) :: itotphase
-
-
+    integer :: i, iab, icheck, icsf, idist
+    integer :: iflag, in, iphase, iref
+    integer :: irep, isav, ish, istate
+    integer :: isub, iw, iwf, iwref
+    integer :: j, k, kref_old, l
+    integer :: ndet_dist, nel
+    integer, dimension(nelec) :: iswapped
+    integer, dimension(ndet) :: itotphase
 
     save kref_old
 
@@ -374,15 +366,9 @@ subroutine inputjastrow()
     use wfsec, only: nwftype
     use atom, only: ncent, nctype
     use precision_kinds,    only: dp
+    use jastrow4_mod,       only: nterms4
 
       implicit none
-
-      interface
-      function nterms4(nord)
-          integer, intent(in) :: nord
-          integer :: nterms4
-      end function nterms4
-      end interface
 
       integer :: iparm, isp, it, iwft, mparmja
       integer :: mparmjb, mparmjc
@@ -493,3 +479,4 @@ subroutine hessian_zmat_define
 
     return
 end subroutine hessian_zmat_define
+end module 

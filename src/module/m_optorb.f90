@@ -442,6 +442,8 @@ contains
 
 end module optorb_mix
 
+module m_optorb
+contains
 subroutine allocate_m_optorb()
     use orb_mat_001, only: allocate_orb_mat_001
     use orb_mat_002, only: allocate_orb_mat_002
@@ -501,3 +503,4 @@ subroutine deallocate_m_optorb()
     call deallocate_optorb()
     call deallocate_optorb_mix()
 end subroutine deallocate_m_optorb
+end module 

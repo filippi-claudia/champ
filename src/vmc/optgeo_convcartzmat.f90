@@ -107,6 +107,8 @@ module misc_bond_func
 end module misc_bond_func
 
 
+module m_zmat_tools
+contains
 subroutine cart2zmat(natoms,coord_cart,conn_zmatrix,coord_zmatrix)
   use misc_bond_func
   use contrl_file,    only: ounit
@@ -497,3 +499,4 @@ subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_ca
 end subroutine zmat2cart_rc
 
 
+end module

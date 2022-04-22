@@ -36,7 +36,8 @@ module wfsec
 
     private
     public :: iwf, iwftype, nwftype
-    public :: allocate_wfsec, deallocate_wfsec
+    !public :: allocate_wfsec
+    public :: deallocate_wfsec
     save
 contains
     ! subroutine allocate_wfsec()
@@ -219,6 +220,8 @@ end module wfsec
 
  end module force_mat_n
 
+ module m_force
+ contains
  subroutine allocate_m_force()
      use forcest, only: allocate_forcest
     !  use forcestr, only: allocate_forcestr
@@ -250,3 +253,4 @@ end module wfsec
      call deallocate_force_fin()
      call deallocate_force_mat_n()
  end subroutine deallocate_m_force
+ end module 

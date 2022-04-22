@@ -1,3 +1,5 @@
+      module jassav_mod
+      contains
       subroutine jassav(iel,iflag)
 c Written by Claudia Filippi
 
@@ -52,3 +54,4 @@ c Written by Claudia Filippi
       enddo
       return
       end
+      end module

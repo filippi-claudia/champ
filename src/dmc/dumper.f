@@ -1,3 +1,5 @@
+      module dumper_mod
+      contains
       subroutine dumper
 c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
@@ -27,7 +29,7 @@ c job where it left off
       use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcm2, derivcum, derivtotave_num_old
       use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
       use contr3, only: mode
       use mpiblk, only: iblk_proc
@@ -44,16 +46,22 @@ c job where it left off
       use control_dmc, only: dmc_nconf
       use mpi
       use contrl_file,    only: ounit
-
       use precision_kinds, only: dp
+
+      use dumper_gpop_mod, only: dumper_gpop
+      use mmpol,           only: mmpol_dump
+      use pcm_mod,         only: pcm_dump
+      use properties_mod,  only: prop_dump
+      use rannyu_mod,      only: savern
+      use strech_mod,      only: strech
       implicit none
 
       integer :: i, ib, ic, id, ierr
       integer :: ifr, irequest, iw, j
       integer :: k, nscounts
-      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(4, 0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(4, 0:NPROCX) :: irn_tmp
+      integer, dimension(4, 0:nproc) :: irn_tmp
 
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
@@ -218,3 +226,4 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
 
       return
       end
+      end module

@@ -1,3 +1,5 @@
+      module force_analy_reduce_mod
+      contains
       subroutine force_analy_reduce
       use atom, only: ncent, ncent_tot
 
@@ -78,3 +80,4 @@
 
       return
       end
+      end module

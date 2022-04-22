@@ -1,13 +1,15 @@
-      subroutine do_read_lattice(iu)
+      subroutine pw_setup_input
       implicit none
-
-      integer :: iu
 
       return
       end
 
-      subroutine pw_setup_input
+      module pw_read
+      contains
+      subroutine do_read_lattice(iu)
       implicit none
+
+      integer :: iu
 
       return
       end
@@ -23,6 +25,7 @@
 
       return
       end
+      end module
 
       subroutine set_ewald
       implicit none
@@ -30,12 +33,14 @@
       return
       end
 
+      module pw_find_image
+      contains
       subroutine find_image3(r,rnorm)
       use precision_kinds, only: dp
       implicit none
 
 
-      real(dp) :: r, rnorm
+      real(dp) :: r(*), rnorm
       return
       end
 
@@ -47,22 +52,16 @@
       real(dp) :: r, rnorm, rs
       return
       end
+      end module 
 
+      module pw_orbitals
+      contains
       subroutine orbitals_pw(x,orb,dorb,ddorb)
       use precision_kinds, only: dp
       implicit none
 
 
-      real(dp) :: ddorb, dorb, orb, x
-      return
-      end
-
-      subroutine orbitals_pwe(iel,x,orb)
-      use precision_kinds, only: dp
-      implicit none
-
-      integer :: iel
-      real(dp) :: orb, x
+      real(dp) :: ddorb(*), dorb(3,*), orb(*), x(3,*)
       return
       end
 
@@ -71,10 +70,25 @@
       implicit none
 
       integer :: iel
-      real(dp) :: ddorb, dorb, orb, x
+      real(dp) :: ddorb(*), dorb(3,*), orb(*), x(3)
       return
       end
+      end module
 
+      module pw_orbitals_e
+      contains
+      subroutine orbitals_pwe(iel,x,orb)
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: iel
+      real(dp) :: orb(*), x(3)
+      return
+      end
+      end module 
+
+      module pw_ewald
+      contains
       subroutine pot_nn_ewald
       implicit none
 
@@ -98,3 +112,4 @@
       real(dp) :: pe_ee, x
       return
       end
+      end module

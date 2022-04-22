@@ -13,8 +13,13 @@
 module optwf_dl_mod
 
     use precision_kinds, only: dp
+    use error, only: fatal_error
 
     implicit None
+    interface
+      subroutine qmc
+      end subroutine
+    end interface
 
     real(dp), dimension(:), allocatable :: deltap
     real(dp), dimension(:), allocatable :: dl_momentum
@@ -42,11 +47,18 @@ use optwf_contrl, only: idl_flag
         use control_vmc, only: vmc_nblk, vmc_nblk_max
         use method_opt, only: method
         use contrl_file,    only: ounit
+        use optwf_handle_wf,only: set_nparms_tot, save_wf, write_wf
+        use optwf_handle_wf,only: compute_parameters, test_solution_parm
+        use optwf_handle_wf,only: save_nparms, set_nparms
+        use fetch_parameters_mod, only: fetch_parameters
+        use vmc_f_mod, only: vmc
+        use sr_more, only: dscal
         implicit None
 
         integer :: iter, iflag, nadorb_sav
         real(dp) :: dparm_norm
         real(dp) :: denergy, energy_sav, denergy_err, energy_err_sav
+        real(dp), dimension(mparm) :: parameters
 
         write (ounit, '(''Started dl optimization'')')
 
@@ -60,7 +72,7 @@ use optwf_contrl, only: idl_flag
 
         call save_nparms()
 
-        call fetch_parameters()
+        call fetch_parameters(parameters)
 
         ! do iteration
         do iter = 1, nopt_iter

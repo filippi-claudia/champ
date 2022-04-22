@@ -1,3 +1,5 @@
+      module bxmatrices
+      contains
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
       use vmc_mod, only: norb_tot
@@ -7,6 +9,8 @@
       use const, only: nelec
 
       use precision_kinds, only: dp
+      use multiply_slmi_mderiv, only: multiply_slmi_mderiv_simple
+
       implicit none
 
       integer :: i, iab, iel, ish, j
@@ -45,3 +49,4 @@
       return
       end
 c-----------------------------------------------------------------------
+      end module

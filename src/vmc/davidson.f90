@@ -46,11 +46,6 @@ module davidson
         INTEGER :: basis_size
     end type davidson_parameters
 
-    !> \private
-    private
-    !> \public
-    public :: generalized_eigensolver, davidson_parameters, die
-
 contains
 
     subroutine generalized_eigensolver(fun_mtx_gemv, eigenvalues, eigenvectors, nparm, nparm_max, &
@@ -81,6 +76,7 @@ contains
         !> return eigenvalues and ritz_vectors of the matrix
 
         use mpi
+        use store_diag_hs_mod, only: store_diag_hs
 
         implicit none
 
@@ -95,13 +91,12 @@ contains
         integer, intent(out) :: iters
 
         ! Function to compute the target matrix on the fly
-        interface
 
+        interface
             function fun_mtx_gemv(parameters, input_vect) result(output_vect)
-                !> rief Function to compute the action of the hamiltonian on the fly
+                !> Brief Function to compute the action of the hamiltonian on the fly
                 !> \param[in] dimension of the arrays to compute the action of the hamiltonian
                 !> \param[in] input_vec Array to project
-                !>
                 !> return Projected matrix
 
                 use precision_kinds, only: dp
@@ -113,10 +108,9 @@ contains
             end function fun_mtx_gemv
 
             function fun_stx_gemv(parameters, input_vect) result(output_vect)
-                !> rief Fucntion to compute the optional stx matrix on the fly
+                !> Brief Function to compute the action of the overlap on the fly
                 !> \param[in] dimension of the arrays to compute the action of the hamiltonian
                 !> \param[in] input_vec Array to project
-                !>
                 !> return Projected matrix
 
                 use precision_kinds, only: dp
@@ -292,7 +286,7 @@ contains
 
                 ! Solve the small eigenvalue problem
                 call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
-                write(ounit, '(''DAV: eigv'',1000f12.5)') (eigenvalues_sub(j), j=1, parameters%lowest)
+                write(ounit, '(''DAV: eigv'',1000d12.5)') (eigenvalues_sub(j), j=1, parameters%lowest)
 
                 ! Compute the necessary ritz vectors
                 ritz_vectors = lapack_matmul('N', 'N', V, eigenvectors_sub(:, :size_update))
@@ -307,7 +301,7 @@ contains
                 do j = 1, parameters%lowest
                     if (errors(j) < tolerance) has_converged(j) = .true.
                 end do
-                write(ounit, '(''DAV: resd'',1000f12.5)') (errors(j), j=1, parameters%lowest)
+                write(ounit, '(''DAV: resd'',1000d12.5)') (errors(j), j=1, parameters%lowest)
 
                 not_cnv = count(.not. has_converged(:))
                 write(ounit, '(''DAV: Root not yet converged     : '', I10)') not_cnv
@@ -594,36 +588,6 @@ contains
         integer   :: eigen_index
         real(dp) :: eigenvalue
 
-        interface
-
-            function fun_mtx_gemv(parameters, input_vect) result(output_vect)
-                !> rief Function to compute the action of the hamiltonian on the fly
-                !> \param[in] dimension of the arrays to compute the action of the
-                !             hamiltonian
-                !> \param[in] input_vec Array to project
-                !> return Projected matrix
-                use precision_kinds, only: dp
-                import                                   :: davidson_parameters
-                type(davidson_parameters)               :: parameters
-                real(dp), dimension(:, :), intent(in) :: input_vect
-                real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
-            end function fun_mtx_gemv
-
-            function fun_stx_gemv(parameters, input_vect) result(output_vect)
-                !> rief Fucntion to compute the optional stx matrix on the fly
-                !> \param[in] dimension of the arrays to compute the action of the
-                !             hamiltonian
-                !> \param[in] input_vec Array to project
-                !> return Projected matrix
-                use precision_kinds, only: dp
-                import                                   :: davidson_parameters
-                type(davidson_parameters)               :: parameters
-                real(dp), dimension(:, :), intent(in) :: input_vect
-                real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
-            end function fun_stx_gemv
-
-        end interface
-
         real(dp), dimension(parameters%nparm, parameters%nparm) :: F_matrix, lambda
         real(dp), dimension(parameters%nparm, 1) :: ritz_tmp
         real(dp), dimension(:, :), allocatable :: ys
@@ -656,41 +620,6 @@ contains
         real(dp), dimension(:, :), allocatable :: mtx
         real(dp), dimension(:, :), allocatable :: stx
 
-        ! Function to compute the target matrix on the fly
-        interface
-
-            function fun_mtx_gemv(parameters, input_vect) result(output_vect)
-                !> rief Function to compute the action of the hamiltonian on the fly
-                !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-                !> \param[in] input_vec Array to project
-                !>
-                !> return Projected matrix
-
-                use precision_kinds, only: dp
-                import :: davidson_parameters
-                type(davidson_parameters) :: parameters
-                real(dp), dimension(:, :), intent(in) :: input_vect
-                real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
-
-            end function fun_mtx_gemv
-
-            function fun_stx_gemv(parameters, input_vect) result(output_vect)
-                !> rief Fucntion to compute the optional stx matrix on the fly
-                !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-                !> \param[in] input_vec Array to project
-                !>
-                !> return Projected matrix
-
-                use precision_kinds, only: dp
-                import :: davidson_parameters
-                type(davidson_parameters) :: parameters
-                real(dp), dimension(:, :), intent(in) :: input_vect
-                real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
-
-            end function fun_stx_gemv
-
-        end interface
-
         allocate (mtx(parameters%nparm, parameters%nparm))
         allocate (stx(parameters%nparm, parameters%nparm))
 
@@ -707,5 +636,59 @@ contains
         deallocate (I)
 
     end subroutine export_matrices
+
+    function fun_mtx_gemv(parameters, input_vect) result(output_vect)
+        !> Brief Function to compute the action of the hamiltonian on the fly
+        !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+        !> \param[in] input_vec Array to project
+        !> return Projected matrix
+
+        use precision_kinds, only: dp
+        use optwf_lin_dav_extra,  only: h_psi_lin_d
+
+        type(davidson_parameters) :: parameters
+        real(dp), dimension(:, :), intent(in) :: input_vect
+        real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
+        real(dp), dimension(:, :), allocatable :: psi, hpsi
+
+        allocate (psi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
+        allocate (hpsi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
+
+        psi = 0.0_dp
+        psi(1:size(input_vect, 1), 1:size(input_vect, 2)) = input_vect
+
+        call h_psi_lin_d(parameters%nparm, size(input_vect, 2), psi, hpsi)
+
+        output_vect = hpsi(1:size(input_vect, 1), 1:size(input_vect, 2))
+        deallocate (psi, hpsi)
+
+    end function fun_mtx_gemv
+
+    function fun_stx_gemv(parameters, input_vect) result(output_vect)
+        !> Brief Fucntion to compute the optional stx matrix on the fly
+        !> \param[in] dimension of the arrays to compute the action of the hamiltonian
+        !> \param[in] input_vec Array to project
+        !> return Projected matrix
+
+        use precision_kinds, only: dp
+        use optwf_lin_dav_extra,  only: s_psi_lin_d
+
+        type(davidson_parameters) :: parameters
+        real(dp), dimension(:, :), intent(in) :: input_vect
+        real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
+        real(dp), dimension(:, :), allocatable :: psi, spsi
+
+        allocate (psi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
+        allocate (spsi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
+
+        psi = 0.0_dp
+        psi(1:size(input_vect, 1), 1:size(input_vect, 2)) = input_vect
+
+        call s_psi_lin_d(parameters%nparm, size(input_vect, 2), psi, spsi)
+
+        output_vect = spsi(1:size(input_vect, 1), 1:size(input_vect, 2))
+        deallocate (psi, spsi)
+
+    end function fun_stx_gemv
 
 end module davidson

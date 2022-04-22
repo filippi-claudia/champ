@@ -1,3 +1,5 @@
+      module distances_mod
+      contains
       subroutine distances(iel,x)
 c Written by Cyrus Umrigar
 c calculate interparticle distances
@@ -9,6 +11,7 @@ c calculate interparticle distances
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use pw_find_image, only: find_image4, find_image3
       implicit none
 
       integer :: i, i1, i2, ic, iel
@@ -155,3 +158,4 @@ c Calculate e-e inter-particle distances
       return
       end
 c-----------------------------------------------------------------------
+      end module

@@ -1,3 +1,5 @@
+      module multideterminant_mod
+      contains
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
       use const, only: hb, nelec
@@ -19,6 +21,8 @@
       use method_opt, only: method
 
       use precision_kinds, only: dp
+      use bxmatrices, only: bxmatrix
+      use matinv_mod, only: matinv
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
@@ -632,3 +636,4 @@ c-----------------------------------------------------------------------
       end
 
 c-----------------------------------------------------------------------
+      end module

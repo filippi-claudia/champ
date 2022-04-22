@@ -1,3 +1,5 @@
+      module finwrt_mod
+      contains
       subroutine finwrt
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
@@ -18,7 +20,7 @@ c routine to print out final results
       use forcewt, only: wcum
       use grdntspar, only: igrdtype, ngradnts
       use header, only: title
-      use optwf_corsam, only: energy, energy_err, force, force_err
+      use optwf_corsam, only: energy, energy_err, force, force_err, sigma
       use sa_weights, only: weights
       use step, only: rprob, suc, try
       use tmpnode, only: distance_node_sum
@@ -32,6 +34,14 @@ c routine to print out final results
       use contrl_file,    only: ounit, errunit
 
       use precision_kinds, only: dp
+
+      use qmmm_pot, only: qmmm_extpot_final
+      use misc_grdnts, only: finwrt_diaghess_zmat, finwrt_grdnts_zmat
+      use misc_grdnts, only: finwrt_grdnts_cart
+      use finwrt_more_mod, only: finwrt_more
+      use optci_mod, only: optci_prt
+      use multiple_states, only: efficiency_prt
+      use properties_mod, only: prop_fin
       implicit none
 
       integer :: i, iciprt_sav, ifr, index, istate
@@ -40,7 +50,7 @@ c routine to print out final results
       real(dp) :: eerr1s, eerr_p, efin, efin_p
       real(dp) :: err, err1, ferr, ffin
       real(dp) :: passes, peerr, pefin, r2err
-      real(dp) :: r2fin, rtpass, sigma, sucsum
+      real(dp) :: r2fin, rtpass, sucsum
       real(dp) :: tcsq, term, tjferr, tjffin
       real(dp) :: tpberr, tpbfin, trysum, x
       real(dp) :: x2
@@ -213,3 +223,4 @@ c 250   force_err(ifr)=sqrt(force_err(ifr))
 
       return
       end
+      end module

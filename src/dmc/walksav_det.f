@@ -1,3 +1,5 @@
+      module walksav_det_mod
+      contains
       subroutine walksav_det(iw)
 c Written by Claudia Filippi
 
@@ -363,3 +365,4 @@ c Written by Claudia Filippi
 
       return
       end
+      end module

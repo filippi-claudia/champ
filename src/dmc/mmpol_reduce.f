@@ -1,3 +1,5 @@
+      module mmpol_reduce_mod
+      contains
       subroutine mmpol_reduce(wgsum)
 
       use mpiconf, only: wid
@@ -103,3 +105,4 @@
       return
       end
 
+      end module

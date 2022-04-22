@@ -1,3 +1,5 @@
+      module prop_dmc
+      contains
 C----------------------------------------------
 C Additional properties (<X> etc )
 C DMC related routines
@@ -142,3 +144,4 @@ c----------------------------------------------------------------------
        vprop_old(i,iw2)=vprop_old(i,iw)
       enddo
       end
+      end module

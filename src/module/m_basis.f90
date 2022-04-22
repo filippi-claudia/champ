@@ -269,6 +269,8 @@ contains
 
 end module numbas2
 
+module m_basis
+contains
 subroutine allocate_m_basis()
     ! use basis, only: allocate_basis
     use numexp, only: allocate_numexp
@@ -300,3 +302,4 @@ subroutine deallocate_m_basis()
     call deallocate_numbas1()
     call deallocate_numbas2()
 end subroutine deallocate_m_basis
+end module

@@ -1,3 +1,5 @@
+      module determinante_psit_mod
+      contains
 c-----------------------------------------------------------------------
       subroutine determinante_psit(iel,determ,istate)
 
@@ -32,3 +34,4 @@ c-----------------------------------------------------------------------
 
       return
       end
+      end module

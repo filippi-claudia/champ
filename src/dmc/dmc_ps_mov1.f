@@ -1,3 +1,5 @@
+      module dmc_ps_mov1
+      contains
       subroutine dmc_ps
 c Written by Cyrus Umrigar and Claudia Filippi
 c Uses the diffusion Monte Carlo algorithm described in:
@@ -66,24 +68,37 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
+
+      use distances_mod,  only: distances
+      use strech_mod,     only: strech
+      use splitj_mod,     only: splitj
+      use walksav_jas_mod,only: walksav_jas, walkstrjas
+      use walksav_det_mod,only: walksav_det, walkstrdet
+      use averages,       only: average
+      use multideterminant_mod, only: update_ymat
+      use detsav_mod,     only: detsav 
+      use jassav_mod,     only: jassav
+      use hpsiedmc,       only: psiedmc
+      use nonloc_grid_mod,only: nonloc_grid, t_vpsp_get
+      use optx_orb_ci    ,only: optx_orb_ci_sum
+      use optx_jas_ci,    only: optx_jas_ci_sum
+      use optx_jas_orb,   only: optx_jas_orb_sum
+      use optci_mod,      only: optci_sum
+      use optorb_f_mod,   only: optorb_sum
+      use optjas_mod,     only: optjas_sum
+      use mmpol_dmc,      only: mmpol_sum, mmpol_save
+      use pcm_dmc,        only: pcm_sum, pcm_save
+      use prop_dmc,       only: prop_sum_dmc, prop_save_dmc
+      use determinante_mod,only: compute_determinante_grad
+      use nonloc_grid_mod, only: t_vpsp_sav
+      use hpsi_mod,        only: hpsi
+      use multideterminant_tmove_mod, only: multideterminant_tmove
+      use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
+      use distances_mod,  only: distancese_restore
+      use rannyu_mod,     only: rannyu
+      use gauss_mod,      only: gauss
+
       implicit none
-
-      interface
-         function rannyu(idum)
-          use precision_kinds, only: dp
-         implicit none
-         integer,intent(in) :: idum
-         real(dp) :: rannyu
-         end function rannyu
-      end interface
-
-      interface
-         function gauss()
-          use precision_kinds, only: dp
-         implicit none
-         real(dp) :: gauss
-         end function gauss
-      end interface
 
       integer :: i, iaccept, iel
       integer :: iflag_dn, iflag_up, ifr, ii
@@ -97,17 +112,17 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
       real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
       real(dp) :: drifdifr, drifdifs, drift, dwt
-      real(dp) :: dx, e_cutoff, enew
+      real(dp) :: dx, e_cutoff, enew(1)
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, ginv
       real(dp) :: p, pen, pp, psi2savo
-      real(dp) :: psidn, psijn, q, r2n
+      real(dp) :: psidn(1), psijn, q, r2n
       real(dp) :: r2o, r2sume, risume
       real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new
-      real(dp) :: rnorm_nodes_num, rnorm_nodes_old, ro, taunow
+      real(dp) :: rnorm_nodes_old, ro, taunow
       real(dp) :: tauprim, tratio, v2new, v2old
       real(dp) :: v2sumn, v2sumo, vav2sumn, vav2sumo
-      real(dp) :: vavvn, vavvo, vavvt, wtg
+      real(dp) :: vavvn, vavvo, vavvt, wtg(1)
       real(dp) :: wtg_derivsum1, wtnow
       real(dp), dimension(3, nelec) :: xstrech
       real(dp), dimension(3) :: xnew
@@ -120,6 +135,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: adrift = 0.5d0
+      real(dp), parameter :: zero_1d(1) = (/0.d0/)
 
 
 
@@ -208,14 +224,14 @@ c Sample Green function for forward move
               call psiedmc(i,iw,xnew,psidn,psijn,0)
               nmove_casula=nmove_casula+1
 
-              call compute_determinante_grad(i,psidn,psidn,vnew(1,i),0)
+              call compute_determinante_grad(i,psidn(1),psidn,vnew(1,i),0)
               iaccept=1
               iage(iw)=0
               do k=1,3
                 xold_dmc(k,i,iw,1)=xnew(k)
                 vold_dmc(k,i,iw,1)=vnew(k,i)
               enddo
-              psido_dmc(iw,1)=psidn
+              psido_dmc(iw,1)=psidn(1)
               psijo_dmc(iw,1)=psijn
               call jassav(i,0)
               call detsav(i,0)
@@ -277,16 +293,16 @@ c Tau primary -> tratio=one
 c calculate psi and velocity at new configuration
           call psiedmc(i,iw,xnew,psidn,psijn,0)
 
-          call compute_determinante_grad(i,psidn,psidn,vnew(1,i),0)
+          call compute_determinante_grad(i,psidn(1),psidn,vnew(1,i),0)
 
           distance_node_ratio2=1.d0
           if(node_cutoff.gt.0) then
             do jel=1,nup
-              if(jel.ne.i) call compute_determinante_grad(jel,psidn,psidn,vnew(1,jel),iflag_up)
+              if(jel.ne.i) call compute_determinante_grad(jel,psidn(1),psidn,vnew(1,jel),iflag_up)
             enddo
 
             do jel=nup+1,nelec
-              if(jel.ne.i) call compute_determinante_grad(jel,psidn,psidn,vnew(1,jel),iflag_dn)
+              if(jel.ne.i) call compute_determinante_grad(jel,psidn(1),psidn,vnew(1,jel),iflag_dn)
             enddo
 
             call nodes_distance(vold_dmc(1,1,iw,1),distance_node,1)
@@ -298,7 +314,7 @@ c calculate psi and velocity at new configuration
           endif
 
 c Check for node crossings
-          if(psidn*psido_dmc(iw,1).le.zero) then
+          if(psidn(1)*psido_dmc(iw,1).le.zero) then
             nodecr=nodecr+1
             if(icross.le.0) then
               p=zero
@@ -326,7 +342,7 @@ c Calculate Green function for the reverse move
      &      psido_dmc(iw,1),psidn,psijo_dmc(iw,1),psijn
           endif
 
-          p=(psidn/psido_dmc(iw,1))**2*exp(2*(psijn-psijo_dmc(iw,1)))*
+          p=(psidn(1)/psido_dmc(iw,1))**2*exp(2*(psijn-psijo_dmc(iw,1)))*
      &    exp((dfus2o-dfus2n)/(two*tau))*distance_node_ratio2
 
           if(ipr.ge.1) write(ounit,'(''p'',11f10.6)')
@@ -384,7 +400,7 @@ c If we are using weights rather than accept/reject
               drifdif=drifdif+(xold_dmc(k,i,iw,1)-xnew(k))**2
               xold_dmc(k,i,iw,1)=xnew(k)
             enddo
-            psido_dmc(iw,1)=psidn
+            psido_dmc(iw,1)=psidn(1)
             psijo_dmc(iw,1)=psijn
             call jassav(i,0)
             call detsav(i,0)
@@ -415,10 +431,10 @@ c Primary configuration
             drifdifr=one
             if(nforce.gt.1)
      &      call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
-            call hpsi(xold_dmc(1,1,iw,1),psidn,psijn,enew,ipass,1)
+            call hpsi(xold_dmc(1,1,iw,1),psidn(1),psijn,enew,ipass,1)
             call walksav_det(iw)
             call walksav_jas(iw)
-            if(icasula.lt.0) call multideterminant_tmove(psidn,0)
+            if(icasula.lt.0) call multideterminant_tmove(psidn(1),0)
 c           call t_vpsp_sav(iw)
             call t_vpsp_sav
             i_vpsp=0
@@ -462,7 +478,7 @@ c Compute streched electronic positions for all nucleus displacement
           endif
 
           do i=1,nelec
-              call compute_determinante_grad(i,psidn,psidn,vold_dmc(1,i,iw,ifr),1)
+              call compute_determinante_grad(i,psidn(1),psidn,vold_dmc(1,i,iw,ifr),1)
           enddo
 
           vav2sumn=zero
@@ -494,10 +510,10 @@ c Use more accurate formula for the drift and tau secondary in drift
 
           if(icut_e.eq.0) then
             ewto=eest-(eest-eold(iw,ifr))*fratio(iw,ifr)
-            ewtn=eest-(eest-enew)*fration
+            ewtn=eest-(eest-enew(1))*fration
            else
             deo=eest-eold(iw,ifr)
-            den=eest-enew
+            den=eest-enew(1)
             ewto=eest-sign(1.d0,deo)*min(e_cutoff,dabs(deo))
             ewtn=eest-sign(1.d0,den)*min(e_cutoff,dabs(den))
           endif
@@ -562,27 +578,33 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
           endif
 
           if(ifr.eq.1) then
-            r2sum=r2sum+wtg*r2sume
-            risum=risum+wtg*risume
+            r2sum=r2sum+wtg(1)*r2sume
+            risum=risum+wtg(1)*risume
             do i=1,nelec
-              rprob(itryo(i))=rprob(itryo(i))+wtg*unacp(i)
-              rprob(itryn(i))=rprob(itryn(i))+wtg*(one-unacp(i))
+              rprob(itryo(i))=rprob(itryo(i))+wtg(1)*unacp(i)
+              rprob(itryn(i))=rprob(itryn(i))+wtg(1)*(one-unacp(i))
             enddo
           endif
-          tausum(ifr)=tausum(ifr)+wtg*taunow
+          tausum(ifr)=tausum(ifr)+wtg(1)*taunow
 
-          if(dabs((enew-etrial)/etrial).gt.0.2d+0) then
+          if(dabs((enew(1)-etrial)/etrial).gt.0.2d+0) then
            write(18,'(i6,f8.2,2d10.2,(8f8.4))') ipass,
-     &     enew-etrial,psidn,psijn,(xnew(ii),ii=1,3)
+     &     enew(1)-etrial,psidn,psijn,(xnew(ii),ii=1,3)
           endif
 
           if(wt(iw).gt.3) write(18,'(i6,i4,3f8.2,30f8.4)') ipass,iw,
-     &    wt(iw),enew-etrial,eold(iw,ifr)-etrial,(xnew(ii),ii=1,3)
+     &    wt(iw),enew(1)-etrial,eold(iw,ifr)-etrial,(xnew(ii),ii=1,3)
 
-          eold(iw,ifr)=enew
-          peo_dmc(iw,ifr)=pen
-          d2o(iw,ifr)=d2n
-          psido_dmc(iw,ifr)=psidn
+          eold(iw,ifr)=enew(1)
+          ! peo_dmc(iw,ifr)=pen <= pen is undefined, could be den mispelled ?
+          if(icut_e .ne. 0) then  ! <= check that with claudia
+            peo_dmc(iw,ifr)=den
+          else
+            peo_dmc(iw,ifr)=0.0_dp
+          end if
+          ! d2o(iw,ifr)=d2n <= dn2 is not initialized I don't think it' s mispelled
+          d2o(iw,ifr)=0.0_dp ! I set it to 0 but we must check with Claudia
+          psido_dmc(iw,ifr)=psidn(1)
           psijo_dmc(iw,ifr)=psijn
           fratio(iw,ifr)=fration
           do i=1,nelec
@@ -605,31 +627,31 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
 
             wsum1(ifr)=wsum1(ifr)+wtnow
             esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)
-            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg*peo_dmc(iw,ifr)
-            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg*(eold(iw,ifr)-peo_dmc(iw,ifr))
-            tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg*half*hb*d2o(iw,ifr)
+            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*peo_dmc(iw,ifr)
+            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-peo_dmc(iw,ifr))
+            tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg(1)*half*hb*d2o(iw,ifr)
 
-            derivsum(1,ifr)=derivsum(1,ifr)+wtg*eold(iw,ifr)
+            derivsum(1,ifr)=derivsum(1,ifr)+wtg(1)*eold(iw,ifr)
 
             if(idrifdifgfunc.gt.0) then
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg*eold(iw,ifr)*pwt(iw,ifr)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg*pwt(iw,ifr)
+              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,ifr)*pwt(iw,ifr)
+              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*pwt(iw,ifr)
              else
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg*eold(iw,ifr)*(pwt(iw,ifr)+psi2savo)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg*(pwt(iw,ifr)+psi2savo)
+              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,ifr)*(pwt(iw,ifr)+psi2savo)
+              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*(pwt(iw,ifr)+psi2savo)
             endif
 
-            call prop_sum_dmc(0.d0,wtg,iw)
-            call pcm_sum(0.d0,wtg,iw)
-            call mmpol_sum(0.d0,wtg,iw)
+            call prop_sum_dmc(0.d0,wtg(1),iw)
+            call pcm_sum(0.d0,wtg(1),iw)
+            call mmpol_sum(0.d0,wtg(1),iw)
 
-            call optjas_sum(wtg,0.d0,eold(iw,1),eold(iw,1),0)
-            call optorb_sum(wtg,0.d0,eold(iw,1),eold(iw,1),0)
-            call optci_sum(wtg,0.d0,eold(iw,1),eold(iw,1))
+            call optjas_sum(wtg,zero_1d,eold(iw,1),eold(iw,1),0)
+            call optorb_sum(wtg,zero_1d,eold(iw,1),eold(iw,1),0)
+            call optci_sum(wtg(1),0.d0,eold(iw,1),eold(iw,1))
 
-            call optx_jas_orb_sum(wtg,0.d0,0)
-            call optx_jas_ci_sum(wtg,0.d0,eold(iw,1),eold(iw,1))
-            call optx_orb_ci_sum(wtg,0.d0)
+            call optx_jas_orb_sum(wtg,zero_1d,0)
+            call optx_jas_ci_sum(wtg(1),0.d0,eold(iw,1),eold(iw,1))
+            call optx_orb_ci_sum(wtg(1),0.d0)
 
            else
 c           write(ounit,*) 'IN DMC',ajacold(iw,ifr)
@@ -638,12 +660,12 @@ c           write(ounit,*) 'IN DMC',ajacold(iw,ifr)
 
             wsum1(ifr)=wsum1(ifr)+wtnow*ro
             esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)*ro
-            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg*peo_dmc(iw,ifr)*ro
-            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg*(eold(iw,ifr)-peo_dmc(iw,ifr))*ro
-            tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg*half*hb*d2o(iw,ifr)*ro
+            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*peo_dmc(iw,ifr)*ro
+            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-peo_dmc(iw,ifr))*ro
+            tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg(1)*half*hb*d2o(iw,ifr)*ro
 
             wtg=wt(iw)*fprod/rnorm_nodes**2
-            wtg_derivsum1=wtg
+            wtg_derivsum1=wtg(1)
 c           if(idrifdifgfunc.eq.0)then
 c             wtg=wt(iw)*fprod/rnorm_nodes**2
 c             wtg_derivsum1=wtg
@@ -655,12 +677,12 @@ c           endif
             derivsum(1,ifr)=derivsum(1,ifr)+wtg_derivsum1*eold(iw,ifr)
 
             if(idrifdifgfunc.gt.0) then
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg*eold(iw,1)*pwt(iw,ifr)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg*pwt(iw,ifr)
+              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,1)*pwt(iw,ifr)
+              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*pwt(iw,ifr)
             else
               ro=log(ajacold(iw,ifr))+2*(log(abs(psido_dmc(iw,ifr)))+psijo_dmc(iw,ifr))
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg*eold(iw,1)*(pwt(iw,ifr)+ro)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg*(pwt(iw,ifr)+ro)
+              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,1)*(pwt(iw,ifr)+ro)
+              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*(pwt(iw,ifr)+ro)
             endif
           endif
 
@@ -698,7 +720,7 @@ c           call compute_determinante_grad(iel,psidn,psidn,vnew(1,iel),0)
               xold_dmc(k,iel,iw,1)=xnew(k)
             enddo
 c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
-            psido_dmc(iw,1)=psidn
+            psido_dmc(iw,1)=psidn(1)
             psijo_dmc(iw,1)=psijn
             call jassav(iel,0)
             call detsav(iel,0)
@@ -751,3 +773,4 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
 
       return
       end
+      end module

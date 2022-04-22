@@ -1,3 +1,5 @@
+      module optx_orb_ci_reduce_mod
+      contains
       subroutine optx_orb_ci_reduce
 c Written by Claudia Filippi
 
@@ -72,3 +74,4 @@ c Written by Claudia Filippi
 
       return
       end
+      end module

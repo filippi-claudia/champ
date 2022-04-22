@@ -1,3 +1,5 @@
+      module fetch_parameters_mod
+      contains
 c-----------------------------------------------------------------------
       subroutine fetch_parameters(p)
 
@@ -137,3 +139,4 @@ c90     write(ounit,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
       return
       end
 c-----------------------------------------------------------------------
+      end module

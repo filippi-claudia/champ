@@ -1,3 +1,6 @@
+      module multiple_states
+      use error, only: fatal_error
+      contains
 c----------------------------------------------------------------------
       subroutine efficiency_sample(ipass,determ_s,determ_psig)
 
@@ -113,3 +116,4 @@ c-----------------------------------------------------------------------
 
       end
 c-----------------------------------------------------------------------
+      end module

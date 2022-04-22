@@ -24,8 +24,7 @@ if (MPI_Fortran_FOUND)
     distances.f
     dumper.f
     dumper_more.f
-    efield.f
-    error.f
+	  efield.f
     fetch_parameters.f
     fin_reduce.f
     finwrt.f
@@ -67,6 +66,7 @@ if (MPI_Fortran_FOUND)
     optwf_lib.f
     optwf_lin_dav.f
     optwf_lin_dav_more.f
+    optwf_lin_dav_extra.f
     optwf_lin_matrix.f
     optwf_matrix_corsamp.f
     optwf_mix_sa.f
@@ -281,9 +281,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optci_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optjas_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/error.f)
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f)
 
   # --------------------------------------------------------------------
   # Remove objects to share depending on CMAKE options:

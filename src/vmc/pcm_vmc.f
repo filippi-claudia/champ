@@ -1,3 +1,5 @@
+      module pcm_vmc
+      contains
       subroutine pcm_prt(wcum,iblk)
 
       use pcm_cntrl, only: ipcm, ipcmprt
@@ -60,6 +62,7 @@ c-----------------------------------------------------------------------
       use pcm_averages, only: enfpcm_cum, enfpcm_cm2
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use pcm_mod, only: qpcm_charges, pcm_write_chvol
       implicit none
 
       integer :: i, iblk, iqopcm_err, ispcmerr, ivpcmerr
@@ -240,3 +243,4 @@ c-----------------------------------------------------------------------
 
       return
       end
+      end module

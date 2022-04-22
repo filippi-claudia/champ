@@ -12,6 +12,14 @@ module optgeo_hessian
 
   implicit none
 
+  interface !Externally link to lapack
+    SUBROUTINE dger(M,N,ALPHA,X,INCX,Y,INCY,A,LDA)
+       DOUBLE PRECISION ALPHA
+       INTEGER INCX,INCY,LDA,M,N
+       DOUBLE PRECISION A(LDA,*),X(*),Y(*)
+    END SUBROUTINE
+  end interface
+
   contains
 
   !>

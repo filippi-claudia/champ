@@ -1,3 +1,5 @@
+      module optx_jas_ci
+      contains
       subroutine optx_jas_ci_sum(p,q,enew,eold)
 
       use derivjas, only: gvalue
@@ -172,3 +174,4 @@ c H matrix h_ci_jas
 
       return
       end
+      end module

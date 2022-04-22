@@ -1,3 +1,5 @@
+      module cuspexact4_mod
+      contains
       subroutine cuspexact4(iprin,iadiag)
 c Written by Cyrus Umrigar
       use atom, only: nctype
@@ -78,3 +80,4 @@ c Set dep. variables from 2nd order e-n cusp
 
       return
       end
+      end module

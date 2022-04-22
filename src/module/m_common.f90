@@ -27,8 +27,9 @@ contains
     subroutine allocate_Bloc()
         use const, only: nelec
         use coefs, only: norb
-        use atom, only: ncent_tot
+        use atom, only: ncent_tot, ncent
         use vmc_mod, only: norb_tot
+        use coefs, only: norb
         use optwf_parms, only: nparmj
         
         if (.not. allocated(b)) allocate (b(norb_tot, nelec))
@@ -1034,6 +1035,8 @@ contains
 
 end module zmatrix_grad
 
+module m_common
+contains
 subroutine allocate_m_common()
 
     use atom, only: allocate_atom
@@ -1178,3 +1181,4 @@ subroutine deallocate_m_common()
     call deallocate_zmatrix()
     call deallocate_zmatrix_grad()
 end subroutine deallocate_m_common
+end module 

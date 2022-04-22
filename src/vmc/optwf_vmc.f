@@ -1,4 +1,5 @@
       subroutine qmc
+      use vmc_f_mod, only: vmc
 
       implicit none
 
@@ -8,6 +9,7 @@
       end
 c---------------------------------------------------
       subroutine reset_configs_start
+      use mc_configs, only: mc_configs_start
 
       implicit none
 

@@ -1,3 +1,5 @@
+      module acues1_mod
+      contains
       subroutine acues1
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
@@ -20,10 +22,13 @@ c routine to accumulate estimators for energy etc.
       use contr3, only: mode
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
       use contrl_file,    only: ounit
+
+      use acues1_gpop_mod, only: acues1_gpop
       implicit none
 
       integer :: ifr, ipmod, nfpro
-      real(dp) :: wgdsum1, eisum
+      real(dp) :: wgdsum1
+
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
@@ -60,7 +65,7 @@ c collect block averages
       wgdsum=wgdsum+wgdsum1
       esum_dmc=esum_dmc+esum1_dmc(1)
       efsum=efsum+efsum1
-      eisum=eisum+wfsum1/wdsum1
+
       do ifr=1,nforce
         wgsum(ifr)=wgsum(ifr)+wgsum1(ifr)
         egsum(ifr)=egsum(ifr)+egsum1(ifr)
@@ -96,3 +101,4 @@ c zero out step averages
 
       return
       end
+      end module

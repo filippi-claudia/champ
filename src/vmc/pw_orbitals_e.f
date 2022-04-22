@@ -1,3 +1,5 @@
+      module pw_orbitals_e
+      contains
       subroutine orbitals_pwe(iel,x,orb)
 c Written by Cyrus Umrigar
 c Calculate pw orbitals.
@@ -139,3 +141,4 @@ c           endif
 
       return
       end
+      end module

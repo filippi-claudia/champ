@@ -1,3 +1,5 @@
+      module optx_orb_ci
+      contains
       subroutine optx_orb_ci_sum(p,q)
 
       use optwf_contrl, only: ioptci, ioptorb
@@ -179,3 +181,4 @@ c Hamiltonian orb_ci
 
       return
       end
+      end module
