@@ -1,4 +1,4 @@
-      subroutine deriv_jastrow(x,v,d2,div_vj,value)
+      subroutine deriv_jastrow(x,v,d2,div_vj,value,istate)
 c Written by Claudia Filippi
 
       use vmc_mod, only: MELEC
@@ -15,7 +15,7 @@ c Written by Claudia Filippi
    10   v(3,i)=zero
       d2=zero
 
-      call deriv_jastrow4(x,v,d2,value)
+      call deriv_jastrow4(x,v,d2,value,istate)
 
       return
       end

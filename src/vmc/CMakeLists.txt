@@ -3,7 +3,7 @@ if (MPI_Fortran_FOUND)
   # Source files
   file(GLOB VMC_SOURCE *.f)
   file(GLOB VMC90_SOURCE *.f90) 
-
+  
   set_source_files_properties(VMC90_SOURCE PROPERTIES COMPILE_FLAGS "-check bounds -g -traceback")
 
   # --------------------------------------------------------------------
@@ -77,6 +77,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/m_estimators.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_deriv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_mixderiv.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/m_md.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_input.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_grdnt.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/m_allocation.f90
@@ -176,6 +177,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
     ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f
     ${CMAKE_CURRENT_SOURCE_DIR}/error.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/fit_force.f
     ${CMAKE_INPUT_DIR}/p2_defaults.f
     ${CMAKE_INPUT_DIR}/p2etc.f
     ${CMAKE_INPUT_DIR}/p2nmcheck.f)
@@ -259,7 +261,7 @@ if (MPI_Fortran_FOUND)
     )
   
   target_link_libraries(vmc.mov1
-    cyrus pspline
+    cyrus pspline slatec
     ${LINEAR_ALGEBRA})
   
   # --------------------------------------------------------------------

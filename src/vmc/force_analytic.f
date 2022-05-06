@@ -145,6 +145,7 @@ c     compute force for reference determinant
                do i=1,nel
                   do j=1,nel
                      jorb=iworbd(j+ish,kref)
+c                     if(ic.eq.1) write(6,*) 'B',b_da(k,i+ish,jorb,ic,1),xmat(i+(j-1)*nel,iab,1)
                      da_energy_ref(k,ic)=da_energy_ref(k,ic)
      &                    +slmi(j+(i-1)*nel,iab,istate)*b_da(k,i+ish,jorb,ic,istate)
      &                    -da_orb(k,i+ish,jorb,ic,istate)*xmat(i+(j-1)*nel,iab,istate)
@@ -186,6 +187,7 @@ c     enddo iab
 c     complete da_psi
          enddo
       enddo
+
 
       end subroutine
 
@@ -290,10 +292,10 @@ c-----------------------------------------------------------------------
       do ic=1,ncent
          do k=1,3
             da_energy_ave(k,ic,istate)=(da_energy_cum(k,ic,istate)-2*eave*da_psi_cum(k,ic,istate))/wcum
-            da_energy_err(k,istate)=err(da_energy_ave(k,ic,istate),da_energy_cm2(k,ic,istate))
+            da_energy_err(k,ic,istate)=err(da_energy_ave(k,ic,istate),da_energy_cm2(k,ic,istate))
          enddo
 c        RLPB fix this to print all states
-         write(80,'(i5,1p6e14.5)') ic,(da_energy_ave(k,ic,1),k=1,3),(da_energy_err(k,1),k=1,3)
+         write(80,'(i5,1p6e14.5)') ic,(da_energy_ave(k,ic,1),k=1,3),(da_energy_err(k,ic,1),k=1,3)
       enddo
 
       end subroutine

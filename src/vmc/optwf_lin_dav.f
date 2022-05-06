@@ -222,7 +222,6 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
 
-
       do 30 i=1,ndet
    30   cdet(i,1,1)=cdet(i,iroot,1)
 

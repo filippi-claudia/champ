@@ -521,7 +521,7 @@ c-----------------------------------------------------------------------
 
       use vmc_mod, only: MORB, MCENT
       use atom, only: ncent
-      use Bloc, only: db
+      use Bloc, only: b_da
       use coefs, only: norb
       use force_analy, only: iforce_analy
       use pseudo, only: lpot, vps
@@ -539,7 +539,7 @@ c-----------------------------------------------------------------------
       if(iforce_analy.eq.0) return
 
       iel=i
-      sav_db=db(1,iel,1,ic,istate)
+      sav_db=b_da(1,iel,1,ic,istate)
 
       da_term_radial=0.0d0
       do k=1,3
@@ -558,13 +558,13 @@ c-----------------------------------------------------------------------
       r_en_savi=1.0d0/r_en_sav(ic)
       r_en_savi2=r_en_savi*r_en_savi
       do iorb=1,norb
-         db(1,iel,iorb,ic,istate)=db(1,iel,iorb,ic,istate)+term_radial_da_vps(1)*orbn(iorb)
+         b_da(1,iel,iorb,ic,istate)=b_da(1,iel,iorb,ic,istate)+term_radial_da_vps(1)*orbn(iorb)
      &        +da_term_radial*(-xq(iq)*r_en_savi
      &        +costh*rvec_en_sav(1,ic)*r_en_savi2)*orbn(iorb)
-         db(2,iel,iorb,ic,istate)=db(2,iel,iorb,ic,istate)+term_radial_da_vps(2)*orbn(iorb)
+         b_da(2,iel,iorb,ic,istate)=b_da(2,iel,iorb,ic,istate)+term_radial_da_vps(2)*orbn(iorb)
      &        +da_term_radial*(-yq(iq)*r_en_savi
      &        +costh*rvec_en_sav(2,ic)*r_en_savi2)*orbn(iorb)
-         db(3,iel,iorb,ic,istate)=db(3,iel,iorb,ic,istate)+term_radial_da_vps(3)*orbn(iorb)
+         b_da(3,iel,iorb,ic,istate)=b_da(3,iel,iorb,ic,istate)+term_radial_da_vps(3)*orbn(iorb)
      &        +da_term_radial*(-zq(iq)*r_en_savi
      &        +costh*rvec_en_sav(3,ic)*r_en_savi2)*orbn(iorb)
          
@@ -574,13 +574,13 @@ c-----------------------------------------------------------------------
 
          dum=xq(iq)*db_tmp1+yq(iq)*db_tmp2+zq(iq)*db_tmp3
 
-         db(1,iel,iorb,ic,istate)=db(1,iel,iorb,ic,istate)-dum*rvec_en_sav(1,ic)*r_en_savi+db_tmp1
-         db(2,iel,iorb,ic,istate)=db(2,iel,iorb,ic,istate)-dum*rvec_en_sav(2,ic)*r_en_savi+db_tmp2
-         db(3,iel,iorb,ic,istate)=db(3,iel,iorb,ic,istate)-dum*rvec_en_sav(3,ic)*r_en_savi+db_tmp3
+         b_da(1,iel,iorb,ic,istate)=b_da(1,iel,iorb,ic,istate)-dum*rvec_en_sav(1,ic)*r_en_savi+db_tmp1
+         b_da(2,iel,iorb,ic,istate)=b_da(2,iel,iorb,ic,istate)-dum*rvec_en_sav(2,ic)*r_en_savi+db_tmp2
+         b_da(3,iel,iorb,ic,istate)=b_da(3,iel,iorb,ic,istate)-dum*rvec_en_sav(3,ic)*r_en_savi+db_tmp3
 
          do jc=1,ncent
             do k=1,3
-               db(k,iel,iorb,jc,istate)=db(k,iel,iorb,jc,istate)
+               b_da(k,iel,iorb,jc,istate)=b_da(k,iel,iorb,jc,istate)
      &              +term_radial*(da_orbn(k,jc,iorb)+orbn(iorb)*da_ratio_jn(k,jc))
             enddo
          enddo

@@ -68,6 +68,7 @@ c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
 c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
 
+
       thetamx(r,z)=deltat+(two-deltat)/(one+(z*r)**2)
 
       mode='vmc_mov1    '

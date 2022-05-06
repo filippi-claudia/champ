@@ -94,7 +94,7 @@ c     RLPB need to extend to several states!!!!
       subroutine compute_position_bcast
 
       use atom, only: ncent
-      use force_fin, only: da_energy_ave
+      use force_fin, only: da_energy_ave,da_energy_err
       use force_analy, only: iforce_analy
       use mpi
 
@@ -103,7 +103,7 @@ c     RLPB need to extend to several states!!!!
       if(iforce_analy.eq.0)return
 
       call MPI_BCAST(da_energy_ave,3*ncent,MPI_REAL8,0,MPI_COMM_WORLD,i)
-
+      call MPI_BCAST(da_energy_err,3*ncent,MPI_REAL8,0,MPI_COMM_WORLD,i)
       return
       end
 

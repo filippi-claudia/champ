@@ -87,7 +87,7 @@ c     only called for ifr=1
       call prop_cum(wsum(1,1))
       call pcm_cum(wsum(1,1))
       call mmpol_cum(wsum(1,1))
-      call force_analy_cum(wsum(1,1),ecum(1,1)/wcum(1,1),wcum(1,1))
+      call force_analy_cum(wsum(1,1),ecum(1,1)/wcum(1,1),wcum(1,1),1)
 
 c     zero out xsum variables for metrop
 
@@ -260,7 +260,7 @@ c     set n- and e-coords and n-n potentials before getting wavefn. etc.
 c     rewrite psi2o if you are sampling guiding
         psi2o(1,1)=2*(dlog(dabs(psig)))
       endif
-         
+
       if(ipr.gt.1) then
          write(6,'(''psid(istate), psig='',10d12.4)') (psido(istate),istate=1,nstates),psig
          write(6,'(''psid2o='',f9.4)') psi2o(1,1)

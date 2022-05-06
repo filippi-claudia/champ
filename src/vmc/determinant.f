@@ -8,6 +8,7 @@ c     Modified by A. Scemama
       use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
+      use force_analy, only: iforce_analy
       use contr3, only: mode
       use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
@@ -81,53 +82,57 @@ c     vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
       endif
 
 c     for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
-c     if(index(mode,'dmc').eq.0) then
-c        icheck=icheck+1
-c        if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.10) then
-c           call check_detref(ipass,icheck,newref)
-c           if(newref.gt.0) goto 10
-c        endif
-c     endif
+c     ONLY IF IFORCE ANALY > 0
+      if(index(mode,'dmc').eq.0 .and. iforce_analy .ge. 1) then
+c         write(6,*) "CIAO KREF", iforce_analy
+         icheck=icheck+1
+         if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.10) then
+            call check_detref(ipass,icheck,newref)
+            if(newref.gt.0) goto 10
+         endif
+      endif
 
       end subroutine
 
 c-----------------------------------------------------------------------
 
-c     subroutine check_detref(ipass,icheck,iflag)
+      subroutine check_detref(ipass,icheck,iflag)
+ 
+      use vmc_mod, only: MELEC, MORB, MDET
+      use const, only: ipr
+      use estpsi, only: detref
+      use multidet, only: kref
+      use optwf_contrl, only: ioptorb
+      use coefs, only: norb
+      use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
+      use multislater, only: detiab
+ 
+      implicit real*8(a-h,o-z)
+ 
+      iflag=0
+      if(ipass.le.2) return
+ 
+c      write(6,*) "CIAO KREF"
 
-c     use vmc_mod, only: MELEC, MORB, MDET
-c     use const, only: ipr
-c     use estpsi, only: detref
-c     use multidet, only: kref
-c     use optwf_contrl, only: ioptorb
-c     use coefs, only: norb
-c     use orbval, only: ddorb, dorb, nadorb, ndetorb, orb
-c     use multislater, only: detiab
-
-c     implicit real*8(a-h,o-z)
-
-c     iflag=0
-c     if(ipass.le.2) return
-
-c     do iab=1,2
-c        dlogdet=dlog10(dabs(detiab(kref,iab)))
-c        dcheck=detref(iab)/ipass-dlogdet
-c        if(iab.eq.1.and.dcheck.gt.6) iflag=1
-c        if(iab.eq.2.and.dcheck.gt.6) iflag=2
-c        if(ipr.ge.2) write(6,*) 'check',dlogdet,detref(iab)/ipass
-c     enddo
-
-c     if(ipr.ge.2) write(6,*) 'check detref',iflag
-c     if(iflag.gt.0) then
-c        call multideterminants_define(iflag,icheck)
-c        if (ioptorb.ne.0) then
-c           norb=norb+nadorb
-c           call optorb_define
-c        endif
-c     endif
-c     
-c     end subroutine
-
+      do iab=1,2
+         dlogdet=dlog10(dabs(detiab(kref,iab,1)))
+         dcheck=detref(iab,1)/ipass-dlogdet
+         if(iab.eq.1.and.dcheck.gt.6) iflag=1
+         if(iab.eq.2.and.dcheck.gt.6) iflag=2
+         if(ipr.ge.2) write(6,*) 'check',dlogdet,detref(iab,1)/ipass
+      enddo
+ 
+      if(ipr.ge.2) write(6,*) 'check detref',iflag
+      if(iflag.gt.0) then
+         call multideterminants_define(iflag,icheck)
+         if (ioptorb.ne.0) then
+            norb=norb+nadorb
+            call optorb_define
+         endif
+      endif
+     
+      end subroutine
+ 
 c-----------------------------------------------------------------------
 
       subroutine compute_bmatrices_kin

@@ -26,7 +26,7 @@ module optwf_sr_ortho_mod
   real(dp) :: sr_adiag_sav
 
   private
-  public :: optwf_sr_ortho, atimes_n_ortho
+  public :: optwf_sr_ortho, optwf_sr_ortho_nogeo, atimes_n_ortho
   save
 
 contains
@@ -72,7 +72,7 @@ contains
              write(6,'(/,''Micro iteration'',i5,'' of'',i5)')miter,micro_iter_sr
           end if
 
-          if(miter.eq.micro_iter_sr) iforce_analy=iforce_analy_sav
+!          if(miter.eq.micro_iter_sr) iforce_analy=iforce_analy_sav
 
           call qmc
           write(6,'(/,''Completed sampling'')')
@@ -106,11 +106,11 @@ contains
           call write_wf(1,iter)
           call save_wf
 
-          if(iforce_analy.gt.0) then
-             if(izvzb.gt.0) call forces_zvzb(nparm)
-             call compute_positions
-             call write_geometry(iter)
-          endif
+!          if(iforce_analy.gt.0) then
+!             if(izvzb.gt.0) call forces_zvzb(nparm)
+!             call compute_positions
+!             call write_geometry(iter)
+!          endif
        enddo
 
        if(iter.ge.2) then
@@ -128,17 +128,17 @@ contains
        sigma_sav=sigma
     end do
 
-    write(6,'(/,''Check last iteration'')')
+!    write(6,'(/,''Check last iteration'')')
 
-    ioptjas=0
-    ioptorb=0
-    ioptci=0
-    iforce_analy=0
+!    ioptjas=0
+!    ioptorb=0
+!    ioptci=0
+!    iforce_analy=0
 
-    call set_nparms
-    call qmc
-    call write_wf(1,-1)
-    call write_geometry(-1)
+!    call set_nparms
+!    call qmc
+!    call write_wf(1,-1)
+!    call write_geometry(-1)
 
     deallocate(deltap)
 
@@ -183,43 +183,43 @@ contains
        iorbend=norbterm+nparmj
        icistart=nparmj+1+norbterm
 
-       do j=1,nstates
-          if (j.eq.1) then
-             print *, "State: ", j
-             print *, "Jastrow Parameters"
-             print *, "parm, deltap, full grad, s_ii_inv"
-             do i=1,nparmj
-                write(6,'(i7,3es26.15e3)') i, deltap(i,j), h_sr(i,j), s_ii_inv(i,j) 
-             enddo
-             print *, "Orbital Mixing Parameters"
-             print *, "parm, orbterm, deltap, full grad, s_ii_inv io, jo"
-             do i=iorbstart,iorbend
-                write(6,'(2i7,3es26.15e3,2i7)') i, i-nparmj, deltap(i,j), h_sr(i,j), s_ii_inv(i,j), ideriv(1,i-nparmj), ideriv(2,i-nparmj)
-             enddo
-             print *, "CI Parameters"
-             print *, "parm, citerm, deltap, full grad, s_ii_inv"
-             do i=icistart,nparm
-                write(6,'(2i7,3es26.15e3)') i, i-iorbend, deltap(i,j), h_sr(i,j), s_ii_inv(i,j)
-             enddo
-          else
-             print *, "State: ", j
-             print *, "Jastrow Parameters"
-             print *, "parm, deltap, full grad, ortho grad, s_ii_inv"
-             do i=1,nparmj
-                write(6,'(i7,4es26.15e3)') i, deltap(i,j), h_sr(i,j), h_sr_penalty(i,j), s_ii_inv(i,j) 
-             enddo
-             print *, "Orbital Mixing Parameters"
-             print *, "parm, orbterm, deltap, full grad, ortho grad, s_ii_inv io, jo"
-             do i=iorbstart,iorbend
-                write(6,'(2i7,4es26.15e3,2i7)') i, i-nparmj, deltap(i,j), h_sr(i,j), h_sr_penalty(i,j), s_ii_inv(i,j), ideriv(1,i-nparmj), ideriv(2,i-nparmj)
-             enddo
-             print *, "CI Parameters"
-             print *, "parm, citerm, deltap, full grad, ortho grad, s_ii_inv"
-             do i=icistart,nparm
-                write(6,'(2i7,4es26.15e3)') i, i-iorbend, deltap(i,j), h_sr(i,j), h_sr_penalty(i,j), s_ii_inv(i,j)
-             enddo
-          endif
-       enddo
+!       do j=1,nstates
+!          if (j.eq.1) then
+!             print *, "State: ", j
+!             print *, "Jastrow Parameters"
+!             print *, "parm, deltap, full grad, s_ii_inv"
+!             do i=1,nparmj
+!                write(6,'(i7,3es26.15e3)') i, deltap(i,j), h_sr(i,j), s_ii_inv(i,j) 
+!             enddo
+!             print *, "Orbital Mixing Parameters"
+!             print *, "parm, orbterm, deltap, full grad, s_ii_inv io, jo"
+!             do i=iorbstart,iorbend
+!                write(6,'(2i7,3es26.15e3,2i7)') i, i-nparmj, deltap(i,j), h_sr(i,j), s_ii_inv(i,j), ideriv(1,i-nparmj), ideriv(2,i-nparmj)
+!             enddo
+!             print *, "CI Parameters"
+!             print *, "parm, citerm, deltap, full grad, s_ii_inv"
+!             do i=icistart,nparm
+!                write(6,'(2i7,3es26.15e3)') i, i-iorbend, deltap(i,j), h_sr(i,j), s_ii_inv(i,j)
+!             enddo
+!          else
+!             print *, "State: ", j
+!             print *, "Jastrow Parameters"
+!             print *, "parm, deltap, full grad, ortho grad, s_ii_inv"
+!             do i=1,nparmj
+!                write(6,'(i7,4es26.15e3)') i, deltap(i,j), h_sr(i,j), h_sr_penalty(i,j), s_ii_inv(i,j) 
+!             enddo
+!             print *, "Orbital Mixing Parameters"
+!             print *, "parm, orbterm, deltap, full grad, ortho grad, s_ii_inv io, jo"
+!             do i=iorbstart,iorbend
+!                write(6,'(2i7,4es26.15e3,2i7)') i, i-nparmj, deltap(i,j), h_sr(i,j), h_sr_penalty(i,j), s_ii_inv(i,j), ideriv(1,i-nparmj), ideriv(2,i-nparmj)
+!             enddo
+!             print *, "CI Parameters"
+!             print *, "parm, citerm, deltap, full grad, ortho grad, s_ii_inv"
+!             do i=icistart,nparm
+!                write(6,'(2i7,4es26.15e3)') i, i-iorbend, deltap(i,j), h_sr(i,j), h_sr_penalty(i,j), s_ii_inv(i,j)
+!             enddo
+!          endif
+!       enddo
     endif
 
   end subroutine sr_ortho
@@ -512,5 +512,173 @@ contains
       ioptci_sav = ioptci
   end subroutine save_params
 
+  subroutine optwf_sr_ortho_nogeo
+
+    use precision_kinds, only: dp
+    use sr_mod, only: MPARM
+    use csfs, only: nstates
+    use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+    use mstates_mod, only: MSTATES
+    use optwf_corsam, only: energy, energy_err, force
+    use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
+    use contrl, only: nblk
+    use force_analy, only: alfgeo
+    use optwf_contrl, only: nparm
+    use method_opt, only: method
+    use optwf_sr_mod, only: forces_zvzb
+
+    implicit real*8(a-h, o-z)
+
+    allocate(deltap(MPARM,MSTATES))
+
+    call set_nparms_tot
+
+    if(nparm.gt.MPARM) call fatal_error('SR_OPTWF: nparmtot gt MPARM')
+
+    write(6,'(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
+    write(6,'(/,''SR adiag: '',f10.5)') sr_adiag
+    write(6,'(''SR tau:   '',f10.5)') sr_tau
+    write(6,'(''SR eps:   '',f10.5)') sr_eps
+
+    call save_params()
+    call save_nparms
+!    call write_geometry(0)
+
+    do iter=1,nopt_iter
+       write(6,'(/,''Optimization iteration'',i5,'' of'',i5)')iter,nopt_iter
+       iforce_analy=0
+
+       do miter=1,micro_iter_sr
+          if(micro_iter_sr.gt.1) then
+             write(6,'(/,''Micro iteration'',i5,'' of'',i5)')miter,micro_iter_sr
+          end if
+
+!          if(miter.eq.micro_iter_sr) iforce_analy=iforce_analy_sav
+
+          call qmc
+          write(6,'(/,''Completed sampling'')')
+
+6         continue
+
+          call sr_ortho(nparm,deltap,sr_adiag,sr_eps,i)
+
+          adiag=sr_adiag
+	  iflagin=0
+          do istate=1,nstates
+             call dscal(nparm,-sr_tau,deltap(:,istate),1)
+             call test_solution_parm(nparm,deltap(:,istate),&
+		     dparm_norm,dparm_norm_min,adiag,iflag)
+             write(6,'(''Norm of parm variation '',d12.5)') dparm_norm
+             if(iflag.ne.0) iflagin=1
+          end do
+
+          if(iflagin.ne.0) then
+             write(6,'(''Warning: dparm_norm>1'')')
+             adiag=10*adiag
+             write(6,'(''adiag increased to '',f10.5)') adiag
+             sr_adiag=adiag
+             go to 6
+          else
+             sr_adiag=sr_adiag_sav
+          endif
+
+	  call compute_norm_lin(nparm,-deltap)
+          call compute_parameters(deltap,iflag,1)
+          call write_wf(1,iter)
+          call save_wf
+
+!          if(iforce_analy.gt.0) then
+!             if(izvzb.gt.0) call forces_zvzb(nparm)
+!             call compute_positions
+!             call write_geometry(iter)
+!          endif
+       enddo
+
+       if(iter.ge.2) then
+          denergy=energy(1)-energy_sav
+          denergy_err=sqrt(energy_err(1)**2+energy_err_sav**2)
+          nblk=nblk*1.2
+          nblk=min(nblk,nblk_max)
+       endif
+
+       write(6,'(''nblk = '',i6)') nblk
+       write(6,'(''alfgeo = '',f10.4)') alfgeo
+
+       energy_sav=energy(1)
+       energy_err_sav=energy_err(1)
+       sigma_sav=sigma
+    end do
+
+    write(6,'(/,''Check last iteration'')')
+
+    ioptjas=0
+    ioptorb=0
+    ioptci=0
+    iforce_analy=0
+
+    call set_nparms
+    call qmc
+    call write_wf(1,-1)
+    call write_geometry(-1)
+
+    deallocate(deltap)
+
+  end subroutine optwf_sr_ortho_nogeo
+
+
 end module optwf_sr_ortho_mod
 
+
+  subroutine select_wf_root(iroot)
+  use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+  use vmc_mod, only: MELEC, MORB, MBASIS, MDET, MCENT, MCTYPE, MCTYP3X
+  use vmc_mod, only: NSPLIN, nrad, MORDJ, MORDJ1, MMAT_DIM, MMAT_DIM2, MMAT_DIM20
+  use vmc_mod, only: radmax, delri
+  use vmc_mod, only: NEQSX, MTERMS
+  use vmc_mod, only: MCENT3, NCOEF, MEXCIT
+  use atom, only: nctype
+  use jaspar3, only: a, b, c
+  use jaspar4, only: a4, norda, nordb, nordc
+  use dets, only: cdet, ndet
+  use csfs, only: ccsf, ncsf
+  use coefs, only: coef, nbasis, norb
+  implicit real*8(a-h,o-z)
+
+!Select ci
+   do i=1,ndet
+      cdet(i,1,1)=cdet(i,iroot,1)
+   enddo
+   do icsf=1,ncsf
+      ccsf(icsf,1,iadiag)=ccsf(icsf,iroot,1)
+   enddo
+
+!Select lcao
+      do i=1,norb
+         do j=1,nbasis
+           coef(j,i,1,1)=coef(j,i,iroot,1)
+         enddo
+      enddo
+
+
+    mparmja=2+max(0,norda-1)
+    mparmjb=2+max(0,nordb-1)
+    mparmjc=nterms4(nordc)
+
+    do ict=1,nctype
+       do i=1,mparmja
+          a4(i,ict,1,1)=a4(i,ict,iroot,1)
+       enddo
+    enddo
+
+    do i=1,mparmjb
+       b(i,1,1,1)=b(i,1,iroot,1)
+    enddo
+
+    do ict=1,nctype
+       do i=1,mparmjc
+          c(i,ict,1,1)=c(i,ict,iroot,1)
+       enddo
+    enddo
+
+    return
+  end

@@ -16,6 +16,7 @@
 
       dimension collect(3*MCENT,MSTATES)
 
+
       if(iforce_analy.eq.0) return
 
       do istate=1,nstates

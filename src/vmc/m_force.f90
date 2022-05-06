@@ -132,7 +132,7 @@ module force_mod
      use mstates_mod, only: MSTATES
 
      real(dp), dimension(:, :, :), allocatable :: da_energy_ave !(3,MCENT,MSTATES)
-     real(dp), dimension(:, :), allocatable :: da_energy_err !(3,MSTATES)
+     real(dp), dimension(:, :, :), allocatable :: da_energy_err !(3,MCENT,MSTATES)
 
      private
      public   :: da_energy_ave, da_energy_err
@@ -143,7 +143,7 @@ module force_mod
          use precision_kinds, only: dp
          use vmc_mod, only: MCENT
          if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, MCENT,MSTATES))
-         if (.not. allocated(da_energy_err)) allocate (da_energy_err(3,MSTATES))
+         if (.not. allocated(da_energy_err)) allocate (da_energy_err(3, MCENT,MSTATES))
      end subroutine allocate_force_fin
 
      subroutine deallocate_force_fin()

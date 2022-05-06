@@ -484,7 +484,7 @@ c     e-n terms
             d2ijo(i,i,istate)=d2ijo(i,i,istate)+fenii+2*feni
 
             if(iforce_analy.eq.1) then
-               call da_jastrow4(iwf,i,ic,it,rvec_en(1,i,ic),ri,rri,feni_save,fenii_save,dd7,dd9)
+               call da_jastrow4(iwf,i,ic,it,rvec_en(1,i,ic),ri,rri,feni_save,fenii_save,dd7,dd9,istate)
             endif
 
             do jparm=1,nparma(it)

@@ -436,6 +436,10 @@ c Make sure that the printout is not huge
 
 c Analytical forces flags (vmc only)
       if(index(mode,'vmc').ne.0) then
+        call p2gtid('mdyn:imdyn', imdyn,0,1)
+        if(imdyn.gt.0) then
+          write(6,'(''Performing molecular dynamics steps for atoms '')')
+        endif
         call p2gtid('optgeo:iforce_analy',iforce_analy,0,0)
         call p2gtid('optgeo:iuse_zmat',iuse_zmat,0,0)
         call p2gtid('optgeo:izvzb',izvzb,0,1)
@@ -1143,6 +1147,27 @@ CKEYDOC position and type for each atom and ghost atom
 
       igeometry=1
       call p2chkend(iu, 'geometry')
+      end
+
+
+c-----------------------------------------------------------------------
+
+      subroutine read_masses(iu)
+C$INPUT masses inp
+      use vmc_mod
+      use force_mod
+      use inputflags
+      use atom
+      use md_mass
+
+      implicit real*8(a-h,o-z)
+       
+      call incpos(iu,itmp,1)
+      read(iu,*) (asymb(it), ntype(it), it=1,nctype)
+c      write(6,*) "ASYMB = ", asymb
+c      write(6,*) "NTYPE = ", ntype
+      call p2chkend(iu, 'masses')
+      return
       end
 
 c-----------------------------------------------------------------------

@@ -18,11 +18,14 @@ program main
     use mpiconf, only: mpiconf_init
     use contr3, only: init_control_mode
     use contrl_file, only: init_logfile, init_procfile, close_files 
+    use md_mass
+    use md_var
     use allocation_mod, only: deallocate_vmc
     use optwf_mod, only: optwf
 
     implicit None
     integer :: ierr
+    integer :: md_step
 
     !> Initialize MPI
     call mpi_init(ierr)
@@ -45,8 +48,17 @@ program main
     call init_procfile() 
 
     ! run the the optimization
-    call optwf()
-
+    call p2gtid('mdyn:md_step',md_step,0,1) !number of iterations
+    write(6,*) "MD STEP", md_step
+    if(md_step.ge.1) then
+       call allocate_mass()
+       call allocate_md()
+       call md
+       call deallocate_mass()
+       call deallocate_md()
+    else
+       call optwf()
+    endif
     call close_files()
     call mpi_finalize(ierr)
     call deallocate_vmc()

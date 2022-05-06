@@ -120,7 +120,7 @@ c reduce mmpol properties
 c reduce analytical forces
       call force_analy_reduce
 
-      if(wid) call force_analy_fin(wcum(1,1),iblk,efin)
+      if(wid) call force_analy_fin(wcum(1,1),iblk,efin,1)
 
       return
       end

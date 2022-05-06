@@ -1,6 +1,6 @@
 module mpiconf
     !> Arguments: idtask, nproc, wid, NPROCX
-    integer, parameter :: NPROCX = 1524
+    integer, parameter :: NPROCX = 3000
     integer  :: idtask
     integer  :: nproc
     logical  :: wid

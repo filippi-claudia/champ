@@ -304,7 +304,7 @@ c e-n terms
 
            if(iforce_analy.eq.1) then
               call da_jastrow4(iwf,i,ic,it,rvec_en(1,i,ic),
-     &                        ri,rri,feni_save,fenii_save,dd7,dd9)
+     &                        ri,rri,feni_save,fenii_save,dd7,dd9,istate)
            endif
         enddo
 

@@ -10,18 +10,6 @@ module vmc_mod
     ! MCTYPE >= number of center types
     ! MCTYP3X=max(3,MCTYPE)
 
-    ! Slater matrices are dimensioned (MELEC/2)**2 assuming
-    ! equal numbers of up and down spins. MELEC has to be
-    ! correspondingly larger if spin polarized calculations
-    ! are attempted.
-
-    ! PLT@eScienceCenter(2020) Moved the parameter here:
-    ! "For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
-    !  For Jastrow3 NEQSX=2*MORDJ should be sufficient.
-    !  I am setting NEQSX=6*MORDJ simply because that is how it was for
-    !  Jastrow3 for reasons I do not understand."
-    !     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
-
     integer :: MMAT_DIM20
     real(dp), parameter :: radmax = 10.d0
     integer, parameter :: nrad = 3001
