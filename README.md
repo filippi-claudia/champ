@@ -14,12 +14,14 @@
  ____________________________________________________________________
 ```
 ------
-![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.png?raw=true)
+![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.jpg?raw=true)
 
 
-[![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ_intel_fdfparser.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ_intel_fdfparser.yml)
+[![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml)
 
-[![CI using Doxygen generated doc](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml)
+[![DEBUG build and testing](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml)
+
+<!-- [![CI using Doxygen generated doc](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml) -->
 
 
 The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo
