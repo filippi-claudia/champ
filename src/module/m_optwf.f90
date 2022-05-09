@@ -39,6 +39,7 @@ module optwf_contrl
     character(20) :: dl_alg
     real(dp) :: dl_mom
 
+
     private
     public :: ioptwf
     public :: idl_flag, ilbfgs_flag, ilbfgs_m
@@ -66,10 +67,12 @@ module optwf_corsam
     real(dp), dimension(:), allocatable :: energy_err !(MFORCE)
     real(dp), dimension(:), allocatable :: force !(MFORCE)
     real(dp), dimension(:), allocatable :: force_err !(MFORCE)
+    real(dp) :: sigma
 
     private
-    public :: add_diag, add_diag_tmp, energy, energy_err, force, force_err
+    public :: add_diag, energy, energy_err, force, force_err
     public :: allocate_optwf_corsam, deallocate_optwf_corsam
+    public :: sigma
     save
 contains
     subroutine allocate_optwf_corsam()
@@ -91,22 +94,6 @@ contains
     end subroutine deallocate_optwf_corsam
 
 end module optwf_corsam
-
-module optwf_func
-    !> Arguments: ifunc_omega, omega, omega0, omega_hes, n_omegaf, n_omegat
-    use precision_kinds, only: dp
-
-    integer :: ifunc_omega
-    real(dp) :: omega
-    real(dp) :: omega0
-    real(dp) :: omega_hes
-    integer :: n_omegaf
-    integer :: n_omegat
-
-    private
-    public :: ifunc_omega, omega, omega0, omega_hes, n_omegaf, n_omegat
-    save
-end module optwf_func
 
 module optwf_nparmj
     !> Arguments: nparma, nparmb, nparmc, nparmf
@@ -186,6 +173,8 @@ contains
 
 end module optwf_wjas
 
+module m_optwf
+contains
 subroutine allocate_m_optwf()
     use optwf_corsam, only: allocate_optwf_corsam
     use optwf_wjas, only: allocate_optwf_wjas
@@ -203,3 +192,4 @@ subroutine deallocate_m_optwf()
     call deallocate_optwf_nparmj()
     call deallocate_optwf_wjas()
 end subroutine deallocate_m_optwf
+end module 

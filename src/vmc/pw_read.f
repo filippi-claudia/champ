@@ -71,6 +71,8 @@ c$$$
 c$$$      return
 c$$$      end
 c----------------------------------------------------------------------
+      module pw_read
+      contains
       subroutine do_read_lattice(iu)
 
       use periodic, only: rkvec_shift, rlatt, rlatt_sim
@@ -579,3 +581,4 @@ c       endif
 
       return
       end
+      end module

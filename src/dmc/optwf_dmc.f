@@ -1,4 +1,5 @@
       subroutine qmc
+      use dmc_f_mod, only: dmc
 
       call dmc
 

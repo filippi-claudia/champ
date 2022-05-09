@@ -1,3 +1,5 @@
+      module metrop_mov1_slat
+      contains
       subroutine metrop6(ipass,irun)
 c Written by Cyrus Umrigar
 c Uses the accelerated Metropolis method described in:
@@ -35,32 +37,36 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
 
+      use acuest_mod, only: acues1, acusig
+      use multiple_states, only: efficiency_sample
+      use optwf_handle_wf, only: optwf_store
+      use optx_orb_ci    ,only: optx_orb_ci_sum
+      use optx_jas_ci,    only: optx_jas_ci_sum
+      use optx_jas_orb,   only: optx_jas_orb_sum
+      use optci_mod,      only: optci_sum
+      use optorb_f_mod,   only: optorb_sum
+      use optjas_mod,     only: optjas_sum
+      use force_analytic, only: force_analy_sum
+      use prop_vmc,       only: prop_sum
+      use mmpol_vmc,      only: mmpol_sum
+      use mmpol,          only: mmpol_efield
+      use pcm_mod,        only: qpcm_efield
+      use pcm_vmc,        only: pcm_sum
+      use gammai_mod,     only: gammai
+      use hpsi_mod,       only: hpsi
+      use determinant_psig_mod, only: determinant_psig
+      use strech_mod,     only: strech
+      use rannyu_mod,     only: rannyu
+      use jassav_mod,     only: jassav
+      use detsav_mod,     only: detsav
+      use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
+      use determinante_mod,only: compute_determinante_grad
+      use optorb_f_mod,        only: check_orbitals_reset, check_orbitals
+      use hpsie, only: psie
+      use distances_mod,  only: distancese_restore
+      use multideterminant_mod, only: update_ymat
+
       implicit none
-      interface
-      function rannyu(idum)
-         use precision_kinds, only: dp
-         implicit none
-         integer,intent(in) :: idum
-         real(dp) :: rannyu
-      end function rannyu
-
-      function gammai(a, x, xae, iflag)
-        use precision_kinds, only: dp
-        implicit none
-        real(dp), intent(in) :: a, x, xae
-        integer, intent(in) :: iflag
-        real(dp) :: gammai
-      end function gammai
-
-      function rnorm_nodes_num(distance_node,epsilon)
-        use precision_kinds, only: dp
-        implicit none
-        real(dp), intent(in) :: distance_node
-        real(dp), intent(in) :: epsilon
-        real(dp) :: rnorm_nodes_num
-      end function rnorm_nodes_num
-
-      end interface
 
       integer :: i, iab, ic, iel, iflag_dn
       integer :: iflag_up, iflagb, iflagt, iflagz
@@ -79,7 +85,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp) :: g52zer, p, phitry, phizer
       real(dp) :: psidg, psig, psijn, q
       real(dp) :: r, ratio, raver, ravern
-      real(dp) :: rbot, rmax1, rmax2, rnew
+      real(dp) :: rbot, rmax1, rmax2 = 0d0, rnew
       real(dp) :: rnorm, rnorm_nodes, rold, root
       real(dp) :: rratio, rtest, rtest2, rtop
       real(dp) :: rtry, rzero, sintht, term
@@ -96,6 +102,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp), dimension(MSTATES) :: psidn
       real(dp), dimension(MSTATES) :: wtg
       real(dp), parameter :: zero = 0.d0
+      real(dp), dimension(MSTATES) :: zero_array = 0.0_dp
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: four = 4.d0
@@ -385,11 +392,11 @@ c rratio^2 is needed for the density of the angular moves
           write(ounit,'(''vold='',9d12.4)') (vold(ic,i),ic=1,3)
           write(ounit,'(''voldr,voldp='',9d12.4)') voldr,voldp
           write(ounit,'(''axes='',(3f8.4,3x))') xaxis,yaxis,zaxis
-          write(ounit,'(''rmino(i),rmax1,rmax2,rzero'',9f9.4)')
+          write(ounit,'(''rmino(i),rmax1,rmax2,rzero'',9d12.4)')
      &    rmino(i),rmax1,rmax2,rzero
-          write(ounit,'(''rtry,costht,sintht,phitry'',9f9.4)') rtry,costht,
+          write(ounit,'(''rtry,costht,sintht,phitry'',9d12.4)') rtry,costht,
      &    sintht,phitry
-          write(ounit,'(''fxop'',9f12.4)') fxop
+          write(ounit,'(''fxop'',9d12.4)') fxop
         endif
 
 c calculate psi at new configuration
@@ -571,16 +578,16 @@ c p is the probability of accepting new move
       p=rratio**2*exp(psi2n(1)-psi2o(1,1))*dabs((fxnp*areao)/(fxop*arean))
 
         if(ipr.ge.1) then
-          write(ounit,'(''rminn,rvminn,vnew,vnewr'',9f10.4)')
+          write(ounit,'(''rminn,rvminn,vnew,vnewr'',9d12.4)')
      &    rminn(i),(rvminn(ic,i),ic=1,3),(vnew(ic,i),ic=1,3),vnewr
           write(ounit,'(''vnew='',9d12.4)') (vnew(ic,i),ic=1,3)
           write(ounit,'(''vnewr,vnewp='',9d12.4)') vnewr,vnewp
           write(ounit,'(''axes='',(3f8.4,3x))') xaxis,yaxis,zaxis
-          write(ounit,'(''rminn(i),rmax1,rmax2,rzero'',9f9.4)')
+          write(ounit,'(''rminn(i),rmax1,rmax2,rzero'',9d12.4)')
      &    rminn(i),rmax1,rmax2,rzero
-          write(ounit,'(''rtry,costht,sintht,phitry,cosphi'',9f9.4)') rtry,
+          write(ounit,'(''rtry,costht,sintht,phitry,cosphi'',9d12.4)') rtry,
      &    costht,sintht,phitry,cosphi
-          write(ounit,'(''fxop,fxnp,areao,arean,psi2n,psi2o,p'',9f9.4)')
+          write(ounit,'(''fxop,fxnp,areao,arean,psi2n,psi2o,p'',9d12.4)')
      &                  fxop,fxnp,areao,arean,psi2n(1),psi2o(1,1),p
           if(dabs(vnew(1,i))+dabs(vnew(1,i))+dabs(vnew(1,i)).gt.10d+8) then
             do ii=1,i-1
@@ -729,18 +736,18 @@ c efield dovuto agli elettroni sui siti dei dipoli
       if(ich_mmpol.eq.1) call mmpol_efield(nelec,xold)
 
 c use 'new' not 'old' value
-      call pcm_sum(wtg,0.d0)
-      call mmpol_sum(wtg,0.d0)
-      call prop_sum(wtg,0.d0)
-      call force_analy_sum(wtg,0.d0,eold(1,1),0)
+      call pcm_sum(wtg(1),0.d0)
+      call mmpol_sum(wtg(1),0.d0)
+      call prop_sum(wtg(1),0.d0)
+      call force_analy_sum(wtg(1),0.d0,eold(1,1),0.0d0)
 
-      call optjas_sum(wtg(1),0.d0,eold(1,1),eold(1,1),0)
-      call optorb_sum(wtg(1),0.d0,eold(1,1),eold(1,1),0)
+      call optjas_sum(wtg,zero_array,eold(1,1),eold(1,1),0)
+      call optorb_sum(wtg,zero_array,eold(1,1),eold(1,1),0)
       call optci_sum(wtg(1),0.d0,eold(1,1),eold(1,1))
 
-      call optx_jas_orb_sum(wtg,0.d0,0)
-      call optx_jas_ci_sum(wtg,0.d0,eold(1,1),eold(1,1))
-      call optx_orb_ci_sum(wtg,0.d0)
+      call optx_jas_orb_sum(wtg(1),zero_array,0)
+      call optx_jas_ci_sum(wtg(1),0.d0,eold(1,1),eold(1,1))
+      call optx_orb_ci_sum(wtg(1),0.d0)
 
       if(irun.eq.1) call optwf_store(ipass,wtg,psido,eold(1,1))
 
@@ -774,3 +781,4 @@ c rewrite psi2o for next metropolis step if you are sampling guiding
       endif
       return
       end
+      end module

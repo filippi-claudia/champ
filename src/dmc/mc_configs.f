@@ -1,3 +1,5 @@
+      module mc_configs_mod
+      contains
       subroutine mc_configs
 
       use const, only: ipr, nelec
@@ -10,16 +12,11 @@
       use mpi
 
       use precision_kinds, only: dp
-      implicit none
+      use error,          only: fatal_error
+      use rannyu_mod,     only: rannyu, savern, setrn
+      use restart,        only: startr
 
-      interface
-         function rannyu(idum)
-          use precision_kinds, only: dp
-         implicit none
-         integer,intent(in) :: idum
-         real(dp) :: rannyu
-         end function rannyu
-      end interface
+      implicit none
 
       integer :: i, iblk, ic, id, ii
       integer :: index, ipass, iwalk, j
@@ -123,3 +120,4 @@ c Write out configuration for optimization/dmc/gfmc here
 
       return
       end
+      end module

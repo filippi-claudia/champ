@@ -1,3 +1,5 @@
+      module optwf_lib
+      contains
 c-----------------------------------------------------------------------
       subroutine chlsky(a,n,np,ierr)
 c chlsky: purpose: cholesky decomposition of a and determinant
@@ -195,3 +197,4 @@ C     sorts in ascending order
       goto 1
       end
 c-----------------------------------------------------------------------
+      end module

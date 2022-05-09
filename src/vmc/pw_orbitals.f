@@ -1,3 +1,5 @@
+      module pw_orbitals
+      contains
       subroutine orbitals_pw(x,orb,dorb,ddorb)
 c Written by Cyrus Umrigar
 c Calculate pw orbitals, gradient and laplacian.
@@ -410,3 +412,4 @@ c           write(ounit,'(''orb2'',2i5,9d12.4)') iel,iorb,orb(iorb),(dorb(iorb,k
 
       return
       end
+      end module

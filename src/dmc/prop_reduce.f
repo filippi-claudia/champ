@@ -1,3 +1,5 @@
+      module prop_reduce_mod
+      contains
       subroutine prop_reduce(wgsum)
 
       use prp000, only: iprop, nprop
@@ -92,3 +94,4 @@ c     itag_r=itag_r+1
 
       return
       end
+      end module

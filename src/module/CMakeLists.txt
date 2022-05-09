@@ -36,6 +36,7 @@ if (MPI_Fortran_FOUND)
     m_efield.f90
     m_gradhess.f90
     m_optwf.f90
+    m_optwf_func.f90
     m_estimators.f90
     m_deriv.f90
     m_mixderiv.f90
@@ -43,6 +44,7 @@ if (MPI_Fortran_FOUND)
     m_grdnt.f90
     m_allocation.f90
     m_state_avrg.f90
+    m_error.f90
     ${CMAKE_PARSER_DIR}/fdf.F90
     ${CMAKE_PARSER_DIR}/io_fdf.F90
     ${CMAKE_PARSER_DIR}/parse.F90

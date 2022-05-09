@@ -1,3 +1,5 @@
+      module prop_vmc
+      contains
 c-----------------------------------------------------------------------
       subroutine prop_save
       use prp000, only: iprop, nprop
@@ -36,3 +38,4 @@ c-----------------------------------------------------------------------
        vprop_sum(i)=vprop_sum(i)+p*vprop(i)+q*vprop_old2(i)
       enddo
       end
+      end module

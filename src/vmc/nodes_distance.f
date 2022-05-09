@@ -1,3 +1,5 @@
+      module nodes_distance_mod
+      contains
       subroutine nodes_distance(v,distance_node,iflag)
 c Written by Claudia Filippi
 
@@ -62,3 +64,4 @@ c Written by Claudia Filippi
 
       return
       end
+      end module

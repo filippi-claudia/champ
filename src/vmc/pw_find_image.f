@@ -1,3 +1,5 @@
+      module pw_find_image
+      contains
       subroutine check_lattice(rlatt,cutr,isim_cell)
 c Written by Cyrus Umrigar
 c Checks to see if the lattice vectors specified are the smallest
@@ -522,3 +524,4 @@ c Replace r by its shortest image and calculate rshift
 
       return
       end
+      end module

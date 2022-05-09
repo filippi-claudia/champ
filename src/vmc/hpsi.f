@@ -1,3 +1,5 @@
+      module hpsi_mod
+      contains
       subroutine hpsi(coord,psid,psij,energy,ipass,ifr)
 
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
@@ -29,6 +31,24 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use inputflags, only: iqmmm
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+
+      use properties_mod, only: prop_compute
+      use optci_mod,      only: optci_deloc
+      use optjas_mod,     only: optjas_deloc
+      use optorb_f_mod,   only: optorb_compute
+      use force_analytic, only: compute_force
+      use determinant_psit_mod, only: determinant_psit
+      use multideterminant_mod, only: multideterminant_hpsi
+      use nonloc_pot_mod, only: nonloc_pot
+      use determinant_mod,only: determinant, compute_bmatrices_kin
+      use jastrow_num_mod,only: jastrow_num
+      use jastrow_mod,    only: jastrow
+      use mmpol,          only: mmpol_extpot_ene
+      use pcm_mod,        only: pcm_extpot_ene
+      use distances_mod,  only: distances
+      use pot_local_mod,  only: pot_local
+      use qmmm_pot,       only: qmmm_extpot_ene
+      use efield_f_mod,   only: efield_extpot_ene
 
       implicit none
 
@@ -163,10 +183,11 @@ c  25         write(ounit,'(''vj'',2e18.11)') vj(k,i)
 
         call optjas_deloc(psid,energy,dvpsp_dj,vj)
 
-        call optci_deloc(eloc_det,e_other,psid,energy)
+        call optci_deloc(eloc_det,e_other,psid(1),energy(1))
 
         call prop_compute(coord)
       endif
 
       return
       end
+      end module

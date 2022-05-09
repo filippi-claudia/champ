@@ -9,6 +9,10 @@ c Written by Claudia Filippi
       use mpi
       use contrl_file,    only: ounit
       use mpitimer,    only: time, time_start, time_check1, time_final
+      use parser_mod,  only: parser
+      use error,       only: fatal_error
+      use optwf_matrix_corsamp_mod, only: optwf_matrix_corsamp
+      use dmc_f_mod,   only: dmc
 
       implicit none
 

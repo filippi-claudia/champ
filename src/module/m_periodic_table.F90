@@ -6,11 +6,12 @@
     !! The data tabulated in this file is only for the most abundant isotope only.
 
 module periodic_table
+    implicit none
     public :: element, atom_t
     private :: i1, sp
 
     integer, parameter :: sp = kind(1.0)
-    integer, parameter :: i1 = kind(int1)
+    integer, parameter :: i1 = kind(1)
 
     type :: atom_t
         real(kind=sp)        :: atomic_mass  ! in amu

@@ -38,6 +38,8 @@ build
 slurm*
 *.iter*
 *.err
+error
+det_optimal.*
 
 # emacs
 *~
@@ -62,3 +64,7 @@ config/
 
 #local testing of workflow
 .github/workflows/test_locally.yml
+
+#dont ignore source files
+!.f90$
+!.f$

@@ -1,3 +1,5 @@
+      module optwf_mix_sa
+      contains
       subroutine optwf_mix
 
       use sr_mod, only: mparm
@@ -12,6 +14,7 @@
       use mstates_ctrl, only: iguiding
       use method_opt, only: method
       use optwf_sr_mod, only: sr
+      use optwf_corsam, only: sigma
       use force_analy, only: iforce_analy
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_contrl, only: iroot_geo
@@ -20,7 +23,21 @@
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
+
+      use error, only: fatal_error
+      use optwf_handle_wf,only: save_nparms, write_wf, restore_wf
+      use optwf_handle_wf,only: set_nparms, save_wf, compute_parameters
+      use optwf_handle_wf,only: test_solution_parm, save_ci_best
+      use optwf_handle_wf,only: restore_ci_best, set_nparms_tot
+      use optgeo_lib, only: write_geometry, compute_positions
+      use optwf_lin_dav_extra, only: select_ci_root
+      use optwf_lin_dav_more,  only: lin_d
+      use sr_more, only: dscal
       implicit none
+      interface
+      subroutine qmc
+      end subroutine
+      end interface
 
       integer :: i, iflag, iforce_analy_sav, iguiding_sav, inc_nblk
       integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iqmc_again
@@ -31,7 +48,7 @@
       integer, dimension(5,MSTATES) :: index_more
       real(dp) :: adiag, alin_adiag_sav, denergy, denergy_err, diffene
       real(dp) :: dparm_norm, energy_err_sav, energy_sav, errdiff
-      real(dp) :: sigma, sigma_sav, sr_adiag_sav
+      real(dp) :: sigma_sav, sr_adiag_sav
       real(dp), dimension(mparm*MSTATES) :: deltap
       real(dp), dimension(mparm*MSTATES,5) :: deltap_more
       real(dp), dimension(MSTATES) :: energy_old
@@ -307,3 +324,4 @@ c      write(ounit,*) "COPUTING NEW CI, ccsf(1,istate,1)", ccsf(1,istate,1), dpa
       return
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      end module

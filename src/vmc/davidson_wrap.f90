@@ -1,3 +1,5 @@
+module davidson_wrap_mod
+contains
 SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
                          eigenvalues, btype, notcnv, dav_iter, ipr, method)
     !----------------------------------------------------------------------------
@@ -13,9 +15,12 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
     use precision_kinds, only: dp
     use davidson, only: generalized_eigensolver
     use davidson, only: davidson_parameters
+    use davidson, only: fun_mtx_gemv, fun_stx_gemv
     use array_utils, only: eye, write_matrix, write_vector
     use mpi
     use contrl_file,    only: ounit, errunit
+    use error,          only: fatal_error
+    use optwf_lin_dav_extra,  only: s_psi_lin_d
 
     IMPLICIT NONE
 
@@ -48,38 +53,6 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
     real(dp), dimension(nparmx, nparmx) :: psi
     real(dp), dimension(:, :), allocatable :: hpsi, spsi, ritz_vectors
 
-    ! Function to compute the target matrix on the fly
-
-    interface
-        function fun_mtx_gemv(parameters, input_vect) result(output_vect)
-            !> Brief Function to compute the action of the hamiltonian on the fly
-            !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-            !> \param[in] input_vec Array to project
-            !> return Projected matrix
-
-            use precision_kinds, only: dp
-            import :: davidson_parameters
-            type(davidson_parameters) :: parameters
-            real(dp), dimension(:, :), intent(in) :: input_vect
-            real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
-
-        end function fun_mtx_gemv
-
-        function fun_stx_gemv(parameters, input_vect) result(output_vect)
-            !> Brief Function to compute the action of the overlap on the fly
-            !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-            !> \param[in] input_vec Array to project
-            !> return Projected matrix
-
-            use precision_kinds, only: dp
-            import :: davidson_parameters
-            type(davidson_parameters) :: parameters
-            real(dp), dimension(:, :), intent(in) :: input_vect
-            real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
-
-        end function fun_stx_gemv
-
-    end interface
 
     allocate (ritz_vectors(nparm, nvec))
 
@@ -104,56 +77,4 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
     deallocate (ritz_vectors)
 END SUBROUTINE davidson_wrap
 
-function fun_mtx_gemv(parameters, input_vect) result(output_vect)
-    !> Brief Function to compute the action of the hamiltonian on the fly
-    !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-    !> \param[in] input_vec Array to project
-    !> return Projected matrix
-
-    use precision_kinds, only: dp
-    use davidson, only: davidson_parameters
-
-    type(davidson_parameters) :: parameters
-    real(dp), dimension(:, :), intent(in) :: input_vect
-    real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
-    real(dp), dimension(:, :), allocatable :: psi, hpsi
-
-    allocate (psi(parameters%nparm_max, 2*parameters%nvecx))
-    allocate (hpsi(parameters%nparm_max, 2*parameters%nvecx))
-
-    psi = 0.0_dp
-    psi(1:size(input_vect, 1), 1:size(input_vect, 2)) = input_vect
-
-    call h_psi_lin_d(parameters%nparm, size(input_vect, 2), psi, hpsi)
-
-    output_vect = hpsi(1:size(input_vect, 1), 1:size(input_vect, 2))
-    deallocate (psi, hpsi)
-
-end function fun_mtx_gemv
-
-function fun_stx_gemv(parameters, input_vect) result(output_vect)
-    !> Brief Fucntion to compute the optional stx matrix on the fly
-    !> \param[in] dimension of the arrays to compute the action of the hamiltonian
-    !> \param[in] input_vec Array to project
-    !> return Projected matrix
-
-    use precision_kinds, only: dp
-    use davidson, only: davidson_parameters
-
-    type(davidson_parameters) :: parameters
-    real(dp), dimension(:, :), intent(in) :: input_vect
-    real(dp), dimension(size(input_vect, 1), size(input_vect, 2)) :: output_vect
-    real(dp), dimension(:, :), allocatable :: psi, spsi
-
-    allocate (psi(parameters%nparm_max, 2*parameters%nvecx))
-    allocate (spsi(parameters%nparm_max, 2*parameters%nvecx))
-
-    psi = 0.0_dp
-    psi(1:size(input_vect, 1), 1:size(input_vect, 2)) = input_vect
-
-    call s_psi_lin_d(parameters%nparm, size(input_vect, 2), psi, spsi)
-
-    output_vect = spsi(1:size(input_vect, 1), 1:size(input_vect, 2))
-    deallocate (psi, spsi)
-
-end function fun_stx_gemv
+end module

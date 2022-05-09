@@ -1,3 +1,5 @@
+      module acuest_mod
+      contains
       subroutine acuest
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
@@ -34,17 +36,38 @@ c routine to accumulate estimators for energy etc.
       use distance_mod, only: rshift, r_en, rvec_en
       use inputflags, only: node_cutoff, eps_node_cutoff
       use contrl_file, only: ounit
+      
+      use distances_mod, only: distances
+      use force_analytic, only: force_analy_save
+      use optorb_f_mod, only: optorb_save
+      use optci_mod, only: optci_save
+      use optjas_mod,   only: optjas_save
+      use mmpol_vmc,    only: mmpol_save, mmpol_cum
+      use pcm_vmc,      only: pcm_save, pcm_cum
+      use prop_vmc,     only: prop_save
+      use nodes_distance_mod, only: nodes_distance
+      use determinante_mod, only: compute_determinante_grad
+      use determinant_psig_mod,  only: determinant_psig
+      use hpsi_mod, only: hpsi
+      use strech_mod, only: strech
+      use pot, only: pot_nn
+      use multiple_states, only: efficiency_init
+      use force_analytic, only: force_analy_init, force_analy_cum
+      use properties_mod, only: prop_init, prop_cum
+      use pcm_mod, only: pcm_init
+      use mmpol, only: mmpol_init
+      use optci_mod, only: optci_init, optci_cum
+      use optorb_f_mod, only: optorb_init, optorb_cum
+      use optjas_mod, only: optjas_init, optjas_cum
+      use optx_orb_ci, only: optx_orb_ci_init
+      use optx_jas_ci, only: optx_jas_ci_init
+      use optx_jas_orb, only: optx_jas_orb_init
+      use rotqua_mod, only: gesqua
+      use acuest_reduce_mod, only: acuest_reduce, acues1_reduce
+      use nodes_distance_mod, only: rnorm_nodes_num
+
 
       implicit none
-
-      interface
-        function rnorm_nodes_num(distance_node, epsilon)
-            use precision_kinds, only: dp
-            real(dp), intent(in) :: distance_node
-            real(dp), intent(in) :: epsilon
-            real(dp) :: rnorm_nodes_num
-        end function rnorm_nodes_num
-      end interface
 
       integer :: i, ic, ifr, istate, jel
       integer :: k
@@ -279,7 +302,7 @@ c rewrite psi2o if you are sampling guiding
 
       if(node_cutoff.gt.0) then
         do jel=1,nelec
-          call compute_determinante_grad(jel,psido,psido,vold(1,jel),1)
+          call compute_determinante_grad(jel,psido(1),psido,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
@@ -324,3 +347,4 @@ c get interparticle distances
 
       return
       end
+      end module

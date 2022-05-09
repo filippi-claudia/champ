@@ -1,3 +1,5 @@
+      module gammai_mod
+      contains
       function gammai(a,x,xae,iflag)
 c Written by Cyrus Umrigar
 c Calculate the incomplete gamma function
@@ -147,3 +149,4 @@ c     gamm=dexp(gammln)
       gamm=stp*ser*tmp
       return
       end
+      end module

@@ -56,11 +56,27 @@ module basis
     integer, dimension(:), allocatable :: nfyyz !(MCTYPE)
     integer, dimension(:), allocatable :: nfyzz !(MCTYPE)
     integer, dimension(:), allocatable :: nfzzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxxx !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxxy !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxxz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxyy !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxyz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxyyy !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxyyz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxyzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxzzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngyyyy !(MCTYPE)
+    integer, dimension(:), allocatable :: ngyyyz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngyyzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngyzzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngzzzz !(MCTYPE)
 
     private
     public :: zex, betaq
     public :: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
     public :: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
+    public :: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz, ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
     public :: allocate_basis, deallocate_basis
     save
 contains
@@ -89,6 +105,22 @@ contains
     end subroutine allocate_basis
 
     subroutine deallocate_basis()
+
+        if (allocated(ngzzzz)) deallocate (ngzzzz)
+        if (allocated(ngyzzz)) deallocate (ngyzzz)
+        if (allocated(ngyyzz)) deallocate (ngyyzz)
+        if (allocated(ngyyyz)) deallocate (ngyyyz)
+        if (allocated(ngyyyy)) deallocate (ngyyyy)
+        if (allocated(ngxzzz)) deallocate (ngxzzz)
+        if (allocated(ngxyzz)) deallocate (ngxyzz)
+        if (allocated(ngxyyz)) deallocate (ngxyyz)
+        if (allocated(ngxyyy)) deallocate (ngxyyy)
+        if (allocated(ngxxzz)) deallocate (ngxxzz)
+        if (allocated(ngxxyz)) deallocate (ngxxyz)
+        if (allocated(ngxxyy)) deallocate (ngxxyy)
+        if (allocated(ngxxxz)) deallocate (ngxxxz)
+        if (allocated(ngxxxy)) deallocate (ngxxxy)
+        if (allocated(ngxxxx)) deallocate (ngxxxx)
 
         if (allocated(nfzzz)) deallocate (nfzzz)
         if (allocated(nfyzz)) deallocate (nfyzz)
@@ -269,6 +301,8 @@ contains
 
 end module numbas2
 
+module m_basis
+contains
 subroutine allocate_m_basis()
     ! use basis, only: allocate_basis
     use numexp, only: allocate_numexp
@@ -300,3 +334,4 @@ subroutine deallocate_m_basis()
     call deallocate_numbas1()
     call deallocate_numbas2()
 end subroutine deallocate_m_basis
+end module

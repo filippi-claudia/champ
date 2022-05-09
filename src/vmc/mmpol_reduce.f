@@ -1,3 +1,5 @@
+      module mmpol_reduce_mod
+      contains
       subroutine mmpol_reduce
 
       use mmpol_mod, only: MCHMM
@@ -99,3 +101,4 @@
       return
       end
 
+      end module

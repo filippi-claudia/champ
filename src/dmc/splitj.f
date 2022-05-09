@@ -1,3 +1,5 @@
+      module splitj_mod
+      contains
       subroutine splitj
 c Written by Cyrus Umrigar
 
@@ -14,16 +16,15 @@ c Written by Cyrus Umrigar
       use velratio, only: fratio, xdrifted
       use precision_kinds, only: dp
 
-      implicit none
+      use mmpol_dmc,      only: mmpol_splitj
+      use pcm_dmc,        only: pcm_splitj
+      use prop_dmc,       only: prop_splitj
+      use walksav_jas_mod,only: splitjjas
+      use walksav_det_mod,only: splitjdet
+      use error,          only: fatal_error
+      use rannyu_mod,     only: rannyu
 
-      interface
-         function rannyu(idum)
-          use precision_kinds, only: dp
-         implicit none
-         integer,intent(in) :: idum
-         real(dp) :: rannyu
-         end function rannyu
-      end interface
+      implicit none
 
       integer :: i, ifr, ip, ipair, iunder
       integer :: iw, iw2, j, k
@@ -156,3 +157,4 @@ c     if(dabs(wtsm-wtsm2).gt.1.d-10) write(11,'(2f12.6)') wtsm,wtsm2
 
       return
       end
+      end module

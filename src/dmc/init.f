@@ -1,3 +1,5 @@
+      module init_mod
+      contains
       subroutine init
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
@@ -22,6 +24,19 @@ c routine to accumulate estimators for energy etc.
       use mpi
 
       use precision_kinds, only: dp
+
+      use rotqua_mod, only: gesqua
+      use pot,        only: pot_nn
+      use zerest_mod, only: zerest
+      use strech_mod, only: strech
+      use mmpol_dmc,       only: mmpol_save
+      use pcm_dmc,         only: pcm_save
+      use prop_dmc,        only: prop_save_dmc
+      use nonloc_grid_mod, only: t_vpsp_sav
+      use hpsi_mod,        only: hpsi
+      use walksav_det_mod, only: walksav_det
+      use walksav_jas_mod, only: walksav_jas
+      use determinante_mod,only: compute_determinante_grad
       implicit none
 
       integer :: i, ie, ifr, ip, iw
@@ -104,3 +119,4 @@ c           call t_vpsp_sav(iw)
 
       return
       end
+      end module

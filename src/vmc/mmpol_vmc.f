@@ -1,3 +1,5 @@
+      module mmpol_vmc
+      contains
       subroutine mmpol_prt(wcum,iblk)
 
       use mmpol_cntrl, only: immpol, immpolprt
@@ -55,6 +57,7 @@ c-----------------------------------------------------------------------
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use mmpol, only: mmpol_dipoles
       implicit none
 
       integer :: i, iblk, icmmpol_err, idmmpol_err
@@ -240,3 +243,4 @@ c-----------------------------------------------------------------------
 
       return
       end
+      end module

@@ -1,3 +1,6 @@
+      module nonloc_mod
+      use error, only: fatal_error
+      contains
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use pseudo_mod, only: MPS_QUAD
@@ -21,6 +24,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use pseudo, only: lpot, vps
       use b_tmove, only: b_t, iskip
       use qua, only: nquad, wq, xq, yq, zq
+      use scale_dist_mod, only: scale_dist, scale_dist1
+      use deriv_nonloc, only: deriv_nonlocj
 
       use orbval, only: nadorb
       use slater, only: slmi
@@ -37,7 +42,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp) :: det_ratio, gives
       real(dp) :: psij_ratio, ri, see
       real(dp) :: term, term_radial
-      real(dp) :: yl0
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rshift
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
@@ -283,7 +287,7 @@ c-----------------------------------------------------------------------
        elseif(l.eq.3) then
         dyl0=15.d0*costh
        elseif(l.eq.4) then
-        dyl0=52.5d0*(costh*costh-1)
+        dyl0=10.5d0*(5*costh*costh-1)
        else
         call fatal_error('YL0: implemented to l=4 only')
       endif
@@ -299,6 +303,8 @@ c-----------------------------------------------------------------------
       use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
       use const, only: nelec
+      use pw_find_image, only: find_image4
+      use scale_dist_mod, only: scale_dist, scale_dist1
 
       use precision_kinds, only: dp
       implicit none
@@ -370,6 +376,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use orbval, only: ddorb, nadorb
       use precision_kinds, only: dp
+      use grid3d_orbitals, only: spline_mo, lagrange_mose
+      use basis_fns_mod, only: basis_fns
+      use pw_orbitals_e, only: orbitals_pwe
       use method_opt, only: method
       use optwf_contrl, only: ioptorb
       use vmc_mod, only: norb_tot
@@ -404,7 +413,7 @@ c get the value from the 3d-interpolated orbitals
             dtmp(1)=0   ! Don't compute the gradients
             dtmp(2)=0   ! Don't compute the gradients
             dtmp(3)=0   ! Don't compute the gradients
-            call spline_mo(x,iorb,orbn(iorb),dtmp,ddorb,ier)
+            call spline_mo(x,iorb,orbn(iorb),dtmp,ddorb(iel,iorb),ier) 
           enddo
          elseif(i3dlagorb.ge.1) then
           call lagrange_mose(1,x,orbn,ier)
@@ -539,53 +548,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use const, only: nelec
       use force_analy, only: iforce_analy
       use precision_kinds, only: dp
+      use nonlpsi, only: psibnl, dpsibnl, psinl, psianl, dpsianl
+      use pw_find_image, only: find_image3
+      use scale_dist_mod, only: scale_dist, scale_dist1
 
       implicit none
-
-      interface
-      function dpsibnl(u,isb,ipar)
-        use precision_kinds, only: dp
-        implicit none
-        real(dp), intent(in) :: u
-        integer, intent(in) :: isb
-        integer, intent(in) :: ipar
-        real(dp) :: dpsibnl
-      end function
-
-      function psibnl(u,isb,ipar)
-        use precision_kinds, only: dp
-        implicit none
-        real(dp), intent(in) :: u
-        integer, intent(in) :: isb
-        integer, intent(in) :: ipar
-        real(dp) :: psibnl
-      end function
-
-      function psinl(u,rshifti,rshiftj,rri,rrj,it)
-        use precision_kinds, only: dp
-        implicit none
-        real(dp), intent(in) :: u
-        real(dp), intent(in) :: rshifti, rshiftj, rri, rrj
-        integer, intent(in) :: it
-        real(dp) :: psinl
-      end function
-
-      function psianl(rri, it)
-        use precision_kinds, only: dp
-        implicit none
-        real(dp), intent(in) :: rri
-        integer, intent(in) :: it
-        real(dp) :: psianl
-      end function
-
-      function dpsianl(rri, it)
-        use precision_kinds, only: dp
-        implicit none
-        real(dp), intent(in) :: rri
-        integer, intent(in) :: it
-        real(dp) :: dpsianl
-      end function
-      end interface
 
       integer :: i, ic, iel, ipar, isb
       integer :: it, j, jj, k
@@ -726,8 +693,8 @@ c-----------------------------------------------------------------------
       integer :: i, ic, ict, iel, iorb
       integer :: iq, jc, k, l
       real(dp) :: costh, da_term_radial, db_tmp1, db_tmp2, db_tmp3
-      real(dp) :: dum, dyl0, psij_ratio, r_en_savi
-      real(dp) :: r_en_savi2, sav_db, term_radial, yl0
+      real(dp) :: dum, psij_ratio, r_en_savi
+      real(dp) :: r_en_savi2, sav_db, term_radial
       real(dp), dimension(3,ncent_tot) :: rvec_en_sav
       real(dp), dimension(ncent_tot) :: r_en_sav
       real(dp), dimension(norb_tot) :: orbn
@@ -792,3 +759,4 @@ c          endif
 c     write(ounit,*) 'AFT',iel,ic,iq,b_da(1,iel,1,ic)-sav_db
       return
       end
+      end module

@@ -1,3 +1,5 @@
+      module dumper_gpop_mod
+      contains
       subroutine dumper_gpop
 c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
@@ -8,6 +10,8 @@ c job where it left off
       use basis, only: zex
       use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
       use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
+      use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
+      use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
       use const, only: hb, nelec
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
@@ -27,7 +31,7 @@ c job where it left off
       use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcum
       use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
@@ -43,14 +47,17 @@ c job where it left off
       use mpi
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+
+      use strech_mod, only: strech
+      use rannyu_mod, only: savern
       implicit none
 
       integer :: i, ib, ic, id, ierr
       integer :: ifr, irequest, iw, j
       integer :: k, nscounts
-      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(4, 0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(4, 0:NPROCX) :: irn_tmp
+      integer, dimension(4, 0:nproc) :: irn_tmp
 
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
@@ -175,3 +182,4 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
 
       return
       end
+      end module

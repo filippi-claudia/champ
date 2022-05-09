@@ -1,3 +1,33 @@
+module regterg_mod
+use error, only: fatal_error
+interface!LAPACK interface
+!*  -- LAPACK driver routine (version 3.1) --
+  SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
+    DOUBLE PRECISION ALPHA,BETA
+    INTEGER K,LDA,LDB,LDC,M,N
+    CHARACTER TRANSA,TRANSB
+    DOUBLE PRECISION A(LDA,*),B(LDB,*),C(LDC,*)
+  END SUBROUTINE
+  SUBROUTINE DSYGV( ITYPE, JOBZ, UPLO, N, A, LDA, B, LDB, W, WORK, LWORK, INFO )
+    CHARACTER          JOBZ, UPLO
+    INTEGER            INFO, ITYPE, LDA, LDB, LWORK, N
+    DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), W( * ), WORK( * )
+  END SUBROUTINE
+  INTEGER FUNCTION ILAENV( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
+    CHARACTER*( * )    NAME, OPTS
+    INTEGER            ISPEC, N1, N2, N3, N4
+  END FUNCTION
+  SUBROUTINE DSYGVX( ITYPE, JOBZ, RANGE, UPLO, N, A, LDA, B, LDB, &
+                     VL, VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK,  &
+                     LWORK, IWORK, IFAIL, INFO )
+    CHARACTER          JOBZ, RANGE, UPLO
+    INTEGER            IL, INFO, ITYPE, IU, LDA, LDB, LDZ, LWORK, M, N
+    DOUBLE PRECISION   ABSTOL, VL, VU
+    INTEGER            IFAIL( * ), IWORK( * )
+    DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), W( * ), WORK( * ), Z( LDZ, * )
+  END SUBROUTINE
+end interface
+contains
 !
 ! Copyright (C) 2003-2015 Quantum ESPRESSO group
 ! This file is distributed under the terms of the
@@ -20,6 +50,8 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
   !
   use mpi
   use contrl_file,    only: ounit, errunit
+  use sr_more, only : ddot
+  use optwf_lin_dav_extra, only: s_psi_lin_d, h_psi_lin_d
   IMPLICIT NONE
   !
   !
@@ -75,7 +107,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
     ! true if the root is converged
   REAL*8 :: empty_ethr
     ! threshold for empty bands
-  REAL*8, EXTERNAL :: ddot
+  !REAL*8, EXTERNAL :: ddot
   !
   ! EXTERNAL  h_psi_lin_d, s_psi_lin_d, g_psi_lin_d
     ! h_psi_lin_d(nparm,nvec,psi,hpsi)
@@ -500,7 +532,7 @@ SUBROUTINE rdiaghg( n, m, h, s, ldh, e, v )
   INTEGER,  ALLOCATABLE :: iwork(:), ifail(:)
   REAL*8, ALLOCATABLE :: work(:), sdiag(:), hdiag(:)
   LOGICAL               :: all_eigenvalues
-  INTEGER,  EXTERNAL    :: ILAENV
+  !INTEGER,  EXTERNAL    :: ILAENV
     ! ILAENV returns optimal block size "nb"
   !
   ! ... save the diagonal of input S (it will be overwritten)
@@ -605,3 +637,4 @@ SUBROUTINE rdiaghg( n, m, h, s, ldh, e, v )
   !
 END SUBROUTINE rdiaghg
 
+end module

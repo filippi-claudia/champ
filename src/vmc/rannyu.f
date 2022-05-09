@@ -1,3 +1,5 @@
+      module rannyu_mod
+      contains
       subroutine setrn(iseed)
 
       use rnyucm, only : switch_rng
@@ -132,3 +134,4 @@ c-----------------------------------------------------------------------
       enddo
       return
       end
+      end module

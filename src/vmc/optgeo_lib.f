@@ -1,3 +1,5 @@
+      module optgeo_lib
+      contains
       subroutine write_geometry(iter)
 
       use atom, only: cent, iwctype, nctype, ncent
@@ -129,4 +131,4 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       return
       end
-
+      end module 

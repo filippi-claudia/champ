@@ -1,3 +1,5 @@
+      module restart
+      contains
       subroutine startr
 
       use vmc_mod, only: norb_tot
@@ -5,6 +7,8 @@
       use basis, only: zex
       use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
       use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
+      use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
+      use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
       use const, only: hb, ipr, nelec
       use forcest, only: fgcm2, fgcum
       use forcepar, only: istrech, nforce
@@ -28,7 +32,7 @@
       use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
       use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid, NPROCX
+      use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
       use contr3, only: mode
       use mpiblk, only: iblk_proc
@@ -47,6 +51,22 @@
       use mpi
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      
+      use restart_gpop,    only: startr_gpop
+      use error,           only: fatal_error
+      use rannyu_mod,      only: setrn
+      use mmpol,           only: mmpol_init, mmpol_rstrt
+      use pcm_mod,         only: pcm_init, pcm_rstrt
+      use properties_mod,  only: prop_init, prop_rstrt
+      use mmpol_dmc,       only: mmpol_save
+      use pcm_dmc,         only: pcm_save
+      use prop_dmc,        only: prop_save_dmc
+      use nonloc_grid_mod, only: t_vpsp_sav
+      use walksav_det_mod, only: walksav_det
+      use walksav_jas_mod, only: walksav_jas
+      use determinante_mod,only: compute_determinante_grad
+      use hpsi_mod,        only: hpsi
+      use strech_mod,      only: strech
       implicit none
 
       integer :: i, iage_id, ib, ic, id
@@ -56,7 +76,7 @@
       integer :: ndetx, ndnx, nelecx, newghostypex
       integer :: nghostcentx, nprock, nq_id, num
       integer :: nupx, nwalk_id
-      integer, dimension(4, 0:NPROCX) :: irn
+      integer, dimension(4, 0:nproc) :: irn
       integer, dimension(ncent_tot) :: nsx
       integer, dimension(ncent_tot) :: npxx
       integer, dimension(ncent_tot) :: npyx
@@ -312,3 +332,4 @@ c zero out xsum variables for metrop
 
       return
       end
+      end module

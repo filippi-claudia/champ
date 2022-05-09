@@ -1,3 +1,5 @@
+      module mc_configs
+      contains
       subroutine mc_configs_start
 
       use mpi
@@ -10,17 +12,13 @@
       use mpi
       use contrl_file,    only: ounit, errunit
       use precision_kinds, only: dp
+      use rannyu_mod, only: savern, setrn, rannyu
+      use sites_mod, only: sites
+      use error, only: fatal_error
+      use pcm_mod, only: pcm_qvol
+      use fin_reduce_mod, only: fin_reduce
 
       implicit none
-
-      interface
-        function rannyu(idum)
-           use precision_kinds, only: dp
-           implicit none
-           integer,intent(in) :: idum
-           real(dp) :: rannyu
-        end function rannyu
-      end interface
 
       integer :: i, ic, icharge_system, id, ierr
       integer :: index, k, l, ntotal_sites
@@ -148,3 +146,4 @@ c reduce cum1 estimates, density and related quantities
 
       return
       end
+      end module

@@ -1,3 +1,5 @@
+      module verify_orbitals_mod
+      contains
       subroutine verify_orbitals
 
       use const, only: nelec
@@ -6,6 +8,7 @@
       use coefs, only: norb
       use dorb_m, only: iworbd
       use orbval, only: nadorb, ndetorb, orb
+      use error, only: fatal_error
 
       implicit none
 
@@ -35,4 +38,4 @@ c orbital indices in determinants of trial wave function
 
       return
       end
-
+      end module

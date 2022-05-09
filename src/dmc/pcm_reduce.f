@@ -1,3 +1,5 @@
+      module pcm_reduce_mod
+      contains
       subroutine pcm_reduce(wgsum)
 
       use mpiconf, only: wid
@@ -123,3 +125,4 @@
 
       return
       end
+      end module

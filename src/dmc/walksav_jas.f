@@ -1,3 +1,5 @@
+      module walksav_jas_mod
+      contains
       subroutine walksav_jas(iw)
 c Written by Claudia Filippi
 
@@ -181,3 +183,4 @@ c Written by Claudia Filippi
 
       return
       end
+      end module

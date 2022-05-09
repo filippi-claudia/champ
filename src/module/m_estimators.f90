@@ -360,6 +360,8 @@ module estcum
 
  end module est2cm
 
+module m_estimators
+contains
  subroutine allocate_m_estimators()
      use estcum, only: allocate_estcum
      use estsig, only: allocate_estsig
@@ -391,3 +393,4 @@ module estcum
      call deallocate_estpsi()
      call deallocate_est2cm()
  end subroutine deallocate_m_estimators
+end module 

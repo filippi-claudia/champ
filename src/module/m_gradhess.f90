@@ -340,6 +340,8 @@ contains
 
 end module gradjerr
 
+module m_gradhess
+contains
 subroutine allocate_m_gradhess()
     use gradhess_all, only: allocate_gradhess_all
     use gradhessj, only: allocate_gradhessj
@@ -387,3 +389,4 @@ subroutine deallocate_m_gradhess()
     call deallocate_gradhess_mix_orb_ci()
     call deallocate_gradjerr()
 end subroutine deallocate_m_gradhess
+end module 

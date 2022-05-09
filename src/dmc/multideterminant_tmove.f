@@ -1,3 +1,5 @@
+      module multideterminant_tmove_mod
+      contains
       subroutine multideterminant_tmove(psid,iel_move)
 
       use vmc_mod, only: norb_tot
@@ -89,3 +91,4 @@ c     t_vpsp(ic,iq,iel)=t_vpsp_ref
 
       return
       end
+      end module

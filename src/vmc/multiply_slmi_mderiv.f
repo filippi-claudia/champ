@@ -1,3 +1,5 @@
+      module multiply_slmi_mderiv
+      contains
       subroutine multiply_slmi_mderiv_simple(nel,work_mat,work,slmi,xmat)
 
       use precision_kinds, only: dp
@@ -35,3 +37,4 @@
           
       return
       end
+      end module

@@ -1,3 +1,5 @@
+      module jastrow4e_mod
+      contains
       subroutine jastrow4e(iel,x,v,d2,value,iflag)
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
@@ -19,6 +21,8 @@ c Jastrow 6   must be used with one of isc=6,7
       use jasn, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
+      use scale_dist_mod, only: scale_dist1, scale_dist2
+      use scale_dist_mod, only: switch_scale1, switch_scale2
 
       implicit none
 
@@ -368,3 +372,4 @@ c e-n terms
 
       return
       end
+      end module 

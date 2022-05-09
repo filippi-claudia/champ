@@ -548,6 +548,8 @@ contains
 
 end module spc2
 
+module m_pcm
+contains
 subroutine allocate_m_pcm()
     use pcm_ah, only: allocate_pcm_ah
     use pcm_ameta, only: allocate_pcm_ameta
@@ -615,3 +617,4 @@ subroutine deallocate_m_pcm()
     call deallocate_spc1()
     call deallocate_spc2()
 end subroutine deallocate_m_pcm
+end module 

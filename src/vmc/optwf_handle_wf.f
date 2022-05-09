@@ -1,3 +1,16 @@
+      module optwf_handle_wf
+      use error, only: fatal_error
+      use jastrow4_mod,       only: nterms4
+      interface ! LAPACK interface
+        SUBROUTINE dcopy(N,DX,INCX,DY,INCY)
+!*  -- Reference BLAS level1 routine --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+          INTEGER INCX,INCY,N
+          DOUBLE PRECISION DX(*),DY(*)
+        end subroutine
+      end interface
+      contains
 c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
 
@@ -56,14 +69,6 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
 
       implicit none
-
-      interface
-        function nterms4(nord)
-            implicit none
-            integer, intent(in) :: nord
-            integer :: nterms4
-        end function nterms4
-      end interface
 
       integer :: i, isp, ict, index, iwf_fit, mparmja
       integer :: mparmjb, mparmjc
@@ -282,14 +287,6 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      interface
-        function nterms4(nord)
-            implicit none
-            integer, intent(in) :: nord
-            integer :: nterms4
-        end function nterms4
-      end interface
-
       integer :: i, isp, iadiag, ict, mparmja, mparmjb
       integer :: mparmjc
       real(dp), allocatable, save :: a4_save(:,:,:)
@@ -399,6 +396,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
       use dets, only: cdet, ndet
+      use set_input_data, only: multideterminants_define
 
       implicit none
 
@@ -472,14 +470,6 @@ c-----------------------------------------------------------------------
       use bparm, only: nspin2b
 
       implicit none
-
-      interface
-        function nterms4(nord)
-            implicit none
-            integer, intent(in) :: nord
-            integer :: nterms4
-        end function nterms4
-      end interface
 
       integer :: i, isp, iadiag, ict, mparmja, mparmjb
       integer :: mparmjc
@@ -578,14 +568,6 @@ c-----------------------------------------------------------------------
       use bparm, only: nspin2b
 
       implicit none
-
-      interface
-        function nterms4(nord)
-            implicit none
-            integer, intent(in) :: nord
-            integer :: nterms4
-        end function nterms4
-      end interface
 
       integer :: i, isp, ict, mparmja, mparmjb, mparmjc
       real(dp), allocatable, save :: a4_best(:,:,:)
@@ -695,6 +677,7 @@ c-----------------------------------------------------------------------
       use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
       use dets, only: cdet, ndet
+      use set_input_data, only: multideterminants_define
 
       implicit none
 
@@ -791,6 +774,8 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
+      use cuspinit4_mod, only: cuspinit4
+      use cuspexact4_mod, only: cuspexact4
 
       implicit none
 
@@ -1118,13 +1103,15 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use ci001_blk, only: ci_o
       use ci003_blk, only: ci_e
       use method_opt, only: method
-      use optwf_sr_mod, only: izvzb, i_sr_rescale
+      !use optwf_sr_mod, only: izvzb, i_sr_rescale
       use precision_kinds, only: dp
+      use optgeo_lib, only: force_store
 
       implicit none
 
       integer :: i0, ii, ijasci, istate, j
       integer :: l, ntmp
+      integer :: izvzb, i_sr_rescale
       real(dp), dimension(nparmj) :: tmp_ho
       real(dp), dimension(*) :: wt
       real(dp), dimension(*) :: psid
@@ -1139,17 +1126,17 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       if(l.gt.mconf) call fatal_error('SR_STORE: l gt mconf')
 
-      call dcopy(nparmj,gvalue,1,sr_o(1,l),1)
+      if(nparmj /= 0) call dcopy(nparmj,gvalue,1,sr_o(1,l),1)
 
       ntmp=max(nciterm-i0,0)
-      call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l),1)
+      if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l),1)
 
       ijasci=nparmj+ntmp
       if(ijasci+nstates*norbterm+nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')
 
       do istate=1,nstates
         ii=ijasci+(istate-1)*norbterm
-        call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l),1)
+        if (norbterm /= 0) call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l),1)
         elocal(l,istate)=energy(istate)
         wtg(l,istate)=wt(istate)
       enddo
@@ -1164,17 +1151,17 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       if(method.eq.'sr_n'.and.i_sr_rescale.eq.0.and.izvzb.eq.0.and.ifunc_omega.eq.0) return
 
 c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secular problem
-
       do j=1,nparmj
         tmp_ho(j)=denergy(j,1)+gvalue(j)*energy(1)
       enddo
 
-      call dcopy(nparmj,tmp_ho,1,sr_ho(1,l),1)
+      if(nparmj /= 0) call dcopy(nparmj,tmp_ho,1,sr_ho(1,l),1)
 
-      call dcopy(ntmp,ci_e(1+i0),1,sr_ho(nparmj+1,l),1)
+      if(ntmp /= 0) call dcopy(ntmp,ci_e(1+i0),1,sr_ho(nparmj+1,l),1)
 
-      call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)
+      if(norbterm /= 0) call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)
 
       return
       end
 c-----------------------------------------------------------------------
+      end module

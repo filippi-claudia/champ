@@ -1,18 +1,16 @@
 module mpiconf
-    !> Arguments: idtask, nproc, wid, NPROCX
-    integer, parameter :: NPROCX = 1524
+    !> Arguments: idtask, nproc, wid
     integer  :: idtask
     integer  :: nproc
+    integer  :: ierr
     logical  :: wid
 
     private
-    public :: NPROCX
     public :: idtask, nproc, wid
     public :: mpiconf_init
     save
 contains
     subroutine mpiconf_init()
-        if(nproc.gt.NPROCX) call fatal_error('MAIN: nproc > NPROCX')
         wid = (idtask .eq. 0)
     end subroutine mpiconf_init
 end module mpiconf

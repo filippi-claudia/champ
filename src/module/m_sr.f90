@@ -3,9 +3,11 @@ module sr_mod
     integer :: mparm
     integer :: mobs
     integer :: mconf
+    integer :: i_sr_rescale, izvzb
 
     private
     public :: mparm, mobs, mconf
+    public :: izvzb, i_sr_rescale
     save
 end module sr_mod
 
@@ -47,7 +49,8 @@ module sr_mat_n
     save
 contains
     subroutine allocate_sr_mat_n()
-        use sr_mod, only: mparm, mobs, mconf
+        use sr_mod, only: mparm, mobs, mconf, izvzb, i_sr_rescale
+        use optwf_func, only: ifunc_omega
         use mstates_mod, only: MSTATES
         if (.not. allocated(elocal)) allocate (elocal(mconf, MSTATES))
         if (.not. allocated(h_sr)) allocate (h_sr(mparm))
@@ -72,6 +75,8 @@ contains
 
 end module sr_mat_n
 
+module m_sr
+contains
 subroutine allocate_m_sr()
     use sr_mat_n, only: allocate_sr_mat_n
 
@@ -84,3 +89,4 @@ subroutine deallocate_m_sr()
 
     call deallocate_sr_mat_n()
 end subroutine deallocate_m_sr
+end module 

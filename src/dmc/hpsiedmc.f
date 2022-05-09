@@ -1,16 +1,20 @@
+      module hpsiedmc
+      contains
       subroutine psiedmc(iel,iw,coord,psid,psij,iflag)
 c Written by Claudia Filippi
 
 
       use const, only: nelec
       use config, only: xold_dmc
+      use hpsie, only: psie
+      use mstates_mod, only: MSTATES
 
       use precision_kinds, only: dp
       implicit none
 
       integer :: i, ic, idum, iel, iflag
       integer :: iw
-      real(dp) :: psid, psij
+      real(dp) :: psid(*), psij
       real(dp), dimension(3) :: coord
       real(dp), dimension(3, nelec) :: x
 
@@ -36,3 +40,4 @@ c Written by Claudia Filippi
 
       return
       end
+      end module

@@ -1,3 +1,5 @@
+      module jastrow4_mod
+      contains
       subroutine jastrow4(x,v,d2,div_vj,value)
 c Written by Cyrus Umrigar, modified by C. Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
@@ -17,6 +19,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use contr2, only: isc
+      use scale_dist_mod, only: scale_dist2, switch_scale2
       use force_analy, only: iforce_analy
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
@@ -440,3 +443,4 @@ c-----------------------------------------------------------------------
 
       return
       end
+      end module

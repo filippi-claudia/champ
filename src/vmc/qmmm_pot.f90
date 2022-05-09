@@ -1,3 +1,6 @@
+module qmmm_pot
+  integer, parameter :: dbl = kind(1.0d0)
+contains
 !*********************************************************************
         subroutine qmmm_extpot_read
 !*********************************************************************
@@ -263,3 +266,4 @@
       return
       end
 
+end module

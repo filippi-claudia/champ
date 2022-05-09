@@ -1,3 +1,5 @@
+      module deriv_nonloc
+      contains
       subroutine deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,value,gn,vjn,da_ratio_jn)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
@@ -17,32 +19,17 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr2, only: isc
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
-
       use precision_kinds, only: dp
+      use pw_find_image, only: find_image3
+      use scale_dist_mod, only: scale_dist, scale_dist1
+      use deriv_nonlpsi, only: deriv_psibnl, deriv_psinl, deriv_psianl
+      use nonlpsi, only: dpsianl, dpsibnl
       implicit none
-
-      interface
-      function dpsibnl(u,isb,ipar)
-        use precision_kinds, only: dp
-        real(dp), intent(in) :: u
-        integer, intent(in) :: isb
-        integer, intent(in) :: ipar
-        real(dp) :: dpsibnl
-      endfunction dpsibnl
-
-      function dpsianl(rr,it)
-        use precision_kinds, only: dp
-        real(dp), intent(in) :: rr
-        integer, intent(in) :: it
-        real(dp) :: dpsianl
-      endfunction dpsianl
-
-      end interface
 
       integer :: i, ic, iel, ipar, ipara
       integer :: iparm, iparm0, isb, it
       integer :: j, jj, jparm, k
-      real(dp) :: dd1u, deriv_psianl, deriv_psibnl, deriv_psinl, dum
+      real(dp) :: dd1u, dum
       real(dp) :: dumk, fsumn, rij, u
       real(dp) :: value
       real(dp), dimension(3,*) :: x
@@ -229,3 +216,4 @@ c e-n terms
 
       return
       end
+      end module

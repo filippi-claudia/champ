@@ -358,6 +358,8 @@ module ewald_mod
 
  end module tempor_test
 
+module m_ewald
+contains
  subroutine allocate_m_ewald()
      use ewald, only: allocate_ewald
      use ewald_basis, only: allocate_ewald_basis
@@ -393,3 +395,4 @@ module ewald_mod
      call deallocate_test()
      call deallocate_tempor_test()
  end subroutine deallocate_m_ewald
+end module 

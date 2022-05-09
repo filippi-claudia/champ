@@ -1,3 +1,5 @@
+      module nonloc_pot_mod
+      contains
       subroutine nonloc_pot(x,rshift,rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
 c Written by Claudia Filippi; modified by Cyrus Umrigar
 c Calculates the local and nonlocal components of the pseudopotential
@@ -11,6 +13,9 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use pseudo, only: lpot, nloc, vps
 
       use precision_kinds, only: dp
+      use readps_gauss, only: getvps_gauss
+      use readps_tm_mod, only: getvps_tm
+      use nonloc_mod, only: nonloc
       implicit none
 
       integer :: i, i1, i2, i_vpsp, ic
@@ -59,3 +64,4 @@ c non-local component (division by the Jastrow already in nonloc)
       
       return
       end
+      end module 

@@ -1,3 +1,5 @@
+      module finwrt_mod
+      contains
       subroutine finwrt
 c MPI version created by Claudia Filippi starting from serial version
 c routine to print out final results
@@ -35,6 +37,12 @@ c routine to print out final results
       use mpi
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use prop_dmc,        only: prop_prt_dmc
+      use pcm_dmc,         only: pcm_fin
+      use mmpol_dmc,       only: mmpol_fin
+      use finwrt_more_mod, only: finwrt_more
+      use misc_grdnts,     only: finwrt_grdnts_cart, finwrt_grdnts_zmat
+      use misc_grdnts,     only: finwrt_diaghess_zmat
       implicit none
 
       integer :: i, ierr, ifr, j, k
@@ -287,3 +295,4 @@ c Done by Omar Valsson 2008-12-01
 
       return
       end
+      end module

@@ -1,3 +1,5 @@
+      module optwf_olbfgs_mod
+      contains
       subroutine optwf_olbfgs
       use sr_mod, only: mparm
       use olbfgs, only: initialize_olbfgs
@@ -10,7 +12,19 @@
       use method_opt, only: method
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+
+      use optwf_handle_wf, only: write_wf, set_nparms_tot, save_wf
+      use optwf_handle_wf, only: compute_parameters, test_solution_parm
+      use optwf_handle_wf, only: save_nparms
+      use sr_more,         only: dscal
+      use fetch_parameters_mod,only: fetch_parameters
+      use error,           only: fatal_error
+      use olbfgs_more_mod, only: olbfgs_more
       implicit none
+      interface
+      subroutine qmc
+      end subroutine
+      end interface
 
       integer :: i, iflag, ilbfgs_m, inc_nblk, iter
       real(dp) :: denergy, denergy_err, dparm_norm, energy_err_sav, energy_sav
@@ -110,3 +124,4 @@ c enddo iteration
       end
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      end module

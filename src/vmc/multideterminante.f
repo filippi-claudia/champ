@@ -1,3 +1,5 @@
+      module multideterminante_mod
+      contains
       subroutine multideterminante(iel)
 
       use vmc_mod, only: norb_tot
@@ -16,6 +18,8 @@
       use multislater, only: detiab
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
+      use matinv_mod, only: matinv
+      use multideterminant_mod, only: compute_ymat
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
@@ -251,3 +255,4 @@ c     if(iab.eq.2) write(ounit,*) 'ymat ',((ymat(jrep,irep),irep=iactv(iab),nel)
       return
       end
 c-----------------------------------------------------------------------
+      end module

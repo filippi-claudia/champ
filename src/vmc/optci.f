@@ -1,3 +1,6 @@
+      module optci_mod
+      use error, only: fatal_error
+      contains
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
       use dets, only: ndet
@@ -704,3 +707,4 @@ c-----------------------------------------------------------------------
 
       end
 c-----------------------------------------------------------------------
+      end module

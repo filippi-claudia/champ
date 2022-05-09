@@ -1,3 +1,11 @@
+      module determinant_mod
+      interface !LAPACK interface
+        DOUBLE PRECISION FUNCTION ddot(N,DX,INCX,DY,INCY)
+          INTEGER incx,incy,n
+          DOUBLE PRECISION dx(*),dy(*)
+        END FUNCTION
+      end interface
+      contains
       subroutine determinant(ipass,x,rvec_en,r_en)
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
@@ -17,13 +25,15 @@ c Modified by A. Scemama
       use atom, only: ncent_tot
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use optwf_handle_wf, only: dcopy
+      use matinv_mod, only: matinv
+      use orbitals_mod, only: orbitals
 
       implicit none
 
       integer :: i, iab, icheck, ii, ik
       integer :: index, ipass, ish, j
       integer :: jk, jorb, nel, newref
-      real(dp) :: ddot
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
@@ -115,6 +125,8 @@ c-----------------------------------------------------------------------
       use multislater, only: detiab, allocate_multislater
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use set_input_data, only: multideterminants_define
+      use optorb_f_mod, only: optorb_define
       implicit none
 
       integer :: iab, icheck, iflag, ipass
@@ -166,6 +178,8 @@ c-----------------------------------------------------------------------
       use velocity_jastrow, only: vj
       use orbval, only: ddorb, dorb, nadorb
       use precision_kinds, only: dp
+      use optwf_handle_wf, only: dcopy
+      use sr_more, only: daxpy
       implicit none
 
       integer :: i, ic, iorb, iparm, l
@@ -236,3 +250,4 @@ c    &          +da_vj(l,3,i,ic)*dorb(3,i,iorb))
 
       return
       end
+      end module

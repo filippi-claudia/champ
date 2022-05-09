@@ -1,3 +1,6 @@
+      module optorb_f_mod
+      use error, only: fatal_error
+      contains
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
       use vmc_mod, only: norb_tot
@@ -1085,3 +1088,4 @@ c Do not compute virtual orbitals during single-electron move
 
       return
       end
+      end module

@@ -1,3 +1,5 @@
+      module store_diag_hs_mod
+      contains
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
       use sr_mod, only: mparm
@@ -53,3 +55,4 @@
 
       return
       end
+      end module

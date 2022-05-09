@@ -1,3 +1,5 @@
+      module determinante_mod
+      contains
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
       use elec, only: ndn, nup
@@ -13,6 +15,7 @@
 
       use atom, only: ncent_tot
       use precision_kinds, only: dp
+      use orbitals_mod, only: orbitalse
       implicit none
 
       integer :: i, iab, iel, iflag, ik
@@ -93,6 +96,8 @@ c-----------------------------------------------------------------------
       use slater, only: slmi
       use const, only: nelec
       use multislater, only: detiab
+      use multideterminante_mod, only: multideterminante_grad
+      use multideterminant_mod, only: compute_ymat
 
       implicit none
 
@@ -322,3 +327,4 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
+      end module

@@ -71,6 +71,8 @@ module grdnthes
      save
  end module grdntspar
 
+module m_grdnt
+contains
  subroutine allocate_m_grdnt()
      use grdnthes, only: allocate_grdnthes
      use grdntsmv, only: allocate_grdntsmv
@@ -90,3 +92,4 @@ module grdnthes
      call deallocate_grdnthes()
      call deallocate_grdntsmv()
  end subroutine deallocate_m_grdnt
+ end module 

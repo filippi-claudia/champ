@@ -1,3 +1,5 @@
+      module basis_fns_mod
+      contains
       subroutine basis_fns(ie1,ie2,rvec_en,r_en,ider)
 c calculate the values of the basis functions and their derivatives
 c ider = 0 -> value
@@ -14,6 +16,8 @@ c ider = 3 -> value, gradient, laplacian, forces
       use phifun, only: phin, dphin, d2phin, d2phin_all, d3phin, n0_nbasis
       use wfsec, only: iwf
       use force_analy, only: iforce_analy
+      use splfit_mod, only: splfit
+      use slm_mod, only: slm
 
       use precision_kinds, only: dp
       implicit none
@@ -191,3 +195,4 @@ c-------------------------------------------------------------------
 
       return
       end
+      end module

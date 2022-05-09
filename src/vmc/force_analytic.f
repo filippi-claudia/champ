@@ -1,3 +1,5 @@
+      module force_analytic
+      contains
       subroutine compute_force(psid,denergy)
 
       use atom, only: ncent
@@ -387,3 +389,4 @@ c-----------------------------------------------------------------------
 
       return
       end
+      end module
