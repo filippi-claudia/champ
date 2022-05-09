@@ -21,10 +21,10 @@ contains
 
       use numbas_mod, only: MRWF, MRWF_PTS
       use vmc_mod, only: NCOEF
-      use atom, only: znuc, nctype
+      use atom, only: znuc, nctype, nctype_tot
       use ghostatom, only: newghostype
       use const, only: ipr
-      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
+      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
       use numbas, only: allocate_numbas
       use coefs, only: nbasis
       use numexp, only: ae, ce, allocate_numexp
@@ -121,6 +121,21 @@ contains
         endif
         call bcast(x)
         call bcast(rwf)
+
+!        Get the rmaxwf value for each center
+
+        if (.not. allocated(rmaxwf)) allocate (rmaxwf(nrbas(ic), nctype_tot))
+
+        do irb = 1, nrbas(ic)
+        rmaxwf(irb, ic) = 0.0d0
+          do ir=1,nr(ic)
+            if (rwf(ir,irb,ic,iwf) .gt. rmaxwf(irb, ic)) then
+              rmaxwf(irb, ic) = rwf(ir,irb,ic,iwf)
+            endif
+          enddo
+        enddo
+
+        write(45,*) "Rmax for center ic ", ic, " is ",  (rmaxwf(irb, ic), irb=1, nrbas(ic))
 
         if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
         if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)

@@ -213,10 +213,11 @@ module numbas
     integer, dimension(:), allocatable :: nrbas !(MCTYPE)
     integer :: numr
     real(dp), dimension(:), allocatable :: r0 !(MCTYPE)
+    real(dp), dimension(:, :), allocatable :: rmaxwf !(nrbas,MCTYPE)
     real(dp), dimension(:, :, :, :), allocatable :: rwf !(MRWF_PTS,MRWF,MCTYPE,MWF)
 
     private
-    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf, rmaxwf
     public :: allocate_numbas, deallocate_numbas
     save
 contains
@@ -236,6 +237,7 @@ contains
     end subroutine allocate_numbas
 
     subroutine deallocate_numbas()
+        if (allocated(rmaxwf)) deallocate (rmaxwf)
         if (allocated(rwf)) deallocate (rwf)
         if (allocated(r0)) deallocate (r0)
         if (allocated(nrbas)) deallocate (nrbas)
