@@ -124,10 +124,7 @@ contains
 
 !        Get the rmaxwf value for each center
 
-        if (.not. allocated(rmaxwf)) allocate (rmaxwf(nrbas(ic), nctype_tot))
-
         do irb = 1, nrbas(ic)
-        rmaxwf(irb, ic) = 0.0d0
           do ir=1,nr(ic)
             if (rwf(ir,irb,ic,iwf) .gt. rmaxwf(irb, ic)) then
               rmaxwf(irb, ic) = rwf(ir,irb,ic,iwf)
@@ -135,7 +132,7 @@ contains
           enddo
         enddo
 
-        write(45,*) "Rmax for center ic ", ic, " is ",  (rmaxwf(irb, ic), irb=1, nrbas(ic))
+        write(45,*) "Rmax for center ic ", ic, " are ",  (rmaxwf(irb, ic), irb=1, nrbas(ic))
 
         if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
         if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)

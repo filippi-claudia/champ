@@ -234,10 +234,11 @@ contains
         if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot), source=0)
         if (.not. allocated(r0)) allocate (r0(nctype_tot))
         if (.not. allocated(rwf)) allocate (rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
+        if (.not. allocated(rmaxwf)) allocate (rmaxwf(MRWF, nctype_tot), source=0.0d0) ! This source is needed: by Ravindra
     end subroutine allocate_numbas
 
     subroutine deallocate_numbas()
-        if (allocated(rmaxwf)) deallocate (rmaxwf)
+        ! if (allocated(rmaxwf)) deallocate (rmaxwf)
         if (allocated(rwf)) deallocate (rwf)
         if (allocated(r0)) deallocate (r0)
         if (allocated(nrbas)) deallocate (nrbas)

@@ -64,10 +64,9 @@ c get distance to center
           ri2=ri*ri
 
           do irb=1,nrbas(it)
-            if (r < rmaxwf(irb,ic)) then
+            ! only evaluate for r <= rmaxwf
+            if (r <= rmaxwf(irb,it)) then
               call splfit(r,irb,it,iwf,wfv(1,irb),ider)
-            else
-              wfv(1:4,irb)=0.d0
             endif
           enddo
 
