@@ -24,7 +24,7 @@ contains
       use atom, only: znuc, nctype, nctype_tot
       use ghostatom, only: newghostype
       use const, only: ipr
-      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
+      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmax
       use numbas, only: allocate_numbas
       use coefs, only: nbasis
       use numexp, only: ae, ce, allocate_numexp
@@ -42,6 +42,7 @@ contains
       integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
       integer         :: iwf, info
       real(dp)        :: val, dwf1, wfm, dwfn, dwfm
+      real(dp)        :: cutoff_rmax = 1.0d-24
       integer         :: iunit, iostat = 0, counter = 0
       logical         :: exist, skip = .true.
 
@@ -122,17 +123,17 @@ contains
         call bcast(x)
         call bcast(rwf)
 
-!        Get the rmaxwf value for each center
+!        Get the rmax value for each center. Set the cutoff to 10^-10
 
         do irb = 1, nrbas(ic)
           do ir=1,nr(ic)
-            if (rwf(ir,irb,ic,iwf) .gt. rmaxwf(irb, ic)) then
-              rmaxwf(irb, ic) = rwf(ir,irb,ic,iwf)
+            if (rwf(ir,irb,ic,iwf) .gt. cutoff_rmax ) then
+              rmax(irb, ic) = x(ir)
             endif
           enddo
         enddo
 
-        write(45,*) "Rmax for center ic ", ic, " are ",  (rmaxwf(irb, ic), irb=1, nrbas(ic))
+        write(45,*) "Rmax for center ic ", ic, " are ",  (rmax(irb, ic), irb=1, nrbas(ic))
 
         if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
         if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)

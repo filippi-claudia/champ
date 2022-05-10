@@ -213,11 +213,11 @@ module numbas
     integer, dimension(:), allocatable :: nrbas !(MCTYPE)
     integer :: numr
     real(dp), dimension(:), allocatable :: r0 !(MCTYPE)
-    real(dp), dimension(:, :), allocatable :: rmaxwf !(nrbas,MCTYPE)
+    real(dp), dimension(:, :), allocatable :: rmax !(nrbas,MCTYPE)
     real(dp), dimension(:, :, :, :), allocatable :: rwf !(MRWF_PTS,MRWF,MCTYPE,MWF)
 
     private
-    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf, rmaxwf
+    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf, rmax
     public :: allocate_numbas, deallocate_numbas
     save
 contains
@@ -234,11 +234,11 @@ contains
         if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot), source=0)
         if (.not. allocated(r0)) allocate (r0(nctype_tot))
         if (.not. allocated(rwf)) allocate (rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
-        if (.not. allocated(rmaxwf)) allocate (rmaxwf(MRWF, nctype_tot), source=0.0d0) ! This source is needed: by Ravindra
+        if (.not. allocated(rmax)) allocate (rmax(MRWF, nctype_tot), source=0.0d0) ! This source is needed: by Ravindra
     end subroutine allocate_numbas
 
     subroutine deallocate_numbas()
-        ! if (allocated(rmaxwf)) deallocate (rmaxwf)
+        ! if (allocated(rmax)) deallocate (rmax)
         if (allocated(rwf)) deallocate (rwf)
         if (allocated(r0)) deallocate (r0)
         if (allocated(nrbas)) deallocate (nrbas)
