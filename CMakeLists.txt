@@ -155,6 +155,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-O2")
+  list(APPEND Fortran_FLAGS "-finline" "-ip" "-align" "array64byte" "-fma" "-ftz" "-fomit-frame-pointer")
 	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
