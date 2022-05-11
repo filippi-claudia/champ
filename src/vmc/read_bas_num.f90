@@ -128,7 +128,7 @@ contains
         rmax = 20.0d0 ! default value
         do irb = 1, nrbas(ic)
           do ir=nr(ic),1,-1
-            if (rwf(ir,irb,ic,iwf) .lt. cutoff_rmax ) then
+            if (abs(rwf(ir,irb,ic,iwf)) .lt. cutoff_rmax ) then
               rmax(irb, ic) = x(ir)
             endif
           enddo
