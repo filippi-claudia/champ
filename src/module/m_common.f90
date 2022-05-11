@@ -339,10 +339,17 @@ module multidet
     integer, dimension(:), allocatable :: ivirt !(2)
     integer, dimension(:, :), allocatable :: iwundet !(MDET,2)
     integer :: kref
+    integer :: ndet_req
     integer, dimension(:, :), allocatable :: numrep_det !(MDET,2)
-
+    integer, dimension(:, :), allocatable :: k_det !(MDET,2)
+    integer, dimension(:, :), allocatable :: k_det2 !(MDET,2)
+    integer, dimension(:, :), allocatable :: k_aux !(MDET,2)
+    integer, dimension(:), allocatable :: ndetiab !(2)
+    integer, dimension(:), allocatable :: ndetiab2 !(2)
+    integer, dimension(:), allocatable :: ndetsingle !(2)
+    
     private
-    public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+    public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle
     public :: allocate_multidet, deallocate_multidet
     save
 contains
@@ -355,6 +362,12 @@ contains
         if (.not. allocated(ivirt)) allocate (ivirt(2), source=0)
         if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2), source=0)
         if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2), source=0)
+        if (.not. allocated(k_det)) allocate (k_det(ndet, 2), source=0)
+        if (.not. allocated(ndetiab)) allocate (ndetiab(2), source=0)
+        if (.not. allocated(k_det2)) allocate (k_det2(ndet, 2), source=0)
+        if (.not. allocated(k_aux)) allocate (k_aux(ndet, 2), source=0)
+        if (.not. allocated(ndetiab2)) allocate (ndetiab2(2), source=0)
+        if (.not. allocated(ndetsingle)) allocate (ndetsingle(2), source=0)
     end subroutine allocate_multidet
 
     subroutine deallocate_multidet()
@@ -364,6 +377,12 @@ contains
         if (allocated(ireporb_det)) deallocate (ireporb_det)
         if (allocated(irepcol_det)) deallocate (irepcol_det)
         if (allocated(iactv)) deallocate (iactv)
+        if (allocated(k_det)) deallocate (k_det)
+        if (allocated(ndetiab)) deallocate (ndetiab)
+        if (allocated(k_det)) deallocate (k_det)
+        if (allocated(k_det2)) deallocate (k_det2)
+        if (allocated(ndetiab2)) deallocate (ndetiab2)
+        if (allocated(ndetsingle)) deallocate (ndetsingle)
     end subroutine deallocate_multidet
 
 end module multidet
@@ -405,7 +424,7 @@ module multimatn
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: aan !(MELEC,norb_tot)
+    real(dp), dimension(:), allocatable :: aan !(MELEC*norb_tot)
     real(dp), dimension(:, :), allocatable :: wfmatn !(MDET, MEXCIT**2)
 
     private
@@ -418,7 +437,7 @@ contains
         use dets, only: ndet
         use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
-        if (.not. allocated(aan)) allocate (aan(nelec, norb_tot))
+        if (.not. allocated(aan)) allocate (aan(nelec*norb_tot))
         if (.not. allocated(wfmatn)) allocate (wfmatn(ndet,MEXCIT**2))
     end subroutine allocate_multimatn
 
