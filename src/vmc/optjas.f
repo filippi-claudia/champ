@@ -8,7 +8,8 @@
       use derivjas, only: d2g, g
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
-      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req
+      use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
       use scratch, only: denergy_det, dtildem
@@ -28,7 +29,7 @@
 
       integer :: i, iab, iel, index_det, iorb
       integer :: iparm, irep, ish, istate
-      integer :: jorb, jrep, k, ndim
+      integer :: jorb, jrep, k, ndim, kun, kw, kk
       integer :: nel
       real(dp) :: deloc_dj_k, deloc_dj_kref, dum2, dum3, term_jas
       real(dp), dimension(*) :: psid
@@ -36,7 +37,9 @@
       real(dp), dimension(*) :: energy
       real(dp), dimension(3, *) :: vj
       real(dp), dimension(nparmj) :: deloc_dj
+      real(dp), dimension(ndet_req,2) :: ddenergy_det
 
+      real(dp) :: cum_deloc_k_state
 
       if(ioptjas.eq.0) return
 
@@ -88,79 +91,65 @@ C       enddo
           enddo
         enddo
 
-        denergy_det(kref,1)=0.d0
-        denergy_det(kref,2)=0.d0
-
-
-        do iab=1,2
+        ddenergy_det=0.d0
+        denergy_det=0.d0
         
-           do k=1,kref-1
-              
-              if(iwundet(k,iab).eq.k) then
-                    
-                 iel=0
-                 nel=nup
-                 if(iab.eq.2) then
-                    iel=nup
-                    nel=ndn
-                 endif
-                 ndim=numrep_det(k,iab)
-                    
-                 denergy_det(k,iab)=0
-                 do irep=1,ndim
-                    iorb=irepcol_det(irep,k,iab)
-                    do jrep=1,ndim
-                       jorb=ireporb_det(jrep,k,iab)
-                       denergy_det(k,iab)=denergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab)*dtildem(iorb,jorb,iab)
-                    enddo
-                 enddo
-                    
-              else
-                 index_det=iwundet(k,iab)                   
-                 denergy_det(k,iab)=denergy_det(index_det,iab)
-              endif
-                 
-           enddo          
-              
+        do iab=1,2
 
-           do k=kref+1,ndet
-                         
-              if(iwundet(k,iab).eq.k) then
+c           ddenergy_det(:,iab)=0
+           do k=1,ndetsingle(iab)
+
+              iorb=irepcol_det(1,k,iab)
+              jorb=ireporb_det(1,k,iab)
+              ddenergy_det(k,iab)=wfmat(k,1,iab)*dtildem(iorb,jorb,iab)
+             
+           enddo          
+
+c           do k=1,ndetiab(iab)
+           do k=ndetsingle(iab)+1,ndetiab(iab)
                     
-                 iel=0
-                 nel=nup
-                 if(iab.eq.2) then
-                    iel=nup
-                    nel=ndn
-                 endif
-                 ndim=numrep_det(k,iab)
-                    
-                 denergy_det(k,iab)=0
-                 do irep=1,ndim
-                    iorb=irepcol_det(irep,k,iab)
-                    do jrep=1,ndim
-                       jorb=ireporb_det(jrep,k,iab)
-                       denergy_det(k,iab)=denergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab)*dtildem(iorb,jorb,iab)
-                    enddo
+              ndim=numrep_det(k,iab) 
+             
+              do irep=1,ndim
+                 iorb=irepcol_det(irep,k,iab)
+                 do jrep=1,ndim
+                    jorb=ireporb_det(jrep,k,iab)
+                    ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab)*dtildem(iorb,jorb,iab)
                  enddo
-                    
-              else
-                 index_det=iwundet(k,iab)
-                 denergy_det(k,iab)=denergy_det(index_det,iab)
-              endif
-                 
-           enddo   
+              enddo
+           enddo          
+           
+           
+c     Unrolling determinants different to kref
+c           do kk=1,ndetiab2(iab)
+c              k=k_det2(kk,iab)
+c              kw=k_aux(kk,iab)
+c              denergy_det(k,iab)=ddenergy_det(kw,iab)
+c           enddo
+c           k_det2(1:ndetiab2(iab),iab)
+c           k_aux(1:ndetiab2(iab),iab)
+           denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
+           
            
         enddo
-
         
-        do k=1,ndet
-           deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref             
-           do istate=1,nstates
-              denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detiab(k,1)*detiab(k,2)
-           enddo
-        enddo
+        
+c        do k=1,ndet
+c           deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref             
+c           do istate=1,nstates
+c              denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detiab(k,1)*detiab(k,2)
+c           enddo
+c        enddo
 
+        do istate=1,nstates
+           cum_deloc_k_state=0.0d0
+           do k=1,ndet
+              cum_deloc_k_state=cum_deloc_k_state+cdet(k,istate,1)*(denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref)
+     &             *detiab(k,1)*detiab(k,2)
+           enddo
+           denergy(iparm,istate)=denergy(iparm,istate)+cum_deloc_k_state
+        enddo
+        
         
       endif
 c endif ndet.gt.1

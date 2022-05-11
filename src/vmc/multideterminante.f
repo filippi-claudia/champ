@@ -7,7 +7,8 @@
       use csfs, only: nstates
       use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det
+      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req
+      use multidet, only: k_det2, ndetiab2, k_aux, ndetsingle
       use slatn, only: slmin
       use ycompactn, only: ymatn
       use coefs, only: norb
@@ -24,7 +25,7 @@
 
       integer :: i, iab, iel, index_det, iorb
       integer :: irep, ish, istate, jj
-      integer :: jorb, jrep, k, ndim, ndim2
+      integer :: jorb, jrep, k, ndim, ndim2, kun, kw, kk
       integer :: nel
       real(dp) :: det, dum1
       real(dp), dimension(nelec, norb_tot, 3) :: gmat
@@ -32,12 +33,7 @@
       real(dp), dimension(norb_tot, 3) :: b
       real(dp), dimension(3) :: ddx_mdet
       real(dp), dimension(norb_tot) :: orb_sav
-      real(dp), parameter :: one = 1.d0
-      real(dp), parameter :: half = 0.5d0
-
-
-
-
+      real(dp), dimension(ndet_req) :: ddetn
 
 
 
@@ -66,98 +62,68 @@ c temporarely copy orbn to orb
           do i=1,nel
            dum1=dum1+slmin(irep+(i-1)*nel)*orb(i+ish,jrep)
           enddo
-          aan(irep,jrep)=dum1
-
+          aan(irep+nelec*(jrep-1))=dum1
         enddo
       enddo
 
 c compute wave function
-      do k=1,kref-1
-
-        if(iwundet(k,iab).eq.k) then
-
-          ndim=numrep_det(k,iab)
-
-          ndim2=ndim*ndim
-          jj=0
-          do jrep=1,ndim
-             jorb=ireporb_det(jrep,k,iab)
-             do irep=1,ndim
-                iorb=irepcol_det(irep,k,iab)
-                jj=jj+1
-                wfmatn(k,jj)=aan(iorb,jorb)
-             enddo
-          enddo
-          call matinv(wfmatn(k,1:ndim2),ndim,det)
-
-          
-          detn(k)=det
-
-       else
-          index_det=iwundet(k,iab)
-          detn(k)=detn(index_det)
-
-        endif
-
-      enddo
-
-      do k=kref+1,ndet
-
-
-        if(iwundet(k,iab).eq.k) then
-
-          ndim=numrep_det(k,iab)
-          
-          ndim2=ndim*ndim
-          jj=0
-          do jrep=1,ndim
-             jorb=ireporb_det(jrep,k,iab)
-             do irep=1,ndim
-                iorb=irepcol_det(irep,k,iab)
-                jj=jj+1
-                
-                wfmatn(k,jj)=aan(iorb,jorb)
-             enddo
-          enddo
-          call matinv(wfmatn(k,1:ndim2),ndim,det)
-          
-
-          
-          
-          detn(k)=det
-
-       else
-          index_det=iwundet(k,iab)
-          detn(k)=detn(index_det)
-          
-        endif
-
-
-      enddo
-
-      do k=1,kref-1
-        if(iwundet(k,iab).ne.kref) then
-          detn(k)=detn(k)*detn(kref)
-        endif
-      enddo
-
-      do k=kref+1,ndet
-        if(iwundet(k,iab).ne.kref) then
-          detn(k)=detn(k)*detn(kref)
-        endif
-      enddo
-
-c      do k=1,ndet
-c        if(k.ne.kref.and.iwundet(k,iab).ne.kref) then
-c          detn(k)=detn(k)*detn(kref)
-c        endif
+c     loop inequivalent determinants
+c     loop over single exitations
+c     do k=1,ndetsingle(iab)
+         
+c         jorb=ireporb_det(1,k,iab)
+c         iorb=irepcol_det(1,k,iab)
+c         wfmatn(k,1)=aan(iorb+nelec*(jorb-1))
+c         ddetn(k)=wfmatn(k,1)
+c         wfmatn(k,1)=1.0d0/wfmatn(k,1)
 c      enddo
 
-c      do istate=1,nstates
+c     loop over single exitations      
+c         jorb=ireporb_det(1,1:ndetsingle(iab),iab)
+c         iorb=irepcol_det(1,1Kndetsingle(iab),iab)
+      
+      wfmatn(1:ndetsingle(iab),1)=aan(irepcol_det(1,1:ndetsingle(iab),iab)+nelec*(ireporb_det(1,1:ndetsingle(iab),iab)-1))
+      ddetn(1:ndetsingle(iab))=wfmatn(1:ndetsingle(iab),1)
+      wfmatn(1:ndetsingle(iab),1)=1.0d0/wfmatn(1:ndetsingle(iab),1)
+
+      
+c     loop over multiple exitations      
+      do k=ndetsingle(iab)+1,ndetiab(iab)
+     
+         ndim=numrep_det(k,iab)
+         ndim2=ndim*ndim
+     
+         jj=0
+         do jrep=1,ndim
+            jorb=ireporb_det(jrep,k,iab)
+            do irep=1,ndim
+               iorb=irepcol_det(irep,k,iab)
+               jj=jj+1
+               wfmatn(k,jj)=aan(iorb+nelec*(jorb-1))
+            enddo
+         enddo
+         call matinv(wfmatn(k,1:ndim2),ndim,ddetn(k))
+      enddo
+      
+      
+
+c     Unrolling determinats different to kref
+      detn=detn(kref)
+c      do kk=1,ndetiab2(iab)
+c         k=k_det2(kk,iab)
+c         kw=k_aux(kk,iab)  
+c         detn(k)=detn(k)*ddetn(kw)
+c     print *, "k ",k,"detn(k) ",detn(k)
+c      enddo
+c      k_det2(1:ndetiab2(iab),iab)
+c      k_aux(1:ndetiab2(iab),iab)  
+      detn(k_det2(1:ndetiab2(iab),iab))=detn(k_det2(1:ndetiab2(iab),iab))*ddetn(k_aux(1:ndetiab2(iab),iab))
+      
+c     do istate=1,nstates
 c        if(iab.eq.1) call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
-c        if(iab.eq.2) call compute_ymat(iab,detiab(1,1),detn,wfmatn,ymatn(1,1,istate),istate)
-c      enddo
-
+c     if(iab.eq.2) call compute_ymat(iab,detiab(1,1),detn,wfmatn,ymatn(1,1,istate),istate)
+c     enddo
+      
       if (iab.eq.1) then
          do istate=1,nstates
             call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
@@ -195,14 +161,13 @@ c-----------------------------------------------------------------------
       integer :: j, jel, jrep, k
       integer :: kk, nel
       real(dp) :: detratio, dum
-      real(dp), dimension(nelec, norb_tot) :: aa
+      real(dp), dimension(nelec*norb_tot) :: aa
       real(dp), dimension(norb_tot, nelec) :: ymat
       real(dp), dimension(norbs, 3) :: b
       real(dp), dimension(nelec, norb_tot, 3) :: gmat
       real(dp), dimension(3) :: velocity
       real(dp), dimension(nmat_dim) :: slmi
-      real(dp), parameter :: one = 1.d0
-      real(dp), parameter :: half = 0.5d0
+
 
 
 
@@ -229,7 +194,7 @@ c-----------------------------------------------------------------------
         do jrep=ivirt(iab),norb
           dum=0
           do j=1,nel
-             dum=dum+b(iworbd(j+ish,kref),kk)*aa(j,jrep)
+             dum=dum+b(iworbd(j+ish,kref),kk)*aa(j+nelec*(jrep-1))
           enddo
           dum=b(jrep,kk)-dum
           do irep=iactv(iab),nel
