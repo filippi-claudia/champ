@@ -42,7 +42,7 @@ contains
       integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
       integer         :: iwf, info
       real(dp)        :: val, dwf1, wfm, dwfn, dwfm
-      real(dp)        :: cutoff_rmax = 1.0d-24
+      real(dp)        :: cutoff_rmax = 1.0d-12
       integer         :: iunit, iostat = 0, counter = 0
       logical         :: exist, skip = .true.
 
@@ -123,17 +123,18 @@ contains
         call bcast(x)
         call bcast(rwf)
 
-!        Get the rmax value for each center. Set the cutoff to 10^-10
-
+!        Get the rmax value for each center. Set the cutoff to 10^-12
+!        Scanning from the bottom up to avoid false zeros.
+        rmax = 20.0d0 ! default value
         do irb = 1, nrbas(ic)
-          do ir=1,nr(ic)
-            if (rwf(ir,irb,ic,iwf) .gt. cutoff_rmax ) then
+          do ir=nr(ic),1,-1
+            if (rwf(ir,irb,ic,iwf) .lt. cutoff_rmax ) then
               rmax(irb, ic) = x(ir)
             endif
           enddo
         enddo
 
-        write(45,*) "Rmax for center ic ", ic, " are ",  (rmax(irb, ic), irb=1, nrbas(ic))
+        write(ounit,*) "Rmax for center ic ", ic, " are ",  (rmax(irb, ic), irb=1, nrbas(ic))
 
         if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
         if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)
