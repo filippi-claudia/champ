@@ -125,7 +125,7 @@ contains
 
 !        Get the rmax value for each center. Set the cutoff to 10^-12
 !        Scanning from the bottom up to avoid false zeros.
-        rmax = 20.0d0 ! default value
+        rmax = x(nr(ic))  ! default rmax as the last point
         do irb = 1, nrbas(ic)
           do ir=nr(ic),1,-1
             if (abs(rwf(ir,irb,ic,iwf)) .lt. cutoff_rmax ) then
