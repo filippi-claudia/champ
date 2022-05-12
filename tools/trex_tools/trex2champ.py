@@ -52,10 +52,25 @@ import numpy as np
 from collections import Counter
 import argparse
 
+# Before we do anything else, we need to check if trexio and resultsFile are installed
+try:
+    import trexio
+except:
+    print("Error: The TREXIO Python library is not installed")
+    sys.exit(1)
+
+try:
+    import resultsFile
+except:
+    print("Error: The resultsFile Python library is not installed")
+    sys.exit(1)
+
+
+
 # Set of tools to interact with trexio files.
 
 # Usage:
-#       trexio convert2champ  -i GAMESS_input_file  [-x orbital_type]  [-b back_end]  TREXIO_FILE
+# python trex2champ.py  --trex filetrexio.hdf5  --gamess filegamess.out [--motype orbital_type]  [--b back_end]
 
 # Instantiate the parser
 parser = argparse.ArgumentParser(description='Python Converter for conversion of trexio files to champ v2.0 format.')
@@ -65,7 +80,7 @@ parser.add_argument("--trex", "-hdf5", "--hdf5", dest='filename', type=str, requ
                     help='Required: Filename (including extension) of the trexio file.')
 
 # Required positional argument
-parser.add_argument("--gamess", "-i", "--g", dest='gamesfile', type=str, required = True,
+parser.add_argument("--gamess", "-i", "--g", dest='gamessfile', type=str, required = True,
                     help='Required: Filename (including extension) of the gamess output file.')
 
 # Optional positional argument
@@ -85,17 +100,17 @@ print (' GAMESS filename    ::         \t {}'.format(args.gamessfile))
 print (' MOTYPE             ::         \t {}'.format(args.motype))
 print (' Backend            ::         \t {}'.format(args.back_end))
 
-try:
-    import trexio
-except:
-    print("Error: The TREXIO Python library is not installed")
-    sys.exit(1)
+# Default backend is HDF5
+if args.back_end is not None:
+    if str(args.back_end).lower() == "hdf5":
+        back_end = trexio.TREXIO_HDF5
+    elif str(args.back_end).lower() == "text":
+        back_end = trexio.TREXIO_TEXT
+    else:
+        raise ValueError
+else:
+    back_end = trexio.TREXIO_HDF5
 
-try:
-    import resultsFile
-except:
-    print("Error: The resultsFile Python library is not installed")
-    sys.exit(1)
 
 def run(filename,  gamessfile, back_end, motype=None):
 
@@ -1084,4 +1099,5 @@ def write_champ_file_ecp_trexio(filename, nucleus_num, nucleus_label, ecp_num, e
 
 
 # Main command
-run(filename, gamessfile = args["--input"], back_end=back_end, motype=args["--motype"])
+run(args.filename, gamessfile = args.gamessfile, back_end=back_end, motype=args.motype)
+
