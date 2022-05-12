@@ -5,6 +5,7 @@ on:
     branches:
       - 'releases/**'
       - main
+      - rmax
       - debug_intel
       - feature/debug-ci
     # Sequence of patterns matched against refs/tags
@@ -14,6 +15,7 @@ on:
     branches:
       - 'releases/**'
       - main
+      - rmax
       - cartesian_d
       - cartesian_d_qmckl
       - debug_intel
