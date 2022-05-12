@@ -68,3 +68,4 @@ config/
 #dont ignore source files
 !.f90$
 !.f$
+!hf_cc-VDZ.out
