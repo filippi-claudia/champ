@@ -339,6 +339,7 @@ module multidet
     integer, dimension(:), allocatable :: ivirt !(2)
     integer, dimension(:, :), allocatable :: iwundet !(MDET,2)
     integer :: kref
+    integer :: kref_old
     integer :: ndet_req
     integer, dimension(:, :), allocatable :: numrep_det !(MDET,2)
     integer, dimension(:, :), allocatable :: k_det !(MDET,2)
@@ -349,7 +350,7 @@ module multidet
     integer, dimension(:), allocatable :: ndetsingle !(2)
     
     private
-    public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle
+    public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old
     public :: allocate_multidet, deallocate_multidet
     save
 contains
