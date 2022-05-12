@@ -85,11 +85,36 @@ parser.add_argument("--gamess", "-i", "--g", dest='gamessfile', type=str, requir
 
 # Optional positional argument
 parser.add_argument("--motype", "-mo", "--mo", dest='motype', type=str, required = False,
-                    help='Required: Variable motype which indicates the type of molecular orbitals stored in the hdf5 file.')
+                    help='Optional: Variable motype which indicates the type of molecular orbitals stored in the hdf5 file.')
 
 # Optional positional argument
-parser.add_argument("--backend", "-b", "--back", dest='back_end', type=str, required = False,
-                    help='Required: Variable back_end which indicates the type of the TREXIO back end.')
+parser.add_argument("--backend", "--back", dest='back_end', type=str, required = False,
+                    help='Optional: Variable back_end which indicates the type of the TREXIO back end.')
+
+#
+# Optional argument for controlling the output files
+parser.add_argument("--lcao", "-s", "--orb" , dest='save_lcao', type=str, required = False,
+                    help='Optional: Variable save_lcao to save the LCAO orbitals in CHAMP format.')
+
+# Optional argument for controlling the output files
+parser.add_argument("--geometry", "-g", "--geom", "--xyz", dest='save_geometry', type=str, required = False,
+                    help='Optional: Variable save_geometry to save the geometry in CHAMP format.')
+
+# Optional argument for controlling the output files
+parser.add_argument("--basis", "-b", "--bas", dest='save_basis', type=str, required = False,
+                    help='Optional: Variable save_basis to save the basis set in CHAMP format.')
+
+# Optional argument for controlling the output files
+parser.add_argument("--pseudo", "-ps", "--ecp", "--ECP", dest='save_ecp', type=str, required = False,
+                    help='Optional: Variable save_ecp to save the ECP in CHAMP format.')
+
+# Optional argument for controlling the output files
+parser.add_argument("--symmetry", "-sym", "--sym", dest='save_symmetry', type=str, required = False,
+                    help='Optional: Variable save_symmetry to save the symmetry in CHAMP format.')
+
+# Optional argument for controlling the output files
+parser.add_argument("--determinants", "-det", "--det", dest='save_determinants', type=str, required = False,
+                    help='Optional: Variable save_determinants to save the determinants in CHAMP format.')
 
 
 args = parser.parse_args()
@@ -110,6 +135,52 @@ if args.back_end is not None:
         raise ValueError
 else:
     back_end = trexio.TREXIO_HDF5
+
+
+class Champ:
+    """
+    Class to convert TREXIO files to CHAMP v2.0 format.
+    """
+
+    def __init__(self, filename, gamessfile, motype, back_end):
+        """
+        Initialize the class.
+        """
+        self.filename = filename
+        self.gamessfile = gamessfile
+        self.motype = motype
+        self.back_end = back_end
+        self.champ_file = None
+        self.champ_file_name = None
+        self.champ_file_path = None
+
+    def convert_trexio(self):
+        """
+        Convert the TREXIO file.
+        """
+        self.champ_file = self.run(self.filename,  self.gamessfile, self.back_end, self.motype)
+        self.champ_file_name = self.champ_file.get_file_name()
+        self.champ_file_path = self.champ_file.get_file_path()
+
+    def __main__(self):
+        """
+        Main function.
+        """
+        self.read_trexio()
+
+
+    # Instantiate the class
+champ = Champ(args.filename, args.gamessfile, args.motype, back_end)
+
+print (type(champ))
+
+
+
+
+
+# Main command
+# run(args.filename, gamessfile = args.gamessfile, back_end=back_end, motype=args.motype)
+
 
 
 def run(filename,  gamessfile, back_end, motype=None):
@@ -221,7 +292,7 @@ def run(filename,  gamessfile, back_end, motype=None):
 
     # Write the eigenvalues for a given type of orbitals using the resultsFile package. Currently it is optional.
     # write_champ_file_eigenvalues(filename, file, dict_mo["type"])
-
+    trexio_file.close()
     return
 
 
