@@ -85,33 +85,22 @@ subroutine multideterminants_define(iflag, icheck)
     integer, dimension(ndet) :: itotphase
     integer, dimension(nelec) :: auxdet
 
-!    save kref_old
 
     if (nup .gt. nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
     ndn = nelec - nup
 
     !!call p2gtid('general:nwftype', nwftype, 1, 1)
     if (nwftype .gt. MWF) call fatal_error('INPUT: nwftype exceeds MWF')
+    
 
+! This part remains just for the initialization calls set kref and kref_old first time    
     if (iflag .eq. 0) then
-        kref = 1
-    else
-       
-       if (kref .gt. 1 .and. icheck .eq. 1) then
-          kref = 1
-       endif
-       
-       if (idiff(kref_old, kref, iflag) .eq. 0) then
-          kref = kref + 1
-          if (kref .gt. ndet) call fatal_error('MULTIDET_DEFINE: kref > ndet')
-       endif
-       
-       write (ounit, *) 'kref change', iflag, kref_old, kref
+       kref = 1
+       kref_old = kref
 
     endif
-    
-    kref_old = kref
-
+!    write (ounit, *) 'I am in multi_def',kref,kref_old
+       
     if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
     if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
     if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
