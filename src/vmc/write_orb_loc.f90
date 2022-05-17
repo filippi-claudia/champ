@@ -1,11 +1,11 @@
       module write_orb_loc_mod
       contains
       subroutine write_orb_loc
-c Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt's routine
-c Reads in localized orbitals, in either
-c Modified by A. Scemama (printing in a GAMESS-like format)
-c 1) a slater basis
-c 2) a gaussian basis
+! Written by Cyrus Umrigar and Claudia Filippi, starting from Kevin Schmidt's routine
+! Reads in localized orbitals, in either
+! Modified by A. Scemama (printing in a GAMESS-like format)
+! 1) a slater basis
+! 2) a gaussian basis
       use atom, only: znuc, iwctype, nctype, ncent
       use ghostatom, only: newghostype
       use const, only: nelec
@@ -21,8 +21,8 @@ c 2) a gaussian basis
 
       use precision_kinds, only: dp
       implicit none
-
-      integer :: i, iabs, ic, imax, iu
+      integer :: iu
+      integer :: i, iabs, ic, imax
       integer :: j, k, l, ncheck
       integer, parameter :: nprime = 10
       real(dp), parameter :: zero = 0.d0
@@ -31,18 +31,18 @@ c 2) a gaussian basis
 
 
 
-c Check that nbasis in lcao matches specified basis on all centers
+! Check that nbasis in lcao matches specified basis on all centers
       ncheck=0
       do ic=1,ncent
         i=iwctype(ic)
-        ncheck=ncheck+ ns(i)
-     &  + npx(i) + npy(i) + npz(i)
-     &  + ndxx(i) + ndxy(i) + ndxz(i) + ndyy(i) + ndyz(i) + ndzz(i)
-     &  + nfxxx(i) + nfxxy(i) + nfxxz(i) + nfxyy(i) + nfxyz(i)
-     &  + nfxzz(i) + nfyyy(i) + nfyyz(i) + nfyzz(i) + nfzzz(i)
-     &  + ngxxxx(i) + ngxxxy(i) + ngxxxz(i) + ngxxyy(i) + ngxxyz(i)
-     &  + ngxxzz(i) + ngxyyy(i) + ngxyyz(i) + ngxyzz(i) + ngxzzz(i)
-     &  + ngyyyy(i) + ngyyyz(i) + ngyyzz(i) + ngyzzz(i) + ngzzzz(i)
+        ncheck=ncheck+ ns(i) &
+        & + npx(i) + npy(i) + npz(i) &
+        & + ndxx(i) + ndxy(i) + ndxz(i) + ndyy(i) + ndyz(i) + ndzz(i) &
+        & + nfxxx(i) + nfxxy(i) + nfxxz(i) + nfxyy(i) + nfxyz(i) &
+        & + nfxzz(i) + nfyyy(i) + nfyyz(i) + nfyzz(i) + nfzzz(i) &
+        & + ngxxxx(i) + ngxxxy(i) + ngxxxz(i) + ngxxyy(i) + ngxxyz(i) &
+        & + ngxxzz(i) + ngxyyy(i) + ngxyyz(i) + ngxyzz(i) + ngxzzz(i) &
+        & + ngyyyy(i) + ngyyyz(i) + ngyyzz(i) + ngyzzz(i) + ngzzzz(i)
       enddo
 
 
@@ -52,7 +52,7 @@ c Check that nbasis in lcao matches specified basis on all centers
         call fatal_error('WRITE_BAS: ncheck not equal to nbasis')
       endif
 
-c Exponent for asymptotic basis
+! Exponent for asymptotic basis
       betaq=zero
       do ic=1,ncent
         betaq=betaq+znuc(iwctype(ic))
@@ -141,8 +141,8 @@ c Exponent for asymptotic basis
 
       write(ounit,'(/,''no. of orbitals ='',t30,i10)') norb
 
-c the following sets up strings to identify basis functions on centers for
-c the printout of coefficients and screening constants.
+! the following sets up strings to identify basis functions on centers for
+! the printout of coefficients and screening constants.
 
 
   210 continue
@@ -155,12 +155,12 @@ c the printout of coefficients and screening constants.
 
       i=1
       do while (i.le.norb)
-       imax=i+4
-       if (i+4.gt.norb) then
+       imax=i+9
+       if (i+9.gt.norb) then
         imax=norb
        endif
        write (iu, 211) (l, l=i,imax)
-C      write (iu, 212) TODO : print out the symmetry
+!      write (iu, 212) TODO : print out the symmetry
 
        j=1
        do ic=1,ncent
@@ -348,9 +348,9 @@ C      write (iu, 212) TODO : print out the symmetry
        write (iu, *)
       enddo ! do while (i.le.norb)
 
-  211 format (5X,8X,5(1X,I10))
-  212 format (5X,8X,5(1X,A10))
-  213 format (I5,I3,I3,A5,5(1X,F10.6))
+  211 format (5X,8X,10(1X,I10))
+  212 format (5X,8X,10(1X,A10))
+  213 format (I5,I3,I3,A5,10(1X,F10.6))
 
       if(numr.eq.0) then
         write(iu,'(''screening constants'')')
