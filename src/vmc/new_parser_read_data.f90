@@ -806,6 +806,7 @@ subroutine read_orbitals_file(file_orbitals)
     use general, only: pooldir
     use method_opt, only: method
     use precision_kinds, only: dp
+    use write_orb_loc_mod, only: write_orb_loc
 
     implicit none
 
@@ -886,28 +887,9 @@ subroutine read_orbitals_file(file_orbitals)
         endif
     enddo
     call bcast(coef)
+    ! printing of the lcao orbitals coefficients will be done by write_orb_loc subroutine.
+    write(ounit,*) "Orbital coefficients are written to the output.log file"
 
-    write(ounit,*)
-    write(ounit,*) " LCAO orbitals "
-
-    temp3 = '(T8, T14, i3, T28, i3, T42, i3, T56, i3, T70, i3, T84, i3, T98, i3, T112, i3, T126, i3, T140, i3)'
-    ! print orbs in blocks of 10
-    counter = 0
-    do k = 10, nbasis, 10
-!        write(ounit,*) " Orbitals  ", k-9 , "  to ", k
-        write(ounit, fmt=temp3 )  (i, i = k-9, k)
-        do iorb = 1, norb
-            write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=k-9, k)
-        enddo
-        counter = counter + 10
-    enddo
-
-
-    ! Remaining block
-    write(ounit, fmt=temp3 )  (i, i = counter, nbasis)
-    do iorb = 1, norb
-        write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=counter, nbasis)
-    enddo
     ilcao = ilcao + 1
 
     call bcast(ilcao)
@@ -2954,4 +2936,4 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
 
     if (wid) close(iunit)
 end subroutine read_efield_file
-end module 
+end module

@@ -110,7 +110,6 @@ if (MPI_Fortran_FOUND)
     strech.f
     verify_orbitals.f
     vmc.f
-    write_orb_loc.f
 	  )
 
   file(GLOB VMC90_SOURCE
@@ -138,6 +137,7 @@ if (MPI_Fortran_FOUND)
     regterg.f90
     set_input_data.f90
     slm.f90
+    write_orb_loc.f90
 	  )
 
   set_property(
@@ -224,7 +224,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/multideterminant.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrowe.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/write_orb_loc.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/write_orb_loc.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspexact4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_matrix_corsamp.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_matrix.f
