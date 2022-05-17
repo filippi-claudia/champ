@@ -13,7 +13,7 @@ c Modified by A. Scemama
       use const, only: ipr
       use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: kref
+      use multidet, only: kref, kchange, kref_fixed
       use dorb_m, only: iworbd
       use contr3, only: mode
 
@@ -28,6 +28,12 @@ c Modified by A. Scemama
       use optwf_handle_wf, only: dcopy
       use matinv_mod, only: matinv
       use orbitals_mod, only: orbitals
+      use set_input_data, only: multideterminants_define
+      use optorb_f_mod, only: optorb_define
+      use optwf_contrl, only: ioptorb
+      use coefs, only: norb
+      use orbval, only: nadorb
+
 
       implicit none
 
@@ -44,69 +50,93 @@ c Modified by A. Scemama
 c compute orbitals
       call orbitals(x,rvec_en,r_en)
 
+      kchange=0
       icheck=0
   10  continue
 
       do iab=1,2
 
-      if(iab.eq.1) then
-        ish=0
-        nel=nup
-       else
-        ish=nup
-        nel=ndn
-      endif
+         if(iab.eq.1) then
+            ish=0
+            nel=nup
+         else
+            ish=nup
+            nel=ndn
+         endif
 
-      call allocate_multislater() ! properly accessing array elements
-      detiab(kref,iab)=1.d0
+         call allocate_multislater() ! properly accessing array elements
+         detiab(kref,iab)=1.d0
 
-      jk=-nel
-      do j=1,nel
-        jorb=iworbd(j+ish,kref)
+         jk=-nel
+         do j=1,nel
+            jorb=iworbd(j+ish,kref)
 
-        jk=jk+nel
+            jk=jk+nel
 
-        call dcopy(nel,orb(1+ish,jorb),1,slmi(1+jk,iab),1)
-        call dcopy(nel,dorb(1,1+ish,jorb),3,fp(1,j,iab),nel*3)
-        call dcopy(nel,dorb(2,1+ish,jorb),3,fp(2,j,iab),nel*3)
-        call dcopy(nel,dorb(3,1+ish,jorb),3,fp(3,j,iab),nel*3)
-        call dcopy(nel,ddorb (1+ish,jorb),1,fpp (j,iab),nel)
-      enddo
+            call dcopy(nel,orb(1+ish,jorb),1,slmi(1+jk,iab),1)
+            call dcopy(nel,dorb(1,1+ish,jorb),3,fp(1,j,iab),nel*3)
+            call dcopy(nel,dorb(2,1+ish,jorb),3,fp(2,j,iab),nel*3)
+            call dcopy(nel,dorb(3,1+ish,jorb),3,fp(3,j,iab),nel*3)
+            call dcopy(nel,ddorb (1+ish,jorb),1,fpp (j,iab),nel)
+         enddo
 
-c calculate the inverse transpose matrix and itsdeterminant
-      if(nel.gt.0) call matinv(slmi(1,iab),nel,detiab(kref,iab))
+c     calculate the inverse transpose matrix and itsdeterminant
+         if(nel.gt.0) call matinv(slmi(1,iab),nel,detiab(kref,iab))
 
-c loop through up spin electrons
-c take inner product of transpose inverse with derivative
-c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
-      ik=-nel
-      do i=1,nel
-        ik=ik+nel
-        ddx(1,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(1,1+ik,iab),3)
-        ddx(2,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(2,1+ik,iab),3)
-        ddx(3,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(3,1+ik,iab),3)
-        d2dx2(i+ish)=ddot(nel,slmi(1+ik,iab),1,fpp( 1+ik,iab),1)
-      enddo
-
-       if(ipr.ge.4) then
-          ik=-nel
-          do i=1,nel
+c     loop through up spin electrons
+c     take inner product of transpose inverse with derivative
+c     vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
+         ik=-nel
+         do i=1,nel
             ik=ik+nel
-            write(ounit,*) 'slmi',iab,'M',(slmi(ii+ik,iab),ii=1,nel)
-          enddo
-        endif
+            ddx(1,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(1,1+ik,iab),3)
+            ddx(2,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(2,1+ik,iab),3)
+            ddx(3,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(3,1+ik,iab),3)
+            d2dx2(i+ish)=ddot(nel,slmi(1+ik,iab),1,fpp( 1+ik,iab),1)
+         enddo
+
+         if(ipr.ge.4) then
+            ik=-nel
+            do i=1,nel
+               ik=ik+nel
+               write(ounit,*) 'slmi',iab,'M',(slmi(ii+ik,iab),ii=1,nel)
+            enddo
+         endif
       enddo
 
       if(ipr.ge.4) write(ounit,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
 
-c for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
-      if(index(mode,'dmc').eq.0) then
+c     for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
+      if(index(mode,'dmc').eq.0 .and. kref_fixed.eq.0) then ! allow if kref is allowed to vary
+         icheck=icheck+1
+         if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.10) then
+            call check_detref(ipass,icheck,newref)
+            if(newref.gt.0) goto 10
 
-      icheck=icheck+1
-      if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.10) then
-        call check_detref(ipass,icheck,newref)
-        if(newref.gt.0) goto 10
-      endif
+c reshuffling determinants just if the new kref was accepted
+            if(newref.eq.0 .and. kchange.gt.0) then
+               call multideterminants_define(kchange,icheck)
+               if (ioptorb.ne.0) then
+                  norb=norb+nadorb
+                  write(ounit, *) norb
+                  call optorb_define
+               endif
+            endif
+
+         endif
+
+c reshuffling determinants if the maximum number of iterations looking for kref was exhausted
+         if (kchange.eq.10) then
+            call multideterminants_define(kchange,icheck)
+            if (ioptorb.ne.0) then
+               norb=norb+nadorb
+               write(ounit, *) norb
+               call optorb_define
+            endif
+            write(ounit, *) "kref changed but it is not optimal"
+         endif
+
+
 
       endif
 
@@ -117,16 +147,13 @@ c-----------------------------------------------------------------------
 
       use const, only: ipr
       use estpsi, only: detref
-      use multidet, only: kref
-
-      use optwf_contrl, only: ioptorb
-      use coefs, only: norb
-      use orbval, only: nadorb
+      use multidet, only: kref, kref_old, kchange
       use multislater, only: detiab, allocate_multislater
       use precision_kinds, only: dp
       use contrl_file, only: ounit
-      use set_input_data, only: multideterminants_define
-      use optorb_f_mod, only: optorb_define
+      use dets, only: ndet
+      use multideterminant_mod, only: idiff
+      use error, only: fatal_error
       implicit none
 
       integer :: iab, icheck, iflag, ipass
@@ -134,14 +161,15 @@ c-----------------------------------------------------------------------
 
 
       iflag=0
+
       if(ipass.le.2) return
 
       call allocate_multislater() !access elements after allocating
       do iab=1,2
         dlogdet=dlog10(dabs(detiab(kref,iab)))
-c       dcheck=dabs(dlogdet-detref(iab)/ipass)
-c       if(iab.eq.1.and.dcheck.gt.6) iflag=1
-c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
+c     dcheck=dabs(dlogdet-detref(iab)/ipass)
+c     if(iab.eq.1.and.dcheck.gt.6) iflag=1
+c     if(iab.eq.2.and.dcheck.gt.6) iflag=2
         dcheck=detref(iab)/ipass-dlogdet
         if(iab.eq.1.and.dcheck.gt.6) iflag=1
         if(iab.eq.2.and.dcheck.gt.6) iflag=2
@@ -150,12 +178,30 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
 
       if(ipr.ge.2) write(ounit,*) 'check detref',iflag
       if(iflag.gt.0) then
-        call multideterminants_define(iflag,icheck)
-        if (ioptorb.ne.0) then
-          norb=norb+nadorb
-          write(ounit, *) norb
-          call optorb_define
-        endif
+
+
+c     block of code decoupled from multideterminants_define
+c to change kref if the change is accepted or required
+         if (kref .gt. 1 .and. icheck .eq. 1) then
+            kref = 1
+         endif
+
+
+
+         if (idiff(kref_old, kref, iflag) .eq. 0) then
+            kref = kref + 1
+            if (kref .gt. ndet) then
+               call fatal_error('MULTIDET_DEFINE: kref > ndet')
+            endif
+         endif
+
+         write (ounit, *) 'kref change', iflag, kref_old, kref
+
+         kref_old = kref
+
+         kchange = kchange + 1
+
+
       endif
 
       return
@@ -186,8 +232,6 @@ c-----------------------------------------------------------------------
 
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
-
-
 
 
       ! resize ddor and dorb if necessary

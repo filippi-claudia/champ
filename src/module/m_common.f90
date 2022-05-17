@@ -31,7 +31,7 @@ contains
         use vmc_mod, only: norb_tot
         use coefs, only: norb
         use optwf_parms, only: nparmj
-        
+
         if (.not. allocated(b)) allocate (b(norb_tot, nelec))
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
@@ -341,6 +341,8 @@ module multidet
     integer :: kref
     integer :: kref_old
     integer :: ndet_req
+    integer :: kchange
+    integer :: kref_fixed
     integer, dimension(:, :), allocatable :: numrep_det !(MDET,2)
     integer, dimension(:, :), allocatable :: k_det !(MDET,2)
     integer, dimension(:, :), allocatable :: k_det2 !(MDET,2)
@@ -348,9 +350,9 @@ module multidet
     integer, dimension(:), allocatable :: ndetiab !(2)
     integer, dimension(:), allocatable :: ndetiab2 !(2)
     integer, dimension(:), allocatable :: ndetsingle !(2)
-    
+
     private
-    public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old
+    public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, kref_fixed, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old, kchange
     public :: allocate_multidet, deallocate_multidet
     save
 contains
@@ -1201,4 +1203,4 @@ subroutine deallocate_m_common()
     call deallocate_zmatrix()
     call deallocate_zmatrix_grad()
 end subroutine deallocate_m_common
-end module 
+end module
