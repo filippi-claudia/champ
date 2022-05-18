@@ -121,6 +121,7 @@ if (MPI_Fortran_FOUND)
     lapack_wrapper.f90
     main.f90
     new_parser_read_data.f90
+    fitting.f90
     olbfgs.f90
     optgeo_convcartzmat.f90
     optgeo_coords_int.f90
@@ -212,6 +213,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/sites.f
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonloc.f
     ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/fitting.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f    # This file should be refactored and eliminated.
