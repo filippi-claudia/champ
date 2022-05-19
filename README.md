@@ -1,19 +1,3 @@
-```
- ____________________________________________________________________
-
-
-  .d8888b.   888    888         d8888  888b     d888  8888888b.
- d88P  Y88b  888    888        d88888  8888b   d8888  888   Y88b
- 888    888  888    888       d88P888  88888b.d88888  888    888
- 888         8888888888      d88P 888  888Y88888P888  888   d88P
- 888         888    888     d88P  888  888 Y888P 888  8888888P"
- 888    888  888    888    d88P   888  888  Y8P  888  888
- Y88b  d88P  888    888   d8888888888  888   "   888  888
-  "Y8888P"   888    888  d88P     888  888       888  888
-
- ____________________________________________________________________
-```
-------
 ![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.jpg?raw=true)
 
 
@@ -66,7 +50,7 @@ the program suite and people who use it do so at their own risk.
 CHAMP relies on various other program packages:
 
 1. [Parser](https://github.com/neelravi/mpi-libfdf-parser):
-   An easy-to-use and easy-to-extend keyword-value pair based input file parser written in Fortran 2008.  This parser uses a heavily modified libFDF library and is written by Ravindra Shinde. The parser is built in the code, however, the parser folder can be easily adapted by any other Fortran-based code.
+   An easy-to-use and easy-to-extend keyword-value pair based input file parser written in Fortran 2008.  This parser uses a heavily modified libFDF library and is written by [Ravindra Shinde](https://github.com/neelravi). It can parse keyword-value pairs, blocks of data, and general variables with different physical units in an order-independent manner. Our implementation can handle multiple data types and file formats. The parser is kept as a library in the code, however, it can be easily adapted by any other Fortran-based code.
 
 2. GAMESS:
    For finite systems the starting wavefunction is obtained from the
@@ -76,9 +60,9 @@ CHAMP relies on various other program packages:
 3. GAMESS_Interface:
    The wavefunction produced by GAMESS has to be cast in a form
    suitable for input to CHAMP.  This is a lot more work than first meets
-   the eye. The Perl script was written by Friedemann Schautz.
+   the eye. We provide a python package inside the CHAMP's tool directory to extract all the necessary information needed from a GAMESS calculation. The tool can also extract information from a TREXIO file in the hdf5 file format. This utility is written by [Ravindra Shinde](https://github.com/neelravi).
 
-4. MOLCAS_Interface: recently added thanks to Csaba Daday and Monika Dash
+4. MOLCAS_Interface: A python package qc2champ can be used to convert a MOLCAS or an openMOLCAS calculation into the input files needed by CHAMP. This package is written by [Ravindra Shinde](https://github.com/neelravi). An independent version of the convertor script was added thanks to Csaba Daday and Monika Dash.
 
 ------------------------------------------------------------------------
 
@@ -106,12 +90,17 @@ required.
 
 To select a given compiler, you can type:
 ```
-cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=ifort
+cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=mpif90
 ```
 To use LAPACK and BLAS installed locally, include the path to the libraries:
 ```
-cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=ifort -D BLAS_blas_LIBRARY=/home/user/lib/BLAS/blas_LINUX.a -D LAPACK_lapack_LIBRARY=/home/user/lib/LAPACK/liblapack.a
+cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=mpif90 -D BLAS_blas_LIBRARY=/home/user/lib/BLAS/blas_LINUX.a -D LAPACK_lapack_LIBRARY=/home/user/lib/LAPACK/liblapack.a
 ```
+To enable/disable vectorization based on the architecture:
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DVECTORIZED=yes/no/auto
+```
+
 To compile only e.g. VMC serial:
 ```
 cmake --build build --target vmc.mov1
@@ -126,9 +115,10 @@ Compared to the previous Makefiles the dependencies for the include files
 #### CMAKE Recipes
 
 Here are a couple of recipes for commonly used computing facilities, which can be easily adapted.
-* **Cartesius** (cartesius.surfasara.nl):
+* **Snellius** (snellius.surfa.nl):
 	- To compile the code, first load the required modules:
 		```bash
+        module purge
 		module load 2021
 		module load git
         module load CMake/3.20.1-GCCcore-10.3.0
@@ -152,52 +142,51 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 
 		```bash
 		#!/bin/bash
-        #SBATCH -t 0-12:00:00           # time in (day-hours:min:sec)
-        #SBATCH -N 60                   # number of nodes
-        #SBATCH -n 1440                 # number of cores
-        #SBATCH --ntasks-per-node 24    # tasks per node
-        #SBATCH -J cn19-B1              # name of the job
-        #SBATCH -o vmc.%j.out           # std output file name for slurm
-        #SBATCH -e vmc.%j.err           # std error file name for slurm
-        #SBATCH --constraint=haswell    # specific requirements about procs
-		#SBATCH -p normal               # partition (queue)
+        #!/bin/bash
+        #SBATCH -t 0-12:00:00            # time in (day-hours:min:sec)
+        #SBATCH -N 1                     # number of nodes
+        #SBATCH -n 128                   # number of cores
+        #SBATCH --ntasks-per-node 128    # tasks per node
+        #SBATCH -J 1-128-AMD             # name of the job
+        #SBATCH -o vmc.%j.out            # std output file name for slurm
+        #SBATCH -e vmc.%j.err            # std error file name for slurm
+        #SBATCH --exclusive              # specific requirements about node
+        #SBATCH --partition thin         # partition (queue)
         #
         module purge
-		module load 2021
-		module load imkl
+        module load 2021
+        module load imkl/2021.2.0-iimpi-2021a
+        module load CMake/3.20.1-GCCcore-10.3.0
         #
         export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
         cd $PWD
 		srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
 		```
 * **CCPGate**:
-	- To build with ifort set the variables for the Intel Compiler and MPI:
-		If you use CSH:
-		```
-		source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.csh -arch intel64 -platform linux
-		source /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.csh -arch intel64 -platform linux
-		```
-		If you use BASH:
-		```
-		. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.1.144/linux/bin/compilervars.sh intel64
-		. /software/intel/intel_2019.0.117/compilers_and_libraries_2019.0.117/linux/mpi/intel64/bin/mpivars.sh intel64
+	- To build with mpiifort, load the required modules of the Intel Compiler and MPI:
+
+		```bash
+        module load compiler
+        module load compiler-rt
+        module load mkl
+        module load mpi
+        module load trexio/2.0.0-intel     # Optional
+        module load python3                # Optional
 		```
 		Setup the build:
 		```
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 		```
+	- To run the code with Intel Compilers and MPI:
+	    ```bash
+        mpirun -np 24  champ/bin/vmc.mov1 -i input.inp -o output.out -e error
+		```
+
  	- To build with gfortran:
-		If you use CSH:
-		```
-		source /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh -arch intel64 -platform linux
-		```
-		If you use BASH:
-		```
-		. /software/intel/intel_2019.0.117/impi/2019.0.117/intel64/bin/mpivars.sh intel64
-		```
+
 		Setup the build:
 		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=/usr/bin/mpif90
 		```
 		which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.
 	- To run the code:
