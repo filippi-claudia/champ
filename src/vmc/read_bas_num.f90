@@ -27,7 +27,7 @@ contains
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
       use numbas, only: allocate_numbas
       use coefs, only: nbasis
-      use numexp, only: ae, ce, allocate_numexp
+      use numexp, only: ae, ce, ab, allocate_numexp
       use pseudo, only: nloc
       use general, only: filename, filenames_bas_num
 
@@ -35,13 +35,14 @@ contains
       use general, 			      only: pooldir, bas_id
       use contrl_file,        only: ounit, errunit
       use precision_kinds,    only: dp
-      use spline2_mod, only: spline2
+      use spline2_mod,        only: spline2
+      use fitting_methods,    only: exp_fit
 
       implicit none
 
       integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
       integer         :: iwf, info
-      real(dp)        :: val, dwf1, wfm, dwfn, dwfm
+      real(dp)        :: val, dwf1, wfm, dwfn, dwfm, a, b, temp
       integer         :: iunit, iostat = 0, counter = 0
       logical         :: exist, skip = .true.
 
@@ -207,15 +208,24 @@ contains
           ae(2,irb,ic,iwf)=0.d0
           dwfn=0.d0
         endif
+
+! Nonzero basis at the boundary : Ravindra Shinde
+        if(rwf(nr(ic),irb,ic,iwf).gt.1.d-12) then
+          call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ab(1,irb,ic,iwf), ab(2,irb,ic,iwf))
+          write(45, *) 'DEBUG :: exp_fit: ', ab(1,irb,ic,iwf), ab(2,irb,ic,iwf)
+        endif
+
+
 ! c       if(ipr.gt.1) then
           write(45,'(''check the large radius expansion'')')
           write(45,'(''a0,ak'',1p2e22.10)')     &
                             ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
-          write(45,'(''irad, rad, extrapolated value, correct value'')')
+          write(45,'(''irad, rad, extrapolated value, correct value,  DEBUG new fit'')')
           do ir=1,10
             val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
-            write(45,'(i2,1p3e22.14)')      &
-            ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf)
+            temp = ab(1,irb,ic,iwf)*dexp(-ab(2,irb,ic,iwf)*x(nr(ic)-ir))
+            write(45,'(i2,1p4e22.14)')      &
+            ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf), temp
           enddo
           write(45,*) 'dwf1,dwfn',dwf1,dwfn
 ! c       endif

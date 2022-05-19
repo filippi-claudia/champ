@@ -174,10 +174,11 @@ module numexp
     implicit none
 
     real(dp), dimension(:, :, :, :), allocatable :: ae !(2,MRWF,MCTYPE,MFORCE)
+    real(dp), dimension(:, :, :, :), allocatable :: ab !(2,MRWF,MCTYPE,MFORCE)
     real(dp), dimension(:, :, :, :), allocatable :: ce !(NCOEF,MRWF,MCTYPE,MFORCE)
 
     private
-    public :: ae, ce
+    public :: ae, ab, ce
     public :: allocate_numexp, deallocate_numexp
     save
 contains
@@ -187,11 +188,13 @@ contains
         use force_mod, only: MFORCE
         use vmc_mod, only: NCOEF
         if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, MFORCE))
+        if (.not. allocated(ab)) allocate (ab(2, MRWF, nctype_tot, MFORCE))
         if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, nctype_tot, MFORCE))
     end subroutine allocate_numexp
 
     subroutine deallocate_numexp()
         if (allocated(ce)) deallocate (ce)
+        if (allocated(ab)) deallocate (ab)
         if (allocated(ae)) deallocate (ae)
     end subroutine deallocate_numexp
 
