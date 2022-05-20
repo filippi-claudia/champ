@@ -137,7 +137,7 @@ c All quantities saved (old) avaliable
 
         do kk=1,3
           do iorb=1,norb
-            dorb_tmp(iorb,kk)=dorb(kk,iel,iorb)
+            dorb_tmp(iorb,kk)=dorb(iorb,iel,kk)
           enddo
         enddo
         
@@ -237,7 +237,7 @@ c       write(ounit,*) 'VD',(vd(kk),kk=1,3)
 c Within single-electron move - iel not equal to electron moved - quantities of electron iel not saved
         do kk=1,3
           do iorb=1,norb
-            dorb_tmp(iorb,kk)=dorb(kk,iel,iorb)
+            dorb_tmp(iorb,kk)=dorb(iorb,iel,kk)
           enddo
         enddo
 
