@@ -157,8 +157,9 @@ subroutine parser
   use parser_read_data, only: read_determinants_file, read_jasderiv_file
   use parser_read_data, only: read_jastrow_file, read_basis_num_info_file
   use parser_read_data, only: read_symmetry_file, read_orbitals_file
-  use parser_read_data, only: read_trexio_molecule_file, read_molecule_file
-  use parser_read_data, only: read_trexio_orbitals_file
+  use parser_read_data, only: read_molecule_file
+  use trexio_read_data, only: read_trexio_molecule_file
+  use trexio_read_data, only: read_trexio_orbitals_file
   use parser_read_data, only: header_printing
   use misc_grdnts,      only: inpwrt_zmatrix, inpwrt_grdnts_zmat, inpwrt_grdnts_cart
   use set_input_data,   only: hessian_zmat_define, modify_zmat_define
