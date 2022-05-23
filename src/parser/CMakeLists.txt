@@ -8,7 +8,7 @@ file(GLOB PARSER_SOURCE
 	utils.F90
 	)
 
-add_library(parser ${PARSER_SOURCE})
+add_library(parser SHARED ${PARSER_SOURCE})
 
 target_compile_options(parser
   PRIVATE
