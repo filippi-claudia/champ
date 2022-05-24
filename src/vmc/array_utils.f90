@@ -218,7 +218,7 @@ contains
     end subroutine modified_gram_schmidt
 
     function search_key(keys, i) result(k)
-        !> rief Search for a given index  in a vector
+        !> Brief Search for a given index  in a vector
         !> \param keys Vector of index
         !> \param i Index to search for
         !>

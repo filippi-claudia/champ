@@ -338,3 +338,64 @@ subroutine deallocate_m_basis()
     call deallocate_numbas2()
 end subroutine deallocate_m_basis
 end module
+
+! subroutines required by the trexio modules
+module m_trexio_basis
+    contains
+    double precision function gnorm(A, l)
+        use precision_kinds,    only: dp
+        implicit none
+        real(dp), intent (in)       :: A
+        integer, intent (in)    :: l
+        real(dp), parameter     :: pi = 3.1415926535897932
+
+        gnorm = 1.0d0
+
+        if (l .eq. 0) then
+            gnorm = (2.d0*A)**(3.d0/4.d0)*2.d0*(1.d0/(pi**(1.d0/4.d0)))
+        elseif (l .eq. 1) then
+            gnorm = (2.d0*A)**(5.d0/4.d0)*dsqrt(8.d0/3.d0)*(1.d0/(pi**(1.d0/4.d0)))
+        elseif (l .eq. 2) then
+            gnorm = (2.d0*A)**(7.d0/4.d0)*dsqrt(16.d0/15.d0)*(1.d0/(pi**(1.d0/4.d0)))
+        elseif (l .eq. 3) then
+            gnorm = (2.d0*A)**(9.d0/4.d0)*dsqrt(32.d0/105.d0)*(1.d0/(pi**(1.d0/4.d0)))
+        elseif (l .eq. 4) then
+            gnorm = (2.d0*A)**(11.d0/4.d0)*dsqrt(64.d0/945.d0)*(1.d0/(pi**(1.d0/4.d0)))
+        endif
+
+    end function gnorm
+
+    subroutine unique_elements(arr, res, count, ind)
+        implicit none
+        integer, dimension(1), intent(in)           :: arr    ! The input
+        integer, dimension(1), intent(out)          :: res    ! The output
+        integer, intent(out)                        :: count                   ! The number of unique elements
+        integer, dimension(1), intent(out)          :: ind
+        integer                                     :: i,j,k
+
+        k = 1
+        res(1) = arr(1)
+        outer: do i=2,size(arr)
+        do j=1,k
+            if (res(j) == arr(i)) then
+                ! Found a match so start looking again
+                cycle outer
+            end if
+        end do
+        ! No match found so add it to the output
+        k = k + 1
+        res(k) = arr(i)
+        end do outer
+        write(*,advance='no',fmt='(a,i0,a)') 'Unique list has ',k,' elements: '
+        write(*,*) res(1:k)
+        count = k
+        do i=1,k
+        ind(i) = i
+        end do
+        write(*,advance='no',fmt='(a)') 'Unique list indices '
+        write(*,*) ind(1:k)
+
+    end subroutine unique_elements
+
+
+end module

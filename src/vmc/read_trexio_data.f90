@@ -1,5 +1,15 @@
 module trexio_read_data
     use error, only : fatal_error
+    use precision_kinds,        only: dp
+    use m_trexio_basis,         only: gnorm
+    use m_trexio_basis,         only: unique_elements
+
+    private
+    public :: dp
+    public :: read_trexio_molecule_file
+    public :: read_trexio_symmetry_file
+    public :: read_trexio_orbitals_file
+    public :: read_trexio_basis_file
     contains
 
     subroutine read_trexio_molecule_file(file_trexio)
@@ -55,7 +65,7 @@ module trexio_read_data
         endif
 
         write(ounit,*) '-----------------------------------------------------------------------'
-        write(ounit,string_format)  " Reading molecular coordinates from the trexio file :: ",  file_trexio_path
+        write(ounit,*) " Reading molecular coordinates from the trexio file :: ",  file_trexio_path
         write(ounit,*) '-----------------------------------------------------------------------'
 
         ! Check if the file exists
@@ -200,7 +210,7 @@ module trexio_read_data
         endif
 
         write(ounit,*) '---------------------------------------------------------------------------'
-        write(ounit,string_format)  " Reading LCAO orbitals from the file :: ",  trim(file_trexio_path)
+        write(ounit,*) " Reading LCAO orbitals from the file :: ",  trim(file_trexio_path)
         write(ounit,*) '---------------------------------------------------------------------------'
         ! Check if the file exists
 
@@ -279,7 +289,27 @@ module trexio_read_data
         use periodic_table,     only: atom_t, element
         use contrl_file,        only: ounit, errunit
         use general,            only: pooldir
-        use precision_kinds, only: dp
+
+        ! The following to be used to store the information
+        use numbas_mod,         only: MRWF, MRWF_PTS
+        use atom,               only: znuc, nctype, nctype_tot
+        use vmc_mod,            only: NCOEF
+        use atom,               only: znuc, nctype
+        use ghostatom,          only: newghostype
+        use const,              only: ipr
+        use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
+        use numbas,             only: allocate_numbas
+        use coefs,              only: nbasis
+        use numexp,             only: ae, ce, ab, allocate_numexp
+        use pseudo,             only: nloc
+        use general,            only: filename, filenames_bas_num
+
+        ! For processing the stored information
+        use atom, 			    only: atomtyp
+        use general, 			only: pooldir, bas_id
+        use contrl_file,        only: ounit, errunit
+        use spline2_mod,        only: spline2
+        use fitting_methods,    only: exp_fit
 
 #if defined(TREXIO_FOUND)
         use trexio
@@ -311,7 +341,6 @@ module trexio_read_data
         integer                         :: iostat, i, j, k, iunit
         logical                         :: exist
         type(atom_t)                    :: atoms
-        character(len=2), allocatable   :: unique(:)
 
         ! trexio
         integer(8)                      :: trex_basis_file
@@ -322,6 +351,15 @@ module trexio_read_data
         character(len=128)              :: float_format   = '(A, T60, f12.8)'
         character(len=128)              :: string_format  = '(A, T60, A128)'
 
+        ! Grid related
+        integer                         :: gridtype=3
+        integer                         :: gridpoints=2000
+        real(dp)                        :: gridarg=1.003
+        real(dp)                        :: gridr0=20.0
+        real(dp)                        :: gridr0_save = 20.0
+
+        integer, dimension(:), allocatable :: temp1, temp2, temp
+        integer                         :: count
 
         trex_basis_file = 0
 
@@ -404,31 +442,128 @@ module trexio_read_data
         write(ounit,fmt=int_format) " Number of primitives ::  ", basis_num_prim
         write(ounit,fmt=int_format) " Number of shells     ::  ", basis_num_shell
         write(ounit,fmt=int_format) " Number of AO         ::  ", ao_num
-        write(ounit,*) " Nucleus Index      ::  ", (basis_nucleus_index(i), i=1, basis_num_shell)
-        write(ounit,*) " Shell Index        ::  ", (basis_shell_index(i), i=1, basis_num_prim)
-        write(ounit,*) " Shell Ang. Mom.    ::  ", (basis_shell_ang_mom(i), i=1, basis_num_shell)
-        write(ounit,*) " Shell Factor       ::  ", (basis_shell_factor(i), i=1, basis_num_shell)
-        write(ounit,*) " Exponent           ::  ", (basis_exponent(i), i=1, basis_num_prim)
-        write(ounit,*) " Coefficient        ::  ", (basis_coefficient(i), i=1, basis_num_prim)
-        write(ounit,*) " Prim. Factor       ::  ", (basis_prim_factor(i), i=1, basis_num_prim)
-        write(ounit,*) " AO Shell           ::  ", (ao_shell(i), i=1, ao_num)
-        write(ounit,*) " AO Normalization   ::  ", (ao_normalization(i), i=1, ao_num)
-
-
-
-
+        write(ounit,*)
+        write(ounit,*) '-----------------------------------------------------------------------'
         write(ounit,*)
 
+        ! Processing the basis set information to get the numerican grid
+        gridtype=3
+        gridpoints=2000
+        gridarg=1.003
+        gridr0=20.0
+        gridr0_save = gridr0
+
+
+        ! Get the number of shells per atom (information needed to reshuffle AOs)
+
+        write(*,*) gnorm(1.d0, 2)
+
+        allocate(temp(20))
+        allocate(temp1(20))
+        allocate(temp2(20))
+
+        temp = (/1, 2, 3, 2, 2, 4, 5, 5, 4, 6, 6, 5/)
+
+        call unique_elements(temp, temp1, count, temp2)
+
+
+
+
+
+
+    end subroutine read_trexio_basis_file
+
+
+
+    subroutine read_trexio_symmetry_file(file_trexio)
+        ! Ravindra
+
+        use custom_broadcast,   only: bcast
+        use mpiconf,            only: wid, idtask
+
+        use contrl_file,        only: ounit, errunit
+        use coefs,              only: norb
+        use optorb,             only: irrep
+        use vmc_mod,            only: norb_tot
+        use general,            only: pooldir
+        use precision_kinds,    only: dp
+
+
+#if defined(TREXIO_FOUND)
+        use trexio
+        use contrl_file,        only: backend
+#endif
+
+        implicit none
+
+        !   local use
+        character(len=72), intent(in)   :: file_trexio
+        character(len=128)              :: file_trexio_path
+        integer                         :: iostat, i, j, k, iunit
+        logical                         :: exist, skip = .true.
+        character(len=40)               :: label
+        integer                         :: io, nsym, mo_num
+        character(len=10), allocatable  :: mo_symmetry(:)
+
+
+        ! trexio
+        integer(8)                      :: trex_symmetry_file
+        integer                         :: rc = 1
+
+        !   Formatting
+        character(len=100)               :: int_format     = '(A, T60, I0)'
+        character(len=100)               :: string_format  = '(A, T60, A)'
+
+        !   External file reading
+
+        if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
+            file_trexio_path = pooldir // file_trexio(7:)
+        else
+            file_trexio_path = file_trexio
+        endif
 
         write(ounit,*) '-----------------------------------------------------------------------'
+        write(ounit,*) " Reading orbital symmetries information from the trexio file :: ", trim(adjustl(file_trexio_path))
+        write(ounit,*) '-----------------------------------------------------------------------'
 
-        ! do j= 1, ncent
-        !     write(ounit,'(A4, 2x, 3F12.6, 2x, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
-        ! enddo
+        ! Check if the file exists
+        if (wid) then
+#if defined(TREXIO_FOUND)
+            trex_symmetry_file = trexio_open(file_trexio_path, 'r', backend, rc)
+            write(*,*) "trexio_open from symmetry :: ", rc
+            rc = trexio_read_mo_num(trex_symmetry_file, mo_num)
+            write(*,*) "trexio_read_mo_num from symmetry:: ", rc
+#endif
+        endif
+        call bcast(mo_num)
+        write(*,*) "trexio symmetry file :: ", trex_symmetry_file
+        ! safe allocate
+        if (.not. allocated(irrep)) allocate (irrep(mo_num))
+        if (.not. allocated(mo_symmetry)) allocate (mo_symmetry(mo_num))
+
+!         if (wid) then
+! #if defined(TREXIO_FOUND)
+!             rc = trexio_read_mo_symmetry(trex_symmetry_file, mo_symmetry)
+!             ! write(*,*) "trexio_read_mo_symmetry :: ", rc
+! #endif
+!         endif
+!         call bcast(mo_symmetry)
+
+        write(ounit,fmt=int_format) " Number of MOs ::  ", mo_num
+        ! write(ounit,*) " MO Symmetry ::  ", (mo_symmetry(i), i=1, mo_num)
 
 
-        write(ounit,*)
-    end subroutine read_trexio_basis_file
+        ! ! read data
+        ! if (wid) then
+        !     read (iunit, *, iostat=iostat) (irrep(io), io=1, norb)
+        !     if (iostat/=0) call fatal_error("Error in reading symmetry file :: expecting irrep correspondence for all norb orbitals")
+        ! endif
+        ! call bcast(irrep)
+
+        ! write(ounit, '(10(1x, i3))') (irrep(io), io=1, norb)
+
+        ! if (wid) close(iunit)
+    end subroutine read_trexio_symmetry_file
 
 
 
