@@ -365,37 +365,4 @@ module m_trexio_basis
 
     end function gnorm
 
-    subroutine unique_elements(arr, res, count, ind)
-        implicit none
-        integer, dimension(1), intent(in)           :: arr    ! The input
-        integer, dimension(1), intent(out)          :: res    ! The output
-        integer, intent(out)                        :: count                   ! The number of unique elements
-        integer, dimension(1), intent(out)          :: ind
-        integer                                     :: i,j,k
-
-        k = 1
-        res(1) = arr(1)
-        outer: do i=2,size(arr)
-        do j=1,k
-            if (res(j) == arr(i)) then
-                ! Found a match so start looking again
-                cycle outer
-            end if
-        end do
-        ! No match found so add it to the output
-        k = k + 1
-        res(k) = arr(i)
-        end do outer
-        write(*,advance='no',fmt='(a,i0,a)') 'Unique list has ',k,' elements: '
-        write(*,*) res(1:k)
-        count = k
-        do i=1,k
-        ind(i) = i
-        end do
-        write(*,advance='no',fmt='(a)') 'Unique list indices '
-        write(*,*) ind(1:k)
-
-    end subroutine unique_elements
-
-
 end module

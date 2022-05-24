@@ -2,7 +2,7 @@ module trexio_read_data
     use error, only : fatal_error
     use precision_kinds,        only: dp
     use m_trexio_basis,         only: gnorm
-    use m_trexio_basis,         only: unique_elements
+    use array_utils,            only: unique_elements
 
     private
     public :: dp
@@ -292,9 +292,8 @@ module trexio_read_data
 
         ! The following to be used to store the information
         use numbas_mod,         only: MRWF, MRWF_PTS
-        use atom,               only: znuc, nctype, nctype_tot
+        use atom,               only: znuc, nctype, nctype_tot, ncent_tot
         use vmc_mod,            only: NCOEF
-        use atom,               only: znuc, nctype
         use ghostatom,          only: newghostype
         use const,              only: ipr
         use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
@@ -358,7 +357,7 @@ module trexio_read_data
         real(dp)                        :: gridr0=20.0
         real(dp)                        :: gridr0_save = 20.0
 
-        integer, dimension(:), allocatable :: temp1, temp2, temp
+        integer, dimension(:), allocatable :: atom_index(:), shell_index_atom(:), nshells_per_atom(:)
         integer                         :: count
 
         trex_basis_file = 0
@@ -458,16 +457,16 @@ module trexio_read_data
 
         write(*,*) gnorm(1.d0, 2)
 
-        allocate(temp(20))
-        allocate(temp1(20))
-        allocate(temp2(20))
+        allocate(atom_index(basis_num_shell))
+        allocate(nshells_per_atom(basis_num_shell))
+        allocate(shell_index_atom(basis_num_shell))
 
-        temp = (/1, 2, 3, 2, 2, 4, 5, 5, 4, 6, 6, 5/)
+        call unique_elements(basis_num_shell, basis_nucleus_index, atom_index, count, nshells_per_atom, shell_index_atom)
 
-        call unique_elements(temp, temp1, count, temp2)
-
-
-
+        print *, "Number of unique elements :: ", count
+        print*, "Unique elements index :: ", atom_index(1:count)
+        print*, "frequency :: ", nshells_per_atom(1:count)
+        print*, "result", shell_index_atom(1:count)
 
 
 

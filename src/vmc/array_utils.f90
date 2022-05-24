@@ -1,8 +1,7 @@
 module array_utils
 
     use precision_kinds, only: dp
-    use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
-                              lapack_qr, lapack_solver, lapack_sort
+    use lapack_wrapper, only: lapack_matrix_vector, lapack_sort
     implicit none
 
     !> \private
@@ -11,6 +10,7 @@ module array_utils
     public :: concatenate, diagonal, eye, generate_diagonal_dominant, norm, &
               initialize_subspace, write_matrix, write_vector, check_deallocate_vector, &
               check_deallocate_matrix, modified_gram_schmidt, diag_mat
+    public :: unique_elements
 
 contains
 
@@ -290,4 +290,93 @@ contains
 
     end subroutine check_deallocate_vector
 
+    subroutine unique_elements(n, arr, res, count, frequency, ind)
+        !> Returns the unique elements of a vector
+        !> Also returns the number of unique elements, their indices in the original vector.
+        !> \param[in] n: size of the vector
+        !> \param[in] arr: vector to be processed
+        !> \param[out] res: vector of unique elements
+        !> \param[out] count: number of unique elements
+        !> \param[out] ind: vector of indices of the unique elements in the original vector
+        !> @author: Ravindra Shinde
+        !> @email: r.l.shinde@utwente.nl
+        !> @date:   24/05/2022
+
+        implicit none
+        integer, intent(in)                         :: n
+        integer, dimension(n), intent(in)           :: arr    ! The input
+        integer, dimension(n), intent(out)          :: res    ! The output
+        integer, dimension(n), intent(out)          :: frequency ! The output
+        integer, intent(out)                        :: count                   ! The number of unique elements
+        integer, dimension(n), intent(out)          :: ind
+        integer                                     :: i,j,k, counter1, counter2
+
+        k = 1
+        ind(1) = 1
+        frequency(1) = 0
+        res(1) = arr(1);
+        counter1 = 1
+
+        outer: do i=1,n
+            do j=1,counter1
+                if (res(j) == arr(i)) then
+                    frequency(j) = frequency(j) + 1
+                    ind(j+1) = i + 1
+                    k = k + 1
+                    cycle outer
+                end if
+            end do
+            res(counter1+1) = arr(i)
+            frequency(counter1+1) = 1
+            ind(k) = i
+            k = k + 1
+            counter1 = counter1 + 1
+        end do outer
+
+        count = counter1
+        do i = count + 1, n
+            res(i) = 0
+            frequency(i) = 0
+            ind(i) = 0
+        end do
+
+    end subroutine unique_elements
+
+    subroutine sortedunique(list, n, indices, sorted)
+        implicit none
+        !   find "indices", the list of unique numbers in "list"
+
+        integer :: n, kx, i, nitems
+        integer, dimension(n) :: list
+        logical, dimension(n) :: mask
+        integer, dimension(:), allocatable :: indices, sorted
+
+        mask(1)=.true.
+
+        do kx=n,2,-1
+            mask(kx)= .not.(any(list(:kx-1)==list(kx)))
+        end do
+
+        if (allocated(indices)) then
+            indices=pack([(kx,kx=1,n)],mask)
+        else
+            allocate(indices, source=pack( [(kx,kx=1,n)],mask) )
+        endif
+
+        nitems = size(indices)
+        if (allocated(sorted)) then
+            do i=1,nitems
+                sorted(i) = list(indices(i))
+            enddo
+        else
+            allocate(sorted(nitems))
+            do i=1,nitems
+                sorted(i) = list(indices(i))
+            enddo
+        endif
+    end subroutine sortedunique
+
+
 end module array_utils
+
+
