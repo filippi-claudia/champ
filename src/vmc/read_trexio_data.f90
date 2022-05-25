@@ -885,16 +885,16 @@ module trexio_read_data
         character(len=100)              :: string_format  = '(A, T60, A)'
 
         ! determinant data (debugging)
-        integer*8 :: det_list(6,50)
-        integer*8 :: read_buf_det_size = 5000   ! how many do you want
+        integer*8 :: det_list(150000)
+        integer*8 :: read_buf_det_size = 1000   ! how many do you want
         integer*8 :: offset_det_read = 10
         integer*8 :: offset_det_data_read = 5
         integer*8 :: determinant_num
         integer   :: int_num
         ! orbital lists (debugging)
-        integer*4 :: orb_list_up(150)
-        integer*4 :: orb_list_dn(150)
-        integer*4 :: occ_num_up, occ_num_dn
+        integer*4 :: orb_list_up(15000), orb_list_dn(15000)
+        integer*8 :: orb_list(1000)
+        integer*4 :: occ_num_up, occ_num_dn, occupied_num
         real*8   ::  determinant_coefficient(150000)
 
 
@@ -945,26 +945,43 @@ module trexio_read_data
         ! endif
         ! call bcast(coef_list)
 
+        ! debugging
+        occ_num_up = 7  ! remove after testing
+        occ_num_dn = 7  ! remove after testing
 
         write(ounit,*)
         write(ounit,*) " Determinant coefficients "
-        write(ounit,'(10(1x, f11.8, 1x))') (determinant_coefficient(i), i=1, ndet)
+        write(ounit,'(10(1x, f11.8, 1x))') (determinant_coefficient(i), i=1, read_buf_det_size)
 
-! !       allocate the orbital mapping array
-!         if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
+!       allocate the orbital mapping array
+        if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
 
         print*, " Contains determinant coefficients ?", trexio_has_determinant_coefficient(trex_determinant_file)
         print*, " Contains determinant list ?", trexio_has_determinant_list(trex_determinant_file)
 
         ! convert one given determinant into lists of orbitals
-        rc = trexio_to_orbital_list_up_dn(1, det_list(:, offset_det_data_read+1), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
-        ! write(*,*) occ_num_up, occ_num_dn
+        rc = trexio_read_determinant_list(trex_determinant_file, offset_det_read, read_buf_det_size, orb_list)
+        write(ounit,*) "orb list :: ", orb_list
+        rc = trexio_to_orbital_list_up_dn(150000, orb_list, orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
+        write(ounit,*) "occ_num_up, occ_num_dn :: ", occ_num_up, occ_num_dn
+        ! Print occupied orbitals for an up-spin component of a given determinant
+        write(ounit,*) "orb_list_up :: ", orb_list_up
+
+
         ! Print occupied orbitals for an up-spin component of a given determinant
         ! write(*,*) orb_list_up(1:occ_num_up)
         ! Print integers representanting a given determinant fully (up- and down-spin components)
         ! write(*,*) det_list(:, offset_det_data_read+1)
         ! Print binary representation of the first integer bit field of a given determinant
         ! write(*,'(B64.64)') det_list(1, offset_det_data_read+1)
+
+        ! convert one given determinant into lists of orbitals
+        ! rc = trexio_to_orbital_list_up_dn(3, det_list(:, offset_det_data_read+1), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
+        !write(*,*) occ_num_up, occ_num_dn
+        ! Print occupied orbitals for an up-spin component of a given determinant
+        !write(*,*) orb_list_up(1:occ_num_up)
+        ! Print integers representanting a given determinant fully (up- and down-spin components)
+        !write(*,*) det_list(:, offset_det_data_read+1)
 
 
         write(ounit,*) '-----------------------------------------------------------------------'
