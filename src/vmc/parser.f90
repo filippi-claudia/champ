@@ -162,6 +162,7 @@ subroutine parser
   use trexio_read_data, only: read_trexio_orbitals_file
   use trexio_read_data, only: read_trexio_basis_file
   use trexio_read_data, only: read_trexio_symmetry_file
+  use trexio_read_data, only: read_trexio_determinant_file
   use parser_read_data, only: header_printing
   use misc_grdnts,      only: inpwrt_zmatrix, inpwrt_grdnts_zmat, inpwrt_grdnts_cart
   use set_input_data,   only: hessian_zmat_define, modify_zmat_define
@@ -599,8 +600,9 @@ subroutine parser
   elseif ( fdf_load_defined('trexio') ) then
     call read_trexio_molecule_file(file_trexio)
     ! temporary testing debug line
-    call read_trexio_basis_file(file_trexio)
+    ! call read_trexio_basis_file(file_trexio)
     ! call read_trexio_symmetry_file(file_trexio)
+    call read_trexio_determinant_file(file_trexio)
   else
     write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__

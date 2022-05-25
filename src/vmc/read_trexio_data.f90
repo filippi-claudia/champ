@@ -10,6 +10,7 @@ module trexio_read_data
     public :: read_trexio_symmetry_file
     public :: read_trexio_orbitals_file
     public :: read_trexio_basis_file
+    public :: read_trexio_determinant_file
     contains
 
     subroutine read_trexio_molecule_file(file_trexio)
@@ -37,7 +38,7 @@ module trexio_read_data
         implicit none
 
         !   local use
-        character(len=72), intent(in)   :: file_trexio
+        character(len=*), intent(in)   :: file_trexio
         character(len=40)               :: temp1, temp2, temp3, temp4
         character(len=80)               :: comment, file_trexio_path
         integer                         :: iostat, i, j, k, iunit
@@ -72,9 +73,13 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             trex_molecule_file = trexio_open(file_trexio_path, 'r', backend, rc)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             rc = trexio_read_nucleus_num(trex_molecule_file, ncent)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             rc = trexio_read_electron_up_num(trex_molecule_file, nup)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             rc = trexio_read_electron_dn_num(trex_molecule_file, ndn)
+            call trexio_assert(rc, TREXIO_SUCCESS)
 #endif
         endif
         call bcast(ncent)
@@ -92,8 +97,11 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
         rc = trexio_read_nucleus_coord(trex_molecule_file, cent)
+        call trexio_assert(rc, TREXIO_SUCCESS)
         rc = trexio_read_nucleus_label(trex_molecule_file, symbol, 3)
+        call trexio_assert(rc, TREXIO_SUCCESS)
         rc = trexio_close(trex_molecule_file)
+        call trexio_assert(rc, TREXIO_SUCCESS)
 #endif
         endif
         call bcast(cent)
@@ -217,8 +225,11 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             trex_orbitals_file = trexio_open(file_trexio_path, 'r', backend, rc)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             rc = trexio_read_mo_num(trex_orbitals_file, norb)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
+            call trexio_assert(rc, TREXIO_SUCCESS)
 #endif
         endif
         call bcast(norb)
@@ -235,6 +246,7 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             rc = trexio_read_mo_coefficient(trex_orbitals_file, coef(:,:,1))
+            call trexio_assert(rc, TREXIO_SUCCESS)
 #endif
         endif
         call bcast(coef)
@@ -386,12 +398,16 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             trex_basis_file = trexio_open(file_trexio_path, 'r', backend, rc)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_open :: ", rc
             rc = trexio_read_basis_prim_num(trex_basis_file, basis_num_prim)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_basis_prim_num :: ", rc
             rc = trexio_read_basis_shell_num(trex_basis_file, basis_num_shell)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_basis_shell_num :: ", rc
             rc = trexio_read_ao_num(trex_basis_file, ao_num)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_ao_num :: ", rc
 #endif
         endif
@@ -413,24 +429,34 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             trex_basis_file = trexio_open(file_trexio_path, 'r', backend, rc)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_open :: ", rc
             rc = trexio_read_basis_nucleus_index(trex_basis_file, basis_nucleus_index)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_basis_nucleus_index :: ", basis_nucleus_index
             rc = trexio_read_basis_shell_index(trex_basis_file, basis_shell_index)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_basis_shell_index :: ", basis_shell_index
             rc = trexio_read_basis_shell_ang_mom(trex_basis_file, basis_shell_ang_mom)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_basis_shell_ang_mom :: ", basis_shell_ang_mom
             rc = trexio_read_basis_shell_factor(trex_basis_file, basis_shell_factor)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_basis_shell_factor :: ", rc
             rc = trexio_read_basis_exponent(trex_basis_file, basis_exponent)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_basis_exponent :: ", rc
             rc = trexio_read_basis_coefficient(trex_basis_file, basis_coefficient)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_basis_coefficient :: ", rc
             rc = trexio_read_basis_prim_factor(trex_basis_file, basis_prim_factor)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_basis_prim_factor :: ", rc
             rc = trexio_read_ao_shell(trex_basis_file, ao_shell)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_ao_shell :: ", rc
             rc = trexio_read_ao_normalization(trex_basis_file, ao_normalization)
+            call trexio_assert(rc, TREXIO_SUCCESS)
             ! write(*,*) "trexio_read_ao_normalization :: ", rc
 #endif
         endif
@@ -809,6 +835,142 @@ module trexio_read_data
 
         ! if (wid) close(iunit)
     end subroutine read_trexio_symmetry_file
+
+
+    subroutine read_trexio_determinant_file(file_trexio)
+        !> This subroutine reads the .hdf5 trexio generated file/folder. It then reads the
+        !> determinant coefficients and orbital occupations .
+        !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+        !! @date 25 May 2022
+        use custom_broadcast,   only: bcast
+        use mpiconf,            only: wid
+        use, intrinsic :: iso_fortran_env, only: iostat_eor
+        use contrl_file,    only: ounit, errunit
+        use general,            only: pooldir
+        use dets,           only: cdet, ndet
+        use dorb_m,         only: iworbd
+        use coefs,          only: norb
+        use inputflags,     only: ideterminants
+        use wfsec,          only: nwftype
+        use csfs,           only: nstates
+        use mstates_mod,    only: MSTATES
+        use general,        only: pooldir
+        use elec,           only: ndn, nup
+        use const,          only: nelec
+        use method_opt,     only: method
+        use precision_kinds, only: dp
+
+#if defined(TREXIO_FOUND)
+        use trexio
+        use contrl_file,        only: backend
+#endif
+
+        implicit none
+
+        !   local use
+        character(len=72), intent(in)   :: file_trexio
+        character(len=40)               :: temp1, temp2, temp3, temp4
+        character(len=80)               :: comment, file_trexio_path
+        integer                         :: iostat, i, j, k, iunit
+        logical                         :: exist
+        character(len=2), allocatable   :: unique(:)
+
+        ! trexio
+        integer(8)                      :: trex_determinant_file
+        integer                         :: rc = 1
+
+        !   Formatting
+        character(len=100)              :: int_format     = '(A, T60, I0)'
+        character(len=100)              :: float_format   = '(A, T60, f12.8)'
+        character(len=100)              :: string_format  = '(A, T60, A)'
+
+        ! determinant data (debugging)
+        integer*8 :: det_list(6,50)
+        integer*8 :: read_buf_det_size = 5000   ! how many do you want
+        integer*8 :: offset_det_read = 10
+        integer*8 :: offset_det_data_read = 5
+        integer*8 :: determinant_num
+        integer   :: int_num
+        ! orbital lists (debugging)
+        integer*4 :: orb_list_up(150)
+        integer*4 :: orb_list_dn(150)
+        integer*4 :: occ_num_up, occ_num_dn
+        real*8   ::  determinant_coefficient(150000)
+
+
+        trex_determinant_file = 0
+
+        !   External file reading
+
+        if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
+            file_trexio_path = pooldir // file_trexio(7:)
+        else
+            file_trexio_path = file_trexio
+        endif
+
+        file_trexio_path = 'hcn.trexio.hdf5'
+
+        write(ounit,*) '-----------------------------------------------------------------------'
+        write(ounit,*) " Reading determinants from the trexio file :: ",  file_trexio_path
+        write(ounit,*) '-----------------------------------------------------------------------'
+
+        ! Check if the file exists
+        if (wid) then
+#if defined(TREXIO_FOUND)
+            trex_determinant_file = trexio_open(file_trexio_path, 'r', backend, rc)
+            call trexio_assert(rc, TREXIO_SUCCESS)
+            rc = trexio_read_determinant_num(trex_determinant_file, ndet)
+            print *, "trexio_read_determinant_num from determinants :: ", rc, ndet
+            call trexio_assert(rc, TREXIO_SUCCESS)
+#endif
+        endif
+        call bcast(ndet)
+
+        determinant_num = ndet
+        write(*,*) "Number of determinants (trexio) :: ", ndet
+
+!       Do the allocations based on the number of determinants and the method
+        if( (method(1:3) == 'lin')) then
+            if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,3))
+        else
+            if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,nwftype))
+        endif
+
+
+        ! if (wid) then
+#if defined(TREXIO_FOUND)
+        rc = trexio_read_determinant_coefficient(trex_determinant_file, offset_det_read, read_buf_det_size, determinant_coefficient)
+        call trexio_assert(rc, TREXIO_SUCCESS)
+#endif
+        ! endif
+        ! call bcast(coef_list)
+
+
+        write(ounit,*)
+        write(ounit,*) " Determinant coefficients "
+        write(ounit,'(10(1x, f11.8, 1x))') (determinant_coefficient(i), i=1, ndet)
+
+! !       allocate the orbital mapping array
+!         if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
+
+        print*, " Contains determinant coefficients ?", trexio_has_determinant_coefficient(trex_determinant_file)
+        print*, " Contains determinant list ?", trexio_has_determinant_list(trex_determinant_file)
+
+        ! convert one given determinant into lists of orbitals
+        rc = trexio_to_orbital_list_up_dn(1, det_list(:, offset_det_data_read+1), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
+        ! write(*,*) occ_num_up, occ_num_dn
+        ! Print occupied orbitals for an up-spin component of a given determinant
+        ! write(*,*) orb_list_up(1:occ_num_up)
+        ! Print integers representanting a given determinant fully (up- and down-spin components)
+        ! write(*,*) det_list(:, offset_det_data_read+1)
+        ! Print binary representation of the first integer bit field of a given determinant
+        ! write(*,'(B64.64)') det_list(1, offset_det_data_read+1)
+
+
+        write(ounit,*) '-----------------------------------------------------------------------'
+        write(ounit,*)
+    end subroutine read_trexio_determinant_file
+
 
 
 
