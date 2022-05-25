@@ -368,10 +368,11 @@ module m_trexio_basis
     double precision function compute_grid(gridtype, gridpoints, gridarg, gridr0)
     implicit None
 
-    integer, intent(in) :: gridpoints, gridtype
-    double precision, intent(in) :: gridarg
-    double precision, intent(in) :: gridr0
-    double precision             :: grid(gridpoints)
+    integer, intent(in)             :: gridtype
+    integer, intent(in)             :: gridpoints
+    double precision, intent(in)    :: gridarg
+    double precision, intent(in)    :: gridr0
+    double precision                :: grid(gridpoints)
     double precision :: r
     integer :: i
 
@@ -385,6 +386,7 @@ module m_trexio_basis
         endif
         grid(i) = r
     enddo
+
     end function compute_grid
 
 end module

@@ -338,7 +338,7 @@ module trexio_read_data
         ! for local use.
         character(len=72), intent(in)   :: file_trexio
         character(len=128)              :: file_trexio_path
-        integer                         :: iostat, ic, i, j, k, iunit, tcount1, tcount2
+        integer                         :: iostat, ic, i, j, k, l, iunit, tcount1, tcount2, tcount3, tcount4
         logical                         :: exist
         type(atom_t)                    :: atoms
 
@@ -357,9 +357,13 @@ module trexio_read_data
         real(dp)                        :: gridarg=1.003
         real(dp)                        :: gridr0=20.0
         real(dp)                        :: gridr0_save = 20.0
+        real(dp)                        :: rgrid(2000)
         integer, dimension(nctype_tot)  :: icusp
+        integer                         :: cartesian_shells(5) = (/1, 3, 6, 10, 15/)
+        real(dp)                        :: r, r2, r3, val   ! local values
 
         integer, dimension(:), allocatable :: atom_index(:), shell_index_atom(:), nshells_per_atom(:)
+        integer, dimension(:), allocatable :: prim_index_atom(:), nprims_per_atom(:)
         integer, dimension(:), allocatable :: unique_atom_index(:)
         integer                         :: count
         character(len=2), allocatable   :: unique(:) ! unique symbols of atoms
@@ -413,9 +417,9 @@ module trexio_read_data
             rc = trexio_read_basis_nucleus_index(trex_basis_file, basis_nucleus_index)
             ! write(*,*) "trexio_read_basis_nucleus_index :: ", basis_nucleus_index
             rc = trexio_read_basis_shell_index(trex_basis_file, basis_shell_index)
-            ! write(*,*) "trexio_read_basis_shell_index :: ", rc
+            ! write(*,*) "trexio_read_basis_shell_index :: ", basis_shell_index
             rc = trexio_read_basis_shell_ang_mom(trex_basis_file, basis_shell_ang_mom)
-            ! write(*,*) "trexio_read_basis_shell_ang_mom :: ", rc
+            ! write(*,*) "trexio_read_basis_shell_ang_mom :: ", basis_shell_ang_mom
             rc = trexio_read_basis_shell_factor(trex_basis_file, basis_shell_factor)
             ! write(*,*) "trexio_read_basis_shell_factor :: ", rc
             rc = trexio_read_basis_exponent(trex_basis_file, basis_exponent)
@@ -442,18 +446,14 @@ module trexio_read_data
 
 
 
-        write(ounit,fmt=int_format) " Number of primitives ::  ", basis_num_prim
-        write(ounit,fmt=int_format) " Number of shells     ::  ", basis_num_shell
-        write(ounit,fmt=int_format) " Number of AO         ::  ", ao_num
+        write(ounit,fmt=int_format) " Number of primitives  ::  ", basis_num_prim
+        write(ounit,fmt=int_format) " Number of shells      ::  ", basis_num_shell
+        write(ounit,fmt=int_format) " Number of AO          ::  ", ao_num
         write(ounit,*)
         write(ounit,*) '-----------------------------------------------------------------------'
         write(ounit,*)
 
         ! Processing the basis set information to get the numerican grid
-        gridtype=3
-        gridpoints=2000
-        gridarg=1.003
-        gridr0=20.0
         gridr0_save = gridr0
 
 
@@ -462,6 +462,9 @@ module trexio_read_data
         allocate(atom_index(basis_num_shell))
         allocate(nshells_per_atom(basis_num_shell))
         allocate(shell_index_atom(basis_num_shell))
+
+
+
 
         call unique_elements(basis_num_shell, basis_nucleus_index, atom_index, count, nshells_per_atom, shell_index_atom)
 
@@ -476,6 +479,25 @@ module trexio_read_data
         ! shell_index_atom(1:count) :: "index number of the shell for each atom"
         ! The shells per atom can be obtained by accessing the shell_index_atom
         ! for a given atom index by the slice of size frequency.
+
+
+        ! Now get the number of primitives per atom and their indices
+        allocate(nprims_per_atom(basis_num_prim))
+        allocate(prim_index_atom(basis_num_prim))
+
+        prim_index_atom(1) = 1
+        nprims_per_atom(1) = 0
+        tcount3 = 0; tcount4 = 0
+        do i = 1, ncent_tot
+            do j = 1, nshells_per_atom(i)   ! frequency
+                tcount4 = tcount4 + 1
+                nprims_per_atom(i) = nprims_per_atom(i) + cartesian_shells(basis_shell_ang_mom(tcount4)+1)
+            enddo
+            if (i .ne. ncent_tot) prim_index_atom(i+1) = prim_index_atom(i) + nprims_per_atom(i)
+        enddo
+
+        ! print*, "prim_index_atom(1:ncent_tot) :: ", prim_index_atom(1:ncent_tot)
+        ! print*, "nprims_per_atom(1:ncent_tot) :: ", nprims_per_atom(1:ncent_tot)
 
 
         ! Obtain the number of unique types of atoms stored in the hdf5 file.
@@ -517,6 +539,25 @@ module trexio_read_data
         call allocate_numbas()
         call allocate_numexp()
 
+        ! count                     :: "Number of unique elements"
+        ! atom_index(1:count)       :: "Unique elements index (not used here)"
+        ! nshells_per_atom(1:count) :: "frequency or count of shells per atom"
+        ! shell_index_atom(1:count) :: "index number of the shell for each atom"
+        ! The shells per atom can be obtained by accessing the shell_index_atom
+        ! for a given atom index by the slice of size frequency.
+
+        ! Populate the rgrid array.
+        do i = 1, gridpoints
+            if (gridtype .eq. 1) then
+                rgrid(i) = gridr0 + i*gridarg
+            else if (gridtype .eq. 2) then
+                rgrid(i) = gridr0 * gridarg**i
+            else if (gridtype .eq. 3) then
+                rgrid(i) = gridr0*gridarg**i - gridr0
+            endif
+        enddo
+
+
 
         do ic = 1, nctype_tot            ! loop over all the unique atoms
             nrbas(ic)   = nshells_per_atom(shell_index_atom(ic))
@@ -536,11 +577,29 @@ module trexio_read_data
             write(ounit,'(A, T60, I0)')     " Icusp                 ::  ", icusp(ic)
             write(ounit,*)
 
+            ! Make space for the special case when nloc == 0
+
+
+            if (gridtype .eq. 3) gridr0 = gridr0/(gridarg**(gridpoints-1)-1)
+
+
+
+
+
             do j = 1, basis_num_shell   ! loop over all the shells
                 ! select the shells corresponding to the unique atoms only
                 if (unique_atom_index(ic) == basis_nucleus_index(j)) then
                     ! j is the running shell index for the unique atom i
-                    print *, "j ", j, "basis_nucleus_index ", basis_nucleus_index(j)
+                    print *, "j ", j, "basis_nucleus_index ", basis_nucleus_index(j), "basis_shell ang mom  ", basis_shell_ang_mom(j)
+                    ! loop over all the gridpoints to add contracted Gaussians over the grid
+                    do i = 1, gridpoints
+                        ! Generate the grid here for the unique atom
+                        r = rgrid(i)
+                        r2 = r*r
+                        r3 = r2*r
+                        val = 0.0d0
+
+                    enddo
                 endif
             enddo
         enddo
