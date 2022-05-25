@@ -338,7 +338,7 @@ module trexio_read_data
         ! for local use.
         character(len=72), intent(in)   :: file_trexio
         character(len=128)              :: file_trexio_path
-        integer                         :: iostat, ic, i, j, k, l, iunit, tcount1, tcount2, tcount3, tcount4
+        integer                         :: iostat, ic, ir, i, j, k, l, iunit, tcount1, tcount2, tcount3, tcount4
         logical                         :: exist
         type(atom_t)                    :: atoms
 
@@ -357,7 +357,7 @@ module trexio_read_data
         real(dp)                        :: gridarg=1.003
         real(dp)                        :: gridr0=20.0
         real(dp)                        :: gridr0_save = 20.0
-        real(dp)                        :: rgrid(2000)
+        real(dp)                        :: rgrid(2000)  ! Grid points
         integer, dimension(nctype_tot)  :: icusp
         integer                         :: cartesian_shells(5) = (/1, 3, 6, 10, 15/)
         real(dp)                        :: r, r2, r3, val   ! local values
@@ -496,8 +496,9 @@ module trexio_read_data
             if (i .ne. ncent_tot) prim_index_atom(i+1) = prim_index_atom(i) + nprims_per_atom(i)
         enddo
 
-        ! print*, "prim_index_atom(1:ncent_tot) :: ", prim_index_atom(1:ncent_tot)
-        ! print*, "nprims_per_atom(1:ncent_tot) :: ", nprims_per_atom(1:ncent_tot)
+        print*, "prim_index_atom(1:ncent_tot) :: ", prim_index_atom(1:ncent_tot)
+        print*, "nprims_per_atom(1:ncent_tot) :: ", nprims_per_atom(1:ncent_tot)
+        print*, "tcount4 :: ", tcount4
 
 
         ! Obtain the number of unique types of atoms stored in the hdf5 file.
@@ -582,8 +583,13 @@ module trexio_read_data
 
             if (gridtype .eq. 3) gridr0 = gridr0/(gridarg**(gridpoints-1)-1)
 
-
-
+            ! loop over all the primitives for the unique atom
+            val = 0.0d0
+            do k = prim_index_atom(unique_atom_index(ic)), prim_index_atom(unique_atom_index(ic)) + nprims_per_atom(unique_atom_index(ic)) - 1
+                ! k is index of primitives that needs to used for adding to the grid.
+                ! gnorm(exponents[j], shell_ang_mom) * coefficients[j] * np.exp(-exponents[j]*r2)
+                print*, "the primi list k ", k
+            enddo
 
 
             do j = 1, basis_num_shell   ! loop over all the shells
@@ -592,13 +598,16 @@ module trexio_read_data
                     ! j is the running shell index for the unique atom i
                     print *, "j ", j, "basis_nucleus_index ", basis_nucleus_index(j), "basis_shell ang mom  ", basis_shell_ang_mom(j)
                     ! loop over all the gridpoints to add contracted Gaussians over the grid
-                    do i = 1, gridpoints
+                    ! list of exponents
+
+
+                    do ir = 1, gridpoints
                         ! Generate the grid here for the unique atom
-                        r = rgrid(i)
+                        r = rgrid(ir)
                         r2 = r*r
                         r3 = r2*r
                         val = 0.0d0
-
+                        ! rwf(ir,j,ic,iwf) = compute_grid_value(r, basis_shell_ang_mom(j), basis_shell_coeff(j), basis_shell_exp(j), val)
                     enddo
                 endif
             enddo
