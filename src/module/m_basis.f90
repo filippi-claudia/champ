@@ -365,4 +365,26 @@ module m_trexio_basis
 
     end function gnorm
 
+    double precision function compute_grid(gridtype, gridpoints, gridarg, gridr0)
+    implicit None
+
+    integer, intent(in) :: gridpoints, gridtype
+    double precision, intent(in) :: gridarg
+    double precision, intent(in) :: gridr0
+    double precision             :: grid(gridpoints)
+    double precision :: r
+    integer :: i
+
+    do i = 1, gridpoints
+        if (gridtype .eq. 1) then
+            r = gridr0 + i*gridarg
+        else if (gridtype .eq. 2) then
+            r = gridr0 * gridarg**i
+        else if (gridtype .eq. 3) then
+            r = gridr0*gridarg**i - gridr0
+        endif
+        grid(i) = r
+    enddo
+    end function compute_grid
+
 end module

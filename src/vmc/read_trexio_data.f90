@@ -293,6 +293,7 @@ module trexio_read_data
         ! The following to be used to store the information
         use numbas_mod,         only: MRWF, MRWF_PTS
         use atom,               only: znuc, nctype, nctype_tot, ncent_tot
+        use atom,               only: symbol, atomtyp
         use vmc_mod,            only: NCOEF
         use ghostatom,          only: newghostype
         use const,              only: ipr
@@ -337,7 +338,7 @@ module trexio_read_data
         ! for local use.
         character(len=72), intent(in)   :: file_trexio
         character(len=128)              :: file_trexio_path
-        integer                         :: iostat, i, j, k, iunit
+        integer                         :: iostat, ic, i, j, k, iunit, tcount1, tcount2
         logical                         :: exist
         type(atom_t)                    :: atoms
 
@@ -356,9 +357,12 @@ module trexio_read_data
         real(dp)                        :: gridarg=1.003
         real(dp)                        :: gridr0=20.0
         real(dp)                        :: gridr0_save = 20.0
+        integer, dimension(nctype_tot)  :: icusp
 
         integer, dimension(:), allocatable :: atom_index(:), shell_index_atom(:), nshells_per_atom(:)
+        integer, dimension(:), allocatable :: unique_atom_index(:)
         integer                         :: count
+        character(len=2), allocatable   :: unique(:) ! unique symbols of atoms
 
         trex_basis_file = 0
 
@@ -371,7 +375,7 @@ module trexio_read_data
         endif
 
         write(ounit,*) '-----------------------------------------------------------------------'
-        write(ounit,*) " Reading Basis Set information from the trexio file :: ", len(file_trexio_path), trim(adjustl(file_trexio_path))
+        write(ounit,*) " Reading Basis Set information from the trexio file :: ", trim(adjustl(file_trexio_path))
         write(ounit,*) '-----------------------------------------------------------------------'
 
         ! Check if the file exists
@@ -407,7 +411,7 @@ module trexio_read_data
             trex_basis_file = trexio_open(file_trexio_path, 'r', backend, rc)
             ! write(*,*) "trexio_open :: ", rc
             rc = trexio_read_basis_nucleus_index(trex_basis_file, basis_nucleus_index)
-            ! write(*,*) "trexio_read_basis_nucleus_index :: ", rc
+            ! write(*,*) "trexio_read_basis_nucleus_index :: ", basis_nucleus_index
             rc = trexio_read_basis_shell_index(trex_basis_file, basis_shell_index)
             ! write(*,*) "trexio_read_basis_shell_index :: ", rc
             rc = trexio_read_basis_shell_ang_mom(trex_basis_file, basis_shell_ang_mom)
@@ -455,18 +459,192 @@ module trexio_read_data
 
         ! Get the number of shells per atom (information needed to reshuffle AOs)
 
-        write(*,*) gnorm(1.d0, 2)
-
         allocate(atom_index(basis_num_shell))
         allocate(nshells_per_atom(basis_num_shell))
         allocate(shell_index_atom(basis_num_shell))
 
         call unique_elements(basis_num_shell, basis_nucleus_index, atom_index, count, nshells_per_atom, shell_index_atom)
 
-        print *, "Number of unique elements :: ", count
+        print*, "Number of unique elements :: ", count
         print*, "Unique elements index :: ", atom_index(1:count)
         print*, "frequency :: ", nshells_per_atom(1:count)
         print*, "result", shell_index_atom(1:count)
+
+        ! count                     :: "Number of unique elements"
+        ! atom_index(1:count)       :: "Unique elements index (not used here)"
+        ! nshells_per_atom(1:count) :: "frequency or count of shells per atom"
+        ! shell_index_atom(1:count) :: "index number of the shell for each atom"
+        ! The shells per atom can be obtained by accessing the shell_index_atom
+        ! for a given atom index by the slice of size frequency.
+
+
+        ! Obtain the number of unique types of atoms stored in the hdf5 file.
+        print*, "number of types of atoms :: ", nctype_tot
+        print*, "nucleus shell index ", basis_nucleus_index
+        if (.not. allocated(unique)) allocate(unique(nctype_tot))
+        if (.not. allocated(unique_atom_index)) allocate(unique_atom_index(nctype_tot))
+
+
+        print*, "symbol ", symbol
+        print*, "atom_type ", atomtyp
+
+
+        tcount1 = 1; tcount2 = 1
+        unique_atom_index(1) = 1
+        unique(1) = symbol(1)
+        do j= 2, ncent_tot
+            if (any(unique == symbol(j) ))  then
+                cycle
+            endif
+            print*, "j ", j, "symbol ", symbol(j)
+            tcount1 = tcount1 + 1
+            unique_atom_index(tcount1) = j
+            unique(tcount1) = symbol(j)
+        enddo
+        print *, "tcount1 ", tcount1, "unique ", unique(1:tcount1)
+        print*, "unique ", unique
+        print*, "unique atom index ", unique_atom_index
+
+
+        ! start putting in the information in the arrays and variables
+        gridtype=3
+        gridpoints=2000
+        gridarg=1.003
+        gridr0=20.0
+        gridr0_save = gridr0
+
+        ! Do the necessary allocation for the numerical basis set
+        call allocate_numbas()
+        call allocate_numexp()
+
+
+        do ic = 1, nctype_tot            ! loop over all the unique atoms
+            nrbas(ic)   = nshells_per_atom(shell_index_atom(ic))
+            igrid(ic)   = gridtype       ! grid type default is 3
+            nr(ic)      = gridpoints     ! number of grid points default is 2000
+            arg(ic)     = gridarg        ! grid spacing default is 1.003
+            r0(ic)      = gridr0         ! grid origin default is 20.0
+            icusp(ic)   = 0              ! default is 0
+
+            write(ounit,*)
+            write(ounit,'(A, T60,  A)')     " For Nucleus           ::  ", unique(ic)
+            write(ounit,'(A, T60, I0)')     " Number of Shells      ::  ", nrbas(ic)
+            write(ounit,'(A, T60, I0)')     " Grid type             ::  ", igrid(ic)
+            write(ounit,'(A, T60, I0)')     " Number of Grid Points ::  ", nr(ic)
+            write(ounit,'(A, T56, F10.6)')  " Grid spacing          ::  ", arg(ic)
+            write(ounit,'(A, T56, F10.6)')  " Grid origin           ::  ", r0(ic)
+            write(ounit,'(A, T60, I0)')     " Icusp                 ::  ", icusp(ic)
+            write(ounit,*)
+
+            do j = 1, basis_num_shell   ! loop over all the shells
+                ! select the shells corresponding to the unique atoms only
+                if (unique_atom_index(ic) == basis_nucleus_index(j)) then
+                    ! j is the running shell index for the unique atom i
+                    print *, "j ", j, "basis_nucleus_index ", basis_nucleus_index(j)
+                endif
+            enddo
+        enddo
+
+
+
+
+        ! Extract the shell angular momentum information only for unique type
+        ! of atoms.
+
+
+
+    !     def compute_grid():
+    !     # Compute the radial grid r for a given number of grid points
+    !     # and grid type
+    !     for i in range(gridpoints):
+    !         if gridtype == 1:
+    !             r = gridr0 + i*gridarg
+    !         elif gridtype == 2:
+    !             r = gridr0 * gridarg**i
+    !         elif gridtype == 3:
+    !             r = gridr0 * gridarg**i - gridr0
+    !         bgrid[:,i] = r
+    !     return bgrid
+
+    ! def add_function(shell_ang_mom, exponents, coefficients, shell, bgrid):
+    !     # put a new function on the grid
+    !     # The function is defined by the exponent, coefficient and type
+    !     for i in range(gridpoints):
+    !         r = bgrid[shell+1, i]
+    !         r2 = r*r
+    !         r3 = r2*r
+    !         value = 0.0
+    !         for j in range(len(exponents)):
+    !             value += gnorm(exponents[j], shell_ang_mom) * coefficients[j] * np.exp(-exponents[j]*r2)
+    !             # print ("each value k, ib,", i ,j , value)
+
+    !         bgrid[shell+1,i] = value
+
+    !     return
+
+    ! if filename is not None:
+    !     if isinstance(filename, str):
+    !         unique_elements, indices = np.unique(nucleus_label, return_index=True)
+
+    !         for i in range(len(unique_elements)):
+    !             # Write down an radial basis grid file in the new champ v2.0 format for each unique atom type
+    !             filename_basis_grid = "BASISGRID." + 'basis.' + unique_elements[i]
+    !             with open(filename_basis_grid, 'w') as file:
+
+    !                 # Common numbers
+    !                 gridtype=3
+    !                 gridpoints=2000
+    !                 gridarg=1.003
+    !                 gridr0=20.0
+
+    !                 number_of_shells_per_atom = list_nshells[indices[i]]
+
+    !                 shell_ang_mom_per_atom_list = []
+    !                 for ind, val in enumerate(dict_basis["nucleus_index"]):
+    !                     if val == indices[i]:
+    !                         shell_ang_mom_per_atom_list.append(dict_basis["shell_ang_mom"][ind])
+
+    !                 shell_ang_mom_per_atom_count = Counter(shell_ang_mom_per_atom_list)
+
+    !                 total_shells = sum(shell_ang_mom_per_atom_count.values())
+
+    !                 shells_per_atom = {}
+    !                 for count in shell_ang_mom_per_atom_count:
+    !                     shells_per_atom[count] = shell_ang_mom_per_atom_count[count]
+
+    !                 bgrid = np.zeros((number_of_shells_per_atom+1, gridpoints))
+
+
+    !                 ## The main part of the file starts here
+    !                 gridr0_save = gridr0
+    !                 if gridtype == 3:
+    !                     gridr0 = gridr0/(gridarg**(gridpoints-1)-1)
+
+
+    !                 bgrid = compute_grid()  # Compute the grid, store the results in bgrid
+
+    !                 ### Note temp index should point to shell index of unique atoms
+    !                 # get the exponents and coefficients of unique atom types
+    !                 counter = 0
+    !                 for ind, val in enumerate(dict_basis["nucleus_index"]):
+    !                     if val == indices[i]:
+    !                         shell_index_unique_atom = index_radial[indices[i]][counter]
+    !                         list_contracted_exponents =  contr[shell_index_unique_atom]["exponent"]
+    !                         list_contracted_coefficients =  contr[shell_index_unique_atom]["coefficient"]
+    !                         add_function(dict_basis["shell_ang_mom"][ind], list_contracted_exponents, list_contracted_coefficients, counter, bgrid)
+    !                         counter += 1
+
+
+    !                 # file writing part
+    !                 file.write(f"{number_of_shells_per_atom} {gridtype} {gridpoints} {gridarg:0.6f} {gridr0_save:0.6f} {0}\n")
+    !                 np.savetxt(file, np.transpose(bgrid), fmt=' %.12e')
+
+    !             file.close()
+    !     else:
+    !         raise ValueError
+    ! # If filename is None, return a string representation of the output.
+    ! else:
+    !     return None
 
 
 

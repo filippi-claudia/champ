@@ -1734,8 +1734,8 @@ subroutine read_basis_num_info_file(file_basis_num_info)
         call fatal_error('Please Load LCAO before basis info in the input file')
     endif
 
-    allocate (iwlbas(nbasis, nctot))
-    allocate (iwrwf(nbasis, nctot))
+    if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctot))
+    if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctot))
 
     if (wid) then
         do i = 1, nctype + newghostype
