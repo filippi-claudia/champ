@@ -209,8 +209,8 @@ c However, that causes problems when running with mpi, so comment out that part.
       real(dp) :: sum_abs, units
       real(dp), dimension(3) :: r
       real(dp), dimension(nelec,norb_tot) :: orb
-      real(dp), dimension(norb_tot,nelec,3) :: dorb
-      real(dp), dimension(norb_tot,nelec) :: ddorb
+      real(dp), dimension(3,nelec,norb_tot) :: dorb
+      real(dp), dimension(nelec,norb_tot) :: ddorb
 
 
 
@@ -374,17 +374,17 @@ c Test to see if orbitals and derivs. calculated correctly
           if(k_inv(ikv).eq.1) then
             if(abs(orb(1,jorb)/orb(1,jorb+1)).gt.1.d0) then
               ireal_imag(jorb)=1
-              write(ounit,'(''ireal_imag,orb2_sim='',i1,5d15.8)') ireal_imag(jorb),orb(1,jorb),ddorb(jorb,1),(dorb(jorb,1,k),k=1,3)
+              write(ounit,'(''ireal_imag,orb2_sim='',i1,5d15.8)') ireal_imag(jorb),orb(1,jorb),ddorb(1,jorb),(dorb(k,1,jorb),k=1,3)
              else
               ireal_imag(jorb)=2
               write(ounit,'(''ireal_imag,orb2_sim='',i1,5d15.8)')
-     &        ireal_imag(jorb),orb(1,jorb+1),ddorb(jorb+1,1),(dorb(jorb+1,1,k),k=1,3)
+     &        ireal_imag(jorb),orb(1,jorb+1),ddorb(1,jorb+1),(dorb(k,1,jorb+1),k=1,3)
             endif
            else
             ireal_imag(jorb)=0
-            write(ounit,'(''ireal_imag,orb2_sim='',i1,5d15.8)') ireal_imag(jorb),orb(1,jorb),ddorb(jorb,1),(dorb(jorb,1,k),k=1,3)
+            write(ounit,'(''ireal_imag,orb2_sim='',i1,5d15.8)') ireal_imag(jorb),orb(1,jorb),ddorb(1,jorb),(dorb(k,1,jorb),k=1,3)
             write(ounit,'(''ireal_imag,orb2_sim='',i1,5d15.8)')
-     &      ireal_imag(jorb),orb(1,jorb+1),ddorb(jorb+1,1),(dorb(jorb+1,1,k),k=1,3)
+     &      ireal_imag(jorb),orb(1,jorb+1),ddorb(1,jorb+1),(dorb(k,1,jorb+1),k=1,3)
           endif
 
         enddo
@@ -412,7 +412,7 @@ c Test to see if orbitals and derivs. calculated correctly by comparing to above
       nelec_sav=nelec
       nelec=1
       call orbitals_pw(r,orb,dorb,ddorb)
-      write(ounit,'(''orb2_com='',5d15.8)') (orb(1,ib),ddorb(ib,1),(dorb(ib,1,k),k=1,3),ib=1,4)
+      write(ounit,'(''orb2_com='',5d15.8)') (orb(1,ib),ddorb(1,ib),(dorb(k,1,ib),k=1,3),ib=1,4)
       nelec=nelec_sav
 
 c Write file for subsequent read-in, though at present I am not using it.
@@ -463,7 +463,6 @@ c This is the straightforward evaluation for checking purposes only.
       use contrl_file,    only: ounit
       use coefs, only: norb
       use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot
       implicit none
 
       integer :: i, iband, ig, ig2, ikv
@@ -471,8 +470,8 @@ c This is the straightforward evaluation for checking purposes only.
       real(dp) :: cos, dot, sin
       real(dp), dimension(3) :: x
       real(dp), dimension(nelec,*) :: orb
-      real(dp), dimension(norb_tot,nelec,3) :: dorb
-      real(dp), dimension(norb_tot,nelec) :: ddorb
+      real(dp), dimension(3,nelec,*) :: dorb
+      real(dp), dimension(nelec,*) :: ddorb
       real(dp), dimension(3,NGVEC_BIGX) :: gvec_dft
       real(dp), dimension(NGVEC_BIGX) :: gnorm_dft
 
@@ -515,9 +514,9 @@ c       if(ireal_imag(iorb).eq.0 .or. ireal_imag(iorb).eq.1) then
 
 c       iorb=iorb+1
         orb(i,iorb)=0
-        ddorb(iorb,i)=0
+        ddorb(i,iorb)=0
         do k=1,3
-          dorb(iorb,i,k)=0
+          dorb(k,i,iorb)=0
         enddo
         do ig=1,ngg(ikv)
           ig2=iwgvec(ig)
@@ -531,9 +530,9 @@ c       iorb=iorb+1
           if(ipr.ge.4 .and. ig.le.22) write(ounit,'(''rkvec+gvec'',2i4,7f9.4,f18.12)')
      &    ig,ig2,(rkvec(k,ikv)+gvec_dft(k,ig2),k=1,3),c_real(ig),dot,cos(dot),sin(dot),orb(i,iorb)
           do k=1,3
-            dorb(iorb,i,k)=dorb(iorb,i,k)+(rkvec(k,ikv)+gvec_dft(k,ig2))*(-c_real(ig)*sin(dot)-c_imag(ig)*cos(dot))
+            dorb(k,i,iorb)=dorb(k,i,iorb)+(rkvec(k,ikv)+gvec_dft(k,ig2))*(-c_real(ig)*sin(dot)-c_imag(ig)*cos(dot))
           enddo
-          ddorb(iorb,i)=ddorb(iorb,i)-gnorm_dft(ig2)*(c_real(ig)*cos(dot)-c_imag(ig)*sin(dot))
+          ddorb(i,iorb)=ddorb(i,iorb)-gnorm_dft(ig2)*(c_real(ig)*cos(dot)-c_imag(ig)*sin(dot))
         enddo
 
         write(ounit,'(''ikv,iband,nband(ikv),k_inv(ikv)'',9i5)') ikv,iband,nband(ikv),k_inv(ikv)
@@ -547,9 +546,9 @@ c       if(iorb.lt.norb) then
 c       if(ireal_imag(iorb).eq.0 .or. ireal_imag(iorb).eq.2) then
 
         orb(i,iorb)=0
-        ddorb(iorb,i)=0
+        ddorb(i,iorb)=0
         do k=1,3
-          dorb(iorb,i,k)=0
+          dorb(k,i,iorb)=0
         enddo
         do ig=1,ngg(ikv)
           ig2=iwgvec(ig)
@@ -566,9 +565,9 @@ c    &    ig,ig2,(rkvec(k,ikv)+gvec_dft(k,ig2),k=1,3),c_real(ig),dot,cos(dot),si
           if(ipr.ge.4 .and. ig.le.22) write(ounit,'(''rkvec+gvec'',2i4,8f9.4,f18.12)')
      &    ig,ig2,(rkvec(k,ikv)+gvec_dft(k,ig2),k=1,3),c_real(ig),x(1),dot,cos(dot),sin(dot),orb(i,iorb)
           do k=1,3
-            dorb(iorb,i,k)=dorb(iorb,i,k)+(rkvec(k,ikv)+gvec_dft(k,ig2))*(c_real(ig)*cos(dot)-c_imag(ig)*sin(dot))
+            dorb(k,i,iorb)=dorb(k,i,iorb)+(rkvec(k,ikv)+gvec_dft(k,ig2))*(c_real(ig)*cos(dot)-c_imag(ig)*sin(dot))
           enddo
-   70     ddorb(iorb,i)=ddorb(iorb,i)-gnorm_dft(ig2)*(c_real(ig)*sin(dot)+c_imag(ig)*cos(dot))
+   70     ddorb(i,iorb)=ddorb(i,iorb)-gnorm_dft(ig2)*(c_real(ig)*sin(dot)+c_imag(ig)*cos(dot))
         enddo
 
         write(ounit,'(''ikv,iband,nband(ikv),k_inv(ikv)'',9i5)') ikv,iband,nband(ikv),k_inv(ikv)

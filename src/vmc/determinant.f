@@ -33,7 +33,7 @@ c Modified by A. Scemama
       use optwf_contrl, only: ioptorb
       use coefs, only: norb
       use orbval, only: nadorb
-      use vmc_mod, only: norb_tot
+
 
       implicit none
 
@@ -74,10 +74,10 @@ c compute orbitals
             jk=jk+nel
 
             call dcopy(nel,orb(1+ish,jorb),1,slmi(1+jk,iab),1)
-            call dcopy(nel,dorb(jorb,1+ish:nel+ish,1),1,fp(1,j,iab),nel*3)
-            call dcopy(nel,dorb(jorb,1+ish:nel+ish,2),1,fp(2,j,iab),nel*3)
-            call dcopy(nel,dorb(jorb,1+ish:nel+ish,3),1,fp(3,j,iab),nel*3)
-            call dcopy(nel,ddorb (jorb,1+ish:nel+ish),1,fpp (j,iab),nel)
+            call dcopy(nel,dorb(1,1+ish,jorb),3,fp(1,j,iab),nel*3)
+            call dcopy(nel,dorb(2,1+ish,jorb),3,fp(2,j,iab),nel*3)
+            call dcopy(nel,dorb(3,1+ish,jorb),3,fp(3,j,iab),nel*3)
+            call dcopy(nel,ddorb (1+ish,jorb),1,fpp (j,iab),nel)
          enddo
 
 c     calculate the inverse transpose matrix and itsdeterminant
@@ -242,7 +242,7 @@ c-----------------------------------------------------------------------
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec
         do iorb=1,norb+nadorb
-          b(iorb,i)=-hb*(ddorb(iorb,i)+2*(vj(1,i)*dorb(iorb,i,1)+vj(2,i)*dorb(iorb,i,2)+vj(3,i)*dorb(iorb,i,3)))
+          b(iorb,i)=-hb*(ddorb(i,iorb)+2*(vj(1,i)*dorb(1,i,iorb)+vj(2,i)*dorb(2,i,iorb)+vj(3,i)*dorb(3,i,iorb)))
         enddo
       enddo
 
@@ -251,7 +251,7 @@ c compute derivative of kinetic contribution of B+Btilde wrt jastrow parameters
         do iparm=1,nparmj
           do i=1,nelec
             do iorb=1,norb
-              b_dj(iorb,i,iparm)=-2*hb*(g(1,i,iparm)*dorb(iorb,i,1)+g(2,i,iparm)*dorb(iorb,i,2)+g(3,i,iparm)*dorb(iorb,i,3))
+              b_dj(iorb,i,iparm)=-2*hb*(g(1,i,iparm)*dorb(1,i,iorb)+g(2,i,iparm)*dorb(2,i,iorb)+g(3,i,iparm)*dorb(3,i,iorb))
             enddo
           enddo
         enddo
@@ -270,9 +270,9 @@ c compute derivative of kinetic contribution of B+Btilde wrt nuclear coordinates
               call daxpy(norb,2*vj(1,i),da_dorb(l,1,i,1,ic),9*nelec,b_da(l,i,1,ic),3*nelec)
               call daxpy(norb,2*vj(2,i),da_dorb(l,2,i,1,ic),9*nelec,b_da(l,i,1,ic),3*nelec)
               call daxpy(norb,2*vj(3,i),da_dorb(l,3,i,1,ic),9*nelec,b_da(l,i,1,ic),3*nelec)
-              call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1:norb,i,1),1,b_da(l,i,1,ic),3*nelec)
-              call daxpy(norb,2*da_vj(l,2,i,ic),dorb(1:norb,i,2),1,b_da(l,i,1,ic),3*nelec)
-              call daxpy(norb,2*da_vj(l,3,i,ic),dorb(1:norb,i,3),1,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1,i,1),3*nelec,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*da_vj(l,2,i,ic),dorb(2,i,1),3*nelec,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*da_vj(l,3,i,ic),dorb(3,i,1),3*nelec,b_da(l,i,1,ic),3*nelec)
               do iorb=1,norb
                 b_da(l,i,iorb,ic)=-hb*b_da(l,i,iorb,ic)
               enddo
@@ -288,9 +288,9 @@ c 10          db(l,i,iorb,ic)=da_d2orb(l,i,iorb,ic)+two*(
 c    &           vj(1,i)*da_dorb(l,1,i,iorb,ic)
 c    &          +vj(2,i)*da_dorb(l,2,i,iorb,ic)
 c    &          +vj(3,i)*da_dorb(l,3,i,iorb,ic)
-c    &          +da_vj(l,1,i,ic)*dorb(iorb,i,1)
-c    &          +da_vj(l,2,i,ic)*dorb(iorb,i,2)
-c    &          +da_vj(l,3,i,ic)*dorb(iorb,i,3))
+c    &          +da_vj(l,1,i,ic)*dorb(1,i,iorb)
+c    &          +da_vj(l,2,i,ic)*dorb(2,i,iorb)
+c    &          +da_vj(l,3,i,ic)*dorb(3,i,iorb))
 
       return
       end

@@ -113,7 +113,7 @@ c    &)
 c      write(ounit,'(''ddcos_k(ikvec),ddsin_k(ikvec),cos_k(ikvec),ddcos_rp,sin_k(ikvec),ddsin_rm='',9f9.4)')
 c    &ddcos_k(ikvec),ddsin_k(ikvec),cos_k(ikvec),ddcos_rp,sin_k(ikvec),ddsin_rm
 
-c           write(ounit,'(''orb'',2i5,9d12.4)') iel,iorb,orb(iorb),(dorb(iorb,iel,k),k=1,3)
+c           write(ounit,'(''orb'',2i5,9d12.4)') iel,iorb,orb(iorb),(dorb(k,iel,iorb),k=1,3)
 
             if(k_inv(ikvec).eq.1) goto 130
 
