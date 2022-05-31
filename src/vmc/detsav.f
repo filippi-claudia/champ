@@ -84,14 +84,14 @@ c Written by Claudia Filippi
       do k=1,ndet
          detiab(k,iab)=detn(k)
       enddo
-
       
       do iorb=1,norb
          orb(iel,iorb)=orbn(iorb)
-         dorb(iorb,iel,:)=dorbn(iorb,:)
+         do kk=1,3
+            dorb(kk,iel,iorb)=dorbn(iorb,kk)
+         enddo
       enddo
-      
-      
+       
       return
       end
       end module
