@@ -321,7 +321,7 @@ if (MPI_Fortran_FOUND)
   #  Add headers
   target_include_directories(shared_objects
   PUBLIC
-  ${CMAKE_SOURCE_DIR}/build/src/module
+  ${CMAKE_BINARY_DIR}/src/module
   )
 
   target_compile_options(shared_objects
@@ -363,7 +363,7 @@ if (MPI_Fortran_FOUND)
   #  Add headers
   target_include_directories(vmc.mov1
   PUBLIC
-  ${CMAKE_SOURCE_DIR}/build/src/module
+  ${CMAKE_BINARY_DIR}/src/module
   )
 
 

@@ -352,8 +352,7 @@ module multidet
     integer, dimension(:), allocatable :: ndetsingle !(2)
 
     private
-    public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, kref_fixed, numrep_det
-    public :: k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old, kchange
+    public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, kref_fixed, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old, kchange
     public :: allocate_multidet, deallocate_multidet
     save
 contains
@@ -553,8 +552,8 @@ module orbval
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: ddorb !(MELEC,norb_tot)
-    real(dp), dimension(:, :, :), allocatable :: dorb !(3,MELEC,norb_tot)
+    real(dp), dimension(:, :), allocatable :: ddorb !(norb_tot,MELEC)
+    real(dp), dimension(:, :, :), allocatable :: dorb !(norb_tot,MELEC,3)
     integer :: nadorb
     integer :: ndetorb
     real(dp), dimension(:, :), allocatable :: orb !(MELEC,norb_tot)
@@ -568,8 +567,8 @@ contains
         use const, only: nelec
         use coefs, only: norb
         use precision_kinds, only: dp
-        if (.not. allocated(ddorb)) allocate (ddorb(nelec, norb_tot))
-        if (.not. allocated(dorb)) allocate (dorb(3, nelec, norb_tot))
+        if (.not. allocated(ddorb)) allocate (ddorb(norb_tot, nelec))
+        if (.not. allocated(dorb)) allocate (dorb(norb_tot, nelec, 3))
         if (.not. allocated(orb)) allocate (orb(nelec, norb_tot))
     end subroutine allocate_orbval
 
