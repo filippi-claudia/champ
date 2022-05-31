@@ -66,77 +66,6 @@ except:
     sys.exit(1)
 
 
-
-# Set of tools to interact with trexio files.
-
-# Usage:
-# python trex2champ.py  --trex filetrexio.hdf5  --gamess filegamess.out [--motype orbital_type]  [--b back_end]
-
-# # Instantiate the parser
-# parser = argparse.ArgumentParser(description='Python Converter for conversion of trexio files to champ v2.0 format.')
-
-# # Required positional argument
-# parser.add_argument("--trex", "-hdf5", "--hdf5", dest='filename', type=str, required = True,
-#                     help='Required: Filename (including extension) of the trexio file.')
-
-# # Required positional argument
-# parser.add_argument("--gamess", "-i", "--g", dest='gamessfile', type=str, required = True,
-#                     help='Required: Filename (including extension) of the gamess output file.')
-
-# # Optional positional argument
-# parser.add_argument("--motype", "-mo", "--mo", dest='motype', type=str, required = False,
-#                     help='Optional: Variable motype which indicates the type of molecular orbitals stored in the hdf5 file.')
-
-# # Optional positional argument
-# parser.add_argument("--backend", "--back", dest='back_end', type=str, required = False,
-#                     help='Optional: Variable back_end which indicates the type of the TREXIO back end.')
-
-# #
-# # Optional argument for controlling the output files
-# parser.add_argument("--lcao", "-s", "--orb" , dest='save_lcao', type=str, required = False,
-#                     help='Optional: Variable save_lcao to save the LCAO orbitals in CHAMP format.')
-
-# # Optional argument for controlling the output files
-# parser.add_argument("--geometry", "-g", "--geom", "--xyz", dest='save_geometry', type=str, required = False,
-#                     help='Optional: Variable save_geometry to save the geometry in CHAMP format.')
-
-# # Optional argument for controlling the output files
-# parser.add_argument("--basis", "-b", "--bas", dest='save_basis', type=str, required = False,
-#                     help='Optional: Variable save_basis to save the basis set in CHAMP format.')
-
-# # Optional argument for controlling the output files
-# parser.add_argument("--pseudo", "-ps", "--ecp", "--ECP", dest='save_ecp', type=str, required = False,
-#                     help='Optional: Variable save_ecp to save the ECP in CHAMP format.')
-
-# # Optional argument for controlling the output files
-# parser.add_argument("--symmetry", "-sym", "--sym", dest='save_symmetry', type=str, required = False,
-#                     help='Optional: Variable save_symmetry to save the symmetry in CHAMP format.')
-
-# # Optional argument for controlling the output files
-# parser.add_argument("--determinants", "-det", "--det", dest='save_determinants', type=str, required = False,
-#                     help='Optional: Variable save_determinants to save the determinants in CHAMP format.')
-
-
-# args = parser.parse_args()
-
-# print ("Arguments parsed are :")
-# print (' TREXIO filename    ::         \t {}'.format(args.filename))
-# print (' GAMESS filename    ::         \t {}'.format(args.gamessfile))
-# print (' MOTYPE             ::         \t {}'.format(args.motype))
-# print (' Backend            ::         \t {}'.format(args.back_end))
-
-# # Default backend is HDF5
-# if args.back_end is not None:
-#     if str(args.back_end).lower() == "hdf5":
-#         back_end = trexio.TREXIO_HDF5
-#     elif str(args.back_end).lower() == "text":
-#         back_end = trexio.TREXIO_TEXT
-#     else:
-#         raise ValueError
-# else:
-#     back_end = trexio.TREXIO_HDF5
-
-
 class Champ:
     """
     Class to convert TREXIO files to CHAMP v2.0 format.
@@ -184,28 +113,34 @@ class Champ:
 
         #
         # Optional argument for controlling the output files
-        parser.add_argument("--lcao", "-s", "--orb" , dest='save_lcao', type=str, required = False,
+        parser.add_argument("--lcao", "-s", "--orb" , dest='save_lcao', action='store_true',
                             help='Optional: Variable save_lcao to save the LCAO orbitals in CHAMP format.')
+        parser.set_defaults(save_lcao=False)
 
         # Optional argument for controlling the output files
-        parser.add_argument("--geometry", "-g", "--geom", "--xyz", dest='save_geometry', type=str, required = False,
+        parser.add_argument("--geometry", "-g", "--geom", "--xyz", dest='save_geometry', action='store_true',
                             help='Optional: Variable save_geometry to save the geometry in CHAMP format.')
+        parser.set_defaults(save_geometry=False)
 
         # Optional argument for controlling the output files
-        parser.add_argument("--basis", "-b", "--bas", dest='save_basis', type=str, required = False,
+        parser.add_argument("--basis", "-b", "--bas", dest='save_basis', action='store_true',
                             help='Optional: Variable save_basis to save the basis set in CHAMP format.')
+        parser.set_defaults(save_basis=False)
 
         # Optional argument for controlling the output files
-        parser.add_argument("--pseudo", "-ps", "--ecp", "--ECP", dest='save_ecp', type=str, required = False,
+        parser.add_argument("--pseudo", "-ps", "--ecp", "--ECP", dest='save_ecp', action='store_true',
                             help='Optional: Variable save_ecp to save the ECP in CHAMP format.')
+        parser.set_defaults(save_ecp=False)
 
         # Optional argument for controlling the output files
-        parser.add_argument("--symmetry", "-sym", "--sym", dest='save_symmetry', type=str, required = False,
+        parser.add_argument("--symmetry", "-sym", "--sym", dest='save_symmetry', action='store_true',
                             help='Optional: Variable save_symmetry to save the symmetry in CHAMP format.')
+        parser.set_defaults(save_symmetry=False)
 
         # Optional argument for controlling the output files
-        parser.add_argument("--determinants", "-det", "--det", dest='save_determinants', type=str, required = False,
+        parser.add_argument("--determinants", "-det", "--det", dest='save_determinants', action='store_true',
                             help='Optional: Variable save_determinants to save the determinants in CHAMP format.')
+        parser.set_defaults(save_determinants=False)
 
 
         args = parser.parse_args()
@@ -219,6 +154,25 @@ class Champ:
         self.filename = args.filename
         self.gamessfile = args.gamessfile
         self.motype = args.motype
+
+
+        # Options to save different files
+        self.save_lcao = args.save_lcao
+        self.save_geometry = args.save_geometry
+        self.save_basis = args.save_basis
+        self.save_ecp = args.save_ecp
+        self.save_symmetry = args.save_symmetry
+        self.save_determinants = args.save_determinants
+
+        print ('\n')
+        print (' Save LCAO orbitals ::         \t {}'.format(self.save_lcao))
+        print (' Save geometry      ::         \t {}'.format(self.save_geometry))
+        print (' Save basis         ::         \t {}'.format(self.save_basis))
+        print (' Save ECP           ::         \t {}'.format(self.save_ecp))
+        print (' Save symmetry      ::         \t {}'.format(self.save_symmetry))
+        print (' Save determinants  ::         \t {}'.format(self.save_determinants))
+        print ('\n')
+
 
         # Default backend is HDF5
         if args.back_end is not None:
@@ -333,24 +287,30 @@ class Champ:
         # It will be replaced by the data stored by trexio later in the future.
 
         # Write the .xyz file containing cartesian coordinates (Bohr) of nuclei
-        write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coord)
+        if self.save_lcao:
+            write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coord)
 
         # Write the ECP files for each unique atoms
-        write_champ_file_ecp_trexio(filename, nucleus_num, nucleus_label, ecp_num, ecp_z_core, ecp_max_ang_mom_plus_1, ecp_ang_mom, ecp_nucleus_index, ecp_exponent, ecp_coefficient, ecp_power)
+        if self.save_ecp:
+            write_champ_file_ecp_trexio(filename, nucleus_num, nucleus_label, ecp_num, ecp_z_core, ecp_max_ang_mom_plus_1, ecp_ang_mom, ecp_nucleus_index, ecp_exponent, ecp_coefficient, ecp_power)
 
         # Write the .sym file containing symmetry information of MOs
-        write_champ_file_symmetry(filename, dict_mo)
+        if self.save_basis:
+            write_champ_file_symmetry(filename, dict_mo)
 
         # Write the .lcao and .bfinfo file containing orbital information of MOs
-        write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_label)
-        write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num)
+        if self.save_lcao:
+            write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_label)
+            write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num)
 
         # Write the basis on the radial grid file
-        write_champ_file_basis_grid(filename, dict_basis, nucleus_label)
+        if self.save_basis:
+            write_champ_file_basis_grid(filename, dict_basis, nucleus_label)
 
         # Write the determinants, csf and csfmap into a single file using the resultsFile package
-        file = resultsFile.getFile(gamessfile)
-        write_champ_file_determinants(filename, file)
+        if self.save_determinants:
+            file = resultsFile.getFile(gamessfile)
+            write_champ_file_determinants(filename, file)
 
         # Write the eigenvalues for a given type of orbitals using the resultsFile package. Currently it is optional.
         # write_champ_file_eigenvalues(filename, file, dict_mo["type"])
