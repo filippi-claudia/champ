@@ -885,17 +885,17 @@ module trexio_read_data
         character(len=100)              :: string_format  = '(A, T60, A)'
 
         ! determinant data (debugging)
-        integer*8 :: det_list(150000)
-        integer*8 :: read_buf_det_size = 1000   ! how many do you want
-        integer*8 :: offset_det_read = 10
-        integer*8 :: offset_det_data_read = 5
+        integer*8, allocatable :: det_list(:)
+        integer*8 :: read_buf_det_size      ! how many do you want
+        integer*8 :: offset_det_read = 0    ! How many first you want to skip
+        integer*8 :: chunk_det_read = 1
         integer*8 :: determinant_num
-        integer   :: int_num
+        integer   :: int64_num           ! Number of intergers required per spin component
         ! orbital lists (debugging)
-        integer*4 :: orb_list_up(15000), orb_list_dn(15000)
-        integer*8 :: orb_list(1000)
+        integer*4, allocatable :: orb_list_up(:), orb_list_dn(:)
+        integer*8, allocatable :: orb_list(:)
         integer*4 :: occ_num_up, occ_num_dn, occupied_num
-        real*8   ::  determinant_coefficient(150000)
+        real*8, allocatable   ::  determinant_coefficient(:)
 
 
         trex_determinant_file = 0
@@ -920,14 +920,16 @@ module trexio_read_data
             trex_determinant_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_assert(rc, TREXIO_SUCCESS)
             rc = trexio_read_determinant_num(trex_determinant_file, ndet)
-            print *, "trexio_read_determinant_num from determinants :: ", rc, ndet
+            call trexio_assert(rc, TREXIO_SUCCESS)
+            rc = trexio_get_int64_num(trex_determinant_file, int64_num)
             call trexio_assert(rc, TREXIO_SUCCESS)
 #endif
         endif
         call bcast(ndet)
+        call bcast(int64_num)
 
         determinant_num = ndet
-        write(*,*) "Number of determinants (trexio) :: ", ndet
+        write(ounit,int_format) " Number of determinants (read from trexio) :: ", ndet
 
 !       Do the allocations based on the number of determinants and the method
         if( (method(1:3) == 'lin')) then
@@ -936,18 +938,19 @@ module trexio_read_data
             if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,nwftype))
         endif
 
+        read_buf_det_size = int(determinant_num/int64_num)
 
-        ! if (wid) then
+        allocate(determinant_coefficient(ndet))
+        allocate(det_list(ndet))
+
+        if (wid) then
 #if defined(TREXIO_FOUND)
         rc = trexio_read_determinant_coefficient(trex_determinant_file, offset_det_read, read_buf_det_size, determinant_coefficient)
         call trexio_assert(rc, TREXIO_SUCCESS)
 #endif
-        ! endif
-        ! call bcast(coef_list)
+        endif
+        call bcast(determinant_coefficient)
 
-        ! debugging
-        occ_num_up = 7  ! remove after testing
-        occ_num_dn = 7  ! remove after testing
 
         write(ounit,*)
         write(ounit,*) " Determinant coefficients "
@@ -955,18 +958,22 @@ module trexio_read_data
 
 !       allocate the orbital mapping array
         if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
-
-        print*, " Contains determinant coefficients ?", trexio_has_determinant_coefficient(trex_determinant_file)
-        print*, " Contains determinant list ?", trexio_has_determinant_list(trex_determinant_file)
+        allocate(orb_list(ndet*int64_num*2))
+        allocate(orb_list_up(ndet*int64_num))
+        allocate(orb_list_dn(ndet*int64_num))
 
         ! convert one given determinant into lists of orbitals
         rc = trexio_read_determinant_list(trex_determinant_file, offset_det_read, read_buf_det_size, orb_list)
-        write(ounit,*) "orb list :: ", orb_list
-        rc = trexio_to_orbital_list_up_dn(150000, orb_list, orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
-        write(ounit,*) "occ_num_up, occ_num_dn :: ", occ_num_up, occ_num_dn
-        ! Print occupied orbitals for an up-spin component of a given determinant
-        write(ounit,*) "orb_list_up :: ", orb_list_up
 
+        ! write(ounit,*) " Determinant lists  first 10 " , orb_list(1:10)
+        ! write(*,*) "size of orb_list :: ", size(orb_list), size(orb_list_up), size(orb_list_dn), size(orb_list)*7
+
+        ! Print occupied orbitals for an up-spin component of a given determinant
+        ! do i = 1, 14
+            ! rc = trexio_to_orbital_list_up_dn(int64_num, orb_list(i), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
+            ! write(ounit,*) "occ_num_up, occ_num_dn :: ", occ_num_up, occ_num_dn
+            ! write(ounit,*) occ_num_up, occ_num_dn, orb_list_up(i), orb_list_dn(i)
+        ! enddo
 
         ! Print occupied orbitals for an up-spin component of a given determinant
         ! write(*,*) orb_list_up(1:occ_num_up)
