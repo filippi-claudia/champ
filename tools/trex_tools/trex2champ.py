@@ -72,69 +72,69 @@ except:
 # Usage:
 # python trex2champ.py  --trex filetrexio.hdf5  --gamess filegamess.out [--motype orbital_type]  [--b back_end]
 
-# Instantiate the parser
-parser = argparse.ArgumentParser(description='Python Converter for conversion of trexio files to champ v2.0 format.')
+# # Instantiate the parser
+# parser = argparse.ArgumentParser(description='Python Converter for conversion of trexio files to champ v2.0 format.')
 
-# Required positional argument
-parser.add_argument("--trex", "-hdf5", "--hdf5", dest='filename', type=str, required = True,
-                    help='Required: Filename (including extension) of the trexio file.')
+# # Required positional argument
+# parser.add_argument("--trex", "-hdf5", "--hdf5", dest='filename', type=str, required = True,
+#                     help='Required: Filename (including extension) of the trexio file.')
 
-# Required positional argument
-parser.add_argument("--gamess", "-i", "--g", dest='gamessfile', type=str, required = True,
-                    help='Required: Filename (including extension) of the gamess output file.')
+# # Required positional argument
+# parser.add_argument("--gamess", "-i", "--g", dest='gamessfile', type=str, required = True,
+#                     help='Required: Filename (including extension) of the gamess output file.')
 
-# Optional positional argument
-parser.add_argument("--motype", "-mo", "--mo", dest='motype', type=str, required = False,
-                    help='Optional: Variable motype which indicates the type of molecular orbitals stored in the hdf5 file.')
+# # Optional positional argument
+# parser.add_argument("--motype", "-mo", "--mo", dest='motype', type=str, required = False,
+#                     help='Optional: Variable motype which indicates the type of molecular orbitals stored in the hdf5 file.')
 
-# Optional positional argument
-parser.add_argument("--backend", "--back", dest='back_end', type=str, required = False,
-                    help='Optional: Variable back_end which indicates the type of the TREXIO back end.')
+# # Optional positional argument
+# parser.add_argument("--backend", "--back", dest='back_end', type=str, required = False,
+#                     help='Optional: Variable back_end which indicates the type of the TREXIO back end.')
 
-#
-# Optional argument for controlling the output files
-parser.add_argument("--lcao", "-s", "--orb" , dest='save_lcao', type=str, required = False,
-                    help='Optional: Variable save_lcao to save the LCAO orbitals in CHAMP format.')
+# #
+# # Optional argument for controlling the output files
+# parser.add_argument("--lcao", "-s", "--orb" , dest='save_lcao', type=str, required = False,
+#                     help='Optional: Variable save_lcao to save the LCAO orbitals in CHAMP format.')
 
-# Optional argument for controlling the output files
-parser.add_argument("--geometry", "-g", "--geom", "--xyz", dest='save_geometry', type=str, required = False,
-                    help='Optional: Variable save_geometry to save the geometry in CHAMP format.')
+# # Optional argument for controlling the output files
+# parser.add_argument("--geometry", "-g", "--geom", "--xyz", dest='save_geometry', type=str, required = False,
+#                     help='Optional: Variable save_geometry to save the geometry in CHAMP format.')
 
-# Optional argument for controlling the output files
-parser.add_argument("--basis", "-b", "--bas", dest='save_basis', type=str, required = False,
-                    help='Optional: Variable save_basis to save the basis set in CHAMP format.')
+# # Optional argument for controlling the output files
+# parser.add_argument("--basis", "-b", "--bas", dest='save_basis', type=str, required = False,
+#                     help='Optional: Variable save_basis to save the basis set in CHAMP format.')
 
-# Optional argument for controlling the output files
-parser.add_argument("--pseudo", "-ps", "--ecp", "--ECP", dest='save_ecp', type=str, required = False,
-                    help='Optional: Variable save_ecp to save the ECP in CHAMP format.')
+# # Optional argument for controlling the output files
+# parser.add_argument("--pseudo", "-ps", "--ecp", "--ECP", dest='save_ecp', type=str, required = False,
+#                     help='Optional: Variable save_ecp to save the ECP in CHAMP format.')
 
-# Optional argument for controlling the output files
-parser.add_argument("--symmetry", "-sym", "--sym", dest='save_symmetry', type=str, required = False,
-                    help='Optional: Variable save_symmetry to save the symmetry in CHAMP format.')
+# # Optional argument for controlling the output files
+# parser.add_argument("--symmetry", "-sym", "--sym", dest='save_symmetry', type=str, required = False,
+#                     help='Optional: Variable save_symmetry to save the symmetry in CHAMP format.')
 
-# Optional argument for controlling the output files
-parser.add_argument("--determinants", "-det", "--det", dest='save_determinants', type=str, required = False,
-                    help='Optional: Variable save_determinants to save the determinants in CHAMP format.')
+# # Optional argument for controlling the output files
+# parser.add_argument("--determinants", "-det", "--det", dest='save_determinants', type=str, required = False,
+#                     help='Optional: Variable save_determinants to save the determinants in CHAMP format.')
 
 
-args = parser.parse_args()
+# args = parser.parse_args()
 
-print ("Arguments parsed are :")
-print (' TREXIO filename    ::         \t {}'.format(args.filename))
-print (' GAMESS filename    ::         \t {}'.format(args.gamessfile))
-print (' MOTYPE             ::         \t {}'.format(args.motype))
-print (' Backend            ::         \t {}'.format(args.back_end))
+# print ("Arguments parsed are :")
+# print (' TREXIO filename    ::         \t {}'.format(args.filename))
+# print (' GAMESS filename    ::         \t {}'.format(args.gamessfile))
+# print (' MOTYPE             ::         \t {}'.format(args.motype))
+# print (' Backend            ::         \t {}'.format(args.back_end))
 
-# Default backend is HDF5
-if args.back_end is not None:
-    if str(args.back_end).lower() == "hdf5":
-        back_end = trexio.TREXIO_HDF5
-    elif str(args.back_end).lower() == "text":
-        back_end = trexio.TREXIO_TEXT
-    else:
-        raise ValueError
-else:
-    back_end = trexio.TREXIO_HDF5
+# # Default backend is HDF5
+# if args.back_end is not None:
+#     if str(args.back_end).lower() == "hdf5":
+#         back_end = trexio.TREXIO_HDF5
+#     elif str(args.back_end).lower() == "text":
+#         back_end = trexio.TREXIO_TEXT
+#     else:
+#         raise ValueError
+# else:
+#     back_end = trexio.TREXIO_HDF5
 
 
 class Champ:
@@ -142,14 +142,11 @@ class Champ:
     Class to convert TREXIO files to CHAMP v2.0 format.
     """
 
-    def __init__(self, filename, gamessfile, motype, back_end):
+    def __init__(self):
         """
         Initialize the class.
         """
-        self.filename = filename
-        self.gamessfile = gamessfile
-        self.motype = motype
-        self.back_end = back_end
+        self.parse_arguments()
         self.champ_file = None
         self.champ_file_name = None
         self.champ_file_path = None
@@ -162,138 +159,203 @@ class Champ:
         self.champ_file_name = self.champ_file.get_file_name()
         self.champ_file_path = self.champ_file.get_file_path()
 
+    def parse_arguments(self):
+        """
+        Parse the arguments from the command line.
+        """
+        # Instantiate the parser
+        parser = argparse.ArgumentParser(description='Python Converter for conversion of trexio files to champ v2.0 format.')
+
+        # Required positional argument
+        parser.add_argument("--trex", "-hdf5", "--hdf5", dest='filename', type=str, required = True,
+                            help='Required: Filename (including extension) of the trexio file.')
+
+        # Required positional argument
+        parser.add_argument("--gamess", "-i", "--g", dest='gamessfile', type=str, required = True,
+                            help='Required: Filename (including extension) of the gamess output file.')
+
+        # Optional positional argument
+        parser.add_argument("--motype", "-mo", "--mo", dest='motype', type=str, required = False,
+                            help='Optional: Variable motype which indicates the type of molecular orbitals stored in the hdf5 file.')
+
+        # Optional positional argument
+        parser.add_argument("--backend", "--back", dest='back_end', type=str, required = False,
+                            help='Optional: Variable back_end which indicates the type of the TREXIO back end.')
+
+        #
+        # Optional argument for controlling the output files
+        parser.add_argument("--lcao", "-s", "--orb" , dest='save_lcao', type=str, required = False,
+                            help='Optional: Variable save_lcao to save the LCAO orbitals in CHAMP format.')
+
+        # Optional argument for controlling the output files
+        parser.add_argument("--geometry", "-g", "--geom", "--xyz", dest='save_geometry', type=str, required = False,
+                            help='Optional: Variable save_geometry to save the geometry in CHAMP format.')
+
+        # Optional argument for controlling the output files
+        parser.add_argument("--basis", "-b", "--bas", dest='save_basis', type=str, required = False,
+                            help='Optional: Variable save_basis to save the basis set in CHAMP format.')
+
+        # Optional argument for controlling the output files
+        parser.add_argument("--pseudo", "-ps", "--ecp", "--ECP", dest='save_ecp', type=str, required = False,
+                            help='Optional: Variable save_ecp to save the ECP in CHAMP format.')
+
+        # Optional argument for controlling the output files
+        parser.add_argument("--symmetry", "-sym", "--sym", dest='save_symmetry', type=str, required = False,
+                            help='Optional: Variable save_symmetry to save the symmetry in CHAMP format.')
+
+        # Optional argument for controlling the output files
+        parser.add_argument("--determinants", "-det", "--det", dest='save_determinants', type=str, required = False,
+                            help='Optional: Variable save_determinants to save the determinants in CHAMP format.')
+
+
+        args = parser.parse_args()
+
+        print ("Arguments parsed are :")
+        print (' TREXIO filename    ::         \t {}'.format(args.filename))
+        print (' GAMESS filename    ::         \t {}'.format(args.gamessfile))
+        print (' MOTYPE             ::         \t {}'.format(args.motype))
+        print (' Backend            ::         \t {}'.format(args.back_end))
+
+        self.filename = args.filename
+        self.gamessfile = args.gamessfile
+        self.motype = args.motype
+
+        # Default backend is HDF5
+        if args.back_end is not None:
+            if str(args.back_end).lower() == "hdf5":
+                back_end_t = trexio.TREXIO_HDF5
+            elif str(args.back_end).lower() == "text":
+                back_end_t = trexio.TREXIO_TEXT
+            else:
+                raise ValueError
+        else:
+            back_end_t = trexio.TREXIO_HDF5
+
+        self.back_end = back_end_t
+
+
     def __main__(self):
         """
         Main function.
         """
-        self.read_trexio()
 
 
-    # Instantiate the class
-champ = Champ(args.filename, args.gamessfile, args.motype, back_end)
+    def run(self):
 
-print (type(champ))
+        filename = self.filename
+        gamessfile = self.gamessfile
+        motype = self.motype
+        back_end = self.back_end
 
-
-
-
-
-# Main command
-# run(args.filename, gamessfile = args.gamessfile, back_end=back_end, motype=args.motype)
+        trexio_file = trexio.File(filename, mode='r', back_end=back_end)
 
 
+        # Metadata
+        # --------
 
-def run(filename,  gamessfile, back_end, motype=None):
+        # try:
+        #     trexio.read_metadata_code_num(trexio_file)
+        # except trexio.Error as e:
+        #     print(f"TREXIO error message: {e.message}")
 
-    trexio_file = trexio.File(filename, mode='r',back_end=back_end)
+        metadata_num = trexio.read_metadata_code_num(trexio_file)
+        metadata_code  = trexio.read_metadata_code(trexio_file)
+        metadata_description = trexio.read_metadata_description(trexio_file)
 
+        # Electrons
+        # ---------
 
-    # Metadata
-    # --------
+        electron_up_num = trexio.read_electron_up_num(trexio_file)
+        electron_dn_num = trexio.read_electron_dn_num(trexio_file)
 
-    # try:
-    #     trexio.read_metadata_code_num(trexio_file)
-    # except trexio.Error as e:
-    #     print(f"TREXIO error message: {e.message}")
+        # Nuclei
+        # ------
 
-    metadata_num = trexio.read_metadata_code_num(trexio_file)
-    metadata_code  = trexio.read_metadata_code(trexio_file)
-    metadata_description = trexio.read_metadata_description(trexio_file)
-
-    # Electrons
-    # ---------
-
-    electron_up_num = trexio.read_electron_up_num(trexio_file)
-    electron_dn_num = trexio.read_electron_dn_num(trexio_file)
-
-    # Nuclei
-    # ------
-
-    nucleus_num = trexio.read_nucleus_num(trexio_file)
-    nucleus_charge = trexio.read_nucleus_charge(trexio_file)
-    nucleus_coord = trexio.read_nucleus_coord(trexio_file)
-    nucleus_label = trexio.read_nucleus_label(trexio_file)
-    nucleus_point_group = trexio.read_nucleus_point_group(trexio_file)
+        nucleus_num = trexio.read_nucleus_num(trexio_file)
+        nucleus_charge = trexio.read_nucleus_charge(trexio_file)
+        nucleus_coord = trexio.read_nucleus_coord(trexio_file)
+        nucleus_label = trexio.read_nucleus_label(trexio_file)
+        nucleus_point_group = trexio.read_nucleus_point_group(trexio_file)
 
 
-    # ECP
-    # ------
+        # ECP
+        # ------
 
-    ecp_num = trexio.read_ecp_num(trexio_file)
-    ecp_z_core = trexio.read_ecp_z_core(trexio_file)
-    ecp_max_ang_mom_plus_1 = trexio.read_ecp_max_ang_mom_plus_1(trexio_file)
-    ecp_ang_mom = trexio.read_ecp_ang_mom(trexio_file)
-    ecp_nucleus_index = trexio.read_ecp_nucleus_index(trexio_file)
-    ecp_exponent = trexio.read_ecp_exponent(trexio_file)
-    ecp_coefficient = trexio.read_ecp_coefficient(trexio_file)
-    ecp_power = trexio.read_ecp_power(trexio_file)
-
-
-    # Basis
-
-    dict_basis = {}
-    dict_basis["type"] = trexio.read_basis_type(trexio_file)
-    dict_basis["shell_num"] = trexio.read_basis_shell_num(trexio_file)
-    dict_basis["prim_num"] = trexio.read_basis_prim_num(trexio_file)
-    dict_basis["nucleus_index"] = trexio.read_basis_nucleus_index(trexio_file)
-    dict_basis["shell_ang_mom"] = trexio.read_basis_shell_ang_mom(trexio_file)
-    dict_basis["shell_factor"] = trexio.read_basis_shell_factor(trexio_file)
-    dict_basis["shell_index"] = trexio.read_basis_shell_index(trexio_file)
-    dict_basis["exponent"] = trexio.read_basis_exponent(trexio_file)
-    dict_basis["coefficient"] = trexio.read_basis_coefficient(trexio_file)
-    dict_basis["prim_factor"] = trexio.read_basis_prim_factor(trexio_file)
-
-    # AO
-    # --
-
-    ao_cartesian = trexio.read_ao_cartesian(trexio_file)
-    ao_num = trexio.read_ao_num(trexio_file)
-    ao_shell = trexio.read_ao_shell(trexio_file)
-    ao_normalization = trexio.read_ao_normalization(trexio_file)
+        ecp_num = trexio.read_ecp_num(trexio_file)
+        ecp_z_core = trexio.read_ecp_z_core(trexio_file)
+        ecp_max_ang_mom_plus_1 = trexio.read_ecp_max_ang_mom_plus_1(trexio_file)
+        ecp_ang_mom = trexio.read_ecp_ang_mom(trexio_file)
+        ecp_nucleus_index = trexio.read_ecp_nucleus_index(trexio_file)
+        ecp_exponent = trexio.read_ecp_exponent(trexio_file)
+        ecp_coefficient = trexio.read_ecp_coefficient(trexio_file)
+        ecp_power = trexio.read_ecp_power(trexio_file)
 
 
-    # MOs
-    # ---
-    dict_mo = {}
-    dict_mo["type"] = trexio.read_mo_type(trexio_file)
-    dict_mo["num"] = trexio.read_mo_num(trexio_file)
-    dict_mo["coefficient"] = trexio.read_mo_coefficient(trexio_file)
-    dict_mo["symmetry"] = trexio.read_mo_symmetry(trexio_file)
+        # Basis
+
+        dict_basis = {}
+        dict_basis["type"] = trexio.read_basis_type(trexio_file)
+        dict_basis["shell_num"] = trexio.read_basis_shell_num(trexio_file)
+        dict_basis["prim_num"] = trexio.read_basis_prim_num(trexio_file)
+        dict_basis["nucleus_index"] = trexio.read_basis_nucleus_index(trexio_file)
+        dict_basis["shell_ang_mom"] = trexio.read_basis_shell_ang_mom(trexio_file)
+        dict_basis["shell_factor"] = trexio.read_basis_shell_factor(trexio_file)
+        dict_basis["shell_index"] = trexio.read_basis_shell_index(trexio_file)
+        dict_basis["exponent"] = trexio.read_basis_exponent(trexio_file)
+        dict_basis["coefficient"] = trexio.read_basis_coefficient(trexio_file)
+        dict_basis["prim_factor"] = trexio.read_basis_prim_factor(trexio_file)
+
+        # AO
+        # --
+
+        ao_cartesian = trexio.read_ao_cartesian(trexio_file)
+        ao_num = trexio.read_ao_num(trexio_file)
+        ao_shell = trexio.read_ao_shell(trexio_file)
+        ao_normalization = trexio.read_ao_normalization(trexio_file)
+
+
+        # MOs
+        # ---
+        dict_mo = {}
+        dict_mo["type"] = trexio.read_mo_type(trexio_file)
+        dict_mo["num"] = trexio.read_mo_num(trexio_file)
+        dict_mo["coefficient"] = trexio.read_mo_coefficient(trexio_file)
+        dict_mo["symmetry"] = trexio.read_mo_symmetry(trexio_file)
 
 
 
 
-    ###### NOTE ######
-    # The following portion is written to convert the data available in the
-    # TREXIO file to the format readable by CHAMP.
-    # Note all the information is yet not available in trexio file.
-    # The determinants and csf information is obtained from the GAMESS output file using the resultsFile package.
-    # It will be replaced by the data stored by trexio later in the future.
+        ###### NOTE ######
+        # The following portion is written to convert the data available in the
+        # TREXIO file to the format readable by CHAMP.
+        # Note all the information is yet not available in trexio file.
+        # The determinants and csf information is obtained from the GAMESS output file using the resultsFile package.
+        # It will be replaced by the data stored by trexio later in the future.
 
-    # Write the .xyz file containing cartesian coordinates (Bohr) of nuclei
-    write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coord)
+        # Write the .xyz file containing cartesian coordinates (Bohr) of nuclei
+        write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coord)
 
-    # Write the ECP files for each unique atoms
-    write_champ_file_ecp_trexio(filename, nucleus_num, nucleus_label, ecp_num, ecp_z_core, ecp_max_ang_mom_plus_1, ecp_ang_mom, ecp_nucleus_index, ecp_exponent, ecp_coefficient, ecp_power)
+        # Write the ECP files for each unique atoms
+        write_champ_file_ecp_trexio(filename, nucleus_num, nucleus_label, ecp_num, ecp_z_core, ecp_max_ang_mom_plus_1, ecp_ang_mom, ecp_nucleus_index, ecp_exponent, ecp_coefficient, ecp_power)
 
-    # Write the .sym file containing symmetry information of MOs
-    write_champ_file_symmetry(filename, dict_mo)
+        # Write the .sym file containing symmetry information of MOs
+        write_champ_file_symmetry(filename, dict_mo)
 
-    # Write the .lcao and .bfinfo file containing orbital information of MOs
-    write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_label)
-    write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num)
+        # Write the .lcao and .bfinfo file containing orbital information of MOs
+        write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_label)
+        write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num)
 
-    # Write the basis on the radial grid file
-    write_champ_file_basis_grid(filename, dict_basis, nucleus_label)
+        # Write the basis on the radial grid file
+        write_champ_file_basis_grid(filename, dict_basis, nucleus_label)
 
-    # Write the determinants, csf and csfmap into a single file using the resultsFile package
-    file = resultsFile.getFile(gamessfile)
-    write_champ_file_determinants(filename, file)
+        # Write the determinants, csf and csfmap into a single file using the resultsFile package
+        file = resultsFile.getFile(gamessfile)
+        write_champ_file_determinants(filename, file)
 
-    # Write the eigenvalues for a given type of orbitals using the resultsFile package. Currently it is optional.
-    # write_champ_file_eigenvalues(filename, file, dict_mo["type"])
-    trexio_file.close()
-    return
+        # Write the eigenvalues for a given type of orbitals using the resultsFile package. Currently it is optional.
+        # write_champ_file_eigenvalues(filename, file, dict_mo["type"])
+        trexio_file.close()
+        return
 
 
 
@@ -1168,7 +1230,11 @@ def write_champ_file_ecp_trexio(filename, nucleus_num, nucleus_label, ecp_num, e
         return None
 
 
+if __name__ == "__main__":
+    print ("Converting the trexio file to the champ v2.0 format")
 
-# Main command
-run(args.filename, gamessfile = args.gamessfile, back_end=back_end, motype=args.motype)
+    # Instantiate the class
+    champ = Champ()
 
+    # Run the class instance
+    champ.run()
