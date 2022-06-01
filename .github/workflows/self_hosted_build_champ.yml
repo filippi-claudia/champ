@@ -8,6 +8,7 @@ on:
       - rmax
       - debug_intel
       - feature/debug-ci
+      - optimization
     # Sequence of patterns matched against refs/tags
     tags:
       - v2.*.*
@@ -19,6 +20,7 @@ on:
       - cartesian_d
       - cartesian_d_qmckl
       - debug_intel
+      - optimization
       - feature/debug-ci
 
 jobs:
