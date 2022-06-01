@@ -142,6 +142,11 @@ class Champ:
                             help='Optional: Variable save_determinants to save the determinants in CHAMP format.')
         parser.set_defaults(save_determinants=False)
 
+        # Optional argument for controlling the names of the output files
+        parser.add_argument("--basis_prefix", dest='basis_prefix', type=str, required = False,
+                            help='Optional: Variable basis prefix to save the basis grid files with this prefix.')
+        parser.set_defaults(basis_prefix="BASISGRID")
+
 
         args = parser.parse_args()
 
@@ -163,6 +168,9 @@ class Champ:
         self.save_ecp = args.save_ecp
         self.save_symmetry = args.save_symmetry
         self.save_determinants = args.save_determinants
+
+        # Optional argument for controlling the names of the output files
+        self.basis_prefix = args.basis_prefix
 
         print ('\n')
         print (' Save LCAO orbitals ::         \t {}'.format(self.save_lcao))
@@ -305,7 +313,7 @@ class Champ:
 
         # Write the basis on the radial grid file
         if self.save_basis:
-            write_champ_file_basis_grid(filename, dict_basis, nucleus_label)
+            write_champ_file_basis_grid(filename, dict_basis, nucleus_label, self.basis_prefix)
 
         # Write the determinants, csf and csfmap into a single file using the resultsFile package
         if self.save_determinants:
@@ -322,7 +330,7 @@ class Champ:
 ## Champ v2.0 format input files
 
 # Radial basis on the grid
-def write_champ_file_basis_grid(filename, dict_basis, nucleus_label):
+def write_champ_file_basis_grid(filename, dict_basis, nucleus_label, basis_prefix):
     """Writes the radial basis data onto a grid for champ calculation.
 
     Returns:
@@ -429,7 +437,7 @@ def write_champ_file_basis_grid(filename, dict_basis, nucleus_label):
 
             for i in range(len(unique_elements)):
                 # Write down an radial basis grid file in the new champ v2.0 format for each unique atom type
-                filename_basis_grid = "BASISGRID." + 'basis.' + unique_elements[i]
+                filename_basis_grid = basis_prefix + '.basis.' + unique_elements[i]
                 with open(filename_basis_grid, 'w') as file:
 
                     # Common numbers
