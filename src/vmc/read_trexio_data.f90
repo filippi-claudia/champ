@@ -11,6 +11,7 @@ module trexio_read_data
     public :: read_trexio_orbitals_file
     public :: read_trexio_basis_file
     public :: read_trexio_determinant_file
+    public :: read_trexio_ecp_file
     contains
 
     subroutine read_trexio_molecule_file(file_trexio)
@@ -996,7 +997,230 @@ module trexio_read_data
     end subroutine read_trexio_determinant_file
 
 
+    subroutine read_trexio_ecp_file(file_trexio)
+        !> This subroutine reads the .hdf5 trexio generated file/folder. It then reads the
+        !> ECP information for all the unique atoms.
+        !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+        !! @date 01 June 2022
 
+        use custom_broadcast,   only: bcast
+        use mpiconf,            only: wid
+
+#if defined(TREXIO_FOUND)
+        use trexio
+        use contrl_file,        only: backend
+        use error,              only: trexio_error
+#endif
+
+        use pseudo_mod,         only: MPS_L, MGAUSS, MPS_QUAD
+        use atom,               only: nctype, atomtyp
+        use gauss_ecp,          only: ecp_coef, ecp_exponent, necp_power, necp_term
+        use gauss_ecp,          only: allocate_gauss_ecp
+        use pseudo,             only: lpot
+        use qua,                only: nquad, wq, xq0, yq0, zq0
+        use general,            only: pooldir, filename, pp_id, filenames_ps_gauss
+        use contrl_file,        only: ounit, errunit
+        use rotqua_mod,         only: gesqua
+
+        use precision_kinds,    only: dp
+
+        implicit none
+
+        !   local use
+        character(len=72), intent(in)   :: file_trexio
+        character(len=40)               :: temp1, temp2, temp3, temp4
+        character(len=80)               :: comment, file_trexio_path
+        logical                         :: exist, skip = .true.
+
+        ! trexio
+        integer(8)                      :: trex_ecp_file
+        integer                         :: rc = 1
+
+        ! local variables
+        integer                         :: ecp_num
+        integer, allocatable            :: flat_ecp_ang_mom(:)
+        integer, allocatable            :: flat_ecp_nucleus_index(:)
+        integer, allocatable            :: flat_ecp_max_ang_mom_plus_1(:)
+        integer, allocatable            :: flat_ecp_power(:)
+        integer, allocatable            :: flat_ecp_z_core(:)
+        real(dp), allocatable           :: flat_ecp_coefficient(:)
+        real(dp), allocatable           :: flat_ecp_exponent(:)
+
+
+        !   Formatting
+        character(len=100)              :: int_format     = '(A, T60, I0)'
+        character(len=100)              :: float_format   = '(A, T60, f12.8)'
+        character(len=100)              :: string_format  = '(A, T60, A)'
+
+        integer         :: i, ic, idx, l
+        integer         :: iunit, iostat, counter = 0
+
+        character*80 label
+
+        trex_ecp_file = 0
+
+        !   External file reading
+
+        if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
+            file_trexio_path = pooldir // file_trexio(7:)
+        else
+            file_trexio_path = file_trexio
+        endif
+
+
+        write(ounit,*) '-----------------------------------------------------------------------'
+        write(ounit,*) " Reading ECP data from the trexio file :: ",  file_trexio_path
+        write(ounit,*) '-----------------------------------------------------------------------'
+
+
+
+        ! Check if the file exists
+        if (wid) then
+#if defined(TREXIO_FOUND)
+            trex_ecp_file = trexio_open(file_trexio_path, 'r', backend, rc)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open', __FILE__, __LINE__)
+            rc = trexio_read_ecp_num(trex_ecp_file, ecp_num)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ecp_num', __FILE__, __LINE__)
+#endif
+        endif
+        call bcast(ecp_num)
+        allocate (flat_ecp_ang_mom(ecp_num))
+        allocate (flat_ecp_nucleus_index(ecp_num))
+        allocate (flat_ecp_max_ang_mom_plus_1(ecp_num))
+        allocate (flat_ecp_power(ecp_num))
+        allocate (flat_ecp_z_core(ecp_num))
+        allocate (flat_ecp_coefficient(ecp_num))
+        allocate (flat_ecp_exponent(ecp_num))
+
+        if (wid) then
+#if defined(TREXIO_FOUND)
+            rc = trexio_read_ecp_ang_mom(trex_ecp_file, flat_ecp_ang_mom)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ecp_ang_mom', __FILE__, __LINE__)
+            rc = trexio_read_ecp_nucleus_index(trex_ecp_file, flat_ecp_nucleus_index)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ecp_nucleus_index', __FILE__, __LINE__)
+            rc = trexio_read_ecp_max_ang_mom_plus_1(trex_ecp_file, flat_ecp_max_ang_mom_plus_1)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ecp_max_ang_mom_plus_1', __FILE__, __LINE__)
+            rc = trexio_read_ecp_power(trex_ecp_file, flat_ecp_power)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ecp_power', __FILE__, __LINE__)
+            rc = trexio_read_ecp_z_core(trex_ecp_file, flat_ecp_z_core)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ecp_z_core', __FILE__, __LINE__)
+            rc = trexio_read_ecp_coefficient(trex_ecp_file, flat_ecp_coefficient)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ecp_coefficient', __FILE__, __LINE__)
+            rc = trexio_read_ecp_exponent(trex_ecp_file, flat_ecp_exponent)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ecp_exponent', __FILE__, __LINE__)
+#endif
+        endif
+        call bcast(flat_ecp_ang_mom)
+        call bcast(flat_ecp_nucleus_index)
+        call bcast(flat_ecp_max_ang_mom_plus_1)
+        call bcast(flat_ecp_power)
+        call bcast(flat_ecp_z_core)
+        call bcast(flat_ecp_coefficient)
+        call bcast(flat_ecp_exponent)
+
+
+!         do ic=1,nctype
+!           if (wid) then
+!             if (nctype.gt.100) call fatal_error('READPS_GAUSS: nctype>100')
+!             filename =  trim(pooldir) // trim(pp_id) // ".gauss_ecp.dat." // atomtyp(ic)
+
+!             inquire(file=filename, exist=exist)
+!             if (exist) then
+!               open (newunit=iunit,file=filename, iostat=iostat, action='read', status='old')
+!               if (iostat .ne. 0) error stop "Problem in opening the pseudopotential file (Gaussian)"
+!             else
+!               call fatal_error( " Pseudopotential file (Gaussian) "// filename // " does not exist.")
+!             endif
+
+!           !   External file reading
+!             write(ounit,*) '-----------------------------------------------------------------------'
+!             write(ounit,'(4a)')  " Reading ECP pseudopotential for ", trim(atomtyp(ic))," from the file :: ", trim(filename)
+!             write(ounit,*) '-----------------------------------------------------------------------'
+
+!         ! label
+
+!             read(iunit,'(a80)',iostat=iostat) label
+!             if (iostat .ne. 0) then
+!               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: label"
+!               write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
+!               write(errunit,'(a,i6)') "at line ", __LINE__
+!             endif
+!             write(ounit,'(a,i4,a,a80)') 'ECP for atom type ', ic, ' label = ', adjustl(label)
+!           endif
+!           call bcast(label)
+!           ! max projector
+!           if (.not. allocated(lpot)) allocate (lpot(nctype))
+
+!           if (wid) then
+!             read(iunit,*,iostat=iostat) lpot(ic)
+!             if (iostat .ne. 0) then
+!               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: lpot"
+!               write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
+!               write(errunit,'(a,i6)') "at line ", __LINE__
+!             endif
+!             write(ounit,'(a,i4,a,i4)') 'ECP for atom type ', ic, ' lpot = ', lpot(ic)
+
+!             if(lpot(ic).gt.MPS_L) call fatal_error('READPS_GAUSS: increase MPS_L')
+!           endif
+!           call bcast(lpot)
+!         ! read terms of local part and all non-local parts
+!         ! local part first in file, but stored at index lpot
+!         ! non-local l=0 at index 1 etc, up to lpot-1
+
+!           call allocate_gauss_ecp()
+!           do l=1,lpot(ic)
+!               if(l.eq.1)then
+!                 idx=lpot(ic)
+!                 else
+!                 idx=l-1
+!               endif
+!               if (wid) then
+!                 read(iunit,*,iostat=iostat) necp_term(idx,ic)
+!                 if (iostat .ne. 0) then
+!                     write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: necp_term"
+!                     write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
+!                     write(errunit,'(a,i6)') "at line ", __LINE__
+!                 endif
+!               endif
+!               call bcast(necp_term)
+
+!               if(necp_term(idx,ic).gt.MGAUSS) call fatal_error('READPS_GAUSS: increase MGAUSS')
+
+!               write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
+
+!               do i=1,necp_term(idx,ic)
+!                 if (wid) then
+!                   read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
+
+!                   if (iostat .ne. 0) then
+!                     write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
+!                     write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
+!                     write(errunit,'(a,i6)') "at line ", __LINE__
+!                   endif
+!                   write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic), &
+!                                                           necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
+!                 endif
+!               enddo
+!               call bcast(ecp_coef)
+!               call bcast(necp_power)
+!               call bcast(ecp_exponent)
+!           enddo
+
+!           if (wid) close(iunit)
+!         enddo
+
+!         if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
+!         if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
+!         if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
+!         if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
+
+!         call gesqua(nquad,xq0,yq0,zq0,wq)
+!         call bcast(wq)
+!         call bcast(xq0)
+!         call bcast(yq0)
+!         call bcast(zq0)
+        return
+      end subroutine read_trexio_ecp_file
 
 
 end module
