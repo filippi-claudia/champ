@@ -27,7 +27,7 @@ jobs:
   build_champ:
     strategy:
       matrix:
-        toolchain: ['intel','gnu']
+        toolchain: ['intel']
     name: Build CHAMP with ${{ matrix.toolchain }} OneAPI self-hosted runner ccpgate/ccp01
     runs-on: self-hosted
     timeout-minutes: 120
