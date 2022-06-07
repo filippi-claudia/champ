@@ -1,7 +1,6 @@
 module trexio_read_data
     use error, only : fatal_error
     use precision_kinds,        only: dp
-    use m_trexio_basis,         only: gnorm
     use array_utils,            only: unique_elements
 
     private
@@ -327,6 +326,7 @@ module trexio_read_data
 #if defined(TREXIO_FOUND)
         use trexio
         use contrl_file,        only: backend
+        use error,              only: trexio_error
 #endif
 
         implicit none
@@ -399,17 +399,13 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             trex_basis_file = trexio_open(file_trexio_path, 'r', backend, rc)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_open :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
             rc = trexio_read_basis_prim_num(trex_basis_file, basis_num_prim)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_basis_prim_num :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_prim_num', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_num(trex_basis_file, basis_num_shell)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_basis_shell_num :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_num', __FILE__, __LINE__)
             rc = trexio_read_ao_num(trex_basis_file, ao_num)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_ao_num :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
 #endif
         endif
         call bcast(basis_num_prim)
@@ -430,35 +426,25 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             trex_basis_file = trexio_open(file_trexio_path, 'r', backend, rc)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_open :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
             rc = trexio_read_basis_nucleus_index(trex_basis_file, basis_nucleus_index)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_basis_nucleus_index :: ", basis_nucleus_index
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_nucleus_index', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_index(trex_basis_file, basis_shell_index)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_basis_shell_index :: ", basis_shell_index
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_index', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_ang_mom(trex_basis_file, basis_shell_ang_mom)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_basis_shell_ang_mom :: ", basis_shell_ang_mom
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_ang_mom', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_factor(trex_basis_file, basis_shell_factor)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_basis_shell_factor :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_factor', __FILE__, __LINE__)
             rc = trexio_read_basis_exponent(trex_basis_file, basis_exponent)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_basis_exponent :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_exponent', __FILE__, __LINE__)
             rc = trexio_read_basis_coefficient(trex_basis_file, basis_coefficient)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_basis_coefficient :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_coefficient', __FILE__, __LINE__)
             rc = trexio_read_basis_prim_factor(trex_basis_file, basis_prim_factor)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_basis_prim_factor :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_prim_factor', __FILE__, __LINE__)
             rc = trexio_read_ao_shell(trex_basis_file, ao_shell)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_ao_shell :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_shell', __FILE__, __LINE__)
             rc = trexio_read_ao_normalization(trex_basis_file, ao_normalization)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            ! write(*,*) "trexio_read_ao_normalization :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_normalization', __FILE__, __LINE__)
 #endif
         endif
         call bcast(basis_nucleus_index)
@@ -641,25 +627,16 @@ module trexio_read_data
         enddo
 
 
+        ! Put in the read information in the x(ir) and rwf(ir,j,ic,iwf) arrays
+        !     do ir=1,nr(ic)
+        !       read(iunit,*,iostat=iostat) x(ir),(rwf(ir,irb,ic,iwf),irb=1,nrbas(ic))
+        !     enddo
+
+
 
 
         ! Extract the shell angular momentum information only for unique type
         ! of atoms.
-
-
-
-    !     def compute_grid():
-    !     # Compute the radial grid r for a given number of grid points
-    !     # and grid type
-    !     for i in range(gridpoints):
-    !         if gridtype == 1:
-    !             r = gridr0 + i*gridarg
-    !         elif gridtype == 2:
-    !             r = gridr0 * gridarg**i
-    !         elif gridtype == 3:
-    !             r = gridr0 * gridarg**i - gridr0
-    !         bgrid[:,i] = r
-    !     return bgrid
 
     ! def add_function(shell_ang_mom, exponents, coefficients, shell, bgrid):
     !     # put a new function on the grid
@@ -741,7 +718,27 @@ module trexio_read_data
     ! else:
     !     return None
 
+    contains
 
+    ! Functions needed only for the radial basis set generation
+    double precision function shell_to_grid(l, exponents, coefficients) result (val)
+    use m_trexio_basis,             only: gnorm
+    implicit None
+    integer, intent(in)             :: l
+    double precision, intent(in)    :: exponents(:)
+    double precision, intent(in)    :: coefficients(:)
+    integer                         :: i,j
+    double precision                :: r, r2
+
+    do i = 1, gridpoints
+        r = rgrid(i)
+        r2 = r*r
+        val = 0.0d0
+        do j = 1, size(exponents)
+            val = val + gnorm(exponents(j), l) * coefficients(j) * dexp(-exponents(j)*r2)
+        enddo
+    enddo
+    end function shell_to_grid
 
     end subroutine read_trexio_basis_file
 
