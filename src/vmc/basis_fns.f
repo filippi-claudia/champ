@@ -23,7 +23,7 @@ c ider = 3 -> value, gradient, laplacian, forces
       implicit none
 
       integer :: it, ic, ider, irb
-      integer :: iwlbas0, j, k
+      integer :: iwlbas0, j, k, nrbasit, nbastypit
       integer :: ie1, ie2, k0, l, l0, ll
       real(dp) :: y, ddy_lap
       real(dp) :: r, r2, ri, ri2
@@ -45,7 +45,9 @@ c loop through centers
       do ic=1,ncent+nghostcent
 
         it=iwctype(ic)
-
+        nrbasit=nrbas(it)
+        nbastypit=nbastyp(it)
+        
         ll=0
         k0=0
         l0=l
@@ -63,7 +65,7 @@ c get distance to center
           ri=one/r
           ri2=ri*ri
 
-          do irb=1,nrbas(it)
+          do irb=1,nrbasit
             call splfit(r,irb,it,iwf,wfv(1,irb),ider)
           enddo
 
@@ -71,7 +73,7 @@ c compute sml and combine to generate molecular orbitals
           l=l0
           ll=0
           iwlbas0=0
-          do j=1,nbastyp(it)
+          do j=1,nbastypit
             l=l+1
             ll=ll+1
             irb=iwrwf(ll,it)
