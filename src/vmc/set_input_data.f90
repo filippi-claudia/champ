@@ -63,6 +63,7 @@ subroutine multideterminants_define(iflag, icheck)
     use dets, only: cdet, ndet
     use elec, only: ndn, nup
     use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, allocate_multidet
+    use multidet, only: k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old
     use coefs, only: norb
     use dorb_m, only: iworbd
 
@@ -78,34 +79,28 @@ subroutine multideterminants_define(iflag, icheck)
     integer :: iflag, in, iphase, iref
     integer :: irep, isav, ish, istate
     integer :: isub, iw, iwf, iwref
-    integer :: j, k, kref_old, l
-    integer :: ndet_dist, nel
+    integer :: j, k, l
+    integer :: ndet_dist, nel, kk, kun, kaux, naux, kkn, kn
     integer, dimension(nelec) :: iswapped
     integer, dimension(ndet) :: itotphase
+    integer, dimension(nelec) :: auxdet
 
-    save kref_old
 
     if (nup .gt. nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
     ndn = nelec - nup
 
     !!call p2gtid('general:nwftype', nwftype, 1, 1)
     if (nwftype .gt. MWF) call fatal_error('INPUT: nwftype exceeds MWF')
+    
 
+! This part remains just for the initialization calls set kref and kref_old first time    
     if (iflag .eq. 0) then
-        kref = 1
-    else
-        if (kref .gt. 1 .and. icheck .eq. 1) then
-            kref = 1
-            goto 2
-        endif
-1       kref = kref + 1
-        if (kref .gt. ndet) call fatal_error('MULTIDET_DEFINE: kref > ndet')
+       kref = 1
+       kref_old = kref
 
-2       if (idiff(kref_old, kref, iflag) .eq. 0) goto 1
-        write (ounit, *) 'kref change', iflag, kref_old, kref
     endif
-    kref_old = kref
-
+!    write (ounit, *) 'I am in multi_def',kref,kref_old
+       
     if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
     if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
     if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
@@ -117,7 +112,7 @@ subroutine multideterminants_define(iflag, icheck)
 
     do k = 1, ndet
         itotphase(k) = 0
-        if (k .eq. kref) goto 5
+        if (k .ne. kref) then
         do iab = 1, 2
             nel = nup
             ish = 0
@@ -182,11 +177,11 @@ subroutine multideterminants_define(iflag, icheck)
                 cdet(k, istate, iwf) = cdet(k, istate, iwf)*(-1)**itotphase(k)
             enddo
         enddo
-5       continue
+        endif
     enddo
 
     do k = 1, ndet
-        if (k .eq. kref) goto 6
+       if (k .ne. kref) then
         do i = 1, nelec
             iworbd(i, k) = iworbd(i, kref)
         enddo
@@ -197,7 +192,7 @@ subroutine multideterminants_define(iflag, icheck)
                 iworbd(irepcol_det(irep, k, iab) + ish, k) = ireporb_det(irep, k, iab)
             enddo
         enddo
-6       continue
+        endif
     enddo
 
     call allocate_multidet()
@@ -207,14 +202,14 @@ subroutine multideterminants_define(iflag, icheck)
     ivirt(1) = nup + 1
     ivirt(2) = ndn + 1
     do k = 1, ndet
-        if (k .eq. kref) go to 8
+        if (k .ne. kref) then
         do iab = 1, 2
             do irep = 1, numrep_det(k, iab)
         if (irepcol_det(irep, k, iab) .ne. 0 .and. irepcol_det(irep, k, iab) .lt. iactv(iab)) iactv(iab)=irepcol_det(irep, k, iab)
                 if (ireporb_det(irep, k, iab) .lt. ivirt(iab)) ivirt(iab) = ireporb_det(irep, k, iab)
             enddo
         enddo
-8       continue
+        endif
     enddo
 
     write (ounit, *) ' Multideterminants :: '
@@ -233,20 +228,19 @@ subroutine multideterminants_define(iflag, icheck)
         do iab = 1, 2
             do i = 1, ndet
                 iwundet(i, iab) = i
-                if (i .eq. kref) goto 10
+                if (i .ne. kref) then
                 if (idiff(kref, i, iab) .eq. 0) then
-                    iwundet(i, iab) = kref
-                    goto 10
-                endif
-                do j = 1, i - 1
-                    if (idiff(j, i, iab) .eq. 0) then
-                        iwundet(i, iab) = j
-                        go to 10
-                    endif
-                enddo
-10              continue
+                   iwundet(i, iab) = kref
+                 else
+                    j=1
+                    do while (idiff(j, i, iab) .ne. 0  .and. j.ne.i)
+                       j= j+1
+                    enddo
+                    iwundet(i, iab) = j
+                 endif
+              endif
             enddo
-        enddo
+         enddo
         do iab = 1, 2
             ndet_dist = 0
             do i = 1, ndet
@@ -265,6 +259,117 @@ subroutine multideterminants_define(iflag, icheck)
         enddo
     enddo
 
+    
+    !reshufling arrays to avoid redundancy of unequivalent determinats
+    k_det=0
+    ndetiab=0
+    do iab = 1, 2
+       kk=0
+       kaux=0
+       do k = 1, ndet
+          if(iwundet(k,iab).eq.k.and.k.ne.kref) then
+             if(numrep_det(k, iab).gt.0) then
+                
+                kk=kk+1
+                k_det(k,iab)=kk
+    
+
+                auxdet=irepcol_det(:, kk, iab)                
+                irepcol_det(:, kk, iab) = irepcol_det(:, k, iab)
+                irepcol_det(:, k, iab) = auxdet
+                
+                auxdet=ireporb_det(:, kk, iab)
+                ireporb_det(:, kk, iab) = ireporb_det(:, k, iab)
+                ireporb_det(:, k, iab) = auxdet
+                
+                naux=numrep_det(kk, iab)
+                numrep_det(kk, iab)=numrep_det(k, iab)
+                numrep_det(k, iab)=naux
+                
+                
+             endif
+          endif
+       enddo
+       
+       
+       ndetiab(iab)=kk
+
+!       print*,"multiple",iab,kk,kaux
+!       print*,"ndetiab",iab,ndetiab(iab)
+!    ordering first excitations at the begining for specialization
+       kkn=0
+       do kk=1,ndetiab(iab)
+
+          if (numrep_det(kk, iab).eq.1) then
+             kkn=kkn+1
+             
+             k=0
+             do while (k_det(k,iab).ne.kk)
+                k=k+1
+             enddo
+             kaux=k_det(k,iab)
+
+             kn=0
+             do while (k_det(kn,iab).ne.kkn)
+                kn=kn+1
+             enddo
+             
+!             print*,"kk",kk,"k_det(kk,",iab,")",kaux
+             k_det(k,iab)=kkn
+             k_det(kn,iab)=kk
+
+
+             auxdet=irepcol_det(:, kkn, iab)                
+             irepcol_det(:, kkn, iab) = irepcol_det(:, kk, iab)
+             irepcol_det(:, kk, iab) = auxdet
+                
+             auxdet=ireporb_det(:, kkn, iab)
+             ireporb_det(:, kkn, iab) = ireporb_det(:, kk, iab)
+             ireporb_det(:, kk, iab) = auxdet
+                
+             naux=numrep_det(kkn, iab)
+             numrep_det(kkn, iab)=numrep_det(kk, iab)
+             numrep_det(kk, iab)=naux
+             
+             
+          
+          endif
+          
+       enddo
+
+       ndetsingle(iab)=kkn
+       
+       !       print*,"kkn singles",iab,kkn
+!       print*,"kkn singles",iab,ndetsingle(iab)
+       
+       
+       
+    enddo
+
+    !setting larger number of required determinants for unequivalent or unique determinants 
+    if(ndetiab(1).le.ndetiab(2)) then
+       ndet_req=ndetiab(1)
+    else
+       ndet_req=ndetiab(2)
+    endif
+
+    !arrays for all not equivalent to kref
+    do iab = 1, 2
+       kk=0
+       do k = 1, ndet
+          kun=iwundet(k,iab)
+          if(kun.ne.kref.and.k.ne.kref) then
+!          if(numrep_det(k,iab).gt.1) then
+             kk=kk+1
+             k_det2(kk,iab)=k
+             k_aux(kk,iab)=k_det(kun,iab)
+!          endif
+       endif
+       enddo
+       ndetiab2(iab)=kk
+    enddo
+    
+    
     return
 end subroutine multideterminants_define
 

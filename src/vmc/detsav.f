@@ -7,7 +7,7 @@ c Written by Claudia Filippi
 
       use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: ivirt, kref, numrep_det
+      use multidet, only: ivirt, kref, numrep_det, ndetiab, ndetsingle
 
       use slatn, only: slmin
       use ycompact, only: ymat
@@ -24,6 +24,8 @@ c Written by Claudia Filippi
       use multislater, only: detiab
 
       use vmc_mod, only: MEXCIT
+
+      use const, only: nelec
 
       use precision_kinds, only: dp
       implicit none
@@ -54,24 +56,23 @@ c Written by Claudia Filippi
             do istate=1,nstates
                ymat(j,i,iab,istate)=ymatn(j,i,istate)
             enddo
-            aa(i,j,iab)=aan(i,j)
+            aa(i,j,iab)=aan(i+nelec*(j-1))
          enddo
       enddo
       
+
+!     This loop should run just over unique or unequivalent determinants
+! single excitations
+      do k=1,ndetsingle(iab)
+          wfmat(k,1,iab)=wfmatn(k,1)
+       enddo
+! multiple excitations
+      do k=ndetsingle(iab)+1,ndetiab(iab)
+          ndim=numrep_det(k,iab)
+          ndim2=ndim*ndim
+          wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
+       enddo
       
-      do k=1,kref-1
-         ndim=numrep_det(k,iab)
-         ndim2=ndim*ndim
-         wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
-      enddo
-      
-      
-      
-      do k=kref+1,ndet
-         ndim=numrep_det(k,iab)
-         ndim2=ndim*ndim
-         wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
-      enddo
       
       
       
@@ -83,14 +84,14 @@ c Written by Claudia Filippi
       do k=1,ndet
          detiab(k,iab)=detn(k)
       enddo
+
       
       do iorb=1,norb
          orb(iel,iorb)=orbn(iorb)
-         do kk=1,3
-            dorb(kk,iel,iorb)=dorbn(iorb,kk)
-         enddo
+         dorb(iorb,iel,:)=dorbn(iorb,:)
       enddo
-       
+      
+      
       return
       end
       end module

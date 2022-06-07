@@ -110,7 +110,6 @@ if (MPI_Fortran_FOUND)
     strech.f
     verify_orbitals.f
     vmc.f
-    write_orb_loc.f
 	  )
 
   file(GLOB VMC90_SOURCE
@@ -122,6 +121,7 @@ if (MPI_Fortran_FOUND)
     lapack_wrapper.f90
     main.f90
     new_parser_read_data.f90
+    fitting.f90
     olbfgs.f90
     optgeo_convcartzmat.f90
     optgeo_coords_int.f90
@@ -138,6 +138,7 @@ if (MPI_Fortran_FOUND)
     regterg.f90
     set_input_data.f90
     slm.f90
+    write_orb_loc.f90
 	  )
 
   set_property(
@@ -212,6 +213,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/sites.f
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonloc.f
     ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/fitting.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f    # This file should be refactored and eliminated.
@@ -224,7 +226,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/multideterminant.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrowe.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/write_orb_loc.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/write_orb_loc.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspexact4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_matrix_corsamp.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_matrix.f
@@ -315,7 +317,7 @@ if (MPI_Fortran_FOUND)
   #  Add headers
   target_include_directories(shared_objects
   PUBLIC
-  ${CMAKE_SOURCE_DIR}/build/src/module
+  ${CMAKE_BINARY_DIR}/src/module
   )
 
   target_compile_options(shared_objects
@@ -357,7 +359,7 @@ if (MPI_Fortran_FOUND)
   #  Add headers
   target_include_directories(vmc.mov1
   PUBLIC
-  ${CMAKE_SOURCE_DIR}/build/src/module
+  ${CMAKE_BINARY_DIR}/src/module
   )
 
 

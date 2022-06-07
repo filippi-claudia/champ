@@ -13,7 +13,7 @@ c Modified by A. Scemama
       use const, only: ipr
       use dets, only: ndet
       use elec, only: ndn, nup
-      use multidet, only: kref
+      use multidet, only: kref, kchange, kref_fixed
       use dorb_m, only: iworbd
       use contr3, only: mode
 
@@ -28,6 +28,12 @@ c Modified by A. Scemama
       use optwf_handle_wf, only: dcopy
       use matinv_mod, only: matinv
       use orbitals_mod, only: orbitals
+      use set_input_data, only: multideterminants_define
+      use optorb_f_mod, only: optorb_define
+      use optwf_contrl, only: ioptorb
+      use coefs, only: norb
+      use orbval, only: nadorb
+      use vmc_mod, only: norb_tot
 
       implicit none
 
@@ -44,69 +50,93 @@ c Modified by A. Scemama
 c compute orbitals
       call orbitals(x,rvec_en,r_en)
 
+      kchange=0
       icheck=0
   10  continue
 
       do iab=1,2
 
-      if(iab.eq.1) then
-        ish=0
-        nel=nup
-       else
-        ish=nup
-        nel=ndn
-      endif
+         if(iab.eq.1) then
+            ish=0
+            nel=nup
+         else
+            ish=nup
+            nel=ndn
+         endif
 
-      call allocate_multislater() ! properly accessing array elements
-      detiab(kref,iab)=1.d0
+         call allocate_multislater() ! properly accessing array elements
+         detiab(kref,iab)=1.d0
 
-      jk=-nel
-      do j=1,nel
-        jorb=iworbd(j+ish,kref)
+         jk=-nel
+         do j=1,nel
+            jorb=iworbd(j+ish,kref)
 
-        jk=jk+nel
+            jk=jk+nel
 
-        call dcopy(nel,orb(1+ish,jorb),1,slmi(1+jk,iab),1)
-        call dcopy(nel,dorb(1,1+ish,jorb),3,fp(1,j,iab),nel*3)
-        call dcopy(nel,dorb(2,1+ish,jorb),3,fp(2,j,iab),nel*3)
-        call dcopy(nel,dorb(3,1+ish,jorb),3,fp(3,j,iab),nel*3)
-        call dcopy(nel,ddorb (1+ish,jorb),1,fpp (j,iab),nel)
-      enddo
+            call dcopy(nel,orb(1+ish,jorb),1,slmi(1+jk,iab),1)
+            call dcopy(nel,dorb(jorb,1+ish:nel+ish,1),1,fp(1,j,iab),nel*3)
+            call dcopy(nel,dorb(jorb,1+ish:nel+ish,2),1,fp(2,j,iab),nel*3)
+            call dcopy(nel,dorb(jorb,1+ish:nel+ish,3),1,fp(3,j,iab),nel*3)
+            call dcopy(nel,ddorb (jorb,1+ish:nel+ish),1,fpp (j,iab),nel)
+         enddo
 
-c calculate the inverse transpose matrix and itsdeterminant
-      if(nel.gt.0) call matinv(slmi(1,iab),nel,detiab(kref,iab))
+c     calculate the inverse transpose matrix and itsdeterminant
+         if(nel.gt.0) call matinv(slmi(1,iab),nel,detiab(kref,iab))
 
-c loop through up spin electrons
-c take inner product of transpose inverse with derivative
-c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
-      ik=-nel
-      do i=1,nel
-        ik=ik+nel
-        ddx(1,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(1,1+ik,iab),3)
-        ddx(2,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(2,1+ik,iab),3)
-        ddx(3,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(3,1+ik,iab),3)
-        d2dx2(i+ish)=ddot(nel,slmi(1+ik,iab),1,fpp( 1+ik,iab),1)
-      enddo
-
-       if(ipr.ge.4) then
-          ik=-nel
-          do i=1,nel
+c     loop through up spin electrons
+c     take inner product of transpose inverse with derivative
+c     vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
+         ik=-nel
+         do i=1,nel
             ik=ik+nel
-            write(ounit,*) 'slmi',iab,'M',(slmi(ii+ik,iab),ii=1,nel)
-          enddo
-        endif
+            ddx(1,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(1,1+ik,iab),3)
+            ddx(2,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(2,1+ik,iab),3)
+            ddx(3,i+ish)=ddot(nel,slmi(1+ik,iab),1,fp(3,1+ik,iab),3)
+            d2dx2(i+ish)=ddot(nel,slmi(1+ik,iab),1,fpp( 1+ik,iab),1)
+         enddo
+
+         if(ipr.ge.4) then
+            ik=-nel
+            do i=1,nel
+               ik=ik+nel
+               write(ounit,*) 'slmi',iab,'M',(slmi(ii+ik,iab),ii=1,nel)
+            enddo
+         endif
       enddo
 
       if(ipr.ge.4) write(ounit,'(''detu,detd'',9d12.5)') detiab(kref,1),detiab(kref,2)
 
-c for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
-      if(index(mode,'dmc').eq.0) then
+c     for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
+      if(index(mode,'dmc').eq.0 .and. kref_fixed.eq.0) then ! allow if kref is allowed to vary
+         icheck=icheck+1
+         if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.10) then
+            call check_detref(ipass,icheck,newref)
+            if(newref.gt.0) goto 10
 
-      icheck=icheck+1
-      if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.10) then
-        call check_detref(ipass,icheck,newref)
-        if(newref.gt.0) goto 10
-      endif
+c reshuffling determinants just if the new kref was accepted
+            if(newref.eq.0 .and. kchange.gt.0) then
+               call multideterminants_define(kchange,icheck)
+               if (ioptorb.ne.0) then
+                  norb=norb+nadorb
+                  write(ounit, *) norb
+                  call optorb_define
+               endif
+            endif
+
+         endif
+
+c reshuffling determinants if the maximum number of iterations looking for kref was exhausted
+         if (kchange.eq.10) then
+            call multideterminants_define(kchange,icheck)
+            if (ioptorb.ne.0) then
+               norb=norb+nadorb
+               write(ounit, *) norb
+               call optorb_define
+            endif
+            write(ounit, *) "kref changed but it is not optimal"
+         endif
+
+
 
       endif
 
@@ -117,16 +147,13 @@ c-----------------------------------------------------------------------
 
       use const, only: ipr
       use estpsi, only: detref
-      use multidet, only: kref
-
-      use optwf_contrl, only: ioptorb
-      use coefs, only: norb
-      use orbval, only: nadorb
+      use multidet, only: kref, kref_old, kchange
       use multislater, only: detiab, allocate_multislater
       use precision_kinds, only: dp
       use contrl_file, only: ounit
-      use set_input_data, only: multideterminants_define
-      use optorb_f_mod, only: optorb_define
+      use dets, only: ndet
+      use multideterminant_mod, only: idiff
+      use error, only: fatal_error
       implicit none
 
       integer :: iab, icheck, iflag, ipass
@@ -134,14 +161,15 @@ c-----------------------------------------------------------------------
 
 
       iflag=0
+
       if(ipass.le.2) return
 
       call allocate_multislater() !access elements after allocating
       do iab=1,2
         dlogdet=dlog10(dabs(detiab(kref,iab)))
-c       dcheck=dabs(dlogdet-detref(iab)/ipass)
-c       if(iab.eq.1.and.dcheck.gt.6) iflag=1
-c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
+c     dcheck=dabs(dlogdet-detref(iab)/ipass)
+c     if(iab.eq.1.and.dcheck.gt.6) iflag=1
+c     if(iab.eq.2.and.dcheck.gt.6) iflag=2
         dcheck=detref(iab)/ipass-dlogdet
         if(iab.eq.1.and.dcheck.gt.6) iflag=1
         if(iab.eq.2.and.dcheck.gt.6) iflag=2
@@ -150,12 +178,30 @@ c       if(iab.eq.2.and.dcheck.gt.6) iflag=2
 
       if(ipr.ge.2) write(ounit,*) 'check detref',iflag
       if(iflag.gt.0) then
-        call multideterminants_define(iflag,icheck)
-        if (ioptorb.ne.0) then
-          norb=norb+nadorb
-          write(ounit, *) norb
-          call optorb_define
-        endif
+
+
+c     block of code decoupled from multideterminants_define
+c to change kref if the change is accepted or required
+         if (kref .gt. 1 .and. icheck .eq. 1) then
+            kref = 1
+         endif
+
+
+
+         if (idiff(kref_old, kref, iflag) .eq. 0) then
+            kref = kref + 1
+            if (kref .gt. ndet) then
+               call fatal_error('MULTIDET_DEFINE: kref > ndet')
+            endif
+         endif
+
+         write (ounit, *) 'kref change', iflag, kref_old, kref
+
+         kref_old = kref
+
+         kchange = kchange + 1
+
+
       endif
 
       return
@@ -188,8 +234,6 @@ c-----------------------------------------------------------------------
       real(dp), parameter :: half = 0.5d0
 
 
-
-
       ! resize ddor and dorb if necessary
       ! call resize_matrix(ddorb, norb+nadorb, 2)
       ! call resize_matrix(b, norb+nadorb, 1)
@@ -198,7 +242,7 @@ c-----------------------------------------------------------------------
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec
         do iorb=1,norb+nadorb
-          b(iorb,i)=-hb*(ddorb(i,iorb)+2*(vj(1,i)*dorb(1,i,iorb)+vj(2,i)*dorb(2,i,iorb)+vj(3,i)*dorb(3,i,iorb)))
+          b(iorb,i)=-hb*(ddorb(iorb,i)+2*(vj(1,i)*dorb(iorb,i,1)+vj(2,i)*dorb(iorb,i,2)+vj(3,i)*dorb(iorb,i,3)))
         enddo
       enddo
 
@@ -207,7 +251,7 @@ c compute derivative of kinetic contribution of B+Btilde wrt jastrow parameters
         do iparm=1,nparmj
           do i=1,nelec
             do iorb=1,norb
-              b_dj(iorb,i,iparm)=-2*hb*(g(1,i,iparm)*dorb(1,i,iorb)+g(2,i,iparm)*dorb(2,i,iorb)+g(3,i,iparm)*dorb(3,i,iorb))
+              b_dj(iorb,i,iparm)=-2*hb*(g(1,i,iparm)*dorb(iorb,i,1)+g(2,i,iparm)*dorb(iorb,i,2)+g(3,i,iparm)*dorb(iorb,i,3))
             enddo
           enddo
         enddo
@@ -226,9 +270,9 @@ c compute derivative of kinetic contribution of B+Btilde wrt nuclear coordinates
               call daxpy(norb,2*vj(1,i),da_dorb(l,1,i,1,ic),9*nelec,b_da(l,i,1,ic),3*nelec)
               call daxpy(norb,2*vj(2,i),da_dorb(l,2,i,1,ic),9*nelec,b_da(l,i,1,ic),3*nelec)
               call daxpy(norb,2*vj(3,i),da_dorb(l,3,i,1,ic),9*nelec,b_da(l,i,1,ic),3*nelec)
-              call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1,i,1),3*nelec,b_da(l,i,1,ic),3*nelec)
-              call daxpy(norb,2*da_vj(l,2,i,ic),dorb(2,i,1),3*nelec,b_da(l,i,1,ic),3*nelec)
-              call daxpy(norb,2*da_vj(l,3,i,ic),dorb(3,i,1),3*nelec,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1:norb,i,1),1,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*da_vj(l,2,i,ic),dorb(1:norb,i,2),1,b_da(l,i,1,ic),3*nelec)
+              call daxpy(norb,2*da_vj(l,3,i,ic),dorb(1:norb,i,3),1,b_da(l,i,1,ic),3*nelec)
               do iorb=1,norb
                 b_da(l,i,iorb,ic)=-hb*b_da(l,i,iorb,ic)
               enddo
@@ -244,9 +288,9 @@ c 10          db(l,i,iorb,ic)=da_d2orb(l,i,iorb,ic)+two*(
 c    &           vj(1,i)*da_dorb(l,1,i,iorb,ic)
 c    &          +vj(2,i)*da_dorb(l,2,i,iorb,ic)
 c    &          +vj(3,i)*da_dorb(l,3,i,iorb,ic)
-c    &          +da_vj(l,1,i,ic)*dorb(1,i,iorb)
-c    &          +da_vj(l,2,i,ic)*dorb(2,i,iorb)
-c    &          +da_vj(l,3,i,ic)*dorb(3,i,iorb))
+c    &          +da_vj(l,1,i,ic)*dorb(iorb,i,1)
+c    &          +da_vj(l,2,i,ic)*dorb(iorb,i,2)
+c    &          +da_vj(l,3,i,ic)*dorb(iorb,i,3))
 
       return
       end

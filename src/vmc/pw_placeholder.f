@@ -57,20 +57,23 @@
       module pw_orbitals
       contains
       subroutine orbitals_pw(x,orb,dorb,ddorb)
+      use vmc_mod, only: norb_tot
+      use const, only: nelec
       use precision_kinds, only: dp
       implicit none
 
 
-      real(dp) :: ddorb(*), dorb(3,*), orb(*), x(3,*)
+      real(dp) :: ddorb(norb_tot,nelec), dorb(norb_tot,nelec,3), orb(*), x(3,*)
       return
       end
 
       subroutine orbitals_pw_grade(iel,x,orb,dorb,ddorb)
       use precision_kinds, only: dp
+      use vmc_mod, only: norb_tot
       implicit none
 
       integer :: iel
-      real(dp) :: ddorb(*), dorb(3,*), orb(*), x(3)
+      real(dp) :: ddorb(*), dorb(norb_tot,3), orb(*), x(3)
       return
       end
       end module

@@ -22,15 +22,16 @@ c-----------------------------------------------------------------------
 
       determ=0
 
-      do k=1,ndet
-        if(iel.le.nup) then
-          det=detn(k)*detiab(k,2)
-         else
-          det=detiab(k,1)*detn(k)
-        endif
-
-        determ=determ+det*cdet(k,istate,iwf)
-      enddo
+      if(iel.le.nup) then
+       do k=1,ndet
+          determ=determ+detn(k)*detiab(k,2)*cdet(k,istate,iwf)
+       enddo
+      else
+         do k=1,ndet
+            determ=determ+detn(k)*detiab(k,1)*cdet(k,istate,iwf)
+         enddo
+      endif
+      
 
       return
       end

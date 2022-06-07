@@ -56,11 +56,27 @@ module basis
     integer, dimension(:), allocatable :: nfyyz !(MCTYPE)
     integer, dimension(:), allocatable :: nfyzz !(MCTYPE)
     integer, dimension(:), allocatable :: nfzzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxxx !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxxy !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxxz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxyy !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxyz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxxzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxyyy !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxyyz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxyzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngxzzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngyyyy !(MCTYPE)
+    integer, dimension(:), allocatable :: ngyyyz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngyyzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngyzzz !(MCTYPE)
+    integer, dimension(:), allocatable :: ngzzzz !(MCTYPE)
 
     private
     public :: zex, betaq
     public :: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
     public :: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
+    public :: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz, ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
     public :: allocate_basis, deallocate_basis
     save
 contains
@@ -89,6 +105,22 @@ contains
     end subroutine allocate_basis
 
     subroutine deallocate_basis()
+
+        if (allocated(ngzzzz)) deallocate (ngzzzz)
+        if (allocated(ngyzzz)) deallocate (ngyzzz)
+        if (allocated(ngyyzz)) deallocate (ngyyzz)
+        if (allocated(ngyyyz)) deallocate (ngyyyz)
+        if (allocated(ngyyyy)) deallocate (ngyyyy)
+        if (allocated(ngxzzz)) deallocate (ngxzzz)
+        if (allocated(ngxyzz)) deallocate (ngxyzz)
+        if (allocated(ngxyyz)) deallocate (ngxyyz)
+        if (allocated(ngxyyy)) deallocate (ngxyyy)
+        if (allocated(ngxxzz)) deallocate (ngxxzz)
+        if (allocated(ngxxyz)) deallocate (ngxxyz)
+        if (allocated(ngxxyy)) deallocate (ngxxyy)
+        if (allocated(ngxxxz)) deallocate (ngxxxz)
+        if (allocated(ngxxxy)) deallocate (ngxxxy)
+        if (allocated(ngxxxx)) deallocate (ngxxxx)
 
         if (allocated(nfzzz)) deallocate (nfzzz)
         if (allocated(nfyzz)) deallocate (nfyzz)
@@ -142,10 +174,11 @@ module numexp
     implicit none
 
     real(dp), dimension(:, :, :, :), allocatable :: ae !(2,MRWF,MCTYPE,MFORCE)
+    real(dp), dimension(:, :, :, :), allocatable :: ab !(2,MRWF,MCTYPE,MFORCE)
     real(dp), dimension(:, :, :, :), allocatable :: ce !(NCOEF,MRWF,MCTYPE,MFORCE)
 
     private
-    public :: ae, ce
+    public :: ae, ab, ce
     public :: allocate_numexp, deallocate_numexp
     save
 contains
@@ -155,11 +188,13 @@ contains
         use force_mod, only: MFORCE
         use vmc_mod, only: NCOEF
         if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, MFORCE))
+        if (.not. allocated(ab)) allocate (ab(2, MRWF, nctype_tot, MFORCE))
         if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, nctype_tot, MFORCE))
     end subroutine allocate_numexp
 
     subroutine deallocate_numexp()
         if (allocated(ce)) deallocate (ce)
+        if (allocated(ab)) deallocate (ab)
         if (allocated(ae)) deallocate (ae)
     end subroutine deallocate_numexp
 

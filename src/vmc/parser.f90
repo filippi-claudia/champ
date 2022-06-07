@@ -154,7 +154,7 @@ subroutine parser
   use parser_read_data, only: read_forces_file, read_eigenvalues_file
   use parser_read_data, only: read_exponents_file, read_multideterminants_file
   use parser_read_data, only: read_csf_file, read_csfmap_file
-  use parser_read_data, only: read_determinants_file, read_jasderiv_file 
+  use parser_read_data, only: read_determinants_file, read_jasderiv_file
   use parser_read_data, only: read_jastrow_file, read_basis_num_info_file
   use parser_read_data, only: read_symmetry_file, read_orbitals_file
   use parser_read_data, only: read_trexio_molecule_file, read_molecule_file
@@ -181,6 +181,7 @@ subroutine parser
   use scale_dist_mod,   only: set_scale_dist
   use rannyu_mod,       only: setrn
   use read_bas_num_mod, only: readps_gauss
+  use multidet,         only: kref_fixed
 
   use precision_kinds,  only: dp
 ! Note the following modules are new additions
@@ -355,6 +356,8 @@ subroutine parser
   vmc_isite     = fdf_get('vmc_isite', 1)
   vmc_icharged_atom     = fdf_get('vmc_icharged_atom', 0)
   vmc_nblk_ci   = fdf_get('vmc_nblk_ci', vmc_nblk)
+
+  kref_fixed    = fdf_get('kref_fixed', 1)
 
 !module dmc (complete)
   idmc        = fdf_get('idmc', 2)

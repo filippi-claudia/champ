@@ -129,7 +129,7 @@ gitinfo(${CMAKE_SOURCE_DIR})
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O3" "-funroll-loops" "-cpp" "-ffree-line-length-none" "-g"
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-ffree-line-length-none" "-g"
        "-Werror=implicit-interface" "-fimplicit-none" 
         "-Wall" "-Wextra"
         "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
@@ -154,9 +154,11 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O2" "-g") 
+  list(APPEND Fortran_FLAGS "-O2") 
+  list(APPEND Fortran_FLAGS "-implicitnone")
 	list(APPEND Fortran_FLAGS "-fpp" "-shared-intel" "-g" 
-      "-warn" "all" "-diag-disable=8889,7712")
+      "-warn" "all" "-diag-disable=8889,7712") 
+  list(APPEND Fortran_FLAGS "-finline" "-ip" "-align" "array64byte" "-fma" "-ftz" "-fomit-frame-pointer")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")

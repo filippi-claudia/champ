@@ -287,7 +287,7 @@ c-----------------------------------------------------------------------
        elseif(l.eq.3) then
         dyl0=15.d0*costh
        elseif(l.eq.4) then
-        dyl0=52.5d0*(costh*costh-1)
+        dyl0=10.5d0*(5*costh*costh-1)
        else
         call fatal_error('YL0: implemented to l=4 only')
       endif
@@ -413,7 +413,7 @@ c get the value from the 3d-interpolated orbitals
             dtmp(1)=0   ! Don't compute the gradients
             dtmp(2)=0   ! Don't compute the gradients
             dtmp(3)=0   ! Don't compute the gradients
-            call spline_mo(x,iorb,orbn(iorb),dtmp,ddorb(iel,iorb),ier) 
+            call spline_mo(x,iorb,orbn(iorb),dtmp,ddorb(iorb,iel),ier) 
           enddo
          elseif(i3dlagorb.ge.1) then
           call lagrange_mose(1,x,orbn,ier)
@@ -429,20 +429,20 @@ c get basis functions for electron iel
 
 ! Vectorization dependent code selection
 #ifdef VECTORIZATION
-          ! The following loop changed for better vectorization AVX512/AVX2
+          ! The following loop changed for better vectorization AVX512/AVX2          
           do iorb=1,norb+nadorb
-            orbn(iorb)=0.d0
-            do m=1,nbasis
-              orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-            enddo
+             orbn(iorb)=0.d0
+             do m=1,nbasis
+                orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
+             enddo
           enddo
 #else
           do iorb=1,norb+nadorb
-            orbn(iorb)=0.d0
-            do m0=1,n0_nbasis(iel)
-              m=n0_ibasis(m0,iel)
-              orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-            enddo
+             orbn(iorb)=0.d0
+             do m0=1,n0_nbasis(iel)
+                m=n0_ibasis(m0,iel)
+                orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
+             enddo
           enddo
 #endif
 
@@ -506,7 +506,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(nmat_dim) :: slmui
       real(dp), dimension(nmat_dim) :: slmdi
       real(dp), dimension(*) :: orb
-      real(dp), dimension(3) :: dorb
 
 
 
