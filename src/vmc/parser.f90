@@ -604,7 +604,7 @@ subroutine parser
     ! call read_trexio_basis_file(file_trexio)
     ! call read_trexio_symmetry_file(file_trexio)
     call read_trexio_determinant_file(file_trexio)
-    call read_trexio_ecp_file(file_trexio)
+    ! call read_trexio_ecp_file(file_trexio)
   else
     write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__

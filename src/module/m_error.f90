@@ -1,5 +1,7 @@
 module error
-contains
+      private
+      public :: fatal_error, trexio_error
+      contains
       subroutine fatal_error(msg)
             use contrl_file,    only: ounit, errunit
             use mpi
@@ -24,6 +26,7 @@ contains
             !> \param[in] message   : the error message for printing
             !> \param[in] filename  : the name of the file where the error occurred
             !> \param[in] line      : the line number where the error occurred
+
 
             use contrl_file,    	only: ounit, errunit
             use mpi,            	only: mpi_abort, MPI_COMM_WORLD

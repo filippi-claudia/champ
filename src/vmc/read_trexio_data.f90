@@ -864,6 +864,7 @@ module trexio_read_data
 #if defined(TREXIO_FOUND)
         use trexio
         use contrl_file,        only: backend
+        use error,              only: trexio_error
 #endif
 
         implicit none
@@ -920,10 +921,16 @@ module trexio_read_data
 #if defined(TREXIO_FOUND)
             trex_determinant_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_assert(rc, TREXIO_SUCCESS)
-            rc = trexio_read_determinant_num(trex_determinant_file, ndet)
-            call trexio_assert(rc, TREXIO_SUCCESS)
-            rc = trexio_get_int64_num(trex_determinant_file, int64_num)
-            call trexio_assert(rc, TREXIO_SUCCESS)
+            rc = trexio_has_determinant_num (trex_determinant_file)
+            if (rc == TREXIO_SUCCESS) then
+                rc = trexio_read_determinant_num(trex_determinant_file, ndet)
+                call trexio_assert(rc, TREXIO_SUCCESS)
+                rc = trexio_get_int64_num(trex_determinant_file, int64_num)
+                call trexio_assert(rc, TREXIO_SUCCESS)
+            else
+                write(errunit,*) "trexio file does not have number of determinant  stored :: ", rc
+                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_has_determinant_num failed', __FILE__, __LINE__)
+            endif
 #endif
         endif
         call bcast(ndet)
@@ -941,13 +948,14 @@ module trexio_read_data
 
         read_buf_det_size = int(determinant_num/int64_num)
 
+        print*, "read buffer size :: ", read_buf_det_size
         allocate(determinant_coefficient(ndet))
         allocate(det_list(ndet))
 
         if (wid) then
 #if defined(TREXIO_FOUND)
         rc = trexio_read_determinant_coefficient(trex_determinant_file, offset_det_read, read_buf_det_size, determinant_coefficient)
-        call trexio_assert(rc, TREXIO_SUCCESS)
+        call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_coeff failed', __FILE__, __LINE__)
 #endif
         endif
         call bcast(determinant_coefficient)
@@ -964,17 +972,21 @@ module trexio_read_data
         allocate(orb_list_dn(ndet*int64_num))
 
         ! convert one given determinant into lists of orbitals
-        rc = trexio_read_determinant_list(trex_determinant_file, offset_det_read, read_buf_det_size, orb_list)
 
-        ! write(ounit,*) " Determinant lists  first 10 " , orb_list(1:10)
-        ! write(*,*) "size of orb_list :: ", size(orb_list), size(orb_list_up), size(orb_list_dn), size(orb_list)*7
+        rc = trexio_read_determinant_list(trex_determinant_file, offset_det_read, read_buf_det_size, orb_list)
+        print*, "offset_det_read :: ", offset_det_read, orb_list(1:10)
+        call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_list failed', __FILE__, __LINE__)
+        print*, " ---- "
+
+        write(ounit,*) " Determinant lists  first 10 " , orb_list(1:10)
+        write(*,*) "size of orb_list :: ", size(orb_list), size(orb_list_up), size(orb_list_dn), size(orb_list)*7
 
         ! Print occupied orbitals for an up-spin component of a given determinant
-        ! do i = 1, 14
-            ! rc = trexio_to_orbital_list_up_dn(int64_num, orb_list(i), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
-            ! write(ounit,*) "occ_num_up, occ_num_dn :: ", occ_num_up, occ_num_dn
-            ! write(ounit,*) occ_num_up, occ_num_dn, orb_list_up(i), orb_list_dn(i)
-        ! enddo
+        do i = 1, 10
+            rc = trexio_to_orbital_list_up_dn(int64_num, orb_list(i), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
+            write(ounit,*) "occ_num_up, occ_num_dn :: ", occ_num_up, occ_num_dn
+            write(ounit,*) occ_num_up, occ_num_dn, orb_list_up(i), orb_list_dn(i)
+        enddo
 
         ! Print occupied orbitals for an up-spin component of a given determinant
         ! write(*,*) orb_list_up(1:occ_num_up)
