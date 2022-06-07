@@ -60,6 +60,8 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   else()
     set(BLA_VENDOR Intel10_64_dyn)
   endif()
+  add_definitions(-DUSE_MKL="True")
+  link_libraries(-liomp5)
 # write elseif part here for non-intel compilers
 endif()
 
@@ -154,7 +156,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
-  list(APPEND Fortran_FLAGS "-O2")
+  list(APPEND Fortran_FLAGS "-O2" "-g")
   list(APPEND Fortran_FLAGS "-implicitnone")
   list(APPEND Fortran_FLAGS "-finline" "-ip" "-align" "array64byte" "-fma" "-ftz" "-fomit-frame-pointer")
 	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )

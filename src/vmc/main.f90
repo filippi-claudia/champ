@@ -14,7 +14,10 @@
 program main
 
     use mpi
-    use mpiconf, only: idtask, nproc
+#ifdef USE_MKL
+      use omp_lib
+#endif 
+    use mpiconf, only: idtask, nproc, nomp
     use mpiconf, only: mpiconf_init
     use contr3, only: init_control_mode
     use contrl_file, only: init_logfile, init_procfile, close_files, initialize
@@ -35,6 +38,11 @@ program main
     call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
     call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
 
+    !> If using MKL set it to serial execution by default
+#ifdef USE_MKL
+    nomp = omp_get_max_threads()
+    call mkl_set_num_threads(1)
+#endif
 
     time_start = time()
     !> init our own mpi vars

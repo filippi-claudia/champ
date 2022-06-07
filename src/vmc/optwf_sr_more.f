@@ -1,4 +1,8 @@
       module sr_more
+#ifdef USE_MKL
+      use omp_lib
+#endif 
+      implicit none
       interface !LAPACK interface
 !*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
 !*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -127,7 +131,7 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use optorb_cblock, only: norbterm
-      use mpiconf, only: idtask
+      use mpiconf, only: idtask, nomp
       use mpi
       use precision_kinds, only: dp
 
@@ -176,6 +180,9 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 !          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),mparm)
 !        enddo
 
+#ifdef USE_MKL
+        call mkl_set_num_threads(nomp) !original number of threads
+#endif
         call dgemv('N', nparm_jasci, nconf_n, 1.0d0, sr_o(1,1), mparm, aux(1), 1, 0.0d0, rloc(1), 1)
 
 
@@ -188,6 +195,9 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
         i0 = nparm_jasci + 1 +(istate-1)*norbterm
         i1 = nparm_jasci + 1
         call dgemv('N', n - nparm_jasci, nconf_n, 1.0d0, sr_o(i0,1), mparm, aux(1), 1, 0.0d0, rloc(i1), 1)
+#ifdef USE_MKL
+        call mkl_set_num_threads(1)
+#endif
 
         call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 

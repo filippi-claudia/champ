@@ -2,12 +2,13 @@ module mpiconf
     !> Arguments: idtask, nproc, wid
     integer  :: idtask
     integer  :: nproc
+    integer  :: nomp
     integer  :: ierr
     logical  :: wid
 
     private
     public :: idtask, nproc, wid
-    public :: mpiconf_init
+    public :: mpiconf_init, nomp
     save
 contains
     subroutine mpiconf_init()

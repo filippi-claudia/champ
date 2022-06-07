@@ -7,7 +7,7 @@ subroutine header_printing()
     !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
 
     use mpi
-    use mpiconf, only: idtask, nproc
+    use mpiconf, only: idtask, nproc, nomp
     use, intrinsic :: iso_fortran_env, only: iostat_end
     use contrl_file,    only: file_input, file_output, file_error
     use contrl_file,    only: ounit, errunit
@@ -105,6 +105,7 @@ subroutine header_printing()
     write(ounit, '(2a)') " Error file                 :: ",   file_error
     write(ounit, '(4a)') " Code compiled on           :: ",__DATE__, " at ", __TIME__
     write(ounit, '(a,i0)') " Number of processors       :: ", nproc
+    write(ounit, '(a,i0)') " Threads per  processor     :: ", nomp
 #if defined(TREXIO_FOUND)
     if (TREXIO_SUCCESS == 0) write(ounit,*) "TREXIO library version     :: ", TREXIO_PACKAGE_VERSION
 #endif
