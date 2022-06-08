@@ -351,7 +351,7 @@ module trexio_read_data
         ! for local use.
         character(len=72), intent(in)   :: file_trexio
         character(len=128)              :: file_trexio_path
-        integer                         :: iostat, ic, ir, i, j, k, l, iunit, tcount1, tcount2, tcount3, tcount4
+        integer                         :: iostat, ic, ir, i, j, k, l, iunit, tcount1, tcount2, tcount3, tcount4, tcount5
         logical                         :: exist
         type(atom_t)                    :: atoms
 
@@ -377,7 +377,7 @@ module trexio_read_data
 
         integer, dimension(:), allocatable :: atom_index(:), shell_index_atom(:), nshells_per_atom(:)
         integer, dimension(:), allocatable :: prim_index_atom(:), nprims_per_atom(:)
-        integer, dimension(:), allocatable :: unique_atom_index(:)
+        integer, dimension(:), allocatable :: unique_atom_index(:), shell_prim_correspondence(:)
         integer                         :: count
         character(len=2), allocatable   :: unique(:) ! unique symbols of atoms
 
@@ -433,6 +433,7 @@ module trexio_read_data
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_index', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_ang_mom(trex_basis_file, basis_shell_ang_mom)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_ang_mom', __FILE__, __LINE__)
+            print *, "shell ang mom ", basis_shell_ang_mom
             rc = trexio_read_basis_shell_factor(trex_basis_file, basis_shell_factor)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_factor', __FILE__, __LINE__)
             rc = trexio_read_basis_exponent(trex_basis_file, basis_exponent)
@@ -571,6 +572,29 @@ module trexio_read_data
             endif
         enddo
 
+        tcount5 = 0
+        allocate(shell_prim_correspondence(basis_num_prim))
+        do j = 1, basis_num_shell
+            if (basis_shell_ang_mom(j) .eq. 0) then
+                tcount5 = tcount5 + 1
+                shell_prim_correspondence(tcount5) = 0
+            elseif (basis_shell_ang_mom(j) .eq. 1) then
+                tcount5 = tcount5 + 1
+                shell_prim_correspondence(tcount5:tcount5+3) = 1
+            elseif (basis_shell_ang_mom(j) .eq. 2) then
+                shell_prim_correspondence(j:j+6) = 2
+            elseif (basis_shell_ang_mom(j) .eq. 3) then
+                shell_prim_correspondence(j:j+10) = 3
+            elseif (basis_shell_ang_mom(j) .eq. 4) then
+                shell_prim_correspondence(j:j+15) = 4
+            elseif (basis_shell_ang_mom(j) .eq. 5) then
+                shell_prim_correspondence(j:j+21) = 5
+            endif
+        enddo
+
+        print *, "shell prim correspondence ", shell_prim_correspondence
+
+
 
 
         do ic = 1, nctype_tot            ! loop over all the unique atoms
@@ -596,6 +620,7 @@ module trexio_read_data
 
             if (gridtype .eq. 3) gridr0 = gridr0/(gridarg**(gridpoints-1)-1)
 
+            print*, "all primitive exponents ", basis_exponent(1:35)
             ! loop over all the primitives for the unique atom
             val = 0.0d0
             do k = prim_index_atom(unique_atom_index(ic)), prim_index_atom(unique_atom_index(ic)) + nprims_per_atom(unique_atom_index(ic)) - 1
@@ -603,6 +628,7 @@ module trexio_read_data
                 ! gnorm(exponents[j], shell_ang_mom) * coefficients[j] * np.exp(-exponents[j]*r2)
                 print*, "the primi list k ", k
             enddo
+
 
 
             do j = 1, basis_num_shell   ! loop over all the shells
@@ -634,89 +660,6 @@ module trexio_read_data
 
 
 
-
-        ! Extract the shell angular momentum information only for unique type
-        ! of atoms.
-
-    ! def add_function(shell_ang_mom, exponents, coefficients, shell, bgrid):
-    !     # put a new function on the grid
-    !     # The function is defined by the exponent, coefficient and type
-    !     for i in range(gridpoints):
-    !         r = bgrid[shell+1, i]
-    !         r2 = r*r
-    !         r3 = r2*r
-    !         value = 0.0
-    !         for j in range(len(exponents)):
-    !             value += gnorm(exponents[j], shell_ang_mom) * coefficients[j] * np.exp(-exponents[j]*r2)
-    !             # print ("each value k, ib,", i ,j , value)
-
-    !         bgrid[shell+1,i] = value
-
-    !     return
-
-    ! if filename is not None:
-    !     if isinstance(filename, str):
-    !         unique_elements, indices = np.unique(nucleus_label, return_index=True)
-
-    !         for i in range(len(unique_elements)):
-    !             # Write down an radial basis grid file in the new champ v2.0 format for each unique atom type
-    !             filename_basis_grid = "BASISGRID." + 'basis.' + unique_elements[i]
-    !             with open(filename_basis_grid, 'w') as file:
-
-    !                 # Common numbers
-    !                 gridtype=3
-    !                 gridpoints=2000
-    !                 gridarg=1.003
-    !                 gridr0=20.0
-
-    !                 number_of_shells_per_atom = list_nshells[indices[i]]
-
-    !                 shell_ang_mom_per_atom_list = []
-    !                 for ind, val in enumerate(dict_basis["nucleus_index"]):
-    !                     if val == indices[i]:
-    !                         shell_ang_mom_per_atom_list.append(dict_basis["shell_ang_mom"][ind])
-
-    !                 shell_ang_mom_per_atom_count = Counter(shell_ang_mom_per_atom_list)
-
-    !                 total_shells = sum(shell_ang_mom_per_atom_count.values())
-
-    !                 shells_per_atom = {}
-    !                 for count in shell_ang_mom_per_atom_count:
-    !                     shells_per_atom[count] = shell_ang_mom_per_atom_count[count]
-
-    !                 bgrid = np.zeros((number_of_shells_per_atom+1, gridpoints))
-
-
-    !                 ## The main part of the file starts here
-    !                 gridr0_save = gridr0
-    !                 if gridtype == 3:
-    !                     gridr0 = gridr0/(gridarg**(gridpoints-1)-1)
-
-
-    !                 bgrid = compute_grid()  # Compute the grid, store the results in bgrid
-
-    !                 ### Note temp index should point to shell index of unique atoms
-    !                 # get the exponents and coefficients of unique atom types
-    !                 counter = 0
-    !                 for ind, val in enumerate(dict_basis["nucleus_index"]):
-    !                     if val == indices[i]:
-    !                         shell_index_unique_atom = index_radial[indices[i]][counter]
-    !                         list_contracted_exponents =  contr[shell_index_unique_atom]["exponent"]
-    !                         list_contracted_coefficients =  contr[shell_index_unique_atom]["coefficient"]
-    !                         add_function(dict_basis["shell_ang_mom"][ind], list_contracted_exponents, list_contracted_coefficients, counter, bgrid)
-    !                         counter += 1
-
-
-    !                 # file writing part
-    !                 file.write(f"{number_of_shells_per_atom} {gridtype} {gridpoints} {gridarg:0.6f} {gridr0_save:0.6f} {0}\n")
-    !                 np.savetxt(file, np.transpose(bgrid), fmt=' %.12e')
-
-    !             file.close()
-    !     else:
-    !         raise ValueError
-    ! # If filename is None, return a string representation of the output.
-    ! else:
-    !     return None
 
     contains
 
@@ -886,7 +829,7 @@ module trexio_read_data
         ! determinant data (debugging)
         integer*8, allocatable :: det_list(:)
         integer*8 :: read_buf_det_size      ! how many do you want
-        integer*8 :: offset_det_read = 0    ! How many first you want to skip
+        integer*8 :: jj, offset_det_read = 0    ! How many first you want to skip
         integer*8 :: chunk_det_read = 1
         integer*8 :: determinant_num
         integer   :: int64_num           ! Number of intergers required per spin component
@@ -894,7 +837,6 @@ module trexio_read_data
         integer*4, allocatable :: orb_list_up(:), orb_list_dn(:)
         integer*8, allocatable :: orb_list(:)
         integer*4 :: occ_num_up, occ_num_dn, occupied_num
-        real*8, allocatable   ::  determinant_coefficient(:)
 
 
         trex_determinant_file = 0
@@ -943,62 +885,54 @@ module trexio_read_data
             if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,nwftype))
         endif
 
-        read_buf_det_size = int(determinant_num/int64_num)
+        read_buf_det_size = determinant_num
 
-        print*, "read buffer size :: ", read_buf_det_size
-        allocate(determinant_coefficient(ndet))
         allocate(det_list(ndet))
 
         if (wid) then
 #if defined(TREXIO_FOUND)
-        rc = trexio_read_determinant_coefficient(trex_determinant_file, offset_det_read, read_buf_det_size, determinant_coefficient)
+        rc = trexio_read_determinant_coefficient(trex_determinant_file, offset_det_read, read_buf_det_size, cdet(:,1,nwftype))
         call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_coeff failed', __FILE__, __LINE__)
 #endif
         endif
-        call bcast(determinant_coefficient)
+        call bcast(cdet)
 
 
         write(ounit,*)
         write(ounit,*) " Determinant coefficients "
-        write(ounit,'(10(1x, f11.8, 1x))') (determinant_coefficient(i), i=1, read_buf_det_size)
+        write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,1,nwftype), i=1, read_buf_det_size)
 
 !       allocate the orbital mapping array
         if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
-        allocate(orb_list(ndet*int64_num*2))
-        allocate(orb_list_up(ndet*int64_num))
-        allocate(orb_list_dn(ndet*int64_num))
+        allocate(orb_list(ndet))
+        allocate(orb_list_up(int64_num))
+        allocate(orb_list_dn(int64_num))
 
+        write(ounit, *)
+        write(ounit, *) "Orbitals <--> Determinants mapping read from a trexio file :: "
+        write(ounit, *) "Serial numbers of orbitals that are occupied               :: "
+        write(ounit, *) "'alpha (spin up)'  <---------------------->  'beta (spin down)' "
+        write(ounit, *)
         ! convert one given determinant into lists of orbitals
 
-        rc = trexio_read_determinant_list(trex_determinant_file, offset_det_read, read_buf_det_size, orb_list)
-        print*, "offset_det_read :: ", offset_det_read, orb_list(1:10)
-        call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_list failed', __FILE__, __LINE__)
-        print*, " ---- "
+        read_buf_det_size = int64_num
+        offset_det_read = 0
+        do jj = 1, determinant_num
+            rc = trexio_read_determinant_list(trex_determinant_file, offset_det_read, read_buf_det_size, orb_list(jj))
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_list failed', __FILE__, __LINE__)
+            rc = trexio_to_orbital_list_up_dn(int64_num, orb_list(jj), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_to_orbital_list_up_dn filed', __FILE__, __LINE__)
+            write(ounit,'(<occ_num_up>(i4,1x), 2x, <occ_num_dn>(i4,1x))') (orb_list_up(i), i = 1, occ_num_up), (orb_list_dn(i), i = 1, occ_num_dn)
 
-        write(ounit,*) " Determinant lists  first 10 " , orb_list(1:10)
-        write(*,*) "size of orb_list :: ", size(orb_list), size(orb_list_up), size(orb_list_dn), size(orb_list)*7
+            do i = 1, occ_num_up
+                iworbd(i, jj) = orb_list_up(i)
+            enddo
+            do i = 1, occ_num_dn
+                iworbd(occ_num_up + i, jj) = orb_list_dn(i)
+            enddo
 
-        ! Print occupied orbitals for an up-spin component of a given determinant
-        do i = 1, 10
-            rc = trexio_to_orbital_list_up_dn(int64_num, orb_list(i), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
-            write(ounit,*) "occ_num_up, occ_num_dn :: ", occ_num_up, occ_num_dn
-            write(ounit,*) occ_num_up, occ_num_dn, orb_list_up(i), orb_list_dn(i)
+            offset_det_read = jj
         enddo
-
-        ! Print occupied orbitals for an up-spin component of a given determinant
-        ! write(*,*) orb_list_up(1:occ_num_up)
-        ! Print integers representanting a given determinant fully (up- and down-spin components)
-        ! write(*,*) det_list(:, offset_det_data_read+1)
-        ! Print binary representation of the first integer bit field of a given determinant
-        ! write(*,'(B64.64)') det_list(1, offset_det_data_read+1)
-
-        ! convert one given determinant into lists of orbitals
-        ! rc = trexio_to_orbital_list_up_dn(3, det_list(:, offset_det_data_read+1), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
-        !write(*,*) occ_num_up, occ_num_dn
-        ! Print occupied orbitals for an up-spin component of a given determinant
-        !write(*,*) orb_list_up(1:occ_num_up)
-        ! Print integers representanting a given determinant fully (up- and down-spin components)
-        !write(*,*) det_list(:, offset_det_data_read+1)
 
 
         write(ounit,*) '-----------------------------------------------------------------------'
