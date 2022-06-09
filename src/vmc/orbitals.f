@@ -219,10 +219,6 @@ c-------------------------------------------------------------------------------
 
       real(dp), dimension(nadorb,nbasis) :: coef_t
 
-c this should be simpler and economical instead copy other vectors and then do dgemm
-c it maybe replaced and simplyfied bbu transposing coeff matrix and orb      
-      coef_t = transpose(coef(:,norb+1:norb+nadorb,iwf))
-      
 c compute values of extra ('virtual') orbitals needed for optorb operators
 c assuming that basis function values in phin are up to date
 
@@ -230,6 +226,9 @@ c assuming that basis function values in phin are up to date
 
 c primary geometry only
       iwf=1
+c this should be simpler and economical instead copy other vectors and then do dgemm
+c it maybe replaced and simplyfied bbu transposing coeff matrix and orb      
+      coef_t = transpose(coef(:,norb+1:norb+nadorb,iwf))
 
       do i=1,nelec
         call dcopy(nbasis,phin(1,i),1,bhin(i,1),nelec)
