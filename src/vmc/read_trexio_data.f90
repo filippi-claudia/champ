@@ -706,6 +706,7 @@ module trexio_read_data
 #if defined(TREXIO_FOUND)
         use trexio
         use contrl_file,        only: backend
+        use error,              only: trexio_error
 #endif
 
         implicit none
@@ -751,6 +752,7 @@ module trexio_read_data
 #if defined(TREXIO_FOUND)
             trex_symmetry_file = trexio_open(file_trexio_path, 'r', backend, rc)
             rc = trexio_read_mo_num(trex_symmetry_file, mo_num)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num failed', __FILE__, __LINE__)
 #endif
         endif
         call bcast(mo_num)
@@ -762,7 +764,7 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             rc = trexio_read_mo_symmetry(trex_symmetry_file, mo_symmetry, 2)
-            write(*,*) "trexio_read_mo_symmetry :: ", rc
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_symmetry failed', __FILE__, __LINE__)
 #endif
         endif
         call bcast(mo_symmetry)
