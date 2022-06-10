@@ -10,7 +10,7 @@ module array_utils
     public :: concatenate, diagonal, eye, generate_diagonal_dominant, norm, &
               initialize_subspace, write_matrix, write_vector, check_deallocate_vector, &
               check_deallocate_matrix, modified_gram_schmidt, diag_mat
-    public :: unique_elements
+    public :: unique_elements, unique_string_elements
 
 contains
 
@@ -297,6 +297,7 @@ contains
         !> \param[in] arr: vector to be processed
         !> \param[out] res: vector of unique elements
         !> \param[out] count: number of unique elements
+        !> \param[out] frequency: frequency of unique elements
         !> \param[out] ind: vector of indices of the unique elements in the original vector
         !> @author: Ravindra Shinde
         !> @email: r.l.shinde@utwente.nl
@@ -341,6 +342,63 @@ contains
         end do
 
     end subroutine unique_elements
+
+
+    subroutine unique_string_elements(n, arr, res, count)
+        !> Returns the unique elements of a vector
+        !> Also returns the number of unique elements, their indices in the original vector.
+        !> \param[in] n: size of the vector
+        !> \param[in] arr: vector to be processed
+        !> \param[out] res: vector of unique elements
+        !> \param[out] count: number of unique elements
+        !> \param[out] frequency: frequency of unique elements
+        !> \param[out] ind: vector of indices of the unique elements in the original vector
+        !> @author: Ravindra Shinde
+        !> @email: r.l.shinde@utwente.nl
+        !> @date:   24/05/2022
+
+        implicit none
+        integer, intent(in)                         :: n
+        character(len=3), dimension(n), intent(in)  :: arr    ! The input
+        character(len=3), dimension(n), intent(out) :: res    ! The output
+        integer, intent(out)                        :: count                   ! The number of unique elements
+        integer, dimension(n)          :: frequency ! The output
+        integer, dimension(n)          :: ind
+        integer                                     :: i,j,k, counter1, counter2
+
+        k = 1
+        ind(1) = 1
+        frequency(1) = 0
+        res(1) = arr(1)
+        counter1 = 1
+
+
+        outer: do i=1,n
+            do j=1,counter1
+                if (res(j) == arr(i)) then
+                    frequency(j) = frequency(j) + 1
+                    ind(j+1) = i + 1
+                    k = k + 1
+                    cycle outer
+                end if
+            end do
+            res(counter1+1) = arr(i)
+            frequency(counter1+1) = 1
+            ind(k) = i
+            k = k + 1
+            counter1 = counter1 + 1
+        end do outer
+
+        count = counter1
+        do i = count + 1, n
+            res(i) = ""
+            frequency(i) = 0
+            ind(i) = 0
+        end do
+
+    end subroutine unique_string_elements
+
+
 
     subroutine sortedunique(list, n, indices, sorted)
         implicit none

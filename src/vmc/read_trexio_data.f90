@@ -699,6 +699,8 @@ module trexio_read_data
         use vmc_mod,            only: norb_tot
         use general,            only: pooldir
         use precision_kinds,    only: dp
+        use array_utils,        only: unique_string_elements
+         
 
 
 #if defined(TREXIO_FOUND)
@@ -715,12 +717,18 @@ module trexio_read_data
         logical                         :: exist, skip = .true.
         character(len=40)               :: label
         integer                         :: io, nsym, mo_num
-        character(len=10), allocatable  :: mo_symmetry(:)
+        character(len=3), allocatable   :: mo_symmetry(:)
 
 
         ! trexio
         integer(8)                      :: trex_symmetry_file
         integer                         :: rc = 1
+
+        character(len=3), dimension(:), allocatable :: unique_irrep       ! The output
+        integer                                     :: num_irrep          ! The number of unique elements
+
+
+
 
         !   Formatting
         character(len=100)               :: int_format     = '(A, T60, I0)'
@@ -742,39 +750,46 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             trex_symmetry_file = trexio_open(file_trexio_path, 'r', backend, rc)
-            write(*,*) "trexio_open from symmetry :: ", rc
             rc = trexio_read_mo_num(trex_symmetry_file, mo_num)
-            write(*,*) "trexio_read_mo_num from symmetry:: ", rc
 #endif
         endif
         call bcast(mo_num)
-        write(*,*) "trexio symmetry file :: ", trex_symmetry_file
         ! safe allocate
         if (.not. allocated(irrep)) allocate (irrep(mo_num))
         if (.not. allocated(mo_symmetry)) allocate (mo_symmetry(mo_num))
+        if (.not. allocated(unique_irrep)) allocate (unique_irrep(mo_num))
 
-!         if (wid) then
-! #if defined(TREXIO_FOUND)
-!             rc = trexio_read_mo_symmetry(trex_symmetry_file, mo_symmetry)
-!             ! write(*,*) "trexio_read_mo_symmetry :: ", rc
-! #endif
-!         endif
-!         call bcast(mo_symmetry)
+        if (wid) then
+#if defined(TREXIO_FOUND)
+            rc = trexio_read_mo_symmetry(trex_symmetry_file, mo_symmetry, 2)
+            write(*,*) "trexio_read_mo_symmetry :: ", rc
+#endif
+        endif
+        call bcast(mo_symmetry)
 
-        write(ounit,fmt=int_format) " Number of MOs ::  ", mo_num
-        ! write(ounit,*) " MO Symmetry ::  ", (mo_symmetry(i), i=1, mo_num)
+        write(ounit,fmt=int_format) " Number of molecular orbital symmetries read ::  ", mo_num
+
+        call unique_string_elements(mo_num, mo_symmetry, unique_irrep, num_irrep)
 
 
-        ! ! read data
-        ! if (wid) then
-        !     read (iunit, *, iostat=iostat) (irrep(io), io=1, norb)
-        !     if (iostat/=0) call fatal_error("Error in reading symmetry file :: expecting irrep correspondence for all norb orbitals")
-        ! endif
-        ! call bcast(irrep)
+        write(ounit,fmt=int_format) " Number of irreducible representations       ::  ", num_irrep
+        write(ounit,*) 
+        write(ounit,'(a)')          " Irreducible representations correspondence  ::  "
+        write(ounit,'(1x,10(a2,a,i2,a,x))') (unique_irrep(i), "=", i ,";", i=1, num_irrep)
+        write(ounit,*) 
 
-        ! write(ounit, '(10(1x, i3))') (irrep(io), io=1, norb)
+        ! get the correspondence for each atom according to the rule defined for atomtypes
+        do j = 1, mo_num
+            do k = 1, num_irrep
+                if (mo_symmetry(j) == unique_irrep(k))   irrep(j) = k
+            enddo
+        enddo
 
-        ! if (wid) close(iunit)
+
+        write(ounit,*)  "Irreducible representation correspondence for all molecular orbitals"
+        write(ounit, '(10(1x, i3))') (irrep(i), i=1, mo_num)
+
+
     end subroutine read_trexio_symmetry_file
 
 
