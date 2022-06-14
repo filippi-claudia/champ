@@ -839,8 +839,6 @@ module trexio_read_data
             file_trexio_path = file_trexio
         endif
 
-        file_trexio_path = 'hcn.trexio.hdf5'
-
         write(ounit,*) '-----------------------------------------------------------------------'
         write(ounit,*) " Reading determinants from the trexio file :: ",  file_trexio_path
         write(ounit,*) '-----------------------------------------------------------------------'

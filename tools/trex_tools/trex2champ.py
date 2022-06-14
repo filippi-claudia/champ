@@ -1418,13 +1418,6 @@ def write_determinants_to_trexio(filename, file):
     n_chunks    = 1
     chunk_size  = int(num_dets/n_chunks)
 
-    from random import randint
-
-    det_list  = [
-        [randint(1,100) for _ in range(int64_num*2)]
-        for _ in range(num_dets)
-    ]
-
     det_list = []
     for det in range(num_dets):
         temp_alpha = []
