@@ -726,6 +726,95 @@ c Compute displacements
 
 c----------------------------------------------------------------------
 
+      subroutine lagrange_mos_2(igrid,r,orb,iel,ier)
+c     Written by A Scemama
+c     Evaluate orbitals by a Lagrange interpolation (LAGMAX mesh pts)
+c     on an equally-spaced 3D grid.
+c     The mesh pts. on which the function values, f, are given, are assumed
+c     to be at 1,2,3,...nstep3d(1), and similarly for y and z.
+c     
+      
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
+      use grid_mod, only: cart_from_int
+      use vmc_mod, only: norb_tot
+      use insout, only: inout, inside
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
+      use const, only: nelec
+      
+      use precision_kinds, only: dp
+      implicit none
+      
+      integer :: i, i1, i2, i3, iel
+      integer :: ier, igrid, iorb, j
+      integer, dimension(3) :: ix
+      real(dp) :: orb1, orb2
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: dr
+      real(dp), dimension(norb_tot,nelec) :: orb
+      real(dp), dimension(LAGSTART:LAGEND) :: xi
+      
+      
+
+      real*8    num(LAGSTART:LAGEND,3)
+
+      inout   = inout  +1.d0
+      if (ier.eq.1) then
+         return
+      endif
+      
+      do i=1,3
+       ix(i) = int_from_cart(r(i),i)
+      enddo
+
+      if (  ( ix(1).le.LAGMAX/2 )
+     >  .or.( ix(2).le.LAGMAX/2 )
+     >  .or.( ix(3).le.LAGMAX/2 )
+     >  .or.( ix(1).ge.nstep3d(1)-LAGMAX/2 )
+     >  .or.( ix(2).ge.nstep3d(2)-LAGMAX/2 )
+     >  .or.( ix(3).ge.nstep3d(3)-LAGMAX/2 ) ) then
+        ier = 1
+      else
+        inside = inside+1.d0
+c Compute displacements
+       do i=1,3
+        dr(i) = (r(i)-cart_from_int(ix(i),i))/step3d(i)
+       enddo
+
+       do i1=1,3
+         do i2=LAGSTART, LAGEND
+           num(i2,i1)=denom(i2,i1)
+           do j=LAGSTART, LAGEND
+             if (j.ne.i2)
+     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dfloat(j))
+           enddo
+         enddo
+       enddo
+
+       do iorb=1,norb
+         orb(iorb,iel) = 0.d0
+         do i3=LAGSTART, LAGEND !z interpolation
+            orb2 = 0.d0
+           do i2=LAGSTART, LAGEND !y interpolation
+              orb1 = 0.d0
+              do i1=LAGSTART, LAGEND !x interpolation
+                 orb1 = orb1 + num(i1,1) *
+     >                orb_num_lag(igrid,ix(1)+i1,ix(2)+i2,ix(3)+i3,iorb)
+              enddo             !x interpolation
+              orb2 = orb2 + num(i2,2) * orb1
+           enddo                !y interpolation
+           orb(iorb,iel) = orb(iorb,iel) + num(i3,3) * orb2
+        enddo                   !z interpolation
+      enddo                     ! iorb
+      
+      endif
+      
+      end
+
+c----------------------------------------------------------------------
+
       subroutine lagrange_mos_grad(igrid,r,orb,iel,ier)
 c Written by A Scemama
 c Evaluate orbitals by a Lagrange interpolation (LAGMAX mesh pts)
@@ -754,7 +843,7 @@ c
       real(dp) :: orb1, orb2
       real(dp), dimension(3) :: r
       real(dp), dimension(3) :: dr
-      real(dp), dimension(3,nelec,norb_tot) :: orb
+      real(dp), dimension(norb_tot,nelec,3) :: orb
       real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
@@ -796,7 +885,7 @@ c Compute displacements
 
        iaxis = igrid-1
        do iorb=1,norb
-         orb(iaxis,iel,iorb) = 0.d0
+         orb(iorb,iel,iaxis) = 0.d0
          do i3=LAGSTART, LAGEND !z interpolation
            orb2 = 0.d0
            do i2=LAGSTART, LAGEND !y interpolation
@@ -807,7 +896,7 @@ c Compute displacements
              enddo !x interpolation
              orb2 = orb2 + num(i2,2) * orb1
            enddo !y interpolation
-           orb(iaxis,iel,iorb) = orb(iaxis,iel,iorb) + num(i3,3) * orb2
+           orb(iorb,iel,iaxis) = orb(iorb,iel,iaxis) + num(i3,3) * orb2
          enddo !z interpolation
        enddo ! iorb
 
