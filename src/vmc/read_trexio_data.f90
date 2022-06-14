@@ -300,6 +300,7 @@ module trexio_read_data
         use trexio
         use contrl_file,        only: backend
         use error,              only: trexio_error
+        use m_trexio_basis,     only: gnorm, shell_to_grid
 #endif
 
         implicit none
@@ -310,9 +311,12 @@ module trexio_read_data
         integer, allocatable            :: basis_nucleus_index(:)
         integer, allocatable            :: basis_shell_index(:)
         integer, allocatable            :: basis_shell_ang_mom(:)
+        integer, allocatable            :: unique_basis_shell_ang_mom(:)
         real(dp), allocatable           :: basis_shell_factor(:)
         real(dp), allocatable           :: basis_exponent(:)
+        real(dp), allocatable           :: unique_basis_exponent(:)
         real(dp), allocatable           :: basis_coefficient(:)
+        real(dp), allocatable           :: unique_basis_coefficient(:)
         real(dp), allocatable           :: basis_prim_factor(:)
 
         integer                         :: ao_num
@@ -327,6 +331,7 @@ module trexio_read_data
         integer                         :: iostat, ic, ir, i, j, k, l, iunit, tcount1, tcount2, tcount3, tcount4, tcount5
         logical                         :: exist
         type(atom_t)                    :: atoms
+        integer                         :: counter
 
         ! trexio
         integer(8)                      :: trex_basis_file
@@ -346,7 +351,7 @@ module trexio_read_data
         real(dp)                        :: rgrid(2000)  ! Grid points
         integer, dimension(nctype_tot)  :: icusp
         integer                         :: cartesian_shells(5) = (/1, 3, 6, 10, 15/)
-        real(dp)                        :: r, r2, r3, val   ! local values
+        real(dp)                        :: r, r2, r3, val
 
         integer, dimension(:), allocatable :: atom_index(:), shell_index_atom(:), nshells_per_atom(:)
         integer, dimension(:), allocatable :: prim_index_atom(:), nprims_per_atom(:)
@@ -389,9 +394,12 @@ module trexio_read_data
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_index))      allocate(basis_shell_index(basis_num_prim))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
+        if (.not. allocated(unique_basis_shell_ang_mom))    allocate(unique_basis_shell_ang_mom(basis_num_shell))
         if (.not. allocated(basis_shell_factor))     allocate(basis_shell_factor(basis_num_shell))
         if (.not. allocated(basis_exponent))         allocate(basis_exponent(basis_num_prim))
+        if (.not. allocated(unique_basis_exponent))         allocate(unique_basis_exponent(basis_num_prim))
         if (.not. allocated(basis_coefficient))      allocate(basis_coefficient(basis_num_prim))
+        if (.not. allocated(unique_basis_coefficient))      allocate(unique_basis_coefficient(basis_num_prim))
         if (.not. allocated(basis_prim_factor))      allocate(basis_prim_factor(basis_num_prim))
         if (.not. allocated(ao_shell))               allocate(ao_shell(ao_num))
         if (.not. allocated(ao_normalization))       allocate(ao_normalization(ao_num))
@@ -547,7 +555,6 @@ module trexio_read_data
             endif
         enddo
 
-
         tcount5 = 0
         allocate(shell_prim_correspondence(basis_num_prim))
         do j = 1, basis_num_shell
@@ -572,7 +579,6 @@ module trexio_read_data
 
 
 
-
         do ic = 1, nctype_tot            ! loop over all the unique atoms
             nrbas(ic)   = nshells_per_atom(shell_index_atom(ic))
             igrid(ic)   = gridtype       ! grid type default is 3
@@ -594,15 +600,21 @@ module trexio_read_data
             ! Make space for the special case when nloc == 0
 
 
-            print*, "all primitive exponents ", basis_exponent(1:35)
+            print*, "all primitive exponents ",(i, basis_exponent(i), i = 1, basis_num_prim)
             ! loop over all the primitives for the unique atom
+            counter = 1
             val = 0.0d0
             do k = prim_index_atom(unique_atom_index(ic)), prim_index_atom(unique_atom_index(ic)) + nprims_per_atom(unique_atom_index(ic)) - 1
                 ! k is index of primitives that needs to used for adding to the grid.
-                ! gnorm(exponents[j], shell_ang_mom) * coefficients[j] * np.exp(-exponents[j]*r2)
-                print*, "the primi list k ", k
+                unique_basis_exponent(counter) = basis_exponent(k)
+                unique_basis_coefficient(counter) = basis_coefficient(k)
+                counter = counter + 1
             enddo
 
+
+            ! print*, "array shell ang mom ", unique_basis_shell_ang_mom
+            print*, "array shell expo ", unique_basis_exponent
+            print*, "array shell coeff ", unique_basis_coefficient
 
 
             do j = 1, basis_num_shell   ! loop over all the shells
@@ -613,49 +625,19 @@ module trexio_read_data
                     ! loop over all the gridpoints to add contracted Gaussians over the grid
                     ! list of exponents
 
-
-                    do ir = 1, gridpoints
-                        ! Generate the grid here for the unique atom
-                        r = rgrid(ir)
-                        r2 = r*r
-                        r3 = r2*r
-                        val = 0.0d0
-                        ! rwf(ir,j,ic,iwf) = shell_to_grid(basis_shell_ang_mom(j), basis_shell_exp(j), basis_shell_coeff(j), val)
-                    enddo
+                    ! print*, "basis exponents before passing ", basis_exponent
+                    rwf(ir,j,ic,1) = shell_to_grid(basis_shell_ang_mom(j), unique_basis_exponent, unique_basis_coefficient, gridpoints, rgrid)
                 endif
             enddo
+
+            !Put in the read information in the x(ir) and rwf(ir,j,ic,iwf) arrays
+            do ir=1,nr(ic)
+                write(100,*) "ic,ir,", ic,ir
+                write(100,*,iostat=iostat) rgrid(ir),(rwf(ir,j,ic,1),j=1,nrbas(ic))
+            enddo
+
         enddo
 
-
-        ! Put in the read information in the x(ir) and rwf(ir,j,ic,iwf) arrays
-        !     do ir=1,nr(ic)
-        !       read(iunit,*,iostat=iostat) x(ir),(rwf(ir,irb,ic,iwf),irb=1,nrbas(ic))
-        !     enddo
-
-
-
-
-    contains
-
-    ! Functions needed only for the radial basis set generation
-    double precision function shell_to_grid(l, exponents, coefficients) result (val)
-    use m_trexio_basis,             only: gnorm
-    implicit None
-    integer, intent(in)             :: l
-    double precision, intent(in)    :: exponents(:)
-    double precision, intent(in)    :: coefficients(:)
-    integer                         :: i,j
-    double precision                :: r, r2
-
-    do i = 1, gridpoints
-        r = rgrid(i)
-        r2 = r*r
-        val = 0.0d0
-        do j = 1, size(exponents)
-            val = val + gnorm(exponents(j), l) * coefficients(j) * dexp(-exponents(j)*r2)
-        enddo
-    enddo
-    end function shell_to_grid
 
     end subroutine read_trexio_basis_file
 

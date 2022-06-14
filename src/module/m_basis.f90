@@ -365,4 +365,25 @@ module m_trexio_basis
 
     end function gnorm
 
+    ! Functions needed only for the radial basis set generation
+    double precision function shell_to_grid(l, exponents, coefficients, gridpoints, rgrid) result (val)
+    implicit None
+    integer, intent(in)             :: l, gridpoints
+    double precision, intent(in)    :: exponents(:)
+    double precision, intent(in)    :: coefficients(:), rgrid(:)
+    integer                         :: i,j
+    double precision                :: r, r2
+
+    do i = 1, gridpoints
+        r = rgrid(i)
+        r2 = r*r
+        val = 0.0d0
+        do j = 1, size(exponents)
+            val = val + gnorm(exponents(j), l) * coefficients(j) * dexp(-exponents(j)*r2)
+        enddo
+    enddo
+    end function shell_to_grid
+
+
+
 end module
