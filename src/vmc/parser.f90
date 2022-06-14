@@ -157,8 +157,13 @@ subroutine parser
   use parser_read_data, only: read_determinants_file, read_jasderiv_file
   use parser_read_data, only: read_jastrow_file, read_basis_num_info_file
   use parser_read_data, only: read_symmetry_file, read_orbitals_file
-  use parser_read_data, only: read_trexio_molecule_file, read_molecule_file
-  use parser_read_data, only: read_trexio_orbitals_file
+  use parser_read_data, only: read_molecule_file
+  use trexio_read_data, only: read_trexio_molecule_file
+  use trexio_read_data, only: read_trexio_orbitals_file
+  use trexio_read_data, only: read_trexio_basis_file
+  use trexio_read_data, only: read_trexio_symmetry_file
+  use trexio_read_data, only: read_trexio_determinant_file
+  use trexio_read_data, only: read_trexio_ecp_file
   use parser_read_data, only: header_printing
   use misc_grdnts,      only: inpwrt_zmatrix, inpwrt_grdnts_zmat, inpwrt_grdnts_cart
   use set_input_data,   only: hessian_zmat_define, modify_zmat_define
@@ -916,17 +921,19 @@ subroutine parser
   elseif ( fdf_block('determinants', bfdf)) then
     if (ioptci .ne. 0) mxciterm = ndet
   ! call fdf_read_determinants_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about determinants provided."
-    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    if(nwftype.gt.1) then
+  elseif ( fdf_load_defined('trexio') ) then
+    call read_trexio_determinant_file(file_trexio)
+    if (ioptci .ne. 0) mxciterm = ndet
+  elseif(nwftype.gt.1) then
       if(ideterminants.ne.nwftype) then
         write(ounit,*) "Warning INPUT: block determinants missing for one wave function"
         write(ounit,*) "Warning INPUT: determinants blocks equal for all wave functions"
         call inputdet
       endif
-    endif
+  else
+    write(errunit,'(a)') "Error:: No information about determinants provided."
+    !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
   endif
 
   ! allocation after determinants and basis
@@ -1079,6 +1086,10 @@ subroutine parser
           ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
         enddo
       endif
+    ! elseif (fdf_block('basis', bfdf)) then
+    !   call fdf_read_basis_block(bfdf)
+    elseif ( fdf_load_defined('trexio') ) then
+      call read_trexio_basis_file(file_trexio)
     else
       write(errunit,'(a)') "Error:: No information about basis provided in the block."
       !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__

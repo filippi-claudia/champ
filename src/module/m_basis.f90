@@ -338,3 +338,31 @@ subroutine deallocate_m_basis()
     call deallocate_numbas2()
 end subroutine deallocate_m_basis
 end module
+
+! subroutines required by the trexio modules
+module m_trexio_basis
+    contains
+    double precision function gnorm(exponent, l)
+        use precision_kinds,    only: dp
+        implicit none
+        real(dp), intent (in)       :: exponent
+        integer, intent (in)    :: l
+        real(dp), parameter     :: pi = 3.1415926535897932
+
+        gnorm = 1.0d0
+
+        if (l .eq. 0) then
+            gnorm = (2.d0*exponent)**(3.d0/4.d0)*2.d0*(1.d0/(pi**(1.d0/4.d0)))
+        elseif (l .eq. 1) then
+            gnorm = (2.d0*exponent)**(5.d0/4.d0)*dsqrt(8.d0/3.d0)*(1.d0/(pi**(1.d0/4.d0)))
+        elseif (l .eq. 2) then
+            gnorm = (2.d0*exponent)**(7.d0/4.d0)*dsqrt(16.d0/15.d0)*(1.d0/(pi**(1.d0/4.d0)))
+        elseif (l .eq. 3) then
+            gnorm = (2.d0*exponent)**(9.d0/4.d0)*dsqrt(32.d0/105.d0)*(1.d0/(pi**(1.d0/4.d0)))
+        elseif (l .eq. 4) then
+            gnorm = (2.d0*exponent)**(11.d0/4.d0)*dsqrt(64.d0/945.d0)*(1.d0/(pi**(1.d0/4.d0)))
+        endif
+
+    end function gnorm
+
+end module

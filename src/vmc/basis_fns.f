@@ -55,6 +55,7 @@ c     numerical atomic orbitals
         do k=ie1,ie2
            
 c get distance to center
+
            xc(1)=rvec_en(1,k,ic)
            xc(2)=rvec_en(2,k,ic)
            xc(3)=rvec_en(3,k,ic)
@@ -120,9 +121,9 @@ c-------------------------------------------------------------------
 
 c     phi is computed for all ider values
       phi=y*wfv(1)
-        
+
       if(ider.eq.1) then
-         
+
         xcri(1)=xc(1)*ri
         xcri(2)=xc(2)*ri
         xcri(3)=xc(3)*ri
@@ -132,7 +133,7 @@ c     phi is computed for all ider values
         enddo
 
       elseif(ider.ge.2) then
-         
+
 
         xcri(1)=xc(1)*ri
         xcri(2)=xc(2)*ri

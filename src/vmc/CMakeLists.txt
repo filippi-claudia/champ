@@ -121,6 +121,7 @@ if (MPI_Fortran_FOUND)
     lapack_wrapper.f90
     main.f90
     new_parser_read_data.f90
+    read_trexio_data.f90
     fitting.f90
     olbfgs.f90
     optgeo_convcartzmat.f90
@@ -196,12 +197,15 @@ if (MPI_Fortran_FOUND)
   # --------------------------------------------------------------------
 
   set(SHARED_OBJECTS
+    ${CMAKE_CURRENT_SOURCE_DIR}/array_resize_utils.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/lapack_wrapper.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/array_utils.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_convcartzmat.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/array_resize_utils.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/new_parser_read_data.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/read_trexio_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/set_input_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f
