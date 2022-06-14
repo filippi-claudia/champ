@@ -612,7 +612,7 @@ subroutine parser
   write(ounit,*)
 
   !checks
-  if(nup.gt.nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
+  if(nup.lt.nelec/2) call fatal_error('INPUT: nelec/2 exceeds nup')
 
   write(ounit,*)
   write(ounit,int_format) " Number of total electrons = ", nelec
