@@ -207,7 +207,7 @@ module trexio_read_data
         integer(8)                      :: trex_orbitals_file
         integer                         :: rc = 1
 
-        iwft = 0
+        iwft = 1
         trex_orbitals_file = 0
         !   External file reading
 
@@ -251,40 +251,13 @@ module trexio_read_data
         endif
         call bcast(coef)
 
-        ! IMPORTANT
-        ! The orbital ordering should be made consistent with the CHAMP code.
-        ! call a function to transform the ordering.
-        ! DEBUG #148
-        ! Close the trexio file
 #if defined(TREXIO_FOUND)
         if (wid) rc = trexio_close(trex_orbitals_file)
 #endif
 
 
         write(ounit,*)
-        write(ounit,*) " LCAO orbitals "
-
-        temp3 = '(T8, T14, i3, T28, i3, T42, i3, T56, i3, T70, i3, T84, i3, T98, i3, T112, i3, T126, i3, T140, i3)'
-        ! print orbs in blocks of 10
-        counter = 0
-        do k = 10, nbasis, 10
-    !        write(ounit,*) " Orbitals  ", k-9 , "  to ", k
-            write(ounit, fmt=temp3 )  (i, i = k-9, k)
-            do iorb = 1, norb
-                write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=k-9, k)
-            enddo
-            counter = counter + 10
-        enddo
-
-
-        ! Remaining block
-        write(ounit, fmt=temp3 )  (i, i = counter, nbasis)
-        do iorb = 1, norb
-            write(ounit, '(A,i5,A, 10(1x, f12.8, 1x))') "[", iorb, "] ", (coef(ibasis, iorb, iwft), ibasis=counter, nbasis)
-        enddo
         ilcao = ilcao + 1
-
-
         write(ounit,*) "----------------------------------------------------------"
 
     end subroutine read_trexio_orbitals_file
@@ -592,7 +565,7 @@ module trexio_read_data
             endif
         enddo
 
-        print *, "shell prim correspondence ", shell_prim_correspondence
+        ! print *, "shell prim correspondence ", shell_prim_correspondence
 
 
 
@@ -620,13 +593,13 @@ module trexio_read_data
 
             if (gridtype .eq. 3) gridr0 = gridr0/(gridarg**(gridpoints-1)-1)
 
-            print*, "all primitive exponents ", basis_exponent(1:35)
+            ! print*, "all primitive exponents ", basis_exponent(1:35)
             ! loop over all the primitives for the unique atom
             val = 0.0d0
             do k = prim_index_atom(unique_atom_index(ic)), prim_index_atom(unique_atom_index(ic)) + nprims_per_atom(unique_atom_index(ic)) - 1
                 ! k is index of primitives that needs to used for adding to the grid.
                 ! gnorm(exponents[j], shell_ang_mom) * coefficients[j] * np.exp(-exponents[j]*r2)
-                print*, "the primi list k ", k
+                ! print*, "the primi list k ", k
             enddo
 
 
@@ -700,7 +673,7 @@ module trexio_read_data
         use general,            only: pooldir
         use precision_kinds,    only: dp
         use array_utils,        only: unique_string_elements
-         
+
 
 
 #if defined(TREXIO_FOUND)
@@ -775,10 +748,10 @@ module trexio_read_data
 
 
         write(ounit,fmt=int_format) " Number of irreducible representations       ::  ", num_irrep
-        write(ounit,*) 
+        write(ounit,*)
         write(ounit,'(a)')          " Irreducible representations correspondence  ::  "
         write(ounit,'(1x,10(a2,a,i2,a,x))') (unique_irrep(i), "=", i ,";", i=1, num_irrep)
-        write(ounit,*) 
+        write(ounit,*)
 
         ! get the correspondence for each atom according to the rule defined for atomtypes
         do j = 1, mo_num
@@ -1079,106 +1052,7 @@ module trexio_read_data
         call bcast(flat_ecp_exponent)
 
 
-!         do ic=1,nctype
-!           if (wid) then
-!             if (nctype.gt.100) call fatal_error('READPS_GAUSS: nctype>100')
-!             filename =  trim(pooldir) // trim(pp_id) // ".gauss_ecp.dat." // atomtyp(ic)
 
-!             inquire(file=filename, exist=exist)
-!             if (exist) then
-!               open (newunit=iunit,file=filename, iostat=iostat, action='read', status='old')
-!               if (iostat .ne. 0) error stop "Problem in opening the pseudopotential file (Gaussian)"
-!             else
-!               call fatal_error( " Pseudopotential file (Gaussian) "// filename // " does not exist.")
-!             endif
-
-!           !   External file reading
-!             write(ounit,*) '-----------------------------------------------------------------------'
-!             write(ounit,'(4a)')  " Reading ECP pseudopotential for ", trim(atomtyp(ic))," from the file :: ", trim(filename)
-!             write(ounit,*) '-----------------------------------------------------------------------'
-
-!         ! label
-
-!             read(iunit,'(a80)',iostat=iostat) label
-!             if (iostat .ne. 0) then
-!               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: label"
-!               write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
-!               write(errunit,'(a,i6)') "at line ", __LINE__
-!             endif
-!             write(ounit,'(a,i4,a,a80)') 'ECP for atom type ', ic, ' label = ', adjustl(label)
-!           endif
-!           call bcast(label)
-!           ! max projector
-!           if (.not. allocated(lpot)) allocate (lpot(nctype))
-
-!           if (wid) then
-!             read(iunit,*,iostat=iostat) lpot(ic)
-!             if (iostat .ne. 0) then
-!               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: lpot"
-!               write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
-!               write(errunit,'(a,i6)') "at line ", __LINE__
-!             endif
-!             write(ounit,'(a,i4,a,i4)') 'ECP for atom type ', ic, ' lpot = ', lpot(ic)
-
-!             if(lpot(ic).gt.MPS_L) call fatal_error('READPS_GAUSS: increase MPS_L')
-!           endif
-!           call bcast(lpot)
-!         ! read terms of local part and all non-local parts
-!         ! local part first in file, but stored at index lpot
-!         ! non-local l=0 at index 1 etc, up to lpot-1
-
-!           call allocate_gauss_ecp()
-!           do l=1,lpot(ic)
-!               if(l.eq.1)then
-!                 idx=lpot(ic)
-!                 else
-!                 idx=l-1
-!               endif
-!               if (wid) then
-!                 read(iunit,*,iostat=iostat) necp_term(idx,ic)
-!                 if (iostat .ne. 0) then
-!                     write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: necp_term"
-!                     write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
-!                     write(errunit,'(a,i6)') "at line ", __LINE__
-!                 endif
-!               endif
-!               call bcast(necp_term)
-
-!               if(necp_term(idx,ic).gt.MGAUSS) call fatal_error('READPS_GAUSS: increase MGAUSS')
-
-!               write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
-
-!               do i=1,necp_term(idx,ic)
-!                 if (wid) then
-!                   read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
-
-!                   if (iostat .ne. 0) then
-!                     write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
-!                     write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
-!                     write(errunit,'(a,i6)') "at line ", __LINE__
-!                   endif
-!                   write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic), &
-!                                                           necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
-!                 endif
-!               enddo
-!               call bcast(ecp_coef)
-!               call bcast(necp_power)
-!               call bcast(ecp_exponent)
-!           enddo
-
-!           if (wid) close(iunit)
-!         enddo
-
-!         if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
-!         if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
-!         if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
-!         if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
-
-!         call gesqua(nquad,xq0,yq0,zq0,wq)
-!         call bcast(wq)
-!         call bcast(xq0)
-!         call bcast(yq0)
-!         call bcast(zq0)
         return
       end subroutine read_trexio_ecp_file
 
