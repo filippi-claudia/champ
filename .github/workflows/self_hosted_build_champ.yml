@@ -41,7 +41,7 @@ jobs:
       if: matrix.toolchain == 'intel'
       run: |
         module load compiler-rt/latest compiler/latest icc/latest mkl/latest mpi/latest python3/latest tbb/latest
-        module load hdf5/1.12.1-intel trexio/2.0.0-intel
+        module load hdf5/1.12.1-intel trexio/2.3.0-intel
         which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
         /software/cmake-3.22.1/bin/cmake --version
@@ -52,7 +52,7 @@ jobs:
       if: matrix.toolchain == 'gnu'
       run: |
         module load compiler-rt/latest mkl/latest mpi/latest
-        module load hdf5/1.12.1-intel trexio/2.0.0-intel
+        module load hdf5/1.12.1-intel trexio/2.3.0-intel
         which mpirun
         /software/cmake-3.22.1/bin/cmake --version
         export OMPI_FC=gfortran-11
