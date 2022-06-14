@@ -42,19 +42,18 @@ jobs:
       run: |
         export MODULEPATH=${MODULEPATH}:/software/intel/oneapi/modulefiles:/software/libraries/Modulefiles
         module avail
-        module load compiler-rt/latest 
-        module load compiler/latest 
-        module load icc/latest 
-        module load mkl/latest 
-        module load mpi/latest 
-        module load python3/latest 
+        module load compiler-rt/latest
+        module load compiler/latest
+        module load icc/latest
+        module load mkl/latest
+        module load mpi/latest
+        module load python3/latest
         module load hdf5
-        module load trexio
 
         which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
         /software/cmake-3.22.1/bin/cmake --version
-        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp
+        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp -DTREXIO_LIBRARY=/home/filippi/trexio-2.2.0/build/libtrexio.so -DTREXIO_INCLUDE_DIR=/home/filippi/trexio-2.2.0/build/include/
         /software/cmake-3.22.1/bin/cmake --build build -- -j2
 
     - name: Compile the CHAMP code
@@ -62,18 +61,18 @@ jobs:
       run: |
         export MODULEPATH=${MODULEPATH}:/software/intel/oneapi/modulefiles:/software/libraries/Modulefiles
         module avail
-        module load compiler-rt/latest 
-        module load compiler/latest 
-        module load icc/latest 
-        module load mkl/latest 
-        module load mpi/latest 
-        module load python3/latest 
+        module load compiler-rt/latest
+        module load compiler/latest
+        module load icc/latest
+        module load mkl/latest
+        module load mpi/latest
+        module load python3/latest
         module load hdf5
         module load trexio
         which mpirun
         /software/cmake-3.22.1/bin/cmake --version
         export OMPI_FC=gfortran-11
-        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DVECTORIZED=no #FindSIMD needs to be fixed!
+        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DVECTORIZED=no -DTREXIO_LIBRARY=/home/filippi/trexio-2.2.0/build/libtrexio.so -DTREXIO_INCLUDE_DIR=/home/filippi/trexio-2.2.0/build/include/ #FindSIMD needs to be fixed!
         /software/cmake-3.22.1/bin/cmake --build build -- -j2
 
     - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
