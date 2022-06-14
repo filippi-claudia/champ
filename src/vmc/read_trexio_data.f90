@@ -524,8 +524,8 @@ module trexio_read_data
         gridr0_save = gridr0
 
         ! Do the necessary allocation for the numerical basis set
-        call allocate_numbas()
-        call allocate_numexp()
+        ! call allocate_numbas()
+        ! call allocate_numexp()
 
         ! count                     :: "Number of unique elements"
         ! atom_index(1:count)       :: "Unique elements index (not used here)"
@@ -533,6 +533,8 @@ module trexio_read_data
         ! shell_index_atom(1:count) :: "index number of the shell for each atom"
         ! The shells per atom can be obtained by accessing the shell_index_atom
         ! for a given atom index by the slice of size frequency.
+
+        if (gridtype .eq. 3) gridr0 = gridr0/(gridarg**(gridpoints-1)-1)
 
         ! Populate the rgrid array.
         do i = 1, gridpoints
@@ -544,6 +546,7 @@ module trexio_read_data
                 rgrid(i) = gridr0*gridarg**i - gridr0
             endif
         enddo
+
 
         tcount5 = 0
         allocate(shell_prim_correspondence(basis_num_prim))
@@ -565,7 +568,7 @@ module trexio_read_data
             endif
         enddo
 
-        ! print *, "shell prim correspondence ", shell_prim_correspondence
+        print *, "shell prim correspondence ", shell_prim_correspondence
 
 
 
@@ -591,15 +594,13 @@ module trexio_read_data
             ! Make space for the special case when nloc == 0
 
 
-            if (gridtype .eq. 3) gridr0 = gridr0/(gridarg**(gridpoints-1)-1)
-
-            ! print*, "all primitive exponents ", basis_exponent(1:35)
+            print*, "all primitive exponents ", basis_exponent(1:35)
             ! loop over all the primitives for the unique atom
             val = 0.0d0
             do k = prim_index_atom(unique_atom_index(ic)), prim_index_atom(unique_atom_index(ic)) + nprims_per_atom(unique_atom_index(ic)) - 1
                 ! k is index of primitives that needs to used for adding to the grid.
                 ! gnorm(exponents[j], shell_ang_mom) * coefficients[j] * np.exp(-exponents[j]*r2)
-                ! print*, "the primi list k ", k
+                print*, "the primi list k ", k
             enddo
 
 
@@ -619,7 +620,7 @@ module trexio_read_data
                         r2 = r*r
                         r3 = r2*r
                         val = 0.0d0
-                        ! rwf(ir,j,ic,iwf) = compute_grid_value(r, basis_shell_ang_mom(j), basis_shell_coeff(j), basis_shell_exp(j), val)
+                        ! rwf(ir,j,ic,iwf) = shell_to_grid(basis_shell_ang_mom(j), basis_shell_exp(j), basis_shell_coeff(j), val)
                     enddo
                 endif
             enddo

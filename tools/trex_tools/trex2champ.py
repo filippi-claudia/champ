@@ -1406,6 +1406,7 @@ def write_determinants_to_trexio(filename, file):
     """
 
     det_coeff = file.det_coefficients
+
     num_states = file.num_states
     num_dets = len(det_coeff[0])
 
