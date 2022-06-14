@@ -17,8 +17,7 @@ module error
       end
 
       subroutine trexio_error(trexio_rc, check_rc, message, filename, line)
-            !> This subroutine reads the .hdf5 trexio generated file/folder. It then reads the
-            !> ECP information for all the unique atoms.
+            !> This subroutine handles the error in reading/writing with trexio data
             !> @author Ravindra Shinde (r.l.shinde@utwente.nl)
             !> @date 01 June 2022
             !> \param[in] trexio_rc : the return code from the trexio library
