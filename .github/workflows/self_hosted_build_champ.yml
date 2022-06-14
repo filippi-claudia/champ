@@ -40,8 +40,14 @@ jobs:
     - name: Compile the CHAMP code
       if: matrix.toolchain == 'intel'
       run: |
+        export MODULEPATH=${MODULEPATH}:/software/intel/oneapi/modulefiles:/software/libraries/Modulefiles
         module avail
-        module load compiler-rt/latest compiler/latest icc/latest mkl/latest mpi/latest python3/latest tbb/latest
+        module load compiler-rt/latest 
+        module load compiler/latest 
+        module load icc/latest 
+        module load mkl/latest 
+        module load mpi/latest 
+        module load python3/latest 
         module load hdf5
         module load trexio
 
@@ -54,9 +60,16 @@ jobs:
     - name: Compile the CHAMP code
       if: matrix.toolchain == 'gnu'
       run: |
+        export MODULEPATH=${MODULEPATH}:/software/intel/oneapi/modulefiles:/software/libraries/Modulefiles
         module avail
-        module load compiler-rt/latest mkl/latest mpi/latest
-        module load hdf5/1.12.1-intel trexio/2.3.0-intel
+        module load compiler-rt/latest 
+        module load compiler/latest 
+        module load icc/latest 
+        module load mkl/latest 
+        module load mpi/latest 
+        module load python3/latest 
+        module load hdf5
+        module load trexio
         which mpirun
         /software/cmake-3.22.1/bin/cmake --version
         export OMPI_FC=gfortran-11
