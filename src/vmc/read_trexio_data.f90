@@ -601,31 +601,29 @@ module trexio_read_data
             print*, "range prim", lower_prim, upper_prim
 
 
-            tcount1 = 0
             ! select the shells corresponding to the unique atoms only
             ! j is the running shell index for the unique atom i
-            do i = 1, 1! gridpoints
+            do i = 1, gridpoints
                 r = rgrid(i)
                 r2 = r*r
 
-                val = 0.0d0
-                counter = 1
+                counter = lower_prim
                 do j = lower_shell, upper_shell
-                    print*, "corres ", j, shell_prim_correspondence(j)
-                    print *, "j ", j, "nucleus_index ", basis_nucleus_index(j), "shell ang mom  ", basis_shell_ang_mom(j)
-                    ! loop over all the gridpoints to add contracted Gaussians over the grid
-                    ! list of exponents
-                    ! val = val + gnorm(basis_exponent(j), basis_shell_ang_mom(j)) * coefficients(j) * dexp(-exponents(j)*r2)
+                    ! loop on primitives in the given shell
+                    val = 0.0d0
+                    do k = counter, counter + shell_prim_correspondence(j) -1
+                        val = val + gnorm(basis_exponent(k), basis_shell_ang_mom(j)) &
+                                  * basis_coefficient(k) * dexp(-basis_exponent(k)*r2)
+                    enddo
+                    counter = counter + shell_prim_correspondence(j)
+                    rwf(i,j,ic,1) = val
                 enddo
-                ! print*, "basis exponents before passing ", basis_exponent
-                ! rwf(ir,j,ic,1) = shell_to_grid(basis_shell_ang_mom(j), unique_basis_exponent, unique_basis_coefficient, gridpoints, rgrid)
             enddo
 
             !Put in the read information in the x(ir) and rwf(ir,j,ic,iwf) arrays
-            ! do ir=1,nr(ic)
-                ! write(100,*) "ic,ir,", ic,ir
-                ! write(100,*,iostat=iostat) rgrid(ir),(rwf(ir,j,ic,1),j=1,nrbas(ic))
-            ! enddo
+            do ir=1,nr(ic)
+                write(100+ic,'(10f12.6)',iostat=iostat) rgrid(ir),(rwf(ir,j,ic,1),j=1,nrbas(ic))
+            enddo
 
         enddo
 
