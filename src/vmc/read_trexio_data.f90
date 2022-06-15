@@ -300,7 +300,7 @@ module trexio_read_data
         use trexio
         use contrl_file,        only: backend
         use error,              only: trexio_error
-        use m_trexio_basis,     only: gnorm, shell_to_grid
+        use m_trexio_basis,     only: gnorm
 #endif
 
         implicit none
@@ -331,7 +331,7 @@ module trexio_read_data
         integer                         :: iostat, ic, ir, i, j, k, l, iunit, tcount1, tcount2, tcount3, tcount4, tcount5
         logical                         :: exist
         type(atom_t)                    :: atoms
-        integer                         :: counter
+        integer                         :: counter, lower_shell, upper_shell, lower_prim, upper_prim
 
         ! trexio
         integer(8)                      :: trex_basis_file
@@ -414,7 +414,7 @@ module trexio_read_data
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_index', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_ang_mom(trex_basis_file, basis_shell_ang_mom)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_ang_mom', __FILE__, __LINE__)
-            print *, "shell ang mom ", basis_shell_ang_mom
+            print *, "initial basis shell index  ", basis_shell_index
             rc = trexio_read_basis_shell_factor(trex_basis_file, basis_shell_factor)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_factor', __FILE__, __LINE__)
             rc = trexio_read_basis_exponent(trex_basis_file, basis_exponent)
@@ -477,23 +477,35 @@ module trexio_read_data
 
 
         ! Now get the number of primitives per atom and their indices
+        ! also obtain the number of primitives per shell for all the atoms
         allocate(nprims_per_atom(basis_num_prim))
         allocate(prim_index_atom(basis_num_prim))
+        allocate(shell_prim_correspondence(basis_num_shell))
 
         prim_index_atom(1) = 1
         nprims_per_atom(1) = 0
-        tcount3 = 0; tcount4 = 0
+        tcount4 = 0; tcount2 = 0
         do i = 1, ncent_tot
+            tcount3 = 0
             do j = 1, nshells_per_atom(i)   ! frequency
                 tcount4 = tcount4 + 1
-                nprims_per_atom(i) = nprims_per_atom(i) + cartesian_shells(basis_shell_ang_mom(tcount4)+1)
+                tcount3 = tcount3 + 1
+                tcount1 = 0
+                do k = 1, basis_num_prim
+                    if (tcount4 == basis_shell_index(k)) then
+                        tcount1 = tcount1 + 1
+                        shell_prim_correspondence(tcount4) = tcount1
+                    endif
+                enddo
+
+                nprims_per_atom(i) = nprims_per_atom(i) + shell_prim_correspondence(tcount4)
             enddo
             if (i .ne. ncent_tot) prim_index_atom(i+1) = prim_index_atom(i) + nprims_per_atom(i)
         enddo
 
+        print *, "prim shell correspondence ", shell_prim_correspondence
         print*, "prim_index_atom(1:ncent_tot) :: ", prim_index_atom(1:ncent_tot)
         print*, "nprims_per_atom(1:ncent_tot) :: ", nprims_per_atom(1:ncent_tot)
-        print*, "tcount4 :: ", tcount4
 
 
         ! Obtain the number of unique types of atoms stored in the hdf5 file.
@@ -555,30 +567,6 @@ module trexio_read_data
             endif
         enddo
 
-        tcount5 = 0
-        allocate(shell_prim_correspondence(basis_num_prim))
-        do j = 1, basis_num_shell
-            if (basis_shell_ang_mom(j) .eq. 0) then
-                tcount5 = tcount5 + 1
-                shell_prim_correspondence(tcount5) = 0
-            elseif (basis_shell_ang_mom(j) .eq. 1) then
-                tcount5 = tcount5 + 1
-                shell_prim_correspondence(tcount5:tcount5+3) = 1
-            elseif (basis_shell_ang_mom(j) .eq. 2) then
-                shell_prim_correspondence(j:j+6) = 2
-            elseif (basis_shell_ang_mom(j) .eq. 3) then
-                shell_prim_correspondence(j:j+10) = 3
-            elseif (basis_shell_ang_mom(j) .eq. 4) then
-                shell_prim_correspondence(j:j+15) = 4
-            elseif (basis_shell_ang_mom(j) .eq. 5) then
-                shell_prim_correspondence(j:j+21) = 5
-            endif
-        enddo
-
-        print *, "shell prim correspondence ", shell_prim_correspondence
-
-
-
         do ic = 1, nctype_tot            ! loop over all the unique atoms
             nrbas(ic)   = nshells_per_atom(shell_index_atom(ic))
             igrid(ic)   = gridtype       ! grid type default is 3
@@ -600,41 +588,44 @@ module trexio_read_data
             ! Make space for the special case when nloc == 0
 
 
-            print*, "all primitive exponents ",(i, basis_exponent(i), i = 1, basis_num_prim)
+
+
             ! loop over all the primitives for the unique atom
-            counter = 1
-            val = 0.0d0
-            do k = prim_index_atom(unique_atom_index(ic)), prim_index_atom(unique_atom_index(ic)) + nprims_per_atom(unique_atom_index(ic)) - 1
-                ! k is index of primitives that needs to used for adding to the grid.
-                unique_basis_exponent(counter) = basis_exponent(k)
-                unique_basis_coefficient(counter) = basis_coefficient(k)
-                counter = counter + 1
-            enddo
+            ! The lower and upper indices of primitive indices
+            lower_shell = shell_index_atom(unique_atom_index(ic))
+            upper_shell = shell_index_atom(unique_atom_index(ic)) + nshells_per_atom(unique_atom_index(ic)) - 1
+            print*, "range shell", lower_shell, upper_shell
+
+            lower_prim = prim_index_atom(unique_atom_index(ic))
+            upper_prim = prim_index_atom(unique_atom_index(ic)) + nprims_per_atom(unique_atom_index(ic)) - 1
+            print*, "range prim", lower_prim, upper_prim
 
 
-            ! print*, "array shell ang mom ", unique_basis_shell_ang_mom
-            print*, "array shell expo ", unique_basis_exponent
-            print*, "array shell coeff ", unique_basis_coefficient
+            tcount1 = 0
+            ! select the shells corresponding to the unique atoms only
+            ! j is the running shell index for the unique atom i
+            do i = 1, 1! gridpoints
+                r = rgrid(i)
+                r2 = r*r
 
-
-            do j = 1, basis_num_shell   ! loop over all the shells
-                ! select the shells corresponding to the unique atoms only
-                if (unique_atom_index(ic) == basis_nucleus_index(j)) then
-                    ! j is the running shell index for the unique atom i
-                    print *, "j ", j, "basis_nucleus_index ", basis_nucleus_index(j), "basis_shell ang mom  ", basis_shell_ang_mom(j)
+                val = 0.0d0
+                counter = 1
+                do j = lower_shell, upper_shell
+                    print*, "corres ", j, shell_prim_correspondence(j)
+                    print *, "j ", j, "nucleus_index ", basis_nucleus_index(j), "shell ang mom  ", basis_shell_ang_mom(j)
                     ! loop over all the gridpoints to add contracted Gaussians over the grid
                     ! list of exponents
-
-                    ! print*, "basis exponents before passing ", basis_exponent
-                    rwf(ir,j,ic,1) = shell_to_grid(basis_shell_ang_mom(j), unique_basis_exponent, unique_basis_coefficient, gridpoints, rgrid)
-                endif
+                    ! val = val + gnorm(basis_exponent(j), basis_shell_ang_mom(j)) * coefficients(j) * dexp(-exponents(j)*r2)
+                enddo
+                ! print*, "basis exponents before passing ", basis_exponent
+                ! rwf(ir,j,ic,1) = shell_to_grid(basis_shell_ang_mom(j), unique_basis_exponent, unique_basis_coefficient, gridpoints, rgrid)
             enddo
 
             !Put in the read information in the x(ir) and rwf(ir,j,ic,iwf) arrays
-            do ir=1,nr(ic)
-                write(100,*) "ic,ir,", ic,ir
-                write(100,*,iostat=iostat) rgrid(ir),(rwf(ir,j,ic,1),j=1,nrbas(ic))
-            enddo
+            ! do ir=1,nr(ic)
+                ! write(100,*) "ic,ir,", ic,ir
+                ! write(100,*,iostat=iostat) rgrid(ir),(rwf(ir,j,ic,1),j=1,nrbas(ic))
+            ! enddo
 
         enddo
 
