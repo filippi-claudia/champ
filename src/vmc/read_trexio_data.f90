@@ -906,10 +906,15 @@ module trexio_read_data
         read_buf_det_size = int64_num
         offset_det_read = 0
         do jj = 1, determinant_num
+
+        if (wid) then
+#if defined(TREXIO_FOUND)
             rc = trexio_read_determinant_list(trex_determinant_file, offset_det_read, read_buf_det_size, orb_list(jj))
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_list failed', __FILE__, __LINE__)
             rc = trexio_to_orbital_list_up_dn(int64_num, orb_list(jj), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_to_orbital_list_up_dn filed', __FILE__, __LINE__)
+#endif
+        endif
 
             write(temp3, '(a,i0,a,i0,a)') '(', occ_num_up, '(i4, 1x)) , 2x, (', occ_num_up, '(i4, 1x))'
             write(ounit, temp3) (orb_list_up(i), i = 1, occ_num_up), (orb_list_dn(i), i = 1, occ_num_dn)
