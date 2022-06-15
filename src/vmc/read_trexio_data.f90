@@ -311,12 +311,9 @@ module trexio_read_data
         integer, allocatable            :: basis_nucleus_index(:)
         integer, allocatable            :: basis_shell_index(:)
         integer, allocatable            :: basis_shell_ang_mom(:)
-        integer, allocatable            :: unique_basis_shell_ang_mom(:)
         real(dp), allocatable           :: basis_shell_factor(:)
         real(dp), allocatable           :: basis_exponent(:)
-        real(dp), allocatable           :: unique_basis_exponent(:)
         real(dp), allocatable           :: basis_coefficient(:)
-        real(dp), allocatable           :: unique_basis_coefficient(:)
         real(dp), allocatable           :: basis_prim_factor(:)
 
         integer                         :: ao_num
@@ -331,7 +328,7 @@ module trexio_read_data
         integer                         :: iostat, ic, ir, i, j, k, l, iunit, tcount1, tcount2, tcount3, tcount4, tcount5
         logical                         :: exist
         type(atom_t)                    :: atoms
-        integer                         :: counter, lower_shell, upper_shell, lower_prim, upper_prim
+        integer                         :: counter, counter_shell, lower_shell, upper_shell, lower_prim, upper_prim
 
         ! trexio
         integer(8)                      :: trex_basis_file
@@ -350,7 +347,6 @@ module trexio_read_data
         real(dp)                        :: gridr0_save = 20.0
         real(dp)                        :: rgrid(2000)  ! Grid points
         integer, dimension(nctype_tot)  :: icusp
-        integer                         :: cartesian_shells(5) = (/1, 3, 6, 10, 15/)
         real(dp)                        :: r, r2, r3, val
 
         integer, dimension(:), allocatable :: atom_index(:), shell_index_atom(:), nshells_per_atom(:)
@@ -394,12 +390,9 @@ module trexio_read_data
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_index))      allocate(basis_shell_index(basis_num_prim))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
-        if (.not. allocated(unique_basis_shell_ang_mom))    allocate(unique_basis_shell_ang_mom(basis_num_shell))
         if (.not. allocated(basis_shell_factor))     allocate(basis_shell_factor(basis_num_shell))
         if (.not. allocated(basis_exponent))         allocate(basis_exponent(basis_num_prim))
-        if (.not. allocated(unique_basis_exponent))         allocate(unique_basis_exponent(basis_num_prim))
         if (.not. allocated(basis_coefficient))      allocate(basis_coefficient(basis_num_prim))
-        if (.not. allocated(unique_basis_coefficient))      allocate(unique_basis_coefficient(basis_num_prim))
         if (.not. allocated(basis_prim_factor))      allocate(basis_prim_factor(basis_num_prim))
         if (.not. allocated(ao_shell))               allocate(ao_shell(ao_num))
         if (.not. allocated(ao_normalization))       allocate(ao_normalization(ao_num))
@@ -414,7 +407,6 @@ module trexio_read_data
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_index', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_ang_mom(trex_basis_file, basis_shell_ang_mom)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_ang_mom', __FILE__, __LINE__)
-            print *, "initial basis shell index  ", basis_shell_index
             rc = trexio_read_basis_shell_factor(trex_basis_file, basis_shell_factor)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_factor', __FILE__, __LINE__)
             rc = trexio_read_basis_exponent(trex_basis_file, basis_exponent)
@@ -463,10 +455,10 @@ module trexio_read_data
 
         call unique_elements(basis_num_shell, basis_nucleus_index, atom_index, count, nshells_per_atom, shell_index_atom)
 
-        print*, "Number of unique elements :: ", count
-        print*, "Unique elements index :: ", atom_index(1:count)
-        print*, "frequency :: ", nshells_per_atom(1:count)
-        print*, "result", shell_index_atom(1:count)
+        ! print*, "Number of unique elements :: ", count
+        ! print*, "Unique elements index :: ", atom_index(1:count)
+        ! print*, "frequency :: ", nshells_per_atom(1:count)
+        ! print*, "result", shell_index_atom(1:count)
 
         ! count                     :: "Number of unique elements"
         ! atom_index(1:count)       :: "Unique elements index (not used here)"
@@ -503,20 +495,20 @@ module trexio_read_data
             if (i .ne. ncent_tot) prim_index_atom(i+1) = prim_index_atom(i) + nprims_per_atom(i)
         enddo
 
-        print *, "prim shell correspondence ", shell_prim_correspondence
-        print*, "prim_index_atom(1:ncent_tot) :: ", prim_index_atom(1:ncent_tot)
-        print*, "nprims_per_atom(1:ncent_tot) :: ", nprims_per_atom(1:ncent_tot)
+        ! print *, "prim shell correspondence ", shell_prim_correspondence
+        ! print*, "prim_index_atom(1:ncent_tot) :: ", prim_index_atom(1:ncent_tot)
+        ! print*, "nprims_per_atom(1:ncent_tot) :: ", nprims_per_atom(1:ncent_tot)
 
 
         ! Obtain the number of unique types of atoms stored in the hdf5 file.
-        print*, "number of types of atoms :: ", nctype_tot
-        print*, "nucleus shell index ", basis_nucleus_index
+        ! print*, "number of types of atoms :: ", nctype_tot
+        ! print*, "nucleus shell index ", basis_nucleus_index
         if (.not. allocated(unique)) allocate(unique(nctype_tot))
         if (.not. allocated(unique_atom_index)) allocate(unique_atom_index(nctype_tot))
 
 
-        print*, "symbol ", symbol
-        print*, "atom_type ", atomtyp
+        ! print*, "symbol ", symbol
+        ! print*, "atom_type ", atomtyp
 
 
         tcount1 = 1; tcount2 = 1
@@ -526,14 +518,14 @@ module trexio_read_data
             if (any(unique == symbol(j) ))  then
                 cycle
             endif
-            print*, "j ", j, "symbol ", symbol(j)
+            ! print*, "j ", j, "symbol ", symbol(j)
             tcount1 = tcount1 + 1
             unique_atom_index(tcount1) = j
             unique(tcount1) = symbol(j)
         enddo
-        print *, "tcount1 ", tcount1, "unique ", unique(1:tcount1)
-        print*, "unique ", unique
-        print*, "unique atom index ", unique_atom_index
+        ! print *, "tcount1 ", tcount1, "unique ", unique(1:tcount1)
+        ! print*, "unique ", unique
+        ! print*, "unique atom index ", unique_atom_index
 
 
         ! start putting in the information in the arrays and variables
@@ -544,8 +536,8 @@ module trexio_read_data
         gridr0_save = gridr0
 
         ! Do the necessary allocation for the numerical basis set
-        ! call allocate_numbas()
-        ! call allocate_numexp()
+        call allocate_numbas()
+        call allocate_numexp()
 
         ! count                     :: "Number of unique elements"
         ! atom_index(1:count)       :: "Unique elements index (not used here)"
@@ -594,20 +586,19 @@ module trexio_read_data
             ! The lower and upper indices of primitive indices
             lower_shell = shell_index_atom(unique_atom_index(ic))
             upper_shell = shell_index_atom(unique_atom_index(ic)) + nshells_per_atom(unique_atom_index(ic)) - 1
-            print*, "range shell", lower_shell, upper_shell
 
             lower_prim = prim_index_atom(unique_atom_index(ic))
             upper_prim = prim_index_atom(unique_atom_index(ic)) + nprims_per_atom(unique_atom_index(ic)) - 1
-            print*, "range prim", lower_prim, upper_prim
 
 
             ! select the shells corresponding to the unique atoms only
             ! j is the running shell index for the unique atom i
-            do i = 1, gridpoints
+            do i = 1, nr(ic)
                 r = rgrid(i)
                 r2 = r*r
 
                 counter = lower_prim
+                counter_shell = 1
                 do j = lower_shell, upper_shell
                     ! loop on primitives in the given shell
                     val = 0.0d0
@@ -616,12 +607,13 @@ module trexio_read_data
                                   * basis_coefficient(k) * dexp(-basis_exponent(k)*r2)
                     enddo
                     counter = counter + shell_prim_correspondence(j)
-                    rwf(i,j,ic,1) = val
+                    rwf(i,counter_shell,ic,1) = val
+                    counter_shell = counter_shell + 1
                 enddo
             enddo
 
             !Put in the read information in the x(ir) and rwf(ir,j,ic,iwf) arrays
-            do ir=1,nr(ic)
+            do ir=1, nr(ic)
                 write(100+ic,'(10f12.6)',iostat=iostat) rgrid(ir),(rwf(ir,j,ic,1),j=1,nrbas(ic))
             enddo
 
