@@ -67,8 +67,6 @@ jobs:
         module load mkl/latest
         module load mpi/latest
         module load python3/latest
-        module load hdf5
-        module load trexio
         which mpirun
         /software/cmake-3.22.1/bin/cmake --version
         export OMPI_FC=gfortran-11
