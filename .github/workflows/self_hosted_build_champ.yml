@@ -52,7 +52,6 @@ jobs:
         which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
         /software/cmake-3.22.1/bin/cmake --version
-      # /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp -DTREXIO_LIBRARY=/home/filippi/trexio-2.2.0/build/libtrexio.so -DTREXIO_INCLUDE_DIR=/home/filippi/trexio-2.2.0/build/include/
         /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
         /software/cmake-3.22.1/bin/cmake --build build -- -j2
 
