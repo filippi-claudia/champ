@@ -51,6 +51,8 @@ option(ENABLE_QMMM "enable_qmmm" off)
 option(ENABLE_PERIODIC "enable_periodic" off)
 
 ## External packages
+option(ENABLE_TREXIO "enable_trexio" off)
+
 # Include function to Load MKL
 message("")
 
@@ -80,6 +82,7 @@ link_libraries(${LINEAR_ALGEBRA})
 
 # LibFDF is built-in in the src/parser folder
 
+if (ENABLE_TREXIO)
 # Find HDF5 library
 find_package(HDF5 QUIET)
 if (HDF5_FOUND)
@@ -106,7 +109,7 @@ if (TREXIO_FOUND)
   message(STATUS "                                    ")
   add_definitions(-DTREXIO_FOUND=\"${TREXIO_FOUND}\")
 endif(TREXIO_FOUND)
-
+endif (ENABLE_TREXIO)
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)
