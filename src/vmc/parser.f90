@@ -377,8 +377,8 @@ subroutine parser
   icut_e      = fdf_get('icut_e', 0)
   dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)
   dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)
-  tau         = fdf_get('tau', 1.)
-  etrial      = fdf_get('etrial', 1.)
+  tau         = fdf_get('tau', 1.0d0)
+  etrial      = fdf_get('etrial', 1.0d0)
   nfprod      = fdf_get('nfprod', 100)
   itausec     = fdf_get('itausec', 1)
   icasula     = fdf_get('icasula', 0)
@@ -959,7 +959,7 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    if( mode(1:3) == 'vmc' ) error stop
     ! if no symmetry file present, assume same symmetry for all orbitals
-    if (.not. allocated(irrep)) allocate (irrep(norb_tot)) 
+    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
     irrep(1:norb_tot) = 1
     write(ounit,*)
     write(ounit,*) '____________________________________________________________________'
