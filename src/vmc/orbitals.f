@@ -19,7 +19,11 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use const, only: nelec, ipr
+! Include all the const module for QMCkl. Avoid 'only', otherwise you will
+! need to change it every time QMCkl is updated, or you will need
+! to have extra ifdef statements here.
+      use const !, only: nelec, ipr, use_qmckl, qmckl_ctx
+
       use wfsec, only: iwf
       use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
       use coefs, only: coef, nbasis, norb
@@ -30,13 +34,22 @@ c Modified by A. Scemama
       use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
+
+
+#ifdef QMCKL_FOUND
+      use qmckl
+#endif
+      
+      
+      
       use grid3d_orbitals, only: spline_mo
       use grid3d_orbitals, only: lagrange_mos, lagrange_mos_grad, lagrange_mos_2
       use basis_fns_mod, only: basis_fns
       use pw_orbitals, only: orbitals_pw
+      
       implicit none
 
-      integer :: i, ier, ider, iorb, k, m
+      integer :: i, ier, ider, iorb, k, m, l
       integer :: m0
 
       real(dp), dimension(3,*) :: x
@@ -46,6 +59,16 @@ c     real(dp), dimension(nelec,nbasis) :: bhin
 c     real(dp), dimension(3*nelec,nbasis) :: dbhin
 c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
+ccc   QMCkl
+      real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
+      real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+      real(dp), allocatable :: mo_coef_qmckl(:,:)
+      integer :: rc
+      integer*8 :: n8
+ccc
+
+
+      
       ier=1
       if(iperiodic.eq.0) then
 
@@ -112,91 +135,136 @@ c Lagrange interpolation
          enddo
 
 c no 3d interpolation
-        else
+      else
+         
+         if (use_qmckl) then
 
-c get basis functions for all electrons
-         ider=2
-         if(iforce_analy.eq.1) ider=3
-         call basis_fns(1,nelec,rvec_en,r_en,ider)
+!     The number of MOs in QMCkl is not necessarily the same as here.                                                                                                                         
+!     For the moment, it is the number of MOs in the TREXIO file                                                                                                                              
+!     which is too large. A quick fix is to store only the useful MOs in                                                                                                                      
+!     the TREXIO file. But in a near future, we will add the possibility to                                                                                                                   
+!     compute only a subset of MOs in QMCkl.                                                                                                                                                  
+            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error getting mo_num from QMCkl'
+               stop
+            end if
 
-c in alternativa al loop 26
-c        do jbasis=1,nbasis
-c         i=0
-c         do ielec=1,nelec
-c          bhin(ielec,jbasis)=phin(jbasis,ielec)
-c          do l=1,3
-c           i=i+1
-c           dbhin(i,jbasis)=dphin(jbasis,ielec,l)
-c          enddo
-c          d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
-c         enddo
-c        enddo
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
-c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
+            allocate(mo_vgl_qmckl(n8, 5, nelec))
 
-!        Vectorization dependent code selection
+!     Send electron coordinates to QMCkl to compute the MOs at these positions                                                                                                                
+            rc = qmckl_set_point(qmckl_ctx, 'N', nelec*1_8, x, nelec*3_8)                                                                                                                     
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error setting electron coordinates in QMCkl'
+            end if
+            
+!     Compute the MOs                                                                                                                                                                         
+            rc = qmckl_get_mo_basis_mo_vgl_inplace(
+     &           qmckl_ctx,
+     &           mo_vgl_qmckl,
+     &           n8*nelec*5_8)
+            
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error getting MOs from QMCkl'
+            end if
+            
+            do iorb=1,norb+nadorb
+               do i=1,nelec
+                  orb  (  i,iorb) = mo_vgl_qmckl(iorb,1,i)
+                  dorb (iorb,i,1) = mo_vgl_qmckl(iorb,2,i)
+                  dorb (iorb,i,2) = mo_vgl_qmckl(iorb,3,i)
+                  dorb (iorb,i,3) = mo_vgl_qmckl(iorb,4,i)
+                  ddorb(  iorb,i) = mo_vgl_qmckl(iorb,5,i)
+               end do
+            end do
+
+            deallocate(mo_vgl_qmckl)
+            
+         else
+c     get basis functions for all electrons
+            ider=2
+            if(iforce_analy.eq.1) ider=3
+            call basis_fns(1,nelec,rvec_en,r_en,ider)
+
+c     in alternativa al loop 26
+c     do jbasis=1,nbasis
+c     i=0
+c     do ielec=1,nelec
+c     bhin(ielec,jbasis)=phin(jbasis,ielec)
+c     do l=1,3
+c     i=i+1
+c     dbhin(i,jbasis)=dphin(jbasis,ielec,l)
+c     enddo
+c     d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
+c     enddo
+c     enddo
+c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
+c     call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
+c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
+            
+!     Vectorization dependent code selection
 #ifdef VECTORIZATION
 !     Following loop changed for better vectorization AVX512/AVX2
-         do i=1,nelec
-            do iorb=1,norb+nadorb
-               orb(i,iorb)=0
-               dorb(iorb,i,1)=0
-               dorb(iorb,i,2)=0
-               dorb(iorb,i,3)=0
-               ddorb(iorb,i)=0
-               do m=1,nbasis
-                  orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
-                  dorb (iorb,i,1)=dorb (iorb,i,1)+coef(m,iorb,iwf)*dphin (m,i,1)
-                  dorb (iorb,i,2)=dorb (iorb,i,2)+coef(m,iorb,iwf)*dphin (m,i,2)
-                  dorb (iorb,i,3)=dorb (iorb,i,3)+coef(m,iorb,iwf)*dphin (m,i,3)
-                  ddorb(  iorb,i)=ddorb(iorb,i)+coef(m,iorb,iwf)*d2phin( m,i)
+            do i=1,nelec
+               do iorb=1,norb+nadorb
+                  orb(i,iorb)=0
+                  dorb(iorb,i,1)=0
+                  dorb(iorb,i,2)=0
+                  dorb(iorb,i,3)=0
+                  ddorb(iorb,i)=0
+                  do m=1,nbasis
+                     orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
+                     dorb (iorb,i,1)=dorb (iorb,i,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+                     dorb (iorb,i,2)=dorb (iorb,i,2)+coef(m,iorb,iwf)*dphin (m,i,2)
+                     dorb (iorb,i,3)=dorb (iorb,i,3)+coef(m,iorb,iwf)*dphin (m,i,3)
+                     ddorb(  iorb,i)=ddorb(iorb,i)+coef(m,iorb,iwf)*d2phin( m,i)
+                  enddo
                enddo
             enddo
-         enddo
 #else
 !     keep the old localization code if no vectorization instructions available
-          do i=1,nelec
-             do iorb=1,norb+nadorb
-                
-                orb(i,iorb)=0
-                dorb(iorb,i,1)=0
-                dorb(iorb,i,2)=0
-                dorb(iorb,i,3)=0
-                ddorb(iorb,i)=0
-                do m0=1,n0_nbasis(i)
-                   m=n0_ibasis(m0,i)
-                   orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
-                   dorb (iorb,i,1)=dorb (iorb,i,1)+coef(m,iorb,iwf)*dphin (m,i,1)
-                   dorb (iorb,i,2)=dorb (iorb,i,2)+coef(m,iorb,iwf)*dphin (m,i,2)
-                   dorb (iorb,i,3)=dorb (iorb,i,3)+coef(m,iorb,iwf)*dphin (m,i,3)
-                   ddorb(iorb,i)=ddorb(iorb,i)+coef(m,iorb,iwf)*d2phin( m,i)
-                enddo
-             enddo
-          enddo
+            do i=1,nelec
+               do iorb=1,norb+nadorb
+                  
+                  orb(i,iorb)=0
+                  dorb(iorb,i,1)=0
+                  dorb(iorb,i,2)=0
+                  dorb(iorb,i,3)=0
+                  ddorb(iorb,i)=0
+                  do m0=1,n0_nbasis(i)
+                     m=n0_ibasis(m0,i)
+                     orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
+                     dorb (iorb,i,1)=dorb (iorb,i,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+                     dorb (iorb,i,2)=dorb (iorb,i,2)+coef(m,iorb,iwf)*dphin (m,i,2)
+                     dorb (iorb,i,3)=dorb (iorb,i,3)+coef(m,iorb,iwf)*dphin (m,i,3)
+                     ddorb(iorb,i)=ddorb(iorb,i)+coef(m,iorb,iwf)*d2phin( m,i)
+                  enddo
+               enddo
+            enddo
 #endif
-       endif
+         endif
+      endif
 
-       if(iforce_analy.eq.1) call da_orbitals
-
-       else
-        call orbitals_pw(x,orb,dorb,ddorb)
+      if(iforce_analy.eq.1) call da_orbitals
+      
+      else
+         call orbitals_pw(x,orb,dorb,ddorb)
       endif
 
       if(ipr.ge.0) then
-        do iorb=1,norb+nadorb
-          write(ounit,'(''iorb,orb='',i4,1000f15.11)') iorb,(orb(i,iorb),i=1,nelec)
-        enddo
          do iorb=1,norb+nadorb
-          write(ounit,'(''iorb,d2orb='',i4,1000f15.11)') iorb,(ddorb(iorb,i),i=1,nelec)
+          write(ounit,'(''iorb,orb='',i4,1000f15.11)') iorb,(orb(i,iorb),i=1,nelec)
+       enddo
+         do iorb=1,norb+nadorb
+            write(ounit,'(''iorb,d2orb='',i4,1000f15.11)') iorb,(ddorb(iorb,i),i=1,nelec)
          enddo
-        do k=1,3
+         do k=1,3
           do iorb=1,norb+nadorb
-            write(ounit,'(''iorb,dorb='',2i4,1000f12.8)') k,iorb,(dorb(iorb,i,k),i=1,nelec)
+             write(ounit,'(''iorb,dorb='',2i4,1000f12.8)') k,iorb,(dorb(iorb,i,k),i=1,nelec)
           enddo
         enddo
       endif
-
+      
       return
       end
 c------------------------------------------------------------------------------------

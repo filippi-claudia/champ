@@ -101,7 +101,51 @@ c           call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
         i2=nelec
       endif
 
-
+      
+! TODO QMCkl
+!      if (use_qmckl) then
+!
+!         allocate(x_grid(3,nquad,nelec))
+!         ! TODO: Pre-compute here an array x_grid containing all the grid positions for all electrons
+!         ! where the MOs will need to be evaluated.  Ideally, these positions
+!         ! should be added to the electron positions in `orbitals.f` so that we
+!         ! make a single QMCkl call for the MOs and for the pseudo.
+!
+!         ! Send electron coordinates to QMCkl to compute the MOs at these positions
+!         rc = qmckl_set_point(qmckl_ctx, 'N', nelec*nquad*1_8, x_grid, nelec*nquad*3_8)
+!         if (rc /= QMCKL_SUCCESS) then
+!           print *, 'Error setting electron coordinates in QMCkl'
+!         end if
+!
+!         rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+!         if (rc /= QMCKL_SUCCESS) then
+!           print *, 'Error getting mo_num from QMCkl'
+!           stop
+!         end if
+!
+!         allocate(mo_vgl_qmckl(n8, 5, nelec))
+!
+!         ! Send electron coordinates to QMCkl to compute the MOs at these positions
+!         rc = qmckl_set_point(qmckl_ctx, 'N', nelec*1_8, x, nelec*3_8)
+!         if (rc /= QMCKL_SUCCESS) then
+!           print *, 'Error setting electron coordinates in QMCkl'
+!         end if
+!
+!         ! Compute the MOs
+!         rc = qmckl_get_mo_basis_mo_vgl_inplace(
+!     &                  qmckl_ctx,
+!     &                  mo_vgl_qmckl,
+!     &                  n8*nelec*5_8)
+!
+!         if (rc /= QMCKL_SUCCESS) then
+!            print *, 'Error getting MOs from QMCkl'
+!         end if
+!
+!        ! Computed MO values are in `mo_vgl_qmckl(iorb,1,ielec)`
+!
+!      endif
+! TODO END QMCkl
+      
 
       do i=i1,i2
 
@@ -241,6 +285,12 @@ c end loop nelec, ncent
       if(ipr.ge.4) write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
      &,(vpsp_det(iab),detiab(1,iab),iab=1,2),r_en(1,1)
 
+! TODO QMCKL
+!      if (use_qmckl) then
+!        deallocate(mo_vgl_qmckl)
+!      endif
+
+      
       return
       end
 c-----------------------------------------------------------------------

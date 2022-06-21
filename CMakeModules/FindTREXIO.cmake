@@ -32,6 +32,9 @@
 
 #===========================================
 
+message(" ")
+message("Looking for the TREXIO library:")
+
 set(TREXIO_SEARCH_PATHS
 	~/Library/Frameworks
 	/Library/Frameworks

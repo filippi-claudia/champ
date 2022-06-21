@@ -1,7 +1,10 @@
 module const
     !> Arguments: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
     use precision_kinds, only: dp
-
+#ifdef QMCKL_FOUND
+    use qmckl
+#endif
+    
     implicit none
 
     real(dp) :: delta
@@ -16,6 +19,16 @@ module const
 
     private
     public   :: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+
+#ifdef QMCKL_FOUND
+    integer(qmckl_context), public :: qmckl_ctx
+    logical, public :: use_qmckl = .True.
+#else
+    integer, public :: qmckl_ctx = 0
+    integer, public :: QMCKL_SUCCESS = 0
+    logical, public :: use_qmckl = .False.
+#endif
+    
     save
 end module const
 

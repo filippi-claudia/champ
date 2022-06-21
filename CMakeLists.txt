@@ -51,7 +51,7 @@ option(ENABLE_QMMM "enable_qmmm" off)
 option(ENABLE_PERIODIC "enable_periodic" off)
 
 ## External packages
-option(ENABLE_TREXIO "enable_trexio" off)
+option(ENABLE_TREXIO "enable_trexio" on)
 
 # Include function to Load MKL
 message("")
@@ -68,8 +68,13 @@ endif()
 find_package(BLAS COMPONENTS Fortran REQUIRED QUIET)
 find_package(LAPACK COMPONENTS Fortran REQUIRED QUIET)
 
+message(" ")
+message("Looking for the BLAS and LAPACK libraries:")
 if (BLAS_FOUND AND LAPACK_FOUND)
+  message(STATUS "Is BLAS   library found          :: " ${BLAS_FOUND})
+  message(STATUS "Is LAPACK library found          :: " ${LAPACK_FOUND})
   message(STATUS "Using BLAS and LAPACK for the linear algebra calculations!")
+  message(" ")
   # Printing individual libraries in the list
   message(STATUS "BLAS and LAPACK LIBRARIES          : ")
   foreach(lib ${BLAS_LIBRARIES})
@@ -99,6 +104,8 @@ if (HDF5_FOUND)
 endif(HDF5_FOUND)
 
 # Find TREXIO
+message(" ")
+message("Looking for the HDF5 library:")
 if (HDF5_FOUND)
   find_package(TREXIO QUIET)
 endif(HDF5_FOUND)
@@ -110,6 +117,19 @@ if (TREXIO_FOUND)
   add_definitions(-DTREXIO_FOUND=\"${TREXIO_FOUND}\")
 endif(TREXIO_FOUND)
 endif (ENABLE_TREXIO)
+
+# Find QMCkl
+if (TREXIO_FOUND)
+  find_package(QMCKL QUIET)
+endif(TREXIO_FOUND)
+if (QMCKL_FOUND)
+  message(STATUS "Is QMCkl library found           :: " ${QMCKL_FOUND})
+  message(STATUS "QMCKL Library include dirs       :: " ${QMCKL_INCLUDE_DIR})
+  message(STATUS "QMCKL Library lib dirs           :: " ${QMCKL_LIBRARY})
+  message("                                    ")
+  add_definitions(-DQMCKL_FOUND=\"${QMCKL_FOUND}\")
+endif(QMCKL_FOUND)
+
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)
@@ -160,7 +180,7 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-O2")
   list(APPEND Fortran_FLAGS "-implicitnone")
   list(APPEND Fortran_FLAGS "-finline" "-ip" "-align" "array64byte" "-fma" "-ftz" "-fomit-frame-pointer")
-	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
+  list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
@@ -175,20 +195,39 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   #if (MKL_FOUND)
   #    list(APPEND Fortran_FLAGS "-i8")
   #endif()
-
+  
   # debug
   # list(APPEND Fortran_FLAGS "-g" "-O0" "-debug" "-traceback")
-
+  
 
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()
+
+if (TREXIO_FOUND)
+  list(APPEND Fortran_FLAGS "-ltrexio")
+endif()
+if (QMCKL_FOUND)
+  list(APPEND Fortran_FLAGS "-lqmckl")
+endif()
+
 
 message("")
 message(STATUS "Fortran compiler flags   : " )
 foreach(flag ${Fortran_FLAGS})
   message("                                    :: " ${flag})
 endforeach(flag)
+
+
+if (TREXIO_FOUND)
+  list(APPEND TREX_LIBS ${TREXIO_LIBRARY})
+endif()
+
+if (QMCKL_FOUND)
+  list(APPEND TREX_LIBS ${QMCKL_LIBRARY})
+endif()
+
+
 
 
 ## Subdirectories

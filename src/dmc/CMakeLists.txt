@@ -62,12 +62,14 @@ target_compile_options(dmc.mov1
   )
 
 if (TREXIO_FOUND)
+  message("TREXIO in dmc was found")
   target_link_libraries(dmc.mov1
     PRIVATE
     pspline
     parser
     ${LINEAR_ALGEBRA}
     ${TREXIO_LIBRARY}
+    ${TREX_LIBS}
     MPI::MPI_Fortran)
 else()
   target_link_libraries(dmc.mov1

@@ -192,6 +192,11 @@ subroutine parser
   use precision_kinds,  only: dp
 ! Note the following modules are new additions
 
+#ifdef QMCKL_FOUND
+  use qmckl
+#endif
+  use const,      only: use_qmckl, qmckl_ctx
+  
 !
   implicit none
 
@@ -1568,6 +1573,30 @@ subroutine parser
 
   call fdf_shutdown()
 
+  if (use_qmckl) then
+     qmckl_ctx = qmckl_context_create()
+
+     iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
+     if (iostat /= QMCKL_SUCCESS) then
+        print *, 'Error: Unable to read TREXIO file '//trim(file_trexio)
+        call abort()
+     end if
+   
+     iostat = qmckl_set_electron_num(qmckl_ctx, nup*1_8, ndn*1_8)
+     if (iostat /= QMCKL_SUCCESS) then
+        print *, 'Error: Unable to set the number of electrons in QMCkl'
+        call abort()
+     end if
+     
+     iostat = qmckl_set_electron_walk_num(qmckl_ctx, 1_8) ! Only one walker is used in CHAMP
+     if (iostat /= QMCKL_SUCCESS) then
+        print *, 'Error: Unable to set the number of electrons in QMCkl'
+        call abort()
+     end if
+  end if
+
+
+  
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some
   ! arrays if something is missing.

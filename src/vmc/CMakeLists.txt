@@ -381,6 +381,7 @@ if (MPI_Fortran_FOUND)
       parser
       ${LINEAR_ALGEBRA}
       ${TREXIO_LIBRARY}
+      ${TREX_LIBS}
       MPI::MPI_Fortran)
   else()
     target_link_libraries(vmc.mov1

@@ -52,7 +52,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_PARSER_DIR}/utils.F90)
 
     if (TREXIO_FOUND)
-      list(APPEND SHARED_MODULES trexio_f.f90)
+      list(APPEND SHARED_MODULES trexio_f.f90 qmckl_f.F90)
     endif()
 
     add_library(shared_modules OBJECT ${SHARED_MODULES})
