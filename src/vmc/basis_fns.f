@@ -11,7 +11,7 @@ c ider = 3 -> value, gradient, laplacian, forces
       use atom, only: iwctype, ncent, ncent_tot
       use ghostatom, only: nghostcent
       use const, only: nelec
-      use numbas, only: iwrwf, nrbas
+      use numbas, only: iwrwf, nrbas, rmax
       use numbas1, only: iwlbas, nbastyp
       use phifun, only: phin, dphin, d2phin, d2phin_all, d3phin, n0_nbasis
       use wfsec, only: iwf
@@ -47,26 +47,31 @@ c loop through centers
         it=iwctype(ic)
         nrbasit=nrbas(it)
         nbastypit=nbastyp(it)
-        
+
 
         l0=l
 
 c     numerical atomic orbitals
         do k=ie1,ie2
-           
+
 c get distance to center
 
            xc(1)=rvec_en(1,k,ic)
            xc(2)=rvec_en(2,k,ic)
            xc(3)=rvec_en(3,k,ic)
-           
+
            r=r_en(k,ic)
            r2=r*r
            ri=one/r
            ri2=ri*ri
 
            do irb=1,nrbasit
+            ! only evaluate for r <= rmax
+            ! if (r <= rmax(irb,it)) then
               call splfit(r,irb,it,iwf,wfv(1,irb),ider)
+            ! else
+            !   wfv(1:4,irb)=0.d0
+            ! endif
            enddo
 
 c     compute sml and combine to generate molecular orbitals
@@ -83,8 +88,8 @@ c     compute sml and combine to generate molecular orbitals
 
               call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),y,dy,ddy,ddy_lap,dlapy,
      &             phin(l,k),dphin(l,k,:),d2phin(l,k),d2phin_all(1,1,l,k),d3phin(1,l,k),ider)
-                       
-            
+
+
               call n0_inc(l,k,ic)
            enddo
 

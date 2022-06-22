@@ -282,7 +282,7 @@ module trexio_read_data
         use vmc_mod,            only: NCOEF
         use ghostatom,          only: newghostype
         use const,              only: ipr
-        use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
+        use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmax
         use numbas,             only: allocate_numbas
         use coefs,              only: nbasis
         use numexp,             only: ae, ce, ab, allocate_numexp
@@ -300,8 +300,8 @@ module trexio_read_data
         use trexio
         use contrl_file,        only: backend
         use error,              only: trexio_error
-        use m_trexio_basis,     only: gnorm
 #endif
+        use m_trexio_basis,     only: gnorm
 
         implicit none
 
@@ -325,7 +325,7 @@ module trexio_read_data
         ! for local use.
         character(len=72), intent(in)   :: file_trexio
         character(len=128)              :: file_trexio_path
-        integer                         :: iostat, ic, ir, i, j, k, l, iunit, tcount1, tcount2, tcount3, tcount4, tcount5
+        integer                         :: iostat, i, j, k, iunit, tcount1, tcount2, tcount3, tcount4, tcount5
         logical                         :: exist
         type(atom_t)                    :: atoms
         integer                         :: counter, counter_shell, lower_shell, upper_shell, lower_prim, upper_prim
@@ -342,18 +342,32 @@ module trexio_read_data
         ! Grid related
         integer                         :: gridtype=3
         integer                         :: gridpoints=2000
-        real(dp)                        :: gridarg=1.003
-        real(dp)                        :: gridr0=20.0
-        real(dp)                        :: gridr0_save = 20.0
+        real(dp)                        :: gridarg=1.003d0
+        real(dp)                        :: gridr0=20.0d0
+        real(dp)                        :: gridr0_save = 20.0d0
         real(dp)                        :: rgrid(2000)  ! Grid points
         integer, dimension(nctype_tot)  :: icusp
-        real(dp)                        :: r, r2, r3, val
+        real(dp)                        :: r, r2
 
         integer, dimension(:), allocatable :: atom_index(:), shell_index_atom(:), nshells_per_atom(:)
         integer, dimension(:), allocatable :: prim_index_atom(:), nprims_per_atom(:)
         integer, dimension(:), allocatable :: unique_atom_index(:), shell_prim_correspondence(:)
         integer                         :: count
         character(len=2), allocatable   :: unique(:) ! unique symbols of atoms
+
+        ! needed for spline
+        real(dp), dimension(MRWF_PTS)       ::  x, work
+        real(dp), dimension(ncoef)          ::  y
+        real(dp), dimension(ncoef*ncoef)    ::  dmatr
+        real(dp), dimension(nbasis)         ::  l
+        integer, dimension(ncoef)           :: ipiv
+        integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
+        integer         :: iwf = 1
+        integer         :: info
+        real(dp)        :: val, dwf1, wfm, dwfn, dwfm, a, b, temp
+
+        ! rmax cutoff
+        real(dp)                            :: cutoff_rmax = 1.0d-12
 
         trex_basis_file = 0
 
@@ -455,11 +469,6 @@ module trexio_read_data
 
         call unique_elements(basis_num_shell, basis_nucleus_index, atom_index, count, nshells_per_atom, shell_index_atom)
 
-        ! print*, "Number of unique elements :: ", count
-        ! print*, "Unique elements index :: ", atom_index(1:count)
-        ! print*, "frequency :: ", nshells_per_atom(1:count)
-        ! print*, "result", shell_index_atom(1:count)
-
         ! count                     :: "Number of unique elements"
         ! atom_index(1:count)       :: "Unique elements index (not used here)"
         ! nshells_per_atom(1:count) :: "frequency or count of shells per atom"
@@ -495,20 +504,9 @@ module trexio_read_data
             if (i .ne. ncent_tot) prim_index_atom(i+1) = prim_index_atom(i) + nprims_per_atom(i)
         enddo
 
-        ! print *, "prim shell correspondence ", shell_prim_correspondence
-        ! print*, "prim_index_atom(1:ncent_tot) :: ", prim_index_atom(1:ncent_tot)
-        ! print*, "nprims_per_atom(1:ncent_tot) :: ", nprims_per_atom(1:ncent_tot)
-
-
         ! Obtain the number of unique types of atoms stored in the hdf5 file.
-        ! print*, "number of types of atoms :: ", nctype_tot
-        ! print*, "nucleus shell index ", basis_nucleus_index
         if (.not. allocated(unique)) allocate(unique(nctype_tot))
         if (.not. allocated(unique_atom_index)) allocate(unique_atom_index(nctype_tot))
-
-
-        ! print*, "symbol ", symbol
-        ! print*, "atom_type ", atomtyp
 
 
         tcount1 = 1; tcount2 = 1
@@ -518,20 +516,15 @@ module trexio_read_data
             if (any(unique == symbol(j) ))  then
                 cycle
             endif
-            ! print*, "j ", j, "symbol ", symbol(j)
             tcount1 = tcount1 + 1
             unique_atom_index(tcount1) = j
             unique(tcount1) = symbol(j)
         enddo
-        ! print *, "tcount1 ", tcount1, "unique ", unique(1:tcount1)
-        ! print*, "unique ", unique
-        ! print*, "unique atom index ", unique_atom_index
-
 
         ! start putting in the information in the arrays and variables
         gridtype=3
         gridpoints=2000
-        gridarg=1.003
+        gridarg=1.003d0
         gridr0=20.0
         gridr0_save = gridr0
 
@@ -539,25 +532,20 @@ module trexio_read_data
         call allocate_numbas()
         call allocate_numexp()
 
-        ! count                     :: "Number of unique elements"
-        ! atom_index(1:count)       :: "Unique elements index (not used here)"
-        ! nshells_per_atom(1:count) :: "frequency or count of shells per atom"
-        ! shell_index_atom(1:count) :: "index number of the shell for each atom"
-        ! The shells per atom can be obtained by accessing the shell_index_atom
-        ! for a given atom index by the slice of size frequency.
-
         if (gridtype .eq. 3) gridr0 = gridr0/(gridarg**(gridpoints-1)-1)
 
         ! Populate the rgrid array.
         do i = 1, gridpoints
             if (gridtype .eq. 1) then
-                rgrid(i) = gridr0 + i*gridarg
+                rgrid(i) = gridr0 + (i-1)*gridarg
             else if (gridtype .eq. 2) then
-                rgrid(i) = gridr0 * gridarg**i
+                rgrid(i) = gridr0 * gridarg**(i-1)
             else if (gridtype .eq. 3) then
-                rgrid(i) = gridr0*gridarg**i - gridr0
+                rgrid(i) = gridr0*gridarg**(i-1) - gridr0
             endif
+            x(i) = rgrid(i)
         enddo
+
 
         do ic = 1, nctype_tot            ! loop over all the unique atoms
             nrbas(ic)   = nshells_per_atom(shell_index_atom(ic))
@@ -577,8 +565,13 @@ module trexio_read_data
             write(ounit,'(A, T60, I0)')     " Icusp                 ::  ", icusp(ic)
             write(ounit,*)
 
-            ! Make space for the special case when nloc == 0
-
+            ! DEBUG following loop; Special case when nloc equals zero.
+            ! Make sure that the trexio file stores this information.
+            if(nloc.eq.0) then
+                do irb = 1, nrbas(ic)
+                    l(irb) = 0
+                enddo
+            endif
 
 
 
@@ -612,14 +605,130 @@ module trexio_read_data
                 enddo
             enddo
 
-            !Put in the read information in the x(ir) and rwf(ir,j,ic,iwf) arrays
-            do ir=1, nr(ic)
-                write(100+ic,'(10f12.6)',iostat=iostat) rgrid(ir),(rwf(ir,j,ic,1),j=1,nrbas(ic))
+
+!        Get the rmax value for each center. Set the cutoff to 10^-12
+!        Scanning from the bottom up to avoid false zeros.
+            rmax = x(nr(ic))  ! default rmax as the last point
+            ! do irb = 1, nrbas(ic)
+            !   do ir=nr(ic),1,-1
+            !     if (abs(rwf(ir,irb,ic,1)) .lt. cutoff_rmax ) then
+            !       rmax(irb, ic) = x(ir)
+            !     endif
+            !   enddo
+            ! enddo
+
+            write(ounit,*) "Rmax for center ic ", ic, " are ",  (rmax(irb, ic), irb=1, nrbas(ic))
+
+
+
+
+            do irb=1,nrbas(ic)
+
+                if(nloc.eq.0.and.l(irb).eq.0.and.icusp(ic).eq.1) then
+
+        ! c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
+                do ii=1,NCOEF-1
+                    dmatr(ii)=1.d0-znuc(ic)*x(ii)
+                enddo
+                y(1)=rwf(1,irb,ic,iwf)
+                ll=NCOEF-1
+                do jj=2,NCOEF-1
+                    y(jj)=rwf(jj,irb,ic,iwf)
+                    do ii=2,NCOEF-1
+                    ll=ll+1
+                    dmatr(ll)=x(ii)**jj
+                    enddo
+                enddo
+
+                call dgesv(NCOEF-1,1,dmatr,NCOEF-1,ipiv,y,NCOEF,info)
+                ce(1,irb,ic,iwf)=y(1)
+                ce(2,irb,ic,iwf)=-znuc(ic)*ce(1,irb,ic,iwf)
+                ce(3,irb,ic,iwf)=y(2)
+                ce(4,irb,ic,iwf)=y(3)
+                ce(5,irb,ic,iwf)=y(4)
+                else
+
+        ! c small radii wf(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
+                ll=0
+                do jj=1,NCOEF
+                    y(jj)=rwf(jj,irb,ic,iwf)
+                    do ii=1,NCOEF
+                    ll=ll+1
+                    dmatr(ll)=x(ii)**(jj-1)
+                    enddo
+                enddo
+                call dgesv(NCOEF,1,dmatr,NCOEF,ipiv,y,NCOEF,info)
+
+                do icoef=1,NCOEF
+                    ce(icoef,irb,ic,iwf)=y(icoef)
+                enddo
+                endif
+
+
+
+        ! c       if(ipr.gt.1) then
+                write(45,'(''basis = '',i4)') irb
+                write(45,'(''check the small radius expansion'')')
+                write(45,'(''coefficients'',1p10e22.10)') &
+                            (ce(iff,irb,ic,iwf),iff=1,NCOEF)
+                write(45,'(''check the small radius expansion'')')
+                write(45,'(''irad, rad, extrapolated value, correct value'')')
+                do ir=1,10
+                    val=ce(1,irb,ic,iwf)
+                    do icoef=2,NCOEF
+                    val=val+ce(icoef,irb,ic,iwf)*x(ir)**(icoef-1)
+                    enddo
+                    write(45,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
+                enddo
+        ! c       endif
+
+                dwf1=0.d0
+                do icoef=2,NCOEF
+                dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
+                enddo
+
+        ! c large radii wf(r)=a0*exp(-ak*r)
+        ! c       xm=0.5d0*(x(nr(ic))+x(nr(ic)-1))
+                wfm=0.5d0*(rwf(nr(ic),irb,ic,iwf)+rwf(nr(ic)-1,irb,ic,iwf))
+                dwfm=(rwf(nr(ic),irb,ic,iwf)-rwf(nr(ic)-1,irb,ic,iwf))/  &
+                (x(nr(ic))-x(nr(ic)-1))
+                if(dabs(wfm).gt.1.d-99) then
+                ae(2,irb,ic,iwf)=-dwfm/wfm
+                ae(1,irb,ic,iwf)=rwf(nr(ic),irb,ic,iwf)*    &
+                                dexp(ae(2,irb,ic,iwf)*x(nr(ic)))
+                dwfn=-ae(2,irb,ic,iwf)*rwf(nr(ic),irb,ic,iwf)
+                else
+                ae(1,irb,ic,iwf)=0.d0
+                ae(2,irb,ic,iwf)=0.d0
+                dwfn=0.d0
+                endif
+
+        ! Nonzero basis at the boundary : Ravindra Shinde
+                if(rwf(nr(ic),irb,ic,iwf).gt.1.d-12) then
+                ! call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ab(1,irb,ic,iwf), ab(2,irb,ic,iwf))
+                ! write(45, *) 'DEBUG :: exp_fit: ', ab(1,irb,ic,iwf), ab(2,irb,ic,iwf)
+                endif
+
+
+        ! c       if(ipr.gt.1) then
+                write(45,'(''check the large radius expansion'')')
+                write(45,'(''a0,ak'',1p2e22.10)')     &
+                                    ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
+                write(45,'(''irad, rad, extrapolated value, correct value,  DEBUG new fit'')')
+                do ir=1,10
+                    val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
+                    temp = ab(1,irb,ic,iwf)*dexp(-ab(2,irb,ic,iwf)*x(nr(ic)-ir))
+                    write(45,'(i2,1p4e22.14)')      &
+                    ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf), temp
+                enddo
+                write(45,*) 'dwf1,dwfn',dwf1,dwfn
+        ! c       endif
+                if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+
+                ! print *, "rwf 1, 100, 500, 1000", rwf(1,irb,ic,iwf), rwf(100,irb,ic,iwf), rwf(500,irb,ic,iwf), rwf(1000,irb,ic,iwf)
+                call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
             enddo
-
-        enddo
-
-
+        enddo ! loop on ic : the unique atom types
     end subroutine read_trexio_basis_file
 
 
@@ -869,6 +978,7 @@ module trexio_read_data
 
         read_buf_det_size = int64_num
         offset_det_read = 0
+#if defined(TREXIO_FOUND)
         do jj = 1, determinant_num
             rc = trexio_read_determinant_list(trex_determinant_file, offset_det_read, read_buf_det_size, orb_list(jj))
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_list failed', __FILE__, __LINE__)
@@ -885,7 +995,7 @@ module trexio_read_data
 
             offset_det_read = jj
         enddo
-
+#endif
 
         write(ounit,*) '-----------------------------------------------------------------------'
         write(ounit,*)

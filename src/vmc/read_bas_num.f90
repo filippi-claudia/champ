@@ -21,10 +21,10 @@ contains
 
       use numbas_mod, only: MRWF, MRWF_PTS
       use vmc_mod, only: NCOEF
-      use atom, only: znuc, nctype
+      use atom, only: znuc, nctype, nctype_tot
       use ghostatom, only: newghostype
       use const, only: ipr
-      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
+      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmax
       use numbas, only: allocate_numbas
       use coefs, only: nbasis
       use numexp, only: ae, ce, ab, allocate_numexp
@@ -234,7 +234,7 @@ contains
         call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn,  &
         d2rwf(1,irb,ic,iwf),work)
 
-        if (wid) close(iunit)
+
         enddo
       enddo
 
