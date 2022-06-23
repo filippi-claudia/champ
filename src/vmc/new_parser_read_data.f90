@@ -243,7 +243,7 @@ subroutine read_molecule_file(file_molecule)
     write(ounit,*) '-----------------------------------------------------------------------'
 
     do j= 1, ncent
-        write(ounit,'(A4, 2x, 3F12.6, 2x, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
+        write(ounit,'(A4, 2x, 3F12.8, 2x, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
     enddo
 
     write(ounit,*) '-----------------------------------------------------------------------'

@@ -155,7 +155,7 @@ module trexio_read_data
         write(ounit,*) '-----------------------------------------------------------------------'
 
         do j= 1, ncent
-            write(ounit,'(A4, 2x, 3F12.6, 2x, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
+            write(ounit,'(A4, 2x, 3F12.8, 2x, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
         enddo
 
         write(ounit,*) '-----------------------------------------------------------------------'
@@ -567,11 +567,11 @@ module trexio_read_data
 
             ! DEBUG following loop; Special case when nloc equals zero.
             ! Make sure that the trexio file stores this information.
-            if(nloc.eq.0) then
-                do irb = 1, nrbas(ic)
-                    l(irb) = 0
-                enddo
-            endif
+!            if(nloc.eq.0) then
+!                do irb = 1, nrbas(ic)
+!                    l(irb) = 0
+!                enddo
+!            endif
 
 
 
@@ -603,6 +603,8 @@ module trexio_read_data
                     rwf(i,counter_shell,ic,1) = val
                     counter_shell = counter_shell + 1
                 enddo
+
+            write(100,*), i, r, rwf(i,irb,ic,iwf)
             enddo
 
 
@@ -725,7 +727,6 @@ module trexio_read_data
         ! c       endif
                 if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
-                ! print *, "rwf 1, 100, 500, 1000", rwf(1,irb,ic,iwf), rwf(100,irb,ic,iwf), rwf(500,irb,ic,iwf), rwf(1000,irb,ic,iwf)
                 call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
             enddo
         enddo ! loop on ic : the unique atom types
@@ -1018,7 +1019,7 @@ module trexio_read_data
 #endif
 
         use pseudo_mod,         only: MPS_L, MGAUSS, MPS_QUAD
-        use atom,               only: nctype, atomtyp
+        use atom,               only: nctype, atomtyp, symbol, nctype_tot, ncent_tot, ncent
         use gauss_ecp,          only: ecp_coef, ecp_exponent, necp_power, necp_term
         use gauss_ecp,          only: allocate_gauss_ecp
         use pseudo,             only: lpot
@@ -1051,13 +1052,22 @@ module trexio_read_data
         real(dp), allocatable           :: flat_ecp_coefficient(:)
         real(dp), allocatable           :: flat_ecp_exponent(:)
 
+        integer, allocatable            :: unique_atom_index(:)
+        character(len=2), allocatable   :: unique(:) ! unique symbols of atoms
+
+        integer, dimension(:), allocatable :: atom_index(:), component_index_atom(:), components_per_atom(:)
+        integer, dimension(:), allocatable :: nterms_per_component(:), term_index_component(:)
+        integer                         :: count, lower_comp, upper_comp, counter_comp
+
+
+
 
         !   Formatting
         character(len=100)              :: int_format     = '(A, T60, I0)'
         character(len=100)              :: float_format   = '(A, T60, f12.8)'
         character(len=100)              :: string_format  = '(A, T60, A)'
 
-        integer         :: i, ic, idx, l
+        integer         :: i, ic, idx, l, tcount1, tcount2, j
         integer         :: iunit, iostat, counter = 0
 
         character*80 label
@@ -1091,9 +1101,9 @@ module trexio_read_data
         call bcast(ecp_num)
         allocate (flat_ecp_ang_mom(ecp_num))
         allocate (flat_ecp_nucleus_index(ecp_num))
-        allocate (flat_ecp_max_ang_mom_plus_1(ecp_num))
+        allocate (flat_ecp_max_ang_mom_plus_1(ncent_tot))
         allocate (flat_ecp_power(ecp_num))
-        allocate (flat_ecp_z_core(ecp_num))
+        allocate (flat_ecp_z_core(ncent_tot))
         allocate (flat_ecp_coefficient(ecp_num))
         allocate (flat_ecp_exponent(ecp_num))
 
@@ -1123,9 +1133,97 @@ module trexio_read_data
         call bcast(flat_ecp_coefficient)
         call bcast(flat_ecp_exponent)
 
+        ! Obtain the number of unique types of atoms stored in the hdf5 file.
+        if (.not. allocated(unique)) allocate(unique(nctype_tot))
+        if (.not. allocated(unique_atom_index)) allocate(unique_atom_index(nctype_tot))
 
 
-        return
+        tcount1 = 1
+        unique_atom_index(1) = 1
+        unique(1) = symbol(1)
+        do j= 2, ncent_tot
+            if (any(unique == symbol(j) ))  then
+                cycle
+            endif
+            tcount1 = tcount1 + 1
+            unique_atom_index(tcount1) = j
+            unique(tcount1) = symbol(j)
+        enddo
+
+        if (.not. allocated(lpot)) allocate (lpot(nctype))
+        call allocate_gauss_ecp()
+
+        allocate(atom_index(ecp_num))
+        allocate(components_per_atom(ncent_tot))
+        allocate(component_index_atom(ncent_tot))
+
+        call unique_elements(ecp_num, flat_ecp_nucleus_index, atom_index, count, components_per_atom, component_index_atom)
+
+        ! count                     :: "Number of unique elements". Not used
+        ! atom_index(1:count)       :: "Unique elements index (not used here)"
+        ! components_per_atom(1:count) :: "frequency or count of shells per atom"
+        ! component_index_atom(1:count) :: "index number of the shell for each atom"
+        ! The components per atom can be obtained by accessing the component_index_atom
+        ! for a given atom index by the slice of size frequency.
+
+
+        do ic = 1, nctype_tot
+
+            ! loop over all the primitives for the unique atom
+            ! The lower and upper indices of primitive indices
+            lower_comp = component_index_atom(unique_atom_index(ic))
+            upper_comp = component_index_atom(unique_atom_index(ic)) + components_per_atom(unique_atom_index(ic)) - 1
+
+            lpot(ic) = flat_ecp_max_ang_mom_plus_1(ic) + 1
+
+            write(ounit,'(a,i4,a,a)') 'ECP for atom type ', ic, ' Element = ', unique(ic)
+            write(ounit,*) '-----------------------------------------------------------------------'
+            write(ounit,*)
+            write(ounit,'(a,i4,a,i4)') 'ECP for atom type ', ic, ' lpot = ', lpot(ic)
+
+            if(lpot(ic).gt.MPS_L) call fatal_error('READPS_GAUSS: increase MPS_L')
+
+
+            allocate(nterms_per_component(lpot(ic)))
+            allocate(term_index_component(lpot(ic)))
+
+            counter_comp = 0
+            do l = 1, lpot(ic)
+                if(l.eq.1)then
+                    idx=lpot(ic)
+                else
+                    idx=l-1
+                endif
+
+                call unique_elements(components_per_atom(ic), flat_ecp_ang_mom(lower_comp:upper_comp), atom_index, count, nterms_per_component, term_index_component)
+                necp_term(idx,ic) = nterms_per_component(l)
+                write(ounit,*)
+                write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
+
+                do i=1,necp_term(idx,ic)
+                    ecp_coef(i,idx,ic) = flat_ecp_coefficient(lower_comp + counter_comp)
+                    necp_power(i,idx,ic) = flat_ecp_power(lower_comp + counter_comp) + 2
+                    ecp_exponent(i,idx,ic) = flat_ecp_exponent(lower_comp + counter_comp)
+                    counter_comp = counter_comp + 1
+
+                    write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic), &
+                    necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
+
+                enddo
+            enddo  ! loop on l upto lpot(ic)
+            deallocate(nterms_per_component)
+            deallocate(term_index_component)
+            write(ounit,*) '-----------------------------------------------------------------------'
+            write(ounit,*)
+        enddo
+      if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
+      if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
+      if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
+      if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
+
+      call gesqua(nquad,xq0,yq0,zq0,wq)
+      return
+
       end subroutine read_trexio_ecp_file
 
 

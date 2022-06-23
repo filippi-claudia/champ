@@ -77,7 +77,7 @@ subroutine parser
   use bparm, 		        only: nocuspb, nspin2b
   use casula, 		      only: i_vpsp, icasula
   use coefs, 		        only: coef, nbasis, norb, next_max
-  use optorb,                 only: irrep
+  use optorb,           only: irrep
   use const2, 		      only: deltar, deltat
   use contr2, 		      only: ianalyt_lap, ijas
   use contr2, 		      only: isc
@@ -641,6 +641,8 @@ subroutine parser
     ! nquad :: number of quadrature points
     write(ounit,*)
     write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
+  elseif ( fdf_load_defined('trexio') ) then
+    call read_trexio_ecp_file(file_trexio)
   elseif (nloc .eq. 0) then
     write(ounit,'(a)') "Warning:: Is this an all electron calculation?"
   else
@@ -959,7 +961,7 @@ subroutine parser
     write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
 !    if( mode(1:3) == 'vmc' ) error stop
     ! if no symmetry file present, assume same symmetry for all orbitals
-    if (.not. allocated(irrep)) allocate (irrep(norb_tot)) 
+    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
     irrep(1:norb_tot) = 1
     write(ounit,*)
     write(ounit,*) '____________________________________________________________________'
@@ -1100,6 +1102,15 @@ subroutine parser
     !   call fdf_read_basis_block(bfdf)
     elseif ( fdf_load_defined('trexio') ) then
       call read_trexio_basis_file(file_trexio)
+      ! See if this is really allocated at this point
+!      if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
+!      if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
+!      ibas0(1)=1
+!      ibas1(1)=nbastyp(iwctype(1))
+!      do ic=2,ncent
+!        ibas0(ic)=ibas1(ic-1)+1
+!        ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
+!      enddo
     else
       write(errunit,'(a)') "Error:: No information about basis provided in the block."
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
