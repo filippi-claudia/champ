@@ -1103,14 +1103,14 @@ subroutine parser
     elseif ( fdf_load_defined('trexio') ) then
       call read_trexio_basis_file(file_trexio)
       ! See if this is really allocated at this point
-!      if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
-!      if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
-!      ibas0(1)=1
-!      ibas1(1)=nbastyp(iwctype(1))
-!      do ic=2,ncent
-!        ibas0(ic)=ibas1(ic-1)+1
-!        ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
-!      enddo
+     if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
+     if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
+     ibas0(1)=1
+     ibas1(1)=nbastyp(iwctype(1))
+     do ic=2,ncent
+       ibas0(ic)=ibas1(ic-1)+1
+       ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
+     enddo
     else
       write(errunit,'(a)') "Error:: No information about basis provided in the block."
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
@@ -1263,8 +1263,8 @@ subroutine parser
       nciterm=0
     endif
 
-    write(ounit,int_format)  " CI number of coefficients ", nciterm
-    write(ounit,int_format)  " nciprim ", nciprim
+    ! write(ounit,int_format)  " CI number of coefficients ", nciterm
+    ! write(ounit,int_format)  " nciprim ", nciprim
     mxciterm = nciprim  ! validate this change debug ravindra
 
     if((ncsf.eq.0) .and. (nciprim.gt.mxciterm) ) call fatal_error('INPUT: nciprim gt mxciterm')

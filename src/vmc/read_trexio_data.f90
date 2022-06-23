@@ -282,7 +282,7 @@ module trexio_read_data
         use vmc_mod,            only: NCOEF
         use ghostatom,          only: newghostype
         use const,              only: ipr
-        use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmax
+        use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf!, rmax
         use numbas,             only: allocate_numbas
         use coefs,              only: nbasis
         use numexp,             only: ae, ce, ab, allocate_numexp
@@ -320,14 +320,10 @@ module trexio_read_data
         integer,allocatable             :: ao_shell(:)
         real(dp),allocatable            :: ao_normalization(:)
 
-        logical                         :: ao_cartesian
-
         ! for local use.
         character(len=72), intent(in)   :: file_trexio
         character(len=128)              :: file_trexio_path
-        integer                         :: iostat, i, j, k, iunit, tcount1, tcount2, tcount3, tcount4, tcount5
-        logical                         :: exist
-        type(atom_t)                    :: atoms
+        integer                         :: i, j, k, tcount1, tcount2, tcount3, tcount4
         integer                         :: counter, counter_shell, lower_shell, upper_shell, lower_prim, upper_prim
 
         ! trexio
@@ -336,8 +332,6 @@ module trexio_read_data
 
         !   Formatting
         character(len=128)              :: int_format     = '(A, T60, I0)'
-        character(len=128)              :: float_format   = '(A, T60, f12.8)'
-        character(len=128)              :: string_format  = '(A, T60, A128)'
 
         ! Grid related
         integer                         :: gridtype=3
@@ -364,7 +358,7 @@ module trexio_read_data
         integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
         integer         :: iwf = 1
         integer         :: info
-        real(dp)        :: val, dwf1, wfm, dwfn, dwfm, a, b, temp
+        real(dp)        :: val, dwf1, wfm, dwfn, dwfm, temp
 
         ! rmax cutoff
         real(dp)                            :: cutoff_rmax = 1.0d-12
@@ -461,8 +455,8 @@ module trexio_read_data
         ! Get the number of shells per atom (information needed to reshuffle AOs)
 
         allocate(atom_index(basis_num_shell))
-        allocate(nshells_per_atom(basis_num_shell))
-        allocate(shell_index_atom(basis_num_shell))
+        allocate(nshells_per_atom(ncent_tot))
+        allocate(shell_index_atom(ncent_tot))
 
 
 
@@ -546,9 +540,9 @@ module trexio_read_data
             x(i) = rgrid(i)
         enddo
 
+        do ic = 1, nctype + newghostype            ! loop over all the unique atoms
 
-        do ic = 1, nctype_tot            ! loop over all the unique atoms
-            nrbas(ic)   = nshells_per_atom(shell_index_atom(ic))
+            nrbas(ic)   = nshells_per_atom(ic)
             igrid(ic)   = gridtype       ! grid type default is 3
             nr(ic)      = gridpoints     ! number of grid points default is 2000
             arg(ic)     = gridarg        ! grid spacing default is 1.003
@@ -604,13 +598,12 @@ module trexio_read_data
                     counter_shell = counter_shell + 1
                 enddo
 
-            write(100,*), i, r, rwf(i,irb,ic,iwf)
             enddo
 
 
 !        Get the rmax value for each center. Set the cutoff to 10^-12
 !        Scanning from the bottom up to avoid false zeros.
-            rmax = x(nr(ic))  ! default rmax as the last point
+            ! rmax = x(nr(ic))  ! default rmax as the last point
             ! do irb = 1, nrbas(ic)
             !   do ir=nr(ic),1,-1
             !     if (abs(rwf(ir,irb,ic,1)) .lt. cutoff_rmax ) then
@@ -619,8 +612,7 @@ module trexio_read_data
             !   enddo
             ! enddo
 
-            write(ounit,*) "Rmax for center ic ", ic, " are ",  (rmax(irb, ic), irb=1, nrbas(ic))
-
+            ! write(ounit,*) "Rmax for center ic ", ic, " are ",  (rmax(irb, ic), irb=1, nrbas(ic))
 
 
 
@@ -707,10 +699,9 @@ module trexio_read_data
 
         ! Nonzero basis at the boundary : Ravindra Shinde
                 if(rwf(nr(ic),irb,ic,iwf).gt.1.d-12) then
-                ! call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ab(1,irb,ic,iwf), ab(2,irb,ic,iwf))
-                ! write(45, *) 'DEBUG :: exp_fit: ', ab(1,irb,ic,iwf), ab(2,irb,ic,iwf)
+                    call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ab(1,irb,ic,iwf), ab(2,irb,ic,iwf))
+                    write(45, *) 'DEBUG :: exp_fit: ', ab(1,irb,ic,iwf), ab(2,irb,ic,iwf)
                 endif
-
 
         ! c       if(ipr.gt.1) then
                 write(45,'(''check the large radius expansion'')')
@@ -728,7 +719,8 @@ module trexio_read_data
                 if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
                 call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
-            enddo
+
+            enddo ! loop on irb : number of radial shells
         enddo ! loop on ic : the unique atom types
     end subroutine read_trexio_basis_file
 
@@ -1150,7 +1142,7 @@ module trexio_read_data
             unique(tcount1) = symbol(j)
         enddo
 
-        if (.not. allocated(lpot)) allocate (lpot(nctype))
+        if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
         call allocate_gauss_ecp()
 
         allocate(atom_index(ecp_num))
