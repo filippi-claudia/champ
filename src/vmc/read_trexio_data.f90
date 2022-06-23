@@ -1183,9 +1183,9 @@ module trexio_read_data
 
             if(lpot(ic).gt.MPS_L) call fatal_error('READPS_GAUSS: increase MPS_L')
 
+            if (.not. allocated(nterms_per_component)) allocate(nterms_per_component(lpot(ic)))
+            if (.not. allocated(term_index_component)) allocate(term_index_component(lpot(ic)))
 
-            allocate(nterms_per_component(lpot(ic)))
-            allocate(term_index_component(lpot(ic)))
 
             counter_comp = 0
             do l = 1, lpot(ic)
@@ -1211,8 +1211,8 @@ module trexio_read_data
 
                 enddo
             enddo  ! loop on l upto lpot(ic)
-            deallocate(nterms_per_component)
-            deallocate(term_index_component)
+            if (allocated(nterms_per_component)) deallocate(nterms_per_component)
+            if (allocated(term_index_component)) deallocate(term_index_component)
             write(ounit,*) '-----------------------------------------------------------------------'
             write(ounit,*)
         enddo
