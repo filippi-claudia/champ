@@ -194,8 +194,9 @@ subroutine parser
 
 #ifdef QMCKL_FOUND
   use qmckl
-#endif
   use const,      only: use_qmckl, qmckl_ctx
+#endif
+
   
 !
   implicit none
