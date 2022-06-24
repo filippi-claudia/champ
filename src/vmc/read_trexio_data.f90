@@ -1,5 +1,5 @@
 module trexio_read_data
-    use error, only : fatal_error
+    use error,                  only: fatal_error
     use precision_kinds,        only: dp
     use array_utils,            only: unique_elements
 
@@ -1011,13 +1011,13 @@ module trexio_read_data
 #endif
 
         use pseudo_mod,         only: MPS_L, MGAUSS, MPS_QUAD
-        use atom,               only: nctype, atomtyp, symbol, nctype_tot, ncent_tot, ncent
+        use atom,               only: symbol, nctype_tot, ncent_tot
         use gauss_ecp,          only: ecp_coef, ecp_exponent, necp_power, necp_term
         use gauss_ecp,          only: allocate_gauss_ecp
         use pseudo,             only: lpot
         use qua,                only: nquad, wq, xq0, yq0, zq0
-        use general,            only: pooldir, filename, pp_id, filenames_ps_gauss
-        use contrl_file,        only: ounit, errunit
+        use general,            only: pooldir
+        use contrl_file,        only: ounit
         use rotqua_mod,         only: gesqua
 
         use precision_kinds,    only: dp
@@ -1026,9 +1026,8 @@ module trexio_read_data
 
         !   local use
         character(len=72), intent(in)   :: file_trexio
-        character(len=40)               :: temp1, temp2, temp3, temp4
-        character(len=80)               :: comment, file_trexio_path
-        logical                         :: exist, skip = .true.
+        character(len=80)               :: file_trexio_path
+
 
         ! trexio
         integer(8)                      :: trex_ecp_file
@@ -1052,17 +1051,7 @@ module trexio_read_data
         integer                         :: count, lower_comp, upper_comp, counter_comp
 
 
-
-
-        !   Formatting
-        character(len=100)              :: int_format     = '(A, T60, I0)'
-        character(len=100)              :: float_format   = '(A, T60, f12.8)'
-        character(len=100)              :: string_format  = '(A, T60, A)'
-
-        integer         :: i, ic, idx, l, tcount1, tcount2, j
-        integer         :: iunit, iostat, counter = 0
-
-        character*80 label
+        integer         :: i, ic, idx, l, tcount1, j
 
         trex_ecp_file = 0
 
@@ -1145,9 +1134,9 @@ module trexio_read_data
         if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
         call allocate_gauss_ecp()
 
-        allocate(atom_index(ecp_num))
-        allocate(components_per_atom(ncent_tot))
-        allocate(component_index_atom(ncent_tot))
+        allocate(atom_index(ecp_num*2))
+        allocate(components_per_atom(ncent_tot*2))
+        allocate(component_index_atom(ncent_tot*2))
 
         call unique_elements(ecp_num, flat_ecp_nucleus_index, atom_index, count, components_per_atom, component_index_atom)
 
@@ -1208,15 +1197,22 @@ module trexio_read_data
             write(ounit,*) '-----------------------------------------------------------------------'
             write(ounit,*)
         enddo
-      if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
-      if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
-      if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
-      if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
 
-      call gesqua(nquad,xq0,yq0,zq0,wq)
-      return
+        deallocate(flat_ecp_ang_mom)
+        deallocate(flat_ecp_nucleus_index)
+        deallocate(flat_ecp_max_ang_mom_plus_1)
+        deallocate(flat_ecp_power)
+        deallocate(flat_ecp_z_core)
+        deallocate(flat_ecp_coefficient)
+        deallocate(flat_ecp_exponent)
 
-      end subroutine read_trexio_ecp_file
+        if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
+        if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
+        if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
+        if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
+
+        call gesqua(nquad,xq0,yq0,zq0,wq)
+    end subroutine read_trexio_ecp_file
 
 
 end module

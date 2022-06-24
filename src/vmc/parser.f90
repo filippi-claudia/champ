@@ -643,6 +643,8 @@ subroutine parser
     write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
   elseif ( fdf_load_defined('trexio') ) then
     call read_trexio_ecp_file(file_trexio)
+    write(ounit,*)
+    write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
   elseif (nloc .eq. 0) then
     write(ounit,'(a)') "Warning:: Is this an all electron calculation?"
   else
