@@ -339,7 +339,7 @@ module trexio_read_data
         real(dp)                        :: gridarg=1.003d0
         real(dp)                        :: gridr0=20.0d0
         real(dp)                        :: gridr0_save = 20.0d0
-        real(dp)                        :: rgrid(2000)  ! Grid points
+        real(kind=dp), dimension(2000)  :: rgrid  ! Grid points
         integer, dimension(nctype_tot)  :: icusp
         real(dp)                        :: r, r2
 
@@ -455,8 +455,8 @@ module trexio_read_data
         ! Get the number of shells per atom (information needed to reshuffle AOs)
 
         allocate(atom_index(basis_num_shell))
-        allocate(nshells_per_atom(ncent_tot))
-        allocate(shell_index_atom(ncent_tot))
+        allocate(nshells_per_atom(ncent_tot*10))
+        allocate(shell_index_atom(ncent_tot*10))
 
 
 
@@ -519,7 +519,7 @@ module trexio_read_data
         gridtype=3
         gridpoints=2000
         gridarg=1.003d0
-        gridr0=20.0
+        gridr0=20.0d0
         gridr0_save = gridr0
 
         ! Do the necessary allocation for the numerical basis set
@@ -722,6 +722,37 @@ module trexio_read_data
 
             enddo ! loop on irb : number of radial shells
         enddo ! loop on ic : the unique atom types
+
+        ! ! debug part
+        ! do ic = 1, nctype_tot
+        !     do ir=1,nr(ic)
+        !         write(200+ic,'(6(E22.15,1x))') x(ir),(rwf(ir,irb,ic,iwf),irb=1,nrbas(ic))
+        !     enddo
+        ! enddo
+
+
+        ! Do the deallocations of local arrays
+        if (allocated(unique)) deallocate(unique)
+        if (allocated(unique_atom_index)) deallocate(unique_atom_index)
+
+        if (allocated(nprims_per_atom)) deallocate(nprims_per_atom)
+        if (allocated(prim_index_atom)) deallocate(prim_index_atom)
+        if (allocated(shell_prim_correspondence)) deallocate(shell_prim_correspondence)
+
+        if (allocated(atom_index)) deallocate(atom_index)
+        if (allocated(nshells_per_atom)) deallocate(nshells_per_atom)
+        if (allocated(shell_index_atom)) deallocate(shell_index_atom)
+
+        if (allocated(basis_nucleus_index))    deallocate(basis_nucleus_index)
+        if (allocated(basis_shell_index))      deallocate(basis_shell_index)
+        if (allocated(basis_shell_ang_mom))    deallocate(basis_shell_ang_mom)
+        if (allocated(basis_shell_factor))     deallocate(basis_shell_factor)
+        if (allocated(basis_exponent))         deallocate(basis_exponent)
+        if (allocated(basis_coefficient))      deallocate(basis_coefficient)
+        if (allocated(basis_prim_factor))      deallocate(basis_prim_factor)
+        if (allocated(ao_shell))               deallocate(ao_shell)
+        if (allocated(ao_normalization))       deallocate(ao_normalization)
+
     end subroutine read_trexio_basis_file
 
 
@@ -1134,9 +1165,9 @@ module trexio_read_data
         if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
         call allocate_gauss_ecp()
 
-        allocate(atom_index(ecp_num*2))
-        allocate(components_per_atom(ncent_tot*2))
-        allocate(component_index_atom(ncent_tot*2))
+        allocate(atom_index(ecp_num), source=0)
+        allocate(components_per_atom(ncent_tot*10), source=0)
+        allocate(component_index_atom(ncent_tot*10), source=0)
 
         call unique_elements(ecp_num, flat_ecp_nucleus_index, atom_index, count, components_per_atom, component_index_atom)
 
@@ -1176,6 +1207,7 @@ module trexio_read_data
                     idx=l-1
                 endif
 
+                atom_index = 0
                 call unique_elements(components_per_atom(ic), flat_ecp_ang_mom(lower_comp:upper_comp), atom_index, count, nterms_per_component, term_index_component)
                 necp_term(idx,ic) = nterms_per_component(l)
                 write(ounit,*)
@@ -1197,6 +1229,10 @@ module trexio_read_data
             write(ounit,*) '-----------------------------------------------------------------------'
             write(ounit,*)
         enddo
+
+        deallocate(atom_index)
+        deallocate(components_per_atom)
+        deallocate(component_index_atom)
 
         deallocate(flat_ecp_ang_mom)
         deallocate(flat_ecp_nucleus_index)
