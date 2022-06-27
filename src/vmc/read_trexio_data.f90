@@ -900,7 +900,7 @@ module trexio_read_data
         character(len=72), intent(in)   :: file_trexio
         character(len=40)               :: temp1, temp2, temp3, temp4
         character(len=80)               :: comment, file_trexio_path
-        integer                         :: iostat, i, j, k, iunit
+        integer                         :: iostat, i, j, k, iunit, jj
         logical                         :: exist
         character(len=2), allocatable   :: unique(:)
 
@@ -915,9 +915,8 @@ module trexio_read_data
 
         ! determinant data (debugging)
         integer*8, allocatable :: det_list(:)
-        integer*8 :: read_buf_det_size      ! how many do you want
-        integer*8 :: jj, offset_det_read = 0    ! How many first you want to skip
-        integer*8 :: chunk_det_read = 1
+        integer*8 :: read_buf_det_size   ! how many do you want
+        integer*8 :: offset_det_read = 0    ! How many first you want to skip
         integer*8 :: determinant_num
         integer   :: int64_num           ! Number of intergers required per spin component
         ! orbital lists (debugging)
@@ -988,8 +987,8 @@ module trexio_read_data
         write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,1,nwftype), i=1, read_buf_det_size)
 
 !       allocate the orbital mapping array
-        if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
-        allocate(orb_list(ndet))
+        if (.not. allocated(iworbd)) allocate(iworbd(nelec, determinant_num))
+        allocate(orb_list(determinant_num))
         allocate(orb_list_up(int64_num))
         allocate(orb_list_dn(int64_num))
 
@@ -1000,7 +999,7 @@ module trexio_read_data
         write(ounit, *)
         ! convert one given determinant into lists of orbitals
 
-        read_buf_det_size = int64_num
+        read_buf_det_size = 1_8
         offset_det_read = 0
 #if defined(TREXIO_FOUND)
         do jj = 1, determinant_num
@@ -1020,6 +1019,10 @@ module trexio_read_data
             offset_det_read = jj
         enddo
 #endif
+
+        deallocate(orb_list)
+        deallocate(orb_list_up)
+        deallocate(orb_list_dn)
 
         write(ounit,*) '-----------------------------------------------------------------------'
         write(ounit,*)
