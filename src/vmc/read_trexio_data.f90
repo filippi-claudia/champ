@@ -872,21 +872,20 @@ module trexio_read_data
         !! @date 25 May 2022
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
-        use, intrinsic :: iso_fortran_env, only: iostat_eor
-        use contrl_file,    only: ounit, errunit
+        use contrl_file,        only: ounit, errunit
         use general,            only: pooldir
-        use dets,           only: cdet, ndet
-        use dorb_m,         only: iworbd
-        use coefs,          only: norb
-        use inputflags,     only: ideterminants
-        use wfsec,          only: nwftype
-        use csfs,           only: nstates
-        use mstates_mod,    only: MSTATES
-        use general,        only: pooldir
-        use elec,           only: ndn, nup
-        use const,          only: nelec
-        use method_opt,     only: method
-        use precision_kinds, only: dp
+        use dets,               only: cdet, ndet
+        use dorb_m,             only: iworbd
+        use coefs,              only: norb
+        use inputflags,         only: ideterminants
+        use wfsec,              only: nwftype
+        use csfs,               only: nstates
+        use mstates_mod,        only: MSTATES
+        use general,            only: pooldir
+        use elec,               only: ndn, nup
+        use const,              only: nelec
+        use method_opt,         only: method
+        use precision_kinds,    only: dp
 
 #if defined(TREXIO_FOUND)
         use trexio
@@ -898,7 +897,7 @@ module trexio_read_data
 
         !   local use
         character(len=72), intent(in)   :: file_trexio
-        character(len=40)               :: temp1, temp2, temp3, temp4
+        character(len=40)               :: temp
         character(len=80)               :: comment, file_trexio_path
         integer                         :: iostat, i, j, k, iunit, jj
         logical                         :: exist
@@ -913,16 +912,13 @@ module trexio_read_data
         character(len=100)              :: float_format   = '(A, T60, f12.8)'
         character(len=100)              :: string_format  = '(A, T60, A)'
 
-        ! determinant data (debugging)
-        integer*8, allocatable :: det_list(:)
-        integer*8 :: read_buf_det_size   ! how many do you want
-        integer*8 :: offset_det_read = 0    ! How many first you want to skip
-        integer*8 :: determinant_num
-        integer   :: int64_num           ! Number of intergers required per spin component
-        ! orbital lists (debugging)
-        integer*4, allocatable :: orb_list_up(:), orb_list_dn(:)
-        integer*8, allocatable :: orb_list(:)
-        integer*4 :: occ_num_up, occ_num_dn, occupied_num
+        ! determinant data
+        integer*8, allocatable          :: buffer(:,:,:)
+        integer(8)                      :: offset, icount, BUFSIZE
+        integer                         :: int64_num, m           ! Number of intergers required per spin component
+        integer*8                       :: determinant_num
+        integer*4, allocatable          :: orb_list_up(:), orb_list_dn(:)
+        integer*4                       :: occ_num_up, occ_num_dn, occupied_num
 
 
         trex_determinant_file = 0
@@ -969,13 +965,16 @@ module trexio_read_data
             if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,nwftype))
         endif
 
-        read_buf_det_size = determinant_num
+        BUFSIZE = determinant_num
+        offset = 0_8
 
-        allocate(det_list(ndet))
+        allocate(buffer(int64_num, 2, BUFSIZE))
+        allocate(orb_list_up(int64_num*64), orb_list_dn(int64_num*64))
+
 
         if (wid) then
 #if defined(TREXIO_FOUND)
-        rc = trexio_read_determinant_coefficient(trex_determinant_file, offset_det_read, read_buf_det_size, cdet(:,1,nwftype))
+        rc = trexio_read_determinant_coefficient(trex_determinant_file, offset, BUFSIZE, cdet(:,1,nwftype))
         call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_coeff failed', __FILE__, __LINE__)
 #endif
         endif
@@ -984,13 +983,10 @@ module trexio_read_data
 
         write(ounit,*)
         write(ounit,*) " Determinant coefficients "
-        write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,1,nwftype), i=1, read_buf_det_size)
+        write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,1,nwftype), i=1, BUFSIZE)
 
 !       allocate the orbital mapping array
         if (.not. allocated(iworbd)) allocate(iworbd(nelec, determinant_num))
-        allocate(orb_list(determinant_num))
-        allocate(orb_list_up(int64_num))
-        allocate(orb_list_dn(int64_num))
 
         write(ounit, *)
         write(ounit, *) "Orbitals <--> Determinants mapping read from a trexio file :: "
@@ -999,28 +995,37 @@ module trexio_read_data
         write(ounit, *)
         ! convert one given determinant into lists of orbitals
 
-        read_buf_det_size = 1_8
-        offset_det_read = 0
+        offset = 0_8
+        icount = BUFSIZE
+
 #if defined(TREXIO_FOUND)
-        do jj = 1, determinant_num
-            rc = trexio_read_determinant_list(trex_determinant_file, offset_det_read, read_buf_det_size, orb_list(jj))
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_list failed', __FILE__, __LINE__)
-            rc = trexio_to_orbital_list_up_dn(int64_num, orb_list(jj), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_to_orbital_list_up_dn filed', __FILE__, __LINE__)
-            write(ounit,'(<occ_num_up>(i4,1x), 2x, <occ_num_dn>(i4,1x))') (orb_list_up(i), i = 1, occ_num_up), (orb_list_dn(i), i = 1, occ_num_dn)
+        do while (icount == BUFSIZE)
+            if (offset < ndet) then
+                rc = trexio_read_determinant_list(trex_determinant_file, offset, icount, buffer)
+                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_list failed', __FILE__, __LINE__)
+                offset = offset + icount
+            else
+                icount = 0
+            end if
 
-            do i = 1, occ_num_up
-                iworbd(i, jj) = orb_list_up(i)
-            enddo
-            do i = 1, occ_num_dn
-                iworbd(occ_num_up + i, jj) = orb_list_dn(i)
-            enddo
+            do m=1,icount
+                rc = trexio_to_orbital_list_up_dn(int64_num, buffer(1,1,m), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
+                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_to_orbital_list_up_dn filed', __FILE__, __LINE__)
+                write(temp, '(1x,a,i0,a,i0,a)') '(', occ_num_up, '(i4,1x),', occ_num_dn, '(i4,1x))'
+                write(ounit, temp) (orb_list_up(i), i = 1, occ_num_up), (orb_list_dn(i), i = 1, occ_num_dn)
 
-            offset_det_read = jj
-        enddo
+                do i = 1, occ_num_up
+                    iworbd(i, m) = orb_list_up(i)
+                enddo
+                do i = 1, occ_num_dn
+                    iworbd(occ_num_up + i, m) = orb_list_dn(i)
+                enddo
+
+            end do
+         end do
 #endif
 
-        deallocate(orb_list)
+        deallocate(buffer)
         deallocate(orb_list_up)
         deallocate(orb_list_dn)
 
