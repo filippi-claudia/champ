@@ -1,0 +1,26 @@
+# Determinants, CSF, and CSF mapping from the GAMESS output / TREXIO file. 
+# Converted from the trexio file using trex2champ converter https://github.com/TREX-CoE/trexio_tools 
+determinants 5 1 
+-0.97550500 0.21414500 -0.01474389 -0.01474389 0.04579400 
+   1    2    3    4    5    6    7    8    9   10      1    2    3    4    5    6    7    8    9   10 
+   1    2    3    4    5    6    7    8    9   11      1    2    3    4    5    6    7    8    9   11 
+   1    2    3    4    5    6    7    8    9   10      1    2    3    4    5    6    7    8    9   12 
+   1    2    3    4    5    6    7    8    9   12      1    2    3    4    5    6    7    8    9   10 
+   1    2    3    4    5    6    7    8    9   12      1    2    3    4    5    6    7    8    9   12 
+end 
+csf 4 1 
+0.97550500 -0.21414500 0.02085100 -0.04579400 
+end 
+csfmap 
+4 5 5 
+1 
+  1  -1.000000 
+1 
+  2  -1.000000 
+2 
+  3  -0.707107 
+  4  -0.707107 
+1 
+  5  -1.000000 
+end 
+

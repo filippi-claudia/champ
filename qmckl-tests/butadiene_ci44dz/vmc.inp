@@ -1,0 +1,33 @@
+%module general
+    title        'butadiene cas44 vmc calculation with 20 dets and 12 csf'
+    pool         './pool/'
+    pseudopot    ECP
+    basis        BASISGRID
+    mode         'vmc_one_mpi1'
+    ipr		 4	
+%endmodule
+
+#load molecule        $pool/champ_v2_gamess_butadiene_ci44_cc-VDZ_geom.xyz
+load trexio	      gamess_butadiene_ci44_cc-VDZ.hdf5
+
+#load basis_num_info  $pool/champ_v2_gamess_butadiene_ci44_cc-VDZ.bfinfo
+load basis_num_info  $pool/champ_v2_gamess_butadiene_ci44_cc-VDZ_with_g.bfinfo
+
+load determinants    champ_v2_gamess_butadiene_ci44_cc-VDZ_determinants_state1.det
+load orbitals        champ_v2_gamess_butadiene_ci44_cc-VDZ_orbitals.lcao
+load symmetry        champ_v2_gamess_butadiene_ci44_cc-VDZ_symmetry.sym
+load jastrow         jastrow.jas
+
+
+%module electrons
+    nup           11
+    nelec         22
+%endmodule
+
+%module blocking_vmc
+    vmc_nstep     1
+    vmc_nblk      40
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+    vmc_isite	  0
+%endmodule

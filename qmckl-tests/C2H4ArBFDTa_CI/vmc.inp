@@ -1,0 +1,32 @@
+%module general
+    title           'C4H4Ar RHF'
+    pool            './pool/'
+    pseudopot       ECP
+    basis           BASISGRID
+    mode            vmc
+    ipr		    4
+%endmodule
+
+
+#load molecule        $pool/champ_v2_gamess_C2H4Ar_ci_geom.xyz
+load trexio	     gamess_C2H4Ar_ci.hdf5
+load basis_num_info  $pool/champ_v2_gamess_C2H4Ar_ci_with_g.bfinfo
+
+load orbitals        champ_v2_gamess_C2H4Ar_ci_orbitals.lcao
+load determinants    champ_v2_gamess_C2H4Ar_ci_determinants_state1.det
+load symmetry	     champ_v2_gamess_C2H4Ar_ci_symmetry.sym
+load jastrow         jastrow.jas
+
+%module electrons
+    nup           10
+    nelec         20
+%endmodule
+
+
+%module blocking_vmc
+    vmc_nstep     1
+    vmc_nblkeq    1
+    vmc_nblk      40
+    vmc_nconf_new 0
+    vmc_isite	  0
+%endmodule

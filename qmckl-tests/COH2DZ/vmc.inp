@@ -1,0 +1,33 @@
+%module general
+    title           'COH2 Formaldehyde VMC'
+    pool            './pool/'
+    pseudopot       ECP
+    basis           BASISGRID
+    mode            'vmc_one_mpi1'
+%endmodule
+
+
+#load molecule        $pool/champ_v2_gamess_COH2_rhf_aug-cc-pVDZ_geom.xyz
+load trexio	      gamess_COH2_rhf_aug-cc-pVDZ.hdf5
+
+#load basis_num_info  $pool/champ_v2_gamess_COH2_rhf_aug-cc-pVDZ.bfinfo
+load basis_num_info  $pool/champ_v2_gamess_COH2_rhf_aug-cc-pVDZ_with_g.bfinfo
+
+load orbitals        champ_v2_gamess_COH2_rhf_aug-cc-pVDZ_orbitals.lcao 
+load determinants    champ_v2_gamess_COH2_rhf_aug-cc-pVDZ_determinants_state1.det
+load symmetry        champ_v2_gamess_COH2_rhf_aug-cc-pVDZ_symmetry.sym
+load jastrow         jastrow.start
+
+
+%module electrons
+    nup           6
+    nelec         12
+%endmodule
+
+
+%module blocking_vmc
+    vmc_nstep     20
+    vmc_nblk      40000
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+%endmodule
