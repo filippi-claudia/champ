@@ -21,6 +21,7 @@ module optwf_sr_mod
     use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
     use orbval, only: nadorb
     use contrl_file,    only: ounit
+    use mpitimer,    only: elapsed_time
     use error, only: fatal_error
     use optwf_handle_wf, only : set_nparms_tot, save_nparms, test_solution_parm
     use optwf_handle_wf, only : compute_parameters, write_wf, save_wf
@@ -59,7 +60,7 @@ module optwf_sr_mod
           INTEGER INCX,N
           DOUBLE PRECISION DX(*)
         END SUBROUTINE
-    end interface 
+    end interface
 
     interface ! Let linking decide between dmc/vmc
       subroutine qmc
@@ -184,6 +185,7 @@ contains
                     call compute_positions
                     call write_geometry(iter)
                 endif
+                call elapsed_time("CG micro iteration", miter)
             enddo
             ! enddo micro_iteration
 
@@ -201,6 +203,7 @@ contains
             energy_sav = energy(1)
             energy_err_sav = energy_err(1)
             sigma_sav = sigma
+            call elapsed_time( "CG iteration ", iter )
         enddo
         ! enddo iteration
 
@@ -220,7 +223,7 @@ contains
         call write_geometry(-1)
 
         deallocate (deltap)
-
+        call elapsed_time( "Last iteration of QMC")
         return
     end
 

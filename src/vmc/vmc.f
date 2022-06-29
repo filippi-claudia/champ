@@ -23,7 +23,7 @@ c and sa, pa, da asymptotic functions
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
       use control_vmc, only: vmc_nblkeq, vmc_nconf_new, vmc_nstep
       use pseudo, only: nloc
-      use mpitimer,    only: time, time_start, time_check1, time_check2
+      use mpitimer,    only: elapsed_time
       use contrl_file,    only: ounit
 
       use precision_kinds, only: dp
@@ -106,10 +106,15 @@ c initialize the walker configuration
        else
         ngfmc=(vmc_nstep*vmc_nblk+vmc_nconf_new-1)/vmc_nconf_new
       endif
+      call elapsed_time("VMC : initial walker configuration : ")
 
 c zero out estimators and averages
 
-      if (vmc_irstar.ne.1) call zerest
+      if (vmc_irstar.ne.1) then
+            call zerest
+            call elapsed_time("VMC : zero out estimators and averages : ")
+      endif
+
 
 c check if restart flag is on. If so then read input from
 c dumped data to restart
@@ -121,11 +126,8 @@ c dumped data to restart
   402   rewind 10
         call startr
         close(10)
+        call elapsed_time("VMC : reading restart files : ")
       endif
-
-c get initial value of cpu time
-!      call my_second(0,'begin ')
-      time_check1 = time()
 
 c if there are equilibrium steps to take, do them here
 c skip equilibrium steps if restart run
@@ -143,11 +145,8 @@ c imetro = 6 spherical-polar with slater T
         enddo
 
 c       Equilibration steps done. Zero out estimators again.
-!        call my_second(2,'equilb')
-        ! Improved timers
-        time_check2 = time()
-        write(ounit, '(a,t40, f12.3, f12.3)') "END OF equilb CP, REAL TIME IS", time_check2 - time_start, time_check2 - time_check1
-        time_check1 = time_check2
+
+        call elapsed_time("VMC : equilibrium CP : ")
 
         call zerest
       endif
@@ -175,19 +174,17 @@ c write out configuration for optimization/dmc/gfmc here
       call acuest
       enddo
 
-!      call my_second(2,'all   ')
-      ! Improved timers
-      time_check2 = time()
-      write(ounit, '(a, t40,f12.3, f12.3)') "END OF all CP, REAL TIME IS", time_check2 - time_start, time_check2 - time_check1
-      time_check1 = time_check2
+      call elapsed_time("VMC : all CP : ")
 
 c write out last configuration to mc_configs_start
 c call fin_reduce to write out additional files for efpci, embedding etc.
 c collected over all the run and to reduce cum1 in mpi version
       call mc_configs_write
+      call elapsed_time("writing configs to a file : ")
 
 c print out final results
       call finwrt
+      call elapsed_time("writing final results : ")
 
 c if dump flag is on then dump out data for a restart
       if (vmc_idump.eq.1) then
@@ -195,6 +192,7 @@ c if dump flag is on then dump out data for a restart
         rewind 10
         call dumper
         close(10)
+        call elapsed_time("dumping restart files : ")
       endif
       if(vmc_nconf_new.ne.0) close(7)
 
