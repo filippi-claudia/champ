@@ -1,5 +1,7 @@
 module elec
     !> Arguments: ndn, nup
+    !> nup       = number of up-spin (alpha) electrons
+    !> ndn       = number of down-spin (beta) electrons
 
     implicit none
 
