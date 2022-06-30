@@ -267,63 +267,7 @@ c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),
       
       return
       end
-c------------------------------------------------------------------------------------
-      subroutine virtual_orbitals
 
-      use const, only: nelec
-      use optwf_contrl, only: ioptci, ioptorb
-      use phifun, only: d2phin, dphin
-      use phifun, only: phin
-      use coefs, only: coef, nbasis, norb
-      use orbval, only: ddorb, dorb, nadorb, orb
-      use precision_kinds, only: dp
-
-      implicit none
-
-      integer :: i, iwf
-      real(dp) :: c25
-      real(dp), dimension(nelec,nbasis) :: bhin
-      real(dp), dimension(nelec,nbasis) :: d2bhin
-
-      real(dp), dimension(nadorb,nbasis) :: coef_t
-
-c compute values of extra ('virtual') orbitals needed for optorb operators
-c assuming that basis function values in phin are up to date
-
-      if (nadorb.eq.0.or.(ioptorb.eq.0.and.ioptci.eq.0)) return
-
-c primary geometry only
-      iwf=1
-c this should be simpler and economical instead copy other vectors and then do dgemm
-c it maybe replaced and simplyfied bbu transposing coeff matrix and orb      
-      coef_t = transpose(coef(:,norb+1:norb+nadorb,iwf))
-
-      do i=1,nelec
-        call dcopy(nbasis,phin(1,i),1,bhin(i,1),nelec)
-      enddo
-      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,  bhin,  nelec,coef(1,norb+1,iwf),nbasis,0.d0,  orb(  1,norb+1),  nelec)
-c     call dgemm('n','n',3*nelec,nadorb,nbasis,1.d0, dbhin,3*nelec,coef(1,norb+1,iwf),nbasis,0.d0, dorb(1,1,norb+1),3*nelec)
-c      call dgemm('n','n',  nelec,nadorb,nbasis,1.d0,d2bhin,  nelec,coef(1,norb+1,iwf),nbasis,0.d0,ddorb(  1,norb+1),  nelec)
-      call dgemm('n','n',nadorb,3*nelec, nbasis,1.d0, coef_t, nadorb, dphin, nbasis,0.d0, dorb(norb+1:norb+nadorb,:,:),nadorb)
-      call dgemm('n','n',  nadorb, nelec, nbasis,1.d0, coef_t, nadorb, d2phin,nbasis,0.d0,ddorb(norb+1:norb+nadorb,:),nadorb)
-
-c     do 25 iorb=norb+1,norb+nadorb
-c       do 25 i=1,nelec
-c         orb(i,iorb)=0.d0
-c         dorb(iorb,i,1)=0.d0
-c         dorb(iorb,i,2)=0.d0
-c         dorb(iorb,i,3)=0.d0
-c         ddorb(iorb,i)=0.d0
-c         do 25 m=1,nbasis
-c           orb(i,iorb)=orb(i,iorb)+coef(m,iorb,iwf)*phin(m,i)
-c           dorb(iorb,i,1)=dorb(iorb,i,1)+coef(m,iorb,iwf)*dphin(m,i,1)
-c           dorb(iorb,i,2)=dorb(iorb,i,2)+coef(m,iorb,iwf)*dphin(m,i,2)
-c           dorb(iorb,i,3)=dorb(iorb,i,3)+coef(m,iorb,iwf)*dphin(m,i,3)
-c           ddorb(iorb,i)=ddorb(iorb,i)+coef(m,iorb,iwf)*d2phin(m,i)
-c25   continue
-
-      return
-      end
 c------------------------------------------------------------------------------------
       subroutine da_orbitals
 
