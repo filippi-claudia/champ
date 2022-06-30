@@ -24,8 +24,8 @@ load jastrow         jastrow.jas
 %endmodule
 
 %module blocking_vmc
-    vmc_nstep     1
-    vmc_nblk      40
+    vmc_nstep     20
+    vmc_nblk      5000
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule

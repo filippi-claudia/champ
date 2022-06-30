@@ -8,8 +8,8 @@
 %endmodule
 
 
-#load molecule        $pool/champ_v2_gamess_C2H4Ar_ci_normf_geom.xyz
-load trexio	     gamess_C2H4Ar_ci_normf.hdf5
+load molecule        $pool/champ_v2_gamess_C2H4Ar_ci_normf_geom.xyz
+# load trexio	     gamess_C2H4Ar_ci_normf.hdf5
 load basis_num_info  $pool/champ_v2_gamess_C2H4Ar_ci_normf_with_g.bfinfo
 
 load orbitals        champ_v2_gamess_C2H4Ar_ci_normf_orbitals.lcao
