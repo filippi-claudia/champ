@@ -174,8 +174,10 @@ module trexio_read_data
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
+        use atom,               only: ncent, ncent_tot
         use coefs,              only: coef, nbasis, norb
         use inputflags,         only: ilcao
+        use numbas,             only: nrbas
         use orbval,             only: nadorb
         use pcm_fdc,            only: fs
         use vmc_mod,            only: norb_tot
@@ -185,7 +187,9 @@ module trexio_read_data
         use precision_kinds, only: dp
 #if defined(TREXIO_FOUND)
         use trexio
+        use error,              only: trexio_error
         use contrl_file,        only: backend
+        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
 #endif
         implicit none
 
@@ -194,9 +198,18 @@ module trexio_read_data
         character(len=40)               :: temp1, temp2
         character(len=120)              :: temp3, file_trexio_path
         integer                         :: iunit, iostat, iwft
-        integer                         :: iorb, ibasis, i, k, counter
+        integer                         :: iorb, ibasis, i, j, k, l
+        integer                         :: counter, count1, count2, count3, summ
+        integer                         :: index_ao, index_nrad
+        integer                         :: cum_rad_per_cent, cum_ao_per_cent
         logical                         :: exist
         logical                         :: skip = .true.
+
+!       trexio
+        integer                         :: basis_num_shell
+        integer, allocatable            :: basis_nucleus_index(:)
+        integer, allocatable            :: basis_shell_ang_mom(:)
+
 
         !   Formatting
         character(len=100)               :: int_format     = '(A, T60, I0)'
@@ -205,7 +218,7 @@ module trexio_read_data
 
         ! trexio
         integer(8)                      :: trex_orbitals_file
-        integer                         :: rc = 1
+        integer                         :: rc = 1, ii, jj
 
         iwft = 1
         trex_orbitals_file = 0
@@ -225,15 +238,18 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             trex_orbitals_file = trexio_open(file_trexio_path, 'r', backend, rc)
-            call trexio_assert(rc, TREXIO_SUCCESS)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
             rc = trexio_read_mo_num(trex_orbitals_file, norb)
-            call trexio_assert(rc, TREXIO_SUCCESS)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num', __FILE__, __LINE__)
             rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
-            call trexio_assert(rc, TREXIO_SUCCESS)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
+            rc = trexio_read_basis_shell_num(trex_orbitals_file, basis_num_shell)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_num', __FILE__, __LINE__)
 #endif
         endif
         call bcast(norb)
         call bcast(nbasis)
+        call bcast(basis_num_shell)
 
         ! Do the array allocations
         if( (method(1:3) == 'lin')) then
@@ -241,6 +257,13 @@ module trexio_read_data
         else
             if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
         endif
+
+        ! Do the allocations based on the number of shells and primitives
+        if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
+        if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
+        if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
+        if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
+        if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
 
         ! Read the orbitals
         if (wid) then
@@ -250,6 +273,62 @@ module trexio_read_data
 #endif
         endif
         call bcast(coef)
+
+!   Generate the basis information (which radial to be read for which Slm)
+
+#if defined(TREXIO_FOUND)
+        rc = trexio_read_basis_shell_ang_mom(trex_orbitals_file, basis_shell_ang_mom)
+        call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_ang_mom', __FILE__, __LINE__)
+        rc = trexio_read_basis_nucleus_index(trex_orbitals_file, basis_nucleus_index)
+        call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_nucleus_index', __FILE__, __LINE__)
+#endif
+
+        ! Generate the index of the slm for each AO
+        ! i.e. index_slm(i) = the slm index of the i-th AO
+        ! The list follows the following order:
+
+        !   l   |   1  2  3  4    5   6   7   8   9   10
+        ! ------+-----------------------------------------
+        !   y   |   s  x  y  z    xx  xy  xz  yy  yz  zz
+
+        !           11  12  13  14  15  16  17  18  19  20
+        !       ------------------------------------------
+        !           xxx xxy xxz xyy xyz xzz yyy yyz yzz zzz
+        !
+        !          21   22   23   24   25   26   27   28   29   30   31   32   33   34   35
+        !       +-----------------------------------------------------------------------------
+        !          xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
+
+        counter = 0; count1 = 1; count2 = 0;
+        cum_rad_per_cent = 0
+        cum_ao_per_cent  = 0
+        index_ao = 0
+        ! The following loop will generate the index_slm array which tells
+        ! which AO is of which type (from the above list)
+
+        do l = 1, basis_num_shell
+            k = basis_shell_ang_mom(l)
+            counter = counter + slm_per_l(k+1)
+            count2 = 0
+            do ii = 1, slm_per_l(k+1)
+                index_ao = index_ao + 1
+                index_slm(index_ao) = sum(slm_per_l(1:k)) + 1 + count2
+                count2 = count2 + 1
+                cum_ao_per_cent = cum_ao_per_cent + 1
+            end do
+            cum_rad_per_cent = cum_rad_per_cent + 1
+
+            ! The following if loop is for counting the number of radial functions
+            ! and number of AOs per center
+            if (count1 == basis_nucleus_index(l)) then
+                num_rad_per_cent(count1) = cum_rad_per_cent
+                num_ao_per_cent(count1) = cum_ao_per_cent
+            else
+                cum_rad_per_cent = 1
+                cum_ao_per_cent  = 1
+                count1 = count1 + 1
+            end if
+        enddo ! loop on shells
 
 #if defined(TREXIO_FOUND)
         if (wid) rc = trexio_close(trex_orbitals_file)
