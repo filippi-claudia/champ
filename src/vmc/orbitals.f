@@ -167,9 +167,9 @@ c no 3d interpolation
             if (rc /= QMCKL_SUCCESS) then
                print *, 'Error getting MOs from QMCkl'
             end if
-            
-            do iorb=1,norb+nadorb
-               do i=1,nelec
+
+            do i=1,nelec
+               do iorb=1,norb+nadorb
                   orb  (  i,iorb) = mo_vgl_qmckl(iorb,1,i)
                   dorb (iorb,i,1) = mo_vgl_qmckl(iorb,2,i)
                   dorb (iorb,i,2) = mo_vgl_qmckl(iorb,3,i)
@@ -177,7 +177,7 @@ c no 3d interpolation
                   ddorb(  iorb,i) = mo_vgl_qmckl(iorb,5,i)
                end do
             end do
-
+            
             deallocate(mo_vgl_qmckl)
             
          else
@@ -320,6 +320,11 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
+      ! Include all the const module for QMCkl. Avoid 'only', otherwise you will
+      ! need to change it every time QMCkl is updated, or you will need
+      ! to have extra ifdef statements here.
+      use const !, only: nelec, ipr, use_qmckl, qmckl_ctx
+
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
@@ -328,12 +333,17 @@ c-------------------------------------------------------------------------------
       use atom, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use multislatern, only: ddorbn, dorbn, orbn
-      use const, only: nelec
+!      use const, only: nelec
       use precision_kinds, only: dp
       use grid3d_orbitals, only: spline_mo, lagrange_mose
       use grid3d_orbitals, only: lagrange_mos_grade
       use basis_fns_mod, only: basis_fns
       use pw_orbitals, only: orbitals_pw_grade
+
+#ifdef QMCKL_FOUND
+      use qmckl
+#endif
+      
 
       implicit none
 
@@ -343,6 +353,16 @@ c-------------------------------------------------------------------------------
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
+
+
+ccc   QMCkl
+      real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
+      real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+      real(dp), allocatable :: mo_coef_qmckl(:,:)
+      integer :: rc
+      integer*8 :: n8
+ccc
+
       
       if(iperiodic.eq.0) then
 
@@ -370,49 +390,102 @@ c Lagrange interpolation
 
         if(ier.eq.1) then
 c get basis functions for electron iel
+           
+           ider=1
+           if(iflag.gt.0) ider=2
+           
+           
+c           if (use_qmckl) then
+           if (0) then
 
-         ider=1
-         if(iflag.gt.0) ider=2
-         call basis_fns(iel,iel,rvec_en,r_en,ider)
+!     compute only a subset of MOs in QMCkl.
+              
+              rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+              if (rc /= QMCKL_SUCCESS) then
+                 print *, 'Error getting mo_num from QMCkl'
+                 stop
+              end if
+              
+              allocate(mo_vgl_qmckl(n8, 5, 1))
+              
+!     Send electron coordinates to QMCkl to compute the MOs at these positions                                                                                                                
+              rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, x, 3_8)                                                                                                                     
+              if (rc /= QMCKL_SUCCESS) then
+                 print *, 'Error setting electron coordinates in QMCkl'
+              end if
+              
+              if (rc /= QMCKL_SUCCESS) then
+                 print *, 'Error setting electron coordinates in QMCkl'
+              end if
 
-!       Vectorization dependent code. useful for AVX512 and AVX2
+!     Compute the MOs                                                                                                                                                                         
+              rc = qmckl_get_mo_basis_mo_vgl_inplace(
+     &             qmckl_ctx,
+     &             mo_vgl_qmckl,
+     &             n8*5_8)
+            
+              if (rc /= QMCKL_SUCCESS) then
+                 print *, 'Error getting MOs from QMCkl'
+              end if
+
+
+              do iorb=1,norb
+                 orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
+                 dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
+                 dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
+                 dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
+                 if(iflag.gt.0) ddorbn(iorb)=mo_vgl_qmckl(iorb,5,1)
+              enddo
+
+              deallocate(mo_vgl_qmckl)
+              
+              
+           else
+              
+              call basis_fns(iel,iel,rvec_en,r_en,ider)
+
+!     Vectorization dependent code. useful for AVX512 and AVX2
 #ifdef VECTORIZATION
-          do iorb=1,norb
-            orbn(iorb)=0
-            dorbn(iorb,1)=0
-            dorbn(iorb,2)=0
-            dorbn(iorb,3)=0
-            ddorbn(iorb)=0
-            do m=1,nbasis
-              orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-              dorbn(iorb,1)=dorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-              dorbn(iorb,2)=dorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
-              dorbn(iorb,3)=dorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
+              do iorb=1,norb
+                 orbn(iorb)=0
+                 dorbn(iorb,1)=0
+                 dorbn(iorb,2)=0
+                 dorbn(iorb,3)=0
+                 ddorbn(iorb)=0
+                 do m=1,nbasis
+                    orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
+                    dorbn(iorb,1)=dorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                    dorbn(iorb,2)=dorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                    dorbn(iorb,3)=dorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
 
-              if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
-            enddo
-          enddo
+                    if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
+                 enddo
+              enddo
 #else
-!         Keep the localization for the non-vectorized code
-          do iorb=1,norb
-            orbn(iorb)=0
-            dorbn(iorb,1)=0
-            dorbn(iorb,2)=0
-            dorbn(iorb,3)=0
-            ddorbn(iorb)=0
-            do m0=1,n0_nbasis(iel)
-             m=n0_ibasis(m0,iel)
-             orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-             dorbn(iorb,1)=dorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-             dorbn(iorb,2)=dorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
-             dorbn(iorb,3)=dorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
-
-             if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
-            enddo
-          enddo
+!     Keep the localization for the non-vectorized code
+              do iorb=1,norb
+                 orbn(iorb)=0
+                 dorbn(iorb,1)=0
+                 dorbn(iorb,2)=0
+                 dorbn(iorb,3)=0
+                 ddorbn(iorb)=0
+                 do m0=1,n0_nbasis(iel)
+                    m=n0_ibasis(m0,iel)
+                    orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
+                    dorbn(iorb,1)=dorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                    dorbn(iorb,2)=dorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                    dorbn(iorb,3)=dorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                    
+                    if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
+                 enddo
+              enddo
 #endif
+
+           endif
+           
         endif
-       else
+        
+      else
         call orbitals_pw_grade(iel,x(1,iel),orbn,dorbn,ddorbn)
       endif
 
