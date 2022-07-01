@@ -171,19 +171,6 @@ contains
 
 end module distances_sav
 
-module elec
-    !> Arguments: ndn, nup
-
-    implicit none
-
-    integer :: ndn
-    integer :: nup
-
-    private
-    public   :: ndn, nup
-    save
-end module elec
-
 module embed
     !> Never called
 

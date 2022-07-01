@@ -86,7 +86,7 @@ subroutine multideterminants_define(iflag, icheck)
     integer, dimension(nelec) :: auxdet
 
 
-    if (nup .gt. nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
+    if (nup .lt. nelec/2) call fatal_error('INPUT: nelec/2 exceeds nup')
     ndn = nelec - nup
 
     !!call p2gtid('general:nwftype', nwftype, 1, 1)
