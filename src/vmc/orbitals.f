@@ -32,7 +32,13 @@ c Modified by A. Scemama
       use contrl_file,    only: ounit
       use grid3d_orbitals, only: spline_mo
       use grid3d_orbitals, only: lagrange_mos, lagrange_mos_grad, lagrange_mos_2
+#if defined(TREXIO_FOUND)
+      use trexio_basis_fns_mod, only: trexio_basis_fns
+      use trexio_read_data, only: trexio_has_orbitals
+#endif
       use basis_fns_mod, only: basis_fns
+
+
       use pw_orbitals, only: orbitals_pw
       implicit none
 
@@ -62,7 +68,11 @@ c spline interpolation
             enddo
 
             if(ier.eq.1) then
-              call basis_fns(i,i,rvec_en,r_en,2)
+              if (trexio_has_orbitals) then
+                call trexio_basis_fns(i,i,rvec_en,r_en,2)
+              else
+                call basis_fns(i,i,rvec_en,r_en,2)
+              endif
               do iorb=1,norb+nadorb
                 orb(i,iorb)=0.d0
                 dorb(iorb,i,1)=0.d0
@@ -80,8 +90,8 @@ c spline interpolation
               enddo
             endif
           enddo
-
-c Lagrange interpolation
+!
+! Lagrange interpolation
         elseif(i3dlagorb.eq.2) then
          do i=1,nelec
            ier=0
@@ -92,7 +102,11 @@ c Lagrange interpolation
            call lagrange_mos_2(5,x(1,i),ddorb,i,ier)
 
            if(ier.eq.1) then
-             call basis_fns(i,i,rvec_en,r_en,2)
+            if (trexio_has_orbitals) then
+              call trexio_basis_fns(i,i,rvec_en,r_en,2)
+            else
+              call basis_fns(i,i,rvec_en,r_en,2)
+            endif
              do iorb=1,norb+nadorb
                orb(i,iorb)=0.d0
                dorb(iorb,i,1)=0.d0
@@ -117,7 +131,13 @@ c no 3d interpolation
 c get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
-         call basis_fns(1,nelec,rvec_en,r_en,ider)
+         if (trexio_has_orbitals) then
+          print*, "trexio_found  but not being used"
+          call trexio_basis_fns(1,nelec,rvec_en,r_en,ider)
+         else
+          call basis_fns(1,nelec,rvec_en,r_en,ider)
+         endif
+
 
 c in alternativa al loop 26
 c        do jbasis=1,nbasis
@@ -158,7 +178,7 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
 !     keep the old localization code if no vectorization instructions available
           do i=1,nelec
              do iorb=1,norb+nadorb
-                
+
                 orb(i,iorb)=0
                 dorb(iorb,i,1)=0
                 dorb(iorb,i,2)=0
@@ -227,7 +247,7 @@ c assuming that basis function values in phin are up to date
 c primary geometry only
       iwf=1
 c this should be simpler and economical instead copy other vectors and then do dgemm
-c it maybe replaced and simplyfied bbu transposing coeff matrix and orb      
+c it maybe replaced and simplyfied bbu transposing coeff matrix and orb
       coef_t = transpose(coef(:,norb+1:norb+nadorb,iwf))
 
       do i=1,nelec
@@ -331,7 +351,7 @@ c-------------------------------------------------------------------------------
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
-      
+
       if(iperiodic.eq.0) then
 
 c get the value and gradients from the 3d-interpolated orbitals

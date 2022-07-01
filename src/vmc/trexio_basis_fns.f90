@@ -22,19 +22,24 @@ module trexio_basis_fns_mod
       use force_analy, only: iforce_analy
       use splfit_mod, only: splfit
       use slm_mod, only: slm
+#if defined(TREXIO_FOUND)
+      use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
+#endif
 
       use precision_kinds, only: dp
       implicit none
 
       integer :: it, ic, ider, irb
-      integer :: iwlbas0, j, k, nrbasit, nbastypit
-      integer :: ie1, ie2, k0, l, l0, ll
+      integer :: iwlbas0, j, k, nrbasit, nbastypit, nlmbasit
+      integer :: ie1, ie2, k0, l, l0, ll, ilm
 
       real(dp), allocatable         :: y(:)
-      real(dp), allocatable         :: dy(3,:)
-      real(dp), allocatable         :: ddy(3,3,:)
+      real(dp), allocatable         :: dy(:,:)
+      real(dp), allocatable         :: ddy(:,:,:)
       real(dp), allocatable         :: ddy_lap(:)
-      real(dp), allocatable         :: dlapy(3,:)
+      real(dp), allocatable         :: dlapy(:,:)
+
+      integer                       :: nlmbas(ncent_tot)
 
       real(dp)                      :: r, r2, ri, ri2
       real(dp)                      :: rvec_en(3, nelec, ncent_tot)
@@ -48,14 +53,27 @@ module trexio_basis_fns_mod
         n0_nbasis(j)=0
       enddo
 
+!     debug
+      nlmbas = 0
+
+
       l=0
 !     loop through centers
       do ic=1,ncent+nghostcent
 
         it=iwctype(ic)
-        nrbasit=nrbas(it)
-        nbastypit=nbastyp(it)
+        nrbasit=num_rad_per_cent(it)
+        nbastypit=num_ao_per_cent(it)
         nlmbasit = nlmbas(it)
+
+        print*, 'trexio_basis_fns: ic=', ic, ' it=', it, ' nrbasit=', nrbasit, ' nbastypit=', nbastypit, ' nlmbasit=', nlmbasit
+
+        allocate (y(nbastypit))
+        allocate (dy(3,nbastypit))
+        allocate (ddy(3,3,nbastypit))
+        allocate (ddy_lap(nbastypit))
+        allocate (dlapy(3,nbastypit))
+
 
         l0=l
 
@@ -82,9 +100,13 @@ module trexio_basis_fns_mod
           ! endif
           enddo
 
-          do ilm=1,nlmbasit
-              call slm(iwlbas0,xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
+          do ilm=1,nbastypit
+              call slm(index_slm(ilm),xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
           enddo
+
+          ! do ilm=1,nlmbasit
+          !   call slm(iwlbas0,xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
+          ! enddo
 
 !     compute sml and combine to generate molecular orbitals
            l=l0
@@ -94,7 +116,7 @@ module trexio_basis_fns_mod
               irb=iwrwf(j,it)
               ilm=iwlbas(j,it)
 
-              call phi_combine(iwlbas0,xc,ri,ri2,wfv(:,irb), &
+              call trexio_phi_combine(iwlbas0,xc,ri,ri2,wfv(:,irb), &
                                 y(ilm), &
                                 dy(:,ilm), &
                                 ddy(:,:,ilm), &
@@ -110,6 +132,12 @@ module trexio_basis_fns_mod
            enddo
 
         enddo ! loop over electrons
+
+        deallocate (y)
+        deallocate (dy)
+        deallocate (ddy)
+        deallocate (ddy_lap)
+        deallocate (dlapy)
 
       enddo ! loop over all atoms
 

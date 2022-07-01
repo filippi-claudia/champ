@@ -3,8 +3,23 @@ module trexio_read_data
     use precision_kinds,        only: dp
     use array_utils,            only: unique_elements
 
+    logical :: trexio_has_molecule      = .false.
+    logical :: trexio_has_symmetry      = .false.
+    logical :: trexio_has_orbitals      = .false.
+    logical :: trexio_has_basis         = .false.
+    logical :: trexio_has_determinant   = .false.
+    logical :: trexio_has_ecp           = .false.
+
     private
     public :: dp
+
+    public :: trexio_has_molecule
+    public :: trexio_has_symmetry
+    public :: trexio_has_orbitals
+    public :: trexio_has_basis
+    public :: trexio_has_determinant
+    public :: trexio_has_ecp
+
     public :: read_trexio_molecule_file
     public :: read_trexio_symmetry_file
     public :: read_trexio_orbitals_file
@@ -75,6 +90,7 @@ module trexio_read_data
             trex_molecule_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_assert(rc, TREXIO_SUCCESS)
             rc = trexio_read_nucleus_num(trex_molecule_file, ncent)
+            if (trexio_has_nucleus_num(trex_molecule_file) == 0) trexio_has_molecule = .true.
             call trexio_assert(rc, TREXIO_SUCCESS)
             rc = trexio_read_electron_up_num(trex_molecule_file, nup)
             call trexio_assert(rc, TREXIO_SUCCESS)
@@ -82,6 +98,7 @@ module trexio_read_data
             call trexio_assert(rc, TREXIO_SUCCESS)
 #endif
         endif
+        call bcast(trexio_has_molecule)
         call bcast(ncent)
         call bcast(nup)
         call bcast(ndn)
@@ -268,10 +285,12 @@ module trexio_read_data
         ! Read the orbitals
         if (wid) then
 #if defined(TREXIO_FOUND)
+            if (trexio_has_mo_coefficient(trex_orbitals_file) == 0) trexio_has_orbitals = .true.
             rc = trexio_read_mo_coefficient(trex_orbitals_file, coef(:,:,1))
-            call trexio_assert(rc, TREXIO_SUCCESS)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_coeffs', __FILE__, __LINE__)
 #endif
         endif
+        call bcast(trexio_has_orbitals)
         call bcast(coef)
 
 !   Generate the basis information (which radial to be read for which Slm)
@@ -329,6 +348,11 @@ module trexio_read_data
                 count1 = count1 + 1
             end if
         enddo ! loop on shells
+
+        do i = 1, nbasis
+            print*, i, index_slm(i)
+        enddo
+
 
 #if defined(TREXIO_FOUND)
         if (wid) rc = trexio_close(trex_orbitals_file)
@@ -462,6 +486,7 @@ module trexio_read_data
             trex_basis_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
             rc = trexio_read_basis_prim_num(trex_basis_file, basis_num_prim)
+            if (trexio_has_basis_prim_num(trex_basis_file) == 0) trexio_has_basis = .true.
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_prim_num', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_num(trex_basis_file, basis_num_shell)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_num', __FILE__, __LINE__)
@@ -469,6 +494,7 @@ module trexio_read_data
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
 #endif
         endif
+        call bcast(trexio_has_basis)
         call bcast(basis_num_prim)
         call bcast(basis_num_shell)
         call bcast(ao_num)
@@ -913,9 +939,11 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
             rc = trexio_read_mo_symmetry(trex_symmetry_file, mo_symmetry, 2)
+            if (trexio_has_mo_symmetry(trex_symmetry_file) == 0) trexio_has_symmetry = .true.
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_symmetry failed', __FILE__, __LINE__)
 #endif
         endif
+        call bcast(trexio_has_symmetry)
         call bcast(mo_symmetry)
 
         write(ounit,fmt=int_format) " Number of molecular orbital symmetries read ::  ", mo_num
@@ -1054,9 +1082,11 @@ module trexio_read_data
         if (wid) then
 #if defined(TREXIO_FOUND)
         rc = trexio_read_determinant_coefficient(trex_determinant_file, offset, BUFSIZE, cdet(:,1,nwftype))
+        if (trexio_has_determinant_coefficient(trex_determinant_file) == 0) trexio_has_determinant = .true.
         call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_coeff failed', __FILE__, __LINE__)
 #endif
         endif
+        call bcast(trexio_has_determinant)
         call bcast(cdet)
 
 
@@ -1194,9 +1224,11 @@ module trexio_read_data
             trex_ecp_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open', __FILE__, __LINE__)
             rc = trexio_read_ecp_num(trex_ecp_file, ecp_num)
+            if (trexio_has_ecp_num(trex_ecp_file) == 0) trexio_has_ecp = .true.
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ecp_num', __FILE__, __LINE__)
 #endif
         endif
+        call bcast(trexio_has_ecp)
         call bcast(ecp_num)
         allocate (flat_ecp_ang_mom(ecp_num))
         allocate (flat_ecp_nucleus_index(ecp_num))
