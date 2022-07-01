@@ -98,9 +98,11 @@ module trexio_basis_fns_mod
           ! else
           !   wfv(1:4,irb)=0.d0
           ! endif
+            ! write(200,*) ic, k, irb, r, r2, ri, ri2, wfv(1,irb)
           enddo
 
           do ilm=1,nbastypit
+              print*, "ilm, iwlbas0", ilm, index_slm(ilm)
               call slm(index_slm(ilm),xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
           enddo
 

@@ -72,6 +72,7 @@ c get distance to center
             ! else
             !   wfv(1:4,irb)=0.d0
             ! endif
+              ! write(300,*) ic, k, irb, r, r2, ri, ri2, wfv(1,irb)
            enddo
 
 c     compute sml and combine to generate molecular orbitals
@@ -83,6 +84,7 @@ c     compute sml and combine to generate molecular orbitals
               irb=iwrwf(j,it)
               if(iwlbas(j,it).ne.iwlbas0) then
                  iwlbas0=iwlbas(j,it)
+                !  print*, "j, iwlbas0=", j, iwlbas0
                  call slm(iwlbas0,xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
               endif
 

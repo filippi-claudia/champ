@@ -1108,6 +1108,7 @@ module trexio_read_data
         icount = BUFSIZE
 
 #if defined(TREXIO_FOUND)
+        if (wid) then
         do while (icount == BUFSIZE)
             if (offset < ndet) then
                 rc = trexio_read_determinant_list(trex_determinant_file, offset, icount, buffer)
@@ -1119,7 +1120,7 @@ module trexio_read_data
 
             do m=1,icount
                 rc = trexio_to_orbital_list_up_dn(int64_num, buffer(1,1,m), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
-                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_to_orbital_list_up_dn filed', __FILE__, __LINE__)
+                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_to_orbital_list_up_dn failed', __FILE__, __LINE__)
                 write(temp, '(1x,a,i0,a,i0,a)') '(', occ_num_up, '(i4,1x),', occ_num_dn, '(i4,1x))'
                 write(ounit, temp) (orb_list_up(i), i = 1, occ_num_up), (orb_list_dn(i), i = 1, occ_num_dn)
 
@@ -1131,12 +1132,14 @@ module trexio_read_data
                 enddo
 
             end do
-         end do
-#endif
+        end do
 
         deallocate(buffer)
         deallocate(orb_list_up)
         deallocate(orb_list_dn)
+        endif
+#endif
+        call bcast(iworbd)
 
         write(ounit,*) '-----------------------------------------------------------------------'
         write(ounit,*)
