@@ -191,10 +191,12 @@ module trexio_read_data
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
-        use atom,               only: ncent, ncent_tot
+        use atom,               only: ncent, ncent_tot, iwctype, nctype_tot
         use coefs,              only: coef, nbasis, norb
         use inputflags,         only: ilcao
         use numbas,             only: nrbas
+        use numbas,             only: iwrwf, numr
+        use numbas1,            only: iwlbas, nbastyp
         use orbval,             only: nadorb
         use pcm_fdc,            only: fs
         use vmc_mod,            only: norb_tot
@@ -218,6 +220,7 @@ module trexio_read_data
         integer                         :: iorb, ibasis, i, j, k, l
         integer                         :: counter, count1, count2, count3, summ
         integer                         :: index_ao, index_nrad
+        integer                         :: lower_range, upper_range
         integer                         :: cum_rad_per_cent, cum_ao_per_cent
         logical                         :: exist
         logical                         :: skip = .true.
@@ -226,6 +229,8 @@ module trexio_read_data
         integer                         :: basis_num_shell
         integer, allocatable            :: basis_nucleus_index(:)
         integer, allocatable            :: basis_shell_ang_mom(:)
+        integer, allocatable            :: ao_ordering(:)
+        real(dp), allocatable           :: unshuffled_coef(:,:,:)
 
 
         !   Formatting
@@ -271,8 +276,10 @@ module trexio_read_data
         ! Do the array allocations
         if( (method(1:3) == 'lin')) then
             if (.not. allocated(coef)) allocate (coef(nbasis, norb, 3))
+            if (.not. allocated(unshuffled_coef)) allocate (unshuffled_coef(3, nbasis, norb))
         else
             if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
+            if (.not. allocated(unshuffled_coef)) allocate (unshuffled_coef(nwftype, nbasis, norb))
         endif
 
         ! Do the allocations based on the number of shells and primitives
@@ -281,12 +288,13 @@ module trexio_read_data
         if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
+        if (.not. allocated(ao_ordering))      allocate(ao_ordering(nbasis))
 
         ! Read the orbitals
         if (wid) then
 #if defined(TREXIO_FOUND)
             if (trexio_has_mo_coefficient(trex_orbitals_file) == 0) trexio_has_orbitals = .true.
-            rc = trexio_read_mo_coefficient(trex_orbitals_file, coef(:,:,1))
+            rc = trexio_read_mo_coefficient(trex_orbitals_file, unshuffled_coef(1,:,:))
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_coeffs', __FILE__, __LINE__)
 #endif
         endif
@@ -318,23 +326,33 @@ module trexio_read_data
         !       +-----------------------------------------------------------------------------
         !          xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
 
-        counter = 0; count1 = 1; count2 = 0;
+        counter = 0; count1 = 1; count2 = 0; count3 = 0
         cum_rad_per_cent = 0
         cum_ao_per_cent  = 0
-        index_ao = 0
+        index_ao = 0; jj = 0
         ! The following loop will generate the index_slm array which tells
         ! which AO is of which type (from the above list)
 
         do l = 1, basis_num_shell
             k = basis_shell_ang_mom(l)
             counter = counter + slm_per_l(k+1)
-            count2 = 0
+            count2 = 0;
             do ii = 1, slm_per_l(k+1)
                 index_ao = index_ao + 1
                 index_slm(index_ao) = sum(slm_per_l(1:k)) + 1 + count2
                 count2 = count2 + 1
+
+                if ((basis_shell_ang_mom(l) == 0) ) then
+                    count3 = count3 + 1
+                    ao_ordering(index_ao) = count3
+                else
+                    count3 = 0
+                    ao_ordering(index_ao) = count2 +  slm_per_l(k+1)
+                endif
+
                 cum_ao_per_cent = cum_ao_per_cent + 1
             end do
+            jj = jj + 1
             cum_rad_per_cent = cum_rad_per_cent + 1
 
             ! The following if loop is for counting the number of radial functions
@@ -349,14 +367,51 @@ module trexio_read_data
             end if
         enddo ! loop on shells
 
+        ! print*, "num rad per cent " ,  num_rad_per_cent
+        ! print*, "num ao per cent " , num_ao_per_cent
+
         do i = 1, nbasis
-            print*, i, index_slm(i)
+            print*, "index slm ", i, index_slm(i)
+
         enddo
+
+        ! Obtain the index of radials for each unique center (iwrwf)
+        if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot))
+        if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctype_tot))
+
+        lower_range = 1; count1 = 1
+        do i = 1, ncent_tot
+            upper_range = lower_range + num_ao_per_cent(iwctype(i)) -1
+            do j = lower_range, upper_range
+                iwrwf(count1, iwctype(i)) = ao_ordering(j)
+                count1 = count1 + 1
+            enddo
+            lower_range = upper_range + 1
+        enddo
+
+
 
 
 #if defined(TREXIO_FOUND)
         if (wid) rc = trexio_close(trex_orbitals_file)
 #endif
+
+
+    ! debug Ravindra
+        write(ounit,int_format) " Number of basis functions ", nbasis
+        write(ounit,int_format) " Number of lcao orbitals ", norb
+        write(ounit,int_format) " Type of wave functions ", iwft
+        write(ounit,*) "Orbital coefficients are written to the output.log file"
+
+        do i = 1, norb
+            do j = 1, nbasis
+                coef(j, i, 1) = unshuffled_coef(1, ao_ordering(j), i)
+            enddo
+        enddo
+
+        ! do i = 1, norb
+        !     write(*,'(66f16.10)') (coef(j, i, 1), j=1, nbasis)
+        ! enddo
 
 
         write(ounit,*)
@@ -1109,34 +1164,34 @@ module trexio_read_data
 
 #if defined(TREXIO_FOUND)
         if (wid) then
-        do while (icount == BUFSIZE)
-            if (offset < ndet) then
-                rc = trexio_read_determinant_list(trex_determinant_file, offset, icount, buffer)
-                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_list failed', __FILE__, __LINE__)
-                offset = offset + icount
-            else
-                icount = 0
-            end if
+            do while (icount == BUFSIZE)
+                if (offset < ndet) then
+                    rc = trexio_read_determinant_list(trex_determinant_file, offset, icount, buffer)
+                    call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_determinant_list failed', __FILE__, __LINE__)
+                    offset = offset + icount
+                else
+                    icount = 0
+                end if
 
-            do m=1,icount
-                rc = trexio_to_orbital_list_up_dn(int64_num, buffer(1,1,m), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
-                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_to_orbital_list_up_dn failed', __FILE__, __LINE__)
-                write(temp, '(1x,a,i0,a,i0,a)') '(', occ_num_up, '(i4,1x),', occ_num_dn, '(i4,1x))'
-                write(ounit, temp) (orb_list_up(i), i = 1, occ_num_up), (orb_list_dn(i), i = 1, occ_num_dn)
+                do m=1,icount
+                    rc = trexio_to_orbital_list_up_dn(int64_num, buffer(1,1,m), orb_list_up, orb_list_dn, occ_num_up, occ_num_dn)
+                    call trexio_error(rc, TREXIO_SUCCESS, 'trexio_to_orbital_list_up_dn failed', __FILE__, __LINE__)
+                    write(temp, '(1x,a,i0,a,i0,a)') '(', occ_num_up, '(i4,1x),', occ_num_dn, '(i4,1x))'
+                    write(ounit, temp) (orb_list_up(i), i = 1, occ_num_up), (orb_list_dn(i), i = 1, occ_num_dn)
 
-                do i = 1, occ_num_up
-                    iworbd(i, m) = orb_list_up(i)
-                enddo
-                do i = 1, occ_num_dn
-                    iworbd(occ_num_up + i, m) = orb_list_dn(i)
-                enddo
+                    do i = 1, occ_num_up
+                        iworbd(i, m) = orb_list_up(i)
+                    enddo
+                    do i = 1, occ_num_dn
+                        iworbd(occ_num_up + i, m) = orb_list_dn(i)
+                    enddo
 
+                end do
             end do
-        end do
 
-        deallocate(buffer)
-        deallocate(orb_list_up)
-        deallocate(orb_list_dn)
+            deallocate(buffer)
+            deallocate(orb_list_up)
+            deallocate(orb_list_dn)
         endif
 #endif
         call bcast(iworbd)

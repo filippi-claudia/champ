@@ -747,6 +747,12 @@ subroutine read_orbitals_file(file_orbitals)
     ! printing of the lcao orbitals coefficients will be done by write_orb_loc subroutine.
     write(ounit,*) "Orbital coefficients are written to the output.log file"
 
+    ! debug Ravindra
+    do iorb = 1, 2
+        write(ounit,'(66f16.10)') (coef(ibasis, iorb, 1), ibasis=1, nbasis)
+    enddo
+
+
     ilcao = ilcao + 1
 
     call bcast(ilcao)
