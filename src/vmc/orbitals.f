@@ -55,14 +55,10 @@ c Modified by A. Scemama
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
-c     real(dp), dimension(nelec,nbasis) :: bhin
-c     real(dp), dimension(3*nelec,nbasis) :: dbhin
-c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
+      
 ccc   QMCkl
-      real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
       real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
-      real(dp), allocatable :: mo_coef_qmckl(:,:)
       integer :: rc
       integer*8 :: n8
 ccc
@@ -137,6 +133,9 @@ c Lagrange interpolation
 c no 3d interpolation
       else
          
+         ider=2
+         if(iforce_analy.eq.1) ider=3
+         
          if (use_qmckl) then
 
 !     The number of MOs in QMCkl is not necessarily the same as here.                                                                                                                         
@@ -151,6 +150,7 @@ c no 3d interpolation
             end if
 
             allocate(mo_vgl_qmckl(n8, 5, nelec))
+
 
 !     Send electron coordinates to QMCkl to compute the MOs at these positions                                                                                                                
             rc = qmckl_set_point(qmckl_ctx, 'N', nelec*1_8, x, nelec*3_8)                                                                                                                     
@@ -168,6 +168,8 @@ c no 3d interpolation
                print *, 'Error getting MOs from QMCkl'
             end if
 
+
+
             do i=1,nelec
                do iorb=1,norb+nadorb
                   orb  (  i,iorb) = mo_vgl_qmckl(iorb,1,i)
@@ -178,12 +180,11 @@ c no 3d interpolation
                end do
             end do
             
+            
             deallocate(mo_vgl_qmckl)
             
          else
 c     get basis functions for all electrons
-            ider=2
-            if(iforce_analy.eq.1) ider=3
             call basis_fns(1,nelec,rvec_en,r_en,ider)
 
 c     in alternativa al loop 26
@@ -320,9 +321,6 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
-      ! Include all the const module for QMCkl. Avoid 'only', otherwise you will
-      ! need to change it every time QMCkl is updated, or you will need
-      ! to have extra ifdef statements here.
       use const !, only: nelec, ipr, use_qmckl, qmckl_ctx
 
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
@@ -356,9 +354,7 @@ c-------------------------------------------------------------------------------
 
 
 ccc   QMCkl
-      real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
       real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
-      real(dp), allocatable :: mo_coef_qmckl(:,:)
       integer :: rc
       integer*8 :: n8
 ccc
@@ -387,7 +383,7 @@ c Lagrange interpolation
          else
           ier=1
         endif
-
+        
         if(ier.eq.1) then
 c get basis functions for electron iel
            
@@ -395,9 +391,9 @@ c get basis functions for electron iel
            if(iflag.gt.0) ider=2
            
            
-c           if (use_qmckl) then
+!           if (use_qmckl) then
            if (0) then
-
+              
 !     compute only a subset of MOs in QMCkl.
               
               rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
@@ -409,26 +405,54 @@ c           if (use_qmckl) then
               allocate(mo_vgl_qmckl(n8, 5, 1))
               
 !     Send electron coordinates to QMCkl to compute the MOs at these positions                                                                                                                
-              rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, x, 3_8)                                                                                                                     
+              rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, x(:,iel), 3_8)                                                                                                                     
               if (rc /= QMCKL_SUCCESS) then
                  print *, 'Error setting electron coordinates in QMCkl'
               end if
               
-              if (rc /= QMCKL_SUCCESS) then
-                 print *, 'Error setting electron coordinates in QMCkl'
-              end if
-
 !     Compute the MOs                                                                                                                                                                         
               rc = qmckl_get_mo_basis_mo_vgl_inplace(
      &             qmckl_ctx,
      &             mo_vgl_qmckl,
      &             n8*5_8)
-            
+              
               if (rc /= QMCKL_SUCCESS) then
                  print *, 'Error getting MOs from QMCkl'
               end if
+              
 
+!     to compare against champ
+              call basis_fns(iel,iel,rvec_en,r_en,ider)
+              
 
+              do iorb=1,norb
+                 orbn(iorb)=0
+                 dorbn(iorb,1)=0
+                 dorbn(iorb,2)=0
+                 dorbn(iorb,3)=0
+                 ddorbn(iorb)=0
+                 do m=1,nbasis
+                    orbn(iorb)=orbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
+                    dorbn(iorb,1)=dorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                    dorbn(iorb,2)=dorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                    dorbn(iorb,3)=dorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
+
+                    if(iflag.gt.0) ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
+                 enddo
+              enddo
+              
+              
+!comparing champ and qmckl orbitals
+              do iorb=1,norb
+                 print*,orbn(iorb),mo_vgl_qmckl(iorb,1,1)
+                 print*,dorbn(iorb,1),mo_vgl_qmckl(iorb,2,1)
+                 print*,dorbn(iorb,2),mo_vgl_qmckl(iorb,3,1)
+                 print*,dorbn(iorb,3),mo_vgl_qmckl(iorb,4,1)
+                 if(iflag.gt.0) print*,ddorbn(iorb),mo_vgl_qmckl(iorb,5,1)
+              enddo
+              
+
+              
               do iorb=1,norb
                  orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
                  dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
@@ -436,14 +460,14 @@ c           if (use_qmckl) then
                  dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
                  if(iflag.gt.0) ddorbn(iorb)=mo_vgl_qmckl(iorb,5,1)
               enddo
-
+              
               deallocate(mo_vgl_qmckl)
               
               
            else
               
               call basis_fns(iel,iel,rvec_en,r_en,ider)
-
+              
 !     Vectorization dependent code. useful for AVX512 and AVX2
 #ifdef VECTORIZATION
               do iorb=1,norb
