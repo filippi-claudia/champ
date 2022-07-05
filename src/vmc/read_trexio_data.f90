@@ -192,11 +192,18 @@ module trexio_read_data
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
         use atom,               only: ncent, ncent_tot, iwctype, nctype_tot
+        use ghostatom,          only: newghostype
         use coefs,              only: coef, nbasis, norb
         use inputflags,         only: ilcao
         use numbas,             only: nrbas
         use numbas,             only: iwrwf, numr
         use numbas1,            only: iwlbas, nbastyp
+
+        use basis,              only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
+        use basis,              only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
+        use basis,              only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
+        use basis,              only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
+
         use orbval,             only: nadorb
         use pcm_fdc,            only: fs
         use vmc_mod,            only: norb_tot
@@ -218,7 +225,7 @@ module trexio_read_data
         character(len=120)              :: temp3, file_trexio_path
         integer                         :: iunit, iostat, iwft
         integer                         :: iorb, ibasis, i, j, k, l
-        integer                         :: counter, count1, count2, count3, summ
+        integer                         :: counter, count0, count1, count2, count3, summ
         integer                         :: index_ao, index_nrad
         integer                         :: lower_range, upper_range
         integer                         :: cum_rad_per_cent, cum_ao_per_cent
@@ -227,7 +234,7 @@ module trexio_read_data
 
 !       trexio
         integer                         :: basis_num_shell
-        integer, allocatable            :: basis_nucleus_index(:)
+        integer, allocatable            :: basis_nucleus_index(:), ao_index(:), ao_frequency(:), unique_index(:)
         integer, allocatable            :: basis_shell_ang_mom(:)
         integer, allocatable            :: ao_ordering(:)
         real(dp), allocatable           :: unshuffled_coef(:,:,:)
@@ -310,6 +317,8 @@ module trexio_read_data
         call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_nucleus_index', __FILE__, __LINE__)
 #endif
 
+        numr = 1            ! Debug Check this statement. Not sure how to store multiple bfinfo files in single trexio
+
         ! Generate the index of the slm for each AO
         ! i.e. index_slm(i) = the slm index of the i-th AO
         ! The list follows the following order:
@@ -340,6 +349,7 @@ module trexio_read_data
             do ii = 1, slm_per_l(k+1)
                 index_ao = index_ao + 1
                 index_slm(index_ao) = sum(slm_per_l(1:k)) + 1 + count2
+
                 count2 = count2 + 1
 
                 if ((basis_shell_ang_mom(l) == 0) ) then
@@ -370,24 +380,282 @@ module trexio_read_data
         ! print*, "num rad per cent " ,  num_rad_per_cent
         ! print*, "num ao per cent " , num_ao_per_cent
 
-        do i = 1, nbasis
-            print*, "index slm ", i, index_slm(i)
 
-        enddo
+        allocate (nbastyp(nctype_tot))
+        allocate (ns(nctype_tot))
+        allocate (npx(nctype_tot))
+        allocate (npy(nctype_tot))
+        allocate (npz(nctype_tot))
+        allocate (ndxx(nctype_tot))
+        allocate (ndxy(nctype_tot))
+        allocate (ndxz(nctype_tot))
+        allocate (ndyy(nctype_tot))
+        allocate (ndyz(nctype_tot))
+        allocate (ndzz(nctype_tot))
+        allocate (nfxxx(nctype_tot))
+        allocate (nfxxy(nctype_tot))
+        allocate (nfxxz(nctype_tot))
+        allocate (nfxyy(nctype_tot))
+        allocate (nfxyz(nctype_tot))
+        allocate (nfxzz(nctype_tot))
+        allocate (nfyyy(nctype_tot))
+        allocate (nfyyz(nctype_tot))
+        allocate (nfyzz(nctype_tot))
+        allocate (nfzzz(nctype_tot))
+        allocate (ngxxxx(nctype_tot))
+        allocate (ngxxxy(nctype_tot))
+        allocate (ngxxxz(nctype_tot))
+        allocate (ngxxyy(nctype_tot))
+        allocate (ngxxyz(nctype_tot))
+        allocate (ngxxzz(nctype_tot))
+        allocate (ngxyyy(nctype_tot))
+        allocate (ngxyyz(nctype_tot))
+        allocate (ngxyzz(nctype_tot))
+        allocate (ngxzzz(nctype_tot))
+        allocate (ngyyyy(nctype_tot))
+        allocate (ngyyyz(nctype_tot))
+        allocate (ngyyzz(nctype_tot))
+        allocate (ngyzzz(nctype_tot))
+        allocate (ngzzzz(nctype_tot))
+
+
 
         ! Obtain the index of radials for each unique center (iwrwf)
         if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot))
         if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctype_tot))
+        if (.not. allocated(ao_index)) allocate (ao_index(35), source=0)            ! ao upto g orbitals
+        if (.not. allocated(ao_frequency)) allocate (ao_frequency(35), source=0)          ! ao upto g orbitals
+        if (.not. allocated(unique_index)) allocate (unique_index(35), source=0)    ! ao upto g orbitals
 
         lower_range = 1; count1 = 1
         do i = 1, ncent_tot
             upper_range = lower_range + num_ao_per_cent(iwctype(i)) -1
+
+            ! the frequency of number of ao's per l value is what we need from the following function
+            call unique_elements(num_ao_per_cent(iwctype(i)), index_slm(lower_range:upper_range), ao_index(1:35), count0, ao_frequency, unique_index)
+            ! reset ao_index to zero; it is not used anyway
+            ao_index = 0
+
+            ns(iwctype(i))     = ao_frequency(1)
+            npx(iwctype(i))    = ao_frequency(2)
+            npy(iwctype(i))    = ao_frequency(3)
+            npz(iwctype(i))    = ao_frequency(4)
+            ndxx(iwctype(i))   = ao_frequency(5)
+            ndxy(iwctype(i))   = ao_frequency(6)
+            ndxz(iwctype(i))   = ao_frequency(7)
+            ndyy(iwctype(i))   = ao_frequency(8)
+            ndyz(iwctype(i))   = ao_frequency(9)
+            ndzz(iwctype(i))   = ao_frequency(10)
+            nfxxx(iwctype(i))  = ao_frequency(11)
+            nfxxy(iwctype(i))  = ao_frequency(12)
+            nfxxz(iwctype(i))  = ao_frequency(13)
+            nfxyy(iwctype(i))  = ao_frequency(14)
+            nfxyz(iwctype(i))  = ao_frequency(15)
+            nfxzz(iwctype(i))  = ao_frequency(16)
+            nfyyy(iwctype(i))  = ao_frequency(17)
+            nfyyz(iwctype(i))  = ao_frequency(18)
+            nfyzz(iwctype(i))  = ao_frequency(19)
+            nfzzz(iwctype(i))  = ao_frequency(20)
+            ngxxxx(iwctype(i)) = ao_frequency(21)
+            ngxxxy(iwctype(i)) = ao_frequency(22)
+            ngxxxz(iwctype(i)) = ao_frequency(23)
+            ngxxyy(iwctype(i)) = ao_frequency(24)
+            ngxxyz(iwctype(i)) = ao_frequency(25)
+            ngxxzz(iwctype(i)) = ao_frequency(26)
+            ngxyyy(iwctype(i)) = ao_frequency(27)
+            ngxyyz(iwctype(i)) = ao_frequency(28)
+            ngxyzz(iwctype(i)) = ao_frequency(29)
+            ngxzzz(iwctype(i)) = ao_frequency(30)
+            ngyyyy(iwctype(i)) = ao_frequency(31)
+            ngyyyz(iwctype(i)) = ao_frequency(32)
+            ngyyzz(iwctype(i)) = ao_frequency(33)
+            ngyzzz(iwctype(i)) = ao_frequency(34)
+            ngzzzz(iwctype(i)) = ao_frequency(35)
+
+            write (*, '(100i3)') ns(iwctype(i)), npx(iwctype(i)), npy(iwctype(i)), npz(iwctype(i)), &
+            ndxx(iwctype(i)), ndxy(iwctype(i)), ndxz(iwctype(i)), ndyy(iwctype(i)), ndyz(iwctype(i)), ndzz(iwctype(i)), &
+            nfxxx(iwctype(i)), nfxxy(iwctype(i)), nfxxz(iwctype(i)), nfxyy(iwctype(i)), nfxyz(iwctype(i)), nfxzz(iwctype(i)), &
+            nfyyy(iwctype(i)), nfyyz(iwctype(i)), nfyzz(iwctype(i)), nfzzz(iwctype(i)), &
+            ngxxxx(iwctype(i)), ngxxxy(iwctype(i)), ngxxxz(iwctype(i)), ngxxyy(iwctype(i)), ngxxyz(iwctype(i)), &
+            ngxxzz(iwctype(i)), ngxyyy(iwctype(i)), ngxyyz(iwctype(i)), ngxyzz(iwctype(i)), ngxzzz(iwctype(i)), &
+            ngyyyy(iwctype(i)), ngyyyz(iwctype(i)), ngyyzz(iwctype(i)), ngyzzz(iwctype(i)), ngzzzz(iwctype(i))
+
+            if (numr .gt. 0) then
+                nbastyp(iwctype(i)) = num_ao_per_cent(iwctype(i))
+            endif
+
+            count1 = 1
             do j = lower_range, upper_range
                 iwrwf(count1, iwctype(i)) = ao_ordering(j)
                 count1 = count1 + 1
             enddo
             lower_range = upper_range + 1
+
+
+            ! reset the ao_frequency array to zero
+            ao_frequency = 0
         enddo
+
+        if (numr .gt. 0) then
+            do i = 1, nctype_tot
+                jj = 0
+                do j = 1, ns(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 1
+                enddo
+                do j = 1, npx(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 2
+                enddo
+                do j = 1, npy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 3
+                enddo
+                do j = 1, npz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 4
+                enddo
+                do j = 1, ndxx(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 5
+                enddo
+                do j = 1, ndxy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 6
+                enddo
+                do j = 1, ndxz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 7
+                enddo
+                do j = 1, ndyy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 8
+                enddo
+                do j = 1, ndyz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 9
+                enddo
+                do j = 1, ndzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 10
+                enddo
+                do j = 1, nfxxx(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 11
+                enddo
+                do j = 1, nfxxy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 12
+                enddo
+                do j = 1, nfxxz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 13
+                enddo
+                do j = 1, nfxyy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 14
+                enddo
+                do j = 1, nfxyz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 15
+                enddo
+                do j = 1, nfxzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 16
+                enddo
+                do j = 1, nfyyy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 17
+                enddo
+                do j = 1, nfyyz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 18
+                enddo
+                do j = 1, nfyzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 19
+                enddo
+                do j = 1, nfzzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 20
+                enddo
+                do j = 1, ngxxxx(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 21
+                enddo
+                do j = 1, ngxxxy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 22
+                enddo
+                do j = 1, ngxxxz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 23
+                enddo
+                do j = 1, ngxxyy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 24
+                enddo
+                do j = 1, ngxxyz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 25
+                enddo
+                do j = 1, ngxxzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 26
+                enddo
+                do j = 1, ngxyyy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 27
+                enddo
+                do j = 1, ngxyyz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 28
+                enddo
+                do j = 1, ngxyzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 29
+                enddo
+                do j = 1, ngxzzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 30
+                enddo
+                do j = 1, ngyyyy(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 31
+                enddo
+                do j = 1, ngyyyz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 32
+                enddo
+                do j = 1, ngyyzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 33
+                enddo
+                do j = 1, ngyzzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 34
+                enddo
+                do j = 1, ngzzzz(i)
+                    jj = jj + 1
+                    iwlbas(jj, i) = 35
+                enddo
+            enddo
+        endif
+
+
+
+
+
+        do i = 1, nctype_tot
+            write(*,*) "iwrwf(:,i) = ", (iwrwf(j,i), j=1, 35)
+        enddo
+
+        do i = 1, nctype_tot
+            write(*,*) "iwlbas(:,i) = ", (iwlbas(j,i), j = 1, 35)
+        enddo
+
+
+
 
 
 
