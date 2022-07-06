@@ -34,7 +34,7 @@ c Modified by A. Scemama
       use grid3d_orbitals, only: lagrange_mos, lagrange_mos_grad, lagrange_mos_2
 #if defined(TREXIO_FOUND)
       use trexio_basis_fns_mod, only: trexio_basis_fns
-      use trexio_read_data, only: trexio_has_orbitals
+      use trexio_read_data, only: trexio_has_group_orbitals
 #endif
       use basis_fns_mod, only: basis_fns
 
@@ -68,7 +68,7 @@ c spline interpolation
             enddo
 
             if(ier.eq.1) then
-              if (trexio_has_orbitals) then
+              if (trexio_has_group_orbitals) then
                 call trexio_basis_fns(i,i,rvec_en,r_en,2)
               else
                 call basis_fns(i,i,rvec_en,r_en,2)
@@ -102,7 +102,7 @@ c spline interpolation
            call lagrange_mos_2(5,x(1,i),ddorb,i,ier)
 
            if(ier.eq.1) then
-            if (trexio_has_orbitals) then
+            if (trexio_has_group_orbitals) then
               call trexio_basis_fns(i,i,rvec_en,r_en,2)
             else
               call basis_fns(i,i,rvec_en,r_en,2)
@@ -131,7 +131,7 @@ c no 3d interpolation
 c get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
-         if (trexio_has_orbitals) then
+         if (trexio_has_group_orbitals) then
           print*, "trexio_found  but not being used"
           call trexio_basis_fns(1,nelec,rvec_en,r_en,ider)
          else
