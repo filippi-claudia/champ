@@ -216,7 +216,7 @@ module trexio_read_data
         use trexio
         use error,              only: trexio_error
         use contrl_file,        only: backend
-        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
+        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering
 #endif
         implicit none
 
@@ -238,7 +238,7 @@ module trexio_read_data
         integer                         :: basis_num_shell
         integer, allocatable            :: basis_nucleus_index(:), ao_index(:), ao_frequency(:), unique_index(:)
         integer, allocatable            :: basis_shell_ang_mom(:), compare(:)
-        integer, allocatable            :: ao_ordering(:), champ_ao_ordering(:)
+        integer, allocatable            :: ao_ordering(:), ao_radial_index(:)
         integer, allocatable            :: local_array_s(:,:), local_array_p(:,:), local_array_d(:,:), local_array_f(:,:), local_array_g(:,:)
         real(dp), allocatable           :: unshuffled_coef(:,:,:)
 
@@ -298,7 +298,8 @@ module trexio_read_data
         if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
-        if (.not. allocated(ao_ordering))            allocate(ao_ordering(nbasis))
+        ! if (.not. allocated(ao_ordering))            allocate(ao_ordering(nbasis))
+        if (.not. allocated(ao_radial_index))        allocate(ao_radial_index(nbasis))
         ! if (.not. allocated(champ_ao_ordering))      allocate(champ_ao_ordering(nbasis))
 
         ! Read the orbitals
@@ -339,7 +340,7 @@ module trexio_read_data
         !       +-----------------------------------------------------------------------------
         !          xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
 
-        counter = 0; count1 = 1; count2 = 0; count3 = 0
+        counter = 0; count1 = 1; count2 = 0
         cum_rad_per_cent = 0
         cum_ao_per_cent  = 0
         index_ao = 0; jj = 1
@@ -357,30 +358,30 @@ module trexio_read_data
             counter = counter + slm_per_l(k+1)
             count2 = 0;
             do ii = 1, slm_per_l(k+1)
+
                 index_ao = index_ao + 1
                 index_slm(index_ao) = sum(slm_per_l(1:k)) + 1 + count2
                 count2 = count2 + 1
 
-                if ((basis_shell_ang_mom(l) == 0) ) then
-                    count3 = count3 + 1
-                    ao_ordering(index_ao) = count3
-                else
-                    count3 = 0
-                    ao_ordering(index_ao) = count2 +  slm_per_l(k+1)
-                endif
 
                 cum_ao_per_cent = cum_ao_per_cent + 1
             end do
+
             jj = jj + 1
+
             cum_rad_per_cent = cum_rad_per_cent + 1
 
             ! The following if loop is for counting the number of radial functions
             ! and number of AOs per center
             if (count1 == basis_nucleus_index(l)) then
                 num_rad_per_cent(count1) = cum_rad_per_cent
+                do ii = 1, slm_per_l(k+1)
+                    ao_ordering = [ao_ordering, cum_rad_per_cent]
+                enddo
                 num_ao_per_cent(count1) = cum_ao_per_cent
             else
                 cum_rad_per_cent = 1
+                ao_ordering = [ao_ordering, cum_rad_per_cent]
                 cum_ao_per_cent  = 1
                 count1 = count1 + 1
             end if
@@ -485,20 +486,14 @@ module trexio_read_data
                 nbastyp(iwctype(i)) = num_ao_per_cent(iwctype(i))
             endif
 
-            count1 = 1
-            do j = lower_range, upper_range
-                iwrwf(count1, iwctype(i)) = ao_ordering(j)
-                count1 = count1 + 1
-            enddo
             lower_range = upper_range + 1
-
 
             ! reset the ao_frequency array to zero
             ao_frequency = 0
         enddo
 
         ! For obtaining champ ao ordering -------------------------------
-        lower_range = 1; count1 = 1; index = 1; ind = 1; counter = 0; count2 = 0
+        lower_range = 1; count1 = 1; index = 1; ind = 1; counter = 0; count2 = 0; count3 = 0
 
         allocate(local_array_s(1,10))
         allocate(local_array_p(3,10))
@@ -509,7 +504,7 @@ module trexio_read_data
         do i = 1, ncent_tot
             upper_range = lower_range + num_rad_per_cent(i) -1
 
-            count1 = 2;
+            count1 = 2; count3 = 1
             count_s = 0; count_p = 0; count_d = 0; count_f = 0; count_g = 0
             do k = lower_range, upper_range
                 l = basis_shell_ang_mom(k)
@@ -548,7 +543,6 @@ module trexio_read_data
             enddo
 
             ! Construct the champ ao ordering array
-            champ_ao_ordering = [champ_ao_ordering, local_array_s(1,1:count_s)]
 
             do j = 1, count_s
                 champ_ao_ordering = [champ_ao_ordering, local_array_s(1,j)]
@@ -584,7 +578,26 @@ module trexio_read_data
         enddo
 
 !       At this point the array champ_ao_ordering contains the indices of the AOs in the order of the basis set.
-        ! print*, "champ ao ordering", champ_ao_ordering
+        print*, "champ ao ordering", champ_ao_ordering
+
+        do i = 1, nbasis
+            ao_radial_index(i) = ao_ordering(champ_ao_ordering(i))
+        enddo
+
+
+!       This is for obtaining iwrwf
+        lower_range = 1; count1 = 1
+        do i = 1, ncent_tot
+            upper_range = lower_range + num_ao_per_cent(iwctype(i)) -1
+            count1 = 1
+            do j = lower_range, upper_range
+                iwrwf(count1, iwctype(i)) = ao_radial_index(j)
+                count1 = count1 + 1
+            enddo
+            lower_range = upper_range + 1
+        enddo
+
+
 
         ! ---------------------------------------------------------------
 
@@ -769,13 +782,13 @@ module trexio_read_data
 
         do i = 1, norb
             do j = 1, nbasis
-                coef(j, i, 1) = unshuffled_coef(1, ao_ordering(j), i)
+                coef(j, i, 1) = unshuffled_coef(1, champ_ao_ordering(j), i)
             enddo
         enddo
 
-        ! do i = 1, norb
-        !     write(*,'(66f16.10)') (coef(j, i, 1), j=1, nbasis)
-        ! enddo
+        do i = 1, nbasis
+            write(ounit,'(66f16.10)') (coef(j, i, 1), j=1, nbasis)
+        enddo
 
 
         write(ounit,*)
@@ -828,7 +841,7 @@ module trexio_read_data
             if (numr .gt. 0) then
                 write(ounit, '(100i3)') (iwrwf(ib, i), ib=1, nbastyp(i))
             endif
-
+            write(ounit,*)
         enddo
 
         write(ounit,*)
