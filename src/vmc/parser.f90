@@ -165,6 +165,7 @@ subroutine parser
   use trexio_read_data, only: read_trexio_symmetry_file
   use trexio_read_data, only: read_trexio_determinant_file
   use trexio_read_data, only: read_trexio_ecp_file
+  use trexio_read_data, only: write_trexio_basis_num_info_file
   use parser_read_data, only: header_printing
   use misc_grdnts,      only: inpwrt_zmatrix, inpwrt_grdnts_zmat, inpwrt_grdnts_cart
   use set_input_data,   only: hessian_zmat_define, modify_zmat_define
@@ -792,6 +793,8 @@ subroutine parser
 
   if ( fdf_load_defined('basis_num_info') ) then
     call read_basis_num_info_file(file_basis_num_info)
+  elseif ( fdf_load_defined('trexio') ) then
+    call write_trexio_basis_num_info_file(file_trexio)
   elseif (.not. fdf_block('basis_num_info', bfdf)) then
   ! call fdf_read_eigenvalues_block(bfdf)
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."

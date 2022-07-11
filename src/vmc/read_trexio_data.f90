@@ -26,6 +26,7 @@ module trexio_read_data
     public :: read_trexio_basis_file
     public :: read_trexio_determinant_file
     public :: read_trexio_ecp_file
+    public :: write_trexio_basis_num_info_file
     contains
 
     subroutine read_trexio_molecule_file(file_trexio)
@@ -228,6 +229,7 @@ module trexio_read_data
         integer                         :: counter, count0, count1, count2, count3, summ
         integer                         :: index_ao, index_nrad
         integer                         :: lower_range, upper_range
+        integer                         :: count_s, count_p, count_d, count_f, count_g
         integer                         :: cum_rad_per_cent, cum_ao_per_cent
         logical                         :: exist
         logical                         :: skip = .true.
@@ -235,10 +237,10 @@ module trexio_read_data
 !       trexio
         integer                         :: basis_num_shell
         integer, allocatable            :: basis_nucleus_index(:), ao_index(:), ao_frequency(:), unique_index(:)
-        integer, allocatable            :: basis_shell_ang_mom(:)
-        integer, allocatable            :: ao_ordering(:)
+        integer, allocatable            :: basis_shell_ang_mom(:), compare(:)
+        integer, allocatable            :: ao_ordering(:), champ_ao_ordering(:)
+        integer, allocatable            :: local_array_s(:,:), local_array_p(:,:), local_array_d(:,:), local_array_f(:,:), local_array_g(:,:)
         real(dp), allocatable           :: unshuffled_coef(:,:,:)
-
 
         !   Formatting
         character(len=100)               :: int_format     = '(A, T60, I0)'
@@ -247,7 +249,7 @@ module trexio_read_data
 
         ! trexio
         integer(8)                      :: trex_orbitals_file
-        integer                         :: rc = 1, ii, jj
+        integer                         :: rc = 1, ii, jj, ind, index
 
         iwft = 1
         trex_orbitals_file = 0
@@ -292,10 +294,12 @@ module trexio_read_data
         ! Do the allocations based on the number of shells and primitives
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
+        if (.not. allocated(compare))    allocate(compare(basis_num_shell))
         if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
-        if (.not. allocated(ao_ordering))      allocate(ao_ordering(nbasis))
+        if (.not. allocated(ao_ordering))            allocate(ao_ordering(nbasis))
+        ! if (.not. allocated(champ_ao_ordering))      allocate(champ_ao_ordering(nbasis))
 
         ! Read the orbitals
         if (wid) then
@@ -338,18 +342,23 @@ module trexio_read_data
         counter = 0; count1 = 1; count2 = 0; count3 = 0
         cum_rad_per_cent = 0
         cum_ao_per_cent  = 0
-        index_ao = 0; jj = 0
+        index_ao = 0; jj = 1
         ! The following loop will generate the index_slm array which tells
         ! which AO is of which type (from the above list)
-
+        compare = 0
         do l = 1, basis_num_shell
             k = basis_shell_ang_mom(l)
+
+            if (k == 2) then
+                compare(l) = 2
+            else
+                compare(l) = -1
+            endif
             counter = counter + slm_per_l(k+1)
             count2 = 0;
             do ii = 1, slm_per_l(k+1)
                 index_ao = index_ao + 1
                 index_slm(index_ao) = sum(slm_per_l(1:k)) + 1 + count2
-
                 count2 = count2 + 1
 
                 if ((basis_shell_ang_mom(l) == 0) ) then
@@ -377,8 +386,8 @@ module trexio_read_data
             end if
         enddo ! loop on shells
 
-        ! print*, "num rad per cent " ,  num_rad_per_cent
-        ! print*, "num ao per cent " , num_ao_per_cent
+        print*, "num rad per cent " ,  num_rad_per_cent
+        print*, "num ao per cent " , num_ao_per_cent
 
 
         allocate (nbastyp(nctype_tot))
@@ -472,14 +481,6 @@ module trexio_read_data
             ngyzzz(iwctype(i)) = ao_frequency(34)
             ngzzzz(iwctype(i)) = ao_frequency(35)
 
-            write (*, '(100i3)') ns(iwctype(i)), npx(iwctype(i)), npy(iwctype(i)), npz(iwctype(i)), &
-            ndxx(iwctype(i)), ndxy(iwctype(i)), ndxz(iwctype(i)), ndyy(iwctype(i)), ndyz(iwctype(i)), ndzz(iwctype(i)), &
-            nfxxx(iwctype(i)), nfxxy(iwctype(i)), nfxxz(iwctype(i)), nfxyy(iwctype(i)), nfxyz(iwctype(i)), nfxzz(iwctype(i)), &
-            nfyyy(iwctype(i)), nfyyz(iwctype(i)), nfyzz(iwctype(i)), nfzzz(iwctype(i)), &
-            ngxxxx(iwctype(i)), ngxxxy(iwctype(i)), ngxxxz(iwctype(i)), ngxxyy(iwctype(i)), ngxxyz(iwctype(i)), &
-            ngxxzz(iwctype(i)), ngxyyy(iwctype(i)), ngxyyz(iwctype(i)), ngxyzz(iwctype(i)), ngxzzz(iwctype(i)), &
-            ngyyyy(iwctype(i)), ngyyyz(iwctype(i)), ngyyzz(iwctype(i)), ngyzzz(iwctype(i)), ngzzzz(iwctype(i))
-
             if (numr .gt. 0) then
                 nbastyp(iwctype(i)) = num_ao_per_cent(iwctype(i))
             endif
@@ -495,6 +496,101 @@ module trexio_read_data
             ! reset the ao_frequency array to zero
             ao_frequency = 0
         enddo
+
+        ! For obtaining champ ao ordering -------------------------------
+        lower_range = 1; count1 = 1; index = 1; ind = 1; counter = 0; count2 = 0
+
+        allocate(local_array_s(1,10))
+        allocate(local_array_p(3,10))
+        allocate(local_array_d(6,10))
+        allocate(local_array_f(10,10))
+        allocate(local_array_g(15,10))
+        lower_range = 1
+        do i = 1, ncent_tot
+            upper_range = lower_range + num_rad_per_cent(i) -1
+
+            count1 = 2;
+            count_s = 0; count_p = 0; count_d = 0; count_f = 0; count_g = 0
+            do k = lower_range, upper_range
+                l = basis_shell_ang_mom(k)
+                counter = counter + slm_per_l(l+1)
+
+                ind = index
+
+                count1 = count1 + 1
+
+                count2 = 0;
+                if (l == 0) count_s = count_s + 1
+                if (l == 1) count_p = count_p + 1
+                if (l == 2) count_d = count_d + 1
+                if (l == 3) count_f = count_f + 1
+                if (l == 4) count_g = count_g + 1
+
+                do ii = 1, slm_per_l(l+1)
+                    count2 = count2 + 1
+
+                    if (l == 0) then
+                        local_array_s(count2,count_s) = index
+                    elseif (l == 1) then
+                        local_array_p(count2,count_p) = index
+                    elseif (l == 2) then
+                        local_array_d(count2,count_d) = index
+                    elseif (l == 3) then
+                        local_array_f(count2,count_f) = index
+                    elseif (l == 4) then
+                        local_array_g(count2,count_g) = index
+                    endif
+
+                    index = index + 1
+                enddo
+                ind = ind + 1
+
+            enddo
+
+            ! Construct the champ ao ordering array
+            champ_ao_ordering = [champ_ao_ordering, local_array_s(1,1:count_s)]
+
+            do j = 1, count_s
+                champ_ao_ordering = [champ_ao_ordering, local_array_s(1,j)]
+            enddo
+
+
+            do k = 1, 3
+                do j = 1, count_p
+                    champ_ao_ordering = [champ_ao_ordering, local_array_p(k,j)]
+                enddo
+            enddo
+
+            do k = 1, 6
+                do j = 1, count_d
+                    champ_ao_ordering = [champ_ao_ordering, local_array_d(k,j)]
+                enddo
+            enddo
+
+            do k = 1, 10
+                do j = 1, count_f
+                    champ_ao_ordering = [champ_ao_ordering, local_array_f(k,j)]
+                enddo
+            enddo
+
+            do k = 1, 15
+                do j = 1, count_g
+                    champ_ao_ordering = [champ_ao_ordering, local_array_g(k,j)]
+                enddo
+            enddo
+
+
+            lower_range = upper_range + 1
+        enddo
+
+!       At this point the array champ_ao_ordering contains the indices of the AOs in the order of the basis set.
+        ! print*, "champ ao ordering", champ_ao_ordering
+
+        ! ---------------------------------------------------------------
+
+
+
+
 
         if (numr .gt. 0) then
             do i = 1, nctype_tot
@@ -687,6 +783,60 @@ module trexio_read_data
         write(ounit,*) "----------------------------------------------------------"
 
     end subroutine read_trexio_orbitals_file
+
+    subroutine write_trexio_basis_num_info_file(file_trexio)
+        !> This subroutine prints the generated information about the numerical basis.
+        !> The data is already generated in the read_trexio_orbitals_file.
+        !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+        !! @date 06 July 2022
+        use custom_broadcast,   only: bcast
+        use mpiconf,            only: wid
+        use contrl_file,        only: ounit, errunit
+        use atom,               only: nctype_tot
+        use inputflags,         only: ibasis_num
+        use numbas,             only: iwrwf, numr
+        use numbas1,            only: iwlbas, nbastyp
+
+        use basis,              only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
+        use basis,              only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
+        use basis,              only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
+        use basis,              only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
+
+        use wfsec,              only: nwftype
+
+        implicit none
+
+    !   local use
+        character(len=72), intent(in)   :: file_trexio
+        integer                         :: i, ib
+
+        write(ounit,*) '---------------------------------------------------------------------------'
+        write(ounit,'(a)')  " Basis function types and pointers to radial parts tables generated from :: " &
+                            // trim(file_trexio)
+        write(ounit,*) '---------------------------------------------------------------------------'
+
+
+        do i = 1, nctype_tot
+            write (ounit, '(100i3)') ns(i), npx(i), npy(i), npz(i), &
+            ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
+            nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
+            nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i), &
+            ngxxxx(i), ngxxxy(i), ngxxxz(i), ngxxyy(i), ngxxyz(i), &
+            ngxxzz(i), ngxyyy(i), ngxyyz(i), ngxyzz(i), ngxzzz(i), &
+            ngyyyy(i), ngyyyz(i), ngyyzz(i), ngyzzz(i), ngzzzz(i)
+
+            if (numr .gt. 0) then
+                write(ounit, '(100i3)') (iwrwf(ib, i), ib=1, nbastyp(i))
+            endif
+
+        enddo
+
+        write(ounit,*)
+        ibasis_num =  1
+        write(ounit,*) "----------------------------------------------------------"
+
+    end subroutine write_trexio_basis_num_info_file
+
 
 
     subroutine read_trexio_basis_file(file_trexio)
