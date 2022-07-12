@@ -48,12 +48,15 @@ jobs:
         module load mkl/latest
         module load mpi/latest
         module load python3/latest
+        module load cmake
+        module load hdf5
+        module load trexio
 
         which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        /software/cmake-3.22.1/bin/cmake --version
-        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp
-        /software/cmake-3.22.1/bin/cmake --build build -- -j4
+        cmake --version
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=/software/trexio/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=/software/trexio/include/
+        cmake --build build -- -j4
 
     - name: Compile the CHAMP code
       if: matrix.toolchain == 'gnu'
@@ -66,11 +69,15 @@ jobs:
         module load mkl/latest
         module load mpi/latest
         module load python3/latest
+        module load cmake
+        module load hdf5
+        module load trexio
+
         which mpirun
-        /software/cmake-3.22.1/bin/cmake --version
+        cmake --version
         export OMPI_FC=gfortran-11
-        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DVECTORIZED=no -DTREXIO_LIBRARY=/home/filippi/trexio-2.2.0/build/libtrexio.so -DTREXIO_INCLUDE_DIR=/home/filippi/trexio-2.2.0/build/include/ #FindSIMD needs to be fixed!
-        /software/cmake-3.22.1/bin/cmake --build build -- -j2
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DVECTORIZED=no -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=/software/trexio/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=/software/trexio/include/
+        cmake --build build -- -j2
 
     - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
       run: |
