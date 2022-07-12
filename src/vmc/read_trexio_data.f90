@@ -212,12 +212,14 @@ module trexio_read_data
         use general,            only: pooldir
         use method_opt,         only: method
         use precision_kinds, only: dp
-#if defined(TREXIO_FOUND)
+
         use trexio
         use error,              only: trexio_error
+#if defined(TREXIO_FOUND)
         use contrl_file,        only: backend
-        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering
 #endif
+        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering
+
         implicit none
 
     !   local use

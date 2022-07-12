@@ -56,7 +56,7 @@ module trexio_basis_fns_mod
 !     debug
       nlmbas = 0
 
-
+#if defined(TREXIO_FOUND)
       l=0
 !     loop through centers
       do ic=1,ncent+nghostcent
@@ -142,7 +142,7 @@ module trexio_basis_fns_mod
         deallocate (dlapy)
 
       enddo ! loop over all atoms
-
+#endif
       return
       end
 !-------------------------------------------------------------------

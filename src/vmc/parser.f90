@@ -782,7 +782,9 @@ subroutine parser
   if ( fdf_load_defined('orbitals') ) then
     call read_orbitals_file(file_orbitals)
   elseif ( fdf_load_defined('trexio') ) then
+#if defined(TREXIO_FOUND)
     call read_trexio_orbitals_file(file_trexio)
+#endif
   elseif ( fdf_block('orbitals', bfdf)) then
   ! call fdf_read_orbitals_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbitals provided."
@@ -810,7 +812,9 @@ subroutine parser
   if ( fdf_load_defined('basis_num_info') ) then
     call read_basis_num_info_file(file_basis_num_info)
   elseif ( fdf_load_defined('trexio') ) then
+#if defined(TREXIO_FOUND)
     call write_trexio_basis_num_info_file(file_trexio)
+#endif
   elseif (.not. fdf_block('basis_num_info', bfdf)) then
   ! call fdf_read_eigenvalues_block(bfdf)
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
