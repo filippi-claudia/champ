@@ -101,7 +101,7 @@ class Champ:
                             help='Required: Filename (including extension) of the trexio file.')
 
         # Required positional argument
-        parser.add_argument("--gamess", "-i", "--g", dest='gamessfile', type=str, required = True,
+        parser.add_argument("--gamess", "-i", "--g", dest='gamessfile', type=str, required = False,
                             help='Required: Filename (including extension) of the gamess output file.')
 
         # Optional positional argument
@@ -437,10 +437,11 @@ class Champ:
             except trexio.Error:
                 print('TREXIO Error :: MO : coefficients not found')
 
-            try:
-                dict_mo["symmetry"] = trexio.read_mo_symmetry(trexio_file)
-            except trexio.Error:
-                print('TREXIO Error :: MO : symmetry not found')
+            if self.save_symmetry is True:
+                try:
+                    dict_mo["symmetry"] = trexio.read_mo_symmetry(trexio_file)
+                except trexio.Error:
+                    print('TREXIO Error :: MO : symmetry not found')
 
         # Determinants
         # ---
@@ -452,6 +453,14 @@ class Champ:
                 except trexio.Error:
                     print('TREXIO Error :: Determinant : number not found')
 
+                # Read number of states
+                try:
+                    num_states = trexio.read_state_num(trexio_file)
+                except trexio.Error:
+                    print('TREXIO Error :: State : number not found')
+                    num_states = 1
+
+
                 # Read determinant coefficients
                 try:
                     offset_file = 0
@@ -460,28 +469,30 @@ class Champ:
                     print('TREXIO Error :: Determinant : coefficients not found')
 
                 # Read determinant list
-                # try:
-                #     offset_file = 0
-                #     n_chunks = 1
-                #     chunk_size  = int(num_dets/n_chunks)
-                #     det_list= [[] for _ in range(num_dets)]
-                #     for _ in range(n_chunks):
-                #         trexio.read_determinant_list(trexio_file, offset_file, det_list[offset_file:])
-                #         print(f'Succesfully read {chunk_size} determinants to file position {offset_file}')
-                #         offset_file += chunk_size
-                # except trexio.Error:
-                #     print('TREXIO Error :: Determinant : lists not found')
+                try:
+                    offset_file = 0
+                    n_chunks = 1
+                    chunk_size  = int(num_dets/n_chunks)
+                    det_list  = [ [] for _ in range(num_dets)]
+                    for _ in range(n_chunks):
+                        det_list = trexio.read_determinant_list(trexio_file, offset_file, chunk_size)
+                        offset_file += chunk_size
+                except trexio.Error:
+                    print('TREXIO Error :: Determinant : lists not found')
 
                 # Close the trexio file after reading all the data
+                write_determinants_to_champ_from_trexio_only(trexio_file, num_states, num_dets, det_coeff, det_list)
                 trexio_file.close()
             else:
-                trexio_file.close()
+                # trexio_file.close()
                 # open the file for writing the determinant data
                 print("Determinant information not found in the trexio file")
                 print("Getting determinant information from GAMESS file and writing into the trexio file")
-                write_trexio_file = trexio.File(filename, mode='w',back_end=back_end)
-                file = resultsFile.getFile(gamessfile)
-                write_determinants_to_trexio(write_trexio_file, file)
+                if self.gamessfile is not None:
+                    # write_trexio_file = trexio.File(filename, mode='w',back_end=back_end)
+                    file = resultsFile.getFile(gamessfile)
+                    write_champ_file_determinants(filename, file)
+                    # write_determinants_to_trexio(trexio_file, file)
 
 
 
@@ -493,7 +504,7 @@ class Champ:
         # It will be replaced by the data stored by trexio later in the future.
 
         # Write the .xyz file containing cartesian coordinates (Bohr) of nuclei
-        if self.save_lcao:
+        if self.save_geometry:
             write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coord)
 
         # Write the ECP files for each unique atoms
@@ -514,9 +525,9 @@ class Champ:
             write_champ_file_basis_grid(filename, dict_basis, nucleus_label, self.basis_prefix)
 
         # Write the determinants, csf and csfmap into a single file using the resultsFile package
-        if self.save_determinants:
-            file = resultsFile.getFile(gamessfile)
-            write_champ_file_determinants(filename, file)
+        # if self.save_determinants:
+        #     file = resultsFile.getFile(gamessfile)
+        #     write_champ_file_determinants(filename, file)
 
         # Write the eigenvalues for a given type of orbitals using the resultsFile package. Currently it is optional.
         if self.save_eigenvalues:
@@ -565,6 +576,7 @@ def write_champ_file_basis_grid(filename, dict_basis, nucleus_label, basis_prefi
         basis[k]["shell_factor"]  += [ dict_basis["shell_factor"][i] ]
         basis[k]["shell_index"]   += [ dict_basis["shell_index"][i] ]
         basis[k]["contr"]         += [ contr[i] ]
+
 
     # Get the index array of the primitives for each atom
     index_primitive = []; counter = 0;
@@ -1242,12 +1254,13 @@ def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_lab
     if filename is not None:
         if isinstance(filename, str):
             ## Write down a symmetry file in the new champ v2.0 format
-            filename_bfinfo = os.path.splitext("champ_v2_" + filename)[0]+'.bfinfo'
+            # filename_bfinfo = os.path.splitext("champ_v2_" + filename)[0]+'.bfinfo'
             filename_bfinfo_g = os.path.splitext("champ_v2_" + filename)[0]+'_with_g.bfinfo'
-            with open(filename_bfinfo, 'w') as file, open(filename_bfinfo_g, 'w') as file_g:
+            # with open(filename_bfinfo, 'w') as file, open(filename_bfinfo_g, 'w') as file_g:
+            with open(filename_bfinfo_g, 'w') as file_g:
 
                 # qmc bfinfo line printed below
-                file.write("qmc_bf_info 1 \n")
+                # file.write("qmc_bf_info 1 \n")
                 file_g.write("qmc_bf_info 1 \n")
 
                 # pointers to the basis functions
@@ -1255,25 +1268,25 @@ def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_lab
                     count_shells_per_atom = list(Counter(shell_reprensentation_per_atom[i]).values())
                     # Write the number of types of shells for each unique atom
                     for num in count_shells_per_atom:
-                        file.write(f"{num} ")
+                        # file.write(f"{num} ")
                         file_g.write(f"{num} ")
                     # Write down zeros for shells that are not present. Total shells supported are S(1) + P(3) + D(6) + F(10) = 20
-                    for rem in range(len(count_shells_per_atom), 20):
-                        file.write(f"0 ")
+                    # for rem in range(len(count_shells_per_atom), 20):
+                        # file.write(f"0 ")
                     for rem in range(len(count_shells_per_atom), 35):
                         file_g.write(f"0 ")
-                    file.write(f"\n")
+                    # file.write(f"\n")
                     file_g.write(f"\n")
 
                     # Write the pointers to the basis functions
                     for pointer in basis_pointer_per_atom[i]:
-                        file.write(f"{pointer} ")
+                        # file.write(f"{pointer} ")
                         file_g.write(f"{pointer} ")
-                    file.write(f"\n")
+                    # file.write(f"\n")
                     file_g.write(f"\n")
-                file.write("end\n")
+                # file.write("end\n")
                 file_g.write("end\n")
-            file.close()
+            # file.close()
             file_g.close()
 
         else:
@@ -1452,44 +1465,45 @@ def write_determinants_to_trexio(filename, file):
     if filename is not None:
         if isinstance(filename, str):
             ## Write down a determinant file in the new champ v2.0 format
-            filename_determinant = os.path.splitext("champ_v2_TREXIO_" + filename)[0]+'_determinants_state1.det'
-            filename_determinant_multistates = os.path.splitext("champ_v2_TREXIO_" + filename)[0]+'_determinants_multistate.det'
-            with open(filename_determinant, 'w') as f, open(filename_determinant_multistates, 'w') as f2:
+            filename_determinant = os.path.splitext("champ_v2_TREXIO_" + filename)[0]+'_determinants.det'
+            # filename_determinant_multistates = os.path.splitext("champ_v2_TREXIO_" + filename)[0]+'_determinants_multistate.det'
+            # with open(filename_determinant, 'w') as f, open(filename_determinant_multistates, 'w') as f2:
+            with open(filename_determinant, 'w') as f:
                 # header line printed below
                 f.write("# Determinants from the TREXIO file. \n")
                 f.write("# Converted from the trexio file using trex2champ converter https://github.com/TREX-CoE/trexio_tools \n")
                 f.write("determinants {} {} \n".format(len(num_dets), 1))
 
-                f2.write("# Determinants from the TREXIO file. \n")
-                f2.write("# Converted from the trexio file using trex2champ converter https://github.com/TREX-CoE/trexio_tools \n")
-                f2.write("determinants {} {} \n".format(len(num_dets), 1))
+                # f2.write("# Determinants from the TREXIO file. \n")
+                # f2.write("# Converted from the trexio file using trex2champ converter https://github.com/TREX-CoE/trexio_tools \n")
+                # f2.write("determinants {} {} \n".format(len(num_dets), 1))
 
 
                 # print the determinant coefficients
                 for det in range(num_dets):
                     f.write("{:.8f} ".format(det_coeff[0][det]))
-                    f2.write("{:.8f} ".format(det_coeff[0][det]))
+                    # f2.write("{:.8f} ".format(det_coeff[0][det]))
                 f.write("\n")
-                f2.write("\n")
+                # f2.write("\n")
 
                 # print the determinant orbital mapping
                 for det in range(num_dets):
                     for num in range(num_alpha):
                         alpha_orbitals = np.sort(file.determinants[det].get("alpha"))[num]+1
                         f.write("{:4d} ".format(alpha_orbitals))
-                        f2.write("{:4d} ".format(alpha_orbitals))
+                        # f2.write("{:4d} ".format(alpha_orbitals))
                     f.write("  ")
-                    f2.write("  ")
+                    # f2.write("  ")
                     for num in range(num_beta):
                         beta_orbitals = np.sort(file.determinants[det].get("beta"))[num]+1
                         f.write("{:4d} ".format(beta_orbitals))
-                        f2.write("{:4d} ".format(beta_orbitals))
+                        # f2.write("{:4d} ".format(beta_orbitals))
                     f.write("\n")
-                    f2.write("\n")
+                    # f2.write("\n")
                 f.write("end \n")
-                f2.write("end \n")
+                # f2.write("end \n")
             f.close()
-            f2.close()
+            # f2.close()
         else:
             raise ValueError
     # If filename is None, return a string representation of the output.
@@ -1497,6 +1511,76 @@ def write_determinants_to_trexio(filename, file):
         return None
 
 
+def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets, det_coeff, det_list):
+    """Writes the determinant data from the quantum
+    chemistry calculation to CHAMP v2.0 file format.
+
+    Returns:
+        None as a function value
+    """
+
+    def read_coefficients (state: int, offset_file: int, det_num: int) -> list:
+        filename.set_state(state)
+        coefficients = trexio.read_determinant_coefficient(
+            filename, offset_file, det_num
+        )
+        print(f'Succesfully read {det_num} coefficients for state {state}\n')
+        return coefficients
+
+    offset_file = 0
+    coefficients_read_all = []
+
+    for i in range(num_states):
+        coefficients_read = read_coefficients(i, offset_file, num_dets)
+        coefficients_read_all.append(coefficients_read)
+
+    print(f'Serial read, {num_states} states: done')
+
+    int64_num = trexio.get_int64_num(filename)
+
+    alpha_orbitals = [[] for _ in range(num_dets)]
+    beta_orbitals  = [[] for _ in range(num_dets)]
+    for i in range(num_dets):
+        up_spin_det = det_list[0][i][:int64_num]
+        dn_spin_det = det_list[0][i][int64_num:]
+
+        orb_list_up = trexio.to_orbital_list(int64_num, up_spin_det)
+        orb_list_dn = trexio.to_orbital_list(int64_num, dn_spin_det)
+
+        alpha_orbitals[i] = orb_list_up
+        beta_orbitals[i] = orb_list_dn
+
+    if filename is not None:
+        if isinstance(champ.filename, str):
+            ## Write down a determinant file in the new champ v2.0 format
+            filename_determinant = os.path.splitext("champ_v2_" + champ.filename)[0]+'_determinants.det'
+            with open(filename_determinant, 'w') as f:
+                # header line printed below
+                f.write("# Determinants from the TREXIO file. \n")
+                f.write("# Converted from the trexio file using trex2champ converter https://github.com/TREX-CoE/trexio_tools \n")
+
+                for state in range(num_states):
+                    f.write("determinants {} {} \n".format(num_dets, 1))
+
+                    # print the determinant coefficients
+                    for det in range(num_dets):
+                        f.write("{:.8f} ".format(coefficients_read_all[state][0][det]))
+                    f.write("\n")
+                    # # print the determinant orbital mapping
+                    for det in range(num_dets):
+                        for num in alpha_orbitals[det]:
+                            f.write("{:4d} ".format(num+1))
+                        f.write("  ")
+                        for num in beta_orbitals[det]:
+                            f.write("{:4d} ".format(num+1))
+                        f.write("\n")
+                f.write("end \n")
+            f.close()
+        else:
+            raise ValueError
+    # If filename is None, return a string representation of the output.
+    else:
+        return None
 
 
 

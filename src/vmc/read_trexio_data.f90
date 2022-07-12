@@ -1577,7 +1577,6 @@ module trexio_read_data
         write(ounit, *) "Serial numbers of orbitals that are occupied               :: "
         write(ounit, *) "'alpha (spin up)'  <---------------------->  'beta (spin down)' "
         write(ounit, *)
-        ! convert one given determinant into lists of orbitals
 
         offset = 0_8
         icount = BUFSIZE

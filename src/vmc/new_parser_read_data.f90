@@ -283,8 +283,8 @@ subroutine read_determinants_file(file_determinants)
     !   local use
     character(len=72), intent(in)   :: file_determinants
     character(len=80)               :: temp1, temp2, temp3
-    integer                         :: iostat, i, j, iunit, counter
-    logical                         :: exist, skip = .true.
+    integer                         :: iostat, i, j, iunit, counter, istate
+    logical                         :: exist, skip = .true., found = .false.
 
     !   Formatting
     character(len=100)               :: int_format     = '(A, T40, I8)'
@@ -313,8 +313,19 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,int_format) " Number of beta  electrons ", ndn
     write(ounit,*)
 
+    nstates = 0
+    if (wid) then
+        do while (.not. found)
+            read(iunit,*, iostat=iostat) temp1
+            if (is_iostat_end(iostat)) exit
+            temp1 = trim(temp1)
+            if (temp1 == "determinants") then
+                nstates = nstates + 1
+            endif
+        enddo
+        rewind(iunit)
+    endif
 
-    ! to escape the comments before the "determinants" line
     if (wid) then
         do while (skip)
             read(iunit,*, iostat=iostat) temp1
@@ -344,27 +355,29 @@ subroutine read_determinants_file(file_determinants)
     else
         if (.not. allocated(cdet)) allocate(cdet(ndet,MSTATES,nwftype))
     endif
-
-    if (wid) then
-        read(iunit,*, iostat=iostat) (cdet(i,1,1), i=1,ndet)
-        if (iostat /= 0) call fatal_error( "Error in determinant coefficients ")
-    endif
-    call bcast(cdet)
-
-    write(ounit,*)
-    write(ounit,*) " Determinant coefficients "
-    write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,1,1), i=1,ndet)
-
-!       allocate the orbital mapping array
+    !       allocate the orbital mapping array
     if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
 
+    write(ounit,int_format) " # of sets of dets read from the file ", nstates
+
     if (wid) then
-        do i = 1, ndet
-            read(iunit,*, iostat=iostat) (iworbd(j,i), j=1,nelec)
-            if (iostat /= 0) call fatal_error("Error in reading orbital -- determinants mapping ")
+        do istate = 1, nstates
+            read(iunit,*, iostat=iostat) (cdet(i,istate,1), i=1,ndet)
+            if (iostat /= 0) call fatal_error( "Error in determinant coefficients ")
+            write(ounit,*)
+            write(ounit,*) " Determinant coefficients "
+            write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,istate,1), i=1,ndet)
+
+            do i = 1, ndet
+                read(iunit,*, iostat=iostat) (iworbd(j,i), j=1,nelec)
+                if (iostat /= 0) call fatal_error("Error in reading orbital -- determinants mapping ")
+            enddo
+            read(iunit,*, iostat=iostat) temp1
         enddo
     endif
+    call bcast(cdet)
     call bcast(iworbd)
+    call bcast(temp1)
     ! This part replaces a call to verify_orbitals
     !if(any(iworbd .gt. norb))  call fatal_error('INPUT: iworbd > norb')
 
@@ -377,12 +390,10 @@ subroutine read_determinants_file(file_determinants)
         write(ounit,temp3) (iworbd(j,i), j=1,nelec)                 !GNU version
     enddo
 
-    if (wid) then
-        read(iunit,*) temp1
-        if (temp1 == "end" ) write(ounit,*) " Single state determinant file read successfully "
+    if (temp1 == "end" ) then
+        write(ounit,*) " Determinant file read successfully "
         ideterminants = ideterminants + 1
     endif
-    call bcast(ideterminants)
 
     if (wid) close(iunit)
 

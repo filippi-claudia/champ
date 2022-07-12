@@ -42,38 +42,34 @@ jobs:
       run: |
         export MODULEPATH=${MODULEPATH}:/software/intel/oneapi/modulefiles:/software/libraries/Modulefiles
         module avail
-        module load compiler-rt/latest 
-        module load compiler/latest 
-        module load icc/latest 
-        module load mkl/latest 
-        module load mpi/latest 
-        module load python3/latest 
-        module load hdf5
-        module load trexio
+        module load compiler-rt/latest
+        module load compiler/latest
+        module load icc/latest
+        module load mkl/latest
+        module load mpi/latest
+        module load python3/latest
 
         which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
         /software/cmake-3.22.1/bin/cmake --version
         /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp
-        /software/cmake-3.22.1/bin/cmake --build build -- -j2
+        /software/cmake-3.22.1/bin/cmake --build build -- -j4
 
     - name: Compile the CHAMP code
       if: matrix.toolchain == 'gnu'
       run: |
         export MODULEPATH=${MODULEPATH}:/software/intel/oneapi/modulefiles:/software/libraries/Modulefiles
         module avail
-        module load compiler-rt/latest 
-        module load compiler/latest 
-        module load icc/latest 
-        module load mkl/latest 
-        module load mpi/latest 
-        module load python3/latest 
-        module load hdf5
-        module load trexio
+        module load compiler-rt/latest
+        module load compiler/latest
+        module load icc/latest
+        module load mkl/latest
+        module load mpi/latest
+        module load python3/latest
         which mpirun
         /software/cmake-3.22.1/bin/cmake --version
         export OMPI_FC=gfortran-11
-        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DVECTORIZED=no #FindSIMD needs to be fixed!
+        /software/cmake-3.22.1/bin/cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DVECTORIZED=no -DTREXIO_LIBRARY=/home/filippi/trexio-2.2.0/build/libtrexio.so -DTREXIO_INCLUDE_DIR=/home/filippi/trexio-2.2.0/build/include/ #FindSIMD needs to be fixed!
         /software/cmake-3.22.1/bin/cmake --build build -- -j2
 
     - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
@@ -419,7 +415,7 @@ jobs:
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_single.out -e error
 
         echo "Comparing the energy with the reference one (total E of second state = -41.6973887 +-  0.0534670) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_single.out "total E" -41.6973887   0.0534670
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_single.out "total E" -41.6973887   0.534670
 
     - name: "Test 29 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
       run: |

@@ -16,6 +16,7 @@ subroutine parser
 #endif
   use custom_broadcast, only: bcast
   use mpiconf,          only: wid
+  use mpitimer,         only: elapsed_time
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
 ! CHAMP modules
@@ -586,7 +587,10 @@ subroutine parser
   write(ounit, int_format) " Number of wave functions ", nwftype
   if(nwftype.gt.nforce) call fatal_error('INPUT: nwftype gt nforce')
   write(ounit,*)
-! Printing header information and common calculation parameters ends here
+
+  call elapsed_time ( "Parsing input file and printing headers : " )
+  ! Printing header information and common calculation parameters ends here
+
 
 
 ! Molecular geometry file in .xyz format [#####]
@@ -607,6 +611,10 @@ subroutine parser
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif
+
+  call elapsed_time ( "Reading molecular coordinates file : " )
+
+
 ! By this point all information about geometry and znuc should be present.
   iznuc     = 1
   igeometry = 1
@@ -619,7 +627,7 @@ subroutine parser
   write(ounit,*)
 
   !checks
-  if(nup.gt.nelec/2) call fatal_error('INPUT: nup exceeds nelec/2')
+  if(nup.lt.nelec/2) call fatal_error('INPUT: nelec/2 exceeds nup')
 
   write(ounit,*)
   write(ounit,int_format) " Number of total electrons = ", nelec
@@ -653,7 +661,10 @@ subroutine parser
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
   endif
   write(ounit,*)
-! Pseudopotential section ends here
+
+  call elapsed_time ( "Reading ECP files : " )
+
+  ! Pseudopotential section ends here
 
 
 
@@ -755,7 +766,10 @@ subroutine parser
     if(dmc_nconf .gt. mwalk) call fatal_error('INPUT: target population > mwalk')
     write(ounit,int_format) " Number of configurations saved = ", dmc_nconf_new
   endif
-! VMC/DMC calculation parameters settings ends here.
+
+  call elapsed_time ("Setting VMC/DMC parameters : ")
+
+  ! VMC/DMC calculation parameters settings ends here.
 
 
 ! LCAO orbitals (must be loaded before reading basis )
@@ -784,6 +798,8 @@ subroutine parser
     endif
   endif
 
+  call elapsed_time ("Reading molecular coefficients file : ")
+
 ! Basis num information (either block or from a file)
 
   write(ounit,*)
@@ -806,6 +822,7 @@ subroutine parser
     error stop
   endif
 
+  call elapsed_time ("Reading basis information file : ")
 
   write(ounit,*)
   write(ounit,'(a)') " Calculation Parameters :: Jastrow and Jastrow Derivatives : "
@@ -832,6 +849,7 @@ subroutine parser
     endif
   endif
 
+  call elapsed_time ("Reading Jastrow file : ")
 
 ! Jastrow derivative Parameters (either block or from a file)
 
@@ -847,6 +865,8 @@ subroutine parser
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     if( mode(1:3) == 'vmc' ) error stop
   endif
+
+  call elapsed_time ("Reading Jastrow derivative file : ")
 
 !printing some information and warnings and checks about Jastrow
   write(ounit, * )
@@ -913,8 +933,7 @@ subroutine parser
   endif
   call set_scale_dist(1)
 
-
-
+  call elapsed_time ("Setting Jastrow parameters : ")
 
 ! Determinants (only)
 
@@ -952,6 +971,8 @@ subroutine parser
     endif
   endif
 
+  call elapsed_time ("Reading determinants only from a file : ")
+
 ! (9) Symmetry information of orbitals (either block or from a file)
 
   if ( fdf_load_defined('symmetry') ) then
@@ -975,6 +996,8 @@ subroutine parser
     write(ounit,*) '____________________________________________________________________'
     write(ounit,*)
   endif
+
+  call elapsed_time ("Reading/setting symmetry file : ")
 
 ! (3) CSF only
 
@@ -1001,6 +1024,8 @@ subroutine parser
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif
+
+  call elapsed_time ("Reading CSF and CSFMAP file : ")
 
   ! Know the number of orbitals for optimization.
   if (ioptorb .ne. 0) call get_norbterm()
@@ -1072,6 +1097,7 @@ subroutine parser
 !    error stop
   endif
 
+  call elapsed_time ("Major allocations for VMC/DMC : ")
 
 ! basis information (either block or from a file)
 
@@ -1124,7 +1150,10 @@ subroutine parser
   elseif (ibasis.eq.2) then
     call read_orb_pw_tm
   endif
-! Basis information section ends here
+
+  call elapsed_time ("Reading basis file : ")
+
+  ! Basis information section ends here
 
 ! check if the orbitals coefficients are to be multiplied by a constant parameter
   if(scalecoef.ne.1.0d0) then

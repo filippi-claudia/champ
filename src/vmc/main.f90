@@ -23,7 +23,7 @@ program main
     use mpiconf, only: wid      ! logical :: true only for mpirank=0
     use precision_kinds,    only: dp
     use contrl_file,    only: ounit
-    use mpitimer,    only: time, time_start, time_check1, time_final
+    use mpitimer,    only: time, elapsed_time, time_start, time_check1, time_final
     use parser_mod,  only: parser
 
     implicit None
@@ -37,6 +37,7 @@ program main
 
 
     time_start = time()
+    time_check1 = time_start
     !> init our own mpi vars
     call mpiconf_init()
 
@@ -48,19 +49,23 @@ program main
     call initialize()
 
     ! read the input from input file and other data files
+    call elapsed_time("MPI initializations : ")
     call parser()
+    call elapsed_time("Parsing all the files : ")
 
     !> Initiaize log check.XXX files. It needs ipr flag value.
     call init_procfile()
 
     call MPI_BARRIER(MPI_Comm_World, ierr)
+    call elapsed_time("MPI Barrier before optwf : ")
+
     ! ! run the the optimization
     call optwf()
 
     ! call close_files()
     time_final = time()
 
-    write(ounit,'(a,g16.6,a)') " Total time of computation ::  ", time_final - time_start, " seconds "
+    write(ounit,'(a,g16.6,a)') " REAL TIME (Total) of computation ::  ", time_final - time_start, " seconds "
 
     call mpi_finalize(ierr)
     call deallocate_vmc()
