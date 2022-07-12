@@ -122,6 +122,7 @@ if (MPI_Fortran_FOUND)
     main.f90
     new_parser_read_data.f90
     read_trexio_data.f90
+    trexio_basis_fns.f90
     fitting.f90
     olbfgs.f90
     optgeo_convcartzmat.f90
@@ -206,6 +207,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/new_parser_read_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/read_trexio_data.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/trexio_basis_fns.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/set_input_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f

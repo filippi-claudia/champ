@@ -84,7 +84,6 @@ c     compute sml and combine to generate molecular orbitals
               irb=iwrwf(j,it)
               if(iwlbas(j,it).ne.iwlbas0) then
                  iwlbas0=iwlbas(j,it)
-                !  print*, "j, iwlbas0=", j, iwlbas0
                  call slm(iwlbas0,xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
               endif
 

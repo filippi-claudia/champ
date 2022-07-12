@@ -270,7 +270,7 @@ module trexio_read_data
 #if defined(TREXIO_FOUND)
             trex_orbitals_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
-            rc = trexio_read_mo_num(trex_orbitals_file, norb)
+            rc = trexio_read_mo_num(trex_orbitals_file, norb_tot)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num', __FILE__, __LINE__)
             rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
@@ -278,17 +278,19 @@ module trexio_read_data
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_num', __FILE__, __LINE__)
 #endif
         endif
-        call bcast(norb)
+        call bcast(norb_tot)
         call bcast(nbasis)
         call bcast(basis_num_shell)
 
+        norb = norb_tot        ! norb will get updated later. norb_tot is fixed
+
         ! Do the array allocations
         if( (method(1:3) == 'lin')) then
-            if (.not. allocated(coef)) allocate (coef(nbasis, norb, 3))
-            if (.not. allocated(unshuffled_coef)) allocate (unshuffled_coef(3, nbasis, norb))
+            if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
+            if (.not. allocated(unshuffled_coef)) allocate (unshuffled_coef(3, nbasis, norb_tot))
         else
-            if (.not. allocated(coef)) allocate (coef(nbasis, norb, nwftype))
-            if (.not. allocated(unshuffled_coef)) allocate (unshuffled_coef(nwftype, nbasis, norb))
+            if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
+            if (.not. allocated(unshuffled_coef)) allocate (unshuffled_coef(nwftype, nbasis, norb_tot))
         endif
 
         ! Do the allocations based on the number of shells and primitives
@@ -386,9 +388,6 @@ module trexio_read_data
                 count1 = count1 + 1
             end if
         enddo ! loop on shells
-
-        print*, "num rad per cent " ,  num_rad_per_cent
-        print*, "num ao per cent " , num_ao_per_cent
 
 
         allocate (nbastyp(nctype_tot))
@@ -578,7 +577,7 @@ module trexio_read_data
         enddo
 
 !       At this point the array champ_ao_ordering contains the indices of the AOs in the order of the basis set.
-        print*, "champ ao ordering", champ_ao_ordering
+        ! print*, "champ ao ordering", champ_ao_ordering
 
         do i = 1, nbasis
             ao_radial_index(i) = ao_ordering(champ_ao_ordering(i))
@@ -751,22 +750,13 @@ module trexio_read_data
             enddo
         endif
 
+        ! do i = 1, nctype_tot
+        !     write(*,*) "iwrwf(:,i) = ", (iwrwf(j,i), j=1, num_ao_per_cent(i))
+        ! enddo
 
-
-
-
-        do i = 1, nctype_tot
-            write(*,*) "iwrwf(:,i) = ", (iwrwf(j,i), j=1, num_ao_per_cent(i))
-        enddo
-
-        do i = 1, nctype_tot
-            write(*,*) "iwlbas(:,i) = ", (iwlbas(j,i), j = 1, 35)
-        enddo
-
-
-
-
-
+        ! do i = 1, nctype_tot
+        !     write(*,*) "iwlbas(:,i) = ", (iwlbas(j,i), j = 1, 35)
+        ! enddo
 
 
 #if defined(TREXIO_FOUND)
@@ -784,10 +774,6 @@ module trexio_read_data
             do j = 1, nbasis
                 coef(j, i, 1) = unshuffled_coef(1, champ_ao_ordering(j), i)
             enddo
-        enddo
-
-        do i = 1, nbasis
-            write(ounit,'(66f16.10)') (coef(j, i, 1), j=1, nbasis)
         enddo
 
 
