@@ -313,16 +313,19 @@ module trexio_read_data
 #endif
         endif
         call bcast(trexio_has_group_orbitals)
-        call bcast(coef)
+        call bcast(unshuffled_coef(1,:,:))
 
 !   Generate the basis information (which radial to be read for which Slm)
-
+        if (wid) then
 #if defined(TREXIO_FOUND)
         rc = trexio_read_basis_shell_ang_mom(trex_orbitals_file, basis_shell_ang_mom)
         call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_ang_mom', __FILE__, __LINE__)
         rc = trexio_read_basis_nucleus_index(trex_orbitals_file, basis_nucleus_index)
         call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_nucleus_index', __FILE__, __LINE__)
 #endif
+        endif
+        call bcast(basis_shell_ang_mom)
+        call bcast(basis_nucleus_index)
 
         numr = 1            ! Debug Check this statement. Not sure how to store multiple bfinfo files in single trexio
 
