@@ -83,7 +83,6 @@ link_libraries(${LINEAR_ALGEBRA})
 
 # LibFDF is built-in in the src/parser folder
 
-if (ENABLE_TREXIO)
 # Find HDF5 library
 if (ENABLE_TREXIO)
 find_package(HDF5 QUIET)
