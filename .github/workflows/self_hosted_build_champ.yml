@@ -578,7 +578,7 @@ jobs:
         export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
 
         echo "Running the testsuite:: Test : . Butadiene VMC 1862 dets"
-        cd tests/CI_test/example10_COH2_ground_state
+        cd tests/CI_test/TREXIO
 
         echo "Running the calculation with trexio library linked"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_double.out  -e error
