@@ -54,10 +54,10 @@ jobs:
 
         which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/software/hdf5/1.12.1/lib:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=/home/filippi/lib:$LD_LIBRARY_PATH
         cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=/software/trexio/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=/software/trexio/include/ -DHDF5_LIBRARIES=/software/hdf5/1.12.1/lib/libhdf5.so -DHDF5_INCLUDE_DIRS=/software/hdf5/1.12.1/include
-        cmake --build build -- -j4
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=/software/trexio/lib/libtrexio.a -DTREXIO_INCLUDE_DIR=/software/trexio/include/ -DHDF5_LIBRARIES=/home/filippi/lib/libhdf5.a -DHDF5_INCLUDE_DIRS=/home/filippi/include
+        cmake --build build -- -j8
 
     - name: Compile the CHAMP code
       if: matrix.toolchain == 'gnu'
