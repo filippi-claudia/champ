@@ -449,23 +449,24 @@ jobs:
         echo "Comparing the energy with the reference one ("total E" -29.7013541 +-  0.0312926) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.7013541   0.0312926
 
-    # # - name: "Test 31 (Butadiene) TREXIO interface testing with HDF5 backend on 1 processor"
-    # #   run: |
-    # #     ulimit -s unlimited
-    # #     echo "Running the testsuite:: Test : . Butadiene VMC 500 dets"
-    # #     cd tests/CI_test/TREXIO
+    - name: "Test 31 (Formaldehyde) Native TREXIO testing with HDF5 backend on 8 processors"
+      run: |
+        ulimit -s unlimited
+        echo "Running the testsuite:: Test : . Formaldehyde VMC with 1862 dets"
+        cd tests/CI_test/example10_COH2_ground_state
 
-    # #     echo "Running the calculation with trexio library linked"
-    # #     /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_single.out  -e error
+        echo "Running the calculation with trexio library linked"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i trexio_vmc_COH2_gs.inp  -o trexio_vmc_COH2_gs.out  -e error
 
-    # #     echo "Comparing the energy with the reference one (total E = -26.2164721 +-  0.0280294) "
-    # #     $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_hdf5_single.out "total E" -26.2164721  0.0280294
+        tail trexio_vmc_COH2_gs.out
+      # echo "Comparing the energy with the reference one (total E =  +-  ) "
+      # $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_gs.out "total E"
 
     # # - name: "Test 32 (Butadiene) TREXIO interface testing with HDF5 backend on 2 processor"
     # #   run: |
     # #     ulimit -s unlimited
-    # #     echo "Running the testsuite:: Test : . Butadiene VMC 500 dets"
-    # #     cd tests/CI_test/TREXIO
+    # #     echo "Running the testsuite:: Test : . Butadiene VMC 1862 dets"
+    # #     cd tests/CI_test/example10_COH2_ground_state
 
     # #     echo "Running the calculation with trexio library linked"
     # #     /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_double.out  -e error
