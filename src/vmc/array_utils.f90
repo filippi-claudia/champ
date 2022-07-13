@@ -307,9 +307,9 @@ contains
         integer, intent(in)                         :: n
         integer, dimension(n), intent(in)           :: arr    ! The input
         integer, dimension(n), intent(out)          :: res    ! The output
-        integer, dimension(n), intent(out)          :: frequency ! The output
         integer, intent(out)                        :: count                   ! The number of unique elements
-        integer, dimension(n), intent(out)          :: ind
+        integer, dimension(n), intent(out)          :: frequency ! The output
+        integer, dimension(n), intent(out),optional :: ind
         integer                                     :: i,j,k, counter1, counter2
 
         k = 1

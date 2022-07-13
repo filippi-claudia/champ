@@ -21,10 +21,10 @@ contains
 
       use numbas_mod, only: MRWF, MRWF_PTS
       use vmc_mod, only: NCOEF
-      use atom, only: znuc, nctype
+      use atom, only: znuc, nctype, nctype_tot
       use ghostatom, only: newghostype
       use const, only: ipr
-      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf
+      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf!, rmax
       use numbas, only: allocate_numbas
       use coefs, only: nbasis
       use numexp, only: ae, ce, ab, allocate_numexp
@@ -170,8 +170,6 @@ contains
           enddo
         endif
 
-
-
 ! c       if(ipr.gt.1) then
           write(45,'(''basis = '',i4)') irb
           write(45,'(''check the small radius expansion'')')
@@ -231,10 +229,9 @@ contains
 ! c       endif
         if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
-        call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn,  &
-        d2rwf(1,irb,ic,iwf),work)
+        call spline2(x(:),rwf(:,irb,ic,iwf),nr(ic),dwf1,dwfn,  &
+                        d2rwf(:,irb,ic,iwf),work)
 
-        if (wid) close(iunit)
         enddo
       enddo
 

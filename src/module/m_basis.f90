@@ -216,10 +216,11 @@ module numbas
     integer, dimension(:), allocatable :: nrbas !(MCTYPE)
     integer :: numr
     real(dp), dimension(:), allocatable :: r0 !(MCTYPE)
+    ! real(dp), dimension(:,:), allocatable :: rmax !(nrbas, MCTYPE)
     real(dp), dimension(:, :, :, :), allocatable :: rwf !(MRWF_PTS,MRWF,MCTYPE,MWF)
 
     private
-    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
+    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf !, rmax
     public :: allocate_numbas, deallocate_numbas
     save
 contains
@@ -235,6 +236,7 @@ contains
         if (.not. allocated(nr)) allocate (nr(nctype_tot), source=0)
         if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot), source=0)
         if (.not. allocated(r0)) allocate (r0(nctype_tot))
+        ! if (.not. allocated(rmax)) allocate (rmax(MRWF,nctype_tot), source=0.0d0) ! This source is needed.
         if (.not. allocated(rwf)) allocate (rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
     end subroutine allocate_numbas
 
@@ -341,13 +343,28 @@ end module
 
 ! subroutines required by the trexio modules
 module m_trexio_basis
+    use coefs, only: nbasis
+    implicit none
+
+    integer, dimension(5)       :: slm_per_l = (/1, 3, 6, 10, 15/) !s,p,d,f,g
+    integer, allocatable        :: index_slm(:)             !(nbasis)
+    integer, allocatable        :: champ_ao_ordering(:)     !(nbasis)
+    integer, allocatable        :: num_rad_per_cent(:)      !(ncent_tot)
+    integer, allocatable        :: num_ao_per_cent(:)       !(ncent_tot)
+
+    private
+    public :: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
+    public :: champ_ao_ordering
+    public :: gnorm
+
     contains
     double precision function gnorm(exponent, l)
         use precision_kinds,    only: dp
         implicit none
         real(dp), intent (in)       :: exponent
         integer, intent (in)    :: l
-        real(dp), parameter     :: pi = 3.1415926535897932
+        real(dp), parameter     :: pi = 4.0d0*atan(1.0d0)
+        !real(dp), parameter     :: pi = 3.1415926535897932
 
         gnorm = 1.0d0
 

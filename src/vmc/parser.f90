@@ -78,7 +78,7 @@ subroutine parser
   use bparm, 		        only: nocuspb, nspin2b
   use casula, 		      only: i_vpsp, icasula
   use coefs, 		        only: coef, nbasis, norb, next_max
-  use optorb,                 only: irrep
+  use optorb,           only: irrep
   use const2, 		      only: deltar, deltat
   use contr2, 		      only: ianalyt_lap, ijas
   use contr2, 		      only: isc
@@ -166,6 +166,7 @@ subroutine parser
   use trexio_read_data, only: read_trexio_symmetry_file
   use trexio_read_data, only: read_trexio_determinant_file
   use trexio_read_data, only: read_trexio_ecp_file
+  use trexio_read_data, only: write_trexio_basis_num_info_file
   use parser_read_data, only: header_printing
   use misc_grdnts,      only: inpwrt_zmatrix, inpwrt_grdnts_zmat, inpwrt_grdnts_cart
   use set_input_data,   only: hessian_zmat_define, modify_zmat_define
@@ -649,6 +650,10 @@ subroutine parser
     ! nquad :: number of quadrature points
     write(ounit,*)
     write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
+  elseif ( fdf_load_defined('trexio') ) then
+    call read_trexio_ecp_file(file_trexio)
+    write(ounit,*)
+    write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
   elseif (nloc .eq. 0) then
     write(ounit,'(a)') "Warning:: Is this an all electron calculation?"
   else
@@ -777,7 +782,9 @@ subroutine parser
   if ( fdf_load_defined('orbitals') ) then
     call read_orbitals_file(file_orbitals)
   elseif ( fdf_load_defined('trexio') ) then
+#if defined(TREXIO_FOUND)
     call read_trexio_orbitals_file(file_trexio)
+#endif
   elseif ( fdf_block('orbitals', bfdf)) then
   ! call fdf_read_orbitals_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbitals provided."
@@ -804,6 +811,10 @@ subroutine parser
 
   if ( fdf_load_defined('basis_num_info') ) then
     call read_basis_num_info_file(file_basis_num_info)
+  elseif ( fdf_load_defined('trexio') ) then
+#if defined(TREXIO_FOUND)
+    call write_trexio_basis_num_info_file(file_trexio)
+#endif
   elseif (.not. fdf_block('basis_num_info', bfdf)) then
   ! call fdf_read_eigenvalues_block(bfdf)
     write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
@@ -1126,6 +1137,15 @@ subroutine parser
     !   call fdf_read_basis_block(bfdf)
     elseif ( fdf_load_defined('trexio') ) then
       call read_trexio_basis_file(file_trexio)
+      ! See if this is really allocated at this point
+     if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
+     if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
+     ibas0(1)=1
+     ibas1(1)=nbastyp(iwctype(1))
+     do ic=2,ncent
+       ibas0(ic)=ibas1(ic-1)+1
+       ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
+     enddo
     else
       write(errunit,'(a)') "Error:: No information about basis provided in the block."
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
@@ -1281,8 +1301,8 @@ subroutine parser
       nciterm=0
     endif
 
-    write(ounit,int_format)  " CI number of coefficients ", nciterm
-    write(ounit,int_format)  " nciprim ", nciprim
+    ! write(ounit,int_format)  " CI number of coefficients ", nciterm
+    ! write(ounit,int_format)  " nciprim ", nciprim
     mxciterm = nciprim  ! validate this change debug ravindra
 
     if((ncsf.eq.0) .and. (nciprim.gt.mxciterm) ) call fatal_error('INPUT: nciprim gt mxciterm')

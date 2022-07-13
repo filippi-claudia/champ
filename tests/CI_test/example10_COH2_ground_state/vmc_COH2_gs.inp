@@ -1,0 +1,30 @@
+%module general
+    title           'COH2 Formaldehyde VMC optimization calculation ground state'
+    pool            './pool/'
+    pseudopot       ECP
+    basis           BFD-aug-cc-pVDZ
+    mode            'vmc_one_mpi1'
+%endmodule
+
+
+load molecule        $pool/champ_v2_COH2_GS_geom.xyz
+load basis_num_info  $pool/champ_v2_COH2_GS_with_g.bfinfo
+
+load orbitals        champ_v2_COH2_GS_orbitals.lcao 
+load determinants    champ_v2_COH2_GS_determinants.det 
+load symmetry        champ_v2_COH2_GS_symmetry.sym 
+load jastrow         jastrow.start
+load jastrow_der     jastrow.der
+
+%module electrons
+    nup           6
+    nelec         12
+%endmodule
+
+
+%module blocking_vmc
+    vmc_nstep     20
+    vmc_nblk      1000
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+%endmodule

@@ -43,6 +43,7 @@ option(BUILD_DOC "build_doc" off)
 
 # MPI
 option(ENABLE_MPI "enable_mpi" on)
+option(ENABLE_TREXIO "enable_mpi" OFF)
 
 # QMMM option
 option(ENABLE_QMMM "enable_qmmm" off)
@@ -82,8 +83,8 @@ link_libraries(${LINEAR_ALGEBRA})
 
 # LibFDF is built-in in the src/parser folder
 
-if (ENABLE_TREXIO)
 # Find HDF5 library
+if (ENABLE_TREXIO)
 find_package(HDF5 QUIET)
 if (HDF5_FOUND)
   message(STATUS "Is HDF5 library found            :: " ${HDF5_VERSION})
@@ -99,9 +100,8 @@ if (HDF5_FOUND)
 endif(HDF5_FOUND)
 
 # Find TREXIO
-if (HDF5_FOUND)
-  find_package(TREXIO QUIET)
-endif(HDF5_FOUND)
+find_package(TREXIO QUIET)
+
 if (TREXIO_FOUND)
   message(STATUS "Is TREXIO library found          :: " ${TREXIO_FOUND})
   message(STATUS "TREXIO Library include dirs      :: " ${TREXIO_INCLUDE_DIR})
@@ -109,7 +109,8 @@ if (TREXIO_FOUND)
   message(STATUS "                                    ")
   add_definitions(-DTREXIO_FOUND=\"${TREXIO_FOUND}\")
 endif(TREXIO_FOUND)
-endif (ENABLE_TREXIO)
+endif(ENABLE_TREXIO)
+
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)
@@ -177,7 +178,7 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   #endif()
 
   # debug
-  # list(APPEND Fortran_FLAGS "-g" "-O0" "-debug" "-traceback")
+  # list(APPEND Fortran_FLAGS "-g" "-debug" "all" "-traceback")
 
 
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
