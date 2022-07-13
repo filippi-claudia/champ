@@ -54,6 +54,7 @@ jobs:
 
         which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=/software/hdf5/1.12.1/lib:$LD_LIBRARY_PATH
         cmake --version
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=/software/trexio/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=/software/trexio/include/ -DHDF5_LIBRARIES=/software/hdf5/1.12.1/lib/libhdf5.so -DHDF5_INCLUDE_DIRS=/software/hdf5/1.12.1/include
         cmake --build build -- -j4
@@ -449,6 +450,19 @@ jobs:
         echo "Comparing the energy with the reference one ("total E" -29.7013541 +-  0.0312926) "
         $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.7013541   0.0312926
 
+    - name: "Test 32 (Butadiene) TREXIO interface testing with HDF5 backend on 2 processor"
+      run: |
+        ulimit -s unlimited
+        echo "Running the testsuite:: Test : . Butadiene VMC 1862 dets"
+        cd tests/CI_test/example10_COH2_ground_state
+
+        echo "Running the calculation with trexio library linked"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_double.out  -e error
+
+        echo "Comparing the energy with the reference one (total E = -26.1862817 +-  0.0180068) "
+        tail vmc_optimization_500_hdf5_double.out
+      # $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_hdf5_double.out "total E" -26.1862817  0.0180068
+
     - name: "Test 31 (Formaldehyde) Native TREXIO testing with HDF5 backend on 8 processors"
       run: |
         ulimit -s unlimited
@@ -462,17 +476,6 @@ jobs:
       # echo "Comparing the energy with the reference one (total E =  +-  ) "
       # $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_gs.out "total E"
 
-    # # - name: "Test 32 (Butadiene) TREXIO interface testing with HDF5 backend on 2 processor"
-    # #   run: |
-    # #     ulimit -s unlimited
-    # #     echo "Running the testsuite:: Test : . Butadiene VMC 1862 dets"
-    # #     cd tests/CI_test/example10_COH2_ground_state
-
-    # #     echo "Running the calculation with trexio library linked"
-    # #     /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_hdf5.inp  -o vmc_optimization_500_hdf5_double.out  -e error
-
-    # #     echo "Comparing the energy with the reference one (total E = -26.1862817 +-  0.0180068) "
-    # #     $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_hdf5_double.out "total E" -26.1862817  0.0180068
 
     # # - name: "Test 33 (Butadiene) TREXIO interface testing with TEXT backend on 1 processor"
     # #   run: |
