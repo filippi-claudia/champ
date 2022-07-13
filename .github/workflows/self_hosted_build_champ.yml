@@ -85,7 +85,10 @@ jobs:
       run: |
         echo "Running the testsuite:: Test : . H2 "
         cd tests/CI_test/VMC-H2
-
+        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+        ls -l /home/filippi/lib
+        echo "ldd on executalbe"
+        ldd $GITHUB_WORKSPACE/bin/vmc.mov1
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
 
