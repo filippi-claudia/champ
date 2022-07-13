@@ -9,6 +9,7 @@ on:
       - debug_intel
       - feature/debug-ci
       - optimization
+      - native-trexio
     # Sequence of patterns matched against refs/tags
     tags:
       - v2.*.*
@@ -17,7 +18,6 @@ on:
       - 'releases/**'
       - main
       - rmax
-      - cartesian_d
       - cartesian_d_qmckl
       - debug_intel
       - optimization
@@ -80,12 +80,16 @@ jobs:
         export OMPI_FC=gfortran-11
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DVECTORIZED=no -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=/software/trexio/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=/software/trexio/include/
         cmake --build build -- -j2
+        echo "ldd on executalbe after installation"
+        ldd $GITHUB_WORKSPACE/bin/vmc.mov1
+
 
     - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
       run: |
         echo "Running the testsuite:: Test : . H2 "
         cd tests/CI_test/VMC-H2
         export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_LIBRARY_PATH
         ls -l /home/filippi/lib
         echo "ldd on executalbe"
         ldd $GITHUB_WORKSPACE/bin/vmc.mov1
