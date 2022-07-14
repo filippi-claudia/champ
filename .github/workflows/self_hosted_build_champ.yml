@@ -30,7 +30,7 @@ jobs:
         toolchain: ['intel']
     name: Build CHAMP with ${{ matrix.toolchain }} OneAPI self-hosted runner ccpgate/ccp01
     runs-on: self-hosted
-    timeout-minutes: 120
+    timeout-minutes: 180
     # continue-on-error: true
     defaults:
       run:
@@ -90,9 +90,7 @@ jobs:
         cd tests/CI_test/VMC-H2
         export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
         export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_LIBRARY_PATH
-        ls -l /home/filippi/lib
-        echo "ldd on executalbe"
-        ldd $GITHUB_WORKSPACE/bin/vmc.mov1
+
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
 
@@ -579,7 +577,7 @@ jobs:
         export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
 
         echo "Running the testsuite:: Test : . Formaldehyde VMC with 1862 dets"
-        cd tests/CI_test/VMC_formaldehyde_ground_state
+        cd tests/CI_test/TREXIO-VMC-formaldehyde-ground-state
 
         echo "Running the calculation with trexio library linked"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i trexio_vmc_COH2_gs.inp  -o trexio_vmc_COH2_gs.out  -e error
@@ -597,41 +595,60 @@ jobs:
         export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
 
         echo "Running the testsuite:: Test : . Formaldehyde VMC with 8724 dets"
-        cd tests/CI_test/VMC_formaldehyde_excited_state
+        cd tests/CI_test/TREXIO-VMC-formaldehyde-excited-state
 
         echo "Running the calculation with trexio library linked"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i trexio_vmc_COH2_excited_state.inp  -o trexio_vmc_COH2_excited_state.out  -e error
 
-        tail -20 trexio_vmc_COH2_excited_state.out
-      # echo "Comparing the energy with the reference one (total E =  +-  ) "
-      # $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_excited_state.out "total E"
+
+        echo "Comparing the energy with the reference one (total E = -22.6186521 +-  0.0030356 ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_excited_state.out "total E" -22.6186521  0.0030356
+
+    - name: "Test 33 (Water optall) Native TREXIO testing with HDF5 backend on 2 processors"
+      continue-on-error: True
+      run: |
+        ulimit -s unlimited
+        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+
+        echo "Running the testsuite:: Test : Water VMC optimize all using 2 procs"
+        cd tests/CI_test/TREXIO-VMC-water-DFT-OptAll
+
+        echo "Running the calculation with trexio library linked"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_h2o_dft_optall.inp  -o vmc_h2o_dft_optall.out  -e error
+
+        tail -20 vmc_h2o_dft_optall.out
+      # echo "Comparing the energy with the reference one (total E = -22.6186521 +-  0.0030356 ) "
+      # $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_excited_state.out "total E" -22.6186521  0.0030356
 
 
+    # - name: "Test 34 (Water DMC) Native TREXIO testing with HDF5 backend on 8 processors"
+    #   continue-on-error: True
+    #   run: |
+    #     ulimit -s unlimited
+    #     export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+    #     export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+    #     export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+
+    #     echo "Running the testsuite:: Test : Water DMC on optimized orbitals and Jastrow using 8 procs"
+    #     cd tests/CI_test/TREXIO-DMC-water-DFT-dmc2body_optall_tau0.05
+
+    #     echo "Running the calculation with trexio library linked"
+    #     /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_h2o_dft_jas2body_optall.inp -o vmc_h2o_dft_jas2body_optall.out -e error
+    #     cat mc_configs_new* >> mc_configs
+    #     rm -v mc_configs_new*
+
+    #     echo "First step completed"
+
+    #     /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/dmc.mov1 -i dmc_h2o_dft_jas2body_optall.inp -o dmc_h2o_dft_jas2body_optall.out -e error
+    #     rm -v problem*
+    #     rm -v mc_configs_new*
 
 
-    # # - name: "Test 33 (Butadiene) TREXIO interface testing with TEXT backend on 1 processor"
-    # #   run: |
-    # #     ulimit -s unlimited
-    # #     echo "Running the testsuite:: Test : . Butadiene VMC 500 dets"
-    # #     cd tests/CI_test/TREXIO
-
-    # #     echo "Running the calculation with trexio library linked"
-    # #     /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_text.inp  -o vmc_optimization_500_text_single.out  -e error
-
-    # #     echo "Comparing the energy with the reference one (total E = -26.2164721 +-  0.0280294) "
-    # #     $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_text_single.out "total E" -26.2164721  0.0280294
-
-    # # - name: "Test 32 (Butadiene) TREXIO interface testing with TEXT backend on 2 processor"
-    # #   run: |
-    # #     ulimit -s unlimited
-    # #     echo "Running the testsuite:: Test : . Butadiene VMC 500 dets"
-    # #     cd tests/CI_test/TREXIO
-
-    # #     echo "Running the calculation with trexio library linked"
-    # #     /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500_text.inp  -o vmc_optimization_500_text_double.out  -e error
-
-    # #     echo "Comparing the energy with the reference one (total E = -26.1862817 +-  0.0180068) "
-    # #     $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_text_double.out "total E" -26.1862817  0.0180068
+    #     tail -20 dmc_h2o_dft_jas2body_optall.out
+      # echo "Comparing the energy with the reference one (total E = -22.6186521 +-  0.0030356 ) "
+      # $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_excited_state.out "total E" -22.6186521  0.0030356
 
 
     # - name: "Zip the test reults"

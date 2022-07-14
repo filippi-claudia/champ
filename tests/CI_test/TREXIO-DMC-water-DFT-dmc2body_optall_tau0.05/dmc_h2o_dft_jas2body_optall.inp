@@ -1,0 +1,28 @@
+%module general
+    title           'H2O DFT calculation'
+    pool            './pool/'
+    mode            'dmc_one_mpi1'
+%endmodule
+
+
+load trexio          H2O_DFT.hdf5
+load orbitals        orbitals.final_optall
+load jastrow         jastrow.final_optall
+
+%module electrons
+    nup           4
+    nelec         8
+%endmodule
+
+%module blocking_dmc
+    dmc_nstep     60
+    dmc_nblk      40
+    dmc_nblkeq    1
+    dmc_nconf     100
+%endmodule
+
+%module dmc
+    tau           0.05d0
+    etrial      -17.26d0
+    icasula      -1
+%endmodule

@@ -1,0 +1,9 @@
+jastrow_parameter   1
+  5  5  0           norda,nordb,nordc
+   0.60000000         scalek
+   0.00000000   0.00000000  -0.38849410  -0.22708321  -0.05262006   0.07839119 (a(iparmj),iparmj=1,nparma)
+   0.00000000   0.00000000  -0.08988581  -0.00264443   0.00427360   0.00407866 (a(iparmj),iparmj=1,nparma)
+   0.50000000   0.42300913   0.08393629   0.00727417  -0.00485362  -0.00359483 (b(iparmj),iparmj=1,nparmb)
+ (c(iparmj),iparmj=1,nparmc)
+ (c(iparmj),iparmj=1,nparmc)
+end

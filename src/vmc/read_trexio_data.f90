@@ -1407,24 +1407,30 @@ module trexio_read_data
             trex_symmetry_file = trexio_open(file_trexio_path, 'r', backend, rc)
             rc = trexio_read_mo_num(trex_symmetry_file, mo_num)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num failed', __FILE__, __LINE__)
+            if (trexio_has_mo_symmetry(trex_symmetry_file) == 0) trexio_has_group_symmetry = .true.
 #endif
         endif
         call bcast(mo_num)
+        call bcast(trexio_has_group_symmetry)
         ! safe allocate
         if (.not. allocated(irrep)) allocate (irrep(mo_num))
         if (.not. allocated(mo_symmetry)) allocate (mo_symmetry(mo_num))
         if (.not. allocated(temp_mo_symmetry)) allocate (temp_mo_symmetry(mo_num))
         if (.not. allocated(unique_irrep)) allocate (unique_irrep(mo_num))
 
-        if (wid) then
+
+        if (trexio_has_group_symmetry) then
+            if (wid) then
 #if defined(TREXIO_FOUND)
-            rc = trexio_read_mo_symmetry(trex_symmetry_file, temp_mo_symmetry, 2)
-            if (trexio_has_mo_symmetry(trex_symmetry_file) == 0) trexio_has_group_symmetry = .true.
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_symmetry failed', __FILE__, __LINE__)
+                rc = trexio_read_mo_symmetry(trex_symmetry_file, temp_mo_symmetry, 2)
+                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_symmetry failed', __FILE__, __LINE__)
 #endif
+            endif
+            call bcast(temp_mo_symmetry)
+        else ! set default symmetry if information not present in the file
+            temp_mo_symmetry(:) = 'A'
+            irrep(:) = 1
         endif
-        call bcast(trexio_has_group_symmetry)
-        call bcast(temp_mo_symmetry)
 
         ! reorder the Mo Symmetry labels according to the CHAMP ordering
         do i = 1, mo_num
