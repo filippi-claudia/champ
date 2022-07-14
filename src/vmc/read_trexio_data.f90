@@ -487,6 +487,7 @@ module trexio_read_data
             ngyzzz(iwctype(i)) = ao_frequency(34)
             ngzzzz(iwctype(i)) = ao_frequency(35)
 
+
             if (numr .gt. 0) then
                 nbastyp(iwctype(i)) = num_ao_per_cent(iwctype(i))
             endif

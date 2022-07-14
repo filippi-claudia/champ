@@ -675,6 +675,7 @@ subroutine read_orbitals_file(file_orbitals)
     use method_opt, only: method
     use precision_kinds, only: dp
     use write_orb_loc_mod, only: write_orb_loc
+    use m_trexio_basis,   only: champ_ao_ordering
 
     implicit none
 
@@ -757,6 +758,12 @@ subroutine read_orbitals_file(file_orbitals)
     call bcast(coef)
     ! printing of the lcao orbitals coefficients will be done by write_orb_loc subroutine.
     write(ounit,*) "Orbital coefficients are written to the output.log file"
+
+    ! set default ordering if we are not using trexio files.
+    if (.not. allocated(champ_ao_ordering))      allocate(champ_ao_ordering(nbasis))
+    do i = 1, nbasis
+        champ_ao_ordering(i) = i
+    enddo
 
     ilcao = ilcao + 1
 

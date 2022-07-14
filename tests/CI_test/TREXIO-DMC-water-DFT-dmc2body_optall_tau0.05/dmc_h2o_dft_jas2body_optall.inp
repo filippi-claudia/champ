@@ -7,6 +7,7 @@
 
 load trexio          H2O_DFT.hdf5
 load orbitals        orbitals.final_optall
+load basis_num_info  $pool/champ_v2_trexio_H2O_DFT_with_g.bfinfo
 load jastrow         jastrow.final_optall
 
 %module electrons

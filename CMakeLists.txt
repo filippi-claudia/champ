@@ -43,7 +43,7 @@ option(BUILD_DOC "build_doc" off)
 
 # MPI
 option(ENABLE_MPI "enable_mpi" on)
-option(ENABLE_TREXIO "enable_mpi" OFF)
+
 
 # QMMM option
 option(ENABLE_QMMM "enable_qmmm" off)
@@ -53,6 +53,7 @@ option(ENABLE_PERIODIC "enable_periodic" off)
 
 ## External packages
 option(ENABLE_TREXIO "enable_trexio" off)
+option(ENABLE_QMCKL  "enable_qmckl" off)
 
 # Include function to Load MKL
 message("")
