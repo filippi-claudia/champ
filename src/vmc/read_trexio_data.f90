@@ -1355,12 +1355,12 @@ module trexio_read_data
         use array_utils,        only: unique_string_elements
 
 
-
 #if defined(TREXIO_FOUND)
         use trexio
         use contrl_file,        only: backend
         use error,              only: trexio_error
 #endif
+        use m_trexio_basis,     only: champ_ao_ordering
 
         implicit none
 
@@ -1371,6 +1371,7 @@ module trexio_read_data
         logical                         :: exist, skip = .true.
         character(len=40)               :: label
         integer                         :: io, nsym, mo_num
+        character(len=3), allocatable   :: temp_mo_symmetry(:)
         character(len=3), allocatable   :: mo_symmetry(:)
 
 
@@ -1412,17 +1413,24 @@ module trexio_read_data
         ! safe allocate
         if (.not. allocated(irrep)) allocate (irrep(mo_num))
         if (.not. allocated(mo_symmetry)) allocate (mo_symmetry(mo_num))
+        if (.not. allocated(temp_mo_symmetry)) allocate (temp_mo_symmetry(mo_num))
         if (.not. allocated(unique_irrep)) allocate (unique_irrep(mo_num))
 
         if (wid) then
 #if defined(TREXIO_FOUND)
-            rc = trexio_read_mo_symmetry(trex_symmetry_file, mo_symmetry, 2)
+            rc = trexio_read_mo_symmetry(trex_symmetry_file, temp_mo_symmetry, 2)
             if (trexio_has_mo_symmetry(trex_symmetry_file) == 0) trexio_has_group_symmetry = .true.
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_symmetry failed', __FILE__, __LINE__)
 #endif
         endif
         call bcast(trexio_has_group_symmetry)
-        call bcast(mo_symmetry)
+        call bcast(temp_mo_symmetry)
+
+        ! reorder the Mo Symmetry labels according to the CHAMP ordering
+        do i = 1, mo_num
+            mo_symmetry(i) = temp_mo_symmetry(champ_ao_ordering(i))
+        enddo
+
 
         write(ounit,fmt=int_format) " Number of molecular orbital symmetries read ::  ", mo_num
 

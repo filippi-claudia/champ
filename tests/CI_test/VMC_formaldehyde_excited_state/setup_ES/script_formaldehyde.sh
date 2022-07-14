@@ -1,6 +1,6 @@
 #!/bin/bash
-python3 trex2champ.py \
-			--trex 	"COH2_GS.trexio" \
+python3 ../../../../tools/trex_tools/trex2champ.py \
+			--trex 	"../COH2_ES.trexio" \
 			--backend	"HDF5" \
 			--basis_prefix  "BFD-aug-cc-pVDZ" \
 			--lcao \
@@ -9,4 +9,7 @@ python3 trex2champ.py \
 			--geom \
 			--basis \
 			--det
+
+
+
 

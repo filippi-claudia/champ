@@ -981,6 +981,10 @@ subroutine parser
 
   if ( fdf_load_defined('symmetry') ) then
     call read_symmetry_file(file_symmetry)
+  elseif ( fdf_load_defined('trexio') ) then
+#if defined(TREXIO_FOUND)
+    call read_trexio_symmetry_file(file_trexio)
+#endif
   elseif ( fdf_block('symmetry', bfdf)) then
   ! call fdf_read_symmetry_block(bfdf)
     write(errunit,'(a)') "Warning:: No information about orbital symmetries provided in the block."
