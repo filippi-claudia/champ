@@ -9,7 +9,6 @@ on:
       - debug_intel
       - feature/debug-ci
       - optimization
-      - native-trexio
     # Sequence of patterns matched against refs/tags
     tags:
       - v2.*.*
@@ -615,7 +614,7 @@ jobs:
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_h2o_dft_optall.inp  -o vmc_h2o_dft_optall.out  -e error
 
         echo "Comparing the energy with the reference one (total E = -17.2271129 +-  0.0019663 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_excited_state.out "total E" -17.2271129  0.0019663
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_h2o_dft_optall.out "total E" -17.2271129  0.0019663
 
 
     - name: "Test 34 (Water DMC) Native TREXIO testing with HDF5 backend on 8 processors"
@@ -642,7 +641,7 @@ jobs:
 
         tail -20 dmc_h2o_dft_jas2body_optall.out
         echo "Comparing the energy with the reference one (total E = -17.2611671 +-  0.0009610 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_excited_state.out "total energy (  100)" -17.2611671  0.0009610
+        $GITHUB_WORKSPACE/tools/compare_value.py dmc_h2o_dft_jas2body_optall.out "total energy (  100)" -17.2611671  0.0009610
 
 
     # - name: "Zip the test reults"
