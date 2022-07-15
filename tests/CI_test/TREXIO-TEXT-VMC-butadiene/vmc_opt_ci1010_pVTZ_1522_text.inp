@@ -2,12 +2,11 @@
     title           'butadiene'
     pool            'pool/'
     mode            'vmc'
-    backend         'hdf5'
+    backend         'text'
 %endmodule
 
-load trexio          butadiene_ci1010_pVTZ_1.hdf5
+load trexio          'butadiene.dir'
 
-load determinants    TZ_1M_500.det
 load jastrow         jastrow_good_b3lyp.0
 load jastrow_der     jastrow.der
 
@@ -20,7 +19,7 @@ load jastrow_der     jastrow.der
     ioptwf        1
     ioptci        1
     ioptjas       1
-    ioptorb       1
+    ioptorb       0
     method        'sr_n'
     multiple_adiag 0
     ncore         0

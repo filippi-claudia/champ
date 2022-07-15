@@ -1,0 +1,2 @@
+determinant_num_isSet 1 
+determinant_num 3250 

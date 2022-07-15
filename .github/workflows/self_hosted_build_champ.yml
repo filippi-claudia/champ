@@ -640,8 +640,38 @@ jobs:
         rm -v mc_configs_new*
 
         tail -20 dmc_h2o_dft_jas2body_optall.out
-        echo "Comparing the energy with the reference one (total E = -17.2611671 +-  0.0009610 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py dmc_h2o_dft_jas2body_optall.out "total energy (  100)" -17.2611671  0.0009610
+        echo "Comparing the energy with the reference one (total E = -17.2642624 +-  0.0009615 ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py dmc_h2o_dft_jas2body_optall.out "total energy (  100)" -17.2642624   0.0009615
+
+    - name: "Test 35 (Butadiene) Native TREXIO with TEXT backend on 1 processor"
+      continue-on-error: True
+      run: |
+        ulimit -s unlimited
+        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+
+        echo "Running the testsuite:: Test : Water DMC on optimized orbitals and Jastrow using 8 procs"
+        cd tests/CI_test/TREXIO-TEXT-VMC-butadiene
+
+        echo "Running the HDF5 backend calculation with trexio library linked"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ci1010_pVTZ_1522_hdf5.inp  -o vmc_opt_ci1010_pVTZ_1522_hdf5_single.out  -e error_hdf5_single
+
+        echo "Running the TEXT backend calculation with trexio library linked"
+        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ci1010_pVTZ_1522_text.inp  -o vmc_opt_ci1010_pVTZ_1522_text_single.out  -e error_text_single
+
+
+        HDF=`tail -13 vmc_opt_ci1010_pVTZ_1522_hdf5_single.out | head -n 1 | awk 'NR == 1 {print $4}'`
+        echo $HDF
+        TEXT=`tail -13 vmc_opt_ci1010_pVTZ_1522_text_single.out | head -n 1 | awk 'NR == 1 {print $4}'`
+        echo $TEXT
+        if (($(echo "$HDF == $TEXT" |bc -l))); then
+        echo "success"
+        exit 0;
+        else
+        exit -1;
+        fi
+
 
 
     # - name: "Zip the test reults"
