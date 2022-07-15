@@ -1,6 +1,6 @@
 #!/bin/bash
 python3 ../../../../tools/trex_tools/trex2champ.py \
-			--trex 	"../COH2_ES.trexio" \
+			--trex 	"COH2_ES.trexio" \
 			--backend	"HDF5" \
 			--basis_prefix  "BFD-aug-cc-pVDZ" \
 			--lcao \

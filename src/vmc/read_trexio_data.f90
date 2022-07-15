@@ -444,10 +444,9 @@ module trexio_read_data
 
         lower_range = 1; count1 = 1
         do i = 1, ncent_tot
-            upper_range = lower_range + num_ao_per_cent(iwctype(i)) -1
-
+            upper_range = lower_range + num_ao_per_cent(i) -1
             ! the frequency of number of ao's per l value is what we need from the following function
-            call unique_elements(num_ao_per_cent(iwctype(i)), index_slm(lower_range:upper_range), ao_index(1:35), count0, ao_frequency, unique_index)
+            call unique_elements(num_ao_per_cent(i), index_slm(lower_range:upper_range), ao_index(1:35), count0, ao_frequency, unique_index)
             ! reset ao_index to zero; it is not used anyway
             ao_index = 0
 
@@ -489,7 +488,7 @@ module trexio_read_data
 
 
             if (numr .gt. 0) then
-                nbastyp(iwctype(i)) = num_ao_per_cent(iwctype(i))
+                nbastyp(iwctype(i)) = num_ao_per_cent(i)
             endif
 
             lower_range = upper_range + 1
@@ -594,7 +593,7 @@ module trexio_read_data
 !       This is for obtaining iwrwf
         lower_range = 1; count1 = 1
         do i = 1, ncent_tot
-            upper_range = lower_range + num_ao_per_cent(iwctype(i)) -1
+            upper_range = lower_range + num_ao_per_cent(i) -1
             count1 = 1
             do j = lower_range, upper_range
                 iwrwf(count1, iwctype(i)) = ao_radial_index(j)
