@@ -813,7 +813,8 @@ subroutine parser
     call read_basis_num_info_file(file_basis_num_info)
   elseif ( fdf_load_defined('trexio') ) then
 #if defined(TREXIO_FOUND)
-    call write_trexio_basis_num_info_file(file_trexio)
+    ! call write_trexio_basis_num_info_file(file_trexio)
+    write(ounit,*) "Numerical basis information not needed when orbitals are read from trexio file"
 #endif
   elseif (.not. fdf_block('basis_num_info', bfdf)) then
   ! call fdf_read_eigenvalues_block(bfdf)

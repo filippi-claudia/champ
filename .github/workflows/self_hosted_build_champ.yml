@@ -651,7 +651,7 @@ jobs:
         export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
         export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
 
-        echo "Running the testsuite:: Test : Water DMC on optimized orbitals and Jastrow using 8 procs"
+        echo "Running the testsuite:: Test : Butadiene VMC optimization of Jastrow and determinants using 1 processor using TEXT backend of trexio"
         cd tests/CI_test/TREXIO-TEXT-VMC-butadiene
 
         echo "Running the HDF5 backend calculation with trexio library linked"
