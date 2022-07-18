@@ -8,7 +8,8 @@ c Written by Claudia Filippi
       use contrl_file, only: initialize
       use mpi
       use contrl_file,    only: ounit
-      use mpitimer,    only: time, time_start, time_check1, time_final
+      use mpitimer,    only: time, elapsed_time, time_start, time_check1
+      use mpitimer,    only: time_final
       use parser_mod,  only: parser
       use error,       only: fatal_error
       use optwf_matrix_corsamp_mod, only: optwf_matrix_corsamp
@@ -24,6 +25,7 @@ c Written by Claudia Filippi
       call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
 
       time_start = time()
+      time_check1 = time_start
       call mpiconf_init()
 
       call initialize()
@@ -42,14 +44,16 @@ c Open the standard output and the log file only on the master
 
 
 !     read the input from parser
+      call elapsed_time("MPI initializations : ")
       call parser()
+      call elapsed_time("Parsing all the files : ")
       call MPI_BARRIER(MPI_Comm_World, ierr)
+      call elapsed_time("MPI Barrier before main DMC : ")
 
 
       if(mode.eq.'dmc_one_mpi2') then
         if(ioptwf.gt.0) call fatal_error('MAIN: no DMC optimization with global population')
 
-!        call p2gtid('dmc:ibranch_elec', ibranch_elec, 0, 1)
         ! why a local variable is used to decide the following line
         if(ibranch_elec.gt.0) call fatal_error('MAIN: no DMC single-branch with global population')
       endif
@@ -65,7 +69,7 @@ c Open the standard output and the log file only on the master
       close(45)
 
       time_final = time()
-      !write(ounit,'(a,g16.6,a)') " Total time of computation ::  ", time_final - time_start, " seconds "
+      write(ounit,'(a,g16.6,a)') " REAL TIME (Total) of computation ::  ", time_final - time_start, " seconds "
 
       call mpi_finalize(ierr)
       call deallocate_dmc()
