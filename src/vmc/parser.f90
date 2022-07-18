@@ -605,7 +605,12 @@ subroutine parser
   elseif ( fdf_load_defined('molecule') ) then
     call read_molecule_file(file_molecule)
   elseif ( fdf_load_defined('trexio') ) then
+#if defined(TREXIO_FOUND)
     call read_trexio_molecule_file(file_trexio)
+#else
+  write(errunit,'(a)') "Error:: Not compiled with TREXIO support but trexio file is present in input file"
+  error stop
+#endif
   else
     write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
@@ -1145,12 +1150,12 @@ subroutine parser
       ! See if this is really allocated at this point
      if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
      if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
-     ibas0(1)=1
-     ibas1(1)=nbastyp(iwctype(1))
-     do ic=2,ncent
-       ibas0(ic)=ibas1(ic-1)+1
-       ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
-     enddo
+    !  ibas0(1)=1
+    !  ibas1(1)=nbastyp(iwctype(1))
+    !  do ic=2,ncent
+    !    ibas0(ic)=ibas1(ic-1)+1
+    !    ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
+    !  enddo
     else
       write(errunit,'(a)') "Error:: No information about basis provided in the block."
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__

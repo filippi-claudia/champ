@@ -60,13 +60,10 @@ module trexio_basis_fns_mod
       l=0
 !     loop through centers
       do ic=1,ncent+nghostcent
-
         it=iwctype(ic)
-        nrbasit=num_rad_per_cent(it)
-        nbastypit=num_ao_per_cent(it)
-        nlmbasit = nlmbas(it)
-
-        print*, 'trexio_basis_fns: ic=', ic, ' it=', it, ' nrbasit=', nrbasit, ' nbastypit=', nbastypit, ' nlmbasit=', nlmbasit
+        ! nlmbasit = nlmbas(it)
+        nbastypit = nbastyp(it)
+        print*, 'trexio_basis_fns: ic=', ic, ' it=', it, ' nbastypit=', nbastypit
 
         allocate (y(nbastypit))
         allocate (dy(3,nbastypit))
@@ -102,8 +99,9 @@ module trexio_basis_fns_mod
           enddo
 
           do ilm=1,nbastypit
-              print*, "ilm, iwlbas0", ilm, index_slm(ilm)
-              call slm(index_slm(ilm),xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
+              ! print*, "ilm, iwlbas0", ilm, index_slm(ilm)
+              ! call slm(index_slm(ilm),xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
+              call slm(ilm,xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
           enddo
 
           ! do ilm=1,nlmbasit

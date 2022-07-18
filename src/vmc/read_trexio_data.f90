@@ -272,10 +272,13 @@ module trexio_read_data
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num', __FILE__, __LINE__)
             rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
+            rc = trexio_read_basis_shell_num(trex_orbitals_file, basis_num_shell)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_num', __FILE__, __LINE__)
 #endif
         endif
         call bcast(norb_tot)
         call bcast(nbasis)
+        call bcast(basis_num_shell)
 
         print*, "Number of molecular orbitals :: ", norb_tot
         print*, "Number of atomic orbitals    :: ", nbasis
@@ -287,6 +290,20 @@ module trexio_read_data
         else
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
         endif
+
+        ! Do the allocations based on the number of shells and primitives
+        if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
+        if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
+        if (.not. allocated(compare))    allocate(compare(basis_num_shell))
+        if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
+        if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
+        if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
+        ! if (.not. allocated(ao_ordering))            allocate(ao_ordering(nbasis))
+        if (.not. allocated(ao_radial_index))        allocate(ao_radial_index(nbasis))
+        ! if (.not. allocated(champ_ao_ordering))      allocate(champ_ao_ordering(nbasis))
+
+
+
 
         ! Read the orbitals
         if (wid) then
@@ -301,6 +318,101 @@ module trexio_read_data
         print*, "trexio has orbital group :: ", trexio_has_group_orbitals
         call bcast(coef(:,:,1))
         print*, "coeffs :: ", coef(:,:,1)
+
+!   Generate the basis information (which radial to be read for which Slm)
+        if (wid) then
+#if defined(TREXIO_FOUND)
+            rc = trexio_read_basis_shell_ang_mom(trex_orbitals_file, basis_shell_ang_mom)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_ang_mom', __FILE__, __LINE__)
+            rc = trexio_read_basis_nucleus_index(trex_orbitals_file, basis_nucleus_index)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_nucleus_index', __FILE__, __LINE__)
+#endif
+        endif
+        call bcast(basis_shell_ang_mom)
+        call bcast(basis_nucleus_index)
+
+        numr = 1            ! Debug Check this statement. Not sure how to store multiple bfinfo files in single trexio
+
+        ! Generate the index of the slm for each AO
+        ! i.e. index_slm(i) = the slm index of the i-th AO
+        ! The list follows the following order:
+
+        !   l   |   1  2  3  4    5   6   7   8   9   10
+        ! ------+-----------------------------------------
+        !   y   |   s  x  y  z    xx  xy  xz  yy  yz  zz
+
+        !           11  12  13  14  15  16  17  18  19  20
+        !       ------------------------------------------
+        !           xxx xxy xxz xyy xyz xzz yyy yyz yzz zzz
+        !
+        !          21   22   23   24   25   26   27   28   29   30   31   32   33   34   35
+        !       +-----------------------------------------------------------------------------
+        !          xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
+
+        counter = 0; count1 = 1; count2 = 0
+        cum_rad_per_cent = 0
+        cum_ao_per_cent  = 0
+        index_ao = 0; jj = 1
+        ! The following loop will generate the index_slm array which tells
+        ! which AO is of which type (from the above list)
+        compare = 0
+        do l = 1, basis_num_shell
+            k = basis_shell_ang_mom(l)
+
+            if (k == 2) then
+                compare(l) = 2
+            else
+                compare(l) = -1
+            endif
+            counter = counter + slm_per_l(k+1)
+            count2 = 0;
+            do ii = 1, slm_per_l(k+1)
+
+                index_ao = index_ao + 1
+                index_slm(index_ao) = sum(slm_per_l(1:k)) + 1 + count2
+                count2 = count2 + 1
+
+
+                cum_ao_per_cent = cum_ao_per_cent + 1
+            end do
+
+            jj = jj + 1
+
+            cum_rad_per_cent = cum_rad_per_cent + 1
+
+            ! The following if loop is for counting the number of radial functions
+            ! and number of AOs per center
+            if (count1 == basis_nucleus_index(l)) then
+                num_rad_per_cent(count1) = cum_rad_per_cent
+                do ii = 1, slm_per_l(k+1)
+                    ao_ordering = [ao_ordering, cum_rad_per_cent]
+                enddo
+                num_ao_per_cent(count1) = cum_ao_per_cent
+            else
+                cum_rad_per_cent = 1
+                ao_ordering = [ao_ordering, cum_rad_per_cent]
+                cum_ao_per_cent  = 1
+                count1 = count1 + 1
+            end if
+        enddo ! loop on shells
+
+        allocate (nbastyp(nctype_tot))
+
+        ! Obtain the index of radials for each unique center (iwrwf)
+        if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot))
+        if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctype_tot))
+        if (.not. allocated(ao_index)) allocate (ao_index(35), source=0)            ! ao upto g orbitals
+        if (.not. allocated(ao_frequency)) allocate (ao_frequency(35), source=0)          ! ao upto g orbitals
+        if (.not. allocated(unique_index)) allocate (unique_index(35), source=0)    ! ao upto g orbitals
+
+        do i = 1, ncent_tot
+            if (numr .gt. 0) then
+                nbastyp(iwctype(i)) = num_ao_per_cent(i)
+            endif
+        enddo
+
+        ! You need iwlbas and iwrwf to proceed from here
+
 
 #if defined(TREXIO_FOUND)
         if (wid) rc = trexio_close(trex_orbitals_file)

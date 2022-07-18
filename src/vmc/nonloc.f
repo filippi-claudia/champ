@@ -231,7 +231,7 @@ c elseif iskip
                 t_vpsp(ic,iq,i)=0.d0
               enddo
 c endif dmc
-            endif 
+            endif
 c endif iskip
           endif
 c end loop nelec, ncent
@@ -382,7 +382,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use method_opt, only: method
       use optwf_contrl, only: ioptorb
       use vmc_mod, only: norb_tot
-      
+#if defined(TREXIO_FOUND)
+      use trexio_basis_fns_mod, only: trexio_basis_fns
+      use trexio_read_data, only: trexio_has_group_orbitals
+#endif
+
       implicit none
 
       integer :: ic, iel, ider, ier, iforce_analy, ii
@@ -413,7 +417,7 @@ c get the value from the 3d-interpolated orbitals
             dtmp(1)=0   ! Don't compute the gradients
             dtmp(2)=0   ! Don't compute the gradients
             dtmp(3)=0   ! Don't compute the gradients
-            call spline_mo(x,iorb,orbn(iorb),dtmp,ddorb(iorb,iel),ier) 
+            call spline_mo(x,iorb,orbn(iorb),dtmp,ddorb(iorb,iel),ier)
           enddo
          elseif(i3dlagorb.ge.1) then
           call lagrange_mose(1,x,orbn,ier)
@@ -425,11 +429,15 @@ c get the value from the 3d-interpolated orbitals
 c get basis functions for electron iel
           ider=0
           if(iforce_analy.gt.0) ider=1
-          call basis_fns(iel,iel,rvec_en,r_en,ider)
+          if (trexio_has_group_orbitals) then
+            call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
+          else
+            call basis_fns(iel,iel,rvec_en,r_en,ider)
+          endif
 
 ! Vectorization dependent code selection
 #ifdef VECTORIZATION
-          ! The following loop changed for better vectorization AVX512/AVX2          
+          ! The following loop changed for better vectorization AVX512/AVX2
           do iorb=1,norb+nadorb
              orbn(iorb)=0.d0
              do m=1,nbasis
