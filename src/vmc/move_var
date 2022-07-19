@@ -1,0 +1,10 @@
+#!/bin/bash
+
+VARNAME=mode
+NEWMOD=control
+
+for f in *.f*
+do
+    echo $f
+    python ~/roquefort/roquefort/refac_fortran.py --action move_var --var_name $VARNAME --new_module $NEWMOD --filename $f
+done
