@@ -327,8 +327,6 @@ module multidet
     integer, dimension(:, :, :), allocatable :: irepcol_det !(MELEC,MDET,2)
     integer, dimension(:, :, :), allocatable :: ireporb_det !(MELEC,MDET,2)
     integer, dimension(:), allocatable :: ivirt !(2)
-    integer, dimension(:, :), allocatable :: iwundet !(MDET,2)
-    integer :: kref
     integer :: kref_old
     integer :: ndet_req
     integer :: kchange
@@ -342,19 +340,19 @@ module multidet
     integer, dimension(:), allocatable :: ndetsingle !(2)
 
     private
-    public :: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, kref_fixed, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old, kchange
+    public :: iactv, irepcol_det, ireporb_det, ivirt, kref_fixed, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old, kchange
     public :: allocate_multidet, deallocate_multidet
     save
 contains
     subroutine allocate_multidet()
-        use dets, only: ndet
       use system, only: nelec
       use system, only: nelec
+      use slater, only: ndet
+      use slater, only: ndet
         if (.not. allocated(iactv)) allocate (iactv(2), source=0)
         if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2), source=0)
         if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2), source=0)
         if (.not. allocated(ivirt)) allocate (ivirt(2), source=0)
-        if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2), source=0)
         if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2), source=0)
         if (.not. allocated(k_det)) allocate (k_det(ndet, 2), source=0)
         if (.not. allocated(ndetiab)) allocate (ndetiab(2), source=0)
@@ -366,7 +364,6 @@ contains
 
     subroutine deallocate_multidet()
         if (allocated(numrep_det)) deallocate (numrep_det)
-        if (allocated(iwundet)) deallocate (iwundet)
         if (allocated(ivirt)) deallocate (ivirt)
         if (allocated(ireporb_det)) deallocate (ireporb_det)
         if (allocated(irepcol_det)) deallocate (irepcol_det)
@@ -385,6 +382,7 @@ module multimat
     !> Arguments: aa, wfmat
     use precision_kinds, only: dp
       use system, only: nelec
+      use slater, only: ndet
 
     implicit none
 
@@ -397,12 +395,16 @@ module multimat
     save
 contains
     subroutine allocate_multimat()
-        use dets, only: ndet
         use coefs, only: norb
         use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
       use system, only: nelec
       use system, only: nelec
+        use coefs, only: norb
+        use vmc_mod, only: norb_tot
+        use vmc_mod, only: MEXCIT
+      use slater, only: ndet
+      use slater, only: ndet
         if (.not. allocated(aa)) allocate (aa(nelec, norb_tot, 2))
         if (.not. allocated(wfmat)) allocate (wfmat(ndet, MEXCIT**2, 2))
     end subroutine allocate_multimat
@@ -418,6 +420,7 @@ module multimatn
     !> Arguments: aan, wfmatn
     use precision_kinds, only: dp
       use system, only: nelec
+      use slater, only: ndet
 
     implicit none
 
@@ -430,11 +433,14 @@ module multimatn
     save
 contains
     subroutine allocate_multimatn()
-        use dets, only: ndet
         use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
       use system, only: nelec
       use system, only: nelec
+        use vmc_mod, only: norb_tot
+        use vmc_mod, only: MEXCIT
+      use slater, only: ndet
+      use slater, only: ndet
         if (.not. allocated(aan)) allocate (aan(nelec*norb_tot))
         if (.not. allocated(wfmatn)) allocate (wfmatn(ndet,MEXCIT**2))
     end subroutine allocate_multimatn
@@ -450,6 +456,9 @@ module multislater
     !> Arguments: detiab
     use precision_kinds, only: dp
       use system, only: nelec
+      use slater, only: ndet
+      use slater, only: ndet
+      use slater, only: ndet
 
     implicit none
 
@@ -464,7 +473,6 @@ module multislater
     save
 contains
     subroutine allocate_multislater()
-        use dets, only: ndet
       use system, only: nelec
       use system, only: nelec
         if (.not. allocated(detiab)) allocate(detiab(ndet, 2))
@@ -480,6 +488,7 @@ module multislatern
     !> Arguments: ddorbn, detn, dorbn, orbn
     use precision_kinds, only: dp
     use vmc_mod, only: norb_tot
+      use slater, only: ndet
 
     implicit none
 
@@ -494,9 +503,10 @@ module multislatern
     save
 contains
     subroutine allocate_multislatern()
-        use dets, only: ndet
         use coefs, only: norb
         use vmc_mod, only: norb_tot
+      use slater, only: ndet
+      use slater, only: ndet
         if (.not. allocated(ddorbn)) allocate (ddorbn(norb_tot))
         if (.not. allocated(detn)) allocate (detn(ndet))
         if (.not. allocated(dorbn)) allocate (dorbn(norb_tot, 3))
@@ -547,6 +557,7 @@ module orbval
     !> Arguments: ddorb, dorb, nadorb, ndetorb, orb
     use precision_kinds, only: dp
     use vmc_mod, only: norb_tot
+      use slater, only: ndet
 
     implicit none
 
@@ -566,6 +577,8 @@ contains
         use precision_kinds, only: dp
       use system, only: nelec
       use system, only: nelec
+      use slater, only: ndet
+      use slater, only: ndet
         if (.not. allocated(ddorb)) allocate (ddorb(norb_tot, nelec))
         if (.not. allocated(dorb)) allocate (dorb(norb_tot, nelec, 3))
         if (.not. allocated(orb)) allocate (orb(nelec, norb_tot))
@@ -742,10 +755,12 @@ module scratch
     save
 contains
     subroutine allocate_scratch()
-        use dets, only: ndet
         use vmc_mod, only: norb_tot
       use system, only: nelec
       use system, only: nelec
+        use vmc_mod, only: norb_tot
+      use slater, only: ndet
+      use slater, only: ndet
         if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
         if (.not. allocated(dtildem)) allocate (dtildem(nelec, norb_tot, 2))
     end subroutine allocate_scratch
@@ -757,71 +772,12 @@ contains
 
 end module scratch
 
-module slater
-    !> Arguments: d2dx2, ddx, fp, fpp, slmi
-
-    use precision_kinds, only: dp
-    use vmc_mod, only: nmat_dim
-      use system, only: nelec
-
-    implicit none
-
-    real(dp), dimension(:), allocatable :: d2dx2 !(MELEC)
-    real(dp), dimension(:, :), allocatable :: ddx !(3,MELEC)
-    real(dp), dimension(:, :, :), allocatable :: fp !(3,nmat_dim,2)
-    real(dp), dimension(:, :), allocatable :: fpp !(nmat_dim,2)
-    real(dp), dimension(:, :), allocatable :: slmi !(nmat_dim,2)
-    !> DMC extra variables:
-    real(dp), dimension(:,:), allocatable :: fpd !(3,nmat_dim)
-    real(dp), dimension(:), allocatable :: fppd !(nmat_dim)
-    real(dp), dimension(:), allocatable :: fppu !(nmat_dim)
-    real(dp), dimension(:,:), allocatable :: fpu !(3,nmat_dim)
-
-
-    private
-    public :: d2dx2, ddx, fp, fpp, slmi
-    public :: fpd, fppd, fppu, fpu
-    ! public :: slmui, slmdi
-    public :: allocate_slater, deallocate_slater
-    save
-
-contains
-    subroutine allocate_slater()
-        use vmc_mod, only: nmat_dim
-      use system, only: nelec
-      use system, only: nelec
-        if (.not. allocated(d2dx2)) allocate(d2dx2(nelec))
-        if (.not. allocated(ddx)) allocate(ddx(3, nelec))
-        if (.not. allocated(fp)) allocate(fp(3, nmat_dim, 2))
-        if (.not. allocated(fpp)) allocate(fpp(nmat_dim, 2))
-        if (.not. allocated(slmi)) allocate(slmi(nmat_dim, 2))
-        if (.not. allocated(fpd))  allocate(fpd(3,nmat_dim))
-        if (.not. allocated(fppd)) allocate(fppd(nmat_dim))
-        if (.not. allocated(fppu)) allocate(fppu(nmat_dim))
-        if (.not. allocated(fpu))  allocate(fpu(3,nmat_dim))
-
-    end subroutine allocate_slater
-
-    subroutine deallocate_slater()
-        if (allocated(slmi)) deallocate(slmi)
-        if (allocated(fpp)) deallocate(fpp)
-        if (allocated(fp)) deallocate(fp)
-        if (allocated(ddx)) deallocate(ddx)
-        if (allocated(d2dx2)) deallocate(d2dx2)
-        if (allocated(fpd))  deallocate(fpd)
-        if (allocated(fppd)) deallocate(fppd)
-        if (allocated(fppu)) deallocate(fppu)
-        if (allocated(fpu))  deallocate(fpu)
-
-    end subroutine deallocate_slater
-
-end module slater
-
 module slatn
     !> Arguments: slmin
     use precision_kinds, only: dp
     use vmc_mod, only: nmat_dim
       use system, only: nelec
+      use slater, only: ndet
 
     implicit none
 
@@ -836,6 +792,8 @@ contains
         use vmc_mod, only: nmat_dim
       use system, only: nelec
       use system, only: nelec
+      use slater, only: ndet
+      use slater, only: ndet
         if (.not. allocated(slmin)) allocate (slmin(nmat_dim))
     end subroutine allocate_slatn
 
@@ -862,6 +820,7 @@ module vardep
     !> Arguments: cdep, iwdepend, nvdepend
     use precision_kinds, only: dp
       use system, only: nelec
+      use slater, only: ndet
 
     real(dp), dimension(:, :, :), allocatable :: cdep !(neqsx,83,MCTYPE)
     integer, dimension(:, :, :), allocatable :: iwdepend !(neqsx,83,MCTYPE)
@@ -876,6 +835,8 @@ contains
         use system, only: nctype_tot
       use system, only: nelec
       use jastrow, only: neqsx
+      use slater, only: ndet
+      use slater, only: ndet
         if (.not. allocated(cdep)) allocate (cdep(neqsx, 83, nctype_tot))
         if (.not. allocated(iwdepend)) allocate (iwdepend(neqsx, 83, nctype_tot), source=0)
         if (.not. allocated(nvdepend)) allocate (nvdepend(neqsx, nctype_tot), source=0)
@@ -1103,7 +1064,6 @@ subroutine allocate_m_common()
     use csfs, only: allocate_csfs
     use cuspmat4, only: allocate_cuspmat4
     ! use dets, only: allocate_dets
-    use dets_equiv, only: allocate_dets_equiv
     use distance_mod, only: allocate_distance_mod
     use distances_sav, only: allocate_distances_sav
     use gauss_ecp, only: allocate_gauss_ecp
@@ -1139,7 +1099,6 @@ subroutine allocate_m_common()
     call allocate_csfs()
     call allocate_cuspmat4()
     ! call allocate_dets()
-    call allocate_dets_equiv()
     call allocate_distance_mod()
     call allocate_distances_sav()
     call allocate_gauss_ecp()
@@ -1171,11 +1130,8 @@ subroutine deallocate_m_common()
     use b_tmove, only: deallocate_b_tmove
     use Bloc, only: deallocate_Bloc
     use casula, only: deallocate_casula
-    use coefs, only: deallocate_coefs
     use csfs, only: deallocate_csfs
     use cuspmat4, only: deallocate_cuspmat4
-    use dets, only: deallocate_dets
-    use dets_equiv, only: deallocate_dets_equiv
     use distance_mod, only: deallocate_distance_mod
     use distances_sav, only: deallocate_distances_sav
     use gauss_ecp, only: deallocate_gauss_ecp
@@ -1207,11 +1163,8 @@ subroutine deallocate_m_common()
     call deallocate_b_tmove()
     call deallocate_Bloc()
     call deallocate_casula()
-    call deallocate_coefs()
     call deallocate_csfs()
     call deallocate_cuspmat4()
-    call deallocate_dets()
-    call deallocate_dets_equiv()
     call deallocate_distance_mod()
     call deallocate_distances_sav()
     call deallocate_gauss_ecp()

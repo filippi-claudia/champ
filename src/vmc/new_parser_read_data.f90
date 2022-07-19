@@ -266,7 +266,6 @@ subroutine read_determinants_file(file_determinants)
     use mpiconf, only: wid
     use, intrinsic :: iso_fortran_env, only: iostat_eor
     use contrl_file, only: ounit, errunit
-    use dets, only: cdet, ndet
     use dorb_m, only: iworbd
     use coefs, only: norb
     use inputflags, only: ideterminants
@@ -279,6 +278,16 @@ subroutine read_determinants_file(file_determinants)
       use system, only: nup
       use system, only: ndn
       use optwf_control, only: method
+    use contrl_file,    only: ounit, errunit
+    use dorb_m,         only: iworbd
+    use coefs,          only: norb
+    use inputflags,     only: ideterminants
+    use csfs,           only: nstates
+    use mstates_mod,    only: MSTATES
+    use general,        only: pooldir
+    use precision_kinds, only: dp
+      use slater, only: ndet
+      use slater, only: cdet
 
     implicit none
 
@@ -408,11 +417,17 @@ subroutine read_multideterminants_file(file_multideterminants)
     use custom_broadcast, only: bcast
     use mpiconf, only: wid
     use contrl_file, only: ounit, errunit
-    use dets, only: ndet
-    use multidet, only: irepcol_det, ireporb_det, numrep_det, iwundet
     use inputflags, only: imultideterminants
     use general, only: pooldir
       use system, only: nelec
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+    use contrl_file,    only: ounit, errunit
+    use multidet, only: irepcol_det, ireporb_det, numrep_det
+    use inputflags, only: imultideterminants
+    use general, only: pooldir
+      use slater, only: ndet
+      use slater, only: iwundet
 
     implicit none
 
@@ -664,7 +679,8 @@ subroutine read_orbitals_file(file_orbitals)
     use mpiconf, only: wid
 
     use contrl_file, only: ounit, errunit
-    use coefs, only: coef, nbasis, norb
+    use contrl_file,    only: ounit, errunit
+    use coefs, only: nbasis, norb
     use inputflags, only: ilcao
     use orbval, only: nadorb
     use pcm_fdc, only: fs
@@ -676,6 +692,8 @@ subroutine read_orbitals_file(file_orbitals)
     use write_orb_loc_mod, only: write_orb_loc
     use m_trexio_basis, only: champ_ao_ordering
       use optwf_control, only: method
+    use m_trexio_basis,   only: champ_ao_ordering
+      use slater, only: coef
 
     implicit none
 
@@ -788,13 +806,14 @@ subroutine read_csf_file(file_determinants)
     use mstates_mod, only: MSTATES
     use inputflags, only: icsfs
     use multiple_geo, only: nwftype
-    use dets, only: ndet, cdet
 !   Not sure about the following two lines
     use ci000, only: nciprim, nciterm
     use optwf_control, only: ioptci
     use general, only: pooldir
     use precision_kinds, only: dp
       use optwf_control, only: method
+      use slater, only: ndet
+      use slater, only: cdet
     implicit none
 
     !   local use
@@ -913,10 +932,14 @@ subroutine read_csfmap_file(file_determinants)
     use, intrinsic :: iso_fortran_env
     use contrl_file, only: ounit, errunit
     use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use dets, only: cdet, ndet, nmap
     use multiple_geo, only: nwftype
     use precision_kinds, only: dp
     use general, only: pooldir
+    use dets, only: nmap
+    use precision_kinds,    only: dp
+    use general,            only: pooldir
+      use slater, only: ndet
+      use slater, only: cdet
 
     implicit none
 

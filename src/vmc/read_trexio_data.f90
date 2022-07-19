@@ -197,11 +197,18 @@ module trexio_read_data
         use contrl_file, only: ounit, errunit
         use system, only: ncent, ncent_tot, iwctype, nctype_tot
         use system, only: newghostype
-        use coefs, only: coef, nbasis, norb
         use inputflags, only: ilcao
         use numbas, only: nrbas
         use numbas, only: iwrwf, numr
         use numbas1, only: iwlbas, nbastyp
+        use custom_broadcast,   only: bcast
+        use mpiconf,            only: wid
+        use contrl_file,        only: ounit, errunit
+        use coefs, only: nbasis, norb
+        use inputflags,         only: ilcao
+        use numbas,             only: nrbas
+        use numbas,             only: iwrwf, numr
+        use numbas1,            only: iwlbas, nbastyp
 
         use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
         use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
@@ -223,6 +230,8 @@ module trexio_read_data
 #endif
         use m_trexio_basis, only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering
         use optwf_control, only: method
+        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering
+      use slater, only: coef
 
         implicit none
 
@@ -1476,7 +1485,7 @@ module trexio_read_data
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
         use general,            only: pooldir
-        use dets,               only: cdet, ndet
+        use slater,             only: cdet, ndet
         use dorb_m,             only: iworbd
         use coefs,              only: norb
         use inputflags,         only: ideterminants

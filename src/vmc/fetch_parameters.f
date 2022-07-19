@@ -100,9 +100,11 @@ c-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
       use csfs, only: ccsf, ncsf
       use contrl_file, only: ounit
-      use dets, only: cdet, ndet
       use optwf_control, only: ioptci
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use slater, only: ndet
+      use slater, only: cdet
       implicit none
 
       integer :: i, iadiag, icsf, idet, j

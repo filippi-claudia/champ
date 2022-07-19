@@ -58,7 +58,8 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use phifun, only: d2phin, dphin
       use phifun, only: phin
       use multiple_geo, only: iwf
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis, norb
+      use coefs, only: nbasis, norb
 !      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite, vmc_nconf
       use control_vmc, only: vmc_nblk, vmc_nblkeq, vmc_nconf_new, vmc_nstep
@@ -69,7 +70,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use contrl_file, only: ounit
       use basis_fns_mod, only: basis_fns
       use system, only: nelec
-      implicit none
+      use slater, only: coef
 
       integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin
       integer :: ibczmax, ibczmin, ic, ier
@@ -449,13 +450,14 @@ c Lagrange interpolation routines
       use multiple_geo, only: iwf
       use grid3d_param, only: nstep3d, endpt, origin
       use orbital_num_lag, only: denom
-      use coefs, only: coef, nbasis, norb
       use system, only: nghostcent
+      use coefs, only: nbasis, norb
       use control_vmc, only: vmc_irstar
       use phifun, only: phin, dphin, d2phin
       use distance_mod, only: r_en, rvec_en
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use slater, only: coef
       implicit none
 
       integer :: i, ic, idenom, ier, iok

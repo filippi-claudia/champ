@@ -21,7 +21,6 @@ c routine to accumulate estimators for energy etc.
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum, wsum
-      use multidet, only: kref
       use optwf_control, only: ioptorb
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use pseudo, only: nloc
@@ -67,6 +66,7 @@ c routine to accumulate estimators for energy etc.
       use system, only: nelec
       use multiple_geo, only: nforce
       use multiple_geo, only: pecent
+      use slater, only: kref
 
 
       implicit none

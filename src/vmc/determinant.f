@@ -10,8 +10,7 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use dets, only: ndet
-      use multidet, only: kref, kchange, kref_fixed
+      use multidet, only: kchange, kref_fixed
       use dorb_m, only: iworbd
 
       use orbval, only: ddorb, dorb, orb
@@ -35,6 +34,8 @@ c Modified by A. Scemama
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use slater, only: ndet
+      use slater, only: kref
 
       implicit none
 
@@ -147,14 +148,15 @@ c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
       use estpsi, only: detref
-      use multidet, only: kref, kref_old, kchange
+      use multidet, only: kref_old, kchange
       use multislater, only: detiab, allocate_multislater
       use precision_kinds, only: dp
       use contrl_file, only: ounit
-      use dets, only: ndet
       use multideterminant_mod, only: idiff
       use error, only: fatal_error
       use control, only: ipr
+      use slater, only: ndet
+      use slater, only: kref
       implicit none
 
       integer :: iab, icheck, iflag, ipass

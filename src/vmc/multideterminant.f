@@ -3,8 +3,7 @@
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
       use csfs, only: nstates
-      use dets, only: ndet
-      use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, ndetiab, k_det, ndet_req
+      use multidet, only: irepcol_det, ireporb_det, numrep_det, ndetiab, k_det, ndet_req
       use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
       use optwf_control, only: ioptorb
       use ycompact, only: dymat, ymat
@@ -26,6 +25,9 @@
       use system, only: ndn
       use optwf_control, only: method
       use constants, only: hb
+      use slater, only: ndet
+      use slater, only: iwundet
+      use slater, only: kref
       implicit none
 
       integer :: i, iab, iel, index_det, iorb, kun, kw
@@ -233,9 +235,7 @@ c-----------------------------------------------------------------------
 
       use vmc_mod, only: norb_tot
       use vmc_mod, only: MEXCIT
-      use dets, only: cdet, ndet
-      use dets_equiv, only: cdet_equiv, dcdet_equiv
-      use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, k_det, ndetiab
+      use multidet, only: irepcol_det, ireporb_det, numrep_det, k_det, ndetiab
       use multidet, only: k_det2, ndetiab2, k_aux, ndetsingle
       use multiple_geo, only: iwf
       use coefs, only: norb
@@ -244,6 +244,12 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use system, only: nelec
+      use slater, only: ndet
+      use slater, only: iwundet
+      use slater, only: kref
+      use slater, only: cdet
+      use slater, only: cdet_equiv
+      use slater, only: dcdet_equiv
       implicit none
 
       integer :: i, iab, iorb, irep, istate
@@ -333,9 +339,7 @@ c-----------------------------------------------------------------------
 
       use vmc_mod, only: norb_tot
       use vmc_mod, only: MEXCIT
-      use dets, only: ndet
-      use dets_equiv, only: cdet_equiv, dcdet_equiv
-      use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, ndetiab, ndetsingle
+      use multidet, only: irepcol_det, ireporb_det, numrep_det, ndetiab, ndetsingle
       use coefs, only: norb
       use Bloc, only: tildem
 
@@ -343,6 +347,11 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use system, only: nelec
+      use slater, only: ndet
+      use slater, only: iwundet
+      use slater, only: kref
+      use slater, only: cdet_equiv
+      use slater, only: dcdet_equiv
       implicit none
 
       integer :: i, iab, iorb, irep, j

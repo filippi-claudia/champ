@@ -38,9 +38,8 @@ c job where it left off
       use branch, only: eest, eigv, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
       use jacobsave, only: ajacob
       use pseudo, only: nloc
-      use dets, only: cdet, ndet
-      use coefs, only: coef, nbasis, norb
       use system, only: newghostype, nghostcent
+      use coefs, only: nbasis, norb
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
@@ -56,6 +55,9 @@ c job where it left off
       use multiple_geo, only: nforce
       use multiple_geo, only: pecent
       use constants, only: hb
+      use slater, only: ndet
+      use slater, only: coef
+      use slater, only: cdet
       implicit none
 
       integer :: i, ib, ic, id, ierr

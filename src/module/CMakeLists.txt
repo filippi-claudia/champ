@@ -17,6 +17,7 @@ if (MPI_Fortran_FOUND)
     m_coefs.f90
     m_constant.f90
     m_control.f90
+    m_slater.f90
     m_force.f90
     m_mstates.f90
     m_mpi.f90

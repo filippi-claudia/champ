@@ -5,8 +5,7 @@
       use optwf_parms, only: nparmj
       use csfs, only: nstates
       use derivjas, only: d2g, g
-      use dets, only: cdet, ndet
-      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req
+      use multidet, only: irepcol_det, ireporb_det, ivirt, numrep_det, k_det, ndetiab, ndet_req
       use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
       use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
@@ -27,6 +26,10 @@
       use system, only: nup
       use system, only: ndn
       use constants, only: hb
+      use slater, only: ndet
+      use slater, only: iwundet
+      use slater, only: kref
+      use slater, only: cdet
 
       implicit none
 

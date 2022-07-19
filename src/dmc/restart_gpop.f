@@ -38,9 +38,8 @@
       use casula, only: i_vpsp, icasula
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: nloc
-      use dets, only: cdet, ndet
-      use coefs, only: coef, nbasis, norb
       use system, only: nghostcent
+      use coefs, only: nbasis, norb
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
@@ -69,6 +68,9 @@
       use multiple_geo, only: nforce
       use multiple_geo, only: pecent
       use constants, only: hb
+      use slater, only: ndet
+      use slater, only: coef
+      use slater, only: cdet
       implicit none
 
       integer :: i, iage_id, ib, ic, id

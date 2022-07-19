@@ -2,21 +2,18 @@
       contains
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
-      use multidet, only: kref
       use slatn, only: slmin
       use dorb_m, only: iworbd
       use multislatern, only: detn, orbn
-
       use slater, only: slmi
-
       use multislater, only: detiab
-
       use system, only: ncent_tot
       use precision_kinds, only: dp
       use orbitals_mod, only: orbitalse
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use slater, only: kref
       implicit none
 
       integer :: i, iab, iel, iflag, ik
@@ -80,7 +77,6 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
       use csfs, only: nstates
-      use multidet, only: kref
       use slatn, only: slmin
       use ycompact, only: ymat
       use ycompactn, only: ymatn
@@ -99,6 +95,7 @@ c-----------------------------------------------------------------------
       use multideterminant_mod, only: compute_ymat
       use system, only: nelec
       use system, only: nup
+      use slater, only: kref
 
       implicit none
 
@@ -289,10 +286,11 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim
-      use multidet, only: kref
       use dorb_m, only: iworbd
       use system, only: nup
       use system, only: ndn
+      use dorb_m, only: iworbd
+      use slater, only: kref
 
       implicit none
 

@@ -373,7 +373,6 @@ c-----------------------------------------------------------------------
 
       use optci, only: mxciterm, ncimatdim
       use csfs, only: ccsf, ncsf, nstates
-      use dets, only: cdet
       use linear_norm, only: ci_oav
       use optwf_control, only: ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
@@ -382,6 +381,8 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use optwf_control, only: method
+      use contrl_file,    only: ounit
+      use slater, only: cdet
 
       implicit none
 

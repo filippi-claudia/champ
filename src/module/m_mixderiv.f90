@@ -15,7 +15,7 @@ module mix_jas_ci
  contains
      subroutine allocate_mix_jas_ci()
          use optwf_parms, only: nparmj
-         use dets, only: ndet
+      use slater, only: ndet
          if (.not. allocated(de_o_ci)) allocate (de_o_ci(nparmj, ndet))
          if (.not. allocated(dj_de_ci)) allocate (dj_de_ci(nparmj, ndet))
          if (.not. allocated(dj_o_ci)) allocate (dj_o_ci(nparmj, ndet))

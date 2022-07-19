@@ -5,8 +5,7 @@
       use vmc_mod, only: norb_tot
       use vmc_mod, only: MEXCIT
       use csfs, only: nstates
-      use dets, only: ndet
-      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req
+      use multidet, only: irepcol_det, ireporb_det, ivirt, numrep_det, k_det, ndetiab, ndet_req
       use multidet, only: k_det2, ndetiab2, k_aux, ndetsingle
       use slatn, only: slmin
       use ycompactn, only: ymatn
@@ -22,6 +21,9 @@
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use slater, only: ndet
+      use slater, only: iwundet
+      use slater, only: kref
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
@@ -149,13 +151,16 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
-      use dets, only: ndet
-      use multidet, only: iactv, ivirt, kref
       use coefs, only: norb
       use dorb_m, only: iworbd
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use multidet, only: iactv, ivirt
+      use coefs, only: norb
+      use dorb_m, only: iworbd
+      use slater, only: ndet
+      use slater, only: kref
 
       implicit none
 

@@ -6,11 +6,10 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use optwf_parms, only: nparmj
-      use dets, only: ndet
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use mmpol_hpsi, only: peQMdp, peQMq
-      use multidet, only: iactv, ivirt, kref
+      use multidet, only: iactv, ivirt
       use pcm_hpsi, only: pcms, pcmv
       use multiple_geo, only: iwf, iwftype
       use ycompact, only: ymat
@@ -58,6 +57,8 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
  
       use constants, only: hb
       use jastrow, only: ianalyt_lap
+      use slater, only: ndet
+      use slater, only: kref
 
       implicit none
 

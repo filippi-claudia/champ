@@ -3,7 +3,6 @@
       contains
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
-      use dets, only: ndet
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
       use optwf_control, only: ioptci
       use ci000, only: nciprim
@@ -16,6 +15,8 @@
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use optwf_control, only: method
+      use contrl_file,    only: ounit
+      use slater, only: ndet
 
       implicit none
 
@@ -439,7 +440,6 @@ c-----------------------------------------------------------------------
 
       use optci, only: mxciterm, mxcireduced, ncimatdim
       use csfs, only: ccsf, ncsf
-      use dets, only: cdet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use linear_norm, only: ci_oav
       use optwf_control, only: ioptci, ioptjas, ioptorb
@@ -448,6 +448,7 @@ c-----------------------------------------------------------------------
       use contrl_file, only: ounit
       use precision_kinds, only: dp
       use optwf_control, only: method
+      use slater, only: cdet
       implicit none
 
       integer :: i, iblk, iciprt_sav, idx, is
@@ -679,13 +680,13 @@ c-----------------------------------------------------------------------
       subroutine optci_define
 
       use csfs, only: ncsf
-      use dets, only: ndet
       use optwf_control, only: ioptjas, ioptorb
       use inputflags, only: ici_def
 
       use ci000, only: nciprim, nciterm
       use optwf_control, only: method
 
+      use slater, only: ndet
 
       implicit none
 

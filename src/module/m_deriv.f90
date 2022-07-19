@@ -203,7 +203,7 @@ module denergy_det_m
     save
 contains
     subroutine allocate_denergy_det_m()
-        use dets, only: ndet
+      use slater, only: ndet
         if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
     end subroutine allocate_denergy_det_m
 
@@ -292,8 +292,8 @@ module dorb_m
 contains
 
     subroutine allocate_dorb_m()
-        use dets, only: ndet
       use system, only: nelec
+      use slater, only: ndet
         if (.not. allocated(iworbd)) allocate (iworbd(nelec, ndet), source=0)
     end subroutine allocate_dorb_m
 

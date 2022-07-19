@@ -126,10 +126,11 @@ c-----------------------------------------------------------------------
 
       use numbas, only: numr
       use optwf_control, only: ioptorb
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis, norb
       use orbval, only: nadorb
       use inputflags, only: scalecoef
       use precision_kinds, only: dp
+      use slater, only: coef
 
       implicit none
 
@@ -157,12 +158,14 @@ c-----------------------------------------------------------------------
       subroutine write_ci(iwf_fit,filetype)
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use dets, only: cdet, ndet
-      use multidet, only: kref
       use optwf_control, only: ioptci
       use dorb_m, only: iworbd
       use system, only: nelec
       use system, only: nup
+      use dorb_m, only: iworbd
+      use slater, only: ndet
+      use slater, only: kref
+      use slater, only: cdet
 
       implicit none
 
@@ -357,7 +360,8 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis, norb
+      use slater, only: coef
       use multiple_geo, only: nwftype
 
       implicit none
@@ -394,8 +398,9 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
-      use dets, only: cdet, ndet
       use set_input_data, only: multideterminants_define
+      use slater, only: ndet
+      use slater, only: cdet
 
       implicit none
 
@@ -500,8 +505,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
 
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis, norb
       use orbval, only: nadorb
+      use slater, only: coef
 
       implicit none
 
@@ -519,7 +525,8 @@ c-----------------------------------------------------------------------
       subroutine copy_ci(iadiag)
 
       use csfs, only: ccsf, ncsf, nstates
-      use dets, only: cdet, ndet
+      use slater, only: ndet
+      use slater, only: cdet
 
       implicit none
 
@@ -635,8 +642,9 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
-      use coefs, only: coef, nbasis, norb
       use multiple_geo, only: nwftype
+      use coefs, only: nbasis, norb
+      use slater, only: coef
 
       implicit none
 
@@ -674,8 +682,9 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, ncsf, nstates
       use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
-      use dets, only: cdet, ndet
       use set_input_data, only: multideterminants_define
+      use slater, only: ndet
+      use slater, only: cdet
 
       implicit none
 
@@ -817,10 +826,11 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: norb_tot
       use optwf_control, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis, norb
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use precision_kinds, only: dp
+      use slater, only: coef
 
       implicit none
 
@@ -857,11 +867,12 @@ c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use dets, only: cdet, ndet
       use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use optwf_control, only: method
+      use slater, only: ndet
+      use slater, only: cdet
 
       implicit none
 

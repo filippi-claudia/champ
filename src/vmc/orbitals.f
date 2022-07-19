@@ -21,7 +21,7 @@ c Modified by A. Scemama
 
       use multiple_geo, only: iwf
       use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis, norb
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use grid3dflag, only: i3dlagorb, i3dsplorb
@@ -41,6 +41,7 @@ c Modified by A. Scemama
       use pw_orbitals, only: orbitals_pw
       use control, only: ipr
       use system, only: nelec
+      use slater, only: coef
       implicit none
 
       integer :: i, ier, ider, iorb, k, m
@@ -228,10 +229,13 @@ c-------------------------------------------------------------------------------
       use numbas2, only: ibas0, ibas1
       use phifun, only: d2phin_all, d3phin, dphin
       use multiple_geo, only: iwf
-      use coefs, only: coef, nbasis, norb
       use contrl_per, only: ibasis
       use precision_kinds, only: dp
       use system, only: nelec
+      use coefs, only: nbasis, norb
+      use contrl_per, only: ibasis
+      use precision_kinds, only: dp
+      use slater, only: coef
 
       implicit none
 
@@ -275,7 +279,7 @@ c-------------------------------------------------------------------------------
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
       use multiple_geo, only: iwf
-      use coefs, only: coef, norb, nbasis
+      use coefs, only: norb, nbasis
       use contrl_per, only: iperiodic
       use system, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
@@ -286,6 +290,7 @@ c-------------------------------------------------------------------------------
       use basis_fns_mod, only: basis_fns
       use pw_orbitals, only: orbitals_pw_grade
       use system, only: nelec
+      use slater, only: coef
 
       implicit none
 

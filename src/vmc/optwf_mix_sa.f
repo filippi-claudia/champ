@@ -291,9 +291,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf
 
-      use dets, only: cdet, ndet
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use contrl_file,    only: ounit
+      use slater, only: ndet
+      use slater, only: cdet
 
       implicit none
 

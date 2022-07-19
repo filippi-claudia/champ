@@ -9,7 +9,7 @@
       use system, only: znuc, iwctype, nctype, ncent
       use system, only: newghostype
       use numbas, only: numr
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis, norb
       use basis, only: zex, betaq
       use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
       use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
@@ -20,6 +20,7 @@
 
       use precision_kinds, only: dp
       use system, only: nelec
+      use slater, only: coef
       implicit none
       integer :: iu
       integer :: i, iabs, ic, imax

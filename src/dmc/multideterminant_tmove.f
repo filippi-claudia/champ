@@ -12,13 +12,14 @@
       use coefs, only: norb
       use ycompact, only: ymat
       use multislater, only: detiab
-      use multidet, only: iactv, ivirt, kref
+      use multidet, only: iactv, ivirt
       use multimat, only: aa
 
       use precision_kinds, only: dp
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use slater, only: kref
       implicit none
 
       integer :: i1, i2, iab, ic, iel

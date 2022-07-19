@@ -15,7 +15,6 @@ c job where it left off
       use config, only: vold, xnew, xold
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
-      use dets, only: cdet, ndet
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
@@ -26,7 +25,7 @@ c job where it left off
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use multiple_geo, only: iwftype, nwftype
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis, norb
       use const2, only: deltar, deltat
 !      use contrl, only: nstep
       use control_vmc, only: vmc_nstep
@@ -69,6 +68,9 @@ c job where it left off
       use multiple_geo, only: nforce
       use multiple_geo, only: pecent
       use constants, only: hb
+      use slater, only: ndet
+      use slater, only: coef
+      use slater, only: cdet
       
       implicit none
 

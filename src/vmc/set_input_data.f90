@@ -58,8 +58,7 @@ subroutine multideterminants_define(iflag, icheck)
     use vmc_mod, only: nrad, nmat_dim, nmat_dim2
     use vmc_mod, only: radmax, delri
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use dets, only: cdet, ndet
-    use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, allocate_multidet
+    use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, numrep_det, allocate_multidet
     use multidet, only: k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old
     use coefs, only: norb
     use dorb_m, only: iworbd
@@ -73,6 +72,10 @@ subroutine multideterminants_define(iflag, icheck)
       use system, only: nup
       use system, only: ndn
     use jastrow, only: neqsx, nordj, nordj1
+      use slater, only: ndet
+      use slater, only: iwundet
+      use slater, only: kref
+      use slater, only: cdet
 
     implicit none
 
@@ -408,12 +411,14 @@ end subroutine inputforces
 
 subroutine inputdet()
     ! Set the cdet to be equal
-    use dets, only: cdet, ndet
     use csfs, only: nstates
 !    use mstates_mod, only: MSTATES
     use multiple_geo, only: nwftype
     use precision_kinds, only: dp
       use optwf_control, only: method
+    use precision_kinds,    only: dp
+      use slater, only: ndet
+      use slater, only: cdet
 
     implicit none
     integer             :: iwft, k
@@ -435,10 +440,12 @@ end subroutine inputdet
 subroutine inputlcao()
     ! Set the lcao to be equal
     use vmc_mod, only: norb_tot
-    use coefs, only: coef, nbasis, norb
     use multiple_geo, only: nwftype
     use precision_kinds, only: dp
       use optwf_control, only: method
+    use coefs, only: nbasis, norb
+    use precision_kinds,    only: dp
+      use slater, only: coef
 
     implicit none
     integer             :: iwft, i,j

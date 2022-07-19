@@ -16,7 +16,7 @@ c and sa, pa, da asymptotic functions
       use config, only: psido, psijo
       use config, only: xold
       use multiple_geo, only: iwftype, nwftype
-      use coefs, only: coef, nbasis
+      use coefs, only: nbasis
 !      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
       use control_vmc, only: vmc_nblkeq, vmc_nconf_new, vmc_nstep
@@ -36,6 +36,7 @@ c and sa, pa, da asymptotic functions
       use metrop_mov1_slat, only: metrop6
       use system, only: nelec
       use multiple_geo, only: nforce
+      use slater, only: coef
       implicit none
 
       integer :: i, ii, j, jj, l

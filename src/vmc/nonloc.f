@@ -371,7 +371,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
       use multiple_geo, only: iwf
-      use coefs, only: coef, norb, nbasis
+      use coefs, only: norb, nbasis
       use contrl_per, only: iperiodic
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use orbval, only: ddorb, nadorb
@@ -383,6 +383,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use vmc_mod, only: norb_tot
       use system, only: nelec
       use optwf_control, only: method
+      use slater, only: coef
       
       implicit none
 
@@ -492,11 +493,13 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use precision_kinds, only: dp
-      use multidet, only: kref
       use dorb_m, only: iworbd
       use vmc_mod, only: nmat_dim
       use system, only: nup
       use system, only: ndn
+      use dorb_m, only: iworbd
+      use vmc_mod, only: nmat_dim
+      use slater, only: kref
 
       implicit none
 

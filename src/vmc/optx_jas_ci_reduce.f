@@ -4,7 +4,6 @@
 c Written by Claudia Filippi
 
       use optwf_parms, only: nparmj
-      use dets, only: ndet
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
       use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
@@ -12,6 +11,7 @@ c Written by Claudia Filippi
       use mpi
       use precision_kinds, only: dp
       use optwf_control, only: method
+      use slater, only: ndet
 
       implicit none
 

@@ -6,7 +6,6 @@ c Written by Claudia Filippi by modifying hpsi
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use estpsi, only: apsi, aref
-      use multidet, only: kref
       use multiple_geo, only: iwf, iwftype
       use velocity_jastrow, only: vjn
       use multislatern, only: detn
@@ -21,6 +20,7 @@ c Written by Claudia Filippi by modifying hpsi
       use determinante_psit_mod, only: determinante_psit
       use system, only: nelec
       use jastrow, only: ianalyt_lap
+      use slater, only: kref
 
       implicit none
 

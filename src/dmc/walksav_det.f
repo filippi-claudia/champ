@@ -14,18 +14,19 @@ c Written by Claudia Filippi
       use mstates_mod, only: MSTATES
       use branch, only: nwalk
       use slater, only: ddx, fp, slmi
-      use dets, only: ndet
       use orbval, only: dorb, orb
       use coefs, only: norb
       use csfs, only: nstates
       use ycompact, only: ymat
       use multislater, only: detiab
-      use multidet, only: ivirt, kref, numrep_det
+      use multidet, only: ivirt, numrep_det
       use multimat, only: aa, wfmat
       use mpi
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use slater, only: ndet
+      use slater, only: kref
 
       implicit none
 

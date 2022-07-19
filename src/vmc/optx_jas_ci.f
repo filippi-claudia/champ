@@ -96,7 +96,6 @@ c-----------------------------------------------------------------------
 
       use optci, only: mxciterm
       use csfs, only: ccsf, ncsf
-      use dets, only: cdet
       use gradhess_ci, only: grad_ci
       use gradhess_jas, only: grad_jas
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
@@ -110,6 +109,7 @@ c-----------------------------------------------------------------------
       use ci008_blk, only: ci_oe_cum
       use precision_kinds, only: dp
       use optwf_control, only: method
+      use slater, only: cdet
 
       implicit none
 

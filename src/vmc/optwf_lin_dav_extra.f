@@ -780,7 +780,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine select_ci_root(iroot)
 
       use csfs, only: ccsf, ncsf
-      use dets, only: cdet, ndet
+      use slater, only: ndet
+      use slater, only: cdet
 
       implicit none
 

@@ -51,7 +51,6 @@ subroutine parser
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num
   use csfs, 		        only: cxdet, ncsf, nstates
-  use dets, 		        only: cdet, ndet
   use grdntspar, 	      only: igrdtype, ngradnts
   use header, 		      only: title
   use jastrow, 		      only: nspin1, nspin2, is
@@ -76,8 +75,9 @@ subroutine parser
   use zmatrix, 		      only: izmatrix
   use bparm, 		        only: nocuspb, nspin2b
   use casula, 		      only: i_vpsp, icasula
-  use coefs, 		        only: coef, nbasis, norb, next_max
   use optorb, only: irrep
+  use coefs, only: nbasis, norb, next_max
+  use optorb,           only: irrep
   use const2, 		      only: deltar, deltat
   use contrldmc, 	      only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
   use contrldmc, 	      only: itau_eff, nfprod, rttau, tau
@@ -196,6 +196,9 @@ subroutine parser
   use optwf_control, only: method
   use constants, only: pi
 
+      use slater, only: coef
+      use slater, only: cdet
+      use slater, only: ndet
 ! Note the following modules are new additions
 
 !

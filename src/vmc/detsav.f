@@ -5,9 +5,7 @@ c Written by Claudia Filippi
 
       use csfs, only: nstates
 
-      use dets, only: ndet
-      use multidet, only: ivirt, kref, numrep_det, ndetiab, ndetsingle
-
+      use multidet, only: ivirt, numrep_det, ndetiab, ndetsingle
       use slatn, only: slmin
       use ycompact, only: ymat
       use ycompactn, only: ymatn
@@ -16,19 +14,16 @@ c Written by Claudia Filippi
       use multimat, only: aa, wfmat
       use multimatn, only: aan, wfmatn
       use multislatern, only: detn, dorbn, orbn
-
       use orbval, only: dorb, orb
       use slater, only: fp, slmi
-
       use multislater, only: detiab
-
       use vmc_mod, only: MEXCIT
-
-
       use precision_kinds, only: dp
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use slater, only: ndet
+      use slater, only: kref
       implicit none
 
       integer :: i, iab, iel, iflag, ikel

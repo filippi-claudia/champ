@@ -99,7 +99,6 @@ c-----------------------------------------------------------------------
 
       use optci, only: mxciterm
       use csfs, only: ccsf, ncsf
-      use dets, only: cdet
       use gradhess_ci, only: grad_ci
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
       use optwf_control, only: ioptci, ioptorb
@@ -117,6 +116,7 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: nreduced
       use precision_kinds, only: dp
       use optwf_control, only: method
+      use slater, only: cdet
 
       implicit none
 
