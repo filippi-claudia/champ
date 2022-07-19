@@ -5,9 +5,13 @@ module system
     implicit none
 
     integer  :: nelec
+    integer :: ndn
+    integer :: nup
+
 
     private
     public :: nelec
+    public   :: ndn, nup
     save
 
 end module system
