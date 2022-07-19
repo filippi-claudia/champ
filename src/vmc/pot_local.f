@@ -2,7 +2,7 @@
       contains
       subroutine pot_local(pe)
       use system, only: znuc, pecent, iwctype, ncent
-      use ghostatom, only: nghostcent
+      use system, only: nghostcent
       use contrl_per, only: iperiodic
       use distance_mod, only: r_en, r_ee
       use pseudo, only: nloc

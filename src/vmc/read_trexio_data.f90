@@ -38,7 +38,7 @@ module trexio_read_data
         use custom_broadcast, only: bcast
         use mpiconf, only: wid
         use system, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-        use ghostatom, 		    only: newghostype, nghostcent
+        use system, 		    only: newghostype, nghostcent
         use inputflags, only: igeometry
         use periodic_table, only: atom_t, element
         use contrl_file, only: ounit, errunit
@@ -195,7 +195,7 @@ module trexio_read_data
         use mpiconf, only: wid
         use contrl_file, only: ounit, errunit
         use system, only: ncent, ncent_tot, iwctype, nctype_tot
-        use ghostatom, only: newghostype
+        use system, only: newghostype
         use coefs, only: coef, nbasis, norb
         use inputflags, only: ilcao
         use numbas, only: nrbas
@@ -863,7 +863,7 @@ module trexio_read_data
         use system,               only: znuc, nctype, nctype_tot, ncent_tot
         use system,               only: symbol, atomtyp
         use vmc_mod,            only: NCOEF
-        use ghostatom,          only: newghostype
+        use system,          only: newghostype
         use control,            only: ipr
         use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf!, rmax
         use numbas,             only: allocate_numbas

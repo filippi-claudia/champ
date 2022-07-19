@@ -22,7 +22,7 @@ contains
       use numbas_mod, only: MRWF, MRWF_PTS
       use vmc_mod, only: NCOEF
       use system, only: znuc, nctype, nctype_tot
-      use ghostatom, only: newghostype
+      use system, only: newghostype
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf!, rmax
       use numbas, only: allocate_numbas
       use coefs, only: nbasis

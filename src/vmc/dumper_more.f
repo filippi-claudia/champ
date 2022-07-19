@@ -8,7 +8,7 @@ c job where it left off
       use vmc_mod, only: nrad
       use system, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
-      use ghostatom, only: newghostype, nghostcent
+      use system, only: newghostype, nghostcent
       use const, only: hb, delta
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino, tjfo

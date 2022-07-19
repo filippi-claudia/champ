@@ -162,7 +162,7 @@ c----------------------------------------------------------------------
 
       use grid_mod, only: grid3d
       use system, only: znuc, cent, iwctype, ncent
-      use ghostatom, only: nghostcent
+      use system, only: nghostcent
       use grid3d_param, only: nstep3d, origin, step3d
 
       implicit none

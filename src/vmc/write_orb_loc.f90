@@ -7,7 +7,7 @@
 ! 1) a slater basis
 ! 2) a gaussian basis
       use system, only: znuc, iwctype, nctype, ncent
-      use ghostatom, only: newghostype
+      use system, only: newghostype
       use numbas, only: numr
       use coefs, only: coef, nbasis, norb
       use basis, only: zex, betaq

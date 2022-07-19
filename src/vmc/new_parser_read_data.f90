@@ -124,7 +124,7 @@ subroutine read_molecule_file(file_molecule)
     use custom_broadcast, only: bcast
     use mpiconf, only: wid
     use system, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-    use ghostatom, 		    only: newghostype, nghostcent
+    use system, 		    only: newghostype, nghostcent
     use inputflags, only: igeometry
     use periodic_table, only: atom_t, element
     use contrl_file, only: ounit, errunit
@@ -1662,7 +1662,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     use general, only: pooldir
 
     use system, only: nctype
-    use ghostatom, only: newghostype
+    use system, only: newghostype
     use precision_kinds, only: dp
 
     implicit none

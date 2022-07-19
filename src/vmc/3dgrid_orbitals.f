@@ -54,7 +54,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use grid_mod, only: MXNSTEP, MXNSTEP3
       use grid_mod, only: cart_from_int
       use system, only: cent, ncent
-      use ghostatom, only: nghostcent
+      use system, only: nghostcent
       use phifun, only: d2phin, dphin
       use phifun, only: phin
       use wfsec, only: iwf
@@ -450,7 +450,7 @@ c Lagrange interpolation routines
       use grid3d_param, only: nstep3d, endpt, origin
       use orbital_num_lag, only: denom
       use coefs, only: coef, nbasis, norb
-      use ghostatom, only: nghostcent
+      use system, only: nghostcent
       use control_vmc, only: vmc_irstar
       use phifun, only: phin, dphin, d2phin
       use distance_mod, only: r_en, rvec_en

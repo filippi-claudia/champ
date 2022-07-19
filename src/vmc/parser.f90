@@ -46,7 +46,7 @@ subroutine parser
   use vmc_mod, 		      only: norb_tot, mterms
   use system, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 		      only: nspin1, nspin2, is
-  use ghostatom, 	      only: newghostype, nghostcent
+  use system, 	      only: newghostype, nghostcent
   use const, only: pi, hb, etrial, delta, deltai, fbias, imetro
   use control,          only: ipr
   use general, 		      only: pooldir, pp_id, bas_id

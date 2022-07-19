@@ -41,7 +41,7 @@
       use pseudo, only: nloc
       use dets, only: cdet, ndet
       use coefs, only: coef, nbasis, norb
-      use ghostatom, only: nghostcent
+      use system, only: nghostcent
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf

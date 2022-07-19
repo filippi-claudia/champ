@@ -39,7 +39,7 @@ c job where it left off
       use pseudo, only: nloc
       use dets, only: cdet, ndet
       use coefs, only: coef, nbasis, norb
-      use ghostatom, only: newghostype, nghostcent
+      use system, only: newghostype, nghostcent
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf

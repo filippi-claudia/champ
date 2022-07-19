@@ -17,13 +17,17 @@ module system
     character(len=2), dimension(:), allocatable :: symbol
     character(len=2), dimension(:), allocatable :: atomtyp
 
+    integer :: newghostype
+    integer :: nghostcent
+
     private
     public :: nelec
     public   :: ndn, nup
     public   :: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
     public   :: allocate_atom, deallocate_atom
+    public   :: newghostype, nghostcent
     save
-    
+
 contains
     subroutine allocate_atom()
 
@@ -40,18 +44,5 @@ contains
     end subroutine deallocate_atom
 
 end module system
-
-module ghostatom
-    !> Arguments: newghostype, nghostcent
-
-    implicit none
-
-    integer :: newghostype
-    integer :: nghostcent
-
-    private
-    public   :: newghostype, nghostcent
-    save
-end module ghostatom
 
 
