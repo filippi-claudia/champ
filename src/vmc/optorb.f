@@ -605,10 +605,10 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use gradhess_all, only: grad, h, s
       use ci000, only: nciterm
-      use method_opt, only: method
       use optorb_cblock, only: nreduced, norbterm
       use optwf_control, only: iapprox, iuse_orbeigv
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 
@@ -849,7 +849,6 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
       use orbval, only: nadorb, ndetorb, orb
       use optwf_control, only: ncore, no_active
@@ -857,6 +856,7 @@ c-----------------------------------------------------------------------
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use optwf_control, only: method
 
       implicit none
 

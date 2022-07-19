@@ -274,11 +274,11 @@ subroutine read_determinants_file(file_determinants)
     use csfs, only: nstates
     use mstates_mod, only: MSTATES
     use general, only: pooldir
-    use method_opt, only: method
     use precision_kinds, only: dp
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use optwf_control, only: method
 
     implicit none
 
@@ -504,9 +504,9 @@ subroutine read_jastrow_file(file_jastrow)
     use contrl_per, 		only: iperiodic
     use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
     use general, only: pooldir
-    use method_opt, only: method
     use jastrow4_mod, only: nterms4
       use system, only: ndn
+      use optwf_control, only: method
     implicit none
 
     !   local use
@@ -674,10 +674,10 @@ subroutine read_orbitals_file(file_orbitals)
     ! was not in master but is needed
     use multiple_geo, only: nwftype
     use general, only: pooldir
-    use method_opt, only: method
     use precision_kinds, only: dp
     use write_orb_loc_mod, only: write_orb_loc
     use m_trexio_basis, only: champ_ao_ordering
+      use optwf_control, only: method
 
     implicit none
 
@@ -795,8 +795,8 @@ subroutine read_csf_file(file_determinants)
     use ci000, only: nciprim, nciterm
     use optwf_control, only: ioptci
     use general, only: pooldir
-    use method_opt, only: method
     use precision_kinds, only: dp
+      use optwf_control, only: method
     implicit none
 
     !   local use
@@ -1073,8 +1073,8 @@ subroutine read_exponents_file(file_exponents)
     use inputflags, only: iexponents
     use multiple_geo, only: nwftype
     use general, only: pooldir
-    use method_opt, only: method
     use precision_kinds, only: dp
+      use optwf_control, only: method
     implicit none
 
     !   local use

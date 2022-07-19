@@ -597,8 +597,8 @@ c Written by Claudia Filippi
       use sa_weights, only: weights
       use gradhessj, only: d2j, d2j_e, de, dj, dj_de, dj_dj, dj_dj_e, dj_e
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
-      use method_opt, only: method
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 

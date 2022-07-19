@@ -14,7 +14,6 @@ c MPI version written by Claudia Filippi
       use step, only: rprob, suc, try
       !use contrl, only: nstep
       use control_vmc, only: vmc_nstep
-      use method_opt, only: method
       use mpi
       use custom_broadcast, only: bcast
       use precision_kinds, only: dp
@@ -38,6 +37,7 @@ c MPI version written by Claudia Filippi
       use optci_mod, only: optci_fin
       use optjas_mod, only: optjas_fin
       use multiple_geo, only: nforce
+      use optwf_control, only: method
       implicit none
 
       integer :: i, id, ierr, istate

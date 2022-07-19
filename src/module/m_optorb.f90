@@ -59,8 +59,8 @@ module optorb_mod
 contains
     subroutine set_optorb_size()
 
-        use method_opt, only: method
         use optorb_cblock, only: norbterm
+      use optwf_control, only: method
         if (method .eq. 'linear') then
             mxreduced = norbterm
         else
@@ -77,6 +77,7 @@ module orb_mat_001
     use optorb_cblock, only: norbterm
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
+      use optwf_control, only: method
 
     real(dp), dimension(:, :), allocatable :: orb_ho !(norbterm,MSTATES)
     real(dp), dimension(:, :), allocatable :: orb_o  !(norbterm,MSTATES)

@@ -13,8 +13,8 @@ c Written by Claudia Filippi
       use gradhessj, only: dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
-      use method_opt, only: method
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 

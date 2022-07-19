@@ -12,7 +12,6 @@
       use orbval, only: nadorb
       use force_analy, only: iforce_analy, alfgeo
       use mstates_ctrl, only: iguiding
-      use method_opt, only: method
       use optwf_sr_mod, only: sr
       use optwf_corsam, only: sigma
       use force_analy, only: iforce_analy
@@ -33,6 +32,7 @@
       use optwf_lin_dav_extra, only: select_ci_root
       use optwf_lin_dav_more, only: lin_d
       use sr_more, only: dscal
+      use optwf_control, only: method
       implicit none
       interface
       subroutine qmc

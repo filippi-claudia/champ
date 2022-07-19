@@ -9,9 +9,9 @@ c Written by Claudia Filippi
       use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
-      use method_opt, only: method
       use mpi
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 

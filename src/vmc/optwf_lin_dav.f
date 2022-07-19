@@ -14,7 +14,6 @@
       !use contrl, only: nblk, nblk_max
       use control_vmc, only: vmc_nblk, vmc_nblk_max
       use force_analy, only: iforce_analy, alfgeo
-      use method_opt, only: method
       use precision_kinds, only: dp
       use contrl_file, only: ounit
 
@@ -25,6 +24,7 @@
       use optgeo_lib, only: write_geometry, compute_positions
       use sr_more, only: dscal
       use optwf_lin_dav_more, only: lin_d
+      use optwf_control, only: method
       implicit none
       interface
       subroutine qmc

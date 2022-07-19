@@ -86,15 +86,3 @@ module general
     save
 end module general
 
-module method_opt
-    !> should be in the input somehow no ?
-    !> Arguments: method
-
-    implicit none
-
-    character(:), allocatable :: method
-
-    private
-    public :: method
-    save
-end module method_opt

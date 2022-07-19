@@ -79,9 +79,9 @@ contains
         use control_vmc, only: vmc_nblk
         use force_analy, only: alfgeo
         use optwf_control, only: nparm
-        use method_opt, only: method
         use orbval, only: nadorb
         use contrl_file, only: ounit
+      use optwf_control, only: method
 
         implicit none
 
@@ -314,8 +314,8 @@ contains
         use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho
         use sr_mat_n, only: sr_o, wtg, obs_tot
         use optorb_cblock, only: norbterm
-        use method_opt, only: method
         use contrl_file, only: ounit
+      use optwf_control, only: method
         implicit none
 
         real(dp), DIMENSION(:, :), allocatable :: obs

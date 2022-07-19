@@ -11,8 +11,8 @@ subroutine inputzex
     ! are they needed ??!!
     use contrl_per, only: iperiodic
     use multiple_geo, only: nwftype
-    use method_opt, only: method
     use precision_kinds, only: dp
+      use optwf_control, only: method
       implicit none
 
       integer :: i, iwft
@@ -412,8 +412,8 @@ subroutine inputdet()
     use csfs, only: nstates
 !    use mstates_mod, only: MSTATES
     use multiple_geo, only: nwftype
-    use method_opt, only: method
     use precision_kinds, only: dp
+      use optwf_control, only: method
 
     implicit none
     integer             :: iwft, k
@@ -437,8 +437,8 @@ subroutine inputlcao()
     use vmc_mod, only: norb_tot
     use coefs, only: coef, nbasis, norb
     use multiple_geo, only: nwftype
-    use method_opt, only: method
     use precision_kinds, only: dp
+      use optwf_control, only: method
 
     implicit none
     integer             :: iwft, i,j

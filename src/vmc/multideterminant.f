@@ -18,7 +18,6 @@
       use orbval, only: nadorb, orb
       use slater, only: d2dx2, ddx, slmi
       use multislater, only: detiab
-      use method_opt, only: method
 
       use precision_kinds, only: dp
       use bxmatrices, only: bxmatrix
@@ -26,6 +25,7 @@
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use optwf_control, only: method
       implicit none
 
       integer :: i, iab, iel, index_det, iorb, kun, kw

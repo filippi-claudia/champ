@@ -863,8 +863,8 @@ c-----------------------------------------------------------------------
       use dets, only: cdet, ndet
       use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmj
-      use method_opt, only: method
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 
@@ -1049,8 +1049,8 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
-      use method_opt, only: method
       use contrl_file, only: ounit
+      use optwf_control, only: method
       implicit none
 
       integer :: i0
@@ -1102,10 +1102,10 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use ci000, only: nciterm
       use ci001_blk, only: ci_o
       use ci003_blk, only: ci_e
-      use method_opt, only: method
       !use optwf_sr_mod, only: izvzb, i_sr_rescale
       use precision_kinds, only: dp
       use optgeo_lib, only: force_store
+      use optwf_control, only: method
 
       implicit none
 

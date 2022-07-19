@@ -30,9 +30,9 @@
       use optwf_parms, only: nparmd, nparmj
       use gradhess_all, only: nparmall
       use ci000, only: nciterm
-      use method_opt, only: method
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use optwf_control, only: method
 
       implicit none
 
@@ -379,9 +379,9 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparmj
       use gradhess_all, only: nparmall
       use ci000, only: nciterm
-      use method_opt, only: method
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use optwf_control, only: method
 
       implicit none
 

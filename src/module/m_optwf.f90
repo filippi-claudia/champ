@@ -7,6 +7,7 @@ module optwf_control
 
     use precision_kinds, only: dp
 
+    character(:), allocatable :: method
     integer :: ioptwf
     integer :: ioptci
     integer :: ioptjas
@@ -53,6 +54,7 @@ module optwf_control
     public :: ilastvmc
     public :: sr_tau, sr_adiag, sr_eps
     public :: dl_alg, dl_mom
+    public :: method
     save
 
 end module optwf_control

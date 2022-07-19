@@ -379,10 +379,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use grid3d_orbitals, only: spline_mo, lagrange_mose
       use basis_fns_mod, only: basis_fns
       use pw_orbitals_e, only: orbitals_pwe
-      use method_opt, only: method
       use optwf_control, only: ioptorb
       use vmc_mod, only: norb_tot
       use system, only: nelec
+      use optwf_control, only: method
       
       implicit none
 

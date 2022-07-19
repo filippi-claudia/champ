@@ -8,11 +8,11 @@ c Written by Claudia Filippi
       use optwf_control, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
       use ci000, only: nciterm
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
       use mpi
 
       use precision_kinds, only: dp
+      use optwf_control, only: method
       implicit none
 
       integer :: i, ierr, j

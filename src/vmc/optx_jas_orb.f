@@ -11,9 +11,9 @@
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 
@@ -63,8 +63,8 @@ c-----------------------------------------------------------------------
       use optwf_control, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: method
 
       implicit none
 
@@ -97,8 +97,8 @@ c-----------------------------------------------------------------------
       use optwf_control, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: method
 
       implicit none
 
@@ -121,8 +121,8 @@ c-----------------------------------------------------------------------
       use optwf_control, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: method
 
       implicit none
 
@@ -151,12 +151,12 @@ c-----------------------------------------------------------------------
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
       ! I think this one is not needed ...
       ! use gradhess_jas, only: grad_jas
       use precision_kinds, only: dp
       use error, only: fatal_error
+      use optwf_control, only: method
       implicit none
 
       integer :: i, istate, j

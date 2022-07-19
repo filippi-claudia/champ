@@ -213,7 +213,6 @@ module trexio_read_data
         use vmc_mod, only: norb_tot
         use multiple_geo, only: nwftype
         use general, only: pooldir
-        use method_opt, only: method
         use precision_kinds, only: dp
 
 
@@ -223,6 +222,7 @@ module trexio_read_data
         use contrl_file, only: backend
 #endif
         use m_trexio_basis, only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering
+        use optwf_control, only: method
 
         implicit none
 
@@ -1486,7 +1486,7 @@ module trexio_read_data
         use general,            only: pooldir
         use system,             only: ndn, nup
         use system,             only: nelec
-        use method_opt,         only: method
+        use optwf_control,      only: method
         use precision_kinds,    only: dp
 
 #if defined(TREXIO_FOUND)

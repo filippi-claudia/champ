@@ -45,7 +45,6 @@ use optwf_control, only: idl_flag
         use orbval, only: nadorb
 !        use contrl, only: nblk, nblk_max
         use control_vmc, only: vmc_nblk, vmc_nblk_max
-        use method_opt, only: method
         use contrl_file, only: ounit
         use optwf_handle_wf, only: set_nparms_tot, save_wf, write_wf
         use optwf_handle_wf, only: compute_parameters, test_solution_parm
@@ -53,6 +52,7 @@ use optwf_control, only: idl_flag
         use fetch_parameters_mod, only: fetch_parameters
         use vmc_f_mod, only: vmc
         use sr_more, only: dscal
+      use optwf_control, only: method
         implicit None
 
         integer :: iter, iflag, nadorb_sav
@@ -137,7 +137,7 @@ use optwf_control, only: idl_flag
         use sr_mod, only: mparm
         use optwf_control, only: nparm
         use optwf_control, only: idl_flag
-        use method_opt, only: method
+      use optwf_control, only: method
 
         if (method .ne. 'sr_n' .or. idl_flag .eq. 0) return
         if (nparm .gt. mparm) call fatal_error('SR_OPTWF: nparmtot gt mparm')

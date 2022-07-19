@@ -117,7 +117,6 @@ subroutine parser
   use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d, pcm_origin, pcm_endpt, allocate_pcm_grid3d_param
   use pcm_3dgrid, 	    only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED
   use prp003, 		      only: cc_nuc
-  use method_opt, 	    only: method
   use optorb_cblock, 	  only: nefp_blocks, isample_cmat, iorbsample
   use orbval, 		      only: ddorb, dorb, nadorb, ndetorb, orb
   use array_resize_utils, only: resize_tensor
@@ -193,6 +192,7 @@ subroutine parser
       use system, only: ndn
       use multiple_geo, only: nforce
       use multiple_geo, only: pecent
+      use optwf_control, only: method
 ! Note the following modules are new additions
 
 !

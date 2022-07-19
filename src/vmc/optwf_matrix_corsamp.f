@@ -701,9 +701,9 @@ c-----------------------------------------------------------------------
       use gradhess_all, only: h, s
       use ci000, only: nciterm
       use contrl_file, only: ounit
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
       use contrl_file, only: ounit
+      use optwf_control, only: method
       implicit none
 
       integer :: i, i0, is, ishift, j

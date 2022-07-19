@@ -9,7 +9,6 @@
       use optwf_control, only: idl_flag, ilbfgs_flag
       use optwf_control, only: sr_tau, sr_adiag, sr_eps
       use optwf_control, only: dparm_norm_min, nopt_iter
-      use method_opt, only: method
       use contrl_file, only: ounit
       use precision_kinds, only: dp
 
@@ -20,6 +19,7 @@
       use fetch_parameters_mod, only: fetch_parameters
       use error, only: fatal_error
       use olbfgs_more_mod, only: olbfgs_more
+      use optwf_control, only: method
       implicit none
       interface
       subroutine qmc

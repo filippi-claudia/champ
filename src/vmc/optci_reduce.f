@@ -13,10 +13,10 @@
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
-      use method_opt, only: method
       use mpi
       use optorb_mod, only: nmatdim
       use optorb_cblock, only: norbterm
+      use optwf_control, only: method
 
       implicit none
 
