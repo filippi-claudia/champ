@@ -3,7 +3,7 @@
       subroutine distances(iel,x)
 c Written by Cyrus Umrigar
 c calculate interparticle distances
-      use atom, only: cent, ncent
+      use system, only: cent, ncent
       use ghostatom, only: nghostcent
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use contrl_per, only: iperiodic
@@ -114,7 +114,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c restore interparticle distances (called if move rejected)
 
-      use atom, only: ncent
+      use system, only: ncent
       use ghostatom, only: nghostcent
       use distance_mod, only: rshift, r_en, rvec_en
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav

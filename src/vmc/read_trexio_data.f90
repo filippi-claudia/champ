@@ -37,7 +37,7 @@ module trexio_read_data
         !! @date 07 October 2021
         use custom_broadcast, only: bcast
         use mpiconf, only: wid
-        use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+        use system, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
         use ghostatom, 		    only: newghostype, nghostcent
         use inputflags, only: igeometry
         use periodic_table, only: atom_t, element
@@ -194,7 +194,7 @@ module trexio_read_data
         use custom_broadcast, only: bcast
         use mpiconf, only: wid
         use contrl_file, only: ounit, errunit
-        use atom, only: ncent, ncent_tot, iwctype, nctype_tot
+        use system, only: ncent, ncent_tot, iwctype, nctype_tot
         use ghostatom, only: newghostype
         use coefs, only: coef, nbasis, norb
         use inputflags, only: ilcao
@@ -799,7 +799,7 @@ module trexio_read_data
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
-        use atom,               only: nctype_tot
+        use system,               only: nctype_tot
         use inputflags,         only: ibasis_num
         use numbas,             only: iwrwf, numr
         use numbas1,            only: iwlbas, nbastyp
@@ -860,8 +860,8 @@ module trexio_read_data
 
         ! The following to be used to store the information
         use numbas_mod,         only: MRWF, MRWF_PTS
-        use atom,               only: znuc, nctype, nctype_tot, ncent_tot
-        use atom,               only: symbol, atomtyp
+        use system,               only: znuc, nctype, nctype_tot, ncent_tot
+        use system,               only: symbol, atomtyp
         use vmc_mod,            only: NCOEF
         use ghostatom,          only: newghostype
         use control,            only: ipr
@@ -873,7 +873,7 @@ module trexio_read_data
         use general,            only: filename, filenames_bas_num
 
         ! For processing the stored information
-        use atom, 			    only: atomtyp
+        use system, 			    only: atomtyp
         use general, 			only: pooldir, bas_id
         use contrl_file,        only: ounit, errunit
         use spline2_mod,        only: spline2
@@ -1483,7 +1483,7 @@ module trexio_read_data
         use csfs,               only: nstates
         use mstates_mod,        only: MSTATES
         use general,            only: pooldir
-        use elec,               only: ndn, nup
+        use system,             only: ndn, nup
         use system,             only: nelec
         use method_opt,         only: method
         use precision_kinds,    only: dp
@@ -1655,7 +1655,7 @@ module trexio_read_data
 #endif
 
         use pseudo_mod,         only: MPS_L, MGAUSS, MPS_QUAD
-        use atom,               only: symbol, nctype_tot, ncent_tot
+        use system,               only: symbol, nctype_tot, ncent_tot
         use gauss_ecp,          only: ecp_coef, ecp_exponent, necp_power, necp_term
         use gauss_ecp,          only: allocate_gauss_ecp
         use pseudo,             only: lpot

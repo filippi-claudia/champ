@@ -5,7 +5,7 @@ c-----------------------------------------------------------------------
 c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(rvec_en,r_en,iel)
 
-      use atom, only: znuc, iwctype, ncent, ncent_tot
+      use system, only: znuc, iwctype, ncent, ncent_tot
       use pseudo, only: lpot, vps
 
       use da_pseudo, only: da_vps

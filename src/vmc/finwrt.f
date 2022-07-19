@@ -7,7 +7,7 @@ c routine to print out final results
       use force_mod, only: MFORCE
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use atom, only: ncent
+      use system, only: ncent
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2

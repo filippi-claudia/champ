@@ -54,7 +54,7 @@ module vmc_mod
     save
 contains
     subroutine set_vmc_size
-        use atom, only: nctype_tot, ncent_tot
+        use system, only: nctype_tot, ncent_tot
 
       use system, only: nelec
       use system, only: nup

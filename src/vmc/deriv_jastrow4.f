@@ -3,7 +3,7 @@
       subroutine deriv_jastrow4(x,v,d2,value)
 c Written by Cyrus Umrigar and Claudia Filippi
       use vmc_mod, only: nordj
-      use atom, only: iwctype, nctype, ncent
+      use system, only: iwctype, nctype, ncent
       use derivjas, only: d2g, g, go, gvalue
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo

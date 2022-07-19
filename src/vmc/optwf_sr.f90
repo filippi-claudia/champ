@@ -567,7 +567,7 @@ contains
 
         use mpi
         use sr_mod, only: mparm
-        use atom, only: ncent
+        use system, only: ncent
         use force_fin, only: da_energy_ave
         use force_mat_n, only: force_o
         use mpiconf, only: idtask

@@ -11,7 +11,7 @@ c get nuclear potential energy
       use da_pseudo, only: da_pecent, da_vps
       use da_pseudo, only: da_pecent, da_vps
       use da_pseudo, only: da_pecent, da_vps
-      use atom, only: ncent_tot, nctype_tot
+      use system, only: ncent_tot, nctype_tot
       use force_analy, only: iforce_analy
       use da_pseudo, only: da_pecent, da_vps
       use precision_kinds, only: dp

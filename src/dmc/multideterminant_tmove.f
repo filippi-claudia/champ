@@ -3,7 +3,7 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
       use vmc_mod, only: norb_tot
-      use atom, only: ncent
+      use system, only: ncent
       use qua, only: nquad
       use b_tmove, only: b_t, iskip
       use casula, only: icasula, t_vpsp

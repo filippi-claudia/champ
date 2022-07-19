@@ -53,7 +53,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use grid_spline_mod, only: orb_num_spl
       use grid_mod, only: MXNSTEP, MXNSTEP3
       use grid_mod, only: cart_from_int
-      use atom, only: cent, ncent
+      use system, only: cent, ncent
       use ghostatom, only: nghostcent
       use phifun, only: d2phin, dphin
       use phifun, only: phin
@@ -445,7 +445,7 @@ c Lagrange interpolation routines
       use grid_mod, only: cart_from_int
       use vmc_mod, only: norb_tot
       use vmc_mod, only: norb_tot
-      use atom, only: cent, ncent
+      use system, only: cent, ncent
       use wfsec, only: iwf
       use grid3d_param, only: nstep3d, endpt, origin
       use orbital_num_lag, only: denom

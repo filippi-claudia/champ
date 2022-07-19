@@ -2,7 +2,7 @@
       contains
       subroutine cuspexact4(iprin,iadiag)
 c Written by Cyrus Umrigar
-      use atom, only: nctype
+      use system, only: nctype
       use jaspar3, only: c
       use jaspar4, only: nordc
       use cuspmat4, only: d, iwc4, nterms

@@ -382,7 +382,7 @@ subroutine inputforces
     use forcestr, only: delc
     use wfsec, only: iwftype, nwftype
     use contrl_file, only: errunit
-    use atom, only: ncent
+    use system, only: ncent
     use precision_kinds, only: dp
 
     implicit none
@@ -470,7 +470,7 @@ subroutine inputjastrow()
     use contr2, only: ijas
     use contr2, only: isc
     use wfsec, only: nwftype
-    use atom, only: ncent, nctype
+    use system, only: ncent, nctype
     use precision_kinds, only: dp
     use jastrow4_mod, only: nterms4
 
@@ -522,7 +522,7 @@ subroutine set_displace_zero(nforce_tmp)
     use pcm_cntrl, only: ipcm
     use pcm_parms, only: ch, nchs
 
-    use atom, only: ncent
+    use system, only: ncent
     use precision_kinds, only: dp
 
     implicit none
@@ -548,7 +548,7 @@ end subroutine set_displace_zero
 subroutine modify_zmat_define
 
     use grdntsmv, only: igrdmv
-    use atom, only: ncent
+    use system, only: ncent
     implicit none
 
     integer :: ic, k
@@ -568,7 +568,7 @@ end subroutine modify_zmat_define
 subroutine hessian_zmat_define
 
     use grdnthes, only: hessian_zmat
-    use atom, only: ncent
+    use system, only: ncent
     use precision_kinds, only: dp
 
     implicit none

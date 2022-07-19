@@ -236,7 +236,7 @@ c-----------------------------------------------------------------------
 c............................................................
 c     compute penu_dp (nuclei-induced dipoles on MM sites interaction)
 c............................................................
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, x_mmpol
       use mmpol_dipol, only: dipo
@@ -274,7 +274,7 @@ c-----------------------------------------------------------------------
 c............................................................
 c     compute penu_q  (nuclei-charges interaction)
 c............................................................
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: chmm, nchmm, x_mmpol
       use mmpol_pot, only: penu_q
@@ -384,7 +384,7 @@ c-----------------------------------------------------------------------
 C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
       use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm, x_mmpol
       use mmpol_dipol, only: dipo

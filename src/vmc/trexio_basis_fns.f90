@@ -12,7 +12,7 @@ module trexio_basis_fns_mod
 !     ider = 3 -> value, gradient, laplacian, forces
 
       use numbas_mod, only: MRWF
-      use atom, only: iwctype, ncent, ncent_tot
+      use system, only: iwctype, ncent, ncent_tot
       use ghostatom, only: nghostcent
       use numbas, only: iwrwf, nrbas!, rmax
       use numbas1, only: iwlbas, nbastyp

@@ -6,7 +6,7 @@
 ! Modified by A. Scemama (printing in a GAMESS-like format)
 ! 1) a slater basis
 ! 2) a gaussian basis
-      use atom, only: znuc, iwctype, nctype, ncent
+      use system, only: znuc, iwctype, nctype, ncent
       use ghostatom, only: newghostype
       use numbas, only: numr
       use coefs, only: coef, nbasis, norb

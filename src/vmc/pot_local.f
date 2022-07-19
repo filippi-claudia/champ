@@ -1,7 +1,7 @@
       module pot_local_mod
       contains
       subroutine pot_local(pe)
-      use atom, only: znuc, pecent, iwctype, ncent
+      use system, only: znuc, pecent, iwctype, ncent
       use ghostatom, only: nghostcent
       use contrl_per, only: iperiodic
       use distance_mod, only: r_en, r_ee

@@ -32,7 +32,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_jastrow(p,n)
-      use atom, only: nctype
+      use system, only: nctype
       use jaspar3, only: b, c
 
       use jaspar4, only: a4

@@ -6,7 +6,7 @@ c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
       use vmc_mod, only: nordj
-      use atom, only: iwctype, ncent
+      use system, only: iwctype, ncent
       use jaspar, only: sspinn
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
       use jaspar3, only: b, c, scalek

@@ -4,7 +4,7 @@
 
       use contrl_per, only: iperiodic
       use contrldmc, only: tau
-      use atom, only: cent, ncent
+      use system, only: cent, ncent
       use config, only: xold_dmc
       use optwf_parms, only: nparmj
       use qua, only: nquad, xq, yq, zq
@@ -142,7 +142,7 @@ c-----------------------------------------------------------------------
       subroutine t_vpsp_sav
 
 
-      use atom, only: ncent, ncent_tot
+      use system, only: ncent, ncent_tot
       use qua, only: nquad
       use pseudo_mod, only: MPS_QUAD
 

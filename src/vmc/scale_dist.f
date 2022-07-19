@@ -2,7 +2,7 @@
       contains
       subroutine set_scale_dist(ipr)
 c Written by Cyrus Umrigar
-      use atom, only: nctype
+      use system, only: nctype
 
       use jaspar, only: sspinn
       use jaspar3, only: b, scalek

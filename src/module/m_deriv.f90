@@ -16,7 +16,7 @@ module da_energy_sumcum
     save
 contains
     subroutine allocate_da_energy_sumcum()
-        use atom, only: ncent_tot
+        use system, only: ncent_tot
         if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, ncent_tot))
         if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, ncent_tot))
         if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, ncent_tot))
@@ -50,7 +50,7 @@ module da_jastrow4val
     save
 contains
     subroutine allocate_da_jastrow4val()
-        use atom, only: ncent_tot
+        use system, only: ncent_tot
       use system, only: nelec
         if (.not. allocated(da_d2j)) allocate (da_d2j(3, nelec, ncent_tot))
         if (.not. allocated(da_j)) allocate (da_j(3, nelec, ncent_tot))
@@ -82,7 +82,7 @@ module da_orbval
     save
 contains
     subroutine allocate_da_orbval()
-        use atom, only: ncent_tot, ncent
+        use system, only: ncent_tot, ncent
         use vmc_mod, only: norb_tot
       use system, only: nelec
         if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, norb_tot, ncent_tot))
@@ -116,7 +116,7 @@ module da_pseudo
     save
 contains
     subroutine allocate_da_pseudo()
-        use atom, only: ncent_tot
+        use system, only: ncent_tot
         use pseudo_mod, only: MPS_L
       use system, only: nelec
         if (.not. allocated(da_pecent)) allocate (da_pecent(3, ncent_tot))
@@ -150,7 +150,7 @@ module da_energy_now
     save
 contains
     subroutine allocate_da_energy_now()
-        use atom, only: ncent_tot
+        use system, only: ncent_tot
         if (.not. allocated(da_energy)) allocate (da_energy(3, ncent_tot))
         if (.not. allocated(da_psi)) allocate (da_psi(3, ncent_tot))
     end subroutine allocate_da_energy_now
@@ -320,7 +320,7 @@ module ijasnonlin
     save
 contains
     subroutine allocate_ijasnonlin()
-        use atom, only: nctype_tot
+        use system, only: nctype_tot
         if (.not. allocated(d1d2a)) allocate (d1d2a(nctype_tot))
         if (.not. allocated(d1d2b)) allocate (d1d2b(2))
         if (.not. allocated(d2d2a)) allocate (d2d2a(nctype_tot))
