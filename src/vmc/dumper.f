@@ -13,7 +13,7 @@ c job where it left off
       use estcum, only: ecum, ecum1, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum
       use mpiconf, only: idtask, nproc, wid
       use step, only: ekin, ekin2, rprob, suc, trunfb, try

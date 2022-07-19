@@ -10,7 +10,7 @@ c routine to write out estimators for energy etc.
       use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2
       use estcum, only: ecum, iblk, pecum, tjfcum, tpbcum
       use estsum, only: acc
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum
       !use contrl, only: nstep
       use control_vmc, only: vmc_nstep

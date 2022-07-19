@@ -13,7 +13,7 @@ c job where it left off
       use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
       use const, only: hb
-      use forcest, only: fgcm2, fgcum
+      use multiple_geo, only: fgcm2, fgcum
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau

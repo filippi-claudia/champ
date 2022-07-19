@@ -1,5 +1,8 @@
 module multiple_geo
+
     use precision_kinds, only: dp
+    use mstates_mod, only: MSTATES
+
      implicit none
 
      integer :: MFORCE
@@ -15,6 +18,12 @@ module multiple_geo
      integer :: nwprod
      real(dp), dimension(:, :, :), allocatable :: delc !(3,MCENT,MFORCE)
 
+     real(dp), dimension(:, :), allocatable :: fcm2 !(MSTATES,MFORCE)
+     real(dp), dimension(:, :), allocatable :: fcum !(MSTATES,MFORCE)
+     ! DMC arrays:
+     real(dp), dimension(:), allocatable :: fgcm2 !(MFORCE)
+     real(dp), dimension(:), allocatable :: fgcum !(MFORCE)
+
      private
      public :: MFORCE, MFORCE_WT_PRD, MWF
      public :: nforce
@@ -25,6 +34,8 @@ module multiple_geo
      public :: itausec, nwprod
      public   ::  delc
      public :: deallocate_forcestr
+     public   ::  fcm2, fcum, fgcm2, fgcum
+     public :: allocate_forcest, deallocate_forcest
      save
 
 contains
@@ -40,6 +51,23 @@ contains
     subroutine deallocate_forcestr()
         if (allocated(delc)) deallocate (delc)
     end subroutine deallocate_forcestr
+
+    subroutine allocate_forcest()
+        use mstates_mod, only: MSTATES
+        if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE))
+        if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE))
+        ! DMC arrays:
+        if (.not. allocated(fgcm2)) allocate (fgcm2(MFORCE))
+        if (.not. allocated(fgcum)) allocate (fgcum(MFORCE))
+    end subroutine allocate_forcest
+
+    subroutine deallocate_forcest()
+        if (allocated(fcum)) deallocate (fcum)
+        if (allocated(fcm2)) deallocate (fcm2)
+        ! DMC arrays:
+        if (allocated(fcm2)) deallocate (fgcm2)
+        if (allocated(fcum)) deallocate (fgcum)
+    end subroutine deallocate_forcest
 
 
 end module multiple_geo
@@ -60,43 +88,6 @@ end module multiple_geo
      public   :: iforce_analy, iuse_zmat, alfgeo
      save
  end module force_analy
-
- module forcest
-     !> Arguments: fcm2, fcum, fgcm2, fgcum
-     use multiple_geo, only: MFORCE
-     use precision_kinds, only: dp
-     use mstates_mod, only: MSTATES
-
-     real(dp), dimension(:, :), allocatable :: fcm2 !(MSTATES,MFORCE)
-     real(dp), dimension(:, :), allocatable :: fcum !(MSTATES,MFORCE)
-     ! DMC arrays:
-     real(dp), dimension(:), allocatable :: fgcm2 !(MFORCE)
-     real(dp), dimension(:), allocatable :: fgcum !(MFORCE)
-
-     private
-     public   ::  fcm2, fcum, fgcm2, fgcum
-     public :: allocate_forcest, deallocate_forcest
-     save
- contains
-     subroutine allocate_forcest()
-         use multiple_geo, only: MFORCE
-         use mstates_mod, only: MSTATES
-         if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE))
-         if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE))
-         ! DMC arrays:
-         if (.not. allocated(fgcm2)) allocate (fgcm2(MFORCE))
-         if (.not. allocated(fgcum)) allocate (fgcum(MFORCE))
-     end subroutine allocate_forcest
-
-     subroutine deallocate_forcest()
-         if (allocated(fcum)) deallocate (fcum)
-         if (allocated(fcm2)) deallocate (fcm2)
-         ! DMC arrays:
-         if (allocated(fcm2)) deallocate (fgcm2)
-         if (allocated(fcum)) deallocate (fgcum)
-     end subroutine deallocate_forcest
-
- end module forcest
 
  module forcewt
      !> Arguments: wcum, wsum
@@ -185,7 +176,7 @@ end module multiple_geo
  module m_force
  contains
  subroutine allocate_m_force()
-     use forcest, only: allocate_forcest
+     use multiple_geo, only: allocate_forcest
     !  use multiple_geo, only: allocate_forcestr
      use forcewt, only: allocate_forcewt
      use force_fin, only: allocate_force_fin
@@ -201,7 +192,7 @@ end module multiple_geo
  end subroutine allocate_m_force
 
  subroutine deallocate_m_force()
-     use forcest, only: deallocate_forcest
+     use multiple_geo, only: deallocate_forcest
      use multiple_geo, only: deallocate_forcestr
      use forcewt, only: deallocate_forcewt
      use force_fin, only: deallocate_force_fin

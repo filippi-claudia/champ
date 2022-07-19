@@ -14,7 +14,7 @@ c routine to print out final results
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum
       use grdntspar, only: igrdtype, ngradnts
       use header, only: title

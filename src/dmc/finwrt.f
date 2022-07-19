@@ -7,7 +7,7 @@ c routine to print out final results
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
       use const, only: etrial
-      use forcest, only: fgcm2, fgcum
+      use multiple_geo, only: fgcm2, fgcum
       use age, only: iage, ioldest, ioldestmx
       use contrl_per, only: iperiodic
       use contrldmc, only: idmc, nfprod, tau

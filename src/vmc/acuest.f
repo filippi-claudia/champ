@@ -19,7 +19,7 @@ c routine to accumulate estimators for energy etc.
       use estpsi, only: apsi, aref, detref
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum, wsum
       use multidet, only: kref
       use optwf_contrl, only: ioptorb

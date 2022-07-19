@@ -13,7 +13,7 @@ c Written by Claudia Filippi
       use est2cm, only: ecm2, pecm2, tpbcm2, tjfcm2
       use estpsi, only: apsi, aref, detref
       use estsum, only: acc
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum
       use mpiconf, only: nproc, wid
       use mpi

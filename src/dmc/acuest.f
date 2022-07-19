@@ -4,7 +4,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use forcest, only: fgcm2, fgcum
+      use multiple_geo, only: fgcm2, fgcum
       use age, only: ioldest
       use estcum, only: iblk
       use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
