@@ -27,7 +27,6 @@ subroutine parser
   use periodic_table, 	only: atom_t, element
 
 ! in the replacement of preprocess input
-  use elec,           	only: ndn, nup
   use atom,           	only: nctype, ncent
   use wfsec,          	only: nwftype
   use forcepar,       	only: nforce
@@ -54,7 +53,6 @@ subroutine parser
   use general, 		      only: filenames_bas_num
   use csfs, 		        only: cxdet, ncsf, nstates
   use dets, 		        only: cdet, ndet
-  use elec, 		        only: ndn, nup
   use forcepar, 	      only: nforce
   use grdntspar, 	      only: igrdtype, ngradnts
   use header, 		      only: title
@@ -193,6 +191,8 @@ subroutine parser
 
   use precision_kinds, only: dp
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 ! Note the following modules are new additions
 
 !

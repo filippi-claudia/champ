@@ -40,7 +40,6 @@ c-----------------------------------------------------------------------
       use da_energy_now, only: da_psi
       use da_jastrow4val, only: da_j
       use da_orbval, only: da_orb
-      use elec, only: ndn, nup
       use multidet, only: ivirt, kref
       use zcompact, only: aaz, zmat
       use coefs, only: norb
@@ -49,6 +48,8 @@ c-----------------------------------------------------------------------
       use multislater, only: detiab
       use precision_kinds, only: dp
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 
@@ -137,7 +138,6 @@ c-----------------------------------------------------------------------
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_vj
       use da_orbval, only: da_orb
-      use elec, only: ndn, nup
       use multidet, only: ivirt, kref
       use zcompact, only: aaz, dzmat, emz, zmat
       use Bloc, only: b_da
@@ -151,6 +151,8 @@ c-----------------------------------------------------------------------
       use multislater, only: detiab
       use precision_kinds, only: dp
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 

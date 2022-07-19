@@ -4,7 +4,6 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
       use vmc_mod, only: norb_tot
-      use elec, only: ndn, nup
       use multidet, only: ivirt, kref
       use optwf_contrl, only: ioptorb
       use Bloc, only: b, tildem
@@ -17,6 +16,8 @@
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 
@@ -840,7 +841,6 @@ c-----------------------------------------------------------------------
       use optorb_mod, only: mxreduced
       use vmc_mod, only: norb_tot
       use dets, only: ndet
-      use elec, only: ndn, nup
       use multidet, only: kref
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       use coefs, only: norb, next_max
@@ -855,6 +855,8 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ncore, no_active
       use contrl_file, only: ounit, errunit
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 

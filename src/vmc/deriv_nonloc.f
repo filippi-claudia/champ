@@ -8,7 +8,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar, only: nspin2, sspinn, is
       use da_jastrow4val, only: da_j
       use derivjas, only: go
-      use elec, only: nup
       use jaso, only: fso
       use jaspointer, only: npoint, npointa
       use optwf_nparmj, only: nparma, nparmb, nparmc
@@ -24,6 +23,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use deriv_nonlpsi, only: deriv_psibnl, deriv_psinl, deriv_psianl
       use nonlpsi, only: dpsianl, dpsibnl
       use system, only: nelec
+      use system, only: nup
       implicit none
 
       integer :: i, ic, iel, ipar, ipara

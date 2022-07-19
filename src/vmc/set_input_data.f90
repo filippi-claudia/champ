@@ -60,7 +60,6 @@ subroutine multideterminants_define(iflag, icheck)
     use vmc_mod, only: neqsx
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet
-    use elec, only: ndn, nup
     use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, allocate_multidet
     use multidet, only: k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old
     use coefs, only: norb
@@ -72,6 +71,8 @@ subroutine multideterminants_define(iflag, icheck)
     use wfsec, only: nwftype
     use multideterminant_mod, only: idiff
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
     implicit none
 

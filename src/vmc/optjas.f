@@ -7,7 +7,6 @@
       use csfs, only: nstates
       use derivjas, only: d2g, g
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
       use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req
       use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
       use optwf_contrl, only: ioptjas
@@ -26,6 +25,8 @@
       use bxmatrices, only: bxmatrix
       use control, only: ipr
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 

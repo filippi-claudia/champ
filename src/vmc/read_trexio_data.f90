@@ -41,14 +41,16 @@ module trexio_read_data
         use ghostatom, 		    only: newghostype, nghostcent
         use inputflags, only: igeometry
         use periodic_table, only: atom_t, element
-        use elec,           	only: ndn, nup
         use contrl_file, only: ounit, errunit
         use general, only: pooldir
         use precision_kinds, only: dp
         use system, only: nelec
+        use system, only: nup
+        use system, only: ndn
 #if defined(TREXIO_FOUND)
         use trexio
         use contrl_file, only: backend
+
 #endif
 
         implicit none

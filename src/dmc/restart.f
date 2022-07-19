@@ -41,7 +41,6 @@
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: nloc
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: nghostcent
       use velratio, only: fratio
@@ -69,6 +68,8 @@
       use control, only: ipr
       use control, only: mode
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
       implicit none
 
       integer :: i, iage_id, ib, ic, id

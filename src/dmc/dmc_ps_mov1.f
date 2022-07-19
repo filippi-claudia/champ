@@ -62,7 +62,6 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use branch, only: wthist
       use casula, only: i_vpsp, icasula
       use jacobsave, only: ajacob, ajacold
-      use elec, only: nup
       use velratio, only: fratio, xdrifted
       use control_dmc, only: dmc_irstar, dmc_nconf
       use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
@@ -99,6 +98,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use gauss_mod, only: gauss
       use control, only: ipr
       use system, only: nelec
+      use system, only: nup
 
       implicit none
 

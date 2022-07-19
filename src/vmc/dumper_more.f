@@ -16,7 +16,6 @@ c job where it left off
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
@@ -66,6 +65,8 @@ c job where it left off
       use multiple_states, only: efficiency_rstrt, efficiency_dump
       use properties_mod, only: prop_rstrt, prop_dump
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
       
       implicit none
 

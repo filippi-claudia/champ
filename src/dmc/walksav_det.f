@@ -15,7 +15,6 @@ c Written by Claudia Filippi
       use branch, only: nwalk
       use slater, only: ddx, fp, slmi
       use dets, only: ndet
-      use elec, only: ndn, nup
       use orbval, only: dorb, orb
       use coefs, only: norb
       use csfs, only: nstates
@@ -25,6 +24,8 @@ c Written by Claudia Filippi
       use multimat, only: aa, wfmat
       use mpi
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 

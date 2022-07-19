@@ -162,8 +162,8 @@ c-----------------------------------------------------------------------
       use multidet, only: kref
       use optwf_contrl, only: ioptci
       use dorb_m, only: iworbd
-      use elec, only: nup
       use system, only: nelec
+      use system, only: nup
 
       implicit none
 

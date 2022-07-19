@@ -11,7 +11,6 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
       use dets, only: ndet
-      use elec, only: ndn, nup
       use multidet, only: kref, kchange, kref_fixed
       use dorb_m, only: iworbd
 
@@ -34,6 +33,8 @@ c Modified by A. Scemama
       use control, only: mode
       use control, only: ipr
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 

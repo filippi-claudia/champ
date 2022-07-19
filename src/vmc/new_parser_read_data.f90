@@ -273,10 +273,11 @@ subroutine read_determinants_file(file_determinants)
     use csfs, only: nstates
     use mstates_mod, only: MSTATES
     use general, only: pooldir
-    use elec, only: ndn, nup
     use method_opt, only: method
     use precision_kinds, only: dp
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
     implicit none
 
@@ -488,7 +489,6 @@ subroutine read_jastrow_file(file_jastrow)
 
     use force_mod, only: MWF
     use jaspar, only: nspin1, nspin2
-    use elec, only: ndn
     use jaspar3, only: b, c, scalek
     use jaspar4, only: a4, norda, nordb, nordc
     use vmc_mod, only: nordj, nordj1, neqsx
@@ -505,6 +505,7 @@ subroutine read_jastrow_file(file_jastrow)
     use general, only: pooldir
     use method_opt, only: method
     use jastrow4_mod, only: nterms4
+      use system, only: ndn
     implicit none
 
     !   local use

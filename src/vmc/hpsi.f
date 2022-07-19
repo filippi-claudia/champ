@@ -10,7 +10,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use const, only: hb
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
-      use elec, only: ndn, nup
       use mmpol_hpsi, only: peQMdp, peQMq
       use multidet, only: iactv, ivirt, kref
       use pcm_hpsi, only: pcms, pcmv
@@ -51,6 +50,8 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use efield_f_mod, only: efield_extpot_ene
       use control, only: ipr
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 

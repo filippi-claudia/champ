@@ -5,7 +5,6 @@
       use const, only: hb
       use csfs, only: nstates
       use dets, only: ndet
-      use elec, only: ndn, nup
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, ndetiab, k_det, ndet_req
       use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
       use optwf_contrl, only: ioptorb
@@ -25,6 +24,8 @@
       use bxmatrices, only: bxmatrix
       use matinv_mod, only: matinv
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
       implicit none
 
       integer :: i, iab, iel, index_det, iorb, kun, kw
@@ -416,7 +417,6 @@ c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
       use vmc_mod, only: norb_tot
-      use elec, only: ndn, nup
       use multidet, only: iactv, ivirt
       use coefs, only: norb
       use Bloc, only: tildem, xmat
@@ -425,6 +425,8 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
       implicit none
 
       integer :: iab, irep, ish, jrep, krep
@@ -484,12 +486,13 @@ c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
       use csfs, only: nstates
-      use elec, only: ndn, nup
       use ycompact, only: ymat
       use multimat, only: wfmat
 
       use multislater, only: detiab
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
       implicit none
 
       integer :: iab, iel, istate

@@ -5,7 +5,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use vmc_mod, only: nordj
       use atom, only: iwctype, nctype, ncent
       use derivjas, only: d2g, g, go, gvalue
-      use elec, only: nup
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
       use jaspar, only: sspinn
@@ -32,6 +31,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use scale_dist_mod, only: scale_dist2, switch_scale2
       use jastrow4_mod, only: da_jastrow4
       use system, only: nelec
+      use system, only: nup
       implicit none
 
       integer :: i, ic, id, ideriv, ij

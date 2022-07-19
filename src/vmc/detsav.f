@@ -6,7 +6,6 @@ c Written by Claudia Filippi
       use csfs, only: nstates
 
       use dets, only: ndet
-      use elec, only: ndn, nup
       use multidet, only: ivirt, kref, numrep_det, ndetiab, ndetsingle
 
       use slatn, only: slmin
@@ -28,6 +27,8 @@ c Written by Claudia Filippi
 
       use precision_kinds, only: dp
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
       implicit none
 
       integer :: i, iab, iel, iflag, ikel

@@ -39,7 +39,6 @@ c job where it left off
       use jacobsave, only: ajacob
       use pseudo, only: nloc
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: newghostype, nghostcent
       use velratio, only: fratio
@@ -57,6 +56,8 @@ c job where it left off
       use strech_mod, only: strech
       use control, only: mode
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
       implicit none
 
       integer :: i, ib, ic, id, ierr

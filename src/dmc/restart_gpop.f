@@ -40,7 +40,6 @@
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: nloc
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
       use ghostatom, only: nghostcent
       use velratio, only: fratio
@@ -66,6 +65,8 @@
       use walksav_jas_mod, only: walksav_jas
       use control, only: ipr
       use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
       implicit none
 
       integer :: i, iage_id, ib, ic, id

@@ -7,7 +7,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use optwf_parms, only: nparmj
       use vmc_mod, only: norb_tot
       use atom, only: iwctype, ncent, ncent_tot
-      use elec, only: nup
       use jaso, only: fso
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
@@ -33,6 +32,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use control, only: mode
       use control, only: ipr
       use system, only: nelec
+      use system, only: nup
       implicit none
 
       integer :: i, i1, i2, i_vpsp, iab
@@ -492,10 +492,11 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use precision_kinds, only: dp
-      use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
       use vmc_mod, only: nmat_dim
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 
@@ -540,7 +541,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use jaspar, only: sspinn
       use da_jastrow4val, only: da_j
-      use elec, only: nup
       use bparm, only: nocuspb, nspin2b
       use contr2, only: isc
       use contrl_per, only: iperiodic
@@ -550,6 +550,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use pw_find_image, only: find_image3
       use scale_dist_mod, only: scale_dist, scale_dist1
       use system, only: nelec
+      use system, only: nup
 
       implicit none
 

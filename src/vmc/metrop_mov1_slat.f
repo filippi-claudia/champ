@@ -18,7 +18,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
       use config, only: tjfoo, vnew, vold, xnew, xold
       use csfs, only: nstates
-      use elec, only: nup
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use forcepar, only: nforce
       use forcewt, only: wsum
@@ -66,6 +65,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use control, only: mode
       use control, only: ipr
       use system, only: nelec
+      use system, only: nup
 
       implicit none
 
