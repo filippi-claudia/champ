@@ -24,6 +24,8 @@ module multiple_geo
      real(dp), dimension(:), allocatable :: fgcm2 !(MFORCE)
      real(dp), dimension(:), allocatable :: fgcum !(MFORCE)
 
+     real(dp) :: pecent
+
      private
      public :: MFORCE, MFORCE_WT_PRD, MWF
      public :: nforce
@@ -36,6 +38,7 @@ module multiple_geo
      public :: deallocate_forcestr
      public   ::  fcm2, fcum, fgcm2, fgcum
      public :: allocate_forcest, deallocate_forcest
+     public :: pecent
      save
 
 contains
