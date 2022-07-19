@@ -13,7 +13,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use mmpol_hpsi, only: peQMdp, peQMq
       use multidet, only: iactv, ivirt, kref
       use pcm_hpsi, only: pcms, pcmv
-      use wfsec, only: iwf, iwftype
+      use multiple_geo, only: iwf, iwftype
       use ycompact, only: ymat
       use casula, only: i_vpsp, t_vpsp
       use coefs, only: norb

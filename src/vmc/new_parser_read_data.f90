@@ -269,7 +269,7 @@ subroutine read_determinants_file(file_determinants)
     use dorb_m, only: iworbd
     use coefs, only: norb
     use inputflags, only: ideterminants
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use csfs, only: nstates
     use mstates_mod, only: MSTATES
     use general, only: pooldir
@@ -497,7 +497,7 @@ subroutine read_jastrow_file(file_jastrow)
     use contr2, only: ijas
     use contr2, only: isc
     use inputflags, only: ijastrow_parameter
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use system, only: ncent, nctype
     use precision_kinds, only: dp
     use contrl_per, 		only: iperiodic
@@ -671,7 +671,7 @@ subroutine read_orbitals_file(file_orbitals)
     use pcm_fdc, only: fs
     use vmc_mod, only: norb_tot
     ! was not in master but is needed
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use general, only: pooldir
     use method_opt, only: method
     use precision_kinds, only: dp
@@ -788,7 +788,7 @@ subroutine read_csf_file(file_determinants)
     use csfs, only: ccsf, ncsf, nstates
     use mstates_mod, only: MSTATES
     use inputflags, only: icsfs
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use dets, only: ndet, cdet
 !   Not sure about the following two lines
     use ci000, only: nciprim, nciterm
@@ -915,7 +915,7 @@ subroutine read_csfmap_file(file_determinants)
     use contrl_file, only: ounit, errunit
     use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet, nmap
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use precision_kinds, only: dp
     use general, only: pooldir
 
@@ -1070,7 +1070,7 @@ subroutine read_exponents_file(file_exponents)
     use coefs, only: nbasis
     use basis, only: zex
     use inputflags, only: iexponents
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use general, only: pooldir
     use method_opt, only: method
     use precision_kinds, only: dp
@@ -1336,7 +1336,7 @@ subroutine read_forces_file(file_forces)
     use system, only: symbol
     use contrl_file, only: ounit, errunit
     use forcestr, only: delc
-    use wfsec, only: iwftype
+    use multiple_geo, only: iwftype
     use inputflags, only: iforces
     use general, only: pooldir
     use system, only: ncent
@@ -2184,7 +2184,7 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     use forcestr, only: delc
     use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
     use grdntspar, only: delgrdxyz, igrdtype, ngradnts
-    use wfsec, only: iwftype
+    use multiple_geo, only: iwftype
     use inputflags, only: igradients
     use general, only: pooldir
     use system, only: ncent
@@ -2285,7 +2285,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
     use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts
     use zmatrix, only: izmatrix
-    use wfsec, only: iwftype
+    use multiple_geo, only: iwftype
     use inputflags, only: igradients
     use general, only: pooldir
     use system, only: ncent

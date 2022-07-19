@@ -57,7 +57,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use system, only: nghostcent
       use phifun, only: d2phin, dphin
       use phifun, only: phin
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use coefs, only: coef, nbasis, norb
 !      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite, vmc_nconf
@@ -446,7 +446,7 @@ c Lagrange interpolation routines
       use vmc_mod, only: norb_tot
       use vmc_mod, only: norb_tot
       use system, only: cent, ncent
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use grid3d_param, only: nstep3d, endpt, origin
       use orbital_num_lag, only: denom
       use coefs, only: coef, nbasis, norb

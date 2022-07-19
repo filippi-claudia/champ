@@ -210,7 +210,7 @@ module trexio_read_data
         use orbval, only: nadorb
         use pcm_fdc, only: fs
         use vmc_mod, only: norb_tot
-        use wfsec, only: nwftype
+        use multiple_geo, only: nwftype
         use general, only: pooldir
         use method_opt, only: method
         use precision_kinds, only: dp
@@ -809,7 +809,7 @@ module trexio_read_data
         use basis,              only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
         use basis,              only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
 
-        use wfsec,              only: nwftype
+        use multiple_geo,              only: nwftype
 
         implicit none
 
@@ -1479,7 +1479,7 @@ module trexio_read_data
         use dorb_m,             only: iworbd
         use coefs,              only: norb
         use inputflags,         only: ideterminants
-        use wfsec,              only: nwftype
+        use multiple_geo,              only: nwftype
         use csfs,               only: nstates
         use mstates_mod,        only: MSTATES
         use general,            only: pooldir

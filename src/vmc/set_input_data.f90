@@ -10,7 +10,7 @@ subroutine inputzex
 
     ! are they needed ??!!
     use contrl_per, only: iperiodic
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use method_opt, only: method
     use precision_kinds, only: dp
       implicit none
@@ -68,7 +68,7 @@ subroutine multideterminants_define(iflag, icheck)
     use contrl_file,    	only: ounit, errunit
 
     ! not sure about that one either ....
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use multideterminant_mod, only: idiff
       use system, only: nelec
       use system, only: nup
@@ -379,7 +379,7 @@ subroutine inputforces
 !    use multiple_geo, only: MWF
 !    use multiple_geo, only: MFORCE
     use forcestr, only: delc
-    use wfsec, only: iwftype, nwftype
+    use multiple_geo, only: iwftype, nwftype
     use contrl_file, only: errunit
     use system, only: ncent
     use precision_kinds, only: dp
@@ -411,7 +411,7 @@ subroutine inputdet()
     use dets, only: cdet, ndet
     use csfs, only: nstates
 !    use mstates_mod, only: MSTATES
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use method_opt, only: method
     use precision_kinds, only: dp
 
@@ -436,7 +436,7 @@ subroutine inputlcao()
     ! Set the lcao to be equal
     use vmc_mod, only: norb_tot
     use coefs, only: coef, nbasis, norb
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use method_opt, only: method
     use precision_kinds, only: dp
 
@@ -469,7 +469,7 @@ subroutine inputjastrow()
     use bparm, only: nspin2b
     use contr2, only: ijas
     use contr2, only: isc
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use system, only: ncent, nctype
     use precision_kinds, only: dp
     use jastrow4_mod, only: nterms4

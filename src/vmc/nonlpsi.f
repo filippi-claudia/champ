@@ -8,7 +8,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar3, only: c
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use precision_kinds, only: dp
       use scale_dist_mod, only: switch_scale
@@ -84,7 +84,7 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: a4, norda
       use jaspar6, only: asymp_jasa, asymp_r
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use precision_kinds, only: dp
       implicit none
@@ -116,7 +116,7 @@ c-----------------------------------------------------------------------
       use jaspar3, only: b
       use jaspar4, only: nordb
       use jaspar6, only: asymp_jasb, asymp_r
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use precision_kinds, only: dp
 
@@ -148,7 +148,7 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: a4, norda
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use precision_kinds, only: dp
 
@@ -179,7 +179,7 @@ c-----------------------------------------------------------------------
       use jaspar3, only: b
       use jaspar4, only: nordb
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use precision_kinds, only: dp
 

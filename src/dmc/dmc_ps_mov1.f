@@ -55,7 +55,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use estsum, only: efsum1, egsum1, esum1_dmc
       use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc
       use estsum, only: wfsum1, wgsum1, wsum1
-      use force_dmc, only: itausec, nwprod
+      use multiple_geo, only: itausec, nwprod
       use derivest, only: derivsum
       use step, only: rprob
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt

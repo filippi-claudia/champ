@@ -280,7 +280,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use vmc_mod, only: nordj1
       use system, only: nctype, nctype_tot
-      use wfsec, only: nwftype
+      use multiple_geo, only: nwftype
       use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
       use bparm, only: nspin2b
@@ -359,7 +359,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
       use coefs, only: coef, nbasis, norb
-      use wfsec, only: nwftype
+      use multiple_geo, only: nwftype
 
       implicit none
 
@@ -562,7 +562,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use vmc_mod, only: nordj1
       use system, only: nctype, nctype_tot
-      use wfsec, only: nwftype
+      use multiple_geo, only: nwftype
       use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
       use bparm, only: nspin2b
@@ -638,7 +638,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
       use coefs, only: coef, nbasis, norb
-      use wfsec, only: nwftype
+      use multiple_geo, only: nwftype
 
       implicit none
 

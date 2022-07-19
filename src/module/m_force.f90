@@ -8,27 +8,23 @@ module multiple_geo
      integer :: nforce
      integer :: istrech
      real(dp) :: alfstr
+     integer :: iwf
+     integer, dimension(:), allocatable :: iwftype !(MFORCE)
+     integer :: nwftype
+     integer :: itausec
+     integer :: nwprod
+
 
      private
      public :: MFORCE, MFORCE_WT_PRD, MWF
      public :: nforce
      public   ::  istrech, alfstr
+     public :: iwf, iwftype, nwftype
+     !public :: allocate_wfsec
+     public :: deallocate_wfsec
+     public :: itausec, nwprod
      save
- end module multiple_geo
 
-
-module wfsec
-    !> Arguments: iwf, iwftype, nwftype
-
-    integer :: iwf
-    integer, dimension(:), allocatable :: iwftype !(MFORCE)
-    integer :: nwftype
-
-    private
-    public :: iwf, iwftype, nwftype
-    !public :: allocate_wfsec
-    public :: deallocate_wfsec
-    save
 contains
     ! subroutine allocate_wfsec()
     !     use multiple_geo, only: MFORCE
@@ -39,7 +35,10 @@ contains
         if (allocated(iwftype)) deallocate (iwftype)
     end subroutine deallocate_wfsec
 
-end module wfsec
+end module multiple_geo
+
+
+
  module force_analy
      !> Arguments: iforce_analy, iuse_zmat, alfgeo
      use precision_kinds, only: dp
@@ -142,19 +141,6 @@ end module wfsec
      end subroutine deallocate_forcewt
 
  end module forcewt
-
- module force_dmc
-     !> Arguments: itausec, nwprod
-
-     implicit none
-
-     integer :: itausec
-     integer :: nwprod
-
-     private
-     public   ::   itausec, nwprod
-     save
- end module force_dmc
 
  module force_fin
      !> Arguments: da_energy_ave, da_energy_err

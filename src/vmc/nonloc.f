@@ -370,7 +370,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use system, only: iwctype, ncent, ncent_tot
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use coefs, only: coef, norb, nbasis
       use contrl_per, only: iperiodic
       use grid3dflag, only: i3dlagorb, i3dsplorb

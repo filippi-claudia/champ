@@ -13,7 +13,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use jaspar4, only: a4, norda, nordb, nordc
       use jaspar6, only: asymp_jasa, asymp_jasb, c1_jas6
       use jaspar6, only: cutjas
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use contr2, only: isc

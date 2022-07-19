@@ -28,7 +28,7 @@ subroutine parser
 
 ! in the replacement of preprocess input
   use system,           	only: nctype, ncent
-  use wfsec,          	only: nwftype
+  use multiple_geo,          	only: nwftype
   use multiple_geo,      	only: MFORCE
 
 ! variables from process input
@@ -69,7 +69,7 @@ subroutine parser
   use optwf_parms, 	    only: nparmj
   use sr_mod, only: i_sr_rescale, izvzb
   use sa_weights, 	    only: iweight, nweight, weights
-  use wfsec, 		        only: nwftype
+  use multiple_geo, 		        only: nwftype
   use zmatrix, 		      only: izmatrix
   use bparm, 		        only: nocuspb, nspin2b
   use casula, 		      only: i_vpsp, icasula
@@ -91,9 +91,9 @@ subroutine parser
   use dorb_m, 		      only: iworbd
   use contrl_per, 	    only: iperiodic, ibasis
   use force_analy, 	    only: iforce_analy, iuse_zmat, alfgeo
-  use force_dmc, 	      only: itausec, nwprod
+  use multiple_geo, 	      only: itausec, nwprod
   use forcestr, only: delc
-  use wfsec, only: iwftype
+  use multiple_geo, only: iwftype
   use pseudo, 		      only: nloc
   use optorb_cblock, 	  only: idump_blockav
   use gradjerrb, 	      only: ngrad_jas_blocks

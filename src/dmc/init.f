@@ -10,7 +10,7 @@ c routine to accumulate estimators for energy etc.
       use system, only: cent, iwctype, ncent, pecent, znuc
       use estcum, only: ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use force_dmc, only: nwprod
+      use multiple_geo, only: nwprod
       use mpiconf, only: nproc
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen

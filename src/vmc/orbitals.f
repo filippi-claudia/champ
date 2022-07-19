@@ -19,7 +19,7 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: iperiodic
@@ -227,7 +227,7 @@ c-------------------------------------------------------------------------------
       use da_orbval, only: da_d2orb, da_dorb, da_orb
       use numbas2, only: ibas0, ibas1
       use phifun, only: d2phin_all, d3phin, dphin
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: ibasis
       use precision_kinds, only: dp
@@ -274,7 +274,7 @@ c-------------------------------------------------------------------------------
 
       use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
       use phifun, only: phin
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use coefs, only: coef, norb, nbasis
       use contrl_per, only: iperiodic
       use system, only: ncent_tot

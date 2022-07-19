@@ -17,7 +17,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use optwf_nparmj, only: nparma, nparmb
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use contr2, only: isc

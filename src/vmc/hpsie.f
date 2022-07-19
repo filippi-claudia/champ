@@ -7,7 +7,7 @@ c Written by Claudia Filippi by modifying hpsi
       use mstates_mod, only: MSTATES
       use estpsi, only: apsi, aref
       use multidet, only: kref
-      use wfsec, only: iwf, iwftype
+      use multiple_geo, only: iwf, iwftype
       use contr2, only: ianalyt_lap
       use velocity_jastrow, only: vjn
       use multislatern, only: detn

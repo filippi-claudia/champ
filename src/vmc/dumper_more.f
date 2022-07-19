@@ -25,7 +25,7 @@ c job where it left off
       use optwf_contrl, only: ioptorb
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
-      use wfsec, only: iwftype, nwftype
+      use multiple_geo, only: iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use const2, only: deltar, deltat
 !      use contrl, only: nstep

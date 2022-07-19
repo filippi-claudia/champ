@@ -10,7 +10,7 @@
       use qua, only: nquad, xq, yq, zq
       use casula, only: icasula, t_vpsp
       use distance_mod, only: r_en, rshift, rvec_en
-      use wfsec, only: iwf, iwftype
+      use multiple_geo, only: iwf, iwftype
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use contrl_file, only: ounit
       use precision_kinds, only: dp

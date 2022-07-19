@@ -15,7 +15,7 @@ c and sa, pa, da asymptotic functions
       use config, only: eold
       use config, only: psido, psijo
       use config, only: xold
-      use wfsec, only: iwftype, nwftype
+      use multiple_geo, only: iwftype, nwftype
       use coefs, only: coef, nbasis
 !      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk

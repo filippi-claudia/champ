@@ -15,7 +15,7 @@ c written by Claudia Filippi
       use numbas, only: numr
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
-      use wfsec, only: iwftype, nwftype
+      use multiple_geo, only: iwftype, nwftype
       use orbval, only: nadorb
 
 !     use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci

@@ -93,7 +93,7 @@ module jaspar3
     save
 contains
     subroutine allocate_jaspar3()
-        use wfsec, only: nwftype
+        use multiple_geo, only: nwftype
         use system, only: nctype_tot
         use vmc_mod, only: nordj1
         ! if (.not. allocated(b)) allocate (b(nordj1, 2, MWF))

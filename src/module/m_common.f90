@@ -1118,7 +1118,7 @@ subroutine allocate_m_common()
     use slatn, only: allocate_slatn
     use vardep, only: allocate_vardep
     use velocity_jastrow, only: allocate_velocity_jastrow
-    ! use wfsec, only: allocate_wfsec
+    ! use multiple_geo, only: allocate_wfsec
     use ycompact, only: allocate_ycompact
     use ycompactn, only: allocate_ycompactn
     use zcompact, only: allocate_zcompact
@@ -1190,7 +1190,7 @@ subroutine deallocate_m_common()
     use slatn, only: deallocate_slatn
     use vardep, only: deallocate_vardep
     use velocity_jastrow, only: deallocate_velocity_jastrow
-    use wfsec, only: deallocate_wfsec
+    use multiple_geo, only: deallocate_wfsec
     use ycompact, only: deallocate_ycompact
     use ycompactn, only: deallocate_ycompactn
     use zcompact, only: deallocate_zcompact

@@ -7,7 +7,7 @@ c Written by Cyrus Umrigar
       use age, only: iage
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use stats, only: nbrnch
-      use force_dmc, only: nwprod
+      use multiple_geo, only: nwprod
       use branch, only: eold, nwalk, pwt, wt
       use branch, only: wthist
       use jacobsave, only: ajacold

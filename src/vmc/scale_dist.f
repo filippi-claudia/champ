@@ -130,7 +130,7 @@ c Scale interparticle distances.
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use contr2, only: isc
       use precision_kinds, only: dp
@@ -287,7 +287,7 @@ c gradient and laplacian.
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use contr2, only: isc
       use precision_kinds, only: dp
@@ -477,7 +477,7 @@ c gradient and laplacian.
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
       use scale_more, only: dd3
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use contr2, only: isc
       use precision_kinds, only: dp
@@ -692,7 +692,7 @@ c that appropriate for C terms, for dist.
       use jaspar3, only: scalek
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -717,7 +717,7 @@ c that appropriate for C terms, for dist and 1st deriv.
       use jaspar3, only: scalek
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -743,7 +743,7 @@ c that appropriate for C terms, for dist and 1st two derivs.
       use jaspar3, only: scalek
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 

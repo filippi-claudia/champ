@@ -10,9 +10,9 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use const, only: pi
       use contrldmc, only: idmc
       use estcum, only: ipass
-      use force_dmc, only: nwprod
+      use multiple_geo, only: nwprod
       use pseudo, only: nloc
-      use wfsec, only: iwftype, nwftype
+      use multiple_geo, only: iwftype, nwftype
 !      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
       use control_dmc, only: dmc_idump, dmc_irstar, dmc_nblk, dmc_nblkeq
       use control_dmc, only: dmc_nconf, dmc_nstep

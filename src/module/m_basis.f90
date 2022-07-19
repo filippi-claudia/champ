@@ -225,7 +225,7 @@ module numbas
     save
 contains
     subroutine allocate_numbas()
-        use wfsec, only: nwftype
+        use multiple_geo, only: nwftype
         use coefs, only: nbasis
         use system, only: nctype_tot
         use numbas_mod, only: MRWF, MRWF_PTS

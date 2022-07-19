@@ -12,7 +12,7 @@ c numerical Laplacian for periodic systems.
       use jaspar, only: nspin2, sspin, sspinn, is
       use jaspar3, only: scalek
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use distance_mod, only: r_en, r_ee

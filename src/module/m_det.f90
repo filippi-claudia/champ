@@ -45,7 +45,7 @@ module csfs
     save
 contains
     subroutine allocate_csfs()
-        use wfsec, only: nwftype
+        use multiple_geo, only: nwftype
         use mstates_mod, only: MSTATES
         use dets, only: ndet, nmap
         if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))

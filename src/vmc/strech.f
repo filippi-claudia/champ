@@ -17,11 +17,11 @@ c rigidly with that nucleus
       use multiple_geo, only: MFORCE, MFORCE_WT_PRD
       use multiple_geo, only: istrech, alfstr
       use system, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
-      use force_dmc, only: itausec, nwprod
+      use multiple_geo, only: itausec, nwprod
       use multiple_geo, only: istrech
       use forcestr, only: delc
       use pcm_force, only: sch_s
-      use wfsec, only: iwftype
+      use multiple_geo, only: iwftype
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, nch, nchs
       use pcm_parms, only: nesph

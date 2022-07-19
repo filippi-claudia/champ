@@ -4,7 +4,7 @@ c-----------------------------------------------------------------------
       subroutine determinante_psit(iel,determ,istate)
 
       use dets, only: cdet, ndet
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use multislatern, only: detn
 
       use multislater, only: detiab

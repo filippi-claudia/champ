@@ -12,7 +12,7 @@ c periodic systems.
 
       use jaspar4, only: nordc
       use jaspar6, only: cutjas
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use precision_kinds, only: dp
       implicit none
@@ -103,7 +103,7 @@ c-----------------------------------------------------------------------
       use jaspar4, only: a4, norda
       use jaspar6, only: asymp_jasa
       use jaspar6, only: cutjas
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use precision_kinds, only: dp
       implicit none
@@ -153,7 +153,7 @@ c-----------------------------------------------------------------------
       use jaspar4, only: nordb
       use jaspar6, only: asymp_jasb
       use jaspar6, only: cutjas
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use contr2, only: ijas
       use precision_kinds, only: dp
       implicit none
