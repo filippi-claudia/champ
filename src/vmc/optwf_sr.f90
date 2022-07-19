@@ -13,12 +13,12 @@
 module optwf_sr_mod
 
     use precision_kinds, only: dp
-    use optwf_contrl, only: ioptci, ioptjas, ioptorb
+    use optwf_control, only: ioptci, ioptjas, ioptorb
     use force_analy, only: iforce_analy
 !    use contrl, only: nblk_max
     use control_vmc, only: vmc_nblk_max
-    use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
-    use optwf_contrl, only: sr_tau, sr_adiag, sr_eps
+    use optwf_control, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
+    use optwf_control, only: sr_tau, sr_adiag, sr_eps
     use orbval, only: nadorb
     use contrl_file, only: ounit
     use mpitimer, only: elapsed_time
@@ -71,14 +71,14 @@ contains
     subroutine optwf_sr
 
         use sr_mod, only: mparm
-        use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+        use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
         use mstates_mod, only: MSTATES
         use optwf_corsam, only: energy, energy_err
         use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
         !use contrl, only: nblk
         use control_vmc, only: vmc_nblk
         use force_analy, only: alfgeo
-        use optwf_contrl, only: nparm
+        use optwf_control, only: nparm
         use method_opt, only: method
         use orbval, only: nadorb
         use contrl_file, only: ounit

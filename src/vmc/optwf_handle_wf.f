@@ -63,7 +63,7 @@ c-----------------------------------------------------------------------
       use jaspar3, only: b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
       use bparm, only: nspin2b
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use contr2, only: ianalyt_lap, ijas, isc
       use precision_kinds, only: dp
@@ -126,7 +126,7 @@ c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
 
       use numbas, only: numr
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use coefs, only: coef, nbasis, norb
       use orbval, only: nadorb
       use inputflags, only: scalecoef
@@ -160,7 +160,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use multidet, only: kref
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use dorb_m, only: iworbd
       use system, only: nelec
       use system, only: nup
@@ -236,7 +236,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_wf
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
 
       implicit none
 
@@ -249,7 +249,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine restore_wf(iadiag)
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
 
       implicit none
 
@@ -770,7 +770,7 @@ c-----------------------------------------------------------------------
       use jaspar3, only: b, c
       use jaspar4, only: a4
       use bparm, only: nspin2b
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
@@ -818,7 +818,7 @@ c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
 
       use vmc_mod, only: norb_tot
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
       use coefs, only: coef, nbasis, norb
       use optorb_cblock, only: norbterm
@@ -861,7 +861,7 @@ c-----------------------------------------------------------------------
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use method_opt, only: method
       use precision_kinds, only: dp
@@ -994,7 +994,7 @@ c Calculate rms change in parameters
 c-----------------------------------------------------------------------
       subroutine save_nparms
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
       use ci000, only: nciterm
@@ -1045,7 +1045,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine set_nparms_tot
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
@@ -1090,7 +1090,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use optwf_parms, only: nparmj
       use csfs, only: nstates
       use derivjas, only: gvalue
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_func, only: ifunc_omega
       use optwf_parms, only: nparmj
       use sr_mat_n, only: elocal, nconf_n, sr_ho

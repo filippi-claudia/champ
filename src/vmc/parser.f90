@@ -61,11 +61,11 @@ subroutine parser
   use numbas, 		      only: numr
   use numbas1, 		      only: nbastyp
   use numbas2, 		      only: ibas0, ibas1
-  use optwf_contrl, 	  only: ioptci, ioptjas, ioptorb, ioptwf, nparm
-  use optwf_contrl, 	  only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
-  use optwf_contrl, 	  only: ibeta, ratio_j, iapprox, ncore
-  use optwf_contrl, 	  only: iuse_orbeigv
-  use optwf_contrl, 	  only: no_active
+  use optwf_control, 	  only: ioptci, ioptjas, ioptorb, ioptwf, nparm
+  use optwf_control, 	  only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
+  use optwf_control, 	  only: ibeta, ratio_j, iapprox, ncore
+  use optwf_control, 	  only: iuse_orbeigv
+  use optwf_control, 	  only: no_active
   use optwf_parms, 	    only: nparmj
   use sr_mod, only: i_sr_rescale, izvzb
   use sa_weights, 	    only: iweight, nweight, weights
@@ -123,10 +123,10 @@ subroutine parser
   use array_resize_utils, only: resize_tensor
   use grid3d_param, 	  only: endpt, nstep3d, origin, step3d
   use inputflags, 	    only: node_cutoff, eps_node_cutoff, dmc_node_cutoff, dmc_eps_node_cutoff, iqmmm, scalecoef
-  use optwf_contrl, 	  only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-  use optwf_contrl, 	  only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
-  use optwf_contrl, 	  only: ilastvmc, iroot_geo
-  use optwf_contrl, 	  only: sr_tau , sr_adiag, sr_eps
+  use optwf_control, 	  only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+  use optwf_control, 	  only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
+  use optwf_control, 	  only: ilastvmc, iroot_geo
+  use optwf_control, 	  only: sr_tau , sr_adiag, sr_eps
   use optwf_func, 	    only: ifunc_omega, omega0, n_omegaf, n_omegat
   use optwf_corsam, 	  only: add_diag
   use dmc_mod, 		      only: mwalk, set_mwalk

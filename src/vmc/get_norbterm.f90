@@ -21,7 +21,7 @@ subroutine get_norbterm
     use method_opt, only: method
     use optorb_cblock, only: nreduced
     use orbval, only: nadorb, ndetorb, orb
-    use optwf_contrl, only: ncore, no_active
+    use optwf_control, only: ncore, no_active
     use contrl_file, only: ounit, errunit
     use error, only: fatal_error
       use system, only: nelec

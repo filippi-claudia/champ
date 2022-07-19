@@ -8,7 +8,7 @@
       use elec, only: ndn, nup
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, ndetiab, k_det, ndet_req
       use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use ycompact, only: dymat, ymat
       use zcompact, only: aaz, dzmat, emz, zmat
       use coefs, only: norb

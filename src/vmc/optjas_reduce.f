@@ -7,7 +7,7 @@ c Written by Claudia Filippi
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj
       use gradhessj, only: dj_dj_e, dj_e, dj_e2

@@ -41,7 +41,7 @@ subroutine inputcsf
     use ci000, only: nciprim, nciterm
 
     ! are they needed ??!!
-    use optwf_contrl, only: ioptci
+    use optwf_control, only: ioptci
     implicit none
 
 

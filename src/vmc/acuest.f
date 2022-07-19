@@ -22,7 +22,7 @@ c routine to accumulate estimators for energy etc.
       use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum, wsum
       use multidet, only: kref
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq

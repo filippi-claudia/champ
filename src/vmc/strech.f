@@ -29,7 +29,7 @@ c rigidly with that nucleus
       use pcm_ameta, only: eta
       use pcm_pot, only: penups, penupv
       use pcm_inda, only: inda
-      use optwf_contrl, only: ioptwf
+      use optwf_control, only: ioptwf
       use contrl_file, only: ounit
       use matinv_mod, only: matinv
       use error, only: fatal_error

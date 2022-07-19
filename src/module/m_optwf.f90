@@ -1,4 +1,4 @@
-module optwf_contrl
+module optwf_control
     !> Arguments: ioptci, ioptjas, ioptorb, idl_flag, ilbfgs_flag, ilbfgs_m, nparm,
     !>            nopt_iter, micro_iter_sr, energy_tol,
     !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j,
@@ -55,7 +55,7 @@ module optwf_contrl
     public :: dl_alg, dl_mom
     save
 
-end module optwf_contrl
+end module optwf_control
 
 module optwf_corsam
     !> Arguments: add_diag, add_diag_tmp, energy, energy_err, force, force_err

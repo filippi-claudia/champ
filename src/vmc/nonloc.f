@@ -8,7 +8,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use vmc_mod, only: norb_tot
       use system, only: iwctype, ncent, ncent_tot
       use jastrow_update, only: fso
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use Bloc, only: b_dj
       use coefs, only: norb
@@ -380,7 +380,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use basis_fns_mod, only: basis_fns
       use pw_orbitals_e, only: orbitals_pwe
       use method_opt, only: method
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use vmc_mod, only: norb_tot
       use system, only: nelec
       

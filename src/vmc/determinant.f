@@ -26,7 +26,7 @@ c Modified by A. Scemama
       use orbitals_mod, only: orbitals
       use set_input_data, only: multideterminants_define
       use optorb_f_mod, only: optorb_define
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use coefs, only: norb
       use orbval, only: nadorb
       use vmc_mod, only: norb_tot
@@ -215,7 +215,7 @@ c-----------------------------------------------------------------------
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb, da_dorb
       use derivjas, only: g
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use Bloc, only: b_da
       use Bloc, only: b_dj

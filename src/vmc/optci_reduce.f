@@ -4,7 +4,7 @@
 
       use precision_kinds, only: dp
       use optci, only: mxciterm, mxcireduced, ncimatdim
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
       use ci000, only: nciterm

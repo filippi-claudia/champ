@@ -13,7 +13,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r
       use jaspar6, only: cutjas
       use jaspointer, only: npoint, npointa
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc

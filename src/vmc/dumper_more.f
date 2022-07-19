@@ -22,7 +22,7 @@ c job where it left off
       use estsum, only: acc, esum, pesum, r2sum, tjfsum, tpbsum
       use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum, wsum
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use multiple_geo, only: iwftype, nwftype

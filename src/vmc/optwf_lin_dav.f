@@ -5,9 +5,9 @@
       use sr_mod, only: mparm
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+      use optwf_control, only: nvec, nvecx, alin_adiag, alin_eps
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, sigma
       use orbval, only: nadorb
       use optwf_func, only: ifunc_omega, omega, omega0, n_omegaf, n_omegat

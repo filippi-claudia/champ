@@ -3,7 +3,7 @@
       subroutine verify_orbitals
 
       use dets, only: ndet
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use coefs, only: norb
       use dorb_m, only: iworbd
       use orbval, only: nadorb, ndetorb, orb

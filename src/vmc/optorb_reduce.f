@@ -5,7 +5,7 @@
       use optorb_mod, only: nmatdim
       use csfs, only: nstates
       use optorb_cblock, only: norbterm
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum

@@ -793,7 +793,7 @@ subroutine read_csf_file(file_determinants)
     use dets, only: ndet, cdet
 !   Not sure about the following two lines
     use ci000, only: nciprim, nciterm
-    use optwf_contrl, only: ioptci
+    use optwf_control, only: ioptci
     use general, only: pooldir
     use method_opt, only: method
     use precision_kinds, only: dp
