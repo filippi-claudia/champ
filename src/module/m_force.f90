@@ -98,27 +98,6 @@ end module multiple_geo
 
  end module forcest
 
- module forcestr
-     !> Arguments: delc
-     use precision_kinds, only: dp
-
-     implicit none
-
-     real(dp), dimension(:, :, :), allocatable :: delc !(3,MCENT,MFORCE)
-
-     private
-     public   ::  delc
-!     public :: allocate_forcestr
-     public :: deallocate_forcestr
-     save
- contains
-
-     subroutine deallocate_forcestr()
-         if (allocated(delc)) deallocate (delc)
-     end subroutine deallocate_forcestr
-
- end module forcestr
-
  module forcewt
      !> Arguments: wcum, wsum
      use multiple_geo, only: MFORCE
