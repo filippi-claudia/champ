@@ -537,12 +537,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use atom, only: iwctype, ncent, ncent_tot
 
-      use jaspar, only: sspinn
       use const, only: nelec
       use da_jastrow4val, only: da_j
       use elec, only: nup
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: isc
       use contrl_per, only: iperiodic
       use const, only: nelec
       use force_analy, only: iforce_analy
@@ -550,6 +548,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use nonlpsi, only: psibnl, dpsibnl, psinl, psianl, dpsianl
       use pw_find_image, only: find_image3
       use scale_dist_mod, only: scale_dist, scale_dist1
+      use jastrow, only: sspinn, isc
 
       implicit none
 

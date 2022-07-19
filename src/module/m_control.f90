@@ -39,21 +39,6 @@ module control_dmc
 end module control_dmc
 
 
-module contr2
-    !> Arguments: ianalyt_lap, ijas, isc, istrch
-
-    implicit none
-
-    integer :: ijas
-    integer :: isc
-    integer :: ianalyt_lap
-    integer :: istrch
-
-    private
-    public :: ianalyt_lap, ijas, isc, istrch
-    save
-end module contr2
-
 module contr3
     !> Arguments: mode
 

@@ -11,7 +11,6 @@ use m_force,  only: allocate_m_force,  deallocate_m_force
 use m_gradhess,  only: allocate_m_gradhess,  deallocate_m_gradhess
 use m_grdnt,  only: allocate_m_grdnt,  deallocate_m_grdnt
 use m_grid,  only: allocate_m_grid,  deallocate_m_grid
-use m_jastrow,  only: allocate_m_jastrow,  deallocate_m_jastrow
 use m_mixderiv,  only: allocate_m_mixderiv,  deallocate_m_mixderiv
 use m_mmpol,  only: allocate_m_mmpol,  deallocate_m_mmpol
 use m_mstates,  only: allocate_m_mstates,  deallocate_m_mstates
@@ -24,6 +23,7 @@ use m_pseudo,  only: allocate_m_pseudo,  deallocate_m_pseudo
 use m_sampling,  only: allocate_m_sampling,  deallocate_m_sampling
 use m_sr,  only: allocate_m_sr,  deallocate_m_sr
 use m_state_avrg,  only: allocate_m_state_avrg,  deallocate_m_state_avrg
+use jastrow,  only: allocate_m_jastrow,  deallocate_m_jastrow
 
 implicit none
 public

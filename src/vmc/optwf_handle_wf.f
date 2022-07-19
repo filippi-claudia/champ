@@ -59,14 +59,13 @@ c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
 
       use atom, only: nctype
-      use jaspar, only: nspin1, nspin2
-      use jaspar3, only: b, c, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar4, only: norda, nordb, nordc
       use bparm, only: nspin2b
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
-      use contr2, only: ianalyt_lap, ijas, isc
       use precision_kinds, only: dp
+      use jastrow, only: a4, b, c, scalek, ijas, isc
+      use jastrow, only: nspin1, nspin2, ianalyt_lap
 
       implicit none
 
@@ -278,12 +277,11 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow
 
       use precision_kinds, only: dp
-      use vmc_mod, only: nordj1
       use atom, only: nctype, nctype_tot
       use wfsec, only: nwftype
-      use jaspar3, only: b, c
-      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar4, only: norda, nordb, nordc
       use bparm, only: nspin2b
+      use jastrow, only: a4, nordj1, b, c
 
       implicit none
 
@@ -465,9 +463,9 @@ c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
 
       use atom, only: nctype
-      use jaspar3, only: b, c, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar4, only: norda, nordb, nordc
       use bparm, only: nspin2b
+      use jastrow, only: a4, b, c, scalek
 
       implicit none
 
@@ -560,12 +558,11 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
       use precision_kinds, only: dp
-      use vmc_mod, only: nordj1
       use atom, only: nctype, nctype_tot
       use wfsec, only: nwftype
-      use jaspar3, only: b, c
-      use jaspar4, only: a4, norda, nordb, nordc
+      use jaspar4, only: norda, nordb, nordc
       use bparm, only: nspin2b
+      use jastrow, only: a4, nordj1, b, c
 
       implicit none
 
@@ -767,8 +764,6 @@ c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
       use atom, only: nctype
-      use jaspar3, only: b, c
-      use jaspar4, only: a4
       use bparm, only: nspin2b
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
@@ -776,6 +771,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use cuspinit4_mod, only: cuspinit4
       use cuspexact4_mod, only: cuspexact4
+      use jastrow, only: a4, b, c
 
       implicit none
 
@@ -922,13 +918,12 @@ c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
 
       use atom, only: nctype
-      use jaspar3, only: b, scalek
-      use jaspar4, only: a4
       use bparm, only: nspin2b
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
+      use jastrow, only: a4, b, scalek
 
       implicit none
 

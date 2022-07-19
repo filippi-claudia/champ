@@ -4,25 +4,21 @@
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
-      use vmc_mod, only: nordj
       use atom, only: iwctype, ncent
-      use jaspar, only: sspinn
       use const, only: nelec
       use elec, only: nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-      use jaspar3, only: b, c
-      use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb
+      use jaspar4, only: norda, nordb, nordc
       use jaspar6, only: cutjas
       use wfsec, only: iwf
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: ijas
-      use contr2, only: isc
       use jasn, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
       use scale_dist_mod, only: scale_dist1, scale_dist2
       use scale_dist_mod, only: switch_scale1, switch_scale2
+      use jastrow, only: a4, nordj, asymp_jasa, asymp_jasb, sspinn
+      use jastrow, only: b, c, ijas, isc
 
       implicit none
 

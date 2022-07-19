@@ -1,5 +1,6 @@
 module parser_mod
 use error, only: fatal_error
+implicit none
 contains
 subroutine parser
   !> This subroutine parses the input file using the modified libfdf parser
@@ -41,13 +42,11 @@ subroutine parser
   use optorb_mod,     	only: mxreduced
   use optci,          	only: mxciterm
   use mstates_mod,      only: MSTATES
-  use vmc_mod,          only: nordj, nordj1, neqsx
   use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
   use vmc_mod, 		      only: norb_tot, mterms
   use atom, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-  use jaspar, 		      only: nspin1, nspin2, is
   use ghostatom, 	      only: newghostype, nghostcent
   use const, 		        only: etrial, delta, deltai, fbias, nelec, imetro, ipr
   use constants, only: hb
@@ -59,10 +58,13 @@ subroutine parser
   use forcepar, 	      only: nforce
   use grdntspar, 	      only: igrdtype, ngradnts
   use header, 		      only: title
-  use jaspar3, 		      only: b, c, scalek
-  use jaspar4, 		      only: a4, norda, nordb, nordc
-  use jaspar6, 		      only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
-  use jaspar6, 		      only: cutjas, cutjasi, allocate_jaspar6
+  use jastrow, 		      only: nspin1, nspin2, is
+  use jastrow, 		      only: a4, b, c, scalek, asymp_jasa, asymp_jasb, allocate_jaspar6
+  use jastrow,          only: neqsx, nordj, nordj1
+  use jastrow, 		      only: ianalyt_lap, ijas, isc
+  use jaspar4, 		      only: norda, nordb, nordc
+  use jaspar6, 		      only: asymp_r, c1_jas6, c1_jas6i, c2_jas6
+  use jaspar6, 		      only: cutjas, cutjasi 
   use numbas, 		      only: numr
   use numbas1, 		      only: nbastyp
   use numbas2, 		      only: ibas0, ibas1
@@ -81,8 +83,6 @@ subroutine parser
   use coefs, 		        only: coef, nbasis, norb, next_max
   use optorb,           only: irrep
   use const2, 		      only: deltar, deltat
-  use contr2, 		      only: ianalyt_lap, ijas
-  use contr2, 		      only: isc
   use contrldmc, 	      only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
   use contrldmc, 	      only: itau_eff, nfprod, rttau, tau
 
@@ -193,7 +193,7 @@ subroutine parser
   use multidet,         only: kref_fixed
 
   use precision_kinds,  only: dp
-      use constants, only: pi
+  use constants, only: pi
 ! Note the following modules are new additions
 
 !

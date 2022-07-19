@@ -3,19 +3,17 @@
       function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use vmc_mod, only: nordj
-      use jaspar3, only: c
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
       use optwf_wjas, only: iwjasc
       use wfsec, only: iwf
-      use contr2, only: ijas
 
       use vardep, only: cdep, iwdepend, nvdepend
 
       use cuspmat4, only: d, iwc4
       use precision_kinds, only: dp
       use scale_dist_mod, only: switch_scale
+      use jastrow, only: nordj, c, ijas
       implicit none
 
       integer :: id, ideriv, iparm, it, jj
@@ -120,13 +118,13 @@ c-----------------------------------------------------------------------
       function deriv_psianl(rri,gn,it)
 
 
-      use jaspar4, only: a4, norda
-      use jaspar6, only: asymp_jasa, asymp_r
+      use jaspar4, only: norda
+      use jaspar6, only: asymp_r
       use optwf_nparmj, only: nparma
       use optwf_wjas, only: iwjasa
       use wfsec, only: iwf
-      use contr2, only: ijas
       use precision_kinds, only: dp
+      use jastrow, only: a4, asymp_jasa, ijas
       implicit none
 
       integer :: i, iord, it, jparm
@@ -179,16 +177,14 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
 c-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar)
 
-      use jaspar, only: sspinn
-      use jaspar3, only: b
 
       use jaspar4, only: nordb
-      use jaspar6, only: asymp_jasb, asymp_r
+      use jaspar6, only: asymp_r
       use optwf_nparmj, only: nparmb
       use optwf_wjas, only: iwjasb
       use wfsec, only: iwf
-      use contr2, only: ijas
       use precision_kinds, only: dp
+      use jastrow, only: asymp_jasb, sspinn, b, ijas
       implicit none
 
       integer :: i, iord, ipar, isb, jparm

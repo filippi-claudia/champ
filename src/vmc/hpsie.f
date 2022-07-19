@@ -8,7 +8,6 @@ c Written by Claudia Filippi by modifying hpsi
       use estpsi, only: apsi, aref
       use multidet, only: kref
       use wfsec, only: iwf, iwftype
-      use contr2, only: ianalyt_lap
       use velocity_jastrow, only: vjn
       use multislatern, only: detn
       use distance_mod, only: r_en, rvec_en
@@ -21,6 +20,7 @@ c Written by Claudia Filippi by modifying hpsi
       use determinante_mod, only: determinante
       use multideterminante_mod, only: multideterminante
       use determinante_psit_mod, only: determinante_psit
+      use jastrow, only: ianalyt_lap
 
       implicit none
 

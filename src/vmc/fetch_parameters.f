@@ -33,13 +33,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_jastrow(p,n)
       use atom, only: nctype
-      use jaspar3, only: b, c
 
-      use jaspar4, only: a4
       use optwf_contrl, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
+      use jastrow, only: a4, b, c
       implicit none
 
       integer :: i, ict, iparm, n

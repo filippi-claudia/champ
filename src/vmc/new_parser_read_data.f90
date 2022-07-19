@@ -487,24 +487,21 @@ subroutine read_jastrow_file(file_jastrow)
     use contrl_file,    only: ounit, errunit
 
     use force_mod,          only: MWF
-    use jaspar,             only: nspin1, nspin2
     use elec,               only: ndn
-    use jaspar3,            only: b, c, scalek
-    use jaspar4,            only: a4, norda, nordb, nordc
-    use vmc_mod,            only: nordj, nordj1, neqsx
-    use jaspar6,            only: cutjas, cutjasi, allocate_jaspar6
+    use jaspar4, only: norda, nordb, nordc
+    use jaspar6,            only: cutjas, cutjasi
     use bparm,              only: nocuspb, nspin2b
-    use contr2,             only: ijas
-    use contr2,             only: isc
     use inputflags,         only: ijastrow_parameter
     use wfsec,              only: nwftype
     use atom,               only: ncent, nctype
     use precision_kinds,    only: dp
     use contrl_per, 		only: iperiodic
-    use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
+    use jaspar6, 			only:  asymp_r, c1_jas6, c1_jas6i, c2_jas6
     use general,            only: pooldir
     use method_opt,         only: method
     use jastrow4_mod,       only: nterms4
+    use jastrow, only: neqsx, a4, nordj, nordj1, asymp_jasa, asymp_jasb
+    use jastrow, only: b, c, scalek, ijas, isc, nspin1, nspin2
     implicit none
 
     !   local use
@@ -1138,7 +1135,6 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
     use contrl_file,        only: ounit, errunit
     use atom,               only: nctype
-    use jaspar,             only: nspin1, is
     use jaspar4,            only: norda, nordb, nordc
     use jaspointer,         only: npoint, npointa
     use numbas,             only: numr
@@ -1147,11 +1143,10 @@ subroutine read_jasderiv_file(file_jastrow_der)
     use optwf_parms,        only: nparmj
     use optwf_wjas,         only: iwjasa, iwjasb, iwjasc, iwjasf
     use bparm,              only: nspin2b
-    use contr2,             only: ijas
-    use contr2,             only: isc
     use vmc_mod,            only: nctyp3x
     use atom,               only: nctype_tot
     use general,            only: pooldir
+    use jastrow, only: ijas, isc, nspin1, is
 
     implicit none
 
