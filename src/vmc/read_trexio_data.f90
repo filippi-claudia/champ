@@ -214,7 +214,7 @@ module trexio_read_data
         use trexio
         use contrl_file,        only: backend
 #endif
-        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering
+        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering, ao_radial_index
 
         implicit none
 
@@ -236,7 +236,6 @@ module trexio_read_data
         integer                         :: basis_num_shell
         integer, allocatable            :: basis_nucleus_index(:), ao_index(:), ao_frequency(:), unique_index(:)
         integer, allocatable            :: basis_shell_ang_mom(:), compare(:)
-        integer, allocatable            :: ao_ordering(:), ao_radial_index(:)
         integer, allocatable            :: local_array_s(:,:), local_array_p(:,:), local_array_d(:,:), local_array_f(:,:), local_array_g(:,:)
         real(dp), allocatable           :: unshuffled_coef(:,:,:)
 
@@ -298,11 +297,6 @@ module trexio_read_data
         if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
-        ! if (.not. allocated(ao_ordering))            allocate(ao_ordering(nbasis))
-        if (.not. allocated(ao_radial_index))        allocate(ao_radial_index(nbasis))
-        ! if (.not. allocated(champ_ao_ordering))      allocate(champ_ao_ordering(nbasis))
-
-
 
 
         ! Read the orbitals
@@ -314,10 +308,8 @@ module trexio_read_data
 #endif
         endif
         call bcast(trexio_has_group_orbitals)
-
-        print*, "trexio has orbital group :: ", trexio_has_group_orbitals
         call bcast(coef(:,:,1))
-        print*, "coeffs :: ", coef(:,:,1)
+
 
 !   Generate the basis information (which radial to be read for which Slm)
         if (wid) then
@@ -371,7 +363,7 @@ module trexio_read_data
                 index_ao = index_ao + 1
                 index_slm(index_ao) = sum(slm_per_l(1:k)) + 1 + count2
                 count2 = count2 + 1
-
+                write(*,'(a,3i3,a,i4,a,i4)') "l,k,ii", l,k,ii, "  index_slm(", index_ao, ") = ", index_slm(index_ao)
 
                 cum_ao_per_cent = cum_ao_per_cent + 1
             end do
@@ -385,12 +377,12 @@ module trexio_read_data
             if (count1 == basis_nucleus_index(l)) then
                 num_rad_per_cent(count1) = cum_rad_per_cent
                 do ii = 1, slm_per_l(k+1)
-                    ao_ordering = [ao_ordering, cum_rad_per_cent]
+                    ao_radial_index = [ao_radial_index, cum_rad_per_cent]
                 enddo
                 num_ao_per_cent(count1) = cum_ao_per_cent
             else
                 cum_rad_per_cent = 1
-                ao_ordering = [ao_ordering, cum_rad_per_cent]
+                ao_radial_index = [ao_radial_index, cum_rad_per_cent]
                 cum_ao_per_cent  = 1
                 count1 = count1 + 1
             end if
@@ -425,9 +417,9 @@ module trexio_read_data
         write(ounit,int_format) " Type of wave functions ", iwft
         write(ounit,*) "Orbital coefficients are written to the output.log file"
 
-        do j = 1, nbasis
-                write(ounit, '(10(f12.8,1x))') (coef(j, i, 1), i = 1, norb)
-        enddo
+        ! do j = 1, nbasis
+        !         write(ounit, '(10(f12.8,1x))') (coef(j, i, 1), i = 1, norb)
+        ! enddo
 
 
         write(ounit,*)

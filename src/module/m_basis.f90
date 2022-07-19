@@ -349,12 +349,13 @@ module m_trexio_basis
     integer, dimension(5)       :: slm_per_l = (/1, 3, 6, 10, 15/) !s,p,d,f,g
     integer, allocatable        :: index_slm(:)             !(nbasis)
     integer, allocatable        :: champ_ao_ordering(:)     !(nbasis)
+    integer, allocatable        :: ao_radial_index(:)       !(nbasis)
     integer, allocatable        :: num_rad_per_cent(:)      !(ncent_tot)
     integer, allocatable        :: num_ao_per_cent(:)       !(ncent_tot)
 
     private
     public :: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
-    public :: champ_ao_ordering
+    public :: champ_ao_ordering, ao_radial_index
     public :: gnorm
 
     contains

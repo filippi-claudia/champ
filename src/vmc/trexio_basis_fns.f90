@@ -23,7 +23,7 @@ module trexio_basis_fns_mod
       use splfit_mod, only: splfit
       use slm_mod, only: slm
 #if defined(TREXIO_FOUND)
-      use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
+      use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, ao_radial_index
 #endif
 
       use precision_kinds, only: dp
@@ -33,14 +33,15 @@ module trexio_basis_fns_mod
       integer :: iwlbas0, j, k, nrbasit, nbastypit, nlmbasit
       integer :: ie1, ie2, k0, l, l0, ll, ilm
 
-      real(dp), allocatable         :: y(:)
-      real(dp), allocatable         :: dy(:,:)
-      real(dp), allocatable         :: ddy(:,:,:)
-      real(dp), allocatable         :: ddy_lap(:)
-      real(dp), allocatable         :: dlapy(:,:)
+
+      real(dp)                      :: dy(3)
+      real(dp)                      :: ddy(3,3)
+      real(dp)                      :: dlapy(3)
 
       integer                       :: nlmbas(ncent_tot)
+      integer                       :: upper_range, lower_range, count1, count2, count3
 
+      real(dp)                      :: y, ddy_lap
       real(dp)                      :: r, r2, ri, ri2
       real(dp)                      :: rvec_en(3, nelec, ncent_tot)
       real(dp)                      :: r_en(nelec, ncent_tot)
@@ -57,22 +58,20 @@ module trexio_basis_fns_mod
       nlmbas = 0
 
 #if defined(TREXIO_FOUND)
-      l=0
+
+      lower_range = 1; count1 = 1
+      print*, "num_rad_per_cent, num_ao_per_cent", num_rad_per_cent, num_ao_per_cent
 !     loop through centers
       do ic=1,ncent+nghostcent
+        upper_range = lower_range + num_ao_per_cent(ic) -1
+
+        print*, "lower range", lower_range, "upper range", upper_range
+
         it=iwctype(ic)
-        ! nlmbasit = nlmbas(it)
-        nbastypit = nbastyp(it)
-        print*, 'trexio_basis_fns: ic=', ic, ' it=', it, ' nbastypit=', nbastypit
+        nbastypit = num_ao_per_cent(ic)
+        nrbasit   = num_rad_per_cent(ic)
+        write(*,'(5(a,i4))') 'trexio_basis_fns: ic=', ic, ' it=', it, ' nbastypit=', nbastypit, "nrbasit", nrbasit
 
-        allocate (y(nbastypit))
-        allocate (dy(3,nbastypit))
-        allocate (ddy(3,3,nbastypit))
-        allocate (ddy_lap(nbastypit))
-        allocate (dlapy(3,nbastypit))
-
-
-        l0=l
 
 !     numerical atomic orbitals
         do k=ie1,ie2
@@ -89,6 +88,7 @@ module trexio_basis_fns_mod
           ri2=ri*ri
 
           do irb=1,nrbasit
+            write(*,'((a,2i4))') 'it, irb', it, irb
           ! only evaluate for r <= rmax
           ! if (r <= rmax(irb,it)) then
             call splfit(r,irb,it,iwf,wfv(1,irb),ider)
@@ -98,47 +98,32 @@ module trexio_basis_fns_mod
             ! write(200,*) ic, k, irb, r, r2, ri, ri2, wfv(1,irb)
           enddo
 
-          do ilm=1,nbastypit
-              ! print*, "ilm, iwlbas0", ilm, index_slm(ilm)
-              ! call slm(index_slm(ilm),xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
-              call slm(ilm,xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
-          enddo
-
-          ! do ilm=1,nlmbasit
-          !   call slm(iwlbas0,xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
-          ! enddo
+          l = 1
+          do ilm=lower_range, upper_range
+              print*, "l =", l, "ilm =", ilm, "index_slm(ilm)", index_slm(ilm)
+              call slm(index_slm(ilm),xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
 
 !     compute sml and combine to generate molecular orbitals
-           l=l0
-
-           do j=1,nbastypit
-              l=l+1
-              irb=iwrwf(j,it)
-              ilm=iwlbas(j,it)
-
-              call trexio_phi_combine(iwlbas0,xc,ri,ri2,wfv(:,irb), &
-                                y(ilm), &
-                                dy(:,ilm), &
-                                ddy(:,:,ilm), &
-                                ddy_lap(ilm), &
-                                dlapy(:,ilm), &
+              irb = ao_radial_index(ilm)
+              call trexio_phi_combine(index_slm(ilm),xc,ri,ri2,wfv(1,irb), &
+                                y, &
+                                dy, &
+                                ddy, &
+                                ddy_lap, &
+                                dlapy, &
                                 phin(l,k), &
                                 dphin(l,k,:), &
                                 d2phin(l,k), &
-                                d2phin_all(:,:,l,k), &
-                                d3phin(:,l,k), &
+                                d2phin_all(1,1,l,k), &
+                                d3phin(1,l,k), &
                                 ider)
               call n0_inc(l,k,ic)
-           enddo
+              l = l + 1
+          enddo
 
         enddo ! loop over electrons
 
-        deallocate (y)
-        deallocate (dy)
-        deallocate (ddy)
-        deallocate (ddy_lap)
-        deallocate (dlapy)
-
+        lower_range = upper_range + 1
       enddo ! loop over all atoms
 #endif
       return

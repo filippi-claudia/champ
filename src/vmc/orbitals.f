@@ -286,6 +286,12 @@ c-------------------------------------------------------------------------------
       use basis_fns_mod, only: basis_fns
       use pw_orbitals, only: orbitals_pw_grade
 
+#if defined(TREXIO_FOUND)
+      use trexio_basis_fns_mod, only: trexio_basis_fns
+      use trexio_read_data, only: trexio_has_group_orbitals
+#endif
+
+
       implicit none
 
       integer :: iel, ier, ider, iflag, iorb, m
@@ -324,7 +330,12 @@ c get basis functions for electron iel
 
             ider=1
             if(iflag.gt.0) ider=2
-            call basis_fns(iel,iel,rvec_en,r_en,ider)
+
+            if (trexio_has_group_orbitals) then
+              call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
+            else
+              call basis_fns(iel,iel,rvec_en,r_en,ider)
+            endif
 
 !     Vectorization dependent code. useful for AVX512 and AVX2
 #ifdef VECTORIZATION

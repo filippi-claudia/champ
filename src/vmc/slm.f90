@@ -65,6 +65,7 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
      dlapy = 0.d0        ! dlapy(1:3) = 0.0
      ddy = 0.d0          ! ddy(1:3,1:3) = 0.0
 
+     print*, "l as it enters slm = ", l
 
      if (ider.ne.3) then
 
@@ -332,7 +333,7 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
                     return
 
                case default
-                    stop 'Ylm: AOs of type s, p, d, f and g are implemented only'
+                    stop '(ider .ne. 3) Ylm: AOs of type s, p, d, f and g are implemented only'
           end select
 
      elseif (ider .eq. 3) then
@@ -726,7 +727,7 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
                     return
 
                case default
-                    stop 'Ylm: AOs of type s, p, d, f and g are implemented only'
+                    stop '(ider .eq. 3) Ylm: AOs of type s, p, d, f and g are implemented only'
           end select
 
      endif
