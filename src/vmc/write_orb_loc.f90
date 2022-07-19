@@ -16,7 +16,7 @@
       use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
       use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       use error, only: fatal_error
 
       use precision_kinds, only: dp

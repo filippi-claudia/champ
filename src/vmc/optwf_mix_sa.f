@@ -22,16 +22,16 @@
       use optwf_contrl, only: sr_tau, sr_adiag, sr_eps
       use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       use error, only: fatal_error
-      use optwf_handle_wf,only: save_nparms, write_wf, restore_wf
-      use optwf_handle_wf,only: set_nparms, save_wf, compute_parameters
-      use optwf_handle_wf,only: test_solution_parm, save_ci_best
-      use optwf_handle_wf,only: restore_ci_best, set_nparms_tot
+      use optwf_handle_wf, only: save_nparms, write_wf, restore_wf
+      use optwf_handle_wf, only: set_nparms, save_wf, compute_parameters
+      use optwf_handle_wf, only: test_solution_parm, save_ci_best
+      use optwf_handle_wf, only: restore_ci_best, set_nparms_tot
       use optgeo_lib, only: write_geometry, compute_positions
       use optwf_lin_dav_extra, only: select_ci_root
-      use optwf_lin_dav_more,  only: lin_d
+      use optwf_lin_dav_more, only: lin_d
       use sr_more, only: dscal
       implicit none
       interface
@@ -293,7 +293,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use dets, only: cdet, ndet
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 

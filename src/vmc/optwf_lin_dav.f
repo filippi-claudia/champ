@@ -16,11 +16,11 @@
       use force_analy, only: iforce_analy, alfgeo
       use method_opt, only: method
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
-      use optwf_handle_wf,only: set_nparms_tot, save_nparms, write_wf
-      use optwf_handle_wf,only: set_nparms, save_wf, compute_parameters
-      use optwf_handle_wf,only: test_solution_parm
+      use optwf_handle_wf, only: set_nparms_tot, save_nparms, write_wf
+      use optwf_handle_wf, only: set_nparms, save_wf, compute_parameters
+      use optwf_handle_wf, only: test_solution_parm
       use error, only: fatal_error
       use optgeo_lib, only: write_geometry, compute_positions
       use sr_more, only: dscal

@@ -2,7 +2,7 @@
       contains
       subroutine setrn(iseed)
 
-      use rnyucm, only : switch_rng
+      use rnyucm, only: switch_rng
       implicit none
 
       integer, intent(in) :: iseed(4)
@@ -34,7 +34,7 @@ c Uses 48 bits, rather than the usual 32 bits.
 c----------------------------------------------
       subroutine setrn_rannyu_std(iseed)
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer, intent(in) :: iseed(4)

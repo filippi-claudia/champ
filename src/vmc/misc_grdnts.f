@@ -15,7 +15,7 @@ c   energy gradients (cartesian).
       use grdntsmv, only: igrdaidx, igrdcidx
 
       use grdntspar, only: delgrdxyz, ngradnts
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: ig
@@ -51,7 +51,7 @@ c   energy gradients (z matrix/internal).
       use grdntsmv, only: igrdaidx, igrdcidx
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: ig, na, nb, nc, nd
@@ -95,7 +95,7 @@ c   calculated using correlated smapling.
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdxyz, ngradnts
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -165,7 +165,7 @@ c   calculated using correlated smapling.
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -323,7 +323,7 @@ c   using Z matrix (internal) coordinates
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda
       use zmatrix, only: czcart, czint, czcart_ref, izcmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -372,7 +372,7 @@ c   information regarding the Z matrix.
       subroutine inpwrt_zmatrix()
       use atom, only: iwctype, ncent
       use zmatrix, only: czcart, czint, izcmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: ic, k
@@ -416,7 +416,7 @@ c   from energy differences  calculated using correlated smapling.
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -573,7 +573,7 @@ c -----------------------------------------------------------------------
       use grdntsmv, only: igrdmv
       use zmatrix, only: czint, czcart_ref, izcmat
       use force_analy, only: iuse_zmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 

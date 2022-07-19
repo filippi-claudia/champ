@@ -29,7 +29,7 @@ c written by Claudia Filippi
       ! I think that's needed
       use gradhess_all, only: grad, h, s
       use optwf_corsam, only: add_diag
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use optwf_handle_wf, only: write_wf_best, save_wf_best
       use optwf_handle_wf, only: save_wf, write_wf, set_nparms
       use optwf_handle_wf, only: restore_wf, test_solution_parm
@@ -535,7 +535,7 @@ c-----------------------------------------------------------------------
       subroutine check_length_run(iter,increase_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
 
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: increase_nblk, iter, nblk, nblk_max, nblk_new
@@ -591,7 +591,7 @@ c-----------------------------------------------------------------------
 
       use optwf_corsam, only: add_diag, energy, force, force_err
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use optwf_lib, only: chlsky, lxb, uxb
       use read_bas_num_mod, only: read_bas_num
       implicit none
@@ -700,10 +700,10 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use gradhess_all, only: h, s
       use ci000, only: nciterm
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use method_opt, only: method
       use optorb_cblock, only: nreduced
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, i0, is, ishift, j

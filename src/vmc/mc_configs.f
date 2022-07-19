@@ -10,7 +10,7 @@
       !use contrl, only: irstar, isite, nconf_new, icharged_atom
       use control_vmc, only: vmc_irstar, vmc_isite, vmc_nconf_new, vmc_icharged_atom
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       use precision_kinds, only: dp
       use rannyu_mod, only: savern, setrn, rannyu
       use sites_mod, only: sites

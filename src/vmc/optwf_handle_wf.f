@@ -1,6 +1,6 @@
       module optwf_handle_wf
       use error, only: fatal_error
-      use jastrow4_mod,       only: nterms4
+      use jastrow4_mod, only: nterms4
       interface ! LAPACK interface
         SUBROUTINE dcopy(N,DX,INCX,DY,INCY)
 !*  -- Reference BLAS level1 routine --
@@ -928,7 +928,7 @@ c-----------------------------------------------------------------------
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -964,9 +964,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine test_solution_parm(nparm,dparm,
      &              dparm_norm,dparm_norm_min,add_diag,iflag)
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -998,7 +998,7 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
       use ci000, only: nciterm
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use orbval, only: nadorb
       implicit none
 
@@ -1050,7 +1050,7 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
       use method_opt, only: method
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i0

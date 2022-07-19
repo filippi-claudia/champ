@@ -14,8 +14,8 @@ c Written by Claudia Filippi
       use velratio, only: fratio
       use mpi
       use prop_reduce_mod, only: prop_send, prop_recv
-      use mmpol_reduce_mod,only: mmpol_send, mmpol_recv
-      use pcm_reduce_mod,  only: pcm_send, pcm_recv
+      use mmpol_reduce_mod, only: mmpol_send, mmpol_recv
+      use pcm_reduce_mod, only: pcm_send, pcm_recv
 
       implicit none
 

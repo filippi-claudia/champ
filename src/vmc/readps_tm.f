@@ -20,16 +20,16 @@ c Modified by F. Schautz to use fancy file names
       use pseudo_mod, only: MPS_GRID
       use vmc_mod, only: NCOEF
       use atom, only: znuc, nctype
-      use const, only: ipr
       use pseudo_tm, only: arg, d2pot, nr_ps, r0, rmax, vpseudo
       use pseudo, only: lpot, nloc, vps
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
       use general, only: pooldir, pp_id
       use general, only: filename, filenames_ps_tm
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use spline2_mod, only: spline2
       use rotqua_mod, only: gesqua
+      use control, only: ipr
       implicit none
 
       integer :: i, ic, icoef, ii, index

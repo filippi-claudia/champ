@@ -36,7 +36,7 @@ c-----------------------------------------------------------------------
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
       use efield, only: iscreen, ncharges
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 

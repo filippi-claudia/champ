@@ -18,9 +18,9 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
     use davidson, only: fun_mtx_gemv, fun_stx_gemv
     use array_utils, only: eye, write_matrix, write_vector
     use mpi
-    use contrl_file,    only: ounit, errunit
-    use error,          only: fatal_error
-    use optwf_lin_dav_extra,  only: s_psi_lin_d
+    use contrl_file, only: ounit, errunit
+    use error, only: fatal_error
+    use optwf_lin_dav_extra, only: s_psi_lin_d
 
     IMPLICIT NONE
 

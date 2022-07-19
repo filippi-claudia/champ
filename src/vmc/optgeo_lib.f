@@ -45,7 +45,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         use force_fin, only: da_energy_ave
         use zmatrix, only: czint, izcmat
         use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: ic, k

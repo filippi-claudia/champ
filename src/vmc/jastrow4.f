@@ -23,7 +23,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use force_analy, only: iforce_analy
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, ic, ij, im1, iord

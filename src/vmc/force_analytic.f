@@ -8,7 +8,7 @@
       use da_energy_now, only: da_psi
       use atom, only: ncent_tot
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, ic, k

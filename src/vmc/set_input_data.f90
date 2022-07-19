@@ -12,7 +12,7 @@ subroutine inputzex
     use contrl_per, only: iperiodic
     use wfsec, only: nwftype
     use method_opt, only: method
-    use precision_kinds,    only: dp
+    use precision_kinds, only: dp
       implicit none
 
       integer :: i, iwft
@@ -382,7 +382,7 @@ subroutine inputforces
     use wfsec, only: iwftype, nwftype
     use contrl_file, only: errunit
     use atom, only: ncent
-    use precision_kinds,    only: dp
+    use precision_kinds, only: dp
 
     implicit none
     integer             :: i
@@ -412,7 +412,7 @@ subroutine inputdet()
 !    use mstates_mod, only: MSTATES
     use wfsec, only: nwftype
     use method_opt, only: method
-    use precision_kinds,    only: dp
+    use precision_kinds, only: dp
 
     implicit none
     integer             :: iwft, k
@@ -437,7 +437,7 @@ subroutine inputlcao()
     use coefs, only: coef, nbasis, norb
     use wfsec, only: nwftype
     use method_opt, only: method
-    use precision_kinds,    only: dp
+    use precision_kinds, only: dp
 
     implicit none
     integer             :: iwft, i,j
@@ -470,8 +470,8 @@ subroutine inputjastrow()
     use contr2, only: isc
     use wfsec, only: nwftype
     use atom, only: ncent, nctype
-    use precision_kinds,    only: dp
-    use jastrow4_mod,       only: nterms4
+    use precision_kinds, only: dp
+    use jastrow4_mod, only: nterms4
 
       implicit none
 
@@ -522,7 +522,7 @@ subroutine set_displace_zero(nforce_tmp)
     use pcm_parms, only: ch, nchs
 
     use atom, only: ncent
-    use precision_kinds,    only: dp
+    use precision_kinds, only: dp
 
     implicit none
     integer         :: i, j, nforce_tmp
@@ -568,7 +568,7 @@ subroutine hessian_zmat_define
 
     use grdnthes, only: hessian_zmat
     use atom, only: ncent
-    use precision_kinds,    only: dp
+    use precision_kinds, only: dp
 
     implicit none
 

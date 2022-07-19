@@ -62,7 +62,7 @@ module coords_int
   !! @param connectivities connectivities in z-Matrix format
   !!
   subroutine coords_init (ncent, cart_coords, connectivities)
-    use contrl_file,    only: ounit
+    use contrl_file, only: ounit
     use optgeo_hessian
 
     integer, intent(in) :: ncent
@@ -144,7 +144,7 @@ module coords_int
   !! @param connectivities connectivities as specified in a z-Matrix
   !!
   subroutine coords_compute_wilson (cart_coords, connectivities)
-    use contrl_file,    only: ounit
+    use contrl_file, only: ounit
     use misc_bond_func, only: cross_product
 
     real(kind=8), dimension(:,:), intent(in) :: cart_coords
@@ -322,7 +322,7 @@ module coords_int
   !! @param cart_gradient2d gradients of the cartesian coordinates (3,ncent)
   !!
   subroutine coords_transform_gradients (cart_gradients2d)
-    use contrl_file,    only: ounit
+    use contrl_file, only: ounit
 
     real(kind=8), dimension(:,:), intent(in) :: cart_gradients2d
 

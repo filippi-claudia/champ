@@ -5,7 +5,7 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use precision_kinds, only: dp
-      use const, only: etrial, ipr
+      use const, only: etrial
       use forcepar, only: nforce
       use contrldmc, only: idmc
       use contrldmc, only: nfprod
@@ -19,11 +19,12 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: ecm21_dmc, efcm21, egcm21
       use est2cm, only: ei3cm2, wcm21
       use est2cm, only: wfcm21, wgcm21
-      use contr3, only: mode
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       use acues1_gpop_mod, only: acues1_gpop
+      use control, only: ipr
+      use control, only: mode
       implicit none
 
       integer :: ifr, ipmod, nfpro

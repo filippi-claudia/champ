@@ -45,7 +45,7 @@ c job where it left off
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
 
       use strech_mod, only: strech

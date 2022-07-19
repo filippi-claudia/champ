@@ -38,7 +38,7 @@ c...........................................................
       use mmpol_pot, only: penu_dp, penu_q, peq_dp, peqq, u_self
       use mmpol_inds, only: inds_pol
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -242,7 +242,7 @@ c............................................................
       use mmpol_dipol, only: dipo
       use mmpol_pot, only: penu_dp
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, j
@@ -448,7 +448,7 @@ c............................................................
       use mmpol_pot, only: peq_dp
       use mmpol_fdc, only: screen1
       use mmpol_inds, only: inds_pol
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -568,7 +568,7 @@ c......................................................
       use mmpol_parms, only: nchmm
       use mmpol_pot, only: penu_dp, penu_q, pepol_dp, pepol_q, peq_dp, peqq, u_dd, u_self
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, nelec
@@ -884,7 +884,7 @@ c......................................................
       subroutine mmpol_matinv(a,nsub,determinant)
       use mmpol_mod, only: MCHMM
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, info, nsub

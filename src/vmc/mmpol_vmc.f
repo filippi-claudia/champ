@@ -4,7 +4,7 @@
 
       use mmpol_cntrl, only: immpol, immpolprt
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -55,7 +55,7 @@ c-----------------------------------------------------------------------
       use mmpol_parms, only: nchmm
       use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
       use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use mmpol, only: mmpol_dipoles
       implicit none

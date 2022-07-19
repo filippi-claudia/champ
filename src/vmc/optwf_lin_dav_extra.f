@@ -11,7 +11,7 @@
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -114,7 +114,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -199,7 +199,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -318,7 +318,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -447,7 +447,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj

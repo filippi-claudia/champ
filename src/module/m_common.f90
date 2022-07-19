@@ -679,7 +679,7 @@ contains
         use atom, only: ncent_tot
         use vmc_mod, only: norb_tot
         use qua, only: nquad
-        use contr3, only: mode
+        use control, only: mode
         if(index(mode,'dmc').ne.0) then
           if (.not. allocated(b_t)) allocate (b_t(norb_tot, nquad, ncent_tot, nelec))
         endif

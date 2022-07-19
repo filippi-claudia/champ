@@ -39,22 +39,22 @@ c job where it left off
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
       use mstates_ctrl, only: iguiding
       use inputflags, only: node_cutoff, eps_node_cutoff
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h
       use optorb_cblock, only: ns_current
       use precision_kinds, only: dp
 
       use optorb_f_mod, only: optorb_save, optorb_rstrt
-      use optci_mod,    only: optci_save, optci_rstrt
-      use optjas_mod,   only: optjas_dump, optjas_rstrt, optjas_save
-      use prop_vmc,     only: prop_save
-      use pcm_mod,      only: pcm_rstrt, pcm_dump
-      use nodes_distance_mod,   only: nodes_distance
+      use optci_mod, only: optci_save, optci_rstrt
+      use optjas_mod, only: optjas_dump, optjas_rstrt, optjas_save
+      use prop_vmc, only: prop_save
+      use pcm_mod, only: pcm_rstrt, pcm_dump
+      use nodes_distance_mod, only: nodes_distance
       use determinante_mod, only: compute_determinante_grad
       use error, only: fatal_error
-      use optorb_f_mod,   only: optorb_dump
-      use optci_mod,      only: optci_dump
+      use optorb_f_mod, only: optorb_dump
+      use optci_mod, only: optci_dump
       use nodes_distance_mod, only: rnorm_nodes_num
       use determinant_psig_mod, only: determinant_psig
       use hpsi_mod, only: hpsi

@@ -23,7 +23,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use bparm, only: nocuspb, nspin2b
       use contr2, only: ijas
       use contr2, only: isc
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use vardep, only: cdep, iwdepend, nvdepend
       use distance_mod, only: rshift, r_en, rvec_en
       use force_analy, only: iforce_analy

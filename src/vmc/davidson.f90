@@ -35,7 +35,7 @@ module davidson
                               lapack_qr, lapack_solver
     use array_utils, only: concatenate, initialize_subspace, norm, write_matrix, write_vector, &
                            eye, check_deallocate_matrix, check_deallocate_vector, modified_gram_schmidt, diag_mat
-    use contrl_file,    only: ounit, errunit
+    use contrl_file, only: ounit, errunit
     implicit none
 
     type davidson_parameters

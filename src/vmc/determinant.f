@@ -10,12 +10,10 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use const, only: ipr
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: kref, kchange, kref_fixed
       use dorb_m, only: iworbd
-      use contr3, only: mode
 
       use orbval, only: ddorb, dorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
@@ -34,6 +32,8 @@ c Modified by A. Scemama
       use coefs, only: norb
       use orbval, only: nadorb
       use vmc_mod, only: norb_tot
+      use control, only: mode
+      use control, only: ipr
 
       implicit none
 
@@ -145,7 +145,6 @@ c reshuffling determinants if the maximum number of iterations looking for kref 
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
-      use const, only: ipr
       use estpsi, only: detref
       use multidet, only: kref, kref_old, kchange
       use multislater, only: detiab, allocate_multislater
@@ -154,6 +153,7 @@ c-----------------------------------------------------------------------
       use dets, only: ndet
       use multideterminant_mod, only: idiff
       use error, only: fatal_error
+      use control, only: ipr
       implicit none
 
       integer :: iab, icheck, iflag, ipass

@@ -15,14 +15,14 @@ c nlo                 # of processors that should have nwalk_av_int walkers
 c nhi                 # of processors that should have nwalk_av_int+1 walkers
 c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
 
-      use const, only: ipr
       use mpiconf, only: idtask, nproc
       use branch, only: nwalk
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use move_walker, only: send_walker, recv_walker
       use walksav_det_mod, only: send_det, recv_det
       use walksav_jas_mod, only: send_jas, recv_jas
+      use control, only: ipr
       implicit none
 
       integer :: i, icomm, ido_again, ierr, ihi

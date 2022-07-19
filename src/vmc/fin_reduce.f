@@ -17,7 +17,7 @@ c MPI version written by Claudia Filippi
       use control_vmc, only: vmc_nstep
       use method_opt, only: method
       use mpi
-      use custom_broadcast,   only: bcast
+      use custom_broadcast, only: bcast
       use precision_kinds, only: dp
 
       use force_analytic, only: force_analy_fin
@@ -35,8 +35,8 @@ c MPI version written by Claudia Filippi
       use optx_orb_ci, only: optx_orb_ci_fin
       use optx_jas_orb, only: optx_jas_orb_fin
       use optx_jas_ci, only: optx_jas_ci_fin
-      use optorb_f_mod,only: optorb_fin
-      use optci_mod, only:optci_fin
+      use optorb_f_mod, only: optorb_fin
+      use optci_mod, only: optci_fin
       use optjas_mod, only: optjas_fin
       implicit none
 

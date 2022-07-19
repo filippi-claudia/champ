@@ -23,7 +23,6 @@ c rigidly with that nucleus
       use forcestr, only: delc
       use pcm_force, only: sch_s
       use wfsec, only: iwftype
-      use contr3, only: mode
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, nch, nchs
       use pcm_parms, only: nesph
@@ -32,11 +31,12 @@ c rigidly with that nucleus
       use pcm_pot, only: penups, penupv
       use pcm_inda, only: inda
       use optwf_contrl, only: ioptwf
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use matinv_mod, only: matinv
       use error, only: fatal_error
       use pot, only: pot_nn
       use pcm_mod, only: sigma_R
+      use control, only: mode
 
       implicit none
 

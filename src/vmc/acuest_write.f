@@ -14,15 +14,15 @@ c routine to write out estimators for energy etc.
       use forcepar, only: nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum
-      use contr3, only: mode
       !use contrl, only: nstep
-      use control_vmc, only:  vmc_nstep
+      use control_vmc, only: vmc_nstep
       use precision_kinds, only: i2b
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       use precision_kinds, only: dp
       use properties_mod, only: prop_prt
       use optci_mod, only: optci_prt
       use pcm_vmc, only: pcm_prt
+      use control, only: mode
       implicit none
 
       integer :: i, ieerr, iferr, ifr, index

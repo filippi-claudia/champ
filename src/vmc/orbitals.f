@@ -19,7 +19,7 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use const, only: nelec, ipr
+      use const, only: nelec
       use wfsec, only: iwf
       use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
       use coefs, only: coef, nbasis, norb
@@ -29,7 +29,7 @@ c Modified by A. Scemama
       use atom, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use grid3d_orbitals, only: spline_mo
       use grid3d_orbitals, only: lagrange_mos, lagrange_mos_grad, lagrange_mos_2
 #if defined(TREXIO_FOUND)
@@ -40,6 +40,7 @@ c Modified by A. Scemama
 
 
       use pw_orbitals, only: orbitals_pw
+      use control, only: ipr
       implicit none
 
       integer :: i, ier, ider, iorb, k, m

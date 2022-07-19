@@ -20,11 +20,11 @@ program main
     use contrl_file, only: init_logfile, init_procfile, close_files, initialize
     use allocation_mod, only: deallocate_vmc
     use optwf_mod, only: optwf
-    use mpiconf, only: wid      ! logical :: true only for mpirank=0
-    use precision_kinds,    only: dp
-    use contrl_file,    only: ounit
-    use mpitimer,    only: time, elapsed_time, time_start, time_check1, time_final
-    use parser_mod,  only: parser
+    use mpiconf, only: wid !, logical, true, only, for, mpirank, 0
+    use precision_kinds, only: dp
+    use contrl_file, only: ounit
+    use mpitimer, only: time, elapsed_time, time_start, time_check1, time_final
+    use parser_mod, only: parser
 
     implicit None
     integer :: ierr

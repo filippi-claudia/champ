@@ -9,7 +9,7 @@
       use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_cum, qopcm_cm2
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, iblk, iqopcm_err, ispcmerr, ivpcmerr

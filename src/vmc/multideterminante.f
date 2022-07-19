@@ -18,7 +18,7 @@
       use orbval, only: orb
       use multislater, only: detiab
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use matinv_mod, only: matinv
       use multideterminant_mod, only: compute_ymat
       implicit none

@@ -13,7 +13,7 @@
       use distance_mod, only: r_en, rshift, rvec_en
       use wfsec, only: iwf, iwftype
       use optwf_contrl, only: ioptci, ioptjas, ioptorb
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use distances_mod, only: distances
       use nonloc_pot_mod, only: nonloc_pot

@@ -12,7 +12,7 @@ c written by Claudia Filippi
       use sa_check, only: energy_all, energy_err_all
       use mpi
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       implicit none
 
       integer :: iab, ierr, istate

@@ -33,7 +33,6 @@ c job where it left off
       use step, only: rprob
       use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
       use mpiblk, only: iblk_proc
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
@@ -47,15 +46,16 @@ c job where it left off
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
 
       use dumper_gpop_mod, only: dumper_gpop
-      use mmpol,           only: mmpol_dump
-      use pcm_mod,         only: pcm_dump
-      use properties_mod,  only: prop_dump
-      use rannyu_mod,      only: savern
-      use strech_mod,      only: strech
+      use mmpol, only: mmpol_dump
+      use pcm_mod, only: pcm_dump
+      use properties_mod, only: prop_dump
+      use rannyu_mod, only: savern
+      use strech_mod, only: strech
+      use control, only: mode
       implicit none
 
       integer :: i, ib, ic, id, ierr

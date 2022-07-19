@@ -38,7 +38,7 @@ c...........................................................
       use pcm_fdc, only: feps, fs, rcol, rcolt
       use pcm_inda, only: inda
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -315,7 +315,7 @@ C     ***************************************************************
       use pcm_parms, only: iscov, nchs, nchs1
       use pcm_parms, only: ncopcm, nesph, nvopcm, re2
       use pcm_parms, only: xe, xpol, ye, ze
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use pcm_ameta, only: eta
       use pcm_fdc, only: fs, rcol, rcolt
       use precision_kinds, only: dp
@@ -554,7 +554,7 @@ c       and adds nuclei-qpol interactions
 c......................................................
       use pcm_cntrl, only: icall
       use pcm_parms, only: ch, nch, nchs
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use pcm_pot, only: penups, penupv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
       use pcm_3dgrid_mod, only: spline_pcm, pcm_extpot_ene_elec
@@ -726,7 +726,7 @@ c......................................................
       use pcm_fdc, only: feps
 
       use pcm_inda, only: inda
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -918,7 +918,7 @@ C     ***************************************************************
       use pcm_ameta, only: amdlg, eta
       use pcm_inda, only: inda
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use rannyu_mod, only: rannyu
 
       implicit none
@@ -1511,7 +1511,7 @@ c........................................................
       subroutine qpcm_matinv(a,nsub,determinant)
       use pcm, only: MCHS
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, info, nsub

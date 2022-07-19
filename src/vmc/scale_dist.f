@@ -14,7 +14,7 @@ c Written by Cyrus Umrigar
       use contr2, only: ijas
       use contr2, only: isc
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, iord, ipr, isp, it

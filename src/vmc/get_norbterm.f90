@@ -13,7 +13,7 @@ subroutine get_norbterm
     use dets, only: ndet
     use elec, only: ndn, nup
     use multidet, only: kref
-    use optorb_mix, only: norbopt, norbvirt , iwmix_virt
+    use optorb_mix, only: norbopt, norbvirt, iwmix_virt
     use coefs, only: norb, next_max
     use dorb_m, only: iworbd
     use optorb, only: irrep
@@ -24,7 +24,7 @@ subroutine get_norbterm
     use optorb_cblock, only: nreduced
     use orbval, only: nadorb, ndetorb, orb
     use optwf_contrl, only: ncore, no_active
-    use contrl_file,    only: ounit, errunit
+    use contrl_file, only: ounit, errunit
     use error, only: fatal_error
 
     implicit none

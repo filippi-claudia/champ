@@ -46,10 +46,10 @@ use optwf_contrl, only: idl_flag
 !        use contrl, only: nblk, nblk_max
         use control_vmc, only: vmc_nblk, vmc_nblk_max
         use method_opt, only: method
-        use contrl_file,    only: ounit
-        use optwf_handle_wf,only: set_nparms_tot, save_wf, write_wf
-        use optwf_handle_wf,only: compute_parameters, test_solution_parm
-        use optwf_handle_wf,only: save_nparms, set_nparms
+        use contrl_file, only: ounit
+        use optwf_handle_wf, only: set_nparms_tot, save_wf, write_wf
+        use optwf_handle_wf, only: compute_parameters, test_solution_parm
+        use optwf_handle_wf, only: save_nparms, set_nparms
         use fetch_parameters_mod, only: fetch_parameters
         use vmc_f_mod, only: vmc
         use sr_more, only: dscal

@@ -9,7 +9,7 @@
       use sr_mat_n, only: jefj, jfj, jhfj
       use sr_mat_n, only: obs_tot
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       use precision_kinds, only: dp
       implicit none
 

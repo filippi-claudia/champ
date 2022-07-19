@@ -101,7 +101,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
       use csfs, only: ccsf, ncsf
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use dets, only: cdet, ndet
       use optwf_contrl, only: ioptci
       use precision_kinds, only: dp

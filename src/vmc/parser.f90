@@ -12,15 +12,15 @@ subroutine parser
   use fdf               ! modified libfdf
 #if defined(TREXIO_FOUND)
   use trexio            ! trexio library for reading and writing hdf5 files
-  use contrl_file,      only: backend
+  use contrl_file, only: backend
 #endif
   use custom_broadcast, only: bcast
-  use mpiconf,          only: wid
-  use mpitimer,         only: elapsed_time
+  use mpiconf, only: wid
+  use mpitimer, only: elapsed_time
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
 ! CHAMP modules
-  use contr3,         	only: mode
+  use control,         	only: mode
   use contrl_file,    	only: file_input, file_output, file_error
   use contrl_file,    	only: iunit, ounit, errunit
   use allocation_mod, 	only: allocate_vmc, allocate_dmc
@@ -40,16 +40,17 @@ subroutine parser
   use properties,     	only: MAXPROP
   use optorb_mod,     	only: mxreduced
   use optci,          	only: mxciterm
-  use mstates_mod,      only: MSTATES
-  use vmc_mod,          only: nordj, nordj1, neqsx
-  use pcm,              only: MCHS
+  use mstates_mod, only: MSTATES
+  use vmc_mod, only: nordj, nordj1, neqsx
+  use pcm, only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
   use vmc_mod, 		      only: norb_tot, mterms
   use atom, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 		      only: nspin1, nspin2, is
   use ghostatom, 	      only: newghostype, nghostcent
-  use const, 		        only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+  use const, 		        only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro
+  use control,          only: ipr
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num
   use csfs, 		        only: cxdet, ncsf, nstates
@@ -71,14 +72,14 @@ subroutine parser
   use optwf_contrl, 	  only: iuse_orbeigv
   use optwf_contrl, 	  only: no_active
   use optwf_parms, 	    only: nparmj
-  use sr_mod,           only: i_sr_rescale, izvzb
+  use sr_mod, only: i_sr_rescale, izvzb
   use sa_weights, 	    only: iweight, nweight, weights
   use wfsec, 		        only: nwftype
   use zmatrix, 		      only: izmatrix
   use bparm, 		        only: nocuspb, nspin2b
   use casula, 		      only: i_vpsp, icasula
   use coefs, 		        only: coef, nbasis, norb, next_max
-  use optorb,           only: irrep
+  use optorb, only: irrep
   use const2, 		      only: deltar, deltat
   use contr2, 		      only: ianalyt_lap, ijas
   use contr2, 		      only: isc
@@ -96,8 +97,8 @@ subroutine parser
   use contrl_per, 	    only: iperiodic, ibasis
   use force_analy, 	    only: iforce_analy, iuse_zmat, alfgeo
   use force_dmc, 	      only: itausec, nwprod
-  use forcestr,         only: delc
-  use wfsec,            only: iwftype
+  use forcestr, only: delc
+  use wfsec, only: iwftype
   use pseudo, 		      only: nloc
   use optorb_cblock, 	  only: idump_blockav
   use gradjerrb, 	      only: ngrad_jas_blocks
@@ -117,7 +118,7 @@ subroutine parser
   use pcm_parms, 	      only: ncopcm, nscv, nvopcm
   use prp000, 		      only: iprop, ipropprt, nprop
   use pcm_fdc, 		      only: qfree, rcolv
-  use pcm_grid3d_contrl,only: ipcm_3dgrid
+  use pcm_grid3d_contrl, only: ipcm_3dgrid
   use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d, pcm_origin, pcm_endpt, allocate_pcm_grid3d_param
   use pcm_3dgrid, 	    only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED
   use prp003, 		      only: cc_nuc
@@ -135,8 +136,8 @@ subroutine parser
   use optwf_corsam, 	  only: add_diag
   use dmc_mod, 		      only: mwalk, set_mwalk
 
-  use optorb_mix,       only: norbopt, norbvirt
-  use optorb_cblock,    only: norbterm
+  use optorb_mix, only: norbopt, norbvirt
+  use optorb_cblock, only: norbterm
 
   use grdntspar, 	      only: delgrdxyz, igrdtype, ngradnts
   use grdntspar, 	      only: delgrdba, delgrdbl, delgrdda, ngradnts
@@ -145,10 +146,10 @@ subroutine parser
   use inputflags, 	    only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
   use inputflags, 	    only: ici_def, iforces, icsfs, icharge_efield
   use inputflags, 	    only: imultideterminants, imodify_zmat, izmatrix_check
-  use inputflags,       only: ioptorb_mixvirt, ihessian_zmat, igradients
-  use basis,            only: zex
+  use inputflags, only: ioptorb_mixvirt, ihessian_zmat, igradients
+  use basis, only: zex
 
-  use pot,              only: pot_nn
+  use pot, only: pot_nn
   use parser_read_data, only: read_efield_file, read_zmatrix_connection_file
   use parser_read_data, only: read_hessian_zmatrix_file, read_modify_zmatrix_file
   use parser_read_data, only: read_gradients_zmatrix_file, read_gradients_cartesian_file
@@ -168,30 +169,30 @@ subroutine parser
   use trexio_read_data, only: read_trexio_ecp_file
   use trexio_read_data, only: write_trexio_basis_num_info_file
   use parser_read_data, only: header_printing
-  use misc_grdnts,      only: inpwrt_zmatrix, inpwrt_grdnts_zmat, inpwrt_grdnts_cart
-  use set_input_data,   only: hessian_zmat_define, modify_zmat_define
-  use set_input_data,   only: inputforces, multideterminants_define
-  use set_input_data,   only: inputdet, inputlcao, inputjastrow
-  use jastrow4_mod,     only: nterms4
-  use properties_mod,   only: prop_cc_nuc
-  use efield_f_mod,     only: efield_compute_extint
-  use cuspinit4_mod,    only: cuspinit4
-  use optci_mod,        only: optci_define
-  use optorb_f_mod,     only: optorb_define
+  use misc_grdnts, only: inpwrt_zmatrix, inpwrt_grdnts_zmat, inpwrt_grdnts_cart
+  use set_input_data, only: hessian_zmat_define, modify_zmat_define
+  use set_input_data, only: inputforces, multideterminants_define
+  use set_input_data, only: inputdet, inputlcao, inputjastrow
+  use jastrow4_mod, only: nterms4
+  use properties_mod, only: prop_cc_nuc
+  use efield_f_mod, only: efield_compute_extint
+  use cuspinit4_mod, only: cuspinit4
+  use optci_mod, only: optci_define
+  use optorb_f_mod, only: optorb_define
   use verify_orbitals_mod, only: verify_orbitals
-  use grid3d_orbitals,  only: setup_3dsplorb, setup_3dlagorb
-  use grid3d,           only: setup_grid
-  use pw_read,          only: read_orb_pw_tm
+  use grid3d_orbitals, only: setup_3dsplorb, setup_3dlagorb
+  use grid3d, only: setup_grid
+  use pw_read, only: read_orb_pw_tm
   use read_bas_num_mod, only: read_bas_num
-  use write_orb_loc_mod,only: write_orb_loc
-  use optwf_handle_wf,  only: set_nparms_tot
+  use write_orb_loc_mod, only: write_orb_loc
+  use optwf_handle_wf, only: set_nparms_tot
   use get_norbterm_mod, only: get_norbterm
-  use scale_dist_mod,   only: set_scale_dist
-  use rannyu_mod,       only: setrn
+  use scale_dist_mod, only: set_scale_dist
+  use rannyu_mod, only: setrn
   use read_bas_num_mod, only: readps_gauss
-  use multidet,         only: kref_fixed
+  use multidet, only: kref_fixed
 
-  use precision_kinds,  only: dp
+  use precision_kinds, only: dp
 ! Note the following modules are new additions
 
 !

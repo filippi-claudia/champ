@@ -3,13 +3,14 @@
       subroutine pot_local(pe)
       use atom, only: znuc, pecent, iwctype, ncent
       use ghostatom, only: nghostcent
-      use const, only: nelec, ipr
+      use const, only: nelec
       use contrl_per, only: iperiodic
       use distance_mod, only: r_en, r_ee
       use pseudo, only: nloc
-      use contrl_file, only:ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use pw_ewald, only: pot_en_ewald, pot_ee_ewald
+      use control, only: ipr
       implicit none
 
       integer :: i, ic, ij, j

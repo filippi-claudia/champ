@@ -44,7 +44,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use const, only: etrial, hb, ipr, nelec
+      use const, only: etrial, hb, nelec
       use forcepar, only: istrech, nforce
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: iacc_rej, icross, icut_br, icut_e, idmc, ipq, nfprod, rttau, tau
@@ -67,36 +67,37 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use control_dmc, only: dmc_irstar, dmc_nconf
       use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
-      use distances_mod,  only: distances
-      use strech_mod,     only: strech
-      use splitj_mod,     only: splitj
-      use walksav_jas_mod,only: walksav_jas, walkstrjas
-      use walksav_det_mod,only: walksav_det, walkstrdet
-      use averages,       only: average
+      use distances_mod, only: distances
+      use strech_mod, only: strech
+      use splitj_mod, only: splitj
+      use walksav_jas_mod, only: walksav_jas, walkstrjas
+      use walksav_det_mod, only: walksav_det, walkstrdet
+      use averages, only: average
       use multideterminant_mod, only: update_ymat
-      use detsav_mod,     only: detsav 
-      use jassav_mod,     only: jassav
-      use hpsiedmc,       only: psiedmc
-      use nonloc_grid_mod,only: nonloc_grid, t_vpsp_get
-      use optx_orb_ci    ,only: optx_orb_ci_sum
-      use optx_jas_ci,    only: optx_jas_ci_sum
-      use optx_jas_orb,   only: optx_jas_orb_sum
-      use optci_mod,      only: optci_sum
-      use optorb_f_mod,   only: optorb_sum
-      use optjas_mod,     only: optjas_sum
-      use mmpol_dmc,      only: mmpol_sum, mmpol_save
-      use pcm_dmc,        only: pcm_sum, pcm_save
-      use prop_dmc,       only: prop_sum_dmc, prop_save_dmc
-      use determinante_mod,only: compute_determinante_grad
+      use detsav_mod, only: detsav
+      use jassav_mod, only: jassav
+      use hpsiedmc, only: psiedmc
+      use nonloc_grid_mod, only: nonloc_grid, t_vpsp_get
+      use optx_orb_ci, only: optx_orb_ci_sum
+      use optx_jas_ci, only: optx_jas_ci_sum
+      use optx_jas_orb, only: optx_jas_orb_sum
+      use optci_mod, only: optci_sum
+      use optorb_f_mod, only: optorb_sum
+      use optjas_mod, only: optjas_sum
+      use mmpol_dmc, only: mmpol_sum, mmpol_save
+      use pcm_dmc, only: pcm_sum, pcm_save
+      use prop_dmc, only: prop_sum_dmc, prop_save_dmc
+      use determinante_mod, only: compute_determinante_grad
       use nonloc_grid_mod, only: t_vpsp_sav
-      use hpsi_mod,        only: hpsi
+      use hpsi_mod, only: hpsi
       use multideterminant_tmove_mod, only: multideterminant_tmove
       use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
-      use distances_mod,  only: distancese_restore
-      use rannyu_mod,     only: rannyu
-      use gauss_mod,      only: gauss
+      use distances_mod, only: distancese_restore
+      use rannyu_mod, only: rannyu
+      use gauss_mod, only: gauss
+      use control, only: ipr
 
       implicit none
 

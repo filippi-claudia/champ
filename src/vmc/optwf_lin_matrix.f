@@ -32,7 +32,7 @@
       use ci000, only: nciterm
       use method_opt, only: method
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -211,7 +211,7 @@ c-----------------------------------------------------------------------
 
       use gradhess_all, only: nparmall
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, icut, ineg, isdinfo, j
@@ -381,7 +381,7 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
       use method_opt, only: method
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 

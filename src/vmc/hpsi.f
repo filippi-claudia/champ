@@ -7,7 +7,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use optwf_parms, only: nparmj
       use dets, only: ndet
-      use const, only: hb, nelec, ipr
+      use const, only: hb, nelec
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use elec, only: ndn, nup
@@ -33,22 +33,23 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use contrl_file, only: ounit
 
       use properties_mod, only: prop_compute
-      use optci_mod,      only: optci_deloc
-      use optjas_mod,     only: optjas_deloc
-      use optorb_f_mod,   only: optorb_compute
+      use optci_mod, only: optci_deloc
+      use optjas_mod, only: optjas_deloc
+      use optorb_f_mod, only: optorb_compute
       use force_analytic, only: compute_force
       use determinant_psit_mod, only: determinant_psit
       use multideterminant_mod, only: multideterminant_hpsi
       use nonloc_pot_mod, only: nonloc_pot
-      use determinant_mod,only: determinant, compute_bmatrices_kin
-      use jastrow_num_mod,only: jastrow_num
-      use jastrow_mod,    only: jastrow
-      use mmpol,          only: mmpol_extpot_ene
-      use pcm_mod,        only: pcm_extpot_ene
-      use distances_mod,  only: distances
-      use pot_local_mod,  only: pot_local
-      use qmmm_pot,       only: qmmm_extpot_ene
-      use efield_f_mod,   only: efield_extpot_ene
+      use determinant_mod, only: determinant, compute_bmatrices_kin
+      use jastrow_num_mod, only: jastrow_num
+      use jastrow_mod, only: jastrow
+      use mmpol, only: mmpol_extpot_ene
+      use pcm_mod, only: pcm_extpot_ene
+      use distances_mod, only: distances
+      use pot_local_mod, only: pot_local
+      use qmmm_pot, only: qmmm_extpot_ene
+      use efield_f_mod, only: efield_extpot_ene
+      use control, only: ipr
 
       implicit none
 

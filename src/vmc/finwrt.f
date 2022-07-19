@@ -24,14 +24,13 @@ c routine to print out final results
       use sa_weights, only: weights
       use step, only: rprob, suc, try
       use tmpnode, only: distance_node_sum
-      use contr3, only: mode
       !use contrl, only: nblk, nstep
       use control_vmc, only: vmc_nblk, vmc_nstep
       use contrl_per, only: iperiodic
       use sa_check, only: energy_all, energy_err_all
       use ci000, only: iciprt
       use inputflags, only: iqmmm
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
 
       use precision_kinds, only: dp
 
@@ -42,6 +41,7 @@ c routine to print out final results
       use optci_mod, only: optci_prt
       use multiple_states, only: efficiency_prt
       use properties_mod, only: prop_fin
+      use control, only: mode
       implicit none
 
       integer :: i, iciprt_sav, ifr, index, istate

@@ -16,7 +16,7 @@ C----------------------------------------------
 !      use contrl, only: nconf, nstep
       use precision_kinds, only: dp
       use control_dmc, only: dmc_nconf, dmc_nstep
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, iblk, icount, ifinal, iperr

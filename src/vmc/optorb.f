@@ -16,7 +16,7 @@
       use multislater, only: detiab
       use const, only: nelec
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -98,7 +98,7 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, istate
@@ -473,7 +473,7 @@ c-----------------------------------------------------------------------
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use optorb_cblock, only: norb_f_bcum
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -552,7 +552,7 @@ c-----------------------------------------------------------------------
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
       use optorb_cblock, only: nreduced, nefp_blocks, norb_f_bcum
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -854,7 +854,7 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: nreduced
       use orbval, only: nadorb, ndetorb, orb
       use optwf_contrl, only: ncore, no_active
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
 
       implicit none
 

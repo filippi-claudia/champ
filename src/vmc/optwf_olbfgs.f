@@ -10,15 +10,15 @@
       use optwf_contrl, only: sr_tau, sr_adiag, sr_eps
       use optwf_contrl, only: dparm_norm_min, nopt_iter
       use method_opt, only: method
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
 
       use optwf_handle_wf, only: write_wf, set_nparms_tot, save_wf
       use optwf_handle_wf, only: compute_parameters, test_solution_parm
       use optwf_handle_wf, only: save_nparms
-      use sr_more,         only: dscal
-      use fetch_parameters_mod,only: fetch_parameters
-      use error,           only: fatal_error
+      use sr_more, only: dscal
+      use fetch_parameters_mod, only: fetch_parameters
+      use error, only: fatal_error
       use olbfgs_more_mod, only: olbfgs_more
       implicit none
       interface

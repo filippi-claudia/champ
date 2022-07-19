@@ -26,15 +26,15 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use precision_kinds, only: dp
       use age, only: iage, ioldest, ioldestmx
 
-      use mmpol,           only: mmpol_init
-      use pcm_mod,         only: pcm_init
-      use properties_mod,  only: prop_init
-      use optjas_mod,      only: optjas_init
-      use optci_mod,       only: optci_init
-      use optorb_f_mod,    only: optorb_init
-      use optx_jas_orb,    only: optx_jas_orb_init
-      use optx_jas_ci,     only: optx_jas_ci_init
-      use optx_orb_ci,     only: optx_orb_ci_init
+      use mmpol, only: mmpol_init
+      use pcm_mod, only: pcm_init
+      use properties_mod, only: prop_init
+      use optjas_mod, only: optjas_init
+      use optci_mod, only: optci_init
+      use optorb_f_mod, only: optorb_init
+      use optx_jas_orb, only: optx_jas_orb_init
+      use optx_jas_ci, only: optx_jas_ci_init
+      use optx_orb_ci, only: optx_orb_ci_init
       implicit none
 
       integer :: i, ifr, k

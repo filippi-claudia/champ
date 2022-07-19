@@ -1,7 +1,7 @@
 module trexio_read_data
-    use error,                  only: fatal_error
-    use precision_kinds,        only: dp
-    use array_utils,            only: unique_elements
+    use error, only: fatal_error
+    use precision_kinds, only: dp
+    use array_utils, only: unique_elements
 
     logical :: trexio_has_group_molecule      = .false.
     logical :: trexio_has_group_symmetry      = .false.
@@ -35,20 +35,20 @@ module trexio_read_data
         !! number of valence electrons if pseudopotential is provided.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
         !! @date 07 October 2021
-        use custom_broadcast,   only: bcast
-        use mpiconf,            only: wid
-        use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+        use custom_broadcast, only: bcast
+        use mpiconf, only: wid
+        use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
         use ghostatom, 		    only: newghostype, nghostcent
-        use inputflags,         only: igeometry
-        use periodic_table,     only: atom_t, element
+        use inputflags, only: igeometry
+        use periodic_table, only: atom_t, element
         use elec,           	only: ndn, nup
         use const,          	only: nelec
-        use contrl_file,        only: ounit, errunit
-        use general,            only: pooldir
+        use contrl_file, only: ounit, errunit
+        use general, only: pooldir
         use precision_kinds, only: dp
 #if defined(TREXIO_FOUND)
         use trexio
-        use contrl_file,        only: backend
+        use contrl_file, only: backend
 #endif
 
         implicit none
@@ -189,37 +189,37 @@ module trexio_read_data
         !! number of molecular and atomic orbitals and their corresponding coefficients.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
         !! @date 12 October 2021
-        use custom_broadcast,   only: bcast
-        use mpiconf,            only: wid
-        use contrl_file,        only: ounit, errunit
-        use atom,               only: ncent, ncent_tot, iwctype, nctype_tot
-        use ghostatom,          only: newghostype
-        use coefs,              only: coef, nbasis, norb
-        use inputflags,         only: ilcao
-        use numbas,             only: nrbas
-        use numbas,             only: iwrwf, numr
-        use numbas1,            only: iwlbas, nbastyp
+        use custom_broadcast, only: bcast
+        use mpiconf, only: wid
+        use contrl_file, only: ounit, errunit
+        use atom, only: ncent, ncent_tot, iwctype, nctype_tot
+        use ghostatom, only: newghostype
+        use coefs, only: coef, nbasis, norb
+        use inputflags, only: ilcao
+        use numbas, only: nrbas
+        use numbas, only: iwrwf, numr
+        use numbas1, only: iwlbas, nbastyp
 
-        use basis,              only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
-        use basis,              only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
-        use basis,              only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
-        use basis,              only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
+        use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
+        use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
+        use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
+        use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
 
-        use orbval,             only: nadorb
-        use pcm_fdc,            only: fs
-        use vmc_mod,            only: norb_tot
-        use wfsec,              only: nwftype
-        use general,            only: pooldir
-        use method_opt,         only: method
+        use orbval, only: nadorb
+        use pcm_fdc, only: fs
+        use vmc_mod, only: norb_tot
+        use wfsec, only: nwftype
+        use general, only: pooldir
+        use method_opt, only: method
         use precision_kinds, only: dp
 
 
-        use error,              only: trexio_error
+        use error, only: trexio_error
 #if defined(TREXIO_FOUND)
         use trexio
-        use contrl_file,        only: backend
+        use contrl_file, only: backend
 #endif
-        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering
+        use m_trexio_basis, only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering
 
         implicit none
 
@@ -862,7 +862,7 @@ module trexio_read_data
         use atom,               only: symbol, atomtyp
         use vmc_mod,            only: NCOEF
         use ghostatom,          only: newghostype
-        use const,              only: ipr
+        use control,            only: ipr
         use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf!, rmax
         use numbas,             only: allocate_numbas
         use coefs,              only: nbasis

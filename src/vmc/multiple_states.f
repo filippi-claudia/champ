@@ -52,7 +52,7 @@ c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       use precision_kinds, only: dp
       implicit none
 

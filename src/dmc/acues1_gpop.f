@@ -5,7 +5,7 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use precision_kinds, only: dp
-      use const, only: etrial, ipr
+      use const, only: etrial
       use forcepar, only: nforce
       use contrldmc, only: idmc
       use contrldmc, only: nfprod
@@ -23,8 +23,9 @@ c routine to accumulate estimators for energy etc.
       use force_mod, only: MFORCE
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use redistribute_mod, only: redistribute
+      use control, only: ipr
       implicit none
 
       integer :: ierr, ifr, ipmod, mod, iabs, nfpro

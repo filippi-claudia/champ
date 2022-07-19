@@ -9,7 +9,7 @@
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2
       use mmpol_averages, only: dmmpol_cum, dmmpol_cm2
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, iblk, icmmpol_err, idmmpol_err

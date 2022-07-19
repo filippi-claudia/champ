@@ -10,12 +10,11 @@ module const
     real(dp) :: fbias
     real(dp) :: hb
     integer  :: imetro
-    integer  :: ipr
     integer  :: nelec
     real(dp) :: pi = 4.0d0*datan(1.0d0)
 
     private
-    public   :: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+    public   :: pi, hb, etrial, delta, deltai, fbias, nelec, imetro
     save
 end module const
 

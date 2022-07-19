@@ -7,14 +7,13 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use optwf_parms, only: nparmj
       use vmc_mod, only: norb_tot
       use atom, only: iwctype, ncent, ncent_tot
-      use const, only: nelec, ipr
+      use const, only: nelec
       use elec, only: nup
       use jaso, only: fso
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
       use Bloc, only: b_dj
       use coefs, only: norb
-      use contr3, only: mode
       use Bloc, only: b
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, vps
@@ -30,8 +29,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use orbval, only: nadorb
       use slater, only: slmi
       use multislater, only: detiab
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use control, only: mode
+      use control, only: ipr
       implicit none
 
       integer :: i, i1, i2, i_vpsp, iab

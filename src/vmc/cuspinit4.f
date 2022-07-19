@@ -5,7 +5,7 @@ c Written by Cyrus Umrigar
       use vmc_mod, only: mterms
       use jaspar4, only: nordc
       use cuspmat4, only: d, iwc4, nterms
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, iord, iprin, k, l
@@ -80,7 +80,7 @@ c-----------------------------------------------------------------------
       use optwf_wjas, only: iwjasc
 
       use vardep, only: cdep, iwdepend, nvdepend
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use cuspmat4, only: d, iwc4, nterms
       use precision_kinds, only: dp
       implicit none

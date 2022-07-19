@@ -15,7 +15,7 @@
 
       use multislater, only: detiab
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -347,7 +347,7 @@ c-----------------------------------------------------------------------
       use ci010_blk, only: ci_ooe_cum
 
       use method_opt, only: method
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, iu, j, matdim, mciprim
@@ -446,7 +446,7 @@ c-----------------------------------------------------------------------
       use ci000, only: iciprt, nciterm
 
       use method_opt, only: method
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 

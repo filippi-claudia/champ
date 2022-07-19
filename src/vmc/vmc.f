@@ -23,8 +23,8 @@ c and sa, pa, da asymptotic functions
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
       use control_vmc, only: vmc_nblkeq, vmc_nconf_new, vmc_nstep
       use pseudo, only: nloc
-      use mpitimer,    only: elapsed_time
-      use contrl_file,    only: ounit
+      use mpitimer, only: elapsed_time
+      use contrl_file, only: ounit
 
       use precision_kinds, only: dp
       use strech_mod, only: setup_force

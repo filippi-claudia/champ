@@ -9,7 +9,7 @@ c calculate interparticle distances
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use contrl_per, only: iperiodic
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use pw_find_image, only: find_image4, find_image3
       implicit none

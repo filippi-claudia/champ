@@ -4,7 +4,7 @@
       subroutine sites(x,nelec,nsite)
 c Written by Cyrus Umrigar
       use atom, only: znuc, cent, iwctype, ncent
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use rannyu_mod, only: rannyu
       implicit none

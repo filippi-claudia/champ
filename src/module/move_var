@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VARNAME=ipr
+VARNAME=mode
 NEWMOD=control
 
 for f in *.f*

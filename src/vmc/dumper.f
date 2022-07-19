@@ -22,11 +22,11 @@ c job where it left off
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
 
       use multiple_states, only: efficiency_init
-      use rannyu_mod,      only: savern
+      use rannyu_mod, only: savern
       use dumper_more_mod, only: dumper_more, startr_more
       use error, only: fatal_error
       use rannyu_mod, only: setrn, rannyu

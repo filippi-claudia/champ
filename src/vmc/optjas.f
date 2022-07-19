@@ -3,7 +3,7 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
       use optwf_parms, only: nparmj
-      use const, only: hb, nelec, ipr
+      use const, only: hb, nelec
       use csfs, only: nstates
       use derivjas, only: d2g, g
       use dets, only: cdet, ndet
@@ -22,8 +22,9 @@
       use slater, only: ddx, slmi
       use multislater, only: detiab
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use bxmatrices, only: bxmatrix
+      use control, only: ipr
 
       implicit none
 

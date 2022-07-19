@@ -3,7 +3,7 @@ module error
       public :: fatal_error, trexio_error
       contains
       subroutine fatal_error(msg)
-            use contrl_file,    only: ounit, errunit
+            use contrl_file, only: ounit, errunit
             use mpi
             implicit none
             integer  :: ierr

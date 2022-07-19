@@ -9,7 +9,7 @@ c routine to accumulate estimators for energy etc.
       use vmc_mod, only: nrad
       use atom, only: znuc, cent, pecent, iwctype, ncent
       use mstates_mod, only: MSTATES
-      use const, only: nelec, ipr
+      use const, only: nelec
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino
       use config, only: vold, xold
@@ -41,13 +41,13 @@ c routine to accumulate estimators for energy etc.
       use force_analytic, only: force_analy_save
       use optorb_f_mod, only: optorb_save
       use optci_mod, only: optci_save
-      use optjas_mod,   only: optjas_save
-      use mmpol_vmc,    only: mmpol_save, mmpol_cum
-      use pcm_vmc,      only: pcm_save, pcm_cum
-      use prop_vmc,     only: prop_save
+      use optjas_mod, only: optjas_save
+      use mmpol_vmc, only: mmpol_save, mmpol_cum
+      use pcm_vmc, only: pcm_save, pcm_cum
+      use prop_vmc, only: prop_save
       use nodes_distance_mod, only: nodes_distance
       use determinante_mod, only: compute_determinante_grad
-      use determinant_psig_mod,  only: determinant_psig
+      use determinant_psig_mod, only: determinant_psig
       use hpsi_mod, only: hpsi
       use strech_mod, only: strech
       use pot, only: pot_nn
@@ -65,6 +65,7 @@ c routine to accumulate estimators for energy etc.
       use rotqua_mod, only: gesqua
       use acuest_reduce_mod, only: acuest_reduce, acues1_reduce
       use nodes_distance_mod, only: rnorm_nodes_num
+      use control, only: ipr
 
 
       implicit none

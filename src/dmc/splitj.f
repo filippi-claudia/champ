@@ -16,13 +16,13 @@ c Written by Cyrus Umrigar
       use velratio, only: fratio, xdrifted
       use precision_kinds, only: dp
 
-      use mmpol_dmc,      only: mmpol_splitj
-      use pcm_dmc,        only: pcm_splitj
-      use prop_dmc,       only: prop_splitj
-      use walksav_jas_mod,only: splitjjas
-      use walksav_det_mod,only: splitjdet
-      use error,          only: fatal_error
-      use rannyu_mod,     only: rannyu
+      use mmpol_dmc, only: mmpol_splitj
+      use pcm_dmc, only: pcm_splitj
+      use prop_dmc, only: prop_splitj
+      use walksav_jas_mod, only: splitjjas
+      use walksav_det_mod, only: splitjdet
+      use error, only: fatal_error
+      use rannyu_mod, only: rannyu
 
       implicit none
 

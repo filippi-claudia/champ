@@ -6,7 +6,7 @@ c routine to print out final results
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use const, only: etrial, ipr, nelec
+      use const, only: etrial, nelec
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
       use age, only: iage, ioldest, ioldestmx
@@ -25,7 +25,6 @@ c routine to print out final results
       use step, only: rprob
       use mpiconf, only: nproc, wid
       use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
       use header, only: title
       use grdntspar, only: igrdtype, ngradnts
       use mpiblk, only: iblk_proc
@@ -35,14 +34,16 @@ c routine to print out final results
 !      use contrl, only: nblkeq, nconf, nstep
       use control_dmc, only: dmc_nblkeq, dmc_nconf, dmc_nstep
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
-      use prop_dmc,        only: prop_prt_dmc
-      use pcm_dmc,         only: pcm_fin
-      use mmpol_dmc,       only: mmpol_fin
+      use prop_dmc, only: prop_prt_dmc
+      use pcm_dmc, only: pcm_fin
+      use mmpol_dmc, only: mmpol_fin
       use finwrt_more_mod, only: finwrt_more
-      use misc_grdnts,     only: finwrt_grdnts_cart, finwrt_grdnts_zmat
-      use misc_grdnts,     only: finwrt_diaghess_zmat
+      use misc_grdnts, only: finwrt_grdnts_cart, finwrt_grdnts_zmat
+      use misc_grdnts, only: finwrt_diaghess_zmat
+      use control, only: ipr
+      use control, only: mode
       implicit none
 
       integer :: i, ierr, ifr, j, k

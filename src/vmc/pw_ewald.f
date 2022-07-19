@@ -7,7 +7,7 @@ c Written by Cyrus Umrigar
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
       use atom, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
-      use const, only: pi, ipr
+      use const, only: pi
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
       use ewald_basis, only: vps_basis_fourier
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt
@@ -23,9 +23,10 @@ c Written by Cyrus Umrigar
       use contrl_per, only: iperiodic
 
       use pseudo, only: lpot, nloc, vps
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use grid3d_param, only: origin
       use precision_kinds, only: dp
+      use control, only: ipr
       implicit none
 
       integer :: i, ict, ifcon, ig, in
@@ -684,7 +685,7 @@ c dist_min is the shortest of these three.
 c By choosing the range of the short-range part of the Ewald sums to be
 c <= half the shortest perpendicular distance we ensure that the short-range
 c part has zero or one terms.
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -841,7 +842,7 @@ c-----------------------------------------------------------------------
       use ewald_mod, only: NGNORM_BIGX
       use ewald_mod, only: NGNORM_SIM_BIGX
 c Written by Cyrus Umrigar
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -940,7 +941,7 @@ c a symmetry one could use later on.
       use periodic, only: rknorm, rkvec, rkvec_shift, vcell
       use periodic, only: vcell_sim
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, ikv, j, k, l
@@ -1119,7 +1120,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use ewald_mod, only: NCOEFX, NPX
       use constant, only: twopi
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, i0, ifcon, ig, info
@@ -2149,7 +2150,7 @@ c Written by Cyrus Umrigar
       use vmc_mod, only: nmat_dim2
       use atom, only: znuc, cent, iwctype, ncent
 
-      use const, only: nelec, ipr
+      use const, only: nelec
       use ewald, only: b_coul, y_coul
 
       use periodic, only: cutr, glatt
@@ -2162,6 +2163,7 @@ c Written by Cyrus Umrigar
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
 
       use precision_kinds, only: dp
+      use control, only: ipr
       implicit none
 
       integer :: i, ict, j, k, lowest_pow
@@ -2233,7 +2235,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use vmc_mod, only: nmat_dim2
-      use const, only: nelec, ipr
+      use const, only: nelec
       use ewald, only: b_coul_sim, y_coul_sim
 
       use periodic, only: cutr_sim
@@ -2243,6 +2245,7 @@ c Written by Cyrus Umrigar
       use periodic, only: np
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
+      use control, only: ipr
       implicit none
 
       integer :: i, ij, j, k, lowest_pow

@@ -73,7 +73,7 @@ c----------------------------------------------------------------------
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, iaxis, ibcxmax, ibcxmin, ibcymax

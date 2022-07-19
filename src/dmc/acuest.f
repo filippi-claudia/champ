@@ -20,28 +20,28 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: wfcm2, wgcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
       use mpiconf, only: nproc, wid
-      use contr3, only: mode
       use mpiblk, only: iblk_proc
       use force_mod, only: MFORCE
       use control_dmc, only: dmc_nstep
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
 
       use acuest_gpop_mod, only: acuest_gpop
 
-      use mmpol,         only: mmpol_init
-      use pcm_mod,       only: pcm_init
-      use properties_mod,only: prop_init
-      use optci_mod,     only: optci_init, optci_cum
-      use optorb_f_mod,  only: optorb_init, optorb_cum
-      use mmpol_dmc,     only: mmpol_prt
-      use pcm_dmc,       only: pcm_prt
-      use prop_dmc,      only: prop_prt_dmc
+      use mmpol, only: mmpol_init
+      use pcm_mod, only: pcm_init
+      use properties_mod, only: prop_init
+      use optci_mod, only: optci_init, optci_cum
+      use optorb_f_mod, only: optorb_init, optorb_cum
+      use mmpol_dmc, only: mmpol_prt
+      use pcm_dmc, only: pcm_prt
+      use prop_dmc, only: prop_prt_dmc
       use mmpol_reduce_mod, only: mmpol_reduce
-      use pcm_reduce_mod,only: pcm_reduce
-      use prop_reduce_mod,only: prop_reduce
-      use optjas_mod     ,only: optjas_cum
+      use pcm_reduce_mod, only: pcm_reduce
+      use prop_reduce_mod, only: prop_reduce
+      use optjas_mod, only: optjas_cum
+      use control, only: mode
       implicit none
 
       integer :: i, iderivgerr, iegerr, ierr, ifgerr

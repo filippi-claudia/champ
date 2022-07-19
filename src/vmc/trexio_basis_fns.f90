@@ -23,7 +23,7 @@ module trexio_basis_fns_mod
       use splfit_mod, only: splfit
       use slm_mod, only: slm
 #if defined(TREXIO_FOUND)
-      use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
+      use m_trexio_basis, only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
 #endif
 
       use precision_kinds, only: dp

@@ -22,7 +22,7 @@
       subroutine matinv(a,nsub,determinant)
       use const, only: nelec
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, info, nsub
