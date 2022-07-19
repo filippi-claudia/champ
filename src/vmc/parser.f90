@@ -92,7 +92,7 @@ subroutine parser
   use contrl_per, 	    only: iperiodic, ibasis
   use force_analy, 	    only: iforce_analy, iuse_zmat, alfgeo
   use multiple_geo, 	      only: itausec, nwprod
-  use forcestr, only: delc
+  use multiple_geo, only: delc
   use multiple_geo, only: iwftype
   use pseudo, 		      only: nloc
   use optorb_cblock, 	  only: idump_blockav

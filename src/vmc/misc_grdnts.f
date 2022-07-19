@@ -319,7 +319,7 @@ c   Subroutine which calculates the displacement for energy gradients
 c   using Z matrix (internal) coordinates
       subroutine grdzmat_displ(k_in,ic_in,ia_in,delfactor)
       use system, only: ncent, ncent_tot
-      use forcestr, only: delc
+      use multiple_geo, only: delc
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda
       use zmatrix, only: czcart, czint, czcart_ref, izcmat

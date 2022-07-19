@@ -13,7 +13,7 @@ module multiple_geo
      integer :: nwftype
      integer :: itausec
      integer :: nwprod
-
+     real(dp), dimension(:, :, :), allocatable :: delc !(3,MCENT,MFORCE)
 
      private
      public :: MFORCE, MFORCE_WT_PRD, MWF
@@ -23,6 +23,8 @@ module multiple_geo
      !public :: allocate_wfsec
      public :: deallocate_wfsec
      public :: itausec, nwprod
+     public   ::  delc
+     public :: deallocate_forcestr
      save
 
 contains
@@ -34,6 +36,11 @@ contains
     subroutine deallocate_wfsec()
         if (allocated(iwftype)) deallocate (iwftype)
     end subroutine deallocate_wfsec
+
+    subroutine deallocate_forcestr()
+        if (allocated(delc)) deallocate (delc)
+    end subroutine deallocate_forcestr
+
 
 end module multiple_geo
 
@@ -200,7 +207,7 @@ end module multiple_geo
  contains
  subroutine allocate_m_force()
      use forcest, only: allocate_forcest
-    !  use forcestr, only: allocate_forcestr
+    !  use multiple_geo, only: allocate_forcestr
      use forcewt, only: allocate_forcewt
      use force_fin, only: allocate_force_fin
      use force_mat_n, only: allocate_force_mat_n
@@ -216,7 +223,7 @@ end module multiple_geo
 
  subroutine deallocate_m_force()
      use forcest, only: deallocate_forcest
-     use forcestr, only: deallocate_forcestr
+     use multiple_geo, only: deallocate_forcestr
      use forcewt, only: deallocate_forcewt
      use force_fin, only: deallocate_force_fin
      use force_mat_n, only: deallocate_force_mat_n

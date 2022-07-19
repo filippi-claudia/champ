@@ -1335,7 +1335,7 @@ subroutine read_forces_file(file_forces)
 
     use system, only: symbol
     use contrl_file, only: ounit, errunit
-    use forcestr, only: delc
+    use multiple_geo, only: delc
     use multiple_geo, only: iwftype
     use inputflags, only: iforces
     use general, only: pooldir
@@ -2181,7 +2181,7 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
 
     use contrl_file, only: ounit, errunit
     use multiple_geo, only: MFORCE
-    use forcestr, only: delc
+    use multiple_geo, only: delc
     use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
     use grdntspar, only: delgrdxyz, igrdtype, ngradnts
     use multiple_geo, only: iwftype
@@ -2281,7 +2281,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     use mpiconf, only: wid
     use contrl_file, only: ounit, errunit
     use multiple_geo, only: MFORCE
-    use forcestr, only: delc
+    use multiple_geo, only: delc
     use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
     use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts
     use zmatrix, only: izmatrix

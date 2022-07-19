@@ -378,7 +378,7 @@ subroutine inputforces
 ! Set all force displacements to zero
 !    use multiple_geo, only: MWF
 !    use multiple_geo, only: MFORCE
-    use forcestr, only: delc
+    use multiple_geo, only: delc
     use multiple_geo, only: iwftype, nwftype
     use contrl_file, only: errunit
     use system, only: ncent
@@ -517,7 +517,7 @@ end subroutine inputjastrow
 
 subroutine set_displace_zero(nforce_tmp)
     use pcm, only: MCHS
-    use forcestr, only: delc
+    use multiple_geo, only: delc
     use pcm_force, only: sch_s
     use pcm_cntrl, only: ipcm
     use pcm_parms, only: ch, nchs
