@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VARNAME=mode
-NEWMOD=control
+VARNAME=$1
+NEWMOD=$2
 
 for f in *.f*
 do
