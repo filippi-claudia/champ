@@ -59,7 +59,7 @@ end module optwf_contrl
 
 module optwf_corsam
     !> Arguments: add_diag, add_diag_tmp, energy, energy_err, force, force_err
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: add_diag !(MFORCE)
@@ -76,7 +76,7 @@ module optwf_corsam
     save
 contains
     subroutine allocate_optwf_corsam()
-        use force_mod, only: MFORCE
+        use multiple_geo, only: MFORCE
         use precision_kinds, only: dp
         if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
         if (.not. allocated(energy)) allocate (energy(MFORCE))

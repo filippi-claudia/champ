@@ -127,7 +127,7 @@ module jaspar4
     save
 contains
     ! subroutine allocate_jaspar4()
-    !     use force_mod, only: MWF
+    !     use multiple_geo, only: MWF
     !     use precision_kinds, only: dp
     !     use vmc_mod, only: nordj1
     !     if (.not. allocated(a4)) allocate (a4(nordj1, nctype_tot, MWF))

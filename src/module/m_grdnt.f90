@@ -24,7 +24,7 @@ module grdnthes
 
  module grdntsmv
      !> Arguments: igrdaidx, igrdcidx, igrdmv
-     use force_mod, only: MFORCE
+     use multiple_geo, only: MFORCE
 
      implicit none
 
@@ -39,7 +39,7 @@ module grdnthes
  contains
      subroutine allocate_grdntsmv()
         use system, only: ncent_tot
-         use force_mod, only: MFORCE
+         use multiple_geo, only: MFORCE
          if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE), source=0)
          if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE), source=0)
          if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent_tot), source=0)

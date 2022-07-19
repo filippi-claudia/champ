@@ -167,7 +167,7 @@ module numexp
     !> Arguments: ae, ce
 
     use numbas_mod, only: MRWF
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use precision_kinds, only: dp
     use vmc_mod, only: NCOEF
 
@@ -185,7 +185,7 @@ contains
     subroutine allocate_numexp()
         use system, only: nctype_tot
         use numbas_mod, only: MRWF
-        use force_mod, only: MFORCE
+        use multiple_geo, only: MFORCE
         use vmc_mod, only: NCOEF
         if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, MFORCE))
         if (.not. allocated(ab)) allocate (ab(2, MRWF, nctype_tot, MFORCE))

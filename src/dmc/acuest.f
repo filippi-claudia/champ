@@ -21,7 +21,7 @@ c routine to accumulate estimators for energy etc.
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
       use mpiconf, only: nproc, wid
       use mpiblk, only: iblk_proc
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use control_dmc, only: dmc_nstep
       use mpi
       use contrl_file, only: ounit

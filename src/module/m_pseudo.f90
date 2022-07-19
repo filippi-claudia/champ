@@ -30,7 +30,7 @@ contains
         use system, only: nctype_tot
         use system, only: ncent_tot
         use pseudo_mod, only: MPS_L
-        use force_mod, only: MFORCE
+        use multiple_geo, only: MFORCE
       use system, only: nelec
       use system, only: nelec
 

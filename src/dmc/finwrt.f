@@ -28,7 +28,7 @@ c routine to print out final results
       use header, only: title
       use grdntspar, only: igrdtype, ngradnts
       use mpiblk, only: iblk_proc
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use branch, only: eold, nwalk
       use optwf_corsam, only: energy, energy_err, force, force_err
 !      use contrl, only: nblkeq, nconf, nstep

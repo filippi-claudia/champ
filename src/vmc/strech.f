@@ -14,7 +14,7 @@ c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
       use precision_kinds, only: dp
       use pcm, only: MCHS, MCHV
-      use force_mod, only: MFORCE, MFORCE_WT_PRD
+      use multiple_geo, only: MFORCE, MFORCE_WT_PRD
       use forcepar, only: istrech, alfstr
       use system, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
       use force_dmc, only: itausec, nwprod

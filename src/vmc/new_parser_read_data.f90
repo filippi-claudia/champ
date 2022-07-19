@@ -487,7 +487,7 @@ subroutine read_jastrow_file(file_jastrow)
     use, intrinsic :: iso_fortran_env, only: iostat_eor !, iostat_eof
     use contrl_file, only: ounit, errunit
 
-    use force_mod, only: MWF
+    use multiple_geo, only: MWF
     use jaspar, only: nspin1, nspin2
     use jaspar3, only: b, c, scalek
     use jaspar4, only: a4, norda, nordb, nordc
@@ -2181,7 +2181,7 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
 
     use contrl_file, only: ounit, errunit
     use forcepar, only: nforce
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use forcestr, only: delc
     use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
     use grdntspar, only: delgrdxyz, igrdtype, ngradnts
@@ -2281,7 +2281,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     use mpiconf, only: wid
     use contrl_file, only: ounit, errunit
     use forcepar, only: nforce
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use forcestr, only: delc
     use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
     use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts

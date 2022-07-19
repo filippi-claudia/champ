@@ -20,7 +20,7 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: ei3cm2, wcm21
       use est2cm, only: wfcm21, wgcm21
       use mpiconf, only: wid
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
       use mpi
       use contrl_file, only: ounit

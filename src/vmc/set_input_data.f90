@@ -3,7 +3,7 @@ use error, only: fatal_error
 contains
 subroutine inputzex
     ! Set the exponents to one when using a numerical basis
-    use force_mod, only: MWF
+    use multiple_geo, only: MWF
     use numbas, only: numr
     use coefs, only: nbasis
     use basis, only: zex
@@ -54,7 +54,7 @@ end subroutine inputcsf
 
 subroutine multideterminants_define(iflag, icheck)
 
-    use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+    use multiple_geo, only: MFORCE, MFORCE_WT_PRD, MWF
     use vmc_mod, only: nrad, nordj, nordj1, nmat_dim, nmat_dim2
     use vmc_mod, only: radmax, delri
     use vmc_mod, only: neqsx
@@ -376,8 +376,8 @@ end subroutine multideterminants_define
 
 subroutine inputforces
 ! Set all force displacements to zero
-!    use force_mod, only: MWF
-!    use force_mod, only: MFORCE
+!    use multiple_geo, only: MWF
+!    use multiple_geo, only: MFORCE
     use forcepar, only: nforce
     use forcestr, only: delc
     use wfsec, only: iwftype, nwftype

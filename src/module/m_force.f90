@@ -1,4 +1,4 @@
-module force_mod
+module multiple_geo
 
      implicit none
 
@@ -9,11 +9,11 @@ module force_mod
      private
      public :: MFORCE, MFORCE_WT_PRD, MWF
      save
- end module force_mod
+ end module multiple_geo
 
  module forcepar
     !> Arguments: istrech, nforce, alfstr
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use precision_kinds, only: dp
 
     implicit none
@@ -41,7 +41,7 @@ module wfsec
     save
 contains
     ! subroutine allocate_wfsec()
-    !     use force_mod, only: MFORCE
+    !     use multiple_geo, only: MFORCE
     !     if (.not. allocated(iwftype)) allocate (iwftype(MFORCE))
     ! end subroutine allocate_wfsec
 
@@ -67,7 +67,7 @@ end module wfsec
 
  module forcest
      !> Arguments: fcm2, fcum, fgcm2, fgcum
-     use force_mod, only: MFORCE
+     use multiple_geo, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
 
@@ -83,7 +83,7 @@ end module wfsec
      save
  contains
      subroutine allocate_forcest()
-         use force_mod, only: MFORCE
+         use multiple_geo, only: MFORCE
          use mstates_mod, only: MSTATES
          if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE))
          if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE))
@@ -125,7 +125,7 @@ end module wfsec
 
  module forcewt
      !> Arguments: wcum, wsum
-     use force_mod, only: MFORCE
+     use multiple_geo, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
 
@@ -140,7 +140,7 @@ end module wfsec
      save
  contains
      subroutine allocate_forcewt()
-         use force_mod, only: MFORCE
+         use multiple_geo, only: MFORCE
          use mstates_mod, only: MSTATES
          if (.not. allocated(wcum)) allocate (wcum(MSTATES, MFORCE))
          if (.not. allocated(wsum)) allocate (wsum(MSTATES, MFORCE))

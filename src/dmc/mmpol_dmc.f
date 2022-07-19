@@ -2,7 +2,7 @@
       contains
       subroutine mmpol_prt(iblk,wgcum,wgcm2)
 
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
 !      use contrl, only: nconf, nstep
       use control_dmc, only: dmc_nconf, dmc_nstep
       use mmpol_cntrl, only: immpol, immpolprt
@@ -66,7 +66,7 @@ c-----------------------------------------------------------------------
       subroutine mmpol_fin(iblk,wgcum,wgcm2)
 
       use mmpol_cntrl, only: immpol, immpolprt
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
 
       use precision_kinds, only: dp
       implicit none

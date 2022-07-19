@@ -4,7 +4,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
       use system, only: ncent

@@ -20,7 +20,7 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: wfcm2, wgcm2
       use derivest, only: derivcum, derivsum
       use mpiconf, only: wid
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
 !      use contrl, only: nstep
       use control_dmc, only: dmc_nstep
       use mpi

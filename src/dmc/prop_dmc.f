@@ -10,7 +10,7 @@ C----------------------------------------------
 
       use prp000, only: ipropprt, iprop, nprop
       use prp003, only: vprop_cum, vprop_cm2, cc_nuc
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use properties, only: MAXPROP
 !      use contrl, only: nconf, nstep
       use precision_kinds, only: dp

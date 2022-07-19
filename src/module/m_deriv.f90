@@ -340,7 +340,7 @@ module derivest
    !> DMC derivatives
    !> Arguments: derivcm2, derivcum, derivsum, derivtotave_num_old
 
-   use force_mod, only: MFORCE
+   use multiple_geo, only: MFORCE
    use precision_kinds, only: dp
 
    implicit none

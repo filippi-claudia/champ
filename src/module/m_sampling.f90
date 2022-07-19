@@ -5,7 +5,7 @@ module config
     !> rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold,
     !> d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
 
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
@@ -54,7 +54,7 @@ module config
     save
 contains
     subroutine allocate_config()
-        use force_mod, only: MFORCE
+        use multiple_geo, only: MFORCE
         use mstates_mod, only: MSTATES
       use system, only: nelec
         implicit none
@@ -108,7 +108,7 @@ contains
     end subroutine deallocate_config
 
     subroutine allocate_config_dmc()
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use dmc_mod, only: mwalk
       use system, only: nelec
 

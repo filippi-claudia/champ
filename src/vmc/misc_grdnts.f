@@ -89,7 +89,7 @@ c   Subroutine which calculates and printouts energy gradients
 c   for cartesian coordinates of atoms from energy differences
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_cart(forces_ave,forces_err)
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use system, only: iwctype, ncent
       use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
@@ -158,7 +158,7 @@ c   Subroutine which calculates and printouts energy gradients
 c   for Z matrix coordinates of atoms from energy differences
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_zmat(forces_ave,forces_err)
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use system, only: iwctype, ncent
       use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
@@ -409,7 +409,7 @@ c   Subroutine which calculates and print outs the diagonal
 c   part of the Hessian for Z matrix coordinates of atoms
 c   from energy differences  calculated using correlated smapling.
       subroutine finwrt_diaghess_zmat(forces_ave,forces_err)
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use system, only: iwctype, ncent
       use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv

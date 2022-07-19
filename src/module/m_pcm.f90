@@ -154,7 +154,7 @@ end module pcm_fdc
 module pcm_force
     !> Arguments: sch_s
     use pcm, only: MCHS
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: sch_s !(MCHS,MFORCE)
@@ -166,7 +166,7 @@ module pcm_force
 contains
     subroutine allocate_pcm_force()
         use pcm, only: MCHS
-        use force_mod, only: MFORCE
+        use multiple_geo, only: MFORCE
         if (.not. allocated(sch_s)) allocate (sch_s(MCHS, MFORCE))
     end subroutine allocate_pcm_force
 

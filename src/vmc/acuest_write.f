@@ -4,7 +4,7 @@
 c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2

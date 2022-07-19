@@ -5,7 +5,7 @@ c Written by Claudia Filippi
 
       use mpi
       use precision_kinds, only: dp
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
 

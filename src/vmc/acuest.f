@@ -5,7 +5,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
       use precision_kinds, only: dp
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use vmc_mod, only: nrad
       use system, only: znuc, cent, pecent, iwctype, ncent
       use mstates_mod, only: MSTATES

@@ -87,7 +87,7 @@ end module contrl_per
 
 module contrldmc
     !> Arguments: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use precision_kinds, only: dp
 
     implicit none
@@ -113,7 +113,7 @@ module contrldmc
     save
 contains
     subroutine allocate_contrldmc()
-        use force_mod, only: MFORCE
+        use multiple_geo, only: MFORCE
         if (.not. allocated(taueff)) allocate (taueff(MFORCE))
     end subroutine allocate_contrldmc
 

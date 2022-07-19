@@ -30,7 +30,7 @@ subroutine parser
   use system,           	only: nctype, ncent
   use wfsec,          	only: nwftype
   use forcepar,       	only: nforce
-  use force_mod,      	only: MFORCE
+  use multiple_geo,      	only: MFORCE
 
 ! variables from process input
   use sr_mod,         	only: mconf, mparm
@@ -42,7 +42,7 @@ subroutine parser
   use vmc_mod, only: nordj, nordj1, neqsx
   use pcm, only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
-  use force_mod,      	only: MFORCE, MWF
+  use multiple_geo,      	only: MFORCE, MWF
   use vmc_mod, 		      only: norb_tot, mterms
   use system, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 		      only: nspin1, nspin2, is
