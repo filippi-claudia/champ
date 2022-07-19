@@ -8,7 +8,6 @@ c Jastrow 6   must be used with one of isc=6,7
       use vmc_mod, only: nordj
       use atom, only: iwctype, ncent
       use jaspar, only: sspinn
-      use const, only: nelec
       use elec, only: nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
       use jaspar3, only: b, c, scalek
@@ -24,6 +23,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use system, only: nelec
       implicit none
 
       integer :: i, ic, ij, im1, iord

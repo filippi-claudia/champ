@@ -3,12 +3,12 @@
       subroutine compute_force(psid,denergy)
 
       use atom, only: ncent
-      use const, only: nelec
       use da_jastrow4val, only: da_j
       use da_energy_now, only: da_psi
       use atom, only: ncent_tot
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use system, only: nelec
       implicit none
 
       integer :: i, ic, k
@@ -37,7 +37,6 @@ c-----------------------------------------------------------------------
 
       use vmc_mod, only: norb_tot
       use atom, only: ncent, ncent_tot
-      use const, only: nelec
       use da_energy_now, only: da_psi
       use da_jastrow4val, only: da_j
       use da_orbval, only: da_orb
@@ -49,6 +48,7 @@ c-----------------------------------------------------------------------
       use slater, only: slmi
       use multislater, only: detiab
       use precision_kinds, only: dp
+      use system, only: nelec
 
       implicit none
 
@@ -133,7 +133,7 @@ c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
 
       use atom, only: iwctype, ncent, ncent_tot
-      use const, only: hb, nelec
+      use const, only: hb
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_vj
       use da_orbval, only: da_orb
@@ -150,6 +150,7 @@ c-----------------------------------------------------------------------
       use slater, only: slmi
       use multislater, only: detiab
       use precision_kinds, only: dp
+      use system, only: nelec
 
       implicit none
 

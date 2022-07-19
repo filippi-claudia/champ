@@ -14,13 +14,13 @@
       use coefs, only: norb
       use multimatn, only: aan, wfmatn
       use multislatern, only: detn, orbn
-      use const, only: nelec
       use orbval, only: orb
       use multislater, only: detiab
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use matinv_mod, only: matinv
       use multideterminant_mod, only: compute_ymat
+      use system, only: nelec
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
@@ -153,7 +153,7 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv, ivirt, kref
       use coefs, only: norb
       use dorb_m, only: iworbd
-      use const, only: nelec
+      use system, only: nelec
 
       implicit none
 

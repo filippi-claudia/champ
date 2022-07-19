@@ -7,12 +7,10 @@ c Written by Claudia Filippi
       use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: mwalk
-      use const, only: nelec
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: mwalk
-      use const, only: nelec
       use mstates_mod, only: MSTATES
       use branch, only: nwalk
       use slater, only: ddx, fp, slmi
@@ -26,6 +24,7 @@ c Written by Claudia Filippi
       use multidet, only: ivirt, kref, numrep_det
       use multimat, only: aa, wfmat
       use mpi
+      use system, only: nelec
 
       implicit none
 

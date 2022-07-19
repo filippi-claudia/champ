@@ -3,7 +3,6 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
       use vmc_mod, only: norb_tot
-      use const, only: nelec
       use atom, only: ncent
       use qua, only: nquad
       use b_tmove, only: b_t, iskip
@@ -18,6 +17,7 @@
       use multimat, only: aa
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i1, i2, iab, ic, iel

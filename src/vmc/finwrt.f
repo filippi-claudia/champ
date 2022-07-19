@@ -8,7 +8,6 @@ c routine to print out final results
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
       use atom, only: ncent
-      use const, only: nelec
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
@@ -42,6 +41,7 @@ c routine to print out final results
       use multiple_states, only: efficiency_prt
       use properties_mod, only: prop_fin
       use control, only: mode
+      use system, only: nelec
       implicit none
 
       integer :: i, iciprt_sav, ifr, index, istate

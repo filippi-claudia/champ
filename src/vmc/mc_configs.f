@@ -4,7 +4,6 @@
 
       use mpi
       use atom, only: znuc, iwctype, ncent, ncent_tot
-      use const, only: nelec
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc
       !use contrl, only: irstar, isite, nconf_new, icharged_atom
@@ -17,6 +16,7 @@
       use error, only: fatal_error
       use pcm_mod, only: pcm_qvol
       use fin_reduce_mod, only: fin_reduce
+      use system, only: nelec
 
       implicit none
 

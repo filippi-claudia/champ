@@ -14,9 +14,9 @@
       use orb_mat_033, only: ideriv_ref, irepcol_ref
       use orbval, only: orb
       use multislater, only: detiab
-      use const, only: nelec
       use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use system, only: nelec
 
       implicit none
 
@@ -839,7 +839,6 @@ c-----------------------------------------------------------------------
 
       use optorb_mod, only: mxreduced
       use vmc_mod, only: norb_tot
-      use const, only: nelec
       use dets, only: ndet
       use elec, only: ndn, nup
       use multidet, only: kref
@@ -855,6 +854,7 @@ c-----------------------------------------------------------------------
       use orbval, only: nadorb, ndetorb, orb
       use optwf_contrl, only: ncore, no_active
       use contrl_file, only: ounit, errunit
+      use system, only: nelec
 
       implicit none
 

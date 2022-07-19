@@ -42,10 +42,10 @@ module trexio_read_data
         use inputflags, only: igeometry
         use periodic_table, only: atom_t, element
         use elec,           	only: ndn, nup
-        use const,          	only: nelec
         use contrl_file, only: ounit, errunit
         use general, only: pooldir
         use precision_kinds, only: dp
+        use system, only: nelec
 #if defined(TREXIO_FOUND)
         use trexio
         use contrl_file, only: backend
@@ -1482,7 +1482,7 @@ module trexio_read_data
         use mstates_mod,        only: MSTATES
         use general,            only: pooldir
         use elec,               only: ndn, nup
-        use const,              only: nelec
+        use system,             only: nelec
         use method_opt,         only: method
         use precision_kinds,    only: dp
 

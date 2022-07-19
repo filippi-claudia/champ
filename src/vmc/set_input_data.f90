@@ -58,7 +58,6 @@ subroutine multideterminants_define(iflag, icheck)
     use vmc_mod, only: nrad, nordj, nordj1, nmat_dim, nmat_dim2
     use vmc_mod, only: radmax, delri
     use vmc_mod, only: neqsx
-    use const, only: nelec
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet
     use elec, only: ndn, nup
@@ -72,6 +71,7 @@ subroutine multideterminants_define(iflag, icheck)
     ! not sure about that one either ....
     use wfsec, only: nwftype
     use multideterminant_mod, only: idiff
+      use system, only: nelec
 
     implicit none
 

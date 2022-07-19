@@ -25,9 +25,9 @@ c Written by Claudia Filippi
 
       use vmc_mod, only: MEXCIT
 
-      use const, only: nelec
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, iab, iel, iflag, ikel

@@ -7,7 +7,6 @@ c Jastrow 6   must be used with one of isc=6,7
       use vmc_mod, only: nordj
       use atom, only: iwctype, ncent
       use jaspar, only: sspinn
-      use const, only: nelec
       use elec, only: nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
       use jaspar3, only: b, c
@@ -23,6 +22,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use precision_kinds, only: dp
       use scale_dist_mod, only: scale_dist1, scale_dist2
       use scale_dist_mod, only: switch_scale1, switch_scale2
+      use system, only: nelec
 
       implicit none
 

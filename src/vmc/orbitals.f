@@ -19,7 +19,6 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use const, only: nelec
       use wfsec, only: iwf
       use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
       use coefs, only: coef, nbasis, norb
@@ -41,6 +40,7 @@ c Modified by A. Scemama
 
       use pw_orbitals, only: orbitals_pw
       use control, only: ipr
+      use system, only: nelec
       implicit none
 
       integer :: i, ier, ider, iorb, k, m
@@ -224,7 +224,6 @@ c-------------------------------------------------------------------------------
       subroutine da_orbitals
 
       use atom, only: ncent
-      use const, only: nelec
       use da_orbval, only: da_d2orb, da_dorb, da_orb
       use numbas2, only: ibas0, ibas1
       use phifun, only: d2phin_all, d3phin, dphin
@@ -232,6 +231,7 @@ c-------------------------------------------------------------------------------
       use coefs, only: coef, nbasis, norb
       use contrl_per, only: ibasis
       use precision_kinds, only: dp
+      use system, only: nelec
 
       implicit none
 
@@ -280,12 +280,12 @@ c-------------------------------------------------------------------------------
       use atom, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use multislatern, only: ddorbn, dorbn, orbn
-      use const, only: nelec
       use precision_kinds, only: dp
       use grid3d_orbitals, only: spline_mo, lagrange_mose
       use grid3d_orbitals, only: lagrange_mos_grade
       use basis_fns_mod, only: basis_fns
       use pw_orbitals, only: orbitals_pw_grade
+      use system, only: nelec
 
       implicit none
 

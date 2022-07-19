@@ -9,7 +9,6 @@ subroutine get_norbterm
 
     use optorb_mod, only: mxreduced
     use vmc_mod, only: norb_tot
-    use const, only: nelec
     use dets, only: ndet
     use elec, only: ndn, nup
     use multidet, only: kref
@@ -26,6 +25,7 @@ subroutine get_norbterm
     use optwf_contrl, only: ncore, no_active
     use contrl_file, only: ounit, errunit
     use error, only: fatal_error
+      use system, only: nelec
 
     implicit none
 

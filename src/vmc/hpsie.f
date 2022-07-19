@@ -12,7 +12,6 @@ c Written by Claudia Filippi by modifying hpsi
       use velocity_jastrow, only: vjn
       use multislatern, only: detn
       use distance_mod, only: r_en, rvec_en
-      use const, only: nelec
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use distances_mod, only: distances
@@ -21,6 +20,7 @@ c Written by Claudia Filippi by modifying hpsi
       use determinante_mod, only: determinante
       use multideterminante_mod, only: multideterminante
       use determinante_psit_mod, only: determinante_psit
+      use system, only: nelec
 
       implicit none
 

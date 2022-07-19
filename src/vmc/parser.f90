@@ -28,7 +28,6 @@ subroutine parser
 
 ! in the replacement of preprocess input
   use elec,           	only: ndn, nup
-  use const,          	only: nelec
   use atom,           	only: nctype, ncent
   use wfsec,          	only: nwftype
   use forcepar,       	only: nforce
@@ -49,7 +48,7 @@ subroutine parser
   use atom, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 		      only: nspin1, nspin2, is
   use ghostatom, 	      only: newghostype, nghostcent
-  use const, 		        only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro
+  use const, only: pi, hb, etrial, delta, deltai, fbias, imetro
   use control,          only: ipr
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num
@@ -193,6 +192,7 @@ subroutine parser
   use multidet, only: kref_fixed
 
   use precision_kinds, only: dp
+      use system, only: nelec
 ! Note the following modules are new additions
 
 !

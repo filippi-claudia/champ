@@ -163,7 +163,7 @@ c-----------------------------------------------------------------------
       use optwf_contrl, only: ioptci
       use dorb_m, only: iworbd
       use elec, only: nup
-      use const, only: nelec
+      use system, only: nelec
 
       implicit none
 

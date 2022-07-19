@@ -6,7 +6,7 @@ c routine to print out final results
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use const, only: etrial, nelec
+      use const, only: etrial
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
       use age, only: iage, ioldest, ioldestmx
@@ -44,6 +44,7 @@ c routine to print out final results
       use misc_grdnts, only: finwrt_diaghess_zmat
       use control, only: ipr
       use control, only: mode
+      use system, only: nelec
       implicit none
 
       integer :: i, ierr, ifr, j, k

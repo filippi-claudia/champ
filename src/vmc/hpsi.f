@@ -7,7 +7,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use optwf_parms, only: nparmj
       use dets, only: ndet
-      use const, only: hb, nelec
+      use const, only: hb
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use elec, only: ndn, nup
@@ -50,6 +50,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use qmmm_pot, only: qmmm_extpot_ene
       use efield_f_mod, only: efield_extpot_ene
       use control, only: ipr
+      use system, only: nelec
 
       implicit none
 

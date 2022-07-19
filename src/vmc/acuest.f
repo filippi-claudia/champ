@@ -9,7 +9,6 @@ c routine to accumulate estimators for energy etc.
       use vmc_mod, only: nrad
       use atom, only: znuc, cent, pecent, iwctype, ncent
       use mstates_mod, only: MSTATES
-      use const, only: nelec
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino
       use config, only: vold, xold
@@ -66,6 +65,7 @@ c routine to accumulate estimators for energy etc.
       use acuest_reduce_mod, only: acuest_reduce, acues1_reduce
       use nodes_distance_mod, only: rnorm_nodes_num
       use control, only: ipr
+      use system, only: nelec
 
 
       implicit none

@@ -10,7 +10,6 @@ c ider = 3 -> value, gradient, laplacian, forces
       use numbas_mod, only: MRWF
       use atom, only: iwctype, ncent, ncent_tot
       use ghostatom, only: nghostcent
-      use const, only: nelec
       use numbas, only: iwrwf, nrbas!, rmax
       use numbas1, only: iwlbas, nbastyp
       use phifun, only: phin, dphin, d2phin, d2phin_all, d3phin, n0_nbasis
@@ -20,6 +19,7 @@ c ider = 3 -> value, gradient, laplacian, forces
       use slm_mod, only: slm
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: it, ic, ider, irb

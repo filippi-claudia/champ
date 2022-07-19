@@ -185,7 +185,6 @@ c However, that causes problems when running with mpi, so comment out that part.
       use ewald_mod, only: NGVECX
       use ewald_mod, only: NGVEC_BIGX
       use vmc_mod, only: norb_tot
-      use const, only: nelec
       use periodic, only: glatt
       use periodic, only: igmult, igvec
       use periodic, only: ireal_imag, k_inv, kvec, nband, ngnorm, ngnorm_orb
@@ -197,6 +196,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use contrl_file, only: ounit
       use coefs, only: norb
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, i1, i3, ib, iband
@@ -453,7 +453,6 @@ c This is the straightforward evaluation for checking purposes only.
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
       use ewald_mod, only: NGVEC_BIGX
-      use const, only: nelec
       use periodic, only: glatt
       use periodic, only: gvec
       use periodic, only: ireal_imag, k_inv, nband
@@ -465,6 +464,7 @@ c This is the straightforward evaluation for checking purposes only.
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
       use control, only: ipr
+      use system, only: nelec
       implicit none
 
       integer :: i, iband, ig, ig2, ikv

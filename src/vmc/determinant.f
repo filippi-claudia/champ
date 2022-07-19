@@ -17,7 +17,6 @@ c Modified by A. Scemama
 
       use orbval, only: ddorb, dorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-      use const, only: nelec
 
       use multislater, only: detiab, allocate_multislater
       use atom, only: ncent_tot
@@ -34,6 +33,7 @@ c Modified by A. Scemama
       use vmc_mod, only: norb_tot
       use control, only: mode
       use control, only: ipr
+      use system, only: nelec
 
       implicit none
 
@@ -210,7 +210,7 @@ c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
       use atom, only: ncent
-      use const, only: hb, nelec
+      use const, only: hb
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb, da_dorb
       use derivjas, only: g
@@ -226,6 +226,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use optwf_handle_wf, only: dcopy
       use sr_more, only: daxpy
+      use system, only: nelec
       implicit none
 
       integer :: i, ic, iorb, iparm, l

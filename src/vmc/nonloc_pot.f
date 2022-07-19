@@ -7,7 +7,6 @@ c Calculates non-local potential derivatives
 c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
       use pseudo_mod, only: MPS_QUAD
       use atom, only: iwctype, ncent, ncent_tot
-      use const, only: nelec
       use contrl_per, only: iperiodic
 
       use pseudo, only: lpot, nloc, vps
@@ -16,6 +15,7 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use readps_gauss, only: getvps_gauss
       use readps_tm_mod, only: getvps_tm
       use nonloc_mod, only: nonloc
+      use system, only: nelec
       implicit none
 
       integer :: i, i1, i2, i_vpsp, ic

@@ -12,7 +12,7 @@ c job where it left off
       use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
       use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
-      use const, only: hb, nelec
+      use const, only: hb
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
       use age, only: iage, ioldest, ioldestmx
@@ -50,6 +50,7 @@ c job where it left off
 
       use strech_mod, only: strech
       use rannyu_mod, only: savern
+      use system, only: nelec
       implicit none
 
       integer :: i, ib, ic, id, ierr

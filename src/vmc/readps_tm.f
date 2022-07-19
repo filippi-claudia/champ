@@ -220,10 +220,10 @@ c compute tm-pseudopotential for electron iel
 
       use atom, only: znuc, iwctype, ncent, ncent_tot
       use pseudo_tm, only: rmax
-      use const, only: nelec
       use pseudo, only: lpot, vps
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: ic, ict, iel, l

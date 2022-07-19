@@ -13,7 +13,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use vmc_mod, only: delri
       use atom, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
-      use const, only: pi, fbias, nelec
+      use const, only: pi, fbias
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
       use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
       use config, only: tjfoo, vnew, vold, xnew, xold
@@ -31,7 +31,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use mmpol_cntrl, only: ich_mmpol
       use mstates_ctrl, only: iguiding
       use pcm_cntrl, only: ichpol
-      use const, only: nelec
       use inputflags, only: node_cutoff, eps_node_cutoff
       use precision_kinds, only: dp
       use contrl_file, only: ounit
@@ -66,6 +65,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use multideterminant_mod, only: update_ymat
       use control, only: mode
       use control, only: ipr
+      use system, only: nelec
 
       implicit none
 

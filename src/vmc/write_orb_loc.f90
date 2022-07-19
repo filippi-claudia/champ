@@ -8,7 +8,6 @@
 ! 2) a gaussian basis
       use atom, only: znuc, iwctype, nctype, ncent
       use ghostatom, only: newghostype
-      use const, only: nelec
       use numbas, only: numr
       use coefs, only: coef, nbasis, norb
       use basis, only: zex, betaq
@@ -20,6 +19,7 @@
       use error, only: fatal_error
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
       integer :: iu
       integer :: i, iabs, ic, imax

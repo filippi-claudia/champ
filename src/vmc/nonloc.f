@@ -7,7 +7,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use optwf_parms, only: nparmj
       use vmc_mod, only: norb_tot
       use atom, only: iwctype, ncent, ncent_tot
-      use const, only: nelec
       use elec, only: nup
       use jaso, only: fso
       use optwf_contrl, only: ioptjas
@@ -33,6 +32,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use precision_kinds, only: dp
       use control, only: mode
       use control, only: ipr
+      use system, only: nelec
       implicit none
 
       integer :: i, i1, i2, i_vpsp, iab
@@ -303,11 +303,11 @@ c-----------------------------------------------------------------------
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
-      use const, only: nelec
       use pw_find_image, only: find_image4
       use scale_dist_mod, only: scale_dist, scale_dist1
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, ic, iq, jc, k
@@ -368,7 +368,6 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use atom, only: iwctype, ncent, ncent_tot
-      use const, only: nelec
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
@@ -383,6 +382,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use method_opt, only: method
       use optwf_contrl, only: ioptorb
       use vmc_mod, only: norb_tot
+      use system, only: nelec
       
       implicit none
 
@@ -539,18 +539,17 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use atom, only: iwctype, ncent, ncent_tot
 
       use jaspar, only: sspinn
-      use const, only: nelec
       use da_jastrow4val, only: da_j
       use elec, only: nup
       use bparm, only: nocuspb, nspin2b
       use contr2, only: isc
       use contrl_per, only: iperiodic
-      use const, only: nelec
       use force_analy, only: iforce_analy
       use precision_kinds, only: dp
       use nonlpsi, only: psibnl, dpsibnl, psinl, psianl, dpsianl
       use pw_find_image, only: find_image3
       use scale_dist_mod, only: scale_dist, scale_dist1
+      use system, only: nelec
 
       implicit none
 

@@ -274,9 +274,9 @@ subroutine read_determinants_file(file_determinants)
     use mstates_mod, only: MSTATES
     use general, only: pooldir
     use elec, only: ndn, nup
-    use const, only: nelec
     use method_opt, only: method
     use precision_kinds, only: dp
+      use system, only: nelec
 
     implicit none
 
@@ -407,10 +407,10 @@ subroutine read_multideterminants_file(file_multideterminants)
     use mpiconf, only: wid
     use contrl_file, only: ounit, errunit
     use dets, only: ndet
-    use const, only: nelec
     use multidet, only: irepcol_det, ireporb_det, numrep_det, iwundet
     use inputflags, only: imultideterminants
     use general, only: pooldir
+      use system, only: nelec
 
     implicit none
 

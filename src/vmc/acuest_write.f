@@ -5,7 +5,6 @@ c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
       use force_mod, only: MFORCE
-      use const, only: nelec
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2
@@ -23,6 +22,7 @@ c routine to write out estimators for energy etc.
       use optci_mod, only: optci_prt
       use pcm_vmc, only: pcm_prt
       use control, only: mode
+      use system, only: nelec
       implicit none
 
       integer :: i, ieerr, iferr, ifr, index

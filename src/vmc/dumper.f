@@ -6,7 +6,6 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
 
       use vmc_mod, only: nrad
-      use const, only: nelec
       use config, only: xold
       use csfs, only: nstates
 
@@ -37,6 +36,7 @@ c job where it left off
       use pcm_mod, only: pcm_init
       use mmpol, only: mmpol_init
       use force_analytic, only: force_analy_init
+      use system, only: nelec
       implicit none
 
       integer :: i, id, idfrom, idget, ierr

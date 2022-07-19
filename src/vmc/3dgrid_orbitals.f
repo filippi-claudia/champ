@@ -54,7 +54,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use grid_mod, only: MXNSTEP, MXNSTEP3
       use grid_mod, only: cart_from_int
       use atom, only: cent, ncent
-      use const, only: nelec
       use ghostatom, only: nghostcent
       use phifun, only: d2phin, dphin
       use phifun, only: phin
@@ -69,6 +68,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use basis_fns_mod, only: basis_fns
+      use system, only: nelec
       implicit none
 
       integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin
@@ -653,9 +653,9 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
-      use const, only: nelec
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, i1, i2, i3, iel
@@ -742,9 +742,9 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
-      use const, only: nelec
       
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
       
       integer :: i, i1, i2, i3, iel
@@ -831,9 +831,9 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
-      use const, only: nelec
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, i1, i2, i3, iaxis

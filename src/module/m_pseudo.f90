@@ -27,11 +27,12 @@ module pseudo
     save
 contains
     subroutine allocate_pseudo()
-        use const, only: nelec
         use atom, only: nctype_tot
         use atom, only: ncent_tot
         use pseudo_mod, only: MPS_L
         use force_mod, only: MFORCE
+      use system, only: nelec
+      use system, only: nelec
 
         if (.not. allocated(lpot)) allocate (lpot(nctype_tot), source=0)
         if (.not. allocated(vps)) allocate (vps(nelec, ncent_tot, MPS_L))

@@ -4,12 +4,12 @@
 c Written by Claudia Filippi
 
 
-      use const, only: nelec
       use config, only: xold_dmc
       use hpsie, only: psie
       use mstates_mod, only: MSTATES
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, ic, idum, iel, iflag

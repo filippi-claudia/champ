@@ -17,7 +17,6 @@ c rigidly with that nucleus
       use force_mod, only: MFORCE, MFORCE_WT_PRD
       use forcepar, only: istrech, alfstr
       use atom, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
-      use const, only: nelec
       use force_dmc, only: itausec, nwprod
       use forcepar, only: istrech, nforce
       use forcestr, only: delc
@@ -37,6 +36,7 @@ c rigidly with that nucleus
       use pot, only: pot_nn
       use pcm_mod, only: sigma_R
       use control, only: mode
+      use system, only: nelec
 
       implicit none
 

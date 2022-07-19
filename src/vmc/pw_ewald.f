@@ -1895,10 +1895,10 @@ c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_
 c-----------------------------------------------------------------------
 
       function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
-      use const, only: nelec
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, im, ivec, k, ncent
@@ -1935,10 +1935,10 @@ c Written by Cyrus Umrigar
 c-----------------------------------------------------------------------
 
       function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
-      use const, only: nelec
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, im, ivec, k, ngnorm
@@ -2150,7 +2150,6 @@ c Written by Cyrus Umrigar
       use vmc_mod, only: nmat_dim2
       use atom, only: znuc, cent, iwctype, ncent
 
-      use const, only: nelec
       use ewald, only: b_coul, y_coul
 
       use periodic, only: cutr, glatt
@@ -2164,6 +2163,7 @@ c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
       use control, only: ipr
+      use system, only: nelec
       implicit none
 
       integer :: i, ict, j, k, lowest_pow
@@ -2235,7 +2235,6 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use vmc_mod, only: nmat_dim2
-      use const, only: nelec
       use ewald, only: b_coul_sim, y_coul_sim
 
       use periodic, only: cutr_sim
@@ -2246,6 +2245,7 @@ c Written by Cyrus Umrigar
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
       use control, only: ipr
+      use system, only: nelec
       implicit none
 
       integer :: i, ij, j, k, lowest_pow
@@ -2291,10 +2291,10 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, ir, k, n, ngvec
@@ -2353,7 +2353,6 @@ c-----------------------------------------------------------------------
       subroutine cossin_psi(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
 c Written by Cyrus Umrigar
 c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positions.
@@ -2361,6 +2360,7 @@ c Needed for orbitals and their Laplacian.
 c Presently using cossin_psi_g and cossin_psi_k instead.
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, iflag, ir, k, n
@@ -2453,12 +2453,12 @@ c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng
       subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, im, in, ir, k
@@ -2568,12 +2568,12 @@ c-----------------------------------------------------------------------
 c     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
-      use const, only: nelec
 c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
 c For the k-vectors do it straightforwardly since there are few of them
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, ir, k, ngvec
@@ -2768,11 +2768,11 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, ir, k, n, ngvec

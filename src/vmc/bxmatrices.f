@@ -6,10 +6,10 @@
       use elec, only: ndn, nup
       use dorb_m, only: iworbd
       use slater, only: slmi
-      use const, only: nelec
 
       use precision_kinds, only: dp
       use multiply_slmi_mderiv, only: multiply_slmi_mderiv_simple
+      use system, only: nelec
 
       implicit none
 

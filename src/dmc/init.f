@@ -5,7 +5,7 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use dmc_mod, only: MFPRD1
-      use const, only: etrial, nelec
+      use const, only: etrial
       use forcepar, only: istrech, nforce
       use atom, only: cent, iwctype, ncent, pecent, znuc
       use estcum, only: ipass
@@ -37,6 +37,7 @@ c routine to accumulate estimators for energy etc.
       use walksav_jas_mod, only: walksav_jas
       use determinante_mod, only: compute_determinante_grad
       use control, only: mode
+      use system, only: nelec
       implicit none
 
       integer :: i, ie, ifr, ip, iw

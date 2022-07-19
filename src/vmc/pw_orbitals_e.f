@@ -10,7 +10,6 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
-      use const, only: nelec
       use periodic, only: glatt
       use periodic, only: glatt_sim, gnorm, gvec, igmult, igvec
       use periodic, only: ireal_imag, k_inv, kvec, nband, ng1d, ng1d_sim, ngnorm_orb
@@ -21,6 +20,7 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use contrl_file, only: ounit
       use precision_kinds, only: dp
       use control, only: ipr
+      use system, only: nelec
       implicit none
 
       integer :: iband, iel, ig, ikvec, iorb

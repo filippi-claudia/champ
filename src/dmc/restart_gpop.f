@@ -9,7 +9,7 @@
       use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
       use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
-      use const, only: hb, nelec
+      use const, only: hb
       use forcest, only: fgcm2, fgcum
       use forcepar, only: istrech, nforce
       use age, only: iage, ioldest, ioldestmx
@@ -65,6 +65,7 @@
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
       use control, only: ipr
+      use system, only: nelec
       implicit none
 
       integer :: i, iage_id, ib, ic, id

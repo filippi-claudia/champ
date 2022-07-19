@@ -7,7 +7,6 @@
       use slatn, only: slmin
       use dorb_m, only: iworbd
       use multislatern, only: detn, orbn
-      use const, only: nelec
 
       use slater, only: slmi
 
@@ -16,6 +15,7 @@
       use atom, only: ncent_tot
       use precision_kinds, only: dp
       use orbitals_mod, only: orbitalse
+      use system, only: nelec
       implicit none
 
       integer :: i, iab, iel, iflag, ik
@@ -94,10 +94,10 @@ c-----------------------------------------------------------------------
 
       use orbval, only: dorb
       use slater, only: slmi
-      use const, only: nelec
       use multislater, only: detiab
       use multideterminante_mod, only: multideterminante_grad
       use multideterminant_mod, only: compute_ymat
+      use system, only: nelec
 
       implicit none
 
