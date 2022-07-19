@@ -1,4 +1,4 @@
-module jasn
+module jastrow_update
     !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
     use precision_kinds, only: dp
 
@@ -11,7 +11,18 @@ module jasn
     real(dp), dimension(:, :), allocatable :: fsn !(MELEC,MELEC)
     real(dp) :: fsumn
 
+    real(dp), dimension(:, :), allocatable :: d2ijo !(MELEC,MELEC)
+    real(dp) :: d2o
+    real(dp), dimension(:, :, :), allocatable :: fijo !(3,MELEC,MELEC)
+    real(dp), dimension(:, :), allocatable :: fjo !(3,MELEC)
+    real(dp), dimension(:, :), allocatable :: fso !(MELEC,MELEC)
+    real(dp) :: fsumo
+    !> DMC
+    real(dp) :: d2jo
+
     private
+    public :: d2ijo, d2o, fijo, fjo, fso, fsumo, d2jo
+    public :: allocate_jaso, deallocate_jaso
     public :: d2ijn, d2n, fijn, fjn, fsn, fsumn
     public :: allocate_jasn, deallocate_jasn
     save
@@ -31,28 +42,6 @@ contains
         if (allocated(d2ijn)) deallocate (d2ijn)
     end subroutine deallocate_jasn
 
-end module jasn
-
-module jaso
-    !> Arguments: d2ijo, d2o, fijo, fjo, fso, fsumo
-    use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp), dimension(:, :), allocatable :: d2ijo !(MELEC,MELEC)
-    real(dp) :: d2o
-    real(dp), dimension(:, :, :), allocatable :: fijo !(3,MELEC,MELEC)
-    real(dp), dimension(:, :), allocatable :: fjo !(3,MELEC)
-    real(dp), dimension(:, :), allocatable :: fso !(MELEC,MELEC)
-    real(dp) :: fsumo
-    !> DMC
-    real(dp) :: d2jo
-
-    private
-    public :: d2ijo, d2o, fijo, fjo, fso, fsumo, d2jo
-    public :: allocate_jaso, deallocate_jaso
-    save
-contains
     subroutine allocate_jaso()
       use system, only: nelec
         if (.not. allocated(d2ijo)) allocate (d2ijo(nelec, nelec))
@@ -68,7 +57,7 @@ contains
         if (allocated(d2ijo)) deallocate (d2ijo)
     end subroutine deallocate_jaso
 
-end module jaso
+end module jastrow_update
 
 module jaspar
     !> Arguments: nspin1, nspin2, sspin, sspinn, is
@@ -242,8 +231,8 @@ module m_jastrow
 contains
 
 subroutine allocate_m_jastrow()
-    use jasn, only: allocate_jasn
-    use jaso, only: allocate_jaso
+    use jastrow_update, only: allocate_jasn
+    use jastrow_update, only: allocate_jaso
     use jaspar3, only: allocate_jaspar3
 !    use jaspar4, only: allocate_jaspar4
     use jaspar6, only: allocate_jaspar6
@@ -261,8 +250,8 @@ end subroutine allocate_m_jastrow
 
 
 subroutine deallocate_m_jastrow()
-    use jasn, only: deallocate_jasn
-    use jaso, only: deallocate_jaso
+    use jastrow_update, only: deallocate_jasn
+    use jastrow_update, only: deallocate_jaso
     use jaspar3, only: deallocate_jaspar3
     use jaspar4, only: deallocate_jaspar4
     use jaspar6, only: deallocate_jaspar6

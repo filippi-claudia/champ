@@ -3,9 +3,9 @@
       subroutine jassav(iel,iflag)
 c Written by Claudia Filippi
 
-      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+      use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo
       use velocity_jastrow, only: vj, vjn
-      use jasn, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
+      use jastrow_update, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
       use system, only: nelec
 
       implicit none

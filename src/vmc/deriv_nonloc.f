@@ -8,7 +8,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar, only: nspin2, sspinn, is
       use da_jastrow4val, only: da_j
       use derivjas, only: go
-      use jaso, only: fso
+      use jastrow_update, only: fso
       use jaspointer, only: npoint, npointa
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_parms, only: nparmj

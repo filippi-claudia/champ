@@ -5,7 +5,7 @@ c Written by Claudia Filippi
 
       use dmc_mod, only: MWALK
       use branch, only: nwalk
-      use jaso, only: fijo, fjo, fso, fsumo
+      use jastrow_update, only: fijo, fjo, fso, fsumo
       use velocity_jastrow, only: vj
       use mpi
 
