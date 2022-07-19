@@ -8,20 +8,6 @@ module system
     integer :: ndn
     integer :: nup
 
-
-    private
-    public :: nelec
-    public   :: ndn, nup
-    save
-
-end module system
-
-module atom
-    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
-    use precision_kinds, only: dp
-
-    implicit none
-
     real(dp), dimension(:, :), allocatable :: cent
     real(dp), dimension(:), allocatable :: znuc
     real(dp) :: pecent
@@ -32,9 +18,12 @@ module atom
     character(len=2), dimension(:), allocatable :: atomtyp
 
     private
+    public :: nelec
+    public   :: ndn, nup
     public   :: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
     public   :: allocate_atom, deallocate_atom
     save
+    
 contains
     subroutine allocate_atom()
 
@@ -50,7 +39,7 @@ contains
         if (allocated(cent)) deallocate (cent)
     end subroutine deallocate_atom
 
-end module atom
+end module system
 
 module ghostatom
     !> Arguments: newghostype, nghostcent
