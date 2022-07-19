@@ -3,7 +3,6 @@
       subroutine send_walker(irecv)
 c Written by Claudia Filippi
 
-      use forcepar, only: nforce
       use age, only: iage
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use force_dmc, only: nwprod
@@ -16,6 +15,7 @@ c Written by Claudia Filippi
       use mmpol_reduce_mod, only: mmpol_send, mmpol_recv
       use pcm_reduce_mod, only: pcm_send, pcm_recv
       use system, only: nelec
+      use multiple_geo, only: nforce
 
       implicit none
 

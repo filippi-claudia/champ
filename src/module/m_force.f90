@@ -1,31 +1,21 @@
 module multiple_geo
-
+    use precision_kinds, only: dp
      implicit none
 
      integer :: MFORCE
      integer, parameter :: MFORCE_WT_PRD = 1000
      integer, parameter :: MWF = 3
+     integer :: nforce
+     integer :: istrech
+     real(dp) :: alfstr
 
      private
      public :: MFORCE, MFORCE_WT_PRD, MWF
+     public :: nforce
+     public   ::  istrech, alfstr
      save
  end module multiple_geo
 
- module forcepar
-    !> Arguments: istrech, nforce, alfstr
-    use multiple_geo, only: MFORCE
-    use precision_kinds, only: dp
-
-    implicit none
-
-    integer :: istrech
-    integer :: nforce
-    real(dp) :: alfstr
-
-    private
-    public   ::  istrech, nforce, alfstr
-    save
- end module forcepar
 
 module wfsec
     !> Arguments: iwf, iwftype, nwftype

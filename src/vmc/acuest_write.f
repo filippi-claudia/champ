@@ -10,7 +10,6 @@ c routine to write out estimators for energy etc.
       use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2
       use estcum, only: ecum, iblk, pecum, tjfcum, tpbcum
       use estsum, only: acc
-      use forcepar, only: nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum
       !use contrl, only: nstep
@@ -23,6 +22,7 @@ c routine to write out estimators for energy etc.
       use pcm_vmc, only: pcm_prt
       use control, only: mode
       use system, only: nelec
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, ieerr, iferr, ifr, index

@@ -19,7 +19,6 @@ c routine to accumulate estimators for energy etc.
       use estpsi, only: apsi, aref, detref
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
       use multidet, only: kref
@@ -66,6 +65,7 @@ c routine to accumulate estimators for energy etc.
       use nodes_distance_mod, only: rnorm_nodes_num
       use control, only: ipr
       use system, only: nelec
+      use multiple_geo, only: nforce
 
 
       implicit none

@@ -15,7 +15,6 @@ c and sa, pa, da asymptotic functions
       use config, only: eold
       use config, only: psido, psijo
       use config, only: xold
-      use forcepar, only: nforce
       use wfsec, only: iwftype, nwftype
       use coefs, only: coef, nbasis
 !      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
@@ -36,6 +35,7 @@ c and sa, pa, da asymptotic functions
       use acuest_mod, only: acuest
       use metrop_mov1_slat, only: metrop6
       use system, only: nelec
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, ii, j, jj, l

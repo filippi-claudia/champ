@@ -2,11 +2,11 @@
       contains
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
 
-      use forcepar, only: nforce
       use c_averages, only: prop, wprop
       use c_averages_index, only: jderiv
 
       use precision_kinds, only: dp
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: idrifdifgfunc, ifr, iw, mwalk
@@ -37,9 +37,9 @@
 
       subroutine init_averages_index
 
-      use forcepar, only: nforce
       use c_averages_index, only: jeloc, jderiv
       use prp000, only: nprop
+      use multiple_geo, only: nforce
 
       implicit none
 
@@ -103,11 +103,11 @@ c deriv
 
       subroutine average_write
 
-      use forcepar, only: nforce
       use c_averages, only: cum_av, cum_w
       use c_averages_index, only: jderiv
 
       use precision_kinds, only: dp
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: ifr

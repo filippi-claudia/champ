@@ -14,7 +14,6 @@ c routine to print out final results
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
-      use forcepar, only: nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum
       use grdntspar, only: igrdtype, ngradnts
@@ -42,6 +41,7 @@ c routine to print out final results
       use properties_mod, only: prop_fin
       use control, only: mode
       use system, only: nelec
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, iciprt_sav, ifr, index, istate

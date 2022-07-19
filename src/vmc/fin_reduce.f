@@ -9,7 +9,6 @@ c MPI version written by Claudia Filippi
       use est2cm, only: ecm21
       use estcum, only: ecum1, iblk
       use estsig, only: ecm21s, ecum1s
-      use forcepar, only: nforce
       use forcewt, only: wcum
       use mpiconf, only: nproc, wid
       use step, only: rprob, suc, try
@@ -38,6 +37,7 @@ c MPI version written by Claudia Filippi
       use optorb_f_mod, only: optorb_fin
       use optci_mod, only: optci_fin
       use optjas_mod, only: optjas_fin
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, id, ierr, istate

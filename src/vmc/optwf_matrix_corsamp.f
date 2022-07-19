@@ -12,7 +12,6 @@
 c written by Claudia Filippi
       use precision_kinds, only: dp
       use csfs, only: nstates
-      use forcepar, only: nforce
       use numbas, only: numr
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
@@ -38,6 +37,7 @@ c written by Claudia Filippi
       use optwf_lin_matrix, only: compute_dparm, setup_optimization
       use set_input_data, only: set_displace_zero
       use read_bas_num_mod, only: read_bas_num
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk

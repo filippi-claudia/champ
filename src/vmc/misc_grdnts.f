@@ -91,12 +91,12 @@ c   calculated using correlated smapling.
       subroutine finwrt_grdnts_cart(forces_ave,forces_err)
       use multiple_geo, only: MFORCE
       use system, only: iwctype, ncent
-      use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdxyz, ngradnts
       use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: ic, ig, k, if
@@ -160,13 +160,13 @@ c   calculated using correlated smapling.
       subroutine finwrt_grdnts_zmat(forces_ave,forces_err)
       use multiple_geo, only: MFORCE
       use system, only: iwctype, ncent
-      use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
       use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: ic, ifr, ig, k, na
@@ -411,13 +411,13 @@ c   from energy differences  calculated using correlated smapling.
       subroutine finwrt_diaghess_zmat(forces_ave,forces_err)
       use multiple_geo, only: MFORCE
       use system, only: iwctype, ncent
-      use forcepar, only: nforce
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
       use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: ic, ifr, ig, k, na

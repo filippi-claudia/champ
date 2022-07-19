@@ -8,7 +8,6 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
 
       use precision_kinds, only: dp
       use const, only: pi
-      use forcepar, only: nforce
       use contrldmc, only: idmc
       use estcum, only: ipass
       use force_dmc, only: nwprod
@@ -33,6 +32,7 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use acuest_mod, only: acuest
       use acues1_reduce_mod, only: acues1_reduce
       use finwrt_mod, only: finwrt
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, j

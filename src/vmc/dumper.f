@@ -13,7 +13,6 @@ c job where it left off
       use estcum, only: ecum, ecum1, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
-      use forcepar, only: nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum
       use mpiconf, only: idtask, nproc, wid
@@ -37,6 +36,7 @@ c job where it left off
       use mmpol, only: mmpol_init
       use force_analytic, only: force_analy_init
       use system, only: nelec
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, id, idfrom, idget, ierr

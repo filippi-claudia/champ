@@ -11,7 +11,7 @@
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
       use const, only: hb
       use forcest, only: fgcm2, fgcum
-      use forcepar, only: istrech, nforce
+      use multiple_geo, only: istrech
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
@@ -70,6 +70,7 @@
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, iage_id, ib, ic, id

@@ -29,7 +29,6 @@ subroutine parser
 ! in the replacement of preprocess input
   use system,           	only: nctype, ncent
   use wfsec,          	only: nwftype
-  use forcepar,       	only: nforce
   use multiple_geo,      	only: MFORCE
 
 ! variables from process input
@@ -53,7 +52,6 @@ subroutine parser
   use general, 		      only: filenames_bas_num
   use csfs, 		        only: cxdet, ncsf, nstates
   use dets, 		        only: cdet, ndet
-  use forcepar, 	      only: nforce
   use grdntspar, 	      only: igrdtype, ngradnts
   use header, 		      only: title
   use jaspar3, 		      only: b, c, scalek
@@ -193,6 +191,7 @@ subroutine parser
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use multiple_geo, only: nforce
 ! Note the following modules are new additions
 
 !

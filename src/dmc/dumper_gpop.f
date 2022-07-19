@@ -14,7 +14,6 @@ c job where it left off
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
       use const, only: hb
       use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
@@ -52,6 +51,7 @@ c job where it left off
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, ib, ic, id, ierr

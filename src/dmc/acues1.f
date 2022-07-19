@@ -6,7 +6,6 @@ c routine to accumulate estimators for energy etc.
 
       use precision_kinds, only: dp
       use const, only: etrial
-      use forcepar, only: nforce
       use contrldmc, only: idmc
       use contrldmc, only: nfprod
       use estcum, only: ipass
@@ -25,6 +24,7 @@ c routine to accumulate estimators for energy etc.
       use acues1_gpop_mod, only: acues1_gpop
       use control, only: ipr
       use control, only: mode
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: ifr, ipmod, nfpro

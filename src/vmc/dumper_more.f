@@ -20,7 +20,6 @@ c job where it left off
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
       use optwf_contrl, only: ioptorb
@@ -67,6 +66,7 @@ c job where it left off
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use multiple_geo, only: nforce
       
       implicit none
 

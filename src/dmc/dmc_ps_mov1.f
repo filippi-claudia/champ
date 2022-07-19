@@ -45,7 +45,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
       use const, only: etrial, hb
-      use forcepar, only: istrech, nforce
+      use multiple_geo, only: istrech
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: iacc_rej, icross, icut_br, icut_e, idmc, ipq, nfprod, rttau, tau
       use system, only: cent
@@ -99,6 +99,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use control, only: ipr
       use system, only: nelec
       use system, only: nup
+      use multiple_geo, only: nforce
 
       implicit none
 

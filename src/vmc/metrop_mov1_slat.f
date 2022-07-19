@@ -19,7 +19,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use config, only: tjfoo, vnew, vold, xnew, xold
       use csfs, only: nstates
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: nforce
       use forcewt, only: wsum
       use kinet, only: dtdx2n, dtdx2o
       use stats, only: rejmax
@@ -66,6 +65,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use control, only: ipr
       use system, only: nelec
       use system, only: nup
+      use multiple_geo, only: nforce
 
       implicit none
 

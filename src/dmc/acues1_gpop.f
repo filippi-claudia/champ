@@ -6,7 +6,6 @@ c routine to accumulate estimators for energy etc.
 
       use precision_kinds, only: dp
       use const, only: etrial
-      use forcepar, only: nforce
       use contrldmc, only: idmc
       use contrldmc, only: nfprod
       use estcum, only: ipass
@@ -26,6 +25,7 @@ c routine to accumulate estimators for energy etc.
       use contrl_file, only: ounit
       use redistribute_mod, only: redistribute
       use control, only: ipr
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: ierr, ifr, ipmod, mod, iabs, nfpro

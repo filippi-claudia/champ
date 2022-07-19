@@ -5,7 +5,6 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
       use age, only: ioldest
       use estcum, only: iblk
       use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
@@ -42,6 +41,7 @@ c routine to accumulate estimators for energy etc.
       use prop_reduce_mod, only: prop_reduce
       use optjas_mod, only: optjas_cum
       use control, only: mode
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, iderivgerr, iegerr, ierr, ifgerr

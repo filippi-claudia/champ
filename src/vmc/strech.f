@@ -15,10 +15,10 @@ c rigidly with that nucleus
       use precision_kinds, only: dp
       use pcm, only: MCHS, MCHV
       use multiple_geo, only: MFORCE, MFORCE_WT_PRD
-      use forcepar, only: istrech, alfstr
+      use multiple_geo, only: istrech, alfstr
       use system, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
       use force_dmc, only: itausec, nwprod
-      use forcepar, only: istrech, nforce
+      use multiple_geo, only: istrech
       use forcestr, only: delc
       use pcm_force, only: sch_s
       use wfsec, only: iwftype
@@ -37,6 +37,7 @@ c rigidly with that nucleus
       use pcm_mod, only: sigma_R
       use control, only: mode
       use system, only: nelec
+      use multiple_geo, only: nforce
 
       implicit none
 

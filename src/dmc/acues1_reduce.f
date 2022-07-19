@@ -4,7 +4,6 @@
 
       use precision_kinds, only: dp
       use vmc_mod, only: nrad
-      use forcepar, only: nforce
       use estcum, only: iblk
       use stats, only: acc, nacc, nodecr, trymove
       use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
@@ -31,6 +30,7 @@
       use optx_jas_orb_reduce_mod, only: optx_jas_orb_reduce
       use optx_jas_ci_reduce_mod, only: optx_jas_ci_reduce
       use control, only: mode
+      use multiple_geo, only: nforce
 
       implicit none
 

@@ -6,7 +6,7 @@ c routine to accumulate estimators for energy etc.
 
       use dmc_mod, only: MFPRD1
       use const, only: etrial
-      use forcepar, only: istrech, nforce
+      use multiple_geo, only: istrech
       use system, only: cent, iwctype, ncent, pecent, znuc
       use estcum, only: ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
@@ -38,6 +38,7 @@ c routine to accumulate estimators for energy etc.
       use determinante_mod, only: compute_determinante_grad
       use control, only: mode
       use system, only: nelec
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, ie, ifr, ip, iw

@@ -4,7 +4,6 @@
 c Written by Cyrus Umrigar
 
       use dmc_mod, only: MWALK
-      use forcepar, only: nforce
       use age, only: iage
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use stats, only: nbrnch
@@ -23,6 +22,7 @@ c Written by Cyrus Umrigar
       use error, only: fatal_error
       use rannyu_mod, only: rannyu
       use system, only: nelec
+      use multiple_geo, only: nforce
 
       implicit none
 

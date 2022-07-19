@@ -8,7 +8,6 @@ c routine to print out final results
       use vmc_mod, only: delri
       use const, only: etrial
       use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
       use age, only: iage, ioldest, ioldestmx
       use contrl_per, only: iperiodic
       use contrldmc, only: idmc, nfprod, tau
@@ -45,6 +44,7 @@ c routine to print out final results
       use control, only: ipr
       use control, only: mode
       use system, only: nelec
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, ierr, ifr, j, k

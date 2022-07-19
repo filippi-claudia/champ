@@ -378,12 +378,12 @@ subroutine inputforces
 ! Set all force displacements to zero
 !    use multiple_geo, only: MWF
 !    use multiple_geo, only: MFORCE
-    use forcepar, only: nforce
     use forcestr, only: delc
     use wfsec, only: iwftype, nwftype
     use contrl_file, only: errunit
     use system, only: ncent
     use precision_kinds, only: dp
+      use multiple_geo, only: nforce
 
     implicit none
     integer             :: i
