@@ -10,7 +10,6 @@ module const
     real(dp) :: fbias
     real(dp) :: hb
     integer  :: imetro
-    integer  :: nelec
     real(dp) :: pi = 4.0d0*datan(1.0d0)
 
     private
