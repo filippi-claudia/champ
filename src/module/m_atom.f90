@@ -1,3 +1,17 @@
+module system
+    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
+    use precision_kinds, only: dp
+
+    implicit none
+
+    integer  :: nelec
+
+    private
+    public :: nelec
+    save
+
+end module system
+
 module atom
     !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
     use precision_kinds, only: dp

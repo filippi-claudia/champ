@@ -14,7 +14,7 @@ module const
     real(dp) :: pi = 4.0d0*datan(1.0d0)
 
     private
-    public   :: pi, hb, etrial, delta, deltai, fbias, nelec, imetro
+    public   :: pi, hb, etrial, delta, deltai, fbias, imetro
     save
 end module const
 
