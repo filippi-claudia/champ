@@ -6,7 +6,7 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nrad
-      use system, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
+      use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
       use system, only: newghostype, nghostcent
       use const, only: hb, delta
@@ -67,6 +67,7 @@ c job where it left off
       use system, only: nup
       use system, only: ndn
       use multiple_geo, only: nforce
+      use multiple_geo, only: pecent
       
       implicit none
 

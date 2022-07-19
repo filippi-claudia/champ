@@ -123,13 +123,14 @@ subroutine read_molecule_file(file_molecule)
     !! @date
     use custom_broadcast, only: bcast
     use mpiconf, only: wid
-    use system, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+    use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
     use system, 		    only: newghostype, nghostcent
     use inputflags, only: igeometry
     use periodic_table, only: atom_t, element
     use contrl_file, only: ounit, errunit
     use general, only: pooldir
     use precision_kinds, only: dp
+      use multiple_geo, only: pecent
 
     implicit none
 

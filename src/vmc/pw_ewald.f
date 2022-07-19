@@ -6,7 +6,7 @@ c Written by Cyrus Umrigar
       use pseudo_mod, only: MPS_L, MPS_GRID
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
-      use system, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
+      use system, only: znuc, iwctype, nctype, ncent, nctype_tot
       use const, only: pi
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
       use ewald_basis, only: vps_basis_fourier
@@ -27,6 +27,7 @@ c Written by Cyrus Umrigar
       use grid3d_param, only: origin
       use precision_kinds, only: dp
       use control, only: ipr
+      use multiple_geo, only: pecent
       implicit none
 
       integer :: i, ict, ifcon, ig, in
@@ -2034,7 +2035,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald_old
 c Written by Cyrus Umrigar
 
-      use system, only: znuc, cent, pecent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
 
       use ewald, only: b_coul, y_coul
 
@@ -2044,6 +2045,7 @@ c Written by Cyrus Umrigar
       use periodic, only: np, vcell
       use periodic, only: vcell_sim, znuc2_sum
       use precision_kinds, only: dp
+      use multiple_geo, only: pecent
       implicit none
 
       integer :: i, j, k, lowest_pow
@@ -2088,7 +2090,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald
 c Written by Cyrus Umrigar
 
-      use system, only: znuc, cent, pecent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
 
       use ewald, only: b_coul, y_coul
 
@@ -2099,6 +2101,7 @@ c Written by Cyrus Umrigar
       use periodic, only: np, vcell
       use periodic, only: vcell_sim, znuc2_sum, znuc_sum
       use precision_kinds, only: dp
+      use multiple_geo, only: pecent
       implicit none
 
       integer :: i, j, k, lowest_pow

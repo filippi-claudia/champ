@@ -43,7 +43,7 @@ subroutine parser
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use multiple_geo,      	only: MFORCE, MWF
   use vmc_mod, 		      only: norb_tot, mterms
-  use system, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+  use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 		      only: nspin1, nspin2, is
   use system, 	      only: newghostype, nghostcent
   use const, only: pi, hb, etrial, delta, deltai, fbias, imetro
@@ -192,6 +192,7 @@ subroutine parser
       use system, only: nup
       use system, only: ndn
       use multiple_geo, only: nforce
+      use multiple_geo, only: pecent
 ! Note the following modules are new additions
 
 !

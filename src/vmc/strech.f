@@ -16,7 +16,7 @@ c rigidly with that nucleus
       use pcm, only: MCHS, MCHV
       use multiple_geo, only: MFORCE, MFORCE_WT_PRD
       use multiple_geo, only: istrech, alfstr
-      use system, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
+      use system, only: znuc, cent, iwctype, ncent, ncent_tot
       use multiple_geo, only: itausec, nwprod
       use multiple_geo, only: istrech
       use multiple_geo, only: delc
@@ -38,6 +38,7 @@ c rigidly with that nucleus
       use control, only: mode
       use system, only: nelec
       use multiple_geo, only: nforce
+      use multiple_geo, only: pecent
 
       implicit none
 

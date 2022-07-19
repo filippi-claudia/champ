@@ -15,7 +15,7 @@
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
-      use system, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use system, only: cent, iwctype, ncent, nctype, znuc
       use system, only: ncent_tot
       use estcum, only: iblk, ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
@@ -71,6 +71,7 @@
       use system, only: nup
       use system, only: ndn
       use multiple_geo, only: nforce
+      use multiple_geo, only: pecent
       implicit none
 
       integer :: i, iage_id, ib, ic, id

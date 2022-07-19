@@ -17,7 +17,7 @@ c job where it left off
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
-      use system, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use system, only: cent, iwctype, ncent, nctype, znuc
       use estcum, only: iblk, ipass
       use config, only: xold_dmc
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
@@ -58,6 +58,7 @@ c job where it left off
       use system, only: nup
       use system, only: ndn
       use multiple_geo, only: nforce
+      use multiple_geo, only: pecent
       implicit none
 
       integer :: i, ib, ic, id, ierr

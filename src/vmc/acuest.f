@@ -7,7 +7,7 @@ c routine to accumulate estimators for energy etc.
       use precision_kinds, only: dp
       use multiple_geo, only: MFORCE
       use vmc_mod, only: nrad
-      use system, only: znuc, cent, pecent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino
@@ -66,6 +66,7 @@ c routine to accumulate estimators for energy etc.
       use control, only: ipr
       use system, only: nelec
       use multiple_geo, only: nforce
+      use multiple_geo, only: pecent
 
 
       implicit none

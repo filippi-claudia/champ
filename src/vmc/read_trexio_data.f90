@@ -37,7 +37,7 @@ module trexio_read_data
         !! @date 07 October 2021
         use custom_broadcast, only: bcast
         use mpiconf, only: wid
-        use system, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+        use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
         use system, 		    only: newghostype, nghostcent
         use inputflags, only: igeometry
         use periodic_table, only: atom_t, element
@@ -50,6 +50,7 @@ module trexio_read_data
 #if defined(TREXIO_FOUND)
         use trexio
         use contrl_file, only: backend
+      use multiple_geo, only: pecent
 
 #endif
 
