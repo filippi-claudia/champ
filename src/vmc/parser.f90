@@ -49,7 +49,8 @@ subroutine parser
   use atom, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 		      only: nspin1, nspin2, is
   use ghostatom, 	      only: newghostype, nghostcent
-  use const, 		        only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+  use const, 		        only: etrial, delta, deltai, fbias, nelec, imetro, ipr
+  use constants, only: hb
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num
   use csfs, 		        only: cxdet, ncsf, nstates
@@ -192,6 +193,7 @@ subroutine parser
   use multidet,         only: kref_fixed
 
   use precision_kinds,  only: dp
+      use constants, only: pi
 ! Note the following modules are new additions
 
 !
@@ -287,7 +289,7 @@ subroutine parser
   cseed       = fdf_string('seed', "1837465927472523")
   ipr         = fdf_get('ipr', -1)
   eunit       = fdf_get('unit', 'Hartrees')
-  hb          = fdf_get('mass', 0.5d0)
+  !hb          = fdf_get('mass', 0.5d0) ! Always 0.5
   scalecoef   = fdf_get('scalecoef',1.0d0)
   i3dgrid     = fdf_get('i3dgrid',0)
   i3dsplorb   = fdf_get('i3dsplorb',0)

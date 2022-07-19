@@ -133,7 +133,7 @@ c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
 
       use atom, only: iwctype, ncent, ncent_tot
-      use const, only: hb, nelec
+      use const, only: nelec
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_vj
       use da_orbval, only: da_orb
@@ -150,6 +150,7 @@ c-----------------------------------------------------------------------
       use slater, only: slmi
       use multislater, only: detiab
       use precision_kinds, only: dp
+      use constants, only: hb
 
       implicit none
 

@@ -210,7 +210,7 @@ c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
       use atom, only: ncent
-      use const, only: hb, nelec
+      use const, only: nelec
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb, da_dorb
       use derivjas, only: g
@@ -226,6 +226,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use optwf_handle_wf, only: dcopy
       use sr_more, only: daxpy
+      use constants, only: hb
       implicit none
 
       integer :: i, ic, iorb, iparm, l

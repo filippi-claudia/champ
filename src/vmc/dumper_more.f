@@ -9,7 +9,7 @@ c job where it left off
       use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
       use ghostatom, only: newghostype, nghostcent
-      use const, only: hb, delta, nelec
+      use const, only: delta, nelec
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino, tjfo
       use config, only: vold, xnew, xold
@@ -65,6 +65,7 @@ c job where it left off
       use force_analytic, only: force_analy_rstrt, force_analy_dump
       use multiple_states, only: efficiency_rstrt, efficiency_dump
       use properties_mod, only: prop_rstrt, prop_dump
+      use constants, only: hb
       
       implicit none
 

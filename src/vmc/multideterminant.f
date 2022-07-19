@@ -2,7 +2,7 @@
       contains
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
-      use const, only: hb, nelec
+      use const, only: nelec
       use csfs, only: nstates
       use dets, only: ndet
       use elec, only: ndn, nup
@@ -24,6 +24,7 @@
       use precision_kinds, only: dp
       use bxmatrices, only: bxmatrix
       use matinv_mod, only: matinv
+      use constants, only: hb
       implicit none
 
       integer :: i, iab, iel, index_det, iorb, kun, kw

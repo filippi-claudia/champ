@@ -44,7 +44,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use const, only: etrial, hb, ipr, nelec
+      use const, only: etrial, ipr, nelec
       use forcepar, only: istrech, nforce
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: iacc_rej, icross, icut_br, icut_e, idmc, ipq, nfprod, rttau, tau
@@ -97,6 +97,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use distances_mod,  only: distancese_restore
       use rannyu_mod,     only: rannyu
       use gauss_mod,      only: gauss
+      use constants, only: hb
 
       implicit none
 

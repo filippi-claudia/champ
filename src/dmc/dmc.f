@@ -7,7 +7,6 @@ c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
 c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
 
       use precision_kinds, only: dp
-      use const, only: pi
       use forcepar, only: nforce
       use contrldmc, only: idmc
       use estcum, only: ipass
@@ -33,6 +32,7 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use acuest_mod,     only: acuest
       use acues1_reduce_mod,only: acues1_reduce
       use finwrt_mod,     only: finwrt
+      use constants, only: pi
       implicit none
 
       integer :: i, j
@@ -126,8 +126,6 @@ c        nspin12= If (11) Parallel-spin a's = 1/2 antipar-spin a's
 c                         Parallel-spin b's = antipar-spin b's
 c                    (12) a's and b's for par and antipar are indep.
 c                 The above applies to good psi.
-
-      pi=four*datan(one)
 
       open(unit=8,form='formatted',file='tape8')
       rewind 8
