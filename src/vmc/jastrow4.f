@@ -13,7 +13,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use scale_dist_mod, only: scale_dist2, switch_scale2
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
       use system, only: nelec

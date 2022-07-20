@@ -19,7 +19,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use contrl_file,    only: ounit
       use vardep, only: cdep, iwdepend, nvdepend
       use distance_mod, only: rshift, r_en, rvec_en
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use cuspmat4, only: d, iwc4
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp

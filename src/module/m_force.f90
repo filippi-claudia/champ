@@ -77,7 +77,7 @@ end module multiple_geo
 
 
 
- module force_analy
+ module force_analytic
      !> Arguments: iforce_analy, iuse_zmat, alfgeo
      use precision_kinds, only: dp
 
@@ -90,7 +90,7 @@ end module multiple_geo
      private
      public   :: iforce_analy, iuse_zmat, alfgeo
      save
- end module force_analy
+ end module force_analytic
 
  module forcewt
      !> Arguments: wcum, wsum

@@ -35,7 +35,7 @@ c routine to accumulate estimators for energy etc.
       use contrl_file, only: ounit
       
       use distances_mod, only: distances
-      use force_analytic, only: force_analy_save
+      use force_analytictic, only: force_analy_save
       use optorb_f_mod, only: optorb_save
       use optci_mod, only: optci_save
       use optjas_mod, only: optjas_save
@@ -49,7 +49,7 @@ c routine to accumulate estimators for energy etc.
       use strech_mod, only: strech
       use pot, only: pot_nn
       use multiple_states, only: efficiency_init
-      use force_analytic, only: force_analy_init, force_analy_cum
+      use force_analytictic, only: force_analy_init, force_analy_cum
       use properties_mod, only: prop_init, prop_cum
       use pcm_mod, only: pcm_init
       use mmpol, only: mmpol_init

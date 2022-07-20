@@ -13,11 +13,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use Bloc, only: b_dj
       use coefs, only: norb
       use Bloc, only: b
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analytic, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, vps
       use b_tmove, only: b_t, iskip
       use Bloc, only: b
-      use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+      use force_analytic, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, vps
       use b_tmove, only: b_t, iskip
       use qua, only: nquad, wq, xq, yq, zq
@@ -301,7 +301,7 @@ c-----------------------------------------------------------------------
 
       use system, only: cent, ncent, ncent_tot
       use contrl_per, only: iperiodic
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use qua, only: xq, yq, zq
       use pw_find_image, only: find_image4
       use scale_dist_mod, only: scale_dist, scale_dist1
@@ -545,7 +545,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use da_jastrow4val, only: da_j
       use bparm, only: nocuspb, nspin2b
       use contrl_per, only: iperiodic
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use precision_kinds, only: dp
       use nonlpsi, only: psibnl, dpsibnl, psinl, psianl, dpsianl
       use pw_find_image, only: find_image3
@@ -684,7 +684,7 @@ c-----------------------------------------------------------------------
       use system, only: ncent, ncent_tot
       use Bloc, only: b_da
       use coefs, only: norb
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use pseudo, only: lpot, vps
       use da_pseudo, only: da_vps
       use qua, only: wq, xq, yq, zq

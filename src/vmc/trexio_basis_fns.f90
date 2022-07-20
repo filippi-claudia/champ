@@ -18,7 +18,7 @@ module trexio_basis_fns_mod
       use numbas1, only: iwlbas, nbastyp
       use phifun, only: phin, dphin, d2phin, d2phin_all, d3phin, n0_nbasis
       use multiple_geo, only: iwf
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use splfit_mod, only: splfit
       use slm_mod, only: slm
 #if defined(TREXIO_FOUND)

@@ -15,7 +15,7 @@
       use Bloc, only: b, tildem, xmat
       use denergy_det_m, only: denergy_det, allocate_denergy_det_m
       use multimat, only: aa, wfmat
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use orbval, only: nadorb, orb
       use slater, only: d2dx2, ddx, slmi
       use multislater, only: detiab

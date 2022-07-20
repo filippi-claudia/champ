@@ -14,7 +14,7 @@ module optwf_sr_mod
 
     use precision_kinds, only: dp
     use optwf_control, only: ioptci, ioptjas, ioptorb
-    use force_analy, only: iforce_analy
+    use force_analytic, only: iforce_analy
 !    use contrl, only: nblk_max
     use control_vmc, only: vmc_nblk_max
     use optwf_control, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
@@ -77,7 +77,7 @@ contains
         use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
         !use contrl, only: nblk
         use control_vmc, only: vmc_nblk
-        use force_analy, only: alfgeo
+        use force_analytic, only: alfgeo
         use optwf_control, only: nparm
         use orbval, only: nadorb
         use contrl_file, only: ounit

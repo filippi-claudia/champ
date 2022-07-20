@@ -237,7 +237,7 @@ c-----------------------------------------------------------------------
 
       use system, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
 
       implicit none
 
@@ -271,7 +271,7 @@ c-----------------------------------------------------------------------
       use system, only: ncent
       use da_energy_now, only: da_energy, da_psi
       use da_energy_sumcum, only: da_energy_sum, da_psi_sum
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use precision_kinds, only: dp
 
       implicit none
@@ -296,7 +296,7 @@ c-----------------------------------------------------------------------
 
       use system, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use precision_kinds, only: dp
 
       implicit none
@@ -323,7 +323,7 @@ c-----------------------------------------------------------------------
       use system, only: ncent
       use force_fin, only: da_energy_ave
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use precision_kinds, only: dp
 
       implicit none
@@ -359,7 +359,7 @@ c-----------------------------------------------------------------------
 
       use system, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
 
       implicit none
 
@@ -376,7 +376,7 @@ c-----------------------------------------------------------------------
 
       use system, only: ncent
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
 
       implicit none
 

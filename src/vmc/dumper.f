@@ -34,7 +34,7 @@ c job where it left off
       use properties_mod, only: prop_init
       use pcm_mod, only: pcm_init
       use mmpol, only: mmpol_init
-      use force_analytic, only: force_analy_init
+      use force_analytictic, only: force_analy_init
       use system, only: nelec
       use multiple_geo, only: nforce
       implicit none

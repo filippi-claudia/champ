@@ -222,7 +222,7 @@ c-----------------------------------------------------------------------
       use Bloc, only: b_dj
       use coefs, only: norb
       use Bloc, only: b
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use velocity_jastrow, only: vj
       use orbval, only: ddorb, dorb, nadorb
       use precision_kinds, only: dp

@@ -10,11 +10,11 @@
 !      use contrl, only: nblk, nblk_max, nblk_ci
       use control_vmc, only: vmc_nblk, vmc_nblk_max, vmc_nblk_ci
       use orbval, only: nadorb
-      use force_analy, only: iforce_analy, alfgeo
+      use force_analytic, only: iforce_analy, alfgeo
       use mstates_ctrl, only: iguiding
       use optwf_sr_mod, only: sr
       use optwf_corsam, only: sigma
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_control, only: iroot_geo
       use optwf_control, only: dparm_norm_min, nopt_iter, micro_iter_sr

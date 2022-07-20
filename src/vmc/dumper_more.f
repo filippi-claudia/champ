@@ -59,7 +59,7 @@ c job where it left off
       use optx_orb_ci, only: optx_orb_ci_rstrt, optx_orb_ci_dump
       use optx_jas_ci, only: optx_jas_ci_rstrt, optx_jas_ci_dump
       use optx_jas_orb, only: optx_jas_orb_rstrt, optx_jas_orb_dump
-      use force_analytic, only: force_analy_rstrt, force_analy_dump
+      use force_analytictic, only: force_analy_rstrt, force_analy_dump
       use multiple_states, only: efficiency_rstrt, efficiency_dump
       use properties_mod, only: prop_rstrt, prop_dump
       use system, only: nelec

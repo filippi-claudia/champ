@@ -91,7 +91,7 @@ subroutine parser
 
   use dorb_m, 		      only: iworbd
   use contrl_per, 	    only: iperiodic, ibasis
-  use force_analy, 	    only: iforce_analy, iuse_zmat, alfgeo
+  use force_analytic, 	    only: iforce_analy, iuse_zmat, alfgeo
   use multiple_geo, 	      only: itausec, nwprod
   use multiple_geo, only: delc
   use multiple_geo, only: iwftype

@@ -44,7 +44,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         use system, only: cent, ncent
         use force_fin, only: da_energy_ave
         use zmatrix, only: czint, izcmat
-        use force_analy, only: iforce_analy, iuse_zmat, alfgeo
+        use force_analytic, only: iforce_analy, iuse_zmat, alfgeo
       use contrl_file, only: ounit
       implicit none
 
@@ -87,7 +87,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use system, only: ncent
       use force_fin, only: da_energy_ave
-      use force_analy, only: iforce_analy
+      use force_analytic, only: iforce_analy
       use mpi
 
       implicit none
