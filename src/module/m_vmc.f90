@@ -1,6 +1,6 @@
 module vmc_mod
     !> Arguments:
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     ! nelec      = number of electrons
     ! norb_tot   = number of orbitals read from the orbital file
@@ -51,11 +51,8 @@ module vmc_mod
     save
 contains
     subroutine set_vmc_size
-        use system, only: nctype_tot, ncent_tot
+      use system,  only: ncent_tot,nctype_tot,ndn,nelec,nup
 
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
         nmat_dim = nup*nup
         nmat_dim2 = nelec*(nelec - 1)/2
         nctyp3x = max(3, nctype_tot)

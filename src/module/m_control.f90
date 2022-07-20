@@ -87,8 +87,8 @@ end module contrl_per
 
 module contrldmc
     !> Arguments: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot
-    use multiple_geo, only: MFORCE
-    use precision_kinds, only: dp
+      use multiple_geo, only: MFORCE
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -113,7 +113,7 @@ module contrldmc
     save
 contains
     subroutine allocate_contrldmc()
-        use multiple_geo, only: MFORCE
+      use multiple_geo, only: MFORCE
         if (.not. allocated(taueff)) allocate (taueff(MFORCE))
     end subroutine allocate_contrldmc
 
@@ -125,7 +125,7 @@ end module contrldmc
 
 module contrl_file
 #if defined(TREXIO_FOUND)
-    use trexio,  only: trexio_back_end_t
+      use trexio,  only: trexio_back_end_t
 #endif
     implicit none
 
@@ -163,7 +163,7 @@ contains
     end subroutine close_files
 
     subroutine init_logfile()
-        use mpiconf, only: wid
+      use mpiconf, only: wid
 
         !> Open the standard output and the log file only on the master
         if (wid) then
@@ -179,6 +179,7 @@ contains
     subroutine initialize()
         ! Ravindra
         use mpiconf, only: wid      ! logical :: true only for mpirank=0
+
         use, intrinsic :: iso_fortran_env !, only: stdin=>input_unit, stdout=>output_unit, stderr=>error_unit
 
 

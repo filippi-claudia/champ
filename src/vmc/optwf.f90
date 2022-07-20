@@ -9,16 +9,14 @@ contains
     subroutine optwf()
 
         !> Main switch for optimization
-        use optwf_control, only: ioptwf, idl_flag, ilbfgs_flag
-        use optwf_dl_mod, only: optwf_dl
-        use optwf_sr_mod, only: optwf_sr
-        use optwf_dl_mod, only: optwf_dl
-        use optwf_olbfgs_mod, only: optwf_olbfgs
-        use optwf_lin_dav, only: optwf_lin_d
-        use optwf_mix_sa, only: optwf_mix
-        use optwf_matrix_corsamp_mod, only: optwf_matrix_corsamp
-        use vmc_f_mod, only: vmc
-      use optwf_control, only: method
+      use optwf_control, only: idl_flag,ilbfgs_flag,ioptwf,method
+      use optwf_dl_mod, only: optwf_dl
+      use optwf_lin_dav, only: optwf_lin_d
+      use optwf_matrix_corsamp_mod, only: optwf_matrix_corsamp
+      use optwf_mix_sa, only: optwf_mix
+      use optwf_olbfgs_mod, only: optwf_olbfgs
+      use optwf_sr_mod, only: optwf_sr
+      use vmc_f_mod, only: vmc
 
         implicit None
 

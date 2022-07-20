@@ -62,8 +62,8 @@ module coords_int
   !! @param connectivities connectivities in z-Matrix format
   !!
   subroutine coords_init (ncent, cart_coords, connectivities)
-    use contrl_file, only: ounit
-    use optgeo_hessian
+      use contrl_file, only: ounit
+      use optgeo_hessian
 
     integer, intent(in) :: ncent
     real(kind=8), dimension(:,:), intent(in) :: cart_coords
@@ -144,8 +144,8 @@ module coords_int
   !! @param connectivities connectivities as specified in a z-Matrix
   !!
   subroutine coords_compute_wilson (cart_coords, connectivities)
-    use contrl_file, only: ounit
-    use misc_bond_func, only: cross_product
+      use contrl_file, only: ounit
+      use misc_bond_func, only: cross_product
 
     real(kind=8), dimension(:,:), intent(in) :: cart_coords
     integer, dimension(:,:), intent(in) :: connectivities
@@ -322,7 +322,7 @@ module coords_int
   !! @param cart_gradient2d gradients of the cartesian coordinates (3,ncent)
   !!
   subroutine coords_transform_gradients (cart_gradients2d)
-    use contrl_file, only: ounit
+      use contrl_file, only: ounit
 
     real(kind=8), dimension(:,:), intent(in) :: cart_gradients2d
 
@@ -410,7 +410,7 @@ module coords_int
   !! @param alpha scales the gradient and determines the length of the step
   !!
   subroutine coords_compute_step (alpha)
-    use contrl_file,    only: ounit
+      use contrl_file, only: ounit
     real(kind=8), intent (in) :: alpha
     integer :: i
 
@@ -442,8 +442,8 @@ module coords_int
   !!
   !!
   subroutine coords_transform_step (int_coords2d, cart_coords2d, connectivities)
-    use contrl_file,    only: ounit
-    use m_zmat_tools, only: cart2zmat
+      use contrl_file, only: ounit
+      use m_zmat_tools, only: cart2zmat
     real(kind=8), dimension(:,:), intent(inout) :: cart_coords2d
     real(kind=8), dimension(:,:), intent(inout) :: int_coords2d
     integer, dimension(:,:), intent(in) :: connectivities
@@ -632,7 +632,7 @@ module coords_int
   !! @param int_coords2d new internal coordinates in 2D z-Matrix format
   !!
   subroutine fix_dihedrals (int_reference, int_coords2d)
-    use contrl_file,    only: ounit
+      use contrl_file, only: ounit
     real(kind=8), intent(in) :: int_reference(:)
     real(kind=8), intent(inout) :: int_coords2d(:,:)
     integer :: iint, ic

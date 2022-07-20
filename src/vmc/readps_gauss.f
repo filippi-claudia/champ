@@ -5,13 +5,12 @@ c-----------------------------------------------------------------------
 c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(rvec_en,r_en,iel)
 
-      use system, only: znuc, iwctype, ncent, ncent_tot
-      use pseudo, only: lpot, vps
-
       use da_pseudo, only: da_vps
-
       use precision_kinds, only: dp
-      use system, only: nelec
+      use pseudo,  only: lpot,vps
+      use system,  only: iwctype,ncent,ncent_tot,nelec,znuc
+
+
       implicit none
 
       integer :: ic, ict, iel, k, l
@@ -56,9 +55,9 @@ c     enddo
       end
 c-----------------------------------------------------------------------
       subroutine gauss_pot(r,l,ict,vpot,dvpot)
-      use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
-
+      use gauss_ecp, only: ecp_coef,ecp_exponent,necp_power,necp_term
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: i, ict, l

@@ -10,10 +10,10 @@ c     1   2   3   4      5      6
 c     <x> <y> <z> <x**2> <y**2> <z**2>
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine prop_compute(coord)
-      use prp000, only: iprop, nprop
-      use prp001, only: vprop
       use precision_kinds, only: dp
-      use system, only: nelec
+      use prp000,  only: iprop,nprop
+      use prp001,  only: vprop
+      use system,  only: nelec
       implicit none
 
       integer :: i, m
@@ -39,8 +39,8 @@ c     electron coordinates
 
 c-----------------------------------------------------------------------
       subroutine prop_init(iflg)
-      use prp000, only: iprop, nprop
-      use prp003, only: vprop_cm2, vprop_cum, vprop_sum
+      use prp000,  only: iprop,nprop
+      use prp003,  only: vprop_cm2,vprop_cum,vprop_sum
 
       implicit none
 
@@ -65,10 +65,10 @@ C$ iflg = 0: init *cum, *cm2 as well
 
 c-----------------------------------------------------------------------
       subroutine prop_cum(w)
-      use prp000, only: iprop, nprop
-      use prp003, only: vprop_cm2, vprop_cum, vprop_sum
-
       use precision_kinds, only: dp
+      use prp000,  only: iprop,nprop
+      use prp003,  only: vprop_cm2,vprop_cum,vprop_sum
+
       implicit none
 
       integer :: i
@@ -86,11 +86,11 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       subroutine prop_avrg(wcum,iblk,pav,perr)
-      use properties, only: MAXPROP
-      use prp000, only: iprop, nprop
-      use prp003, only: vprop_cm2, vprop_cum
-
       use precision_kinds, only: dp
+      use properties, only: MAXPROP
+      use prp000,  only: iprop,nprop
+      use prp003,  only: vprop_cm2,vprop_cum
+
       implicit none
 
       integer :: i, iblk
@@ -110,8 +110,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine prop_dump(iu)
-      use prp000, only: iprop, nprop
-      use prp003, only: vprop_cm2, vprop_cum
+      use prp000,  only: iprop,nprop
+      use prp003,  only: vprop_cm2,vprop_cum
 
       implicit none
 
@@ -124,8 +124,8 @@ c-----------------------------------------------------------------------
       write(iu) (vprop_cum(i),vprop_cm2(i),i=1,nprop)
       end
       subroutine prop_rstrt(iu)
-      use prp000, only: iprop, nprop
-      use prp003, only: vprop_cm2, vprop_cum
+      use prp000,  only: iprop,nprop
+      use prp003,  only: vprop_cm2,vprop_cum
 
       implicit none
 
@@ -139,9 +139,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine prop_fin(passes,iblk,efin,eerr)
-      use prp000, only: iprop, ipropprt
       use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use prp000,  only: iprop,ipropprt
       implicit none
 
       integer :: iblk, ipropprt_sav
@@ -158,13 +158,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine prop_prt(w,iblk,iu)
-      use properties, only: MAXPROP
-      use prp000, only: iprop, ipropprt
-      use prp003, only: cc_nuc
       use m_icount, only: icount_prop
-
       use precision_kinds, only: dp
-      use system, only: nelec
+      use properties, only: MAXPROP
+      use prp000,  only: iprop,ipropprt
+      use prp003,  only: cc_nuc
+      use system,  only: nelec
+
       implicit none
 
       integer :: iblk, iu

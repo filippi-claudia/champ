@@ -2,9 +2,9 @@
       contains
 c-----------------------------------------------------------------------
       subroutine prop_save
-      use prp000, only: iprop, nprop
-      use prp001, only: vprop
-      use prp002, only: vprop_old2
+      use prp000,  only: iprop,nprop
+      use prp001,  only: vprop
+      use prp002,  only: vprop_old2
 
       implicit none
 
@@ -19,13 +19,13 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine prop_sum(p,q)
-      use prp000, only: iprop, nprop
-      use prp001, only: vprop
-      use prp002, only: vprop_old2
-
-      use prp003, only: vprop_sum
-
       use precision_kinds, only: dp
+      use prp000,  only: iprop,nprop
+      use prp001,  only: vprop
+      use prp002,  only: vprop_old2
+      use prp003,  only: vprop_sum
+
+
       implicit none
 
       integer :: i

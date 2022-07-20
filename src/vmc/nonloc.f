@@ -1,38 +1,29 @@
       module nonloc_mod
-      use error, only: fatal_error
+      use error,   only: fatal_error
       contains
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
-      use pseudo_mod, only: MPS_QUAD
-      use optwf_parms, only: nparmj
-      use vmc_mod, only: norb_tot
-      use system, only: iwctype, ncent, ncent_tot
+      use Bloc,    only: b,b_dj
+      use b_tmove, only: b_t,iskip
+      use coefs,   only: norb
+      use contrl_file, only: ounit
+      use control, only: ipr,mode
+      use deriv_nonloc, only: deriv_nonlocj
       use jastrow_update, only: fso
+      use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
+      use multislater, only: detiab
       use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
-      use Bloc, only: b_dj
-      use coefs, only: norb
-      use Bloc, only: b
-      use m_force_analytic, only: iforce_analy, iuse_zmat, alfgeo
-      use pseudo, only: lpot, vps
-      use b_tmove, only: b_t, iskip
-      use Bloc, only: b
-      use m_force_analytic, only: iforce_analy, iuse_zmat, alfgeo
-      use pseudo, only: lpot, vps
-      use b_tmove, only: b_t, iskip
-      use qua, only: nquad, wq, xq, yq, zq
-      use scale_dist_mod, only: scale_dist, scale_dist1
-      use deriv_nonloc, only: deriv_nonlocj
-
-      use orbval, only: nadorb
-      use slater, only: slmi
-      use multislater, only: detiab
-      use contrl_file, only: ounit
+      use orbval,  only: nadorb
       use precision_kinds, only: dp
-      use control, only: mode
-      use control, only: ipr
-      use system, only: nelec
-      use system, only: nup
+      use pseudo,  only: lpot,vps
+      use pseudo_mod, only: MPS_QUAD
+      use qua,     only: nquad,wq,xq,yq,zq
+      use scale_dist_mod, only: scale_dist,scale_dist1
+      use slater,  only: slmi
+      use system,  only: iwctype,ncent,ncent_tot,nelec,nup
+      use vmc_mod, only: norb_tot
+
       implicit none
 
       integer :: i, i1, i2, i_vpsp, iab
@@ -299,15 +290,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
-      use system, only: cent, ncent, ncent_tot
       use contrl_per, only: iperiodic
       use m_force_analytic, only: iforce_analy
-      use qua, only: xq, yq, zq
-      use pw_find_image, only: find_image4
-      use scale_dist_mod, only: scale_dist, scale_dist1
-
       use precision_kinds, only: dp
-      use system, only: nelec
+      use pw_find_image, only: find_image4
+      use qua,     only: xq,yq,zq
+      use scale_dist_mod, only: scale_dist,scale_dist1
+      use system,  only: cent,ncent,ncent_tot,nelec
+
       implicit none
 
       integer :: i, ic, iq, jc, k
@@ -367,23 +357,20 @@ c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
-      use system, only: iwctype, ncent, ncent_tot
-      use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
-      use phifun, only: phin
-      use multiple_geo, only: iwf
-      use coefs, only: norb, nbasis
-      use contrl_per, only: iperiodic
-      use grid3dflag, only: i3dlagorb, i3dsplorb
-      use orbval, only: ddorb, nadorb
-      use precision_kinds, only: dp
-      use grid3d_orbitals, only: spline_mo, lagrange_mose
       use basis_fns_mod, only: basis_fns
+      use coefs,   only: nbasis,norb
+      use contrl_per, only: iperiodic
+      use grid3d_orbitals, only: lagrange_mose,spline_mo
+      use grid3dflag, only: i3dlagorb,i3dsplorb
+      use multiple_geo, only: iwf
+      use optwf_control, only: ioptorb,method
+      use orbval,  only: ddorb,nadorb
+      use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
+      use precision_kinds, only: dp
       use pw_orbitals_e, only: orbitals_pwe
-      use optwf_control, only: ioptorb
+      use slater,  only: coef
+      use system,  only: iwctype,ncent,ncent_tot,nelec
       use vmc_mod, only: norb_tot
-      use system, only: nelec
-      use optwf_control, only: method
-      use slater, only: coef
       
       implicit none
 
@@ -492,14 +479,11 @@ c-----------------------------------------------------------------------
       subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
+      use dorb_m,  only: iworbd
       use precision_kinds, only: dp
-      use dorb_m, only: iworbd
+      use slater,  only: kref
+      use system,  only: ndn,nup
       use vmc_mod, only: nmat_dim
-      use system, only: nup
-      use system, only: ndn
-      use dorb_m, only: iworbd
-      use vmc_mod, only: nmat_dim
-      use slater, only: kref
 
       implicit none
 
@@ -540,19 +524,17 @@ c-----------------------------------------------------------------------
       subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use system, only: iwctype, ncent, ncent_tot
-
-      use da_jastrow4val, only: da_j
-      use bparm, only: nocuspb, nspin2b
+      use bparm,   only: nocuspb,nspin2b
       use contrl_per, only: iperiodic
+      use da_jastrow4val, only: da_j
+      use jastrow, only: isc,sspinn
       use m_force_analytic, only: iforce_analy
+      use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
       use precision_kinds, only: dp
-      use nonlpsi, only: psibnl, dpsibnl, psinl, psianl, dpsianl
       use pw_find_image, only: find_image3
-      use scale_dist_mod, only: scale_dist, scale_dist1
-      use system, only: nelec
-      use system, only: nup
-      use jastrow, only: sspinn, isc
+      use scale_dist_mod, only: scale_dist,scale_dist1
+      use system,  only: iwctype,ncent,ncent_tot,nelec,nup
+
 
       implicit none
 
@@ -680,16 +662,16 @@ c-----------------------------------------------------------------------
       subroutine compute_da_bnl(i,ic,ict,iq,r_en_sav,rvec_en_sav,costh,
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
-      use vmc_mod, only: norb_tot
-      use system, only: ncent, ncent_tot
-      use Bloc, only: b_da
-      use coefs, only: norb
-      use m_force_analytic, only: iforce_analy
-      use pseudo, only: lpot, vps
+      use Bloc,    only: b_da
+      use coefs,   only: norb
       use da_pseudo, only: da_vps
-      use qua, only: wq, xq, yq, zq
-
+      use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
+      use pseudo,  only: lpot,vps
+      use qua,     only: wq,xq,yq,zq
+      use system,  only: ncent,ncent_tot
+      use vmc_mod, only: norb_tot
+
       implicit none
 
       integer :: i, ic, ict, iel, iorb

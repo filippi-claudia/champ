@@ -1,6 +1,6 @@
 module grdnthes
      !> Arguments: hessian_zmat
-     use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -12,7 +12,7 @@ module grdnthes
      save
  contains
      subroutine allocate_grdnthes()
-        use system, only: ncent_tot
+      use system,  only: ncent_tot
          if (.not. allocated(hessian_zmat)) allocate (hessian_zmat(3, ncent_tot))
      end subroutine allocate_grdnthes
 
@@ -24,7 +24,7 @@ module grdnthes
 
  module grdntsmv
      !> Arguments: igrdaidx, igrdcidx, igrdmv
-     use multiple_geo, only: MFORCE
+      use multiple_geo, only: MFORCE
 
      implicit none
 
@@ -38,8 +38,8 @@ module grdnthes
      save
  contains
      subroutine allocate_grdntsmv()
-        use system, only: ncent_tot
-         use multiple_geo, only: MFORCE
+      use multiple_geo, only: MFORCE
+      use system,  only: ncent_tot
          if (.not. allocated(igrdaidx)) allocate (igrdaidx(MFORCE), source=0)
          if (.not. allocated(igrdcidx)) allocate (igrdcidx(MFORCE), source=0)
          if (.not. allocated(igrdmv)) allocate (igrdmv(3, ncent_tot), source=0)
@@ -55,7 +55,7 @@ module grdnthes
 
  module grdntspar
      !> Arguments: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-     use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -74,8 +74,8 @@ module grdnthes
 module m_grdnt
 contains
  subroutine allocate_m_grdnt()
-     use grdnthes, only: allocate_grdnthes
-     use grdntsmv, only: allocate_grdntsmv
+      use grdnthes, only: allocate_grdnthes
+      use grdntsmv, only: allocate_grdntsmv
 
      implicit none
 
@@ -84,8 +84,8 @@ contains
  end subroutine allocate_m_grdnt
 
  subroutine deallocate_m_grdnt()
-     use grdnthes, only: deallocate_grdnthes
-     use grdntsmv, only: deallocate_grdntsmv
+      use grdnthes, only: deallocate_grdnthes
+      use grdntsmv, only: deallocate_grdntsmv
 
      implicit none
 

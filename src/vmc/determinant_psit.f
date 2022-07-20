@@ -5,8 +5,7 @@
       use multiple_geo, only: iwf
       use multislater, only: detiab
       use precision_kinds, only: dp
-      use slater, only: ndet
-      use slater, only: cdet
+      use slater,  only: cdet,ndet
       implicit none
 
       integer :: istate, k

@@ -2,24 +2,20 @@
       contains
       subroutine multideterminant_tmove(psid,iel_move)
 
-      use vmc_mod, only: norb_tot
-      use system, only: ncent
-      use qua, only: nquad
-      use b_tmove, only: b_t, iskip
-      use casula, only: icasula, t_vpsp
-      use slater, only: slmi
-      use dorb_m, only: iworbd
-      use coefs, only: norb
-      use ycompact, only: ymat
-      use multislater, only: detiab
-      use multidet, only: iactv, ivirt
+      use b_tmove, only: b_t,iskip
+      use casula,  only: icasula,t_vpsp
+      use coefs,   only: norb
+      use dorb_m,  only: iworbd
+      use multidet, only: iactv,ivirt
       use multimat, only: aa
-
+      use multislater, only: detiab
       use precision_kinds, only: dp
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
-      use slater, only: kref
+      use qua,     only: nquad
+      use slater,  only: kref,slmi
+      use system,  only: ncent,ndn,nelec,nup
+      use vmc_mod, only: norb_tot
+      use ycompact, only: ymat
+
       implicit none
 
       integer :: i1, i2, iab, ic, iel

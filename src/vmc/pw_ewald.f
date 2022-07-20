@@ -3,38 +3,39 @@
       subroutine set_ewald
 c Written by Cyrus Umrigar
 
-      use pseudo_mod, only: MPS_L, MPS_GRID
-      use ewald_mod, only: NGNORMX, NGVECX, NG1DX
-      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
-<<<<<<< HEAD
-      use system, only: znuc, iwctype, nctype, ncent, nctype_tot
-      use const, only: pi
-=======
-      use atom, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
-      use const, only: ipr
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
-      use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
-      use ewald_basis, only: vps_basis_fourier
-      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt
-      use periodic, only: glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim
-      use periodic, only: isrange, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big
-      use periodic, only: ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_sim, ngvec_sim_big
-      use periodic, only: np, npoly, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell
-      use periodic, only: vcell_sim, znuc2_sum, znuc_sum
-      use pseudo_tm, only: d2pot, nr_ps, vpseudo
-      use tempor, only: dist_nn
-      use test, only: f, vbare_coul, vbare_jas, vbare_psp
-      use contrl_per, only: iperiodic
-
-      use pseudo, only: lpot, nloc, vps
+      use atom,    only: iwctype,ncent,nctype,nctype_tot,pecent,znuc
+      use const,   only: ipr,pi
+      use constants, only: pi,twopi
       use contrl_file, only: ounit
-      use grid3d_param, only: origin
-      use precision_kinds, only: dp
-<<<<<<< HEAD
+      use contrl_per, only: iperiodic
       use control, only: ipr
+      use ewald,   only: b_coul,b_coul_sim,y_coul,y_coul_sim
+      use ewald_basis, only: vps_basis_fourier
+      use ewald_mod, only: NG1DX,NGNORMX,NGNORM_SIMX,NGVECX,NGVEC_SIMX
+      use grid3d_param, only: origin
       use multiple_geo, only: pecent
+      use periodic, only: cutg,cutg_big,cutg_sim,cutg_sim_big,cutr
+      use periodic, only: cutr_sim,glatt,glatt_inv,glatt_sim,gnorm
+      use periodic, only: gnorm_sim,gvec,gvec_sim,igmult,igmult_sim
+      use periodic, only: igvec,igvec_sim,isrange,ncoef_per,ng1d
+      use periodic, only: ng1d_sim,ngnorm,ngnorm_big,ngnorm_sim
+      use periodic, only: ngnorm_sim_big,ngvec,ngvec_big,ngvec_sim
+      use periodic, only: ngvec_sim_big,np,npoly,rkvec_shift,rlatt
+      use periodic, only: rlatt_inv,rlatt_sim,rlatt_sim_inv,vcell
+      use periodic, only: vcell_sim,znuc2_sum,znuc_sum
+      use precision_kinds, only: dp
+      use pseudo,  only: lpot,nloc,vps
+      use pseudo_mod, only: MPS_GRID,MPS_L
+      use pseudo_tm, only: d2pot,nr_ps,vpseudo
+      use system,  only: iwctype,ncent,nctype,nctype_tot,znuc
+      use tempor,  only: dist_nn
+      use test,    only: f,vbare_coul,vbare_jas,vbare_psp
+<<<<<<< HEAD
 =======
-      use constants, only: pi, twopi
+>>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
+
+<<<<<<< HEAD
+=======
 >>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       implicit none
 
@@ -765,14 +766,13 @@ c evaluates the cross-product of v1 and v2 and puts it in v3
 c-----------------------------------------------------------------------
 
       subroutine shells(cutg,glatt,gdist,igvec,gvec,gnorm,igmult,ngvec_big,ngnorm_big,ng1d,icell)
-      use ewald_mod, only: NGVEC_BIGX
-      use ewald_mod, only: NGVEC_SIM_BIGX
+      use ewald_mod, only: NGVEC_BIGX,NGVEC_SIM_BIGX
+      use precision_kinds, only: dp
 c Written by Cyrus Umrigar
 
 c icell = 0  primitive cell
 c         1  simulation cell
 
-      use precision_kinds, only: dp
       implicit none
 
       integer :: i1, i2, i2min, i3, i3min
@@ -848,11 +848,10 @@ c         do 10 i3=-ng1d(3),ng1d(3)
 c-----------------------------------------------------------------------
 
       subroutine sort(igvec,gvec,gnorm_tmp,gnorm,igmult,ngvec_big,ngnorm_big,icell)
-      use ewald_mod, only: NGNORM_BIGX
-      use ewald_mod, only: NGNORM_SIM_BIGX
-c Written by Cyrus Umrigar
       use contrl_file, only: ounit
+      use ewald_mod, only: NGNORM_BIGX,NGNORM_SIM_BIGX
       use precision_kinds, only: dp
+c Written by Cyrus Umrigar
       implicit none
 
       integer :: i, icell, icheck, icount, it
@@ -942,15 +941,12 @@ c related by primitive cell reciprocal lattice vectors to inverses of
 c other vectors.  We should come back to the issue of whether that is
 c a symmetry one could use later on.
 
-      use ewald_mod, only: NSYM
-      use periodic, only: cutg, cutg_sim
-      use periodic, only: glatt_inv, gvec, gvec_sim, igvec_sim
-      use periodic, only: k_inv, kvec
-      use periodic, only: ngvec, ngvec_sim, nkvec
-      use periodic, only: rknorm, rkvec, rkvec_shift, vcell
-      use periodic, only: vcell_sim
-      use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use ewald_mod, only: NSYM
+      use periodic, only: cutg,cutg_sim,glatt_inv,gvec,gvec_sim
+      use periodic, only: igvec_sim,k_inv,kvec,ngvec,ngvec_sim,nkvec
+      use periodic, only: rknorm,rkvec,rkvec_shift,vcell,vcell_sim
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ikv, j, k, l
@@ -1074,10 +1070,10 @@ c Note: vps_short overwritten
 c g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
 c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
-      use pseudo_mod, only: MPS_GRID
-      use ewald_mod, only: NGNORM_BIGX
       use constant, only: twopi
+      use ewald_mod, only: NGNORM_BIGX
       use precision_kinds, only: dp
+      use pseudo_mod, only: MPS_GRID
       implicit none
 
       integer :: ig, ir, ngnorm_big, nr
@@ -1126,10 +1122,10 @@ c-----------------------------------------------------------------------
       subroutine separate(v,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm,cutr,vcell,ncoef_per,np,b,y,chisq,ifcon,isrange)
 c Written by Cyrus Umrigar and Claudia Filippi
 
-      use ewald_mod, only: NCOEFX, NPX
       use constant, only: twopi
-      use precision_kinds, only: dp
       use contrl_file, only: ounit
+      use ewald_mod, only: NCOEFX,NPX
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, i0, ifcon, ig, info
@@ -1458,8 +1454,8 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
-      use ewald_mod, only: NCOEFX, NPX
       use ewald_basis, only: vps_basis_fourier
+      use ewald_mod, only: NCOEFX,NPX
       use precision_kinds, only: dp
       implicit none
 
@@ -1549,8 +1545,8 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
-      use ewald_mod, only: NCOEFX, NPX
       use ewald_basis, only: vps_basis_fourier
+      use ewald_mod, only: NCOEFX,NPX
       use precision_kinds, only: dp
       implicit none
 
@@ -1789,8 +1785,8 @@ c-----------------------------------------------------------------------
       function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
 c Written by Cyrus Umrigar
 
-      use precision_kinds, only: dp
       use constants, only: pi
+      use precision_kinds, only: dp
       implicit none
 
       integer :: im, ivec, k, ngnorm
@@ -1829,8 +1825,8 @@ c-----------------------------------------------------------------------
       function ewald_pot_psp(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell,ict,l,z)
 c Written by Cyrus Umrigar
 
-      use precision_kinds, only: dp
       use constants, only: pi
+      use precision_kinds, only: dp
       implicit none
 
       integer :: ict, im, ivec, k, l
@@ -1870,10 +1866,10 @@ c     write(ounit,'(''rr,ewald_pot_psp'',f8.4,9f9.5)') rr,-z*(2*ewald_pot_psp+y(
       end
 c-----------------------------------------------------------------------
       function vlrange_old(rvec,gvec,ngnorm,igmult,y)
-      use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
+      use ewald_mod, only: NGNORM_SIM_BIGX,NGVEC_SIM_BIGX
+      use precision_kinds, only: dp
 c Written by Cyrus Umrigar
 
-      use precision_kinds, only: dp
       implicit none
 
       integer :: im, ivec, k, ngnorm
@@ -1907,7 +1903,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
-      use system, only: nelec
+      use system,  only: nelec
       implicit none
 
       integer :: i, im, ivec, k, ncent
@@ -1947,7 +1943,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
-      use system, only: nelec
+      use system,  only: nelec
       implicit none
 
       integer :: i, im, ivec, k, ngnorm
@@ -2043,17 +2039,14 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald_old
 c Written by Cyrus Umrigar
 
-      use system, only: znuc, cent, iwctype, ncent
-
-      use ewald, only: b_coul, y_coul
-
-      use periodic, only: cutr
-      use periodic, only: gvec, igmult
-      use periodic, only: ncoef_per, ngnorm
-      use periodic, only: np, vcell
-      use periodic, only: vcell_sim, znuc2_sum
-      use precision_kinds, only: dp
+      use ewald,   only: b_coul,y_coul
       use multiple_geo, only: pecent
+      use periodic, only: cutr,gvec,igmult,ncoef_per,ngnorm,np,vcell
+      use periodic, only: vcell_sim,znuc2_sum
+      use precision_kinds, only: dp
+      use system,  only: cent,iwctype,ncent,znuc
+
+
       implicit none
 
       integer :: i, j, k, lowest_pow
@@ -2098,18 +2091,14 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald
 c Written by Cyrus Umrigar
 
-      use system, only: znuc, cent, iwctype, ncent
-
-      use ewald, only: b_coul, y_coul
-
-      use periodic, only: cutr, glatt
-      use periodic, only: igmult, igvec
-      use periodic, only: ncoef_per, ng1d, ngnorm
-      use periodic, only: ngvec
-      use periodic, only: np, vcell
-      use periodic, only: vcell_sim, znuc2_sum, znuc_sum
-      use precision_kinds, only: dp
+      use ewald,   only: b_coul,y_coul
       use multiple_geo, only: pecent
+      use periodic, only: cutr,glatt,igmult,igvec,ncoef_per,ng1d,ngnorm
+      use periodic, only: ngvec,np,vcell,vcell_sim,znuc2_sum,znuc_sum
+      use precision_kinds, only: dp
+      use system,  only: cent,iwctype,ncent,znuc
+
+
       implicit none
 
       integer :: i, j, k, lowest_pow
@@ -2158,23 +2147,18 @@ c-----------------------------------------------------------------------
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
-      use vmc_mod, only: nmat_dim2
-      use system, only: znuc, cent, iwctype, ncent
-
-      use ewald, only: b_coul, y_coul
-
-      use periodic, only: cutr, glatt
-      use periodic, only: igmult, igvec
-      use periodic, only: isrange, ncoef_per, ng1d, ngnorm
-      use periodic, only: ngvec
-      use periodic, only: np
-      use periodic, only: znuc_sum
-      use pseudo, only: lpot, nloc
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-
-      use precision_kinds, only: dp
       use control, only: ipr
-      use system, only: nelec
+      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use ewald,   only: b_coul,y_coul
+      use periodic, only: cutr,glatt,igmult,igvec,isrange,ncoef_per,ng1d
+      use periodic, only: ngnorm,ngvec,np,znuc_sum
+      use precision_kinds, only: dp
+      use pseudo,  only: lpot,nloc
+      use system,  only: cent,iwctype,ncent,nelec,znuc
+      use vmc_mod, only: nmat_dim2
+
+
+
       implicit none
 
       integer :: i, ict, j, k, lowest_pow
@@ -2245,18 +2229,15 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
-      use vmc_mod, only: nmat_dim2
-      use ewald, only: b_coul_sim, y_coul_sim
-
-      use periodic, only: cutr_sim
-      use periodic, only: glatt_sim, igmult_sim, igvec_sim
-      use periodic, only: ncoef_per, ng1d_sim
-      use periodic, only: ngnorm_sim, ngvec_sim
-      use periodic, only: np
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      use precision_kinds, only: dp
       use control, only: ipr
-      use system, only: nelec
+      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use ewald,   only: b_coul_sim,y_coul_sim
+      use periodic, only: cutr_sim,glatt_sim,igmult_sim,igvec_sim
+      use periodic, only: ncoef_per,ng1d_sim,ngnorm_sim,ngvec_sim,np
+      use precision_kinds, only: dp
+      use system,  only: nelec
+      use vmc_mod, only: nmat_dim2
+
       implicit none
 
       integer :: i, ij, j, k, lowest_pow
@@ -2302,10 +2283,10 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
       use ewald_mod, only: NG1DX
+      use precision_kinds, only: dp
+      use system,  only: nelec
 c Written by Cyrus Umrigar
 
-      use precision_kinds, only: dp
-      use system, only: nelec
       implicit none
 
       integer :: i, ir, k, n, ngvec
@@ -2364,14 +2345,14 @@ c-----------------------------------------------------------------------
       subroutine cossin_psi(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
       use ewald_mod, only: NG1DX
+      use precision_kinds, only: dp
+      use system,  only: nelec
 c Written by Cyrus Umrigar
 c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
 c Presently using cossin_psi_g and cossin_psi_k instead.
 
-      use precision_kinds, only: dp
-      use system, only: nelec
       implicit none
 
       integer :: i, iflag, ir, k, n
@@ -2464,12 +2445,12 @@ c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng
       subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
       use ewald_mod, only: NG1DX
+      use precision_kinds, only: dp
+      use system,  only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
 
-      use precision_kinds, only: dp
-      use system, only: nelec
       implicit none
 
       integer :: i, im, in, ir, k
@@ -2584,7 +2565,7 @@ c Needed for orbitals and their Laplacian.
 c For the k-vectors do it straightforwardly since there are few of them
 
       use precision_kinds, only: dp
-      use system, only: nelec
+      use system,  only: nelec
       implicit none
 
       integer :: i, ir, k, ngvec
@@ -2638,11 +2619,11 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_n(znuc,iwctype,glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use system, only: ncent_tot
+      use precision_kinds, only: dp
+      use system,  only: ncent_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
-      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ir, k, n, ngvec
@@ -2705,12 +2686,12 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
 c-----------------------------------------------------------------------
 
       subroutine cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,r,nr,ng1d,cos_sum,sin_sum)
-      use ewald_mod, only: NGNORMX, NG1DX
-      use system, only: ncent_tot, nctype_tot
+      use ewald_mod, only: NG1DX,NGNORMX
+      use precision_kinds, only: dp
+      use system,  only: ncent_tot,nctype_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
-      use precision_kinds, only: dp
       implicit none
 
       integer :: i, im, ir, k, n
@@ -2779,11 +2760,11 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
+      use precision_kinds, only: dp
+      use system,  only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 
-      use precision_kinds, only: dp
-      use system, only: nelec
       implicit none
 
       integer :: i, ir, k, n, ngvec

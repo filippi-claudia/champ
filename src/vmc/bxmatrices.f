@@ -2,15 +2,13 @@
       contains
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
-      use vmc_mod, only: norb_tot
-      use dorb_m, only: iworbd
-      use slater, only: slmi
-
-      use precision_kinds, only: dp
+      use dorb_m,  only: iworbd
       use multiply_slmi_mderiv, only: multiply_slmi_mderiv_simple
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
+      use precision_kinds, only: dp
+      use slater,  only: slmi
+      use system,  only: ndn,nelec,nup
+      use vmc_mod, only: norb_tot
+
 
       implicit none
 

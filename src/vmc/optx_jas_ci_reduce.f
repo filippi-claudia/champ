@@ -3,15 +3,13 @@
       subroutine optx_jas_ci_reduce
 c Written by Claudia Filippi
 
-      use optwf_parms, only: nparmj
-      use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_control, only: ioptci, ioptjas
-      use optwf_parms, only: nparmj
-      use ci000, only: nciterm
+      use ci000,   only: nciterm
+      use mix_jas_ci, only: de_o_ci,dj_de_ci,dj_o_ci,dj_oe_ci
       use mpi
+      use optwf_control, only: ioptci,ioptjas,method
+      use optwf_parms, only: nparmj
       use precision_kinds, only: dp
-      use optwf_control, only: method
-      use slater, only: ndet
+      use slater,  only: ndet
 
       implicit none
 

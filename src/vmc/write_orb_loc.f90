@@ -6,21 +6,19 @@
 ! Modified by A. Scemama (printing in a GAMESS-like format)
 ! 1) a slater basis
 ! 2) a gaussian basis
-      use system, only: znuc, iwctype, nctype, ncent
-      use system, only: newghostype
-      use numbas, only: numr
-      use coefs, only: nbasis, norb
-      use basis, only: zex, betaq
-      use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
-      use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
-      use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
-      use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
-      use contrl_file, only: ounit, errunit
-      use error, only: fatal_error
-
+      use basis,   only: betaq,ndxx,ndxy,ndxz,ndyy,ndyz,ndzz,nfxxx,nfxxy
+      use basis,   only: nfxxz,nfxyy,nfxyz,nfxzz,nfyyy,nfyyz,nfyzz,nfzzz
+      use basis,   only: ngxxxx,ngxxxy,ngxxxz,ngxxyy,ngxxyz,ngxxzz
+      use basis,   only: ngxyyy,ngxyyz,ngxyzz,ngxzzz,ngyyyy,ngyyyz
+      use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns,zex
+      use coefs,   only: nbasis,norb
+      use contrl_file, only: errunit,ounit
+      use error,   only: fatal_error
+      use numbas,  only: numr
       use precision_kinds, only: dp
-      use system, only: nelec
-      use slater, only: coef
+      use slater,  only: coef
+      use system,  only: iwctype,ncent,nctype,nelec,newghostype,znuc
+
       implicit none
       integer :: iu
       integer :: i, iabs, ic, imax

@@ -17,7 +17,7 @@ module inputflags
     !             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
     !             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
     !             ihessian_zmat, node_cutoff, eps_node_cutoff, scalecoef, iqmmm
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 

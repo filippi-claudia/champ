@@ -5,60 +5,56 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
-      use optwf_parms, only: nparmj
-      use mstates_mod, only: MSTATES
-      use csfs, only: nstates
-      use mmpol_hpsi, only: peQMdp, peQMq
-      use multidet, only: iactv, ivirt
-      use pcm_hpsi, only: pcms, pcmv
-      use multiple_geo, only: iwf, iwftype
-      use ycompact, only: ymat
-      use casula, only: i_vpsp, t_vpsp
-      use coefs, only: norb
-      use Bloc, only: tildem
-      use m_force_analytic, only: iforce_analy
-      use pseudo, only: nloc
-      use velocity_jastrow, only: vj
-      use mmpol_cntrl, only: immpol
-      use efield, only: iefield
-      use pcm_cntrl, only: ipcm
-      use distance_mod, only: rshift, r_en, rvec_en
-      use multislater, only: detiab
-      use inputflags, only: iqmmm
-      use precision_kinds, only: dp
+      use Bloc,    only: tildem
+      use casula,  only: i_vpsp,t_vpsp
+      use coefs,   only: norb
+      use constants, only: hb
       use contrl_file, only: ounit
-
-      use properties_mod, only: prop_compute
+      use control, only: ipr
+      use csfs,    only: nstates
+      use determinant_mod, only: compute_bmatrices_kin,determinant
+      use determinant_psit_mod, only: determinant_psit
+      use distance_mod, only: r_en,rshift,rvec_en
+      use distances_mod, only: distances
+      use efield,  only: iefield
+      use efield_f_mod, only: efield_extpot_ene
+      use force_analytic, only: compute_force
+      use inputflags, only: iqmmm
+      use jastrow, only: ianalyt_lap
+      use jastrow_mod, only: jastrow_f => jastrow
+      use jastrow_num_mod, only: jastrow_num
+      use m_force_analytic, only: iforce_analy
+      use mmpol,   only: mmpol_extpot_ene
+      use mmpol_cntrl, only: immpol
+      use mmpol_hpsi, only: peQMdp,peQMq
+      use mstates_mod, only: MSTATES
+      use multidet, only: iactv,ivirt
+      use multideterminant_mod, only: multideterminant_hpsi
+      use multiple_geo, only: iwf,iwftype
+      use multislater, only: detiab
+      use nonloc_pot_mod, only: nonloc_pot
       use optci_mod, only: optci_deloc
       use optjas_mod, only: optjas_deloc
       use optorb_f_mod, only: optorb_compute
-      use force_analytic, only: compute_force
-      use determinant_psit_mod, only: determinant_psit
-      use multideterminant_mod, only: multideterminant_hpsi
-      use nonloc_pot_mod, only: nonloc_pot
-
-      use determinant_mod, only: determinant, compute_bmatrices_kin
-      use jastrow_num_mod, only: jastrow_num
-      use jastrow_mod, only: jastrow
-      use mmpol, only: mmpol_extpot_ene
+      use optwf_parms, only: nparmj
+      use pcm_cntrl, only: ipcm
+      use pcm_hpsi, only: pcms,pcmv
       use pcm_mod, only: pcm_extpot_ene
-      use distances_mod, only: distances
       use pot_local_mod, only: pot_local
+      use precision_kinds, only: dp
+      use properties_mod, only: prop_compute
+      use pseudo,  only: nloc
       use qmmm_pot, only: qmmm_extpot_ene
-      use efield_f_mod, only: efield_extpot_ene
-      use control, only: ipr
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
+      use slater,  only: kref,ndet
+      use system,  only: ndn,nelec,nup
+      use velocity_jastrow, only: vj
+      use ycompact, only: ymat
 
 
-      use jastrow_mod,    only: jastrow_f => jastrow
+
+
 
  
-      use constants, only: hb
-      use jastrow, only: ianalyt_lap
-      use slater, only: ndet
-      use slater, only: kref
 
       implicit none
 

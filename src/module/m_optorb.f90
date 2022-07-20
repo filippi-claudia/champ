@@ -44,7 +44,7 @@ module optorb_mod
     ! integer, parameter :: mxreduced = 1
     ! integer, parameter :: nmatdim = mxreduced*(mxreduced + 1)
     ! integer, parameter :: nmatdim2 = nmatdim/2
-    use optorb_cblock, only: norbterm
+      use optorb_cblock, only: norbterm
 
     integer :: mxreduced
     integer :: nmatdim
@@ -59,7 +59,7 @@ module optorb_mod
 contains
     subroutine set_optorb_size()
 
-        use optorb_cblock, only: norbterm
+      use optorb_cblock, only: norbterm
       use optwf_control, only: method
         if (method .eq. 'linear') then
             mxreduced = norbterm
@@ -74,10 +74,10 @@ end module optorb_mod
 
 module orb_mat_001
     !> Arguments: orb_o, orb_oe, orb_ho
-    use optorb_cblock, only: norbterm
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
       use optwf_control, only: method
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: orb_ho !(norbterm,MSTATES)
     real(dp), dimension(:, :), allocatable :: orb_o  !(norbterm,MSTATES)
@@ -90,8 +90,8 @@ module orb_mat_001
 contains
     subroutine allocate_orb_mat_001()
 
-        use optorb_cblock, only: norbterm
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
         if (.not. allocated(orb_ho)) allocate (orb_ho(norbterm, MSTATES))
         if (.not. allocated(orb_o)) allocate (orb_o(norbterm, MSTATES))
         if (.not. allocated(orb_oe)) allocate (orb_oe(norbterm, MSTATES))
@@ -107,9 +107,9 @@ end module orb_mat_001
 
 module orb_mat_002
     !> Arguments: orb_ho_old, orb_o_old, orb_oe_old
-    use optorb_cblock, only: norbterm
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: orb_ho_old !(norbterm,MSTATES)
     real(dp), dimension(:, :), allocatable :: orb_o_old !(norbterm,MSTATES)
@@ -122,8 +122,8 @@ module orb_mat_002
 contains
     subroutine allocate_orb_mat_002()
 
-        use optorb_cblock, only: norbterm
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
         if (.not. allocated(orb_ho_old)) allocate (orb_ho_old(norbterm, MSTATES))
         if (.not. allocated(orb_o_old)) allocate (orb_o_old(norbterm, MSTATES))
         if (.not. allocated(orb_oe_old)) allocate (orb_oe_old(norbterm, MSTATES))
@@ -139,9 +139,9 @@ end module orb_mat_002
 
 module orb_mat_003
     !> Arguments: orb_o_sum, orb_o_cum
-    use optorb_cblock, only: norbterm
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: orb_o_cum !(norbterm,MSTATES)
     real(dp), dimension(:, :), allocatable :: orb_o_sum !(norbterm,MSTATES)
@@ -153,8 +153,8 @@ module orb_mat_003
 contains
     subroutine allocate_orb_mat_003()
 
-        use optorb_cblock, only: norbterm
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
         if (.not. allocated(orb_o_cum)) allocate (orb_o_cum(norbterm, MSTATES))
         if (.not. allocated(orb_o_sum)) allocate (orb_o_sum(norbterm, MSTATES))
     end subroutine allocate_orb_mat_003
@@ -168,9 +168,9 @@ end module orb_mat_003
 
 module orb_mat_004
     !> Arguments: orb_oe_sum, orb_oe_cum
-    use optorb_cblock, only: norbterm
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: orb_oe_cum !(norbterm,MSTATES)
     real(dp), dimension(:, :), allocatable :: orb_oe_sum !(norbterm,MSTATES)
@@ -181,8 +181,8 @@ module orb_mat_004
     save
 contains
     subroutine allocate_orb_mat_004()
-        use optorb_cblock, only: norbterm
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
         if (.not. allocated(orb_oe_cum)) allocate (orb_oe_cum(norbterm, MSTATES))
         if (.not. allocated(orb_oe_sum)) allocate (orb_oe_sum(norbterm, MSTATES))
     end subroutine allocate_orb_mat_004
@@ -196,9 +196,9 @@ end module orb_mat_004
 
 module orb_mat_005
     !> Arguments: orb_ho_cum
-    use optorb_cblock, only: norbterm
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: orb_ho_cum !(norbterm,MSTATES)
 
@@ -209,8 +209,8 @@ module orb_mat_005
 contains
     subroutine allocate_orb_mat_005()
 
-        use optorb_cblock, only: norbterm
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
         if (.not. allocated(orb_ho_cum)) allocate (orb_ho_cum(norbterm, MSTATES))
     end subroutine allocate_orb_mat_005
 
@@ -222,9 +222,9 @@ end module orb_mat_005
 
 module orb_mat_006
     !> Arguments: orb_oo_cum
-    use optorb_mod, only: nmatdim2
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_mod, only: nmatdim2
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: orb_oo_cum !(nmatdim2,MSTATES)
 
@@ -235,8 +235,8 @@ module orb_mat_006
 contains
     subroutine allocate_orb_mat_006()
 
-        use optorb_mod, only: nmatdim2
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_mod, only: nmatdim2
         if (.not. allocated(orb_oo_cum)) allocate (orb_oo_cum(nmatdim2, MSTATES))
     end subroutine allocate_orb_mat_006
 
@@ -248,9 +248,9 @@ end module orb_mat_006
 
 module orb_mat_007
     !> Arguments: orb_oho_cum
-    use optorb_mod, only: nmatdim
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_mod, only: nmatdim
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: orb_oho_cum !(nmatdim,MSTATES)
 
@@ -261,8 +261,8 @@ module orb_mat_007
 contains
     subroutine allocate_orb_mat_007()
 
-        use optorb_mod, only: nmatdim
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_mod, only: nmatdim
         if (.not. allocated(orb_oho_cum)) allocate (orb_oho_cum(nmatdim, MSTATES))
     end subroutine allocate_orb_mat_007
 
@@ -273,7 +273,7 @@ contains
 end module orb_mat_007
 
 module orb_mat_022
-    use optorb_cblock, only: norbterm
+      use optorb_cblock, only: norbterm
     !> Arguments: ideriv
 
     integer, dimension(:, :), allocatable :: ideriv !(2,norbterm)
@@ -284,7 +284,7 @@ module orb_mat_022
     save
 contains
     subroutine allocate_orb_mat_022()
-        use optorb_cblock, only: norbterm
+      use optorb_cblock, only: norbterm
         if (.not. allocated(ideriv)) allocate (ideriv(2, norbterm), source=0)
     end subroutine allocate_orb_mat_022
 
@@ -296,9 +296,9 @@ end module orb_mat_022
 
 module orb_mat_024
     !> Arguments: orb_oe_bsum, orb_f_bcum, orb_e_bsum, orb_w_bsum, orb_o_bsum, orb_f_bcm2
-    use optorb_cblock, only: norbterm
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: orb_e_bsum !(MSTATES)
     real(dp), dimension(:, :), allocatable :: orb_f_bcm2 !(norbterm,MSTATES)
@@ -314,8 +314,8 @@ module orb_mat_024
 contains
     subroutine allocate_orb_mat_024()
 
-        use optorb_cblock, only: norbterm
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optorb_cblock, only: norbterm
         if (.not. allocated(orb_e_bsum)) allocate (orb_e_bsum(MSTATES))
         if (.not. allocated(orb_f_bcm2)) allocate (orb_f_bcm2(norbterm, MSTATES))
         if (.not. allocated(orb_f_bcum)) allocate (orb_f_bcum(norbterm, MSTATES))
@@ -337,8 +337,8 @@ end module orb_mat_024
 
 module orb_mat_030
     !> Arguments: orb_wcum, orb_ecum
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: orb_ecum !(MSTATES)
     real(dp), dimension(:), allocatable :: orb_wcum !(MSTATES)
@@ -350,7 +350,7 @@ module orb_mat_030
 contains
     subroutine allocate_orb_mat_030()
 
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
         if (.not. allocated(orb_ecum)) allocate (orb_ecum(MSTATES))
         if (.not. allocated(orb_wcum)) allocate (orb_wcum(MSTATES))
     end subroutine allocate_orb_mat_030
@@ -363,7 +363,7 @@ contains
 end module orb_mat_030
 
 module orb_mat_033
-    use optorb_cblock, only: norbterm
+      use optorb_cblock, only: norbterm
     !> Arguments: irepcol_ref, ideriv_ref, ideriv_iab
 
     integer, dimension(:), allocatable :: ideriv_iab !(norbterm)
@@ -376,7 +376,7 @@ module orb_mat_033
     save
 contains
     subroutine allocate_orb_mat_033()
-        use optorb_cblock, only: norbterm
+      use optorb_cblock, only: norbterm
         if (.not. allocated(ideriv_iab)) allocate (ideriv_iab(norbterm), source=0)
         if (.not. allocated(ideriv_ref)) allocate (ideriv_ref(norbterm, 2), source=0)
         if (.not. allocated(irepcol_ref)) allocate (irepcol_ref(norbterm, 2), source=0)
@@ -392,8 +392,8 @@ end module orb_mat_033
 
 module optorb
     !> Arguments: dmat_diag, irrep, orb_energy
-    use precision_kinds, only: dp
-    use vmc_mod, only: norb_tot
+      use precision_kinds, only: dp
+      use vmc_mod, only: norb_tot
 
     real(dp), dimension(:), allocatable :: dmat_diag !(norb_tot)
     integer, dimension(:), allocatable :: irrep !(norb_tot)
@@ -405,7 +405,7 @@ module optorb
     save
 contains
     subroutine allocate_optorb()
-        use vmc_mod, only: norb_tot
+      use vmc_mod, only: norb_tot
         if (.not. allocated(dmat_diag)) allocate (dmat_diag(norb_tot))
         ! if (.not. allocated(irrep)) allocate (irrep(norb_tot))
         ! if (.not. allocated(orb_energy)) allocate (orb_energy(norb_tot))
@@ -421,7 +421,7 @@ end module optorb
 
 module optorb_mix
     !> Arguments: iwmix_virt, norbopt, norbvirt
-    use vmc_mod, only: norb_tot
+      use vmc_mod, only: norb_tot
 
     integer, dimension(:, :), allocatable :: iwmix_virt !(norb_tot,norb_tot)
     integer :: norbopt
@@ -433,7 +433,7 @@ module optorb_mix
     save
 contains
     subroutine allocate_optorb_mix()
-        use vmc_mod, only: norb_tot
+      use vmc_mod, only: norb_tot
         if (.not. allocated(iwmix_virt)) allocate (iwmix_virt(norb_tot, norb_tot), source=0)
     end subroutine allocate_optorb_mix
 
@@ -446,19 +446,19 @@ end module optorb_mix
 module m_optorb
 contains
 subroutine allocate_m_optorb()
-    use orb_mat_001, only: allocate_orb_mat_001
-    use orb_mat_002, only: allocate_orb_mat_002
-    use orb_mat_003, only: allocate_orb_mat_003
-    use orb_mat_004, only: allocate_orb_mat_004
-    use orb_mat_005, only: allocate_orb_mat_005
-    use orb_mat_006, only: allocate_orb_mat_006
-    use orb_mat_007, only: allocate_orb_mat_007
-    use orb_mat_022, only: allocate_orb_mat_022
-    use orb_mat_024, only: allocate_orb_mat_024
-    use orb_mat_030, only: allocate_orb_mat_030
-    use orb_mat_033, only: allocate_orb_mat_033
-    use optorb, only: allocate_optorb
-    use optorb_mix, only: allocate_optorb_mix
+      use optorb,  only: allocate_optorb
+      use optorb_mix, only: allocate_optorb_mix
+      use orb_mat_001, only: allocate_orb_mat_001
+      use orb_mat_002, only: allocate_orb_mat_002
+      use orb_mat_003, only: allocate_orb_mat_003
+      use orb_mat_004, only: allocate_orb_mat_004
+      use orb_mat_005, only: allocate_orb_mat_005
+      use orb_mat_006, only: allocate_orb_mat_006
+      use orb_mat_007, only: allocate_orb_mat_007
+      use orb_mat_022, only: allocate_orb_mat_022
+      use orb_mat_024, only: allocate_orb_mat_024
+      use orb_mat_030, only: allocate_orb_mat_030
+      use orb_mat_033, only: allocate_orb_mat_033
 
     call allocate_orb_mat_001()
     call allocate_orb_mat_002()
@@ -476,19 +476,19 @@ subroutine allocate_m_optorb()
 end subroutine allocate_m_optorb
 
 subroutine deallocate_m_optorb()
-    use orb_mat_001, only: deallocate_orb_mat_001
-    use orb_mat_002, only: deallocate_orb_mat_002
-    use orb_mat_003, only: deallocate_orb_mat_003
-    use orb_mat_004, only: deallocate_orb_mat_004
-    use orb_mat_005, only: deallocate_orb_mat_005
-    use orb_mat_006, only: deallocate_orb_mat_006
-    use orb_mat_007, only: deallocate_orb_mat_007
-    use orb_mat_022, only: deallocate_orb_mat_022
-    use orb_mat_024, only: deallocate_orb_mat_024
-    use orb_mat_030, only: deallocate_orb_mat_030
-    use orb_mat_033, only: deallocate_orb_mat_033
-    use optorb, only: deallocate_optorb
-    use optorb_mix, only: deallocate_optorb_mix
+      use optorb,  only: deallocate_optorb
+      use optorb_mix, only: deallocate_optorb_mix
+      use orb_mat_001, only: deallocate_orb_mat_001
+      use orb_mat_002, only: deallocate_orb_mat_002
+      use orb_mat_003, only: deallocate_orb_mat_003
+      use orb_mat_004, only: deallocate_orb_mat_004
+      use orb_mat_005, only: deallocate_orb_mat_005
+      use orb_mat_006, only: deallocate_orb_mat_006
+      use orb_mat_007, only: deallocate_orb_mat_007
+      use orb_mat_022, only: deallocate_orb_mat_022
+      use orb_mat_024, only: deallocate_orb_mat_024
+      use orb_mat_030, only: deallocate_orb_mat_030
+      use orb_mat_033, only: deallocate_orb_mat_033
 
     call deallocate_orb_mat_001()
     call deallocate_orb_mat_002()

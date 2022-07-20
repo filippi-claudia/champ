@@ -7,21 +7,19 @@ c isortg could be used to map g-vectors from iv to ig and
 c isortk could be used to map k-vectors.
 c At present it is assumed that both g- and k-vectors are in the correct order.
 
-      use multiple_geo, only: MFORCE, MFORCE_WT_PRD, MWF
-      use ewald_mod, only: IVOL_RATIO
-      use ewald_mod, only: NGVECX
-      use periodic, only: glatt
-      use periodic, only: glatt_sim, gnorm, gvec, igmult, igvec
-      use periodic, only: ireal_imag, k_inv, kvec, nband, ng1d, ng1d_sim, ngnorm_orb
-      use periodic, only: ngvec_orb, nkvec
-      use periodic, only: rknorm, rkvec, rkvec_shift
-      use pworbital, only: c_im, c_ip, c_rm, c_rp, isortg, isortk, ngorb
+      use coefs,   only: norb
       use contrl_file, only: ounit
-      use coefs, only: norb
-      use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot
       use control, only: ipr
-      use system, only: nelec
+      use ewald_mod, only: IVOL_RATIO,NGVECX
+      use multiple_geo, only: MFORCE,MFORCE_WT_PRD,MWF
+      use periodic, only: glatt,glatt_sim,gnorm,gvec,igmult,igvec
+      use periodic, only: ireal_imag,k_inv,kvec,nband,ng1d,ng1d_sim
+      use periodic, only: ngnorm_orb,ngvec_orb,nkvec,rknorm,rkvec
+      use periodic, only: rkvec_shift
+      use precision_kinds, only: dp
+      use pworbital, only: c_im,c_ip,c_rm,c_rp,isortg,isortk,ngorb
+      use system,  only: nelec
+      use vmc_mod, only: norb_tot
       implicit none
 
       integer :: iband, iel, ig, ik, ikvec
@@ -218,21 +216,19 @@ c isortg could be used to map g-vectors from iv to ig and
 c isortk could be used to map k-vectors.
 c At present it is assumed that both g- and k-vectors are in the correct order.
 
-      use multiple_geo, only: MFORCE, MFORCE_WT_PRD, MWF
-      use ewald_mod, only: IVOL_RATIO
-      use ewald_mod, only: NGVECX
-      use periodic, only: glatt
-      use periodic, only: glatt_sim, gnorm, gvec, igmult, igvec
-      use periodic, only: ireal_imag, k_inv, kvec, nband, ng1d, ng1d_sim, ngnorm_orb
-      use periodic, only: ngvec_orb, nkvec
-      use periodic, only: rknorm, rkvec, rkvec_shift
-      use pworbital, only: c_im, c_ip, c_rm, c_rp, isortg, isortk, ngorb
+      use coefs,   only: norb
       use contrl_file, only: ounit
-      use coefs, only: norb
-      use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot
       use control, only: ipr
-      use system, only: nelec
+      use ewald_mod, only: IVOL_RATIO,NGVECX
+      use multiple_geo, only: MFORCE,MFORCE_WT_PRD,MWF
+      use periodic, only: glatt,glatt_sim,gnorm,gvec,igmult,igvec
+      use periodic, only: ireal_imag,k_inv,kvec,nband,ng1d,ng1d_sim
+      use periodic, only: ngnorm_orb,ngvec_orb,nkvec,rknorm,rkvec
+      use periodic, only: rkvec_shift
+      use precision_kinds, only: dp
+      use pworbital, only: c_im,c_ip,c_rm,c_rp,isortg,isortk,ngorb
+      use system,  only: nelec
+      use vmc_mod, only: norb_tot
       implicit none
 
       integer :: iband, iel, ig, ikvec, iorb

@@ -2,7 +2,7 @@
       contains
       subroutine write_geometry(iter)
 
-      use system, only: cent, iwctype, nctype, ncent
+      use system,  only: cent,iwctype,ncent,nctype
 
       implicit none
 
@@ -40,12 +40,12 @@
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_positions
 
-        use coords_int
-        use system, only: cent, ncent
-        use m_force_analytic, only: da_energy_ave
-        use zmatrix, only: czint, izcmat
-        use m_force_analytic, only: iforce_analy, iuse_zmat, alfgeo
       use contrl_file, only: ounit
+      use coords_int
+      use m_force_analytic, only: alfgeo,da_energy_ave,iforce_analy
+      use m_force_analytic, only: iuse_zmat
+      use system,  only: cent,ncent
+      use zmatrix, only: czint,izcmat
       implicit none
 
       integer :: ic, k
@@ -85,10 +85,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_position_bcast
 
-      use system, only: ncent
-      use m_force_analytic, only: da_energy_ave
-      use m_force_analytic, only: iforce_analy
+      use m_force_analytic, only: da_energy_ave,iforce_analy
       use mpi
+      use system,  only: ncent
 
       implicit none
 
@@ -106,9 +105,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine force_store(l)
 
-      use system, only: ncent
-      use da_energy_now, only: da_energy, da_psi
+      use da_energy_now, only: da_energy,da_psi
       use m_force_analytic, only: force_o
+      use system,  only: ncent
 
       implicit none
 

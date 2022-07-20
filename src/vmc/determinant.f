@@ -10,32 +10,25 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use multidet, only: kchange, kref_fixed
-      use dorb_m, only: iworbd
-
-      use orbval, only: ddorb, dorb, orb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi
-
-      use multislater, only: detiab, allocate_multislater
-      use system, only: ncent_tot
-      use precision_kinds, only: dp
+      use coefs,   only: norb
       use contrl_file, only: ounit
-      use optwf_handle_wf, only: dcopy
+      use control, only: ipr,mode
+      use dorb_m,  only: iworbd
       use matinv_mod, only: matinv
-      use orbitals_mod, only: orbitals
-      use set_input_data, only: multideterminants_define
+      use multidet, only: kchange,kref_fixed
+      use multislater, only: allocate_multislater,detiab
       use optorb_f_mod, only: optorb_define
       use optwf_control, only: ioptorb
-      use coefs, only: norb
-      use orbval, only: nadorb
+      use optwf_handle_wf, only: dcopy
+      use orbitals_mod, only: orbitals
+      use orbval,  only: ddorb,dorb,nadorb,orb
+      use precision_kinds, only: dp
+      use set_input_data, only: multideterminants_define
+      use slater,  only: d2dx2,ddx,fp,fpp,kref,ndet,slmi
+      use system,  only: ncent_tot,ndn,nelec,nup
       use vmc_mod, only: norb_tot
-      use control, only: mode
-      use control, only: ipr
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
-      use slater, only: ndet
-      use slater, only: kref
+
+
 
       implicit none
 
@@ -147,16 +140,15 @@ c reshuffling determinants if the maximum number of iterations looking for kref 
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
-      use estpsi, only: detref
-      use multidet, only: kref_old, kchange
-      use multislater, only: detiab, allocate_multislater
-      use precision_kinds, only: dp
       use contrl_file, only: ounit
-      use multideterminant_mod, only: idiff
-      use error, only: fatal_error
       use control, only: ipr
-      use slater, only: ndet
-      use slater, only: kref
+      use error,   only: fatal_error
+      use estpsi,  only: detref
+      use multidet, only: kchange,kref_old
+      use multideterminant_mod, only: idiff
+      use multislater, only: allocate_multislater,detiab
+      use precision_kinds, only: dp
+      use slater,  only: kref,ndet
       implicit none
 
       integer :: iab, icheck, iflag, ipass
@@ -212,24 +204,21 @@ c to change kref if the change is accepted or required
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
-      use system, only: ncent
-      use da_jastrow4val, only: da_vj
-      use da_orbval, only: da_d2orb, da_dorb
-      use derivjas, only: g
-      use optwf_control, only: ioptjas
-      use optwf_parms, only: nparmj
-      use Bloc, only: b_da
-      use Bloc, only: b_dj
-      use coefs, only: norb
-      use Bloc, only: b
-      use m_force_analytic, only: iforce_analy
-      use velocity_jastrow, only: vj
-      use orbval, only: ddorb, dorb, nadorb
-      use precision_kinds, only: dp
-      use optwf_handle_wf, only: dcopy
-      use sr_more, only: daxpy
-      use system, only: nelec
+      use Bloc,    only: b,b_da,b_dj
+      use coefs,   only: norb
       use constants, only: hb
+      use da_jastrow4val, only: da_vj
+      use da_orbval, only: da_d2orb,da_dorb
+      use derivjas, only: g
+      use m_force_analytic, only: iforce_analy
+      use optwf_control, only: ioptjas
+      use optwf_handle_wf, only: dcopy
+      use optwf_parms, only: nparmj
+      use orbval,  only: ddorb,dorb,nadorb
+      use precision_kinds, only: dp
+      use sr_more, only: daxpy
+      use system,  only: ncent,nelec
+      use velocity_jastrow, only: vj
       implicit none
 
       integer :: i, ic, iorb, iparm, l

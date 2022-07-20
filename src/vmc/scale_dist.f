@@ -2,16 +2,15 @@
       contains
       subroutine set_scale_dist(ipr)
 c Written by Cyrus Umrigar
-      use system, only: nctype
-
-
-      use jaspar6, only: asymp_r, c1_jas6, c1_jas6i, c2_jas6
-      use jaspar6, only: cutjas
-      use bparm, only: nocuspb, nspin2b
+      use bparm,   only: nocuspb,nspin2b
+      use contrl_file, only: ounit
+      use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas
+      use jastrow, only: a4,asymp_jasa,asymp_jasb,b,ijas,isc,norda,nordb
+      use jastrow, only: scalek,sspinn
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
-      use jastrow, only: a4, asymp_jasa, asymp_jasb, norda, nordb
-      use jastrow, only: sspinn, b, scalek, ijas, isc
+      use system,  only: nctype
+
+
       implicit none
 
       integer :: i, iord, ipr, isp, it
@@ -124,11 +123,10 @@ c Written by Cyrus Umrigar
 c Scale interparticle distances.
 
 
-      use jaspar6, only: asymp_r, c1_jas6, c2_jas6
-      use jaspar6, only: cutjas, cutjasi
+      use jaspar6, only: asymp_r,c1_jas6,c2_jas6,cutjas,cutjasi
+      use jastrow, only: ijas,isc,scalek
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: scalek, ijas, isc
       implicit none
 
       integer :: iflag
@@ -279,11 +277,10 @@ c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
 
-      use jaspar6, only: asymp_r, c1_jas6, c2_jas6
-      use jaspar6, only: cutjas, cutjasi
+      use jaspar6, only: asymp_r,c1_jas6,c2_jas6,cutjas,cutjasi
+      use jastrow, only: ijas,isc,scalek
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: scalek, ijas, isc
       implicit none
 
       integer :: iflag
@@ -466,12 +463,11 @@ c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
 
-      use jaspar6, only: asymp_r, c1_jas6, c2_jas6
-      use jaspar6, only: cutjas, cutjasi
-      use scale_more, only: dd3
+      use jaspar6, only: asymp_r,c1_jas6,c2_jas6,cutjas,cutjasi
+      use jastrow, only: ijas,isc,scalek
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: scalek, ijas, isc
+      use scale_more, only: dd3
       implicit none
 
       integer :: iflag
@@ -682,9 +678,9 @@ c that appropriate for C terms, for dist.
 
 
       use jaspar6, only: c1_jas6
+      use jastrow, only: scalek
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: scalek
       implicit none
 
 
@@ -707,9 +703,9 @@ c that appropriate for C terms, for dist and 1st deriv.
 
 
       use jaspar6, only: c1_jas6
+      use jastrow, only: scalek
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: scalek
       implicit none
 
 
@@ -733,9 +729,9 @@ c that appropriate for C terms, for dist and 1st two derivs.
 
 
       use jaspar6, only: c1_jas6
+      use jastrow, only: scalek
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: scalek
       implicit none
 
 

@@ -40,8 +40,8 @@ end module ci000
 
 module ci001_blk
     !> Arguments: ci_oe, ci_o
-    use optci, only: mxciterm, mxcireduced
-    use precision_kinds, only: dp
+      use optci,   only: mxcireduced,mxciterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: ci_o !(mxciterm)
     real(dp), dimension(:, :), allocatable :: ci_oe !(mxciterm,mxcireduced)
@@ -52,7 +52,7 @@ module ci001_blk
     save
 contains
     subroutine allocate_ci001_blk()
-        use optci, only: mxciterm, mxcireduced
+      use optci,   only: mxcireduced,mxciterm
         if (.not. allocated(ci_o)) allocate (ci_o(mxciterm))
         if (.not. allocated(ci_oe)) allocate (ci_oe(mxciterm, mxcireduced))
     end subroutine allocate_ci001_blk
@@ -66,8 +66,8 @@ end module ci001_blk
 
 module ci002_blk
     !> Arguments: ci_o_old, ci_oe_old
-    use optci, only: mxciterm, mxcireduced
-    use precision_kinds, only: dp
+      use optci,   only: mxcireduced,mxciterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: ci_o_old !(mxciterm)
     real(dp), dimension(:, :), allocatable :: ci_oe_old !(mxciterm,mxcireduced)
@@ -78,7 +78,7 @@ module ci002_blk
     save
 contains
     subroutine allocate_ci002_blk()
-        use optci, only: mxciterm, mxcireduced
+      use optci,   only: mxcireduced,mxciterm
         if (.not. allocated(ci_o_old)) allocate (ci_o_old(mxciterm))
         if (.not. allocated(ci_oe_old)) allocate (ci_oe_old(mxciterm, mxcireduced))
     end subroutine allocate_ci002_blk
@@ -92,8 +92,8 @@ end module ci002_blk
 
 module ci003_blk
     !> Arguments: ci_e_old, ci_e
-    use optci, only: mxciterm
-    use precision_kinds, only: dp
+      use optci,   only: mxciterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: ci_e !(mxciterm)
     real(dp), dimension(:), allocatable :: ci_e_old !(mxciterm)
@@ -104,7 +104,7 @@ module ci003_blk
     save
 contains
     subroutine allocate_ci003_blk()
-        use optci, only: mxciterm
+      use optci,   only: mxciterm
         if (.not. allocated(ci_e)) allocate (ci_e(mxciterm))
         if (.not. allocated(ci_e_old)) allocate (ci_e_old(mxciterm))
     end subroutine allocate_ci003_blk
@@ -118,8 +118,8 @@ end module ci003_blk
 
 module ci004_blk
     !> Arguments: ci_de, ci_de_old
-    use optci, only: mxciterm
-    use precision_kinds, only: dp
+      use optci,   only: mxciterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: ci_de !(mxciterm)
     real(dp), dimension(:), allocatable :: ci_de_old !(mxciterm)
@@ -130,7 +130,7 @@ module ci004_blk
     save
 contains
     subroutine allocate_ci004_blk()
-        use optci, only: mxciterm
+      use optci,   only: mxciterm
         if (.not. allocated(ci_de)) allocate (ci_de(mxciterm))
         if (.not. allocated(ci_de_old)) allocate (ci_de_old(mxciterm))
     end subroutine allocate_ci004_blk
@@ -144,8 +144,8 @@ end module ci004_blk
 
 module ci005_blk
     !> Arguments: ci_o_cum, ci_o_sum
-    use optci, only: mxciterm
-    use precision_kinds, only: dp
+      use optci,   only: mxciterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: ci_o_cum !(mxciterm)
     real(dp), dimension(:), allocatable :: ci_o_sum !(mxciterm)
@@ -156,7 +156,7 @@ module ci005_blk
     save
 contains
     subroutine allocate_ci005_blk()
-        use optci, only: mxciterm
+      use optci,   only: mxciterm
         if (.not. allocated(ci_o_cum)) allocate (ci_o_cum(mxciterm))
         if (.not. allocated(ci_o_sum)) allocate (ci_o_sum(mxciterm))
     end subroutine allocate_ci005_blk
@@ -170,8 +170,8 @@ end module ci005_blk
 
 module ci006_blk
     !> Arguments: ci_de_cum, ci_de_sum
-    use optci, only: mxciterm
-    use precision_kinds, only: dp
+      use optci,   only: mxciterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: ci_de_cum !(mxciterm)
     real(dp), dimension(:), allocatable :: ci_de_sum !(mxciterm)
@@ -182,7 +182,7 @@ module ci006_blk
     save
 contains
     subroutine allocate_ci006_blk()
-        use optci, only: mxciterm
+      use optci,   only: mxciterm
         if (.not. allocated(ci_de_cum)) allocate (ci_de_cum(mxciterm))
         if (.not. allocated(ci_de_sum)) allocate (ci_de_sum(mxciterm))
     end subroutine allocate_ci006_blk
@@ -196,8 +196,8 @@ end module ci006_blk
 
 module ci008_blk
     !> Arguments: ci_oe_cm2, ci_oe_sum, ci_oe_cum
-    use optci, only: mxciterm, mxcireduced
-    use precision_kinds, only: dp
+      use optci,   only: mxcireduced,mxciterm
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: ci_oe_cm2 !(mxciterm,mxcireduced)
     real(dp), dimension(:, :), allocatable :: ci_oe_cum !(mxciterm,mxcireduced)
@@ -209,7 +209,7 @@ module ci008_blk
     save
 contains
     subroutine allocate_ci008_blk()
-        use optci, only: mxciterm, mxcireduced
+      use optci,   only: mxcireduced,mxciterm
         if (.not. allocated(ci_oe_cm2)) allocate (ci_oe_cm2(mxciterm, mxcireduced))
         if (.not. allocated(ci_oe_cum)) allocate (ci_oe_cum(mxciterm, mxcireduced))
         if (.not. allocated(ci_oe_sum)) allocate (ci_oe_sum(mxciterm, mxcireduced))
@@ -225,8 +225,8 @@ end module ci008_blk
 
 module ci009_blk
     !> Arguments: ci_oo_sum, ci_oo_cm2, ci_oo_cum
-    use optci, only: ncimatdim
-    use precision_kinds, only: dp
+      use optci,   only: ncimatdim
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: ci_oo_cm2 !(ncimatdim)
     real(dp), dimension(:), allocatable :: ci_oo_cum !(ncimatdim)
@@ -238,7 +238,7 @@ module ci009_blk
     save
 contains
     subroutine allocate_ci009_blk()
-        use optci, only: ncimatdim
+      use optci,   only: ncimatdim
         if (.not. allocated(ci_oo_cm2)) allocate (ci_oo_cm2(ncimatdim))
         if (.not. allocated(ci_oo_cum)) allocate (ci_oo_cum(ncimatdim))
         if (.not. allocated(ci_oo_sum)) allocate (ci_oo_sum(ncimatdim))
@@ -254,8 +254,8 @@ end module ci009_blk
 
 module ci010_blk
     !> Arguments: ci_ooe_cum, ci_ooe_sum
-    use optci, only: ncimatdim
-    use precision_kinds, only: dp
+      use optci,   only: ncimatdim
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: ci_ooe_cum !(ncimatdim)
     real(dp), dimension(:), allocatable :: ci_ooe_sum !(ncimatdim)
@@ -266,7 +266,7 @@ module ci010_blk
     save
 contains
     subroutine allocate_ci010_blk()
-        use optci, only: ncimatdim
+      use optci,   only: ncimatdim
         if (.not. allocated(ci_ooe_cum)) allocate (ci_ooe_cum(ncimatdim))
         if (.not. allocated(ci_ooe_sum)) allocate (ci_ooe_sum(ncimatdim))
     end subroutine allocate_ci010_blk
@@ -281,15 +281,15 @@ end module ci010_blk
 module m_optci
 contains
 subroutine allocate_m_optci()
-    use ci001_blk, only: allocate_ci001_blk
-    use ci002_blk, only: allocate_ci002_blk
-    use ci003_blk, only: allocate_ci003_blk
-    use ci004_blk, only: allocate_ci004_blk
-    use ci005_blk, only: allocate_ci005_blk
-    use ci006_blk, only: allocate_ci006_blk
-    use ci008_blk, only: allocate_ci008_blk
-    use ci009_blk, only: allocate_ci009_blk
-    use ci010_blk, only: allocate_ci010_blk
+      use ci001_blk, only: allocate_ci001_blk
+      use ci002_blk, only: allocate_ci002_blk
+      use ci003_blk, only: allocate_ci003_blk
+      use ci004_blk, only: allocate_ci004_blk
+      use ci005_blk, only: allocate_ci005_blk
+      use ci006_blk, only: allocate_ci006_blk
+      use ci008_blk, only: allocate_ci008_blk
+      use ci009_blk, only: allocate_ci009_blk
+      use ci010_blk, only: allocate_ci010_blk
 
     call allocate_ci001_blk()
     call allocate_ci002_blk()
@@ -303,15 +303,15 @@ subroutine allocate_m_optci()
 end subroutine allocate_m_optci
 
 subroutine deallocate_m_optci()
-    use ci001_blk, only: deallocate_ci001_blk
-    use ci002_blk, only: deallocate_ci002_blk
-    use ci003_blk, only: deallocate_ci003_blk
-    use ci004_blk, only: deallocate_ci004_blk
-    use ci005_blk, only: deallocate_ci005_blk
-    use ci006_blk, only: deallocate_ci006_blk
-    use ci008_blk, only: deallocate_ci008_blk
-    use ci009_blk, only: deallocate_ci009_blk
-    use ci010_blk, only: deallocate_ci010_blk
+      use ci001_blk, only: deallocate_ci001_blk
+      use ci002_blk, only: deallocate_ci002_blk
+      use ci003_blk, only: deallocate_ci003_blk
+      use ci004_blk, only: deallocate_ci004_blk
+      use ci005_blk, only: deallocate_ci005_blk
+      use ci006_blk, only: deallocate_ci006_blk
+      use ci008_blk, only: deallocate_ci008_blk
+      use ci009_blk, only: deallocate_ci009_blk
+      use ci010_blk, only: deallocate_ci010_blk
 
     call deallocate_ci001_blk()
     call deallocate_ci002_blk()

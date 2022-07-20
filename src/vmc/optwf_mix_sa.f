@@ -2,37 +2,33 @@
       contains
       subroutine optwf_mix
 
-      use sr_mod, only: mparm
-      use csfs, only: nstates
-      use mstates_mod, only: MSTATES
-      use optwf_corsam, only: energy, energy_err
-      use sa_check, only: energy_all, energy_err_all
-!      use contrl, only: nblk, nblk_max, nblk_ci
-      use control_vmc, only: vmc_nblk, vmc_nblk_max, vmc_nblk_ci
-      use orbval, only: nadorb
-      use m_force_analytic, only: iforce_analy, alfgeo
-      use mstates_ctrl, only: iguiding
-      use optwf_sr_mod, only: sr
-      use optwf_corsam, only: sigma
-      use m_force_analytic, only: iforce_analy
-      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_control, only: iroot_geo
-      use optwf_control, only: dparm_norm_min, nopt_iter, micro_iter_sr
-      use optwf_control, only: sr_tau, sr_adiag, sr_eps
-      use optwf_control, only: nvec, nvecx, alin_adiag, alin_eps
-      use precision_kinds, only: dp
       use contrl_file, only: ounit
-
-      use error, only: fatal_error
-      use optwf_handle_wf, only: save_nparms, write_wf, restore_wf
-      use optwf_handle_wf, only: set_nparms, save_wf, compute_parameters
-      use optwf_handle_wf, only: test_solution_parm, save_ci_best
-      use optwf_handle_wf, only: restore_ci_best, set_nparms_tot
-      use optgeo_lib, only: write_geometry, compute_positions
+      use control_vmc, only: vmc_nblk,vmc_nblk_ci,vmc_nblk_max
+      use csfs,    only: nstates
+      use error,   only: fatal_error
+      use m_force_analytic, only: alfgeo,iforce_analy
+      use mstates_ctrl, only: iguiding
+      use mstates_mod, only: MSTATES
+      use optgeo_lib, only: compute_positions,write_geometry
+      use optwf_control, only: alin_adiag,alin_eps,dparm_norm_min,ioptci
+      use optwf_control, only: ioptjas,ioptorb,iroot_geo,method
+      use optwf_control, only: micro_iter_sr,nopt_iter,nparm,nvec,nvecx
+      use optwf_control, only: sr_adiag,sr_eps,sr_tau
+      use optwf_corsam, only: energy,energy_err,sigma
+      use optwf_handle_wf, only: compute_parameters,restore_ci_best
+      use optwf_handle_wf, only: restore_wf,save_ci_best,save_nparms
+      use optwf_handle_wf, only: save_wf,set_nparms,set_nparms_tot
+      use optwf_handle_wf, only: test_solution_parm,write_wf
       use optwf_lin_dav_extra, only: select_ci_root
       use optwf_lin_dav_more, only: lin_d
+      use optwf_sr_mod, only: sr
+      use orbval,  only: nadorb
+      use precision_kinds, only: dp
+      use sa_check, only: energy_all,energy_err_all
+      use sr_mod,  only: mparm
       use sr_more, only: dscal
-      use optwf_control, only: method
+!      use contrl, only: nblk, nblk_max, nblk_ci
+
       implicit none
       interface
       subroutine qmc
@@ -289,13 +285,11 @@ c enddo iteration
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine change_ci(dparm_new,istate)
 
-      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf
-
-      use precision_kinds, only: dp
       use contrl_file, only: ounit
-      use contrl_file,    only: ounit
-      use slater, only: ndet
-      use slater, only: cdet
+      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf
+      use precision_kinds, only: dp
+      use slater,  only: cdet,ndet
+
 
       implicit none
 

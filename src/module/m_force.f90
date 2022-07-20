@@ -1,7 +1,7 @@
 module multiple_geo
 
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -56,7 +56,7 @@ contains
     end subroutine deallocate_forcestr
 
     subroutine allocate_forcest()
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
         if (.not. allocated(fcm2)) allocate (fcm2(MSTATES, MFORCE))
         if (.not. allocated(fcum)) allocate (fcum(MSTATES, MFORCE))
         ! DMC arrays:
@@ -78,7 +78,7 @@ end module multiple_geo
 
  module m_force_analytic
      !> Arguments: iforce_analy, iuse_zmat, alfgeo
-     use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -103,7 +103,7 @@ end module multiple_geo
 
  contains
      subroutine allocate_force_fin()
-         use system, only: ncent_tot
+      use system,  only: ncent_tot
          if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot))
          if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
      end subroutine allocate_force_fin
@@ -114,8 +114,8 @@ end module multiple_geo
      end subroutine deallocate_force_fin
 
      subroutine allocate_force_mat_n()
-         use sr_mod, only: mconf
-         use system, only: ncent_tot
+      use sr_mod,  only: mconf
+      use system,  only: ncent_tot
          if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, mconf))
      end subroutine allocate_force_mat_n
 
@@ -127,9 +127,9 @@ end module multiple_geo
 
  module forcewt
      !> Arguments: wcum, wsum
-     use multiple_geo, only: MFORCE
-     use precision_kinds, only: dp
-     use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -142,8 +142,8 @@ end module multiple_geo
      save
  contains
      subroutine allocate_forcewt()
-         use multiple_geo, only: MFORCE
-         use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE
          if (.not. allocated(wcum)) allocate (wcum(MSTATES, MFORCE))
          if (.not. allocated(wsum)) allocate (wsum(MSTATES, MFORCE))
      end subroutine allocate_forcewt
@@ -158,11 +158,11 @@ end module multiple_geo
  module m_force
     contains
     subroutine allocate_m_force()
-        use multiple_geo, only: allocate_forcest
+      use forcewt, only: allocate_forcewt
+      use m_force_analytic, only: allocate_force_fin
+      use m_force_analytic, only: allocate_force_mat_n
+      use multiple_geo, only: allocate_forcest
         !  use multiple_geo, only: allocate_forcestr
-        use forcewt, only: allocate_forcewt
-        use m_force_analytic, only: allocate_force_fin
-        use m_force_analytic, only: allocate_force_mat_n
 
         implicit none
 
@@ -174,11 +174,10 @@ end module multiple_geo
     end subroutine allocate_m_force
 
     subroutine deallocate_m_force()
-        use multiple_geo, only: deallocate_forcest
-        use multiple_geo, only: deallocate_forcestr
-        use forcewt, only: deallocate_forcewt
-        use m_force_analytic, only: deallocate_force_fin
-        use m_force_analytic, only: deallocate_force_mat_n
+      use forcewt, only: deallocate_forcewt
+      use m_force_analytic, only: deallocate_force_fin
+      use m_force_analytic, only: deallocate_force_mat_n
+      use multiple_geo, only: deallocate_forcest,deallocate_forcestr
 
         implicit none
 

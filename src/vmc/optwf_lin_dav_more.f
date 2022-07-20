@@ -1,28 +1,27 @@
       module optwf_lin_dav_more
-      use error, only: fatal_error
+      use error,   only: fatal_error
       use sr_more, only: ddot
       contains
       subroutine lin_d(nparm,nvec,nvecx,deltap,deltap_more,index_more,adiag,ethr)
 
+      use contrl_file, only: errunit,ounit
+      use control, only: ipr
+      use csfs,    only: nstates
+      use davidson_wrap_mod, only: davidson_wrap
       use mpi
-      use sr_mod, only: mparm
-      use mstates_mod, only: MSTATES
-      use csfs, only: nstates
       use mpiconf, only: idtask
-      use optwf_control, only: ioptjas, ioptorb, lin_jdav
+      use mpitimer, only: time,time_check1,time_check2,time_start
+      use mstates_mod, only: MSTATES
+      use optwf_control, only: ioptjas,ioptorb,lin_jdav
       use optwf_corsam, only: energy
-      use optwf_parms, only: nparmd, nparmj
-      use sr_mat_n, only: jfj
-      use sr_mat_n, only: obs_tot
+      use optwf_lib, only: sort
+      use optwf_lin_dav_extra, only: compute_overlap_psi
+      use optwf_parms, only: nparmd,nparmj
       use optwf_sr_mod, only: sr_hs
       use precision_kinds, only: dp
-      use contrl_file, only: ounit, errunit
-      use mpitimer, only: time, time_start, time_check1, time_check2
       use regterg_mod, only: regterg
-      use davidson_wrap_mod, only: davidson_wrap
-      use optwf_lin_dav_extra, only: compute_overlap_psi
-      use optwf_lib, only: sort
-      use control, only: ipr
+      use sr_mat_n, only: jfj,obs_tot
+      use sr_mod,  only: mparm
       implicit none
 
       integer :: i, i0, i_ortho_min, i_overlap_max, idav_iter
@@ -175,7 +174,7 @@ c     enddo
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine amul(n,q,r)
 
-      use jd_scratch, only: qr, rr
+      use jd_scratch, only: qr,rr
       use mpi
       use optwf_lin_dav_extra, only: h_psi_lin_d
 
@@ -202,7 +201,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine bmul(n,q,r)
 
-      use jd_scratch, only: qr, rr
+      use jd_scratch, only: qr,rr
       use mpi
       use optwf_lin_dav_extra, only: s_psi_lin_d
 

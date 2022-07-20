@@ -6,34 +6,32 @@ c Uses the diffusion Monte Carlo algorithm described in:
 c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
 c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
 
-      use precision_kinds, only: dp
-      use contrldmc, only: idmc
-      use estcum, only: ipass
-      use multiple_geo, only: nwprod
-      use pseudo, only: nloc
-      use multiple_geo, only: iwftype, nwftype
-!      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
-      use control_dmc, only: dmc_idump, dmc_irstar, dmc_nblk, dmc_nblkeq
-      use control_dmc, only: dmc_nconf, dmc_nstep
-      use mpitimer, only: elapsed_time
-      use contrl_file, only: ounit
-
-      use strech_mod, only: setup_force
-      use dumper_mod, only: dumper
-      use mc_configs_mod, only: mc_configs, mc_configs_write
-
-      use averages,       only: init_averages_index, average, average_write
-      use init_mod,       only: init
-      use zerest_mod,     only: zerest
-      use rotqua_mod,     only: rotqua
-      use error,          only: fatal_error
-      use dmc_ps_mov1,    only: dmc_ps
-      use acues1_mod,     only: acues1
-      use acuest_mod,     only: acuest
-      use acues1_reduce_mod,only: acues1_reduce
-      use finwrt_mod,     only: finwrt
+      use acues1_mod, only: acues1
+      use acues1_reduce_mod, only: acues1_reduce
+      use acuest_mod, only: acuest
+      use averages, only: average,average_write,init_averages_index
       use constants, only: pi
-      use multiple_geo, only: nforce
+      use contrl_file, only: ounit
+      use contrldmc, only: idmc
+      use control_dmc, only: dmc_idump,dmc_irstar,dmc_nblk,dmc_nblkeq
+      use control_dmc, only: dmc_nconf,dmc_nstep
+      use dmc_ps_mov1, only: dmc_ps
+      use dumper_mod, only: dumper
+      use error,   only: fatal_error
+      use estcum,  only: ipass
+      use finwrt_mod, only: finwrt
+      use init_mod, only: init
+      use mc_configs_mod, only: mc_configs,mc_configs_write
+      use mpitimer, only: elapsed_time
+      use multiple_geo, only: iwftype,nforce,nwftype,nwprod
+      use precision_kinds, only: dp
+      use pseudo,  only: nloc
+      use rotqua_mod, only: rotqua
+      use strech_mod, only: setup_force
+      use zerest_mod, only: zerest
+!      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
+
+
       implicit none
 
       integer :: i, j

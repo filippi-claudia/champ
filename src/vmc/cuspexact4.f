@@ -2,11 +2,10 @@
       contains
       subroutine cuspexact4(iprin,iadiag)
 c Written by Cyrus Umrigar
-      use system, only: nctype
-      use jastrow, only: nordc
-      use cuspmat4, only: d, iwc4, nterms
+      use cuspmat4, only: d,iwc4,nterms
+      use jastrow, only: c,nordc
       use precision_kinds, only: dp
-      use jastrow, only: c
+      use system,  only: nctype
       implicit none
 
       integer :: i, iadiag, iprin, it, j

@@ -3,26 +3,25 @@
       subroutine splitj
 c Written by Cyrus Umrigar
 
+      use age,     only: iage
+      use branch,  only: eold,nwalk,pwt,wt,wthist
+      use config,  only: d2o,peo_dmc,psido_dmc,psijo_dmc,vold_dmc
+      use config,  only: xold_dmc
       use dmc_mod, only: MWALK
-      use age, only: iage
-      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use stats, only: nbrnch
-      use multiple_geo, only: nwprod
-      use branch, only: eold, nwalk, pwt, wt
-      use branch, only: wthist
+      use error,   only: fatal_error
       use jacobsave, only: ajacold
-      use velratio, only: fratio, xdrifted
-      use precision_kinds, only: dp
-
       use mmpol_dmc, only: mmpol_splitj
+      use multiple_geo, only: nforce,nwprod
       use pcm_dmc, only: pcm_splitj
+      use precision_kinds, only: dp
       use prop_dmc, only: prop_splitj
-      use walksav_jas_mod, only: splitjjas
-      use walksav_det_mod, only: splitjdet
-      use error, only: fatal_error
       use rannyu_mod, only: rannyu
-      use system, only: nelec
-      use multiple_geo, only: nforce
+      use stats,   only: nbrnch
+      use system,  only: nelec
+      use velratio, only: fratio,xdrifted
+      use walksav_det_mod, only: splitjdet
+      use walksav_jas_mod, only: splitjjas
+
 
       implicit none
 

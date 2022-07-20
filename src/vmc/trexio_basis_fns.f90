@@ -11,22 +11,21 @@ module trexio_basis_fns_mod
 !     ider = 2 -> value, gradient, laplacian
 !     ider = 3 -> value, gradient, laplacian, forces
 
-      use numbas_mod, only: MRWF
-      use system, only: iwctype, ncent, ncent_tot
-      use system, only: nghostcent
-      use numbas, only: iwrwf, nrbas!, rmax
-      use numbas1, only: iwlbas, nbastyp
-      use phifun, only: phin, dphin, d2phin, d2phin_all, d3phin, n0_nbasis
-      use multiple_geo, only: iwf
       use m_force_analytic, only: iforce_analy
-      use splfit_mod, only: splfit
+      use m_trexio_basis, only: index_slm,num_ao_per_cent
+      use m_trexio_basis, only: num_rad_per_cent,slm_per_l
+      use multiple_geo, only: iwf
+      use numbas,  only: iwrwf,nrbas!,rmax
+      use numbas1, only: iwlbas,nbastyp
+      use numbas_mod, only: MRWF
+      use phifun,  only: d2phin,d2phin_all,d3phin,dphin,n0_nbasis,phin
+      use precision_kinds, only: dp
       use slm_mod, only: slm
+      use splfit_mod, only: splfit
+      use system,  only: iwctype,ncent,ncent_tot,nelec,nghostcent
 #if defined(TREXIO_FOUND)
-      use m_trexio_basis, only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
 #endif
 
-      use precision_kinds, only: dp
-      use system, only: nelec
       implicit none
 
       integer :: it, ic, ider, irb
@@ -229,7 +228,7 @@ module trexio_basis_fns_mod
 !-------------------------------------------------------------------
       subroutine n0_inc(l,k,ic)
 
-      use phifun, only: phin, dphin, n0_ibasis, n0_ic, n0_nbasis
+      use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
       implicit none
 
       integer :: ic, k, l

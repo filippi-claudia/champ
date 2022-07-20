@@ -2,20 +2,20 @@
       contains
       subroutine mc_configs
 
-      use config, only: psido_dmc, psijo_dmc, xold_dmc
-      use mpiconf, only: idtask, nproc
-      use branch, only: eold, nwalk
-!      use contrl, only: irstar, nblk, nblkeq, nconf, nconf_new, nstep
-      use control_dmc, only: dmc_irstar, dmc_nblk, dmc_nblkeq
-      use control_dmc, only: dmc_nconf, dmc_nconf_new, dmc_nstep
-      use mpi
-
-      use precision_kinds, only: dp
-      use error, only: fatal_error
-      use rannyu_mod, only: rannyu, savern, setrn
-      use restart, only: startr
+      use branch,  only: eold,nwalk
+      use config,  only: psido_dmc,psijo_dmc,xold_dmc
       use control, only: ipr
-      use system, only: nelec
+      use control_dmc, only: dmc_irstar,dmc_nblk,dmc_nblkeq,dmc_nconf
+      use control_dmc, only: dmc_nconf_new,dmc_nstep
+      use error,   only: fatal_error
+      use mpi
+      use mpiconf, only: idtask,nproc
+      use precision_kinds, only: dp
+      use rannyu_mod, only: rannyu,savern,setrn
+      use restart, only: startr
+      use system,  only: nelec
+!      use contrl, only: irstar, nblk, nblkeq, nconf, nconf_new, nstep
+
 
       implicit none
 

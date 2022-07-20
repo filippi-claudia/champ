@@ -3,31 +3,28 @@
       subroutine acuest_reduce(enow)
 c Written by Claudia Filippi
 
-      use mpi
-      use precision_kinds, only: dp
-      use multiple_geo, only: MFORCE
-      use csfs, only: nstates
-      use mstates_mod, only: MSTATES
-
-      use estcum, only: ecum, pecum, tpbcum, tjfcum, iblk
-      use est2cm, only: ecm2, pecm2, tpbcm2, tjfcm2
-      use estpsi, only: apsi, aref, detref
-      use estsum, only: acc
-      use multiple_geo, only: fcm2, fcum
+      use acuest_write_mod, only: acuest_write
+      use csfs,    only: nstates
+      use error,   only: fatal_error
+      use est2cm,  only: ecm2,pecm2,tjfcm2,tpbcm2
+      use estcum,  only: ecum,iblk,pecum,tjfcum,tpbcum
+      use estpsi,  only: apsi,aref,detref
+      use estsum,  only: acc
       use forcewt, only: wcum
-      use mpiconf, only: nproc, wid
       use mpi
-      use error, only: fatal_error
+      use mpiconf, only: nproc,wid
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE,fcm2,fcum,nforce
+      use optorb_cblock, only: iorbprt,iorbprt_sav
+      use pcm_mod, only: pcm_compute_penupv,qpcm_update_vol
+      use pcm_reduce_mod, only: pcm_reduce_chvol
+      use precision_kinds, only: dp
+      use prop_reduce_mod, only: prop_reduce
+
 
       ! this in not even in the master as the line
       ! is commented in optorb.h !
-      use optorb_cblock, only: iorbprt, iorbprt_sav
 
-      use prop_reduce_mod, only: prop_reduce
-      use acuest_write_mod, only: acuest_write
-      use pcm_mod, only: qpcm_update_vol, pcm_compute_penupv
-      use pcm_reduce_mod, only: pcm_reduce_chvol
-      use multiple_geo, only: nforce
 
       implicit none
 

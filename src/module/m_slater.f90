@@ -1,8 +1,8 @@
 module slater
     !> Arguments: d2dx2, ddx, fp, fpp, slmi
 
-    use precision_kinds, only: dp
-    use vmc_mod, only: nmat_dim
+      use precision_kinds, only: dp
+      use vmc_mod, only: nmat_dim
 
     implicit none
 
@@ -29,8 +29,8 @@ module slater
 
 contains
     subroutine allocate_slater()
-        use system, only: nelec
-        use vmc_mod, only: nmat_dim
+      use system,  only: nelec
+      use vmc_mod, only: nmat_dim
         !use force_mod, only: MWF
         !use mstates_mod, only: MSTATES
 

@@ -1,6 +1,6 @@
 module const
     !> Arguments: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -16,7 +16,7 @@ end module const
 
 module const2
     !> Arguments: deltar, deltat
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -29,7 +29,7 @@ module const2
 end module const2
 
 module constants
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
   
     real(dp), parameter :: hb = 0.5
     real(dp), parameter :: pi = 4.0d0*datan(1.0d0)

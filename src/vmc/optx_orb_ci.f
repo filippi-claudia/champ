@@ -2,17 +2,16 @@
       contains
       subroutine optx_orb_ci_sum(p,q)
 
-      use optwf_control, only: ioptci, ioptorb
-      use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-      use orb_mat_001, only: orb_ho, orb_o, orb_oe
-      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
-      use ci000, only: nciterm
+      use ci000,   only: nciterm
       use ci001_blk, only: ci_o
       use ci002_blk, only: ci_o_old
-      use ci004_blk, only: ci_de, ci_de_old
+      use ci004_blk, only: ci_de,ci_de_old
+      use mix_orb_ci, only: ci_de_o,ci_o_ho,ci_o_o,ci_o_oe
       use optorb_cblock, only: nreduced
+      use optwf_control, only: ioptci,ioptorb,method
+      use orb_mat_001, only: orb_ho,orb_o,orb_oe
+      use orb_mat_002, only: orb_ho_old,orb_o_old,orb_oe_old
       use precision_kinds, only: dp
-      use optwf_control, only: method
 
       implicit none
 
@@ -35,11 +34,10 @@
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_init
 
-      use optwf_control, only: ioptci, ioptorb
-      use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-      use ci000, only: nciterm
+      use ci000,   only: nciterm
+      use mix_orb_ci, only: ci_de_o,ci_o_ho,ci_o_o,ci_o_oe
       use optorb_cblock, only: nreduced
-      use optwf_control, only: method
+      use optwf_control, only: ioptci,ioptorb,method
 
       implicit none
 
@@ -61,11 +59,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_dump(iu)
 
-      use optwf_control, only: ioptci, ioptorb
-      use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-      use ci000, only: nciterm
+      use ci000,   only: nciterm
+      use mix_orb_ci, only: ci_de_o,ci_o_ho,ci_o_o,ci_o_oe
       use optorb_cblock, only: nreduced
-      use optwf_control, only: method
+      use optwf_control, only: ioptci,ioptorb,method
 
       implicit none
 
@@ -79,11 +76,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_rstrt(iu)
 
-      use optwf_control, only: ioptci, ioptorb
-      use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-      use ci000, only: nciterm
+      use ci000,   only: nciterm
+      use mix_orb_ci, only: ci_de_o,ci_o_ho,ci_o_o,ci_o_oe
       use optorb_cblock, only: nreduced
-      use optwf_control, only: method
+      use optwf_control, only: ioptci,ioptorb,method
 
       implicit none
 
@@ -97,26 +93,24 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_fin(passes,eave)
 
-      use optci, only: mxciterm
-      use csfs, only: ccsf, ncsf
-      use gradhess_ci, only: grad_ci
-      use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
-      use optwf_control, only: ioptci, ioptorb
-      use optwf_parms, only: nparmj
-      use optorb_cblock, only: norbprim
-      use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-      use orb_mat_003, only: orb_o_cum
-      use orb_mat_004, only: orb_oe_cum
-      use orb_mat_005, only: orb_ho_cum
-      use gradhess_all, only: grad
-      use ci000, only: nciterm
+      use ci000,   only: nciterm
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
       use ci008_blk, only: ci_oe_cum
-      use optorb_cblock, only: nreduced
+      use csfs,    only: ccsf,ncsf
+      use gradhess_all, only: grad
+      use gradhess_ci, only: grad_ci
+      use gradhess_mix_orb_ci, only: h_mix_ci_orb,s_mix_ci_orb
+      use mix_orb_ci, only: ci_de_o,ci_o_ho,ci_o_o,ci_o_oe
+      use optci,   only: mxciterm
+      use optorb_cblock, only: norbprim,nreduced
+      use optwf_control, only: ioptci,ioptorb,method
+      use optwf_parms, only: nparmj
+      use orb_mat_003, only: orb_o_cum
+      use orb_mat_004, only: orb_oe_cum
+      use orb_mat_005, only: orb_ho_cum
       use precision_kinds, only: dp
-      use optwf_control, only: method
-      use slater, only: cdet
+      use slater,  only: cdet
 
       implicit none
 

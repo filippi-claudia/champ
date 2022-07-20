@@ -1,6 +1,6 @@
 module lapack_wrapper
 
-  use precision_kinds, only: dp
+      use precision_kinds, only: dp
   implicit none
   interface!LAPACK interface
 !*  -- LAPACK driver routine (version 3.1) --

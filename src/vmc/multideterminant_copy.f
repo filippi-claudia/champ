@@ -2,28 +2,28 @@
       contains
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
-      use const, only: hb, nelec
-      use csfs, only: nstates
-      use dets, only: ndet
-      use elec, only: ndn, nup
-      use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, ndetiab, k_det, ndet_req
-      use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
-      use optwf_control, only: ioptorb
-      use ycompact, only: dymat, ymat
-      use zcompact, only: aaz, dzmat, emz, zmat
-      use coefs, only: norb
-      use Bloc, only: b, tildem, xmat
-      use denergy_det_m, only: denergy_det, allocate_denergy_det_m
-      use multimat, only: aa, wfmat
-      use m_force_analytic, only: iforce_analy
-      use orbval, only: nadorb, orb
-      use slater, only: d2dx2, ddx, slmi
-      use multislater, only: detiab
-
-      use precision_kinds, only: dp
+      use Bloc,    only: b,tildem,xmat
       use bxmatrices, only: bxmatrix
+      use coefs,   only: norb
+      use const,   only: hb,nelec
+      use csfs,    only: nstates
+      use denergy_det_m, only: allocate_denergy_det_m,denergy_det
+      use dets,    only: ndet
+      use elec,    only: ndn,nup
+      use m_force_analytic, only: iforce_analy
       use matinv_mod, only: matinv
-      use optwf_control, only: method
+      use multidet, only: irepcol_det,ireporb_det,iwundet,k_aux,k_det
+      use multidet, only: k_det2,kref,ndet_req,ndetiab,ndetiab2
+      use multidet, only: ndetsingle,numrep_det
+      use multimat, only: aa,wfmat
+      use multislater, only: detiab
+      use optwf_control, only: ioptorb,method
+      use orbval,  only: nadorb,orb
+      use precision_kinds, only: dp
+      use slater,  only: d2dx2,ddx,slmi
+      use ycompact, only: dymat,ymat
+      use zcompact, only: aaz,dzmat,emz,zmat
+
       implicit none
 
       integer :: i, iab, iel, index_det, iorb, kun, kw
@@ -229,19 +229,19 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: MEXCIT
-      use const, only: nelec
-      use dets, only: cdet, ndet
-      use dets_equiv, only: cdet_equiv, dcdet_equiv
-      use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, k_det, ndetiab
-      use multidet, only: k_det2, ndetiab2, k_aux, ndetsingle
-      use multiple_geo, only: iwf
-      use coefs, only: norb
+      use coefs,   only: norb
+      use const,   only: nelec
       use denergy_det_m, only: denergy_det
-
-
+      use dets,    only: cdet,ndet
+      use dets_equiv, only: cdet_equiv,dcdet_equiv
+      use multidet, only: irepcol_det,ireporb_det,iwundet,k_aux,k_det
+      use multidet, only: k_det2,kref,ndetiab,ndetiab2,ndetsingle
+      use multidet, only: numrep_det
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
+      use vmc_mod, only: MEXCIT,norb_tot
+
+
       implicit none
 
       integer :: i, iab, iorb, irep, istate
@@ -329,18 +329,18 @@ c      ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingl
 c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: MEXCIT
-      use const, only: nelec
-      use dets, only: ndet
-      use dets_equiv, only: cdet_equiv, dcdet_equiv
-      use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, ndetiab, ndetsingle
-      use coefs, only: norb
-      use Bloc, only: tildem
-
+      use Bloc,    only: tildem
+      use coefs,   only: norb
+      use const,   only: nelec
+      use dets,    only: ndet
+      use dets_equiv, only: cdet_equiv,dcdet_equiv
+      use multidet, only: irepcol_det,ireporb_det,iwundet,kref,ndetiab
+      use multidet, only: ndetsingle,numrep_det
       use multimat, only: wfmat
-
       use precision_kinds, only: dp
+      use vmc_mod, only: MEXCIT,norb_tot
+
+
       implicit none
 
       integer :: i, iab, iorb, irep, j
@@ -414,16 +414,16 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
-      use vmc_mod, only: norb_tot
-      use elec, only: ndn, nup
-      use multidet, only: iactv, ivirt
-      use coefs, only: norb
-      use Bloc, only: tildem, xmat
+      use Bloc,    only: tildem,xmat
+      use coefs,   only: norb
+      use const,   only: nelec
+      use elec,    only: ndn,nup
+      use multidet, only: iactv,ivirt
       use multimat, only: aa
-      use slater, only: slmi
-      use const, only: nelec
-
       use precision_kinds, only: dp
+      use slater,  only: slmi
+      use vmc_mod, only: norb_tot
+
       implicit none
 
       integer :: iab, irep, ish, jrep, krep
@@ -482,13 +482,13 @@ c           do krep=ivirt(iab),norb+nadorb
 c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
-      use const, only: nelec
-      use csfs, only: nstates
-      use elec, only: ndn, nup
-      use ycompact, only: ymat
+      use const,   only: nelec
+      use csfs,    only: nstates
+      use elec,    only: ndn,nup
       use multimat, only: wfmat
-
       use multislater, only: detiab
+      use ycompact, only: ymat
+
       implicit none
 
       integer :: iab, iel, istate
@@ -526,7 +526,7 @@ c-----------------------------------------------------------------------
 
 c-----------------------------------------------------------------------
       function idiff(j,i,iab)
-      use multidet, only: irepcol_det, ireporb_det, numrep_det
+      use multidet, only: irepcol_det,ireporb_det,numrep_det
 
       implicit none
 

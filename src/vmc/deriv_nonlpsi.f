@@ -3,15 +3,15 @@
       function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use cuspmat4, only: d,iwc4
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
-      use optwf_wjas, only: iwjasc
+      use jastrow, only: c,ijas,nordj
       use multiple_geo, only: iwf
-      use vardep, only: cdep, iwdepend, nvdepend
-      use cuspmat4, only: d, iwc4
+      use optwf_wjas, only: iwjasc
       use precision_kinds, only: dp
       use scale_dist_mod, only: switch_scale
-      use jastrow, only: nordj, c, ijas
+      use vardep,  only: cdep,iwdepend,nvdepend
       implicit none
 
       integer :: id, ideriv, iparm, it, jj
@@ -118,11 +118,11 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: norda
       use jaspar6, only: asymp_r
+      use jastrow, only: a4,asymp_jasa,ijas
+      use multiple_geo, only: iwf
       use optwf_nparmj, only: nparma
       use optwf_wjas, only: iwjasa
-      use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: a4, asymp_jasa, ijas
       implicit none
 
       integer :: i, iord, it, jparm
@@ -178,11 +178,11 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: nordb
       use jaspar6, only: asymp_r
+      use jastrow, only: asymp_jasb,b,ijas,sspinn
+      use multiple_geo, only: iwf
       use optwf_nparmj, only: nparmb
       use optwf_wjas, only: iwjasb
-      use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: asymp_jasb, sspinn, b, ijas
       implicit none
 
       integer :: i, iord, ipar, isb, jparm

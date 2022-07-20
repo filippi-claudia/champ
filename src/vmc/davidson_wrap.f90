@@ -12,15 +12,14 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
     ! ... S is an symmetric matrix, v is a real vector
     ! ... (real wavefunctions with only half plane waves stored)
     !
-    use precision_kinds, only: dp
-    use davidson, only: generalized_eigensolver
-    use davidson, only: davidson_parameters
-    use davidson, only: fun_mtx_gemv, fun_stx_gemv
-    use array_utils, only: eye, write_matrix, write_vector
-    use mpi
-    use contrl_file, only: ounit, errunit
-    use error, only: fatal_error
-    use optwf_lin_dav_extra, only: s_psi_lin_d
+      use array_utils, only: eye,write_matrix,write_vector
+      use contrl_file, only: errunit,ounit
+      use davidson, only: davidson_parameters,fun_mtx_gemv,fun_stx_gemv
+      use davidson, only: generalized_eigensolver
+      use error,   only: fatal_error
+      use mpi
+      use optwf_lin_dav_extra, only: s_psi_lin_d
+      use precision_kinds, only: dp
 
     IMPLICIT NONE
 

@@ -1,5 +1,5 @@
       module psi_mod
-      use scale_dist_mod, only: scale_dist, switch_scale
+      use scale_dist_mod, only: scale_dist,switch_scale
       contains
       function psi(rij,ri,rj,it)
 c Written by Cyrus Umrigar, modified by Claudia Filippi
@@ -10,9 +10,9 @@ c periodic systems.
 
       use jaspar4, only: nordc
       use jaspar6, only: cutjas
+      use jastrow, only: c,ijas,nordj
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: nordj, c, ijas
       implicit none
 
       integer :: it, jp, k, l, l_hi
@@ -100,9 +100,9 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: norda
       use jaspar6, only: cutjas
+      use jastrow, only: a4,asymp_jasa,ijas
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: a4, asymp_jasa, ijas
       implicit none
 
       integer :: i, it
@@ -147,9 +147,9 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: nordb
       use jaspar6, only: cutjas
+      use jastrow, only: asymp_jasb,b,ijas,sspinn
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use jastrow, only: asymp_jasb, sspinn, b, ijas
       implicit none
 
       integer :: i, ipar, isb

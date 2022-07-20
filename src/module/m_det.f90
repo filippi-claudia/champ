@@ -8,7 +8,7 @@ end module dets
 
 module csfs
     !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :, :), allocatable :: ccsf !(MDET,MSTATES,MWF)
     real(dp), dimension(:), allocatable :: cxdet !(nmap)
@@ -24,10 +24,10 @@ module csfs
     save
 contains
     subroutine allocate_csfs()
-        use multiple_geo, only: nwftype
-        use mstates_mod, only: MSTATES
-        use dets, only: nmap
-      use slater, only: ndet
+      use dets,    only: nmap
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: nwftype
+      use slater,  only: ndet
         if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))
         if (.not. allocated(cxdet)) allocate (cxdet(nmap))
         if (.not. allocated(iadet)) allocate (iadet(ndet))

@@ -3,16 +3,15 @@
       subroutine optx_orb_ci_reduce
 c Written by Claudia Filippi
 
-      use optorb_mod, only: mxreduced
-      use optci, only: mxciterm
-      use optwf_control, only: ioptci, ioptorb
-      use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-      use ci000, only: nciterm
-      use optorb_cblock, only: nreduced
+      use ci000,   only: nciterm
+      use mix_orb_ci, only: ci_de_o,ci_o_ho,ci_o_o,ci_o_oe
       use mpi
-
+      use optci,   only: mxciterm
+      use optorb_cblock, only: nreduced
+      use optorb_mod, only: mxreduced
+      use optwf_control, only: ioptci,ioptorb,method
       use precision_kinds, only: dp
-      use optwf_control, only: method
+
       implicit none
 
       integer :: i, ierr, j

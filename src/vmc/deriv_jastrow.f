@@ -4,10 +4,10 @@
 c Written by Claudia Filippi
 
 
-      use precision_kinds, only: dp
-
       use deriv_jastrow4_mod, only: deriv_jastrow4
-      use system, only: nelec
+      use precision_kinds, only: dp
+      use system,  only: nelec
+
       implicit none
 
       integer :: i

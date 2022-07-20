@@ -1,6 +1,6 @@
 module jastrow_update
     !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -28,7 +28,7 @@ module jastrow_update
     save
 contains
     subroutine allocate_jasn()
-      use system, only: nelec
+      use system,  only: nelec
         if (.not. allocated(d2ijn)) allocate (d2ijn(nelec, nelec))
         if (.not. allocated(fijn)) allocate (fijn(3, nelec, nelec))
         if (.not. allocated(fjn)) allocate (fjn(3, nelec))
@@ -43,7 +43,7 @@ contains
     end subroutine deallocate_jasn
 
     subroutine allocate_jaso()
-      use system, only: nelec
+      use system,  only: nelec
         if (.not. allocated(d2ijo)) allocate (d2ijo(nelec, nelec))
         if (.not. allocated(fijo)) allocate (fijo(3, nelec, nelec))
         if (.not. allocated(fjo)) allocate (fjo(3, nelec))
@@ -61,7 +61,7 @@ end module jastrow_update
 
 module jaspar4
     !> Arguments: a4, norda, nordb, nordc
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -89,7 +89,7 @@ end module jaspar4
 
 module jaspar6
     !> Arguments: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -131,7 +131,7 @@ module jaspointer
     save
 contains
     subroutine allocate_jaspointer()
-        use vmc_mod, only: nctyp3x
+      use vmc_mod, only: nctyp3x
         if (.not. allocated(npoint)) allocate (npoint(nctyp3x), source=0)
         if (.not. allocated(npointa)) allocate (npointa(3*nctyp3x), source=0)
     end subroutine allocate_jaspointer
@@ -146,7 +146,7 @@ end module jaspointer
 
 
 module jastrow
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
     implicit none
 
     ! From contr2
@@ -185,12 +185,11 @@ module jastrow
 contains
 
 subroutine allocate_m_jastrow()
-    use jastrow_update, only: allocate_jasn
-    use jastrow_update, only: allocate_jaso
-    use jaspointer, only: allocate_jaspointer
+      use jaspointer, only: allocate_jaspointer
+      use jastrow_update, only: allocate_jasn,allocate_jaso
+      use multiple_geo, only: MWF
+      use system,  only: nctype_tot
 
-    use multiple_geo, only: MWF
-    use system,      only: nctype_tot
 
     implicit none
 
@@ -205,7 +204,7 @@ subroutine allocate_m_jastrow()
 end subroutine allocate_m_jastrow
 
 subroutine allocate_jaspar6()
-    use system,      only: nctype_tot
+      use system,  only: nctype_tot
     implicit none
 
     if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot))
@@ -213,9 +212,8 @@ subroutine allocate_jaspar6()
 end subroutine allocate_jaspar6
 
 subroutine deallocate_m_jastrow()
-    use jastrow_update, only: deallocate_jasn
-    use jastrow_update, only: deallocate_jaso
-    use jaspointer, only: deallocate_jaspointer
+      use jaspointer, only: deallocate_jaspointer
+      use jastrow_update, only: deallocate_jasn,deallocate_jaso
 
     implicit none
 
@@ -235,7 +233,7 @@ end module jastrow
 
 module cuspmat4
     !> Arguments: d, nterms
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -249,9 +247,8 @@ module cuspmat4
     save
 contains
     subroutine allocate_cuspmat4()
-        use vmc_mod, only: mterms
       use jastrow, only: neqsx
-      use jastrow, only: neqsx
+      use vmc_mod, only: mterms
         if (.not. allocated(d)) allocate (d(neqsx, mterms))
         if (.not. allocated(iwc4)) allocate (iwc4(neqsx))
     end subroutine allocate_cuspmat4

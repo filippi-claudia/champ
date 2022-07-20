@@ -4,40 +4,35 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use multiple_geo, only: fgcm2, fgcum
-      use age, only: ioldest, ioldestmx
-      use estcum, only: iblk
-      use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
-      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, wdsum
-      use estsum, only: wfsum, wgdsum, wgsum, wsum_dmc
-      use estcum, only: ecum_dmc, efcum, egcum, ei1cum, ei2cum
-      use estcum, only: pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
-      use estcum, only: wcum_dmc, wdcum, wfcum, wgcum
-      use estcum, only: wgdcum
-      use est2cm, only: ecm2_dmc, efcm2, egcm2, ei1cm2, ei2cm2
-      use est2cm, only: pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2
-      use est2cm, only: wfcm2, wgcm2
-      use derivest, only: derivcum, derivsum
-      use mpiconf, only: wid
-      use multiple_geo, only: MFORCE
-!      use contrl, only: nstep
-      use control_dmc, only: dmc_nstep
-      use mpi
-
-      use precision_kinds, only: dp
+      use age,     only: ioldest,ioldestmx
       use contrl_file, only: ounit
-
-      use prop_reduce_mod, only: prop_reduce
-      use pcm_reduce_mod, only: pcm_reduce
+      use control_dmc, only: dmc_nstep
+      use derivest, only: derivcum,derivsum
+      use est2cm,  only: ecm2_dmc,efcm2,egcm2,ei1cm2,ei2cm2,pecm2_dmc
+      use est2cm,  only: r2cm2_dmc,ricm2,tjfcm_dmc,tpbcm2_dmc,wcm2,wfcm2
+      use est2cm,  only: wgcm2
+      use estcum,  only: ecum_dmc,efcum,egcum,ei1cum,ei2cum,iblk
+      use estcum,  only: pecum_dmc,r2cum_dmc,ricum,taucum,tjfcum_dmc
+      use estcum,  only: tpbcum_dmc,wcum_dmc,wdcum,wfcum,wgcum,wgdcum
+      use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
+      use estsum,  only: r2sum,risum,tausum,tjfsum_dmc,tpbsum_dmc,wdsum
+      use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
+      use mmpol,   only: mmpol_init
+      use mmpol_dmc, only: mmpol_cum,mmpol_prt
       use mmpol_reduce_mod, only: mmpol_reduce
-      use mmpol, only: mmpol_init
+      use mpi
+      use mpiconf, only: wid
+      use multiple_geo, only: MFORCE,fgcm2,fgcum,nforce
+      use pcm_dmc, only: pcm_cum,pcm_prt
       use pcm_mod, only: pcm_init
-      use properties_mod, only: prop_init
-      use mmpol_dmc, only: mmpol_prt, mmpol_cum
-      use pcm_dmc, only: pcm_prt, pcm_cum
+      use pcm_reduce_mod, only: pcm_reduce
+      use precision_kinds, only: dp
       use prop_dmc, only: prop_prt_dmc
-      use properties_mod, only: prop_cum
-      use multiple_geo, only: nforce
+      use prop_reduce_mod, only: prop_reduce
+      use properties_mod, only: prop_cum,prop_init
+!      use contrl, only: nstep
+
+
 
       implicit none
 

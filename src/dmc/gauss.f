@@ -9,9 +9,9 @@ c the order in which the 2 rannyu's are evaluated.
 c Could generate 2 numbers for almost the same price, but for
 c backward compatibility generate just 1.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      use constants, only: pi
       use precision_kinds, only: dp
       use rannyu_mod, only: rannyu
-      use constants, only: pi
       implicit none
 
       real(dp) :: gauss

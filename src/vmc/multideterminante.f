@@ -2,28 +2,24 @@
       contains
       subroutine multideterminante(iel)
 
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: MEXCIT
-      use csfs, only: nstates
-      use multidet, only: irepcol_det, ireporb_det, ivirt, numrep_det, k_det, ndetiab, ndet_req
-      use multidet, only: k_det2, ndetiab2, k_aux, ndetsingle
-      use slatn, only: slmin
-      use ycompactn, only: ymatn
-      use coefs, only: norb
-      use multimatn, only: aan, wfmatn
-      use multislatern, only: detn, orbn
-      use orbval, only: orb
-      use multislater, only: detiab
-      use precision_kinds, only: dp
+      use coefs,   only: norb
       use contrl_file, only: ounit
+      use csfs,    only: nstates
       use matinv_mod, only: matinv
+      use multidet, only: irepcol_det,ireporb_det,ivirt,k_aux,k_det
+      use multidet, only: k_det2,ndet_req,ndetiab,ndetiab2,ndetsingle
+      use multidet, only: numrep_det
       use multideterminant_mod, only: compute_ymat
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
-      use slater, only: ndet
-      use slater, only: iwundet
-      use slater, only: kref
+      use multimatn, only: aan,wfmatn
+      use multislater, only: detiab
+      use multislatern, only: detn,orbn
+      use orbval,  only: orb
+      use precision_kinds, only: dp
+      use slater,  only: iwundet,kref,ndet
+      use slatn,   only: slmin
+      use system,  only: ndn,nelec,nup
+      use vmc_mod, only: MEXCIT,norb_tot
+      use ycompactn, only: ymatn
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
@@ -147,20 +143,13 @@ c     enddo
 c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,b,norbs,detratio,slmi,aa,ymat,velocity)
 
+      use coefs,   only: norb
+      use dorb_m,  only: iworbd
+      use multidet, only: iactv,ivirt
       use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: nmat_dim
-      use vmc_mod, only: MEXCIT
-      use coefs, only: norb
-      use dorb_m, only: iworbd
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
-      use multidet, only: iactv, ivirt
-      use coefs, only: norb
-      use dorb_m, only: iworbd
-      use slater, only: ndet
-      use slater, only: kref
+      use slater,  only: kref,ndet
+      use system,  only: ndn,nelec,nup
+      use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
 
       implicit none
 
