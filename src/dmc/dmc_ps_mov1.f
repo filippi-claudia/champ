@@ -44,7 +44,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use const, only: etrial, hb
+      use const, only: etrial
       use multiple_geo, only: istrech
 
       use age, only: iage, ioldest, ioldestmx

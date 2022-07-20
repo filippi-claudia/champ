@@ -80,16 +80,10 @@ c-----------------------------------------------------------------------
       function psianl(rri,it)
 
 
-<<<<<<< HEAD
-      use jaspar4, only: a4, norda
-      use jaspar6, only: asymp_jasa, asymp_r
+
       use multiple_geo, only: iwf
-      use contr2, only: ijas
-=======
       use jaspar4, only: norda
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       use precision_kinds, only: dp
       use jastrow, only: a4, asymp_jasa, ijas
       implicit none
@@ -118,14 +112,8 @@ c-----------------------------------------------------------------------
       function psibnl(u,isb,ipar)
 
       use jaspar4, only: nordb
-<<<<<<< HEAD
-      use jaspar6, only: asymp_jasb, asymp_r
       use multiple_geo, only: iwf
-      use contr2, only: ijas
-=======
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       use precision_kinds, only: dp
       use jastrow, only: asymp_jasb, sspinn, b, ijas
 
@@ -157,12 +145,7 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: norda
       use jaspar6, only: asymp_r
-<<<<<<< HEAD
       use multiple_geo, only: iwf
-      use contr2, only: ijas
-=======
-      use wfsec, only: iwf
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       use precision_kinds, only: dp
       use jastrow, only: a4
       use jastrow, only: ijas
@@ -192,12 +175,7 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: nordb
       use jaspar6, only: asymp_r
-<<<<<<< HEAD
       use multiple_geo, only: iwf
-      use contr2, only: ijas
-=======
-      use wfsec, only: iwf
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       use precision_kinds, only: dp
       use jastrow, only: sspinn, b, ijas
 

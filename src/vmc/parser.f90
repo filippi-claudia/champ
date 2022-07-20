@@ -47,8 +47,6 @@ subroutine parser
   use system, 	      only: newghostype, nghostcent
   use const, only: etrial, delta, deltai, fbias, imetro
   use control,          only: ipr
-  use atom, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-  use ghostatom, 	      only: newghostype, nghostcent
   use constants, only: hb
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num

@@ -120,12 +120,7 @@ c-----------------------------------------------------------------------
       use jaspar6, only: asymp_r
       use optwf_nparmj, only: nparma
       use optwf_wjas, only: iwjasa
-<<<<<<< HEAD
       use multiple_geo, only: iwf
-      use contr2, only: ijas
-=======
-      use wfsec, only: iwf
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       use precision_kinds, only: dp
       use jastrow, only: a4, asymp_jasa, ijas
       implicit none
@@ -185,12 +180,7 @@ c-----------------------------------------------------------------------
       use jaspar6, only: asymp_r
       use optwf_nparmj, only: nparmb
       use optwf_wjas, only: iwjasb
-<<<<<<< HEAD
       use multiple_geo, only: iwf
-      use contr2, only: ijas
-=======
-      use wfsec, only: iwf
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       use precision_kinds, only: dp
       use jastrow, only: asymp_jasb, sspinn, b, ijas
       implicit none

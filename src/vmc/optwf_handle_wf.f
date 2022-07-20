@@ -59,8 +59,6 @@ c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
 
       use system, only: nctype
-      use jaspar, only: nspin1, nspin2
-      use atom, only: nctype
       use jaspar4, only: norda, nordb, nordc
       use bparm, only: nspin2b
       use optwf_control, only: ioptjas

@@ -7,8 +7,8 @@ c Jastrow 6   must be used with one of isc=6,7
 
 
       use system, only: iwctype, ncent
-      use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-
+      use jastrow_update, only: d2ijn, d2ijo, d2o, fijo, fjo, fso, fsumo
+      use jastrow_update, only: d2n, fijn, fsumn, fjn, fsn
       use jaspar4, only: norda, nordb, nordc
       use jaspar6, only: cutjas
       use multiple_geo, only: iwf

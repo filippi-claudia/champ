@@ -874,7 +874,6 @@ module vardep
 contains
     subroutine allocate_vardep()
         use system, only: nctype_tot
-        use vmc_mod, only: neqsx
       use system, only: nelec
       use jastrow, only: neqsx
         if (.not. allocated(cdep)) allocate (cdep(neqsx, 83, nctype_tot))

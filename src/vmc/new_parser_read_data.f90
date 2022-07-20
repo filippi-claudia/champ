@@ -488,7 +488,7 @@ subroutine read_jastrow_file(file_jastrow)
     use, intrinsic :: iso_fortran_env, only: iostat_eor !, iostat_eof
     use contrl_file, only: ounit, errunit
     use multiple_geo, only: MWF
-    use jaspar6, only: cutjas, cutjasi, allocate_jaspar6
+    use jaspar6, only: cutjas, cutjasi
     use bparm, only: nocuspb, nspin2b
     use inputflags, only: ijastrow_parameter
     use multiple_geo, only: nwftype
@@ -1135,40 +1135,19 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
     use custom_broadcast, only: bcast
     use mpiconf, only: wid
-
-<<<<<<< HEAD
     use contrl_file, only: ounit, errunit
     use system, only: nctype
-    use jaspar, only: nspin1, is
-    use jaspar4, only: norda, nordb, nordc
-    use jaspointer, only: npoint, npointa
     use numbas, only: numr
-
     use optwf_nparmj, only: nparma, nparmb, nparmc, nparmf
     use optwf_parms, only: nparmj
     use optwf_wjas, only: iwjasa, iwjasb, iwjasc, iwjasf
     use bparm, only: nspin2b
-    use contr2, only: ijas
-    use contr2, only: isc
     use vmc_mod, only: nctyp3x
     use system, only: nctype_tot
     use general, only: pooldir
-=======
-    use contrl_file,        only: ounit, errunit
-    use atom,               only: nctype
     use jaspar4,            only: norda, nordb, nordc
     use jaspointer,         only: npoint, npointa
-    use numbas,             only: numr
-
-    use optwf_nparmj,       only: nparma, nparmb, nparmc, nparmf
-    use optwf_parms,        only: nparmj
-    use optwf_wjas,         only: iwjasa, iwjasb, iwjasc, iwjasf
-    use bparm,              only: nspin2b
-    use vmc_mod,            only: nctyp3x
-    use atom,               only: nctype_tot
-    use general,            only: pooldir
     use jastrow, only: ijas, isc, nspin1, is
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
 
     implicit none
 

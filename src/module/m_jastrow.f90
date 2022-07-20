@@ -103,17 +103,17 @@ module jaspar6
     private
     public :: asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
     save
-contains
-    subroutine allocate_jaspar6()
-        use system, only: nctype_tot
-        if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot))
-        if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2))
-    end subroutine allocate_jaspar6
+! contains
+!     subroutine allocate_jaspar6()
+!         use system, only: nctype_tot
+!         if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot))
+!         if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2))
+!     end subroutine allocate_jaspar6
 
-    subroutine deallocate_jaspar6()
-        if (allocated(asymp_jasb)) deallocate (asymp_jasb)
-        if (allocated(asymp_jasa)) deallocate (asymp_jasa)
-    end subroutine deallocate_jaspar6
+!     subroutine deallocate_jaspar6()
+!         if (allocated(asymp_jasb)) deallocate (asymp_jasb)
+!         if (allocated(asymp_jasa)) deallocate (asymp_jasa)
+!     end subroutine deallocate_jaspar6
 
 end module jaspar6
 
@@ -213,8 +213,8 @@ subroutine allocate_jaspar6()
 end subroutine allocate_jaspar6
 
 subroutine deallocate_m_jastrow()
-    use jasn, only: deallocate_jasn
-    use jaso, only: deallocate_jaso
+    use jastrow_update, only: deallocate_jasn
+    use jastrow_update, only: deallocate_jaso
     use jaspointer, only: deallocate_jaspointer
 
     implicit none
