@@ -46,6 +46,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use vmc_mod, only: delri
       use const, only: etrial, hb
       use multiple_geo, only: istrech
+
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: iacc_rej, icross, icut_br, icut_e, idmc, ipq, nfprod, rttau, tau
       use system, only: cent
@@ -93,6 +94,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use hpsi_mod, only: hpsi
       use multideterminant_tmove_mod, only: multideterminant_tmove
       use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
+
       use distances_mod, only: distancese_restore
       use rannyu_mod, only: rannyu
       use gauss_mod, only: gauss
@@ -100,6 +102,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use system, only: nelec
       use system, only: nup
       use multiple_geo, only: nforce
+
+      use constants, only: hb
 
       implicit none
 

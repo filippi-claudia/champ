@@ -13,7 +13,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use vmc_mod, only: delri
       use system, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
-      use const, only: pi, fbias
+      use const, only: fbias
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
       use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
       use config, only: tjfoo, vnew, vold, xnew, xold
@@ -66,6 +66,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use system, only: nelec
       use system, only: nup
       use multiple_geo, only: nforce
+      use constants, only: pi
 
       implicit none
 

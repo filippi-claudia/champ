@@ -9,7 +9,7 @@ c job where it left off
       use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
       use system, only: newghostype, nghostcent
-      use const, only: hb, delta
+      use const, only: delta
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino, tjfo
       use config, only: vold, xnew, xold
@@ -68,6 +68,7 @@ c job where it left off
       use system, only: ndn
       use multiple_geo, only: nforce
       use multiple_geo, only: pecent
+      use constants, only: hb
       
       implicit none
 

@@ -487,26 +487,24 @@ subroutine read_jastrow_file(file_jastrow)
 
     use, intrinsic :: iso_fortran_env, only: iostat_eor !, iostat_eof
     use contrl_file, only: ounit, errunit
-
     use multiple_geo, only: MWF
-    use jaspar, only: nspin1, nspin2
-    use jaspar3, only: b, c, scalek
-    use jaspar4, only: a4, norda, nordb, nordc
-    use vmc_mod, only: nordj, nordj1, neqsx
     use jaspar6, only: cutjas, cutjasi, allocate_jaspar6
     use bparm, only: nocuspb, nspin2b
-    use contr2, only: ijas
-    use contr2, only: isc
     use inputflags, only: ijastrow_parameter
     use multiple_geo, only: nwftype
     use system, only: ncent, nctype
     use precision_kinds, only: dp
     use contrl_per, 		only: iperiodic
-    use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
-    use general, only: pooldir
     use jastrow4_mod, only: nterms4
-      use system, only: ndn
-      use optwf_control, only: method
+    use system, only: ndn
+    use optwf_control, only: method
+    use jaspar4, only: norda, nordb, nordc
+    use inputflags,         only: ijastrow_parameter
+    use precision_kinds,    only: dp
+    use jaspar6, 			only:  asymp_r, c1_jas6, c1_jas6i, c2_jas6
+    use general,            only: pooldir
+    use jastrow, only: neqsx, a4, nordj, nordj1, asymp_jasa, asymp_jasb
+    use jastrow, only: b, c, scalek, ijas, isc, nspin1, nspin2
     implicit none
 
     !   local use
@@ -1138,6 +1136,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
     use custom_broadcast, only: bcast
     use mpiconf, only: wid
 
+<<<<<<< HEAD
     use contrl_file, only: ounit, errunit
     use system, only: nctype
     use jaspar, only: nspin1, is
@@ -1154,6 +1153,22 @@ subroutine read_jasderiv_file(file_jastrow_der)
     use vmc_mod, only: nctyp3x
     use system, only: nctype_tot
     use general, only: pooldir
+=======
+    use contrl_file,        only: ounit, errunit
+    use atom,               only: nctype
+    use jaspar4,            only: norda, nordb, nordc
+    use jaspointer,         only: npoint, npointa
+    use numbas,             only: numr
+
+    use optwf_nparmj,       only: nparma, nparmb, nparmc, nparmf
+    use optwf_parms,        only: nparmj
+    use optwf_wjas,         only: iwjasa, iwjasb, iwjasc, iwjasf
+    use bparm,              only: nspin2b
+    use vmc_mod,            only: nctyp3x
+    use atom,               only: nctype_tot
+    use general,            only: pooldir
+    use jastrow, only: ijas, isc, nspin1, is
+>>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
 
     implicit none
 

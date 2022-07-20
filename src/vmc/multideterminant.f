@@ -2,7 +2,6 @@
       contains
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
-      use const, only: hb
       use csfs, only: nstates
       use dets, only: ndet
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, ndetiab, k_det, ndet_req
@@ -26,6 +25,7 @@
       use system, only: nup
       use system, only: ndn
       use optwf_control, only: method
+      use constants, only: hb
       implicit none
 
       integer :: i, iab, iel, index_det, iorb, kun, kw

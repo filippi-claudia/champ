@@ -7,7 +7,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use optwf_parms, only: nparmj
       use dets, only: ndet
-      use const, only: hb
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use mmpol_hpsi, only: peQMdp, peQMq
@@ -17,7 +16,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use ycompact, only: ymat
       use casula, only: i_vpsp, t_vpsp
       use coefs, only: norb
-      use contr2, only: ianalyt_lap
       use Bloc, only: tildem
       use force_analy, only: iforce_analy
       use pseudo, only: nloc
@@ -39,6 +37,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use determinant_psit_mod, only: determinant_psit
       use multideterminant_mod, only: multideterminant_hpsi
       use nonloc_pot_mod, only: nonloc_pot
+
       use determinant_mod, only: determinant, compute_bmatrices_kin
       use jastrow_num_mod, only: jastrow_num
       use jastrow_mod, only: jastrow
@@ -52,6 +51,13 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+
+
+      use jastrow_mod,    only: jastrow_f => jastrow
+
+ 
+      use constants, only: hb
+      use jastrow, only: ianalyt_lap
 
       implicit none
 
@@ -118,7 +124,7 @@ c QM-MMPOL (charges+induced dipoles)
 
 c get contribution from jastrow (also compute derivatives wrt parameters and nuclei)
       if(ianalyt_lap.eq.1) then
-        call jastrow(coord,vj,d2j,psij,ifr)
+        call jastrow_f(coord,vj,d2j,psij,ifr)
        else
         call jastrow_num(coord,vj,d2j,psij)
       endif

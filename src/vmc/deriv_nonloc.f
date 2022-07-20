@@ -5,7 +5,6 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar
       use system, only: iwctype, nctype, ncent, ncent_tot
 
-      use jaspar, only: nspin2, sspinn, is
       use da_jastrow4val, only: da_j
       use derivjas, only: go
       use jastrow_update, only: fso
@@ -13,8 +12,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_parms, only: nparmj
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: ijas
-      use contr2, only: isc
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use precision_kinds, only: dp
@@ -24,6 +21,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use nonlpsi, only: dpsianl, dpsibnl
       use system, only: nelec
       use system, only: nup
+      use jastrow, only: sspinn, ijas, isc, nspin2, is
       implicit none
 
       integer :: i, ic, iel, ipar, ipara

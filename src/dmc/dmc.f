@@ -7,7 +7,6 @@ c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
 c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
 
       use precision_kinds, only: dp
-      use const, only: pi
       use contrldmc, only: idmc
       use estcum, only: ipass
       use multiple_geo, only: nwprod
@@ -22,16 +21,18 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use strech_mod, only: setup_force
       use dumper_mod, only: dumper
       use mc_configs_mod, only: mc_configs, mc_configs_write
-      use averages, only: init_averages_index, average, average_write
-      use init_mod, only: init
-      use zerest_mod, only: zerest
-      use rotqua_mod, only: rotqua
-      use error, only: fatal_error
-      use dmc_ps_mov1, only: dmc_ps
-      use acues1_mod, only: acues1
-      use acuest_mod, only: acuest
-      use acues1_reduce_mod, only: acues1_reduce
-      use finwrt_mod, only: finwrt
+
+      use averages,       only: init_averages_index, average, average_write
+      use init_mod,       only: init
+      use zerest_mod,     only: zerest
+      use rotqua_mod,     only: rotqua
+      use error,          only: fatal_error
+      use dmc_ps_mov1,    only: dmc_ps
+      use acues1_mod,     only: acues1
+      use acuest_mod,     only: acuest
+      use acues1_reduce_mod,only: acues1_reduce
+      use finwrt_mod,     only: finwrt
+      use constants, only: pi
       use multiple_geo, only: nforce
       implicit none
 
@@ -126,8 +127,6 @@ c        nspin12= If (11) Parallel-spin a's = 1/2 antipar-spin a's
 c                         Parallel-spin b's = antipar-spin b's
 c                    (12) a's and b's for par and antipar are indep.
 c                 The above applies to good psi.
-
-      pi=four*datan(one)
 
       open(unit=8,form='formatted',file='tape8')
       rewind 8

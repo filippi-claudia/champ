@@ -6,8 +6,13 @@ c Written by Cyrus Umrigar
       use pseudo_mod, only: MPS_L, MPS_GRID
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
+<<<<<<< HEAD
       use system, only: znuc, iwctype, nctype, ncent, nctype_tot
       use const, only: pi
+=======
+      use atom, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
+      use const, only: ipr
+>>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
       use ewald_basis, only: vps_basis_fourier
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt
@@ -19,15 +24,18 @@ c Written by Cyrus Umrigar
       use pseudo_tm, only: d2pot, nr_ps, vpseudo
       use tempor, only: dist_nn
       use test, only: f, vbare_coul, vbare_jas, vbare_psp
-      use constant, only: twopi
       use contrl_per, only: iperiodic
 
       use pseudo, only: lpot, nloc, vps
       use contrl_file, only: ounit
       use grid3d_param, only: origin
       use precision_kinds, only: dp
+<<<<<<< HEAD
       use control, only: ipr
       use multiple_geo, only: pecent
+=======
+      use constants, only: pi, twopi
+>>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       implicit none
 
       integer :: i, ict, ifcon, ig, in
@@ -1781,8 +1789,8 @@ c-----------------------------------------------------------------------
       function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
 c Written by Cyrus Umrigar
 
-      use const, only: pi
       use precision_kinds, only: dp
+      use constants, only: pi
       implicit none
 
       integer :: im, ivec, k, ngnorm
@@ -1821,8 +1829,8 @@ c-----------------------------------------------------------------------
       function ewald_pot_psp(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell,ict,l,z)
 c Written by Cyrus Umrigar
 
-      use const, only: pi
       use precision_kinds, only: dp
+      use constants, only: pi
       implicit none
 
       integer :: ict, im, ivec, k, l

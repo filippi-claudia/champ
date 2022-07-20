@@ -876,7 +876,7 @@ contains
         use system, only: nctype_tot
         use vmc_mod, only: neqsx
       use system, only: nelec
-      use system, only: nelec
+      use jastrow, only: neqsx
         if (.not. allocated(cdep)) allocate (cdep(neqsx, 83, nctype_tot))
         if (.not. allocated(iwdepend)) allocate (iwdepend(neqsx, 83, nctype_tot), source=0)
         if (.not. allocated(nvdepend)) allocate (nvdepend(neqsx, nctype_tot), source=0)
@@ -894,7 +894,7 @@ module velocity_jastrow
     !> Arguments: vj, vjn
     use precision_kinds, only: dp
       use system, only: nelec
-      use system, only: nelec
+      use jastrow, only: neqsx
 
     implicit none
 
@@ -907,6 +907,8 @@ module velocity_jastrow
     save
 contains
     subroutine allocate_velocity_jastrow()
+        use system, only: nelec
+        use jastrow, only: neqsx
         if (.not. allocated(vj)) allocate (vj(3, nelec))
         if (.not. allocated(vjn)) allocate (vjn(3, nelec))
     end subroutine allocate_velocity_jastrow
@@ -924,6 +926,7 @@ module ycompact
     use vmc_mod, only: norb_tot
     use mstates_mod, only: MSTATES
       use system, only: nelec
+      use jastrow, only: neqsx
 
     implicit none
 
@@ -939,7 +942,8 @@ contains
         use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
       use system, only: nelec
-      use system, only: nelec
+
+      use jastrow, only: neqsx
         if (.not. allocated(dymat)) allocate (dymat(norb_tot, nelec, 2, MSTATES))
         if (.not. allocated(ymat)) allocate (ymat(norb_tot, nelec, 2, MSTATES))
     end subroutine allocate_ycompact
@@ -957,6 +961,7 @@ module ycompactn
     use vmc_mod, only: norb_tot
     use mstates_mod, only: MSTATES
       use system, only: nelec
+      use jastrow, only: neqsx
 
     implicit none
 

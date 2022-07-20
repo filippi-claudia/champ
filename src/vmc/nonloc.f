@@ -539,10 +539,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use system, only: iwctype, ncent, ncent_tot
 
-      use jaspar, only: sspinn
       use da_jastrow4val, only: da_j
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: isc
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use precision_kinds, only: dp
@@ -551,6 +549,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use scale_dist_mod, only: scale_dist, scale_dist1
       use system, only: nelec
       use system, only: nup
+      use jastrow, only: sspinn, isc
 
       implicit none
 

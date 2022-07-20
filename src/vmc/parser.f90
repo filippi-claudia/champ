@@ -1,5 +1,6 @@
 module parser_mod
 use error, only: fatal_error
+implicit none
 contains
 subroutine parser
   !> This subroutine parses the input file using the modified libfdf parser
@@ -37,27 +38,31 @@ subroutine parser
   use properties,     	only: MAXPROP
   use optorb_mod,     	only: mxreduced
   use optci,          	only: mxciterm
-  use mstates_mod, only: MSTATES
-  use vmc_mod, only: nordj, nordj1, neqsx
-  use pcm, only: MCHS
+  use mstates_mod,      only: MSTATES
+  use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use multiple_geo,      	only: MFORCE, MWF
   use vmc_mod, 		      only: norb_tot, mterms
   use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-  use jaspar, 		      only: nspin1, nspin2, is
   use system, 	      only: newghostype, nghostcent
-  use const, only: pi, hb, etrial, delta, deltai, fbias, imetro
+  use const, only: etrial, delta, deltai, fbias, imetro
   use control,          only: ipr
+  use atom, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+  use ghostatom, 	      only: newghostype, nghostcent
+  use constants, only: hb
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num
   use csfs, 		        only: cxdet, ncsf, nstates
   use dets, 		        only: cdet, ndet
   use grdntspar, 	      only: igrdtype, ngradnts
   use header, 		      only: title
-  use jaspar3, 		      only: b, c, scalek
-  use jaspar4, 		      only: a4, norda, nordb, nordc
-  use jaspar6, 		      only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
-  use jaspar6, 		      only: cutjas, cutjasi, allocate_jaspar6
+  use jastrow, 		      only: nspin1, nspin2, is
+  use jastrow, 		      only: a4, b, c, scalek, asymp_jasa, asymp_jasb, allocate_jaspar6
+  use jastrow,          only: neqsx, nordj, nordj1
+  use jastrow, 		      only: ianalyt_lap, ijas, isc
+  use jaspar4, 		      only: norda, nordb, nordc
+  use jaspar6, 		      only: asymp_r, c1_jas6, c1_jas6i, c2_jas6
+  use jaspar6, 		      only: cutjas, cutjasi 
   use numbas, 		      only: numr
   use numbas1, 		      only: nbastyp
   use numbas2, 		      only: ibas0, ibas1
@@ -76,8 +81,6 @@ subroutine parser
   use coefs, 		        only: coef, nbasis, norb, next_max
   use optorb, only: irrep
   use const2, 		      only: deltar, deltat
-  use contr2, 		      only: ianalyt_lap, ijas
-  use contr2, 		      only: isc
   use contrldmc, 	      only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
   use contrldmc, 	      only: itau_eff, nfprod, rttau, tau
 
@@ -187,12 +190,14 @@ subroutine parser
   use multidet, only: kref_fixed
 
   use precision_kinds, only: dp
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
-      use multiple_geo, only: nforce
-      use multiple_geo, only: pecent
-      use optwf_control, only: method
+  use system, only: nelec
+  use system, only: nup
+  use system, only: ndn
+  use multiple_geo, only: nforce
+  use multiple_geo, only: pecent
+  use optwf_control, only: method
+  use constants, only: pi
+
 ! Note the following modules are new additions
 
 !
@@ -288,7 +293,7 @@ subroutine parser
   cseed       = fdf_string('seed', "1837465927472523")
   ipr         = fdf_get('ipr', -1)
   eunit       = fdf_get('unit', 'Hartrees')
-  hb          = fdf_get('mass', 0.5d0)
+  !hb          = fdf_get('mass', 0.5d0) ! Always 0.5
   scalecoef   = fdf_get('scalecoef',1.0d0)
   i3dgrid     = fdf_get('i3dgrid',0)
   i3dsplorb   = fdf_get('i3dsplorb',0)

@@ -58,6 +58,7 @@ module control_dmc
 end module control_dmc
 
 
+<<<<<<< HEAD
 module contr2
     !> Arguments: ianalyt_lap, ijas, isc, istrch
 
@@ -72,6 +73,27 @@ module contr2
     public :: ianalyt_lap, ijas, isc, istrch
     save
 end module contr2
+=======
+module contr3
+    !> Arguments: mode
+
+    implicit none
+
+    character*12 :: mode
+
+    private
+    public :: mode
+    public :: init_control_mode
+    save
+contains
+    subroutine init_control_mode(str_mode)
+        implicit None
+        character(12), intent(IN) :: str_mode
+        mode = str_mode
+    end subroutine init_control_mode
+
+end module contr3
+>>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
 
 module contrl_per
     !> Arguments: iperiodic, ibasis

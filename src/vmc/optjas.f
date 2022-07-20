@@ -3,7 +3,6 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
       use optwf_parms, only: nparmj
-      use const, only: hb
       use csfs, only: nstates
       use derivjas, only: d2g, g
       use dets, only: cdet, ndet
@@ -27,6 +26,7 @@
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use constants, only: hb
 
       implicit none
 

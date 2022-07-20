@@ -134,7 +134,6 @@ c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
 
       use system, only: iwctype, ncent, ncent_tot
-      use const, only: hb
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_vj
       use da_orbval, only: da_orb
@@ -153,6 +152,7 @@ c-----------------------------------------------------------------------
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+      use constants, only: hb
 
       implicit none
 

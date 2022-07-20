@@ -7,10 +7,8 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use derivjas, only: d2g, g, go, gvalue
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-      use jaspar, only: sspinn
-      use jaspar3, only: b, c
-      use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r
+      use jaspar4, only: norda, nordb, nordc
+      use jaspar6, only: asymp_r
       use jaspar6, only: cutjas
       use jaspointer, only: npoint, npointa
       use optwf_control, only: ioptjas
@@ -19,9 +17,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: ijas
-      use contr2, only: isc
-      use contrl_file, only: ounit
+      use contrl_file,    only: ounit
       use vardep, only: cdep, iwdepend, nvdepend
       use distance_mod, only: rshift, r_en, rvec_en
       use force_analy, only: iforce_analy
@@ -32,6 +28,8 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use jastrow4_mod, only: da_jastrow4
       use system, only: nelec
       use system, only: nup
+      use jastrow, only: a4, nordj, asymp_jasa, asymp_jasb, sspinn
+      use jastrow, only: b, c, ijas, isc
       implicit none
 
       integer :: i, ic, id, ideriv, ij

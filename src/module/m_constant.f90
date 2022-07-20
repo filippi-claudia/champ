@@ -8,12 +8,9 @@ module const
     real(dp) :: deltai
     real(dp) :: etrial
     real(dp) :: fbias
-    real(dp) :: hb
     integer  :: imetro
-    real(dp) :: pi = 4.0d0*datan(1.0d0)
-
     private
-    public   :: pi, hb, etrial, delta, deltai, fbias, imetro
+    public   :: etrial, delta, deltai, fbias, imetro
     save
 end module const
 
@@ -31,15 +28,11 @@ module const2
     save
 end module const2
 
-module constant
-    !> Arguments: twopi
+module constants
     use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp) :: twopi
-
-    private
-    public :: twopi
-    save
-end module constant
+  
+    real(dp), parameter :: hb = 0.5
+    real(dp), parameter :: pi = 4.0d0*datan(1.0d0)
+    real(dp), parameter :: twopi = 8.d0*datan(1.0d0)
+    
+  end module

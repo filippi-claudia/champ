@@ -55,9 +55,8 @@ end subroutine inputcsf
 subroutine multideterminants_define(iflag, icheck)
 
     use multiple_geo, only: MFORCE, MFORCE_WT_PRD, MWF
-    use vmc_mod, only: nrad, nordj, nordj1, nmat_dim, nmat_dim2
+    use vmc_mod, only: nrad, nmat_dim, nmat_dim2
     use vmc_mod, only: radmax, delri
-    use vmc_mod, only: neqsx
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet
     use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, allocate_multidet
@@ -73,6 +72,7 @@ subroutine multideterminants_define(iflag, icheck)
       use system, only: nelec
       use system, only: nup
       use system, only: ndn
+    use jastrow, only: neqsx, nordj, nordj1
 
     implicit none
 
@@ -463,16 +463,13 @@ end subroutine inputlcao
 subroutine inputjastrow()
     ! Set the jastrow to be equal
 
-    use jaspar, only: nspin1, nspin2
-    use jaspar3, only: b, c, scalek
-    use jaspar4, only: a4, norda, nordb, nordc
+    use jaspar4, only: norda, nordb, nordc
     use bparm, only: nspin2b
-    use contr2, only: ijas
-    use contr2, only: isc
     use multiple_geo, only: nwftype
     use system, only: ncent, nctype
     use precision_kinds, only: dp
-    use jastrow4_mod, only: nterms4
+    use jastrow4_mod,       only: nterms4
+    use jastrow, only: a4, b, c, scalek, ijas, isc, nspin1, nspin2
 
       implicit none
 

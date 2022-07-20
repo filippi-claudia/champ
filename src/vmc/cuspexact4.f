@@ -3,10 +3,10 @@
       subroutine cuspexact4(iprin,iadiag)
 c Written by Cyrus Umrigar
       use system, only: nctype
-      use jaspar3, only: c
-      use jaspar4, only: nordc
+      use jastrow, only: nordc
       use cuspmat4, only: d, iwc4, nterms
       use precision_kinds, only: dp
+      use jastrow, only: c
       implicit none
 
       integer :: i, iadiag, iprin, it, j
