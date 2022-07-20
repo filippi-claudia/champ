@@ -279,8 +279,6 @@ module trexio_read_data
         call bcast(nbasis)
         call bcast(basis_num_shell)
 
-        print*, "Number of molecular orbitals :: ", norb_tot
-        print*, "Number of atomic orbitals    :: ", nbasis
         norb = norb_tot        ! norb will get updated later. norb_tot is fixed
 
         ! Do the array allocations
@@ -363,7 +361,6 @@ module trexio_read_data
                 index_ao = index_ao + 1
                 index_slm(index_ao) = sum(slm_per_l(1:k)) + 1 + count2
                 count2 = count2 + 1
-                write(*,'(a,3i3,a,i4,a,i4)') "l,k,ii", l,k,ii, "  index_slm(", index_ao, ") = ", index_slm(index_ao)
 
                 cum_ao_per_cent = cum_ao_per_cent + 1
             end do
@@ -416,11 +413,6 @@ module trexio_read_data
         write(ounit,int_format) " Number of lcao orbitals ", norb
         write(ounit,int_format) " Type of wave functions ", iwft
         write(ounit,*) "Orbital coefficients are written to the output.log file"
-
-        ! do j = 1, nbasis
-        !         write(ounit, '(10(f12.8,1x))') (coef(j, i, 1), i = 1, norb)
-        ! enddo
-
 
         write(ounit,*)
         ilcao = ilcao + 1

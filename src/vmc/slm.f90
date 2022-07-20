@@ -65,8 +65,6 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
      dlapy = 0.d0        ! dlapy(1:3) = 0.0
      ddy = 0.d0          ! ddy(1:3,1:3) = 0.0
 
-     print*, "l as it enters slm = ", l
-
      if (ider.ne.3) then
 
           select case(l)

@@ -50,28 +50,23 @@ module trexio_basis_fns_mod
       real(dp)                      :: xc(3)
       real(dp), parameter           :: one = 1.d0
 
+#ifdef VECTORIZATION
       do j=ie1,ie2
         n0_nbasis(j)=0
       enddo
-
-!     debug
-      nlmbas = 0
+#endif
 
 #if defined(TREXIO_FOUND)
 
       lower_range = 1; count1 = 1
-      print*, "num_rad_per_cent, num_ao_per_cent", num_rad_per_cent, num_ao_per_cent
+
 !     loop through centers
       do ic=1,ncent+nghostcent
         upper_range = lower_range + num_ao_per_cent(ic) -1
 
-        print*, "lower range", lower_range, "upper range", upper_range
-
         it=iwctype(ic)
         nbastypit = num_ao_per_cent(ic)
         nrbasit   = num_rad_per_cent(ic)
-        write(*,'(5(a,i4))') 'trexio_basis_fns: ic=', ic, ' it=', it, ' nbastypit=', nbastypit, "nrbasit", nrbasit
-
 
 !     numerical atomic orbitals
         do k=ie1,ie2
@@ -88,34 +83,36 @@ module trexio_basis_fns_mod
           ri2=ri*ri
 
           do irb=1,nrbasit
-            write(*,'((a,2i4))') 'it, irb', it, irb
           ! only evaluate for r <= rmax
           ! if (r <= rmax(irb,it)) then
-            call splfit(r,irb,it,iwf,wfv(1,irb),ider)
+            call splfit(r,irb,it,iwf,wfv(:,irb),ider)
           ! else
           !   wfv(1:4,irb)=0.d0
           ! endif
-            ! write(200,*) ic, k, irb, r, r2, ri, ri2, wfv(1,irb)
           enddo
 
           l = 1
+          iwlbas0=0
           do ilm=lower_range, upper_range
-              print*, "l =", l, "ilm =", ilm, "index_slm(ilm)", index_slm(ilm)
-              call slm(index_slm(ilm),xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
+              if(index_slm(ilm).ne.iwlbas0) then
+                iwlbas0=index_slm(ilm)
+                ! call slm(index_slm(ilm),xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
+                call slm(iwlbas0,xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
+              endif
 
 !     compute sml and combine to generate molecular orbitals
               irb = ao_radial_index(ilm)
-              call trexio_phi_combine(index_slm(ilm),xc,ri,ri2,wfv(1,irb), &
+              call trexio_phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb), &
                                 y, &
                                 dy, &
                                 ddy, &
                                 ddy_lap, &
                                 dlapy, &
-                                phin(l,k), &
-                                dphin(l,k,:), &
-                                d2phin(l,k), &
+                                phin(ilm,k), &
+                                dphin(ilm,k,:), &
+                                d2phin(ilm,k), &
                                 d2phin_all(1,1,l,k), &
-                                d3phin(1,l,k), &
+                                d3phin(1,ilm,k), &
                                 ider)
               call n0_inc(l,k,ic)
               l = l + 1
