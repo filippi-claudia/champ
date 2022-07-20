@@ -1,6 +1,6 @@
 module estcum
      !> Arguments: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
-     use force_mod, only: MFORCE
+     use multiple_geo, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
 
@@ -59,7 +59,7 @@ module estcum
      save
  contains
      subroutine allocate_estcum()
-         use force_mod, only: MFORCE
+         use multiple_geo, only: MFORCE
          use mstates_mod, only: MSTATES
          if (.not. allocated(ecum)) allocate (ecum(MSTATES, MFORCE))
          if (.not. allocated(ecum1)) allocate (ecum1(MSTATES))
@@ -135,7 +135,7 @@ module estcum
      !> pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
      !> wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
 
-     use force_mod, only: MFORCE
+     use multiple_geo, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
 
@@ -189,7 +189,7 @@ module estcum
 
  contains
      subroutine allocate_estsum()
-         use force_mod, only: MFORCE
+         use multiple_geo, only: MFORCE
          use mstates_mod, only: MSTATES
          if (.not. allocated(esum)) allocate (esum(MSTATES, MFORCE))
          if (.not. allocated(esum1)) allocate (esum1(MSTATES))
@@ -207,7 +207,7 @@ module estcum
      end subroutine deallocate_estsum
 
      subroutine allocate_estsum_dmc()
-         use force_mod, only: MFORCE
+         use multiple_geo, only: MFORCE
          if (.not. allocated(egsum)) allocate(egsum(MFORCE))
          if (.not. allocated(egsum1)) allocate(egsum1(MFORCE))
          if (.not. allocated(esum1_dmc)) allocate(esum1_dmc(MFORCE))
@@ -269,7 +269,7 @@ module estcum
      !> ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
      !> wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
 
-     use force_mod, only: MFORCE
+     use multiple_geo, only: MFORCE
      use precision_kinds, only: dp
      use mstates_mod, only: MSTATES
 
@@ -319,7 +319,7 @@ module estcum
 
  contains
      subroutine allocate_est2cm()
-         use force_mod, only: MFORCE
+         use multiple_geo, only: MFORCE
          use mstates_mod, only: MSTATES
          if (.not. allocated(ecm2))   allocate(ecm2(MSTATES, MFORCE))
          if (.not. allocated(ecm21))  allocate(ecm21(MSTATES))

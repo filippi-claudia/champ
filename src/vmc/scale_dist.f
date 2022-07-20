@@ -2,7 +2,7 @@
       contains
       subroutine set_scale_dist(ipr)
 c Written by Cyrus Umrigar
-      use atom, only: nctype
+      use system, only: nctype
 
 
       use jaspar6, only: asymp_r, c1_jas6, c1_jas6i, c2_jas6
@@ -126,7 +126,7 @@ c Scale interparticle distances.
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: scalek, ijas, isc
       implicit none
@@ -281,7 +281,7 @@ c gradient and laplacian.
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: scalek, ijas, isc
       implicit none
@@ -469,7 +469,7 @@ c gradient and laplacian.
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
       use scale_more, only: dd3
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: scalek, ijas, isc
       implicit none
@@ -682,7 +682,7 @@ c that appropriate for C terms, for dist.
 
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: scalek
       implicit none
@@ -707,7 +707,7 @@ c that appropriate for C terms, for dist and 1st deriv.
 
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: scalek
       implicit none
@@ -733,7 +733,7 @@ c that appropriate for C terms, for dist and 1st two derivs.
 
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: scalek
       implicit none

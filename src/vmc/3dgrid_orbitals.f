@@ -53,12 +53,11 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use grid_spline_mod, only: orb_num_spl
       use grid_mod, only: MXNSTEP, MXNSTEP3
       use grid_mod, only: cart_from_int
-      use atom, only: cent, ncent
-      use const, only: nelec
-      use ghostatom, only: nghostcent
+      use system, only: cent, ncent
+      use system, only: nghostcent
       use phifun, only: d2phin, dphin
       use phifun, only: phin
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use coefs, only: coef, nbasis, norb
 !      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite, vmc_nconf
@@ -69,6 +68,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use basis_fns_mod, only: basis_fns
+      use system, only: nelec
       implicit none
 
       integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin
@@ -445,12 +445,12 @@ c Lagrange interpolation routines
       use grid_mod, only: cart_from_int
       use vmc_mod, only: norb_tot
       use vmc_mod, only: norb_tot
-      use atom, only: cent, ncent
-      use wfsec, only: iwf
+      use system, only: cent, ncent
+      use multiple_geo, only: iwf
       use grid3d_param, only: nstep3d, endpt, origin
       use orbital_num_lag, only: denom
       use coefs, only: coef, nbasis, norb
-      use ghostatom, only: nghostcent
+      use system, only: nghostcent
       use control_vmc, only: vmc_irstar
       use phifun, only: phin, dphin, d2phin
       use distance_mod, only: r_en, rvec_en
@@ -653,9 +653,9 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
-      use const, only: nelec
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, i1, i2, i3, iel
@@ -742,9 +742,9 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
-      use const, only: nelec
       
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
       
       integer :: i, i1, i2, i3, iel
@@ -831,9 +831,9 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
-      use const, only: nelec
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, i1, i2, i3, iaxis

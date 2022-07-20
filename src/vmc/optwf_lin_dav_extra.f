@@ -4,14 +4,14 @@
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
 
       use sr_mod, only: mparm, mconf
-      use optwf_contrl, only: nvecx
+      use optwf_control, only: nvecx
       use mpiconf, only: idtask
-      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -107,14 +107,14 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine s_psi_energymin(ndim,nvec,psi,spsi )
 
       use sr_mod, only: mparm, mconf
-      use optwf_contrl, only: nvecx
+      use optwf_control, only: nvecx
       use mpiconf, only: idtask
-      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: jefj, jfj, jhfj, nconf_n
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -191,15 +191,15 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine h_psi_omegamin(ndim,nvec,psi,hpsi )
 
       use sr_mod, only: mparm, mconf
-      use optwf_contrl, only: nvecx
+      use optwf_control, only: nvecx
       use mpiconf, only: idtask
-      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -310,15 +310,15 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine s_psi_omegamin(ndim,nvec,psi,spsi )
 
       use sr_mod, only: mparm, mconf
-      use optwf_contrl, only: nvecx
+      use optwf_control, only: nvecx
       use mpiconf, only: idtask
-      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptjas, ioptorb, nparm
       use optwf_func, only: omega
       use sr_mat_n, only: h_sr, jefj, jfj, jhfj, nconf_n, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -439,15 +439,15 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine h_psi_varmin(ndim,nvec,psi,hpsi )
       use sr_mod, only: mparm, mconf
-      use optwf_contrl, only: nvecx
+      use optwf_control, only: nvecx
       use mpiconf, only: idtask
-      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptjas, ioptorb, nparm
       use optwf_func, only: ifunc_omega
       use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use precision_kinds, only: dp
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! these were not called in the master
       ! but they seem to be needed
       ! use sr_index, only: jelo, jelo2, jelohfj
@@ -579,7 +579,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mod, only: mparm
       use sr_mat_n, only: jefj, jfj, jhfj, s_diag
       use sr_mat_n, only: obs_tot
-      use optwf_contrl, only: ioptorb, ioptjas
+      use optwf_control, only: ioptorb, ioptjas
       use precision_kinds, only: dp
       use mpi
 
@@ -656,11 +656,11 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_overlap_psi(ndim,nvec,psi,overlap_psi,anorm)
 
       use sr_mod, only: mparm
-      use optwf_contrl, only: nvecx
+      use optwf_control, only: nvecx
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
       use mpiconf, only: idtask, nproc
-      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptjas, ioptorb, nparm
       use sr_mat_n, only: nconf_n
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use mpi

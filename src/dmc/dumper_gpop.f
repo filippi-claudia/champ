@@ -12,13 +12,14 @@ c job where it left off
       use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
       use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
-      use const, only: nelec
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
+
+
+      use multiple_geo, only: fgcm2, fgcum
+
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use system, only: cent, iwctype, ncent, nctype, znuc
       use estcum, only: iblk, ipass
       use config, only: xold_dmc
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
@@ -38,18 +39,22 @@ c job where it left off
       use jacobsave, only: ajacob
       use pseudo, only: nloc
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
-      use ghostatom, only: newghostype, nghostcent
+      use system, only: newghostype, nghostcent
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
 
       use strech_mod, only: strech
       use rannyu_mod, only: savern
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
+      use multiple_geo, only: nforce
+      use multiple_geo, only: pecent
       use constants, only: hb
       implicit none
 

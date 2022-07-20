@@ -6,9 +6,8 @@
 ! Modified by A. Scemama (printing in a GAMESS-like format)
 ! 1) a slater basis
 ! 2) a gaussian basis
-      use atom, only: znuc, iwctype, nctype, ncent
-      use ghostatom, only: newghostype
-      use const, only: nelec
+      use system, only: znuc, iwctype, nctype, ncent
+      use system, only: newghostype
       use numbas, only: numr
       use coefs, only: coef, nbasis, norb
       use basis, only: zex, betaq
@@ -16,10 +15,11 @@
       use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
       use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       use error, only: fatal_error
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
       integer :: iu
       integer :: i, iabs, ic, imax

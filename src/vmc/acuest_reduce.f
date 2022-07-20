@@ -5,7 +5,7 @@ c Written by Claudia Filippi
 
       use mpi
       use precision_kinds, only: dp
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
 
@@ -13,8 +13,7 @@ c Written by Claudia Filippi
       use est2cm, only: ecm2, pecm2, tpbcm2, tjfcm2
       use estpsi, only: apsi, aref, detref
       use estsum, only: acc
-      use forcepar, only: nforce
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum
       use mpiconf, only: nproc, wid
       use mpi
@@ -28,6 +27,7 @@ c Written by Claudia Filippi
       use acuest_write_mod, only: acuest_write
       use pcm_mod, only: qpcm_update_vol, pcm_compute_penupv
       use pcm_reduce_mod, only: pcm_reduce_chvol
+      use multiple_geo, only: nforce
 
       implicit none
 

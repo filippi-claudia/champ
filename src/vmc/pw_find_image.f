@@ -16,7 +16,7 @@ c good enough -- no need to use 1/2 the shortest perpendicular distance.
 
       use jaspar6, only: cutjas
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, i1, i2, i3, imax
@@ -182,7 +182,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c For any vector (from one particle to another) it finds the
 c image that is closest.
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 

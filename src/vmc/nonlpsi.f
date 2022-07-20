@@ -6,7 +6,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use scale_dist_mod, only: switch_scale
       use jastrow, only: nordj, c, ijas
@@ -80,9 +80,10 @@ c-----------------------------------------------------------------------
       function psianl(rri,it)
 
 
+
+      use multiple_geo, only: iwf
       use jaspar4, only: norda
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: a4, asymp_jasa, ijas
       implicit none
@@ -111,8 +112,8 @@ c-----------------------------------------------------------------------
       function psibnl(u,isb,ipar)
 
       use jaspar4, only: nordb
+      use multiple_geo, only: iwf
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: asymp_jasb, sspinn, b, ijas
 
@@ -144,7 +145,7 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: norda
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: a4
       use jastrow, only: ijas
@@ -174,7 +175,7 @@ c-----------------------------------------------------------------------
 
       use jaspar4, only: nordb
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: sspinn, b, ijas
 

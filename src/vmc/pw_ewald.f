@@ -6,8 +6,13 @@ c Written by Cyrus Umrigar
       use pseudo_mod, only: MPS_L, MPS_GRID
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
+<<<<<<< HEAD
+      use system, only: znuc, iwctype, nctype, ncent, nctype_tot
+      use const, only: pi
+=======
       use atom, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
       use const, only: ipr
+>>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
       use ewald_basis, only: vps_basis_fourier
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt
@@ -22,10 +27,15 @@ c Written by Cyrus Umrigar
       use contrl_per, only: iperiodic
 
       use pseudo, only: lpot, nloc, vps
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use grid3d_param, only: origin
       use precision_kinds, only: dp
+<<<<<<< HEAD
+      use control, only: ipr
+      use multiple_geo, only: pecent
+=======
       use constants, only: pi, twopi
+>>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       implicit none
 
       integer :: i, ict, ifcon, ig, in
@@ -684,7 +694,7 @@ c dist_min is the shortest of these three.
 c By choosing the range of the short-range part of the Ewald sums to be
 c <= half the shortest perpendicular distance we ensure that the short-range
 c part has zero or one terms.
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -841,7 +851,7 @@ c-----------------------------------------------------------------------
       use ewald_mod, only: NGNORM_BIGX
       use ewald_mod, only: NGNORM_SIM_BIGX
 c Written by Cyrus Umrigar
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -940,7 +950,7 @@ c a symmetry one could use later on.
       use periodic, only: rknorm, rkvec, rkvec_shift, vcell
       use periodic, only: vcell_sim
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, ikv, j, k, l
@@ -1119,7 +1129,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use ewald_mod, only: NCOEFX, NPX
       use constant, only: twopi
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, i0, ifcon, ig, info
@@ -1894,10 +1904,10 @@ c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_
 c-----------------------------------------------------------------------
 
       function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
-      use const, only: nelec
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, im, ivec, k, ncent
@@ -1934,10 +1944,10 @@ c Written by Cyrus Umrigar
 c-----------------------------------------------------------------------
 
       function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
-      use const, only: nelec
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, im, ivec, k, ngnorm
@@ -2033,7 +2043,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald_old
 c Written by Cyrus Umrigar
 
-      use atom, only: znuc, cent, pecent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
 
       use ewald, only: b_coul, y_coul
 
@@ -2043,6 +2053,7 @@ c Written by Cyrus Umrigar
       use periodic, only: np, vcell
       use periodic, only: vcell_sim, znuc2_sum
       use precision_kinds, only: dp
+      use multiple_geo, only: pecent
       implicit none
 
       integer :: i, j, k, lowest_pow
@@ -2087,7 +2098,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald
 c Written by Cyrus Umrigar
 
-      use atom, only: znuc, cent, pecent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
 
       use ewald, only: b_coul, y_coul
 
@@ -2098,6 +2109,7 @@ c Written by Cyrus Umrigar
       use periodic, only: np, vcell
       use periodic, only: vcell_sim, znuc2_sum, znuc_sum
       use precision_kinds, only: dp
+      use multiple_geo, only: pecent
       implicit none
 
       integer :: i, j, k, lowest_pow
@@ -2147,9 +2159,8 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use vmc_mod, only: nmat_dim2
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
 
-      use const, only: nelec, ipr
       use ewald, only: b_coul, y_coul
 
       use periodic, only: cutr, glatt
@@ -2162,6 +2173,8 @@ c Written by Cyrus Umrigar
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
 
       use precision_kinds, only: dp
+      use control, only: ipr
+      use system, only: nelec
       implicit none
 
       integer :: i, ict, j, k, lowest_pow
@@ -2233,7 +2246,6 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use vmc_mod, only: nmat_dim2
-      use const, only: nelec, ipr
       use ewald, only: b_coul_sim, y_coul_sim
 
       use periodic, only: cutr_sim
@@ -2243,6 +2255,8 @@ c Written by Cyrus Umrigar
       use periodic, only: np
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
+      use control, only: ipr
+      use system, only: nelec
       implicit none
 
       integer :: i, ij, j, k, lowest_pow
@@ -2288,10 +2302,10 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, ir, k, n, ngvec
@@ -2350,7 +2364,6 @@ c-----------------------------------------------------------------------
       subroutine cossin_psi(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
 c Written by Cyrus Umrigar
 c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positions.
@@ -2358,6 +2371,7 @@ c Needed for orbitals and their Laplacian.
 c Presently using cossin_psi_g and cossin_psi_k instead.
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, iflag, ir, k, n
@@ -2450,12 +2464,12 @@ c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng
       subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, im, in, ir, k
@@ -2565,12 +2579,12 @@ c-----------------------------------------------------------------------
 c     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
-      use const, only: nelec
 c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
 c For the k-vectors do it straightforwardly since there are few of them
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, ir, k, ngvec
@@ -2624,7 +2638,7 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_n(znuc,iwctype,glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use atom, only: ncent_tot
+      use system, only: ncent_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
@@ -2692,7 +2706,7 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NGNORMX, NG1DX
-      use atom, only: ncent_tot, nctype_tot
+      use system, only: ncent_tot, nctype_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
@@ -2765,11 +2779,11 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, ir, k, n, ngvec

@@ -3,15 +3,15 @@
       subroutine distances(iel,x)
 c Written by Cyrus Umrigar
 c calculate interparticle distances
-      use atom, only: cent, ncent
-      use ghostatom, only: nghostcent
-      use const, only: nelec
+      use system, only: cent, ncent
+      use system, only: nghostcent
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use contrl_per, only: iperiodic
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use pw_find_image, only: find_image4, find_image3
+      use system, only: nelec
       implicit none
 
       integer :: i, i1, i2, ic, iel
@@ -114,12 +114,12 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c restore interparticle distances (called if move rejected)
 
-      use atom, only: ncent
-      use ghostatom, only: nghostcent
-      use const, only: nelec
+      use system, only: ncent
+      use system, only: nghostcent
       use distance_mod, only: rshift, r_en, rvec_en
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use system, only: nelec
       implicit none
 
       integer :: i, ic, iel, ij, j

@@ -37,22 +37,22 @@ contains
 
         use precision_kinds, only: dp
 use sr_mod, only: mparm
-        use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-use optwf_contrl, only: idl_flag
+        use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
+use optwf_control, only: idl_flag
         use optwf_corsam, only: energy, energy_err
-        use optwf_contrl, only: dparm_norm_min, nopt_iter
-        use optwf_contrl, only: sr_adiag
+        use optwf_control, only: dparm_norm_min, nopt_iter
+        use optwf_control, only: sr_adiag
         use orbval, only: nadorb
 !        use contrl, only: nblk, nblk_max
         use control_vmc, only: vmc_nblk, vmc_nblk_max
-        use method_opt, only: method
-        use contrl_file,    only: ounit
-        use optwf_handle_wf,only: set_nparms_tot, save_wf, write_wf
-        use optwf_handle_wf,only: compute_parameters, test_solution_parm
-        use optwf_handle_wf,only: save_nparms, set_nparms
+        use contrl_file, only: ounit
+        use optwf_handle_wf, only: set_nparms_tot, save_wf, write_wf
+        use optwf_handle_wf, only: compute_parameters, test_solution_parm
+        use optwf_handle_wf, only: save_nparms, set_nparms
         use fetch_parameters_mod, only: fetch_parameters
         use vmc_f_mod, only: vmc
         use sr_more, only: dscal
+      use optwf_control, only: method
         implicit None
 
         integer :: iter, iflag, nadorb_sav
@@ -135,9 +135,9 @@ use optwf_contrl, only: idl_flag
     subroutine sanity_check()
 
         use sr_mod, only: mparm
-        use optwf_contrl, only: nparm
-        use optwf_contrl, only: idl_flag
-        use method_opt, only: method
+        use optwf_control, only: nparm
+        use optwf_control, only: idl_flag
+      use optwf_control, only: method
 
         if (method .ne. 'sr_n' .or. idl_flag .eq. 0) return
         if (nparm .gt. mparm) call fatal_error('SR_OPTWF: nparmtot gt mparm')
@@ -146,7 +146,7 @@ use optwf_contrl, only: idl_flag
 
     subroutine init_arrays()
         !> Allocate and initialize to 0 all arrays
-        use optwf_contrl, only: nparm
+        use optwf_control, only: nparm
 
         !> allocate
         allocate (deltap(nparm))
@@ -180,8 +180,8 @@ use optwf_contrl, only: idl_flag
 use precision_kinds, only: dp
         use mpiconf, only: idtask
         use optwf_sr_mod, only: sr_hs
-        use optwf_contrl, only: nparm
-        use optwf_contrl, only: sr_tau, sr_adiag
+        use optwf_control, only: nparm
+        use optwf_control, only: sr_tau, sr_adiag
 
         ! in/out variable
         integer, intent(in) :: iter
@@ -203,9 +203,9 @@ use precision_kinds, only: dp
         !> Individual routine to optimize the parameters
         use precision_kinds, only: dp
         use sr_mat_n, only: h_sr
-        use optwf_contrl, only: nparm
-        use optwf_contrl, only: dl_alg, dl_mom
-        use optwf_contrl, only: sr_tau
+        use optwf_control, only: nparm
+        use optwf_control, only: dl_alg, dl_mom
+        use optwf_control, only: sr_tau
 
         integer, intent(in) :: iter
 

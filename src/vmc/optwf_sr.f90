@@ -13,19 +13,19 @@
 module optwf_sr_mod
 
     use precision_kinds, only: dp
-    use optwf_contrl, only: ioptci, ioptjas, ioptorb
+    use optwf_control, only: ioptci, ioptjas, ioptorb
     use force_analy, only: iforce_analy
 !    use contrl, only: nblk_max
     use control_vmc, only: vmc_nblk_max
-    use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
-    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
+    use optwf_control, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
+    use optwf_control, only: sr_tau, sr_adiag, sr_eps
     use orbval, only: nadorb
-    use contrl_file,    only: ounit
-    use mpitimer,    only: elapsed_time
+    use contrl_file, only: ounit
+    use mpitimer, only: elapsed_time
     use error, only: fatal_error
-    use optwf_handle_wf, only : set_nparms_tot, save_nparms, test_solution_parm
-    use optwf_handle_wf, only : compute_parameters, write_wf, save_wf
-    use optwf_handle_wf, only : set_nparms
+    use optwf_handle_wf, only: set_nparms_tot, save_nparms, test_solution_parm
+    use optwf_handle_wf, only: compute_parameters, write_wf, save_wf
+    use optwf_handle_wf, only: set_nparms
     use optgeo_lib, only: write_geometry, compute_positions
     use sr_mod, only: izvzb, i_sr_rescale
 
@@ -71,17 +71,17 @@ contains
     subroutine optwf_sr
 
         use sr_mod, only: mparm
-        use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+        use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
         use mstates_mod, only: MSTATES
         use optwf_corsam, only: energy, energy_err
         use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
         !use contrl, only: nblk
         use control_vmc, only: vmc_nblk
         use force_analy, only: alfgeo
-        use optwf_contrl, only: nparm
-        use method_opt, only: method
+        use optwf_control, only: nparm
         use orbval, only: nadorb
-        use contrl_file,    only: ounit
+        use contrl_file, only: ounit
+      use optwf_control, only: method
 
         implicit none
 
@@ -242,7 +242,7 @@ contains
         ! solve S*deltap=h_sr (call in optwf)
         use sr_more, only: pcg
         use sr_mat_n, only: h_sr
-        use contrl_file,    only: ounit
+        use contrl_file, only: ounit
         implicit none
 
         integer, intent(in) :: nparm
@@ -269,7 +269,7 @@ contains
     end subroutine sr
 
     subroutine check_length_run_sr(iter, increase_nblk, nblk, nblk_max, denergy, denergy_err, energy_err_sav, energy_tol)
-        use contrl_file,    only: ounit
+        use contrl_file, only: ounit
         implicit none
 
         integer :: iter, increase_nblk, nblk, nblk_max, nblk_new, nbkl
@@ -314,8 +314,8 @@ contains
         use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho
         use sr_mat_n, only: sr_o, wtg, obs_tot
         use optorb_cblock, only: norbterm
-        use method_opt, only: method
-        use contrl_file,    only: ounit
+        use contrl_file, only: ounit
+      use optwf_control, only: method
         implicit none
 
         real(dp), DIMENSION(:, :), allocatable :: obs
@@ -520,7 +520,7 @@ contains
         use sr_mat_n, only: jefj, jfj, jhfj
         use sr_mat_n, only: obs_tot
         use sr_index, only: jelo, jelo2, jelohfj
-        use contrl_file,    only: ounit
+        use contrl_file, only: ounit
 
         implicit none
 
@@ -567,14 +567,14 @@ contains
 
         use mpi
         use sr_mod, only: mparm
-        use atom, only: ncent
+        use system, only: ncent
         use force_fin, only: da_energy_ave
         use force_mat_n, only: force_o
         use mpiconf, only: idtask
         use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs_tot, sr_ho
         use sr_mat_n, only: sr_o, wtg
         use sr_index, only: jelo
-        use contrl_file,    only: ounit
+        use contrl_file, only: ounit
         use error, only: fatal_error
 
         implicit none

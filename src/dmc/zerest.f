@@ -4,8 +4,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 
       use vmc_mod, only: nrad
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
+      use multiple_geo, only: fgcm2, fgcum
       use estcum, only: iblk
       use stats, only: acc, nacc, nbrnch, nodecr, trymove
       use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc
@@ -26,15 +25,16 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use precision_kinds, only: dp
       use age, only: iage, ioldest, ioldestmx
 
-      use mmpol,           only: mmpol_init
-      use pcm_mod,         only: pcm_init
-      use properties_mod,  only: prop_init
-      use optjas_mod,      only: optjas_init
-      use optci_mod,       only: optci_init
-      use optorb_f_mod,    only: optorb_init
-      use optx_jas_orb,    only: optx_jas_orb_init
-      use optx_jas_ci,     only: optx_jas_ci_init
-      use optx_orb_ci,     only: optx_orb_ci_init
+      use mmpol, only: mmpol_init
+      use pcm_mod, only: pcm_init
+      use properties_mod, only: prop_init
+      use optjas_mod, only: optjas_init
+      use optci_mod, only: optci_init
+      use optorb_f_mod, only: optorb_init
+      use optx_jas_orb, only: optx_jas_orb_init
+      use optx_jas_ci, only: optx_jas_ci_init
+      use optx_orb_ci, only: optx_orb_ci_init
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, ifr, k

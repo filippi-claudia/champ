@@ -4,9 +4,8 @@
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
       use vmc_mod, only: norb_tot
-      use elec, only: ndn, nup
       use multidet, only: ivirt, kref
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use Bloc, only: b, tildem
       use multimat, only: aa
       use optorb_cblock, only: norbterm
@@ -14,9 +13,11 @@
       use orb_mat_033, only: ideriv_ref, irepcol_ref
       use orbval, only: orb
       use multislater, only: detiab
-      use const, only: nelec
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 
@@ -93,12 +94,12 @@ c-----------------------------------------------------------------------
       subroutine optorb_compute(psid,eloc,deloc)
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use zcompact, only: aaz, dzmat, emz, zmat
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, istate
@@ -131,7 +132,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptorb, iapprox
+      use optwf_control, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
@@ -260,7 +261,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_cum(wsum,esum)
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use optorb_cblock, only: norbterm, idump_blockav
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
@@ -328,7 +329,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_init(iflg)
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptorb, iapprox
+      use optwf_control, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm
       use orb_mat_003, only: orb_o_cum, orb_o_sum
       use orb_mat_004, only: orb_oe_cum, orb_oe_sum
@@ -413,7 +414,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_save
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
@@ -440,7 +441,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_restore
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
@@ -466,14 +467,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
 
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use optorb_cblock, only: norbterm
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use optorb_cblock, only: norb_f_bcum
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -503,7 +504,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_dump(iu)
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptorb, iapprox
+      use optwf_control, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm, norbprim
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
@@ -542,7 +543,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_rstrt(iu)
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptorb, iapprox
+      use optwf_control, only: ioptorb, iapprox
       use optorb_cblock, only: norbterm, norbprim
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
@@ -552,7 +553,7 @@ c-----------------------------------------------------------------------
       use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
       use orb_mat_030, only: orb_ecum, orb_wcum
       use optorb_cblock, only: nreduced, nefp_blocks, norb_f_bcum
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -595,7 +596,7 @@ c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
       use sa_weights, only: weights
       use optorb_cblock, only: idump_blockav
@@ -604,10 +605,10 @@ c-----------------------------------------------------------------------
       use orb_mat_007, only: orb_oho_cum
       use gradhess_all, only: grad, h, s
       use ci000, only: nciterm
-      use method_opt, only: method
       use optorb_cblock, only: nreduced, norbterm
-      use optwf_contrl, only: iapprox, iuse_orbeigv
+      use optwf_control, only: iapprox, iuse_orbeigv
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 
@@ -839,9 +840,7 @@ c-----------------------------------------------------------------------
 
       use optorb_mod, only: mxreduced
       use vmc_mod, only: norb_tot
-      use const, only: nelec
       use dets, only: ndet
-      use elec, only: ndn, nup
       use multidet, only: kref
       use optorb_mix, only: iwmix_virt, norbopt, norbvirt
       use coefs, only: norb, next_max
@@ -850,11 +849,14 @@ c-----------------------------------------------------------------------
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
       use orbval, only: nadorb, ndetorb, orb
-      use optwf_contrl, only: ncore, no_active
-      use contrl_file,    only: ounit, errunit
+      use optwf_control, only: ncore, no_active
+      use contrl_file, only: ounit, errunit
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
+      use optwf_control, only: method
 
       implicit none
 

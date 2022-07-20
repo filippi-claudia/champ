@@ -4,12 +4,12 @@ c-----------------------------------------------------------------------
       subroutine determinante_psit(iel,determ,istate)
 
       use dets, only: cdet, ndet
-      use elec, only: nup
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use multislatern, only: detn
 
       use multislater, only: detiab
       use precision_kinds, only: dp
+      use system, only: nup
       implicit none
 
       integer :: iel, istate, k

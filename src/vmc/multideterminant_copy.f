@@ -2,8 +2,10 @@
       contains
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
+      use const, only: hb, nelec
       use csfs, only: nstates
       use dets, only: ndet
+      use elec, only: ndn, nup
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, ndetiab, k_det, ndet_req
       use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
       use optwf_control, only: ioptorb
@@ -21,11 +23,7 @@
       use precision_kinds, only: dp
       use bxmatrices, only: bxmatrix
       use matinv_mod, only: matinv
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
       use optwf_control, only: method
-      use constants, only: hb
       implicit none
 
       integer :: i, iab, iel, index_det, iorb, kun, kw
@@ -233,6 +231,7 @@ c-----------------------------------------------------------------------
 
       use vmc_mod, only: norb_tot
       use vmc_mod, only: MEXCIT
+      use const, only: nelec
       use dets, only: cdet, ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, k_det, ndetiab
@@ -243,7 +242,6 @@ c-----------------------------------------------------------------------
 
 
       use precision_kinds, only: dp
-      use system, only: nelec
       implicit none
 
       integer :: i, iab, iorb, irep, istate
@@ -333,6 +331,7 @@ c-----------------------------------------------------------------------
 
       use vmc_mod, only: norb_tot
       use vmc_mod, only: MEXCIT
+      use const, only: nelec
       use dets, only: ndet
       use dets_equiv, only: cdet_equiv, dcdet_equiv
       use multidet, only: irepcol_det, ireporb_det, iwundet, kref, numrep_det, ndetiab, ndetsingle
@@ -342,7 +341,6 @@ c-----------------------------------------------------------------------
       use multimat, only: wfmat
 
       use precision_kinds, only: dp
-      use system, only: nelec
       implicit none
 
       integer :: i, iab, iorb, irep, j
@@ -417,16 +415,15 @@ c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
       use vmc_mod, only: norb_tot
+      use elec, only: ndn, nup
       use multidet, only: iactv, ivirt
       use coefs, only: norb
       use Bloc, only: tildem, xmat
       use multimat, only: aa
       use slater, only: slmi
+      use const, only: nelec
 
       use precision_kinds, only: dp
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
       implicit none
 
       integer :: iab, irep, ish, jrep, krep
@@ -485,14 +482,13 @@ c           do krep=ivirt(iab),norb+nadorb
 c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
+      use const, only: nelec
       use csfs, only: nstates
+      use elec, only: ndn, nup
       use ycompact, only: ymat
       use multimat, only: wfmat
 
       use multislater, only: detiab
-      use system, only: nelec
-      use system, only: nup
-      use system, only: ndn
       implicit none
 
       integer :: iab, iel, istate

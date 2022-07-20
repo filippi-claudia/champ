@@ -12,11 +12,10 @@
 c written by Claudia Filippi
       use precision_kinds, only: dp
       use csfs, only: nstates
-      use forcepar, only: nforce
       use numbas, only: numr
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
-      use wfsec, only: iwftype, nwftype
+      use multiple_geo, only: iwftype, nwftype
       use orbval, only: nadorb
 
 !     use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
@@ -24,12 +23,12 @@ c written by Claudia Filippi
       use control_vmc, only: vmc_nblk, vmc_nblk_max, vmc_nblk_ci
 
       use gradhess_all, only: nparmall
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
-      use optwf_contrl, only: energy_tol, dparm_norm_min, ilastvmc
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
+      use optwf_control, only: energy_tol, dparm_norm_min, ilastvmc
       ! I think that's needed
       use gradhess_all, only: grad, h, s
       use optwf_corsam, only: add_diag
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use optwf_handle_wf, only: write_wf_best, save_wf_best
       use optwf_handle_wf, only: save_wf, write_wf, set_nparms
       use optwf_handle_wf, only: restore_wf, test_solution_parm
@@ -38,6 +37,7 @@ c written by Claudia Filippi
       use optwf_lin_matrix, only: compute_dparm, setup_optimization
       use set_input_data, only: set_displace_zero
       use read_bas_num_mod, only: read_bas_num
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk
@@ -535,7 +535,7 @@ c-----------------------------------------------------------------------
       subroutine check_length_run(iter,increase_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
 
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: increase_nblk, iter, nblk, nblk_max, nblk_new
@@ -591,7 +591,7 @@ c-----------------------------------------------------------------------
 
       use optwf_corsam, only: add_diag, energy, force, force_err
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use optwf_lib, only: chlsky, lxb, uxb
       use read_bas_num_mod, only: read_bas_num
       implicit none
@@ -696,14 +696,14 @@ c-----------------------------------------------------------------------
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmj
       use gradhess_all, only: h, s
       use ci000, only: nciterm
-      use contrl_file,    only: ounit
-      use method_opt, only: method
+      use contrl_file, only: ounit
       use optorb_cblock, only: nreduced
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
+      use optwf_control, only: method
       implicit none
 
       integer :: i, i0, is, ishift, j

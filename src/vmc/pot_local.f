@@ -1,15 +1,17 @@
       module pot_local_mod
       contains
       subroutine pot_local(pe)
-      use atom, only: znuc, pecent, iwctype, ncent
-      use ghostatom, only: nghostcent
-      use const, only: nelec, ipr
+      use system, only: znuc, iwctype, ncent
+      use system, only: nghostcent
       use contrl_per, only: iperiodic
       use distance_mod, only: r_en, r_ee
       use pseudo, only: nloc
-      use contrl_file, only:ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use pw_ewald, only: pot_en_ewald, pot_ee_ewald
+      use control, only: ipr
+      use system, only: nelec
+      use multiple_geo, only: pecent
       implicit none
 
       integer :: i, ic, ij, j

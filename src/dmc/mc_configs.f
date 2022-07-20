@@ -2,7 +2,6 @@
       contains
       subroutine mc_configs
 
-      use const, only: ipr, nelec
       use config, only: psido_dmc, psijo_dmc, xold_dmc
       use mpiconf, only: idtask, nproc
       use branch, only: eold, nwalk
@@ -12,9 +11,11 @@
       use mpi
 
       use precision_kinds, only: dp
-      use error,          only: fatal_error
-      use rannyu_mod,     only: rannyu, savern, setrn
-      use restart,        only: startr
+      use error, only: fatal_error
+      use rannyu_mod, only: rannyu, savern, setrn
+      use restart, only: startr
+      use control, only: ipr
+      use system, only: nelec
 
       implicit none
 

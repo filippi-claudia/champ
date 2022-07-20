@@ -5,7 +5,7 @@ module config
     !> rvminno, rvmino, rvminon, tjfn, tjfo, tjfoo, vnew, vold, xnew, xold,
     !> d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
 
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use precision_kinds, only: dp
     use mstates_mod, only: MSTATES
 
@@ -54,9 +54,9 @@ module config
     save
 contains
     subroutine allocate_config()
-        use const, only: nelec
-        use force_mod, only: MFORCE
+        use multiple_geo, only: MFORCE
         use mstates_mod, only: MSTATES
+      use system, only: nelec
         implicit none
         if (.not. allocated(delttn)) allocate (delttn(nelec))
         if (.not. allocated(enew)) allocate (enew(MFORCE))
@@ -108,9 +108,9 @@ contains
     end subroutine deallocate_config
 
     subroutine allocate_config_dmc()
-      use const, only: nelec
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use dmc_mod, only: mwalk
+      use system, only: nelec
 
       implicit none
 
@@ -229,6 +229,9 @@ module kinet
     !> only used in metropolis
     !> Arguments: dtdx2n, dtdx2o
     use precision_kinds, only: dp
+      use system, only: nelec
+      use system, only: nelec
+      use system, only: nelec
 
     real(dp), dimension(:), allocatable :: dtdx2n !(MELEC)
     real(dp), dimension(:), allocatable :: dtdx2o !(MELEC)
@@ -239,7 +242,6 @@ module kinet
     save
 contains
     subroutine allocate_kinet()
-        use const, only: nelec
         if (.not. allocated(dtdx2n)) allocate (dtdx2n(nelec))
         if (.not. allocated(dtdx2o)) allocate (dtdx2o(nelec))
     end subroutine allocate_kinet
@@ -257,6 +259,7 @@ subroutine allocate_m_sampling()
     use config, only: allocate_config
     use step, only: allocate_step
     use kinet, only: allocate_kinet
+      use system, only: nelec
 
     call allocate_config()
     call allocate_step()

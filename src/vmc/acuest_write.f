@@ -4,25 +4,25 @@
 c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
-      use force_mod, only: MFORCE
-      use const, only: nelec
+      use multiple_geo, only: MFORCE
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2
       use estcum, only: ecum, iblk, pecum, tjfcum, tpbcum
       use estsum, only: acc
-      use forcepar, only: nforce
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum
-      use contr3, only: mode
       !use contrl, only: nstep
-      use control_vmc, only:  vmc_nstep
+      use control_vmc, only: vmc_nstep
       use precision_kinds, only: i2b
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       use precision_kinds, only: dp
       use properties_mod, only: prop_prt
       use optci_mod, only: optci_prt
       use pcm_vmc, only: pcm_prt
+      use control, only: mode
+      use system, only: nelec
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, ieerr, iferr, ifr, index

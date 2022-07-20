@@ -167,7 +167,7 @@ module numexp
     !> Arguments: ae, ce
 
     use numbas_mod, only: MRWF
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use precision_kinds, only: dp
     use vmc_mod, only: NCOEF
 
@@ -183,9 +183,9 @@ module numexp
     save
 contains
     subroutine allocate_numexp()
-        use atom, only: nctype_tot
+        use system, only: nctype_tot
         use numbas_mod, only: MRWF
-        use force_mod, only: MFORCE
+        use multiple_geo, only: MFORCE
         use vmc_mod, only: NCOEF
         if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, MFORCE))
         if (.not. allocated(ab)) allocate (ab(2, MRWF, nctype_tot, MFORCE))
@@ -225,9 +225,9 @@ module numbas
     save
 contains
     subroutine allocate_numbas()
-        use wfsec, only: nwftype
+        use multiple_geo, only: nwftype
         use coefs, only: nbasis
-        use atom, only: nctype_tot
+        use system, only: nctype_tot
         use numbas_mod, only: MRWF, MRWF_PTS
         if (.not. allocated(arg)) allocate (arg(nctype_tot))
         if (.not. allocated(d2rwf)) allocate (d2rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
@@ -268,7 +268,7 @@ module numbas1
 contains
     subroutine allocate_numbas1()
         use coefs, only: nbasis
-        use atom, only: nctype_tot
+        use system, only: nctype_tot
         if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot), source=0)
         ! if (.not. allocated(nbastyp)) allocate (nbastyp(nctype_tot))
     end subroutine allocate_numbas1
@@ -294,7 +294,7 @@ module numbas2
     save
 contains
     subroutine allocate_numbas2()
-        use atom, only: ncent_tot
+        use system, only: ncent_tot
         if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot), source=0)
         if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot), source=0)
     end subroutine allocate_numbas2

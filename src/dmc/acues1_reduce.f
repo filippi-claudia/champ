@@ -4,7 +4,6 @@
 
       use precision_kinds, only: dp
       use vmc_mod, only: nrad
-      use forcepar, only: nforce
       use estcum, only: iblk
       use stats, only: acc, nacc, nodecr, trymove
       use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
@@ -14,23 +13,24 @@
       use est2cm, only: wfcm21, wgcm21
       use step, only: rprob
       use mpiconf, only: nproc, wid
-      use contr3, only: mode
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use contrl_per, only: iperiodic
       use mpi
 
       use optx_orb_ci, only: optx_orb_ci_fin
       use optx_jas_orb, only: optx_jas_orb_fin
       use optx_jas_ci, only: optx_jas_ci_fin
-      use optorb_f_mod,only: optorb_fin
-      use optci_mod,   only: optci_fin
-      use optjas_mod,   only: optjas_fin
+      use optorb_f_mod, only: optorb_fin
+      use optci_mod, only: optci_fin
+      use optjas_mod, only: optjas_fin
       use optx_orb_ci_reduce_mod, only: optx_orb_ci_reduce
       use optjas_reduce_mod, only: optjas_reduce
       use optorb_reduce_mod, only: optorb_reduce
-      use optci_reduce_mod,  only: optci_reduce
+      use optci_reduce_mod, only: optci_reduce
       use optx_jas_orb_reduce_mod, only: optx_jas_orb_reduce
       use optx_jas_ci_reduce_mod, only: optx_jas_ci_reduce
+      use control, only: mode
+      use multiple_geo, only: nforce
 
       implicit none
 

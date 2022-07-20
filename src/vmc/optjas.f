@@ -3,14 +3,12 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
       use optwf_parms, only: nparmj
-      use const, only: nelec, ipr
       use csfs, only: nstates
       use derivjas, only: d2g, g
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
       use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req
       use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use scratch, only: denergy_det, dtildem
       use Bloc, only: xmat
@@ -22,8 +20,12 @@
       use slater, only: ddx, slmi
       use multislater, only: detiab
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use bxmatrices, only: bxmatrix
+      use control, only: ipr
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
       use constants, only: hb
 
       implicit none
@@ -179,13 +181,13 @@ c-----------------------------------------------------------------------
       subroutine optjas_sum(wtg_new,wtg_old,enew,eold,iflag)
 c Written by Claudia Filippi
 
-      use atom, only: nctype
+      use system, only: nctype
       use csfs, only: nstates
       use derivjas, only: gvalue
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jaspointer, only: npointa
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa, iwjasb
@@ -364,7 +366,7 @@ c Written by Claudia Filippi
 
       use csfs, only: nstates
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: dj, dj_e
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks, nbj_current
@@ -425,12 +427,12 @@ c-----------------------------------------------------------------------
       subroutine optjas_save
 c Written by Claudia Filippi
 
-      use atom, only: nctype
+      use system, only: nctype
       use csfs, only: nstates
       use derivjas, only: gvalue
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
       use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use bparm, only: nspin2b
       use deloc_dj_m, only: denergy
@@ -466,7 +468,7 @@ c Written by Claudia Filippi
 
       use csfs, only: nstates
       use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
@@ -520,7 +522,7 @@ c Written by Claudia Filippi
 
       use csfs, only: nstates
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
@@ -552,7 +554,7 @@ c Written by Claudia Filippi
 
       use csfs, only: nstates
       use gradjerr, only: dj_e_save, dj_save, grad_jas_bcm2, grad_jas_bcum
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
@@ -590,13 +592,13 @@ c Written by Claudia Filippi
       use csfs, only: nstates
       use gradhess_jas, only: grad_jas, h_jas, s_jas
       use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
-      use optwf_contrl, only: ioptjas, ibeta, ratio_j
+      use optwf_control, only: ioptjas, ibeta, ratio_j
       use optwf_parms, only: nparmj
       use sa_weights, only: weights
       use gradhessj, only: d2j, d2j_e, de, dj, dj_de, dj_dj, dj_dj_e, dj_e
       use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
-      use method_opt, only: method
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 

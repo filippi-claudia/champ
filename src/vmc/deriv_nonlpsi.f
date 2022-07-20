@@ -6,10 +6,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
       use optwf_wjas, only: iwjasc
-      use wfsec, only: iwf
-
+      use multiple_geo, only: iwf
       use vardep, only: cdep, iwdepend, nvdepend
-
       use cuspmat4, only: d, iwc4
       use precision_kinds, only: dp
       use scale_dist_mod, only: switch_scale
@@ -122,7 +120,7 @@ c-----------------------------------------------------------------------
       use jaspar6, only: asymp_r
       use optwf_nparmj, only: nparma
       use optwf_wjas, only: iwjasa
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: a4, asymp_jasa, ijas
       implicit none
@@ -182,7 +180,7 @@ c-----------------------------------------------------------------------
       use jaspar6, only: asymp_r
       use optwf_nparmj, only: nparmb
       use optwf_wjas, only: iwjasb
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use jastrow, only: asymp_jasb, sspinn, b, ijas
       implicit none

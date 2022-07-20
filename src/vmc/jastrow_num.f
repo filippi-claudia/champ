@@ -8,15 +8,15 @@ c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
 
       use vmc_mod, only: nmat_dim2
-      use atom, only: cent, iwctype, ncent, ncent_tot
-      use const, only: nelec
-      use elec, only: nup
+      use system, only: cent, iwctype, ncent, ncent_tot
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use distance_mod, only: r_en, r_ee
       use precision_kinds, only: dp
       use psi_mod, only: psia, psib, psi
+      use system, only: nelec
+      use system, only: nup
       use jastrow, only: sspinn, scalek, ijas, nspin2, sspin, is
 
       implicit none

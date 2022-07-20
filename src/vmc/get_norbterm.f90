@@ -9,23 +9,24 @@ subroutine get_norbterm
 
     use optorb_mod, only: mxreduced
     use vmc_mod, only: norb_tot
-    use const, only: nelec
     use dets, only: ndet
-    use elec, only: ndn, nup
     use multidet, only: kref
-    use optorb_mix, only: norbopt, norbvirt , iwmix_virt
+    use optorb_mix, only: norbopt, norbvirt, iwmix_virt
     use coefs, only: norb, next_max
     use dorb_m, only: iworbd
     use optorb, only: irrep
     use optorb_cblock, only: norbterm
     use orb_mat_022, only: ideriv
     use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
-    use method_opt, only: method
     use optorb_cblock, only: nreduced
     use orbval, only: nadorb, ndetorb, orb
-    use optwf_contrl, only: ncore, no_active
-    use contrl_file,    only: ounit, errunit
+    use optwf_control, only: ncore, no_active
+    use contrl_file, only: ounit, errunit
     use error, only: fatal_error
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
+      use optwf_control, only: method
 
     implicit none
 

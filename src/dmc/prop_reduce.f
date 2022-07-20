@@ -5,11 +5,11 @@
       use prp000, only: iprop, nprop
       use prp003, only: vprop_sum, vprop_cum, vprop_cm2
       use mpiconf, only: wid
-      use contr3, only: mode
       use properties, only: MAXPROP
       use mpi
 
       use precision_kinds, only: dp
+      use control, only: mode
       implicit none
 
       integer :: i, ierr

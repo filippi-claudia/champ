@@ -5,17 +5,17 @@
 
       use dets, only: ndet
       use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciprim
       use ci001_blk, only: ci_o, ci_oe
       use ci003_blk, only: ci_e
       use ci004_blk, only: ci_de
 
-      use method_opt, only: method
 
       use multislater, only: detiab
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
+      use optwf_control, only: method
 
       implicit none
 
@@ -86,7 +86,7 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
 c-----------------------------------------------------------------------
       subroutine optci_init(iflg)
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum, ci_o_sum
       use ci006_blk, only: ci_de_cum, ci_de_sum
@@ -94,9 +94,9 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
-      use method_opt, only: method
 
       use precision_kinds, only: dp
+      use optwf_control, only: method
       implicit none
 
       integer :: i, idx, iflg, j
@@ -153,14 +153,14 @@ C$ iflg = 0: init *cum, *cm2 as well
 c-----------------------------------------------------------------------
       subroutine optci_save
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
       use ci003_blk, only: ci_e, ci_e_old
       use ci004_blk, only: ci_de, ci_de_old
+      use optwf_control, only: method
 
-      use method_opt, only: method
 
       implicit none
 
@@ -184,14 +184,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_restore
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
       use ci003_blk, only: ci_e, ci_e_old
       use ci004_blk, only: ci_de, ci_de_old
+      use optwf_control, only: method
 
-      use method_opt, only: method
 
       implicit none
 
@@ -215,7 +215,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_sum(p,q,enew,eold)
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
 
       use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
@@ -227,9 +227,9 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_sum
       use ci010_blk, only: ci_ooe_sum
 
-      use method_opt, only: method
 
       use precision_kinds, only: dp
+      use optwf_control, only: method
       implicit none
 
       integer :: i, idx, j
@@ -263,7 +263,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_cum(wsum)
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
 
       use ci000, only: nciterm
 
@@ -273,9 +273,9 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
-      use method_opt, only: method
 
       use precision_kinds, only: dp
+      use optwf_control, only: method
       implicit none
 
       integer :: i, idx, j
@@ -309,14 +309,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optci_dump(iu)
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciprim, nciterm
       use ci005_blk, only: ci_o_cum
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
+      use optwf_control, only: method
 
-      use method_opt, only: method
 
       implicit none
 
@@ -338,7 +338,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine optci_rstrt(iu)
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciprim, nciterm
 
       use ci005_blk, only: ci_o_cum
@@ -346,8 +346,8 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
 
-      use method_opt, only: method
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
+      use optwf_control, only: method
       implicit none
 
       integer :: i, iu, j, matdim, mciprim
@@ -381,7 +381,7 @@ c-----------------------------------------------------------------------
       subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
 
       use optci, only: mxciterm, mxcireduced, ncimatdim
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
@@ -389,9 +389,9 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
 
-      use method_opt, only: method
 
       use precision_kinds, only: dp
+      use optwf_control, only: method
       implicit none
 
       integer :: i, iblk, idx, j
@@ -442,12 +442,12 @@ c-----------------------------------------------------------------------
       use dets, only: cdet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use linear_norm, only: ci_oav
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use ci000, only: iciprt, nciterm
 
-      use method_opt, only: method
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use optwf_control, only: method
       implicit none
 
       integer :: i, iblk, iciprt_sav, idx, is
@@ -575,12 +575,12 @@ c h_0,0, h_0,ci, h_ci,0, s_0,ci, s_ci,0
 c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
       use optci, only: mxciterm, mxcireduced, ncimatdim
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: iciprt, nciterm
       use m_icount, only: icount_ci
-      use method_opt, only: method
 
       use precision_kinds, only: dp
+      use optwf_control, only: method
       implicit none
 
       integer :: i, iblk, idx, iu, j
@@ -680,12 +680,12 @@ c-----------------------------------------------------------------------
 
       use csfs, only: ncsf
       use dets, only: ndet
-      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_control, only: ioptjas, ioptorb
       use inputflags, only: ici_def
 
       use ci000, only: nciprim, nciterm
+      use optwf_control, only: method
 
-      use method_opt, only: method
 
       implicit none
 

@@ -10,20 +10,19 @@ end interface
 contains
       subroutine read_bas_num(iwf)
 
-      use custom_broadcast,   only: bcast
-      use mpiconf,            only: wid
+      use custom_broadcast, only: bcast
+      use mpiconf, only: wid
 
       use numbas_mod, only: MRWF, MRWF_PTS
-      use atom, only: znuc, nctype, nctype_tot
+      use system, only: znuc, nctype, nctype_tot
 ! c Written by Claudia Filippi
 ! c Modified by F. Schautz to use fancy file names
 ! c Reads in localized orbitals on a radial grid
 
       use numbas_mod, only: MRWF, MRWF_PTS
       use vmc_mod, only: NCOEF
-      use atom, only: znuc, nctype, nctype_tot
-      use ghostatom, only: newghostype
-      use const, only: ipr
+      use system, only: znuc, nctype, nctype_tot
+      use system, only: newghostype
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf!, rmax
       use numbas, only: allocate_numbas
       use coefs, only: nbasis
@@ -31,12 +30,13 @@ contains
       use pseudo, only: nloc
       use general, only: filename, filenames_bas_num
 
-      use atom, 			        only: atomtyp
+      use system, 			        only: atomtyp
       use general, 			      only: pooldir, bas_id
-      use contrl_file,        only: ounit, errunit
-      use precision_kinds,    only: dp
-      use spline2_mod,        only: spline2
-      use fitting_methods,    only: exp_fit
+      use contrl_file, only: ounit, errunit
+      use precision_kinds, only: dp
+      use spline2_mod, only: spline2
+      use fitting_methods, only: exp_fit
+      use control, only: ipr
 
       implicit none
 
@@ -254,17 +254,17 @@ subroutine readps_gauss
   !
   ! NOTE: as usual power n means r**(n-2)
   !
-  use custom_broadcast,   only: bcast
-  use mpiconf,            only: wid
+  use custom_broadcast, only: bcast
+  use mpiconf, only: wid
 
   use pseudo_mod, only: MPS_L, MGAUSS, MPS_QUAD
-  use atom, only: nctype, atomtyp
+  use system, only: nctype, atomtyp
   use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
   use gauss_ecp, only: allocate_gauss_ecp
   use pseudo, only: lpot
   use qua, only: nquad, wq, xq0, yq0, zq0
   use general, only: pooldir, filename, pp_id, filenames_ps_gauss
-  use contrl_file,        only: ounit, errunit
+  use contrl_file, only: ounit, errunit
   use rotqua_mod, only: gesqua
 
   use precision_kinds, only: dp
@@ -398,7 +398,7 @@ end subroutine readps_gauss
 !   use mpiconf,            only: wid
 
 !   use pseudo_mod, only: MPS_L, MGAUSS, MPS_QUAD
-!   use atom, only: nctype, atomtyp
+!   use system, only: nctype, atomtyp
 !   use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
 !   use gauss_ecp, only: allocate_gauss_ecp
 !   use pseudo, only: lpot

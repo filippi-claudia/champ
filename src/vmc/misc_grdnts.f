@@ -15,7 +15,7 @@ c   energy gradients (cartesian).
       use grdntsmv, only: igrdaidx, igrdcidx
 
       use grdntspar, only: delgrdxyz, ngradnts
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: ig
@@ -51,7 +51,7 @@ c   energy gradients (z matrix/internal).
       use grdntsmv, only: igrdaidx, igrdcidx
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: ig, na, nb, nc, nd
@@ -89,14 +89,14 @@ c   Subroutine which calculates and printouts energy gradients
 c   for cartesian coordinates of atoms from energy differences
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_cart(forces_ave,forces_err)
-      use force_mod, only: MFORCE
-      use atom, only: iwctype, ncent
-      use forcepar, only: nforce
+      use multiple_geo, only: MFORCE
+      use system, only: iwctype, ncent
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdxyz, ngradnts
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: ic, ig, k, if
@@ -158,15 +158,15 @@ c   Subroutine which calculates and printouts energy gradients
 c   for Z matrix coordinates of atoms from energy differences
 c   calculated using correlated smapling.
       subroutine finwrt_grdnts_zmat(forces_ave,forces_err)
-      use force_mod, only: MFORCE
-      use atom, only: iwctype, ncent
-      use forcepar, only: nforce
+      use multiple_geo, only: MFORCE
+      use system, only: iwctype, ncent
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: ic, ifr, ig, k, na
@@ -318,12 +318,12 @@ c -----------------------------------------------------------------------
 c   Subroutine which calculates the displacement for energy gradients
 c   using Z matrix (internal) coordinates
       subroutine grdzmat_displ(k_in,ic_in,ia_in,delfactor)
-      use atom, only: ncent, ncent_tot
-      use forcestr, only: delc
+      use system, only: ncent, ncent_tot
+      use multiple_geo, only: delc
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda
       use zmatrix, only: czcart, czint, czcart_ref, izcmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -370,9 +370,9 @@ c -----------------------------------------------------------------------
 c   Subroutine which prints out at the start of a run
 c   information regarding the Z matrix.
       subroutine inpwrt_zmatrix()
-      use atom, only: iwctype, ncent
+      use system, only: iwctype, ncent
       use zmatrix, only: czcart, czint, izcmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: ic, k
@@ -409,15 +409,15 @@ c   Subroutine which calculates and print outs the diagonal
 c   part of the Hessian for Z matrix coordinates of atoms
 c   from energy differences  calculated using correlated smapling.
       subroutine finwrt_diaghess_zmat(forces_ave,forces_err)
-      use force_mod, only: MFORCE
-      use atom, only: iwctype, ncent
-      use forcepar, only: nforce
+      use multiple_geo, only: MFORCE
+      use system, only: iwctype, ncent
       use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
 
       use grdntspar, only: delgrdba, delgrdbl, delgrdda, ngradnts
       use zmatrix, only: izcmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: ic, ifr, ig, k, na
@@ -568,12 +568,12 @@ c   from energy differences  calculated using correlated smapling.
 c -----------------------------------------------------------------------
       subroutine transform_grad_zmat(force_cart)
       use vmc_mod, only: ncent3
-      use atom, only: cent, ncent, ncent_tot
+      use system, only: cent, ncent, ncent_tot
 
       use grdntsmv, only: igrdmv
       use zmatrix, only: czint, czcart_ref, izcmat
       use force_analy, only: iuse_zmat
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 

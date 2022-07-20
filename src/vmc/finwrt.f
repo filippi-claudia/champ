@@ -4,19 +4,17 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use atom, only: ncent
-      use const, only: nelec
+      use system, only: ncent
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
-      use forcepar, only: nforce
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum
       use grdntspar, only: igrdtype, ngradnts
       use header, only: title
@@ -24,14 +22,13 @@ c routine to print out final results
       use sa_weights, only: weights
       use step, only: rprob, suc, try
       use tmpnode, only: distance_node_sum
-      use contr3, only: mode
       !use contrl, only: nblk, nstep
       use control_vmc, only: vmc_nblk, vmc_nstep
       use contrl_per, only: iperiodic
       use sa_check, only: energy_all, energy_err_all
       use ci000, only: iciprt
       use inputflags, only: iqmmm
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
 
       use precision_kinds, only: dp
 
@@ -42,6 +39,9 @@ c routine to print out final results
       use optci_mod, only: optci_prt
       use multiple_states, only: efficiency_prt
       use properties_mod, only: prop_fin
+      use control, only: mode
+      use system, only: nelec
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, iciprt_sav, ifr, index, istate

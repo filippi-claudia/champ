@@ -3,17 +3,17 @@ c Written by Claudia Filippi
       use mpiconf, only: idtask, nproc, wid
       use mpiconf, only: mpiconf_init
       use allocation_mod, only: deallocate_dmc
-      use optwf_contrl, only: ioptwf
-      use contr3, only: mode
+      use optwf_control, only: ioptwf
       use contrl_file, only: initialize
       use mpi
-      use contrl_file,    only: ounit
-      use mpitimer,    only: time, elapsed_time, time_start, time_check1
-      use mpitimer,    only: time_final
-      use parser_mod,  only: parser
-      use error,       only: fatal_error
+      use contrl_file, only: ounit
+      use mpitimer, only: time, elapsed_time, time_start, time_check1
+      use mpitimer, only: time_final
+      use parser_mod, only: parser
+      use error, only: fatal_error
       use optwf_matrix_corsamp_mod, only: optwf_matrix_corsamp
-      use dmc_f_mod,   only: dmc
+      use dmc_f_mod, only: dmc
+      use control, only: mode
 
       implicit none
 

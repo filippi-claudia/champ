@@ -5,14 +5,13 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use dmc_mod, only: MFPRD1
-      use const, only: etrial, nelec
-      use forcepar, only: istrech, nforce
-      use atom, only: cent, iwctype, ncent, pecent, znuc
+      use const, only: etrial
+      use multiple_geo, only: istrech
+      use system, only: cent, iwctype, ncent, znuc
       use estcum, only: ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use force_dmc, only: nwprod
+      use multiple_geo, only: nwprod
       use mpiconf, only: nproc
-      use contr3, only: mode
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen
       use branch, only: wthist
@@ -26,17 +25,21 @@ c routine to accumulate estimators for energy etc.
       use precision_kinds, only: dp
 
       use rotqua_mod, only: gesqua
-      use pot,        only: pot_nn
+      use pot, only: pot_nn
       use zerest_mod, only: zerest
       use strech_mod, only: strech
-      use mmpol_dmc,       only: mmpol_save
-      use pcm_dmc,         only: pcm_save
-      use prop_dmc,        only: prop_save_dmc
+      use mmpol_dmc, only: mmpol_save
+      use pcm_dmc, only: pcm_save
+      use prop_dmc, only: prop_save_dmc
       use nonloc_grid_mod, only: t_vpsp_sav
-      use hpsi_mod,        only: hpsi
+      use hpsi_mod, only: hpsi
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
-      use determinante_mod,only: compute_determinante_grad
+      use determinante_mod, only: compute_determinante_grad
+      use control, only: mode
+      use system, only: nelec
+      use multiple_geo, only: nforce
+      use multiple_geo, only: pecent
       implicit none
 
       integer :: i, ie, ifr, ip, iw

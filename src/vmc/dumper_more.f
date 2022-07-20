@@ -6,28 +6,26 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nrad
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
+      use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
-      use ghostatom, only: newghostype, nghostcent
-      use const, only: delta, nelec
+      use system, only: newghostype, nghostcent
+      use const, only: delta
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino, tjfo
       use config, only: vold, xnew, xold
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: nforce
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum, wsum
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
-      use wfsec, only: iwftype, nwftype
+      use multiple_geo, only: iwftype, nwftype
       use coefs, only: coef, nbasis, norb
       use const2, only: deltar, deltat
 !      use contrl, only: nstep
@@ -39,22 +37,22 @@ c job where it left off
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
       use mstates_ctrl, only: iguiding
       use inputflags, only: node_cutoff, eps_node_cutoff
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: ounit, errunit
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h
       use optorb_cblock, only: ns_current
       use precision_kinds, only: dp
 
       use optorb_f_mod, only: optorb_save, optorb_rstrt
-      use optci_mod,    only: optci_save, optci_rstrt
-      use optjas_mod,   only: optjas_dump, optjas_rstrt, optjas_save
-      use prop_vmc,     only: prop_save
-      use pcm_mod,      only: pcm_rstrt, pcm_dump
-      use nodes_distance_mod,   only: nodes_distance
+      use optci_mod, only: optci_save, optci_rstrt
+      use optjas_mod, only: optjas_dump, optjas_rstrt, optjas_save
+      use prop_vmc, only: prop_save
+      use pcm_mod, only: pcm_rstrt, pcm_dump
+      use nodes_distance_mod, only: nodes_distance
       use determinante_mod, only: compute_determinante_grad
       use error, only: fatal_error
-      use optorb_f_mod,   only: optorb_dump
-      use optci_mod,      only: optci_dump
+      use optorb_f_mod, only: optorb_dump
+      use optci_mod, only: optci_dump
       use nodes_distance_mod, only: rnorm_nodes_num
       use determinant_psig_mod, only: determinant_psig
       use hpsi_mod, only: hpsi
@@ -65,6 +63,11 @@ c job where it left off
       use force_analytic, only: force_analy_rstrt, force_analy_dump
       use multiple_states, only: efficiency_rstrt, efficiency_dump
       use properties_mod, only: prop_rstrt, prop_dump
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
+      use multiple_geo, only: nforce
+      use multiple_geo, only: pecent
       use constants, only: hb
       
       implicit none

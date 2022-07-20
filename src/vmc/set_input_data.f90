@@ -3,16 +3,16 @@ use error, only: fatal_error
 contains
 subroutine inputzex
     ! Set the exponents to one when using a numerical basis
-    use force_mod, only: MWF
+    use multiple_geo, only: MWF
     use numbas, only: numr
     use coefs, only: nbasis
     use basis, only: zex
 
     ! are they needed ??!!
     use contrl_per, only: iperiodic
-    use wfsec, only: nwftype
-    use method_opt, only: method
-    use precision_kinds,    only: dp
+    use multiple_geo, only: nwftype
+    use precision_kinds, only: dp
+      use optwf_control, only: method
       implicit none
 
       integer :: i, iwft
@@ -41,7 +41,7 @@ subroutine inputcsf
     use ci000, only: nciprim, nciterm
 
     ! are they needed ??!!
-    use optwf_contrl, only: ioptci
+    use optwf_control, only: ioptci
     implicit none
 
 
@@ -54,13 +54,11 @@ end subroutine inputcsf
 
 subroutine multideterminants_define(iflag, icheck)
 
-    use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+    use multiple_geo, only: MFORCE, MFORCE_WT_PRD, MWF
     use vmc_mod, only: nrad, nmat_dim, nmat_dim2
     use vmc_mod, only: radmax, delri
-    use const, only: nelec
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet
-    use elec, only: ndn, nup
     use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, allocate_multidet
     use multidet, only: k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old
     use coefs, only: norb
@@ -69,8 +67,11 @@ subroutine multideterminants_define(iflag, icheck)
     use contrl_file,    	only: ounit, errunit
 
     ! not sure about that one either ....
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use multideterminant_mod, only: idiff
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
     use jastrow, only: neqsx, nordj, nordj1
 
     implicit none
@@ -375,14 +376,14 @@ end subroutine multideterminants_define
 
 subroutine inputforces
 ! Set all force displacements to zero
-!    use force_mod, only: MWF
-!    use force_mod, only: MFORCE
-    use forcepar, only: nforce
-    use forcestr, only: delc
-    use wfsec, only: iwftype, nwftype
+!    use multiple_geo, only: MWF
+!    use multiple_geo, only: MFORCE
+    use multiple_geo, only: delc
+    use multiple_geo, only: iwftype, nwftype
     use contrl_file, only: errunit
-    use atom, only: ncent
-    use precision_kinds,    only: dp
+    use system, only: ncent
+    use precision_kinds, only: dp
+      use multiple_geo, only: nforce
 
     implicit none
     integer             :: i
@@ -410,9 +411,9 @@ subroutine inputdet()
     use dets, only: cdet, ndet
     use csfs, only: nstates
 !    use mstates_mod, only: MSTATES
-    use wfsec, only: nwftype
-    use method_opt, only: method
-    use precision_kinds,    only: dp
+    use multiple_geo, only: nwftype
+    use precision_kinds, only: dp
+      use optwf_control, only: method
 
     implicit none
     integer             :: iwft, k
@@ -435,9 +436,9 @@ subroutine inputlcao()
     ! Set the lcao to be equal
     use vmc_mod, only: norb_tot
     use coefs, only: coef, nbasis, norb
-    use wfsec, only: nwftype
-    use method_opt, only: method
-    use precision_kinds,    only: dp
+    use multiple_geo, only: nwftype
+    use precision_kinds, only: dp
+      use optwf_control, only: method
 
     implicit none
     integer             :: iwft, i,j
@@ -464,9 +465,9 @@ subroutine inputjastrow()
 
     use jaspar4, only: norda, nordb, nordc
     use bparm, only: nspin2b
-    use wfsec, only: nwftype
-    use atom, only: ncent, nctype
-    use precision_kinds,    only: dp
+    use multiple_geo, only: nwftype
+    use system, only: ncent, nctype
+    use precision_kinds, only: dp
     use jastrow4_mod,       only: nterms4
     use jastrow, only: a4, b, c, scalek, ijas, isc, nspin1, nspin2
 
@@ -513,13 +514,13 @@ end subroutine inputjastrow
 
 subroutine set_displace_zero(nforce_tmp)
     use pcm, only: MCHS
-    use forcestr, only: delc
+    use multiple_geo, only: delc
     use pcm_force, only: sch_s
     use pcm_cntrl, only: ipcm
     use pcm_parms, only: ch, nchs
 
-    use atom, only: ncent
-    use precision_kinds,    only: dp
+    use system, only: ncent
+    use precision_kinds, only: dp
 
     implicit none
     integer         :: i, j, nforce_tmp
@@ -544,7 +545,7 @@ end subroutine set_displace_zero
 subroutine modify_zmat_define
 
     use grdntsmv, only: igrdmv
-    use atom, only: ncent
+    use system, only: ncent
     implicit none
 
     integer :: ic, k
@@ -564,8 +565,8 @@ end subroutine modify_zmat_define
 subroutine hessian_zmat_define
 
     use grdnthes, only: hessian_zmat
-    use atom, only: ncent
-    use precision_kinds,    only: dp
+    use system, only: ncent
+    use precision_kinds, only: dp
 
     implicit none
 

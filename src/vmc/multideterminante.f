@@ -6,7 +6,6 @@
       use vmc_mod, only: MEXCIT
       use csfs, only: nstates
       use dets, only: ndet
-      use elec, only: ndn, nup
       use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req
       use multidet, only: k_det2, ndetiab2, k_aux, ndetsingle
       use slatn, only: slmin
@@ -14,13 +13,15 @@
       use coefs, only: norb
       use multimatn, only: aan, wfmatn
       use multislatern, only: detn, orbn
-      use const, only: nelec
       use orbval, only: orb
       use multislater, only: detiab
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use matinv_mod, only: matinv
       use multideterminant_mod, only: compute_ymat
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
@@ -149,11 +150,12 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
       use dets, only: ndet
-      use elec, only: ndn, nup
       use multidet, only: iactv, ivirt, kref
       use coefs, only: norb
       use dorb_m, only: iworbd
-      use const, only: nelec
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 

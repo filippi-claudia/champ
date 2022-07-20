@@ -3,13 +3,11 @@
       subroutine deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,value,gn,vjn,da_ratio_jn)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-      use atom, only: iwctype, nctype, ncent, ncent_tot
+      use system, only: iwctype, nctype, ncent, ncent_tot
 
-      use const, only: nelec
       use da_jastrow4val, only: da_j
       use derivjas, only: go
-      use elec, only: nup
-      use jaso, only: fso
+      use jastrow_update, only: fso
       use jaspointer, only: npoint, npointa
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_parms, only: nparmj
@@ -21,6 +19,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use scale_dist_mod, only: scale_dist, scale_dist1
       use deriv_nonlpsi, only: deriv_psibnl, deriv_psinl, deriv_psianl
       use nonlpsi, only: dpsianl, dpsibnl
+      use system, only: nelec
+      use system, only: nup
       use jastrow, only: sspinn, ijas, isc, nspin2, is
       implicit none
 

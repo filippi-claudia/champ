@@ -1,6 +1,6 @@
       module optwf_handle_wf
       use error, only: fatal_error
-      use jastrow4_mod,       only: nterms4
+      use jastrow4_mod, only: nterms4
       interface ! LAPACK interface
         SUBROUTINE dcopy(N,DX,INCX,DY,INCY)
 !*  -- Reference BLAS level1 routine --
@@ -58,10 +58,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
 
-      use atom, only: nctype
+      use system, only: nctype
       use jaspar4, only: norda, nordb, nordc
       use bparm, only: nspin2b
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use precision_kinds, only: dp
       use jastrow, only: a4, b, c, scalek, ijas, isc
@@ -125,7 +125,7 @@ c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
 
       use numbas, only: numr
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use coefs, only: coef, nbasis, norb
       use orbval, only: nadorb
       use inputflags, only: scalecoef
@@ -159,10 +159,10 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use dets, only: cdet, ndet
       use multidet, only: kref
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use dorb_m, only: iworbd
-      use elec, only: nup
-      use const, only: nelec
+      use system, only: nelec
+      use system, only: nup
 
       implicit none
 
@@ -235,7 +235,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_wf
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
 
       implicit none
 
@@ -248,7 +248,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine restore_wf(iadiag)
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
 
       implicit none
 
@@ -277,8 +277,9 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow
 
       use precision_kinds, only: dp
-      use atom, only: nctype, nctype_tot
-      use wfsec, only: nwftype
+
+      use system, only: nctype, nctype_tot
+      use multiple_geo, only: nwftype
       use jaspar4, only: norda, nordb, nordc
       use bparm, only: nspin2b
       use jastrow, only: a4, nordj1, b, c
@@ -357,7 +358,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
       use coefs, only: coef, nbasis, norb
-      use wfsec, only: nwftype
+      use multiple_geo, only: nwftype
 
       implicit none
 
@@ -462,7 +463,7 @@ c reset kref=1
 c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
 
-      use atom, only: nctype
+      use system, only: nctype
       use jaspar4, only: norda, nordb, nordc
       use bparm, only: nspin2b
       use jastrow, only: a4, b, c, scalek
@@ -558,8 +559,8 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
       use precision_kinds, only: dp
-      use atom, only: nctype, nctype_tot
-      use wfsec, only: nwftype
+      use system, only: nctype, nctype_tot
+      use multiple_geo, only: nwftype
       use jaspar4, only: norda, nordb, nordc
       use bparm, only: nspin2b
       use jastrow, only: a4, nordj1, b, c
@@ -635,7 +636,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
       use coefs, only: coef, nbasis, norb
-      use wfsec, only: nwftype
+      use multiple_geo, only: nwftype
 
       implicit none
 
@@ -763,9 +764,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
-      use atom, only: nctype
+      use system, only: nctype
       use bparm, only: nspin2b
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
@@ -814,7 +815,7 @@ c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
 
       use vmc_mod, only: norb_tot
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
       use coefs, only: coef, nbasis, norb
       use optorb_cblock, only: norbterm
@@ -857,10 +858,10 @@ c-----------------------------------------------------------------------
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmj
-      use method_opt, only: method
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 
@@ -917,7 +918,7 @@ c90     write(ounit,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
 c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
 
-      use atom, only: nctype
+      use system, only: nctype
       use bparm, only: nspin2b
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
@@ -959,9 +960,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine test_solution_parm(nparm,dparm,
      &              dparm_norm,dparm_norm_min,add_diag,iflag)
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -989,11 +990,11 @@ c Calculate rms change in parameters
 c-----------------------------------------------------------------------
       subroutine save_nparms
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
       use ci000, only: nciterm
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use orbval, only: nadorb
       implicit none
 
@@ -1040,12 +1041,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine set_nparms_tot
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
-      use method_opt, only: method
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
+      use optwf_control, only: method
       implicit none
 
       integer :: i0
@@ -1085,7 +1086,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use optwf_parms, only: nparmj
       use csfs, only: nstates
       use derivjas, only: gvalue
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_func, only: ifunc_omega
       use optwf_parms, only: nparmj
       use sr_mat_n, only: elocal, nconf_n, sr_ho
@@ -1097,10 +1098,10 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use ci000, only: nciterm
       use ci001_blk, only: ci_o
       use ci003_blk, only: ci_e
-      use method_opt, only: method
       !use optwf_sr_mod, only: izvzb, i_sr_rescale
       use precision_kinds, only: dp
       use optgeo_lib, only: force_store
+      use optwf_control, only: method
 
       implicit none
 

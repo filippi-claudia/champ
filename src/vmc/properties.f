@@ -10,10 +10,10 @@ c     1   2   3   4      5      6
 c     <x> <y> <z> <x**2> <y**2> <z**2>
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine prop_compute(coord)
-      use const, only: nelec
       use prp000, only: iprop, nprop
       use prp001, only: vprop
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, m
@@ -140,7 +140,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine prop_fin(passes,iblk,efin,eerr)
       use prp000, only: iprop, ipropprt
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -159,12 +159,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine prop_prt(w,iblk,iu)
       use properties, only: MAXPROP
-      use const, only: nelec
       use prp000, only: iprop, ipropprt
       use prp003, only: cc_nuc
       use m_icount, only: icount_prop
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: iblk, iu

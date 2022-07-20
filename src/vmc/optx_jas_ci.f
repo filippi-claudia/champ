@@ -5,7 +5,7 @@
       use derivjas, only: gvalue
       use gradhessjo, only: denergy_old, gvalue_old
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use deloc_dj_m, only: denergy
       use ci000, only: nciterm
@@ -36,7 +36,7 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_init
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
 
@@ -61,7 +61,7 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_dump(iu)
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
 
@@ -78,7 +78,7 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_rstrt(iu)
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
 
@@ -101,15 +101,15 @@ c-----------------------------------------------------------------------
       use gradhess_jas, only: grad_jas
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use gradhessj, only: de, dj, dj_e
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
       use ci008_blk, only: ci_oe_cum
-      use method_opt, only: method
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 

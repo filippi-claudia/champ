@@ -12,21 +12,21 @@ module trexio_basis_fns_mod
 !     ider = 3 -> value, gradient, laplacian, forces
 
       use numbas_mod, only: MRWF
-      use atom, only: iwctype, ncent, ncent_tot
-      use ghostatom, only: nghostcent
-      use const, only: nelec
+      use system, only: iwctype, ncent, ncent_tot
+      use system, only: nghostcent
       use numbas, only: iwrwf, nrbas!, rmax
       use numbas1, only: iwlbas, nbastyp
       use phifun, only: phin, dphin, d2phin, d2phin_all, d3phin, n0_nbasis
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use force_analy, only: iforce_analy
       use splfit_mod, only: splfit
       use slm_mod, only: slm
 #if defined(TREXIO_FOUND)
-      use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
+      use m_trexio_basis, only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
 #endif
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: it, ic, ider, irb

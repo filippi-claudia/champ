@@ -10,19 +10,15 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use const, only: ipr
       use dets, only: ndet
-      use elec, only: ndn, nup
       use multidet, only: kref, kchange, kref_fixed
       use dorb_m, only: iworbd
-      use contr3, only: mode
 
       use orbval, only: ddorb, dorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-      use const, only: nelec
 
       use multislater, only: detiab, allocate_multislater
-      use atom, only: ncent_tot
+      use system, only: ncent_tot
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use optwf_handle_wf, only: dcopy
@@ -30,10 +26,15 @@ c Modified by A. Scemama
       use orbitals_mod, only: orbitals
       use set_input_data, only: multideterminants_define
       use optorb_f_mod, only: optorb_define
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use coefs, only: norb
       use orbval, only: nadorb
       use vmc_mod, only: norb_tot
+      use control, only: mode
+      use control, only: ipr
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 
@@ -145,7 +146,6 @@ c reshuffling determinants if the maximum number of iterations looking for kref 
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
-      use const, only: ipr
       use estpsi, only: detref
       use multidet, only: kref, kref_old, kchange
       use multislater, only: detiab, allocate_multislater
@@ -154,6 +154,7 @@ c-----------------------------------------------------------------------
       use dets, only: ndet
       use multideterminant_mod, only: idiff
       use error, only: fatal_error
+      use control, only: ipr
       implicit none
 
       integer :: iab, icheck, iflag, ipass
@@ -209,12 +210,11 @@ c to change kref if the change is accepted or required
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
-      use atom, only: ncent
-      use const, only: nelec
+      use system, only: ncent
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb, da_dorb
       use derivjas, only: g
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use Bloc, only: b_da
       use Bloc, only: b_dj
@@ -226,6 +226,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use optwf_handle_wf, only: dcopy
       use sr_more, only: daxpy
+      use system, only: nelec
       use constants, only: hb
       implicit none
 

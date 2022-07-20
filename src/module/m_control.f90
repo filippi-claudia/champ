@@ -1,3 +1,22 @@
+module control
+    !> Arguments: mode
+
+    implicit none
+
+    character*12 :: mode
+    integer  :: ipr
+    private
+    public :: mode, ipr, init_control_mode
+    save
+    contains
+    subroutine init_control_mode(str_mode)
+        implicit None
+        character(12), intent(IN) :: str_mode
+        mode = str_mode
+    end subroutine init_control_mode
+
+end module control
+
 module control_vmc
     !> Arguments: idump, irstar, isite, nconf, nblk, nblk_max, nblkeq, nconf_new, nstep,
     !> icharged_atom, nblk_ci for vmc module
@@ -39,25 +58,20 @@ module control_dmc
 end module control_dmc
 
 
-module contr3
-    !> Arguments: mode
+module contr2
+    !> Arguments: ianalyt_lap, ijas, isc, istrch
 
     implicit none
 
-    character*12 :: mode
+    integer :: ijas
+    integer :: isc
+    integer :: ianalyt_lap
+    integer :: istrch
 
     private
-    public :: mode
-    public :: init_control_mode
+    public :: ianalyt_lap, ijas, isc, istrch
     save
-contains
-    subroutine init_control_mode(str_mode)
-        implicit None
-        character(12), intent(IN) :: str_mode
-        mode = str_mode
-    end subroutine init_control_mode
-
-end module contr3
+end module contr2
 
 module contrl_per
     !> Arguments: iperiodic, ibasis
@@ -73,7 +87,7 @@ end module contrl_per
 
 module contrldmc
     !> Arguments: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use precision_kinds, only: dp
 
     implicit none
@@ -99,7 +113,7 @@ module contrldmc
     save
 contains
     subroutine allocate_contrldmc()
-        use force_mod, only: MFORCE
+        use multiple_geo, only: MFORCE
         if (.not. allocated(taueff)) allocate (taueff(MFORCE))
     end subroutine allocate_contrldmc
 
@@ -272,7 +286,7 @@ contains
 
     subroutine init_procfile()
         use mpiconf, only: idtask
-        use const, only: ipr
+        use control, only: ipr
 
         implicit none
 

@@ -33,7 +33,7 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
 
       use mpiconf, only: idtask
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer, parameter :: m_parm_opt = 59000

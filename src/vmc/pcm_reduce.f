@@ -12,7 +12,7 @@
       use pcm_averages, only: enfpcm_cum, enfpcm_cm2
       use mpi
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, ierr
@@ -99,7 +99,7 @@
       use pcm_fdc, only: qvol
       use mpi
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, ierr, nchv3

@@ -6,13 +6,12 @@ c routine to print out final results
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use const, only: etrial, ipr, nelec
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
+      use const, only: etrial
+      use multiple_geo, only: fgcm2, fgcum
       use age, only: iage, ioldest, ioldestmx
       use contrl_per, only: iperiodic
       use contrldmc, only: idmc, nfprod, tau
-      use atom, only: ncent
+      use system, only: ncent
       use estcum, only: iblk
       use config, only: vold_dmc, xold_dmc
       use stats, only: acc, nacc, nodecr, trymove
@@ -25,24 +24,27 @@ c routine to print out final results
       use step, only: rprob
       use mpiconf, only: nproc, wid
       use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
       use header, only: title
       use grdntspar, only: igrdtype, ngradnts
       use mpiblk, only: iblk_proc
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use branch, only: eold, nwalk
       use optwf_corsam, only: energy, energy_err, force, force_err
 !      use contrl, only: nblkeq, nconf, nstep
       use control_dmc, only: dmc_nblkeq, dmc_nconf, dmc_nstep
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
-      use prop_dmc,        only: prop_prt_dmc
-      use pcm_dmc,         only: pcm_fin
-      use mmpol_dmc,       only: mmpol_fin
+      use prop_dmc, only: prop_prt_dmc
+      use pcm_dmc, only: pcm_fin
+      use mmpol_dmc, only: mmpol_fin
       use finwrt_more_mod, only: finwrt_more
-      use misc_grdnts,     only: finwrt_grdnts_cart, finwrt_grdnts_zmat
-      use misc_grdnts,     only: finwrt_diaghess_zmat
+      use misc_grdnts, only: finwrt_grdnts_cart, finwrt_grdnts_zmat
+      use misc_grdnts, only: finwrt_diaghess_zmat
+      use control, only: ipr
+      use control, only: mode
+      use system, only: nelec
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, ierr, ifr, j, k

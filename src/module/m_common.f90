@@ -25,12 +25,12 @@ module Bloc
     save
 contains
     subroutine allocate_Bloc()
-        use const, only: nelec
         use coefs, only: norb
-        use atom, only: ncent_tot, ncent
+        use system, only: ncent_tot, ncent
         use vmc_mod, only: norb_tot
         use coefs, only: norb
         use optwf_parms, only: nparmj
+      use system, only: nelec
 
         if (.not. allocated(b)) allocate (b(norb_tot, nelec))
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2))
@@ -80,9 +80,10 @@ module casula
     save
 contains
     subroutine allocate_casula()
-        use const, only: nelec
-        use atom, only: ncent_tot
+        use system, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(t_vpsp)) allocate (t_vpsp(ncent_tot, MPS_QUAD, nelec))
     end subroutine allocate_casula
 
@@ -114,9 +115,10 @@ module distance_mod
     save
 contains
     subroutine allocate_distance_mod()
-        use const, only: nelec
-        use atom, only: ncent_tot
+        use system, only: ncent_tot
         use vmc_mod, only: nmat_dim2
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(r_en)) allocate (r_en(nelec, ncent_tot))
         if (.not. allocated(rvec_en)) allocate (rvec_en(3, nelec, ncent_tot))
         if (.not. allocated(r_ee)) allocate (r_ee(nmat_dim2))
@@ -152,8 +154,9 @@ module distances_sav
     save
 contains
     subroutine allocate_distances_sav()
-        use const, only: nelec
-        use atom, only: ncent_tot
+        use system, only: ncent_tot
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(r_ee_sav)) allocate (r_ee_sav(nelec))
         if (.not. allocated(r_en_sav)) allocate (r_en_sav(ncent_tot))
         if (.not. allocated(rshift_sav)) allocate (rshift_sav(3, ncent_tot))
@@ -213,7 +216,7 @@ module gauss_ecp
     save
 contains
     subroutine allocate_gauss_ecp()
-        use atom, only: nctype_tot
+        use system, only: nctype_tot
         use pseudo_mod, only: MPS_L, MGAUSS
         if (.not. allocated(ecp_coef)) allocate (ecp_coef(MGAUSS, MPS_L, nctype_tot))
         if (.not. allocated(ecp_exponent)) allocate (ecp_exponent(MGAUSS, MPS_L, nctype_tot))
@@ -344,8 +347,9 @@ module multidet
     save
 contains
     subroutine allocate_multidet()
-        use const, only: nelec
         use dets, only: ndet
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(iactv)) allocate (iactv(2), source=0)
         if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2), source=0)
         if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2), source=0)
@@ -380,6 +384,7 @@ end module multidet
 module multimat
     !> Arguments: aa, wfmat
     use precision_kinds, only: dp
+      use system, only: nelec
 
     implicit none
 
@@ -392,11 +397,12 @@ module multimat
     save
 contains
     subroutine allocate_multimat()
-        use const, only: nelec
         use dets, only: ndet
         use coefs, only: norb
         use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(aa)) allocate (aa(nelec, norb_tot, 2))
         if (.not. allocated(wfmat)) allocate (wfmat(ndet, MEXCIT**2, 2))
     end subroutine allocate_multimat
@@ -411,6 +417,7 @@ end module multimat
 module multimatn
     !> Arguments: aan, wfmatn
     use precision_kinds, only: dp
+      use system, only: nelec
 
     implicit none
 
@@ -423,10 +430,11 @@ module multimatn
     save
 contains
     subroutine allocate_multimatn()
-        use const, only: nelec
         use dets, only: ndet
         use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(aan)) allocate (aan(nelec*norb_tot))
         if (.not. allocated(wfmatn)) allocate (wfmatn(ndet,MEXCIT**2))
     end subroutine allocate_multimatn
@@ -441,6 +449,7 @@ end module multimatn
 module multislater
     !> Arguments: detiab
     use precision_kinds, only: dp
+      use system, only: nelec
 
     implicit none
 
@@ -456,6 +465,8 @@ module multislater
 contains
     subroutine allocate_multislater()
         use dets, only: ndet
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(detiab)) allocate(detiab(ndet, 2))
     end subroutine allocate_multislater
 
@@ -551,9 +562,10 @@ module orbval
     save
 contains
     subroutine allocate_orbval()
-        use const, only: nelec
         use coefs, only: norb
         use precision_kinds, only: dp
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(ddorb)) allocate (ddorb(norb_tot, nelec))
         if (.not. allocated(dorb)) allocate (dorb(norb_tot, nelec, 3))
         if (.not. allocated(orb)) allocate (orb(nelec, norb_tot))
@@ -570,6 +582,7 @@ end module orbval
 module phifun
     !> Arguments: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
     use precision_kinds, only: dp
+      use system, only: nelec
 
     implicit none
 
@@ -588,8 +601,9 @@ module phifun
     save
 contains
     subroutine allocate_phifun()
-        use const, only: nelec
         use coefs, only: nbasis
+      use system, only: nelec
+      use system, only: nelec
 
         if (.not. allocated(d2phin)) allocate (d2phin(nbasis, nelec))
         if (.not. allocated(d2phin_all)) allocate (d2phin_all(3, 3, nbasis, nelec))
@@ -618,6 +632,7 @@ module qua
     !> Arguments: nquad, wq, xq, xq0, yq, yq0, zq, zq0
     use pseudo_mod, only: MPS_QUAD
     use precision_kinds, only: dp
+      use system, only: nelec
 
     implicit none
 
@@ -637,6 +652,8 @@ module qua
 contains
     subroutine allocate_qua()
         use pseudo_mod, only: MPS_QUAD
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(wq)) allocate (wq(MPS_QUAD))
         if (.not. allocated(xq)) allocate (xq(MPS_QUAD))
         if (.not. allocated(xq0)) allocate (xq0(MPS_QUAD))
@@ -663,6 +680,7 @@ module b_tmove
     use pseudo_mod, only: MPS_QUAD
     use precision_kinds, only: dp
     use vmc_mod, only: norb_tot
+      use system, only: nelec
 
     implicit none
 
@@ -675,11 +693,12 @@ module b_tmove
     save
 contains
     subroutine allocate_b_tmove()
-        use const, only: nelec
-        use atom, only: ncent_tot
+        use system, only: ncent_tot
         use vmc_mod, only: norb_tot
         use qua, only: nquad
-        use contr3, only: mode
+        use control, only: mode
+      use system, only: nelec
+      use system, only: nelec
         if(index(mode,'dmc').ne.0) then
           if (.not. allocated(b_t)) allocate (b_t(norb_tot, nquad, ncent_tot, nelec))
         endif
@@ -710,6 +729,7 @@ module scratch
     !> Arguments: denergy_det, dtildem
     use precision_kinds, only: dp
     use vmc_mod, only: norb_tot
+      use system, only: nelec
 
     implicit none
 
@@ -722,9 +742,10 @@ module scratch
     save
 contains
     subroutine allocate_scratch()
-        use const, only: nelec
         use dets, only: ndet
         use vmc_mod, only: norb_tot
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
         if (.not. allocated(dtildem)) allocate (dtildem(nelec, norb_tot, 2))
     end subroutine allocate_scratch
@@ -741,6 +762,7 @@ module slater
 
     use precision_kinds, only: dp
     use vmc_mod, only: nmat_dim
+      use system, only: nelec
 
     implicit none
 
@@ -765,8 +787,9 @@ module slater
 
 contains
     subroutine allocate_slater()
-        use const, only: nelec
         use vmc_mod, only: nmat_dim
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(d2dx2)) allocate(d2dx2(nelec))
         if (.not. allocated(ddx)) allocate(ddx(3, nelec))
         if (.not. allocated(fp)) allocate(fp(3, nmat_dim, 2))
@@ -798,6 +821,7 @@ module slatn
     !> Arguments: slmin
     use precision_kinds, only: dp
     use vmc_mod, only: nmat_dim
+      use system, only: nelec
 
     implicit none
 
@@ -810,6 +834,8 @@ module slatn
 contains
     subroutine allocate_slatn()
         use vmc_mod, only: nmat_dim
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(slmin)) allocate (slmin(nmat_dim))
     end subroutine allocate_slatn
 
@@ -835,6 +861,7 @@ end module svd_mod
 module vardep
     !> Arguments: cdep, iwdepend, nvdepend
     use precision_kinds, only: dp
+      use system, only: nelec
 
     real(dp), dimension(:, :, :), allocatable :: cdep !(neqsx,83,MCTYPE)
     integer, dimension(:, :, :), allocatable :: iwdepend !(neqsx,83,MCTYPE)
@@ -846,7 +873,8 @@ module vardep
     save
 contains
     subroutine allocate_vardep()
-        use atom, only: nctype_tot
+        use system, only: nctype_tot
+      use system, only: nelec
       use jastrow, only: neqsx
         if (.not. allocated(cdep)) allocate (cdep(neqsx, 83, nctype_tot))
         if (.not. allocated(iwdepend)) allocate (iwdepend(neqsx, 83, nctype_tot), source=0)
@@ -864,6 +892,7 @@ end module vardep
 module velocity_jastrow
     !> Arguments: vj, vjn
     use precision_kinds, only: dp
+      use system, only: nelec
       use jastrow, only: neqsx
 
     implicit none
@@ -877,8 +906,8 @@ module velocity_jastrow
     save
 contains
     subroutine allocate_velocity_jastrow()
-        use const, only: nelec
-      use jastrow, only: neqsx
+        use system, only: nelec
+        use jastrow, only: neqsx
         if (.not. allocated(vj)) allocate (vj(3, nelec))
         if (.not. allocated(vjn)) allocate (vjn(3, nelec))
     end subroutine allocate_velocity_jastrow
@@ -895,6 +924,7 @@ module ycompact
     use precision_kinds, only: dp
     use vmc_mod, only: norb_tot
     use mstates_mod, only: MSTATES
+      use system, only: nelec
       use jastrow, only: neqsx
 
     implicit none
@@ -908,9 +938,10 @@ module ycompact
     save
 contains
     subroutine allocate_ycompact()
-        use const, only: nelec
         use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
+      use system, only: nelec
+
       use jastrow, only: neqsx
         if (.not. allocated(dymat)) allocate (dymat(norb_tot, nelec, 2, MSTATES))
         if (.not. allocated(ymat)) allocate (ymat(norb_tot, nelec, 2, MSTATES))
@@ -928,6 +959,7 @@ module ycompactn
     use precision_kinds, only: dp
     use vmc_mod, only: norb_tot
     use mstates_mod, only: MSTATES
+      use system, only: nelec
       use jastrow, only: neqsx
 
     implicit none
@@ -940,9 +972,10 @@ module ycompactn
     save
 contains
     subroutine allocate_ycompactn()
-        use const, only: nelec
         use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(ymatn)) allocate (ymatn(norb_tot, nelec, MSTATES))
     end subroutine allocate_ycompactn
 
@@ -957,6 +990,7 @@ module zcompact
     use precision_kinds, only: dp
     use vmc_mod, only: norb_tot
     use mstates_mod, only: MSTATES
+      use system, only: nelec
 
     implicit none
 
@@ -971,9 +1005,10 @@ module zcompact
     save
 contains
     subroutine allocate_zcompact()
-        use const, only: nelec
         use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(aaz)) allocate (aaz(nelec, nelec, 2, MSTATES))
         if (.not. allocated(dzmat)) allocate (dzmat(norb_tot, nelec, 2, MSTATES))
         if (.not. allocated(emz)) allocate (emz(nelec, nelec, 2, MSTATES))
@@ -992,6 +1027,7 @@ end module zcompact
 module zmatrix
     !> Arguments: czcart, czint, czcart_ref, izcmat, izmatrix
     use precision_kinds, only: dp
+      use system, only: nelec
 
     implicit none
 
@@ -1007,7 +1043,9 @@ module zmatrix
     save
 contains
     subroutine allocate_zmatrix()
-        use atom, only: ncent_tot
+        use system, only: ncent_tot
+      use system, only: nelec
+      use system, only: nelec
         if (.not. allocated(czcart)) allocate (czcart(3, ncent_tot))
         if (.not. allocated(czint)) allocate (czint(3, ncent_tot))
         if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3))
@@ -1027,6 +1065,7 @@ module zmatrix_grad
     !> never called
     !> Arguments: transform_grd
     use precision_kinds, only: dp
+      use system, only: nelec
 
     implicit none
 
@@ -1039,6 +1078,9 @@ module zmatrix_grad
 contains
     subroutine allocate_zmatrix_grad()
         use vmc_mod, only: ncent3
+      use system, only: nelec
+      use system, only: nelec
+      use system, only: nelec
 
         if (.not. allocated(transform_grd)) allocate (transform_grd(ncent3, ncent3))
     end subroutine allocate_zmatrix_grad
@@ -1053,7 +1095,7 @@ module m_common
 contains
 subroutine allocate_m_common()
 
-    use atom, only: allocate_atom
+    use system, only: allocate_atom
     use b_tmove, only: allocate_b_tmove
     use Bloc, only: allocate_Bloc
     use casula, only: allocate_casula
@@ -1080,7 +1122,7 @@ subroutine allocate_m_common()
     use slatn, only: allocate_slatn
     use vardep, only: allocate_vardep
     use velocity_jastrow, only: allocate_velocity_jastrow
-    ! use wfsec, only: allocate_wfsec
+    ! use multiple_geo, only: allocate_wfsec
     use ycompact, only: allocate_ycompact
     use ycompactn, only: allocate_ycompactn
     use zcompact, only: allocate_zcompact
@@ -1125,7 +1167,7 @@ subroutine allocate_m_common()
 end subroutine allocate_m_common
 
 subroutine deallocate_m_common()
-    ! use atom, only: deallocate_atom
+    ! use system, only: deallocate_atom
     use b_tmove, only: deallocate_b_tmove
     use Bloc, only: deallocate_Bloc
     use casula, only: deallocate_casula
@@ -1152,7 +1194,7 @@ subroutine deallocate_m_common()
     use slatn, only: deallocate_slatn
     use vardep, only: deallocate_vardep
     use velocity_jastrow, only: deallocate_velocity_jastrow
-    use wfsec, only: deallocate_wfsec
+    use multiple_geo, only: deallocate_wfsec
     use ycompact, only: deallocate_ycompact
     use ycompactn, only: deallocate_ycompactn
     use zcompact, only: deallocate_zcompact

@@ -9,14 +9,13 @@
       use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
       use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
       use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
-      use const, only: ipr, nelec
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: istrech, nforce
+      use multiple_geo, only: fgcm2, fgcum
+      use multiple_geo, only: istrech
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use atom, only: ncent_tot
+      use system, only: cent, iwctype, ncent, nctype, znuc
+      use system, only: ncent_tot
       use estcum, only: iblk, ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
@@ -34,7 +33,6 @@
       use step, only: rprob
       use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
       use mpiblk, only: iblk_proc
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
@@ -42,31 +40,37 @@
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: nloc
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
-      use ghostatom, only: nghostcent
+      use system, only: nghostcent
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
       use mpi
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       
-      use restart_gpop,    only: startr_gpop
-      use error,           only: fatal_error
-      use rannyu_mod,      only: setrn
-      use mmpol,           only: mmpol_init, mmpol_rstrt
-      use pcm_mod,         only: pcm_init, pcm_rstrt
-      use properties_mod,  only: prop_init, prop_rstrt
-      use mmpol_dmc,       only: mmpol_save
-      use pcm_dmc,         only: pcm_save
-      use prop_dmc,        only: prop_save_dmc
+      use restart_gpop, only: startr_gpop
+      use error, only: fatal_error
+      use rannyu_mod, only: setrn
+      use mmpol, only: mmpol_init, mmpol_rstrt
+      use pcm_mod, only: pcm_init, pcm_rstrt
+      use properties_mod, only: prop_init, prop_rstrt
+      use mmpol_dmc, only: mmpol_save
+      use pcm_dmc, only: pcm_save
+      use prop_dmc, only: prop_save_dmc
       use nonloc_grid_mod, only: t_vpsp_sav
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
-      use determinante_mod,only: compute_determinante_grad
-      use hpsi_mod,        only: hpsi
-      use strech_mod,      only: strech
+      use determinante_mod, only: compute_determinante_grad
+      use hpsi_mod, only: hpsi
+      use strech_mod, only: strech
+      use control, only: ipr
+      use control, only: mode
+      use system, only: nelec
+      use system, only: nup
+      use system, only: ndn
+      use multiple_geo, only: nforce
+      use multiple_geo, only: pecent
       use constants, only: hb
       implicit none
 

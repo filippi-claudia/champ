@@ -6,15 +6,12 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use pseudo_mod, only: MPS_QUAD
       use optwf_parms, only: nparmj
       use vmc_mod, only: norb_tot
-      use atom, only: iwctype, ncent, ncent_tot
-      use const, only: nelec, ipr
-      use elec, only: nup
-      use jaso, only: fso
-      use optwf_contrl, only: ioptjas
+      use system, only: iwctype, ncent, ncent_tot
+      use jastrow_update, only: fso
+      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use Bloc, only: b_dj
       use coefs, only: norb
-      use contr3, only: mode
       use Bloc, only: b
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, vps
@@ -30,8 +27,12 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use orbval, only: nadorb
       use slater, only: slmi
       use multislater, only: detiab
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use control, only: mode
+      use control, only: ipr
+      use system, only: nelec
+      use system, only: nup
       implicit none
 
       integer :: i, i1, i2, i_vpsp, iab
@@ -298,15 +299,15 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
-      use atom, only: cent, ncent, ncent_tot
+      use system, only: cent, ncent, ncent_tot
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
-      use const, only: nelec
       use pw_find_image, only: find_image4
       use scale_dist_mod, only: scale_dist, scale_dist1
 
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, ic, iq, jc, k
@@ -366,11 +367,10 @@ c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
-      use atom, only: iwctype, ncent, ncent_tot
-      use const, only: nelec
+      use system, only: iwctype, ncent, ncent_tot
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use coefs, only: coef, norb, nbasis
       use contrl_per, only: iperiodic
       use grid3dflag, only: i3dlagorb, i3dsplorb
@@ -379,9 +379,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use grid3d_orbitals, only: spline_mo, lagrange_mose
       use basis_fns_mod, only: basis_fns
       use pw_orbitals_e, only: orbitals_pwe
-      use method_opt, only: method
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use vmc_mod, only: norb_tot
+      use system, only: nelec
+      use optwf_control, only: method
       
       implicit none
 
@@ -491,10 +492,11 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use precision_kinds, only: dp
-      use elec, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
       use vmc_mod, only: nmat_dim
+      use system, only: nup
+      use system, only: ndn
 
       implicit none
 
@@ -535,19 +537,18 @@ c-----------------------------------------------------------------------
       subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use atom, only: iwctype, ncent, ncent_tot
+      use system, only: iwctype, ncent, ncent_tot
 
-      use const, only: nelec
       use da_jastrow4val, only: da_j
-      use elec, only: nup
       use bparm, only: nocuspb, nspin2b
       use contrl_per, only: iperiodic
-      use const, only: nelec
       use force_analy, only: iforce_analy
       use precision_kinds, only: dp
       use nonlpsi, only: psibnl, dpsibnl, psinl, psianl, dpsianl
       use pw_find_image, only: find_image3
       use scale_dist_mod, only: scale_dist, scale_dist1
+      use system, only: nelec
+      use system, only: nup
       use jastrow, only: sspinn, isc
 
       implicit none
@@ -677,7 +678,7 @@ c-----------------------------------------------------------------------
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
       use vmc_mod, only: norb_tot
-      use atom, only: ncent, ncent_tot
+      use system, only: ncent, ncent_tot
       use Bloc, only: b_da
       use coefs, only: norb
       use force_analy, only: iforce_analy

@@ -25,14 +25,14 @@
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
       use linear_norm, only: ci_oav
-      use optwf_contrl, only: ioptjas, ioptorb, multiple_adiag
+      use optwf_control, only: ioptjas, ioptorb, multiple_adiag
       use optwf_corsam, only: energy, energy_err
       use optwf_parms, only: nparmd, nparmj
       use gradhess_all, only: nparmall
       use ci000, only: nciterm
-      use method_opt, only: method
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
+      use optwf_control, only: method
 
       implicit none
 
@@ -211,7 +211,7 @@ c-----------------------------------------------------------------------
 
       use gradhess_all, only: nparmall
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, icut, ineg, isdinfo, j
@@ -375,13 +375,13 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, ncsf, nstates
       use dets, only: cdet
       use linear_norm, only: ci_oav
-      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_control, only: ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use gradhess_all, only: nparmall
       use ci000, only: nciterm
-      use method_opt, only: method
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
+      use optwf_control, only: method
 
       implicit none
 

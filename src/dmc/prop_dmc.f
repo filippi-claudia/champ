@@ -10,13 +10,13 @@ C----------------------------------------------
 
       use prp000, only: ipropprt, iprop, nprop
       use prp003, only: vprop_cum, vprop_cm2, cc_nuc
-      use const, only: nelec
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use properties, only: MAXPROP
 !      use contrl, only: nconf, nstep
       use precision_kinds, only: dp
       use control_dmc, only: dmc_nconf, dmc_nstep
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
+      use system, only: nelec
       implicit none
 
       integer :: i, iblk, icount, ifinal, iperr

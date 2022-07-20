@@ -5,19 +5,19 @@ c Written by Cyrus Umrigar, modified by C. Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
-      use atom, only: iwctype, ncent
-      use const, only: nelec
-      use elec, only: nup
-      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+      use system, only: iwctype, ncent
+      use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo
       use jaspar4, only: norda, nordb, nordc
       use jaspar6, only: c1_jas6
       use jaspar6, only: cutjas
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use scale_dist_mod, only: scale_dist2, switch_scale2
       use force_analy, only: iforce_analy
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
+      use system, only: nelec
+      use system, only: nup
       use contrl_file,    only: ounit
       use jastrow, only: a4 , nordj , asymp_jasa , asymp_jasb , sspinn
       use jastrow, only: b, c, ijas, isc, scalek

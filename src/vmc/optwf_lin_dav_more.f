@@ -6,23 +6,23 @@
 
       use mpi
       use sr_mod, only: mparm
-      use const, only: ipr
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use mpiconf, only: idtask
-      use optwf_contrl, only: ioptjas, ioptorb, lin_jdav
+      use optwf_control, only: ioptjas, ioptorb, lin_jdav
       use optwf_corsam, only: energy
       use optwf_parms, only: nparmd, nparmj
       use sr_mat_n, only: jfj
       use sr_mat_n, only: obs_tot
       use optwf_sr_mod, only: sr_hs
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit, errunit
-      use mpitimer,    only: time, time_start, time_check1, time_check2
-      use regterg_mod,     only: regterg
+      use contrl_file, only: ounit, errunit
+      use mpitimer, only: time, time_start, time_check1, time_check2
+      use regterg_mod, only: regterg
       use davidson_wrap_mod, only: davidson_wrap
       use optwf_lin_dav_extra, only: compute_overlap_psi
       use optwf_lib, only: sort
+      use control, only: ipr
       implicit none
 
       integer :: i, i0, i_ortho_min, i_overlap_max, idav_iter

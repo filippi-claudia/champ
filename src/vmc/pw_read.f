@@ -77,7 +77,7 @@ c----------------------------------------------------------------------
 
       use periodic, only: rkvec_shift, rlatt, rlatt_sim
       use inputflags, only: ilattice
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -119,13 +119,13 @@ c Written by Cyrus Umrigar
 c Reads in pw basis orbitals that have already been converted to be real.
 c Presently not used.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use multiple_geo, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use periodic, only: nband
       use periodic, only: ngvec, nkvec
       use periodic, only: rkvec
       use pworbital, only: c_im, c_ip, c_rm, c_rp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use coefs, only: norb
       use precision_kinds, only: dp
       implicit none
@@ -180,12 +180,11 @@ c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
 c However, that causes problems when running with mpi, so comment out that part.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use multiple_geo, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
       use ewald_mod, only: NGVEC_BIGX
       use vmc_mod, only: norb_tot
-      use const, only: nelec
       use periodic, only: glatt
       use periodic, only: igmult, igvec
       use periodic, only: ireal_imag, k_inv, kvec, nband, ngnorm, ngnorm_orb
@@ -194,9 +193,10 @@ c However, that causes problems when running with mpi, so comment out that part.
       use pworbital, only: c_im, c_ip, c_rm, c_rp, icmplx
 
       use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use coefs, only: norb
       use precision_kinds, only: dp
+      use system, only: nelec
       implicit none
 
       integer :: i, i1, i3, ib, iband
@@ -449,21 +449,22 @@ c At present it is assumed that k-vectors are in the correct order, but
 c if not one could use isortk to map iorb.
 c This is the straightforward evaluation for checking purposes only.
 
-      use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
+      use multiple_geo, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
       use ewald_mod, only: NGVEC_BIGX
-      use const, only: nelec, ipr
       use periodic, only: glatt
       use periodic, only: gvec
       use periodic, only: ireal_imag, k_inv, nband
       use periodic, only: nkvec
       use periodic, only: rkvec
       use tempor_test, only: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use coefs, only: norb
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
+      use control, only: ipr
+      use system, only: nelec
       implicit none
 
       integer :: i, iband, ig, ig2, ikv

@@ -6,12 +6,12 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmj
       use dets, only: ndet
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_contrl, only: ioptci, ioptjas
+      use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
-      use method_opt, only: method
       use mpi
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 

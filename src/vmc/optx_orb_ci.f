@@ -2,7 +2,7 @@
       contains
       subroutine optx_orb_ci_sum(p,q)
 
-      use optwf_contrl, only: ioptci, ioptorb
+      use optwf_control, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
@@ -10,9 +10,9 @@
       use ci001_blk, only: ci_o
       use ci002_blk, only: ci_o_old
       use ci004_blk, only: ci_de, ci_de_old
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 
@@ -35,11 +35,11 @@
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_init
 
-      use optwf_contrl, only: ioptci, ioptorb
+      use optwf_control, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
       use ci000, only: nciterm
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: method
 
       implicit none
 
@@ -61,11 +61,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_dump(iu)
 
-      use optwf_contrl, only: ioptci, ioptorb
+      use optwf_control, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
       use ci000, only: nciterm
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: method
 
       implicit none
 
@@ -79,11 +79,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_orb_ci_rstrt(iu)
 
-      use optwf_contrl, only: ioptci, ioptorb
+      use optwf_control, only: ioptci, ioptorb
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
       use ci000, only: nciterm
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: method
 
       implicit none
 
@@ -102,7 +102,7 @@ c-----------------------------------------------------------------------
       use dets, only: cdet
       use gradhess_ci, only: grad_ci
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
-      use optwf_contrl, only: ioptci, ioptorb
+      use optwf_control, only: ioptci, ioptorb
       use optwf_parms, only: nparmj
       use optorb_cblock, only: norbprim
       use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
@@ -114,9 +114,9 @@ c-----------------------------------------------------------------------
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
       use ci008_blk, only: ci_oe_cum
-      use method_opt, only: method
       use optorb_cblock, only: nreduced
       use precision_kinds, only: dp
+      use optwf_control, only: method
 
       implicit none
 

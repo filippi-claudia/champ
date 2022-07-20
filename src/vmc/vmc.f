@@ -12,19 +12,17 @@ c Currently this program contains
 c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater basis states.
 c and sa, pa, da asymptotic functions
 
-      use const, only: nelec
       use config, only: eold
       use config, only: psido, psijo
       use config, only: xold
-      use forcepar, only: nforce
-      use wfsec, only: iwftype, nwftype
+      use multiple_geo, only: iwftype, nwftype
       use coefs, only: coef, nbasis
 !      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
       use control_vmc, only: vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
       use control_vmc, only: vmc_nblkeq, vmc_nconf_new, vmc_nstep
       use pseudo, only: nloc
-      use mpitimer,    only: elapsed_time
-      use contrl_file,    only: ounit
+      use mpitimer, only: elapsed_time
+      use contrl_file, only: ounit
 
       use precision_kinds, only: dp
       use strech_mod, only: setup_force
@@ -36,6 +34,8 @@ c and sa, pa, da asymptotic functions
       use rotqua_mod, only: rotqua
       use acuest_mod, only: acuest
       use metrop_mov1_slat, only: metrop6
+      use system, only: nelec
+      use multiple_geo, only: nforce
       implicit none
 
       integer :: i, ii, j, jj, l

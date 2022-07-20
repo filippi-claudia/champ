@@ -5,7 +5,7 @@ c-----------------------------------------------------------------------
 
       ! this was not in master but I think it's needed
       ! this is so confusng ...
-      use optwf_contrl, only: nparm
+      use optwf_control, only: nparm
 
       use precision_kinds, only: dp
       implicit none
@@ -32,9 +32,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_jastrow(p,n)
-      use atom, only: nctype
-
-      use optwf_contrl, only: ioptjas
+      use system, only: nctype
+      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
@@ -74,7 +73,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_lcao(p,n)
 
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use optorb_cblock, only: norbterm
 
       use precision_kinds, only: dp
@@ -100,9 +99,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
       use csfs, only: ccsf, ncsf
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use precision_kinds, only: dp
       implicit none
 

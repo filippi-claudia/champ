@@ -4,8 +4,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
+      use multiple_geo, only: fgcm2, fgcum
       use age, only: ioldest, ioldestmx
       use estcum, only: iblk
       use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
@@ -20,24 +19,25 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: wfcm2, wgcm2
       use derivest, only: derivcum, derivsum
       use mpiconf, only: wid
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
 !      use contrl, only: nstep
       use control_dmc, only: dmc_nstep
       use mpi
 
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
 
       use prop_reduce_mod, only: prop_reduce
-      use pcm_reduce_mod,  only: pcm_reduce
-      use mmpol_reduce_mod,only: mmpol_reduce
-      use mmpol,           only: mmpol_init
-      use pcm_mod,         only: pcm_init
-      use properties_mod,  only: prop_init
-      use mmpol_dmc,       only: mmpol_prt, mmpol_cum
-      use pcm_dmc,         only: pcm_prt, pcm_cum
-      use prop_dmc,        only: prop_prt_dmc
-      use properties_mod,  only: prop_cum
+      use pcm_reduce_mod, only: pcm_reduce
+      use mmpol_reduce_mod, only: mmpol_reduce
+      use mmpol, only: mmpol_init
+      use pcm_mod, only: pcm_init
+      use properties_mod, only: prop_init
+      use mmpol_dmc, only: mmpol_prt, mmpol_cum
+      use pcm_dmc, only: pcm_prt, pcm_cum
+      use prop_dmc, only: prop_prt_dmc
+      use properties_mod, only: prop_cum
+      use multiple_geo, only: nforce
 
       implicit none
 

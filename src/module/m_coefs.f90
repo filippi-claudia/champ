@@ -18,7 +18,7 @@ module coefs
     save
 contains
     ! subroutine allocate_coefs()
-    !     use force_mod, only: MWF
+    !     use multiple_geo, only: MWF
     !     use precision_kinds, only: dp
     !     use vmc_mod, only: norb_tot, MBASIS
     !     if (.not. allocated(coef)) allocate (coef(MBASIS, norb_tot, MWF))

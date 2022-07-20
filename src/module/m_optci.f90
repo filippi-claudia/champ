@@ -13,7 +13,7 @@ module optci
     save
 contains
     subroutine set_optci_size()
-        use method_opt, only: method
+      use optwf_control, only: method
         if (method .eq. 'linear') then
             mxcireduced = mxciterm
         else

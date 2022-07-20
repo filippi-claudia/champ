@@ -3,7 +3,7 @@
       subroutine determinant_psit(determ,istate)
 
       use dets, only: cdet, ndet
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
 
       use multislater, only: detiab
       use precision_kinds, only: dp

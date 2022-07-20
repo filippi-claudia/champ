@@ -14,7 +14,7 @@ module dets
     save
 contains
     ! subroutine allocate_dets()
-    !     use force_mod, only: MWF
+    !     use multiple_geo, only: MWF
     !     use precision_kinds, only: dp
     !     use vmc_mod, only: MDET
     !     use mstates_mod, only: MSTATES
@@ -45,7 +45,7 @@ module csfs
     save
 contains
     subroutine allocate_csfs()
-        use wfsec, only: nwftype
+        use multiple_geo, only: nwftype
         use mstates_mod, only: MSTATES
         use dets, only: ndet, nmap
         if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))

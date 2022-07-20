@@ -2,14 +2,14 @@
       contains
       subroutine mmpol_prt(iblk,wgcum,wgcm2)
 
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
 !      use contrl, only: nconf, nstep
       use control_dmc, only: dmc_nconf, dmc_nstep
       use mmpol_cntrl, only: immpol, immpolprt
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2
       use mmpol_averages, only: dmmpol_cum, dmmpol_cm2
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, iblk, icmmpol_err, idmmpol_err
@@ -66,7 +66,7 @@ c-----------------------------------------------------------------------
       subroutine mmpol_fin(iblk,wgcum,wgcm2)
 
       use mmpol_cntrl, only: immpol, immpolprt
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
 
       use precision_kinds, only: dp
       implicit none
