@@ -1103,7 +1103,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use sr_mat_n, only: elocal, nconf_n, sr_ho
       use sr_mat_n, only: sr_o, wtg
       use deloc_dj_m, only: denergy
-      use force_analytic, only: iforce_analy
+      use m_force_analytic, only: iforce_analy
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o
       use ci000, only: nciterm

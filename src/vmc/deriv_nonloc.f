@@ -13,7 +13,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use optwf_parms, only: nparmj
       use bparm, only: nocuspb, nspin2b
       use contrl_per, only: iperiodic
-      use force_analytic, only: iforce_analy
+      use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
       use pw_find_image, only: find_image3
       use scale_dist_mod, only: scale_dist, scale_dist1

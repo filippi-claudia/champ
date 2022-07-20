@@ -16,7 +16,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use casula, only: i_vpsp, t_vpsp
       use coefs, only: norb
       use Bloc, only: tildem
-      use force_analytic, only: iforce_analy
+      use m_force_analytic, only: iforce_analy
       use pseudo, only: nloc
       use velocity_jastrow, only: vj
       use mmpol_cntrl, only: immpol
@@ -32,7 +32,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use optci_mod, only: optci_deloc
       use optjas_mod, only: optjas_deloc
       use optorb_f_mod, only: optorb_compute
-      use force_analytictic, only: compute_force
+      use force_analytic, only: compute_force
       use determinant_psit_mod, only: determinant_psit
       use multideterminant_mod, only: multideterminant_hpsi
       use nonloc_pot_mod, only: nonloc_pot

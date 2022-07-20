@@ -572,7 +572,7 @@ c -----------------------------------------------------------------------
 
       use grdntsmv, only: igrdmv
       use zmatrix, only: czint, czcart_ref, izcmat
-      use force_analytic, only: iuse_zmat
+      use m_force_analytic, only: iuse_zmat
       use contrl_file, only: ounit
       use precision_kinds, only: dp
       implicit none

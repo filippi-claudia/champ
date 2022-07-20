@@ -42,9 +42,9 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         use coords_int
         use system, only: cent, ncent
-        use force_fin, only: da_energy_ave
+        use m_force_analytic, only: da_energy_ave
         use zmatrix, only: czint, izcmat
-        use force_analytic, only: iforce_analy, iuse_zmat, alfgeo
+        use m_force_analytic, only: iforce_analy, iuse_zmat, alfgeo
       use contrl_file, only: ounit
       implicit none
 
@@ -86,8 +86,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_position_bcast
 
       use system, only: ncent
-      use force_fin, only: da_energy_ave
-      use force_analytic, only: iforce_analy
+      use m_force_analytic, only: da_energy_ave
+      use m_force_analytic, only: iforce_analy
       use mpi
 
       implicit none
@@ -108,7 +108,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use system, only: ncent
       use da_energy_now, only: da_energy, da_psi
-      use force_mat_n, only: force_o
+      use m_force_analytic, only: force_o
 
       implicit none
 

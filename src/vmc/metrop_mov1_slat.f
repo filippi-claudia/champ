@@ -42,7 +42,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use optci_mod, only: optci_sum
       use optorb_f_mod, only: optorb_sum
       use optjas_mod, only: optjas_sum
-      use force_analytictic, only: force_analy_sum
+      use force_analytic, only: force_analy_sum
       use prop_vmc, only: prop_sum
       use mmpol_vmc, only: mmpol_sum
       use mmpol, only: mmpol_efield

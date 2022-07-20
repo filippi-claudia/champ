@@ -76,8 +76,7 @@ contains
 end module multiple_geo
 
 
-
- module force_analytic
+ module m_force_analytic
      !> Arguments: iforce_analy, iuse_zmat, alfgeo
      use precision_kinds, only: dp
 
@@ -87,10 +86,44 @@ end module multiple_geo
      integer :: iuse_zmat
      real(dp) :: alfgeo
 
+    ! from force_fin
+     real(dp), dimension(:, :), allocatable :: da_energy_ave !(3,MCENT)
+     real(dp), dimension(:), allocatable :: da_energy_err !(3)
+
+     ! from force_mat_n
+     real(dp), dimension(:, :), allocatable :: force_o !(6*MCENT,mconf)
+
      private
      public   :: iforce_analy, iuse_zmat, alfgeo
+     public   :: da_energy_ave, da_energy_err
+     public   :: allocate_force_fin, deallocate_force_fin
+     public   ::  force_o
+     public   :: allocate_force_mat_n, deallocate_force_mat_n
      save
- end module force_analytic
+
+ contains
+     subroutine allocate_force_fin()
+         use system, only: ncent_tot
+         if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot))
+         if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
+     end subroutine allocate_force_fin
+
+     subroutine deallocate_force_fin()
+         if (allocated(da_energy_err)) deallocate (da_energy_err)
+         if (allocated(da_energy_ave)) deallocate (da_energy_ave)
+     end subroutine deallocate_force_fin
+
+     subroutine allocate_force_mat_n()
+         use sr_mod, only: mconf
+         use system, only: ncent_tot
+         if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, mconf))
+     end subroutine allocate_force_mat_n
+
+     subroutine deallocate_force_mat_n()
+         if (allocated(force_o)) deallocate (force_o)
+     end subroutine deallocate_force_mat_n
+
+ end module m_force_analytic
 
  module forcewt
      !> Arguments: wcum, wsum
@@ -122,91 +155,37 @@ end module multiple_geo
 
  end module forcewt
 
- module force_fin
-     !> Arguments: da_energy_ave, da_energy_err
-     use precision_kinds, only: dp
-
-     implicit none
-
-     real(dp), dimension(:, :), allocatable :: da_energy_ave !(3,MCENT)
-     real(dp), dimension(:), allocatable :: da_energy_err !(3)
-
-     private
-     public   :: da_energy_ave, da_energy_err
-     public :: allocate_force_fin, deallocate_force_fin
-     save
- contains
-     subroutine allocate_force_fin()
-         use system, only: ncent_tot
-         if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot))
-         if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
-     end subroutine allocate_force_fin
-
-     subroutine deallocate_force_fin()
-         if (allocated(da_energy_err)) deallocate (da_energy_err)
-         if (allocated(da_energy_ave)) deallocate (da_energy_ave)
-     end subroutine deallocate_force_fin
-
- end module force_fin
-
- module force_mat_n
-     !> Arguments: force_o
-
-     use sr_mod, only: mconf
-     use precision_kinds, only: dp
-
-     implicit none
-
-     real(dp), dimension(:, :), allocatable :: force_o !(6*MCENT,mconf)
-
-     private
-     public   ::  force_o
-     public :: allocate_force_mat_n, deallocate_force_mat_n
-     save
- contains
-     subroutine allocate_force_mat_n()
-         use sr_mod, only: mconf
-         use system, only: ncent_tot
-         if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, mconf))
-     end subroutine allocate_force_mat_n
-
-     subroutine deallocate_force_mat_n()
-         if (allocated(force_o)) deallocate (force_o)
-     end subroutine deallocate_force_mat_n
-
- end module force_mat_n
-
  module m_force
- contains
- subroutine allocate_m_force()
-     use multiple_geo, only: allocate_forcest
-    !  use multiple_geo, only: allocate_forcestr
-     use forcewt, only: allocate_forcewt
-     use force_fin, only: allocate_force_fin
-     use force_mat_n, only: allocate_force_mat_n
+    contains
+    subroutine allocate_m_force()
+        use multiple_geo, only: allocate_forcest
+        !  use multiple_geo, only: allocate_forcestr
+        use forcewt, only: allocate_forcewt
+        use m_force_analytic, only: allocate_force_fin
+        use m_force_analytic, only: allocate_force_mat_n
 
-     implicit none
+        implicit none
 
-     call allocate_forcest()
-    !  call allocate_forcestr()
-     call allocate_forcewt()
-     call allocate_force_fin()
-     call allocate_force_mat_n()
- end subroutine allocate_m_force
+        call allocate_forcest()
+        !  call allocate_forcestr()
+        call allocate_forcewt()
+        call allocate_force_fin()
+        call allocate_force_mat_n()
+    end subroutine allocate_m_force
 
- subroutine deallocate_m_force()
-     use multiple_geo, only: deallocate_forcest
-     use multiple_geo, only: deallocate_forcestr
-     use forcewt, only: deallocate_forcewt
-     use force_fin, only: deallocate_force_fin
-     use force_mat_n, only: deallocate_force_mat_n
+    subroutine deallocate_m_force()
+        use multiple_geo, only: deallocate_forcest
+        use multiple_geo, only: deallocate_forcestr
+        use forcewt, only: deallocate_forcewt
+        use m_force_analytic, only: deallocate_force_fin
+        use m_force_analytic, only: deallocate_force_mat_n
 
-     implicit none
+        implicit none
 
-     call deallocate_forcest()
-     call deallocate_forcestr()
-     call deallocate_forcewt()
-     call deallocate_force_fin()
-     call deallocate_force_mat_n()
- end subroutine deallocate_m_force
+        call deallocate_forcest()
+        call deallocate_forcestr()
+        call deallocate_forcewt()
+        call deallocate_force_fin()
+        call deallocate_force_mat_n()
+    end subroutine deallocate_m_force
  end module 

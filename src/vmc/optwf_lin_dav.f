@@ -13,7 +13,7 @@
       use optwf_func, only: ifunc_omega, omega, omega0, n_omegaf, n_omegat
       !use contrl, only: nblk, nblk_max
       use control_vmc, only: vmc_nblk, vmc_nblk_max
-      use force_analytic, only: iforce_analy, alfgeo
+      use m_force_analytic, only: iforce_analy, alfgeo
       use precision_kinds, only: dp
       use contrl_file, only: ounit
 

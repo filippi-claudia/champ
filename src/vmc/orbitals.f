@@ -23,7 +23,7 @@ c Modified by A. Scemama
       use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
       use coefs, only: nbasis, norb
       use contrl_per, only: iperiodic
-      use force_analytic, only: iforce_analy
+      use m_force_analytic, only: iforce_analy
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use system, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, orb

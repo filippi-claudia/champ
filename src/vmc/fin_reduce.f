@@ -18,8 +18,8 @@ c MPI version written by Claudia Filippi
       use custom_broadcast, only: bcast
       use precision_kinds, only: dp
 
-      use force_analytictic, only: force_analy_fin
-      use force_analytic_reduce_mod, only: force_analy_reduce
+      use force_analytic, only: force_analy_fin
+      use force_analy_reduce_mod, only: force_analy_reduce
       use optjas_reduce_mod, only: optjas_reduce
       use optorb_reduce_mod, only: optorb_reduce
       use optci_reduce_mod, only: optci_reduce
