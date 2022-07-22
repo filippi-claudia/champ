@@ -925,7 +925,7 @@ def write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coor
                 file.write("# Converted from the trexio file using trex2champ converter https://github.com/TREX-CoE/trexio_tools \n")
 
                 for element in range(nucleus_num):
-                   file.write("{:5s} {: 0.6f} {: 0.6f} {: 0.6f} \n".format(nucleus_label[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
+                   file.write("{:5s} {} {} {} \n".format(nucleus_label[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
 
                 file.write("\n")
             file.close()
@@ -1306,7 +1306,7 @@ def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_lab
                 # header line printed below
                 file.write("# File created using the trex2champ converter https://github.com/TREX-CoE/trexio_tools  \n")
                 file.write("lcao " + str(dict_mo["num"]) + " " + str(ao_num) + " 1 " + "\n" )
-                np.savetxt(file, reordered_mo_array, fmt='%.8f')
+                np.savetxt(file, reordered_mo_array)
                 file.write("end\n")
             file.close()
         else:

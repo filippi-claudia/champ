@@ -214,7 +214,9 @@ module trexio_read_data
         use trexio
         use contrl_file,        only: backend
 #endif
-        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent, champ_ao_ordering, ao_radial_index
+        use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent
+        use m_trexio_basis,     only: basis_num_shell, basis_shell_ang_mom
+        use m_trexio_basis,     only: num_ao_per_cent, champ_ao_ordering, ao_radial_index
 
         implicit none
 
@@ -233,9 +235,8 @@ module trexio_read_data
         logical                         :: skip = .true.
 
 !       trexio
-        integer                         :: basis_num_shell
         integer, allocatable            :: basis_nucleus_index(:), ao_index(:), ao_frequency(:), unique_index(:)
-        integer, allocatable            :: basis_shell_ang_mom(:), compare(:)
+        integer, allocatable            :: compare(:)
         integer, allocatable            :: local_array_s(:,:), local_array_p(:,:), local_array_d(:,:), local_array_f(:,:), local_array_g(:,:)
         real(dp), allocatable           :: unshuffled_coef(:,:,:)
 

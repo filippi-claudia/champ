@@ -133,7 +133,6 @@ c get basis functions for all electrons
          if(iforce_analy.eq.1) ider=3
          if (trexio_has_group_orbitals) then
           call trexio_basis_fns(1,nelec,rvec_en,r_en,ider)
-          ! write(300,'(12f12.8)') phin(:,1:12)
          else
           call basis_fns(1,nelec,rvec_en,r_en,ider)
          endif
@@ -166,7 +165,6 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
                 dorb(iorb,i,3)=0.d0
                 ddorb(iorb,i)=0.d0
                 do m=1,nbasis
-                  !  write(300,'(a,3i4,2f12.8)') "iel,iorb,m,coef,phin", i,iorb,m,coef(m,iorb,iwf),phin(m,i)
                    orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
                    dorb (iorb,i,1)=dorb (iorb,i,1)+coef(m,iorb,iwf)*dphin (m,i,1)
                    dorb (iorb,i,2)=dorb (iorb,i,2)+coef(m,iorb,iwf)*dphin (m,i,2)
