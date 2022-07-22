@@ -32,9 +32,9 @@ c Modified by A. Scemama
       use contrl_file,    only: ounit
       use grid3d_orbitals, only: spline_mo
       use grid3d_orbitals, only: lagrange_mos, lagrange_mos_grad, lagrange_mos_2
+      use trexio_read_data, only: trexio_has_group_orbitals
 #if defined(TREXIO_FOUND)
       use trexio_basis_fns_mod, only: trexio_basis_fns
-      use trexio_read_data, only: trexio_has_group_orbitals
 #endif
       use basis_fns_mod, only: basis_fns
 
@@ -68,11 +68,15 @@ c spline interpolation
             enddo
 
             if(ier.eq.1) then
+#if defined(TREXIO_FOUND)
               if (trexio_has_group_orbitals) then
                 call trexio_basis_fns(i,i,rvec_en,r_en,2)
               else
                 call basis_fns(i,i,rvec_en,r_en,2)
               endif
+#else
+              call basis_fns(i,i,rvec_en,r_en,2)
+#endif
               do iorb=1,norb+nadorb
                 orb(i,iorb)=0.d0
                 dorb(iorb,i,1)=0.d0
@@ -102,11 +106,15 @@ c spline interpolation
            call lagrange_mos_2(5,x(1,i),ddorb,i,ier)
 
            if(ier.eq.1) then
+#if defined(TREXIO_FOUND)
             if (trexio_has_group_orbitals) then
               call trexio_basis_fns(i,i,rvec_en,r_en,2)
             else
               call basis_fns(i,i,rvec_en,r_en,2)
             endif
+#else
+            call basis_fns(i,i,rvec_en,r_en,2)
+#endif            
              do iorb=1,norb+nadorb
                orb(i,iorb)=0.d0
                dorb(iorb,i,1)=0.d0
@@ -131,12 +139,15 @@ c no 3d interpolation
 c get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
+#if defined(TREXIO_FOUND)
          if (trexio_has_group_orbitals) then
           call trexio_basis_fns(1,nelec,rvec_en,r_en,ider)
          else
           call basis_fns(1,nelec,rvec_en,r_en,ider)
          endif
-
+#else
+         call basis_fns(1,nelec,rvec_en,r_en,ider)
+#endif
 
 c in alternativa al loop 26
 c        do jbasis=1,nbasis
@@ -284,10 +295,10 @@ c-------------------------------------------------------------------------------
       use grid3d_orbitals, only: lagrange_mos_grade
       use basis_fns_mod, only: basis_fns
       use pw_orbitals, only: orbitals_pw_grade
+      use trexio_read_data, only: trexio_has_group_orbitals
 
 #if defined(TREXIO_FOUND)
       use trexio_basis_fns_mod, only: trexio_basis_fns
-      use trexio_read_data, only: trexio_has_group_orbitals
 #endif
 
 
@@ -330,11 +341,15 @@ c get basis functions for electron iel
             ider=1
             if(iflag.gt.0) ider=2
 
+#if defined(TREXIO_FOUND)
             if (trexio_has_group_orbitals) then
               call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
             else
               call basis_fns(iel,iel,rvec_en,r_en,ider)
             endif
+#else
+            call basis_fns(iel,iel,rvec_en,r_en,ider)
+#endif
 
 !     Vectorization dependent code. useful for AVX512 and AVX2
 #ifdef VECTORIZATION
