@@ -51,10 +51,11 @@ c ider = 3 -> value, gradient, laplacian, forces
       integer                       :: upper_range, lower_range
       integer                       :: upper_rad_range, lower_rad_range
 
+#ifndef VECTORIZATION
       do j=ie1,ie2
         n0_nbasis(j)=0
       enddo
-
+#endif
 
 #if defined(TREXIO_FOUND)
 
@@ -132,7 +133,10 @@ c get distance to center
      &            d3phin(1,ilm,k),
      &            ider)
 
+#ifndef VECTORIZATION
+            ! localization
             call n0_inc(l,k,ic)
+#endif
             l = l + 1
           enddo
         enddo ! loop over electrons
