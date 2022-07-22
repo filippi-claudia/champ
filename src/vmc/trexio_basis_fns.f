@@ -30,19 +30,23 @@ c ider = 3 -> value, gradient, laplacian, forces
 
       integer :: it, ic, ider, irb
       integer :: iwlbas0
-      integer :: j, k, nrbasit, nbastypit,i
-      integer :: ie1, ie2, l, ilm, temp_index, maxlval
+      integer :: j, k, nrbasit, nbastypit, i
+      integer :: ie1, ie2, l, ilm, num_slms, maxlval
 
-      real(dp) :: y, ddy_lap
+
       real(dp) :: r, r2, ri, ri2
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
-      real(dp), dimension(3) :: dy
-      real(dp), dimension(3, 3) :: ddy
-      real(dp), dimension(3) :: dlapy
       real(dp), dimension(4, MRWF) :: wfv
       real(dp), dimension(3) :: xc
       real(dp), parameter :: one = 1.d0
+
+      ! Temporary arrays for basis function values and derivatives
+      real(dp), allocatable :: y(:)
+      real(dp), allocatable :: ddy_lap(:)
+      real(dp), allocatable :: dy(:,:)
+      real(dp), allocatable :: ddy(:,:,:)
+      real(dp), allocatable :: dlapy(:,:)
 
       integer                       :: upper_range, lower_range
       integer                       :: upper_rad_range, lower_rad_range
@@ -55,26 +59,29 @@ c ider = 3 -> value, gradient, laplacian, forces
 #if defined(TREXIO_FOUND)
 
       lower_range = 1
-      ! print*, "basis num shell = ", basis_num_shell
-      ! print*, "basis shell ang mom = ", basis_shell_ang_mom
-      ! print*, "num ao per cent = ", num_ao_per_cent
-      ! print*, "num rad per cent = ", num_rad_per_cent
-      ! print*, "max l value = ", maxval(basis_shell_ang_mom(:))
-      ! temp_index = 0
-      ! do i = 0 , maxval(basis_shell_ang_mom(:))
-        ! temp_index = temp_index + slm_per_l(i+1)
-      ! enddo
-      ! print*, "different slms ", temp_index
+      lower_rad_range = 1
 
 
 c loop through centers
       do ic=1,ncent+nghostcent
         upper_range = lower_range + num_ao_per_cent(ic) -1
-        ! upper_rad_range = lower_rad_range + num_rad_per_cent(ic) -1
+        upper_rad_range = lower_rad_range + num_rad_per_cent(ic) -1
 
         it=iwctype(ic)
         nrbasit   = num_rad_per_cent(ic)
         nbastypit = num_ao_per_cent(ic)
+
+        ! Get the maximum angular momentum for this center
+        maxlval = maxval(basis_shell_ang_mom(lower_rad_range:upper_rad_range))
+        ! num_slms will give number of slms needed to evaluate per atom
+        num_slms = sum(slm_per_l(1:maxlval+1))
+
+        allocate (y(num_slms))
+        allocate (ddy_lap(num_slms))
+        allocate (dy(3,num_slms))
+        allocate (ddy(3,3,num_slms))
+        allocate (dlapy(3,num_slms))
+
 c     numerical atomic orbitals
         do k=ie1,ie2
 
@@ -98,31 +105,47 @@ c get distance to center
           ! endif
           enddo
 
-          ! temp_index = 0
-          ! maxlval = maxval(basis_shell_ang_mom(lower_rad_range:upper_rad_range))
-          ! do i=lower_rad_range, upper_rad_range
-              ! write(100,'(a,6i4)') 'ic, k, i, maxval', ic, k, i, maxlval
-            ! call slm(index_slm(ilm),xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
-          ! enddo
+          ! Get the Slm evaluated and store them arrays
+          do i=1, num_slms
+            call slm(i,xc,r2,y(i),dy(1,i),ddy(1,1,i),ddy_lap(i),dlapy(1,i),ider)
+          enddo
 
 
           l = 1
           iwlbas0=0
+          ! Run a loop over all the AOs in this center
           do ilm=lower_range, upper_range
             iwlbas0=index_slm(ilm)
-            call slm(iwlbas0,xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
 
 !     compute sml and combine to generate molecular orbitals
             irb = ao_radial_index(ilm)
-            call trexio_phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),y,dy,ddy,ddy_lap,dlapy,
-     &             phin(ilm,k),dphin(ilm,k,:),d2phin(ilm,k),d2phin_all(1,1,ilm,k),d3phin(1,ilm,k),ider)
+            call trexio_phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),
+     &            y(iwlbas0),
+     &            dy(:,iwlbas0),
+     &            ddy(:,:,iwlbas0),
+     &            ddy_lap(iwlbas0),
+     &            dlapy(:,iwlbas0),
+     &            phin(ilm,k),
+     &            dphin(ilm,k,:),
+     &            d2phin(ilm,k),
+     &            d2phin_all(1,1,ilm,k),
+     &            d3phin(1,ilm,k),
+     &            ider)
 
             call n0_inc(l,k,ic)
             l = l + 1
           enddo
         enddo ! loop over electrons
         lower_range = upper_range + 1
-        ! lower_rad_range = upper_rad_range + 1
+        lower_rad_range = upper_rad_range + 1
+
+!     deallocate temporary arrays
+        deallocate (y)
+        deallocate (ddy_lap)
+        deallocate (dy)
+        deallocate (ddy)
+        deallocate (dlapy)
+
       enddo ! loop over all atoms
 #endif
       return
