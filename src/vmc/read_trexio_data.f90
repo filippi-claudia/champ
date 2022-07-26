@@ -1424,7 +1424,7 @@ module trexio_read_data
             lower_comp = component_index_atom(unique_atom_index(ic))
             upper_comp = component_index_atom(unique_atom_index(ic)) + components_per_atom(unique_atom_index(ic)) - 1
 
-            lpot(ic) = flat_ecp_max_ang_mom_plus_1(ic) + 1
+            lpot(ic) = flat_ecp_max_ang_mom_plus_1(unique_atom_index(ic)) + 1
 
             write(ounit,'(a,i4,a,a)') 'ECP for atom type ', ic, ' Element = ', unique(ic)
             write(ounit,*) '-----------------------------------------------------------------------'
@@ -1439,14 +1439,10 @@ module trexio_read_data
 
             counter_comp = 0
             do l = 1, lpot(ic)
-                if(l.eq.1)then
-                    idx=lpot(ic)
-                else
-                    idx=l-1
-                endif
+                idx=l
 
                 atom_index = 0
-                call unique_elements(components_per_atom(ic), flat_ecp_ang_mom(lower_comp:upper_comp), atom_index, count, nterms_per_component, term_index_component)
+                call unique_elements(components_per_atom(unique_atom_index(ic)), flat_ecp_ang_mom(lower_comp:upper_comp), atom_index, count, nterms_per_component, term_index_component)
                 necp_term(idx,ic) = nterms_per_component(l)
                 write(ounit,*)
                 write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
