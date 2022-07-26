@@ -824,8 +824,8 @@ def write_champ_file_determinants(filename, file):
 
                 # print the determinant coefficients
                 for det in range(len(reduced_list_determintants[0])):
-                    f.write("{:.8f} ".format(reduced_det_coefficients[0][det]))
-                    f2.write("{:.8f} ".format(reduced_det_coefficients[0][det]))
+                    f.write("{} ".format(reduced_det_coefficients[0][det]))
+                    f2.write("{} ".format(reduced_det_coefficients[0][det]))
                 f.write("\n")
                 f2.write("\n")
 
@@ -851,14 +851,14 @@ def write_champ_file_determinants(filename, file):
                 f2.write("csf {} {} \n".format(num_csf, num_states))
 
                 for ccsf in range(num_csf):
-                    f.write("{:.8f} ".format(csf_coeff[0][ccsf]))  # default to state 1 (to be replaced by selected_states)
+                    f.write("{} ".format(csf_coeff[0][ccsf]))  # default to state 1 (to be replaced by selected_states)
                 f.write("\n")
                 f.write("end \n")
 
                 #multistate file
                 for state in range(num_states):
                     for ccsf in range(num_csf):
-                        f2.write("{:.8f} ".format(csf_coeff[state][ccsf]))
+                        f2.write("{} ".format(csf_coeff[state][ccsf]))
                     f2.write("\n")
                 f2.write("end \n")
 
@@ -1564,7 +1564,7 @@ def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets,
 
                     # print the determinant coefficients
                     for det in range(num_dets):
-                        f.write("{:.8f} ".format(coefficients_read_all[state][0][det]))
+                        f.write("{} ".format(coefficients_read_all[state][0][det]))
                     f.write("\n")
                     # # print the determinant orbital mapping
                     for det in range(num_dets):
