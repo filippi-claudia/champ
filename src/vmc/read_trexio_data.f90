@@ -1303,6 +1303,7 @@ module trexio_read_data
         ! local variables
         integer                         :: ecp_num
         integer, allocatable            :: flat_ecp_ang_mom(:)
+        integer, allocatable            :: idx_array(:)
         integer, allocatable            :: flat_ecp_nucleus_index(:)
         integer, allocatable            :: flat_ecp_max_ang_mom_plus_1(:)
         integer, allocatable            :: flat_ecp_power(:)
@@ -1318,7 +1319,7 @@ module trexio_read_data
         integer                         :: count, lower_comp, upper_comp, counter_comp
 
 
-        integer         :: i, ic, idx, l, tcount1, j
+        integer         :: i, ic, idx, l, tcount1, j, count_term
 
         trex_ecp_file = 0
 
@@ -1350,6 +1351,7 @@ module trexio_read_data
         call bcast(trexio_has_group_ecp)
         call bcast(ecp_num)
         allocate (flat_ecp_ang_mom(ecp_num))
+        allocate (idx_array(ecp_num))
         allocate (flat_ecp_nucleus_index(ecp_num))
         allocate (flat_ecp_max_ang_mom_plus_1(ncent_tot))
         allocate (flat_ecp_power(ecp_num))
@@ -1437,17 +1439,31 @@ module trexio_read_data
             if (.not. allocated(term_index_component)) allocate(term_index_component(lpot(ic)))
 
 
-            counter_comp = 0
-            do l = 1, lpot(ic)
-                idx=l
+            count_term = 0
+            do i = lower_comp, upper_comp
+                if(flat_ecp_ang_mom(i) .eq. lpot(ic)-1) then
+                    idx_array(i) = lpot(ic)
+                    else
+                    count_term = count_term + 1
+                    idx_array(i) = count_term
+                endif
+            enddo
 
+
+            counter_comp = 0;
+            do l = 1, lpot(ic)
                 atom_index = 0
                 call unique_elements(components_per_atom(unique_atom_index(ic)), flat_ecp_ang_mom(lower_comp:upper_comp), atom_index, count, nterms_per_component, term_index_component)
-                necp_term(idx,ic) = nterms_per_component(l)
-                write(ounit,*)
-                write(ounit,'(a,2i6)') '    component, #terms ', l,necp_term(idx,ic)
 
-                do i=1,necp_term(idx,ic)
+                write(ounit,*) "nterms_per_component", nterms_per_component
+
+                write(ounit,*)
+                write(ounit,'(a,2i6)') '    component, #terms ', l, nterms_per_component(l)
+
+                do i=1,nterms_per_component(l)
+                    idx=idx_array(lower_comp+counter_comp)
+                    necp_term(idx,ic) = nterms_per_component(l)
+
                     ecp_coef(i,idx,ic) = flat_ecp_coefficient(lower_comp + counter_comp)
                     necp_power(i,idx,ic) = flat_ecp_power(lower_comp + counter_comp) + 2
                     ecp_exponent(i,idx,ic) = flat_ecp_exponent(lower_comp + counter_comp)
