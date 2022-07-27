@@ -1,15 +1,12 @@
-module trexio_basis_fns_mod
-    private :: n0_inc
-    public :: trexio_basis_fns
-    public :: trexio_phi_combine
+      module trexio_basis_fns_mod
 
-    contains
+      contains
       subroutine trexio_basis_fns(ie1,ie2,rvec_en,r_en,ider)
-!     calculate the values of the basis functions and their derivatives
-!     ider = 0 -> value
-!     ider = 1 -> value, gradient
-!     ider = 2 -> value, gradient, laplacian
-!     ider = 3 -> value, gradient, laplacian, forces
+c calculate the values of the basis functions and their derivatives
+c ider = 0 -> value
+c ider = 1 -> value, gradient
+c ider = 2 -> value, gradient, laplacian
+c ider = 3 -> value, gradient, laplacian, forces
 
       use numbas_mod, only: MRWF
       use atom, only: iwctype, ncent, ncent_tot
@@ -23,64 +20,73 @@ module trexio_basis_fns_mod
       use splfit_mod, only: splfit
       use slm_mod, only: slm
 #if defined(TREXIO_FOUND)
-      use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
+      use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent
+      use m_trexio_basis,     only: num_ao_per_cent, ao_radial_index
+      use m_trexio_basis,     only: basis_num_shell, basis_shell_ang_mom
 #endif
 
       use precision_kinds, only: dp
       implicit none
 
       integer :: it, ic, ider, irb
-      integer :: iwlbas0, j, k, nrbasit, nbastypit, nlmbasit
-      integer :: ie1, ie2, k0, l, l0, ll, ilm
+      integer :: iwlbas0
+      integer :: j, k, nrbasit, nbastypit, i
+      integer :: ie1, ie2, l, ilm, num_slms, maxlval
 
-      real(dp), allocatable         :: y(:)
-      real(dp), allocatable         :: dy(:,:)
-      real(dp), allocatable         :: ddy(:,:,:)
-      real(dp), allocatable         :: ddy_lap(:)
-      real(dp), allocatable         :: dlapy(:,:)
 
-      integer                       :: nlmbas(ncent_tot)
+      real(dp) :: r, r2, ri, ri2
+      real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
+      real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), dimension(4, MRWF) :: wfv
+      real(dp), dimension(3) :: xc
+      real(dp), parameter :: one = 1.d0
 
-      real(dp)                      :: r, r2, ri, ri2
-      real(dp)                      :: rvec_en(3, nelec, ncent_tot)
-      real(dp)                      :: r_en(nelec, ncent_tot)
+      ! Temporary arrays for basis function values and derivatives
+      real(dp), allocatable :: y(:)
+      real(dp), allocatable :: ddy_lap(:)
+      real(dp), allocatable :: dy(:,:)
+      real(dp), allocatable :: ddy(:,:,:)
+      real(dp), allocatable :: dlapy(:,:)
 
-      real(dp)                      :: wfv(4, MRWF)
-      real(dp)                      :: xc(3)
-      real(dp), parameter           :: one = 1.d0
+      integer                       :: upper_range, lower_range
+      integer                       :: upper_rad_range, lower_rad_range
 
+#ifndef VECTORIZATION
       do j=ie1,ie2
         n0_nbasis(j)=0
       enddo
-
-!     debug
-      nlmbas = 0
+#endif
 
 #if defined(TREXIO_FOUND)
-      l=0
-!     loop through centers
+
+      lower_range = 1
+      lower_rad_range = 1
+
+
+c loop through centers
       do ic=1,ncent+nghostcent
+        upper_range = lower_range + num_ao_per_cent(ic) -1
+        upper_rad_range = lower_rad_range + num_rad_per_cent(ic) -1
 
         it=iwctype(ic)
-        nrbasit=num_rad_per_cent(it)
-        nbastypit=num_ao_per_cent(it)
-        nlmbasit = nlmbas(it)
+        nrbasit   = num_rad_per_cent(ic)
+        nbastypit = num_ao_per_cent(ic)
 
-        print*, 'trexio_basis_fns: ic=', ic, ' it=', it, ' nrbasit=', nrbasit, ' nbastypit=', nbastypit, ' nlmbasit=', nlmbasit
+        ! Get the maximum angular momentum for this center
+        maxlval = maxval(basis_shell_ang_mom(lower_rad_range:upper_rad_range))
+        ! num_slms will give number of slms needed to evaluate per atom
+        num_slms = sum(slm_per_l(1:maxlval+1))
 
-        allocate (y(nbastypit))
-        allocate (dy(3,nbastypit))
-        allocate (ddy(3,3,nbastypit))
-        allocate (ddy_lap(nbastypit))
-        allocate (dlapy(3,nbastypit))
+        allocate (y(num_slms))
+        allocate (ddy_lap(num_slms))
+        allocate (dy(3,num_slms))
+        allocate (ddy(3,3,num_slms))
+        allocate (dlapy(3,num_slms))
 
-
-        l0=l
-
-!     numerical atomic orbitals
+c     numerical atomic orbitals
         do k=ie1,ie2
 
-!       get distance to center
+c get distance to center
 
           xc(1)=rvec_en(1,k,ic)
           xc(2)=rvec_en(2,k,ic)
@@ -98,54 +104,57 @@ module trexio_basis_fns_mod
           ! else
           !   wfv(1:4,irb)=0.d0
           ! endif
-            ! write(200,*) ic, k, irb, r, r2, ri, ri2, wfv(1,irb)
           enddo
 
-          do ilm=1,nbastypit
-              print*, "ilm, iwlbas0", ilm, index_slm(ilm)
-              call slm(index_slm(ilm),xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
+          ! Get the Slm evaluated and store them arrays
+          do i=1, num_slms
+            call slm(i,xc,r2,y(i),dy(1,i),ddy(1,1,i),ddy_lap(i),dlapy(1,i),ider)
           enddo
 
-          ! do ilm=1,nlmbasit
-          !   call slm(iwlbas0,xc,r2,y(ilm),dy(1,ilm),ddy(1,1,ilm),ddy_lap(ilm),dlapy(1,ilm),ider)
-          ! enddo
+
+          l = 1
+          iwlbas0=0
+          ! Run a loop over all the AOs in this center
+          do ilm=lower_range, upper_range
+            iwlbas0=index_slm(ilm)
 
 !     compute sml and combine to generate molecular orbitals
-           l=l0
+            irb = ao_radial_index(ilm)
+            call trexio_phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),
+     &            y(iwlbas0),
+     &            dy(:,iwlbas0),
+     &            ddy(:,:,iwlbas0),
+     &            ddy_lap(iwlbas0),
+     &            dlapy(:,iwlbas0),
+     &            phin(ilm,k),
+     &            dphin(ilm,k,:),
+     &            d2phin(ilm,k),
+     &            d2phin_all(1,1,ilm,k),
+     &            d3phin(1,ilm,k),
+     &            ider)
 
-           do j=1,nbastypit
-              l=l+1
-              irb=iwrwf(j,it)
-              ilm=iwlbas(j,it)
-
-              call trexio_phi_combine(iwlbas0,xc,ri,ri2,wfv(:,irb), &
-                                y(ilm), &
-                                dy(:,ilm), &
-                                ddy(:,:,ilm), &
-                                ddy_lap(ilm), &
-                                dlapy(:,ilm), &
-                                phin(l,k), &
-                                dphin(l,k,:), &
-                                d2phin(l,k), &
-                                d2phin_all(:,:,l,k), &
-                                d3phin(:,l,k), &
-                                ider)
-              call n0_inc(l,k,ic)
-           enddo
-
+#ifndef VECTORIZATION
+            ! localization
+            call n0_inc(l,k,ic)
+#endif
+            l = l + 1
+          enddo
         enddo ! loop over electrons
+        lower_range = upper_range + 1
+        lower_rad_range = upper_rad_range + 1
 
+!     deallocate temporary arrays
         deallocate (y)
+        deallocate (ddy_lap)
         deallocate (dy)
         deallocate (ddy)
-        deallocate (ddy_lap)
         deallocate (dlapy)
 
       enddo ! loop over all atoms
 #endif
       return
       end
-!-------------------------------------------------------------------
+c-------------------------------------------------------------------
       subroutine trexio_phi_combine(l,xc,ri,ri2,wfv,y,dy,ddy,ddy_lap,dlapy,phi,dphi,d2phi,d2phi_all,d3phi,ider)
       use precision_kinds, only: dp
       implicit none
@@ -169,7 +178,7 @@ module trexio_basis_fns_mod
       real(dp), parameter :: five = 5.d0
       real(dp), parameter :: six = 6.d0
 
-!     phi is computed for all ider values
+c     phi is computed for all ider values
       phi=y*wfv(1)
 
       if(ider.eq.1) then
@@ -205,10 +214,10 @@ module trexio_basis_fns_mod
             do ii=1,3
               dum1=dum1+ddy(jj,ii)*xcri(ii)
             enddo
-            d3phi(jj)=wfv(4)*y*xcri(jj)     &
-                      +wfv(3)*(dy(jj)+two*xcri(jj)*(y*ri+dum))   &
-                      +wfv(2)*(xcri(jj)*(ddy_lap-two*ri*(dum+y*ri))+two*(dum1+two*dy(jj)*ri)) &
-                      +wfv(1)*dlapy(jj)
+            d3phi(jj)=wfv(4)*y*xcri(jj)
+     &               +wfv(3)*(dy(jj)+two*xcri(jj)*(y*ri+dum))
+     &               +wfv(2)*(xcri(jj)*(ddy_lap-two*ri*(dum+y*ri))+two*(dum1+two*dy(jj)*ri))
+     &               +wfv(1)*dlapy(jj)
           enddo
 
           do jj=1,3
@@ -226,7 +235,7 @@ module trexio_basis_fns_mod
 
       return
       end
-!-------------------------------------------------------------------
+c-------------------------------------------------------------------
       subroutine n0_inc(l,k,ic)
 
       use phifun, only: phin, dphin, n0_ibasis, n0_ic, n0_nbasis
@@ -244,4 +253,4 @@ module trexio_basis_fns_mod
 
       return
       end
-end module
+      end module

@@ -33,10 +33,6 @@ c job where it left off
 !      use contrl, only: nstep
       use control_vmc, only: vmc_nstep
       use basis, only: zex
-      use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
-      use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
-      use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
-      use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
       use mstates_ctrl, only: iguiding
       use inputflags, only: node_cutoff, eps_node_cutoff
       use contrl_file,    only: ounit, errunit
@@ -65,7 +61,7 @@ c job where it left off
       use force_analytic, only: force_analy_rstrt, force_analy_dump
       use multiple_states, only: efficiency_rstrt, efficiency_dump
       use properties_mod, only: prop_rstrt, prop_dump
-      
+
       implicit none
 
       integer :: i, ib, ic, ifr, istate
@@ -73,16 +69,6 @@ c job where it left off
       integer :: ncentx, nctypex, ndetx, ndnx
       integer :: newghostypex, nghostcentx, norbx, nstepx
       integer :: nupx
-      integer, dimension(nctype_tot) :: nsx
-      integer, dimension(nctype_tot) :: npxx
-      integer, dimension(nctype_tot) :: npyx
-      integer, dimension(nctype_tot) :: npzx
-      integer, dimension(nctype_tot) :: ndxxx
-      integer, dimension(nctype_tot) :: ndxyx
-      integer, dimension(nctype_tot) :: ndxzx
-      integer, dimension(nctype_tot) :: ndyyx
-      integer, dimension(nctype_tot) :: ndyzx
-      integer, dimension(nctype_tot) :: ndzzx
 
       real(dp) :: ajacob, deltarx
       real(dp) :: deltatx, deltax, dist, distance_node
@@ -131,16 +117,6 @@ c job where it left off
       write(10) ((cent(k,ic),k=1,3),ic=1,ncent+nghostcent)
       write(10) pecent
       write(10) (znuc(i),i=1,nctype)
-      write(10) (ns(i),i=1,nctype)
-      write(10) (npx(i),i=1,nctype)
-      write(10) (npy(i),i=1,nctype)
-      write(10) (npz(i),i=1,nctype)
-      write(10) (ndxx(i),i=1,nctype)
-      write(10) (ndxy(i),i=1,nctype)
-      write(10) (ndxz(i),i=1,nctype)
-      write(10) (ndyy(i),i=1,nctype)
-      write(10) (ndyz(i),i=1,nctype)
-      write(10) (ndzz(i),i=1,nctype)
       write(10) (cdet(i,1,1),i=1,ndet)
       write(10) ndet,nup,ndn
 
@@ -197,16 +173,6 @@ c-----------------------------------------------------------------------
       read(10) ((centx(k,ic),k=1,3),ic=1,ncentx+nghostcentx)
       read(10) pecx
       read(10) (znucx(i),i=1,nctype)
-      read(10) (nsx(i),i=1,nctype)
-      read(10) (npxx(i),i=1,nctype)
-      read(10) (npyx(i),i=1,nctype)
-      read(10) (npzx(i),i=1,nctype)
-      read(10) (ndxxx(i),i=1,nctype)
-      read(10) (ndxyx(i),i=1,nctype)
-      read(10) (ndxzx(i),i=1,nctype)
-      read(10) (ndyyx(i),i=1,nctype)
-      read(10) (ndyzx(i),i=1,nctype)
-      read(10) (ndzzx(i),i=1,nctype)
       do j=1,norb
         do i=1,nbasis
           if (dabs(coefx(i,j)-coef(i,j,1)).gt.small) call fatal_error('STARTR: coef')
@@ -223,16 +189,6 @@ c-----------------------------------------------------------------------
       if (pecx.ne.pecent) call fatal_error('STARTR: pec')
       do i=1,nctype
         if (dabs(znucx(i)-znuc(i)).gt.small) call fatal_error('STARTR: znuc')
-        if (ns(i).ne.nsx(i)) call fatal_error('STARTR: ns')
-        if (npx(i).ne.npxx(i)) call fatal_error('STARTR: npx')
-        if (npy(i).ne.npyx(i)) call fatal_error('STARTR: npy')
-        if (npz(i).ne.npzx(i)) call fatal_error('STARTR: npz')
-        if (ndxx(i).ne.ndxxx(i)) call fatal_error('STARTR: ndxx')
-        if (ndxy(i).ne.ndxyx(i)) call fatal_error('STARTR: ndxy')
-        if (ndxz(i).ne.ndxzx(i)) call fatal_error('STARTR: ndxz')
-        if (ndyy(i).ne.ndyyx(i)) call fatal_error('STARTR: ndyy')
-        if (ndyz(i).ne.ndyzx(i)) call fatal_error('STARTR: ndyz')
-        if (ndzz(i).ne.ndzzx(i)) call fatal_error('STARTR: ndzz')
       enddo
       read(10) (cdetx(i),i=1,ndet)
       read(10) ndetx,nupx,ndnx

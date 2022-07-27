@@ -8,10 +8,6 @@ c job where it left off
       use vmc_mod, only: nrad
       use dmc_mod, only: MWALK
       use basis, only: zex
-      use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
-      use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
-      use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
-      use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
       use const, only: hb, nelec
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
@@ -165,16 +161,6 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) ((cent(k,ic),k=1,3),ic=1,ncent+nghostcent)
       write(10) pecent
       write(10) (znuc(i),i=1,nctype)
-      write(10) (ns(i),i=1,nctype)
-      write(10) (npx(i),i=1,nctype)
-      write(10) (npy(i),i=1,nctype)
-      write(10) (npz(i),i=1,nctype)
-      write(10) (ndxx(i),i=1,nctype)
-      write(10) (ndxy(i),i=1,nctype)
-      write(10) (ndxz(i),i=1,nctype)
-      write(10) (ndyy(i),i=1,nctype)
-      write(10) (ndyz(i),i=1,nctype)
-      write(10) (ndzz(i),i=1,nctype)
       write(10) (cdet(i,1,1),i=1,ndet)
       write(10) ndet,nup,ndn
       close (unit=10)
