@@ -1160,7 +1160,7 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
         # The following loop will generate the index_slm array which tells
         # which AO is of which type (from the above list)
         index_slm = []
-        ao_radial_index = []
+        ao_radial_index = [[] for _ in range(len(index_radial))]
         dict_num_shells_per_l = [{0:0, 1:0, 2:0, 3:0, 4:0} for _ in range(len(index_radial))]
         for atom_index in range(len(index_radial)):
             index_rad = 0
@@ -1177,19 +1177,20 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
                         index_slm.append(count2)
                     else:
                         index_slm.append(aos_per_l[l-1] + l - 1 + count2)
-                    ao_radial_index.append(index_rad)
+                    ao_radial_index[atom_index].append(index_rad)
 
                     cum_ao_per_cent = cum_ao_per_cent + 1
                 cum_rad_per_cent = cum_rad_per_cent + 1
+            # ao_radial_index[atom_index] = [item for sublist in index_slm for item in sublist]
 
         # print("dict num shells per l: ", dict_num_shells_per_l)
         # print("index slm ", index_slm)
         # print("cum_ao_per_cent ", cum_ao_per_cent)
         # print("cum_rad_per_cent ", cum_rad_per_cent)
-
+        # print("ao_radial_index before ", ao_radial_index)
         # reshape the ao_radial_index array in the groups of shells from the dict_num_shells_per_l
 
-        ao_radial_index = [[] for _ in range(len(index_radial))]
+        # ao_radial_index = [[] for _ in range(len(index_radial))]
         for atom_index in range(len(index_radial)):
             # print("dict num shells values ", dict_num_shells_per_l[atom_index].values())
             index_rad = 0
@@ -1207,9 +1208,9 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
                 else:
                     radials_per_l[l] = radials_per_l[l]*aos_per_l[l]
 
-            ao_radial_index[atom_index] = [item for sublist in radials_per_l for item in sublist]
+            # ao_radial_index[atom_index] = [item for sublist in radials_per_l for item in sublist]
 
-        # print("ao_radial_index final ", ao_radial_index)
+        # print("ao_radial_index written ", ao_radial_index)
     slm_index_per_atom = []; count1 = 0
     for i in basis_per_atom:
         slm_index_per_atom.append(index_slm[count1:count1+i])
