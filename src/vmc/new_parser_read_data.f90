@@ -1758,6 +1758,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctot))
     if (.not. allocated(nrbas)) allocate (nrbas(nctype + newghostype), source=0)
 
+
     if (wid) then
         do i = 1, nctype + newghostype
             read (iunit, *, iostat=iostat) nbastyp(i),  ns(i), np(i), nd(i), nf(i), ng(i)
