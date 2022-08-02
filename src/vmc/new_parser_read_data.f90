@@ -1728,7 +1728,6 @@ subroutine read_basis_num_info_file(file_basis_num_info)
         ! To skip the comments in the file
         do while (skip)
             read(iunit,*, iostat=iostat) temp1
-            print*, temp1
             temp1 = trim(temp1)
             if (temp1 == "qmc_bf_info") then
                 backspace(iunit)
@@ -1757,14 +1756,15 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctot))
     if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctot))
-
+    if (.not. allocated(nrbas)) allocate (nrbas(nctype + newghostype), source=0)
 
     if (wid) then
         do i = 1, nctype + newghostype
             read (iunit, *, iostat=iostat) nbastyp(i),  ns(i), np(i), nd(i), nf(i), ng(i)
 
             if (iostat /= 0) call fatal_error( "Error in reading basis num info file")
-            write (ounit, '(100i3)') nbastyp(i), ns(i), np(i), nd(i), nf(i), ng(i)
+            write (ounit, '(a,i0)')  "Number of AOs for this center :: ", nbastyp(i)
+            write (ounit, '(5(a,i0))') "ns= ", ns(i), " np= ", np(i), " nd= ", nd(i), " nf= ", nf(i), " ng= ", ng(i)
 
             if (numr .gt. 0) then
                 nrbas(i) = ns(i) + np(i) + nd(i) + nf(i) + ng(i)
