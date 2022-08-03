@@ -304,7 +304,7 @@ c      ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingl
 !     loop over single exitations     
 c      ymat(ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingle(iab),iab)-1))) =
 c     &     ymat(ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingle(iab),iab)-1))) +
-c     &     cdet_equiv(1:ndetiab(iab))*wfmat(1:ndetiab(iab),1)
+c     &     cdet_equiv(1:ndetsingle(iab))*wfmat(1:ndetsingle(iab),1)
       
       
       do kk=ndetsingle(iab)+1,ndetiab(iab)
