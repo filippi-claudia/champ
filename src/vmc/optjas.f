@@ -121,14 +121,14 @@ c           do k=1,ndetiab(iab)
            
            
 c     Unrolling determinants different to kref
-c           do kk=1,ndetiab2(iab)
-c              k=k_det2(kk,iab)
-c              kw=k_aux(kk,iab)
-c              denergy_det(k,iab)=ddenergy_det(kw,iab)
-c           enddo
+           do kk=1,ndetiab2(iab)
+              k=k_det2(kk,iab)
+              kw=k_aux(kk,iab)
+              denergy_det(k,iab)=ddenergy_det(kw,iab)
+           enddo
 c           k_det2(1:ndetiab2(iab),iab)
 c           k_aux(1:ndetiab2(iab),iab)
-           denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
+c           denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
            
            
         enddo

@@ -69,22 +69,22 @@ c temporarely copy orbn to orb
 c compute wave function
 c     loop inequivalent determinants
 c     loop over single exitations
-c     do k=1,ndetsingle(iab)
+      do k=1,ndetsingle(iab)
          
-c         jorb=ireporb_det(1,k,iab)
-c         iorb=irepcol_det(1,k,iab)
-c         wfmatn(k,1)=aan(iorb+nelec*(jorb-1))
-c         ddetn(k)=wfmatn(k,1)
-c         wfmatn(k,1)=1.0d0/wfmatn(k,1)
-c      enddo
+         jorb=ireporb_det(1,k,iab)
+         iorb=irepcol_det(1,k,iab)
+         wfmatn(k,1)=aan(iorb+nelec*(jorb-1))
+         ddetn(k)=wfmatn(k,1)
+         wfmatn(k,1)=1.0d0/wfmatn(k,1)
+      enddo
 
 c     loop over single exitations      
 c         jorb=ireporb_det(1,1:ndetsingle(iab),iab)
 c         iorb=irepcol_det(1,1Kndetsingle(iab),iab)
       
-      wfmatn(1:ndetsingle(iab),1)=aan(irepcol_det(1,1:ndetsingle(iab),iab)+nelec*(ireporb_det(1,1:ndetsingle(iab),iab)-1))
-      ddetn(1:ndetsingle(iab))=wfmatn(1:ndetsingle(iab),1)
-      wfmatn(1:ndetsingle(iab),1)=1.0d0/wfmatn(1:ndetsingle(iab),1)
+c      wfmatn(1:ndetsingle(iab),1)=aan(irepcol_det(1,1:ndetsingle(iab),iab)+nelec*(ireporb_det(1,1:ndetsingle(iab),iab)-1))
+c      ddetn(1:ndetsingle(iab))=wfmatn(1:ndetsingle(iab),1)
+c      wfmatn(1:ndetsingle(iab),1)=1.0d0/wfmatn(1:ndetsingle(iab),1)
 
       
 c     loop over multiple exitations      
@@ -109,15 +109,15 @@ c     loop over multiple exitations
 
 c     Unrolling determinats different to kref
       detn=detn(kref)
-c      do kk=1,ndetiab2(iab)
-c         k=k_det2(kk,iab)
-c         kw=k_aux(kk,iab)  
-c         detn(k)=detn(k)*ddetn(kw)
+      do kk=1,ndetiab2(iab)
+         k=k_det2(kk,iab)
+         kw=k_aux(kk,iab)  
+         detn(k)=detn(k)*ddetn(kw)
 c     print *, "k ",k,"detn(k) ",detn(k)
-c      enddo
+      enddo
 c      k_det2(1:ndetiab2(iab),iab)
 c      k_aux(1:ndetiab2(iab),iab)  
-      detn(k_det2(1:ndetiab2(iab),iab))=detn(k_det2(1:ndetiab2(iab),iab))*ddetn(k_aux(1:ndetiab2(iab),iab))
+c      detn(k_det2(1:ndetiab2(iab),iab))=detn(k_det2(1:ndetiab2(iab),iab))*ddetn(k_aux(1:ndetiab2(iab),iab))
       
 c     do istate=1,nstates
 c        if(iab.eq.1) call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
