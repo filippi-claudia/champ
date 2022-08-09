@@ -63,10 +63,9 @@ subroutine multideterminants_define(iflag, icheck)
       use multidet, only: numrep_det
       use multideterminant_mod, only: idiff
       use multiple_geo, only: MFORCE,MFORCE_WT_PRD,MWF,nwftype
-      use slater,  only: cdet,iwundet,kref,ndet
+      use slater,  only: cdet,iwundet,kref,ndet,norb
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: delri,nmat_dim,nmat_dim2,nrad,radmax
-      use slater, only: norb
 
 
     ! not sure about that one either ....
@@ -429,13 +428,12 @@ end subroutine inputdet
 
 subroutine inputlcao()
     ! Set the lcao to be equal
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use multiple_geo, only: nwftype
       use optwf_control, only: method
       use precision_kinds, only: dp
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
     implicit none
     integer             :: iwft, i,j

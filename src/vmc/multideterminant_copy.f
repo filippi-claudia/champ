@@ -19,10 +19,9 @@
       use optwf_control, only: ioptorb,method
       use orbval,  only: nadorb,orb
       use precision_kinds, only: dp
-      use slater,  only: d2dx2,ddx,slmi
+      use slater,  only: d2dx2,ddx,norb,slmi
       use ycompact, only: dymat,ymat
       use zcompact, only: aaz,dzmat,emz,zmat
-      use slater, only: norb
 
       implicit none
 
@@ -238,8 +237,8 @@ c-----------------------------------------------------------------------
       use multidet, only: numrep_det
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
+      use slater,  only: norb
       use vmc_mod, only: MEXCIT,norb_tot
-      use slater, only: norb
 
 
       implicit none
@@ -337,8 +336,8 @@ c-----------------------------------------------------------------------
       use multidet, only: ndetsingle,numrep_det
       use multimat, only: wfmat
       use precision_kinds, only: dp
+      use slater,  only: norb
       use vmc_mod, only: MEXCIT,norb_tot
-      use slater, only: norb
 
 
       implicit none
@@ -420,9 +419,8 @@ c-----------------------------------------------------------------------
       use multidet, only: iactv,ivirt
       use multimat, only: aa
       use precision_kinds, only: dp
-      use slater,  only: slmi
+      use slater,  only: norb,slmi
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 

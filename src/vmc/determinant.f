@@ -23,10 +23,9 @@ c Modified by A. Scemama
       use orbval,  only: ddorb,dorb,nadorb,orb
       use precision_kinds, only: dp
       use set_input_data, only: multideterminants_define
-      use slater,  only: d2dx2,ddx,fp,fpp,kref,ndet,slmi
+      use slater,  only: d2dx2,ddx,fp,fpp,kref,ndet,norb,slmi
       use system,  only: ncent_tot,ndn,nelec,nup
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
 
 
@@ -215,10 +214,10 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use orbval,  only: ddorb,dorb,nadorb
       use precision_kinds, only: dp
+      use slater,  only: norb
       use sr_more, only: daxpy
       use system,  only: ncent,nelec
       use velocity_jastrow, only: vj
-      use slater, only: norb
       implicit none
 
       integer :: i, ic, iorb, iparm, l

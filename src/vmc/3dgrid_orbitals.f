@@ -51,7 +51,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       subroutine setup_3dsplorb
 
       use basis_fns_mod, only: basis_fns
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use contrl_file, only: ounit
       use control_vmc, only: vmc_idump,vmc_irstar,vmc_isite,vmc_nblk
       use control_vmc, only: vmc_nblkeq,vmc_nconf,vmc_nconf_new
@@ -63,9 +63,8 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use multiple_geo, only: iwf
       use phifun,  only: d2phin,dphin,phin
       use precision_kinds, only: dp
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use system,  only: cent,ncent,nelec,nghostcent
-      use slater, only: norb
 !      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
 
       integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin
@@ -435,7 +434,7 @@ c Lagrange interpolation routines
 
       subroutine setup_3dlagorb
 
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use contrl_file, only: ounit
       use control_vmc, only: vmc_irstar
       use distance_mod, only: r_en,rvec_en
@@ -446,10 +445,9 @@ c Lagrange interpolation routines
       use orbital_num_lag, only: denom
       use phifun,  only: d2phin,dphin,phin
       use precision_kinds, only: dp
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use system,  only: cent,ncent,nghostcent
       use vmc_mod, only: norb_tot
-      use slater, only: norb
       implicit none
 
       integer :: i, ic, idenom, ier, iok
@@ -645,9 +643,9 @@ c
       use insout,  only: inout,inside
       use orbital_num_lag, only: denom
       use precision_kinds, only: dp
+      use slater,  only: norb
       use system,  only: nelec
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 
@@ -733,9 +731,9 @@ c
       use insout,  only: inout,inside
       use orbital_num_lag, only: denom
       use precision_kinds, only: dp
+      use slater,  only: norb
       use system,  only: nelec
       use vmc_mod, only: norb_tot
-      use slater, only: norb
       
       implicit none
       
@@ -821,9 +819,9 @@ c
       use insout,  only: inout,inside
       use orbital_num_lag, only: denom
       use precision_kinds, only: dp
+      use slater,  only: norb
       use system,  only: nelec
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 
@@ -911,8 +909,8 @@ c
       use insout,  only: inout,inside
       use orbital_num_lag, only: denom
       use precision_kinds, only: dp
+      use slater,  only: norb
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 
@@ -998,8 +996,8 @@ c
       use insout,  only: inout,inside
       use orbital_num_lag, only: denom
       use precision_kinds, only: dp
+      use slater,  only: norb
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 
@@ -1073,7 +1071,7 @@ c-----------------------------------------------------------------------
       use grid3d_param, only: endpt,nstep3d,origin,step3d
       use grid3dflag, only: i3dgrid,i3dlagorb,i3dsplorb
       use grid_mod, only: cart_from_int
-      use slater, only: norb
+      use slater,  only: norb
 
       implicit none
 
@@ -1103,7 +1101,7 @@ c-----------------------------------------------------------------------
       use grid3d_param, only: endpt,nstep3d,origin,step3d
       use grid3dflag, only: i3dgrid,i3dlagorb,i3dsplorb
       use grid_mod, only: cart_from_int
-      use slater, only: norb
+      use slater,  only: norb
 
 
       implicit none
@@ -1131,7 +1129,7 @@ c-----------------------------------------------------------------------
       subroutine splorb_dump(iu)
       use grid3d_param, only: nstep3d
       use grid_spline_mod, only: orb_num_spl
-      use slater, only: norb
+      use slater,  only: norb
       implicit none
 
       integer :: i, iu, j, k, l
@@ -1152,7 +1150,7 @@ c-----------------------------------------------------------------------
       subroutine splorb_rstrt(iu)
       use grid3d_param, only: nstep3d
       use grid_spline_mod, only: orb_num_spl
-      use slater, only: norb
+      use slater,  only: norb
       implicit none
 
       integer :: i, iu, j, k, l
@@ -1173,7 +1171,7 @@ c-----------------------------------------------------------------------
 
       use grid3d_param, only: nstep3d
       use grid_lagrange_mod, only: orb_num_lag
-      use slater, only: norb
+      use slater,  only: norb
 
       implicit none
 
@@ -1196,7 +1194,7 @@ c-----------------------------------------------------------------------
 
       use grid3d_param, only: nstep3d
       use grid_lagrange_mod, only: orb_num_lag
-      use slater, only: norb
+      use slater,  only: norb
 
       implicit none
 

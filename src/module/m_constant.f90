@@ -1,5 +1,5 @@
 module const
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
     implicit none
 
     real(dp) :: etrial
@@ -8,7 +8,7 @@ module const
 end module const
 
 module constants
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
     implicit none
   
     real(dp), parameter :: hb = 0.5

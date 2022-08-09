@@ -7,7 +7,7 @@ subroutine get_norbterm
   !> @email  r.l.shinde@utwente.nl
   !> @date   14-09-2021
 
-      use coefs, only: next_max
+      use coefs,   only: next_max
       use contrl_file, only: errunit,ounit
       use dorb_m,  only: iworbd
       use error,   only: fatal_error
@@ -19,10 +19,9 @@ subroutine get_norbterm
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_iab,ideriv_ref,irepcol_ref
       use orbval,  only: nadorb,ndetorb,orb
-      use slater,  only: kref,ndet
+      use slater,  only: kref,ndet,norb
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
     implicit none
 

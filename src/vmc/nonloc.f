@@ -19,10 +19,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use pseudo_mod, only: MPS_QUAD
       use qua,     only: nquad,wq,xq,yq,zq
       use scale_dist_mod, only: scale_dist,scale_dist1
-      use slater,  only: slmi
+      use slater,  only: norb,slmi
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 
@@ -358,7 +357,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use basis_fns_mod, only: basis_fns
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use contrl_per, only: iperiodic
       use grid3d_orbitals, only: lagrange_mose,spline_mo
       use grid3dflag, only: i3dlagorb,i3dsplorb
@@ -368,13 +367,12 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
       use precision_kinds, only: dp
       use pw_orbitals_e, only: orbitals_pwe
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use system,  only: iwctype,ncent,ncent_tot,nelec
-      use vmc_mod, only: norb_tot
-      use trexio_read_data, only: trexio_has_group_orbitals
-      use slater, only: norb
-#if defined(TREXIO_FOUND)
       use trexio_basis_fns_mod, only: trexio_basis_fns
+      use trexio_read_data, only: trexio_has_group_orbitals
+      use vmc_mod, only: norb_tot
+#if defined(TREXIO_FOUND)
 #endif
 
       implicit none
@@ -682,9 +680,9 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use pseudo,  only: lpot,vps
       use qua,     only: wq,xq,yq,zq
+      use slater,  only: norb
       use system,  only: ncent,ncent_tot
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 

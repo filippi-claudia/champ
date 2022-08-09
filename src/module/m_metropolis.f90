@@ -1,5 +1,5 @@
 module metropolis
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
     implicit none 
 
     integer  :: imetro

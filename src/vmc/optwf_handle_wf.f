@@ -124,14 +124,13 @@ c tmp
 c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
 
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use inputflags, only: scalecoef
       use numbas,  only: numr
       use optwf_control, only: ioptorb
       use orbval,  only: nadorb
       use precision_kinds, only: dp
-      use slater,  only: coef
-      use slater, only: norb
+      use slater,  only: coef,norb
 
       implicit none
 
@@ -355,12 +354,11 @@ c Restore parameters corresponding to run generating hessian
 c-----------------------------------------------------------------------
       subroutine save_lcao
 
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use multiple_geo, only: nwftype
       use precision_kinds, only: dp
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 
@@ -502,10 +500,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
 
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use orbval,  only: nadorb
-      use slater,  only: coef
-      use slater, only: norb
+      use slater,  only: coef,norb
 
       implicit none
 
@@ -637,12 +634,11 @@ c Restore parameters corresponding to run generating hessian
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
 
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use multiple_geo, only: nwftype
       use precision_kinds, only: dp
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 
@@ -819,15 +815,14 @@ c Check parameters a2 and b2 > -scalek
 c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
 
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use optorb_cblock, only: norbterm
       use optwf_control, only: ioptorb
       use optwf_parms, only: nparmd,nparmj
       use orb_mat_022, only: ideriv
       use precision_kinds, only: dp
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 

@@ -10,11 +10,10 @@
       use multislater, only: detiab
       use precision_kinds, only: dp
       use qua,     only: nquad
-      use slater,  only: kref,slmi
+      use slater,  only: kref,norb,slmi
       use system,  only: ncent,ndn,nelec,nup
       use vmc_mod, only: norb_tot
       use ycompact, only: ymat
-      use slater, only: norb
 
       implicit none
 

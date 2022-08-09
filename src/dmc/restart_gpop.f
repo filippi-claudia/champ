@@ -11,7 +11,7 @@
       use branch,  only: eest,eigv,eold,ff,fprod,nwalk,wdsumo,wgdsumo,wt
       use branch,  only: wtgen
       use casula,  only: i_vpsp,icasula
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
       use constants, only: hb
       use contrl_file, only: ounit
@@ -50,7 +50,7 @@
       use pseudo,  only: nloc
       use qua,     only: nquad,wq,xq,yq,zq
       use rannyu_mod, only: setrn
-      use slater,  only: cdet,coef,ndet
+      use slater,  only: cdet,coef,ndet,norb
       use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nbrnch
       use stats,   only: nodecr,trymove
       use step,    only: rprob
@@ -61,7 +61,6 @@
       use vmc_mod, only: norb_tot,nrad
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
-      use slater, only: norb
 !      use contrl, only: nconf
 
       implicit none

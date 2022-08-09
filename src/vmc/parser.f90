@@ -17,8 +17,8 @@ subroutine parser
       use bparm,   only: nocuspb,nspin2b
       use casula,  only: i_vpsp,icasula
       use ci000,   only: iciprt,nciprim,nciterm
-      use coefs, only: nbasis, next_max
-      use const, only: etrial
+      use coefs,   only: nbasis,next_max
+      use const,   only: etrial
       use constants, only: hb,pi
       use contrl_file, only: errunit,file_error,file_input
       use contrl_file, only: file_output,iunit,ounit
@@ -66,6 +66,7 @@ subroutine parser
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
       use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
+      use metropolis, only: delta,deltai,deltar,deltat,fbias,imetro
       use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
       use misc_grdnts, only: inpwrt_zmatrix
       use mmpol_cntrl, only: ich_mmpol,immpol,immpolprt,isites_mmpol
@@ -149,7 +150,7 @@ subroutine parser
       use set_input_data, only: inputjastrow,inputlcao
       use set_input_data, only: modify_zmat_define
       use set_input_data, only: multideterminants_define
-      use slater,  only: cdet,coef,ndet
+      use slater,  only: cdet,coef,ndet,norb
       use sr_mod,  only: i_sr_rescale,izvzb,mconf,mparm
       use system,  only: atomtyp,cent,iwctype,ncent,ncent_tot,nctype
       use system,  only: nctype_tot,ndn,nelec,newghostype,nghostcent,nup
@@ -166,17 +167,10 @@ subroutine parser
       use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
 #if defined(TREXIO_FOUND)
-      use contrl_file, only: backend
+      use ctrl_file, only: backend
       use trexio            ! trexio library for reading and writing hdf5 files
 #endif
   use, intrinsic :: iso_fortran_env, only : iostat_end
-      use metropolis, only: imetro
-      use metropolis, only: delta
-      use metropolis, only: deltai
-      use metropolis, only: fbias
-      use metropolis, only: deltar
-      use metropolis, only: deltat
-      use slater, only: norb
 
 ! CHAMP modules
 

@@ -125,7 +125,7 @@ c Presently not used.
       use periodic, only: nband,ngvec,nkvec,rkvec
       use precision_kinds, only: dp
       use pworbital, only: c_im,c_ip,c_rm,c_rp
-      use slater, only: norb
+      use slater,  only: norb
       implicit none
 
       integer :: i, i3, ikvec, jorb, k
@@ -186,11 +186,11 @@ c However, that causes problems when running with mpi, so comment out that part.
       use periodic, only: rkvec,rkvec_shift
       use precision_kinds, only: dp
       use pworbital, only: c_im,c_ip,c_rm,c_rp,icmplx
+      use slater,  only: norb
       use system,  only: nelec
       use tempor_test, only: c_imag,c_real,igvec_dft,iwgvec,ngg
       use tempor_test, only: ngvec_dft,rkvec_tmp,rkvec_tmp2
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
       implicit none
 
@@ -450,11 +450,11 @@ c This is the straightforward evaluation for checking purposes only.
       use multiple_geo, only: MFORCE,MFORCE_WT_PRD,MWF
       use periodic, only: glatt,gvec,ireal_imag,k_inv,nband,nkvec,rkvec
       use precision_kinds, only: dp
+      use slater,  only: norb
       use system,  only: nelec
       use tempor_test, only: c_imag,c_real,igvec_dft,iwgvec,ngg
       use tempor_test, only: ngvec_dft
       use vmc_mod, only: norb_tot
-      use slater, only: norb
       implicit none
 
       integer :: i, iband, ig, ig2, ikv

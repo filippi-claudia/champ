@@ -20,9 +20,8 @@
       use orbval,  only: orb
       use precision_kinds, only: dp
       use scratch, only: denergy_det,dtildem
-      use slater,  only: cdet,ddx,iwundet,kref,ndet,slmi
+      use slater,  only: cdet,ddx,iwundet,kref,ndet,norb,slmi
       use system,  only: ndn,nelec,nup
-      use slater, only: norb
 
       implicit none
 

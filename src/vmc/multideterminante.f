@@ -14,12 +14,11 @@
       use multislatern, only: detn,orbn
       use orbval,  only: orb
       use precision_kinds, only: dp
-      use slater,  only: iwundet,kref,ndet
+      use slater,  only: iwundet,kref,ndet,norb
       use slatn,   only: slmin
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT,norb_tot
       use ycompactn, only: ymatn
-      use slater, only: norb
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
@@ -146,10 +145,9 @@ c-----------------------------------------------------------------------
       use dorb_m,  only: iworbd
       use multidet, only: iactv,ivirt
       use precision_kinds, only: dp
-      use slater,  only: kref,ndet
+      use slater,  only: kref,ndet,norb
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
-      use slater, only: norb
 
       implicit none
 

@@ -81,14 +81,13 @@ c-----------------------------------------------------------------------
       use multislatern, only: detn,dorbn
       use orbval,  only: dorb
       use precision_kinds, only: dp
-      use slater,  only: kref,slmi
+      use slater,  only: kref,norb,slmi
       use slatn,   only: slmin
       use system,  only: nelec,nup
       use velocity_jastrow, only: vj,vjn
       use vmc_mod, only: norb_tot
       use ycompact, only: ymat
       use ycompactn, only: ymatn
-      use slater, only: norb
 
 
       implicit none

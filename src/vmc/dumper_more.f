@@ -9,7 +9,7 @@ c job where it left off
       use basis,   only: ngxxxx,ngxxxy,ngxxxz,ngxxyy,ngxxyz,ngxxzz
       use basis,   only: ngxyyy,ngxyyz,ngxyzz,ngxzzz,ngyyyy,ngyyyz
       use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns,zex
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use config,  only: eold,nearesto,psi2o,psido,psijo,rmino,rvmino
       use config,  only: tjfo,vold,xnew,xold
       use constants, only: hb
@@ -28,6 +28,7 @@ c job where it left off
       use forcewt, only: wcum,wsum
       use hpsi_mod, only: hpsi
       use inputflags, only: eps_node_cutoff,node_cutoff
+      use metropolis, only: delta,deltar,deltat
       use mstates_ctrl, only: iguiding
       use mstates_mod, only: MSTATES
       use multiple_geo, only: fcm2,fcum,iwftype,nforce,nwftype,pecent
@@ -45,17 +46,13 @@ c job where it left off
       use precision_kinds, only: dp
       use prop_vmc, only: prop_save
       use properties_mod, only: prop_dump,prop_rstrt
-      use slater,  only: cdet,coef,ndet
+      use slater,  only: cdet,coef,ndet,norb
       use stats,   only: rejmax
       use step,    only: ekin,ekin2,rprob,suc,trunfb,try
       use strech_mod, only: setup_force,strech
       use system,  only: cent,iwctype,ncent,ncent_tot,nctype,nctype_tot
       use system,  only: ndn,nelec,newghostype,nghostcent,nup,znuc
       use vmc_mod, only: norb_tot,nrad
-      use metropolis, only: delta
-      use metropolis, only: deltar
-      use metropolis, only: deltat
-      use slater, only: norb
 !      use contrl, only: nstep
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h

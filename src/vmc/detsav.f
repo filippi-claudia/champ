@@ -12,13 +12,12 @@ c Written by Claudia Filippi
       use multislatern, only: detn,dorbn,orbn
       use orbval,  only: dorb,orb
       use precision_kinds, only: dp
-      use slater,  only: fp,kref,ndet,slmi
+      use slater,  only: fp,kref,ndet,norb,slmi
       use slatn,   only: slmin
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT
       use ycompact, only: ymat
       use ycompactn, only: ymatn
-      use slater, only: norb
 
       implicit none
 

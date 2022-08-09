@@ -6,9 +6,8 @@
       use error,   only: fatal_error
       use optwf_control, only: ioptorb
       use orbval,  only: nadorb,ndetorb,orb
-      use slater,  only: ndet
+      use slater,  only: ndet,norb
       use system,  only: nelec
-      use slater, only: norb
 
       implicit none
 

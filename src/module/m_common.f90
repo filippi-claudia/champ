@@ -26,9 +26,9 @@ module Bloc
 contains
     subroutine allocate_Bloc()
       use optwf_parms, only: nparmj
+      use slater,  only: norb
       use system,  only: ncent,ncent_tot,nelec
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
         if (.not. allocated(b)) allocate (b(norb_tot, nelec))
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2))
@@ -385,10 +385,9 @@ module multimat
     save
 contains
     subroutine allocate_multimat()
-      use slater,  only: ndet
+      use slater,  only: ndet,norb
       use system,  only: nelec
       use vmc_mod, only: MEXCIT,norb_tot
-      use slater, only: norb
         if (.not. allocated(aa)) allocate (aa(nelec, norb_tot, 2))
         if (.not. allocated(wfmat)) allocate (wfmat(ndet, MEXCIT**2, 2))
     end subroutine allocate_multimat
@@ -479,9 +478,8 @@ module multislatern
     save
 contains
     subroutine allocate_multislatern()
-      use slater,  only: ndet
+      use slater,  only: ndet,norb
       use vmc_mod, only: norb_tot
-      use slater, only: norb
         if (.not. allocated(ddorbn)) allocate (ddorbn(norb_tot))
         if (.not. allocated(detn)) allocate (detn(ndet))
         if (.not. allocated(dorbn)) allocate (dorbn(norb_tot, 3))
@@ -549,9 +547,8 @@ module orbval
 contains
     subroutine allocate_orbval()
       use precision_kinds, only: dp
-      use slater,  only: ndet
+      use slater,  only: ndet,norb
       use system,  only: nelec
-      use slater, only: norb
         if (.not. allocated(ddorb)) allocate (ddorb(norb_tot, nelec))
         if (.not. allocated(dorb)) allocate (dorb(norb_tot, nelec, 3))
         if (.not. allocated(orb)) allocate (orb(nelec, norb_tot))

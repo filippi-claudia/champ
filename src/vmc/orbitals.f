@@ -20,7 +20,7 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
       use basis_fns_mod, only: basis_fns
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use contrl_file, only: ounit
       use contrl_per, only: iperiodic
       use control, only: ipr
@@ -33,13 +33,11 @@ c Modified by A. Scemama
       use phifun,  only: d2phin,dphin,n0_ibasis,n0_nbasis,phin
       use precision_kinds, only: dp
       use pw_orbitals, only: orbitals_pw
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use system,  only: ncent_tot,nelec
       use trexio_basis_fns_mod, only: trexio_basis_fns
       use trexio_read_data, only: trexio_has_group_orbitals
-      use slater, only: norb
 #if defined(TREXIO_FOUND)
-      use trexio_basis_fns_mod, only: trexio_basis_fns
 #endif
 
 
@@ -235,16 +233,15 @@ c-------------------------------------------------------------------------------
 
       subroutine da_orbitals
 
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use contrl_per, only: ibasis
       use da_orbval, only: da_d2orb,da_dorb,da_orb
       use multiple_geo, only: iwf
       use numbas2, only: ibas0,ibas1
       use phifun,  only: d2phin_all,d3phin,dphin
       use precision_kinds, only: dp
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use system,  only: ncent,nelec
-      use slater, only: norb
 
       implicit none
 
@@ -286,7 +283,7 @@ c-------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
       use basis_fns_mod, only: basis_fns
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use contrl_per, only: iperiodic
       use grid3d_orbitals, only: lagrange_mos_grade,lagrange_mose
       use grid3d_orbitals, only: spline_mo
@@ -296,13 +293,12 @@ c-------------------------------------------------------------------------------
       use phifun,  only: d2phin,dphin,n0_ibasis,n0_nbasis,phin
       use precision_kinds, only: dp
       use pw_orbitals, only: orbitals_pw_grade
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use system,  only: ncent_tot,nelec
+      use trexio_basis_fns_mod, only: trexio_basis_fns
       use trexio_read_data, only: trexio_has_group_orbitals
-      use slater, only: norb
 
 #if defined(TREXIO_FOUND)
-      use trexio_basis_fns_mod, only: trexio_basis_fns
 #endif
 
 

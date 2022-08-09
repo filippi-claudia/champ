@@ -13,11 +13,10 @@ c Written by Claudia Filippi
       use multislater, only: detiab
       use orbval,  only: dorb,orb
       use precision_kinds, only: dp
-      use slater,  only: ddx,fp,kref,ndet,slmi
+      use slater,  only: ddx,fp,kref,ndet,norb,slmi
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
       use ycompact, only: ymat
-      use slater, only: norb
 
       implicit none
 

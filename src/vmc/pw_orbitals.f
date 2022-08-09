@@ -17,9 +17,9 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use periodic, only: rkvec_shift
       use precision_kinds, only: dp
       use pworbital, only: c_im,c_ip,c_rm,c_rp,isortg,isortk,ngorb
+      use slater,  only: norb
       use system,  only: nelec
       use vmc_mod, only: norb_tot
-      use slater, only: norb
       implicit none
 
       integer :: iband, iel, ig, ik, ikvec
@@ -226,9 +226,9 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use periodic, only: rkvec_shift
       use precision_kinds, only: dp
       use pworbital, only: c_im,c_ip,c_rm,c_rp,isortg,isortk,ngorb
+      use slater,  only: norb
       use system,  only: nelec
       use vmc_mod, only: norb_tot
-      use slater, only: norb
       implicit none
 
       integer :: iband, iel, ig, ikvec, iorb

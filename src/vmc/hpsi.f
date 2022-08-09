@@ -44,17 +44,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use properties_mod, only: prop_compute
       use pseudo,  only: nloc
       use qmmm_pot, only: qmmm_extpot_ene
-      use slater,  only: kref,ndet
+      use slater,  only: kref,ndet, norb
       use system,  only: ndn,nelec,nup
       use velocity_jastrow, only: vj
       use ycompact, only: ymat
-      use slater, only: norb
-
-
-
-
-
- 
 
       implicit none
 

@@ -273,10 +273,9 @@ subroutine read_determinants_file(file_determinants)
       use multiple_geo, only: nwftype
       use optwf_control, only: method
       use precision_kinds, only: dp
-      use slater,  only: cdet,ndet
+      use slater,  only: cdet,ndet,norb
       use system,  only: ndn,nelec,nup
     use, intrinsic :: iso_fortran_env, only: iostat_eor
-      use slater, only: norb
 
     implicit none
 
@@ -653,7 +652,7 @@ end subroutine read_jastrow_file
 subroutine read_orbitals_file(file_orbitals)
     ! Ravindra
 
-      use coefs, only: nbasis
+      use coefs,   only: nbasis
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -665,10 +664,9 @@ subroutine read_orbitals_file(file_orbitals)
       use orbval,  only: nadorb
       use pcm_fdc, only: fs
       use precision_kinds, only: dp
-      use slater,  only: coef
+      use slater,  only: coef,norb
       use vmc_mod, only: norb_tot
       use write_orb_loc_mod, only: write_orb_loc
-      use slater, only: norb
 
     ! was not in master but is needed
 
@@ -1405,8 +1403,8 @@ subroutine read_symmetry_file(file_symmetry)
       use mpiconf, only: idtask,wid
       use optorb,  only: irrep
       use precision_kinds, only: dp
+      use slater,  only: norb
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
 
     implicit none
@@ -1485,7 +1483,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
       use mpiconf, only: wid
       use optorb_mix, only: iwmix_virt,norbopt,norbvirt
       use precision_kinds, only: dp
-      use slater, only: norb
+      use slater,  only: norb
 
 
     implicit none
@@ -1565,8 +1563,8 @@ subroutine read_eigenvalues_file(file_eigenvalues)
       use mpiconf, only: wid
       use optorb,  only: orb_energy
       use precision_kinds, only: dp
+      use slater,  only: norb
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
 
     implicit none
@@ -1992,8 +1990,8 @@ subroutine read_dmatrix_file(file_dmatrix)
       use optorb,  only: dmat_diag
       use precision_kinds, only: dp
       use sa_weights, only: iweight,nweight,weights
+      use slater,  only: norb
       use vmc_mod, only: norb_tot
-      use slater, only: norb
 
 
     implicit none

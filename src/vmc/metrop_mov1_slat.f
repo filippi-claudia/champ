@@ -31,6 +31,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use inputflags, only: eps_node_cutoff,node_cutoff
       use jassav_mod, only: jassav
       use kinet,   only: dtdx2n,dtdx2o
+      use metropolis, only: deltar,deltat,fbias
       use mmpol,   only: mmpol_efield
       use mmpol_cntrl, only: ich_mmpol
       use mmpol_vmc, only: mmpol_sum
@@ -61,9 +62,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use system,  only: cent,iwctype,ncent,nelec,nup,znuc
       use tmpnode, only: distance_node_sum
       use vmc_mod, only: delri,nrad
-      use metropolis, only: fbias
-      use metropolis, only: deltar
-      use metropolis, only: deltat
 
 
       implicit none

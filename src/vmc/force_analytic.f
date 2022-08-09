@@ -40,11 +40,10 @@ c-----------------------------------------------------------------------
       use multidet, only: ivirt
       use multislater, only: detiab
       use precision_kinds, only: dp
-      use slater,  only: kref,slmi
+      use slater,  only: kref,norb,slmi
       use system,  only: ncent,ncent_tot,ndn,nelec,nup
       use vmc_mod, only: norb_tot
       use zcompact, only: aaz,zmat
-      use slater, only: norb
 
       implicit none
 
@@ -139,11 +138,10 @@ c-----------------------------------------------------------------------
       use multislater, only: detiab
       use precision_kinds, only: dp
       use pseudo,  only: lpot
-      use slater,  only: kref,slmi
+      use slater,  only: kref,norb,slmi
       use system,  only: iwctype,ncent,ncent_tot,ndn,nelec,nup
       use velocity_jastrow, only: vj
       use zcompact, only: aaz,dzmat,emz,zmat
-      use slater, only: norb
 
       implicit none
 
