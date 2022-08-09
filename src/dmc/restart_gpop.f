@@ -72,16 +72,6 @@
       integer :: nf_id, nghostcentx, nprock, nq_id
       integer :: num, nupx, nwalk_id
       integer, dimension(4, 0:nproc) :: irn
-      integer, dimension(ncent_tot) :: nsx
-      integer, dimension(ncent_tot) :: npxx
-      integer, dimension(ncent_tot) :: npyx
-      integer, dimension(ncent_tot) :: npzx
-      integer, dimension(ncent_tot) :: ndxxx
-      integer, dimension(ncent_tot) :: ndxyx
-      integer, dimension(ncent_tot) :: ndxzx
-      integer, dimension(ncent_tot) :: ndyyx
-      integer, dimension(ncent_tot) :: ndyzx
-      integer, dimension(ncent_tot) :: ndzzx
       real(dp) :: different, fmt
       real(dp) :: fratio_id, hbx, taux, wq_id
       real(dp) :: wt_id, xold_dmc_id, xq_id, yq_id
@@ -173,16 +163,6 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) ((centx(k,ic),k=1,3),ic=1,ncentx+nghostcentx)
       read(10) pecent
       read(10) (znucx(i),i=1,nctypex)
-      read(10) (nsx(i),i=1,nctype)
-      read(10) (npxx(i),i=1,nctype)
-      read(10) (npyx(i),i=1,nctype)
-      read(10) (npzx(i),i=1,nctype)
-      read(10) (ndxxx(i),i=1,nctype)
-      read(10) (ndxyx(i),i=1,nctype)
-      read(10) (ndxzx(i),i=1,nctype)
-      read(10) (ndyyx(i),i=1,nctype)
-      read(10) (ndyzx(i),i=1,nctype)
-      read(10) (ndzzx(i),i=1,nctype)
 
       if (ncentx.ne.ncent) call fatal_error('STARTR: ncent')
       if (nctypex.ne.nctype) call fatal_error('STARTR: nctype')
@@ -196,16 +176,6 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       enddo
       do i=1,nctype
       if (dabs(znucx(i)-znuc(i)).gt.small) call fatal_error('STARTR: znuc')
-      if (ns(i).ne.nsx(i)) call fatal_error('STARTR: ns')
-      if (npx(i).ne.npxx(i)) call fatal_error('STARTR: npx')
-      if (npy(i).ne.npyx(i)) call fatal_error('STARTR: npy')
-      if (npz(i).ne.npzx(i)) call fatal_error('STARTR: npz')
-      if (ndxx(i).ne.ndxxx(i)) call fatal_error('STARTR: ndxx')
-      if (ndxy(i).ne.ndxyx(i)) call fatal_error('STARTR: ndxy')
-      if (ndxz(i).ne.ndxzx(i)) call fatal_error('STARTR: ndxz')
-      if (ndyy(i).ne.ndyyx(i)) call fatal_error('STARTR: ndyy')
-      if (ndyz(i).ne.ndyzx(i)) call fatal_error('STARTR: ndyz')
-      if (ndzz(i).ne.ndzzx(i)) call fatal_error('STARTR: ndzz')
       enddo
       read(10) (cdetx(i),i=1,ndet)
       read(10) ndetx,nupx,ndnx
