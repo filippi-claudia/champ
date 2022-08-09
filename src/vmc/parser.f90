@@ -18,8 +18,7 @@ subroutine parser
       use casula,  only: i_vpsp,icasula
       use ci000,   only: iciprt,nciprim,nciterm
       use coefs,   only: nbasis,next_max,norb
-      use const,   only: delta,deltai,etrial,fbias,imetro
-      use const2,  only: deltar,deltat
+      use const, only: etrial
       use constants, only: hb,pi
       use contrl_file, only: errunit,file_error,file_input
       use contrl_file, only: file_output,iunit,ounit
@@ -171,6 +170,12 @@ subroutine parser
       use trexio            ! trexio library for reading and writing hdf5 files
 #endif
   use, intrinsic :: iso_fortran_env, only : iostat_end
+      use metropolis, only: imetro
+      use metropolis, only: delta
+      use metropolis, only: deltai
+      use metropolis, only: fbias
+      use metropolis, only: deltar
+      use metropolis, only: deltat
 
 ! CHAMP modules
 

@@ -12,8 +12,6 @@ c job where it left off
       use coefs,   only: nbasis,norb
       use config,  only: eold,nearesto,psi2o,psido,psijo,rmino,rvmino
       use config,  only: tjfo,vold,xnew,xold
-      use const,   only: delta
-      use const2,  only: deltar,deltat
       use constants, only: hb
       use contrl_file, only: errunit,ounit
       use control_vmc, only: vmc_nstep
@@ -54,6 +52,9 @@ c job where it left off
       use system,  only: cent,iwctype,ncent,ncent_tot,nctype,nctype_tot
       use system,  only: ndn,nelec,newghostype,nghostcent,nup,znuc
       use vmc_mod, only: norb_tot,nrad
+      use metropolis, only: delta
+      use metropolis, only: deltar
+      use metropolis, only: deltat
 !      use contrl, only: nstep
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h

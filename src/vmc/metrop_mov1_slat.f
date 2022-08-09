@@ -14,8 +14,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use config,  only: psido,psijo,rminn,rminno,rmino,rminon,rvminn
       use config,  only: rvminno,rvmino,rvminon,tjfoo,vnew,vold,xnew
       use config,  only: xold
-      use const,   only: fbias
-      use const2,  only: deltar,deltat
       use constants, only: pi
       use contrl_file, only: ounit
       use control, only: ipr,mode
@@ -63,6 +61,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use system,  only: cent,iwctype,ncent,nelec,nup,znuc
       use tmpnode, only: distance_node_sum
       use vmc_mod, only: delri,nrad
+      use metropolis, only: fbias
+      use metropolis, only: deltar
+      use metropolis, only: deltat
 
 
       implicit none
