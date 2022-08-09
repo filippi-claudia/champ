@@ -204,7 +204,7 @@ module trexio_read_data
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
-        use coefs, only: nbasis, norb
+        use coefs, only: nbasis
         use inputflags,         only: ilcao
         use numbas,             only: nrbas
         use numbas,             only: iwrwf, numr
@@ -228,6 +228,7 @@ module trexio_read_data
         use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent
         use m_trexio_basis,     only: basis_num_shell, basis_shell_ang_mom
         use m_trexio_basis,     only: num_ao_per_cent, champ_ao_ordering, ao_radial_index
+      use slater, only: norb
 
         implicit none
 
@@ -990,7 +991,7 @@ module trexio_read_data
         use mpiconf,            only: wid, idtask
 
         use contrl_file,        only: ounit, errunit
-        use coefs,              only: norb
+        use slater,             only: norb
         use optorb,             only: irrep
         use vmc_mod,            only: norb_tot
         use general,            only: pooldir
@@ -1111,7 +1112,7 @@ module trexio_read_data
         use general,            only: pooldir
         use slater,             only: cdet, ndet
         use dorb_m,             only: iworbd
-        use coefs,              only: norb
+        use slater,             only: norb
         use inputflags,         only: ideterminants
         use multiple_geo,              only: nwftype
         use csfs,               only: nstates

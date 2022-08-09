@@ -834,7 +834,7 @@ c replaced column
 c-----------------------------------------------------------------------
       subroutine optorb_define
 
-      use coefs,   only: next_max,norb
+      use coefs, only: next_max
       use contrl_file, only: errunit,ounit
       use dorb_m,  only: iworbd
       use optorb,  only: irrep
@@ -848,6 +848,7 @@ c-----------------------------------------------------------------------
       use slater,  only: kref,ndet
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
       implicit none
 

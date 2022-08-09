@@ -4,7 +4,6 @@
 
       use Bloc,    only: b,tildem,xmat
       use bxmatrices, only: bxmatrix
-      use coefs,   only: norb
       use constants, only: hb
       use csfs,    only: nstates
       use denergy_det_m, only: allocate_denergy_det_m,denergy_det
@@ -22,6 +21,7 @@
       use system,  only: ndn,nelec,nup
       use ycompact, only: dymat,ymat
       use zcompact, only: aaz,dzmat,emz,zmat
+      use slater, only: norb
 
       implicit none
 
@@ -227,7 +227,6 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
-      use coefs,   only: norb
       use denergy_det_m, only: denergy_det
       use multidet, only: irepcol_det,ireporb_det,k_aux,k_det,k_det2
       use multidet, only: ndetiab,ndetiab2,ndetsingle,numrep_det
@@ -236,6 +235,7 @@ c-----------------------------------------------------------------------
       use slater,  only: cdet,cdet_equiv,dcdet_equiv,iwundet,kref,ndet
       use system,  only: nelec
       use vmc_mod, only: MEXCIT,norb_tot
+      use slater, only: norb
 
 
       implicit none
@@ -326,7 +326,6 @@ c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
       use Bloc,    only: tildem
-      use coefs,   only: norb
       use multidet, only: irepcol_det,ireporb_det,ndetiab,ndetsingle
       use multidet, only: numrep_det
       use multimat, only: wfmat
@@ -334,6 +333,7 @@ c-----------------------------------------------------------------------
       use slater,  only: cdet_equiv,dcdet_equiv,iwundet,kref,ndet
       use system,  only: nelec
       use vmc_mod, only: MEXCIT,norb_tot
+      use slater, only: norb
 
 
       implicit none
@@ -410,13 +410,13 @@ c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
       use Bloc,    only: tildem,xmat
-      use coefs,   only: norb
       use multidet, only: iactv,ivirt
       use multimat, only: aa
       use precision_kinds, only: dp
       use slater,  only: slmi
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
       implicit none
 

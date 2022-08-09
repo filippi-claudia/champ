@@ -262,7 +262,6 @@ subroutine read_determinants_file(file_determinants)
     !> This subroutine reads the single state determinant file.
     !! @author Ravindra Shinde
 
-      use coefs,   only: norb
       use contrl_file, only: errunit,ounit
       use csfs,    only: nstates
       use custom_broadcast, only: bcast
@@ -277,6 +276,7 @@ subroutine read_determinants_file(file_determinants)
       use slater,  only: cdet,ndet
       use system,  only: ndn,nelec,nup
     use, intrinsic :: iso_fortran_env, only: iostat_eor
+      use slater, only: norb
 
     implicit none
 
@@ -653,7 +653,7 @@ end subroutine read_jastrow_file
 subroutine read_orbitals_file(file_orbitals)
     ! Ravindra
 
-      use coefs,   only: nbasis,norb
+      use coefs, only: nbasis
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -668,6 +668,7 @@ subroutine read_orbitals_file(file_orbitals)
       use slater,  only: coef
       use vmc_mod, only: norb_tot
       use write_orb_loc_mod, only: write_orb_loc
+      use slater, only: norb
 
     ! was not in master but is needed
 
@@ -1398,7 +1399,6 @@ end subroutine read_forces_file
 subroutine read_symmetry_file(file_symmetry)
     ! Ravindra
 
-      use coefs,   only: norb
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -1406,6 +1406,7 @@ subroutine read_symmetry_file(file_symmetry)
       use optorb,  only: irrep
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
 
     implicit none
@@ -1477,7 +1478,6 @@ end subroutine read_symmetry_file
 subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     !
     ! Ravindra
-      use coefs,   only: norb
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -1485,6 +1485,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
       use mpiconf, only: wid
       use optorb_mix, only: iwmix_virt,norbopt,norbvirt
       use precision_kinds, only: dp
+      use slater, only: norb
 
 
     implicit none
@@ -1558,7 +1559,6 @@ end subroutine read_optorb_mixvirt_file
 
 subroutine read_eigenvalues_file(file_eigenvalues)
 
-      use coefs,   only: norb
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -1566,6 +1566,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
       use optorb,  only: orb_energy
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
 
     implicit none
@@ -1982,7 +1983,6 @@ subroutine read_dmatrix_file(file_dmatrix)
     ! Ravindra (no=ndetorb, ns=nweight)
     !INPUT dmatrix i i a=<input>
     !KEYDOC Read diagonal density matrix information.
-      use coefs,   only: norb
       use contrl_file, only: errunit,ounit
       use csfs,    only: nstates
       use custom_broadcast, only: bcast
@@ -1993,6 +1993,7 @@ subroutine read_dmatrix_file(file_dmatrix)
       use precision_kinds, only: dp
       use sa_weights, only: iweight,nweight,weights
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
 
     implicit none

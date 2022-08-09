@@ -4,7 +4,6 @@
 
       use b_tmove, only: b_t,iskip
       use casula,  only: icasula,t_vpsp
-      use coefs,   only: norb
       use dorb_m,  only: iworbd
       use multidet, only: iactv,ivirt
       use multimat, only: aa
@@ -15,6 +14,7 @@
       use system,  only: ncent,ndn,nelec,nup
       use vmc_mod, only: norb_tot
       use ycompact, only: ymat
+      use slater, only: norb
 
       implicit none
 

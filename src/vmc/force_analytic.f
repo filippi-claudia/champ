@@ -33,7 +33,6 @@ c     write(ounit,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
 c-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
 
-      use coefs,   only: norb
       use da_energy_now, only: da_psi
       use da_jastrow4val, only: da_j
       use da_orbval, only: da_orb
@@ -45,6 +44,7 @@ c-----------------------------------------------------------------------
       use system,  only: ncent,ncent_tot,ndn,nelec,nup
       use vmc_mod, only: norb_tot
       use zcompact, only: aaz,zmat
+      use slater, only: norb
 
       implicit none
 
@@ -129,7 +129,6 @@ c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
 
       use Bloc,    only: b_da,xmat
-      use coefs,   only: norb
       use constants, only: hb
       use da_energy_now, only: da_energy,da_psi
       use da_jastrow4val, only: da_d2j,da_vj
@@ -144,6 +143,7 @@ c-----------------------------------------------------------------------
       use system,  only: iwctype,ncent,ncent_tot,ndn,nelec,nup
       use velocity_jastrow, only: vj
       use zcompact, only: aaz,dzmat,emz,zmat
+      use slater, only: norb
 
       implicit none
 

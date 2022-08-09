@@ -2,7 +2,6 @@
       contains
       subroutine multideterminante(iel)
 
-      use coefs,   only: norb
       use contrl_file, only: ounit
       use csfs,    only: nstates
       use matinv_mod, only: matinv
@@ -20,6 +19,7 @@
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT,norb_tot
       use ycompactn, only: ymatn
+      use slater, only: norb
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
@@ -143,13 +143,13 @@ c     enddo
 c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,b,norbs,detratio,slmi,aa,ymat,velocity)
 
-      use coefs,   only: norb
       use dorb_m,  only: iworbd
       use multidet, only: iactv,ivirt
       use precision_kinds, only: dp
       use slater,  only: kref,ndet
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
+      use slater, only: norb
 
       implicit none
 

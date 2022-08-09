@@ -7,7 +7,6 @@ c isortg could be used to map g-vectors from iv to ig and
 c isortk could be used to map k-vectors.
 c At present it is assumed that both g- and k-vectors are in the correct order.
 
-      use coefs,   only: norb
       use contrl_file, only: ounit
       use control, only: ipr
       use ewald_mod, only: IVOL_RATIO,NGVECX
@@ -19,6 +18,7 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use precision_kinds, only: dp
       use pworbital, only: c_im,c_ip,c_rm,c_rp,isortg,isortk,ngorb
       use system,  only: nelec
+      use slater, only: norb
       implicit none
 
       integer :: iband, iel, ig, ikvec, iorb

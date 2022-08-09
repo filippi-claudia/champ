@@ -119,13 +119,13 @@ c Written by Cyrus Umrigar
 c Reads in pw basis orbitals that have already been converted to be real.
 c Presently not used.
 
-      use coefs,   only: norb
       use contrl_file, only: ounit
       use ewald_mod, only: IVOL_RATIO
       use multiple_geo, only: MFORCE,MFORCE_WT_PRD,MWF
       use periodic, only: nband,ngvec,nkvec,rkvec
       use precision_kinds, only: dp
       use pworbital, only: c_im,c_ip,c_rm,c_rp
+      use slater, only: norb
       implicit none
 
       integer :: i, i3, ikvec, jorb, k
@@ -178,7 +178,6 @@ c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
 c However, that causes problems when running with mpi, so comment out that part.
 
-      use coefs,   only: norb
       use contrl_file, only: ounit
       use ewald_mod, only: IVOL_RATIO,NGVECX,NGVEC_BIGX
       use multiple_geo, only: MFORCE,MFORCE_WT_PRD,MWF
@@ -191,6 +190,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use tempor_test, only: c_imag,c_real,igvec_dft,iwgvec,ngg
       use tempor_test, only: ngvec_dft,rkvec_tmp,rkvec_tmp2
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
       implicit none
 
@@ -444,7 +444,6 @@ c At present it is assumed that k-vectors are in the correct order, but
 c if not one could use isortk to map iorb.
 c This is the straightforward evaluation for checking purposes only.
 
-      use coefs,   only: norb
       use contrl_file, only: ounit
       use control, only: ipr
       use ewald_mod, only: IVOL_RATIO,NGVECX,NGVEC_BIGX
@@ -455,6 +454,7 @@ c This is the straightforward evaluation for checking purposes only.
       use tempor_test, only: c_imag,c_real,igvec_dft,iwgvec,ngg
       use tempor_test, only: ngvec_dft
       use vmc_mod, only: norb_tot
+      use slater, only: norb
       implicit none
 
       integer :: i, iband, ig, ig2, ikv

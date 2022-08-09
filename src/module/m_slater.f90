@@ -23,6 +23,7 @@ module slater
     real(dp), dimension(:, :, :), allocatable :: coef !(MBASIS,norb_tot,MWF)
 
     integer :: ndet
+    integer :: norb
     integer :: kref
 
     save

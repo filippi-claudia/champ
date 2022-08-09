@@ -4,7 +4,6 @@
 
       use Bloc,    only: b,tildem,xmat
       use bxmatrices, only: bxmatrix
-      use coefs,   only: norb
       use const,   only: hb,nelec
       use csfs,    only: nstates
       use denergy_det_m, only: allocate_denergy_det_m,denergy_det
@@ -23,6 +22,7 @@
       use slater,  only: d2dx2,ddx,slmi
       use ycompact, only: dymat,ymat
       use zcompact, only: aaz,dzmat,emz,zmat
+      use slater, only: norb
 
       implicit none
 
@@ -229,7 +229,6 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
-      use coefs,   only: norb
       use const,   only: nelec
       use denergy_det_m, only: denergy_det
       use dets,    only: cdet,ndet
@@ -240,6 +239,7 @@ c-----------------------------------------------------------------------
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use vmc_mod, only: MEXCIT,norb_tot
+      use slater, only: norb
 
 
       implicit none
@@ -330,7 +330,6 @@ c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
       use Bloc,    only: tildem
-      use coefs,   only: norb
       use const,   only: nelec
       use dets,    only: ndet
       use dets_equiv, only: cdet_equiv,dcdet_equiv
@@ -339,6 +338,7 @@ c-----------------------------------------------------------------------
       use multimat, only: wfmat
       use precision_kinds, only: dp
       use vmc_mod, only: MEXCIT,norb_tot
+      use slater, only: norb
 
 
       implicit none
@@ -415,7 +415,6 @@ c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
       use Bloc,    only: tildem,xmat
-      use coefs,   only: norb
       use const,   only: nelec
       use elec,    only: ndn,nup
       use multidet, only: iactv,ivirt
@@ -423,6 +422,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use slater,  only: slmi
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
       implicit none
 

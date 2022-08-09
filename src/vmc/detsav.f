@@ -3,7 +3,6 @@
       subroutine detsav(iel,iflag)
 c Written by Claudia Filippi
 
-      use coefs,   only: norb
       use csfs,    only: nstates
       use dorb_m,  only: iworbd
       use multidet, only: ivirt,ndetiab,ndetsingle,numrep_det
@@ -19,6 +18,7 @@ c Written by Claudia Filippi
       use vmc_mod, only: MEXCIT
       use ycompact, only: ymat
       use ycompactn, only: ymatn
+      use slater, only: norb
 
       implicit none
 

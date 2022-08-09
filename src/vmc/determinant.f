@@ -10,7 +10,6 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use coefs,   only: norb
       use contrl_file, only: ounit
       use control, only: ipr,mode
       use dorb_m,  only: iworbd
@@ -27,6 +26,7 @@ c Modified by A. Scemama
       use slater,  only: d2dx2,ddx,fp,fpp,kref,ndet,slmi
       use system,  only: ncent_tot,ndn,nelec,nup
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
 
 
@@ -205,7 +205,6 @@ c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
       use Bloc,    only: b,b_da,b_dj
-      use coefs,   only: norb
       use constants, only: hb
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb,da_dorb
@@ -219,6 +218,7 @@ c-----------------------------------------------------------------------
       use sr_more, only: daxpy
       use system,  only: ncent,nelec
       use velocity_jastrow, only: vj
+      use slater, only: norb
       implicit none
 
       integer :: i, ic, iorb, iparm, l

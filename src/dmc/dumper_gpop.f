@@ -13,7 +13,7 @@ c job where it left off
       use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns,zex
       use branch,  only: eest,eigv,ff,fprod,nwalk,wdsumo,wgdsumo,wt
       use branch,  only: wtgen
-      use coefs,   only: nbasis,norb
+      use coefs, only: nbasis
       use config,  only: xold_dmc
       use constants, only: hb
       use contrl_file, only: ounit
@@ -48,6 +48,7 @@ c job where it left off
       use system,  only: nghostcent,nup,znuc
       use velratio, only: fratio
       use vmc_mod, only: nrad
+      use slater, only: norb
 
 
 

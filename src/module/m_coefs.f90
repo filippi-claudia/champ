@@ -6,10 +6,7 @@ module coefs
     implicit none
 
     integer :: nbasis
-    integer :: norb
     integer :: next_max
 
-    private
-    public :: nbasis, norb, next_max
     save
 end module coefs

@@ -9,6 +9,7 @@ if (MPI_Fortran_FOUND)
   set(SHARED_MODULES
     m_kinds.f90
     m_metropolis.f90
+    m_slater.f90
     m_basis.f90
     m_common.f90
     m_periodic_table.F90

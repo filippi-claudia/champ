@@ -4,7 +4,6 @@
 c Written by Claudia Filippi
 
       use branch,  only: nwalk
-      use coefs,   only: norb
       use csfs,    only: nstates
       use dmc_mod, only: mwalk
       use mpi
@@ -18,6 +17,7 @@ c Written by Claudia Filippi
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
       use ycompact, only: ymat
+      use slater, only: norb
 
       implicit none
 

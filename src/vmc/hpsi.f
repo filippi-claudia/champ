@@ -7,7 +7,6 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use Bloc,    only: tildem
       use casula,  only: i_vpsp,t_vpsp
-      use coefs,   only: norb
       use constants, only: hb
       use contrl_file, only: ounit
       use control, only: ipr
@@ -49,6 +48,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use system,  only: ndn,nelec,nup
       use velocity_jastrow, only: vj
       use ycompact, only: ymat
+      use slater, only: norb
 
 
 

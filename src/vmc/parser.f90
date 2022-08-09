@@ -17,7 +17,7 @@ subroutine parser
       use bparm,   only: nocuspb,nspin2b
       use casula,  only: i_vpsp,icasula
       use ci000,   only: iciprt,nciprim,nciterm
-      use coefs,   only: nbasis,next_max,norb
+      use coefs, only: nbasis, next_max
       use const, only: etrial
       use constants, only: hb,pi
       use contrl_file, only: errunit,file_error,file_input
@@ -176,6 +176,7 @@ subroutine parser
       use metropolis, only: fbias
       use metropolis, only: deltar
       use metropolis, only: deltat
+      use slater, only: norb
 
 ! CHAMP modules
 

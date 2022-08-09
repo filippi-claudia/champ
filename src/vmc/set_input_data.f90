@@ -53,7 +53,6 @@ end subroutine inputcsf
 
 subroutine multideterminants_define(iflag, icheck)
 
-      use coefs,   only: norb
       use contrl_file, only: errunit,ounit
       use csfs,    only: cxdet,iadet,ibdet,icxdet,ncsf,nstates
       use dorb_m,  only: iworbd
@@ -67,6 +66,7 @@ subroutine multideterminants_define(iflag, icheck)
       use slater,  only: cdet,iwundet,kref,ndet
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: delri,nmat_dim,nmat_dim2,nrad,radmax
+      use slater, only: norb
 
 
     ! not sure about that one either ....
@@ -429,12 +429,13 @@ end subroutine inputdet
 
 subroutine inputlcao()
     ! Set the lcao to be equal
-      use coefs,   only: nbasis,norb
+      use coefs, only: nbasis
       use multiple_geo, only: nwftype
       use optwf_control, only: method
       use precision_kinds, only: dp
       use slater,  only: coef
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
     implicit none
     integer             :: iwft, i,j

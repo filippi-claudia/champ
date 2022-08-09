@@ -5,7 +5,6 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use Bloc,    only: b,b_dj
       use b_tmove, only: b_t,iskip
-      use coefs,   only: norb
       use contrl_file, only: ounit
       use control, only: ipr,mode
       use deriv_nonloc, only: deriv_nonlocj
@@ -23,6 +22,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use slater,  only: slmi
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
       implicit none
 
@@ -358,7 +358,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use basis_fns_mod, only: basis_fns
-      use coefs,   only: nbasis,norb
+      use coefs, only: nbasis
       use contrl_per, only: iperiodic
       use grid3d_orbitals, only: lagrange_mose,spline_mo
       use grid3dflag, only: i3dlagorb,i3dsplorb
@@ -372,6 +372,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use system,  only: iwctype,ncent,ncent_tot,nelec
       use vmc_mod, only: norb_tot
       use trexio_read_data, only: trexio_has_group_orbitals
+      use slater, only: norb
 #if defined(TREXIO_FOUND)
       use trexio_basis_fns_mod, only: trexio_basis_fns
 #endif
@@ -676,7 +677,6 @@ c-----------------------------------------------------------------------
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
       use Bloc,    only: b_da
-      use coefs,   only: norb
       use da_pseudo, only: da_vps
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
@@ -684,6 +684,7 @@ c-----------------------------------------------------------------------
       use qua,     only: wq,xq,yq,zq
       use system,  only: ncent,ncent_tot
       use vmc_mod, only: norb_tot
+      use slater, only: norb
 
       implicit none
 

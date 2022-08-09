@@ -4,7 +4,6 @@
 
       use Bloc,    only: b_dj,xmat
       use bxmatrices, only: bxmatrix
-      use coefs,   only: norb
       use constants, only: hb
       use contrl_file, only: ounit
       use control, only: ipr
@@ -23,6 +22,7 @@
       use scratch, only: denergy_det,dtildem
       use slater,  only: cdet,ddx,iwundet,kref,ndet,slmi
       use system,  only: ndn,nelec,nup
+      use slater, only: norb
 
       implicit none
 

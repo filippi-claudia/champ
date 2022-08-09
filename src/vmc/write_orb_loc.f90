@@ -8,7 +8,7 @@
 ! 2) a gaussian basis
       use system, only: znuc, iwctype, nctype, ncent, newghostype, nelec
       use numbas, only: numr
-      use coefs, only:  nbasis, norb
+      use coefs, only: nbasis
       use slater, only: coef
       use basis, only: zex, betaq
       use contrl_file,    only: ounit, errunit
@@ -17,6 +17,7 @@
       use precision_kinds, only: dp
       use slater,  only: coef
       use system,  only: iwctype,ncent,nctype,nelec,newghostype,znuc
+      use slater, only: norb
 
       implicit none
       integer :: iu

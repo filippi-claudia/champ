@@ -9,7 +9,7 @@ c job where it left off
       use basis,   only: ngxxxx,ngxxxy,ngxxxz,ngxxyy,ngxxyz,ngxxzz
       use basis,   only: ngxyyy,ngxyyz,ngxyzz,ngxzzz,ngyyyy,ngyyyz
       use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns,zex
-      use coefs,   only: nbasis,norb
+      use coefs, only: nbasis
       use config,  only: eold,nearesto,psi2o,psido,psijo,rmino,rvmino
       use config,  only: tjfo,vold,xnew,xold
       use constants, only: hb
@@ -55,6 +55,7 @@ c job where it left off
       use metropolis, only: delta
       use metropolis, only: deltar
       use metropolis, only: deltat
+      use slater, only: norb
 !      use contrl, only: nstep
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h

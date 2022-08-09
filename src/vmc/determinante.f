@@ -70,7 +70,6 @@
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
-      use coefs,   only: norb
       use csfs,    only: nstates
       use mstates3, only: iweight_g,weights_g
       use mstates_ctrl, only: iguiding
@@ -89,6 +88,7 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: norb_tot
       use ycompact, only: ymat
       use ycompactn, only: ymatn
+      use slater, only: norb
 
 
       implicit none
