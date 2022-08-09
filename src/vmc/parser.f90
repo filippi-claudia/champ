@@ -167,7 +167,7 @@ subroutine parser
       use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
 #if defined(TREXIO_FOUND)
-      use ctrl_file, only: backend
+      use contrl_file, only: backend
       use trexio            ! trexio library for reading and writing hdf5 files
 #endif
   use, intrinsic :: iso_fortran_env, only : iostat_end
