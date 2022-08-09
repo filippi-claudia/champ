@@ -145,6 +145,7 @@ jobs:
         $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0586579   0.0020902
 
     - name: "Test 05 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -161,6 +162,7 @@ jobs:
         $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0537256   0.0031706
 
     - name: "Test 06 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
