@@ -2,67 +2,69 @@
       contains
       subroutine startr
 
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: nrad
-      use basis, only: zex
-      use const, only: hb, ipr, nelec
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: istrech, nforce
-      use age, only: iage, ioldest, ioldestmx
-      use contrldmc, only: idmc
-      use contrldmc, only: nfprod, rttau, tau
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use atom, only: ncent_tot
-      use estcum, only: iblk, ipass
-      use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-      use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
-      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, wdsum
-      use estsum, only: wfsum, wgdsum, wgsum, wsum_dmc
-      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum
-      use estcum, only: ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
-      use estcum, only: wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wgcum, wgcum1
-      use estcum, only: wgdcum
-      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2
-      use est2cm, only: ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21
-      use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
-      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
-      use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid
-      use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
-      use mpiblk, only: iblk_proc
-      use qua, only: nquad, wq, xq, yq, zq
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
-      use casula, only: i_vpsp, icasula
-      use jacobsave, only: ajacob, ajacold
-      use pseudo, only: nloc
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
-      use coefs, only: coef, nbasis, norb
-      use ghostatom, only: nghostcent
-      use velratio, only: fratio
-!      use contrl, only: nconf
+      use age,     only: iage,ioldest,ioldestmx
+      use basis,   only: ndxx,ndxy,ndxz,ndyy,ndyz,ndzz,nfxxx,nfxxy,nfxxz
+      use basis,   only: nfxyy,nfxyz,nfxzz,nfyyy,nfyyz,nfyzz,nfzzz
+      use basis,   only: ngxxxx,ngxxxy,ngxxxz,ngxxyy,ngxxyz,ngxxzz
+      use basis,   only: ngxyyy,ngxyyz,ngxyzz,ngxzzz,ngyyyy,ngyyyz
+      use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns,zex
+      use branch,  only: eest,eigv,eold,ff,fprod,nwalk,wdsumo,wgdsumo,wt
+      use branch,  only: wtgen
+      use casula,  only: i_vpsp,icasula
+      use coefs,   only: nbasis
+      use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
+      use constants, only: hb
+      use contrl_file, only: ounit
+      use contrldmc, only: idmc,nfprod,rttau,tau
+      use control, only: ipr,mode
       use control_dmc, only: dmc_nconf
+      use denupdn, only: rprobdn,rprobup
+      use derivest, only: derivcm2,derivcum,derivsum,derivtotave_num_old
+      use determinante_mod, only: compute_determinante_grad
+      use error,   only: fatal_error
+      use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
+      use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
+      use est2cm,  only: tjfcm_dmc,tpbcm2_dmc,wcm2,wcm21,wdcm2,wdcm21
+      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21,wgdcm2
+      use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
+      use estcum,  only: ei1cum,ei2cum,ei3cum,iblk,ipass,pecum_dmc
+      use estcum,  only: r2cum_dmc,ricum,taucum,tjfcum_dmc,tpbcum_dmc
+      use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
+      use estcum,  only: wgcum1,wgdcum
+      use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
+      use estsum,  only: r2sum,risum,tausum,tjfsum_dmc,tpbsum_dmc,wdsum
+      use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
+      use hpsi_mod, only: hpsi
+      use jacobsave, only: ajacob,ajacold
+      use mmpol,   only: mmpol_init,mmpol_rstrt
+      use mmpol_dmc, only: mmpol_save
       use mpi
-      use contrl_file,    only: ounit
-      use precision_kinds, only: dp
-
-      use restart_gpop,    only: startr_gpop
-      use error,           only: fatal_error
-      use rannyu_mod,      only: setrn
-      use mmpol,           only: mmpol_init, mmpol_rstrt
-      use pcm_mod,         only: pcm_init, pcm_rstrt
-      use properties_mod,  only: prop_init, prop_rstrt
-      use mmpol_dmc,       only: mmpol_save
-      use pcm_dmc,         only: pcm_save
-      use prop_dmc,        only: prop_save_dmc
+      use mpiblk,  only: iblk_proc
+      use mpiconf, only: idtask,nproc,wid
+      use multiple_geo, only: fgcm2,fgcum,istrech,nforce,pecent
       use nonloc_grid_mod, only: t_vpsp_sav
+      use pcm_dmc, only: pcm_save
+      use pcm_mod, only: pcm_init,pcm_rstrt
+      use precision_kinds, only: dp
+      use prop_dmc, only: prop_save_dmc
+      use properties_mod, only: prop_init,prop_rstrt
+      use pseudo,  only: nloc
+      use qua,     only: nquad,wq,xq,yq,zq
+      use rannyu_mod, only: setrn
+      use restart_gpop, only: startr_gpop
+      use slater,  only: cdet,coef,ndet,norb
+      use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nbrnch
+      use stats,   only: nodecr,trymove
+      use step,    only: rprob
+      use strech_mod, only: strech
+      use system,  only: cent,iwctype,ncent,ncent_tot,nctype,ndn,nelec
+      use system,  only: nghostcent,nup,znuc
+      use velratio, only: fratio
+      use vmc_mod, only: norb_tot,nrad
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
-      use determinante_mod,only: compute_determinante_grad
-      use hpsi_mod,        only: hpsi
-      use strech_mod,      only: strech
+!      use contrl, only: nconf
+      
       implicit none
 
       integer :: i, iage_id, ib, ic, id

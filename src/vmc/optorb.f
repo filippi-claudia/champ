@@ -1,22 +1,22 @@
       module optorb_f_mod
-      use error, only: fatal_error
+      use error,   only: fatal_error
       contains
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim)
 
-      use vmc_mod, only: norb_tot
-      use elec, only: ndn, nup
-      use multidet, only: ivirt, kref
-      use optwf_contrl, only: ioptorb
-      use Bloc, only: b, tildem
+      use Bloc,    only: b,tildem
+      use contrl_file, only: ounit
+      use multidet, only: ivirt
       use multimat, only: aa
-      use optorb_cblock, only: norbterm
-      use orb_mat_022, only: ideriv
-      use orb_mat_033, only: ideriv_ref, irepcol_ref
-      use orbval, only: orb
       use multislater, only: detiab
-      use const, only: nelec
+      use optorb_cblock, only: norbterm
+      use optwf_control, only: ioptorb
+      use orb_mat_022, only: ideriv
+      use orb_mat_033, only: ideriv_ref,irepcol_ref
+      use orbval,  only: orb
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use slater,  only: kref
+      use system,  only: ndn,nelec,nup
+      use vmc_mod, only: norb_tot
 
       implicit none
 
@@ -92,13 +92,13 @@ c ns_current reset in optorb_sum
 c-----------------------------------------------------------------------
       subroutine optorb_compute(psid,eloc,deloc)
 
-      use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
-      use zcompact, only: aaz, dzmat, emz, zmat
+      use contrl_file, only: ounit
+      use csfs,    only: nstates
       use optorb_cblock, only: norbterm
-      use orb_mat_001, only: orb_ho, orb_o, orb_oe
+      use optwf_control, only: ioptorb
+      use orb_mat_001, only: orb_ho,orb_o,orb_oe
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use zcompact, only: aaz,dzmat,emz,zmat
       implicit none
 
       integer :: i, istate
@@ -130,18 +130,17 @@ c     enddo
 c-----------------------------------------------------------------------
       subroutine optorb_sum(wtg_new,wtg_old,enew,eold,iflag)
 
-      use csfs, only: nstates
-      use optwf_contrl, only: ioptorb, iapprox
-      use optorb_cblock, only: norbterm
-      use orb_mat_001, only: orb_ho, orb_o, orb_oe
-      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
+      use csfs,    only: nstates
+      use optorb_cblock, only: isample_cmat,norbterm,nreduced
+      use optwf_control, only: iapprox,ioptorb
+      use orb_mat_001, only: orb_ho,orb_o,orb_oe
+      use orb_mat_002, only: orb_ho_old,orb_o_old,orb_oe_old
       use orb_mat_003, only: orb_o_sum
       use orb_mat_004, only: orb_oe_sum
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
-      use orb_mat_030, only: orb_ecum, orb_wcum
-      use optorb_cblock, only: isample_cmat, nreduced
+      use orb_mat_030, only: orb_ecum,orb_wcum
       use precision_kinds, only: dp
 
       implicit none
@@ -259,13 +258,14 @@ c     ns_current=0
 c-----------------------------------------------------------------------
       subroutine optorb_cum(wsum,esum)
 
-      use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
-      use optorb_cblock, only: norbterm, idump_blockav
-      use orb_mat_003, only: orb_o_cum, orb_o_sum
-      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
-      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
-      use optorb_cblock, only: nb_current, nefp_blocks, norb_f_bcum
+      use csfs,    only: nstates
+      use optorb_cblock, only: idump_blockav,nb_current,nefp_blocks
+      use optorb_cblock, only: norb_f_bcum,norbterm
+      use optwf_control, only: ioptorb
+      use orb_mat_003, only: orb_o_cum,orb_o_sum
+      use orb_mat_004, only: orb_oe_cum,orb_oe_sum
+      use orb_mat_024, only: orb_e_bsum,orb_f_bcm2,orb_f_bcum,orb_o_bsum
+      use orb_mat_024, only: orb_oe_bsum,orb_w_bsum
       use precision_kinds, only: dp
 
       implicit none
@@ -327,17 +327,18 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_init(iflg)
 
-      use csfs, only: nstates
-      use optwf_contrl, only: ioptorb, iapprox
-      use optorb_cblock, only: norbterm
-      use orb_mat_003, only: orb_o_cum, orb_o_sum
-      use orb_mat_004, only: orb_oe_cum, orb_oe_sum
+      use csfs,    only: nstates
+      use optorb_cblock, only: isample_cmat,nb_current,norb_f_bcum
+      use optorb_cblock, only: norbterm,nreduced
+      use optwf_control, only: iapprox,ioptorb
+      use orb_mat_003, only: orb_o_cum,orb_o_sum
+      use orb_mat_004, only: orb_oe_cum,orb_oe_sum
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
-      use orb_mat_024, only: orb_e_bsum, orb_f_bcm2, orb_f_bcum, orb_o_bsum, orb_oe_bsum, orb_w_bsum
-      use orb_mat_030, only: orb_ecum, orb_wcum
-      use optorb_cblock, only: isample_cmat, nreduced, nb_current, norb_f_bcum
+      use orb_mat_024, only: orb_e_bsum,orb_f_bcm2,orb_f_bcum,orb_o_bsum
+      use orb_mat_024, only: orb_oe_bsum,orb_w_bsum
+      use orb_mat_030, only: orb_ecum,orb_wcum
 
       implicit none
 
@@ -412,11 +413,11 @@ C$ iflg = 0: init *cum, *cm2 as well
 c-----------------------------------------------------------------------
       subroutine optorb_save
 
-      use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
+      use csfs,    only: nstates
       use optorb_cblock, only: norbterm
-      use orb_mat_001, only: orb_ho, orb_o, orb_oe
-      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
+      use optwf_control, only: ioptorb
+      use orb_mat_001, only: orb_ho,orb_o,orb_oe
+      use orb_mat_002, only: orb_ho_old,orb_o_old,orb_oe_old
 
       implicit none
 
@@ -439,11 +440,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_restore
 
-      use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
+      use csfs,    only: nstates
       use optorb_cblock, only: norbterm
-      use orb_mat_001, only: orb_ho, orb_o, orb_oe
-      use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
+      use optwf_control, only: ioptorb
+      use orb_mat_001, only: orb_ho,orb_o,orb_oe
+      use orb_mat_002, only: orb_ho_old,orb_o_old,orb_oe_old
 
       implicit none
 
@@ -466,14 +467,13 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_avrg(wcum,eave,oav,eoav,fo,foerr,istate)
 
-      use optwf_contrl, only: ioptorb
-      use optorb_cblock, only: norbterm
+      use contrl_file, only: ounit
+      use optorb_cblock, only: norb_f_bcum,norbterm
+      use optwf_control, only: ioptorb
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
-      use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
-      use optorb_cblock, only: norb_f_bcum
+      use orb_mat_024, only: orb_f_bcm2,orb_f_bcum
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
 
       implicit none
 
@@ -502,17 +502,17 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_dump(iu)
 
-      use csfs, only: nstates
-      use optwf_contrl, only: ioptorb, iapprox
-      use optorb_cblock, only: norbterm, norbprim
+      use csfs,    only: nstates
+      use optorb_cblock, only: nefp_blocks,norb_f_bcum,norbprim,norbterm
+      use optorb_cblock, only: nreduced
+      use optwf_control, only: iapprox,ioptorb
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
-      use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
-      use orb_mat_030, only: orb_ecum, orb_wcum
-      use optorb_cblock, only: nreduced, nefp_blocks, norb_f_bcum
+      use orb_mat_024, only: orb_f_bcm2,orb_f_bcum
+      use orb_mat_030, only: orb_ecum,orb_wcum
 
       implicit none
 
@@ -541,18 +541,18 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optorb_rstrt(iu)
 
-      use csfs, only: nstates
-      use optwf_contrl, only: ioptorb, iapprox
-      use optorb_cblock, only: norbterm, norbprim
+      use contrl_file, only: ounit
+      use csfs,    only: nstates
+      use optorb_cblock, only: nefp_blocks,norb_f_bcum,norbprim,norbterm
+      use optorb_cblock, only: nreduced
+      use optwf_control, only: iapprox,ioptorb
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
-      use orb_mat_024, only: orb_f_bcm2, orb_f_bcum
-      use orb_mat_030, only: orb_ecum, orb_wcum
-      use optorb_cblock, only: nreduced, nefp_blocks, norb_f_bcum
-      use contrl_file,    only: ounit
+      use orb_mat_024, only: orb_f_bcm2,orb_f_bcum
+      use orb_mat_030, only: orb_ecum,orb_wcum
 
       implicit none
 
@@ -594,20 +594,17 @@ c nreduced has to be set since it will only be known for non-continuation runs
 c-----------------------------------------------------------------------
       subroutine optorb_fin(wcum,ecum)
 
-      use csfs, only: nstates
-      use optwf_contrl, only: ioptorb
-      use optwf_parms, only: nparmd, nparmj
-      use sa_weights, only: weights
-      use optorb_cblock, only: idump_blockav
+      use ci000,   only: nciterm
+      use csfs,    only: nstates
+      use gradhess_all, only: grad,h,s
+      use optorb_cblock, only: idump_blockav,norbterm,nreduced
+      use optwf_control, only: iapprox,ioptorb,iuse_orbeigv,method
+      use optwf_parms, only: nparmd,nparmj
       use orb_mat_005, only: orb_ho_cum
       use orb_mat_006, only: orb_oo_cum
       use orb_mat_007, only: orb_oho_cum
-      use gradhess_all, only: grad, h, s
-      use ci000, only: nciterm
-      use method_opt, only: method
-      use optorb_cblock, only: nreduced, norbterm
-      use optwf_contrl, only: iapprox, iuse_orbeigv
       use precision_kinds, only: dp
+      use sa_weights, only: weights
 
       implicit none
 
@@ -837,24 +834,20 @@ c replaced column
 c-----------------------------------------------------------------------
       subroutine optorb_define
 
+      use coefs,   only: next_max
+      use contrl_file, only: errunit,ounit
+      use dorb_m,  only: iworbd
+      use optorb,  only: irrep
+      use optorb_cblock, only: norbterm,nreduced
+      use optorb_mix, only: iwmix_virt,norbopt,norbvirt
       use optorb_mod, only: mxreduced
-      use vmc_mod, only: norb_tot
-      use const, only: nelec
-      use dets, only: ndet
-      use elec, only: ndn, nup
-      use multidet, only: kref
-      use optorb_mix, only: iwmix_virt, norbopt, norbvirt
-      use coefs, only: norb, next_max
-      use dorb_m, only: iworbd
-      use optorb, only: irrep
-      use optorb_cblock, only: norbterm
+      use optwf_control, only: method,ncore,no_active
       use orb_mat_022, only: ideriv
-      use orb_mat_033, only: ideriv_iab, ideriv_ref, irepcol_ref
-      use method_opt, only: method
-      use optorb_cblock, only: nreduced
-      use orbval, only: nadorb, ndetorb, orb
-      use optwf_contrl, only: ncore, no_active
-      use contrl_file,    only: ounit, errunit
+      use orb_mat_033, only: ideriv_iab,ideriv_ref,irepcol_ref
+      use orbval,  only: nadorb,ndetorb,orb
+      use slater,  only: kref,ndet,norb
+      use system,  only: ndn,nelec,nup
+      use vmc_mod, only: norb_tot
 
       implicit none
 
@@ -1069,7 +1062,7 @@ c-----------------------------------------------------------------------
       subroutine check_orbitals
 
 c Do not compute virtual orbitals during single-electron move
-      use orbval, only: nadorb
+      use orbval,  only: nadorb
 
       implicit none
 

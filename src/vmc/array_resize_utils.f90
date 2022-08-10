@@ -1,6 +1,6 @@
 module array_resize_utils
 
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
     implicit none
 
     !> \private

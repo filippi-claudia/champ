@@ -3,41 +3,41 @@
       subroutine fin_reduce
 c MPI version written by Claudia Filippi
 
-      use vmc_mod, only: nrad
-      use csfs, only: nstates
-      use mstates_mod, only: MSTATES
-      use est2cm, only: ecm21
-      use estcum, only: ecum1, iblk
-      use estsig, only: ecm21s, ecum1s
-      use forcepar, only: nforce
-      use forcewt, only: wcum
-      use mpiconf, only: nproc, wid
-      use step, only: rprob, suc, try
-      !use contrl, only: nstep
       use control_vmc, only: vmc_nstep
-      use method_opt, only: method
-      use mpi
-      use custom_broadcast,   only: bcast
-      use precision_kinds, only: dp
-
-      use force_analytic, only: force_analy_fin
+      use csfs,    only: nstates
+      use custom_broadcast, only: bcast
+      use est2cm,  only: ecm21
+      use estcum,  only: ecum1,iblk
+      use estsig,  only: ecm21s,ecum1s
       use force_analy_reduce_mod, only: force_analy_reduce
-      use optjas_reduce_mod, only: optjas_reduce
-      use optorb_reduce_mod, only: optorb_reduce
+      use force_analytic, only: force_analy_fin
+      use forcewt, only: wcum
+      use mmpol_reduce_mod, only: mmpol_reduce
+      use mmpol_vmc, only: mmpol_fin
+      use mpi
+      use mpiconf, only: nproc,wid
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: nforce
+      use optci_mod, only: optci_fin
       use optci_reduce_mod, only: optci_reduce
-      use optx_jas_orb_reduce_mod, only: optx_jas_orb_reduce
+      use optjas_mod, only: optjas_fin
+      use optjas_reduce_mod, only: optjas_reduce
+      use optorb_f_mod, only: optorb_fin
+      use optorb_reduce_mod, only: optorb_reduce
+      use optwf_control, only: method
+      use optx_jas_ci, only: optx_jas_ci_fin
       use optx_jas_ci_reduce_mod, only: optx_jas_ci_reduce
+      use optx_jas_orb, only: optx_jas_orb_fin
+      use optx_jas_orb_reduce_mod, only: optx_jas_orb_reduce
+      use optx_orb_ci, only: optx_orb_ci_fin
       use optx_orb_ci_reduce_mod, only: optx_orb_ci_reduce
       use pcm_reduce_mod, only: pcm_reduce
-      use mmpol_vmc, only: mmpol_fin
-      use mmpol_reduce_mod, only: mmpol_reduce
       use pcm_vmc, only: pcm_fin
-      use optx_orb_ci, only: optx_orb_ci_fin
-      use optx_jas_orb, only: optx_jas_orb_fin
-      use optx_jas_ci, only: optx_jas_ci_fin
-      use optorb_f_mod,only: optorb_fin
-      use optci_mod, only:optci_fin
-      use optjas_mod, only: optjas_fin
+      use precision_kinds, only: dp
+      use step,    only: rprob,suc,try
+      use vmc_mod, only: nrad
+      !use contrl, only: nstep
+
       implicit none
 
       integer :: i, id, ierr, istate

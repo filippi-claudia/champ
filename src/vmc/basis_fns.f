@@ -7,19 +7,17 @@ c ider = 1 -> value, gradient
 c ider = 2 -> value, gradient, laplacian
 c ider = 3 -> value, gradient, laplacian, forces
 
+      use m_force_analytic, only: iforce_analy
+      use multiple_geo, only: iwf
+      use numbas,  only: iwrwf,nrbas!,rmax
+      use numbas1, only: iwlbas,nbastyp
       use numbas_mod, only: MRWF
-      use atom, only: iwctype, ncent, ncent_tot
-      use ghostatom, only: nghostcent
-      use const, only: nelec
-      use numbas, only: iwrwf, nrbas!, rmax
-      use numbas1, only: iwlbas, nbastyp
-      use phifun, only: phin, dphin, d2phin, d2phin_all, d3phin, n0_nbasis
-      use wfsec, only: iwf
-      use force_analy, only: iforce_analy
-      use splfit_mod, only: splfit
-      use slm_mod, only: slm
-
+      use phifun,  only: d2phin,d2phin_all,d3phin,dphin,n0_nbasis,phin
       use precision_kinds, only: dp
+      use slm_mod, only: slm
+      use splfit_mod, only: splfit
+      use system,  only: iwctype,ncent,ncent_tot,nelec,nghostcent
+
       implicit none
 
       integer :: it, ic, ider, irb
@@ -185,7 +183,7 @@ c     phi is computed for all ider values
 c-------------------------------------------------------------------
       subroutine n0_inc(l,k,ic)
 
-      use phifun, only: phin, dphin, n0_ibasis, n0_ic, n0_nbasis
+      use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
       implicit none
 
       integer :: ic, k, l
