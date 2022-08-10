@@ -218,6 +218,7 @@ jobs:
 
 
     - name: "Test 09 (Butadiene) Workload DMC on 1 processor"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -235,6 +236,7 @@ jobs:
 
 
     - name: "Test 10 (Butadiene) Workload DMC on 2 processors"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -320,6 +322,7 @@ jobs:
 
 
     - name: "Test 15 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 1 processor"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -337,6 +340,7 @@ jobs:
 
 
     - name: "Test 16 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 2 processors"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -354,6 +358,7 @@ jobs:
 
 
     - name: "Test 17 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 1 processor"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -371,6 +376,7 @@ jobs:
 
 
     - name: "Test 18 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 2 processors"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -387,6 +393,7 @@ jobs:
         $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_double.out "total E" -26.1987822   0.0143569
 
     - name: "Test 19 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 1 processor"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -403,6 +410,7 @@ jobs:
         $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_single.out "total E" -26.2456717   0.0195821
 
     - name: "Test 20 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 2 processors"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -419,6 +427,7 @@ jobs:
         $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_double.out "total E" -26.2156578   0.0137883
 
     - name: "Test 21 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 1 processor"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -436,6 +445,7 @@ jobs:
 
 
     - name: "Test 22 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants with 3body Jastrow) on 2 processors"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -452,6 +462,7 @@ jobs:
         $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_3body_double.out "total E" -26.2156578   0.0137883
 
     - name: "Test 23 (Butadiene) Workload VMC optimization all using sr_n (65000 dets) on 1 processor"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -468,6 +479,7 @@ jobs:
         $GITHUB_WORKSPACE/tools/compare_value.py vmc_opt_ras1022_pVQZ_65000_single.out "total E" -26.1099681   0.0261470
 
     - name: "Test 24 (Butadiene) Workload VMC optimization all using sr_n (65000 dets) on 2 processors"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -486,6 +498,7 @@ jobs:
 
     - name: "Test 25 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 1 processor"
       continue-on-error: True
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -503,6 +516,7 @@ jobs:
 
     - name: "Test 26 (psb3) optimize wavefunction and ci using sr_n (400 determinants, 2 states, csfmap) on 2 processors"
       continue-on-error: True
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -521,6 +535,7 @@ jobs:
 
     - name: "Test 27 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 1 processor"
       continue-on-error: True
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -537,6 +552,7 @@ jobs:
         $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_single.out "total E" -41.7568182   0.0571839
 
     - name: "Test 29 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -554,6 +570,7 @@ jobs:
 
 
     - name: "Test 30 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 2 processor"
+      if: 0
       run: |
         ulimit -s unlimited
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
