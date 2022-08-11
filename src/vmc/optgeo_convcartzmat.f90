@@ -110,8 +110,8 @@ end module misc_bond_func
 module m_zmat_tools
 contains
 subroutine cart2zmat(natoms,coord_cart,conn_zmatrix,coord_zmatrix)
-      use contrl_file, only: ounit
-      use misc_bond_func
+  use misc_bond_func
+  use contrl_file,    only: ounit
   implicit none
   integer, parameter  ::  dp = selected_real_kind(2*precision(1.0))
   integer, intent(in)  ::  natoms
@@ -181,8 +181,8 @@ end subroutine cart2zmat
 subroutine zmat2cart(natoms,conn_zmatrix,coord_zmatrix,coord_cart)
   ! this is taken from int_to_cart subroutine in intcart.c
   ! in Babel 1.6
-      use contrl_file, only: ounit
-      use misc_bond_func
+  use misc_bond_func
+  use contrl_file,    only: ounit
   implicit none
   integer, parameter  ::  dp = selected_real_kind(2*precision(1.0))
   integer, intent(in)  ::  natoms
@@ -335,8 +335,8 @@ end subroutine zmat2cart
 
 
 subroutine zmat2cart_rc(natoms,conn_zmatrix,coord_zmatrix,coord_cart,refcoord_cart)
-      use contrl_file, only: ounit
-      use misc_bond_func
+  use misc_bond_func
+  use contrl_file,    only: ounit
   implicit none
   integer, parameter  ::  dp = selected_real_kind(2*precision(1.0))
   integer, intent(in)  ::  natoms

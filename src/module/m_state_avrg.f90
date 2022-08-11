@@ -1,7 +1,7 @@
 module sa_check
      !> Arguments: energy_all, energy_err_all
-      use mstates_mod, only: MSTATES
-      use precision_kinds, only: dp
+     use precision_kinds, only: dp
+     use mstates_mod, only: MSTATES
 
      real(dp), dimension(:), allocatable :: energy_all !(MSTATES)
      real(dp), dimension(:), allocatable :: energy_err_all !(MSTATES)
@@ -12,7 +12,7 @@ module sa_check
      save
  contains
      subroutine allocate_sa_check()
-      use mstates_mod, only: MSTATES
+         use mstates_mod, only: MSTATES
          if (.not. allocated(energy_all)) allocate (energy_all(MSTATES))
          if (.not. allocated(energy_err_all)) allocate (energy_err_all(MSTATES))
      end subroutine allocate_sa_check
@@ -26,8 +26,8 @@ module sa_check
 
  module sa_weights
      !> Arguments: iweight, nweight, weights
-      use mstates_mod, only: MSTATES
-      use precision_kinds, only: dp
+     use precision_kinds, only: dp
+     use mstates_mod, only: MSTATES
 
      integer, dimension(:), allocatable :: iweight !(MSTATES)
      integer :: nweight
@@ -39,7 +39,7 @@ module sa_check
      save
  contains
      subroutine allocate_sa_weights()
-      use mstates_mod, only: MSTATES
+         use mstates_mod, only: MSTATES
          if (.not. allocated(iweight)) allocate (iweight(MSTATES), source=0)
          if (.not. allocated(weights)) allocate (weights(MSTATES))
      end subroutine allocate_sa_weights
@@ -54,16 +54,16 @@ module sa_check
  module m_state_avrg
  contains
  subroutine allocate_m_state_avrg()
-      use sa_check, only: allocate_sa_check
-      use sa_weights, only: allocate_sa_weights
+     use sa_check, only: allocate_sa_check
+     use sa_weights, only: allocate_sa_weights
 
      call allocate_sa_check()
      call allocate_sa_weights()
  end subroutine allocate_m_state_avrg
 
  subroutine deallocate_m_state_avrg()
-      use sa_check, only: deallocate_sa_check
-      use sa_weights, only: deallocate_sa_weights
+     use sa_check, only: deallocate_sa_check
+     use sa_weights, only: deallocate_sa_weights
 
      call deallocate_sa_check()
      call deallocate_sa_weights()

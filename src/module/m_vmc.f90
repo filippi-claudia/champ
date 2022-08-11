@@ -1,6 +1,19 @@
+module elec
+    !> Arguments: ndn, nup
+
+    implicit none
+
+    integer :: ndn
+    integer :: nup
+
+    private
+    public   :: ndn, nup
+    save
+end module elec
+
 module vmc_mod
     !> Arguments:
-      use precision_kinds, only: dp
+    use precision_kinds, only: dp
 
     ! nelec      = number of electrons
     ! norb_tot   = number of orbitals read from the orbital file
@@ -29,9 +42,12 @@ module vmc_mod
 
     integer :: norb_tot
     integer :: nctyp3x
+    integer :: nordj
 
     integer :: nmat_dim, nmat_dim2
+    integer :: nordj1   ! nordj+1
 
+    integer :: neqsx    ! 6*nordj
     integer :: mterms
     integer :: ncent3
 
@@ -40,10 +56,10 @@ module vmc_mod
 
     private
     public :: norb_tot, nctyp3x
-    public :: nrad, nmat_dim, nmat_dim2
+    public :: nrad, nordj, nordj1, nmat_dim, nmat_dim2
     public :: radmax, delri
 
-    public :: mterms
+    public :: neqsx, mterms
 
     public :: ncent3, NCOEF, MEXCIT
     public :: set_vmc_size
@@ -51,8 +67,9 @@ module vmc_mod
     save
 contains
     subroutine set_vmc_size
-      use system,  only: ncent_tot,nctype_tot,ndn,nelec,nup
-
+        use const, only: nelec
+        use atom, only: nctype_tot, ncent_tot
+        use elec, only: nup  ! nup >= ndn
         nmat_dim = nup*nup
         nmat_dim2 = nelec*(nelec - 1)/2
         nctyp3x = max(3, nctype_tot)

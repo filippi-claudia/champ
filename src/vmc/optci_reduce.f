@@ -2,20 +2,21 @@
       contains
       subroutine optci_reduce
 
-      use ci000,   only: nciterm
+      use precision_kinds, only: dp
+      use optci, only: mxciterm, mxcireduced, ncimatdim
+      use optwf_contrl, only: ioptci
+      use mstates_ctrl, only: iefficiency, nstates_psig
+      use mstates2, only: effcm2, effcum
+      use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
-      use ci008_blk, only: ci_oe_cm2,ci_oe_cum
-      use ci009_blk, only: ci_oo_cm2,ci_oo_cum
+      use ci008_blk, only: ci_oe_cm2, ci_oe_cum
+      use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
+      use method_opt, only: method
       use mpi
-      use mstates2, only: effcm2,effcum
-      use mstates_ctrl, only: iefficiency,nstates_psig
-      use optci,   only: mxcireduced,mxciterm,ncimatdim
-      use optorb_cblock, only: norbterm
       use optorb_mod, only: nmatdim
-      use optwf_control, only: ioptci,method
-      use precision_kinds, only: dp
+      use optorb_cblock, only: norbterm
 
       implicit none
 

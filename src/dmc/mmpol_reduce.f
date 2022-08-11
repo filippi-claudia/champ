@@ -2,14 +2,14 @@
       contains
       subroutine mmpol_reduce(wgsum)
 
-      use control, only: mode
-      use mmpol_averages, only: cmmpol_cm2,cmmpol_cum,cmmpol_sum
-      use mmpol_averages, only: dmmpol_cm2,dmmpol_cum,dmmpol_sum
-      use mmpol_cntrl, only: immpol
-      use mpi
       use mpiconf, only: wid
-      use precision_kinds, only: dp
+      use contr3, only: mode
+      use mmpol_cntrl, only: immpol
+      use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, dmmpol_sum
+      use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2
+      use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: ierr
@@ -67,9 +67,9 @@
 
       subroutine mmpol_send(irecv,itag_s)
 
-      use branch,  only: nwalk
+      use branch, only: nwalk
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc
       use mmpol_cntrl, only: immpol
-      use mmpolo,  only: cmmpolo_dmc,dmmpolo_dmc
       use mpi
 
       implicit none

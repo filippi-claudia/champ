@@ -94,7 +94,7 @@ module optgeo_hessian
   !! @param dg change of the gradient in the last step
   !!
   subroutine optgeo_update_bfgs (h, dx, dg)
-      use contrl_file, only: ounit
+    use contrl_file,    only: ounit
     real(kind=8), intent(inout) :: h(:,:)
     real(kind=8), intent(in) :: dx(:), dg(:)
 

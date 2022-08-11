@@ -4,40 +4,44 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use acuest_gpop_mod, only: acuest_gpop
-      use age,     only: ioldest
-      use contrl_file, only: ounit
-      use control, only: mode
+      use forcest, only: fgcm2, fgcum
+      use forcepar, only: nforce
+      use age, only: ioldest
+      use estcum, only: iblk
+      use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
+      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, wdsum
+      use estsum, only: wfsum, wgdsum, wgsum, wsum_dmc
+      use estcum, only: ecum_dmc, efcum, egcum, ei1cum, ei2cum
+      use estcum, only: pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
+      use estcum, only: wcum_dmc, wdcum, wfcum, wgcum
+      use estcum, only: wgdcum
+      use est2cm, only: ecm2_dmc, efcm2, egcm2, ei1cm2, ei2cm2
+      use est2cm, only: pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2
+      use est2cm, only: wfcm2, wgcm2
+      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
+      use mpiconf, only: nproc, wid
+      use contr3, only: mode
+      use mpiblk, only: iblk_proc
+      use force_mod, only: MFORCE
       use control_dmc, only: dmc_nstep
-      use derivest, only: derivcm2,derivcum,derivsum,derivtotave_num_old
-      use est2cm,  only: ecm2_dmc,efcm2,egcm2,ei1cm2,ei2cm2,pecm2_dmc
-      use est2cm,  only: r2cm2_dmc,ricm2,tjfcm_dmc,tpbcm2_dmc,wcm2,wfcm2
-      use est2cm,  only: wgcm2
-      use estcum,  only: ecum_dmc,efcum,egcum,ei1cum,ei2cum,iblk
-      use estcum,  only: pecum_dmc,r2cum_dmc,ricum,taucum,tjfcum_dmc
-      use estcum,  only: tpbcum_dmc,wcum_dmc,wdcum,wfcum,wgcum,wgdcum
-      use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
-      use estsum,  only: r2sum,risum,tausum,tjfsum_dmc,tpbsum_dmc,wdsum
-      use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
-      use mmpol,   only: mmpol_init
-      use mmpol_dmc, only: mmpol_prt
-      use mmpol_reduce_mod, only: mmpol_reduce
       use mpi
-      use mpiblk,  only: iblk_proc
-      use mpiconf, only: nproc,wid
-      use multiple_geo, only: MFORCE,fgcm2,fgcum,nforce
-      use optci_mod, only: optci_cum,optci_init
-      use optjas_mod, only: optjas_cum
-      use optorb_f_mod, only: optorb_cum,optorb_init
-      use pcm_dmc, only: pcm_prt
-      use pcm_mod, only: pcm_init
-      use pcm_reduce_mod, only: pcm_reduce
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
-      use prop_dmc, only: prop_prt_dmc
-      use prop_reduce_mod, only: prop_reduce
-      use properties_mod, only: prop_init
 
+      use acuest_gpop_mod, only: acuest_gpop
 
+      use mmpol,         only: mmpol_init
+      use pcm_mod,       only: pcm_init
+      use properties_mod,only: prop_init
+      use optci_mod,     only: optci_init, optci_cum
+      use optorb_f_mod,  only: optorb_init, optorb_cum
+      use mmpol_dmc,     only: mmpol_prt
+      use pcm_dmc,       only: pcm_prt
+      use prop_dmc,      only: prop_prt_dmc
+      use mmpol_reduce_mod, only: mmpol_reduce
+      use pcm_reduce_mod,only: pcm_reduce
+      use prop_reduce_mod,only: prop_reduce
+      use optjas_mod     ,only: optjas_cum
       implicit none
 
       integer :: i, iderivgerr, iegerr, ierr, ifgerr

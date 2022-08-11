@@ -1,13 +1,12 @@
-module optwf_control
+module optwf_contrl
     !> Arguments: ioptci, ioptjas, ioptorb, idl_flag, ilbfgs_flag, ilbfgs_m, nparm,
     !>            nopt_iter, micro_iter_sr, energy_tol,
     !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j,
     !>            iapprox, ncore, iuse_orbeigv, no_active, multiple_adiag, iroot_geo,
     !>            ilastvmc, sr_tau, sr_adig, sr_adiag, sr_eps
 
-      use precision_kinds, only: dp
+    use precision_kinds, only: dp
 
-    character(:), allocatable :: method
     integer :: ioptwf
     integer :: ioptci
     integer :: ioptjas
@@ -54,15 +53,14 @@ module optwf_control
     public :: ilastvmc
     public :: sr_tau, sr_adiag, sr_eps
     public :: dl_alg, dl_mom
-    public :: method
     save
 
-end module optwf_control
+end module optwf_contrl
 
 module optwf_corsam
     !> Arguments: add_diag, add_diag_tmp, energy, energy_err, force, force_err
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+    use force_mod, only: MFORCE
+    use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: add_diag !(MFORCE)
     real(dp), dimension(:), allocatable :: energy !(MFORCE)
@@ -78,8 +76,8 @@ module optwf_corsam
     save
 contains
     subroutine allocate_optwf_corsam()
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+        use force_mod, only: MFORCE
+        use precision_kinds, only: dp
         if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
         if (.not. allocated(energy)) allocate (energy(MFORCE))
         if (.not. allocated(energy_err)) allocate (energy_err(MFORCE))
@@ -111,8 +109,8 @@ module optwf_nparmj
     save
 contains
     subroutine allocate_optwf_nparmj()
-      use system,  only: nctype_tot
-      use vmc_mod, only: nctyp3x
+        use vmc_mod, only: nctyp3x
+        use atom, only: nctype_tot
 
         if (.not. allocated(nparma)) allocate (nparma(nctyp3x), source=0)
         if (.not. allocated(nparmb)) allocate (nparmb(3), source=0)
@@ -158,8 +156,8 @@ module optwf_wjas
     save
 contains
     subroutine allocate_optwf_wjas()
-      use system,  only: nctype_tot
-      use vmc_mod, only: nctyp3x
+        use atom, only: nctype_tot
+        use vmc_mod, only: nctyp3x
         if (.not. allocated(iwjasa)) allocate (iwjasa(83, nctyp3x), source=0)
         if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3), source=0)
         if (.not. allocated(iwjasc)) allocate (iwjasc(83, nctype_tot), source=0)
@@ -178,17 +176,17 @@ end module optwf_wjas
 module m_optwf
 contains
 subroutine allocate_m_optwf()
-      use optwf_corsam, only: allocate_optwf_corsam
-      use optwf_wjas, only: allocate_optwf_wjas
+    use optwf_corsam, only: allocate_optwf_corsam
+    use optwf_wjas, only: allocate_optwf_wjas
 
     call allocate_optwf_corsam()
     call allocate_optwf_wjas()
 end subroutine allocate_m_optwf
 
 subroutine deallocate_m_optwf()
-      use optwf_corsam, only: deallocate_optwf_corsam
-      use optwf_nparmj, only: deallocate_optwf_nparmj
-      use optwf_wjas, only: deallocate_optwf_wjas
+    use optwf_corsam, only: deallocate_optwf_corsam
+    use optwf_nparmj, only: deallocate_optwf_nparmj
+    use optwf_wjas, only: deallocate_optwf_wjas
 
     call deallocate_optwf_corsam()
     call deallocate_optwf_nparmj()

@@ -1,6 +1,6 @@
       module optwf_handle_wf
-      use error,   only: fatal_error
-      use jastrow4_mod, only: nterms4
+      use error, only: fatal_error
+      use jastrow4_mod,       only: nterms4
       interface ! LAPACK interface
         SUBROUTINE dcopy(N,DX,INCX,DY,INCY)
 !*  -- Reference BLAS level1 routine --
@@ -14,8 +14,8 @@
 c-----------------------------------------------------------------------
       subroutine write_wf(iwf_fit,iter)
 
-      use mpi
       use mpiconf, only: idtask
+      use mpi
 
       implicit none
 
@@ -58,14 +58,15 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
 
-      use bparm,   only: nspin2b
-      use jaspar4, only: norda,nordb,nordc
-      use jastrow, only: a4,b,c,ianalyt_lap,ijas,isc,nspin1,nspin2
-      use jastrow, only: scalek
-      use optwf_control, only: ioptjas
-      use optwf_nparmj, only: nparma,nparmb,nparmc
+      use atom, only: nctype
+      use jaspar, only: nspin1, nspin2
+      use jaspar3, only: b, c, scalek
+      use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nspin2b
+      use optwf_contrl, only: ioptjas
+      use optwf_nparmj, only: nparma, nparmb, nparmc
+      use contr2, only: ianalyt_lap, ijas, isc
       use precision_kinds, only: dp
-      use system,  only: nctype
 
       implicit none
 
@@ -124,13 +125,12 @@ c tmp
 c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
 
-      use coefs,   only: nbasis
+      use numbas, only: numr
+      use optwf_contrl, only: ioptorb
+      use coefs, only: coef, nbasis, norb
+      use orbval, only: nadorb
       use inputflags, only: scalecoef
-      use numbas,  only: numr
-      use optwf_control, only: ioptorb
-      use orbval,  only: nadorb
       use precision_kinds, only: dp
-      use slater,  only: coef,norb
 
       implicit none
 
@@ -157,11 +157,13 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine write_ci(iwf_fit,filetype)
 
-      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
-      use dorb_m,  only: iworbd
-      use optwf_control, only: ioptci
-      use slater,  only: cdet,kref,ndet
-      use system,  only: nelec,nup
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use dets, only: cdet, ndet
+      use multidet, only: kref
+      use optwf_contrl, only: ioptci
+      use dorb_m, only: iworbd
+      use elec, only: nup
+      use const, only: nelec
 
       implicit none
 
@@ -234,7 +236,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_wf
 
-      use optwf_control, only: ioptci,ioptjas,ioptorb
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
 
       implicit none
 
@@ -247,7 +249,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine restore_wf(iadiag)
 
-      use optwf_control, only: ioptci,ioptjas,ioptorb
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
 
       implicit none
 
@@ -275,13 +277,13 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_jastrow
 
-      use bparm,   only: nspin2b
-      use jaspar4, only: norda,nordb,nordc
-      use jastrow, only: a4,b,c,nordj1
-      use multiple_geo, only: nwftype
       use precision_kinds, only: dp
-      use system,  only: nctype,nctype_tot
-
+      use vmc_mod, only: nordj1
+      use atom, only: nctype, nctype_tot
+      use wfsec, only: nwftype
+      use jaspar3, only: b, c
+      use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nspin2b
 
       implicit none
 
@@ -354,11 +356,10 @@ c Restore parameters corresponding to run generating hessian
 c-----------------------------------------------------------------------
       subroutine save_lcao
 
-      use coefs,   only: nbasis
-      use multiple_geo, only: nwftype
       use precision_kinds, only: dp
-      use slater,  only: coef,norb
       use vmc_mod, only: norb_tot
+      use coefs, only: coef, nbasis, norb
+      use wfsec, only: nwftype
 
       implicit none
 
@@ -391,11 +392,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_ci
 
-      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
-      use mstates_mod, only: MSTATES
       use precision_kinds, only: dp
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use mstates_mod, only: MSTATES
+      use dets, only: cdet, ndet
       use set_input_data, only: multideterminants_define
-      use slater,  only: cdet,ndet
 
       implicit none
 
@@ -463,10 +464,10 @@ c reset kref=1
 c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
 
-      use bparm,   only: nspin2b
-      use jaspar4, only: norda,nordb,nordc
-      use jastrow, only: a4,b,c,scalek
-      use system,  only: nctype
+      use atom, only: nctype
+      use jaspar3, only: b, c, scalek
+      use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nspin2b
 
       implicit none
 
@@ -500,9 +501,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
 
-      use coefs,   only: nbasis
-      use orbval,  only: nadorb
-      use slater,  only: coef,norb
+      use coefs, only: coef, nbasis, norb
+      use orbval, only: nadorb
 
       implicit none
 
@@ -519,8 +519,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_ci(iadiag)
 
-      use csfs,    only: ccsf,ncsf,nstates
-      use slater,  only: cdet,ndet
+      use csfs, only: ccsf, ncsf, nstates
+      use dets, only: cdet, ndet
 
       implicit none
 
@@ -543,8 +543,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_zex(iadiag)
 
-      use basis,   only: zex
-      use coefs,   only: nbasis
+      use coefs, only: nbasis
+      use basis, only: zex
 
       implicit none
 
@@ -559,12 +559,13 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
-      use bparm,   only: nspin2b
-      use jaspar4, only: norda,nordb,nordc
-      use jastrow, only: a4,b,c,nordj1
-      use multiple_geo, only: nwftype
       use precision_kinds, only: dp
-      use system,  only: nctype,nctype_tot
+      use vmc_mod, only: nordj1
+      use atom, only: nctype, nctype_tot
+      use wfsec, only: nwftype
+      use jaspar3, only: b, c
+      use jaspar4, only: a4, norda, nordb, nordc
+      use bparm, only: nspin2b
 
       implicit none
 
@@ -634,11 +635,10 @@ c Restore parameters corresponding to run generating hessian
 c-----------------------------------------------------------------------
       subroutine save_lcao_best
 
-      use coefs,   only: nbasis
-      use multiple_geo, only: nwftype
       use precision_kinds, only: dp
-      use slater,  only: coef,norb
       use vmc_mod, only: norb_tot
+      use coefs, only: coef, nbasis, norb
+      use wfsec, only: nwftype
 
       implicit none
 
@@ -672,11 +672,12 @@ c     if(ioptorb.eq.0) return
 c-----------------------------------------------------------------------
       subroutine save_ci_best
 
-      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
-      use mstates_mod, only: MSTATES
       use precision_kinds, only: dp
+      use csfs, only: ccsf, ncsf, nstates
+      use csfs, only: cxdet, iadet, ibdet, icxdet
+      use mstates_mod, only: MSTATES
+      use dets, only: cdet, ndet
       use set_input_data, only: multideterminants_define
-      use slater,  only: cdet,ndet
 
       implicit none
 
@@ -765,15 +766,16 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
-      use bparm,   only: nspin2b
-      use cuspexact4_mod, only: cuspexact4
-      use cuspinit4_mod, only: cuspinit4
-      use jastrow, only: a4,b,c
-      use optwf_control, only: ioptjas
-      use optwf_nparmj, only: nparma,nparmb,nparmc
-      use optwf_wjas, only: iwjasa,iwjasb,iwjasc
+      use atom, only: nctype
+      use jaspar3, only: b, c
+      use jaspar4, only: a4
+      use bparm, only: nspin2b
+      use optwf_contrl, only: ioptjas
+      use optwf_nparmj, only: nparma, nparmb, nparmc
+      use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
-      use system,  only: nctype
+      use cuspinit4_mod, only: cuspinit4
+      use cuspexact4_mod, only: cuspexact4
 
       implicit none
 
@@ -815,14 +817,13 @@ c Check parameters a2 and b2 > -scalek
 c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
 
-      use coefs,   only: nbasis
+      use vmc_mod, only: norb_tot
+      use optwf_contrl, only: ioptorb
+      use optwf_parms, only: nparmd, nparmj
+      use coefs, only: coef, nbasis, norb
       use optorb_cblock, only: norbterm
-      use optwf_control, only: ioptorb
-      use optwf_parms, only: nparmd,nparmj
       use orb_mat_022, only: ideriv
       use precision_kinds, only: dp
-      use slater,  only: coef,norb
-      use vmc_mod, only: norb_tot
 
       implicit none
 
@@ -858,11 +859,12 @@ c Update the orbitals
 c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
 
-      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
-      use optwf_control, only: ioptci,ioptjas,ioptorb,method
+      use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use dets, only: cdet, ndet
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmj
+      use method_opt, only: method
       use precision_kinds, only: dp
-      use slater,  only: cdet,ndet
 
       implicit none
 
@@ -919,13 +921,14 @@ c90     write(ounit,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
 c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
 
-      use bparm,   only: nspin2b
-      use contrl_file, only: ounit
-      use jastrow, only: a4,b,scalek
-      use optwf_nparmj, only: nparma,nparmb
-      use optwf_wjas, only: iwjasa,iwjasb
+      use atom, only: nctype
+      use jaspar3, only: b, scalek
+      use jaspar4, only: a4
+      use bparm, only: nspin2b
+      use optwf_nparmj, only: nparma, nparmb
+      use optwf_wjas, only: iwjasa, iwjasb
       use precision_kinds, only: dp
-      use system,  only: nctype
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -961,8 +964,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine test_solution_parm(nparm,dparm,
      &              dparm_norm,dparm_norm_min,add_diag,iflag)
-      use contrl_file, only: ounit
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -990,12 +994,12 @@ c Calculate rms change in parameters
 c-----------------------------------------------------------------------
       subroutine save_nparms
 
-      use ci000,   only: nciterm
-      use contrl_file, only: ounit
-      use optorb_cblock, only: norbterm,nreduced
-      use optwf_control, only: ioptci,ioptjas,ioptorb
-      use optwf_parms, only: nparmd,nparmj
-      use orbval,  only: nadorb
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_parms, only: nparmd, nparmj
+      use optorb_cblock, only: norbterm, nreduced
+      use ci000, only: nciterm
+      use contrl_file,    only: ounit
+      use orbval, only: nadorb
       implicit none
 
       integer :: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav, nadorb_sav
@@ -1041,11 +1045,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine set_nparms_tot
 
-      use ci000,   only: nciterm
-      use contrl_file, only: ounit
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
-      use optwf_control, only: ioptci,ioptjas,ioptorb,method,nparm
-      use optwf_parms, only: nparmd,nparmj
+      use ci000, only: nciterm
+      use method_opt, only: method
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i0
@@ -1081,23 +1086,26 @@ c-----------------------------------------------------------------------
       subroutine optwf_store(l,wt,psid,energy)
 c store elocal and derivatives of psi for each configuration (call in vmc)
 
-      use ci000,   only: nciterm
-      use ci001_blk, only: ci_o
-      use ci003_blk, only: ci_e
-      use csfs,    only: nstates
-      use deloc_dj_m, only: denergy
+      use sr_mod, only: mparm, mconf
+      use optwf_parms, only: nparmj
+      use csfs, only: nstates
       use derivjas, only: gvalue
-      use m_force_analytic, only: iforce_analy
-      use optgeo_lib, only: force_store
-      use optorb_cblock, only: norbterm
-      use optwf_control, only: ioptci,ioptjas,ioptorb,method
+      use optwf_contrl, only: ioptci, ioptjas, ioptorb
       use optwf_func, only: ifunc_omega
       use optwf_parms, only: nparmj
-      use orb_mat_001, only: orb_ho,orb_o
-      use precision_kinds, only: dp
-      use sr_mat_n, only: elocal,nconf_n,sr_ho,sr_o,wtg
-      use sr_mod,  only: mconf,mparm
+      use sr_mat_n, only: elocal, nconf_n, sr_ho
+      use sr_mat_n, only: sr_o, wtg
+      use deloc_dj_m, only: denergy
+      use force_analy, only: iforce_analy
+      use optorb_cblock, only: norbterm
+      use orb_mat_001, only: orb_ho, orb_o
+      use ci000, only: nciterm
+      use ci001_blk, only: ci_o
+      use ci003_blk, only: ci_e
+      use method_opt, only: method
       !use optwf_sr_mod, only: izvzb, i_sr_rescale
+      use precision_kinds, only: dp
+      use optgeo_lib, only: force_store
 
       implicit none
 

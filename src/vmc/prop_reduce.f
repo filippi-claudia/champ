@@ -2,13 +2,13 @@
       contains
       subroutine prop_reduce
 
-      use mpi
-      use mpiconf, only: wid
-      use precision_kinds, only: dp
       use properties, only: MAXPROP
-      use prp000,  only: iprop,nprop
-      use prp003,  only: vprop_cm2,vprop_cum
+      use mpiconf, only: wid
+      use prp000, only: iprop, nprop
+      use prp003, only: vprop_cm2, vprop_cum
+      use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ierr

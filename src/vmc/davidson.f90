@@ -30,16 +30,12 @@
 !> \param[out] iters: Number of iterations until convergence.
 !> return eigenvalues and ritz_vectors of the matrix.
 module davidson
-      use array_utils, only: check_deallocate_matrix
-      use array_utils, only: check_deallocate_vector,concatenate
-      use array_utils, only: diag_mat,eye,initialize_subspace
-      use array_utils, only: modified_gram_schmidt,norm,write_matrix
-      use array_utils, only: write_vector
-      use contrl_file, only: errunit,ounit
-      use lapack_wrapper, only: lapack_generalized_eigensolver
-      use lapack_wrapper, only: lapack_matmul,lapack_matrix_vector
-      use lapack_wrapper, only: lapack_qr,lapack_solver
-      use precision_kinds, only: dp
+    use precision_kinds, only: dp
+    use lapack_wrapper, only: lapack_generalized_eigensolver, lapack_matmul, lapack_matrix_vector, &
+                              lapack_qr, lapack_solver
+    use array_utils, only: concatenate, initialize_subspace, norm, write_matrix, write_vector, &
+                           eye, check_deallocate_matrix, check_deallocate_vector, modified_gram_schmidt, diag_mat
+    use contrl_file,    only: ounit, errunit
     implicit none
 
     type davidson_parameters

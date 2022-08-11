@@ -1,9 +1,9 @@
       module grid3d_orbitals
 c Orbitals on a 3d grid with spline fit
 c Written by A. Scemama, adapted from C. Umrigar's 2D routines
+      use error, only: fatal_error
       use basis_fns_mod, only: basis_fns
-      use error,   only: fatal_error
-      use grid3d,  only: int_from_cart
+      use grid3d, only: int_from_cart
       interface ! pspline interface
       subroutine fvtricub(ict,ivec,ivecd,
      >   fval,ii,jj,kk,xparam,yparam,zparam,
@@ -50,22 +50,26 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
 
       subroutine setup_3dsplorb
 
-      use basis_fns_mod, only: basis_fns
-      use coefs,   only: nbasis
-      use contrl_file, only: ounit
-      use control_vmc, only: vmc_idump,vmc_irstar,vmc_isite,vmc_nblk
-      use control_vmc, only: vmc_nblkeq,vmc_nconf,vmc_nconf_new
-      use control_vmc, only: vmc_nstep
-      use distance_mod, only: r_en,rvec_en
-      use grid3d_param, only: endpt,nstep3d,origin
-      use grid_mod, only: MXNSTEP,MXNSTEP3,cart_from_int
       use grid_spline_mod, only: orb_num_spl
-      use multiple_geo, only: iwf
-      use phifun,  only: d2phin,dphin,phin
-      use precision_kinds, only: dp
-      use slater,  only: coef,norb
-      use system,  only: cent,ncent,nelec,nghostcent
+      use grid_mod, only: MXNSTEP, MXNSTEP3
+      use grid_mod, only: cart_from_int
+      use atom, only: cent, ncent
+      use const, only: nelec
+      use ghostatom, only: nghostcent
+      use phifun, only: d2phin, dphin
+      use phifun, only: phin
+      use wfsec, only: iwf
+      use coefs, only: coef, nbasis, norb
 !      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
+      use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite, vmc_nconf
+      use control_vmc, only: vmc_nblk, vmc_nblkeq, vmc_nconf_new, vmc_nstep
+      use phifun, only: d2phin, dphin, phin
+      use grid3d_param, only: endpt, nstep3d, origin
+      use distance_mod, only: r_en, rvec_en
+      use precision_kinds, only: dp
+      use contrl_file, only: ounit
+      use basis_fns_mod, only: basis_fns
+      implicit none
 
       integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin
       integer :: ibczmax, ibczmin, ic, ier
@@ -339,10 +343,12 @@ c----------------------------------------------------------------------
 
 
       subroutine spline_mo(r,iorb,f,df,ddf,ier)
-      use grid3d_param, only: nstep3d,step3d
-      use grid_mod, only: IUNDEFINED,MXNSTEP,cart_from_int
       use grid_spline_mod, only: orb_num_spl
-      use insout,  only: inout,inside
+      use grid_mod, only: MXNSTEP
+      use grid_mod, only: IUNDEFINED
+      use grid_mod, only: cart_from_int
+      use insout, only: inout, inside
+      use grid3d_param, only: nstep3d, step3d
       implicit none
 
       integer :: i
@@ -434,20 +440,22 @@ c Lagrange interpolation routines
 
       subroutine setup_3dlagorb
 
-      use coefs,   only: nbasis
-      use contrl_file, only: ounit
-      use control_vmc, only: vmc_irstar
-      use distance_mod, only: r_en,rvec_en
-      use grid3d_param, only: endpt,nstep3d,origin
-      use grid_lagrange_mod, only: LAGEND,LAGSTART,orb_num_lag
+      use grid_lagrange_mod, only: LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use multiple_geo, only: iwf
-      use orbital_num_lag, only: denom
-      use phifun,  only: d2phin,dphin,phin
-      use precision_kinds, only: dp
-      use slater,  only: coef,norb
-      use system,  only: cent,ncent,nghostcent
       use vmc_mod, only: norb_tot
+      use vmc_mod, only: norb_tot
+      use atom, only: cent, ncent
+      use wfsec, only: iwf
+      use grid3d_param, only: nstep3d, endpt, origin
+      use orbital_num_lag, only: denom
+      use coefs, only: coef, nbasis, norb
+      use ghostatom, only: nghostcent
+      use control_vmc, only: vmc_irstar
+      use phifun, only: phin, dphin, d2phin
+      use distance_mod, only: r_en, rvec_en
+      use precision_kinds, only: dp
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, ic, idenom, ier, iok
@@ -637,16 +645,17 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use grid3d_param, only: nstep3d,step3d
-      use grid_lagrange_mod, only: LAGEND,LAGMAX,LAGSTART,orb_num_lag
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use insout,  only: inout,inside
-      use orbital_num_lag, only: denom
-      use precision_kinds, only: dp
-      use slater,  only: norb
-      use system,  only: nelec
       use vmc_mod, only: norb_tot
+      use insout, only: inout, inside
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
+      use const, only: nelec
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, i1, i2, i3, iel
@@ -725,16 +734,17 @@ c     The mesh pts. on which the function values, f, are given, are assumed
 c     to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c     
       
-      use grid3d_param, only: nstep3d,step3d
-      use grid_lagrange_mod, only: LAGEND,LAGMAX,LAGSTART,orb_num_lag
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use insout,  only: inout,inside
-      use orbital_num_lag, only: denom
-      use precision_kinds, only: dp
-      use slater,  only: norb
-      use system,  only: nelec
       use vmc_mod, only: norb_tot
+      use insout, only: inout, inside
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
+      use const, only: nelec
       
+      use precision_kinds, only: dp
       implicit none
       
       integer :: i, i1, i2, i3, iel
@@ -813,16 +823,17 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use grid3d_param, only: nstep3d,step3d
-      use grid_lagrange_mod, only: LAGEND,LAGMAX,LAGSTART,orb_num_lag
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use insout,  only: inout,inside
-      use orbital_num_lag, only: denom
-      use precision_kinds, only: dp
-      use slater,  only: norb
-      use system,  only: nelec
       use vmc_mod, only: norb_tot
+      use insout, only: inout, inside
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
+      use const, only: nelec
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, i1, i2, i3, iaxis
@@ -903,15 +914,16 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use grid3d_param, only: nstep3d,step3d
-      use grid_lagrange_mod, only: LAGEND,LAGMAX,LAGSTART,orb_num_lag
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use insout,  only: inout,inside
-      use orbital_num_lag, only: denom
-      use precision_kinds, only: dp
-      use slater,  only: norb
       use vmc_mod, only: norb_tot
+      use insout, only: inout, inside
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, i1, i2, i3, ier
@@ -990,15 +1002,16 @@ c The mesh pts. on which the function values, f, are given, are assumed
 c to be at 1,2,3,...nstep3d(1), and similarly for y and z.
 c
 
-      use grid3d_param, only: nstep3d,step3d
-      use grid_lagrange_mod, only: LAGEND,LAGMAX,LAGSTART,orb_num_lag
+      use grid_lagrange_mod, only: LAGMAX, LAGSTART, LAGEND
+      use grid_lagrange_mod, only: orb_num_lag
       use grid_mod, only: cart_from_int
-      use insout,  only: inout,inside
-      use orbital_num_lag, only: denom
-      use precision_kinds, only: dp
-      use slater,  only: norb
       use vmc_mod, only: norb_tot
+      use insout, only: inout, inside
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d, step3d
+      use orbital_num_lag, only: denom
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, i1, i2, i3, iaxis
@@ -1068,10 +1081,10 @@ c Compute displacements
       end
 c-----------------------------------------------------------------------
       subroutine orb3d_dump(iu)
-      use grid3d_param, only: endpt,nstep3d,origin,step3d
-      use grid3dflag, only: i3dgrid,i3dlagorb,i3dsplorb
       use grid_mod, only: cart_from_int
-      use slater,  only: norb
+      use coefs, only: norb
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use grid3dflag, only: i3dgrid, i3dlagorb, i3dsplorb
 
       implicit none
 
@@ -1098,11 +1111,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine orb3d_rstrt(iu)
 
-      use grid3d_param, only: endpt,nstep3d,origin,step3d
-      use grid3dflag, only: i3dgrid,i3dlagorb,i3dsplorb
       use grid_mod, only: cart_from_int
-      use slater,  only: norb
+      use coefs, only: norb
 
+      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use grid3dflag, only: i3dgrid, i3dlagorb, i3dsplorb
 
       implicit none
 
@@ -1127,9 +1140,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_dump(iu)
-      use grid3d_param, only: nstep3d
       use grid_spline_mod, only: orb_num_spl
-      use slater,  only: norb
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
       implicit none
 
       integer :: i, iu, j, k, l
@@ -1148,9 +1161,9 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splorb_rstrt(iu)
-      use grid3d_param, only: nstep3d
       use grid_spline_mod, only: orb_num_spl
-      use slater,  only: norb
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
       implicit none
 
       integer :: i, iu, j, k, l
@@ -1169,9 +1182,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_dump(iu)
 
-      use grid3d_param, only: nstep3d
       use grid_lagrange_mod, only: orb_num_lag
-      use slater,  only: norb
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
 
       implicit none
 
@@ -1192,9 +1205,9 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine lagorb_rstrt(iu)
 
-      use grid3d_param, only: nstep3d
       use grid_lagrange_mod, only: orb_num_lag
-      use slater,  only: norb
+      use coefs, only: norb
+      use grid3d_param, only: nstep3d
 
       implicit none
 

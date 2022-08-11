@@ -3,24 +3,24 @@
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 c Written by Claudia Filippi by modifying hpsi
 
-      use contrl_file, only: ounit
-      use csfs,    only: nstates
-      use determinante_mod, only: determinante
-      use determinante_psit_mod, only: determinante_psit
-      use distance_mod, only: r_en,rvec_en
-      use distances_mod, only: distances
-      use error,   only: fatal_error
-      use estpsi,  only: apsi,aref
-      use jastrow, only: ianalyt_lap
-      use jastrowe_mod, only: jastrowe
+      use csfs, only: nstates
       use mstates_mod, only: MSTATES
-      use multideterminante_mod, only: multideterminante
-      use multiple_geo, only: iwf,iwftype
-      use multislatern, only: detn
-      use precision_kinds, only: dp
-      use slater,  only: kref
-      use system,  only: nelec
+      use estpsi, only: apsi, aref
+      use multidet, only: kref
+      use wfsec, only: iwf, iwftype
+      use contr2, only: ianalyt_lap
       use velocity_jastrow, only: vjn
+      use multislatern, only: detn
+      use distance_mod, only: r_en, rvec_en
+      use const, only: nelec
+      use precision_kinds, only: dp
+      use contrl_file, only: ounit
+      use distances_mod, only: distances
+      use jastrowe_mod, only: jastrowe
+      use error, only: fatal_error
+      use determinante_mod, only: determinante
+      use multideterminante_mod, only: multideterminante
+      use determinante_psit_mod, only: determinante_psit
 
       implicit none
 

@@ -6,7 +6,7 @@
         end
 
         subroutine qmmm_extpot_ene(coord,nelec,ext_pot)
-      use precision_kinds, only: dp
+        use precision_kinds, only: dp
         implicit none
         integer :: nelec
         real(dp) :: ext_pot

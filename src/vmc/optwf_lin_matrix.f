@@ -1,5 +1,5 @@
       module optwf_lin_matrix
-      use error,   only: fatal_error
+      use error, only: fatal_error
       use optwf_lib, only: sort
       interface !LAPACK interface
       SUBROUTINE DGEEV( JOBVL, JOBVR, N, A, LDA, WR, WI, VL, LDVL, VR,
@@ -24,14 +24,15 @@
       contains
       subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
-      use ci000,   only: nciterm
-      use contrl_file, only: ounit
-      use gradhess_all, only: nparmall
       use linear_norm, only: ci_oav
-      use optwf_control, only: ioptjas,ioptorb,method,multiple_adiag
-      use optwf_corsam, only: energy,energy_err
-      use optwf_parms, only: nparmd,nparmj
+      use optwf_contrl, only: ioptjas, ioptorb, multiple_adiag
+      use optwf_corsam, only: energy, energy_err
+      use optwf_parms, only: nparmd, nparmj
+      use gradhess_all, only: nparmall
+      use ci000, only: nciterm
+      use method_opt, only: method
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -208,9 +209,9 @@ c       add_diag=0
 c-----------------------------------------------------------------------
       subroutine regularize_geneig(n,mparmx,h,s,work,seig_valinv,hmod)
 
-      use contrl_file, only: ounit
       use gradhess_all, only: nparmall
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, icut, ineg, isdinfo, j
@@ -370,16 +371,17 @@ c-----------------------------------------------------------------------
       subroutine compute_dparm(nparm,mparmx,lwork,dparm,h,h_sav,s,s_sav,work,eig_vec,
      &                     add_diag,energy_sav,energy_err_sav)
 
-      use ci000,   only: nciterm
-      use contrl_file, only: ounit
-      use csfs,    only: ccsf,ncsf,nstates
-      use gradhess_all, only: nparmall
+      use optci, only: mxciterm, ncimatdim
+      use csfs, only: ccsf, ncsf, nstates
+      use dets, only: cdet
       use linear_norm, only: ci_oav
-      use optci,   only: mxciterm,ncimatdim
-      use optwf_control, only: ioptjas,ioptorb,method
-      use optwf_parms, only: nparmd,nparmj
+      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_parms, only: nparmd, nparmj
+      use gradhess_all, only: nparmall
+      use ci000, only: nciterm
+      use method_opt, only: method
       use precision_kinds, only: dp
-      use slater,  only: cdet
+      use contrl_file,    only: ounit
 
       implicit none
 

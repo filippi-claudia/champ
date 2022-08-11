@@ -1,19 +1,19 @@
 module parser_read_data
-      use error,   only: fatal_error
+use error, only : fatal_error
 contains
 subroutine header_printing()
     !> This subroutine prints the header in each output file. It contains some
     !! useful information about the compilers, version of the code, input and output file names.
     !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
 
-      use contrl_file, only: errunit,file_error,file_input,file_output
-      use contrl_file, only: ounit
-      use mpi
-      use mpiconf, only: idtask,nproc
-#if defined(TREXIO_FOUND)
-      use trexio
-#endif
+    use mpi
+    use mpiconf, only: idtask, nproc
     use, intrinsic :: iso_fortran_env, only: iostat_end
+    use contrl_file,    only: file_input, file_output, file_error
+    use contrl_file,    only: ounit, errunit
+#if defined(TREXIO_FOUND)
+    use trexio
+#endif
 
     implicit none
 
@@ -121,16 +121,15 @@ subroutine read_molecule_file(file_molecule)
     !! number of valence electrons if pseudopotential is provided.
     !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
     !! @date
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use inputflags, only: igeometry
-      use mpiconf, only: wid
-      use multiple_geo, only: pecent
-      use periodic_table, only: atom_t,element
-      use precision_kinds, only: dp
-      use system,  only: atomtyp,cent,iwctype,ncent,ncent_tot,nctype
-      use system,  only: nctype_tot,newghostype,nghostcent,symbol,znuc
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+    use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+    use ghostatom, 		    only: newghostype, nghostcent
+    use inputflags,         only: igeometry
+    use periodic_table,     only: atom_t, element
+    use contrl_file,        only: ounit, errunit
+    use general,            only: pooldir
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -262,20 +261,22 @@ subroutine read_determinants_file(file_determinants)
     !> This subroutine reads the single state determinant file.
     !! @author Ravindra Shinde
 
-      use contrl_file, only: errunit,ounit
-      use csfs,    only: nstates
-      use custom_broadcast, only: bcast
-      use dorb_m,  only: iworbd
-      use general, only: pooldir
-      use inputflags, only: ideterminants
-      use mpiconf, only: wid
-      use mstates_mod, only: MSTATES
-      use multiple_geo, only: nwftype
-      use optwf_control, only: method
-      use precision_kinds, only: dp
-      use slater,  only: cdet,ndet,norb
-      use system,  only: ndn,nelec,nup
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
     use, intrinsic :: iso_fortran_env, only: iostat_eor
+    use contrl_file,    only: ounit, errunit
+    use dets,           only: cdet, ndet
+    use dorb_m,         only: iworbd
+    use coefs,          only: norb
+    use inputflags,     only: ideterminants
+    use wfsec,          only: nwftype
+    use csfs,           only: nstates
+    use mstates_mod,    only: MSTATES
+    use general,        only: pooldir
+    use elec,           only: ndn, nup
+    use const,          only: nelec
+    use method_opt,     only: method
+    use precision_kinds, only: dp
 
     implicit none
 
@@ -402,14 +403,14 @@ subroutine read_multideterminants_file(file_multideterminants)
     !> This subroutine reads the multideterminants file. The first line appears as 'multideterminants' ndet_local
     !! CI coefficients and occupation of determinants in wf
     !! @author Ravindra Shinde
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use inputflags, only: imultideterminants
-      use mpiconf, only: wid
-      use multidet, only: irepcol_det,ireporb_det,numrep_det
-      use slater,  only: iwundet,ndet
-      use system,  only: nelec
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+    use contrl_file,    only: ounit, errunit
+    use dets, only: ndet
+    use const, only: nelec
+    use multidet, only: irepcol_det, ireporb_det, numrep_det, iwundet
+    use inputflags, only: imultideterminants
+    use general, only: pooldir
 
     implicit none
 
@@ -479,24 +480,31 @@ subroutine read_jastrow_file(file_jastrow)
     ! This subroutine reads jastrow parameters from a file.
     ! Ravindra
 
-      use bparm,   only: nocuspb,nspin2b
-      use contrl_file, only: errunit,ounit
-      use contrl_per, only: iperiodic
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use inputflags, only: ijastrow_parameter
-      use jaspar4, only: norda,nordb,nordc
-      use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
-      use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,neqsx
-      use jastrow, only: nordj,nordj1,nspin1,nspin2,scalek
-      use jastrow4_mod, only: nterms4
-      use mpiconf, only: wid
-      use multiple_geo, only: MWF,nwftype
-      use optwf_control, only: method
-      use precision_kinds, only: dp
-      use system,  only: ncent,nctype,ndn
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
     use, intrinsic :: iso_fortran_env, only: iostat_eor !, iostat_eof
+    use contrl_file,    only: ounit, errunit
+
+    use force_mod,          only: MWF
+    use jaspar,             only: nspin1, nspin2
+    use elec,               only: ndn
+    use jaspar3,            only: b, c, scalek
+    use jaspar4,            only: a4, norda, nordb, nordc
+    use vmc_mod,            only: nordj, nordj1, neqsx
+    use jaspar6,            only: cutjas, cutjasi, allocate_jaspar6
+    use bparm,              only: nocuspb, nspin2b
+    use contr2,             only: ijas
+    use contr2,             only: isc
+    use inputflags,         only: ijastrow_parameter
+    use wfsec,              only: nwftype
+    use atom,               only: ncent, nctype
+    use precision_kinds,    only: dp
+    use contrl_per, 		only: iperiodic
+    use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
+    use general,            only: pooldir
+    use method_opt,         only: method
+    use jastrow4_mod,       only: nterms4
     implicit none
 
     !   local use
@@ -652,23 +660,22 @@ end subroutine read_jastrow_file
 subroutine read_orbitals_file(file_orbitals)
     ! Ravindra
 
-      use coefs,   only: nbasis
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use inputflags, only: ilcao
-      use m_trexio_basis, only: champ_ao_ordering
-      use mpiconf, only: wid
-      use multiple_geo, only: nwftype
-      use optwf_control, only: method
-      use orbval,  only: nadorb
-      use pcm_fdc, only: fs
-      use precision_kinds, only: dp
-      use slater,  only: coef,norb
-      use vmc_mod, only: norb_tot
-      use write_orb_loc_mod, only: write_orb_loc
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
+    use contrl_file,    only: ounit, errunit
+    use coefs, only: coef, nbasis, norb
+    use inputflags, only: ilcao
+    use orbval, only: nadorb
+    use pcm_fdc, only: fs
+    use vmc_mod, only: norb_tot
     ! was not in master but is needed
+    use wfsec, only: nwftype
+    use general, only: pooldir
+    use method_opt, only: method
+    use precision_kinds, only: dp
+    use write_orb_loc_mod, only: write_orb_loc
+    use m_trexio_basis,   only: champ_ao_ordering
 
     implicit none
 
@@ -772,21 +779,22 @@ subroutine read_csf_file(file_determinants)
     ! This subroutine reads the csf coefficients from the determinant file.
     ! Ravindra
 
-      use ci000,   only: nciprim,nciterm
-      use contrl_file, only: errunit,ounit
-      use csfs,    only: ccsf,ncsf,nstates
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use inputflags, only: icsfs
-      use mpiconf, only: wid
-      use mstates_mod, only: MSTATES
-      use multiple_geo, only: nwftype
-      use optwf_control, only: ioptci,method
-      use precision_kinds, only: dp
-      use slater,  only: cdet,ndet
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
     use, intrinsic :: iso_fortran_env!, only: is_iostat_end
+    use contrl_file,    only: ounit, errunit
+    use csfs, only: ccsf, ncsf, nstates
+    use mstates_mod, only: MSTATES
+    use inputflags, only: icsfs
+    use wfsec, only: nwftype
+    use dets, only: ndet, cdet
 !   Not sure about the following two lines
+    use ci000, only: nciprim, nciterm
+    use optwf_contrl, only: ioptci
+    use general, only: pooldir
+    use method_opt, only: method
+    use precision_kinds, only: dp
     implicit none
 
     !   local use
@@ -899,17 +907,16 @@ subroutine read_csfmap_file(file_determinants)
     ! This subroutine reads the csf coefficients from the determinant file.
     ! Ravindra
 
-      use contrl_file, only: errunit,ounit
-      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
-      use custom_broadcast, only: bcast
-      use dets,    only: nmap
-      use general, only: pooldir
-      use mpiconf, only: wid
-      use multiple_geo, only: nwftype
-      use precision_kinds, only: dp
-      use slater,  only: cdet,ndet
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
     use, intrinsic :: iso_fortran_env
+    use contrl_file,    only: ounit, errunit
+    use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+    use dets, only: cdet, ndet, nmap
+    use wfsec, only: nwftype
+    use precision_kinds,    only: dp
+    use general,            only: pooldir
 
     implicit none
 
@@ -1055,17 +1062,17 @@ subroutine read_exponents_file(file_exponents)
     ! Read basis function exponents (only if no numerical basis)
     ! Ravindra
 
-      use basis,   only: zex
-      use coefs,   only: nbasis
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use inputflags, only: iexponents
-      use mpiconf, only: wid
-      use multiple_geo, only: nwftype
-      use optwf_control, only: method
-      use precision_kinds, only: dp
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
+    use contrl_file,        only: ounit, errunit
+    use coefs,              only: nbasis
+    use basis,              only: zex
+    use inputflags,         only: iexponents
+    use wfsec,              only: nwftype
+    use general,            only: pooldir
+    use method_opt,         only: method
+    use precision_kinds, only: dp
     implicit none
 
     !   local use
@@ -1126,20 +1133,25 @@ subroutine read_jasderiv_file(file_jastrow_der)
     ! Read jastrow derivatives
     ! Ravindra
 
-      use bparm,   only: nspin2b
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use jaspar4, only: norda,nordb,nordc
-      use jaspointer, only: npoint,npointa
-      use jastrow, only: ijas,is,isc,nspin1
-      use mpiconf, only: wid
-      use numbas,  only: numr
-      use optwf_nparmj, only: nparma,nparmb,nparmc,nparmf
-      use optwf_parms, only: nparmj
-      use optwf_wjas, only: iwjasa,iwjasb,iwjasc,iwjasf
-      use system,  only: nctype,nctype_tot
-      use vmc_mod, only: nctyp3x
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+
+    use contrl_file,        only: ounit, errunit
+    use atom,               only: nctype
+    use jaspar,             only: nspin1, is
+    use jaspar4,            only: norda, nordb, nordc
+    use jaspointer,         only: npoint, npointa
+    use numbas,             only: numr
+
+    use optwf_nparmj,       only: nparma, nparmb, nparmc, nparmf
+    use optwf_parms,        only: nparmj
+    use optwf_wjas,         only: iwjasa, iwjasb, iwjasc, iwjasf
+    use bparm,              only: nspin2b
+    use contr2,             only: ijas
+    use contr2,             only: isc
+    use vmc_mod,            only: nctyp3x
+    use atom,               only: nctype_tot
+    use general,            only: pooldir
 
     implicit none
 
@@ -1317,15 +1329,18 @@ end subroutine read_jasderiv_file
 subroutine read_forces_file(file_forces)
     !
     ! Ravindra
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use inputflags, only: iforces
-      use mpiconf, only: wid
-      use multiple_geo, only: delc,iwftype,nforce
-      use precision_kinds, only: dp
-      use system,  only: ncent,symbol
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
+    use atom,               only: symbol
+    use contrl_file,        only: ounit, errunit
+    use forcepar,           only: nforce
+    use forcestr,           only: delc
+    use wfsec,              only: iwftype
+    use inputflags,         only: iforces
+    use general,            only: pooldir
+    use atom,               only: ncent
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1397,15 +1412,15 @@ end subroutine read_forces_file
 subroutine read_symmetry_file(file_symmetry)
     ! Ravindra
 
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use mpiconf, only: idtask,wid
-      use optorb,  only: irrep
-      use precision_kinds, only: dp
-      use slater,  only: norb
-      use vmc_mod, only: norb_tot
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid, idtask
 
+    use contrl_file,        only: ounit, errunit
+    use coefs,              only: norb
+    use optorb,             only: irrep
+    use vmc_mod,            only: norb_tot
+    use general,            only: pooldir
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1476,15 +1491,15 @@ end subroutine read_symmetry_file
 subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     !
     ! Ravindra
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use inputflags, only: ioptorb_mixvirt
-      use mpiconf, only: wid
-      use optorb_mix, only: iwmix_virt,norbopt,norbvirt
-      use precision_kinds, only: dp
-      use slater,  only: norb
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
+    use contrl_file,        only: ounit, errunit
+    use optorb_mix,         only: iwmix_virt, norbopt, norbvirt
+    use coefs,              only: norb
+    use inputflags,         only: ioptorb_mixvirt
+    use general,            only: pooldir
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1557,15 +1572,15 @@ end subroutine read_optorb_mixvirt_file
 
 subroutine read_eigenvalues_file(file_eigenvalues)
 
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use mpiconf, only: wid
-      use optorb,  only: orb_energy
-      use precision_kinds, only: dp
-      use slater,  only: norb
-      use vmc_mod, only: norb_tot
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
+    use contrl_file,        only: ounit, errunit
+    use coefs,              only: norb
+    use vmc_mod,            only: norb_tot
+    use optorb,             only: orb_energy
+    use general,            only: pooldir
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1630,24 +1645,24 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     ! Ravindra
     ! Basis function types and pointers to radial parts tables
     ! alternative name for keyword basis because of GAMBLE inputword basis because of GAMBLE input
-      use basis,   only: ndxx,ndxy,ndxz,ndyy,ndyz,ndzz,nfxxx,nfxxy,nfxxz
-      use basis,   only: nfxyy,nfxyz,nfxzz,nfyyy,nfyyz,nfyzz,nfzzz
-      use basis,   only: ngxxxx,ngxxxy,ngxxxz,ngxxyy,ngxxyz,ngxxzz
-      use basis,   only: ngxyyy,ngxyyz,ngxyzz,ngxzzz,ngyyyy,ngyyyz
-      use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns
-      use coefs,   only: nbasis
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use inputflags, only: ibasis_num
-      use mpiconf, only: wid
-      use numbas,  only: iwrwf,numr
-      use numbas1, only: iwlbas,nbastyp
-      use numbas_mod, only: MRWF
-      use precision_kinds, only: dp
-      use system,  only: nctype,newghostype
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
+    use contrl_file,    only: ounit, errunit
+    use numbas_mod, only: MRWF
+    use numbas, only: iwrwf, numr
+    use numbas1, only: iwlbas, nbastyp
+    use basis, only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
+    use basis, only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
+    use basis, only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
+    use basis, only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
+    use inputflags, only: ibasis_num
+    use coefs, only: nbasis
+    use general, only: pooldir
 
+    use atom, only: nctype
+    use ghostatom, only: newghostype
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -1981,18 +1996,18 @@ subroutine read_dmatrix_file(file_dmatrix)
     ! Ravindra (no=ndetorb, ns=nweight)
     !INPUT dmatrix i i a=<input>
     !KEYDOC Read diagonal density matrix information.
-      use contrl_file, only: errunit,ounit
-      use csfs,    only: nstates
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use mpiconf, only: wid
-      use mstates_mod, only: MSTATES
-      use optorb,  only: dmat_diag
-      use precision_kinds, only: dp
-      use sa_weights, only: iweight,nweight,weights
-      use slater,  only: norb
-      use vmc_mod, only: norb_tot
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
+    use contrl_file,    only: ounit, errunit
+    use precision_kinds, only: dp
+    use vmc_mod, only: norb_tot
+    use csfs, only: nstates
+    use sa_weights, only: iweight, nweight, weights
+    use mstates_mod, only: MSTATES
+    use coefs, only: norb
+    use optorb, only: dmat_diag
+    use general,    only: pooldir
 
     implicit none
 
@@ -2086,13 +2101,14 @@ end subroutine read_dmatrix_file
 subroutine read_cavity_spheres_file(file_cavity_spheres)
     ! Ravindra
     ! Read centers of cavity spheres and radii
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use mpiconf, only: wid
-      use pcm_parms, only: nesph,re,re2,xe,ye,ze
-      use precision_kinds, only: dp
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
+    use contrl_file,        only: ounit, errunit
+    use pcm_parms,          only: nesph, re, re2
+    use pcm_parms,          only: xe, ye, ze
+    use general,            only: pooldir
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -2159,17 +2175,20 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     !KEYDOC atoms energy gradients are to be calculated for.
 
     !     Originally written by Omar Valsson
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use grdntsmv, only: igrdaidx,igrdcidx,igrdmv
-      use grdntspar, only: delgrdxyz,igrdtype,ngradnts
-      use inputflags, only: igradients
-      use mpiconf, only: wid
-      use multiple_geo, only: MFORCE,delc,iwftype,nforce
-      use precision_kinds, only: dp
-      use system,  only: ncent
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
+    use contrl_file,        only: ounit, errunit
+    use forcepar,           only: nforce
+    use force_mod,          only: MFORCE
+    use forcestr,           only: delc
+    use grdntsmv,           only: igrdaidx, igrdcidx, igrdmv
+    use grdntspar,          only: delgrdxyz, igrdtype, ngradnts
+    use wfsec,              only: iwftype
+    use inputflags,         only: igradients
+    use general,            only: pooldir
+    use atom,               only: ncent
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -2257,18 +2276,21 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     ! atoms energy gradients are to be calculated for.
 
     ! Originally written by Omar Valsson.
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use grdntsmv, only: igrdaidx,igrdcidx,igrdmv
-      use grdntspar, only: delgrdba,delgrdbl,delgrdda,igrdtype,ngradnts
-      use inputflags, only: igradients
-      use misc_grdnts, only: grdzmat_displ
-      use mpiconf, only: wid
-      use multiple_geo, only: MFORCE,delc,iwftype,nforce
-      use precision_kinds, only: dp
-      use system,  only: ncent
-      use zmatrix, only: izmatrix
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+    use contrl_file,    only: ounit, errunit
+    use forcepar, only: nforce
+    use force_mod, only: MFORCE
+    use forcestr, only: delc
+    use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
+    use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts
+    use zmatrix, only: izmatrix
+    use wfsec, only: iwftype
+    use inputflags, only: igradients
+    use general, only:pooldir
+    use atom, only: ncent
+    use precision_kinds,    only: dp
+    use misc_grdnts, only: grdzmat_displ
 
     implicit none
 
@@ -2354,14 +2376,14 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     !
     ! Read for which Z matrix (internal) coordiantes of
     ! atoms energy gradients are to be calculated for.
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use grdntsmv, only: igrdmv
-      use inputflags, only: imodify_zmat
-      use mpiconf, only: wid
-      use system,  only: ncent
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
 
+    use contrl_file,        only: ounit, errunit
+    use grdntsmv,           only: igrdmv
+    use inputflags,         only: imodify_zmat
+    use general,            only: pooldir
+    use atom,               only: ncent
 
     implicit none
 
@@ -2426,14 +2448,14 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     !
     ! Read for which Z matrix (internal) coordiantes of
     ! atoms energy gradients are to be calculated for.
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use grdnthes, only: hessian_zmat
-      use inputflags, only: ihessian_zmat
-      use mpiconf, only: wid
-      use precision_kinds, only: dp
-      use system,  only: ncent
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+    use general,            only: pooldir
+    use contrl_file,        only: ounit, errunit
+    use grdnthes,           only: hessian_zmat
+    use inputflags,         only: ihessian_zmat
+    use atom,               only: ncent
+    use precision_kinds,    only: dp
 
     implicit none
 
@@ -2502,15 +2524,15 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     ! coordinates.
 
     ! Originally written by Omar Valsson
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use general, only: pooldir
-      use inputflags, only: izmatrix_check
-      use m_zmat_tools, only: cart2zmat,zmat2cart_rc
-      use mpiconf, only: wid
-      use precision_kinds, only: dp
-      use system,  only: cent,ncent
-      use zmatrix, only: czcart,czcart_ref,czint,izcmat,izmatrix
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+    use general,            only: pooldir
+    use contrl_file,    only: ounit, errunit
+    use atom, only: cent, ncent
+    use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
+    use inputflags, only: izmatrix_check
+    use precision_kinds,    only: dp
+    use m_zmat_tools, only: cart2zmat, zmat2cart_rc
 
     implicit none
 
@@ -2588,16 +2610,15 @@ end subroutine read_zmatrix_connection_file
 
 subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     ! Ravindra
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use efield,  only: iscreen,ncharges
-      use efield_blk, only: ascreen,bscreen,qcharge,xcharge,ycharge
-      use efield_blk, only: zcharge
-      use efield_mod, only: MCHARGES
-      use general, only: pooldir
-      use inputflags, only: icharge_efield
-      use mpiconf, only: wid
-      use precision_kinds, only: dp
+    use custom_broadcast,   only: bcast
+    use mpiconf,            only: wid
+    use general,            only: pooldir
+    use contrl_file,    only: ounit, errunit
+    use efield_mod, only: MCHARGES
+    use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
+    use efield, only: iscreen, ncharges
+    use inputflags, only: icharge_efield
+    use precision_kinds,    only: dp
 
     implicit none
 

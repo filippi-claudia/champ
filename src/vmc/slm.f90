@@ -24,7 +24,7 @@ subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)
 !>          xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
 !>
 
-      use precision_kinds, only: dp
+     use precision_kinds, only: dp
      implicit none
 
      integer :: i, j, l, ider

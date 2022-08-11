@@ -4,58 +4,63 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
-      use basis,   only: ndxx,ndxy,ndxz,ndyy,ndyz,ndzz,nfxxx,nfxxy,nfxxz
-      use basis,   only: nfxyy,nfxyz,nfxzz,nfyyy,nfyyz,nfyzz,nfzzz
-      use basis,   only: ngxxxx,ngxxxy,ngxxxz,ngxxyy,ngxxyz,ngxxzz
-      use basis,   only: ngxyyy,ngxyyz,ngxyzz,ngxzzz,ngyyyy,ngyyyz
-      use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns,zex
-      use coefs,   only: nbasis
-      use config,  only: eold,nearesto,psi2o,psido,psijo,rmino,rvmino
-      use config,  only: tjfo,vold,xnew,xold
-      use constants, only: hb
-      use contrl_file, only: errunit,ounit
-      use control_vmc, only: vmc_nstep
-      use csfs,    only: nstates
-      use denupdn, only: rprobdn,rprobup
-      use determinant_psig_mod, only: determinant_psig
-      use determinante_mod, only: compute_determinante_grad
-      use error,   only: fatal_error
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tjfcm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tjfcum,tpbcum
-      use estsig,  only: ecm21s,ecum1s
-      use estsum,  only: acc,esum,pesum,r2sum,tjfsum,tpbsum
-      use force_analytic, only: force_analy_dump,force_analy_rstrt
-      use forcewt, only: wcum,wsum
-      use hpsi_mod, only: hpsi
-      use inputflags, only: eps_node_cutoff,node_cutoff
-      use metropolis, only: delta,deltar,deltat
-      use mstates_ctrl, only: iguiding
+      use vmc_mod, only: norb_tot
+      use vmc_mod, only: nrad
+      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
-      use multiple_geo, only: fcm2,fcum,iwftype,nforce,nwftype,pecent
-      use multiple_states, only: efficiency_dump,efficiency_rstrt
-      use nodes_distance_mod, only: nodes_distance,rnorm_nodes_num
-      use optci_mod, only: optci_dump,optci_rstrt,optci_save
-      use optjas_mod, only: optjas_dump,optjas_rstrt,optjas_save
-      use optorb_cblock, only: ns_current
-      use optorb_f_mod, only: optorb_dump,optorb_rstrt,optorb_save
-      use optwf_control, only: ioptorb
-      use optx_jas_ci, only: optx_jas_ci_dump,optx_jas_ci_rstrt
-      use optx_jas_orb, only: optx_jas_orb_dump,optx_jas_orb_rstrt
-      use optx_orb_ci, only: optx_orb_ci_dump,optx_orb_ci_rstrt
-      use pcm_mod, only: pcm_dump,pcm_rstrt
-      use precision_kinds, only: dp
-      use prop_vmc, only: prop_save
-      use properties_mod, only: prop_dump,prop_rstrt
-      use slater,  only: cdet,coef,ndet,norb
-      use stats,   only: rejmax
-      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
-      use strech_mod, only: setup_force,strech
-      use system,  only: cent,iwctype,ncent,ncent_tot,nctype,nctype_tot
-      use system,  only: ndn,nelec,newghostype,nghostcent,nup,znuc
-      use vmc_mod, only: norb_tot,nrad
+      use ghostatom, only: newghostype, nghostcent
+      use const, only: hb, delta, nelec
+      use config, only: eold, nearesto, psi2o
+      use config, only: psido, psijo, rmino, rvmino, tjfo
+      use config, only: vold, xnew, xold
+      use csfs, only: nstates
+      use denupdn, only: rprobdn, rprobup
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use estsig, only: ecm21s, ecum1s
+      use estsum, only: acc, esum, pesum, r2sum, tjfsum, tpbsum
+      use forcepar, only: nforce
+      use forcest, only: fcm2, fcum
+      use forcewt, only: wcum, wsum
+      use optwf_contrl, only: ioptorb
+      use stats, only: rejmax
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use wfsec, only: iwftype, nwftype
+      use coefs, only: coef, nbasis, norb
+      use const2, only: deltar, deltat
 !      use contrl, only: nstep
+      use control_vmc, only: vmc_nstep
+      use basis, only: zex
+      use mstates_ctrl, only: iguiding
+      use inputflags, only: node_cutoff, eps_node_cutoff
+      use contrl_file,    only: ounit, errunit
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h
+      use optorb_cblock, only: ns_current
+      use precision_kinds, only: dp
+
+      use optorb_f_mod, only: optorb_save, optorb_rstrt
+      use optci_mod,    only: optci_save, optci_rstrt
+      use optjas_mod,   only: optjas_dump, optjas_rstrt, optjas_save
+      use prop_vmc,     only: prop_save
+      use pcm_mod,      only: pcm_rstrt, pcm_dump
+      use nodes_distance_mod,   only: nodes_distance
+      use determinante_mod, only: compute_determinante_grad
+      use error, only: fatal_error
+      use optorb_f_mod,   only: optorb_dump
+      use optci_mod,      only: optci_dump
+      use nodes_distance_mod, only: rnorm_nodes_num
+      use determinant_psig_mod, only: determinant_psig
+      use hpsi_mod, only: hpsi
+      use strech_mod, only: strech, setup_force
+      use optx_orb_ci, only: optx_orb_ci_rstrt, optx_orb_ci_dump
+      use optx_jas_ci, only: optx_jas_ci_rstrt, optx_jas_ci_dump
+      use optx_jas_orb, only: optx_jas_orb_rstrt, optx_jas_orb_dump
+      use force_analytic, only: force_analy_rstrt, force_analy_dump
+      use multiple_states, only: efficiency_rstrt, efficiency_dump
+      use properties_mod, only: prop_rstrt, prop_dump
 
       implicit none
 

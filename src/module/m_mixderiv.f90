@@ -1,7 +1,7 @@
 module mix_jas_ci
      !> Arguments: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_parms, only: nparmj
-      use precision_kinds, only: dp
+     use optwf_parms, only: nparmj
+     use precision_kinds, only: dp
 
      real(dp), dimension(:, :), allocatable :: de_o_ci !(nparmj,MDET)
      real(dp), dimension(:, :), allocatable :: dj_de_ci !(nparmj,MDET)
@@ -14,8 +14,8 @@ module mix_jas_ci
      save
  contains
      subroutine allocate_mix_jas_ci()
-      use optwf_parms, only: nparmj
-      use slater,  only: ndet
+         use optwf_parms, only: nparmj
+         use dets, only: ndet
          if (.not. allocated(de_o_ci)) allocate (de_o_ci(nparmj, ndet))
          if (.not. allocated(dj_de_ci)) allocate (dj_de_ci(nparmj, ndet))
          if (.not. allocated(dj_o_ci)) allocate (dj_o_ci(nparmj, ndet))
@@ -33,10 +33,10 @@ module mix_jas_ci
 
  module mix_jas_orb
      !> Arguments: de_o, dj_ho, dj_o, dj_oe
-      use mstates_mod, only: MSTATES
-      use optorb_mod, only: mxreduced
-      use optwf_parms, only: nparmj
-      use precision_kinds, only: dp
+     use optorb_mod, only: mxreduced
+     use optwf_parms, only: nparmj
+     use precision_kinds, only: dp
+     use mstates_mod, only: MSTATES
 
      real(dp), dimension(:, :, :), allocatable :: de_o !(nparmj,mxreduced,MSTATES)
      real(dp), dimension(:, :, :), allocatable :: dj_ho !(nparmj,mxreduced,MSTATES)
@@ -49,9 +49,9 @@ module mix_jas_ci
      save
  contains
      subroutine allocate_mix_jas_orb()
-      use mstates_mod, only: MSTATES
-      use optorb_mod, only: mxreduced
-      use optwf_parms, only: nparmj
+         use optorb_mod, only: mxreduced
+         use optwf_parms, only: nparmj
+         use mstates_mod, only: MSTATES
          if (.not. allocated(de_o)) allocate (de_o(nparmj, mxreduced, MSTATES))
          if (.not. allocated(dj_ho)) allocate (dj_ho(nparmj, mxreduced, MSTATES))
          if (.not. allocated(dj_o)) allocate (dj_o(nparmj, mxreduced, MSTATES))
@@ -69,9 +69,9 @@ module mix_jas_ci
 
  module mix_orb_ci
      !> Arguments: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
-      use optci,   only: mxciterm
-      use optorb_mod, only: mxreduced
-      use precision_kinds, only: dp
+     use optorb_mod, only: mxreduced
+     use optci, only: mxciterm
+     use precision_kinds, only: dp
 
      real(dp), dimension(:, :), allocatable :: ci_de_o !(mxciterm,mxreduced)
      real(dp), dimension(:, :), allocatable :: ci_o_ho !(mxciterm,mxreduced)
@@ -84,8 +84,8 @@ module mix_jas_ci
      save
  contains
      subroutine allocate_mix_orb_ci()
-      use optci,   only: mxciterm
-      use optorb_mod, only: mxreduced
+         use optorb_mod, only: mxreduced
+         use optci, only: mxciterm
          if (.not. allocated(ci_de_o)) allocate (ci_de_o(mxciterm, mxreduced))
          if (.not. allocated(ci_o_ho)) allocate (ci_o_ho(mxciterm, mxreduced))
          if (.not. allocated(ci_o_o)) allocate (ci_o_o(mxciterm, mxreduced))
@@ -104,9 +104,9 @@ module mix_jas_ci
  module m_mixderiv
  contains
  subroutine allocate_m_mixderiv()
-      use mix_jas_ci, only: allocate_mix_jas_ci
-      use mix_jas_orb, only: allocate_mix_jas_orb
-      use mix_orb_ci, only: allocate_mix_orb_ci
+     use mix_jas_ci, only: allocate_mix_jas_ci
+     use mix_jas_orb, only: allocate_mix_jas_orb
+     use mix_orb_ci, only: allocate_mix_orb_ci
 
      call allocate_mix_jas_ci()
      call allocate_mix_jas_orb()
@@ -114,9 +114,9 @@ module mix_jas_ci
  end subroutine allocate_m_mixderiv
 
  subroutine deallocate_m_mixderiv()
-      use mix_jas_ci, only: deallocate_mix_jas_ci
-      use mix_jas_orb, only: deallocate_mix_jas_orb
-      use mix_orb_ci, only: deallocate_mix_orb_ci
+     use mix_jas_ci, only: deallocate_mix_jas_ci
+     use mix_jas_orb, only: deallocate_mix_jas_orb
+     use mix_orb_ci, only: deallocate_mix_orb_ci
 
      call deallocate_mix_jas_ci()
      call deallocate_mix_jas_orb()

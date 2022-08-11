@@ -3,22 +3,31 @@
       subroutine detsav(iel,iflag)
 c Written by Claudia Filippi
 
-      use csfs,    only: nstates
-      use dorb_m,  only: iworbd
-      use multidet, only: ivirt,ndetiab,ndetsingle,numrep_det
-      use multimat, only: aa,wfmat
-      use multimatn, only: aan,wfmatn
-      use multislater, only: detiab
-      use multislatern, only: detn,dorbn,orbn
-      use orbval,  only: dorb,orb
-      use precision_kinds, only: dp
-      use slater,  only: fp,kref,ndet,norb,slmi
-      use slatn,   only: slmin
-      use system,  only: ndn,nelec,nup
-      use vmc_mod, only: MEXCIT
+      use csfs, only: nstates
+
+      use dets, only: ndet
+      use elec, only: ndn, nup
+      use multidet, only: ivirt, kref, numrep_det, ndetiab, ndetsingle
+
+      use slatn, only: slmin
       use ycompact, only: ymat
       use ycompactn, only: ymatn
+      use coefs, only: norb
+      use dorb_m, only: iworbd
+      use multimat, only: aa, wfmat
+      use multimatn, only: aan, wfmatn
+      use multislatern, only: detn, dorbn, orbn
 
+      use orbval, only: dorb, orb
+      use slater, only: fp, slmi
+
+      use multislater, only: detiab
+
+      use vmc_mod, only: MEXCIT
+
+      use const, only: nelec
+
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iab, iel, iflag, ikel

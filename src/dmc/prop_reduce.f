@@ -2,14 +2,14 @@
       contains
       subroutine prop_reduce(wgsum)
 
-      use control, only: mode
-      use mpi
+      use prp000, only: iprop, nprop
+      use prp003, only: vprop_sum, vprop_cum, vprop_cm2
       use mpiconf, only: wid
-      use precision_kinds, only: dp
+      use contr3, only: mode
       use properties, only: MAXPROP
-      use prp000,  only: iprop,nprop
-      use prp003,  only: vprop_cm2,vprop_cum,vprop_sum
+      use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ierr
@@ -60,10 +60,10 @@
 
       subroutine prop_send(irecv,itag_s)
 
-      use branch,  only: nwalk
+      use prp000, only: iprop, nprop
+      use prp002, only: vprop_old
+      use branch, only: nwalk
       use mpi
-      use prp000,  only: iprop,nprop
-      use prp002,  only: vprop_old
 
       implicit none
 

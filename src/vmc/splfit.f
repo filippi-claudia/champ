@@ -5,11 +5,11 @@ c Written by Claudia Filippi
 c get spline_fit at r of basis fn irb of center ic and force iwf
 c 1st and 2nd derivs also calculated if ider=1.
 
-      use numbas,  only: arg,d2rwf,igrid,nr,r0,rwf
-      use numexp,  only: ae,ce
-      use precision_kinds, only: dp
       use vmc_mod, only: NCOEF
+      use numbas, only: arg, d2rwf, igrid, nr, r0, rwf
 
+      use numexp, only: ae, ce
+      use precision_kinds, only: dp
       implicit none
 
       integer :: ic, ider, ii, irb, iwf

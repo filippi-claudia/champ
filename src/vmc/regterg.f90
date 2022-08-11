@@ -1,5 +1,5 @@
 module regterg_mod
-      use error,   only: fatal_error
+use error, only: fatal_error
 interface!LAPACK interface
 !*  -- LAPACK driver routine (version 3.1) --
   SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)

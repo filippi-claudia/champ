@@ -1,7 +1,7 @@
 module array_utils
 
-      use lapack_wrapper, only: lapack_matrix_vector,lapack_sort
-      use precision_kinds, only: dp
+    use precision_kinds, only: dp
+    use lapack_wrapper, only: lapack_matrix_vector, lapack_sort
     implicit none
 
     !> \private

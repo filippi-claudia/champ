@@ -9,60 +9,62 @@ c    C.J. Umrigar, in "Quantum Monte Carlo Methods in Physics and Chemistry",
 c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
-      use acuest_mod, only: acues1,acusig
-      use config,  only: delttn,eold,nearestn,nearesto,peo,psi2n,psi2o
-      use config,  only: psido,psijo,rminn,rminno,rmino,rminon,rvminn
-      use config,  only: rvminno,rvmino,rvminon,tjfoo,vnew,vold,xnew
-      use config,  only: xold
-      use constants, only: pi
-      use contrl_file, only: ounit
-      use control, only: ipr,mode
-      use csfs,    only: nstates
-      use determinant_psig_mod, only: determinant_psig
-      use determinante_mod, only: compute_determinante_grad
-      use detsav_mod, only: detsav
-      use distances_mod, only: distancese_restore
-      use estsum,  only: acc,esum,esum1,pesum,r2sum,tjfsum,tpbsum
-      use force_analytic, only: force_analy_sum
-      use forcewt, only: wsum
-      use gammai_mod, only: gammai
-      use hpsi_mod, only: hpsi
-      use hpsie,   only: psie
-      use inputflags, only: eps_node_cutoff,node_cutoff
-      use jassav_mod, only: jassav
-      use kinet,   only: dtdx2n,dtdx2o
-      use metropolis, only: deltar,deltat,fbias
-      use mmpol,   only: mmpol_efield
-      use mmpol_cntrl, only: ich_mmpol
-      use mmpol_vmc, only: mmpol_sum
-      use mstates_ctrl, only: iguiding
+      use vmc_mod, only: nrad
+      use vmc_mod, only: delri
+      use atom, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
-      use multideterminant_mod, only: update_ymat
-      use multiple_geo, only: nforce
-      use multiple_states, only: efficiency_sample
-      use nodes_distance_mod, only: nodes_distance,rnorm_nodes_num
-      use optci_mod, only: optci_sum
-      use optjas_mod, only: optjas_sum
-      use optorb_f_mod, only: check_orbitals,check_orbitals_reset
-      use optorb_f_mod, only: optorb_sum
-      use optwf_handle_wf, only: optwf_store
-      use optx_jas_ci, only: optx_jas_ci_sum
-      use optx_jas_orb, only: optx_jas_orb_sum
-      use optx_orb_ci, only: optx_orb_ci_sum
-      use pcm_cntrl, only: ichpol
-      use pcm_mod, only: qpcm_efield
-      use pcm_vmc, only: pcm_sum
-      use precision_kinds, only: dp
-      use prop_vmc, only: prop_sum
-      use pseudo,  only: nloc
-      use rannyu_mod, only: rannyu
-      use stats,   only: rejmax
-      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
-      use strech_mod, only: strech
-      use system,  only: cent,iwctype,ncent,nelec,nup,znuc
+      use const, only: pi, fbias, nelec, ipr
+      use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
+      use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
+      use config, only: tjfoo, vnew, vold, xnew, xold
+      use csfs, only: nstates
+      use elec, only: nup
+      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
+      use forcepar, only: nforce
+      use forcewt, only: wsum
+      use kinet, only: dtdx2n, dtdx2o
+      use stats, only: rejmax
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use tmpnode, only: distance_node_sum
-      use vmc_mod, only: delri,nrad
+      use const2, only: deltar, deltat
+      use contr3, only: mode
+      use pseudo, only: nloc
+      use mmpol_cntrl, only: ich_mmpol
+      use mstates_ctrl, only: iguiding
+      use pcm_cntrl, only: ichpol
+      use const, only: nelec
+      use inputflags, only: node_cutoff, eps_node_cutoff
+      use precision_kinds, only: dp
+      use contrl_file,    only: ounit
 
+      use acuest_mod, only: acues1, acusig
+      use multiple_states, only: efficiency_sample
+      use optwf_handle_wf, only: optwf_store
+      use optx_orb_ci    ,only: optx_orb_ci_sum
+      use optx_jas_ci,    only: optx_jas_ci_sum
+      use optx_jas_orb,   only: optx_jas_orb_sum
+      use optci_mod,      only: optci_sum
+      use optorb_f_mod,   only: optorb_sum
+      use optjas_mod,     only: optjas_sum
+      use force_analytic, only: force_analy_sum
+      use prop_vmc,       only: prop_sum
+      use mmpol_vmc,      only: mmpol_sum
+      use mmpol,          only: mmpol_efield
+      use pcm_mod,        only: qpcm_efield
+      use pcm_vmc,        only: pcm_sum
+      use gammai_mod,     only: gammai
+      use hpsi_mod,       only: hpsi
+      use determinant_psig_mod, only: determinant_psig
+      use strech_mod,     only: strech
+      use rannyu_mod,     only: rannyu
+      use jassav_mod,     only: jassav
+      use detsav_mod,     only: detsav
+      use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
+      use determinante_mod,only: compute_determinante_grad
+      use optorb_f_mod,        only: check_orbitals_reset, check_orbitals
+      use hpsie, only: psie
+      use distances_mod,  only: distancese_restore
+      use multideterminant_mod, only: update_ymat
 
       implicit none
 
