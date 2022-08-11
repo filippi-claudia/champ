@@ -1,15 +1,13 @@
       module nonlpsi
-      use error, only: fatal_error
+      use error,   only: fatal_error
       contains
       function psinl(u,rshifti,rshiftj,rri,rrj,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use vmc_mod, only: nordj
-      use jaspar3, only: c
       use jaspar4, only: nordc
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
-      use contr2, only: ijas
+      use jastrow, only: c,ijas,nordj
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use scale_dist_mod, only: switch_scale
 
@@ -82,10 +80,11 @@ c-----------------------------------------------------------------------
       function psianl(rri,it)
 
 
-      use jaspar4, only: a4, norda
-      use jaspar6, only: asymp_jasa, asymp_r
-      use wfsec, only: iwf
-      use contr2, only: ijas
+
+      use jaspar4, only: norda
+      use jaspar6, only: asymp_r
+      use jastrow, only: a4,asymp_jasa,ijas
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -112,12 +111,10 @@ c-----------------------------------------------------------------------
 
       function psibnl(u,isb,ipar)
 
-      use jaspar, only: sspinn
-      use jaspar3, only: b
       use jaspar4, only: nordb
-      use jaspar6, only: asymp_jasb, asymp_r
-      use wfsec, only: iwf
-      use contr2, only: ijas
+      use jaspar6, only: asymp_r
+      use jastrow, only: asymp_jasb,b,ijas,sspinn
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
 
       implicit none
@@ -146,10 +143,10 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsianl(rri,it)
 
-      use jaspar4, only: a4, norda
+      use jaspar4, only: norda
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
-      use contr2, only: ijas
+      use jastrow, only: a4,ijas
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
 
       implicit none
@@ -175,12 +172,10 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsibnl(u,isb,ipar)
 
-      use jaspar, only: sspinn
-      use jaspar3, only: b
       use jaspar4, only: nordb
       use jaspar6, only: asymp_r
-      use wfsec, only: iwf
-      use contr2, only: ijas
+      use jastrow, only: b,ijas,sspinn
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
 
       implicit none

@@ -1,11 +1,11 @@
       module multiple_states
-      use error, only: fatal_error
+      use error,   only: fatal_error
       contains
 c----------------------------------------------------------------------
       subroutine efficiency_sample(ipass,determ_s,determ_psig)
 
-      use mstates_ctrl, only: iefficiency, nstates_psig
-      use mstates2, only: effcm2, effcum
+      use mstates2, only: effcm2,effcum
+      use mstates_ctrl, only: iefficiency,nstates_psig
       use precision_kinds, only: dp
       implicit none
 
@@ -34,8 +34,8 @@ c     write(88,*) (effcum(j)*effcum(j)/effcm2(j)/ipass,j=1,nstates_psig)
       end
 c----------------------------------------------------------------------
       subroutine efficiency_init
+      use mstates2, only: effcm2,effcum
       use mstates_ctrl, only: nstates_psig
-      use mstates2, only: effcm2, effcum
       implicit none
 
       integer :: j
@@ -50,9 +50,9 @@ c----------------------------------------------------------------------
       end
 c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
-      use mstates_ctrl, only: iefficiency, nstates_psig
-      use mstates2, only: effcm2, effcum
-      use contrl_file,    only: ounit, errunit
+      use contrl_file, only: errunit,ounit
+      use mstates2, only: effcm2,effcum
+      use mstates_ctrl, only: iefficiency,nstates_psig
       use precision_kinds, only: dp
       implicit none
 
@@ -75,8 +75,8 @@ c       write(ounit,*) effcum(j)*effcum(j)/passes,effcm2(j)
       end
 c----------------------------------------------------------------------
       subroutine efficiency_dump(iu)
-      use mstates_ctrl, only: iefficiency, nstates_psig
-      use mstates2, only: effcm2, effcum
+      use mstates2, only: effcm2,effcum
+      use mstates_ctrl, only: iefficiency,nstates_psig
       implicit none
 
       integer :: i, iu
@@ -92,17 +92,17 @@ c----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine efficiency_rstrt(iu)
-      use mstates_ctrl, only: iefficiency, nstates_psig
-      use mstates2, only: effcm2, effcum
+      use csfs,    only: nstates
+      use mstates2, only: effcm2,effcum
+      use mstates_ctrl, only: iefficiency,nstates_psig
+      use precision_kinds, only: dp
 
       ! nstates below is undefined and
       ! it' also the case in the master branch
       ! one replacement is
       ! use csfs, only: nstates
       ! no idea if that would be correct
-      use precision_kinds, only: dp
 
-      use csfs, only: nstates
       implicit none
 
       integer :: i, iu

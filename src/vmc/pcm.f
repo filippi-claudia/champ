@@ -1,5 +1,5 @@
       module pcm_mod
-      use error, only: fatal_error
+      use error,   only: fatal_error
       interface !LAPACK interface
         SUBROUTINE dgetrf( M, N, A, LDA, IPIV, INFO )
 !*  -- LAPACK computational routine --
@@ -27,18 +27,17 @@ c     read data for pcm calculations
 c     comput nuclei-qpol interactions (penups,penupv)
 c...........................................................
 
-      use atom, only: znuc, cent, iwctype, ncent
-      use pcm_cntrl, only: icall, ichpol, ipcm, isurf
-      use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
-      use pcm_parms, only: ch, eps_solv, nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nchv, nesph, re
-      use pcm_parms, only: surk, xe, xpol, ye, ze
-      use pcm_ameta, only: amdlg, eta
-      use pcm_pot, only: penupol, penups, penupv
-      use pcm_fdc, only: feps, fs, rcol, rcolt
+      use contrl_file, only: ounit
+      use pcm_ameta, only: amdlg,eta
+      use pcm_cntrl, only: icall,ichpol,ipcm,isurf
+      use pcm_fdc, only: feps,fs,rcol,rcolt
       use pcm_inda, only: inda
+      use pcm_parms, only: ch,eps_solv,nch,nchs,nchs1,nchs2,nchv,nesph
+      use pcm_parms, only: re,surk,xe,xpol,ye,ze
+      use pcm_pot, only: penupol,penups,penupv
+      use pcm_unit, only: pcmfile_cavity,pcmfile_chs,pcmfile_chv
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use system,  only: cent,iwctype,ncent,znuc
 
       implicit none
 
@@ -162,10 +161,10 @@ c......................................................
 c Written by Amovilli-Floris
 
       use pcm_cntrl, only: ipcm
+      use pcm_fdc, only: fs,qvol
       use pcm_parms, only: nscv
-
-      use pcm_fdc, only: fs, qvol
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: n
@@ -186,15 +185,14 @@ C     ***************************************************************
 C     contribution from nuclei to polarization charghes
 C     ***************************************************************
 
-      use pcm, only: MCHS
-      use atom, only: znuc, cent, iwctype, ncent
-      use pcm_parms, only: eps_solv, nchs
-      use pcm_parms, only: surk, xpol
-      use pcm_ameta, only: amdlg, eta
-      use pcm_ah, only: ahca, bh
+      use pcm,     only: MCHS
+      use pcm_ah,  only: ahca,bh
+      use pcm_ameta, only: amdlg,eta
       use pcm_fdc, only: feps
       use pcm_inda, only: inda
+      use pcm_parms, only: eps_solv,nchs,surk,xpol
       use precision_kinds, only: dp
+      use system,  only: cent,iwctype,ncent,znuc
 
       implicit none
 
@@ -309,15 +307,14 @@ c     3) for the accepted configuration, the normal component
 c        of the electron field  at the point on the surface is computed
 C     ***************************************************************
 
-      use pcm_hpsi, only: enfpcm, qopcm
-      use pcm_xv_new, only: xv_new
-      use pcm_cntrl, only: ipcm
-      use pcm_parms, only: iscov, nchs, nchs1
-      use pcm_parms, only: ncopcm, nesph, nvopcm, re2
-      use pcm_parms, only: xe, xpol, ye, ze
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use pcm_ameta, only: eta
-      use pcm_fdc, only: fs, rcol, rcolt
+      use pcm_cntrl, only: ipcm
+      use pcm_fdc, only: fs,rcol,rcolt
+      use pcm_hpsi, only: enfpcm,qopcm
+      use pcm_parms, only: iscov,nchs,nchs1,ncopcm,nesph,nvopcm,re2,xe
+      use pcm_parms, only: xpol,ye,ze
+      use pcm_xv_new, only: xv_new
       use precision_kinds, only: dp
       implicit none
 
@@ -445,13 +442,12 @@ c............................................................
 c      update of volume charges and penupol
 c............................................................
 
-      use pcm_xv_new, only: xv_new
       use pcm_cntrl, only: ipcm
-      use pcm_parms, only: ch, iscov, nch, nchs
-      use pcm_parms, only: nchv, ncopcm, nscv, nvopcm
-      use pcm_parms, only: xpol
-
       use pcm_fdc, only: qvol
+      use pcm_parms, only: ch,iscov,nch,nchs,nchv,ncopcm,nscv,nvopcm
+      use pcm_parms, only: xpol
+      use pcm_xv_new, only: xv_new
+
       implicit none
 
       integer, intent(inout) :: iupdate
@@ -490,13 +486,12 @@ c............................................................
 c     compute penupv of volume charges
 c............................................................
 
-      use atom, only: znuc, cent, iwctype, ncent
       use pcm_cntrl, only: ipcm
-      use pcm_parms, only: ch, nch, nchs
-      use pcm_parms, only: xpol
-
+      use pcm_parms, only: ch,nch,nchs,xpol
       use pcm_pot, only: penupv
       use precision_kinds, only: dp
+      use system,  only: cent,iwctype,ncent,znuc
+
       implicit none
 
       integer :: i, j
@@ -524,8 +519,7 @@ c..............................................................
 
       subroutine pcm_write_chvol
 
-      use pcm_parms, only: ch, nch, nchs
-      use pcm_parms, only: xpol
+      use pcm_parms, only: ch,nch,nchs,xpol
 
       implicit none
 
@@ -552,12 +546,12 @@ c......................................................
 c       Calculate e-qpol interactions (pcm)
 c       and adds nuclei-qpol interactions
 c......................................................
+      use contrl_file, only: ounit
+      use pcm_3dgrid_mod, only: pcm_extpot_ene_elec,spline_pcm
       use pcm_cntrl, only: icall
-      use pcm_parms, only: ch, nch, nchs
-      use contrl_file,    only: ounit
-      use pcm_pot, only: penups, penupv
       use pcm_grid3d_contrl, only: ipcm_3dgrid
-      use pcm_3dgrid_mod, only: spline_pcm, pcm_extpot_ene_elec
+      use pcm_parms, only: ch,nch,nchs
+      use pcm_pot, only: penups,penupv
       use precision_kinds, only: dp
       implicit none
 
@@ -617,12 +611,11 @@ c......................................................
 
       subroutine pcm_init(iflag)
 
+      use pcm_averages, only: enfpcm_cm2,enfpcm_cum,enfpcm_sum,qopcm_cm2
+      use pcm_averages, only: qopcm_cum,qopcm_sum,spcmcm2,spcmcum
+      use pcm_averages, only: spcmsum,vpcmcm2,vpcmcum,vpcmsum
       use pcm_cntrl, only: ipcm
-      use pcm_parms, only: nchs
-      use pcm_parms, only: ncopcm
-      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
-      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
+      use pcm_parms, only: nchs,ncopcm
 
       implicit none
 
@@ -662,11 +655,10 @@ c......................................................
 c-----------------------------------------------------------------------
       subroutine pcm_dump(iu)
 
+      use pcm_averages, only: enfpcm_cm2,enfpcm_cum,qopcm_cm2,qopcm_cum
+      use pcm_averages, only: spcmcm2,spcmcum,vpcmcm2,vpcmcum
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: nchs
-      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_cum, qopcm_cm2
-      use pcm_averages, only: enfpcm_cum, enfpcm_cm2
 
       implicit none
 
@@ -689,11 +681,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_rstrt(iu)
 
+      use pcm_averages, only: enfpcm_cm2,enfpcm_cum,qopcm_cm2,qopcm_cum
+      use pcm_averages, only: spcmcm2,spcmcum,vpcmcm2,vpcmcum
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: nchs
-      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_cum, qopcm_cm2
-      use pcm_averages, only: enfpcm_cum, enfpcm_cm2
 
       implicit none
 
@@ -718,16 +709,14 @@ c......................................................
 
       subroutine qpcm_charges(enfpcm_ave,enfpcm_err,qpol,sqpol2)
 
-      use pcm, only: MCHS, MSPHERE
-      use pcm_parms, only: nchs
-      use pcm_parms, only: nesph, re
-      use pcm_parms, only: surk, xe, xpol, ye, ze
-      use pcm_ah, only: ahca, bh
+      use contrl_file, only: ounit
+      use pcm,     only: MCHS,MSPHERE
+      use pcm_ah,  only: ahca,bh
       use pcm_fdc, only: feps
-
       use pcm_inda, only: inda
-      use contrl_file,    only: ounit
+      use pcm_parms, only: nchs,nesph,re,surk,xe,xpol,ye,ze
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: i, j, k
@@ -825,14 +814,13 @@ c     da modificare per stati eccitati
 c................................................................
       subroutine qpcm_charges2(enfpcm_ave,enfpcm_err,qpol) ! Never Called
 
-      use pcm, only: MCHS
-      use pcm_parms, only: ch, nch, nchs
-      use pcm_parms, only: surk, xpol
-
+      use pcm,     only: MCHS
+      use pcm_ah,  only: ahca,bh
       use pcm_ameta, only: eta
-      use pcm_ah, only: ahca, bh
       use pcm_fdc, only: feps
+      use pcm_parms, only: ch,nch,nchs,surk,xpol
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: i, j, k, l
@@ -908,18 +896,17 @@ c     This subroutine computes the coordinates of point charges
 c     on the cavity surface
 C     ***************************************************************
 
-      use atom, only: cent, iwctype, ncent
-      use spc, only: nsf, num
-      use spc1, only: csf, qsf, rsf
-      use spc2, only: nxyz, sfxyz, usf
-      use pcm_parms, only: nch, nchs, nchs1, nchs2
-      use pcm_parms, only: nesph, re
-      use pcm_parms, only: surk, xe, xpol, ye, ze
-      use pcm_ameta, only: amdlg, eta
+      use contrl_file, only: ounit
+      use pcm_ameta, only: amdlg,eta
       use pcm_inda, only: inda
+      use pcm_parms, only: nch,nchs,nchs1,nchs2,nesph,re,surk,xe,xpol,ye
+      use pcm_parms, only: ze
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
       use rannyu_mod, only: rannyu
+      use spc,     only: nsf,num
+      use spc1,    only: csf,qsf,rsf
+      use spc2,    only: nxyz,sfxyz,usf
+      use system,  only: cent,iwctype,ncent
 
       implicit none
 
@@ -1195,10 +1182,10 @@ c..................................................
 
       subroutine prep
 
-      use spc, only: nsf, num
-      use spc1, only: csf, rsf
       use precision_kinds, only: dp
       use rannyu_mod, only: rannyu
+      use spc,     only: nsf,num
+      use spc1,    only: csf,rsf
 
       implicit none
 
@@ -1337,10 +1324,10 @@ c     f1=r0*dsin(theta)
 
       subroutine prep1
 
-      use spc, only: nsf, num
-      use spc1, only: csf, rsf
       use precision_kinds, only: dp
       use rannyu_mod, only: rannyu
+      use spc,     only: nsf,num
+      use spc1,    only: csf,rsf
 
       implicit none
 
@@ -1509,9 +1496,9 @@ c........................................................
 c........................................................
 
       subroutine qpcm_matinv(a,nsub,determinant)
-      use pcm, only: MCHS
+      use contrl_file, only: ounit
+      use pcm,     only: MCHS
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, info, nsub
@@ -1565,15 +1552,14 @@ c        ...exit
 C     ***************************************************************
 C     march/2014: compute surface charges for a stretched cavity
 C     ***************************************************************
-      use pcm, only: MCHS
-      use pcm_parms, only: eps_solv, nchs
-      use pcm_parms, only: surk, xpol
-
-      use pcm_ameta, only: amdlg, eta
+      use pcm,     only: MCHS
+      use pcm_ameta, only: amdlg,eta
       use pcm_fdc, only: feps
       use pcm_inda, only: inda
-
+      use pcm_parms, only: eps_solv,nchs,surk,xpol
       use precision_kinds, only: dp
+
+
       implicit none
 
       integer :: i, ij, j, k, l

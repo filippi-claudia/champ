@@ -1,8 +1,8 @@
 module estcum
      !> Arguments: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
-     use force_mod, only: MFORCE
-     use precision_kinds, only: dp
-     use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -59,8 +59,8 @@ module estcum
      save
  contains
      subroutine allocate_estcum()
-         use force_mod, only: MFORCE
-         use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE
          if (.not. allocated(ecum)) allocate (ecum(MSTATES, MFORCE))
          if (.not. allocated(ecum1)) allocate (ecum1(MSTATES))
          if (.not. allocated(pecum)) allocate (pecum(MSTATES))
@@ -103,8 +103,8 @@ module estcum
 
  module estsig
      !> Arguments: ecm21s, ecum1s
-     use precision_kinds, only: dp
-     use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -117,7 +117,7 @@ module estcum
      save
  contains
      subroutine allocate_estsig()
-         use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
          if (.not. allocated(ecm21s)) allocate (ecm21s(MSTATES))
          if (.not. allocated(ecum1s)) allocate (ecum1s(MSTATES))
      end subroutine allocate_estsig
@@ -135,9 +135,9 @@ module estcum
      !> pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
      !> wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
 
-     use force_mod, only: MFORCE
-     use precision_kinds, only: dp
-     use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -189,8 +189,8 @@ module estcum
 
  contains
      subroutine allocate_estsum()
-         use force_mod, only: MFORCE
-         use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE
          if (.not. allocated(esum)) allocate (esum(MSTATES, MFORCE))
          if (.not. allocated(esum1)) allocate (esum1(MSTATES))
          if (.not. allocated(pesum)) allocate (pesum(MSTATES))
@@ -207,7 +207,7 @@ module estcum
      end subroutine deallocate_estsum
 
      subroutine allocate_estsum_dmc()
-         use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
          if (.not. allocated(egsum)) allocate(egsum(MFORCE))
          if (.not. allocated(egsum1)) allocate(egsum1(MFORCE))
          if (.not. allocated(esum1_dmc)) allocate(esum1_dmc(MFORCE))
@@ -236,8 +236,8 @@ module estcum
 
  module estpsi
      !> Arguments: apsi, aref, detref
-     use precision_kinds, only: dp
-     use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -251,7 +251,7 @@ module estcum
      save
  contains
      subroutine allocate_estpsi()
-         use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
          if (.not. allocated(apsi)) allocate (apsi(MSTATES))
          if (.not. allocated(detref)) allocate (detref(2))
      end subroutine allocate_estpsi
@@ -269,9 +269,9 @@ module estcum
      !> ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
      !> wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
 
-     use force_mod, only: MFORCE
-     use precision_kinds, only: dp
-     use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -319,8 +319,8 @@ module estcum
 
  contains
      subroutine allocate_est2cm()
-         use force_mod, only: MFORCE
-         use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE
          if (.not. allocated(ecm2))   allocate(ecm2(MSTATES, MFORCE))
          if (.not. allocated(ecm21))  allocate(ecm21(MSTATES))
          if (.not. allocated(pecm2))  allocate(pecm2(MSTATES))
@@ -363,11 +363,11 @@ module estcum
 module m_estimators
 contains
  subroutine allocate_m_estimators()
-     use estcum, only: allocate_estcum
-     use estsig, only: allocate_estsig
-     use estsum, only: allocate_estsum
-     use estpsi, only: allocate_estpsi
-     use est2cm, only: allocate_est2cm
+      use est2cm,  only: allocate_est2cm
+      use estcum,  only: allocate_estcum
+      use estpsi,  only: allocate_estpsi
+      use estsig,  only: allocate_estsig
+      use estsum,  only: allocate_estsum
 
      implicit none
 
@@ -379,11 +379,11 @@ contains
  end subroutine allocate_m_estimators
 
  subroutine deallocate_m_estimators()
-     use estcum, only: deallocate_estcum
-     use estsig, only: deallocate_estsig
-     use estsum, only: deallocate_estsum
-     use estpsi, only: deallocate_estpsi
-     use est2cm, only: deallocate_est2cm
+      use est2cm,  only: deallocate_est2cm
+      use estcum,  only: deallocate_estcum
+      use estpsi,  only: deallocate_estpsi
+      use estsig,  only: deallocate_estsig
+      use estsum,  only: deallocate_estsum
 
      implicit none
 

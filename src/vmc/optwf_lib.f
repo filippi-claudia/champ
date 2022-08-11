@@ -6,8 +6,8 @@ c chlsky: purpose: cholesky decomposition of a and determinant
 c in: matrix a of order n stored with physical dimension np
 c out: lower triangular matrix stored in lower portion of a
 c note: lower triangular portion of original a is overwritten
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
       implicit none
 
       integer :: ierr, ip, j, jm1, k

@@ -5,25 +5,19 @@ c Written by Cyrus Umrigar, modified by C. Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
-      use vmc_mod, only: nordj
-      use atom, only: iwctype, ncent
-      use jaspar, only: sspinn
-      use const, only: nelec
-      use elec, only: nup
-      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-      use jaspar3, only: b, c, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, c1_jas6
-      use jaspar6, only: cutjas
-      use wfsec, only: iwf
-      use bparm, only: nocuspb, nspin2b
-      use contr2, only: ijas
-      use contr2, only: isc
-      use scale_dist_mod, only: scale_dist2, switch_scale2
-      use force_analy, only: iforce_analy
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use bparm,   only: nocuspb,nspin2b
+      use contrl_file, only: ounit
+      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use jaspar4, only: norda,nordb,nordc
+      use jaspar6, only: c1_jas6,cutjas
+      use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj
+      use jastrow, only: scalek,sspinn
+      use jastrow_update, only: d2ijo,d2o,fijo,fjo,fso,fsumo
+      use m_force_analytic, only: iforce_analy
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use scale_dist_mod, only: scale_dist2,switch_scale2
+      use system,  only: iwctype,ncent,nelec,nup
       implicit none
 
       integer :: i, ic, ij, im1, iord
@@ -409,11 +403,11 @@ c     write(ounit,'(''nterms4='',i5)') nterms4
 c-----------------------------------------------------------------------
       subroutine da_jastrow4(iwf,i,ic,it,rvec_en,r,rr,feni,fenii,dd1,dd2)
 
-      use vmc_mod, only: nordj
-      use da_jastrow4val, only: da_d2j, da_j, da_vj
-      use jaspar4, only: a4, norda
-      use scale_more, only: dd3
+      use da_jastrow4val, only: da_d2j,da_j,da_vj
+      use jaspar4, only: norda
+      use jastrow, only: a4,nordj
       use precision_kinds, only: dp
+      use scale_more, only: dd3
 
       implicit none
 

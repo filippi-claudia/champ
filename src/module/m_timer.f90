@@ -3,7 +3,7 @@ module mpitimer
     !! @author Ravindra Shinde
     !! @date June 23 2021
 
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     real(dp), save  :: time_start
     real(dp), save  :: time_check1

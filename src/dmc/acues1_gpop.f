@@ -4,26 +4,22 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use precision_kinds, only: dp
-      use const, only: etrial, ipr
-      use forcepar, only: nforce
-      use contrldmc, only: idmc
-      use contrldmc, only: nfprod
-      use estcum, only: ipass
-      use estsum, only: efsum, efsum1, egsum, egsum1, esum1_dmc, esum_dmc
-      use estsum, only: tausum, wdsum
-      use estsum, only: wdsum1, wfsum, wfsum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
-      use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
-      use estcum, only: ei3cum, taucum
-      use estcum, only: wcum1, wfcum1, wgcum, wgcum1
-      use est2cm, only: ecm21_dmc, efcm21, egcm21
-      use est2cm, only: ei3cm2, wcm21
-      use est2cm, only: wfcm21, wgcm21
-      use mpiconf, only: wid
-      use force_mod, only: MFORCE
-      use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
+      use branch,  only: eest,eigv,ff,fprod,wdsumo,wgdsumo,wtgen
+      use const,   only: etrial
+      use contrl_file, only: ounit
+      use contrldmc, only: idmc,nfprod
+      use control, only: ipr
+      use est2cm,  only: ecm21_dmc,efcm21,egcm21,ei3cm2,wcm21,wfcm21
+      use est2cm,  only: wgcm21
+      use estcum,  only: ecum1_dmc,efcum1,egcum,egcum1,ei3cum,ipass
+      use estcum,  only: taucum,wcum1,wfcum1,wgcum,wgcum1
+      use estsum,  only: efsum,efsum1,egsum,egsum1,esum1_dmc,esum_dmc
+      use estsum,  only: tausum,wdsum,wdsum1,wfsum,wfsum1,wgdsum,wgsum
+      use estsum,  only: wgsum1,wsum1,wsum_dmc
       use mpi
-      use contrl_file,    only: ounit
+      use mpiconf, only: wid
+      use multiple_geo, only: MFORCE,nforce
+      use precision_kinds, only: dp
       use redistribute_mod, only: redistribute
       implicit none
 
