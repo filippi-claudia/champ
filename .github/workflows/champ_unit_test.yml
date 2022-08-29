@@ -83,7 +83,8 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort \
+                          -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DUNIT_TESTS=on
         cmake --build build -- vmc_Tests -j2
         ulimit -s unlimited
 
@@ -95,7 +96,8 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DVECTORIZED=no -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DVECTORIZED=no \
+                          -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DUNIT_TESTS=on
         cmake --build build -- vmc_Tests -j2
         ulimit -s unlimited
 
