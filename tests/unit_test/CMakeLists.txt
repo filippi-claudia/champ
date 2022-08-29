@@ -1,6 +1,6 @@
 # the netherlands escience center (2022)
 
-project(vmc_unit_test)
+project(vmc)
 
 OPTION( BUILD_UNIT_TESTS "Build Project Unit tests" OFF )
 message(STATUS "Build Unit Tests: ${BUILD_UNIT_TESTS}")
