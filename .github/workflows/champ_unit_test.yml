@@ -10,7 +10,7 @@ on:
 jobs:
   debug_build_test_champ:
     name: unit test with ${{ matrix.toolchain }} ${{ matrix.mode }} mode
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
     strategy:
       matrix:
@@ -39,16 +39,16 @@ jobs:
     - name: Install GNU compilers and libraries
       if: matrix.toolchain == 'gnu'
       run: |
-           sudo apt-get update
-           sudo apt --only-upgrade install -y gfortran
-           sudo apt install -y openmpi-bin
-           sudo apt install -y libopenmpi-dev
-           sudo apt install -y gawk
-           sudo apt install -y libblacs-mpi-dev
-           sudo apt install -y liblapack-dev
-           gawk --version
-           mpirun --version
-           gfortran --version
+        #sudo apt-get update
+        sudo apt install -y gfortran
+        sudo apt install -y openmpi-bin
+        sudo apt install -y libopenmpi-dev
+        sudo apt install -y gawk
+        sudo apt install -y libblacs-mpi-dev
+        sudo apt install -y liblapack-dev
+        gawk --version
+        mpirun --version
+        gfortran --version
 
     - name: install Intel oneapi components
       if: matrix.toolchain == 'intel'
