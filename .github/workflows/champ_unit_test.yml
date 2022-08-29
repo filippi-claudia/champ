@@ -74,6 +74,11 @@ jobs:
         sudo make install
         sudo cp include/* /usr/local/include/
 
+    - name: Install FortUTF for Unit Testing
+      run: |
+        git submodule init
+        git submodule update
+
     - name: Compile the CHAMP code with INTEL
       if: matrix.toolchain == 'intel'
       run: |
