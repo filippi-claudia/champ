@@ -39,7 +39,7 @@ jobs:
     - name: Install GNU compilers and libraries
       if: matrix.toolchain == 'gnu'
       run: |
-           sudo apt install -y gfortran-11
+           sudo apt --only-upgrade install -y gfortran
            sudo apt install -y openmpi-bin
            sudo apt install -y libopenmpi-dev
            sudo apt install -y gawk
