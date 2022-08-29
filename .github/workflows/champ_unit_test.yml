@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        toolchain: ['intel','gnu']
+        toolchain: ['gnu']
         mode: ['DEBUG']
       fail-fast: false
     defaults:
@@ -39,7 +39,7 @@ jobs:
     - name: Install GNU compilers and libraries
       if: matrix.toolchain == 'gnu'
       run: |
-           sudo apt install -y gfortran
+           sudo apt install -y gfortran-11
            sudo apt install -y openmpi-bin
            sudo apt install -y libopenmpi-dev
            sudo apt install -y gawk
