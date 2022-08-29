@@ -16,9 +16,6 @@ jobs:
       matrix:
         toolchain: ['intel','gnu']
         mode: ['DEBUG']
-        exclude:
-          - toolchain: 'intel'
-            mode: 'DEBUG'
       fail-fast: false
     defaults:
       run:
