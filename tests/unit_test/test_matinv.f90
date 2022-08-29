@@ -3,44 +3,41 @@ module test_matinv_mod
   use precision_kinds, only: dp
   implicit none
   contains
-subroutine test_matinv_id
+subroutine test_matinv
 
     use system, only: nelec
     use matinv_mod, only: matinv
-    real(dp), dimension(3,3) :: a               = reshape([1,0,0,0,1,0,0,0,1],[3,3])
-    real(dp), dimension(3,3) :: expected_output = reshape([1,0,0,0,1,0,0,0,1],[3,3])
-    real(dp)                 :: determinant     = -1.
-    real(dp)                 :: expected_determinant = 1.
+    real(dp), dimension(3,3) :: a       = reshape([ 1, 0, 0,  &
+                                                    0, 1, 0,  &
+                                                    0, 0, 1]  &
+                                                  ,[3,3])
+    real(dp), dimension(  9) :: a_expected      = [ 1, 0, 0   &
+                                                  , 0, 1, 0   &
+                                                  , 0, 0, 1]
+    real(dp)                 :: a_expected_det = 1.
 
-    call tag_test("test matinv")
+    real(dp), dimension(3,3) :: b       = reshape([ 1, 0, 0   &
+                                                  , 5, 1, 0   &
+                                                  , 0, 0, 1]  &
+                                                  ,[3,3])
+    real(dp), dimension(  9) :: b_expected      = [ 1, 0, 0   &
+                                                  ,-5, 1, 0   &
+                                                  , 0, 0, 1]
+    real(dp)                 :: b_expected_det = 1.
 
-    nelec = 3 ! TODO is this really necessary?
+    real(dp)                 :: det             = -1.
 
-    call matinv(a,3,determinant)
 
-    call assert_equal(reshape(a,[9]),reshape(expected_output,[9]))
-    call assert_equal(determinant,expected_determinant)
+    call tag_test("test matinv_a")
+    call matinv(a,3,det)
+    call assert_equal(reshape(a,[9]),a_expected)
+    call assert_equal(det, a_expected_det)
 
-end subroutine test_matinv_id
 
-subroutine test_matinv_2
-
-    use system, only: nelec
-    use matinv_mod, only: matinv
-    real(dp), dimension(3,3) :: a               = reshape([1,0,0,5,1,0,0,0,1],[3,3])
-    real(dp), dimension(3,3) :: expected_output = reshape([1,0,0,-5,1,0,0,0,1],[3,3])
-    real(dp)                 :: determinant     = -1
-    real(dp)                 :: expected_determinant = 1.
-
-    call tag_test("test matinv")
-
-    nelec = 3 ! TODO is this really necessary?
-
-    call matinv(a,3,determinant)
-
-    call assert_equal(reshape(a,[9]),reshape(expected_output,[9]))
-    call assert_equal(determinant,expected_determinant)
-
-end subroutine test_matinv_2
+    call tag_test("test matinv_b")
+    call matinv(b,3,det)
+    call assert_equal(reshape(b,[9]),b_expected)
+    call assert_equal(det, b_expected_det)
+end subroutine test_matinv
 
 end module
