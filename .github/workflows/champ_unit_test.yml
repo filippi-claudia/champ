@@ -22,19 +22,11 @@ jobs:
         shell: bash --noprofile --norc {0}
     steps:
     - uses: actions/checkout@v2
-    - name: Get Intel Key
-      if: matrix.toolchain == 'intel'
-      run: |
-        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-        sudo apt-get update
 
     - name: Install Cmake and HDF5
       run: |
-        sudo apt-get install -y cmake
-        sudo apt-get install -y libhdf5-serial-dev
+        sudo apt install -y cmake
+        sudo apt install -y libhdf5-serial-dev
 
     - name: Install GNU compilers and libraries
       if: matrix.toolchain == 'gnu'
@@ -46,26 +38,14 @@ jobs:
         sudo apt install -y gawk
         sudo apt install -y libblacs-mpi-dev
         sudo apt install -y liblapack-dev
+        sudo apt-get install -y gcc
         gawk --version
         mpirun --version
         gfortran --version
-
-    - name: install Intel oneapi components
-      if: matrix.toolchain == 'intel'
-      run: |
-        sudo apt-get install -y intel-oneapi-common-vars
-        sudo apt-get install -y intel-oneapi-compiler-fortran-2021.3.0
-        sudo apt-get install -y intel-oneapi-mkl-2021.3.0
-        sudo apt-get install -y intel-oneapi-mkl-devel-2021.3.0
-        sudo apt-get install -y intel-oneapi-mpi-2021.3.0
-        sudo apt-get install -y intel-oneapi-mpi-devel-2021.3.0
+        gcc --version
 
     - name: Install Trexio
       run: |
-        sudo apt-get install -y cmake
-        sudo apt-get install -y libhdf5-serial-dev
-        sudo apt-get install -y gfortran
-        sudo apt-get install -y gcc
         wget https://github.com/TREX-CoE/trexio/releases/download/v1.0/trexio-1.0.0.tar.gz
         tar -xzf trexio-1.0.0.tar.gz
         cd trexio-1.0.0/
@@ -79,20 +59,6 @@ jobs:
       run: |
         git submodule init
         git submodule update
-
-    - name: Compile the CHAMP code with INTEL
-      if: matrix.toolchain == 'intel'
-      run: |
-        source /opt/intel/oneapi/setvars.sh
-        printenv >> $GITHUB_ENV
-        which mpiifort
-        MPIRUN=`which mpirun`
-        echo "mpirun used is " $MPIRUN
-        cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort \
-                          -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DBUILD_UNIT_TESTS=on
-        cmake --build build -- vmc_Tests -j2
-        ulimit -s unlimited
 
     - name: Compile with GNU
       if: matrix.toolchain == 'gnu'
