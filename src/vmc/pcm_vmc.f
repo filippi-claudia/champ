@@ -2,9 +2,9 @@
       contains
       subroutine pcm_prt(wcum,iblk)
 
-      use contrl_file, only: ounit
-      use pcm_averages, only: spcmcm2,spcmcum,vpcmcm2,vpcmcum
-      use pcm_cntrl, only: ipcm,ipcmprt
+      use pcm_cntrl, only: ipcm, ipcmprt
+      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -50,17 +50,19 @@
 c-----------------------------------------------------------------------
       subroutine pcm_fin(wcum,iblk)
 
-      use contrl_file, only: ounit
-      use control_vmc, only: vmc_nblk,vmc_nstep
-      use pcm,     only: MCHS
-      use pcm_averages, only: enfpcm_cm2,enfpcm_cum,qopcm_cm2,qopcm_cum
-      use pcm_averages, only: spcmcm2,spcmcum,vpcmcm2,vpcmcum
-      use pcm_cntrl, only: ipcm
-      use pcm_fdc, only: fs,qfree,qvol
-      use pcm_mod, only: pcm_write_chvol,qpcm_charges
-      use pcm_parms, only: iscov,nch,nchs,nscv
-      use precision_kinds, only: dp
+      use pcm, only: MCHS
       !use contrl, only: nblk, nstep
+      use control_vmc, only: vmc_nblk, vmc_nstep
+      use pcm_cntrl, only: ipcm
+      use pcm_parms, only: iscov, nch, nchs
+      use pcm_parms, only: nscv
+      use pcm_fdc, only: fs, qfree, qvol
+      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_cum, enfpcm_cm2
+      use contrl_file,    only: ounit
+      use precision_kinds, only: dp
+      use pcm_mod, only: qpcm_charges, pcm_write_chvol
       implicit none
 
       integer :: i, iblk, iqopcm_err, ispcmerr, ivpcmerr
@@ -153,12 +155,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_save
 
+      use pcm_hpsi, only: enfpcm, qopcm
+      use pcmo, only: enfpcmo, qopcmo, spcmo, vpcmo
       use pcm_cntrl, only: ipcm
-      use pcm_hpsi, only: enfpcm,qopcm
       use pcm_parms, only: nchs
-      use pcmo,    only: enfpcmo,qopcmo,spcmo,vpcmo
-      use precision_kinds, only: dp
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i
@@ -178,13 +180,15 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q)
-      use pcm_averages, only: enfpcm_sum,qopcm_sum,spcmsum,vpcmsum
+      use pcm_hpsi, only: enfpcm, qopcm
+      use pcmo, only: enfpcmo, qopcmo, spcmo, vpcmo
       use pcm_cntrl, only: ipcm
-      use pcm_hpsi, only: enfpcm,qopcm
       use pcm_parms, only: nchs
-      use pcmo,    only: enfpcmo,qopcmo,spcmo,vpcmo
-      use precision_kinds, only: dp
+      use pcm_averages, only: spcmsum, vpcmsum
+      use pcm_averages, only: qopcm_sum
+      use pcm_averages, only: enfpcm_sum
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i
@@ -205,13 +209,13 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_cum(wsum)
 
-      use pcm_averages, only: enfpcm_cm2,enfpcm_cum,enfpcm_sum,qopcm_cm2
-      use pcm_averages, only: qopcm_cum,qopcm_sum,spcmcm2,spcmcum
-      use pcm_averages, only: spcmsum,vpcmcm2,vpcmcum,vpcmsum
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: nchs
-      use precision_kinds, only: dp
+      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_sum, enfpcm_cum, enfpcm_cm2
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i

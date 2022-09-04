@@ -2,13 +2,13 @@
       contains
       subroutine olbfgs_more(iter, nparm, deltap, parameters)
 
-      use mpi
-      use mpiconf, only: idtask
-      use olbfgs,  only: olbfgs_iteration,update_hessian
-      use optwf_control, only: sr_adiag,sr_tau
-      use optwf_sr_mod, only: sr_hs
-      use precision_kinds, only: dp
+      use olbfgs, only: update_hessian, olbfgs_iteration
       use sr_mat_n, only: h_sr
+      use optwf_sr_mod, only: sr_hs
+      use mpiconf, only: idtask
+      use optwf_contrl, only: sr_tau, sr_adiag
+      use mpi
+      use precision_kinds, only: dp
 
       implicit none
 

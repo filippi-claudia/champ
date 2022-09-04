@@ -2,12 +2,13 @@
       contains
       subroutine verify_orbitals
 
-      use dorb_m,  only: iworbd
-      use error,   only: fatal_error
-      use optwf_control, only: ioptorb
-      use orbval,  only: nadorb,ndetorb,orb
-      use slater,  only: ndet,norb
-      use system,  only: nelec
+      use const, only: nelec
+      use dets, only: ndet
+      use optwf_contrl, only: ioptorb
+      use coefs, only: norb
+      use dorb_m, only: iworbd
+      use orbval, only: nadorb, ndetorb, orb
+      use error, only: fatal_error
 
       implicit none
 

@@ -6,16 +6,16 @@
 ! Modified by A. Scemama (printing in a GAMESS-like format)
 ! 1) a slater basis
 ! 2) a gaussian basis
-      use basis,   only: betaq,zex
-      use coefs,   only: nbasis
-      use contrl_file, only: errunit,ounit
-      use error,   only: fatal_error
-      use numbas,  only: numr
+      use atom, only: znuc, iwctype, nctype, ncent
+      use ghostatom, only: newghostype
+      use const, only: nelec
+      use numbas, only: numr
+      use coefs, only: coef, nbasis, norb
+      use basis, only: zex, betaq
+      use contrl_file,    only: ounit, errunit
+      use error, only: fatal_error
+
       use precision_kinds, only: dp
-      use slater,  only: coef,norb
-      use system,  only: iwctype,ncent,nctype,nelec,newghostype,znuc
-
-
       implicit none
       integer :: iu
       integer :: i, iabs, ic, imax

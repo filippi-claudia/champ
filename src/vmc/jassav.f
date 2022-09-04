@@ -3,10 +3,10 @@
       subroutine jassav(iel,iflag)
 c Written by Claudia Filippi
 
-      use jastrow_update, only: d2ijn,d2ijo,d2n,d2o,fijn,fijo,fjn,fjo
-      use jastrow_update, only: fsn,fso,fsumn,fsumo
-      use system,  only: nelec
-      use velocity_jastrow, only: vj,vjn
+      use const, only: nelec
+      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+      use velocity_jastrow, only: vj, vjn
+      use jasn, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
 
       implicit none
 

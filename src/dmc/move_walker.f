@@ -3,18 +3,19 @@
       subroutine send_walker(irecv)
 c Written by Claudia Filippi
 
-      use age,     only: iage
-      use branch,  only: eold,nwalk,pwt,wt,wthist
-      use config,  only: d2o,peo_dmc,psido_dmc,psijo_dmc,vold_dmc
-      use config,  only: xold_dmc
+      use const, only: nelec
+      use forcepar, only: nforce
+      use age, only: iage
+      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use force_dmc, only: nwprod
+      use branch, only: eold, nwalk, pwt, wt
+      use branch, only: wthist
       use jacobsave, only: ajacold
-      use mmpol_reduce_mod, only: mmpol_recv,mmpol_send
-      use mpi
-      use multiple_geo, only: nforce,nwprod
-      use pcm_reduce_mod, only: pcm_recv,pcm_send
-      use prop_reduce_mod, only: prop_recv,prop_send
-      use system,  only: nelec
       use velratio, only: fratio
+      use mpi
+      use prop_reduce_mod, only: prop_send, prop_recv
+      use mmpol_reduce_mod,only: mmpol_send, mmpol_recv
+      use pcm_reduce_mod,  only: pcm_send, pcm_recv
 
       implicit none
 

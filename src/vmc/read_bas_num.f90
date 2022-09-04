@@ -1,5 +1,5 @@
 module read_bas_num_mod
-      use error,   only: fatal_error
+use error, only: fatal_error
 interface !LAPACK interface
   SUBROUTINE DGESV( N, NRHS, A, LDA, IPIV, B, LDB, INFO )
     INTEGER            INFO, LDA, LDB, N, NRHS
@@ -10,28 +10,33 @@ end interface
 contains
       subroutine read_bas_num(iwf)
 
-      use coefs,   only: nbasis
-      use contrl_file, only: errunit,ounit
-      use control, only: ipr
-      use custom_broadcast, only: bcast
-      use fitting_methods, only: exp_fit
-      use general, only: bas_id,filename,filenames_bas_num,pooldir
-      use mpiconf, only: wid
-      use numbas,  only: allocate_numbas,arg,d2rwf,igrid,nr,nrbas,r0
-      use numbas,  only: rwf!, rmax
-      use numbas_mod, only: MRWF,MRWF_PTS
-      use numexp,  only: ab,ae,allocate_numexp,ce
-      use precision_kinds, only: dp
-      use pseudo,  only: nloc
-      use spline2_mod, only: spline2
-      use system,  only: atomtyp,nctype,nctype_tot,newghostype,znuc
-      use vmc_mod, only: NCOEF
+      use custom_broadcast,   only: bcast
+      use mpiconf,            only: wid
 
+      use numbas_mod, only: MRWF, MRWF_PTS
+      use atom, only: znuc, nctype, nctype_tot
 ! c Written by Claudia Filippi
 ! c Modified by F. Schautz to use fancy file names
 ! c Reads in localized orbitals on a radial grid
 
+      use numbas_mod, only: MRWF, MRWF_PTS
+      use vmc_mod, only: NCOEF
+      use atom, only: znuc, nctype, nctype_tot
+      use ghostatom, only: newghostype
+      use const, only: ipr
+      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf!, rmax
+      use numbas, only: allocate_numbas
+      use coefs, only: nbasis
+      use numexp, only: ae, ce, ab, allocate_numexp
+      use pseudo, only: nloc
+      use general, only: filename, filenames_bas_num
 
+      use atom, 			        only: atomtyp
+      use general, 			      only: pooldir, bas_id
+      use contrl_file,        only: ounit, errunit
+      use precision_kinds,    only: dp
+      use spline2_mod,        only: spline2
+      use fitting_methods,    only: exp_fit
 
       implicit none
 
@@ -249,20 +254,20 @@ subroutine readps_gauss
   !
   ! NOTE: as usual power n means r**(n-2)
   !
-      use contrl_file, only: errunit,ounit
-      use custom_broadcast, only: bcast
-      use gauss_ecp, only: allocate_gauss_ecp,ecp_coef,ecp_exponent
-      use gauss_ecp, only: necp_power,necp_term
-      use general, only: filename,filenames_ps_gauss,pooldir,pp_id
-      use mpiconf, only: wid
-      use precision_kinds, only: dp
-      use pseudo,  only: lpot
-      use pseudo_mod, only: MGAUSS,MPS_L,MPS_QUAD
-      use qua,     only: nquad,wq,xq0,yq0,zq0
-      use rotqua_mod, only: gesqua
-      use system,  only: atomtyp,nctype
+  use custom_broadcast,   only: bcast
+  use mpiconf,            only: wid
 
+  use pseudo_mod, only: MPS_L, MGAUSS, MPS_QUAD
+  use atom, only: nctype, atomtyp
+  use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
+  use gauss_ecp, only: allocate_gauss_ecp
+  use pseudo, only: lpot
+  use qua, only: nquad, wq, xq0, yq0, zq0
+  use general, only: pooldir, filename, pp_id, filenames_ps_gauss
+  use contrl_file,        only: ounit, errunit
+  use rotqua_mod, only: gesqua
 
+  use precision_kinds, only: dp
   implicit none
 
   integer         :: i, ic, idx, l
@@ -393,7 +398,7 @@ end subroutine readps_gauss
 !   use mpiconf,            only: wid
 
 !   use pseudo_mod, only: MPS_L, MGAUSS, MPS_QUAD
-!   use system, only: nctype, atomtyp
+!   use atom, only: nctype, atomtyp
 !   use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
 !   use gauss_ecp, only: allocate_gauss_ecp
 !   use pseudo, only: lpot
