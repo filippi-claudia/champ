@@ -239,12 +239,11 @@ c-------------------------------------------------------------------------------
       use phifun, only: d2phin_all, d3phin, dphin
       use wfsec, only: iwf
       use coefs, only: coef, nbasis, norb
-      use contrl_per, only: ibasis
       use precision_kinds, only: dp
 
       implicit none
 
-      integer :: i, ic, ielec, j, k
+      integer :: ibasis, i, ic, ielec, j, k
       integer :: l, m, n
 
       real(dp), dimension(3*nelec,nbasis) :: tphin
