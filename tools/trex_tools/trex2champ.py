@@ -933,7 +933,7 @@ def write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coor
                 file.write("# Converted from the trexio file using trex2champ converter https://github.com/TREX-CoE/trexio_tools \n")
 
                 for element in range(nucleus_num):
-                   file.write("{:5s} {:18.12f} {:18.12f} {:18.12f} \n".format(nucleus_label[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
+                   file.write("{:5s} {} {} {} \n".format(nucleus_label[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
 
                 file.write("\n")
             file.close()

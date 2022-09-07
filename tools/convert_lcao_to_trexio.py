@@ -21,7 +21,6 @@ import argparse
 import numpy as np
 np.set_printoptions(threshold=np.inf)
 from collections import Counter
-from collections.abc import Iterable
 from itertools import count as icount
 
 # Instantiate the parser
@@ -46,12 +45,6 @@ print (' lcao file old   ::         \t {}'.format(args.filename_lcao))
 print (' bfinfo file old ::         \t {}'.format(args.filename_bfinfo))
 print (' geom file old   ::         \t {}'.format(args.filename_geom))
 
-
-def flatten(x):
-    if isinstance(x, Iterable):
-        return [a for i in x for a in flatten(i)]
-    else:
-        return [x]
 
 ### Read the lcao file first
 
@@ -161,10 +154,10 @@ with open(args.filename_geom) as f2:
 
         print ('Number of atoms             \t {}'.format(natoms))
         print ('Number of types of atoms    \t {}'.format(nctype))
-        # print ('Dictionary of atom types    \t {}'.format(dict_atom_type))
+        print ('Dictionary of atom types    \t {}'.format(dict_atom_type))
 
         print ('Atom Symbols                \t {}'.format(atom_type_symbol))
-        # print ('Atom types                  \t {}'.format(atom_type))
+        print ('Atom types                  \t {}'.format(atom_type))
 
 
 ## utility functions
@@ -187,80 +180,67 @@ with open(args.filename_bfinfo) as f3:
         if line.startswith('end'):
             continue
 
-    atom_type_symbol = np.array(atom_type_symbol)
-    Atoms, unique_atom_index = np.unique(atom_type_symbol, return_index=True)
-    Atoms, count_each_type_atoms = np.unique(atom_type_symbol, return_counts=True)
-    same_ordered_unique_atoms =  Atoms[np.argsort(unique_atom_index)]
+    # unique_atoms, indices = np.unique(atom_type_symbol, return_index=True)
+    _, indices = np.unique(atom_type_symbol, return_index=True)
+    unique_atoms = np.array(atom_type_symbol)[np.sort(indices)]
+    _, count_each_type_atoms = np.unique(atom_type_symbol, return_counts=True)
+    # unique_atoms = unique_atoms[np.sort(indices)]
+    print ('unique elements             \t {}'.format(unique_atoms))
+    print ('indices                     \t {}'.format(np.sort(indices)))
 
-    # print("debug ", Atoms)
-    # print("same order ", same_ordered_unique_atoms)
-    print ('Unique atoms             \t {}'.format(Atoms))
-    print ('Indices of unique atoms  \t {}'.format(unique_atom_index))
-    print ('count each atom type     \t {}'.format(count_each_type_atoms))
-
-
-    num_unique_atoms = len(unique_atom_index)
+    print ('count each atom type        \t {}'.format(count_each_type_atoms))
+    num_unique_atoms = len(unique_atoms)
 
     dict_num_per_shell = {} #only the odd numbered rows of data
     for i in range(coord_block_start, coord_block_start+2*num_unique_atoms,2):
         dict_num_per_shell[i] = lines[i].split()
 
+    print ("dict num per shell", dict_num_per_shell)
+
+
     dict_radial_pointers = {} #only the even numbered rows of data
     for i in range(coord_block_start+1, coord_block_start+2*num_unique_atoms,2):
         dict_radial_pointers[i] = lines[i].split()
+
+    print ("radial pointers", dict_radial_pointers)
 
 
 print (" ")
 print (" ")
 ### Writing part starts here!
 
-## Writing the new geometry file begins here ----------------
-new_filename_geom = "champ_v3_" + splitext(args.filename_geom)[0] + ".xyz"
-if new_filename_geom is not None:
-    if isinstance(new_filename_geom, str):
-        ## Write down a symmetry file in the new champ v2.0 format
-        with open(new_filename_geom, 'w') as file:
-
-            file.write("{} \n".format(natoms))
-            # header line printed below
-            file.write("# Converted from the old .geometry file to CHAMP v3 .xyz file \n")
-
-            for element in range(natoms):
-                file.write("{:5s} {:18.12f} {:18.12f} {:18.12f} \n".format(atom_type_symbol[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
-
-            file.write("\n")
-        file.close()
-    else:
-        raise ValueError
-# all the geometry file information written to the file
-print ("New geometry file created   \t {} ".format(new_filename_geom))
-## Writing the new geometry file ends here ----------------
-
-
-## Writing the new bfinfo file begins here ----------------
 ## Get the bfinfo file with cartesian ordering of shell pointers
 # Cartesian ordering
 order = [[0],
          [0, 1, 2],
          [0, 1, 2, 3, 4, 5],
-         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]]
+         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]
 
-## v2.0 champ shell ordering (to be replaced by trexio order)
+## NEW champ shell ordering
 shells = {}
 shells[0] = ['S']
 shells[1] = ['X','Y','Z']
 shells[2] = ['XX','XY','XZ','YY','YZ','ZZ']
 shells[3] = ['XXX','XXY','XXZ','XYY','XYZ','XZZ','YYY','YYZ','YZZ','ZZZ']
-shells[4] = ['XXXX','XXXY','XXXZ','XXYY','XXYZ','XXZZ','XYYY','XYYZ','XYZZ','XZZZ','YYYY','YYYZ','YYZZ','YZZZ','ZZZZ']
+
+## OLD champ shell ordering
+old_shells = {}
+old_shells[0] = ['S']
+old_shells[1] = ['X','Y','Z']
+old_shells[2] = ['XX','YY','ZZ','XY','XZ','YZ']
+old_shells[3] = ['XXX','YYY','ZZZ','XXY','XXZ','YYX','YYZ','ZZX','ZZY','XYZ']
+
 
 dict_l_of_shells = {1:0, 3:1, 6:2, 10:3}
+index_unique_atom = 0
+basis_shell_ang_mom_unique = {}
+dict_shell_counter = {}
 
 ## Write the new bfinfo file begins here ----------------
-new_filename_bfinfo = "champ_v3_" + splitext(args.filename_bfinfo)[0] + "_basis_pointers.bfinfo"
+new_filename_bfinfo = "champ_v3_trexio_order_" + splitext(args.filename_bfinfo)[0] + ".bfinfo"
 if new_filename_bfinfo is not None:
     if isinstance(new_filename_bfinfo, str):
-        ## Write down a bfinfo file in the new champ v3.0 format
+        ## Write down a symmetry file in the new champ v2.0 format
         with open(new_filename_bfinfo, 'w') as file:
 
             # qmc bfinfo line printed below
@@ -271,6 +251,10 @@ if new_filename_bfinfo is not None:
             file.write("qmc_bf_info 1 \n")
 
             ## Calculate the needed quantities
+
+            index_unique_atom = 0
+            basis_shell_ang_mom_unique = {}
+            dict_shell_counter = {}
 
             for vals in dict_radial_pointers.values():
                 pointers = [int(i) for i in vals]
@@ -284,22 +268,20 @@ if new_filename_bfinfo is not None:
 
                 _, temp_counter = np.unique(shell_count, return_counts=True)
 
-                list_slm_index = []
                 for l in range(len(temp_counter)):
                     num_shells_per_l[l] = temp_counter[l]
-                    for nshell in range(num_shells_per_l[l]):
-                        if l == 0:
-                            list_slm_index.append(1)
-                        elif l == 1:
-                            list_slm_index.append([2,3,4])
-                        elif l == 2:
-                            list_slm_index.append([5,6,7,8,9,10])
-                        elif l == 3:
-                            list_slm_index.append([11,12,13,14,15,16,17,18,19,20])
-                        elif l == 4:
-                            list_slm_index.append([21,22,23,24,25,26,27,28,29,30,31,32,33,34,35])
 
-                slm_index = flatten(list_slm_index)
+                slm_index = []
+                for ind in range(len(shell_count)):
+                    val = shell_count[ind]
+                    count = 1
+                    for j in range(val):
+                        if val == 1:
+                            slm_index.append(count)
+                            count += 1
+                        else:
+                            slm_index.append(count+val-2)
+                            count += 1
 
                 # Things to write to the file
                 # line 1) basis_per_atom, num_shells_per_l
@@ -330,180 +312,184 @@ if new_filename_bfinfo is not None:
 print ("New bfinfo file created   \t {} ".format(new_filename_bfinfo))
 # all the bfinfo file information written to the file
 
+## Write the new geometry file begins here ----------------
+new_filename_geom = "champ_v3_trexio_order_" + splitext(args.filename_geom)[0] + ".xyz"
+if new_filename_geom is not None:
+    if isinstance(new_filename_geom, str):
+        ## Write down a symmetry file in the new champ v2.0 format
+        with open(new_filename_geom, 'w') as file:
 
+            file.write("{} \n".format(natoms))
+            # header line printed below
+            file.write("# Converted from the old .geometry file to CHAMP v2 .xyz file \n")
 
+            for element in range(natoms):
+                file.write("{:5s} {: 0.6f} {: 0.6f} {: 0.6f} \n".format(atom_type_symbol[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
 
-
-
+            file.write("\n")
+        file.close()
+    else:
+        raise ValueError
+# all the geometry file information written to the file
+print ("New geometry file created   \t {} ".format(new_filename_geom))
 
 
 
 
 ### Operations on MO coefficients done here
-## Calculate the needed quantities
 
-dict_unique_atom_l = {}
-dict_shellcount_per_l = {}
-
-count_over_unique = 0
-for vals in dict_radial_pointers.values():
-    pointers = [int(i) for i in vals]
-    basis_pointers = sorted(pointers)
-    unique_shells, shell_count = np.unique(basis_pointers, return_counts=True)
-
-    # sorted_pointers can be stored as it is now.
-
-    num_shells_per_l = np.zeros(5, dtype=int)
-
-    basis_per_atom = np.sum(shell_count)
-
-    _, temp_counter = np.unique(shell_count, return_counts=True)
-
-    list_slm_index = []
-    list_shell_ang_mom = []
-    for l in range(len(temp_counter)):
-        num_shells_per_l[l] = temp_counter[l]
-        for nshell in range(num_shells_per_l[l]):
-            list_shell_ang_mom.append(l)
+## CHAMP old AO ordering (where d is moved to s orbital)
+# ao_order_old= ['S','XX','X','Y','Z','YY','ZZ','XY','XZ','YZ','XXX','YYY','ZZZ','XXY','XXZ','YYX','YYZ','ZZX','ZZY','XYZ']
+## Cartesian Ordering CHAMP
+# ao_order_new = ['S',[all 'X'],[all 'Y'],[all 'Z'],'XX','XY','XZ','YY','YZ','ZZ','XXX','XXY','XXZ','XYY','XYZ','XZZ','YYY','YYZ','YZZ','ZZZ']
 
 
-    dict_unique_atom_l[same_ordered_unique_atoms[count_over_unique]] = list_shell_ang_mom
-    # print ("dict ang mom", same_ordered_unique_atoms[count_over_unique], dict_unique_atom_l )
-    dict_shellcount_per_l[same_ordered_unique_atoms[count_over_unique]] = list(num_shells_per_l)
-    count_over_unique += 1
+# ## Reorder orbitals according to the ordering of the CHAMP ordering
+# reordered_mo_array = dict_mo["coefficient"][:,champ_ao_ordering]
 
 
-list_ang_mom_l_all = [[] for _ in range(natoms)]
-list_num_shell_per_l_all = [[] for _ in range(natoms)]
+# print ("reconstruting the old shell representation first atom")
+# old_shell_reprensentation_per_atom = []
+# for element in atom_type_symbol:
+#     temp_old_shell = []
+#     for ind, num in enumerate(dict_shell_counter[element]):
+#         # S with XX of D
+#         if ind == 0:
+#             for j in range(num):
+#                 temp_old_shell.append(old_shells[ind][0])
 
-for i in range(natoms):
-    list_ang_mom_l_all[i] = dict_unique_atom_l[atom_type_symbol[i]]
-    list_num_shell_per_l_all[i] = dict_shellcount_per_l[atom_type_symbol[i]]
+#             for jj in range(dict_shell_counter[element][2]):
+#                 temp_old_shell.append(old_shells[2][0]+str(jj))
 
-# print ("shell ang mom all atoms  ", list_ang_mom_l_all )
-# print ("dict_shellcount_per_l", list_num_shell_per_l_all)
+#         # P
+#         if ind == 1:
+#             temp = np.zeros((3,num),dtype='U2')
+#             for j in range(num):
+#                 for k in order[1]:
+#                     temp[k,j] = old_shells[1][k] + str(j)
 
-###
+#             temp_old_shell.extend(list(temp.flatten()))
 
+#         # D without XX
+#         if ind == 2:
+#             temp = np.zeros((6,num),dtype='U3')
+#             for j in range(num):
+#                 for k in order[2][1:]:  #exclude XX
+#                     temp[k,j] = old_shells[2][k] + str(j)
 
-# This part is for reshuffling to make the AO basis in the CHAMP's own ordering
-index_dict = {}; shell_representation = {}
-new_shell_representation = []
-counter = 0; basis_per_atom = []
-ind = 0; champ_ao_ordering = []
-for atom_index in range(natoms):
-    bfcounter = 1; basis_per_atom_counter = 0
-    pindex = 0; dindex = 0; findex = 0; gindex = 0
-    for l in list_ang_mom_l_all[atom_index]:
-        # run a small loop to reshuffle the shell ordering
-        if l == 0:
-            new_shell_representation.append(shells[l][0])
-            champ_ao_ordering.append(ind)
-            ind += 1
+#             temp_old_shell.extend(list(temp.flatten()))
 
-        local_p = np.zeros((3,list_num_shell_per_l_all[atom_index][1]),dtype='U1')
-        local_ind_p = np.zeros((3,list_num_shell_per_l_all[atom_index][1]),dtype=int)
-        if l == 1:
-            pindex += 1; ind = champ_ao_ordering[-1] + 1
-            for j in range(list_num_shell_per_l_all[atom_index][1]):
-                #loop over all 3 p orbitals
-                for k in order[l]:
-                    local_p[k,j] = shells[l][k]
-                    local_ind_p[k,j] = ind
-                    ind += 1
+#         # F
+#         if ind == 3:
+#             temp = np.zeros((10,num),dtype='U4')
+#             for j in range(num):
+#                 for k in order[3]:
+#                     temp[k,j] = old_shells[3][k] + str(j)
 
-            if pindex == list_num_shell_per_l_all[atom_index][1]:
-                new_shell_representation.extend(list(local_p.flatten()))
-                champ_ao_ordering.extend(list(local_ind_p.flatten()))
+#             temp_old_shell.extend(list(temp.flatten()))
+
+#     temp_old_shell = list(filter(None, temp_old_shell))
+#     old_shell_reprensentation_per_atom.append(temp_old_shell)
 
 
 
-        local_d = np.zeros((6,list_num_shell_per_l_all[atom_index][2]),dtype='U2')
-        local_ind_d = np.zeros((6,list_num_shell_per_l_all[atom_index][2]),dtype=int)
-        if l == 2:
-            dindex += 1; ind = champ_ao_ordering[-1] + 1
-            for j in range(list_num_shell_per_l_all[atom_index][2]):
-                #loop over all 6 d orbitals
-                for k in order[l]:
-                    local_d[k,j] = shells[l][k]
-                    local_ind_d[k,j] = ind
-                    ind += 1
+# # Create a copy of mocoeffs; only the d coeffs will change; rest will be shuffled
+# transformed_mocoeffs = np.asarray(mocoeffs)
 
-            if dindex == list_num_shell_per_l_all[atom_index][2]:
-                new_shell_representation.extend(list(local_d.flatten()))
-                champ_ao_ordering.extend(list(local_ind_d.flatten()))
+# # Get the list of indices of starting point for each atom
+# basis_start_index = np.cumsum(basis_per_atom)
+# basis_start_index = np.insert(basis_start_index, 0, 0, axis=0)
+# # Ignore the last number from the above list
 
 
-        local_f = np.zeros((10,list_num_shell_per_l_all[atom_index][3]),dtype='U3')
-        local_ind_f = np.zeros((10,list_num_shell_per_l_all[atom_index][3]),dtype=int)
-        if l == 3:
-            findex += 1; ind = champ_ao_ordering[-1] + 1
-            for j in range(list_num_shell_per_l_all[atom_index][3]):
-                #loop over all 10 f orbitals
-                for k in order[l]:
-                    local_f[k,j] = shells[l][k]
-                    local_ind_f[k,j] = ind
-                    ind += 1
+# summ = 0; final_list_indices = []
+# for index, element in enumerate(atom_type_symbol):
+#     temporary = []
+#     B = np.array(distinct_shell_reprensentation_per_atom[index])
+#     A = np.array(old_shell_reprensentation_per_atom[index])
 
-            if findex == list_num_shell_per_l_all[atom_index][3]:
-                new_shell_representation.extend(list(local_f.flatten()))
-                champ_ao_ordering.extend(list(local_ind_f.flatten()))
-
-        local_g = np.zeros((15,list_num_shell_per_l_all[atom_index][4]),dtype='U4')
-        local_ind_g = np.zeros((15,list_num_shell_per_l_all[atom_index][4]),dtype=int)
-        if l == 4:
-            gindex += 1; ind = champ_ao_ordering[-1] + 1
-            for j in range(list_num_shell_per_l_all[atom_index][4]):
-                #loop over all 15 g orbitals
-                for k in order[l]:
-                    local_g[k,j] = shells[l][k]
-                    local_ind_g[k,j] = ind
-                    ind += 1
-
-            if gindex == list_num_shell_per_l_all[atom_index][4]:
-                new_shell_representation.extend(list(local_g.flatten()))
-                champ_ao_ordering.extend(list(local_ind_g.flatten()))
+#     #take care of repeated number corresponding to S shells
+#     c = Counter(B)
+#     iters = {k: icount(1) for k, v in c.items() if v > 1}
+#     indexed_B = [x+str(next(iters[x])) if x in iters else x for x in B]
+#     indexed_B =np.array(indexed_B)
 
 
-        # Get number of AO basis per atom
-        for k in order[l]:
-            shell_representation[counter] = shells[l][k]
-            index_dict[counter] =  counter
-            counter += 1
-            basis_per_atom_counter += 1
-        bfcounter += 1
-    basis_per_atom.append(basis_per_atom_counter)
+#     c = Counter(A)
+#     iters = {k: icount(1) for k, v in c.items() if v > 1}
+#     indexed_A = [x+str(next(iters[x])) if x in iters else x for x in A]
+#     indexed_A =np.array(indexed_A)
 
-# print ("champ ao ordering: ", champ_ao_ordering)
-# print ("new_shell_representation: ", new_shell_representation)
-# print ("old_shell_representation: ", shell_representation.values())
-# print ("basis per atom: ", basis_per_atom)
+#     # print ("indexed A ", indexed_A)
+#     # print ("indexed B ", indexed_B)
 
+#     xsorted = np.argsort(indexed_B)
+#     res = xsorted[np.searchsorted(indexed_B[xsorted], indexed_A)]
 
-
-mocoeffs = np.array(mocoeffs)
-## Reorder orbitals according to the ordering of the CHAMP ordering
-reordered_mo_array =  mocoeffs[:,np.argsort(champ_ao_ordering)]
+#     temporary = [str(a + summ) for a in res]
+#     final_list_indices.extend(temporary)
+#     summ = summ + basis_per_atom[index]
 
 
-# write the transformed molecular coefficients to the new .lcao file
-new_filename_orbitals = "champ_v3_trexio_order_" + splitext(args.filename_lcao)[0] + '.lcao'
-if new_filename_orbitals is not None:
-    if isinstance(new_filename_orbitals, str):
-        ## Write down an orbitals file in the new champ v2.0 format
-        with open(new_filename_orbitals, 'w') as file:
+#     ## Do the molecular coefficient transformation here.
+#     # Select the XX, YY, ZZ coefficients from the old file for each atom
+#     # and then apply the following transformation::
+#     CS = np.sqrt(5.0)
+#     CD = 1.0/np.sqrt(3.0)
+#     # a=oldcoeff('XX')
+#     # b=oldcoeff('YY')
+#     # c=oldcoeff('ZZ')
+#     # newcoeff('XX') = a/CS - b/2.0 + c / (2.0*CD);
+#     # newcoeff('YY') = a/CS - b/2.0 - c / (2.0*CD);
+#     # newcoeff('ZZ') = a/CS + b;
 
-            # header line printed below
-            file.write("# File created using the champ v3 converter in the trexio order \n")
-            file.write("lcao " + str(ncoeff) + " " + str(nbasis) + " 1 " + "\n" )
-            # np.savetxt(file, reordered_mo_array, fmt='%.8f')
-            np.savetxt(file, reordered_mo_array)
-            file.write("end\n")
-        file.close()
-    else:
-        raise ValueError
-# all the lcao file information written to the file
-print ("New orbital file created   \t {} ".format(new_filename_orbitals))
+#     # make sure that you loop over all the d coeffs
+#     # print ("to search in list A", A)
+#     # print ("basis per atom ", basis_per_atom)
+#     for num_d in range(dict_shell_counter[element][2]):
+#         index_xx = np.where( A == 'XX' + str(num_d))[0][0] + basis_start_index[index]
+#         index_yy = np.where( A == 'YY' + str(num_d))[0][0] + basis_start_index[index]
+#         index_zz = np.where( A == 'ZZ' + str(num_d))[0][0] + basis_start_index[index]
+#         # print ("index what i want xx,yy,zz", index_xx,index_yy,index_zz)
+#         for iorb in range(ncoeff):
+#             a = mocoeffs[iorb][index_xx]
+#             b = mocoeffs[iorb][index_yy]
+#             c = mocoeffs[iorb][index_zz]
+#             transformed_mocoeffs[iorb][index_xx] = a/CS - b/2.0 + c/(2.0*CD)
+#             transformed_mocoeffs[iorb][index_yy] = a/CS - b/2.0 - c/(2.0*CD)
+#             transformed_mocoeffs[iorb][index_zz] = a/CS + b
+
+
+
+
+# flat_list = [item for sublist in old_shell_reprensentation_per_atom for item in sublist]
+# #Convert to numpy array
+# final_list_indices = np.asarray(final_list_indices)
+# #Convert to numpy int array
+# final_list_indices = final_list_indices.astype(int)
+# # print ("list of indices final ", final_list_indices)
+# ## Rearrange the transofrmed mocoeffs array with index array from final_list_indices
+# argindex = final_list_indices.argsort()
+# for iorb in range(ncoeff):
+#     transformed_mocoeffs[iorb] = transformed_mocoeffs[iorb][argindex]
+
+# # write the transformed molecular coefficients to the new .lcao file
+# new_filename_orbitals = "champ_v3_trexio_order_" + splitext(args.filename_lcao)[0] + '_orbitals.lcao'
+# if new_filename_orbitals is not None:
+#     if isinstance(new_filename_orbitals, str):
+#         ## Write down an orbitals file in the new champ v2.0 format
+#         with open(new_filename_orbitals, 'w') as file:
+
+#             # header line printed below
+#             file.write("# File created using the old champ spherical to cartesian converter \n")
+#             file.write("lcao " + str(ncoeff) + " " + str(nbasis) + " 1 " + "\n" )
+#             np.savetxt(file, transformed_mocoeffs, fmt='%.8f')
+#             file.write("end\n")
+#         file.close()
+#     else:
+#         raise ValueError
+# # all the lcao file information written to the file
+# print ("New orbital file created   \t {} ".format(new_filename_orbitals))
 
 print ('{}'.format("All files have been converted successfully"))
 # The end
