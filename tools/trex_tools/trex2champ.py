@@ -102,7 +102,7 @@ class Champ:
 
         # Required positional argument
         parser.add_argument("--gamess", "-i", "--g", dest='gamessfile', type=str, required = False,
-                            help='Required: Filename (including extension) of the gamess output file.')
+                            help='Optional: Filename (including extension) of the gamess output file.')
 
         # Optional positional argument
         parser.add_argument("--motype", "-mo", "--mo", dest='motype', type=str, required = False,
@@ -149,6 +149,12 @@ class Champ:
                             help='Optional: Variable save_determinants to save the determinants in CHAMP format.')
         parser.set_defaults(save_determinants=False)
 
+        # Optional argument for controlling the output files
+        parser.add_argument("--csf", "-csf", dest='save_csfs', action='store_true',
+                            help='Optional: Variable save_csfs to save the determinants, csfs, and csfmap in CHAMP format.')
+        parser.set_defaults(save_csfs=False)
+
+
         # Optional argument for controlling the names of the output files
         parser.add_argument("--basis_prefix", dest='basis_prefix', type=str, required = False,
                             help='Optional: Variable basis prefix to save the basis grid files with this prefix.')
@@ -176,6 +182,7 @@ class Champ:
         self.save_ecp = args.save_ecp
         self.save_symmetry = args.save_symmetry
         self.save_determinants = args.save_determinants
+        self.save_csfs = args.save_csfs
 
         # Optional argument for controlling the names of the output files
         self.basis_prefix = args.basis_prefix
@@ -188,6 +195,7 @@ class Champ:
         print (' Save symmetry      ::         \t {}'.format(self.save_symmetry))
         print (' Save eigenvalues   ::         \t {}'.format(self.save_eigenvalues))
         print (' Save determinants  ::         \t {}'.format(self.save_determinants))
+        print (' Save CSFs          ::         \t {}'.format(self.save_csfs))
         print ('\n')
 
 
@@ -446,52 +454,57 @@ class Champ:
         # Determinants
         # ---
         if self.save_determinants is True:
-            if trexio.has_determinant_list(trexio_file) and trexio.has_determinant_coefficient(trexio_file):
-                # Read number of determinants
-                try:
-                    num_dets = trexio.read_determinant_num(trexio_file)
-                except trexio.Error:
-                    print('TREXIO Error :: Determinant : number not found')
+            if self.save_csfs is False:      # use trexio to get determinants
+                if trexio.has_determinant_list(trexio_file) and trexio.has_determinant_coefficient(trexio_file):
+                    # Read number of determinants
+                    try:
+                        num_dets = trexio.read_determinant_num(trexio_file)
+                    except trexio.Error:
+                        print('TREXIO Error :: Determinant : number not found')
 
-                # Read number of states
-                try:
-                    num_states = trexio.read_state_num(trexio_file)
-                except trexio.Error:
-                    print('TREXIO Error :: State : number not found')
-                    num_states = 1
+                    # Read number of states
+                    try:
+                        num_states = trexio.read_state_num(trexio_file)
+                    except trexio.Error:
+                        print('TREXIO Error :: State : number not found')
+                        num_states = 1
 
 
-                # Read determinant coefficients
-                try:
-                    offset_file = 0
-                    det_coeff = trexio.read_determinant_coefficient(trexio_file, offset_file, num_dets)
-                except trexio.Error:
-                    print('TREXIO Error :: Determinant : coefficients not found')
+                    # Read determinant coefficients
+                    try:
+                        offset_file = 0
+                        det_coeff = trexio.read_determinant_coefficient(trexio_file, offset_file, num_dets)
+                    except trexio.Error:
+                        print('TREXIO Error :: Determinant : coefficients not found')
 
-                # Read determinant list
-                try:
-                    offset_file = 0
-                    n_chunks = 1
-                    chunk_size  = int(num_dets/n_chunks)
-                    det_list  = [ [] for _ in range(num_dets)]
-                    for _ in range(n_chunks):
-                        det_list = trexio.read_determinant_list(trexio_file, offset_file, chunk_size)
-                        offset_file += chunk_size
-                except trexio.Error:
-                    print('TREXIO Error :: Determinant : lists not found')
+                    # Read determinant list
+                    try:
+                        offset_file = 0
+                        n_chunks = 1
+                        chunk_size  = int(num_dets/n_chunks)
+                        det_list  = [ [] for _ in range(num_dets)]
+                        for _ in range(n_chunks):
+                            det_list = trexio.read_determinant_list(trexio_file, offset_file, chunk_size)
+                            offset_file += chunk_size
+                    except trexio.Error:
+                        print('TREXIO Error :: Determinant : lists not found')
 
-                # Close the trexio file after reading all the data
-                write_determinants_to_champ_from_trexio_only(trexio_file, num_states, num_dets, det_coeff, det_list)
-                trexio_file.close()
+                    # Close the trexio file after reading all the data
+                    write_determinants_to_champ_from_trexio_only(trexio_file, num_states, num_dets, det_coeff, det_list)
+                    trexio_file.close()
+
+            # Get CSFs and CSFMAP from the GAMESS file
             else:
-                # trexio_file.close()
                 # open the file for writing the determinant data
-                print("Determinant information not found in the trexio file")
-                print("Getting determinant information from GAMESS file and writing into the trexio file")
-                if self.gamessfile is not None:
+                print("Determinants and CSF information being read from the GAMESS file")
+                print("Gamess file :: ", self.gamessfile)
+                if self.gamessfile is None:
+                    raise FileNotFoundError ('save CSF enabled but no GAMESS file provided')
+                else:
                     # write_trexio_file = trexio.File(filename, mode='w',back_end=back_end)
                     file = resultsFile.getFile(gamessfile)
                     write_champ_file_determinants(filename, file)
+                    # Update the trexio file if you wish to include determinant information
                     # write_determinants_to_trexio(trexio_file, file)
 
 
@@ -1222,12 +1235,12 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
     if filename is not None:
         if isinstance(filename, str):
             ## Write down a symmetry file in the new champ v2.0 format
-            filename_bfinfo_g = os.path.splitext("champ_v2_" + filename)[0]+'_basis_pointers.bfinfo'
+            filename_bfinfo_g = os.path.splitext("champ_v3_" + filename)[0]+'_basis_pointers.bfinfo'
             with open(filename_bfinfo_g, 'w') as file_g:
 
                 # qmc bfinfo line printed below
-                file_g.write("# Format of the new basis information file \n")
-                file_g.write("# num_ao_per_center : n(s), n(p), n(d), n(f), n(g) \n")
+                file_g.write("# Format of the new basis information file champ_v3 \n")
+                file_g.write("# num_ao_per_center, n(s), n(p), n(d), n(f), n(g) \n")
                 file_g.write("# Index of Slm (Range 1 to 35) \n")
                 file_g.write("# Index of column from numerical basis file  \n")
                 file_g.write("qmc_bf_info 1 \n")
@@ -1264,7 +1277,7 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
 
 def write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num):
     """Writes the molecular orbitals coefficients from the quantum
-    chemistry calculation / trexio file to the champ v2.0 input file format but with the same trexio AO ordering.
+    chemistry calculation / trexio file to the champ v3.0 input file format but with the same trexio AO ordering.
 
     Returns:
         None as a function value
@@ -1274,7 +1287,7 @@ def write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num):
     if filename is not None:
         if isinstance(filename, str):
             ## Write down an orbitals file in the new champ v2.0 format
-            filename_orbitals = os.path.splitext("champ_v2_" + filename)[0]+'_trexio_orbitals.lcao'
+            filename_orbitals = os.path.splitext("champ_v3_" + filename)[0]+'_trexio_orbitals.lcao'
             with open(filename_orbitals, 'w') as file:
 
                 # header line printed below
