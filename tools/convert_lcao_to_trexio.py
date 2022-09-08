@@ -21,6 +21,7 @@ import argparse
 import numpy as np
 np.set_printoptions(threshold=np.inf)
 from collections import Counter
+from collections.abc import Iterable
 from itertools import count as icount
 
 # Instantiate the parser
@@ -45,6 +46,12 @@ print (' lcao file old   ::         \t {}'.format(args.filename_lcao))
 print (' bfinfo file old ::         \t {}'.format(args.filename_bfinfo))
 print (' geom file old   ::         \t {}'.format(args.filename_geom))
 
+
+def flatten(x):
+    if isinstance(x, Iterable):
+        return [a for i in x for a in flatten(i)]
+    else:
+        return [x]
 
 ### Read the lcao file first
 
@@ -195,14 +202,9 @@ with open(args.filename_bfinfo) as f3:
     for i in range(coord_block_start, coord_block_start+2*num_unique_atoms,2):
         dict_num_per_shell[i] = lines[i].split()
 
-    print ("dict num per shell", dict_num_per_shell)
-
-
     dict_radial_pointers = {} #only the even numbered rows of data
     for i in range(coord_block_start+1, coord_block_start+2*num_unique_atoms,2):
         dict_radial_pointers[i] = lines[i].split()
-
-    print ("radial pointers", dict_radial_pointers)
 
 
 print (" ")
@@ -268,20 +270,22 @@ if new_filename_bfinfo is not None:
 
                 _, temp_counter = np.unique(shell_count, return_counts=True)
 
+                list_slm_index = []
                 for l in range(len(temp_counter)):
                     num_shells_per_l[l] = temp_counter[l]
+                    for nshell in range(num_shells_per_l[l]):
+                        if l == 0:
+                            list_slm_index.append(1)
+                        elif l == 1:
+                            list_slm_index.append([2,3,4])
+                        elif l == 2:
+                            list_slm_index.append([5,6,7,8,9,10])
+                        elif l == 3:
+                            list_slm_index.append([11,12,13,14,15,16,17,18,19,20])
+                        elif l == 4:
+                            list_slm_index.append([21,22,23,24,25,26,27,28,29,30,31,32,33,34,35])
 
-                slm_index = []
-                for ind in range(len(shell_count)):
-                    val = shell_count[ind]
-                    count = 1
-                    for j in range(val):
-                        if val == 1:
-                            slm_index.append(count)
-                            count += 1
-                        else:
-                            slm_index.append(count+val-2)
-                            count += 1
+                slm_index = flatten(list_slm_index)
 
                 # Things to write to the file
                 # line 1) basis_per_atom, num_shells_per_l
