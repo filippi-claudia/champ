@@ -224,7 +224,7 @@ if new_filename_geom is not None:
             file.write("# Converted from the old .geometry file to CHAMP v2 .xyz file \n")
 
             for element in range(natoms):
-                file.write("{:5s} {: 0.6f} {: 0.6f} {: 0.6f} \n".format(atom_type_symbol[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
+                file.write("{:5s} {} {} {} \n".format(atom_type_symbol[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
 
             file.write("\n")
         file.close()
@@ -484,7 +484,7 @@ reordered_mo_array =  mocoeffs[:,np.argsort(champ_ao_ordering)]
 
 
 # write the transformed molecular coefficients to the new .lcao file
-new_filename_orbitals = "champ_v3_trexio_order_" + splitext(args.filename_lcao)[0] + '_orbitals.lcao'
+new_filename_orbitals = "champ_v3_trexio_order_" + splitext(args.filename_lcao)[0] + '.lcao'
 if new_filename_orbitals is not None:
     if isinstance(new_filename_orbitals, str):
         ## Write down an orbitals file in the new champ v2.0 format
@@ -493,7 +493,8 @@ if new_filename_orbitals is not None:
             # header line printed below
             file.write("# File created using the champ v3 converter in the trexio order \n")
             file.write("lcao " + str(ncoeff) + " " + str(nbasis) + " 1 " + "\n" )
-            np.savetxt(file, reordered_mo_array, fmt='%.8f')
+            # np.savetxt(file, reordered_mo_array, fmt='%.8f')
+            np.savetxt(file, reordered_mo_array)
             file.write("end\n")
         file.close()
     else:
