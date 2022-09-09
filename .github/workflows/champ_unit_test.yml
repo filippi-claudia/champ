@@ -75,4 +75,5 @@ jobs:
 
     - name: "run vmc testing suite"
       run: |
-        ./bin/vmc_Tests
+        cd tests/unit_test
+        ./run_tests.sh
