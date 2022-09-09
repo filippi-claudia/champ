@@ -12,7 +12,7 @@ IF(BUILD_UNIT_TESTS)
   ENDIF()
 
   # set required project files variable e.g. files in 'src' directory within the project directory
-  file(GLOB FORTUTF_PROJECT_SRC_FILES CONFIGURE_DEPENDS "*.f90")
+  file(GLOB_RECURSE FORTUTF_PROJECT_SRC_FILES CONFIGURE_DEPENDS "*.f90")
   set(FORTUTF_PROJECT_TEST_DIR ${CMAKE_CURRENT_LIST_DIR})
   set(FORTUTF_PROJECT_SRC_LIBRARY "vmc;pspline;parser")
   set(FORTUTF_PROJECT_MOD_DIR "${CMAKE_BINARY_DIR}/src/module;${CMAKE_BINARY_DIR}/src/vmc")
