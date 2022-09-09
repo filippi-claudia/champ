@@ -4,6 +4,7 @@ module test_matinv_mod
   implicit none
   contains
 subroutine test_matinv
+    use const, only: nelec
     use matinv_mod, only: matinv
 
     real(dp), dimension(3,3) :: a       = reshape([ 1, 0, 0,  &
@@ -24,6 +25,8 @@ subroutine test_matinv
 
     real(dp)                 :: det             = -1.
 
+
+    nelec = 6 !TODO matinv could be independent of nelec
 
     call tag_test("test matinv_a")
     call matinv(a,3,det)

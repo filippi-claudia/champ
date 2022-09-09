@@ -85,7 +85,7 @@ c        ...exit
 
         determinant = det(1)*10.0**det(2)
 
-        call dgetri(nsub,a,nsub,ipvt,work,nsub,info)
+        call dgetri(nsub,a,nsub,ipvt,work,nelec,info)
 
       endif
 
