@@ -12,8 +12,8 @@
 !---------------------------------------------------------------------------
 
 module main_mod
-
-contains
+    contains
+subroutine initialize_main
       use allocation_mod, only: deallocate_vmc
       use contrl_file, only: close_files,init_logfile,init_procfile
       use contrl_file, only: initialize,ounit
