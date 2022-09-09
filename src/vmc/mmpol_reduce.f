@@ -2,16 +2,15 @@
       contains
       subroutine mmpol_reduce
 
-      use mmpol_averages, only: cmmpol_cm2,cmmpol_cum,dmmpol_cm2
-      use mmpol_averages, only: dmmpol_cum,eek1_cm2,eek1_cum,eek2_cm2
-      use mmpol_averages, only: eek2_cum,eek3_cm2,eek3_cum
-      use mmpol_cntrl, only: immpol
       use mmpol_mod, only: MCHMM
-      use mmpol_parms, only: nchmm
-      use mpi
       use mpiconf, only: wid
-      use precision_kinds, only: dp
+      use mmpol_cntrl, only: immpol
+      use mmpol_parms, only: nchmm
+      use mmpol_averages, only: cmmpol_cm2, cmmpol_cum, dmmpol_cm2, dmmpol_cum
+      use mmpol_averages, only: eek1_cm2, eek1_cum, eek2_cm2, eek2_cum, eek3_cm2, eek3_cum
+      use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ierr

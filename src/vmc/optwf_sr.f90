@@ -12,22 +12,22 @@
 
 module optwf_sr_mod
 
-      use contrl_file, only: ounit
-      use control_vmc, only: vmc_nblk_max
-      use error,   only: fatal_error
-      use m_force_analytic, only: iforce_analy
-      use mpitimer, only: elapsed_time
-      use optgeo_lib, only: compute_positions,write_geometry
-      use optwf_control, only: dparm_norm_min,energy_tol,ioptci,ioptjas
-      use optwf_control, only: ioptorb,micro_iter_sr,nopt_iter,sr_adiag
-      use optwf_control, only: sr_eps,sr_tau
-      use optwf_handle_wf, only: compute_parameters,save_nparms,save_wf
-      use optwf_handle_wf, only: set_nparms,set_nparms_tot
-      use optwf_handle_wf, only: test_solution_parm,write_wf
-      use orbval,  only: nadorb
-      use precision_kinds, only: dp
-      use sr_mod,  only: i_sr_rescale,izvzb
+    use precision_kinds, only: dp
+    use optwf_contrl, only: ioptci, ioptjas, ioptorb
+    use force_analy, only: iforce_analy
 !    use contrl, only: nblk_max
+    use control_vmc, only: vmc_nblk_max
+    use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
+    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
+    use orbval, only: nadorb
+    use contrl_file,    only: ounit
+    use mpitimer,    only: elapsed_time
+    use error, only: fatal_error
+    use optwf_handle_wf, only : set_nparms_tot, save_nparms, test_solution_parm
+    use optwf_handle_wf, only : compute_parameters, write_wf, save_wf
+    use optwf_handle_wf, only : set_nparms
+    use optgeo_lib, only: write_geometry, compute_positions
+    use sr_mod, only: izvzb, i_sr_rescale
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -70,17 +70,18 @@ contains
 
     subroutine optwf_sr
 
-      use contrl_file, only: ounit
-      use control_vmc, only: vmc_nblk
-      use m_force_analytic, only: alfgeo
-      use mstates_mod, only: MSTATES
-      use optwf_control, only: ioptci,ioptjas,ioptorb,method,nparm
-      use optwf_corsam, only: energy,energy_err
-      use optwf_func, only: ifunc_omega,n_omegaf,n_omegat,omega0
-      use optwf_func, only: omega_hes
-      use orbval,  only: nadorb
-      use sr_mod,  only: mparm
+        use sr_mod, only: mparm
+        use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+        use mstates_mod, only: MSTATES
+        use optwf_corsam, only: energy, energy_err
+        use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
         !use contrl, only: nblk
+        use control_vmc, only: vmc_nblk
+        use force_analy, only: alfgeo
+        use optwf_contrl, only: nparm
+        use method_opt, only: method
+        use orbval, only: nadorb
+        use contrl_file,    only: ounit
 
         implicit none
 
@@ -239,9 +240,9 @@ contains
     subroutine sr(nparm, deltap, sr_adiag, sr_eps, i)
 
         ! solve S*deltap=h_sr (call in optwf)
-      use contrl_file, only: ounit
-      use sr_mat_n, only: h_sr
-      use sr_more, only: pcg
+        use sr_more, only: pcg
+        use sr_mat_n, only: h_sr
+        use contrl_file,    only: ounit
         implicit none
 
         integer, intent(in) :: nparm
@@ -268,7 +269,7 @@ contains
     end subroutine sr
 
     subroutine check_length_run_sr(iter, increase_nblk, nblk, nblk_max, denergy, denergy_err, energy_err_sav, energy_tol)
-      use contrl_file, only: ounit
+        use contrl_file,    only: ounit
         implicit none
 
         integer :: iter, increase_nblk, nblk, nblk_max, nblk_new, nbkl
@@ -302,19 +303,19 @@ contains
     subroutine sr_hs(nparm, sr_adiag)
         ! <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
-      use contrl_file, only: ounit
-      use csfs,    only: nstates
-      use mpi
-      use mpiconf, only: idtask
-      use mstates_mod, only: MSTATES
-      use optorb_cblock, only: norbterm
-      use optwf_control, only: method
-      use optwf_func, only: ifunc_omega,omega
-      use sa_weights, only: weights
-      use sr_index, only: jelo,jelo2,jelohfj
-      use sr_mat_n, only: elocal,h_sr,jefj,jfj,jhfj,nconf_n,obs_tot
-      use sr_mat_n, only: s_diag,s_ii_inv,sr_ho,sr_o,wtg
-      use sr_mod,  only: mobs
+        use mpi
+        use sr_mod, only: mobs
+        use csfs, only: nstates
+        use mstates_mod, only: MSTATES
+        use mpiconf, only: idtask
+        use optwf_func, only: ifunc_omega, omega
+        use sa_weights, only: weights
+        use sr_index, only: jelo, jelo2, jelohfj
+        use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho
+        use sr_mat_n, only: sr_o, wtg, obs_tot
+        use optorb_cblock, only: norbterm
+        use method_opt, only: method
+        use contrl_file,    only: ounit
         implicit none
 
         real(dp), DIMENSION(:, :), allocatable :: obs
@@ -514,15 +515,18 @@ contains
 
     subroutine sr_rescale_deltap(nparm, deltap)
 
-      use contrl_file, only: ounit
-      use mpi
-      use mpiconf, only: idtask
-      use sr_index, only: jelo,jelo2,jelohfj
-      use sr_mat_n, only: jefj,jfj,jhfj,obs_tot
+        use mpi
+        use mpiconf, only: idtask
+        use sr_mat_n, only: jefj, jfj, jhfj
+        use sr_mat_n, only: obs_tot
+        use sr_index, only: jelo, jelo2, jelohfj
+        use optwf_contrl, only: sr_tau
+        use contrl_file,    only: ounit
 
         implicit none
 
         integer, intent(in)                     :: nparm
+        real(dp) :: de, top, bot
         real(dp), dimension(:), intent(inout)   :: deltap
         integer :: i, j, jfifj, jwtg, jfhfj, n_obs
 
@@ -550,9 +554,24 @@ contains
 
         if (idtask .eq. 0) then
         do i = 1, nparm
-            write(ounit, *) 'CIAO', obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1), obs_tot(jelo, 1), &
-                obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1)
-            deltap(i) = deltap(i)/(obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1))
+            de=obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1)-obs_tot(jelo, 1)
+!           write(ounit, *) 'CIAO', obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1), obs_tot(jelo, 1), &
+!               obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1)
+
+            top = obs_tot(jfhfj + i - 1, 1) + obs_tot(jelo, 1)*obs_tot(jfj + i - 1, 1)*obs_tot(jfj + i - 1, 1) &
+                - (obs_tot(jefj + i - 1, 1) + obs_tot(jhfj + i - 1, 1))*obs_tot(jfj + i - 1, 1)
+            bot = obs_tot(jfifj + i - 1, 1) - obs_tot(jfj + i - 1, 1)*obs_tot(jfj + i - 1, 1)
+            de = top/bot - obs_tot(jelo, 1)
+
+            de = de + 1.0
+
+            write(ounit,*) "CIAO", de
+
+            if(de .le. 0.1) then
+                deltap(i) = deltap(i)*0.01/sr_tau
+            else
+                deltap(i) = deltap(i)/de
+            endif
         enddo
         endif
 
@@ -563,16 +582,17 @@ contains
 
     subroutine forces_zvzb(nparm)
 
-      use contrl_file, only: ounit
-      use error,   only: fatal_error
-      use m_force_analytic, only: da_energy_ave,force_o
-      use mpi
-      use mpiconf, only: idtask
-      use sr_index, only: jelo
-      use sr_mat_n, only: elocal,jefj,jfj,jhfj,nconf_n,obs_tot,sr_ho
-      use sr_mat_n, only: sr_o,wtg
-      use sr_mod,  only: mparm
-      use system,  only: ncent
+        use mpi
+        use sr_mod, only: mparm
+        use atom, only: ncent
+        use force_fin, only: da_energy_ave
+        use force_mat_n, only: force_o
+        use mpiconf, only: idtask
+        use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs_tot, sr_ho
+        use sr_mat_n, only: sr_o, wtg
+        use sr_index, only: jelo
+        use contrl_file,    only: ounit
+        use error, only: fatal_error
 
         implicit none
 

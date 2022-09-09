@@ -1,5 +1,5 @@
       module matinv_mod
-      use error,   only: fatal_error
+      use error, only: fatal_error
       interface !LAPACK interface
         SUBROUTINE dgetrf( M, N, A, LDA, IPIV, INFO )
 !*  -- LAPACK computational routine --
@@ -20,9 +20,9 @@
       end interface
       contains
       subroutine matinv(a,nsub,determinant)
-      use contrl_file, only: ounit
+      use const, only: nelec
       use precision_kinds, only: dp
-      use system,  only: nelec
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, info, nsub
@@ -30,7 +30,7 @@
       real(dp) :: aux, determinant, deti
       real(dp) :: ten
       real(dp), dimension(nsub, nsub) :: a
-      real(dp), dimension(nsub) :: work
+      real(dp), dimension(nelec) :: work
 
       real(dp), dimension(2) :: det
       real(dp), parameter :: eps = 10.d0**(-40)

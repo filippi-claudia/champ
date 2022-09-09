@@ -2,15 +2,18 @@
       contains
       subroutine optjas_reduce
 c Written by Claudia Filippi
-      use csfs,    only: nstates
-      use gradhessj, only: d2j,d2j_e,de,de_de,de_e,dj,dj_de,dj_dj
-      use gradhessj, only: dj_dj_e,dj_e,dj_e2,e2
-      use gradjerr, only: grad_jas_bcm2,grad_jas_bcum
-      use gradjerrb, only: ngrad_jas_bcum,ngrad_jas_blocks
       use mpi
-      use mstates_mod, only: MSTATES
-      use optwf_control, only: ioptjas,method
       use optwf_parms, only: nparmj
+      use csfs, only: nstates
+      use mstates_mod, only: MSTATES
+      use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
+      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj
+      use gradhessj, only: dj_dj_e, dj_e, dj_e2
+      use gradhessj, only: e2
+      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
+      use method_opt, only: method
       use precision_kinds, only: dp
 
       implicit none

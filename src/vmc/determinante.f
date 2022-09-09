@@ -2,14 +2,20 @@
       contains
       subroutine determinante(iel,x,rvec_en,r_en,iflag)
 
-      use dorb_m,  only: iworbd
+      use elec, only: ndn, nup
+      use multidet, only: kref
+      use slatn, only: slmin
+      use dorb_m, only: iworbd
+      use multislatern, only: detn, orbn
+      use const, only: nelec
+
+      use slater, only: slmi
+
       use multislater, only: detiab
-      use multislatern, only: detn,orbn
-      use orbitals_mod, only: orbitalse
+
+      use atom, only: ncent_tot
       use precision_kinds, only: dp
-      use slater,  only: kref,slmi
-      use slatn,   only: slmin
-      use system,  only: ncent_tot,ndn,nelec,nup
+      use orbitals_mod, only: orbitalse
       implicit none
 
       integer :: i, iab, iel, iflag, ik
@@ -70,25 +76,28 @@
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,vd,iflag_move)
 
-      use csfs,    only: nstates
-      use mstates3, only: iweight_g,weights_g
-      use mstates_ctrl, only: iguiding
-      use multideterminant_mod, only: compute_ymat
-      use multideterminante_mod, only: multideterminante_grad
-      use multimat, only: aa,wfmat
-      use multimatn, only: aan
-      use multislater, only: detiab
-      use multislatern, only: detn,dorbn
-      use orbval,  only: dorb
       use precision_kinds, only: dp
-      use slater,  only: kref,norb,slmi
-      use slatn,   only: slmin
-      use system,  only: nelec,nup
-      use velocity_jastrow, only: vj,vjn
       use vmc_mod, only: norb_tot
+      use csfs, only: nstates
+      use elec, only: nup
+      use multidet, only: kref
+      use slatn, only: slmin
       use ycompact, only: ymat
       use ycompactn, only: ymatn
+      use coefs, only: norb
+      use multimat, only: aa, wfmat
+      use multimatn, only: aan
+      use velocity_jastrow, only: vj, vjn
+      use mstates_ctrl, only: iguiding
+      use mstates3, only: iweight_g, weights_g
+      use multislatern, only: detn, dorbn
 
+      use orbval, only: dorb
+      use slater, only: slmi
+      use const, only: nelec
+      use multislater, only: detiab
+      use multideterminante_mod, only: multideterminante_grad
+      use multideterminant_mod, only: compute_ymat
 
       implicit none
 
@@ -276,11 +285,12 @@ c iel has different spin than the electron moved
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,norbs,ddx_ref)
 
-      use dorb_m,  only: iworbd
       use precision_kinds, only: dp
-      use slater,  only: kref
-      use system,  only: ndn,nup
-      use vmc_mod, only: nmat_dim,norb_tot
+      use vmc_mod, only: norb_tot
+      use vmc_mod, only: nmat_dim
+      use elec, only: ndn, nup
+      use multidet, only: kref
+      use dorb_m, only: iworbd
 
       implicit none
 

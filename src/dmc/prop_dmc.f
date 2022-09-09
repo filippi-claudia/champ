@@ -8,15 +8,15 @@ C----------------------------------------------
 
       subroutine prop_prt_dmc(iblk,ifinal,wgcum,wgcm2)
 
-      use contrl_file, only: ounit
-      use control_dmc, only: dmc_nconf,dmc_nstep
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+      use prp000, only: ipropprt, iprop, nprop
+      use prp003, only: vprop_cum, vprop_cm2, cc_nuc
+      use const, only: nelec
+      use force_mod, only: MFORCE
       use properties, only: MAXPROP
-      use prp000,  only: iprop,ipropprt,nprop
-      use prp003,  only: cc_nuc,vprop_cm2,vprop_cum
-      use system,  only: nelec
 !      use contrl, only: nconf, nstep
+      use precision_kinds, only: dp
+      use control_dmc, only: dmc_nconf, dmc_nstep
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iblk, icount, ifinal, iperr
@@ -95,9 +95,9 @@ c....dipole
 c----------------------------------------------------------------------
       subroutine prop_save_dmc(iw)
 
-      use prp000,  only: iprop,nprop
-      use prp001,  only: vprop
-      use prp002,  only: vprop_old
+      use prp000, only: iprop, nprop
+      use prp001, only: vprop
+      use prp002, only: vprop_old
 
       implicit none
 
@@ -112,12 +112,12 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       subroutine prop_sum_dmc(p,q,iw)
 
-      use precision_kinds, only: dp
-      use prp000,  only: iprop,nprop
-      use prp001,  only: vprop
-      use prp002,  only: vprop_old
-      use prp003,  only: vprop_sum
+      use prp000, only: iprop, nprop
+      use prp001, only: vprop
+      use prp002, only: vprop_old
+      use prp003, only: vprop_sum
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iw
@@ -132,8 +132,8 @@ c----------------------------------------------------------------------
 c----------------------------------------------------------------------
       subroutine prop_splitj(iw,iw2)
 
-      use prp000,  only: nprop
-      use prp002,  only: vprop_old
+      use prp000, only: nprop
+      use prp002, only: vprop_old
 
       implicit none
 

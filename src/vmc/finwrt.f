@@ -4,40 +4,44 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
-      use ci000,   only: iciprt
-      use contrl_file, only: errunit,ounit
-      use contrl_per, only: iperiodic
-      use control, only: mode
-      use control_vmc, only: vmc_nblk,vmc_nstep
-      use csfs,    only: nstates
-      use denupdn, only: rprobdn,rprobup
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tjfcm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tjfcum,tpbcum
-      use estsig,  only: ecm21s,ecum1s
-      use estsum,  only: acc
-      use finwrt_more_mod, only: finwrt_more
+      use force_mod, only: MFORCE
+      use vmc_mod, only: nrad
+      use vmc_mod, only: delri
+      use atom, only: ncent
+      use const, only: nelec
+      use csfs, only: nstates
+      use denupdn, only: rprobdn, rprobup
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use estsig, only: ecm21s, ecum1s
+      use estsum, only: acc
+      use forcepar, only: nforce
+      use forcest, only: fcm2, fcum
       use forcewt, only: wcum
-      use grdntspar, only: igrdtype,ngradnts
-      use header,  only: title
-      use inputflags, only: iqmmm
-      use misc_grdnts, only: finwrt_diaghess_zmat,finwrt_grdnts_cart
-      use misc_grdnts, only: finwrt_grdnts_zmat
-      use multiple_geo, only: MFORCE,fcm2,fcum,nforce
-      use multiple_states, only: efficiency_prt
-      use optci_mod, only: optci_prt
-      use optwf_corsam, only: energy,energy_err,force,force_err,sigma
-      use precision_kinds, only: dp
-      use properties_mod, only: prop_fin
-      use qmmm_pot, only: qmmm_extpot_final
-      use sa_check, only: energy_all,energy_err_all
+      use grdntspar, only: igrdtype, ngradnts
+      use header, only: title
+      use optwf_corsam, only: energy, energy_err, force, force_err, sigma
       use sa_weights, only: weights
-      use step,    only: rprob,suc,try
-      use system,  only: ncent,nelec
+      use step, only: rprob, suc, try
       use tmpnode, only: distance_node_sum
-      use vmc_mod, only: delri,nrad
+      use contr3, only: mode
       !use contrl, only: nblk, nstep
+      use control_vmc, only: vmc_nblk, vmc_nstep
+      use contrl_per, only: iperiodic
+      use sa_check, only: energy_all, energy_err_all
+      use ci000, only: iciprt
+      use inputflags, only: iqmmm
+      use contrl_file,    only: ounit, errunit
 
+      use precision_kinds, only: dp
 
+      use qmmm_pot, only: qmmm_extpot_final
+      use misc_grdnts, only: finwrt_diaghess_zmat, finwrt_grdnts_zmat
+      use misc_grdnts, only: finwrt_grdnts_cart
+      use finwrt_more_mod, only: finwrt_more
+      use optci_mod, only: optci_prt
+      use multiple_states, only: efficiency_prt
+      use properties_mod, only: prop_fin
       implicit none
 
       integer :: i, iciprt_sav, ifr, index, istate

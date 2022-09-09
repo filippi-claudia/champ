@@ -31,9 +31,9 @@
       subroutine pcg(n,b,x,i,imax,imod,eps)
 c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
-      use contrl_file, only: ounit
-      use mpi
       use mpiconf, only: idtask
+      use mpi
+      use contrl_file,    only: ounit
       implicit none
 
       integer, parameter :: m_parm_opt = 59000
@@ -98,8 +98,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine asolve(n,b,x)
 c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
-      use precision_kinds, only: dp
       use sr_mat_n, only: s_ii_inv
+      use precision_kinds, only: dp
 
       implicit none
 
@@ -119,17 +119,17 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine atimes_n(n,z,r)
 c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
-      use csfs,    only: nstates
-      use mpi
-      use mpiconf, only: idtask
-      use optorb_cblock, only: norbterm
-      use optwf_func, only: ifunc_omega,omega,omega_hes
-      use precision_kinds, only: dp
+      use sr_mod, only: mparm, mconf
+      use csfs, only: nstates
+      use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: weights
-      use sr_index, only: jelo,jelo2,jelohfj
-      use sr_mat_n, only: jefj,jfj,jhfj,nconf_n,obs_tot,s_diag,sr_ho
-      use sr_mat_n, only: sr_o,wtg
-      use sr_mod,  only: mconf,mparm
+      use sr_index, only: jelo, jelo2, jelohfj
+      use sr_mat_n, only: jefj, jfj, jhfj, nconf_n, s_diag, sr_ho
+      use sr_mat_n, only: sr_o, wtg, obs_tot
+      use optorb_cblock, only: norbterm
+      use mpiconf, only: idtask
+      use mpi
+      use precision_kinds, only: dp
 
       implicit none
 

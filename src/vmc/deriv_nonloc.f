@@ -3,23 +3,27 @@
       subroutine deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,value,gn,vjn,da_ratio_jn)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-      use bparm,   only: nocuspb,nspin2b
-      use contrl_per, only: iperiodic
+      use atom, only: iwctype, nctype, ncent, ncent_tot
+
+      use jaspar, only: nspin2, sspinn, is
+      use const, only: nelec
       use da_jastrow4val, only: da_j
-      use deriv_nonlpsi, only: deriv_psianl,deriv_psibnl,deriv_psinl
       use derivjas, only: go
-      use jaspointer, only: npoint,npointa
-      use jastrow, only: ijas,is,isc,nspin2,sspinn
-      use jastrow_update, only: fso
-      use m_force_analytic, only: iforce_analy
-      use nonlpsi, only: dpsianl,dpsibnl
-      use optwf_nparmj, only: nparma,nparmb,nparmc
+      use elec, only: nup
+      use jaso, only: fso
+      use jaspointer, only: npoint, npointa
+      use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_parms, only: nparmj
+      use bparm, only: nocuspb, nspin2b
+      use contr2, only: ijas
+      use contr2, only: isc
+      use contrl_per, only: iperiodic
+      use force_analy, only: iforce_analy
       use precision_kinds, only: dp
       use pw_find_image, only: find_image3
-      use scale_dist_mod, only: scale_dist,scale_dist1
-      use system,  only: iwctype,ncent,ncent_tot,nctype,nelec,nup
-
+      use scale_dist_mod, only: scale_dist, scale_dist1
+      use deriv_nonlpsi, only: deriv_psibnl, deriv_psinl, deriv_psianl
+      use nonlpsi, only: dpsianl, dpsibnl
       implicit none
 
       integer :: i, ic, iel, ipar, ipara

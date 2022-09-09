@@ -1,31 +1,29 @@
 module allocation_mod
 !> Contains subroutines to allocate/deallocate VMC and DMC calculations.
-      use jastrow, only: allocate_m_jastrow,deallocate_m_jastrow
-      use m_basis, only: allocate_m_basis,deallocate_m_basis
-      use m_common, only: allocate_m_common,deallocate_m_common
-      use m_control, only: allocate_m_control,deallocate_m_control
-      use m_deriv, only: allocate_m_deriv,deallocate_m_deriv
-      use m_efield, only: allocate_m_efield,deallocate_m_efield
-      use m_estimators, only: allocate_m_estimators
-      use m_estimators, only: deallocate_m_estimators
-      use m_ewald, only: allocate_m_ewald,deallocate_m_ewald
-      use m_force, only: allocate_m_force,deallocate_m_force
-      use m_gradhess, only: allocate_m_gradhess,deallocate_m_gradhess
-      use m_grdnt, only: allocate_m_grdnt,deallocate_m_grdnt
-      use m_grid,  only: allocate_m_grid,deallocate_m_grid
-      use m_mixderiv, only: allocate_m_mixderiv,deallocate_m_mixderiv
-      use m_mmpol, only: allocate_m_mmpol,deallocate_m_mmpol
-      use m_mstates, only: allocate_m_mstates,deallocate_m_mstates
-      use m_optci, only: allocate_m_optci,deallocate_m_optci
-      use m_optorb, only: allocate_m_optorb,deallocate_m_optorb
-      use m_optwf, only: allocate_m_optwf,deallocate_m_optwf
-      use m_pcm,   only: allocate_m_pcm,deallocate_m_pcm
-      use m_prop,  only: allocate_m_prop,deallocate_m_prop
-      use m_pseudo, only: allocate_m_pseudo,deallocate_m_pseudo
-      use m_sampling, only: allocate_m_sampling,deallocate_m_sampling
-      use m_sr,    only: allocate_m_sr,deallocate_m_sr
-      use m_state_avrg, only: allocate_m_state_avrg
-      use m_state_avrg, only: deallocate_m_state_avrg
+use m_common, only: allocate_m_common, deallocate_m_common
+use m_basis,  only: allocate_m_basis,  deallocate_m_basis
+use m_control,  only: allocate_m_control,  deallocate_m_control
+use m_deriv,  only: allocate_m_deriv,  deallocate_m_deriv
+use m_efield,  only: allocate_m_efield,  deallocate_m_efield
+use m_estimators,  only: allocate_m_estimators,  deallocate_m_estimators
+use m_ewald,  only: allocate_m_ewald,  deallocate_m_ewald
+use m_force,  only: allocate_m_force,  deallocate_m_force
+use m_gradhess,  only: allocate_m_gradhess,  deallocate_m_gradhess
+use m_grdnt,  only: allocate_m_grdnt,  deallocate_m_grdnt
+use m_grid,  only: allocate_m_grid,  deallocate_m_grid
+use m_jastrow,  only: allocate_m_jastrow,  deallocate_m_jastrow
+use m_mixderiv,  only: allocate_m_mixderiv,  deallocate_m_mixderiv
+use m_mmpol,  only: allocate_m_mmpol,  deallocate_m_mmpol
+use m_mstates,  only: allocate_m_mstates,  deallocate_m_mstates
+use m_optci,  only: allocate_m_optci,  deallocate_m_optci
+use m_optorb,  only: allocate_m_optorb,  deallocate_m_optorb
+use m_optwf,  only: allocate_m_optwf,  deallocate_m_optwf
+use m_pcm,  only: allocate_m_pcm,  deallocate_m_pcm
+use m_prop,  only: allocate_m_prop,  deallocate_m_prop
+use m_pseudo,  only: allocate_m_pseudo,  deallocate_m_pseudo
+use m_sampling,  only: allocate_m_sampling,  deallocate_m_sampling
+use m_sr,  only: allocate_m_sr,  deallocate_m_sr
+use m_state_avrg,  only: allocate_m_state_avrg,  deallocate_m_state_avrg
 
 implicit none
 public
@@ -95,18 +93,18 @@ contains
   !> Allocation will occurr only via read_input.f.
   !> Deallocation will ocurr before ending of dmc/main.f.
   subroutine allocate_dmc()
-      use age,     only: allocate_iage
-      use branch,  only: allocate_branch
-      use c_averages, only: allocate_c_averages
-      use c_averages_index, only: allocate_c_averages_index
-      use config,  only: allocate_config_dmc
-      use contrldmc, only: allocate_contrldmc
-      use derivest, only: allocate_derivest
-      use est2cm,  only: allocate_est2cm_dmc
-      use estcum,  only: allocate_estcum_dmc
-      use estsum,  only: allocate_estsum_dmc
-      use jacobsave, only: allocate_jacobsave
-      use velratio, only: allocate_velratio
+    use age, only: allocate_iage
+    use contrldmc, only: allocate_contrldmc
+    use config, only: allocate_config_dmc
+    use estsum, only: allocate_estsum_dmc
+    use estcum, only: allocate_estcum_dmc
+    use est2cm, only: allocate_est2cm_dmc
+    use derivest, only: allocate_derivest
+    use branch, only: allocate_branch
+    use c_averages, only: allocate_c_averages
+    use c_averages_index, only: allocate_c_averages_index
+    use jacobsave, only: allocate_jacobsave
+    use velratio, only: allocate_velratio
 
     implicit none
   
@@ -128,18 +126,18 @@ contains
   end subroutine allocate_dmc
   
   subroutine deallocate_dmc()
-      use age,     only: deallocate_iage
-      use branch,  only: deallocate_branch
-      use c_averages, only: deallocate_c_averages
-      use c_averages_index, only: deallocate_c_averages_index
-      use config,  only: deallocate_config_dmc
-      use contrldmc, only: deallocate_contrldmc
-      use derivest, only: deallocate_derivest
-      use est2cm,  only: deallocate_est2cm_dmc
-      use estcum,  only: deallocate_estcum_dmc
-      use estsum,  only: deallocate_estsum_dmc
-      use jacobsave, only: deallocate_jacobsave
-      use velratio, only: deallocate_velratio
+    use age, only: deallocate_iage
+    use contrldmc, only: deallocate_contrldmc
+    use config, only: deallocate_config_dmc
+    use estsum, only: deallocate_estsum_dmc
+    use estcum, only: deallocate_estcum_dmc
+    use est2cm, only: deallocate_est2cm_dmc
+    use derivest, only: deallocate_derivest
+    use branch, only: deallocate_branch
+    use c_averages, only: deallocate_c_averages
+    use c_averages_index, only: deallocate_c_averages_index
+    use jacobsave, only: deallocate_jacobsave
+    use velratio, only: deallocate_velratio
 
     !> Deallocate dmc-related arrays:
   

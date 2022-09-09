@@ -25,8 +25,8 @@ module ewald_mod
 
  module ewald
      !> Arguments: b_coul, b_coul_sim, y_coul, y_coul_sim
-      use ewald_mod, only: NCOEFX,NGNORMX,NGNORM_SIMX
-      use precision_kinds, only: dp
+     use precision_kinds, only: dp
+     use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX
 
      implicit none
 
@@ -41,7 +41,7 @@ module ewald_mod
      save
  contains
      subroutine allocate_ewald()
-      use ewald_mod, only: NCOEFX,NGNORMX,NGNORM_SIMX
+         use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX
          if (.not. allocated(b_coul)) allocate (b_coul(NCOEFX))
          if (.not. allocated(b_coul_sim)) allocate (b_coul_sim(NCOEFX))
          if (.not. allocated(y_coul)) allocate (y_coul(NGNORMX))
@@ -59,8 +59,8 @@ module ewald_mod
 
  module ewald_basis
      !> Arguments: vps_basis_fourier
-      use ewald_mod, only: NGNORM_BIGX
-      use precision_kinds, only: dp
+     use precision_kinds, only: dp
+     use ewald_mod, only: NGNORM_BIGX
 
      implicit none
 
@@ -72,7 +72,7 @@ module ewald_mod
      save
  contains
      subroutine allocate_ewald_basis()
-      use ewald_mod, only: NGNORM_BIGX
+         use ewald_mod, only: NGNORM_BIGX
          if (.not. allocated(vps_basis_fourier)) allocate (vps_basis_fourier(NGNORM_BIGX))
      end subroutine allocate_ewald_basis
 
@@ -89,10 +89,11 @@ module ewald_mod
      !> ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big,
      !> nkvec, np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      !> vcell_sim, znuc2_sum, znuc_sum
-      use ewald_mod, only: IVOL_RATIO,NGNORM_BIGX,NGNORM_SIM_BIGX
-      use ewald_mod, only: NGVEC_BIGX,NGVEC_SIM_BIGX
-      use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot
+     use ewald_mod, only: IVOL_RATIO
+     use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
+     use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
+     use precision_kinds, only: dp
+     use vmc_mod, only: norb_tot
 
      implicit none
 
@@ -157,9 +158,10 @@ module ewald_mod
      save
  contains
      subroutine allocate_periodic()
-      use ewald_mod, only: IVOL_RATIO,NGNORM_BIGX,NGNORM_SIM_BIGX
-      use ewald_mod, only: NGVEC_BIGX,NGVEC_SIM_BIGX
-      use vmc_mod, only: norb_tot
+         use ewald_mod, only: IVOL_RATIO
+         use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
+         use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
+         use vmc_mod, only: norb_tot
          if (.not. allocated(glatt)) allocate (glatt(3, 3))
          if (.not. allocated(glatt_inv)) allocate (glatt_inv(3, 3))
          if (.not. allocated(glatt_sim)) allocate (glatt_sim(3, 3))
@@ -217,9 +219,10 @@ module ewald_mod
 
  module pworbital
      !> Arguments: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
-      use ewald_mod, only: IVOL_RATIO,NGVECX
-      use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot
+     use ewald_mod, only: IVOL_RATIO
+     use ewald_mod, only: NGVECX
+     use precision_kinds, only: dp
+     use vmc_mod, only: norb_tot
 
      implicit none
 
@@ -238,8 +241,9 @@ module ewald_mod
      save
  contains
      subroutine allocate_pworbital()
-      use ewald_mod, only: IVOL_RATIO,NGVECX
-      use vmc_mod, only: norb_tot
+         use ewald_mod, only: IVOL_RATIO
+         use ewald_mod, only: NGVECX
+         use vmc_mod, only: norb_tot
          if (.not. allocated(c_im)) allocate (c_im(NGVECX, norb_tot))
          if (.not. allocated(c_ip)) allocate (c_ip(NGVECX, norb_tot))
          if (.not. allocated(c_rm)) allocate (c_rm(NGVECX, norb_tot))
@@ -263,8 +267,9 @@ module ewald_mod
 
  module test
      !> Arguments: f, vbare_coul, vbare_jas, vbare_psp
-      use ewald_mod, only: NGNORM_BIGX,NGNORM_SIM_BIGX
-      use precision_kinds, only: dp
+     use ewald_mod, only: NGNORM_BIGX
+     use ewald_mod, only: NGNORM_SIM_BIGX
+     use precision_kinds, only: dp
 
      implicit none
 
@@ -279,7 +284,8 @@ module ewald_mod
      save
  contains
      subroutine allocate_test()
-      use ewald_mod, only: NGNORM_BIGX,NGNORM_SIM_BIGX
+         use ewald_mod, only: NGNORM_BIGX
+         use ewald_mod, only: NGNORM_SIM_BIGX
          if (.not. allocated(vbare_coul)) allocate (vbare_coul(NGNORM_SIM_BIGX))
          if (.not. allocated(vbare_jas)) allocate (vbare_jas(NGNORM_SIM_BIGX))
          if (.not. allocated(vbare_psp)) allocate (vbare_psp(NGNORM_BIGX))
@@ -295,7 +301,7 @@ module ewald_mod
 
  module tempor
      !> Arguments: dist_nn
-      use precision_kinds, only: dp
+     use precision_kinds, only: dp
 
      implicit none
 
@@ -308,8 +314,9 @@ module ewald_mod
 
  module tempor_test
      !> Arguments: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
-      use ewald_mod, only: IVOL_RATIO,NGVEC_BIGX
-      use precision_kinds, only: dp
+     use ewald_mod, only: IVOL_RATIO
+     use ewald_mod, only: NGVEC_BIGX
+     use precision_kinds, only: dp
 
      implicit none
 
@@ -328,7 +335,8 @@ module ewald_mod
      save
  contains
      subroutine allocate_tempor_test()
-      use ewald_mod, only: IVOL_RATIO,NGVEC_BIGX
+         use ewald_mod, only: IVOL_RATIO
+         use ewald_mod, only: NGVEC_BIGX
          if (.not. allocated(c_imag)) allocate (c_imag(NGVEC_BIGX))
          if (.not. allocated(c_real)) allocate (c_real(NGVEC_BIGX))
          if (.not. allocated(igvec_dft)) allocate (igvec_dft(3, NGVEC_BIGX), source=0)
@@ -353,12 +361,12 @@ module ewald_mod
 module m_ewald
 contains
  subroutine allocate_m_ewald()
-      use ewald,   only: allocate_ewald
-      use ewald_basis, only: allocate_ewald_basis
-      use periodic, only: allocate_periodic
-      use pworbital, only: allocate_pworbital
-      use tempor_test, only: allocate_tempor_test
-      use test,    only: allocate_test
+     use ewald, only: allocate_ewald
+     use ewald_basis, only: allocate_ewald_basis
+     use periodic, only: allocate_periodic
+     use pworbital, only: allocate_pworbital
+     use test, only: allocate_test
+     use tempor_test, only: allocate_tempor_test
 
      implicit none
 
@@ -371,12 +379,12 @@ contains
  end subroutine allocate_m_ewald
 
  subroutine deallocate_m_ewald()
-      use ewald,   only: deallocate_ewald
-      use ewald_basis, only: deallocate_ewald_basis
-      use periodic, only: deallocate_periodic
-      use pworbital, only: deallocate_pworbital
-      use tempor_test, only: deallocate_tempor_test
-      use test,    only: deallocate_test
+     use ewald, only: deallocate_ewald
+     use ewald_basis, only: deallocate_ewald_basis
+     use periodic, only: deallocate_periodic
+     use pworbital, only: deallocate_pworbital
+     use test, only: deallocate_test
+     use tempor_test, only: deallocate_tempor_test
 
      implicit none
 

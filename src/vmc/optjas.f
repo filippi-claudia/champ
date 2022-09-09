@@ -2,26 +2,28 @@
       contains
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
-      use Bloc,    only: b_dj,xmat
-      use bxmatrices, only: bxmatrix
-      use constants, only: hb
-      use contrl_file, only: ounit
-      use control, only: ipr
-      use csfs,    only: nstates
-      use deloc_dj_m, only: denergy
-      use derivjas, only: d2g,g
-      use multidet, only: irepcol_det,ireporb_det,ivirt,k_aux,k_det
-      use multidet, only: k_det2,ndet_req,ndetiab,ndetiab2,ndetsingle
-      use multidet, only: numrep_det
-      use multimat, only: wfmat
-      use multislater, only: detiab
-      use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
-      use orbval,  only: orb
+      use const, only: hb, nelec, ipr
+      use csfs, only: nstates
+      use derivjas, only: d2g, g
+      use dets, only: cdet, ndet
+      use elec, only: ndn, nup
+      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req
+      use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
+      use optwf_contrl, only: ioptjas
+      use optwf_parms, only: nparmj
+      use scratch, only: denergy_det, dtildem
+      use Bloc, only: xmat
+      use Bloc, only: b_dj
+      use coefs, only: norb
+      use deloc_dj_m, only: denergy
+      use multimat, only: wfmat
+      use orbval, only: orb
+      use slater, only: ddx, slmi
+      use multislater, only: detiab
       use precision_kinds, only: dp
-      use scratch, only: denergy_det,dtildem
-      use slater,  only: cdet,ddx,iwundet,kref,ndet,norb,slmi
-      use system,  only: ndn,nelec,nup
+      use contrl_file,    only: ounit
+      use bxmatrices, only: bxmatrix
 
       implicit none
 
@@ -50,19 +52,14 @@
         enddo
 
         deloc_dj_kref=deloc_dj(iparm)
+
+        if(ndet.eq.1) then
+
         do istate=1,nstates
           denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref*detiab(kref,1)*detiab(kref,2)
         enddo
 
-C       test=0
-C       do j=1,nup
-C         do i=1,nup
-C           test=test+slmi(j+(i-1)*nup,1)*b_dj(j,i,iparm)
-C           test=test+slmi(j+(i-1)*ndn,2)*b_dj(j,i+nup,iparm)
-C         enddo
-C       enddo
-
-        if(ndet.gt.1) then
+        else
 
         call bxmatrix(kref,xmat(1,1),xmat(1,2),b_dj(1,1,iparm))
 
@@ -145,7 +142,7 @@ c        enddo
               cum_deloc_k_state=cum_deloc_k_state+cdet(k,istate,1)*(denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref)
      &             *detiab(k,1)*detiab(k,2)
            enddo
-           denergy(iparm,istate)=denergy(iparm,istate)+cum_deloc_k_state
+           denergy(iparm,istate)=cum_deloc_k_state
         enddo
         
         
@@ -176,22 +173,21 @@ c-----------------------------------------------------------------------
       subroutine optjas_sum(wtg_new,wtg_old,enew,eold,iflag)
 c Written by Claudia Filippi
 
-      use bparm,   only: nspin2b
-      use csfs,    only: nstates
-      use deloc_dj_m, only: denergy
+      use atom, only: nctype
+      use csfs, only: nstates
       use derivjas, only: gvalue
-      use gradhessj, only: d2j,d2j_e,de,de_de,de_e,dj,dj_de,dj_dj
-      use gradhessj, only: dj_dj_e,dj_e,dj_e2,e2
-      use gradhessjo, only: d1d2a_old,d1d2b_old,d2d2a_old,d2d2b_old
-      use gradhessjo, only: denergy_old,gvalue_old
-      use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
+      use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+      use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
       use jaspointer, only: npointa
-      use optwf_control, only: ioptjas
-      use optwf_nparmj, only: nparma,nparmb
+      use optwf_contrl, only: ioptjas
+      use optwf_nparmj, only: nparma, nparmb
       use optwf_parms, only: nparmj
-      use optwf_wjas, only: iwjasa,iwjasb
+      use optwf_wjas, only: iwjasa, iwjasb
+      use bparm, only: nspin2b
+      use deloc_dj_m, only: denergy
+      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
+      use gradhessj, only: e2
       use precision_kinds, only: dp
-      use system,  only: nctype
 
       implicit none
 
@@ -360,13 +356,12 @@ c-----------------------------------------------------------------------
       subroutine optjas_cum(wsum,enow)
 c Written by Claudia Filippi
 
-      use csfs,    only: nstates
-      use gradhessj, only: dj,dj_e
-      use gradjerr, only: dj_bsum,dj_e_bsum,dj_e_save,dj_save,e_bsum
-      use gradjerr, only: grad_jas_bcm2,grad_jas_bcum
-      use gradjerrb, only: nbj_current,ngrad_jas_bcum,ngrad_jas_blocks
-      use optwf_control, only: ioptjas
+      use csfs, only: nstates
+      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+      use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
+      use gradhessj, only: dj, dj_e
+      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks, nbj_current
       use precision_kinds, only: dp
 
       implicit none
@@ -424,16 +419,15 @@ c-----------------------------------------------------------------------
       subroutine optjas_save
 c Written by Claudia Filippi
 
-      use bparm,   only: nspin2b
-      use csfs,    only: nstates
-      use deloc_dj_m, only: denergy
+      use atom, only: nctype
+      use csfs, only: nstates
       use derivjas, only: gvalue
-      use gradhessjo, only: d1d2a_old,d1d2b_old,d2d2a_old,d2d2b_old
-      use gradhessjo, only: denergy_old,gvalue_old
-      use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
-      use optwf_control, only: ioptjas
+      use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+      use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
+      use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
-      use system,  only: nctype
+      use bparm, only: nspin2b
+      use deloc_dj_m, only: denergy
 
       implicit none
 
@@ -464,14 +458,13 @@ c-----------------------------------------------------------------------
       subroutine optjas_init
 c Written by Claudia Filippi
 
-      use csfs,    only: nstates
-      use gradhessj, only: d2j,d2j_e,de,de_de,de_e,dj,dj_de,dj_dj
-      use gradhessj, only: dj_dj_e,dj_e,dj_e2,e2
-      use gradjerr, only: dj_bsum,dj_e_bsum,dj_e_save,dj_save,e_bsum
-      use gradjerr, only: grad_jas_bcm2,grad_jas_bcum
-      use gradjerrb, only: nbj_current,ngrad_jas_bcum
-      use optwf_control, only: ioptjas
+      use csfs, only: nstates
+      use gradjerr, only: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+      use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
+      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
+      use gradhessj, only: e2
+      use gradjerrb, only: ngrad_jas_bcum, nbj_current
 
       implicit none
 
@@ -519,13 +512,13 @@ c-----------------------------------------------------------------------
       subroutine optjas_dump(iu)
 c Written by Claudia Filippi
 
-      use csfs,    only: nstates
-      use gradhessj, only: d2j,d2j_e,de,de_de,de_e,dj,dj_de,dj_dj
-      use gradhessj, only: dj_dj_e,dj_e,dj_e2,e2
-      use gradjerr, only: grad_jas_bcm2,grad_jas_bcum
-      use gradjerrb, only: ngrad_jas_bcum,ngrad_jas_blocks
-      use optwf_control, only: ioptjas
+      use csfs, only: nstates
+      use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
+      use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
+      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
+      use gradhessj, only: e2
+      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
 
       implicit none
 
@@ -551,13 +544,13 @@ c-----------------------------------------------------------------------
       subroutine optjas_rstrt(iu)
 c Written by Claudia Filippi
 
-      use csfs,    only: nstates
-      use gradhessj, only: d2j,d2j_e,de,de_de,de_e,dj,dj_de,dj_dj
-      use gradhessj, only: dj_dj_e,dj_e,dj_e2,e2
-      use gradjerr, only: dj_e_save,dj_save,grad_jas_bcm2,grad_jas_bcum
-      use gradjerrb, only: ngrad_jas_bcum,ngrad_jas_blocks
-      use optwf_control, only: ioptjas
+      use csfs, only: nstates
+      use gradjerr, only: dj_e_save, dj_save, grad_jas_bcm2, grad_jas_bcum
+      use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
+      use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
+      use gradhessj, only: e2
+      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
 
       implicit none
 
@@ -587,15 +580,17 @@ c-----------------------------------------------------------------------
       subroutine optjas_fin(wcum,ecum)
 c Written by Claudia Filippi
 
-      use csfs,    only: nstates
-      use gradhess_jas, only: grad_jas,h_jas,s_jas
-      use gradhessj, only: d2j,d2j_e,de,dj,dj_de,dj_dj,dj_dj_e,dj_e
-      use gradjerr, only: grad_jas_bcm2,grad_jas_bcum
-      use gradjerrb, only: ngrad_jas_bcum,ngrad_jas_blocks
-      use optwf_control, only: ibeta,ioptjas,method,ratio_j
       use optwf_parms, only: nparmj
-      use precision_kinds, only: dp
+      use csfs, only: nstates
+      use gradhess_jas, only: grad_jas, h_jas, s_jas
+      use gradjerr, only: grad_jas_bcm2, grad_jas_bcum
+      use optwf_contrl, only: ioptjas, ibeta, ratio_j
+      use optwf_parms, only: nparmj
       use sa_weights, only: weights
+      use gradhessj, only: d2j, d2j_e, de, dj, dj_de, dj_dj, dj_dj_e, dj_e
+      use gradjerrb, only: ngrad_jas_bcum, ngrad_jas_blocks
+      use method_opt, only: method
+      use precision_kinds, only: dp
 
       implicit none
 

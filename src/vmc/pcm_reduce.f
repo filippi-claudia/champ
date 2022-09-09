@@ -1,17 +1,18 @@
       module pcm_reduce_mod
-      use error,   only: fatal_error
+      use error, only: fatal_error
       contains
       subroutine pcm_reduce
 
-      use contrl_file, only: ounit
-      use mpi
+      use pcm, only: MCHS
       use mpiconf, only: wid
-      use pcm,     only: MCHS
-      use pcm_averages, only: enfpcm_cm2,enfpcm_cum,qopcm_cm2,qopcm_cum
-      use pcm_averages, only: spcmcm2,spcmcum,vpcmcm2,vpcmcum
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: nchs
+      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
+      use pcm_averages, only: qopcm_cum, qopcm_cm2
+      use pcm_averages, only: enfpcm_cum, enfpcm_cm2
+      use mpi
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, ierr
@@ -88,15 +89,17 @@
 
       subroutine pcm_reduce_chvol
 
-      use contrl_file, only: ounit
-      use mpi
+      use pcm, only: MCHV
       use mpiconf, only: nproc
-      use pcm,     only: MCHV
-      use pcm_cntrl, only: ipcm
-      use pcm_fdc, only: qvol
-      use pcm_parms, only: ch,nch,nchs,nchv,xpol
       use pcm_xv_new, only: xv_new
+      use pcm_cntrl, only: ipcm
+      use pcm_parms, only: ch, nch, nchs
+      use pcm_parms, only: nchv
+      use pcm_parms, only: xpol
+      use pcm_fdc, only: qvol
+      use mpi
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, ierr, nchv3

@@ -1,17 +1,19 @@
       program maindmc
 c Written by Claudia Filippi
+      use mpiconf, only: idtask, nproc, wid
+      use mpiconf, only: mpiconf_init
       use allocation_mod, only: deallocate_dmc
-      use contrl_file, only: initialize,ounit
-      use control, only: mode
-      use dmc_f_mod, only: dmc
-      use error,   only: fatal_error
+      use optwf_contrl, only: ioptwf
+      use contr3, only: mode
+      use contrl_file, only: initialize
       use mpi
-      use mpiconf, only: idtask,mpiconf_init,nproc,wid
-      use mpitimer, only: elapsed_time,time,time_check1,time_final
-      use mpitimer, only: time_start
-      use optwf_control, only: ioptwf
+      use contrl_file,    only: ounit
+      use mpitimer,    only: time, elapsed_time, time_start, time_check1
+      use mpitimer,    only: time_final
+      use parser_mod,  only: parser
+      use error,       only: fatal_error
       use optwf_matrix_corsamp_mod, only: optwf_matrix_corsamp
-      use parser_mod, only: parser
+      use dmc_f_mod,   only: dmc
 
       implicit none
 

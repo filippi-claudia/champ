@@ -25,8 +25,8 @@ module efield_mod
 
  module efield_blk
      !> Arguments: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
-      use efield_mod, only: MCHARGES
-      use precision_kinds, only: dp
+     use precision_kinds, only: dp
+     use efield_mod, only: MCHARGES
 
      implicit none
 
@@ -43,7 +43,7 @@ module efield_mod
      save
  contains
      subroutine allocate_efield_blk()
-      use efield_mod, only: MCHARGES
+         use efield_mod, only: MCHARGES
          if (.not. allocated(ascreen)) allocate (ascreen(MCHARGES))
          if (.not. allocated(bscreen)) allocate (bscreen(MCHARGES))
          if (.not. allocated(qcharge)) allocate (qcharge(MCHARGES))
@@ -66,7 +66,7 @@ module efield_mod
 module m_efield
 contains
  subroutine allocate_m_efield()
-      use efield_blk, only: allocate_efield_blk
+     use efield_blk, only: allocate_efield_blk
 
      implicit none
 
@@ -74,7 +74,7 @@ contains
  end subroutine allocate_m_efield
 
  subroutine deallocate_m_efield()
-      use efield_blk, only: deallocate_efield_blk
+     use efield_blk, only: deallocate_efield_blk
 
      implicit none
 

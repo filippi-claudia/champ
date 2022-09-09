@@ -120,8 +120,8 @@ contains
 !            sequence.  (output)
 !
 
-      use contrl_file, only: ounit
-      use qmmm_numeric
+    use qmmm_numeric
+    use contrl_file,    only: ounit
     implicit none
 
     integer, intent(in) :: nx, kxord

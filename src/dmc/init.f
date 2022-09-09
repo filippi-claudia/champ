@@ -4,38 +4,39 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use branch,  only: eest,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
-      use branch,  only: wgdsumo,wt,wtgen,wthist
-      use casula,  only: i_vpsp,icasula
-      use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
-      use const,   only: etrial
-      use control, only: mode
-      use control_dmc, only: dmc_nconf
-      use determinante_mod, only: compute_determinante_grad
       use dmc_mod, only: MFPRD1
-      use estcum,  only: ipass
-      use hpsi_mod, only: hpsi
-      use jacobsave, only: ajacob,ajacold
-      use mmpol_dmc, only: mmpol_save
-      use mpi
+      use const, only: etrial, nelec
+      use forcepar, only: istrech, nforce
+      use atom, only: cent, iwctype, ncent, pecent, znuc
+      use estcum, only: ipass
+      use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
+      use force_dmc, only: nwprod
       use mpiconf, only: nproc
-      use multiple_geo, only: istrech,nforce,nwprod,pecent
-      use nonloc_grid_mod, only: t_vpsp_sav
-      use pcm_dmc, only: pcm_save
-      use pot,     only: pot_nn
+      use contr3, only: mode
+      use qua, only: nquad, wq, xq, yq, zq
+      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen
+      use branch, only: wthist
+      use casula, only: i_vpsp, icasula
+      use jacobsave, only: ajacob, ajacold
+      use pseudo, only: nloc
+!      use contrl, only: nconf
+      use control_dmc, only: dmc_nconf
+      use mpi
+
       use precision_kinds, only: dp
-      use prop_dmc, only: prop_save_dmc
-      use pseudo,  only: nloc
-      use qua,     only: nquad,wq,xq,yq,zq
+
       use rotqua_mod, only: gesqua
+      use pot,        only: pot_nn
+      use zerest_mod, only: zerest
       use strech_mod, only: strech
-      use system,  only: cent,iwctype,ncent,nelec,znuc
+      use mmpol_dmc,       only: mmpol_save
+      use pcm_dmc,         only: pcm_save
+      use prop_dmc,        only: prop_save_dmc
+      use nonloc_grid_mod, only: t_vpsp_sav
+      use hpsi_mod,        only: hpsi
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
-      use zerest_mod, only: zerest
-!      use contrl, only: nconf
-
-
+      use determinante_mod,only: compute_determinante_grad
       implicit none
 
       integer :: i, ie, ifr, ip, iw

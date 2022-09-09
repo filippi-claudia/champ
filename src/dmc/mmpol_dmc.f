@@ -2,14 +2,14 @@
       contains
       subroutine mmpol_prt(iblk,wgcum,wgcm2)
 
-      use contrl_file, only: ounit
-      use control_dmc, only: dmc_nconf,dmc_nstep
-      use mmpol_averages, only: cmmpol_cm2,cmmpol_cum,dmmpol_cm2
-      use mmpol_averages, only: dmmpol_cum
-      use mmpol_cntrl, only: immpol,immpolprt
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+      use force_mod, only: MFORCE
 !      use contrl, only: nconf, nstep
+      use control_dmc, only: dmc_nconf, dmc_nstep
+      use mmpol_cntrl, only: immpol, immpolprt
+      use mmpol_averages, only: cmmpol_cum, cmmpol_cm2
+      use mmpol_averages, only: dmmpol_cum, dmmpol_cm2
+      use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iblk, icmmpol_err, idmmpol_err
@@ -65,10 +65,10 @@ c Statement functions for error calculation, it might be reaplaced in the near f
 c-----------------------------------------------------------------------
       subroutine mmpol_fin(iblk,wgcum,wgcm2)
 
-      use mmpol_cntrl, only: immpol,immpolprt
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+      use mmpol_cntrl, only: immpol, immpolprt
+      use force_mod, only: MFORCE
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: iblk, immpolprt_sav
@@ -91,12 +91,12 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_save(iw)
 
-      use mmpol_cntrl, only: immpol
       use mmpol_hpsi, only: eek_pol
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
+      use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm
-      use mmpolo,  only: cmmpolo_dmc,dmmpolo_dmc,eeko1,eeko2,eeko3
-      use precision_kinds, only: dp
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iw
@@ -118,13 +118,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_sum(p,q,iw)
 
-      use mmpol_averages, only: cmmpol_sum,dmmpol_sum,eek_sum
-      use mmpol_cntrl, only: immpol
       use mmpol_hpsi, only: eek_pol
+      use mmpolo, only: eeko1, eeko2, eeko3, cmmpolo_dmc, dmmpolo_dmc
+      use mmpol_cntrl, only: immpol
       use mmpol_parms, only: nchmm
-      use mmpolo,  only: cmmpolo_dmc,dmmpolo_dmc,eeko1,eeko2,eeko3
-      use precision_kinds, only: dp
+      use mmpol_averages, only: dmmpol_sum
+      use mmpol_averages, only: eek_sum, cmmpol_sum
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iw
@@ -146,12 +147,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_cum(wsum_dmc)
 
-      use mmpol_averages, only: cmmpol_cm2,cmmpol_cum,cmmpol_sum
-      use mmpol_averages, only: dmmpol_cm2,dmmpol_cum,dmmpol_sum
-      use mmpol_averages, only: eek1_cm2,eek1_cum,eek2_cm2,eek2_cum
-      use mmpol_averages, only: eek3_cm2,eek3_cum,eek_sum
-      use mmpol_cntrl, only: immpol
+      use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2
+      use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
       use mmpol_parms, only: nchmm
+      use mmpol_cntrl, only: immpol
       use precision_kinds, only: dp
       implicit none
 
@@ -190,8 +189,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine mmpol_splitj(iw,iw2)
 
+      use mmpolo, only: cmmpolo_dmc, dmmpolo_dmc, eeko1, eeko2, eeko3
       use mmpol_parms, only: nchmm
-      use mmpolo,  only: cmmpolo_dmc,dmmpolo_dmc,eeko1,eeko2,eeko3
 
       implicit none
 

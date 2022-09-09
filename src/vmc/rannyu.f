@@ -2,9 +2,7 @@
       contains
       subroutine setrn(iseed)
 
-      use contrl_file, only: ounit
-      use precision_kinds, only: dp
-      use rnyucm,  only: ll,switch_rng
+      use rnyucm, only : switch_rng
       implicit none
 
       integer, intent(in) :: iseed(4)
@@ -21,9 +19,7 @@ c-------------------------------------------
 c NYU linear congruential random number generator.
 c Uses 48 bits, rather than the usual 32 bits.
 
-      use contrl_file, only: ounit
-      use precision_kinds, only: dp
-      use rnyucm,  only: ll
+      use rnyucm, only: ll
       implicit none
 
       integer :: i
@@ -37,8 +33,8 @@ c Uses 48 bits, rather than the usual 32 bits.
       end
 c----------------------------------------------
       subroutine setrn_rannyu_std(iseed)
-      use contrl_file, only: ounit
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
       implicit none
 
       integer, intent(in) :: iseed(4)

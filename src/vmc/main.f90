@@ -13,17 +13,18 @@
 
 program main
 
-      use allocation_mod, only: deallocate_vmc
-      use contrl_file, only: close_files,init_logfile,init_procfile
-      use contrl_file, only: initialize,ounit
-      use control, only: init_control_mode
-      use mpi
-      use mpiconf, only: idtask,mpiconf_init,nproc,wid
-      use mpitimer, only: elapsed_time,time,time_check1,time_final
-      use mpitimer, only: time_start
-      use optwf_mod, only: optwf
-      use parser_mod, only: parser
-      use precision_kinds, only: dp
+    use mpi
+    use mpiconf, only: idtask, nproc
+    use mpiconf, only: mpiconf_init
+    use contr3, only: init_control_mode
+    use contrl_file, only: init_logfile, init_procfile, close_files, initialize
+    use allocation_mod, only: deallocate_vmc
+    use optwf_mod, only: optwf
+    use mpiconf, only: wid      ! logical :: true only for mpirank=0
+    use precision_kinds,    only: dp
+    use contrl_file,    only: ounit
+    use mpitimer,    only: time, elapsed_time, time_start, time_check1, time_final
+    use parser_mod,  only: parser
 
     implicit None
     integer :: ierr

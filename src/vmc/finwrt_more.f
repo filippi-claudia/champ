@@ -3,16 +3,16 @@
       subroutine finwrt_more
 c written by Claudia Filippi
 
-      use contrl_file, only: errunit,ounit
-      use control_vmc, only: vmc_nstep
-      use csfs,    only: nstates
-      use estcum,  only: iblk
-      use estpsi,  only: apsi,aref,detref
-      use mpi
+      use csfs, only: nstates
+      use estcum, only: iblk
+      use estpsi, only: apsi, aref, detref
       use mpiconf, only: nproc
-      use optwf_corsam, only: energy,energy_err,force,force_err,sigma
+      use optwf_corsam, only: energy, energy_err, force, force_err, sigma
+      use control_vmc, only: vmc_nstep
+      use sa_check, only: energy_all, energy_err_all
+      use mpi
       use precision_kinds, only: dp
-      use sa_check, only: energy_all,energy_err_all
+      use contrl_file,    only: ounit, errunit
       implicit none
 
       integer :: iab, ierr, istate

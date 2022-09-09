@@ -3,14 +3,14 @@
       subroutine walksav_jas(iw)
 c Written by Claudia Filippi
 
-      use branch,  only: nwalk
       use dmc_mod, only: MWALK
-      use jastrow_update, only: fijo,fjo,fso,fsumo
-      use mpi
-      use precision_kinds, only: dp
-      use system,  only: nelec
+      use const, only: nelec
+      use branch, only: nwalk
+      use jaso, only: fijo, fjo, fso, fsumo
       use velocity_jastrow, only: vj
+      use mpi
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ierr, irecv, irequest, isend

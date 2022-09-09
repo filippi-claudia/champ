@@ -13,7 +13,7 @@ end module pseudo_mod
 
 module pseudo
     !> Arguments: lpot, nloc, vps, vpso
-      use precision_kinds, only: dp
+    use precision_kinds, only: dp
 
 
     integer, dimension(:), allocatable :: lpot !(MCTYPE)
@@ -27,9 +27,11 @@ module pseudo
     save
 contains
     subroutine allocate_pseudo()
-      use multiple_geo, only: MFORCE
-      use pseudo_mod, only: MPS_L
-      use system,  only: ncent_tot,nctype_tot,nelec
+        use const, only: nelec
+        use atom, only: nctype_tot
+        use atom, only: ncent_tot
+        use pseudo_mod, only: MPS_L
+        use force_mod, only: MFORCE
 
         if (.not. allocated(lpot)) allocate (lpot(nctype_tot), source=0)
         if (.not. allocated(vps)) allocate (vps(nelec, ncent_tot, MPS_L))
@@ -47,7 +49,7 @@ end module pseudo
 module pseudo_tm
     !> Arguments: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
 
-      use precision_kinds, only: dp
+    use precision_kinds, only: dp
 
 
     real(dp), dimension(:), allocatable :: arg !(MCTYPE)
@@ -65,8 +67,8 @@ module pseudo_tm
     save
 contains
     subroutine allocate_pseudo_tm()
-      use pseudo_mod, only: MPS_GRID,MPS_L
-      use system,  only: nctype_tot
+        use atom, only: nctype_tot
+        use pseudo_mod, only: MPS_L, MPS_GRID
 
         if (.not. allocated(arg)) allocate (arg(nctype_tot))
         if (.not. allocated(arg_ps)) allocate (arg_ps(nctype_tot))
@@ -92,16 +94,16 @@ end module pseudo_tm
 module m_pseudo
 contains
 subroutine allocate_m_pseudo()
-      use pseudo,  only: allocate_pseudo
-      use pseudo_tm, only: allocate_pseudo_tm
+    use pseudo, only: allocate_pseudo
+    use pseudo_tm, only: allocate_pseudo_tm
 
     call allocate_pseudo()
     call allocate_pseudo_tm()
 end subroutine allocate_m_pseudo
 
 subroutine deallocate_m_pseudo()
-      use pseudo,  only: deallocate_pseudo
-      use pseudo_tm, only: deallocate_pseudo_tm
+    use pseudo, only: deallocate_pseudo
+    use pseudo_tm, only: deallocate_pseudo_tm
 
     call deallocate_pseudo()
     call deallocate_pseudo_tm()
