@@ -122,6 +122,7 @@ contains
         if (.not. allocated(r_ee)) allocate (r_ee(nmat_dim2))
         if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, nmat_dim2))
         if (.not. allocated(rshift)) allocate (rshift(3, nelec, ncent_tot))
+        rshift=0.d0
     end subroutine allocate_distance_mod
 
     subroutine deallocate_distance_mod()
