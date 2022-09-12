@@ -190,8 +190,10 @@ with open(args.filename_bfinfo) as f3:
     atom_type_symbol = np.array(atom_type_symbol)
     Atoms, unique_atom_index = np.unique(atom_type_symbol, return_index=True)
     Atoms, count_each_type_atoms = np.unique(atom_type_symbol, return_counts=True)
-    same_ordered_unique_atoms =  atom_type_symbol[np.argsort(unique_atom_index)]
+    same_ordered_unique_atoms =  Atoms[np.argsort(unique_atom_index)]
 
+    # print("debug ", Atoms)
+    # print("same order ", same_ordered_unique_atoms)
     print ('Unique atoms             \t {}'.format(Atoms))
     print ('Indices of unique atoms  \t {}'.format(unique_atom_index))
     print ('count each atom type     \t {}'.format(count_each_type_atoms))
@@ -365,8 +367,9 @@ for vals in dict_radial_pointers.values():
             list_shell_ang_mom.append(l)
 
 
-    dict_unique_atom_l[Atoms[unique_atom_index[count_over_unique]]] = list_shell_ang_mom
-    dict_shellcount_per_l[Atoms[unique_atom_index[count_over_unique]]] = list(num_shells_per_l)
+    dict_unique_atom_l[same_ordered_unique_atoms[count_over_unique]] = list_shell_ang_mom
+    # print ("dict ang mom", same_ordered_unique_atoms[count_over_unique], dict_unique_atom_l )
+    dict_shellcount_per_l[same_ordered_unique_atoms[count_over_unique]] = list(num_shells_per_l)
     count_over_unique += 1
 
 
