@@ -215,7 +215,7 @@ print (" ")
 ### Writing part starts here!
 
 ## Writing the new geometry file begins here ----------------
-new_filename_geom = "champ_v3_trexio_order_" + splitext(args.filename_geom)[0] + ".xyz"
+new_filename_geom = "champ_v3_" + splitext(args.filename_geom)[0] + ".xyz"
 if new_filename_geom is not None:
     if isinstance(new_filename_geom, str):
         ## Write down a symmetry file in the new champ v2.0 format
@@ -223,10 +223,10 @@ if new_filename_geom is not None:
 
             file.write("{} \n".format(natoms))
             # header line printed below
-            file.write("# Converted from the old .geometry file to CHAMP v2 .xyz file \n")
+            file.write("# Converted from the old .geometry file to CHAMP v3 .xyz file \n")
 
             for element in range(natoms):
-                file.write("{:5s} {} {} {} \n".format(atom_type_symbol[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
+                file.write("{:5s} {:18.12f} {:18.12f} {:18.12f} \n".format(atom_type_symbol[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
 
             file.write("\n")
         file.close()
