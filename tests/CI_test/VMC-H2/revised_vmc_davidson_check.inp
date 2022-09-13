@@ -8,11 +8,11 @@
     ipr 1
 %endmodule
 
-load molecule        $pool/champ_v3_h2.xyz
-load basis_num_info  $pool/champ_v3_sto_cvb1_basis_pointers.bfinfo
+load molecule        $pool/h2.xyz
+load basis_num_info  $pool/sto_cvb1.bfinfo
 
 load determinants    rhf.det
-load orbitals        champ_v3_trexio_order_rhf.sto_cvb1.lcao
+load orbitals        rhf.sto_cvb1.lcao
 load jastrow         jastrow.0
 load jastrow_der     jastrow.der
 

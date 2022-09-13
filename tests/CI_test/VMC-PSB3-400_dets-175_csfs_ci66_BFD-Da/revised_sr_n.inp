@@ -13,11 +13,11 @@
     iefficiency     1
 %endmodule
 
-load molecule        $pool/champ_v3_psb3_PBE0_cc-pVQZ.xyz
-load basis_num_info  $pool/champ_v3_BFD-Da_basis_pointers.bfinfo
+load molecule        $pool/psb3_PBE0_cc-pVQZ.xyz
+load basis_num_info  $pool/BFD-Da.bfinfo
 
 load determinants    det_optjci
-load orbitals        champ_v3_trexio_order_ci66_BFD-Da_sa2.lcao
+load orbitals        ci66_BFD-Da_sa2.lcao
 load jastrow         jastrow_optjci
 load jastrow_der     jastrow.der
 load symmetry        ci66_BFD-Da_sa2.sym
