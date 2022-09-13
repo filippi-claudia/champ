@@ -13,11 +13,11 @@
     iefficiency     1
 %endmodule
 
-load molecule        $pool/casci44-dz.geometry.xyz
-load basis_num_info  $pool/bfd-dz.bfinfo
+load molecule        $pool/champ_v3_casci44-dz.geometry.xyz
+load basis_num_info  $pool/champ_v3_bfd-dz_basis_pointers.bfinfo
 
 load determinants    champ_v2_gamess_PSB2_casci44.det
-load orbitals        champ_v2_gamess_PSB2_casci44.lcao
+load orbitals        champ_v3_trexio_order_champ_v2_gamess_PSB2_casci44.lcao
 load jastrow         jastrow_initial
 load jastrow_der     jastrow.der
 load symmetry        champ_v2_gamess_PSB2_casci44.sym
