@@ -126,6 +126,7 @@ subroutine read_molecule_file(file_molecule)
     use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
     use ghostatom, 		    only: newghostype, nghostcent
     use inputflags,         only: igeometry
+    use m_string_operations, only: wordcount
     use periodic_table,     only: atom_t, element
     use contrl_file,        only: ounit, errunit
     use general,            only: pooldir
@@ -136,11 +137,12 @@ subroutine read_molecule_file(file_molecule)
     !   local use
     character(len=72), intent(in)   :: file_molecule
     character(len=40)               :: temp1, temp2, temp3, temp4
-    character(len=80)               :: comment, file_molecule_path
-    integer                         :: iostat, i, j, k, iunit
+    character(len=80)               :: comment, file_molecule_path, line
+    integer                         :: iostat, i, j, k, iunit, count
     logical                         :: exist
     type(atom_t)                    :: atoms
     character(len=2), allocatable   :: unique(:)
+    double precision, allocatable   :: nval(:)
 
     !   Formatting
     character(len=100)               :: int_format     = '(A, T60, I0)'
@@ -179,6 +181,7 @@ subroutine read_molecule_file(file_molecule)
     if (.not. allocated(symbol)) allocate(symbol(ncent))
     if (.not. allocated(iwctype)) allocate(iwctype(ncent))
     if (.not. allocated(unique)) allocate(unique(ncent))
+    if (.not. allocated(nval)) allocate(nval(ncent))
     unique = ''
     symbol = ''
 
@@ -189,15 +192,35 @@ subroutine read_molecule_file(file_molecule)
     write(ounit,*)
 
     if (wid) then
-        do i = 1, ncent
-            read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
-        enddo
+        read(iunit,'(A)')  line
+        backspace(iunit)
     endif
-    call bcast(symbol)
-    call bcast(cent)
+    call bcast(line)
+    count = wordcount(line)
 
-    if (wid) close(iunit)
+    if (count == 4) then
+        ! Read the symbol and coords only
+        if (wid) then
+            do i = 1, ncent
+                read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
+            enddo
+        endif
+        call bcast(symbol)
+        call bcast(cent)
 
+        if (wid) close(iunit)
+    else
+        ! Read the symbol, coords, and nvalence (or znuc)
+        if (wid) then
+            do i = 1, ncent
+                read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i), nval(i)
+            enddo
+        endif
+        call bcast(symbol)
+        call bcast(cent)
+        call bcast(nval)
+        if (wid) close(iunit)
+    endif
 
     ! Count unique type of elements
     nctype = 1
@@ -217,7 +240,10 @@ subroutine read_molecule_file(file_molecule)
     ! get the correspondence for each atom according to the rule defined for atomtypes
     do j = 1, ncent
         do k = 1, nctype
-            if (symbol(j) == unique(k))   iwctype(j) = k
+            if (symbol(j) == unique(k))  then
+                iwctype(j) = k
+                if (count .gt. 4) znuc(k) = nval(j)
+            endif
         enddo
     enddo
 
@@ -228,11 +254,13 @@ subroutine read_molecule_file(file_molecule)
 
     if (allocated(unique)) deallocate(unique)
 
-    ! Get the znuc for each unique atom
-    do j = 1, nctype
-        atoms = element(atomtyp(j))
-        znuc(j) = atoms%nvalence
-    enddo
+    if (count == 4) then
+        ! Get the znuc for each unique atom
+        do j = 1, nctype
+            atoms = element(atomtyp(j))
+            znuc(j) = atoms%nvalence
+        enddo
+    endif
 
     ncent_tot = ncent + nghostcent
     nctype_tot = nctype + newghostype

@@ -98,3 +98,29 @@ module method_opt
     public :: method
     save
 end module method_opt
+
+module m_string_operations
+    implicit none
+
+    private
+    public :: wordcount
+
+    contains
+    integer function wordcount(text)
+        implicit none
+        character (len=*), intent(in)       :: text
+        integer                             :: pos, i
+        pos = 1
+        wordcount = 0
+        loop: do
+          i = verify(text(pos:), ' ')
+          if (i == 0) exit loop
+          wordcount = wordcount + 1
+          pos = pos + i - 1
+          i = scan(text(pos:), ' ')
+          if (i == 0) exit loop
+          pos = pos + i - 1
+        end do loop
+    end function wordcount
+
+end module
