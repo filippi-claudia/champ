@@ -1702,8 +1702,6 @@ subroutine parser
         enddo
         nval(j) = fdf_bvalues(pline, 4)
         j = j + 1
-      elseif (pline%ntokens .ne. 1 ) then ! remaining line is a comment line
-        write(ounit,*) " Comment from the file ::  ", trim(pline%line)
       endif
     enddo
 
