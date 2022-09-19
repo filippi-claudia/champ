@@ -28,7 +28,6 @@ module optwf_sr_mod
     use optwf_handle_wf, only : set_nparms
     use optgeo_lib, only: write_geometry, compute_positions
     use sr_mod, only: izvzb, i_sr_rescale
-    use fssd
 
     real(dp) :: omega0
     integer :: n_omegaf, n_omegat
@@ -71,7 +70,6 @@ contains
 
     subroutine optwf_sr
 
-        use atom, only: cent, ncent
         use sr_mod, only: mparm
         use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
         use mstates_mod, only: MSTATES
@@ -84,18 +82,12 @@ contains
         use method_opt, only: method
         use orbval, only: nadorb
         use contrl_file,    only: ounit
-        use fssd, only: errbar_fssd, div_fssd, norm_fssd
 
         implicit none
 
         real(dp) :: adiag, denergy, alpha_omega, denergy_err, dparm_norm
         real(dp) :: energy_sav, energy_err_sav, omega, sigma, sigma_sav, nadorb_sav
-        real(dp) :: error_bar_fssd
-        real(dp), dimension(:, :, :), allocatable :: cent_history
-        real(dp), dimension(:, :), allocatable :: cent_ave
         integer :: i, iflag, iter, miter
-        integer :: keep_track, stage_track, max_conv, config_conv, max_conf, Na, Nave, Nmin, j, k, ic, n_stage, max_stage
-        logical :: check_config_conv
 
         sigma_sav = 0.0
         energy_sav= 0.0
@@ -112,12 +104,12 @@ contains
         write (ounit, '(''Starting dparm_norm_min'',g12.4)') dparm_norm_min
 
         if (ifunc_omega .gt. 0) then
-           if (n_omegaf + n_omegat .gt. nopt_iter) call fatal_error('SR_OPTWF: n_omegaf+n_omegat > nopt_iter')
-           omega = omega0
-           write (ounit, '(/,''SR ifunc_omega: '',i3)') ifunc_omega
-           write (ounit, '(''SR omega: '',f10.5)') omega
-           write (ounit, '(''SR n_omegaf: '',i4)') n_omegaf
-           write (ounit, '(''SR n_omegat: '',i4)') n_omegat
+            if (n_omegaf + n_omegat .gt. nopt_iter) call fatal_error('SR_OPTWF: n_omegaf+n_omegat > nopt_iter')
+            omega = omega0
+            write (ounit, '(/,''SR ifunc_omega: '',i3)') ifunc_omega
+            write (ounit, '(''SR omega: '',f10.5)') omega
+            write (ounit, '(''SR n_omegaf: '',i4)') n_omegaf
+            write (ounit, '(''SR n_omegat: '',i4)') n_omegat
         endif
 
         write (ounit, '(/,''SR adiag: '',f10.5)') sr_adiag
@@ -131,118 +123,89 @@ contains
 
         call write_geometry(0)
 
-        ! do set stage
-        call allocate_fssd()
-        d_fssd = 0.0
+        ! do iteration
+        do iter = 1, nopt_iter
+            write (ounit, '(/,''Optimization iteration'',i5,'' of'',i5)') iter, nopt_iter
 
-        keep_track = 0
-        error_bar_fssd = errbar_fssd
-        !vmc_nblk = 1 / (error_bar_fssd * error_bar_fssd)
-        !error_bar_fssd = 1 / sqrt(vmc_nblk)
+            iforce_analy = 0
 
-        max_conv = 10
-        max_conf = 10
-        Na = 5
-        Nave = 10
-        Nmin = 2 * Na + Nave
-        max_stage = 2
+            if (ifunc_omega .gt. 0) then
+                omega_hes = energy_sav
+                if (iter .gt. n_omegaf) then
+                    alpha_omega = dfloat(n_omegaf + n_omegat - iter)/n_omegat
+                    omega = alpha_omega*omega0 + (1.d0 - alpha_omega)*(energy_sav - sigma_sav)
+                    if (ifunc_omega .eq. 1 .or. ifunc_omega .eq. 2) omega = alpha_omega*omega0 + (1.d0 - alpha_omega)*energy_sav
+                endif
+                if (iter .gt. n_omegaf + n_omegat) then
+                    omega = energy_sav - sigma_sav
+                    if (ifunc_omega .eq. 1 .or. ifunc_omega .eq. 2) omega = energy_sav
+                endif
+                write (ounit, '(''SR omega: '',f10.5)') omega
+            endif
 
-        allocate(cent_history(max_conf * max_conv * nopt_iter, 3, ncent))
-        allocate(cent_ave(3, ncent))
+            ! do micro_iteration
+            do miter = 1, micro_iter_sr
 
-        cent_history = 0.0
+                if (micro_iter_sr .gt. 1) write (ounit, '(/,''Micro iteration'',i5,'' of'',i5)') miter, micro_iter_sr
 
-        check_config_conv = .false.
-        config_conv = 1
-        n_stage = 1
+                if (miter .eq. micro_iter_sr) iforce_analy = iforce_analy_sav
 
-        if (ifssd.gt.0) then
-           if (div_fssd.gt.0.and.norm_fssd.gt.0) then
-              write (ounit, '(/,''You are running the SR with Shiwei algorithm in the standard fashion'')')
-           elseif (div_fssd.le.0.and.norm_fssd.gt.0) then
-              write (ounit, '(/,''You are running the SR with Shiwei algorithm in the modified version where we do not normalize the displacement direction'')')
-           else
-              write (ounit, '(/,''You are running the SR with Shiwei algorithm in the modified version where we do not normalize the displacement direction and else the displacement direction numerator is not divided by alpha + 1'')')
-           endif
-        else
-           write (ounit, '(/,''You are running the SR with steepest descent algorithm'')')
-        endif
+                call qmc
 
-        do while (n_stage.le.max_stage)
-           write (ounit, '(/,''Starting stage '', i5)') n_stage
-           stage_track = 0
-           check_config_conv = .false.
+                write (ounit, '(/,''Completed sampling'')')
 
-           if (iset.gt.0) then
-              d_fssd = 0.0
-              cent_history = 0.0
-              cent_ave = 0.0
-           endif
+6               continue
 
-           if (ifssd.gt.0) then
-              do while (stage_track.le.Nmin)
-                 write (ounit, '(/,''Prepatory steps ... '')') 
-                 call macro_iteration(energy_sav, alpha_omega, omega, sigma_sav, adiag, dparm_norm, iflag, cent_history, keep_track, stage_track, error_bar_fssd, config_conv)
-              enddo
-           endif
+                call sr(nparm, deltap, sr_adiag, sr_eps, i)
+                call dscal(nparm, -sr_tau, deltap, 1)
 
-           do while (.not. check_config_conv)
-              cent_ave = 0.0
-              if (ifssd .gt. 0) then 
-                 write (ounit, '(/,''Config_conv is '', i5)') config_conv
+                adiag = sr_adiag
+                call test_solution_parm(nparm, deltap, dparm_norm, dparm_norm_min, adiag, iflag)
+                write (ounit, '(''Norm of parm variation '',d12.5)') dparm_norm
+                if (iflag .ne. 0) then
+                    write (ounit, '(''Warning: dparm_norm>1'')')
+                    adiag = 10*adiag
+                    write (ounit, '(''adiag increased to '',f10.5)') adiag
 
-                 write (ounit, '(/,''Starting macro_iteration with alfgeo, error_bar_fssd, keep_track '', d10.3, '' '', d10.3, i5)') alfgeo, error_bar_fssd, keep_track
+                    sr_adiag = adiag
+                    go to 6
+                else
+                    sr_adiag = sr_adiag_sav
+                endif
 
-              endif
+                call compute_parameters(deltap, iflag, 1)
+                call write_wf(1, iter)
 
-              call macro_iteration(energy_sav, alpha_omega, omega, sigma_sav, adiag, dparm_norm, iflag, cent_history, keep_track, stage_track, error_bar_fssd, config_conv)
+                call save_wf
 
-              if(ifssd.gt.0) then
-                 do j = stage_track - Nave + 1, stage_track
-                    write (ounit, '(/,''Configuration at '', i5)') j 
-                    do ic = 1,ncent
-                       write(ounit,'(3f10.5)') (cent_history(j, k, ic),k=1,3)
-                       do k = 1,3
-                          cent_ave(k, ic) = cent_ave(k, ic) + cent_history(j, k, ic) / Nave
-                       enddo
-                    enddo
+                if (iforce_analy .gt. 0) then
 
-                    write (ounit, '(/,''Average configuration at '', i5)') j
-                    do ic = 1,ncent
-                       write(ounit,'(3f10.5)') (cent_ave(k,ic),k=1,3)
-                    enddo
-                 enddo
+                    if (izvzb .gt. 0) call forces_zvzb(nparm)
 
-                 write (ounit, *) 'Average configuration is: '
-                 do ic=1,ncent
-                    write(ounit,'(3f10.5)') (cent_ave(k,ic),k=1,3)
-                 enddo
-              endif
+                    call compute_positions
+                    call write_geometry(iter)
+                endif
+                call elapsed_time("CG micro iteration", miter)
+            enddo
+            ! enddo micro_iteration
 
-              if (ifssd.gt.0) then ! .and. stage_track.gt.Nmin) then
+            if (iter .ge. 2) then
+                denergy = energy(1) - energy_sav
+                denergy_err = sqrt(energy_err(1)**2 + energy_err_sav**2)
 
-                 write (ounit, '(/,''Checking convergence ...'')') 
-                 call config_check(stage_track, max_conv, cent_history, error_bar_fssd, cent_ave, check_config_conv, Nave)
+                vmc_nblk = vmc_nblk*1.2
+                vmc_nblk = min(vmc_nblk, vmc_nblk_max)
 
-                 config_conv = config_conv + 1
-              else
-                 check_config_conv = .true.
-              endif
-           enddo
-           if (ifssd.gt.0) then 
-              n_stage = n_stage + 1
+            endif
+            write (ounit, '(''nblk = '',i6)') vmc_nblk
+            write (ounit, '(''alfgeo = '',f10.4)') alfgeo
 
-              vmc_nblk = vmc_nblk * 4
-              alfgeo = alfgeo / 2.d0
-           else
-              n_stage = 2 * max_stage
-           endif
+            energy_sav = energy(1)
+            energy_err_sav = energy_err(1)
+            sigma_sav = sigma
+            call elapsed_time( "CG iteration ", iter )
         enddo
-
-        if (ifssd .gt. 0) write (ounit, '(/,''Calculation terminated with alfgeo, error_bar_fssd, keep_track, config_conv '', d10.3, '' '', d10.3, i5, i5)') alfgeo, error_bar_fssd, keep_track, config_conv
-
-        deallocate(cent_ave)
-        call deallocate_fssd()
+        ! enddo iteration
 
         write (ounit, '(/,''Check last iteration'')')
 
@@ -262,276 +225,7 @@ contains
         deallocate (deltap)
         call elapsed_time( "Last iteration of QMC")
         return
-      end subroutine optwf_sr
-
-      subroutine macro_iteration(energy_sav, alpha_omega, omega, sigma_sav, adiag, dparm_norm, iflag, cent_history, keep_track, stage_track, error_bar_fssd, config_conv)
-        use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
-        use control_vmc, only: vmc_nblk
-        use optwf_corsam, only: energy, energy_err
-        use force_analy, only: alfgeo
-        use fssd, only: ifssd
-
-        integer :: iter, iflag, keep_track, stage_track, config_conv
-        real(dp) :: energy_sav, alpha_omega, omega, sigma_sav, adiag, dparm_norm, error_bar_fssd, denergy, energy_err_sav, denergy_err, sigma
-        real(dp), dimension(:, :, :) :: cent_history                
-
-        ! do iteration
-        do iter = 1, nopt_iter
-           write (ounit, '(/,''Optimization iteration'',i5,'' of'',i5)') iter, nopt_iter
-
-           iforce_analy = 0
-
-           if (ifunc_omega .gt. 0) then
-              omega_hes = energy_sav
-              if (iter .gt. n_omegaf) then
-                 alpha_omega = dfloat(n_omegaf + n_omegat - iter)/n_omegat
-                 omega = alpha_omega*omega0 + (1.d0 - alpha_omega)*(energy_sav - sigma_sav)
-                 if (ifunc_omega .eq. 1 .or. ifunc_omega .eq. 2) omega = alpha_omega*omega0 + (1.d0 - alpha_omega)*energy_sav
-              endif
-              if (iter .gt. n_omegaf + n_omegat) then
-                 omega = energy_sav - sigma_sav
-                 if (ifunc_omega .eq. 1 .or. ifunc_omega .eq. 2) omega = energy_sav
-              endif
-              write (ounit, '(''SR omega: '',f10.5)') omega
-           endif
-
-           call micro_iteration(adiag, dparm_norm, iflag, iter, cent_history, keep_track, stage_track, config_conv)             
-
-           if (iter .ge. 2) then
-              denergy = energy(1) - energy_sav
-              denergy_err = sqrt(energy_err(1)**2 + energy_err_sav**2)
-
-              if (ifssd.le.0) then
-                 vmc_nblk = vmc_nblk*1.2
-                 vmc_nblk = min(vmc_nblk, vmc_nblk_max)
-              endif
-
-           endif
-           write (ounit, '(''nblk = '',i6)') vmc_nblk
-           write (ounit, '(''alfgeo = '',f10.4)') alfgeo
-
-           energy_sav = energy(1)
-           energy_err_sav = energy_err(1)
-           sigma_sav = sigma
-           call elapsed_time( "CG iteration ", iter )
-        enddo
-        ! enddo iteration
-    end subroutine macro_iteration
-
-    subroutine micro_iteration(adiag, dparm_norm, iflag, iter, cent_history, keep_track, stage_track, config_conv)
-
-      use optwf_contrl, only: nparm
-      use optwf_corsam, only: energy
-      use atom, only: cent, ncent
-
-      integer :: i, miter, n_sr, iflag, iter, k, ic, keep_track, stage_track, j, config_conv
-      real(dp) :: adiag, dparm_norm
-      real(dp), dimension(:, :, :) :: cent_history
-
-      ! do micro_iteration
-      do miter = 1, micro_iter_sr
-
-         if (micro_iter_sr .gt. 1) write (ounit, '(/,''Micro iteration'',i5,'' of'',i5)') miter, micro_iter_sr
-
-         if (miter .eq. micro_iter_sr) iforce_analy = iforce_analy_sav
-
-         call qmc
-
-         write (ounit, '(/,''Completed sampling'')')
-
-6        continue
-
-         call sr(nparm, deltap, sr_adiag, sr_eps, i)
-         call dscal(nparm, -sr_tau, deltap, 1)
-
-         adiag = sr_adiag
-         call test_solution_parm(nparm, deltap, dparm_norm, dparm_norm_min, adiag, iflag)
-         write (ounit, '(''Norm of parm variation '',d12.5)') dparm_norm
-         if (iflag .ne. 0) then
-            write (ounit, '(''Warning: dparm_norm>1'')')
-            adiag = 10*adiag
-            write (ounit, '(''adiag increased to '',f10.5)') adiag
-
-            sr_adiag = adiag
-            go to 6
-         else
-            sr_adiag = sr_adiag_sav
-         endif
-
-         call compute_parameters(deltap, iflag, 1)
-         call write_wf(1, iter)
-
-         call save_wf
-
-         keep_track = keep_track + 1
-         stage_track = stage_track + 1
-
-         if (iforce_analy .gt. 0) then
-
-            if (izvzb .gt. 0) call forces_zvzb(nparm)
-
-            call compute_positions
-            call write_geometry(iter)
-
-            write  (ounit, '(''keep_track is '',i5, '' for config_conv '', i5,'', iter '',i5,'',  miter '',i5)') keep_track, config_conv, iter, miter
-            do ic = 1,ncent
-               do k = 1,3
-                  cent_history(stage_track/micro_iter_sr, k, ic) = cent(k, ic)
-               enddo
-            enddo
-
-         endif
-
-         iforce_analy = 0
-
-         call elapsed_time("CG micro iteration", miter)
-      enddo
-      ! enddo micro_iteration
-      
-    end subroutine micro_iteration
-
-    subroutine config_check(keep_track, max_conv, cent_history, error_bar_fssd, cent_ave, check_config_conv, Nave)
-
-      use atom, only: cent, ncent
-      use force_analy, only: alfgeo
-      use fssd, only: d_fssd
-
-      real(dp), dimension(:), allocatable :: cent_dist, R_conv
-      real(dp), dimension(:, :) :: cent_ave
-      real(dp), dimension(:, :, :) :: cent_history
-      real(dp) :: ave_dist_a, ave_dist_b, stderr_dist_a, stderr_dist_b, error_bar_fssd, R_th, R_max, infinity
-      integer :: last_track, iter, miter, track, ic, k, max_conv, n_history, j, N_a, keep_track, Nave
-      logical :: check_config_conv
-
-      last_track = keep_track - Nave
-      allocate(cent_dist(last_track/micro_iter_sr))
-
-      track = 0
-
-      do iter = 1,last_track/micro_iter_sr
-         track = track + 1
-         cent_dist(track) = 0.0
-
-         do ic = 1,ncent
-            do k = 1,3
-               cent_dist(track) = cent_dist(track) + (cent_history(iter, k, ic) - cent_ave(k, ic))**2
-               !if (track .eq. keep_track/3) then
-               !   write (ounit, '(f10.5)') (cent_history(iter, k, ic) - cent_ave(k, ic))**2
-               !endif
-            enddo
-         enddo
-         cent_dist(track) = sqrt(cent_dist(track))
-         write (ounit, '(''Distance from reference configuration is '', f10.5)') cent_dist(track)
-      enddo
-
-      allocate(R_conv(track))
-
-      R_conv = 0.0
-      N_a = 5 ! modify also in optwf_sr
-      R_th = 5.0
-      R_max = 0.0
-
-      if (track > 2 * N_a + 2) then 
-         do j = N_a,track-N_a
-
-            ave_dist_a = 0.0
-            ave_dist_b = 0.0
-            stderr_dist_a = 0.0
-            stderr_dist_b = 0.0
-
-            do k = 1,j
-               ave_dist_a = ave_dist_a + cent_dist(k) / j
-            enddo
-
-            do k = j+1,track
-               ave_dist_b = ave_dist_b + cent_dist(k) / (track - j)
-            enddo
-
-            do k = 1,j
-               stderr_dist_a = stderr_dist_a + (cent_dist(k) - ave_dist_a)**2 / j
-            enddo
-
-            do k = j+1,track
-               stderr_dist_b = stderr_dist_b + (cent_dist(k) - ave_dist_b)**2 / (track - j)
-            enddo
-
-            stderr_dist_a = sqrt(stderr_dist_a)
-            stderr_dist_b = sqrt(stderr_dist_b)
-            write (ounit, '(''stderr(D) = '',f10.2,'' before '',i5, '' and stderr(D) = '',f10.2,'' after '',i5)') stderr_dist_a, j, stderr_dist_b, j
-
-            R_conv(j) = stderr_dist_a / stderr_dist_b
-
-            write (ounit, '(''R = '',f10.2,'' at step '',i5)') R_conv(j), j
-
-            !if (j .ge. 2) then
-            !  if (R_conv(j) .gt. R_max) R_max = R_conv(j)
-            !else
-            !  R_max = R_conv(j)
-            !endif
-
-            infinity = 1.d0 / 0.d0
-
-            if (R_conv(j) .ge. R_th .and. R_conv(j) .lt. infinity) then
-               write (ounit, *) "Convergence is reached for the configuration!"
-               write (ounit, '(''R '', f10.5)')  R_conv(j)
-               if (.not.check_config_conv) then
-                  cent_ave = 0.0
-                  do iter = j,keep_track
-                     write (ounit, '(/,''Averaging '', i5)') iter
-                     do ic = 1,ncent
-                        write(ounit,'(3f10.5)') (cent_history(iter,k,ic),k=1,3)
-                        do k = 1,3
-                           cent_ave(k, ic) = cent_ave(k, ic) + cent_history(iter, k, ic) / (keep_track - j + 1)
-                        enddo
-                     enddo
-                  enddo
-                  write (ounit, *) 'Reference configuration is: '
-                  !write (ounit,*) 'CENT'
-                  do ic=1,ncent
-                     write(ounit,'(3f10.5)') (cent_ave(k,ic),k=1,3)
-                  enddo
-                  check_config_conv = .true.
-               endif
-
-            endif
-
-         enddo
-      endif
-
-      !if(R_max .ge. R_th .and. R_max .lt. infinity) then
-      !   write (ounit, *) "Convergence is reached for the configuration!"
-      !   write (ounit, '(''R_max '', f10.5)')  R_max
-      !   write (ounit, *) 'Reference configuration is: '
-      !   !write (ounit,*) 'CENT'
-      !   do ic=1,ncent
-      !      write(ounit,'(3f10.5)') (cent_ave(k,ic),k=1,3)
-      !   enddo
-      !    check_config_conv = .true.
-      ! endif
-
-      do ic = 1,ncent
-         do k = 1,3
-            cent(k, ic) = cent_ave(k, ic)
-         enddo
-      enddo
-
-      !write (ounit, *) 'Average configuration after checking convergence is: '
-      !do ic=1,ncent
-      !   write(ounit,'(3f10.5)') (cent(k,ic),k=1,3)
-      !enddo
-
-      if (check_config_conv .eq. .false.) then
-         write(ounit, *) 'Running another FSSD'
-
-         !write(ounit, *) 'Setting parameters for next SET'
-         !error_bar_fssd = error_bar_fssd / 2.d0
-         !alfgeo = alfgeo / 2.d0
-         !d_fssd = 0.0
-      endif
-
-      deallocate(cent_dist)
-      deallocate(R_conv)
-    end subroutine config_check
+    end
 
     subroutine save_params()
 

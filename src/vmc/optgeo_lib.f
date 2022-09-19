@@ -45,13 +45,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         use force_fin, only: da_energy_ave
         use zmatrix, only: czint, izcmat
         use force_analy, only: iforce_analy, iuse_zmat, alfgeo
-        use contrl_file,    only: ounit
-        use fssd
+      use contrl_file,    only: ounit
       implicit none
 
       integer :: ic, k
-      integer :: i
-      real :: d_m, F_m
 
         if (iforce_analy.eq.0) return
 
@@ -74,108 +71,18 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
             write(ounit,'(3f10.5)') (cent(k,ic),k=1,3)
           enddo
 
-       else
-          
-          if (ifssd .eq. 0) then 
-!     STEEPEST DESCENT
-             do ic=1,ncent
-                do k=1,3
-                   cent(k,ic)=cent(k,ic)-alfgeo*da_energy_ave(k,ic)
-                enddo
-                write(ounit,*)'CENT ',(cent(k,ic),k=1,3)
-             enddo
-             
-             write (ounit, *) 'Energy gradient over centers is'
-             do ic=1,ncent
-                write(ounit, *)'FORCES ',(-da_energy_ave(k,ic), k=1,3)
-             enddo
+        else
+          do ic=1,ncent
+            do k=1,3
+              cent(k,ic)=cent(k,ic)-alfgeo*da_energy_ave(k,ic)
+            enddo
+            write(ounit,*)'CENT ',(cent(k,ic),k=1,3)
+          enddo
+        endif
 
-             F_m = 0.0
-             call d_modulus(F_m, da_energy_ave)
-             write(ounit, *)'FORCES MODULUS', F_m
-             
-          else
-!     FIXED STEP STEEPEST DESCENT
-             call displacement_direction(d_fssd, div_fssd) !update displacement direction
-             
-             d_m = 0.0          !
-             call d_modulus(d_m, d_fssd) !calculate absolute value of d.d. ^^
-             
-             do ic=1,ncent
-                do k=1,3
-                   if (norm_fssd .gt. 0) then
-                      cent(k,ic) = cent(k,ic) + alfgeo*d_fssd(k,ic)/d_m !update positions
-                   else
-                      cent(k,ic) = cent(k,ic) + alfgeo*d_fssd(k,ic)
-                   endif
-                enddo
-                write (ounit,*)'CENT ',(cent(k,ic), k=1,3)
-             enddo
-             
-             write (ounit, *) 'Energy gradient over centers is'
-             do ic=1,ncent
-                write(ounit, *)'FORCES ',(-da_energy_ave(k,ic), k=1,3)
-             enddo
-             write (ounit, *) 'Non normalized displacement direction is'
-             do ic=1,ncent
-                write(ounit, *)'STEP  ',(d_fssd(k,ic), k=1,3)
-             enddo
-             write (ounit, *) 'Normalized displacement direction is'
-             do ic=1,ncent
-                write(ounit, *)'NSTEP  ',(d_fssd(k,ic) / d_m, k=1,3)
-             enddo
-             write(ounit, *)'FSSD MODULUS', d_m
-          endif
-          
-       endif
-
-       return
+        return
       end
 
-      subroutine displacement_direction(d, div)
-      
-      use atom, only: ncent
-      use force_fin, only: da_energy_ave
-      use precision_kinds, only: dp
-      use fssd, only: alfa_dfssd
-      
-      implicit none
-      
-      integer :: ic, k, div
-      real :: alpha             != 1.d0/2.718281828459
-      real(dp), dimension(:,:) :: d
-
-      alpha = alfa_dfssd
-      do ic=1,ncent             
-         do k=1,3               
-            d(k,ic)=(d(k,ic)*alpha-da_energy_ave(k, ic))/(alpha*div+1.d0) 
-         enddo                  
-      enddo                     
-      
-      end 
-
-      subroutine d_modulus(d_m, d)
-      
-      use atom, only: ncent
-      use precision_kinds, only: dp      
-      implicit none
-      
-      integer :: ic, k
-      real :: d_m
-      real(dp), dimension(:,:) :: d
-      
-      do ic=1,ncent
-         do k=1,3
-            d_m = d_m + d(k,ic)*d(k,ic)
-         enddo
-      enddo
-
-      d_m = sqrt(d_m)
-
-      return
-      
-      end 
-      
       subroutine compute_position_bcast
 
       use atom, only: ncent
