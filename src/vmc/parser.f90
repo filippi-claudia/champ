@@ -95,7 +95,6 @@ subroutine parser
   use dorb_m, 		      only: iworbd
   use contrl_per, 	    only: iperiodic, ibasis
   use force_analy, 	    only: iforce_analy, iuse_zmat, alfgeo
-  use fssd,                 only: ifssd, norm_fssd, div_fssd, alfa_dfssd, errbar_fssd, iset
   use force_dmc, 	      only: itausec, nwprod
   use forcestr,         only: delc
   use wfsec,            only: iwftype
@@ -326,13 +325,6 @@ subroutine parser
     alfgeo      = fdf_get('alfgeo', 1.0d0)
   endif
   iroot_geo   = fdf_get('iroot_geo', 0)
-  ifssd       = fdf_get('ifssd', 0)
-  norm_fssd   = fdf_get('norm_fssd', 1)
-  div_fssd    = fdf_get('div_fssd', 1)
-  alfa_dfssd  = fdf_get('alfa_dfssd', 1.d0/2.718281828459)
-  errbar_fssd = fdf_get('errbar_fssd', 0.01)
-  iset        = fdf_get('iset', 0)
-
 
 ! %module gradients
   delgrdxyz   = fdf_get('delgrdxyz', 0.001d0)
