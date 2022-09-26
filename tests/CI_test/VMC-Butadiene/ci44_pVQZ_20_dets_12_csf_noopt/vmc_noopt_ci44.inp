@@ -6,11 +6,11 @@
     mode         'vmc_one_mpi1'
 %endmodule
 
-load molecule        $pool/butadiene_champ_v2_gamess_ci44_pVQZ_1_geom.xyz
-load basis_num_info  $pool/champ_v2_gamess_ci44_pVQZ.bfinfo
+load molecule        $pool/champ_v3_butadiene_champ_v2_gamess_ci44_pVQZ_1_geom.xyz
+load basis_num_info  $pool/champ_v3_champ_v2_gamess_ci44_pVQZ_basis_pointers.bfinfo
 
 load determinants    champ_v2_gamess_ci44_pVQZ_cart.det
-load orbitals        champ_v2_gamess_ci44_pVQZ_cart.lcao
+load orbitals        champ_v3_trexio_order_champ_v2_gamess_ci44_pVQZ_cart.lcao
 load symmetry        champ_v2_gamess_ci44_pVQZ_cart.sym
 load jastrow         jastrow_good_b3lyp.0
 load jastrow_der     jastrow.der

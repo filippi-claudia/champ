@@ -6,11 +6,11 @@
     mode         vmc
 %endmodule
 
-load molecule        $pool/butadiene.xyz
-load basis_num_info  $pool/BFD-T.bfinfo
+load molecule        $pool/champ_v3_butadiene.xyz
+load basis_num_info  $pool/champ_v3_BFD-T_basis_pointers.bfinfo
 
 load determinants    TZ_1M_500.det
-load orbitals        ci1010_pVTZ_1_orbitals.lcao
+load orbitals        champ_v3_trexio_order_ci1010_pVTZ_1_orbitals.lcao
 load jastrow         jastrow_good_b3lyp.0
 load jastrow_der     jastrow.der
 load symmetry        ci1010_pVTZ_1_symmetry.sym

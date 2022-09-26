@@ -2,6 +2,7 @@
     title           'COH2 Formaldehyde VMC optimization calculation ground state'
     pool            './pool/'
     mode            'vmc'
+    basis           BFD-aug-cc-pVDZ
 %endmodule
 
 # Use the following file to fetch coordinates, basis, ecp, molecular orbitals, determinants and orbital symmetries.
