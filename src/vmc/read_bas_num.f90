@@ -24,7 +24,7 @@ contains
       use atom, only: znuc, nctype, nctype_tot
       use ghostatom, only: newghostype
       use const, only: ipr
-      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf!, rmax
+      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
       use numbas, only: allocate_numbas
       use coefs, only: nbasis
       use numexp, only: ae, ce, ab, allocate_numexp
@@ -42,8 +42,9 @@ contains
 
       integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
       integer         :: iwf, info
-      real(dp)        :: val, dwf1, wfm, dwfn, dwfm, a, b, temp
+      real(dp)        :: val, dwf1, wfm, dwfn, dwfm, temp
       integer         :: iunit, iostat = 0, counter = 0
+      real(dp)        :: cutoff_rmax = 1.0d-12
       logical         :: exist, skip = .true.
 
       real(dp), dimension(MRWF_PTS)       ::  x, work
@@ -122,6 +123,23 @@ contains
         endif
         call bcast(x)
         call bcast(rwf)
+
+!        Get the rmax value for each center. Set the cutoff to 10^-12
+
+        if (.not. allocated(rmaxwf)) allocate (rmaxwf(nrbas(ic), nctype_tot))
+
+        do irb = 1, nrbas(ic)
+        rmaxwf(irb, ic) = 0.0d0
+          do ir=1,nr(ic)
+            if (rwf(ir,irb,ic,iwf) .gt. cutoff_rmax ) then
+              rmaxwf(irb, ic) = x(ir)
+            endif
+          enddo
+        enddo
+
+        write(45,*) "Rmax for center ic ", ic, " is ",  (rmaxwf(irb, ic), irb=1, nrbas(ic))
+
+
 
         if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
         if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)
@@ -226,6 +244,9 @@ contains
             ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf), temp
           enddo
           write(45,*) 'dwf1,dwfn',dwf1,dwfn
+          !
+!         ! important Extend the nr(ic) here until the point where the rwf(nr(ic),irb,ic,iwf) goes to zero ~ 10E-24
+          !
 ! c       endif
         if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
