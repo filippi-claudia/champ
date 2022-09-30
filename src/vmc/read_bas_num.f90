@@ -44,7 +44,7 @@ contains
       integer         :: iwf, info
       real(dp)        :: val, dwf1, wfm, dwfn, dwfm, temp
       integer         :: iunit, iostat = 0, counter = 0
-      real(dp)        :: cutoff_rmax = 1.0d-12
+      real(dp)        :: cutoff_rmax = 1.0d-20
       logical         :: exist, skip = .true.
 
       real(dp), dimension(MRWF_PTS)       ::  x, work
