@@ -27,7 +27,7 @@ contains
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
       use numbas, only: allocate_numbas
       use coefs, only: nbasis
-      use numexp, only: ae, ce, ab, allocate_numexp
+      use numexp, only: ae, ce, allocate_numexp
       use pseudo, only: nloc
       use general, only: filename, filenames_bas_num
 
@@ -198,6 +198,7 @@ contains
           dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
         enddo
 
+        ! Update the rmax at the point where rwf goes below cutoff (scanning from right to left)
         rmaxwf(irb, ic) = 20.0d0
         rloop: do ir=nr(ic),1,-1
           if (dabs(rwf(ir,irb,ic,iwf)) .gt. cutoff_rmax ) then
@@ -206,25 +207,23 @@ contains
           endif
         enddo rloop
 
-        write(45,'(a,i0,a,i0,a,g0)') "Rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
+        write(45,'(a,i0,a,i0,a,g0)') "Initial rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
 
-! Nonzero basis at the boundary : Ravindra Shinde
+! Nonzero basis at the boundary : Do exponential fitting.
         if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
           call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
           rmaxwf(irb,ic)=-dlog(cutoff_rmax/ae(1,irb,ic,iwf))/ae(2,irb,ic,iwf)
-          write(45, *) 'DEBUG :: exp_fit: ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
 
 
-! c       if(ipr.gt.1) then
-          write(45,'(''check the large radius expansion'')')
-          write(45,'(''a0,ak'',1p2e22.10)')     &
-                            ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
-          write(45,'(''rmax'',1p2e22.10)')     &
-                            rmaxwf(irb,ic)
-          write(45,'(''irad, rad, extrapolated value, correct value,  DEBUG new fit'')')
+
+          write(45,'(a)') 'check the large radius expansion'
+          write(45,'(a,g0,2x,g0)') 'Exponential fitting parameters : ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
+
+          write(45,'(a,i0,a,i0,a,g0)') "Final rmax (fit) for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
+          write(45, '(a)') 'irad,         rad                  rwf value            expo fit'
           do ir=1,10
             temp = ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
-            write(45,'(i2,1p4e22.14)') ir,x(nr(ic)-ir),rwf(nr(ic)-ir,irb,ic,iwf), temp
+            write(45,'(i3,2x,1p4e22.14)') ir,x(nr(ic)-ir),rwf(nr(ic)-ir,irb,ic,iwf), temp
           enddo
           write(45,*) 'dwf1,dwfn',dwf1,dwfn
 
