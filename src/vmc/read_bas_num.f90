@@ -44,7 +44,7 @@ contains
       integer         :: iwf, info
       real(dp)        :: val, dwf1, wfm, dwfn, dwfm, temp
       integer         :: iunit, iostat = 0, counter = 0
-      real(dp)        :: cutoff_rmax = 1.0d-20
+      real(dp)        :: cutoff_rmax = 1.0d-12
       logical         :: exist, skip = .true.
 
       real(dp), dimension(MRWF_PTS)       ::  x, work
@@ -128,17 +128,6 @@ contains
 
         if (.not. allocated(rmaxwf)) allocate (rmaxwf(nrbas(ic), nctype_tot))
 
-        do irb = 1, nrbas(ic)
-        rmaxwf(irb, ic) = 0.0d0
-          do ir=1,nr(ic)
-            if (rwf(ir,irb,ic,iwf) .gt. cutoff_rmax ) then
-              rmaxwf(irb, ic) = x(ir)
-            endif
-          enddo
-        enddo
-
-        write(45,*) "Rmax for center ic ", ic, " is ",  (rmaxwf(irb, ic), irb=1, nrbas(ic))
-
 
 
         if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
@@ -209,46 +198,39 @@ contains
           dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
         enddo
 
-! c large radii wf(r)=a0*exp(-ak*r)
-! c       xm=0.5d0*(x(nr(ic))+x(nr(ic)-1))
-        wfm=0.5d0*(rwf(nr(ic),irb,ic,iwf)+rwf(nr(ic)-1,irb,ic,iwf))
-        dwfm=(rwf(nr(ic),irb,ic,iwf)-rwf(nr(ic)-1,irb,ic,iwf))/  &
-        (x(nr(ic))-x(nr(ic)-1))
-        if(dabs(wfm).gt.1.d-99) then
-          ae(2,irb,ic,iwf)=-dwfm/wfm
-          ae(1,irb,ic,iwf)=rwf(nr(ic),irb,ic,iwf)*    &
-                          dexp(ae(2,irb,ic,iwf)*x(nr(ic)))
-          dwfn=-ae(2,irb,ic,iwf)*rwf(nr(ic),irb,ic,iwf)
-        else
-          ae(1,irb,ic,iwf)=0.d0
-          ae(2,irb,ic,iwf)=0.d0
-          dwfn=0.d0
-        endif
+        rmaxwf(irb, ic) = 20.0d0
+        rloop: do ir=nr(ic),1,-1
+          if (dabs(rwf(ir,irb,ic,iwf)) .gt. cutoff_rmax ) then
+            rmaxwf(irb, ic) = x(ir)
+            exit rloop
+          endif
+        enddo rloop
+
+        write(45,'(a,i0,a,i0,a,g0)') "Rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
 
 ! Nonzero basis at the boundary : Ravindra Shinde
-        if(rwf(nr(ic),irb,ic,iwf).gt.1.d-12) then
-          call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ab(1,irb,ic,iwf), ab(2,irb,ic,iwf))
-          write(45, *) 'DEBUG :: exp_fit: ', ab(1,irb,ic,iwf), ab(2,irb,ic,iwf)
-        endif
+        if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
+          call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
+          rmaxwf(irb,ic)=-dlog(cutoff_rmax/ae(1,irb,ic,iwf))/ae(2,irb,ic,iwf)
+          write(45, *) 'DEBUG :: exp_fit: ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
 
 
 ! c       if(ipr.gt.1) then
           write(45,'(''check the large radius expansion'')')
           write(45,'(''a0,ak'',1p2e22.10)')     &
                             ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
+          write(45,'(''rmax'',1p2e22.10)')     &
+                            rmaxwf(irb,ic)
           write(45,'(''irad, rad, extrapolated value, correct value,  DEBUG new fit'')')
           do ir=1,10
-            val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
-            temp = ab(1,irb,ic,iwf)*dexp(-ab(2,irb,ic,iwf)*x(nr(ic)-ir))
-            write(45,'(i2,1p4e22.14)')      &
-            ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf), temp
+            temp = ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
+            write(45,'(i2,1p4e22.14)') ir,x(nr(ic)-ir),rwf(nr(ic)-ir,irb,ic,iwf), temp
           enddo
           write(45,*) 'dwf1,dwfn',dwf1,dwfn
-          !
-!         ! important Extend the nr(ic) here until the point where the rwf(nr(ic),irb,ic,iwf) goes to zero ~ 10E-24
-          !
-! c       endif
-        if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+
+          if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+
+        endif
 
         call spline2(x(:),rwf(:,irb,ic,iwf),nr(ic),dwf1,dwfn,  &
                         d2rwf(:,irb,ic,iwf),work)
