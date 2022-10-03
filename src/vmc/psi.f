@@ -8,7 +8,7 @@ c if we add in the capability to use numerical Laplacian for
 c periodic systems.
 
 
-      use jaspar4, only: nordc
+      use jastrow, only: nordc
       use jaspar6, only: cutjas
       use jastrow, only: c,ijas,nordj
       use multiple_geo, only: iwf
@@ -98,7 +98,7 @@ c-----------------------------------------------------------------------
       function psia(ri,it)
 
 
-      use jaspar4, only: norda
+      use jastrow, only: norda
       use jaspar6, only: cutjas
       use jastrow, only: a4,asymp_jasa,ijas
       use multiple_geo, only: iwf
@@ -145,7 +145,7 @@ c-----------------------------------------------------------------------
       function psib(rij,isb,ipar)
 
 
-      use jaspar4, only: nordb
+      use jastrow, only: nordb
       use jaspar6, only: cutjas
       use jastrow, only: asymp_jasb,b,ijas,sspinn
       use multiple_geo, only: iwf

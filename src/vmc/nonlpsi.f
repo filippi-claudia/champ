@@ -4,7 +4,7 @@
       function psinl(u,rshifti,rshiftj,rri,rrj,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use jaspar4, only: nordc
+      use jastrow, only: nordc
       use jaspar6, only: asymp_r
       use jastrow, only: c,ijas,nordj
       use multiple_geo, only: iwf
@@ -81,7 +81,7 @@ c-----------------------------------------------------------------------
 
 
 
-      use jaspar4, only: norda
+      use jastrow, only: norda
       use jaspar6, only: asymp_r
       use jastrow, only: a4,asymp_jasa,ijas
       use multiple_geo, only: iwf
@@ -111,7 +111,7 @@ c-----------------------------------------------------------------------
 
       function psibnl(u,isb,ipar)
 
-      use jaspar4, only: nordb
+      use jastrow, only: nordb
       use jaspar6, only: asymp_r
       use jastrow, only: asymp_jasb,b,ijas,sspinn
       use multiple_geo, only: iwf
@@ -143,7 +143,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsianl(rri,it)
 
-      use jaspar4, only: norda
+      use jastrow, only: norda
       use jaspar6, only: asymp_r
       use jastrow, only: a4,ijas
       use multiple_geo, only: iwf
@@ -172,7 +172,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsibnl(u,isb,ipar)
 
-      use jaspar4, only: nordb
+      use jastrow, only: nordb
       use jaspar6, only: asymp_r
       use jastrow, only: b,ijas,sspinn
       use multiple_geo, only: iwf

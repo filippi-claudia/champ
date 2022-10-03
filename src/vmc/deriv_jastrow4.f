@@ -8,7 +8,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use derivjas, only: d2g,g,go,gvalue
       use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
       use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jaspar6, only: asymp_r,cutjas
       use jaspointer, only: npoint,npointa
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj

@@ -8,7 +8,7 @@ c Jastrow 6   must be used with one of isc=6,7
 
       use bparm,   only: nocuspb,nspin2b
       use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jaspar6, only: cutjas
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj
       use jastrow, only: sspinn

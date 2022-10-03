@@ -59,7 +59,7 @@ c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
 
       use bparm,   only: nspin2b
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jastrow, only: a4,b,c,ianalyt_lap,ijas,isc,nspin1,nspin2
       use jastrow, only: scalek
       use optwf_control, only: ioptjas
@@ -276,7 +276,7 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow
 
       use bparm,   only: nspin2b
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jastrow, only: a4,b,c,nordj1
       use multiple_geo, only: nwftype
       use precision_kinds, only: dp
@@ -464,7 +464,7 @@ c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
 
       use bparm,   only: nspin2b
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jastrow, only: a4,b,c,scalek
       use system,  only: nctype
 
@@ -560,7 +560,7 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
       use bparm,   only: nspin2b
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jastrow, only: a4,b,c,nordj1
       use multiple_geo, only: nwftype
       use precision_kinds, only: dp

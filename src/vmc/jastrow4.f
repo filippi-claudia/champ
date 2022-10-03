@@ -8,7 +8,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use bparm,   only: nocuspb,nspin2b
       use contrl_file, only: ounit
       use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jaspar6, only: c1_jas6,cutjas
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj
       use jastrow, only: scalek,sspinn
@@ -404,7 +404,7 @@ c-----------------------------------------------------------------------
       subroutine da_jastrow4(iwf,i,ic,it,rvec_en,r,rr,feni,fenii,dd1,dd2)
 
       use da_jastrow4val, only: da_d2j,da_j,da_vj
-      use jaspar4, only: norda
+      use jastrow, only: norda
       use jastrow, only: a4,nordj
       use precision_kinds, only: dp
       use scale_more, only: dd3

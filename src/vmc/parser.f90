@@ -59,7 +59,7 @@ subroutine parser
       use inputflags, only: imodify_zmat,imultideterminants,ioptorb_def
       use inputflags, only: ioptorb_mixvirt,iqmmm,izmatrix_check,iznuc
       use inputflags, only: node_cutoff,scalecoef
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
       use jastrow, only: a4,allocate_jaspar6,asymp_jasa,asymp_jasb,b,c
       use jastrow, only: ianalyt_lap,ijas,is,isc,neqsx,nordj,nordj1

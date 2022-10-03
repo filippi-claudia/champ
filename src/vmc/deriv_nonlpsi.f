@@ -4,7 +4,7 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use cuspmat4, only: d,iwc4
-      use jaspar4, only: nordc
+      use jastrow, only: nordc
       use jaspar6, only: asymp_r
       use jastrow, only: c,ijas,nordj
       use multiple_geo, only: iwf
@@ -116,7 +116,7 @@ c-----------------------------------------------------------------------
       function deriv_psianl(rri,gn,it)
 
 
-      use jaspar4, only: norda
+      use jastrow, only: norda
       use jaspar6, only: asymp_r
       use jastrow, only: a4,asymp_jasa,ijas
       use multiple_geo, only: iwf
@@ -176,7 +176,7 @@ c-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar)
 
 
-      use jaspar4, only: nordb
+      use jastrow, only: nordb
       use jaspar6, only: asymp_r
       use jastrow, only: asymp_jasb,b,ijas,sspinn
       use multiple_geo, only: iwf

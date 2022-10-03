@@ -59,34 +59,6 @@ contains
 
 end module jastrow_update
 
-module jaspar4
-    !> Arguments: a4, norda, nordb, nordc
-      use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp), dimension(:, :, :), allocatable :: a4 !(nordj1,nctype_tot,MWF)
-    integer :: norda
-    integer :: nordb
-    integer :: nordc
-
-    private
-    public :: norda, nordb, nordc
-    save
-contains
-    ! subroutine allocate_jaspar4()
-    !     use multiple_geo, only: MWF
-    !     use precision_kinds, only: dp
-    !     use vmc_mod, only: nordj1
-    !     if (.not. allocated(a4)) allocate (a4(nordj1, nctype_tot, MWF))
-    ! end subroutine allocate_jaspar4
-
-    subroutine deallocate_jaspar4()
-        if (allocated(a4)) deallocate (a4)
-    end subroutine deallocate_jaspar4
-
-end module jaspar4
-
 module jaspar6
     !> Arguments: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
       use precision_kinds, only: dp

@@ -459,7 +459,7 @@ subroutine inputjastrow()
     ! Set the jastrow to be equal
 
       use bparm,   only: nspin2b
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jastrow, only: a4,b,c,ijas,isc,nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
       use multiple_geo, only: nwftype

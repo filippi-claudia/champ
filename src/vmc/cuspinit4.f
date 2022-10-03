@@ -4,7 +4,7 @@
 c Written by Cyrus Umrigar
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4,nterms
-      use jaspar4, only: nordc
+      use jastrow, only: nordc
       use vmc_mod, only: mterms
       implicit none
 
@@ -76,7 +76,7 @@ c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4,nterms
-      use jaspar4, only: nordc
+      use jastrow, only: nordc
       use optwf_nparmj, only: nparmc
       use optwf_wjas, only: iwjasc
       use precision_kinds, only: dp

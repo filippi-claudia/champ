@@ -485,7 +485,7 @@ subroutine read_jastrow_file(file_jastrow)
       use custom_broadcast, only: bcast
       use general, only: pooldir
       use inputflags, only: ijastrow_parameter
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,neqsx
       use jastrow, only: nordj,nordj1,nspin1,nspin2,scalek
@@ -1130,7 +1130,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
-      use jaspar4, only: norda,nordb,nordc
+      use jastrow, only: norda,nordb,nordc
       use jaspointer, only: npoint,npointa
       use jastrow, only: ijas,is,isc,nspin1
       use mpiconf, only: wid
