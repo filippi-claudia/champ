@@ -9,7 +9,7 @@ end module pcm
 
 module pcm_3dgrid
     !     flags and dimensions for the 3d grid objects
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
     integer, parameter :: MGRID_PCM = 1
     integer, parameter :: IUNDEFINED = -1234567890
     integer, parameter :: MGRID_PCM2 = MGRID_PCM*MGRID_PCM
@@ -28,8 +28,8 @@ end module pcm_3dgrid
 
 module pcm_ah
     !> Arguments: ahca, bh
-    use pcm, only: MCHS
-    use precision_kinds, only: dp
+      use pcm,     only: MCHS
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: ahca !(MCHS,MCHS)
     real(dp), dimension(:), allocatable :: bh !(MCHS)
@@ -40,7 +40,7 @@ module pcm_ah
     save
 contains
     subroutine allocate_pcm_ah()
-        use pcm, only: MCHS
+      use pcm,     only: MCHS
         if (.not. allocated(ahca)) allocate (ahca(MCHS, MCHS))
         if (.not. allocated(bh)) allocate (bh(MCHS))
     end subroutine allocate_pcm_ah
@@ -54,8 +54,8 @@ end module pcm_ah
 
 module pcm_ameta
     !> Arguments: amdlg, eta
-    use pcm, only: MCHS
-    use precision_kinds, only: dp
+      use pcm,     only: MCHS
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: amdlg !(MCHS)
     real(dp), dimension(:, :), allocatable :: eta !(3,MCHS)
@@ -66,7 +66,7 @@ module pcm_ameta
     save
 contains
     subroutine allocate_pcm_ameta()
-        use pcm, only: MCHS
+      use pcm,     only: MCHS
         if (.not. allocated(amdlg)) allocate (amdlg(MCHS))
         if (.not. allocated(eta)) allocate (eta(3, MCHS))
     end subroutine allocate_pcm_ameta
@@ -82,8 +82,8 @@ module pcm_averages
     !> Arguments: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
     ! qopcm_sum, qopcm_cum, qopcm_cm2,
     ! enfpcm_sum(MCHS), enfpcm_cum(MCHS), enfpcm_cm2(MCHS)
-    use pcm, only: MCHS
-    use precision_kinds, only: dp
+      use pcm,     only: MCHS
+      use precision_kinds, only: dp
 
     real(dp) :: spcmsum
     real(dp) :: spcmcum
@@ -106,7 +106,7 @@ module pcm_averages
     save
 contains
     subroutine allocate_pcm_averages()
-        use pcm, only: MCHS
+      use pcm,     only: MCHS
         if (.not. allocated(enfpcm_sum)) allocate (enfpcm_sum(MCHS))
         if (.not. allocated(enfpcm_cum)) allocate (enfpcm_cum(MCHS))
         if (.not. allocated(enfpcm_cm2)) allocate (enfpcm_cm2(MCHS))
@@ -136,7 +136,7 @@ end module pcm_cntrl
 
 module pcm_fdc
     !> Arguments: fs, rcol, feps, rcolt, rcolv, qfree, qvol
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     real(dp) :: feps
     real(dp) :: fs
@@ -153,9 +153,9 @@ end module pcm_fdc
 
 module pcm_force
     !> Arguments: sch_s
-    use pcm, only: MCHS
-    use force_mod, only: MFORCE
-    use precision_kinds, only: dp
+      use multiple_geo, only: MFORCE
+      use pcm,     only: MCHS
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: sch_s !(MCHS,MFORCE)
 
@@ -165,8 +165,8 @@ module pcm_force
     save
 contains
     subroutine allocate_pcm_force()
-        use pcm, only: MCHS
-        use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
+      use pcm,     only: MCHS
         if (.not. allocated(sch_s)) allocate (sch_s(MCHS, MFORCE))
     end subroutine allocate_pcm_force
 
@@ -188,8 +188,8 @@ end module pcm_grid3d_contrl
 
 module pcm_grid3d_array
     !> Arguments: pcm_cart_from_int
-    use pcm_3dgrid, only: MGRID_PCM
-    use precision_kinds, only: dp
+      use pcm_3dgrid, only: MGRID_PCM
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: pcm_cart_from_int !(MGRID_PCM,3)
 
@@ -199,7 +199,7 @@ module pcm_grid3d_array
     save
 contains
     subroutine allocate_pcm_grid3d_array()
-        use pcm_3dgrid, only: MGRID_PCM
+      use pcm_3dgrid, only: MGRID_PCM
         if (.not. allocated(pcm_cart_from_int)) allocate (pcm_cart_from_int(MGRID_PCM, 3))
     end subroutine allocate_pcm_grid3d_array
 
@@ -211,7 +211,7 @@ end module pcm_grid3d_array
 
 module pcm_grid3d_param
     !> Arguments: pcm_endpt, pcm_origin, ipcm_nstep3d, pcm_step3d
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     integer, dimension(:), allocatable :: ipcm_nstep3d !(3)
     real(dp), dimension(:), allocatable :: pcm_endpt !(3)
@@ -242,8 +242,8 @@ end module pcm_grid3d_param
 
 module pcm_hpsi
     !> Arguments: enfpcm, pepcms, pepcmv, qopcm
-    use pcm, only: MCHS
-    use precision_kinds, only: dp
+      use pcm,     only: MCHS
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: enfpcm !(MCHS)
     real(dp) :: qopcm
@@ -258,7 +258,7 @@ module pcm_hpsi
     save
 contains
     subroutine allocate_pcm_hpsi()
-        use pcm, only: MCHS
+      use pcm,     only: MCHS
         if (.not. allocated(enfpcm)) allocate (enfpcm(MCHS))
     end subroutine allocate_pcm_hpsi
 
@@ -269,7 +269,7 @@ contains
 end module pcm_hpsi
 
 module pcm_inda
-    use pcm, only: MCHS
+      use pcm,     only: MCHS
     !> Arguments: inda
 
     integer, dimension(:), allocatable :: inda !(MCHS)
@@ -280,7 +280,7 @@ module pcm_inda
     save
 contains
     subroutine allocate_pcm_inda()
-        use pcm, only: MCHS
+      use pcm,     only: MCHS
         if (.not. allocated(inda)) allocate (inda(MCHS), source=0)
     end subroutine allocate_pcm_inda
 
@@ -292,8 +292,8 @@ end module pcm_inda
 
 module m_pcm_num_spl
     !> Arguments: pcm_num_spl
-    use pcm_3dgrid, only: MGRID_PCM
-    use precision_kinds, only: dp
+      use pcm_3dgrid, only: MGRID_PCM
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :, :, :), allocatable :: pcm_num_spl !(8,MGRID_PCM,MGRID_PCM,MGRID_PCM)
 
@@ -303,7 +303,7 @@ module m_pcm_num_spl
     save
 contains
     subroutine allocate_m_pcm_num_spl()
-        use pcm_3dgrid, only: MGRID_PCM
+      use pcm_3dgrid, only: MGRID_PCM
         if (.not. allocated(pcm_num_spl)) allocate (pcm_num_spl(8, MGRID_PCM, MGRID_PCM, MGRID_PCM))
     end subroutine allocate_m_pcm_num_spl
 
@@ -315,7 +315,7 @@ end module m_pcm_num_spl
 
 module pcm_num_spl2
     !> Arguments: bc, wk
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     real(dp) :: bc
     real(dp) :: wk
@@ -328,8 +328,8 @@ end module pcm_num_spl2
 module pcm_parms
     !> Arguments: re, nchv, nesph, ze, iscov, eps_solv, xpol,
     !             retk, ch, xe, nvopcm, nch, re2, ncopcm, surk, nscv, nchs, ye, nchs2, nchs1
-    use pcm, only: MCHV, MSPHERE
-    use precision_kinds, only: dp
+      use pcm,     only: MCHV,MSPHERE
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: ch !(MCHV)
     real(dp) :: eps_solv
@@ -362,7 +362,7 @@ module pcm_parms
     save
 contains
     subroutine allocate_pcm_parms()
-        use pcm, only: MCHV, MSPHERE
+      use pcm,     only: MCHV,MSPHERE
         if (.not. allocated(ch)) allocate (ch(MCHV))
         if (.not. allocated(re)) allocate (re(MSPHERE))
         if (.not. allocated(re2)) allocate (re2(MSPHERE))
@@ -386,7 +386,7 @@ end module pcm_parms
 
 module pcm_pot
     !> Arguments: penupol, penups, penupv
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     real(dp) :: penupol
     real(dp) :: penups
@@ -399,8 +399,8 @@ end module pcm_pot
 
 module pcm_xv_new
     !> Arguments: xv_new
-    use pcm, only: MCHV
-    use precision_kinds, only: dp
+      use pcm,     only: MCHV
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: xv_new !(3,MCHV)
 
@@ -410,7 +410,7 @@ module pcm_xv_new
     save
 contains
     subroutine allocate_pcm_xv_new()
-        use pcm, only: MCHV
+      use pcm,     only: MCHV
         if (.not. allocated(xv_new)) allocate (xv_new(3, MCHV))
     end subroutine allocate_pcm_xv_new
 
@@ -435,8 +435,8 @@ end module pcm_unit
 module pcmo
     !> Arguments: enfpcmo, qopcmo, spcmo, vpcmo,
     !> spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
-    use pcm, only: MCHS
-    use precision_kinds, only: dp
+      use pcm,     only: MCHS
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: enfpcmo !(MCHS)
     real(dp) :: qopcmo
@@ -456,8 +456,8 @@ module pcmo
     save
 contains
     subroutine allocate_pcmo()
-        use pcm, only: MCHS
-        use dmc_mod, only: mwalk
+      use dmc_mod, only: mwalk
+      use pcm,     only: MCHS
         if (.not. allocated(enfpcmo)) allocate(enfpcmo(MCHS))
         if (.not. allocated(enfpcmo_dmc)) allocate(enfpcmo_dmc(mwalk, MCHS))
         if (.not. allocated(qopcmo_dmc)) allocate(qopcmo_dmc(mwalk))
@@ -498,7 +498,7 @@ end module spc
 
 module spc1
     !> Arguments: csf, qsf, rsf
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :, :), allocatable :: csf !(750,4,50)
     real(dp), dimension(:, :), allocatable :: qsf !(50,3)
@@ -525,7 +525,7 @@ end module spc1
 
 module spc2
     !> Arguments: nxyz, sfxyz, usf
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     integer :: nxyz
     real(dp), dimension(:, :), allocatable :: sfxyz !(5000,4)
@@ -551,21 +551,21 @@ end module spc2
 module m_pcm
 contains
 subroutine allocate_m_pcm()
-    use pcm_ah, only: allocate_pcm_ah
-    use pcm_ameta, only: allocate_pcm_ameta
-    use pcm_averages, only: allocate_pcm_averages
-    use pcm_force, only: allocate_pcm_force
-    use pcm_grid3d_array, only: allocate_pcm_grid3d_array
-    use pcm_grid3d_param, only: allocate_pcm_grid3d_param
-    use pcm_hpsi, only: allocate_pcm_hpsi
-    use pcm_inda, only: allocate_pcm_inda
-    use m_pcm_num_spl, only: allocate_m_pcm_num_spl
-    use pcm_parms, only: allocate_pcm_parms
-    use pcm_xv_new, only: allocate_pcm_xv_new
-    use pcmo, only: allocate_pcmo
-    use spc, only: allocate_spc
-    use spc1, only: allocate_spc1
-    use spc2, only: allocate_spc2
+      use m_pcm_num_spl, only: allocate_m_pcm_num_spl
+      use pcm_ah,  only: allocate_pcm_ah
+      use pcm_ameta, only: allocate_pcm_ameta
+      use pcm_averages, only: allocate_pcm_averages
+      use pcm_force, only: allocate_pcm_force
+      use pcm_grid3d_array, only: allocate_pcm_grid3d_array
+      use pcm_grid3d_param, only: allocate_pcm_grid3d_param
+      use pcm_hpsi, only: allocate_pcm_hpsi
+      use pcm_inda, only: allocate_pcm_inda
+      use pcm_parms, only: allocate_pcm_parms
+      use pcm_xv_new, only: allocate_pcm_xv_new
+      use pcmo,    only: allocate_pcmo
+      use spc,     only: allocate_spc
+      use spc1,    only: allocate_spc1
+      use spc2,    only: allocate_spc2
 
     call allocate_pcm_ah()
     call allocate_pcm_ameta()
@@ -585,21 +585,21 @@ subroutine allocate_m_pcm()
 end subroutine allocate_m_pcm
 
 subroutine deallocate_m_pcm()
-    use pcm_ah, only: deallocate_pcm_ah
-    use pcm_ameta, only: deallocate_pcm_ameta
-    use pcm_averages, only: deallocate_pcm_averages
-    use pcm_force, only: deallocate_pcm_force
-    use pcm_grid3d_array, only: deallocate_pcm_grid3d_array
-    use pcm_grid3d_param, only: deallocate_pcm_grid3d_param
-    use pcm_hpsi, only: deallocate_pcm_hpsi
-    use pcm_inda, only: deallocate_pcm_inda
-    use m_pcm_num_spl, only: deallocate_m_pcm_num_spl
-    use pcm_parms, only: deallocate_pcm_parms
-    use pcm_xv_new, only: deallocate_pcm_xv_new
-    use pcmo, only: deallocate_pcmo
-    use spc, only: deallocate_spc
-    use spc1, only: deallocate_spc1
-    use spc2, only: deallocate_spc2
+      use m_pcm_num_spl, only: deallocate_m_pcm_num_spl
+      use pcm_ah,  only: deallocate_pcm_ah
+      use pcm_ameta, only: deallocate_pcm_ameta
+      use pcm_averages, only: deallocate_pcm_averages
+      use pcm_force, only: deallocate_pcm_force
+      use pcm_grid3d_array, only: deallocate_pcm_grid3d_array
+      use pcm_grid3d_param, only: deallocate_pcm_grid3d_param
+      use pcm_hpsi, only: deallocate_pcm_hpsi
+      use pcm_inda, only: deallocate_pcm_inda
+      use pcm_parms, only: deallocate_pcm_parms
+      use pcm_xv_new, only: deallocate_pcm_xv_new
+      use pcmo,    only: deallocate_pcmo
+      use spc,     only: deallocate_spc
+      use spc1,    only: deallocate_spc1
+      use spc2,    only: deallocate_spc2
 
     call deallocate_pcm_ah()
     call deallocate_pcm_ameta()

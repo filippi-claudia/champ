@@ -5,7 +5,7 @@ contains
         subroutine qmmm_extpot_read
 !*********************************************************************
 
-        use qmmm_extpot
+      use qmmm_extpot
 
         implicit none
         integer :: i,ix,iy,iz

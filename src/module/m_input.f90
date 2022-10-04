@@ -17,7 +17,7 @@ module inputflags
     !             ici_def,iforces,icsfs,imstates,igradients,icharge_efield,
     !             imultideterminants,ioptorb_mixvirt,imodify_zmat,izmatrix_check,
     !             ihessian_zmat, node_cutoff, eps_node_cutoff, scalecoef, iqmmm
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -85,19 +85,6 @@ module general
     public :: filenames_ps_champ, filenames_ps_tm, atomsymbol
     save
 end module general
-
-module method_opt
-    !> should be in the input somehow no ?
-    !> Arguments: method
-
-    implicit none
-
-    character(:), allocatable :: method
-
-    private
-    public :: method
-    save
-end module method_opt
 
 module m_string_operations
     implicit none

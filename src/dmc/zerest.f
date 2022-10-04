@@ -3,38 +3,38 @@
       subroutine zerest
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 
-      use vmc_mod, only: nrad
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
-      use estcum, only: iblk
-      use stats, only: acc, nacc, nbrnch, nodecr, trymove
-      use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc
-      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, wdsum
-      use estsum, only: wfsum, wfsum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
-      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum
-      use estcum, only: ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
-      use estcum, only: wcum1, wcum_dmc, wdcum, wfcum, wfcum1, wgcum, wgcum1
-      use estcum, only: wgdcum
-      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2
-      use est2cm, only: ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2
-      use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
-      use derivest, only: derivcm2, derivcum, derivsum
-      use step, only: rprob
-      use denupdn, only: rprobdn, rprobup
-      use mpiblk, only: iblk_proc
-
+      use age,     only: iage,ioldest,ioldestmx
+      use denupdn, only: rprobdn,rprobup
+      use derivest, only: derivcm2,derivcum,derivsum
+      use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
+      use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
+      use est2cm,  only: tjfcm_dmc,tpbcm2_dmc,wcm2,wcm21,wdcm2,wfcm2
+      use est2cm,  only: wfcm21,wgcm2,wgcm21,wgdcm2
+      use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
+      use estcum,  only: ei1cum,ei2cum,ei3cum,iblk,pecum_dmc,r2cum_dmc
+      use estcum,  only: ricum,taucum,tjfcum_dmc,tpbcum_dmc,wcum1
+      use estcum,  only: wcum_dmc,wdcum,wfcum,wfcum1,wgcum,wgcum1,wgdcum
+      use estsum,  only: efsum,efsum1,egsum,egsum1,ei1sum,ei2sum,ei3sum
+      use estsum,  only: esum1_dmc,esum_dmc,pesum_dmc,r2sum,risum,tausum
+      use estsum,  only: tjfsum_dmc,tpbsum_dmc,wdsum,wfsum,wfsum1,wgdsum
+      use estsum,  only: wgsum,wgsum1,wsum1,wsum_dmc
+      use mmpol,   only: mmpol_init
+      use mpiblk,  only: iblk_proc
+      use multiple_geo, only: fgcm2,fgcum,nforce
+      use optci_mod, only: optci_init
+      use optjas_mod, only: optjas_init
+      use optorb_f_mod, only: optorb_init
+      use optx_jas_ci, only: optx_jas_ci_init
+      use optx_jas_orb, only: optx_jas_orb_init
+      use optx_orb_ci, only: optx_orb_ci_init
+      use pcm_mod, only: pcm_init
       use precision_kinds, only: dp
-      use age, only: iage, ioldest, ioldestmx
+      use properties_mod, only: prop_init
+      use stats,   only: acc,nacc,nbrnch,nodecr,trymove
+      use step,    only: rprob
+      use vmc_mod, only: nrad
 
-      use mmpol,           only: mmpol_init
-      use pcm_mod,         only: pcm_init
-      use properties_mod,  only: prop_init
-      use optjas_mod,      only: optjas_init
-      use optci_mod,       only: optci_init
-      use optorb_f_mod,    only: optorb_init
-      use optx_jas_orb,    only: optx_jas_orb_init
-      use optx_jas_ci,     only: optx_jas_ci_init
-      use optx_orb_ci,     only: optx_orb_ci_init
+
       implicit none
 
       integer :: i, ifr, k

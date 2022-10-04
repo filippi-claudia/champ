@@ -4,21 +4,22 @@
 
       use Bloc,    only: b,tildem,xmat
       use bxmatrices, only: bxmatrix
-      use constants, only: hb
+      use const,   only: hb,nelec
       use csfs,    only: nstates
       use denergy_det_m, only: allocate_denergy_det_m,denergy_det
+      use dets,    only: ndet
+      use elec,    only: ndn,nup
       use m_force_analytic, only: iforce_analy
       use matinv_mod, only: matinv
-      use multidet, only: irepcol_det,ireporb_det,k_aux,k_det,k_det2
-      use multidet, only: ndet_req,ndetiab,ndetiab2,ndetsingle
-      use multidet, only: numrep_det
+      use multidet, only: irepcol_det,ireporb_det,iwundet,k_aux,k_det
+      use multidet, only: k_det2,kref,ndet_req,ndetiab,ndetiab2
+      use multidet, only: ndetsingle,numrep_det
       use multimat, only: aa,wfmat
       use multislater, only: detiab
       use optwf_control, only: ioptorb,method
       use orbval,  only: nadorb,orb
       use precision_kinds, only: dp
-      use slater,  only: d2dx2,ddx,iwundet,kref,ndet,norb,slmi
-      use system,  only: ndn,nelec,nup
+      use slater,  only: d2dx2,ddx,norb,slmi
       use ycompact, only: dymat,ymat
       use zcompact, only: aaz,dzmat,emz,zmat
 
@@ -137,7 +138,8 @@ c     endif
 !     loop inequivalent determinants
 ! determinants with single exitations
          do k=1,ndetsingle(iab)
-                     
+           
+           
             iorb=irepcol_det(1,k,iab)
             jorb=ireporb_det(1,k,iab)
             ddetiab(k,iab)=aa(iorb,jorb,iab)               
@@ -178,20 +180,20 @@ c     endif
         detiab(:,iab)=detiab(kref,iab)
         eloc_det(:,iab)=eloc_det(kref,iab)
         denergy_det(:,iab)=0.d0
-        do kk=1,ndetiab2(iab)
-           k=k_det2(kk,iab)
-           kw=k_aux(kk,iab)
-           detiab(k,iab)=detiab(k,iab)*ddetiab(kw,iab)
-           denergy_det(k,iab)=ddenergy_det(kw,iab)
-           eloc_det(k,iab)=eloc_det(k,iab)+denergy_det(k,iab)
+c        do kk=1,ndetiab2(iab)
+c           k=k_det2(kk,iab)
+c           kw=k_aux(kk,iab)
+c           detiab(k,iab)=detiab(k,iab)*ddetiab(kw,iab)
+c           denergy_det(k,iab)=ddenergy_det(kw,iab)
+c           eloc_det(k,iab)=eloc_det(k,iab)+denergy_det(k,iab)
 
 c!     print *, 'CIAO',k,eloc_det(k,iab),detiab(k,iab)
-        enddo
+c        enddo
 
-c        detiab(k_det2(1:ndetiab2(iab),iab),iab)=detiab(k_det2(1:ndetiab2(iab),iab),iab)*ddetiab(k_aux(1:ndetiab2(iab),iab),iab)
-c        denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
-c        eloc_det(k_det2(1:ndetiab2(iab),iab),iab)=eloc_det(k_det2(1:ndetiab2(iab),iab),iab)+
-c     &       denergy_det(k_det2(1:ndetiab2(iab),iab),iab)
+        detiab(k_det2(1:ndetiab2(iab),iab),iab)=detiab(k_det2(1:ndetiab2(iab),iab),iab)*ddetiab(k_aux(1:ndetiab2(iab),iab),iab)
+        denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
+        eloc_det(k_det2(1:ndetiab2(iab),iab),iab)=eloc_det(k_det2(1:ndetiab2(iab),iab),iab)+
+     &       denergy_det(k_det2(1:ndetiab2(iab),iab),iab)
         
         
         
@@ -226,14 +228,16 @@ c compute Ymat for future use
 c-----------------------------------------------------------------------
       subroutine compute_ymat(iab,detu,detd,wfmat,ymat,istate)
 
+      use const,   only: nelec
       use denergy_det_m, only: denergy_det
-      use multidet, only: irepcol_det,ireporb_det,k_aux,k_det,k_det2
-      use multidet, only: ndetiab,ndetiab2,ndetsingle,numrep_det
+      use dets,    only: cdet,ndet
+      use dets_equiv, only: cdet_equiv,dcdet_equiv
+      use multidet, only: irepcol_det,ireporb_det,iwundet,k_aux,k_det
+      use multidet, only: k_det2,kref,ndetiab,ndetiab2,ndetsingle
+      use multidet, only: numrep_det
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use slater,  only: cdet,cdet_equiv,dcdet_equiv,iwundet,kref,ndet
       use slater,  only: norb
-      use system,  only: nelec
       use vmc_mod, only: MEXCIT,norb_tot
 
 
@@ -263,44 +267,44 @@ c-----------------------------------------------------------------------
       cdet_equiv=0
       dcdet_equiv=0
 ! Unroling determinants different to kref
-      do kk=1,ndetiab2(iab)
-         k=k_det2(kk,iab)
-         kw=k_aux(kk,iab)
-         detall=detrefi*detu(k)*detd(k)*cdet(k,istate,iwf)
-         cdet_equiv(kw)=cdet_equiv(kw)+detall
-         dcdet_equiv(kw)=dcdet_equiv(kw)+detall*(denergy_det(k,1)+denergy_det(k,2)) 
-      enddo
+c      do kk=1,ndetiab2(iab)
+c         k=k_det2(kk,iab)
+c         kw=k_aux(kk,iab)
+c         detall=detrefi*detu(k)*detd(k)*cdet(k,istate,iwf)
+c         cdet_equiv(kw)=cdet_equiv(kw)+detall
+c         dcdet_equiv(kw)=dcdet_equiv(kw)+detall*(denergy_det(k,1)+denergy_det(k,2)) 
+c      enddo
       
-c      detallv=detrefi*detu(k_det2(1:ndetiab2(iab),iab))*detd(k_det2(1:ndetiab2(iab),iab))
-c     &     *cdet(k_det2(1:ndetiab2(iab),iab),istate,iwf)
+      detallv=detrefi*detu(k_det2(1:ndetiab2(iab),iab))*detd(k_det2(1:ndetiab2(iab),iab))
+     &     *cdet(k_det2(1:ndetiab2(iab),iab),istate,iwf)
 
-c      cdet_equiv(k_aux(1:ndetiab2(iab),iab))=cdet_equiv(k_aux(1:ndetiab2(iab),iab))+detallv
+      cdet_equiv(k_aux(1:ndetiab2(iab),iab))=cdet_equiv(k_aux(1:ndetiab2(iab),iab))+detallv
       
-c      sumde=denergy_det(k_det2(1:ndetiab2(iab),iab),1)+denergy_det(k_det2(1:ndetiab2(iab),iab),2)
+      sumde=denergy_det(k_det2(1:ndetiab2(iab),iab),1)+denergy_det(k_det2(1:ndetiab2(iab),iab),2)
       
-c      detallv=detallv*sumde
+      detallv=detallv*sumde
       
-c      dcdet_equiv(k_aux(1:ndetiab2(iab),iab))=dcdet_equiv(k_aux(1:ndetiab2(iab),iab))+detallv
+      dcdet_equiv(k_aux(1:ndetiab2(iab),iab))=dcdet_equiv(k_aux(1:ndetiab2(iab),iab))+detallv
       
       
 c! loop over single exitations
-      do kk=1,ndetsingle(iab)
+c      do kk=1,ndetsingle(iab)
 c!     print *,'OLA',kk,cdet_equiv(kk)
-
-         iorb=irepcol_det(1,kk,iab)
-         jorb=ireporb_det(1,kk,iab)
-         ymat(jorb+norb_tot*(iorb-1))=ymat(jorb+norb_tot*(iorb-1))+cdet_equiv(kk)*wfmat(kk,1)
-         
-      enddo
+c
+c         iorb=irepcol_det(1,kk,iab)
+c         jorb=ireporb_det(1,kk,iab)
+c         ymat(jorb,iorb)=ymat(jorb,iorb)+cdet_equiv(kk)*wfmat(kk,1)
+c         
+c      enddo
       
 c      irepcol_det(1,1:ndetsingle(iab),iab)
 c      ireporb_det(1,1:ndetsingle(iab),iab)
 c      ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingle(iab),iab)-1))
  
 !     loop over single exitations     
-c      ymat(ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingle(iab),iab)-1))) =
-c     &     ymat(ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingle(iab),iab)-1))) +
-c     &     cdet_equiv(1:ndetsingle(iab))*wfmat(1:ndetsingle(iab),1)
+      ymat(ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingle(iab),iab)-1))) =
+     &     ymat(ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingle(iab),iab)-1))) +
+     &     cdet_equiv(1:ndetiab(iab))*wfmat(1:ndetiab(iab),1)
       
       
       do kk=ndetsingle(iab)+1,ndetiab(iab)
@@ -312,8 +316,8 @@ c     &     cdet_equiv(1:ndetsingle(iab))*wfmat(1:ndetsingle(iab),1)
                jorb=ireporb_det(jrep,kk,iab)
                ymat(jorb+norb_tot*(iorb-1))=ymat(jorb+norb_tot*(iorb-1))+cdet_equiv(kk)*wfmat(kk,jrep+(irep-1)*ndim)
             enddo
-            
-         enddo
+
+      enddo
          
       enddo
 
@@ -325,12 +329,14 @@ c-----------------------------------------------------------------------
       subroutine compute_dymat(iab,dymat)
 
       use Bloc,    only: tildem
-      use multidet, only: irepcol_det,ireporb_det,ndetiab,ndetsingle
-      use multidet, only: numrep_det
+      use const,   only: nelec
+      use dets,    only: ndet
+      use dets_equiv, only: cdet_equiv,dcdet_equiv
+      use multidet, only: irepcol_det,ireporb_det,iwundet,kref,ndetiab
+      use multidet, only: ndetsingle,numrep_det
       use multimat, only: wfmat
       use precision_kinds, only: dp
-      use slater,  only: cdet_equiv,dcdet_equiv,iwundet,kref,ndet,norb
-      use system,  only: nelec
+      use slater,  only: norb
       use vmc_mod, only: MEXCIT,norb_tot
 
 
@@ -408,11 +414,12 @@ c-----------------------------------------------------------------------
       subroutine compute_zmat(ymat,dymat,zmat,dzmat,emz,aaz)
 
       use Bloc,    only: tildem,xmat
+      use const,   only: nelec
+      use elec,    only: ndn,nup
       use multidet, only: iactv,ivirt
       use multimat, only: aa
       use precision_kinds, only: dp
       use slater,  only: norb,slmi
-      use system,  only: ndn,nelec,nup
       use vmc_mod, only: norb_tot
 
       implicit none
@@ -473,10 +480,11 @@ c           do krep=ivirt(iab),norb+nadorb
 c-----------------------------------------------------------------------
       subroutine update_ymat(iel)
 
+      use const,   only: nelec
       use csfs,    only: nstates
+      use elec,    only: ndn,nup
       use multimat, only: wfmat
       use multislater, only: detiab
-      use system,  only: ndn,nelec,nup
       use ycompact, only: ymat
 
       implicit none

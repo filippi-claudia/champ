@@ -2,35 +2,31 @@
       contains
       subroutine acues1_reduce
 
-      use precision_kinds, only: dp
-      use vmc_mod, only: nrad
-      use forcepar, only: nforce
-      use estcum, only: iblk
-      use stats, only: acc, nacc, nodecr, trymove
-      use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
-      use estcum, only: wcum1, wfcum1, wgcum, wgcum1
-      use est2cm, only: ecm21_dmc, efcm21, egcm21
-      use est2cm, only: wcm21
-      use est2cm, only: wfcm21, wgcm21
-      use step, only: rprob
-      use mpiconf, only: nproc, wid
-      use contr3, only: mode
-      use force_mod, only: MFORCE
       use contrl_per, only: iperiodic
+      use control, only: mode
+      use est2cm,  only: ecm21_dmc,efcm21,egcm21,wcm21,wfcm21,wgcm21
+      use estcum,  only: ecum1_dmc,efcum1,egcum,egcum1,iblk,wcum1,wfcum1
+      use estcum,  only: wgcum,wgcum1
       use mpi
-
-      use optx_orb_ci, only: optx_orb_ci_fin
-      use optx_jas_orb, only: optx_jas_orb_fin
-      use optx_jas_ci, only: optx_jas_ci_fin
-      use optorb_f_mod,only: optorb_fin
-      use optci_mod,   only: optci_fin
-      use optjas_mod,   only: optjas_fin
-      use optx_orb_ci_reduce_mod, only: optx_orb_ci_reduce
+      use mpiconf, only: nproc,wid
+      use multiple_geo, only: MFORCE,nforce
+      use optci_mod, only: optci_fin
+      use optci_reduce_mod, only: optci_reduce
+      use optjas_mod, only: optjas_fin
       use optjas_reduce_mod, only: optjas_reduce
+      use optorb_f_mod, only: optorb_fin
       use optorb_reduce_mod, only: optorb_reduce
-      use optci_reduce_mod,  only: optci_reduce
-      use optx_jas_orb_reduce_mod, only: optx_jas_orb_reduce
+      use optx_jas_ci, only: optx_jas_ci_fin
       use optx_jas_ci_reduce_mod, only: optx_jas_ci_reduce
+      use optx_jas_orb, only: optx_jas_orb_fin
+      use optx_jas_orb_reduce_mod, only: optx_jas_orb_reduce
+      use optx_orb_ci, only: optx_orb_ci_fin
+      use optx_orb_ci_reduce_mod, only: optx_orb_ci_reduce
+      use precision_kinds, only: dp
+      use stats,   only: acc,nacc,nodecr,trymove
+      use step,    only: rprob
+      use vmc_mod, only: nrad
+
 
       implicit none
 

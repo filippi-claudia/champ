@@ -6,7 +6,7 @@ contains
       &  ncent)
 !*********************************************************************
 
-        use qmmm_density
+      use qmmm_density
 
         implicit none
 
@@ -76,7 +76,7 @@ contains
         subroutine qmmm_density_accu(nelec,xold,weight)
 !*********************************************************************
 
-        use qmmm_density
+      use qmmm_density
 
         implicit none
 
@@ -179,8 +179,8 @@ contains
         subroutine qmmm_density_write(nelec,id)
 !*********************************************************************
 
-        use qmmm_density
-        use qmmm_writecube_mod, only: qmmm_writecube
+      use qmmm_density
+      use qmmm_writecube_mod, only: qmmm_writecube
 
         implicit none
         integer :: nelec,id

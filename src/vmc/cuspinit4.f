@@ -2,10 +2,10 @@
       contains
       subroutine cuspinit4(iprin)
 c Written by Cyrus Umrigar
+      use contrl_file, only: ounit
+      use cuspmat4, only: d,iwc4,nterms
+      use jastrow, only: nordc
       use vmc_mod, only: mterms
-      use jaspar4, only: nordc
-      use cuspmat4, only: d, iwc4, nterms
-      use contrl_file,    only: ounit
       implicit none
 
       integer :: i, iord, iprin, k, l
@@ -74,15 +74,15 @@ c Written by Cyrus Umrigar
       end
 c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
-      use atom, only: nctype
-      use jaspar4, only: nordc
+      use contrl_file, only: ounit
+      use cuspmat4, only: d,iwc4,nterms
+      use jastrow, only: nordc
       use optwf_nparmj, only: nparmc
       use optwf_wjas, only: iwjasc
-
-      use vardep, only: cdep, iwdepend, nvdepend
-      use contrl_file,    only: ounit
-      use cuspmat4, only: d, iwc4, nterms
       use precision_kinds, only: dp
+      use system,  only: nctype
+      use vardep,  only: cdep,iwdepend,nvdepend
+
       implicit none
 
       integer :: i, iprin, it, j, l

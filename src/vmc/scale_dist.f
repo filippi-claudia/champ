@@ -2,19 +2,15 @@
       contains
       subroutine set_scale_dist(ipr)
 c Written by Cyrus Umrigar
-      use atom, only: nctype
-
-      use jaspar, only: sspinn
-      use jaspar3, only: b, scalek
-
-      use jaspar4, only: a4, norda, nordb
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
-      use jaspar6, only: cutjas
-      use bparm, only: nocuspb, nspin2b
-      use contr2, only: ijas
-      use contr2, only: isc
+      use bparm,   only: nocuspb,nspin2b
+      use contrl_file, only: ounit
+      use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas
+      use jastrow, only: a4,asymp_jasa,asymp_jasb,b,ijas,isc,norda,nordb
+      use jastrow, only: scalek,sspinn
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use system,  only: nctype
+
+
       implicit none
 
       integer :: i, iord, ipr, isp, it
@@ -126,13 +122,10 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Scale interparticle distances.
 
-      use jaspar3, only: scalek
 
-      use jaspar6, only: asymp_r, c1_jas6, c2_jas6
-      use jaspar6, only: cutjas, cutjasi
-      use wfsec, only: iwf
-      use contr2, only: ijas
-      use contr2, only: isc
+      use jaspar6, only: asymp_r,c1_jas6,c2_jas6,cutjas,cutjasi
+      use jastrow, only: ijas,isc,scalek
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -283,13 +276,10 @@ c Scale interparticle distances and calculate the 1st derivative
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
-      use jaspar3, only: scalek
 
-      use jaspar6, only: asymp_r, c1_jas6, c2_jas6
-      use jaspar6, only: cutjas, cutjasi
-      use wfsec, only: iwf
-      use contr2, only: ijas
-      use contr2, only: isc
+      use jaspar6, only: asymp_r,c1_jas6,c2_jas6,cutjas,cutjasi
+      use jastrow, only: ijas,isc,scalek
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -472,15 +462,12 @@ c Scale interparticle distances and calculate the 1st and 2nd derivs
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
-      use jaspar3, only: scalek
 
-      use jaspar6, only: asymp_r, c1_jas6, c2_jas6
-      use jaspar6, only: cutjas, cutjasi
-      use scale_more, only: dd3
-      use wfsec, only: iwf
-      use contr2, only: ijas
-      use contr2, only: isc
+      use jaspar6, only: asymp_r,c1_jas6,c2_jas6,cutjas,cutjasi
+      use jastrow, only: ijas,isc,scalek
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
+      use scale_more, only: dd3
       implicit none
 
       integer :: iflag
@@ -689,10 +676,10 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist.
 
-      use jaspar3, only: scalek
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use jastrow, only: scalek
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -714,10 +701,10 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st deriv.
 
-      use jaspar3, only: scalek
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use jastrow, only: scalek
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -740,10 +727,10 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st two derivs.
 
-      use jaspar3, only: scalek
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use jastrow, only: scalek
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
