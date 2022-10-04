@@ -446,10 +446,7 @@ module trexio_read_data
         use numbas,             only: iwrwf, numr
         use numbas1,            only: iwlbas, nbastyp
 
-        use basis,              only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
-        use basis,              only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
-        use basis,              only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
-        use basis,              only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
+        use basis,              only: ns, np, nd, nf, ng
 
         use multiple_geo,              only: nwftype
 
@@ -466,13 +463,7 @@ module trexio_read_data
 
 
         do i = 1, nctype_tot
-            write (ounit, '(100i3)') ns(i), npx(i), npy(i), npz(i), &
-            ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
-            nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
-            nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i), &
-            ngxxxx(i), ngxxxy(i), ngxxxz(i), ngxxyy(i), ngxxyz(i), &
-            ngxxzz(i), ngxyyy(i), ngxyyz(i), ngxyzz(i), ngxzzz(i), &
-            ngyyyy(i), ngyyyz(i), ngyyzz(i), ngyzzz(i), ngzzzz(i)
+            write (ounit, '(100i3)') ns(i), np(i), nd(i), nf(i), ng(i) 
 
             if (numr .gt. 0) then
                 write(ounit, '(100i3)') (iwrwf(ib, i), ib=1, nbastyp(i))

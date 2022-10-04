@@ -523,6 +523,7 @@ contains
         implicit none
 
         integer, intent(in)                     :: nparm
+        real(dp) :: de, top, bot
         real(dp), dimension(:), intent(inout)   :: deltap
         integer :: i, j, jfifj, jwtg, jfhfj, n_obs
 
@@ -550,9 +551,24 @@ contains
 
         if (idtask .eq. 0) then
         do i = 1, nparm
-            write(ounit, *) 'CIAO', obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1), obs_tot(jelo, 1), &
-                obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1)
-            deltap(i) = deltap(i)/(obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1))
+            de=obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1)-obs_tot(jelo, 1)
+!           write(ounit, *) 'CIAO', obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1), obs_tot(jelo, 1), &
+!               obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1)
+
+            top = obs_tot(jfhfj + i - 1, 1) + obs_tot(jelo, 1)*obs_tot(jfj + i - 1, 1)*obs_tot(jfj + i - 1, 1) &
+                - (obs_tot(jefj + i - 1, 1) + obs_tot(jhfj + i - 1, 1))*obs_tot(jfj + i - 1, 1)
+            bot = obs_tot(jfifj + i - 1, 1) - obs_tot(jfj + i - 1, 1)*obs_tot(jfj + i - 1, 1)
+            de = top/bot - obs_tot(jelo, 1)
+
+            de = de + 1.0
+
+            write(ounit,*) "CIAO", de
+
+            if(de .le. 0.1) then
+                deltap(i) = deltap(i)*0.01/sr_tau
+            else
+                deltap(i) = deltap(i)/de
+            endif
         enddo
         endif
 

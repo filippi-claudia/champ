@@ -6,11 +6,7 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
 
       use age,     only: iage,ioldest,ioldestmx
-      use basis,   only: ndxx,ndxy,ndxz,ndyy,ndyz,ndzz,nfxxx,nfxxy,nfxxz
-      use basis,   only: nfxyy,nfxyz,nfxzz,nfyyy,nfyyz,nfyzz,nfzzz
-      use basis,   only: ngxxxx,ngxxxy,ngxxxz,ngxxyy,ngxxyz,ngxxzz
-      use basis,   only: ngxyyy,ngxyyz,ngxyzz,ngxzzz,ngyyyy,ngyyyz
-      use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns,zex
+      use basis,   only: zex
       use branch,  only: eest,eigv,ff,fprod,nwalk,wdsumo,wgdsumo,wt
       use branch,  only: wtgen
       use coefs,   only: nbasis

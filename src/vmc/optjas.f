@@ -50,19 +50,14 @@
         enddo
 
         deloc_dj_kref=deloc_dj(iparm)
+
+        if(ndet.eq.1) then
+
         do istate=1,nstates
           denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref*detiab(kref,1)*detiab(kref,2)
         enddo
 
-C       test=0
-C       do j=1,nup
-C         do i=1,nup
-C           test=test+slmi(j+(i-1)*nup,1)*b_dj(j,i,iparm)
-C           test=test+slmi(j+(i-1)*ndn,2)*b_dj(j,i+nup,iparm)
-C         enddo
-C       enddo
-
-        if(ndet.gt.1) then
+        else
 
         call bxmatrix(kref,xmat(1,1),xmat(1,2),b_dj(1,1,iparm))
 
@@ -145,7 +140,7 @@ c        enddo
               cum_deloc_k_state=cum_deloc_k_state+cdet(k,istate,1)*(denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref)
      &             *detiab(k,1)*detiab(k,2)
            enddo
-           denergy(iparm,istate)=denergy(iparm,istate)+cum_deloc_k_state
+           denergy(iparm,istate)=cum_deloc_k_state
         enddo
         
         

@@ -21,82 +21,124 @@ c ider = 3 -> value, gradient, laplacian, forces
       implicit none
 
       integer :: it, ic, ider, irb
-      integer :: iwlbas0, j, k, nrbasit, nbastypit
-      integer :: ie1, ie2, k0, l, l0, ll
-      real(dp) :: y, ddy_lap
+      integer :: iwlbas0
+      integer :: j, k, nrbasit, nbastypit, i
+      integer :: ie1, ie2, l, ilm, num_slms, maxlval
+
+
       real(dp) :: r, r2, ri, ri2
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
-      real(dp), dimension(3) :: dy
-      real(dp), dimension(3, 3) :: ddy
-      real(dp), dimension(3) :: dlapy
       real(dp), dimension(4, MRWF) :: wfv
       real(dp), dimension(3) :: xc
       real(dp), parameter :: one = 1.d0
 
+      ! Temporary arrays for basis function values and derivatives
+      real(dp), allocatable :: y(:)
+      real(dp), allocatable :: ddy_lap(:)
+      real(dp), allocatable :: dy(:,:)
+      real(dp), allocatable :: ddy(:,:,:)
+      real(dp), allocatable :: dlapy(:,:)
+
+      integer                       :: upper_range, lower_range
+      integer                       :: upper_rad_range, lower_rad_range
+
+#ifndef VECTORIZATION
       do j=ie1,ie2
         n0_nbasis(j)=0
       enddo
+#endif
 
-      l=0
+      lower_range = 1
+      lower_rad_range = 1
+
+
 c loop through centers
       do ic=1,ncent+nghostcent
-
         it=iwctype(ic)
-        nrbasit=nrbas(it)
-        nbastypit=nbastyp(it)
+        nrbasit   = nrbas(it)
+        nbastypit = nbastyp(it)
 
+        upper_range = lower_range + nbastypit -1
+        upper_rad_range = lower_rad_range + nrbasit -1
 
-        l0=l
+        ! num_slms will give number of slms needed to evaluate per atom
+        num_slms = maxval(iwlbas(1:nbastypit,it))
+
+        allocate (y(num_slms))
+        allocate (ddy_lap(num_slms))
+        allocate (dy(3,num_slms))
+        allocate (ddy(3,3,num_slms))
+        allocate (dlapy(3,num_slms))
 
 c     numerical atomic orbitals
         do k=ie1,ie2
 
 c get distance to center
 
-           xc(1)=rvec_en(1,k,ic)
-           xc(2)=rvec_en(2,k,ic)
-           xc(3)=rvec_en(3,k,ic)
+          xc(1)=rvec_en(1,k,ic)
+          xc(2)=rvec_en(2,k,ic)
+          xc(3)=rvec_en(3,k,ic)
 
-           r=r_en(k,ic)
-           r2=r*r
-           ri=one/r
-           ri2=ri*ri
+          r=r_en(k,ic)
+          r2=r*r
+          ri=one/r
+          ri2=ri*ri
 
-           do irb=1,nrbasit
-            ! only evaluate for r <= rmax
-            ! if (r <= rmax(irb,it)) then
-              call splfit(r,irb,it,iwf,wfv(1,irb),ider)
-            ! else
-            !   wfv(1:4,irb)=0.d0
-            ! endif
-              ! write(300,*) ic, k, irb, r, r2, ri, ri2, wfv(1,irb)
-           enddo
+          do irb=1,nrbasit
+          ! only evaluate for r <= rmax
+          ! if (r <= rmax(irb,it)) then
+            call splfit(r,irb,it,iwf,wfv(1,irb),ider)
+          ! else
+          !   wfv(1:4,irb)=0.d0
+          ! endif
+          enddo
 
-c     compute sml and combine to generate molecular orbitals
-           l=l0
-
-           iwlbas0=0
-           do j=1,nbastypit
-              l=l+1
-              irb=iwrwf(j,it)
-              if(iwlbas(j,it).ne.iwlbas0) then
-                 iwlbas0=iwlbas(j,it)
-                 call slm(iwlbas0,xc,r2,y,dy,ddy,ddy_lap,dlapy,ider)
-              endif
-
-              call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),y,dy,ddy,ddy_lap,dlapy,
-     &             phin(l,k),dphin(l,k,:),d2phin(l,k),d2phin_all(1,1,l,k),d3phin(1,l,k),ider)
+          ! Get the Slm evaluated and store them arrays
+          do i=1, num_slms
+            call slm(i,xc,r2,y(i),dy(1,i),ddy(1,1,i),ddy_lap(i),dlapy(1,i),ider)
+          enddo
 
 
-              call n0_inc(l,k,ic)
-           enddo
+          l = 1
+          iwlbas0=0
+          ! Run a loop over all the AOs in this center
+          do i=1, nbastypit
+            iwlbas0 = iwlbas(i,it)
+            irb = iwrwf(i,it)
+            ilm = lower_range + i - 1
+!     compute sml and combine to generate molecular orbitals
+            call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),
+     &            y(iwlbas0),
+     &            dy(:,iwlbas0),
+     &            ddy(:,:,iwlbas0),
+     &            ddy_lap(iwlbas0),
+     &            dlapy(:,iwlbas0),
+     &            phin(ilm,k),
+     &            dphin(ilm,k,:),
+     &            d2phin(ilm,k),
+     &            d2phin_all(1,1,ilm,k),
+     &            d3phin(1,ilm,k),
+     &            ider)
 
-        enddo
+#ifndef VECTORIZATION
+            ! localization
+            call n0_inc(l,k,ic)
+#endif
+            l = l + 1
+          enddo
+        enddo ! loop over electrons
+        lower_range = upper_range + 1
+        lower_rad_range = upper_rad_range + 1
 
-c     loop over all atoms
-      enddo
+!     deallocate temporary arrays
+        deallocate (y)
+        deallocate (ddy_lap)
+        deallocate (dy)
+        deallocate (ddy)
+        deallocate (dlapy)
 
+      enddo ! loop over all atoms
       return
       end
 c-------------------------------------------------------------------

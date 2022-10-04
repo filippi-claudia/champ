@@ -4,11 +4,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
-      use basis,   only: ndxx,ndxy,ndxz,ndyy,ndyz,ndzz,nfxxx,nfxxy,nfxxz
-      use basis,   only: nfxyy,nfxyz,nfxzz,nfyyy,nfyyz,nfyzz,nfzzz
-      use basis,   only: ngxxxx,ngxxxy,ngxxxz,ngxxyy,ngxxyz,ngxxzz
-      use basis,   only: ngxyyy,ngxyyz,ngxyzz,ngxzzz,ngyyyy,ngyyyz
-      use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns,zex
+      use basis,   only: zex
       use coefs,   only: nbasis
       use config,  only: eold,nearesto,psi2o,psido,psijo,rmino,rvmino
       use config,  only: tjfo,vold,xnew,xold

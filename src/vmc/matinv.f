@@ -30,7 +30,7 @@
       real(dp) :: aux, determinant, deti
       real(dp) :: ten
       real(dp), dimension(nsub, nsub) :: a
-      real(dp), dimension(nsub) :: work
+      real(dp), dimension(nelec) :: work
 
       real(dp), dimension(2) :: det
       real(dp), parameter :: eps = 10.d0**(-40)

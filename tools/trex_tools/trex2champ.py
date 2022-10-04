@@ -39,7 +39,7 @@
 
 __author__ = "Ravindra Shinde, Evgeny Posenitskiy"
 __copyright__ = "Copyright 2022, The TREX Project"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __maintainer__ = "Ravindra Shinde"
 __email__ = "r.l.shinde@utwente.nl"
 __status__ = "Development"
@@ -102,7 +102,7 @@ class Champ:
 
         # Required positional argument
         parser.add_argument("--gamess", "-i", "--g", dest='gamessfile', type=str, required = False,
-                            help='Required: Filename (including extension) of the gamess output file.')
+                            help='Optional: Filename (including extension) of the gamess output file.')
 
         # Optional positional argument
         parser.add_argument("--motype", "-mo", "--mo", dest='motype', type=str, required = False,
@@ -149,6 +149,12 @@ class Champ:
                             help='Optional: Variable save_determinants to save the determinants in CHAMP format.')
         parser.set_defaults(save_determinants=False)
 
+        # Optional argument for controlling the output files
+        parser.add_argument("--csf", "-csf", dest='save_csfs', action='store_true',
+                            help='Optional: Variable save_csfs to save the determinants, csfs, and csfmap in CHAMP format.')
+        parser.set_defaults(save_csfs=False)
+
+
         # Optional argument for controlling the names of the output files
         parser.add_argument("--basis_prefix", dest='basis_prefix', type=str, required = False,
                             help='Optional: Variable basis prefix to save the basis grid files with this prefix.')
@@ -176,6 +182,7 @@ class Champ:
         self.save_ecp = args.save_ecp
         self.save_symmetry = args.save_symmetry
         self.save_determinants = args.save_determinants
+        self.save_csfs = args.save_csfs
 
         # Optional argument for controlling the names of the output files
         self.basis_prefix = args.basis_prefix
@@ -188,6 +195,7 @@ class Champ:
         print (' Save symmetry      ::         \t {}'.format(self.save_symmetry))
         print (' Save eigenvalues   ::         \t {}'.format(self.save_eigenvalues))
         print (' Save determinants  ::         \t {}'.format(self.save_determinants))
+        print (' Save CSFs          ::         \t {}'.format(self.save_csfs))
         print ('\n')
 
 
@@ -446,52 +454,57 @@ class Champ:
         # Determinants
         # ---
         if self.save_determinants is True:
-            if trexio.has_determinant_list(trexio_file) and trexio.has_determinant_coefficient(trexio_file):
-                # Read number of determinants
-                try:
-                    num_dets = trexio.read_determinant_num(trexio_file)
-                except trexio.Error:
-                    print('TREXIO Error :: Determinant : number not found')
+            if self.save_csfs is False:      # use trexio to get determinants
+                if trexio.has_determinant_list(trexio_file) and trexio.has_determinant_coefficient(trexio_file):
+                    # Read number of determinants
+                    try:
+                        num_dets = trexio.read_determinant_num(trexio_file)
+                    except trexio.Error:
+                        print('TREXIO Error :: Determinant : number not found')
 
-                # Read number of states
-                try:
-                    num_states = trexio.read_state_num(trexio_file)
-                except trexio.Error:
-                    print('TREXIO Error :: State : number not found')
-                    num_states = 1
+                    # Read number of states
+                    try:
+                        num_states = trexio.read_state_num(trexio_file)
+                    except trexio.Error:
+                        print('TREXIO Error :: State : number not found')
+                        num_states = 1
 
 
-                # Read determinant coefficients
-                try:
-                    offset_file = 0
-                    det_coeff = trexio.read_determinant_coefficient(trexio_file, offset_file, num_dets)
-                except trexio.Error:
-                    print('TREXIO Error :: Determinant : coefficients not found')
+                    # Read determinant coefficients
+                    try:
+                        offset_file = 0
+                        det_coeff = trexio.read_determinant_coefficient(trexio_file, offset_file, num_dets)
+                    except trexio.Error:
+                        print('TREXIO Error :: Determinant : coefficients not found')
 
-                # Read determinant list
-                try:
-                    offset_file = 0
-                    n_chunks = 1
-                    chunk_size  = int(num_dets/n_chunks)
-                    det_list  = [ [] for _ in range(num_dets)]
-                    for _ in range(n_chunks):
-                        det_list = trexio.read_determinant_list(trexio_file, offset_file, chunk_size)
-                        offset_file += chunk_size
-                except trexio.Error:
-                    print('TREXIO Error :: Determinant : lists not found')
+                    # Read determinant list
+                    try:
+                        offset_file = 0
+                        n_chunks = 1
+                        chunk_size  = int(num_dets/n_chunks)
+                        det_list  = [ [] for _ in range(num_dets)]
+                        for _ in range(n_chunks):
+                            det_list = trexio.read_determinant_list(trexio_file, offset_file, chunk_size)
+                            offset_file += chunk_size
+                    except trexio.Error:
+                        print('TREXIO Error :: Determinant : lists not found')
 
-                # Close the trexio file after reading all the data
-                write_determinants_to_champ_from_trexio_only(trexio_file, num_states, num_dets, det_coeff, det_list)
-                trexio_file.close()
+                    # Close the trexio file after reading all the data
+                    write_determinants_to_champ_from_trexio_only(trexio_file, num_states, num_dets, det_coeff, det_list)
+                    trexio_file.close()
+
+            # Get CSFs and CSFMAP from the GAMESS file
             else:
-                # trexio_file.close()
                 # open the file for writing the determinant data
-                print("Determinant information not found in the trexio file")
-                print("Getting determinant information from GAMESS file and writing into the trexio file")
-                if self.gamessfile is not None:
+                print("Determinants and CSF information being read from the GAMESS file")
+                print("Gamess file :: ", self.gamessfile)
+                if self.gamessfile is None:
+                    raise FileNotFoundError ('save CSF enabled but no GAMESS file provided')
+                else:
                     # write_trexio_file = trexio.File(filename, mode='w',back_end=back_end)
                     file = resultsFile.getFile(gamessfile)
                     write_champ_file_determinants(filename, file)
+                    # Update the trexio file if you wish to include determinant information
                     # write_determinants_to_trexio(trexio_file, file)
 
 
@@ -517,17 +530,12 @@ class Champ:
 
         # Write the .lcao and .bfinfo file containing orbital information of MOs
         if self.save_lcao:
-            write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_label)
+            write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label)
             write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num)
 
         # Write the basis on the radial grid file
         if self.save_basis:
             write_champ_file_basis_grid(filename, dict_basis, nucleus_label, self.basis_prefix)
-
-        # Write the determinants, csf and csfmap into a single file using the resultsFile package
-        # if self.save_determinants:
-        #     file = resultsFile.getFile(gamessfile)
-        #     write_champ_file_determinants(filename, file)
 
         # Write the eigenvalues for a given type of orbitals using the resultsFile package. Currently it is optional.
         if self.save_eigenvalues:
@@ -925,7 +933,7 @@ def write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coor
                 file.write("# Converted from the trexio file using trex2champ converter https://github.com/TREX-CoE/trexio_tools \n")
 
                 for element in range(nucleus_num):
-                   file.write("{:5s} {} {} {} \n".format(nucleus_label[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
+                   file.write("{:5s} {:18.12f} {:18.12f} {:18.12f} \n".format(nucleus_label[element], nucleus_coord[element][0], nucleus_coord[element][1], nucleus_coord[element][2]))
 
                 file.write("\n")
             file.close()
@@ -1019,20 +1027,14 @@ def write_champ_file_eigenvalues(filename, file, mo_type):
         return None
 
 
-# Orbitals / LCAO infomation
-
-def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_label):
-    """Writes the molecular orbitals coefficients from the quantum
+def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label):
+    """Writes the basis info file from the quantum
     chemistry calculation / trexio file to champ v2.0 input file format.
 
     Returns:
         None as a function value
     """
-
-    ## Cartesian Ordering CHAMP
-    # basis_order = ['S',[all 'X'],[all 'Y'],[all 'Z'],'XX','XY','XZ','YY','YZ','ZZ','XXX','XXY','XXZ','XYY','XYZ','XZZ','YYY','YYZ','YZZ','ZZZ']
-    # sequence of flags in qmc input
-    label_ang_mom = {0:'S', 1:'P', 2:'D', 3:'F', 4:'G', 5:'H'}
+    aos_per_l = [1,3,6,10,15,21]
 
     shells = {}
     shells[0] = ['S']
@@ -1082,6 +1084,7 @@ def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_lab
                 index_radial[i].append(counter)
                 counter += 1
 
+
     mo_num = dict_mo["num"]
     cartesian = True
     if cartesian:
@@ -1096,119 +1099,21 @@ def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_lab
 
 
 
-#   Count how many times p,d,f,g appears for a given atom
-    dict_sshell_count = {}; dict_pshell_count = {}; dict_dshell_count = {}; dict_fshell_count = {}; dict_gshell_count = {}
-    for atom_index in range(len(index_radial)):
-        counter_s = 0; counter_p = 0; counter_d = 0; counter_f = 0; counter_g = 0
-        for i in index_radial[atom_index]:
-            l = dict_basis["shell_ang_mom"][i]
-            if l == 0:
-                counter_s += 1
-            if l == 1:
-                counter_p += 1
-            if l == 2:
-                counter_d += 1
-            if l == 3:
-                counter_f += 1
-            if l == 4:
-                counter_g += 1
-        dict_sshell_count[atom_index] = counter_s
-        dict_pshell_count[atom_index] = counter_p
-        dict_dshell_count[atom_index] = counter_d
-        dict_fshell_count[atom_index] = counter_f
-        dict_gshell_count[atom_index] = counter_g
-
-
-    # print ("index radial: ", index_radial)
-    # print ("dict basis: ", dict_basis["shell_ang_mom"])
-    # print ("dict_sshell count: ", dict_sshell_count)
-    # print ("dict_pshell count: ", dict_pshell_count)
-    # print ("dict_dshell count: ", dict_dshell_count)
-    # print ("dict_fshell count: ", dict_fshell_count)
-    # print ("dict_gshell count: ", dict_gshell_count)
-
     # This part is for reshuffling to make the AO basis in the CHAMP's own ordering
     index_dict = {}; shell_representation = {}; bf_representation = {}
-    new_shell_representation = []
     counter = 0; basis_per_atom = []
-    ind = 0; champ_ao_ordering = []
+    champ_ao_ordering = []
     for atom_index in range(len(index_radial)):
         bfcounter = 1; basis_per_atom_counter = 0
-        pindex = 0; dindex = 0; findex = 0; gindex = 0
         for i in index_radial[atom_index]:
             l = dict_basis["shell_ang_mom"][i]
+
             # run a small loop to reshuffle the shell ordering
-            if l == 0:
-                new_shell_representation.append(shells[l][0])
-                champ_ao_ordering.append(ind)
-                ind += 1
-
-            local_p = np.zeros((3,dict_pshell_count[atom_index]),dtype='U1')
-            local_ind_p = np.zeros((3,dict_pshell_count[atom_index]),dtype=int)
-            if l == 1:
-                pindex += 1; ind = champ_ao_ordering[-1] + 1
-                for j in range(dict_pshell_count[atom_index]):
-                    #loop over all 3 p orbitals
-                    for k in order[l]:
-                        local_p[k,j] = shells[l][k]
-                        local_ind_p[k,j] = ind
-                        ind += 1
-
-                if pindex == dict_pshell_count[atom_index]:
-                    new_shell_representation.extend(list(local_p.flatten()))
-                    champ_ao_ordering.extend(list(local_ind_p.flatten()))
-
-
-
-            local_d = np.zeros((6,dict_dshell_count[atom_index]),dtype='U2')
-            local_ind_d = np.zeros((6,dict_dshell_count[atom_index]),dtype=int)
-            if l == 2:
-                dindex += 1; ind = champ_ao_ordering[-1] + 1
-                for j in range(dict_dshell_count[atom_index]):
-                    #loop over all 6 d orbitals
-                    for k in order[l]:
-                        local_d[k,j] = shells[l][k]
-                        local_ind_d[k,j] = ind
-                        ind += 1
-
-                if dindex == dict_dshell_count[atom_index]:
-                    new_shell_representation.extend(list(local_d.flatten()))
-                    champ_ao_ordering.extend(list(local_ind_d.flatten()))
-
-
-            local_f = np.zeros((10,dict_fshell_count[atom_index]),dtype='U3')
-            local_ind_f = np.zeros((10,dict_fshell_count[atom_index]),dtype=int)
-            if l == 3:
-                findex += 1; ind = champ_ao_ordering[-1] + 1
-                for j in range(dict_fshell_count[atom_index]):
-                    #loop over all 10 f orbitals
-                    for k in order[l]:
-                        local_f[k,j] = shells[l][k]
-                        local_ind_f[k,j] = ind
-                        ind += 1
-
-                if findex == dict_fshell_count[atom_index]:
-                    new_shell_representation.extend(list(local_f.flatten()))
-                    champ_ao_ordering.extend(list(local_ind_f.flatten()))
-
-            local_g = np.zeros((15,dict_gshell_count[atom_index]),dtype='U4')
-            local_ind_g = np.zeros((15,dict_gshell_count[atom_index]),dtype=int)
-            if l == 4:
-                gindex += 1; ind = champ_ao_ordering[-1] + 1
-                for j in range(dict_gshell_count[atom_index]):
-                    #loop over all 15 g orbitals
-                    for k in order[l]:
-                        local_g[k,j] = shells[l][k]
-                        local_ind_g[k,j] = ind
-                        ind += 1
-
-                if gindex == dict_gshell_count[atom_index]:
-                    new_shell_representation.extend(list(local_g.flatten()))
-                    champ_ao_ordering.extend(list(local_ind_g.flatten()))
-
 
             # Get number of AO basis per atom
+            ind = 0
             for k in order[l]:
+                ind = ind + 1
                 shell_representation[counter] = shells[l][k]
                 index_dict[counter] =  counter
                 bf_representation[counter] = bfcounter
@@ -1217,15 +1122,14 @@ def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_lab
             bfcounter += 1
         basis_per_atom.append(basis_per_atom_counter)
 
-    # print ("champ ao ordering: ", champ_ao_ordering)
-    # print ("new_shell_representation: ", new_shell_representation)
     # print ("old_shell_representation: ", shell_representation.values())
+    # print ("old_shell_representation keys : ", shell_representation.keys())
     # print ("basis per atom: ", basis_per_atom)
     # print ("BF representation: ", bf_representation.values())
 
 
+    champ_ao_ordering = [ _ for _ in range(ao_num) ]
     ## Reorder orbitals according to the ordering of the CHAMP ordering
-    reordered_mo_array = dict_mo["coefficient"][:,champ_ao_ordering]
 
 
     # The next two arrays are needed for bfinfo file
@@ -1233,7 +1137,6 @@ def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_lab
     reordered_bf_array_values = list(reordered_bf_array.values())
     shell_representation_values = list(shell_representation.values())
 
-    # print( "bf   ", reordered_bf_array_values)
 
     accumumulated_basis_per_atom = np.cumsum(basis_per_atom)
 
@@ -1246,7 +1149,85 @@ def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_lab
         shell_reprensentation_per_atom.append(shell_representation_values[start_index:end_index])
         start_index = end_index
 
+#   #   #
+        # ! Generate the index of the slm for each AO
+        # ! i.e. index_slm(i) = the slm index of the i-th AO
+        # ! The list follows the following order:
 
+        # !   l   |   1  2  3  4    5   6   7   8   9   10
+        # ! ------+-----------------------------------------
+        # !   y   |   s  x  y  z    xx  xy  xz  yy  yz  zz
+
+        # !           11  12  13  14  15  16  17  18  19  20
+        # !       ------------------------------------------
+        # !           xxx xxy xxz xyy xyz xzz yyy yyz yzz zzz
+        # !
+        # !          21   22   23   24   25   26   27   28   29   30   31   32   33   34   35
+        # !       +-----------------------------------------------------------------------------
+        # !          xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
+
+        counter = 0; count1 = 1; count2 = 0
+        cum_rad_per_cent = 0
+        cum_ao_per_cent  = 0
+
+        # The following loop will generate the index_slm array which tells
+        # which AO is of which type (from the above list)
+        index_slm = []
+        ao_radial_index = [[] for _ in range(len(index_radial))]
+        dict_num_shells_per_l = [{0:0, 1:0, 2:0, 3:0, 4:0} for _ in range(len(index_radial))]
+        for atom_index in range(len(index_radial)):
+            index_rad = 0
+            for i in index_radial[atom_index]:
+                l = dict_basis["shell_ang_mom"][i]
+                dict_num_shells_per_l[atom_index][l] += 1
+
+                counter = counter + aos_per_l[l]
+                count2 = 0
+                index_rad += 1
+                for ii in range(aos_per_l[l]):
+                    count2   += 1
+                    if l == 0:
+                        index_slm.append(count2)
+                    else:
+                        index_slm.append(aos_per_l[l-1] + l - 1 + count2)
+                    ao_radial_index[atom_index].append(index_rad)
+
+                    cum_ao_per_cent = cum_ao_per_cent + 1
+                cum_rad_per_cent = cum_rad_per_cent + 1
+            # ao_radial_index[atom_index] = [item for sublist in index_slm for item in sublist]
+
+        # print("dict num shells per l: ", dict_num_shells_per_l)
+        # print("index slm ", index_slm)
+        # print("cum_ao_per_cent ", cum_ao_per_cent)
+        # print("cum_rad_per_cent ", cum_rad_per_cent)
+        # print("ao_radial_index before ", ao_radial_index)
+        # reshape the ao_radial_index array in the groups of shells from the dict_num_shells_per_l
+
+        # ao_radial_index = [[] for _ in range(len(index_radial))]
+        for atom_index in range(len(index_radial)):
+            # print("dict num shells values ", dict_num_shells_per_l[atom_index].values())
+            index_rad = 0
+
+            radials_per_l = [ [] for _ in range(5) ]
+            for i in index_radial[atom_index]:
+                l = dict_basis["shell_ang_mom"][i]
+                index_rad += 1
+                radials_per_l[l].append(index_rad)
+
+
+            for l, num in dict_num_shells_per_l[atom_index].items():
+                if l == 0:
+                    radials_per_l[l] = radials_per_l[l]*1
+                else:
+                    radials_per_l[l] = radials_per_l[l]*aos_per_l[l]
+
+            # ao_radial_index[atom_index] = [item for sublist in radials_per_l for item in sublist]
+
+        # print("ao_radial_index written ", ao_radial_index)
+    slm_index_per_atom = []; count1 = 0
+    for i in basis_per_atom:
+        slm_index_per_atom.append(index_slm[count1:count1+i])
+        count1 = count1 + i
 
     ## write the information to the bfinfo file
     # Get the indices of unique atoms
@@ -1254,39 +1235,34 @@ def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_lab
     if filename is not None:
         if isinstance(filename, str):
             ## Write down a symmetry file in the new champ v2.0 format
-            # filename_bfinfo = os.path.splitext("champ_v2_" + filename)[0]+'.bfinfo'
-            filename_bfinfo_g = os.path.splitext("champ_v2_" + filename)[0]+'_with_g.bfinfo'
-            # with open(filename_bfinfo, 'w') as file, open(filename_bfinfo_g, 'w') as file_g:
+            filename_bfinfo_g = os.path.splitext("champ_v3_" + filename)[0]+'_basis_pointers.bfinfo'
             with open(filename_bfinfo_g, 'w') as file_g:
 
                 # qmc bfinfo line printed below
-                # file.write("qmc_bf_info 1 \n")
+                file_g.write("# Format of the new basis information file champ_v3 \n")
+                file_g.write("# num_ao_per_center, n(s), n(p), n(d), n(f), n(g) \n")
+                file_g.write("# Index of Slm (Range 1 to 35) \n")
+                file_g.write("# Index of column from numerical basis file  \n")
                 file_g.write("qmc_bf_info 1 \n")
 
                 # pointers to the basis functions
                 for i in np.sort(unique_atom_indices):
-                    count_shells_per_atom = list(Counter(shell_reprensentation_per_atom[i]).values())
-                    # Write the number of types of shells for each unique atom
-                    for num in count_shells_per_atom:
-                        # file.write(f"{num} ")
+                    file_g.write(f"{basis_per_atom[i]} ")
+
+                    for l, num in dict_num_shells_per_l[i].items():
                         file_g.write(f"{num} ")
-                    # Write down zeros for shells that are not present. Total shells supported are S(1) + P(3) + D(6) + F(10) = 20
-                    # for rem in range(len(count_shells_per_atom), 20):
-                        # file.write(f"0 ")
-                    for rem in range(len(count_shells_per_atom), 35):
-                        file_g.write(f"0 ")
-                    # file.write(f"\n")
+                    file_g.write(f"\n")
+
+                    # Write the number of types of shells for each unique atom
+                    for slm in slm_index_per_atom[i]:
+                        file_g.write(f"{slm} ")
                     file_g.write(f"\n")
 
                     # Write the pointers to the basis functions
-                    for pointer in basis_pointer_per_atom[i]:
-                        # file.write(f"{pointer} ")
+                    for pointer in ao_radial_index[i]:
                         file_g.write(f"{pointer} ")
-                    # file.write(f"\n")
                     file_g.write(f"\n")
-                # file.write("end\n")
                 file_g.write("end\n")
-            # file.close()
             file_g.close()
 
         else:
@@ -1296,32 +1272,12 @@ def write_champ_file_orbitals(filename, dict_basis, dict_mo, ao_num, nucleus_lab
         return None
     # all the bfinfo file information written to the file
 
-    # write the molecular coefficients to the .lcao file
-    if filename is not None:
-        if isinstance(filename, str):
-            ## Write down an orbitals file in the new champ v2.0 format
-            filename_orbitals = os.path.splitext("champ_v2_" + filename)[0]+'_orbitals.lcao'
-            with open(filename_orbitals, 'w') as file:
-
-                # header line printed below
-                file.write("# File created using the trex2champ converter https://github.com/TREX-CoE/trexio_tools  \n")
-                file.write("lcao " + str(dict_mo["num"]) + " " + str(ao_num) + " 1 " + "\n" )
-                np.savetxt(file, reordered_mo_array)
-                file.write("end\n")
-            file.close()
-        else:
-            raise ValueError
-    # If filename is None, return a string representation of the output.
-    else:
-        return None
-    # all the lcao file information written to the file
-
 
 # Orbitals / LCAO infomation
 
 def write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num):
     """Writes the molecular orbitals coefficients from the quantum
-    chemistry calculation / trexio file to the champ v2.0 input file format but with the same trexio AO ordering.
+    chemistry calculation / trexio file to the champ v3.0 input file format but with the same trexio AO ordering.
 
     Returns:
         None as a function value
@@ -1331,11 +1287,11 @@ def write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num):
     if filename is not None:
         if isinstance(filename, str):
             ## Write down an orbitals file in the new champ v2.0 format
-            filename_orbitals = os.path.splitext("champ_v2_" + filename)[0]+'_trexio_aligned_orbitals.lcao'
+            filename_orbitals = os.path.splitext("champ_v3_" + filename)[0]+'_trexio_orbitals.lcao'
             with open(filename_orbitals, 'w') as file:
 
                 # header line printed below
-                file.write("# File created using the trex2champ converter https://github.com/TREX-CoE/trexio_tools . AOs have trexio ordering. \n")
+                file.write("# File created using the trex2champ converter. AOs have trexio ordering. \n")
                 file.write("lcao " + str(dict_mo["num"]) + " " + str(ao_num) + " 1 " + "\n" )
                 np.savetxt(file, dict_mo["coefficient"])
                 file.write("end\n")

@@ -1088,6 +1088,8 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use deloc_dj_m, only: denergy
       use derivjas, only: gvalue
       use m_force_analytic, only: iforce_analy
+      use sr_mod, only: izvzb, i_sr_rescale
+      use precision_kinds, only: dp
       use optgeo_lib, only: force_store
       use optorb_cblock, only: norbterm
       use optwf_control, only: ioptci,ioptjas,ioptorb,method
@@ -1103,7 +1105,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       integer :: i0, ii, ijasci, istate, j
       integer :: l, ntmp
-      integer :: izvzb, i_sr_rescale
       real(dp), dimension(nparmj) :: tmp_ho
       real(dp), dimension(*) :: wt
       real(dp), dimension(*) :: psid
@@ -1111,7 +1112,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       if(iforce_analy.gt.0.and.izvzb.eq.1) call force_store(l)
 
-      if((method.ne.'sr_n'.and.method.ne.'lin_d').or.ioptjas+ioptorb+ioptci.eq.0)return
+      if((method.ne.'sr_n').and.(method.ne.'lin_d').or.(ioptjas+ioptorb+ioptci.eq.0))return
 
       i0=1
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0

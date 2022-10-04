@@ -234,7 +234,6 @@ c-------------------------------------------------------------------------------
       subroutine da_orbitals
 
       use coefs,   only: nbasis
-      use contrl_per, only: ibasis
       use da_orbval, only: da_d2orb,da_dorb,da_orb
       use multiple_geo, only: iwf
       use numbas2, only: ibas0,ibas1
@@ -245,7 +244,7 @@ c-------------------------------------------------------------------------------
 
       implicit none
 
-      integer :: i, ic, ielec, j, k
+      integer :: ibasis, i, ic, ielec, j, k
       integer :: l, m, n
 
       real(dp), dimension(3*nelec,nbasis) :: tphin

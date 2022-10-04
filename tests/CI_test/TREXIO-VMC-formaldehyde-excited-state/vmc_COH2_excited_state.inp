@@ -6,12 +6,12 @@
     mode            'vmc_one_mpi1'
 %endmodule
 
-load molecule        $pool/champ_v2_COH2_ES_geom.xyz
-load basis_num_info  $pool/champ_v2_COH2_ES_with_g.bfinfo
+load molecule        $pool/champ_v3_champ_v2_COH2_ES_geom.xyz
+load basis_num_info  $pool/champ_v3_champ_v2_COH2_ES_with_g_basis_pointers.bfinfo
 
-load orbitals        champ_v2_COH2_ES_orbitals.lcao
-load determinants    champ_v2_COH2_ES_determinants.det 
-load symmetry        champ_v2_COH2_ES_symmetry.sym 
+load orbitals        champ_v3_trexio_order_champ_v2_COH2_ES_orbitals.lcao
+load determinants    champ_v2_COH2_ES_determinants.det
+load symmetry        champ_v2_COH2_ES_symmetry.sym
 load jastrow         jastrow.start
 load jastrow_der     jastrow.der
 

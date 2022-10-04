@@ -6,11 +6,7 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
 
       use age,     only: iage,ioldest,ioldestmx
-      use basis,   only: ndxx,ndxy,ndxz,ndyy,ndyz,ndzz,nfxxx,nfxxy,nfxxz
-      use basis,   only: nfxyy,nfxyz,nfxzz,nfyyy,nfyyz,nfyzz,nfzzz
-      use basis,   only: ngxxxx,ngxxxy,ngxxxz,ngxxyy,ngxxyz,ngxxzz
-      use basis,   only: ngxyyy,ngxyyz,ngxyzz,ngxzzz,ngyyyy,ngyyyz
-      use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns,zex
+      use basis,   only: ns, np, nd, nf, ng, zex
       use branch,  only: eest,eigv,ff,fprod,nwalk,wdsumo,wgdsumo,wt
       use branch,  only: wtgen
       use coefs,   only: nbasis
@@ -213,15 +209,10 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) pecent
       write(10) (znuc(i),i=1,nctype)
       write(10) (ns(i),i=1,nctype)
-      write(10) (npx(i),i=1,nctype)
-      write(10) (npy(i),i=1,nctype)
-      write(10) (npz(i),i=1,nctype)
-      write(10) (ndxx(i),i=1,nctype)
-      write(10) (ndxy(i),i=1,nctype)
-      write(10) (ndxz(i),i=1,nctype)
-      write(10) (ndyy(i),i=1,nctype)
-      write(10) (ndyz(i),i=1,nctype)
-      write(10) (ndzz(i),i=1,nctype)
+      write(10) (np(i),i=1,nctype)
+      write(10) (nd(i),i=1,nctype)
+      write(10) (nf(i),i=1,nctype)
+      write(10) (ng(i),i=1,nctype)
       write(10) (cdet(i,1,1),i=1,ndet)
       write(10) ndet,nup,ndn
       close (unit=10)

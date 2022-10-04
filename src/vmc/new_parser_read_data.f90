@@ -125,6 +125,7 @@ subroutine read_molecule_file(file_molecule)
       use custom_broadcast, only: bcast
       use general, only: pooldir
       use inputflags, only: igeometry
+      use m_string_operations, only: wordcount
       use mpiconf, only: wid
       use multiple_geo, only: pecent
       use periodic_table, only: atom_t,element
@@ -137,11 +138,12 @@ subroutine read_molecule_file(file_molecule)
     !   local use
     character(len=72), intent(in)   :: file_molecule
     character(len=40)               :: temp1, temp2, temp3, temp4
-    character(len=80)               :: comment, file_molecule_path
-    integer                         :: iostat, i, j, k, iunit
+    character(len=80)               :: comment, file_molecule_path, line
+    integer                         :: iostat, i, j, k, iunit, count
     logical                         :: exist
     type(atom_t)                    :: atoms
     character(len=2), allocatable   :: unique(:)
+    double precision, allocatable   :: nval(:)
 
     !   Formatting
     character(len=100)               :: int_format     = '(A, T60, I0)'
@@ -180,6 +182,7 @@ subroutine read_molecule_file(file_molecule)
     if (.not. allocated(symbol)) allocate(symbol(ncent))
     if (.not. allocated(iwctype)) allocate(iwctype(ncent))
     if (.not. allocated(unique)) allocate(unique(ncent))
+    if (.not. allocated(nval)) allocate(nval(ncent))
     unique = ''
     symbol = ''
 
@@ -190,15 +193,35 @@ subroutine read_molecule_file(file_molecule)
     write(ounit,*)
 
     if (wid) then
-        do i = 1, ncent
-            read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
-        enddo
+        read(iunit,'(A)')  line
+        backspace(iunit)
     endif
-    call bcast(symbol)
-    call bcast(cent)
+    call bcast(line)
+    count = wordcount(line)
 
-    if (wid) close(iunit)
+    if (count == 4) then
+        ! Read the symbol and coords only
+        if (wid) then
+            do i = 1, ncent
+                read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
+            enddo
+        endif
+        call bcast(symbol)
+        call bcast(cent)
 
+        if (wid) close(iunit)
+    else
+        ! Read the symbol, coords, and nvalence (or znuc)
+        if (wid) then
+            do i = 1, ncent
+                read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i), nval(i)
+            enddo
+        endif
+        call bcast(symbol)
+        call bcast(cent)
+        call bcast(nval)
+        if (wid) close(iunit)
+    endif
 
     ! Count unique type of elements
     nctype = 1
@@ -218,7 +241,10 @@ subroutine read_molecule_file(file_molecule)
     ! get the correspondence for each atom according to the rule defined for atomtypes
     do j = 1, ncent
         do k = 1, nctype
-            if (symbol(j) == unique(k))   iwctype(j) = k
+            if (symbol(j) == unique(k))  then
+                iwctype(j) = k
+                if (count .gt. 4) znuc(k) = nval(j)
+            endif
         enddo
     enddo
 
@@ -229,11 +255,13 @@ subroutine read_molecule_file(file_molecule)
 
     if (allocated(unique)) deallocate(unique)
 
-    ! Get the znuc for each unique atom
-    do j = 1, nctype
-        atoms = element(atomtyp(j))
-        znuc(j) = atoms%nvalence
-    enddo
+    if (count == 4) then
+        ! Get the znuc for each unique atom
+        do j = 1, nctype
+            atoms = element(atomtyp(j))
+            znuc(j) = atoms%nvalence
+        enddo
+    endif
 
     ncent_tot = ncent + nghostcent
     nctype_tot = nctype + newghostype
@@ -1630,23 +1658,18 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     ! Ravindra
     ! Basis function types and pointers to radial parts tables
     ! alternative name for keyword basis because of GAMBLE inputword basis because of GAMBLE input
-      use basis,   only: ndxx,ndxy,ndxz,ndyy,ndyz,ndzz,nfxxx,nfxxy,nfxxz
-      use basis,   only: nfxyy,nfxyz,nfxzz,nfyyy,nfyyz,nfyzz,nfzzz
-      use basis,   only: ngxxxx,ngxxxy,ngxxxz,ngxxyy,ngxxyz,ngxxzz
-      use basis,   only: ngxyyy,ngxyyz,ngxyzz,ngxzzz,ngyyyy,ngyyyz
-      use basis,   only: ngyyzz,ngyzzz,ngzzzz,npx,npy,npz,ns
+      use basis, only: ns, np, nd, nf, ng
       use coefs,   only: nbasis
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
       use inputflags, only: ibasis_num
       use mpiconf, only: wid
-      use numbas,  only: iwrwf,numr
+      use numbas,  only: iwrwf,numr,nrbas
       use numbas1, only: iwlbas,nbastyp
       use numbas_mod, only: MRWF
       use precision_kinds, only: dp
       use system,  only: nctype,newghostype
-
 
 
     implicit none
@@ -1685,6 +1708,17 @@ subroutine read_basis_num_info_file(file_basis_num_info)
             call fatal_error (" Basis num info file "// pooldir // trim(file_basis_num_info) // " does not exist.")
         endif
 
+        ! To skip the comments in the file
+        do while (skip)
+            read(iunit,*, iostat=iostat) temp1
+            temp1 = trim(temp1)
+            if (temp1 == "qmc_bf_info") then
+                backspace(iunit)
+                skip = .false.
+            endif
+        enddo
+
+
         read (iunit, *, iostat=iostat) temp1, numr
         if (iostat /= 0) call fatal_error( "Error in reading basis num info file :: expecting 'qmc_bf_info / basis', numr")
 
@@ -1698,236 +1732,41 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     allocate (nbastyp(nctot))
     allocate (ns(nctot))
-    allocate (npx(nctot))
-    allocate (npy(nctot))
-    allocate (npz(nctot))
-    allocate (ndxx(nctot))
-    allocate (ndxy(nctot))
-    allocate (ndxz(nctot))
-    allocate (ndyy(nctot))
-    allocate (ndyz(nctot))
-    allocate (ndzz(nctot))
-    allocate (nfxxx(nctot))
-    allocate (nfxxy(nctot))
-    allocate (nfxxz(nctot))
-    allocate (nfxyy(nctot))
-    allocate (nfxyz(nctot))
-    allocate (nfxzz(nctot))
-    allocate (nfyyy(nctot))
-    allocate (nfyyz(nctot))
-    allocate (nfyzz(nctot))
-    allocate (nfzzz(nctot))
-    allocate (ngxxxx(nctot))
-    allocate (ngxxxy(nctot))
-    allocate (ngxxxz(nctot))
-    allocate (ngxxyy(nctot))
-    allocate (ngxxyz(nctot))
-    allocate (ngxxzz(nctot))
-    allocate (ngxyyy(nctot))
-    allocate (ngxyyz(nctot))
-    allocate (ngxyzz(nctot))
-    allocate (ngxzzz(nctot))
-    allocate (ngyyyy(nctot))
-    allocate (ngyyyz(nctot))
-    allocate (ngyyzz(nctot))
-    allocate (ngyzzz(nctot))
-    allocate (ngzzzz(nctot))
-
-    if (nbasis .eq. 0) then
-        call fatal_error('Please Load LCAO before basis info in the input file')
-    endif
+    allocate (np(nctot))
+    allocate (nd(nctot))
+    allocate (nf(nctot))
+    allocate (ng(nctot))
 
     if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctot))
     if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctot))
+    if (.not. allocated(nrbas)) allocate (nrbas(nctype + newghostype), source=0)
 
     if (wid) then
         do i = 1, nctype + newghostype
-            read (iunit, *, iostat=iostat) ns(i), npx(i), npy(i), npz(i), &
-                ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
-                nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
-                nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i), &
-                ngxxxx(i), ngxxxy(i), ngxxxz(i), ngxxyy(i), ngxxyz(i), &
-                ngxxzz(i), ngxyyy(i), ngxyyz(i), ngxyzz(i), ngxzzz(i), &
-                ngyyyy(i), ngyyyz(i), ngyyzz(i), ngyzzz(i), ngzzzz(i)
+            read (iunit, *, iostat=iostat) nbastyp(i),  ns(i), np(i), nd(i), nf(i), ng(i)
 
             if (iostat /= 0) call fatal_error( "Error in reading basis num info file")
-            write (ounit, '(100i3)') ns(i), npx(i), npy(i), npz(i), &
-            ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
-            nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
-            nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i), &
-            ngxxxx(i), ngxxxy(i), ngxxxz(i), ngxxyy(i), ngxxyz(i), &
-            ngxxzz(i), ngxyyy(i), ngxyyz(i), ngxyzz(i), ngxzzz(i), &
-            ngyyyy(i), ngyyyz(i), ngyyzz(i), ngyzzz(i), ngzzzz(i)
+            write (ounit, '(a,i0)')  "Number of AOs for this center :: ", nbastyp(i)
+            write (ounit, '(5(a,i0))') "ns= ", ns(i), " np= ", np(i), " nd= ", nd(i), " nf= ", nf(i), " ng= ", ng(i)
 
             if (numr .gt. 0) then
-                nbastyp(i) =    ns(i) &
-                            +   npx(i) + npy(i) + npz(i) &
-                            +   ndxx(i)  + ndxy(i)  +  ndxz(i) + ndyy(i)  + ndyz(i) + ndzz(i) &
-                            +   nfxxx(i) + nfxxy(i) + nfxxz(i) + nfxyy(i) + nfxyz(i) &
-                            +   nfxzz(i) + nfyyy(i) + nfyyz(i) + nfyzz(i) + nfzzz(i) &
-                            +   ngxxxx(i) + ngxxxy(i) + ngxxxz(i) + ngxxyy(i) + ngxxyz(i) &
-                            +   ngxxzz(i) + ngxyyy(i) + ngxyyz(i) + ngxyzz(i) + ngxzzz(i) &
-                            +   ngyyyy(i) + ngyyyz(i) + ngyyzz(i) + ngyzzz(i) + ngzzzz(i)
+                nrbas(i) = ns(i) + np(i) + nd(i) + nf(i) + ng(i)
 
                 if (nbastyp(i) .gt. MRWF) call fatal_error('BASIS: nbastyp > MRWF')
 
+                read (iunit, *) (iwlbas(ib, i), ib=1, nbastyp(i))
+
+                if (iostat /= 0) call fatal_error( "Error in reading basis num info file :: iwlbas")
+                write(ounit, '(100i3)') (iwlbas(ib, i), ib=1, nbastyp(i))
+
                 read (iunit, *, iostat=iostat) (iwrwf(ib, i), ib=1, nbastyp(i))
-                if (iostat /= 0) call fatal_error( "Error in reading basis num info file")
+                if (iostat /= 0) call fatal_error( "Error in reading basis num info file :: iwrwf")
                 write(ounit, '(100i3)') (iwrwf(ib, i), ib=1, nbastyp(i))
                 write(ounit, *)
             else
                 call fatal_error('BASIS: numerical basis functions not supported')
             endif
         enddo
-
-        if (numr .gt. 0) then
-
-            do i = 1, nctype + newghostype
-                jj = 0
-                do j = 1, ns(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 1
-                enddo
-                do j = 1, npx(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 2
-                enddo
-                do j = 1, npy(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 3
-                enddo
-                do j = 1, npz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 4
-                enddo
-                do j = 1, ndxx(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 5
-                enddo
-                do j = 1, ndxy(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 6
-                enddo
-                do j = 1, ndxz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 7
-                enddo
-                do j = 1, ndyy(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 8
-                enddo
-                do j = 1, ndyz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 9
-                enddo
-                do j = 1, ndzz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 10
-                enddo
-                do j = 1, nfxxx(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 11
-                enddo
-                do j = 1, nfxxy(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 12
-                enddo
-                do j = 1, nfxxz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 13
-                enddo
-                do j = 1, nfxyy(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 14
-                enddo
-                do j = 1, nfxyz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 15
-                enddo
-                do j = 1, nfxzz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 16
-                enddo
-                do j = 1, nfyyy(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 17
-                enddo
-                do j = 1, nfyyz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 18
-                enddo
-                do j = 1, nfyzz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 19
-                enddo
-                do j = 1, nfzzz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 20
-                enddo
-                do j = 1, ngxxxx(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 21
-                enddo
-                do j = 1, ngxxxy(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 22
-                enddo
-                do j = 1, ngxxxz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 23
-                enddo
-                do j = 1, ngxxyy(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 24
-                enddo
-                do j = 1, ngxxyz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 25
-                enddo
-                do j = 1, ngxxzz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 26
-                enddo
-                do j = 1, ngxyyy(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 27
-                enddo
-                do j = 1, ngxyyz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 28
-                enddo
-                do j = 1, ngxyzz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 29
-                enddo
-                do j = 1, ngxzzz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 30
-                enddo
-                do j = 1, ngyyyy(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 31
-                enddo
-                do j = 1, ngyyyz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 32
-                enddo
-                do j = 1, ngyyzz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 33
-                enddo
-                do j = 1, ngyzzz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 34
-                enddo
-                do j = 1, ngzzzz(i)
-                    jj = jj + 1
-                    iwlbas(jj, i) = 35
-                enddo
-
-
-            enddo
-        endif
 
     endif
 
@@ -1936,40 +1775,10 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     call bcast(iwrwf)
     call bcast(nbastyp)
     call bcast(ns)
-    call bcast(npx)
-    call bcast(npy)
-    call bcast(npz)
-    call bcast(ndxx)
-    call bcast(ndxy)
-    call bcast(ndxz)
-    call bcast(ndyy)
-    call bcast(ndyz)
-    call bcast(ndzz)
-    call bcast(nfxxx)
-    call bcast(nfxxy)
-    call bcast(nfxxz)
-    call bcast(nfxyy)
-    call bcast(nfxyz)
-    call bcast(nfxzz)
-    call bcast(nfyyy)
-    call bcast(nfyyz)
-    call bcast(nfyzz)
-    call bcast(nfzzz)
-    call bcast(ngxxxx)
-    call bcast(ngxxxy)
-    call bcast(ngxxxz)
-    call bcast(ngxxyy)
-    call bcast(ngxxyz)
-    call bcast(ngxxzz)
-    call bcast(ngxyyy)
-    call bcast(ngxyyz)
-    call bcast(ngxyzz)
-    call bcast(ngxzzz)
-    call bcast(ngyyyy)
-    call bcast(ngyyyz)
-    call bcast(ngyyzz)
-    call bcast(ngyzzz)
-    call bcast(ngzzzz)
+    call bcast(np)
+    call bcast(nd)
+    call bcast(nf)
+    call bcast(ng)
 
     ibasis_num = 1
     call bcast(ibasis_num)

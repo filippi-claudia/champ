@@ -368,11 +368,12 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use precision_kinds, only: dp
       use pw_orbitals_e, only: orbitals_pwe
       use slater,  only: coef,norb
+      use sr_mod,  only: i_sr_rescale
       use system,  only: iwctype,ncent,ncent_tot,nelec
-      use trexio_basis_fns_mod, only: trexio_basis_fns
       use trexio_read_data, only: trexio_has_group_orbitals
       use vmc_mod, only: norb_tot
 #if defined(TREXIO_FOUND)
+      use trexio_basis_fns_mod, only: trexio_basis_fns
 #endif
 
       implicit none
@@ -391,7 +392,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       nadorb_sav=nadorb
 
-      if(ioptorb.eq.0.or.method(1:3).ne.'lin') nadorb=0
+      if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
 
       ! call resize_tensor(coef, norb+nadorb, 2)
 
