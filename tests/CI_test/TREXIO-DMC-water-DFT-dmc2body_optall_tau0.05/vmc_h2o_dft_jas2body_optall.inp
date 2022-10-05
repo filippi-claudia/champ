@@ -2,6 +2,7 @@
     title           'H2O DFT calculation'
     pool            './pool/'
     mode            vmc
+    ipr 4
 %endmodule
 
 load trexio          H2O_DFT.hdf5
