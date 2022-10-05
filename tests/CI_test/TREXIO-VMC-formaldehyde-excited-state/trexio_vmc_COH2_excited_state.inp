@@ -2,7 +2,7 @@
     title           'COH2 Formaldehyde VMC optimization calculation first excited state'
     pool            './pool/'
     mode            'vmc'
-    ipr -1
+    ipr 4
 %endmodule
 
 # Use a single trexio file to fetch all the required data.
