@@ -150,7 +150,7 @@ contains
         type(davidson_parameters) :: parameters
 
         ! Indices of the eigenvalues/eigenvectors pair that have not converged
-        logical, dimension(lowest) :: has_converged
+        logical, dimension(lowest*2) :: has_converged
         logical :: update_proj
         integer :: n_converged ! Number of converged eigenvalue/eigenvector pairs
         integer :: sizeV ! size of V for broadcasting
