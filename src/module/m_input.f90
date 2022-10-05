@@ -76,11 +76,10 @@ module general
     character*256, allocatable, dimension(:) :: filenames_ps_gauss
     character*256, allocatable, dimension(:) :: filenames_ps_champ
     character*256, allocatable, dimension(:) :: filenames_ps_tm
-    character(:), allocatable :: atomtyp
     character(:), allocatable :: atomsymbol
 
     private
-    public :: pooldir, pp_id, bas_id, atomtyp, filename
+    public :: pooldir, pp_id, bas_id, filename
     public :: filenames_bas_num, filenames_ps_gauss
     public :: filenames_ps_champ, filenames_ps_tm, atomsymbol
     save
