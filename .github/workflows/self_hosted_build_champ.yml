@@ -24,6 +24,7 @@ on:
 
 jobs:
   build_champ:
+    continue-on-error: true
     strategy:
       matrix:
         toolchain: ['intel']
