@@ -83,11 +83,14 @@ contains
         use orbval, only: nadorb
         use contrl_file,    only: ounit
 
+        use csfs, only: nstates
+
         implicit none
 
         real(dp) :: adiag, denergy, alpha_omega, denergy_err, dparm_norm
         real(dp) :: energy_sav, energy_err_sav, omega, sigma, sigma_sav, nadorb_sav
         integer :: i, iflag, iter, miter
+        integer :: istate_sr, iflagin
 
         sigma_sav = 0.0
         energy_sav= 0.0
@@ -115,7 +118,7 @@ contains
         write (ounit, '(/,''SR adiag: '',f10.5)') sr_adiag
         write (ounit, '(''SR tau:   '',f10.5)') sr_tau
         write (ounit, '(''SR eps:   '',f10.5)') sr_eps
-
+        write (ounit, '(''SR lambda:   '',f10.5)') ((i,j,lambda(i,j),i=1,nstates),j=1,nstates)
 
         call save_params()
 
@@ -156,12 +159,29 @@ contains
 
 6               continue
 
-                call sr(nparm, deltap, sr_adiag, sr_eps, i)
-                call dscal(nparm, -sr_tau, deltap, 1)
+                !call sr(nparm, deltap, sr_adiag, sr_eps, i)
+                !call dscal(nparm, -sr_tau, deltap, 1)
 
+                !new sr part
+                if (nstates .eq. 1) then
+                    call sr_hs(nparm, sr_adiag)
+                elseif (nstates .gt. 1) then
+                    call compute_gradients_sr_ortho(nparm, sr_adiag)
+                endif
+
+                ! maybe distribute pcg over nodes at some point, reduce by MSTATE
                 adiag = sr_adiag
-                call test_solution_parm(nparm, deltap, dparm_norm, dparm_norm_min, adiag, iflag)
-                write (ounit, '(''Norm of parm variation '',d12.5)') dparm_norm
+                iflagin=0
+                do istate_sr = 1, nstates
+                    call sr(nparm, deltap(:, istate_sr), sr_adiag, sr_eps, i)
+                    call dscal(nparm, -sr_tau, deltap(:, istate_sr), 1)
+                    call test_solution_parm(nparm, deltap(:, istate_sr), dparm_norm, dparm_norm_min, adiag, iflag)
+                    write (ounit, '(''Norm of parm variation '',d12.5)') dparm_norm
+                    if (iflag .ne. 0) iflagin = 1
+                enddo
+
+                !call test_solution_parm(nparm, deltap, dparm_norm, dparm_norm_min, adiag, iflag)
+                !write (ounit, '(''Norm of parm variation '',d12.5)') dparm_norm
                 if (iflag .ne. 0) then
                     write (ounit, '(''Warning: dparm_norm>1'')')
                     adiag = 10*adiag
@@ -227,6 +247,76 @@ contains
         return
     end
 
+    subroutine compute_norm_lin(nparm,deltap)  ! check these modules and rest of subroutine
+        use mpi
+        use mpiconf, only: idtask
+        use sr_mod, only: mobs, mparm
+        use mstates_mod, only: MSTATES
+        use csfs, only: nstates
+        use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
+        use sr_mat_n, only: sr_o, wtg, obs_tot
+        use estcum, only: iblk
+        use contrl, only: nstep
+        use optorb_cblock, only: norbterm
+        use config, only: anormo
+        use contrl_file, only: ounit
+
+        implicit none
+
+        integer, intent(in) :: nparm
+        real(dp), dimension(mparm,MSTATES), intent(in) :: deltap
+
+        real(dp), dimension(mobs,MSTATES) :: obs_norm
+        real(dp), dimension(mobs,MSTATES) :: obs_norm_tot
+
+        integer :: jwtg, jwfj, jsqfj, n_obs
+
+        jwtg = 1
+        jwfj = 1
+        jsqfj = 2
+        n_obs = 2
+
+        obs_norm = 0.0d0
+        passes = dfloat(iblk*nstep)
+
+        do istate = 1, nstates
+           do iconf = 1, nconf_n
+              tmp = 0.0d0
+              do i = 1, nparm
+                 tmp = tmp + deltap(i, istate)*sr_o(iconf, i, istate) ! check for bugs, was a '.' not a ','
+              enddo
+              obs_norm(jwfj, istate) = obs_norm(jwfj, istate) + tmp*wtg(iconf, istate)
+              obs_norm(jsqfj,istate) = obs_norm(jsqfj, istate) + tmp*tmp*wtg(iconf, istate)
+           enddo
+           obs_norm(jwfj, istate) = 2.0d0*obs_norm(jwfj, istate)
+           call MPI_REDUCE(obs_norm(1, istate), obs_norm_tot(1, istate),&
+                   n_obs, MPI_REAL8, MPI_SUM, 0, MPI_COMM_WORLD, ier)
+        enddo
+
+        if(idtask.eq.0) then
+           do istate = 1, nstates
+              tmp = obs_tot(jwtg, istate) + obs_norm_tot(jwfj, istate)
+              if(istate.eq.1) tmp1 = tmp
+              anormo(istate) = obs_tot(jwtg, istate) + obs_norm_tot(jwfj, istate)&
+                      + obs_norm_tot(jsqfj, istate)
+              write(ounit, '(''NORMS'',i3,10f20.8)') istate, obs_tot(jwtg,istate)/passes, anormo(istate)/passes,&
+                                 obs_tot(jwtg, istate)/obs_tot(jwtg, 1), anormo(istate)/anormo(1),tmp/tmp1
+           enddo
+           ! Ramon was using the anormo
+           !anormo=anormo/passes
+           ! Claudia tries this
+           do istate = 2, nstates
+             anormo(istate) = anormo(istate)/anormo(1)
+           enddo
+           anormo(1) = 1.d0
+        endif
+        ! TMP
+        ! anormo=1.d0
+        !call MPI_BCAST(anormo(1), nstates, MPI_REAL8, 0, MPI_COMM_WORLD, i)
+        call bcast(anormo(1)) ! check this bcast, we set this to 1 already, do we need to bcast now?
+
+    end subroutine
+
     subroutine save_params()
 
         sr_adiag_sav = sr_adiag
@@ -253,7 +343,7 @@ contains
 
         integer :: imax, imod
 
-        call sr_hs(nparm, sr_adiag)
+        !call sr_hs(nparm, sr_adiag) ! moved outside
 
         imax = nparm          ! max n. iterations conjugate gradients
         imod = 50             ! inv. freq. of calc. r=b-Ax vs. r=r-alpha q (see pcg)
@@ -329,7 +419,7 @@ contains
 
         allocate (obs_wtg(MSTATES))
         allocate (obs_wtg_tot(MSTATES))
-        allocate (obs(MOBS, MSTATES))
+        allocate (obs(mobs, MSTATES))
 
         nstates_eff = nstates
         if (method .eq. 'lin_d') nstates_eff = 1
@@ -512,6 +602,212 @@ contains
 
         return
     end
+
+    subroutine compute_gradient_sr_ortho(nparm,sr_adiag) ! check subroutine
+        use mpi
+        use sr_mod, only: mobs
+        use csfs, only: nstates
+        use mstates_mod, only: MSTATES
+        use mpiconf, only: idtask
+        use optwf_func, only: ifunc_omega, omega
+        use sr_index, only: jelo, jelo2, jelohfj
+        use sr_mat_n, only: elocal, h_sr, h_sr_penalty, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho
+        use sr_mat_n, only: sr_o, wtg, obs_tot
+        use optorb_cblock, only: norbterm
+        use method_opt, only: method
+        use config, only: alambda
+
+        implicit none
+
+        integer, intent(in) :: nparm
+
+        real(dp), parameter :: eps_eigval=1.d-14
+
+        integer :: jwtg, jelo, jfj, jefj, jfifj, jfjsi, n_obs, istate, jstate, iconf, i, k, kk
+
+        !call p2gtfd('optwf:alambda',alambda,1.0d0,1)
+
+
+        jwtg=1
+        n_obs=nstates+1
+        jelo=n_obs+1
+        n_obs=n_obs+1
+        jfj=n_obs+1
+        n_obs=n_obs+nparm
+        jefj=n_obs+1
+        n_obs=n_obs+nparm
+        jfifj=n_obs+1
+        n_obs=n_obs+nparm
+
+        if(nstates.gt.1) then
+           jfjsi=n_obs+1
+           n_obs=n_obs+nparm
+        endif
+
+        if(n_obs.gt.mobs) call fatal_error('SR_HS LIN: n_obs_ortho BS)')
+
+    ! initialize
+        do istate=1,nstates
+           do i=1,n_obs
+              obs(i,istate) = 0.0d0
+           enddo
+        enddo
+
+        do istate=1,nstates
+
+           do iconf=1,nconf_n
+
+! <psi(istate)^2/psig^2>
+              obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
+
+! <(psi(istate)/psig)*(*psi(jstate)/psig)>
+              do jstate=1,istate-1
+                 obs(jwtg+jstate,istate)=obs(jwtg+jstate,istate)&
+                         +sr_o(nparm+2,iconf,jstate)*sr_o(nparm+2,iconf,istate)
+              enddo
+
+! <eloc(istate)*psi(istate)^2/psig^2>
+              obs(jelo,istate)=obs(jelo,istate)&
+                      +elocal(iconf,istate)*wtg(iconf,istate)
+
+              do i=1,nparm
+! <psi_i(istate)/psi(istate)*psi(istate)^2/psig^2>
+                 obs(jfj+i-1,istate)=obs(jfj+i-1,istate)&
+                         +sr_o(i,iconf,istate)*wtg(iconf,istate)
+
+! <eloc(istate)*psi_i(istate)/psi(istate)*psi(istate)^2/psig^2>
+                 obs(jefj+i-1,istate)=obs(jefj+i-1,istate)&
+                         +elocal(iconf,istate)*sr_o(i,iconf,istate)*wtg(iconf,istate)
+
+! <(psi_i(istate)/psi(istate))^2*psi(istate)^2/psig^2>
+                 obs(jfifj+i-1,istate)=obs(jfifj+i-1,istate)&
+                         +sr_o(i,iconf,istate)*sr_o(i,iconf,istate)*wtg(iconf,istate)
+              enddo
+           enddo
+
+! reduce what computed so far
+           n_obs_reduce=n_obs
+           if(nstates.gt.1) n_obs_reduce=n_obs-nparm
+
+           call MPI_REDUCE(obs(1,istate),obs_tot(1,istate),&
+                   n_obs_reduce,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
+
+! bcast overlaps only
+           call MPI_BCAST(obs_tot(1,istate),nstates,MPI_REAL8,0,MPI_COMM_WORLD,i)
+
+! symmetrize overlaps
+           do jstate=1,istate-1
+             obs_tot(jwtg+istate,jstate)=obs_tot(jwtg+jstate,istate)
+           enddo
+
+! close loop over istate: overlaps computed among all states
+        enddo
+! loop over the states
+
+! compute part of gradient of cost function sum_jstate^{istate-1} chi_jstate,istate
+! sum_jstate^{istate-1} <(psi_i(istate)/psi(istate)*(psi(istate)/psig)*(psi(jstate/psig)>
+!                      *<(psi(istate)/psig)*(psi(jstate)/psig)>_tot/<psi(jstate)^2/psig^2>_tot
+        if(nstates.gt.1) then
+
+           do istate=1,nstates
+
+           !call cpu_time(dstart_time)
+              do jstate=1,istate-1
+                 !dum=obs_tot(jwtg+jstate,istate)/obs_tot(jwtg,jstate)
+                 dum=obs_tot(jwtg+jstate,istate)/obs_tot(jwtg,jstate)*alambda(istate,jstate)
+                 do iconf=1,nconf_n
+                    do i=1,nparm
+                       obs(jfjsi+i-1,istate)=obs(jfjsi+i-1,istate)&
+                               +sr_o(i,iconf,istate)*sr_o(nparm+2,iconf,istate)*sr_o(nparm+2,iconf,jstate)*dum
+                    enddo
+                 enddo
+              enddo
+              do jstate=istate+1,nstates
+                 !dum=obs_tot(jwtg+jstate,istate)/obs_tot(jwtg,jstate)
+                 dum=obs_tot(jwtg+jstate,istate)/obs_tot(jwtg,jstate)*alambda(istate,jstate)
+                 do iconf=1,nconf_n
+                    do i=1,nparm
+                       obs(jfjsi+i-1,istate)=obs(jfjsi+i-1,istate)&
+                               +sr_o(i,iconf,istate)*sr_o(nparm+2,iconf,istate)*sr_o(nparm+2,iconf,jstate)*dum
+                    enddo
+                 enddo
+              enddo
+              !call cpu_time(dend_time)
+              !print *, "Old loop time (s): ", dend_time-dstart_time
+
+              call MPI_REDUCE(obs(jfjsi,istate),obs_tot(jfjsi,istate),&
+                      nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
+
+       ! added to check with new loop
+       !if(idtask.eq.0) print *, "state, first part of pen parm 1 tot: ", istate, obs_tot(jfjsi,istate)
+           enddo
+        endif
+
+! end loop over main istate
+
+        if(idtask.eq.0) then
+
+           do istate=1,nstates
+! normalize to current state via <psi(istate)^2/psig^2> (to elminate <psig|psig>)
+              do i=2,n_obs
+                 obs_tot(i,istate)=obs_tot(i,istate)/obs_tot(jwtg,istate)
+              enddo
+
+              do k=1,nparm
+                 aux2=obs_tot(jfifj+k-1,istate)&
+                         -obs_tot(jfj+k-1,istate)*obs_tot(jfj+k-1,istate)
+                 s_diag(k,istate)=aux2*sr_adiag
+                 s_ii_inv(k,istate)=aux2+s_diag(k,istate)
+
+! gradient wrt parameters
+                 h_sr(k,istate)=-2.0d0*(obs_tot(jefj+k-1,istate)&
+                         -obs_tot(jfj+k-1,istate)*obs_tot(jelo,istate))
+              enddo
+
+              smax=0.0d0
+              do k=1,nparm
+                 if(s_ii_inv(k,istate).gt.smax) smax=s_ii_inv(k,istate)
+              enddo
+              write(6,'(''max S diagonal element '',t41,d9.2)') smax
+
+              kk=0
+              do k=1,nparm
+                 if(s_ii_inv(k,istate)/smax.gt.eps_eigval) then
+                    kk=kk+1
+                    s_ii_inv(k,istate)=1.0d0/s_ii_inv(k,istate)
+                 else
+                    s_ii_inv(k,istate)=0.0d0
+                 endif
+              enddo
+              write(6,'(''nparm, non-zero S diag'',t41,2i5)') nparm,kk
+
+          ! Orthogonalization
+              if(nstates.gt.1) then
+! sum (<psi(jstate)|psi(istate)>/<psi(istate)|psi(istate)>)^2*<psi(istate)|psi(istate)>/<psi(jstate)|psi(jstate)>
+                !!call p2gtfd('optwf:alambda',alambda,1.0d0,1)
+                penalty=0.d0
+                do jstate=1,nstates
+                   if(jstate.ne.istate) then
+                     !penalty=penalty+obs_tot(jwtg+jstate,istate)*obs_tot(jwtg+jstate,istate)&
+                     !      *obs_tot(jwtg,istate)/obs_tot(jwtg,jstate)
+                     penalty=penalty+obs_tot(jwtg+jstate,istate)*obs_tot(jwtg+jstate,istate)&
+                           *obs_tot(jwtg,istate)/obs_tot(jwtg,jstate)*alambda(istate,jstate)
+                   endif
+                enddo
+
+                do k=1,nparm
+                   !h_sr_penalty(k,istate)= -alambda*2.d0*(obs_tot(jfjsi+k-1,istate)-penalty*obs_tot(jfj+k-1,istate))
+                   h_sr_penalty(k,istate)=  -2.d0*(obs_tot(jfjsi+k-1,istate)-penalty*obs_tot(jfj+k-1,istate))
+                enddo
+                h_sr(1:nparm,istate)=h_sr(1:nparm,istate)+h_sr_penalty(1:nparm,istate)
+                print *, "State", istate
+                !print *, "lambda SR ortho", alambda
+                print *, "penalty ortho  ", penalty
+              endif
+           enddo
+        endif
+
+    end subroutine compute_gradient_sr_ortho
 
     subroutine sr_rescale_deltap(nparm, deltap)
 
