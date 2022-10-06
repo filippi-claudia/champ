@@ -25,7 +25,11 @@ jobs:
           - toolchain: 'intel'
             mode: 'debug'
           - toolchain: 'gnu'
-            python-version: ["3.8", "3.9", "3.10"]
+            python-version: "3.8"
+          - toolchain: 'gnu'
+            python-version: "3.9"
+          - toolchain: 'gnu'
+            python-version: "3.10"
       fail-fast: false
     defaults:
       run:
