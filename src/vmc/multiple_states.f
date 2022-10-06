@@ -54,6 +54,9 @@ c----------------------------------------------------------------------
       use mstates2, only: effcm2, effcum
       use contrl_file,    only: ounit, errunit
       use precision_kinds, only: dp
+      
+      use config, only: anormo
+
       implicit none
 
       integer :: j
@@ -70,6 +73,7 @@ c----------------------------------------------------------------------
         efficiency=effcum(j)*effcum(j)/effcm2(j)/passes
 c       write(ounit,*) effcum(j)*effcum(j)/passes,effcm2(j)
         write(ounit,'(''efficiency state '',i4,f8.3)') j,efficiency
+        write(6,'(''anorm correction '',i4, E15.8)') j,anormo(j)
       enddo
 
       end

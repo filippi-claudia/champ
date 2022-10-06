@@ -99,6 +99,8 @@ c-----------------------------------------------------------------------
       use multideterminante_mod, only: multideterminante_grad
       use multideterminant_mod, only: compute_ymat
 
+      use config, only: anormo
+
       implicit none
 
       integer :: i, iab, iel, iflag_move, iorb
@@ -163,7 +165,9 @@ c All quantities saved (old) avaliable
             call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),ymat(1,1,iab,istate),vd_s)
 
             do kk=1,3
-              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))
+              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))/anormo(istate)
+c missing a vj(kk,iel,istate) term, also no istate dim on vd_s and vref,
+c also missing exp(2*psij(istate))
             enddo
           enddo
           vd(1)=vd(1)*psi2gi
@@ -216,7 +220,9 @@ c Within single-electron move - quantities of electron iel not saved
             call multideterminante_grad(iel,dorbn,norb_tot,detratio,slmin,aan,ymatn(1,1,istate),vd_s)
 
             do kk=1,3
-              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))
+              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))/anormo(istate)
+c missing a vj(kk,iel,istate) term, also no istate dim on vd_s and vref,
+c also missing exp(2*psij(istate))
             enddo
           enddo
           vd(1)=vd(1)*psi2gi
