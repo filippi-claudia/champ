@@ -12,7 +12,7 @@ c ider = 3 -> value, gradient, laplacian, forces
       use atom, only: iwctype, ncent, ncent_tot
       use ghostatom, only: nghostcent
       use const, only: nelec
-      use numbas, only: iwrwf, nrbas!, rmax
+      use numbas, only: iwrwf, nrbas, rmaxwf
       use numbas1, only: iwlbas, nbastyp
       use phifun, only: phin, dphin, d2phin, d2phin_all, d3phin, n0_nbasis
       use wfsec, only: iwf
@@ -98,12 +98,12 @@ c get distance to center
           ri2=ri*ri
 
           do irb=1,nrbasit
-          ! only evaluate for r <= rmax
-          ! if (r <= rmax(irb,it)) then
-            call splfit(r,irb,it,iwf,wfv(1,irb),ider)
-          ! else
-          !   wfv(1:4,irb)=0.d0
-          ! endif
+          ! only evaluate for r <= rmaxwf
+            if (r <= rmaxwf(irb,it)) then
+              call splfit(r,irb,it,iwf,wfv(1,irb),ider)
+            else
+              wfv(1:4,irb)=0.d0
+            endif
           enddo
 
           ! Get the Slm evaluated and store them arrays

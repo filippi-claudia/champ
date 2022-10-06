@@ -925,7 +925,7 @@ subroutine parser
         cutjas=1.d99
         cutjasi=0
     endif
-    call set_scale_dist(1)
+    call set_scale_dist(ipr)
   else
     cutjas=1.d99
     cutjasi=0
@@ -941,7 +941,7 @@ subroutine parser
         asymp_jasb(i)=0
     enddo
   endif
-  call set_scale_dist(1)
+  call set_scale_dist(ipr)
 
   call elapsed_time ("Setting Jastrow parameters : ")
 
