@@ -872,8 +872,6 @@ module trexio_read_data
                 dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
                 enddo
 
-                if (.not. allocated(rmaxwf)) allocate (rmaxwf(nrbas(ic), nctype_tot))
-
         ! Update the rmax at the point where rwf goes below cutoff (scanning from right to left)
                 rmaxwf(irb, ic) = 20.0d0
                 rloop: do ir=nr(ic),1,-1
@@ -903,20 +901,12 @@ module trexio_read_data
 
                     if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
-                  endif
+                endif
 
                 call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
 
             enddo ! loop on irb : number of radial shells
         enddo ! loop on ic : the unique atom types
-
-        ! ! debug part
-        ! do ic = 1, nctype_tot
-        !     do ir=1,nr(ic)
-        !         write(200+ic,'(6(E22.15,1x))') x(ir),(rwf(ir,irb,ic,iwf),irb=1,nrbas(ic))
-        !     enddo
-        ! enddo
-
 
         ! Do the deallocations of local arrays
         if (allocated(unique)) deallocate(unique)
