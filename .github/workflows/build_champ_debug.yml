@@ -13,17 +13,17 @@ on:
 
 jobs:
   debug_build_test_champ:
-    name: build and test with ${{ matrix.toolchain }} ${{ matrix.mode }} mode
+    name: CI ${{ matrix.toolchain }} ${{ matrix.mode }} mode
     runs-on: ubuntu-latest
     timeout-minutes: 200
     strategy:
       matrix:
         toolchain: ['intel','gnu']
         python-version: ["3.8", "3.9", "3.10"]
-        mode: ['RELEASE','DEBUG']
+        mode: ['release','debug']
         exclude:
           - toolchain: 'intel'
-            mode: 'DEBUG'
+            mode: 'debug'
       fail-fast: false
     defaults:
       run:
@@ -97,12 +97,6 @@ jobs:
         python -m pip install trexio
         python -m pip install trexio_tools
 
-    - name: "Test 00 Python unit testing using pytest"
-      run: |
-        echo "Running the trex2champ converter tests "
-        cd tools/trex_tools
-        pytest __tests__.py
-
     - name: Compile the CHAMP code with INTEL
       if: matrix.toolchain == 'intel'
       run: |
@@ -112,7 +106,6 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        # cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_BUILD_TYPE=DEBUG
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
         cmake --build build -- -j2
         ulimit -s unlimited
@@ -125,10 +118,17 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        # cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DVECTORIZED=no -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
         cmake --build build -- -j2
         ulimit -s unlimited
+
+    - name: "Test 00 Python-${{ matrix.python-version }} unit testing using pytest"
+      if: ${{ (matrix.toolchain == 'intel' ) && ( matrix.mode == 'release' ) }}
+      run: |
+        echo "Running the trex2champ converter tests with python-${{ matrix.python-version }}"
+        cd tools/trex_tools
+        pytest
+
 
     - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
       run: |
