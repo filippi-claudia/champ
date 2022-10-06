@@ -581,8 +581,8 @@ jobs:
         echo "Running the calculation with trexio library linked"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i trexio_vmc_COH2_gs.inp  -o trexio_vmc_COH2_gs.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -22.5895457 +-  0.0042848   ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_gs.out "total E" -22.5895457  0.0042848
+        echo "Comparing the energy with the reference one (total E = -22.5785664 +-  0.0045834   ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_gs.out "total E" -22.5785664  0.0045834
 
     - name: "Test 32 (Formaldehyde Excited State) Native TREXIO testing with HDF5 backend on 8 processors"
       run: |
@@ -597,8 +597,8 @@ jobs:
         echo "Running the calculation with trexio library linked"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i trexio_vmc_COH2_excited_state.inp  -o trexio_vmc_COH2_excited_state.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -22.6266486 +-  0.0030714 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_excited_state.out "total E" -22.6266486  0.0030714
+        echo "Comparing the energy with the reference one (total E = -22.6195267 +-  0.0031049 ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_excited_state.out "total E" -22.6195267  0.0031049
 
     - name: "Test 33 (Water optall) Native TREXIO testing with HDF5 backend on 2 processors"
       run: |
@@ -613,8 +613,8 @@ jobs:
         echo "Running the calculation with trexio library linked"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_h2o_dft_optall.inp  -o vmc_h2o_dft_optall.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -17.2236584 +-  0.0019968 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_h2o_dft_optall.out "total E" -17.2236584  0.0019968
+        echo "Comparing the energy with the reference one (total E = -17.2259531 +-  0.0019156 ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_h2o_dft_optall.out "total E" -17.2259531   0.0019156
 
     - name: "Test 34 (Water DMC) Native TREXIO testing with HDF5 backend on 8 processors"
       run: |
@@ -638,8 +638,8 @@ jobs:
         rm -v mc_configs_new*
 
         tail -20 dmc_h2o_dft_jas2body_optall.out
-        echo "Comparing the energy with the reference one (total E = -17.2616602 +-  0.0009189 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py dmc_h2o_dft_jas2body_optall.out "total energy (  100)" -17.2616602  0.0009189
+        echo "Comparing the energy with the reference one (total E = -17.2625985 +-  0.0008871 ) "
+        $GITHUB_WORKSPACE/tools/compare_value.py dmc_h2o_dft_jas2body_optall.out "total energy (  100)" -17.2625985  0.0008871
 
     - name: "Test 35 (Butadiene) Native TREXIO with TEXT backend on 1 processor"
       run: |
