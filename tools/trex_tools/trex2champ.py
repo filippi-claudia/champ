@@ -191,6 +191,7 @@ class Champ:
         self.save_symmetry = args.save_symmetry
         self.save_determinants = args.save_determinants
         self.save_csfs = args.save_csfs
+        self.back_end = args.back_end
 
         # Optional argument for controlling the names of the output files
         self.basis_prefix = args.basis_prefix
@@ -207,21 +208,6 @@ class Champ:
         print ('\n')
 
 
-        # Default backend is HDF5
-        if args.back_end is not None:
-            if str(args.back_end).lower() == "hdf5":
-                back_end_t = trexio.TREXIO_HDF5
-            elif str(args.back_end).lower() == "text":
-                back_end_t = trexio.TREXIO_TEXT
-            else:
-                raise ValueError
-        else:
-            back_end_t = trexio.TREXIO_HDF5
-
-        self.back_end = back_end_t
-
-
-
 
     def run(self):
         self.__main__
@@ -229,7 +215,17 @@ class Champ:
         if self.gamessfile is not None:
             gamessfile = self.gamessfile
         motype = self.motype
-        back_end = self.back_end
+
+        # Default backend is HDF5
+        if self.back_end is not None:
+            if str(self.back_end).lower() == "hdf5":
+                back_end = trexio.TREXIO_HDF5
+            elif str(self.back_end).lower() == "text":
+                back_end = trexio.TREXIO_TEXT
+            else:
+                raise ValueError
+        else:
+            back_end = trexio.TREXIO_HDF5
 
         trexio_file = trexio.File(filename, mode='r', back_end=back_end)
 
