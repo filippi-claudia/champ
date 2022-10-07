@@ -8,7 +8,7 @@ c routine to print out final results
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
       use system, only: ncent
-      use const, only: nelec
+      use system, only: nelec
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
@@ -24,7 +24,7 @@ c routine to print out final results
       use sa_weights, only: weights
       use step, only: rprob, suc, try
       use tmpnode, only: distance_node_sum
-      use contr3, only: mode
+      use control, only: mode
       !use contrl, only: nblk, nstep
       use control_vmc, only: vmc_nblk, vmc_nstep
       use contrl_per, only: iperiodic

@@ -4,7 +4,7 @@ c Written by Claudia Filippi
       use mpiconf, only: mpiconf_init
       use allocation_mod, only: deallocate_dmc
       use optwf_contrl, only: ioptwf
-      use contr3, only: mode
+      use control, only: mode
       use contrl_file, only: initialize
       use mpi
       use contrl_file,    only: ounit

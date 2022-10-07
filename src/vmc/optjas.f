@@ -3,11 +3,13 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
       use optwf_parms, only: nparmj
-      use const, only: hb, nelec, ipr
+      use const, only: hb
+      use system, only: nelec
+      use control, only: ipr
       use csfs, only: nstates
       use derivjas, only: d2g, g
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
+      use system, only: ndn, nup
       use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req
       use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle
       use optwf_contrl, only: ioptjas
@@ -88,7 +90,7 @@
 
         ddenergy_det=0.d0
         denergy_det=0.d0
-        
+
         do iab=1,2
 
 c           ddenergy_det(:,iab)=0
@@ -97,14 +99,14 @@ c           ddenergy_det(:,iab)=0
               iorb=irepcol_det(1,k,iab)
               jorb=ireporb_det(1,k,iab)
               ddenergy_det(k,iab)=wfmat(k,1,iab)*dtildem(iorb,jorb,iab)
-             
-           enddo          
+
+           enddo
 
 c           do k=1,ndetiab(iab)
            do k=ndetsingle(iab)+1,ndetiab(iab)
-                    
-              ndim=numrep_det(k,iab) 
-             
+
+              ndim=numrep_det(k,iab)
+
               do irep=1,ndim
                  iorb=irepcol_det(irep,k,iab)
                  do jrep=1,ndim
@@ -112,9 +114,9 @@ c           do k=1,ndetiab(iab)
                     ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab)*dtildem(iorb,jorb,iab)
                  enddo
               enddo
-           enddo          
-           
-           
+           enddo
+
+
 c     Unrolling determinants different to kref
            do kk=1,ndetiab2(iab)
               k=k_det2(kk,iab)
@@ -124,13 +126,13 @@ c     Unrolling determinants different to kref
 c           k_det2(1:ndetiab2(iab),iab)
 c           k_aux(1:ndetiab2(iab),iab)
 c           denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
-           
-           
+
+
         enddo
-        
-        
+
+
 c        do k=1,ndet
-c           deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref             
+c           deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref
 c           do istate=1,nstates
 c              denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detiab(k,1)*detiab(k,2)
 c           enddo
@@ -144,8 +146,8 @@ c        enddo
            enddo
            denergy(iparm,istate)=cum_deloc_k_state
         enddo
-        
-        
+
+
       endif
 c endif ndet.gt.1
 

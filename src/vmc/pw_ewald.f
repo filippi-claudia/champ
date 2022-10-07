@@ -7,7 +7,8 @@ c Written by Cyrus Umrigar
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
       use system, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
-      use const, only: pi, ipr
+      use const, only: pi
+      use control, only: ipr
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
       use ewald_basis, only: vps_basis_fourier
       use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt
@@ -1894,7 +1895,7 @@ c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_
 c-----------------------------------------------------------------------
 
       function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
-      use const, only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
@@ -1934,7 +1935,7 @@ c Written by Cyrus Umrigar
 c-----------------------------------------------------------------------
 
       function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
-      use const, only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
@@ -2149,7 +2150,8 @@ c Written by Cyrus Umrigar
       use vmc_mod, only: nmat_dim2
       use system, only: znuc, cent, iwctype, ncent
 
-      use const, only: nelec, ipr
+      use control, only: ipr
+      use system, only: nelec
       use ewald, only: b_coul, y_coul
 
       use periodic, only: cutr, glatt
@@ -2233,7 +2235,8 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use vmc_mod, only: nmat_dim2
-      use const, only: nelec, ipr
+      use control, only: ipr
+      use system, only: nelec
       use ewald, only: b_coul_sim, y_coul_sim
 
       use periodic, only: cutr_sim
@@ -2288,7 +2291,7 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
@@ -2350,7 +2353,7 @@ c-----------------------------------------------------------------------
       subroutine cossin_psi(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positions.
@@ -2450,7 +2453,7 @@ c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng
       subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
@@ -2565,7 +2568,7 @@ c-----------------------------------------------------------------------
 c     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
-      use const, only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
 c For the k-vectors do it straightforwardly since there are few of them
@@ -2765,7 +2768,7 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use const, only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 

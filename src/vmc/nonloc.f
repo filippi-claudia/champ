@@ -7,14 +7,15 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use optwf_parms, only: nparmj
       use vmc_mod, only: norb_tot
       use system, only: iwctype, ncent, ncent_tot
-      use const, only: nelec, ipr
-      use elec, only: nup
+      use control, only: ipr
+      use system, only: nelec
+      use system, only: nup
       use jaso, only: fso
       use optwf_contrl, only: ioptjas
       use optwf_parms, only: nparmj
       use Bloc, only: b_dj
       use coefs, only: norb
-      use contr3, only: mode
+      use control, only: mode
       use Bloc, only: b
       use force_analy, only: iforce_analy, iuse_zmat, alfgeo
       use pseudo, only: lpot, vps
@@ -302,7 +303,7 @@ c-----------------------------------------------------------------------
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
-      use const, only: nelec
+      use system, only: nelec
       use pw_find_image, only: find_image4
       use scale_dist_mod, only: scale_dist, scale_dist1
 
@@ -367,7 +368,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use system, only: iwctype, ncent, ncent_tot
-      use const, only: nelec
+      use system, only: nelec
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
       use wfsec, only: iwf
@@ -438,7 +439,7 @@ c get basis functions for electron iel
           endif
 #else
           call basis_fns(iel,iel,rvec_en,r_en,ider)
-#endif          
+#endif
 
 
 ! Vectorization dependent code selection
@@ -505,7 +506,7 @@ c-----------------------------------------------------------------------
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use precision_kinds, only: dp
-      use elec, only: ndn, nup
+      use system, only: ndn, nup
       use multidet, only: kref
       use dorb_m, only: iworbd
       use vmc_mod, only: nmat_dim
@@ -552,13 +553,13 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use system, only: iwctype, ncent, ncent_tot
 
       use jaspar, only: sspinn
-      use const, only: nelec
+      use system, only: nelec
       use da_jastrow4val, only: da_j
-      use elec, only: nup
+      use system, only: nup
       use bparm, only: nocuspb, nspin2b
       use contr2, only: isc
       use contrl_per, only: iperiodic
-      use const, only: nelec
+      use system, only: nelec
       use force_analy, only: iforce_analy
       use precision_kinds, only: dp
       use nonlpsi, only: psibnl, dpsibnl, psinl, psianl, dpsianl

@@ -50,7 +50,7 @@ module da_jastrow4val
     save
 contains
     subroutine allocate_da_jastrow4val()
-        use const, only: nelec
+        use system, only: nelec
         use system, only: ncent_tot
         if (.not. allocated(da_d2j)) allocate (da_d2j(3, nelec, ncent_tot))
         if (.not. allocated(da_j)) allocate (da_j(3, nelec, ncent_tot))
@@ -82,7 +82,7 @@ module da_orbval
     save
 contains
     subroutine allocate_da_orbval()
-        use const, only: nelec
+        use system, only: nelec
         use system, only: ncent_tot, ncent
         use vmc_mod, only: norb_tot
         if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, norb_tot, ncent_tot))
@@ -116,7 +116,7 @@ module da_pseudo
     save
 contains
     subroutine allocate_da_pseudo()
-        use const, only: nelec
+        use system, only: nelec
         use system, only: ncent_tot
         use pseudo_mod, only: MPS_L
         if (.not. allocated(da_pecent)) allocate (da_pecent(3, ncent_tot))
@@ -259,7 +259,7 @@ module derivjas
     save
 contains
     subroutine allocate_derivjas()
-        use const, only: nelec
+        use system, only: nelec
         use optwf_parms, only: nparmj
         if (.not. allocated(d2g)) allocate (d2g(nparmj))
         if (.not. allocated(g)) allocate (g(3, nelec, nparmj))
@@ -278,7 +278,7 @@ end module derivjas
 
 module dorb_m
     !> Arguments: iworbd
-    use const, only: nelec
+    use system, only: nelec
 
     implicit none
 
@@ -293,7 +293,7 @@ contains
 
     subroutine allocate_dorb_m()
         use dets, only: ndet
-        use const, only: nelec
+        use system, only: nelec
         if (.not. allocated(iworbd)) allocate (iworbd(nelec, ndet), source=0)
     end subroutine allocate_dorb_m
 

@@ -6,7 +6,7 @@
 
       use mpi
       use sr_mod, only: mparm
-      use const, only: ipr
+      use control, only: ipr
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use mpiconf, only: idtask

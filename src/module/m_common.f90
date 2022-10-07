@@ -25,7 +25,7 @@ module Bloc
     save
 contains
     subroutine allocate_Bloc()
-        use const, only: nelec
+        use system, only: nelec
         use coefs, only: norb
         use system, only: ncent_tot, ncent
         use vmc_mod, only: norb_tot
@@ -80,7 +80,7 @@ module casula
     save
 contains
     subroutine allocate_casula()
-        use const, only: nelec
+        use system, only: nelec
         use system, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         if (.not. allocated(t_vpsp)) allocate (t_vpsp(ncent_tot, MPS_QUAD, nelec))
@@ -114,7 +114,7 @@ module distance_mod
     save
 contains
     subroutine allocate_distance_mod()
-        use const, only: nelec
+        use system, only: nelec
         use system, only: ncent_tot
         use vmc_mod, only: nmat_dim2
         if (.not. allocated(r_en)) allocate (r_en(nelec, ncent_tot))
@@ -153,7 +153,7 @@ module distances_sav
     save
 contains
     subroutine allocate_distances_sav()
-        use const, only: nelec
+        use system, only: nelec
         use system, only: ncent_tot
         if (.not. allocated(r_ee_sav)) allocate (r_ee_sav(nelec))
         if (.not. allocated(r_en_sav)) allocate (r_en_sav(ncent_tot))
@@ -345,7 +345,7 @@ module multidet
     save
 contains
     subroutine allocate_multidet()
-        use const, only: nelec
+        use system, only: nelec
         use dets, only: ndet
         if (.not. allocated(iactv)) allocate (iactv(2), source=0)
         if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2), source=0)
@@ -393,7 +393,7 @@ module multimat
     save
 contains
     subroutine allocate_multimat()
-        use const, only: nelec
+        use system, only: nelec
         use dets, only: ndet
         use coefs, only: norb
         use vmc_mod, only: norb_tot
@@ -424,7 +424,7 @@ module multimatn
     save
 contains
     subroutine allocate_multimatn()
-        use const, only: nelec
+        use system, only: nelec
         use dets, only: ndet
         use vmc_mod, only: norb_tot
         use vmc_mod, only: MEXCIT
@@ -552,7 +552,7 @@ module orbval
     save
 contains
     subroutine allocate_orbval()
-        use const, only: nelec
+        use system, only: nelec
         use coefs, only: norb
         use precision_kinds, only: dp
         if (.not. allocated(ddorb)) allocate (ddorb(norb_tot, nelec))
@@ -589,7 +589,7 @@ module phifun
     save
 contains
     subroutine allocate_phifun()
-        use const, only: nelec
+        use system, only: nelec
         use coefs, only: nbasis
 
         if (.not. allocated(d2phin)) allocate (d2phin(nbasis, nelec))
@@ -676,11 +676,11 @@ module b_tmove
     save
 contains
     subroutine allocate_b_tmove()
-        use const, only: nelec
+        use system, only: nelec
         use system, only: ncent_tot
         use vmc_mod, only: norb_tot
         use qua, only: nquad
-        use contr3, only: mode
+        use control, only: mode
         if(index(mode,'dmc').ne.0) then
           if (.not. allocated(b_t)) allocate (b_t(norb_tot, nquad, ncent_tot, nelec))
         endif
@@ -723,7 +723,7 @@ module scratch
     save
 contains
     subroutine allocate_scratch()
-        use const, only: nelec
+        use system, only: nelec
         use dets, only: ndet
         use vmc_mod, only: norb_tot
         if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
@@ -766,7 +766,7 @@ module slater
 
 contains
     subroutine allocate_slater()
-        use const, only: nelec
+        use system, only: nelec
         use vmc_mod, only: nmat_dim
         if (.not. allocated(d2dx2)) allocate(d2dx2(nelec))
         if (.not. allocated(ddx)) allocate(ddx(3, nelec))
@@ -877,7 +877,7 @@ module velocity_jastrow
     save
 contains
     subroutine allocate_velocity_jastrow()
-        use const, only: nelec
+        use system, only: nelec
         if (.not. allocated(vj)) allocate (vj(3, nelec))
         if (.not. allocated(vjn)) allocate (vjn(3, nelec))
     end subroutine allocate_velocity_jastrow
@@ -906,7 +906,7 @@ module ycompact
     save
 contains
     subroutine allocate_ycompact()
-        use const, only: nelec
+        use system, only: nelec
         use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
         if (.not. allocated(dymat)) allocate (dymat(norb_tot, nelec, 2, MSTATES))
@@ -936,7 +936,7 @@ module ycompactn
     save
 contains
     subroutine allocate_ycompactn()
-        use const, only: nelec
+        use system, only: nelec
         use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
         if (.not. allocated(ymatn)) allocate (ymatn(norb_tot, nelec, MSTATES))
@@ -967,7 +967,7 @@ module zcompact
     save
 contains
     subroutine allocate_zcompact()
-        use const, only: nelec
+        use system, only: nelec
         use vmc_mod, only: norb_tot
         use mstates_mod, only: MSTATES
         if (.not. allocated(aaz)) allocate (aaz(nelec, nelec, 2, MSTATES))

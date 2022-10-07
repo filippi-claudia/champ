@@ -4,7 +4,7 @@
 c Written by Cyrus Umrigar
 
       use dmc_mod, only: MWALK
-      use const, only: nelec
+      use system, only: nelec
       use forcepar, only: nforce
       use age, only: iage
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc

@@ -301,8 +301,8 @@ subroutine read_determinants_file(file_determinants)
     use csfs,           only: nstates
     use mstates_mod,    only: MSTATES
     use general,        only: pooldir
-    use elec,           only: ndn, nup
-    use const,          only: nelec
+    use system,           only: ndn, nup
+    use system,         only: nelec
     use method_opt,     only: method
     use precision_kinds, only: dp
 
@@ -435,7 +435,7 @@ subroutine read_multideterminants_file(file_multideterminants)
     use mpiconf,            only: wid
     use contrl_file,    only: ounit, errunit
     use dets, only: ndet
-    use const, only: nelec
+    use system, only: nelec
     use multidet, only: irepcol_det, ireporb_det, numrep_det, iwundet
     use inputflags, only: imultideterminants
     use general, only: pooldir
@@ -516,7 +516,7 @@ subroutine read_jastrow_file(file_jastrow)
 
     use force_mod,          only: MWF
     use jaspar,             only: nspin1, nspin2
-    use elec,               only: ndn
+    use system,               only: ndn
     use jaspar3,            only: b, c, scalek
     use jaspar4,            only: a4, norda, nordb, nordc
     use vmc_mod,            only: nordj, nordj1, neqsx

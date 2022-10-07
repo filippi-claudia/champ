@@ -6,7 +6,7 @@ c Written by Claudia Filippi
       use csfs, only: nstates
 
       use dets, only: ndet
-      use elec, only: ndn, nup
+      use system, only: ndn, nup
       use multidet, only: ivirt, kref, numrep_det, ndetiab, ndetsingle
 
       use slatn, only: slmin
@@ -25,7 +25,7 @@ c Written by Claudia Filippi
 
       use vmc_mod, only: MEXCIT
 
-      use const, only: nelec
+      use system, only: nelec
 
       use precision_kinds, only: dp
       implicit none

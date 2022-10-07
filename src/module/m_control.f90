@@ -1,3 +1,24 @@
+module control
+    !> Arguments: mode
+
+    implicit none
+
+    character*12 :: mode
+    integer  :: ipr
+    private
+    public :: mode
+    public :: ipr
+    public :: init_control_mode
+    save
+    contains
+    subroutine init_control_mode(str_mode)
+        implicit None
+        character(12), intent(IN) :: str_mode
+        mode = str_mode
+    end subroutine init_control_mode
+
+end module control
+
 module control_vmc
     !> Arguments: idump, irstar, isite, nconf, nblk, nblk_max, nblkeq, nconf_new, nstep,
     !> icharged_atom, nblk_ci for vmc module
@@ -53,26 +74,6 @@ module contr2
     public :: ianalyt_lap, ijas, isc, istrch
     save
 end module contr2
-
-module contr3
-    !> Arguments: mode
-
-    implicit none
-
-    character*12 :: mode
-
-    private
-    public :: mode
-    public :: init_control_mode
-    save
-contains
-    subroutine init_control_mode(str_mode)
-        implicit None
-        character(12), intent(IN) :: str_mode
-        mode = str_mode
-    end subroutine init_control_mode
-
-end module contr3
 
 module contrl_per
     !> Arguments: iperiodic, ibasis
@@ -287,7 +288,7 @@ contains
 
     subroutine init_procfile()
         use mpiconf, only: idtask
-        use const, only: ipr
+        use control, only: ipr
 
         implicit none
 

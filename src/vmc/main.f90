@@ -16,7 +16,7 @@ program main
     use mpi
     use mpiconf, only: idtask, nproc
     use mpiconf, only: mpiconf_init
-    use contr3, only: init_control_mode
+    use control, only: init_control_mode
     use contrl_file, only: init_logfile, init_procfile, close_files, initialize
     use allocation_mod, only: deallocate_vmc
     use optwf_mod, only: optwf

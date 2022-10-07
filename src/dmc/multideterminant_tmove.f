@@ -3,13 +3,13 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
       use vmc_mod, only: norb_tot
-      use const, only: nelec
+      use system, only: nelec
       use system, only: ncent
       use qua, only: nquad
       use b_tmove, only: b_t, iskip
       use casula, only: icasula, t_vpsp
       use slater, only: slmi
-      use elec, only: ndn, nup
+      use system, only: ndn, nup
       use dorb_m, only: iworbd
       use coefs, only: norb
       use ycompact, only: ymat

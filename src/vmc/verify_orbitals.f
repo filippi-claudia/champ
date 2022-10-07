@@ -2,7 +2,7 @@
       contains
       subroutine verify_orbitals
 
-      use const, only: nelec
+      use system, only: nelec
       use dets, only: ndet
       use optwf_contrl, only: ioptorb
       use coefs, only: norb

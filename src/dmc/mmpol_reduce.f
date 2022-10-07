@@ -3,7 +3,7 @@
       subroutine mmpol_reduce(wgsum)
 
       use mpiconf, only: wid
-      use contr3, only: mode
+      use control, only: mode
       use mmpol_cntrl, only: immpol
       use mmpol_averages, only: cmmpol_cum, cmmpol_cm2, dmmpol_sum
       use mmpol_averages, only: cmmpol_sum, dmmpol_cum, dmmpol_cm2

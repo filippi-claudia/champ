@@ -5,7 +5,9 @@
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nrad
       use basis, only: zex
-      use const, only: hb, ipr, nelec
+      use const, only: hb
+      use control, only: ipr
+      use system, only: nelec
       use forcest, only: fgcm2, fgcum
       use forcepar, only: istrech, nforce
       use age, only: iage, ioldest, ioldestmx
@@ -30,7 +32,7 @@
       use step, only: rprob
       use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
+      use control, only: mode
       use mpiblk, only: iblk_proc
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
@@ -38,7 +40,7 @@
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: nloc
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
+      use system, only: ndn, nup
       use coefs, only: coef, nbasis, norb
       use system, only: nghostcent
       use velratio, only: fratio

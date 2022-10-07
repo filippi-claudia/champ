@@ -8,7 +8,8 @@ c job where it left off
       use vmc_mod, only: nrad
       use dmc_mod, only: MWALK
       use basis, only: zex
-      use const, only: hb, nelec
+      use const, only: hb
+      use system, only: nelec
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
       use age, only: iage, ioldest, ioldestmx
@@ -34,7 +35,7 @@ c job where it left off
       use jacobsave, only: ajacob
       use pseudo, only: nloc
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
+      use system, only: ndn, nup
       use coefs, only: coef, nbasis, norb
       use system, only: newghostype, nghostcent
       use velratio, only: fratio

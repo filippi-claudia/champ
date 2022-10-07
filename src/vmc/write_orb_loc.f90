@@ -8,7 +8,7 @@
 ! 2) a gaussian basis
       use system, only: znuc, iwctype, nctype, ncent
       use system, only: newghostype
-      use const, only: nelec
+      use system, only: nelec
       use numbas, only: numr
       use coefs, only: coef, nbasis, norb
       use basis, only: zex, betaq

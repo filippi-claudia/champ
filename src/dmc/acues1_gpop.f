@@ -5,7 +5,8 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use precision_kinds, only: dp
-      use const, only: etrial, ipr
+      use control, only: ipr
+      use const, only: etrial
       use forcepar, only: nforce
       use contrldmc, only: idmc
       use contrldmc, only: nfprod

@@ -9,7 +9,8 @@ c job where it left off
       use dmc_mod, only: MWALK
       use basis, only: zex
       use basis, only: ns, np, nd, nf, ng
-      use const, only: hb, nelec
+      use const, only: hb
+      use system, only: nelec
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
       use age, only: iage, ioldest, ioldestmx
@@ -30,14 +31,14 @@ c job where it left off
       use step, only: rprob
       use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
+      use control, only: mode
       use mpiblk, only: iblk_proc
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
       use jacobsave, only: ajacob
       use pseudo, only: nloc
       use dets, only: cdet, ndet
-      use elec, only: ndn, nup
+      use system, only: ndn, nup
       use coefs, only: coef, nbasis, norb
       use system, only: newghostype, nghostcent
       use velratio, only: fratio

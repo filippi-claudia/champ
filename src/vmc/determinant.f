@@ -10,16 +10,16 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use const, only: ipr
+      use control, only: ipr
       use dets, only: ndet
-      use elec, only: ndn, nup
+      use system, only: ndn, nup
       use multidet, only: kref, kchange, kref_fixed
       use dorb_m, only: iworbd
-      use contr3, only: mode
+      use control, only: mode
 
       use orbval, only: ddorb, dorb, orb
       use slater, only: d2dx2, ddx, fp, fpp, slmi
-      use const, only: nelec
+      use system, only: nelec
 
       use multislater, only: detiab, allocate_multislater
       use system, only: ncent_tot
@@ -145,7 +145,7 @@ c reshuffling determinants if the maximum number of iterations looking for kref 
 c-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,iflag)
 
-      use const, only: ipr
+      use control, only: ipr
       use estpsi, only: detref
       use multidet, only: kref, kref_old, kchange
       use multislater, only: detiab, allocate_multislater
@@ -210,7 +210,8 @@ c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
       use system, only: ncent
-      use const, only: hb, nelec
+      use system, only: nelec
+      use const, only: hb
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb, da_dorb
       use derivjas, only: g

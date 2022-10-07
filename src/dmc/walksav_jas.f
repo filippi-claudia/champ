@@ -4,7 +4,7 @@
 c Written by Claudia Filippi
 
       use dmc_mod, only: MWALK
-      use const, only: nelec
+      use system, only: nelec
       use branch, only: nwalk
       use jaso, only: fijo, fjo, fso, fsumo
       use velocity_jastrow, only: vj

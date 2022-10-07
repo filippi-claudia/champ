@@ -36,6 +36,9 @@ module system
     public   :: newghostype
     public   :: nghostcent
     public   :: allocate_atom, deallocate_atom
+    public   :: nelec
+    public   :: ndn
+    public   :: nup
     save
 contains
     subroutine allocate_atom()

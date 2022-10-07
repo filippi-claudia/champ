@@ -37,15 +37,15 @@ module trexio_read_data
         !! @date 07 October 2021
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
-        use system,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+        use system,             only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
         use system, 		    only: newghostype, nghostcent
         use inputflags,         only: igeometry
         use periodic_table,     only: atom_t, element
-        use elec,           	only: ndn, nup
-        use const,          	only: nelec
+        use system,           	only: ndn, nup
+        use system,          	only: nelec
         use contrl_file,        only: ounit, errunit
         use general,            only: pooldir
-        use precision_kinds, only: dp
+        use precision_kinds,    only: dp
 #if defined(TREXIO_FOUND)
         use trexio
         use contrl_file,        only: backend
@@ -481,11 +481,11 @@ module trexio_read_data
 
         ! The following to be used to store the information
         use numbas_mod,         only: MRWF, MRWF_PTS
-        use system,               only: znuc, nctype, nctype_tot, ncent_tot
-        use system,               only: symbol, atomtyp
+        use system,             only: znuc, nctype, nctype_tot, ncent_tot
+        use system,             only: symbol, atomtyp
         use vmc_mod,            only: NCOEF
-        use system,          only: newghostype
-        use const,              only: ipr
+        use system,             only: newghostype
+        use control,            only: ipr
         use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
         use numbas,             only: allocate_numbas
         use coefs,              only: nbasis
@@ -1068,8 +1068,8 @@ module trexio_read_data
         use csfs,               only: nstates
         use mstates_mod,        only: MSTATES
         use general,            only: pooldir
-        use elec,               only: ndn, nup
-        use const,              only: nelec
+        use system,               only: ndn, nup
+        use system,             only: nelec
         use method_opt,         only: method
         use precision_kinds,    only: dp
 

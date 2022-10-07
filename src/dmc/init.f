@@ -5,14 +5,15 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use dmc_mod, only: MFPRD1
-      use const, only: etrial, nelec
+      use const, only: etrial
+      use system, only: nelec
       use forcepar, only: istrech, nforce
       use system, only: cent, iwctype, ncent, pecent, znuc
       use estcum, only: ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use force_dmc, only: nwprod
       use mpiconf, only: nproc
-      use contr3, only: mode
+      use control, only: mode
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen
       use branch, only: wthist

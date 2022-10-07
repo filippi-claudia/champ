@@ -3,7 +3,7 @@
       subroutine send_walker(irecv)
 c Written by Claudia Filippi
 
-      use const, only: nelec
+      use system, only: nelec
       use forcepar, only: nforce
       use age, only: iage
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc

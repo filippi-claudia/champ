@@ -2,7 +2,7 @@
       contains
       subroutine nonloc_grid(iel,iw,x,psid,imove)
 
-      use const, only: nelec
+      use system, only: nelec
       use contrl_per, only: iperiodic
       use contrldmc, only: tau
       use system, only: cent, ncent
@@ -142,7 +142,7 @@ c-----------------------------------------------------------------------
       subroutine t_vpsp_sav
 
 
-      use const, only: nelec
+      use system, only: nelec
       use system, only: ncent, ncent_tot
       use qua, only: nquad
       use pseudo_mod, only: MPS_QUAD

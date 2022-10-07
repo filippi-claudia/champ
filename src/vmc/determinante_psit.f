@@ -4,7 +4,7 @@ c-----------------------------------------------------------------------
       subroutine determinante_psit(iel,determ,istate)
 
       use dets, only: cdet, ndet
-      use elec, only: nup
+      use system, only: nup
       use wfsec, only: iwf
       use multislatern, only: detn
 

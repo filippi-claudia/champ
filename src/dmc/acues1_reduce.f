@@ -14,7 +14,7 @@
       use est2cm, only: wfcm21, wgcm21
       use step, only: rprob
       use mpiconf, only: nproc, wid
-      use contr3, only: mode
+      use control, only: mode
       use force_mod, only: MFORCE
       use contrl_per, only: iperiodic
       use mpi

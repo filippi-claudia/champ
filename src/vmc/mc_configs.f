@@ -4,7 +4,7 @@
 
       use mpi
       use system, only: znuc, iwctype, ncent, ncent_tot
-      use const, only: nelec
+      use system, only: nelec
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc
       !use contrl, only: irstar, isite, nconf_new, icharged_atom

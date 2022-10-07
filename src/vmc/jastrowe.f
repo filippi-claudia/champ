@@ -3,7 +3,7 @@
       subroutine jastrowe(iel,x,v,d2,value,iflag)
 c Written by Claudia Filippi by modifying jastrow
 
-      use const, only: nelec
+      use system, only: nelec
       use precision_kinds, only: dp
       use jastrow4e_mod, only: jastrow4e
 

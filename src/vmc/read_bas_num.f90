@@ -23,7 +23,7 @@ contains
       use vmc_mod, only: NCOEF
       use system, only: znuc, nctype, nctype_tot
       use system, only: newghostype
-      use const, only: ipr
+      use control, only: ipr
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
       use numbas, only: allocate_numbas
       use coefs, only: nbasis
