@@ -14,7 +14,7 @@ c job where it left off
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use system, only: cent, iwctype, ncent, nctype, pecent, znuc
       use estcum, only: iblk, ipass
       use config, only: xold_dmc
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
@@ -36,7 +36,7 @@ c job where it left off
       use dets, only: cdet, ndet
       use elec, only: ndn, nup
       use coefs, only: coef, nbasis, norb
-      use ghostatom, only: newghostype, nghostcent
+      use system, only: newghostype, nghostcent
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf

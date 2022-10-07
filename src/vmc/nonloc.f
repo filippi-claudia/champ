@@ -6,7 +6,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use pseudo_mod, only: MPS_QUAD
       use optwf_parms, only: nparmj
       use vmc_mod, only: norb_tot
-      use atom, only: iwctype, ncent, ncent_tot
+      use system, only: iwctype, ncent, ncent_tot
       use const, only: nelec, ipr
       use elec, only: nup
       use jaso, only: fso
@@ -298,7 +298,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine dist_quad(i,ic,iq,x,r_en,rvec_en,rshift,rr_en,rr_en2,dd1)
 
-      use atom, only: cent, ncent, ncent_tot
+      use system, only: cent, ncent, ncent_tot
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use qua, only: xq, yq, zq
@@ -366,7 +366,7 @@ c-----------------------------------------------------------------------
       subroutine orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
-      use atom, only: iwctype, ncent, ncent_tot
+      use system, only: iwctype, ncent, ncent_tot
       use const, only: nelec
       use phifun, only: dphin, n0_ibasis, n0_ic, n0_nbasis
       use phifun, only: phin
@@ -549,7 +549,7 @@ c-----------------------------------------------------------------------
       subroutine nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,fso,ratio_jn,vjn,da_ratio_jn)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use atom, only: iwctype, ncent, ncent_tot
+      use system, only: iwctype, ncent, ncent_tot
 
       use jaspar, only: sspinn
       use const, only: nelec
@@ -692,7 +692,7 @@ c-----------------------------------------------------------------------
      &                                   term_radial,orbn,dorbn,da_orbn,psij_ratio,vjn,da_ratio_jn)
 
       use vmc_mod, only: norb_tot
-      use atom, only: ncent, ncent_tot
+      use system, only: ncent, ncent_tot
       use Bloc, only: b_da
       use coefs, only: norb
       use force_analy, only: iforce_analy

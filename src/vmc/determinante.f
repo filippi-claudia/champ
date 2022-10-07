@@ -13,7 +13,7 @@
 
       use multislater, only: detiab
 
-      use atom, only: ncent_tot
+      use system, only: ncent_tot
       use precision_kinds, only: dp
       use orbitals_mod, only: orbitalse
       implicit none

@@ -28,8 +28,8 @@ module pseudo
 contains
     subroutine allocate_pseudo()
         use const, only: nelec
-        use atom, only: nctype_tot
-        use atom, only: ncent_tot
+        use system, only: nctype_tot
+        use system, only: ncent_tot
         use pseudo_mod, only: MPS_L
         use force_mod, only: MFORCE
 
@@ -67,7 +67,7 @@ module pseudo_tm
     save
 contains
     subroutine allocate_pseudo_tm()
-        use atom, only: nctype_tot
+        use system, only: nctype_tot
         use pseudo_mod, only: MPS_L, MPS_GRID
 
         if (.not. allocated(arg)) allocate (arg(nctype_tot))

@@ -3,7 +3,7 @@
       subroutine deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,value,gn,vjn,da_ratio_jn)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-      use atom, only: iwctype, nctype, ncent, ncent_tot
+      use system, only: iwctype, nctype, ncent, ncent_tot
 
       use jaspar, only: nspin2, sspinn, is
       use const, only: nelec

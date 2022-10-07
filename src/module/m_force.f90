@@ -181,7 +181,7 @@ end module wfsec
      save
  contains
      subroutine allocate_force_fin()
-         use atom, only: ncent_tot
+         use system, only: ncent_tot
          if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot))
          if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
      end subroutine allocate_force_fin
@@ -210,7 +210,7 @@ end module wfsec
  contains
      subroutine allocate_force_mat_n()
          use sr_mod, only: mconf
-         use atom, only: ncent_tot
+         use system, only: ncent_tot
          if (.not. allocated(force_o)) allocate (force_o(6*ncent_tot, mconf))
      end subroutine allocate_force_mat_n
 
@@ -253,4 +253,4 @@ end module wfsec
      call deallocate_force_fin()
      call deallocate_force_mat_n()
  end subroutine deallocate_m_force
- end module 
+ end module

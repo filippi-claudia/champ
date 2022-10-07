@@ -3,7 +3,7 @@
       subroutine mc_configs_start
 
       use mpi
-      use atom, only: znuc, iwctype, ncent, ncent_tot
+      use system, only: znuc, iwctype, ncent, ncent_tot
       use const, only: nelec
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc

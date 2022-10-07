@@ -14,15 +14,15 @@ contains
       use mpiconf,            only: wid
 
       use numbas_mod, only: MRWF, MRWF_PTS
-      use atom, only: znuc, nctype, nctype_tot
+      use system, only: znuc, nctype, nctype_tot
 ! c Written by Claudia Filippi
 ! c Modified by F. Schautz to use fancy file names
 ! c Reads in localized orbitals on a radial grid
 
       use numbas_mod, only: MRWF, MRWF_PTS
       use vmc_mod, only: NCOEF
-      use atom, only: znuc, nctype, nctype_tot
-      use ghostatom, only: newghostype
+      use system, only: znuc, nctype, nctype_tot
+      use system, only: newghostype
       use const, only: ipr
       use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
       use numbas, only: allocate_numbas
@@ -31,7 +31,7 @@ contains
       use pseudo, only: nloc
       use general, only: filename, filenames_bas_num
 
-      use atom, 			        only: atomtyp
+      use system, 			        only: atomtyp
       use general, 			      only: pooldir, bas_id
       use contrl_file,        only: ounit, errunit
       use precision_kinds,    only: dp
@@ -260,7 +260,7 @@ subroutine readps_gauss
   use mpiconf,            only: wid
 
   use pseudo_mod, only: MPS_L, MGAUSS, MPS_QUAD
-  use atom, only: nctype, atomtyp
+  use system, only: nctype, atomtyp
   use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
   use gauss_ecp, only: allocate_gauss_ecp
   use pseudo, only: lpot
@@ -400,7 +400,7 @@ end subroutine readps_gauss
 !   use mpiconf,            only: wid
 
 !   use pseudo_mod, only: MPS_L, MGAUSS, MPS_QUAD
-!   use atom, only: nctype, atomtyp
+!   use system, only: nctype, atomtyp
 !   use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
 !   use gauss_ecp, only: allocate_gauss_ecp
 !   use pseudo, only: lpot

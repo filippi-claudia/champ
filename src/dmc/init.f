@@ -7,7 +7,7 @@ c routine to accumulate estimators for energy etc.
       use dmc_mod, only: MFPRD1
       use const, only: etrial, nelec
       use forcepar, only: istrech, nforce
-      use atom, only: cent, iwctype, ncent, pecent, znuc
+      use system, only: cent, iwctype, ncent, pecent, znuc
       use estcum, only: ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use force_dmc, only: nwprod

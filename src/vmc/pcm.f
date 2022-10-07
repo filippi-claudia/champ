@@ -27,7 +27,7 @@ c     read data for pcm calculations
 c     comput nuclei-qpol interactions (penups,penupv)
 c...........................................................
 
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
       use pcm_cntrl, only: icall, ichpol, ipcm, isurf
       use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
       use pcm_parms, only: ch, eps_solv, nch, nchs, nchs1, nchs2
@@ -187,7 +187,7 @@ C     contribution from nuclei to polarization charghes
 C     ***************************************************************
 
       use pcm, only: MCHS
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
       use pcm_parms, only: eps_solv, nchs
       use pcm_parms, only: surk, xpol
       use pcm_ameta, only: amdlg, eta
@@ -490,7 +490,7 @@ c............................................................
 c     compute penupv of volume charges
 c............................................................
 
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, nch, nchs
       use pcm_parms, only: xpol
@@ -908,7 +908,7 @@ c     This subroutine computes the coordinates of point charges
 c     on the cavity surface
 C     ***************************************************************
 
-      use atom, only: cent, iwctype, ncent
+      use system, only: cent, iwctype, ncent
       use spc, only: nsf, num
       use spc1, only: csf, qsf, rsf
       use spc2, only: nxyz, sfxyz, usf

@@ -6,7 +6,7 @@ c Written by Cyrus Umrigar
       use pseudo_mod, only: MPS_L, MPS_GRID
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
-      use atom, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
+      use system, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
       use const, only: pi, ipr
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
       use ewald_basis, only: vps_basis_fourier
@@ -2033,7 +2033,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald_old
 c Written by Cyrus Umrigar
 
-      use atom, only: znuc, cent, pecent, iwctype, ncent
+      use system, only: znuc, cent, pecent, iwctype, ncent
 
       use ewald, only: b_coul, y_coul
 
@@ -2087,7 +2087,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald
 c Written by Cyrus Umrigar
 
-      use atom, only: znuc, cent, pecent, iwctype, ncent
+      use system, only: znuc, cent, pecent, iwctype, ncent
 
       use ewald, only: b_coul, y_coul
 
@@ -2147,7 +2147,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use vmc_mod, only: nmat_dim2
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
 
       use const, only: nelec, ipr
       use ewald, only: b_coul, y_coul
@@ -2624,7 +2624,7 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_n(znuc,iwctype,glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use atom, only: ncent_tot
+      use system, only: ncent_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
@@ -2692,7 +2692,7 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NGNORMX, NG1DX
-      use atom, only: ncent_tot, nctype_tot
+      use system, only: ncent_tot, nctype_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 

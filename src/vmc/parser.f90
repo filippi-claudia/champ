@@ -29,7 +29,7 @@ subroutine parser
 ! in the replacement of preprocess input
   use elec,           	only: ndn, nup
   use const,          	only: nelec
-  use atom,           	only: nctype, ncent
+  use system,           	only: nctype, ncent
   use wfsec,          	only: nwftype
   use forcepar,       	only: nforce
   use force_mod,      	only: MFORCE
@@ -46,9 +46,9 @@ subroutine parser
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
   use vmc_mod, 		      only: norb_tot, mterms
-  use atom, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+  use system, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 		      only: nspin1, nspin2, is
-  use ghostatom, 	      only: newghostype, nghostcent
+  use system, 	      only: newghostype, nghostcent
   use const, 		        only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num
@@ -1966,7 +1966,7 @@ subroutine compute_mat_size_new()
   !> compute various size that are derived from the input
   ! use vmc_mod, only: nmat_dim, nmat_dim2
   ! use const, only: nelec
-  ! use atom, only: nctype_tot, ncent_tot
+  ! use system, only: nctype_tot, ncent_tot
 
   use sr_mod, only: mparm, mobs, mconf
   use control_vmc, only: vmc_nstep, vmc_nblk_max
