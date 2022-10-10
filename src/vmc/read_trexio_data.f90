@@ -37,8 +37,8 @@ module trexio_read_data
         !! @date 07 October 2021
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
-        use system,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-        use system, 		    only: newghostype, nghostcent
+        use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+        use ghostatom, 		    only: newghostype, nghostcent
         use inputflags,         only: igeometry
         use periodic_table,     only: atom_t, element
         use elec,           	only: ndn, nup
@@ -192,8 +192,8 @@ module trexio_read_data
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
-        use system,               only: ncent, ncent_tot, iwctype, nctype_tot
-        use system,          only: newghostype
+        use atom,               only: ncent, ncent_tot, iwctype, nctype_tot
+        use ghostatom,          only: newghostype
         use coefs,              only: coef, nbasis, norb
         use inputflags,         only: ilcao
         use numbas,             only: nrbas
@@ -429,7 +429,7 @@ module trexio_read_data
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
-        use system,               only: nctype_tot
+        use atom,               only: nctype_tot
         use inputflags,         only: ibasis_num
         use numbas,             only: iwrwf, numr
         use numbas1,            only: iwlbas, nbastyp
@@ -481,10 +481,10 @@ module trexio_read_data
 
         ! The following to be used to store the information
         use numbas_mod,         only: MRWF, MRWF_PTS
-        use system,               only: znuc, nctype, nctype_tot, ncent_tot
-        use system,               only: symbol, atomtyp
+        use atom,               only: znuc, nctype, nctype_tot, ncent_tot
+        use atom,               only: symbol, atomtyp
         use vmc_mod,            only: NCOEF
-        use system,          only: newghostype
+        use ghostatom,          only: newghostype
         use const,              only: ipr
         use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
         use numbas,             only: allocate_numbas
@@ -494,7 +494,7 @@ module trexio_read_data
         use general,            only: filename, filenames_bas_num
 
         ! For processing the stored information
-        use system, 			    only: atomtyp
+        use atom, 			    only: atomtyp
         use general, 			only: pooldir, bas_id
         use contrl_file,        only: ounit, errunit
         use spline2_mod,        only: spline2
@@ -1240,7 +1240,7 @@ module trexio_read_data
 #endif
 
         use pseudo_mod,         only: MPS_L, MGAUSS, MPS_QUAD
-        use system,               only: symbol, nctype_tot, ncent_tot
+        use atom,               only: symbol, nctype_tot, ncent_tot
         use gauss_ecp,          only: ecp_coef, ecp_exponent, necp_power, necp_term
         use gauss_ecp,          only: allocate_gauss_ecp
         use pseudo,             only: lpot

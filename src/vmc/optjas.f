@@ -173,7 +173,7 @@ c-----------------------------------------------------------------------
       subroutine optjas_sum(wtg_new,wtg_old,enew,eold,iflag)
 c Written by Claudia Filippi
 
-      use system, only: nctype
+      use atom, only: nctype
       use csfs, only: nstates
       use derivjas, only: gvalue
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
@@ -419,7 +419,7 @@ c-----------------------------------------------------------------------
       subroutine optjas_save
 c Written by Claudia Filippi
 
-      use system, only: nctype
+      use atom, only: nctype
       use csfs, only: nstates
       use derivjas, only: gvalue
       use gradhessjo, only: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old

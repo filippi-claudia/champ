@@ -26,7 +26,7 @@ c Modified by A. Scemama
       use contrl_per, only: iperiodic
       use force_analy, only: iforce_analy
       use grid3dflag, only: i3dlagorb, i3dsplorb
-      use system, only: ncent_tot
+      use atom, only: ncent_tot
       use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
@@ -232,7 +232,7 @@ c-------------------------------------------------------------------------------
 
       subroutine da_orbitals
 
-      use system, only: ncent
+      use atom, only: ncent
       use const, only: nelec
       use da_orbval, only: da_d2orb, da_dorb, da_orb
       use numbas2, only: ibas0, ibas1
@@ -285,7 +285,7 @@ c-------------------------------------------------------------------------------
       use wfsec, only: iwf
       use coefs, only: coef, norb, nbasis
       use contrl_per, only: iperiodic
-      use system, only: ncent_tot
+      use atom, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use multislatern, only: ddorbn, dorbn, orbn
       use const, only: nelec

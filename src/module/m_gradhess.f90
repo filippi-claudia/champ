@@ -121,7 +121,7 @@ module gradhessjo
     save
 contains
     subroutine allocate_gradhessjo()
-        use system, only: nctype_tot
+        use atom, only: nctype_tot
         use optwf_parms, only: nparmj
         use mstates_mod, only: MSTATES
         if (.not. allocated(d1d2a_old)) allocate (d1d2a_old(nctype_tot))

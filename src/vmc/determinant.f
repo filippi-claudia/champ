@@ -22,7 +22,7 @@ c Modified by A. Scemama
       use const, only: nelec
 
       use multislater, only: detiab, allocate_multislater
-      use system, only: ncent_tot
+      use atom, only: ncent_tot
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use optwf_handle_wf, only: dcopy
@@ -209,7 +209,7 @@ c to change kref if the change is accepted or required
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
-      use system, only: ncent
+      use atom, only: ncent
       use const, only: hb, nelec
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb, da_dorb

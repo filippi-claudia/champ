@@ -1,40 +1,20 @@
-module system
-    !> Arguments: znuc, cent, iwctype, nctype, ncent
+module atom
+    !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
     use precision_kinds, only: dp
 
     implicit none
 
-    integer     :: nelec
-    integer     :: ndn
-    integer     :: nup
-    integer     :: nctype
-    integer     :: nctype_tot
-    integer     :: ncent
-    integer     :: ncent_tot
-    integer     :: newghostype
-    integer     :: nghostcent
-
-    real(dp)    :: pecent
-
     real(dp), dimension(:, :), allocatable :: cent
     real(dp), dimension(:), allocatable :: znuc
+    real(dp) :: pecent
     integer, dimension(:), allocatable :: iwctype
+    integer :: nctype, ncent
+    integer :: nctype_tot, ncent_tot
     character(len=2), dimension(:), allocatable :: symbol
     character(len=2), dimension(:), allocatable :: atomtyp
 
     private
-    public   :: pecent
-    public   :: znuc
-    public   :: cent
-    public   :: iwctype
-    public   :: nctype
-    public   :: ncent
-    public   :: ncent_tot
-    public   :: nctype_tot
-    public   :: symbol
-    public   :: atomtyp
-    public   :: newghostype
-    public   :: nghostcent
+    public   :: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
     public   :: allocate_atom, deallocate_atom
     save
 contains
@@ -52,6 +32,19 @@ contains
         if (allocated(cent)) deallocate (cent)
     end subroutine deallocate_atom
 
-end module system
+end module atom
+
+module ghostatom
+    !> Arguments: newghostype, nghostcent
+
+    implicit none
+
+    integer :: newghostype
+    integer :: nghostcent
+
+    private
+    public   :: newghostype, nghostcent
+    save
+end module ghostatom
 
 

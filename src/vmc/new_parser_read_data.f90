@@ -123,8 +123,8 @@ subroutine read_molecule_file(file_molecule)
     !! @date
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
-    use system,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-    use system, 		    only: newghostype, nghostcent
+    use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+    use ghostatom, 		    only: newghostype, nghostcent
     use inputflags,         only: igeometry
     use m_string_operations, only: wordcount
     use periodic_table,     only: atom_t, element
@@ -526,7 +526,7 @@ subroutine read_jastrow_file(file_jastrow)
     use contr2,             only: isc
     use inputflags,         only: ijastrow_parameter
     use wfsec,              only: nwftype
-    use system,               only: ncent, nctype
+    use atom,               only: ncent, nctype
     use precision_kinds,    only: dp
     use contrl_per, 		only: iperiodic
     use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
@@ -1165,7 +1165,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
     use mpiconf,            only: wid
 
     use contrl_file,        only: ounit, errunit
-    use system,               only: nctype
+    use atom,               only: nctype
     use jaspar,             only: nspin1, is
     use jaspar4,            only: norda, nordb, nordc
     use jaspointer,         only: npoint, npointa
@@ -1178,7 +1178,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
     use contr2,             only: ijas
     use contr2,             only: isc
     use vmc_mod,            only: nctyp3x
-    use system,               only: nctype_tot
+    use atom,               only: nctype_tot
     use general,            only: pooldir
 
     implicit none
@@ -1360,14 +1360,14 @@ subroutine read_forces_file(file_forces)
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
 
-    use system,               only: symbol
+    use atom,               only: symbol
     use contrl_file,        only: ounit, errunit
     use forcepar,           only: nforce
     use forcestr,           only: delc
     use wfsec,              only: iwftype
     use inputflags,         only: iforces
     use general,            only: pooldir
-    use system,               only: ncent
+    use atom,               only: ncent
     use precision_kinds,    only: dp
 
     implicit none
@@ -1685,8 +1685,8 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     use coefs, only: nbasis
     use general, only: pooldir
 
-    use system, only: nctype
-    use system, only: newghostype
+    use atom, only: nctype
+    use ghostatom, only: newghostype
     use precision_kinds,    only: dp
 
     implicit none
@@ -1998,7 +1998,7 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     use wfsec,              only: iwftype
     use inputflags,         only: igradients
     use general,            only: pooldir
-    use system,               only: ncent
+    use atom,               only: ncent
     use precision_kinds,    only: dp
 
     implicit none
@@ -2099,7 +2099,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     use wfsec, only: iwftype
     use inputflags, only: igradients
     use general, only:pooldir
-    use system, only: ncent
+    use atom, only: ncent
     use precision_kinds,    only: dp
     use misc_grdnts, only: grdzmat_displ
 
@@ -2194,7 +2194,7 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     use grdntsmv,           only: igrdmv
     use inputflags,         only: imodify_zmat
     use general,            only: pooldir
-    use system,               only: ncent
+    use atom,               only: ncent
 
     implicit none
 
@@ -2265,7 +2265,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     use contrl_file,        only: ounit, errunit
     use grdnthes,           only: hessian_zmat
     use inputflags,         only: ihessian_zmat
-    use system,               only: ncent
+    use atom,               only: ncent
     use precision_kinds,    only: dp
 
     implicit none
@@ -2339,7 +2339,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     use mpiconf,            only: wid
     use general,            only: pooldir
     use contrl_file,    only: ounit, errunit
-    use system, only: cent, ncent
+    use atom, only: cent, ncent
     use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
     use inputflags, only: izmatrix_check
     use precision_kinds,    only: dp

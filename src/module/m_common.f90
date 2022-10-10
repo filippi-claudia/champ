@@ -27,7 +27,7 @@ contains
     subroutine allocate_Bloc()
         use const, only: nelec
         use coefs, only: norb
-        use system, only: ncent_tot, ncent
+        use atom, only: ncent_tot, ncent
         use vmc_mod, only: norb_tot
         use coefs, only: norb
         use optwf_parms, only: nparmj
@@ -81,7 +81,7 @@ module casula
 contains
     subroutine allocate_casula()
         use const, only: nelec
-        use system, only: ncent_tot
+        use atom, only: ncent_tot
         use pseudo_mod, only: MPS_QUAD
         if (.not. allocated(t_vpsp)) allocate (t_vpsp(ncent_tot, MPS_QUAD, nelec))
     end subroutine allocate_casula
@@ -115,7 +115,7 @@ module distance_mod
 contains
     subroutine allocate_distance_mod()
         use const, only: nelec
-        use system, only: ncent_tot
+        use atom, only: ncent_tot
         use vmc_mod, only: nmat_dim2
         if (.not. allocated(r_en)) allocate (r_en(nelec, ncent_tot))
         if (.not. allocated(rvec_en)) allocate (rvec_en(3, nelec, ncent_tot))
@@ -154,7 +154,7 @@ module distances_sav
 contains
     subroutine allocate_distances_sav()
         use const, only: nelec
-        use system, only: ncent_tot
+        use atom, only: ncent_tot
         if (.not. allocated(r_ee_sav)) allocate (r_ee_sav(nelec))
         if (.not. allocated(r_en_sav)) allocate (r_en_sav(ncent_tot))
         if (.not. allocated(rshift_sav)) allocate (rshift_sav(3, ncent_tot))
@@ -214,7 +214,7 @@ module gauss_ecp
     save
 contains
     subroutine allocate_gauss_ecp()
-        use system, only: nctype_tot
+        use atom, only: nctype_tot
         use pseudo_mod, only: MPS_L, MGAUSS
         if (.not. allocated(ecp_coef)) allocate (ecp_coef(MGAUSS, MPS_L, nctype_tot))
         if (.not. allocated(ecp_exponent)) allocate (ecp_exponent(MGAUSS, MPS_L, nctype_tot))
@@ -677,7 +677,7 @@ module b_tmove
 contains
     subroutine allocate_b_tmove()
         use const, only: nelec
-        use system, only: ncent_tot
+        use atom, only: ncent_tot
         use vmc_mod, only: norb_tot
         use qua, only: nquad
         use contr3, only: mode
@@ -847,7 +847,7 @@ module vardep
     save
 contains
     subroutine allocate_vardep()
-        use system, only: nctype_tot
+        use atom, only: nctype_tot
         use vmc_mod, only: neqsx
         if (.not. allocated(cdep)) allocate (cdep(neqsx, 83, nctype_tot))
         if (.not. allocated(iwdepend)) allocate (iwdepend(neqsx, 83, nctype_tot), source=0)
@@ -1003,7 +1003,7 @@ module zmatrix
     save
 contains
     subroutine allocate_zmatrix()
-        use system, only: ncent_tot
+        use atom, only: ncent_tot
         if (.not. allocated(czcart)) allocate (czcart(3, ncent_tot))
         if (.not. allocated(czint)) allocate (czint(3, ncent_tot))
         if (.not. allocated(czcart_ref)) allocate (czcart_ref(3, 3))
@@ -1049,7 +1049,7 @@ module m_common
 contains
 subroutine allocate_m_common()
 
-    use system, only: allocate_atom
+    use atom, only: allocate_atom
     use b_tmove, only: allocate_b_tmove
     use Bloc, only: allocate_Bloc
     use casula, only: allocate_casula
@@ -1121,7 +1121,7 @@ subroutine allocate_m_common()
 end subroutine allocate_m_common
 
 subroutine deallocate_m_common()
-    ! use system, only: deallocate_atom
+    ! use atom, only: deallocate_atom
     use b_tmove, only: deallocate_b_tmove
     use Bloc, only: deallocate_Bloc
     use casula, only: deallocate_casula

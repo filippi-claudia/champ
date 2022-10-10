@@ -68,7 +68,7 @@ c----------------------------------------------------------------------
 
       use pcm_3dgrid, only: MGRID_PCM
       use pcm_3dgrid, only: UNDEFINED, IUNDEFINED, PCM_SHIFT
-      use system, only: cent, ncent
+      use atom, only: cent, ncent
       use grid3d_param, only: origin
       use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int

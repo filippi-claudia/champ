@@ -110,7 +110,7 @@ module optwf_nparmj
 contains
     subroutine allocate_optwf_nparmj()
         use vmc_mod, only: nctyp3x
-        use system, only: nctype_tot
+        use atom, only: nctype_tot
 
         if (.not. allocated(nparma)) allocate (nparma(nctyp3x), source=0)
         if (.not. allocated(nparmb)) allocate (nparmb(3), source=0)
@@ -156,7 +156,7 @@ module optwf_wjas
     save
 contains
     subroutine allocate_optwf_wjas()
-        use system, only: nctype_tot
+        use atom, only: nctype_tot
         use vmc_mod, only: nctyp3x
         if (.not. allocated(iwjasa)) allocate (iwjasa(83, nctyp3x), source=0)
         if (.not. allocated(iwjasb)) allocate (iwjasb(83, 3), source=0)

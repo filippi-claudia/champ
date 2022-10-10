@@ -2,7 +2,7 @@
       contains
       subroutine write_geometry(iter)
 
-      use system, only: cent, iwctype, nctype, ncent
+      use atom, only: cent, iwctype, nctype, ncent
 
       implicit none
 
@@ -41,7 +41,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine compute_positions
 
         use coords_int
-        use system, only: cent, ncent
+        use atom, only: cent, ncent
         use force_fin, only: da_energy_ave
         use zmatrix, only: czint, izcmat
         use force_analy, only: iforce_analy, iuse_zmat, alfgeo
@@ -85,7 +85,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine compute_position_bcast
 
-      use system, only: ncent
+      use atom, only: ncent
       use force_fin, only: da_energy_ave
       use force_analy, only: iforce_analy
       use mpi
@@ -106,7 +106,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine force_store(l)
 
-      use system, only: ncent
+      use atom, only: ncent
       use da_energy_now, only: da_energy, da_psi
       use force_mat_n, only: force_o
 

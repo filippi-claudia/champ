@@ -11,7 +11,7 @@ c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use system, only: znuc, cent, iwctype, ncent
+      use atom, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
       use const, only: pi, fbias, nelec, ipr
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o

@@ -32,7 +32,7 @@
 c-----------------------------------------------------------------------
       subroutine efield_compute_extint
 
-      use system, only: znuc, cent, iwctype, ncent
+      use atom, only: znuc, cent, iwctype, ncent
       use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
 
       use efield, only: iscreen, ncharges

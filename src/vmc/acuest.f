@@ -7,7 +7,7 @@ c routine to accumulate estimators for energy etc.
       use precision_kinds, only: dp
       use force_mod, only: MFORCE
       use vmc_mod, only: nrad
-      use system, only: znuc, cent, pecent, iwctype, ncent
+      use atom, only: znuc, cent, pecent, iwctype, ncent
       use mstates_mod, only: MSTATES
       use const, only: nelec, ipr
       use config, only: eold, nearesto, psi2o

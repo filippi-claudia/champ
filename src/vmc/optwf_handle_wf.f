@@ -58,7 +58,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
 
-      use system, only: nctype
+      use atom, only: nctype
       use jaspar, only: nspin1, nspin2
       use jaspar3, only: b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
@@ -279,7 +279,7 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use vmc_mod, only: nordj1
-      use system, only: nctype, nctype_tot
+      use atom, only: nctype, nctype_tot
       use wfsec, only: nwftype
       use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
@@ -464,7 +464,7 @@ c reset kref=1
 c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
 
-      use system, only: nctype
+      use atom, only: nctype
       use jaspar3, only: b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc
       use bparm, only: nspin2b
@@ -561,7 +561,7 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use vmc_mod, only: nordj1
-      use system, only: nctype, nctype_tot
+      use atom, only: nctype, nctype_tot
       use wfsec, only: nwftype
       use jaspar3, only: b, c
       use jaspar4, only: a4, norda, nordb, nordc
@@ -766,7 +766,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
-      use system, only: nctype
+      use atom, only: nctype
       use jaspar3, only: b, c
       use jaspar4, only: a4
       use bparm, only: nspin2b
@@ -921,7 +921,7 @@ c90     write(ounit,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
 c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
 
-      use system, only: nctype
+      use atom, only: nctype
       use jaspar3, only: b, scalek
       use jaspar4, only: a4
       use bparm, only: nspin2b

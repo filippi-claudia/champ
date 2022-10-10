@@ -74,7 +74,7 @@ c Written by Cyrus Umrigar
       end
 c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
-      use system, only: nctype
+      use atom, only: nctype
       use jaspar4, only: nordc
       use optwf_nparmj, only: nparmc
       use optwf_wjas, only: iwjasc

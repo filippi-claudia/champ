@@ -8,7 +8,7 @@ c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
 
       use vmc_mod, only: nmat_dim2
-      use system, only: cent, iwctype, ncent, ncent_tot
+      use atom, only: cent, iwctype, ncent, ncent_tot
       use jaspar, only: nspin2, sspin, sspinn, is
       use const, only: nelec
       use elec, only: nup

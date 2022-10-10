@@ -105,7 +105,7 @@ module jaspar3
 contains
     subroutine allocate_jaspar3()
         use wfsec, only: nwftype
-        use system, only: nctype_tot
+        use atom, only: nctype_tot
         use vmc_mod, only: nordj1
         ! if (.not. allocated(b)) allocate (b(nordj1, 2, MWF))
         ! if (.not. allocated(c)) allocate (c(83, nctype_tot, MWF))
@@ -171,7 +171,7 @@ module jaspar6
     save
 contains
     subroutine allocate_jaspar6()
-        use system, only: nctype_tot
+        use atom, only: nctype_tot
         if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot))
         if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2))
     end subroutine allocate_jaspar6

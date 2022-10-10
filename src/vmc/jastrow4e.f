@@ -5,7 +5,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
       use vmc_mod, only: nordj
-      use system, only: iwctype, ncent
+      use atom, only: iwctype, ncent
       use jaspar, only: sspinn
       use const, only: nelec
       use elec, only: nup

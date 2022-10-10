@@ -12,7 +12,7 @@ c routine to print out final results
       use age, only: iage, ioldest, ioldestmx
       use contrl_per, only: iperiodic
       use contrldmc, only: idmc, nfprod, tau
-      use system, only: ncent
+      use atom, only: ncent
       use estcum, only: iblk
       use config, only: vold_dmc, xold_dmc
       use stats, only: acc, nacc, nodecr, trymove
