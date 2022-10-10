@@ -8,7 +8,7 @@ c routine to print out final results
       use vmc_mod, only: delri
       use control, only: ipr
       use system, only: nelec
-      use dmc_mod, only: etrial
+      use const, only: etrial
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
       use age, only: iage, ioldest, ioldestmx

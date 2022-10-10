@@ -5,7 +5,7 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use dmc_mod, only: MFPRD1
-      use dmc_mod, only: etrial
+      use const, only: etrial
       use system, only: nelec
       use forcepar, only: istrech, nforce
       use system, only: cent, iwctype, ncent, pecent, znuc

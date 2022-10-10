@@ -211,7 +211,7 @@ c-----------------------------------------------------------------------
 
       use system, only: ncent
       use system, only: nelec
-      use constants, only: hb
+      use const, only: hb
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb, da_dorb
       use derivjas, only: g

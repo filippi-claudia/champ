@@ -1,16 +1,15 @@
 module dmc_mod
     !> Arguments: mwalk, MFPROD, MFPRD1
     !> mwalk: Maximum number of walkers
-    use precision_kinds, only: dp
+
     implicit none
 
     integer            :: mwalk
     integer, parameter :: MFPROD=200
     integer, parameter :: MFPRD1=MFPROD-1
-    real(dp)  :: etrial
 
     private
-    public :: mwalk, set_mwalk, MFPROD, MFPRD1, etrial
+    public :: mwalk, set_mwalk, MFPROD, MFPRD1
     save
     contains
     subroutine set_mwalk

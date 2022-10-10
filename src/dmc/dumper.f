@@ -9,7 +9,7 @@ c job where it left off
       use dmc_mod, only: MWALK
       use basis, only: zex
       use basis, only: ns, np, nd, nf, ng
-      use constants, only: hb
+      use const, only: hb
       use system, only: nelec
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce

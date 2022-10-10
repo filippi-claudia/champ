@@ -5,7 +5,7 @@
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nrad
       use basis, only: zex
-      use constants, only: hb
+      use const, only: hb
       use control, only: ipr
       use system, only: nelec
       use forcest, only: fgcm2, fgcum
