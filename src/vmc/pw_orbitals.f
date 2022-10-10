@@ -10,8 +10,7 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
-      use control, only: ipr
-      use system, only: nelec
+      use const, only: nelec, ipr
       use periodic, only: glatt
       use periodic, only: glatt_sim, gnorm, gvec, igmult, igvec
       use periodic, only: ireal_imag, k_inv, kvec, nband, ng1d, ng1d_sim, ngnorm_orb
@@ -221,8 +220,7 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGVECX
-      use control, only: ipr
-      use system, only: nelec
+      use const, only: nelec, ipr
       use periodic, only: glatt
       use periodic, only: glatt_sim, gnorm, gvec, igmult, igvec
       use periodic, only: ireal_imag, k_inv, kvec, nband, ng1d, ng1d_sim, ngnorm_orb
@@ -270,8 +268,8 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
          dorb(iorb,3)=0
       enddo
 
-
-
+      
+      
 c     do 130 iel=1,nelec
 
 c compute cos(g.r), sin(g.r) and derivatives

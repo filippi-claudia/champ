@@ -10,7 +10,7 @@ c ider = 3 -> value, gradient, laplacian, forces
       use numbas_mod, only: MRWF
       use system, only: iwctype, ncent, ncent_tot
       use system, only: nghostcent
-      use system, only: nelec
+      use const, only: nelec
       use numbas, only: iwrwf, nrbas, numr, rmaxwf
       use numbas1, only: iwlbas, nbastyp
       use basis, only: ns, np, nd, nf, ng

@@ -20,16 +20,16 @@ subroutine parser
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
 ! CHAMP modules
-  use control,         	only: mode
+  use contr3,         	only: mode
   use contrl_file,    	only: file_input, file_output, file_error
   use contrl_file,    	only: iunit, ounit, errunit
   use allocation_mod, 	only: allocate_vmc, allocate_dmc
   use periodic_table, 	only: atom_t, element
 
 ! in the replacement of preprocess input
-  use system,           	only: ndn, nup
-  use system,          	only: nelec
-  use system,           only: nctype, ncent
+  use elec,           	only: ndn, nup
+  use const,          	only: nelec
+  use system,           	only: nctype, ncent
   use wfsec,          	only: nwftype
   use forcepar,       	only: nforce
   use force_mod,      	only: MFORCE
@@ -46,17 +46,15 @@ subroutine parser
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
   use vmc_mod, 		      only: norb_tot, mterms
-  use system, 		      only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+  use system, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 		      only: nspin1, nspin2, is
-  use system, 	        only: newghostype, nghostcent
-  use const, 		        only: pi, hb, etrial, delta, deltai, fbias, imetro
-  use control, 		      only: ipr
-  use system, 		      only: nelec
+  use system, 	      only: newghostype, nghostcent
+  use const, 		        only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num
   use csfs, 		        only: cxdet, ncsf, nstates
   use dets, 		        only: cdet, ndet
-  use system, 		        only: ndn, nup
+  use elec, 		        only: ndn, nup
   use forcepar, 	      only: nforce
   use grdntspar, 	      only: igrdtype, ngradnts
   use header, 		      only: title
@@ -1967,7 +1965,7 @@ end subroutine flaginit_new
 subroutine compute_mat_size_new()
   !> compute various size that are derived from the input
   ! use vmc_mod, only: nmat_dim, nmat_dim2
-  ! use system, only: nelec
+  ! use const, only: nelec
   ! use system, only: nctype_tot, ncent_tot
 
   use sr_mod, only: mparm, mobs, mconf

@@ -3,7 +3,7 @@
       subroutine compute_force(psid,denergy)
 
       use system, only: ncent
-      use system, only: nelec
+      use const, only: nelec
       use da_jastrow4val, only: da_j
       use da_energy_now, only: da_psi
       use system, only: ncent_tot
@@ -37,11 +37,11 @@ c-----------------------------------------------------------------------
 
       use vmc_mod, only: norb_tot
       use system, only: ncent, ncent_tot
-      use system, only: nelec
+      use const, only: nelec
       use da_energy_now, only: da_psi
       use da_jastrow4val, only: da_j
       use da_orbval, only: da_orb
-      use system, only: ndn, nup
+      use elec, only: ndn, nup
       use multidet, only: ivirt, kref
       use zcompact, only: aaz, zmat
       use coefs, only: norb
@@ -133,12 +133,11 @@ c-----------------------------------------------------------------------
       subroutine compute_da_energy(psid,denergy)
 
       use system, only: iwctype, ncent, ncent_tot
-      use system, only: nelec
-      use const, only: hb
+      use const, only: hb, nelec
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_vj
       use da_orbval, only: da_orb
-      use system, only: ndn, nup
+      use elec, only: ndn, nup
       use multidet, only: ivirt, kref
       use zcompact, only: aaz, dzmat, emz, zmat
       use Bloc, only: b_da

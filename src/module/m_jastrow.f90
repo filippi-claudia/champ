@@ -17,7 +17,7 @@ module jasn
     save
 contains
     subroutine allocate_jasn()
-        use system, only: nelec
+        use const, only: nelec
         if (.not. allocated(d2ijn)) allocate (d2ijn(nelec, nelec))
         if (.not. allocated(fijn)) allocate (fijn(3, nelec, nelec))
         if (.not. allocated(fjn)) allocate (fjn(3, nelec))
@@ -54,7 +54,7 @@ module jaso
     save
 contains
     subroutine allocate_jaso()
-        use system, only: nelec
+        use const, only: nelec
         if (.not. allocated(d2ijo)) allocate (d2ijo(nelec, nelec))
         if (.not. allocated(fijo)) allocate (fijo(3, nelec, nelec))
         if (.not. allocated(fjo)) allocate (fjo(3, nelec))

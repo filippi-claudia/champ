@@ -3,8 +3,7 @@
       subroutine pot_local(pe)
       use system, only: znuc, pecent, iwctype, ncent
       use system, only: nghostcent
-      use system, only: nelec
-      use control, only: ipr
+      use const, only: nelec, ipr
       use contrl_per, only: iperiodic
       use distance_mod, only: r_en, r_ee
       use pseudo, only: nloc

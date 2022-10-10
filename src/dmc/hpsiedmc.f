@@ -4,7 +4,7 @@
 c Written by Claudia Filippi
 
 
-      use system, only: nelec
+      use const, only: nelec
       use config, only: xold_dmc
       use hpsie, only: psie
       use mstates_mod, only: MSTATES

@@ -54,7 +54,7 @@ module config
     save
 contains
     subroutine allocate_config()
-        use system, only: nelec
+        use const, only: nelec
         use force_mod, only: MFORCE
         use mstates_mod, only: MSTATES
         implicit none
@@ -108,7 +108,7 @@ contains
     end subroutine deallocate_config
 
     subroutine allocate_config_dmc()
-      use system, only: nelec
+      use const, only: nelec
       use force_mod, only: MFORCE
       use dmc_mod, only: mwalk
 
@@ -239,7 +239,7 @@ module kinet
     save
 contains
     subroutine allocate_kinet()
-        use system, only: nelec
+        use const, only: nelec
         if (.not. allocated(dtdx2n)) allocate (dtdx2n(nelec))
         if (.not. allocated(dtdx2o)) allocate (dtdx2o(nelec))
     end subroutine allocate_kinet

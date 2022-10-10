@@ -54,7 +54,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use grid_mod, only: MXNSTEP, MXNSTEP3
       use grid_mod, only: cart_from_int
       use system, only: cent, ncent
-      use system, only: nelec
+      use const, only: nelec
       use system, only: nghostcent
       use phifun, only: d2phin, dphin
       use phifun, only: phin
@@ -653,7 +653,7 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
-      use system, only: nelec
+      use const, only: nelec
 
       use precision_kinds, only: dp
       implicit none
@@ -742,7 +742,7 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
-      use system, only: nelec
+      use const, only: nelec
       
       use precision_kinds, only: dp
       implicit none
@@ -831,7 +831,7 @@ c
       use coefs, only: norb
       use grid3d_param, only: nstep3d, step3d
       use orbital_num_lag, only: denom
-      use system, only: nelec
+      use const, only: nelec
 
       use precision_kinds, only: dp
       implicit none

@@ -20,7 +20,7 @@ c Modified by F. Schautz to use fancy file names
       use pseudo_mod, only: MPS_GRID
       use vmc_mod, only: NCOEF
       use system, only: znuc, nctype
-      use control, only: ipr
+      use const, only: ipr
       use pseudo_tm, only: arg, d2pot, nr_ps, r0, rmax, vpseudo
       use pseudo, only: lpot, nloc, vps
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
@@ -220,7 +220,7 @@ c compute tm-pseudopotential for electron iel
 
       use system, only: znuc, iwctype, ncent, ncent_tot
       use pseudo_tm, only: rmax
-      use system, only: nelec
+      use const, only: nelec
       use pseudo, only: lpot, vps
 
       use precision_kinds, only: dp

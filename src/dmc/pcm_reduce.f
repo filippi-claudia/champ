@@ -3,7 +3,7 @@
       subroutine pcm_reduce(wgsum)
 
       use mpiconf, only: wid
-      use control, only: mode
+      use contr3, only: mode
       use pcm_cntrl, only: ipcm
       use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
       use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2

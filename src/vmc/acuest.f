@@ -9,8 +9,7 @@ c routine to accumulate estimators for energy etc.
       use vmc_mod, only: nrad
       use system, only: znuc, cent, pecent, iwctype, ncent
       use mstates_mod, only: MSTATES
-      use control, only: ipr
-      use system, only: nelec
+      use const, only: nelec, ipr
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino
       use config, only: vold, xold
@@ -37,7 +36,7 @@ c routine to accumulate estimators for energy etc.
       use distance_mod, only: rshift, r_en, rvec_en
       use inputflags, only: node_cutoff, eps_node_cutoff
       use contrl_file, only: ounit
-
+      
       use distances_mod, only: distances
       use force_analytic, only: force_analy_save
       use optorb_f_mod, only: optorb_save

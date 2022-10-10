@@ -27,7 +27,7 @@ module pseudo
     save
 contains
     subroutine allocate_pseudo()
-        use system, only: nelec
+        use const, only: nelec
         use system, only: nctype_tot
         use system, only: ncent_tot
         use pseudo_mod, only: MPS_L

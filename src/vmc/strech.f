@@ -17,13 +17,13 @@ c rigidly with that nucleus
       use force_mod, only: MFORCE, MFORCE_WT_PRD
       use forcepar, only: istrech, alfstr
       use system, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
-      use system, only: nelec
+      use const, only: nelec
       use force_dmc, only: itausec, nwprod
       use forcepar, only: istrech, nforce
       use forcestr, only: delc
       use pcm_force, only: sch_s
       use wfsec, only: iwftype
-      use control, only: mode
+      use contr3, only: mode
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, nch, nchs
       use pcm_parms, only: nesph

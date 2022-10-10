@@ -9,9 +9,9 @@ subroutine get_norbterm
 
     use optorb_mod, only: mxreduced
     use vmc_mod, only: norb_tot
-    use system, only: nelec
+    use const, only: nelec
     use dets, only: ndet
-    use system, only: ndn, nup
+    use elec, only: ndn, nup
     use multidet, only: kref
     use optorb_mix, only: norbopt, norbvirt , iwmix_virt
     use coefs, only: norb, next_max

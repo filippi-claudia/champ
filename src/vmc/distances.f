@@ -5,7 +5,7 @@ c Written by Cyrus Umrigar
 c calculate interparticle distances
       use system, only: cent, ncent
       use system, only: nghostcent
-      use system, only: nelec
+      use const, only: nelec
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use contrl_per, only: iperiodic
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
@@ -116,7 +116,7 @@ c restore interparticle distances (called if move rejected)
 
       use system, only: ncent
       use system, only: nghostcent
-      use system, only: nelec
+      use const, only: nelec
       use distance_mod, only: rshift, r_en, rvec_en
       use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee

@@ -5,7 +5,7 @@ c Written by Claudia Filippi
 c routine to write out estimators for energy etc.
 
       use force_mod, only: MFORCE
-      use system, only: nelec
+      use const, only: nelec
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use est2cm, only: ecm2, pecm2, tjfcm2, tpbcm2
@@ -14,7 +14,7 @@ c routine to write out estimators for energy etc.
       use forcepar, only: nforce
       use forcest, only: fcm2, fcum
       use forcewt, only: wcum
-      use control, only: mode
+      use contr3, only: mode
       !use contrl, only: nstep
       use control_vmc, only:  vmc_nstep
       use precision_kinds, only: i2b

@@ -6,9 +6,7 @@ c routine to print out final results
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use control, only: ipr
-      use system, only: nelec
-      use const, only: etrial
+      use const, only: etrial, ipr, nelec
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce
       use age, only: iage, ioldest, ioldestmx
@@ -27,7 +25,7 @@ c routine to print out final results
       use step, only: rprob
       use mpiconf, only: nproc, wid
       use denupdn, only: rprobdn, rprobup
-      use control, only: mode
+      use contr3, only: mode
       use header, only: title
       use grdntspar, only: igrdtype, ngradnts
       use mpiblk, only: iblk_proc

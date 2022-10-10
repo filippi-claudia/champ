@@ -2,8 +2,7 @@
       contains
       subroutine mc_configs
 
-      use control, only: ipr
-      use system, only: nelec
+      use const, only: ipr, nelec
       use config, only: psido_dmc, psijo_dmc, xold_dmc
       use mpiconf, only: idtask, nproc
       use branch, only: eold, nwalk

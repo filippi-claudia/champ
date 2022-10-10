@@ -12,7 +12,7 @@ c Currently this program contains
 c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater basis states.
 c and sa, pa, da asymptotic functions
 
-      use system, only: nelec
+      use const, only: nelec
       use config, only: eold
       use config, only: psido, psijo
       use config, only: xold

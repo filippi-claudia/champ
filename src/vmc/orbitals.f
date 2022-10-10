@@ -19,8 +19,7 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use control, only: ipr
-      use system, only: nelec
+      use const, only: nelec, ipr
       use wfsec, only: iwf
       use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
       use coefs, only: coef, nbasis, norb
@@ -115,7 +114,7 @@ c spline interpolation
             endif
 #else
             call basis_fns(i,i,rvec_en,r_en,2)
-#endif
+#endif            
              do iorb=1,norb+nadorb
                orb(i,iorb)=0.d0
                dorb(iorb,i,1)=0.d0
@@ -234,7 +233,7 @@ c-------------------------------------------------------------------------------
       subroutine da_orbitals
 
       use system, only: ncent
-      use system, only: nelec
+      use const, only: nelec
       use da_orbval, only: da_d2orb, da_dorb, da_orb
       use numbas2, only: ibas0, ibas1
       use phifun, only: d2phin_all, d3phin, dphin
@@ -289,7 +288,7 @@ c-------------------------------------------------------------------------------
       use system, only: ncent_tot
       use grid3dflag, only: i3dlagorb, i3dsplorb
       use multislatern, only: ddorbn, dorbn, orbn
-      use system, only: nelec
+      use const, only: nelec
       use precision_kinds, only: dp
       use grid3d_orbitals, only: spline_mo, lagrange_mose
       use grid3d_orbitals, only: lagrange_mos_grade

@@ -201,7 +201,7 @@ contains
    subroutine allocate_velratio()
       use dmc_mod, only: mwalk
       use force_mod, only: MFORCE
-      use system, only: nelec
+      use const, only: nelec
       if (.not. allocated(fratio)) allocate(fratio(mwalk, MFORCE))
       if (.not. allocated(xdrifted)) allocate(xdrifted(3, nelec, mwalk, MFORCE))
    end subroutine allocate_velratio

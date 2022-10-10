@@ -7,12 +7,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use optwf_parms, only: nparmj
       use dets, only: ndet
-      use const, only: hb
-      use system, only: nelec
-      use control, only: ipr
+      use const, only: hb, nelec, ipr
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
-      use system, only: ndn, nup
+      use elec, only: ndn, nup
       use mmpol_hpsi, only: peQMdp, peQMq
       use multidet, only: iactv, ivirt, kref
       use pcm_hpsi, only: pcms, pcmv

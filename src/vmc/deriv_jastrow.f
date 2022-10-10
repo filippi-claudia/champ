@@ -3,7 +3,7 @@
       subroutine deriv_jastrow(x,v,d2,div_vj,value)
 c Written by Claudia Filippi
 
-      use system, only: nelec
+      use const, only: nelec
 
       use precision_kinds, only: dp
 

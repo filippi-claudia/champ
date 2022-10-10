@@ -13,14 +13,12 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use vmc_mod, only: delri
       use system, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
-      use const, only: pi, fbias
-      use system, only: nelec
-      use control, only: ipr
+      use const, only: pi, fbias, nelec, ipr
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
       use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
       use config, only: tjfoo, vnew, vold, xnew, xold
       use csfs, only: nstates
-      use system, only: nup
+      use elec, only: nup
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
       use forcepar, only: nforce
       use forcewt, only: wsum
@@ -29,12 +27,12 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use tmpnode, only: distance_node_sum
       use const2, only: deltar, deltat
-      use control, only: mode
+      use contr3, only: mode
       use pseudo, only: nloc
       use mmpol_cntrl, only: ich_mmpol
       use mstates_ctrl, only: iguiding
       use pcm_cntrl, only: ichpol
-      use system, only: nelec
+      use const, only: nelec
       use inputflags, only: node_cutoff, eps_node_cutoff
       use precision_kinds, only: dp
       use contrl_file,    only: ounit

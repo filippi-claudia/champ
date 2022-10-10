@@ -8,8 +8,8 @@ c Jastrow 6   must be used with one of isc=6,7
       use vmc_mod, only: nordj
       use system, only: iwctype, ncent
       use jaspar, only: sspinn
-      use system, only: nelec
-      use system, only: nup
+      use const, only: nelec
+      use elec, only: nup
       use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
       use jaspar3, only: b, c, scalek
       use jaspar4, only: a4, norda, nordb, nordc

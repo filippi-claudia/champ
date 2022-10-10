@@ -58,10 +58,10 @@ subroutine multideterminants_define(iflag, icheck)
     use vmc_mod, only: nrad, nordj, nordj1, nmat_dim, nmat_dim2
     use vmc_mod, only: radmax, delri
     use vmc_mod, only: neqsx
-    use system, only: nelec
+    use const, only: nelec
     use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
     use dets, only: cdet, ndet
-    use system, only: ndn, nup
+    use elec, only: ndn, nup
     use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, allocate_multidet
     use multidet, only: k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old
     use coefs, only: norb

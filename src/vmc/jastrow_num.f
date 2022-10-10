@@ -10,8 +10,8 @@ c numerical Laplacian for periodic systems.
       use vmc_mod, only: nmat_dim2
       use system, only: cent, iwctype, ncent, ncent_tot
       use jaspar, only: nspin2, sspin, sspinn, is
-      use system, only: nelec
-      use system, only: nup
+      use const, only: nelec
+      use elec, only: nup
       use jaspar3, only: scalek
       use jaspar6, only: c1_jas6
       use wfsec, only: iwf

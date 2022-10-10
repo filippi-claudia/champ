@@ -3,7 +3,7 @@
       subroutine nodes_distance(v,distance_node,iflag)
 c Written by Claudia Filippi
 
-      use system, only: nelec
+      use const, only: nelec
       use velocity_jastrow, only: vj, vjn
       use precision_kinds, only: dp
       implicit none

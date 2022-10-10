@@ -3,10 +3,10 @@
       subroutine bxmatrix(kref,xmatu,xmatd,b)
 
       use vmc_mod, only: norb_tot
-      use system, only: ndn, nup
+      use elec, only: ndn, nup
       use dorb_m, only: iworbd
       use slater, only: slmi
-      use system, only: nelec
+      use const, only: nelec
 
       use precision_kinds, only: dp
       use multiply_slmi_mderiv, only: multiply_slmi_mderiv_simple

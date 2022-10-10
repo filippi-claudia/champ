@@ -44,9 +44,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use const, only: etrial, hb
-      use system, only: nelec
-      use control, only: ipr
+      use const, only: etrial, hb, ipr, nelec
       use forcepar, only: istrech, nforce
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: iacc_rej, icross, icut_br, icut_e, idmc, ipq, nfprod, rttau, tau
@@ -64,7 +62,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use branch, only: wthist
       use casula, only: i_vpsp, icasula
       use jacobsave, only: ajacob, ajacold
-      use system, only: nup
+      use elec, only: nup
       use velratio, only: fratio, xdrifted
       use control_dmc, only: dmc_irstar, dmc_nconf
       use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
@@ -78,7 +76,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use walksav_det_mod,only: walksav_det, walkstrdet
       use averages,       only: average
       use multideterminant_mod, only: update_ymat
-      use detsav_mod,     only: detsav
+      use detsav_mod,     only: detsav 
       use jassav_mod,     only: jassav
       use hpsiedmc,       only: psiedmc
       use nonloc_grid_mod,only: nonloc_grid, t_vpsp_get

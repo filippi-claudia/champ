@@ -12,7 +12,7 @@ c Written by Claudia Filippi by modifying hpsi
       use velocity_jastrow, only: vjn
       use multislatern, only: detn
       use distance_mod, only: r_en, rvec_en
-      use system, only: nelec
+      use const, only: nelec
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use distances_mod, only: distances

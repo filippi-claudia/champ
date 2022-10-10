@@ -6,7 +6,7 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
 
       use vmc_mod, only: nrad
-      use system, only: nelec
+      use const, only: nelec
       use config, only: xold
       use csfs, only: nstates
 

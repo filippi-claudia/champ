@@ -9,15 +9,14 @@ c job where it left off
       use system, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
       use system, only: newghostype, nghostcent
-      use const, only: hb, delta
-      use system, only: nelec
+      use const, only: hb, delta, nelec
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino, tjfo
       use config, only: vold, xnew, xold
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use dets, only: cdet, ndet
-      use system, only: ndn, nup
+      use elec, only: ndn, nup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s

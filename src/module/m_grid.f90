@@ -39,7 +39,7 @@ end module grid_mod
 module grid_spline_mod
     !> Arguments
     use precision_kinds, only: sp
-    use system, only: nelec
+    use const, only: nelec
     use grid_mod, only: MXNSTEP
 
     implicit none
@@ -55,7 +55,7 @@ module grid_spline_mod
 
 contains
     subroutine allocate_grid_spline_mod()
-        use system, only: nelec
+        use const, only: nelec
         MORB_OCC = nelec/2 + 3
         if (.not. allocated(orb_num_spl)) allocate (orb_num_spl(8, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC), source=0.0_sp)
     end subroutine allocate_grid_spline_mod
@@ -70,7 +70,7 @@ module grid_lagrange_mod
     !> argument
     use precision_kinds, only: sp
     use grid_mod, only: MXNSTEP
-    use system, only: nelec
+    use const, only: nelec
 
     implicit none
 
@@ -90,7 +90,7 @@ module grid_lagrange_mod
     save
 contains
     subroutine allocate_grid_lagrange_mod()
-        use system, only: nelec
+        use const, only: nelec
         use grid_mod, only: MXNSTEP
         MORB_OCC = nelec/2
         if (.not. allocated(orb_num_lag)) allocate (orb_num_lag(5, MXNSTEP, MXNSTEP, MXNSTEP, MORB_OCC), source=0.0_sp)
