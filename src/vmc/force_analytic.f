@@ -134,7 +134,7 @@ c-----------------------------------------------------------------------
 
       use system, only: iwctype, ncent, ncent_tot
       use system, only: nelec
-      use const, only: hb
+      use constants, only: hb
       use da_energy_now, only: da_energy, da_psi
       use da_jastrow4val, only: da_d2j, da_vj
       use da_orbval, only: da_orb

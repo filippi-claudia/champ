@@ -6,7 +6,7 @@ c routine to accumulate estimators for energy etc.
 
       use precision_kinds, only: dp
       use control, only: ipr
-      use const, only: etrial
+      use dmc_mod, only: etrial
       use forcepar, only: nforce
       use contrldmc, only: idmc
       use contrldmc, only: nfprod

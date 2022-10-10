@@ -3,7 +3,7 @@
       subroutine optjas_deloc(psid,energy,dvpsp_dj,vj)
 
       use optwf_parms, only: nparmj
-      use const, only: hb
+      use constants, only: hb
       use system, only: nelec
       use control, only: ipr
       use csfs, only: nstates

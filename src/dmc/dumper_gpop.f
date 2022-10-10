@@ -8,7 +8,7 @@ c job where it left off
       use vmc_mod, only: nrad
       use dmc_mod, only: MWALK
       use basis, only: zex
-      use const, only: hb
+      use constants, only: hb
       use system, only: nelec
       use forcest, only: fgcm2, fgcum
       use forcepar, only: nforce

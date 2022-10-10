@@ -49,14 +49,16 @@ subroutine parser
   use system, 		      only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
   use jaspar, 		      only: nspin1, nspin2, is
   use system, 	        only: newghostype, nghostcent
-  use const, 		        only: pi, hb, etrial, delta, deltai, fbias, imetro
+  use constants,        only: pi, hb
+  use metropolis,       only: delta, deltai, fbias, imetro
+  use dmc_mod, 		      only: etrial
   use control, 		      only: ipr
   use system, 		      only: nelec
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num
   use csfs, 		        only: cxdet, ncsf, nstates
   use dets, 		        only: cdet, ndet
-  use system, 		        only: ndn, nup
+  use system, 		      only: ndn, nup
   use forcepar, 	      only: nforce
   use grdntspar, 	      only: igrdtype, ngradnts
   use header, 		      only: title
@@ -81,7 +83,7 @@ subroutine parser
   use casula, 		      only: i_vpsp, icasula
   use coefs, 		        only: coef, nbasis, norb, next_max
   use optorb,           only: irrep
-  use const2, 		      only: deltar, deltat
+  use metropolis,       only: deltar, deltat
   use contr2, 		      only: ianalyt_lap, ijas
   use contr2, 		      only: isc
   use contrldmc, 	      only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
@@ -289,7 +291,6 @@ subroutine parser
   cseed       = fdf_string('seed', "1837465927472523")
   ipr         = fdf_get('ipr', -1)
   eunit       = fdf_get('unit', 'Hartrees')
-  hb          = fdf_get('mass', 0.5d0)
   scalecoef   = fdf_get('scalecoef',1.0d0)
   i3dgrid     = fdf_get('i3dgrid',0)
   i3dsplorb   = fdf_get('i3dsplorb',0)

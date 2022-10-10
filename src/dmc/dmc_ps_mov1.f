@@ -44,7 +44,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use const, only: etrial, hb
+      use dmc_mod, only: etrial
+      use constants, only: hb
       use system, only: nelec
       use control, only: ipr
       use forcepar, only: istrech, nforce

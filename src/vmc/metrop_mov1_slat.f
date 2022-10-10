@@ -13,7 +13,8 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use vmc_mod, only: delri
       use system, only: znuc, cent, iwctype, ncent
       use mstates_mod, only: MSTATES
-      use const, only: pi, fbias
+      use constants, only: pi
+      use metropolis, only: fbias
       use system, only: nelec
       use control, only: ipr
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
@@ -28,7 +29,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use tmpnode, only: distance_node_sum
-      use const2, only: deltar, deltat
+      use metropolis, only: deltar, deltat
       use control, only: mode
       use pseudo, only: nloc
       use mmpol_cntrl, only: ich_mmpol

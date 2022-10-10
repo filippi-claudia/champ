@@ -9,7 +9,8 @@ c job where it left off
       use system, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
       use system, only: newghostype, nghostcent
-      use const, only: hb, delta
+      use constants, only: hb
+      use metropolis, only: delta
       use system, only: nelec
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino, tjfo
@@ -30,7 +31,7 @@ c job where it left off
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use wfsec, only: iwftype, nwftype
       use coefs, only: coef, nbasis, norb
-      use const2, only: deltar, deltat
+      use metropolis, only: deltar, deltat
 !      use contrl, only: nstep
       use control_vmc, only: vmc_nstep
       use basis, only: zex

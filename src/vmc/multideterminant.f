@@ -2,7 +2,7 @@
       contains
       subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
-      use const, only: hb
+      use constants, only: hb
       use system, only: nelec
       use csfs, only: nstates
       use dets, only: ndet

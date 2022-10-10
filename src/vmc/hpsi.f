@@ -7,7 +7,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use optwf_parms, only: nparmj
       use dets, only: ndet
-      use const, only: hb
+      use constants, only: hb
       use system, only: nelec
       use control, only: ipr
       use mstates_mod, only: MSTATES

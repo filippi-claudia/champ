@@ -7,7 +7,7 @@ c Written by Cyrus Umrigar
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX
       use system, only: znuc, pecent, iwctype, nctype, ncent, nctype_tot
-      use const, only: pi
+      use constants, only: pi
       use control, only: ipr
       use ewald, only: b_coul, b_coul_sim, y_coul, y_coul_sim
       use ewald_basis, only: vps_basis_fourier
@@ -20,7 +20,7 @@ c Written by Cyrus Umrigar
       use pseudo_tm, only: d2pot, nr_ps, vpseudo
       use tempor, only: dist_nn
       use test, only: f, vbare_coul, vbare_jas, vbare_psp
-      use constant, only: twopi
+      use constants, only: twopi
       use contrl_per, only: iperiodic
 
       use pseudo, only: lpot, nloc, vps
@@ -1067,7 +1067,7 @@ c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
       use pseudo_mod, only: MPS_GRID
       use ewald_mod, only: NGNORM_BIGX
-      use constant, only: twopi
+      use constants, only: twopi
       use precision_kinds, only: dp
       implicit none
 
@@ -1118,7 +1118,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar and Claudia Filippi
 
       use ewald_mod, only: NCOEFX, NPX
-      use constant, only: twopi
+      use constants, only: twopi
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
       implicit none
@@ -1780,7 +1780,7 @@ c-----------------------------------------------------------------------
       function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
 c Written by Cyrus Umrigar
 
-      use const, only: pi
+      use constants, only: pi
       use precision_kinds, only: dp
       implicit none
 
@@ -1820,7 +1820,7 @@ c-----------------------------------------------------------------------
       function ewald_pot_psp(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell,ict,l,z)
 c Written by Cyrus Umrigar
 
-      use const, only: pi
+      use constants, only: pi
       use precision_kinds, only: dp
       implicit none
 
