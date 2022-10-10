@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #   trex2champ is a tool which allows to read output files of quantum
 #   chemistry codes (GAMESS and trexio files) and write input files for
-#   CHAMP in V2.0 format.
+#   CHAMP in V3.0 format.
 #
 # Copyright (c) 2021, TREX Center of Excellence
 # All rights reserved.
@@ -37,21 +37,13 @@
 #   r.l.shinde@utwente.nl
 
 
-__author__ = "Ravindra Shinde, Evgeny Posenitskiy"
-__copyright__ = "Copyright 2022, The TREX Project"
-__version__ = "1.1.0"
-__maintainer__ = "Ravindra Shinde"
-__email__ = "r.l.shinde@utwente.nl"
-__status__ = "Development"
 
-
-from operator import index
 import sys
 import os
 import numpy as np
 from collections import Counter
 import argparse
-import warnings
+import pytest
 
 # Before we do anything else, we need to check if trexio and resultsFile are installed
 try:
@@ -67,15 +59,31 @@ except:
     sys.exit(1)
 
 
-class Champ:
-    """
-    Class to convert TREXIO files to CHAMP v2.0 format.
-    """
 
-    def __init__(self):
+class Champ:
+
+    def __init__(self) -> None:
+        self.__author__ = "Ravindra Shinde "
+        self.__copyright__ = "@Copyright 2022, The TREX Project "
+        self.__version__ = "v1.2.0"
+        self.__maintainer__ = "Ravindra Shinde"
+        self.__email__ = "r.l.shinde@utwente.nl"
+        self.__status__ = "Development"
+
+
+    def __repr__(self) -> str:
+        docs ="trex2champ is a tool which allows to read output files " \
+        "of quantum chemistry codes (GAMESS and trexio files) " \
+        "and write input files for CHAMP in V3.0 format. \n "
+        return docs + self.__author__ + self.__copyright__ + self.__version__ + "\n"
+
+
+    def __main__(self):
         """
-        Initialize the class.
+        Main driver function.
         """
+        self.__init__()
+        print (self.__repr__())
         self.parse_arguments()
         self.champ_file = None
         self.champ_file_name = None
@@ -183,6 +191,7 @@ class Champ:
         self.save_symmetry = args.save_symmetry
         self.save_determinants = args.save_determinants
         self.save_csfs = args.save_csfs
+        self.back_end = args.back_end
 
         # Optional argument for controlling the names of the output files
         self.basis_prefix = args.basis_prefix
@@ -199,32 +208,24 @@ class Champ:
         print ('\n')
 
 
+
+    def run(self):
+        self.__main__
+        filename = self.filename
+        if self.gamessfile is not None:
+            gamessfile = self.gamessfile
+        motype = self.motype
+
         # Default backend is HDF5
-        if args.back_end is not None:
-            if str(args.back_end).lower() == "hdf5":
-                back_end_t = trexio.TREXIO_HDF5
-            elif str(args.back_end).lower() == "text":
-                back_end_t = trexio.TREXIO_TEXT
+        if self.back_end is not None:
+            if str(self.back_end).lower() == "hdf5":
+                back_end = trexio.TREXIO_HDF5
+            elif str(self.back_end).lower() == "text":
+                back_end = trexio.TREXIO_TEXT
             else:
                 raise ValueError
         else:
-            back_end_t = trexio.TREXIO_HDF5
-
-        self.back_end = back_end_t
-
-
-    def __main__(self):
-        """
-        Main function.
-        """
-
-
-    def run(self):
-
-        filename = self.filename
-        gamessfile = self.gamessfile
-        motype = self.motype
-        back_end = self.back_end
+            back_end = trexio.TREXIO_HDF5
 
         trexio_file = trexio.File(filename, mode='r', back_end=back_end)
 
@@ -273,11 +274,13 @@ class Champ:
         if self.save_geometry is True:
             try:
                 nucleus_num = trexio.read_nucleus_num(trexio_file)
+                self.nucleus_num = nucleus_num
             except:
                 raise AttributeError("TREXIO :: Nucleus : Number of nuclei not found")
 
             try:
                 nucleus_charge = trexio.read_nucleus_charge(trexio_file)
+                self.nucleus_charge = nucleus_charge
             except:
                 raise AttributeError("TREXIO :: Nucleus : Charge not found")
 
@@ -304,6 +307,7 @@ class Champ:
         if self.save_ecp is True:
             try:
                 ecp_num = trexio.read_ecp_num(trexio_file)
+                self.ecp_num = ecp_num
             except trexio.Error:
                 print ('TREXIO Error :: ECP : num not found')
 
@@ -356,11 +360,13 @@ class Champ:
 
             try:
                 dict_basis["shell_num"] = trexio.read_basis_shell_num(trexio_file)
+                self.shell_num = dict_basis["shell_num"]
             except trexio.Error:
                 print('TREXIO Error :: Basis : shell num not found')
 
             try:
                 dict_basis["prim_num"] = trexio.read_basis_prim_num(trexio_file)
+                self.prim_num = dict_basis["prim_num"]
             except trexio.Error:
                 print('TREXIO Error :: Basis : prim num not found')
 
@@ -410,6 +416,7 @@ class Champ:
 
             try:
                 ao_num = trexio.read_ao_num(trexio_file)
+                self.ao_num = ao_num
             except trexio.Error:
                 print('TREXIO Error :: AO : number not found')
 
@@ -437,6 +444,7 @@ class Champ:
 
             try:
                 dict_mo["num"] = trexio.read_mo_num(trexio_file)
+                self.mo_num = dict_mo["num"]
             except trexio.Error:
                 print('TREXIO Error :: MO : num not found')
 
@@ -459,12 +467,14 @@ class Champ:
                     # Read number of determinants
                     try:
                         num_dets = trexio.read_determinant_num(trexio_file)
+                        self.num_dets = num_dets
                     except trexio.Error:
                         print('TREXIO Error :: Determinant : number not found')
 
                     # Read number of states
                     try:
                         num_states = trexio.read_state_num(trexio_file)
+                        self.num_states = num_states
                     except trexio.Error:
                         print('TREXIO Error :: State : number not found')
                         num_states = 1
@@ -539,6 +549,7 @@ class Champ:
 
         # Write the eigenvalues for a given type of orbitals using the resultsFile package. Currently it is optional.
         if self.save_eigenvalues:
+            file = resultsFile.getFile(self.gamessfile)
             write_champ_file_eigenvalues(filename, file, dict_mo["type"])
         return
 
@@ -1507,9 +1518,9 @@ def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets,
         beta_orbitals[i] = orb_list_dn
 
     if filename is not None:
-        if isinstance(champ.filename, str):
+        if isinstance(filename.filename, str):
             ## Write down a determinant file in the new champ v2.0 format
-            filename_determinant = os.path.splitext("champ_v2_" + champ.filename)[0]+'_determinants.det'
+            filename_determinant = os.path.splitext("champ_v2_" + filename.filename)[0]+'_determinants.det'
             with open(filename_determinant, 'w') as f:
                 # header line printed below
                 f.write("# Determinants from the TREXIO file. \n")
@@ -1533,18 +1544,74 @@ def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets,
                 f.write("end \n")
             f.close()
         else:
+            print ("in the value error part")
             raise ValueError
     # If filename is None, return a string representation of the output.
     else:
         return None
 
 
+def test_formaldehyde_ground_state():
+    champ = Champ()
+    champ.filename="COH2_GS.trexio"
+    champ.motype="RHF"
+    champ.back_end=trexio.TREXIO_HDF5
+    champ.gamessfile=None
+    champ.save_geometry=True
+    champ.save_lcao = True
+    champ.save_basis = True
+    champ.save_eigenvalues = False
+    champ.save_ecp = True
+    champ.save_symmetry = False
+    champ.save_determinants = True
+    champ.save_csfs = False
+
+    # Optional argument for controlling the names of the output files
+    champ.basis_prefix = "TEST1"
+
+    champ.run()
+    assert champ is not None
+    assert champ.nucleus_num == 4
+    assert champ.ao_num == 66
+    assert champ.mo_num == 66
+    assert champ.shell_num == 26
+    assert champ.prim_num == 62
+    assert champ.ecp_num == 14
+    assert champ.num_dets == 1862
+    assert champ.num_states == 1
+
+def test_benzene_ground_state():
+    champ = Champ()
+    champ.filename="benzene.hdf5"
+    champ.motype="RHF"
+    champ.back_end=trexio.TREXIO_HDF5
+    champ.gamessfile=None
+    champ.save_geometry=True
+    champ.save_lcao = True
+    champ.save_basis = True
+    champ.save_eigenvalues = False
+    champ.save_ecp = True
+    champ.save_symmetry = False
+    champ.save_determinants = False
+    champ.save_csfs = False
+
+    # Optional argument for controlling the names of the output files
+    champ.basis_prefix = "TEST2"
+
+    champ.run()
+    assert champ is not None
+    assert champ.nucleus_num == 12
+    assert champ.ao_num == 114
+    assert champ.mo_num == 108
+    assert champ.shell_num == 48
+    assert champ.prim_num == 186
+    assert champ.ecp_num == 42
+
+
+
+
 
 if __name__ == "__main__":
-    print ("Converting the trexio file to the champ v2.0 format")
-
-    # Instantiate the class
     champ = Champ()
-
-    # Run the class instance
+    champ.__main__()
     champ.run()
