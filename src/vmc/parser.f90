@@ -1126,7 +1126,7 @@ subroutine parser
   if(ibasis.eq.1) then
     write(ounit,'(a)') " Orbitals on localized basis "
     write(ounit, int_format) " Total no. of basis = ", nbasis
-    call write_orb_loc
+    ! call write_orb_loc
 
     if ( fdf_defined('basis') ) then
       if(numr.gt.0) then

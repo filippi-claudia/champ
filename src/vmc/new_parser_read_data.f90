@@ -784,8 +784,7 @@ subroutine read_orbitals_file(file_orbitals)
         endif
     enddo
     call bcast(coef)
-    ! printing of the lcao orbitals coefficients will be done by write_orb_loc subroutine.
-    write(ounit,*) "Orbital coefficients are written to the output.log file"
+    ! printing of the lcao orbitals coefficients will be done by write_orb_loc subroutine after bf pointer file is read.
 
     ! set default ordering if we are not using trexio files.
     if (.not. allocated(champ_ao_ordering))      allocate(champ_ao_ordering(nbasis))
@@ -1684,7 +1683,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     use inputflags, only: ibasis_num
     use coefs, only: nbasis
     use general, only: pooldir
-
+    use write_orb_loc_mod, only: write_orb_loc
     use atom, only: nctype
     use ghostatom, only: newghostype
     use precision_kinds,    only: dp
@@ -1800,6 +1799,10 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     ibasis_num = 1
     call bcast(ibasis_num)
     if (wid) close(iunit)
+
+    write(ounit,*) "Orbital coefficients are written to the output.log file"
+    call write_orb_loc()
+
 end subroutine read_basis_num_info_file
 
 
