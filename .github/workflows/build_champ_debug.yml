@@ -13,40 +13,22 @@ on:
 
 jobs:
   debug_build_test_champ:
-    name: CI ${{ matrix.toolchain }} ${{ matrix.mode }} mode
+    name: build and test with ${{ matrix.toolchain }} ${{ matrix.mode }} mode
     runs-on: ubuntu-latest
     timeout-minutes: 200
     strategy:
       matrix:
         toolchain: ['intel','gnu']
-        python-version: ["3.8", "3.9", "3.10"]
-        mode: ['release','debug']
+        mode: ['RELEASE','DEBUG']
         exclude:
           - toolchain: 'intel'
-            mode: 'debug'
-          - toolchain: 'gnu'
-            python-version: "3.8"
-          - toolchain: 'gnu'
-            python-version: "3.9"
-          - toolchain: 'gnu'
-            python-version: "3.10"
+            mode: 'DEBUG'
       fail-fast: false
     defaults:
       run:
         shell: bash --noprofile --norc {0}
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install pytest
-        python -m pip install trexio
-        python -m pip install trexio_tools
-
+    - uses: actions/checkout@v2
     - name: Get Intel Key
       if: matrix.toolchain == 'intel'
       run: |
@@ -70,8 +52,6 @@ jobs:
            sudo apt install -y gawk
            sudo apt install -y libblacs-mpi-dev
            sudo apt install -y liblapack-dev
-           python -m pip install trexio
-           python -m pip install trexio_tools
            gawk --version
            mpirun --version
            gfortran --version
@@ -100,8 +80,6 @@ jobs:
         make check
         sudo make install
         sudo cp include/* /usr/local/include/
-        python -m pip install trexio
-        python -m pip install trexio_tools
 
     - name: Compile the CHAMP code with INTEL
       if: matrix.toolchain == 'intel'
@@ -112,6 +90,7 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
+        # cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_BUILD_TYPE=DEBUG
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
         cmake --build build -- -j2
         ulimit -s unlimited
@@ -124,17 +103,10 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
+        # cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DVECTORIZED=no -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
         cmake --build build -- -j2
         ulimit -s unlimited
-
-    - name: "Test 00 Python-${{ matrix.python-version }} unit testing using pytest"
-      if: ${{ (matrix.toolchain == 'intel' ) && ( matrix.mode == 'release' ) }}
-      run: |
-        echo "Running the trex2champ converter tests with python-${{ matrix.python-version }}"
-        cd tools/trex_tools
-        pytest
-
 
     - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
       run: |
