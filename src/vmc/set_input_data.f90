@@ -300,13 +300,13 @@ subroutine multideterminants_define(iflag, icheck)
           if (numrep_det(kk, iab).eq.1) then
              kkn=kkn+1
              
-             k=1
+             k=0
              do while (k_det(k,iab).ne.kk)
                 k=k+1
              enddo
              kaux=k_det(k,iab)
 
-             kn=1
+             kn=0
              do while (k_det(kn,iab).ne.kkn)
                 kn=kn+1
              enddo
