@@ -57,9 +57,9 @@
       module pw_orbitals
       contains
       subroutine orbitals_pw(x,orb,dorb,ddorb)
-      use vmc_mod, only: norb_tot
-      use const, only: nelec
       use precision_kinds, only: dp
+      use system,  only: nelec
+      use vmc_mod, only: norb_tot
       implicit none
 
 

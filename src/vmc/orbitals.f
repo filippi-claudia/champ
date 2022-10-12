@@ -19,27 +19,28 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use const, only: nelec, ipr
-      use wfsec, only: iwf
-      use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
-      use coefs, only: coef, nbasis, norb
+      use basis_fns_mod, only: basis_fns
+      use coefs,   only: nbasis
+      use contrl_file, only: ounit
       use contrl_per, only: iperiodic
-      use force_analy, only: iforce_analy
-      use grid3dflag, only: i3dlagorb, i3dsplorb
-      use atom, only: ncent_tot
-      use orbval, only: ddorb, dorb, nadorb, orb
+      use control, only: ipr
+      use grid3d_orbitals, only: lagrange_mos,lagrange_mos_2
+      use grid3d_orbitals, only: lagrange_mos_grad,spline_mo
+      use grid3dflag, only: i3dlagorb,i3dsplorb
+      use m_force_analytic, only: iforce_analy
+      use multiple_geo, only: iwf
+      use orbval,  only: ddorb,dorb,nadorb,orb
+      use phifun,  only: d2phin,dphin,n0_ibasis,n0_nbasis,phin
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
-      use grid3d_orbitals, only: spline_mo
-      use grid3d_orbitals, only: lagrange_mos, lagrange_mos_grad, lagrange_mos_2
+      use pw_orbitals, only: orbitals_pw
+      use slater,  only: coef,norb
+      use system,  only: ncent_tot,nelec
+      use trexio_basis_fns_mod, only: trexio_basis_fns
       use trexio_read_data, only: trexio_has_group_orbitals
 #if defined(TREXIO_FOUND)
-      use trexio_basis_fns_mod, only: trexio_basis_fns
 #endif
-      use basis_fns_mod, only: basis_fns
 
 
-      use pw_orbitals, only: orbitals_pw
       implicit none
 
       integer :: i, ier, ider, iorb, k, m
@@ -232,14 +233,14 @@ c-------------------------------------------------------------------------------
 
       subroutine da_orbitals
 
-      use atom, only: ncent
-      use const, only: nelec
-      use da_orbval, only: da_d2orb, da_dorb, da_orb
-      use numbas2, only: ibas0, ibas1
-      use phifun, only: d2phin_all, d3phin, dphin
-      use wfsec, only: iwf
-      use coefs, only: coef, nbasis, norb
+      use coefs,   only: nbasis
+      use da_orbval, only: da_d2orb,da_dorb,da_orb
+      use multiple_geo, only: iwf
+      use numbas2, only: ibas0,ibas1
+      use phifun,  only: d2phin_all,d3phin,dphin
       use precision_kinds, only: dp
+      use slater,  only: coef,norb
+      use system,  only: ncent,nelec
 
       implicit none
 
@@ -280,24 +281,23 @@ c-------------------------------------------------------------------------------
 c------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
-      use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
-      use phifun, only: phin
-      use wfsec, only: iwf
-      use coefs, only: coef, norb, nbasis
-      use contrl_per, only: iperiodic
-      use atom, only: ncent_tot
-      use grid3dflag, only: i3dlagorb, i3dsplorb
-      use multislatern, only: ddorbn, dorbn, orbn
-      use const, only: nelec
-      use precision_kinds, only: dp
-      use grid3d_orbitals, only: spline_mo, lagrange_mose
-      use grid3d_orbitals, only: lagrange_mos_grade
       use basis_fns_mod, only: basis_fns
+      use coefs,   only: nbasis
+      use contrl_per, only: iperiodic
+      use grid3d_orbitals, only: lagrange_mos_grade,lagrange_mose
+      use grid3d_orbitals, only: spline_mo
+      use grid3dflag, only: i3dlagorb,i3dsplorb
+      use multiple_geo, only: iwf
+      use multislatern, only: ddorbn,dorbn,orbn
+      use phifun,  only: d2phin,dphin,n0_ibasis,n0_nbasis,phin
+      use precision_kinds, only: dp
       use pw_orbitals, only: orbitals_pw_grade
+      use slater,  only: coef,norb
+      use system,  only: ncent_tot,nelec
+      use trexio_basis_fns_mod, only: trexio_basis_fns
       use trexio_read_data, only: trexio_has_group_orbitals
 
 #if defined(TREXIO_FOUND)
-      use trexio_basis_fns_mod, only: trexio_basis_fns
 #endif
 
 

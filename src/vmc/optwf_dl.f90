@@ -12,8 +12,8 @@
 
 module optwf_dl_mod
 
-    use precision_kinds, only: dp
-    use error, only: fatal_error
+      use error,   only: fatal_error
+      use precision_kinds, only: dp
 
     implicit None
     interface
@@ -35,24 +35,21 @@ contains
 
     subroutine optwf_dl()
 
-        use precision_kinds, only: dp
-use sr_mod, only: mparm
-        use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-use optwf_contrl, only: idl_flag
-        use optwf_corsam, only: energy, energy_err
-        use optwf_contrl, only: dparm_norm_min, nopt_iter
-        use optwf_contrl, only: sr_adiag
-        use orbval, only: nadorb
+      use contrl_file, only: ounit
+      use control_vmc, only: vmc_nblk,vmc_nblk_max
+      use fetch_parameters_mod, only: fetch_parameters
+      use optwf_control, only: dparm_norm_min,idl_flag,ioptci,ioptjas
+      use optwf_control, only: ioptorb,method,nopt_iter,nparm,sr_adiag
+      use optwf_corsam, only: energy,energy_err
+      use optwf_handle_wf, only: compute_parameters,save_nparms,save_wf
+      use optwf_handle_wf, only: set_nparms,set_nparms_tot
+      use optwf_handle_wf, only: test_solution_parm,write_wf
+      use orbval,  only: nadorb
+      use precision_kinds, only: dp
+      use sr_mod,  only: mparm
+      use sr_more, only: dscal
+      use vmc_f_mod, only: vmc
 !        use contrl, only: nblk, nblk_max
-        use control_vmc, only: vmc_nblk, vmc_nblk_max
-        use method_opt, only: method
-        use contrl_file,    only: ounit
-        use optwf_handle_wf,only: set_nparms_tot, save_wf, write_wf
-        use optwf_handle_wf,only: compute_parameters, test_solution_parm
-        use optwf_handle_wf,only: save_nparms, set_nparms
-        use fetch_parameters_mod, only: fetch_parameters
-        use vmc_f_mod, only: vmc
-        use sr_more, only: dscal
         implicit None
 
         integer :: iter, iflag, nadorb_sav
@@ -134,10 +131,8 @@ use optwf_contrl, only: idl_flag
 
     subroutine sanity_check()
 
-        use sr_mod, only: mparm
-        use optwf_contrl, only: nparm
-        use optwf_contrl, only: idl_flag
-        use method_opt, only: method
+      use optwf_control, only: idl_flag,method,nparm
+      use sr_mod,  only: mparm
 
         if (method .ne. 'sr_n' .or. idl_flag .eq. 0) return
         if (nparm .gt. mparm) call fatal_error('SR_OPTWF: nparmtot gt mparm')
@@ -146,7 +141,7 @@ use optwf_contrl, only: idl_flag
 
     subroutine init_arrays()
         !> Allocate and initialize to 0 all arrays
-        use optwf_contrl, only: nparm
+      use optwf_control, only: nparm
 
         !> allocate
         allocate (deltap(nparm))
@@ -176,12 +171,11 @@ use optwf_contrl, only: idl_flag
 
     subroutine optimization_step(iter)
         !> do 1 optimization step
-        use mpi
-use precision_kinds, only: dp
-        use mpiconf, only: idtask
-        use optwf_sr_mod, only: sr_hs
-        use optwf_contrl, only: nparm
-        use optwf_contrl, only: sr_tau, sr_adiag
+      use mpi
+      use mpiconf, only: idtask
+      use optwf_control, only: nparm,sr_adiag,sr_tau
+      use optwf_sr_mod, only: sr_hs
+      use precision_kinds, only: dp
 
         ! in/out variable
         integer, intent(in) :: iter
@@ -201,11 +195,9 @@ use precision_kinds, only: dp
 
     subroutine one_iter(iter)
         !> Individual routine to optimize the parameters
-        use precision_kinds, only: dp
-        use sr_mat_n, only: h_sr
-        use optwf_contrl, only: nparm
-        use optwf_contrl, only: dl_alg, dl_mom
-        use optwf_contrl, only: sr_tau
+      use optwf_control, only: dl_alg,dl_mom,nparm,sr_tau
+      use precision_kinds, only: dp
+      use sr_mat_n, only: h_sr
 
         integer, intent(in) :: iter
 
