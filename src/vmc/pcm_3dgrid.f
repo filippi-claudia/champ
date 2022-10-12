@@ -1,5 +1,5 @@
       module pcm_3dgrid_mod
-      use error, only: fatal_error
+      use error,   only: fatal_error
       interface !interface to pspline
       subroutine r8fvtricub(ict,ivec,ivecd,
      >  fval,ii,jj,kk,xparam,yparam,zparam,
@@ -66,14 +66,14 @@ c &pcm xn_pcm 1. yn_pcm 1. zn_pcm 1.
 c----------------------------------------------------------------------
       subroutine pcm_setup_grid
 
-      use pcm_3dgrid, only: MGRID_PCM
-      use pcm_3dgrid, only: UNDEFINED, IUNDEFINED, PCM_SHIFT
-      use atom, only: cent, ncent
+      use contrl_file, only: ounit
       use grid3d_param, only: origin
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_3dgrid, only: IUNDEFINED,MGRID_PCM,PCM_SHIFT,UNDEFINED
       use pcm_grid3d_array, only: pcm_cart_from_int
+      use pcm_grid3d_param, only: ipcm_nstep3d,pcm_endpt,pcm_origin
+      use pcm_grid3d_param, only: pcm_step3d
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use system,  only: cent,ncent
       implicit none
 
       integer :: i, iaxis, ibcxmax, ibcxmin, ibcymax
@@ -168,7 +168,7 @@ c----------------------------------------------------------------------
       function ipcm_int_from_cart(value,iaxis)
 
       use pcm_3dgrid, only: IUNDEFINED
-      use pcm_grid3d_param, only: pcm_endpt, pcm_origin, pcm_step3d
+      use pcm_grid3d_param, only: pcm_endpt,pcm_origin,pcm_step3d
       use precision_kinds, only: dp
 
       implicit none
@@ -193,10 +193,10 @@ c----------------------------------------------------------------------
 c PCM on a 3d grid with spline fit
       subroutine pcm_setup_3dspl
 
-      use pcm_3dgrid, only: MGRID_PCM, MGRID_PCM3
-      use pcm_grid3d_param, only: ipcm_nstep3d
-      use pcm_grid3d_array, only: pcm_cart_from_int
       use m_pcm_num_spl, only: pcm_num_spl
+      use pcm_3dgrid, only: MGRID_PCM,MGRID_PCM3
+      use pcm_grid3d_array, only: pcm_cart_from_int
+      use pcm_grid3d_param, only: ipcm_nstep3d
       use precision_kinds, only: dp
 
       implicit none
@@ -291,12 +291,11 @@ c      stop
 c----------------------------------------------------------------------
       subroutine spline_pcm(r,f,ier)
 
-      use pcm_3dgrid, only: MGRID_PCM
-      use pcm_3dgrid, only: IUNDEFINED
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d
-      use pcm_grid3d_array, only: pcm_cart_from_int
-      use insout, only: inout, inside
+      use insout,  only: inout,inside
       use m_pcm_num_spl, only: pcm_num_spl
+      use pcm_3dgrid, only: IUNDEFINED,MGRID_PCM
+      use pcm_grid3d_array, only: pcm_cart_from_int
+      use pcm_grid3d_param, only: ipcm_nstep3d,pcm_step3d
 
       implicit none
 
@@ -359,8 +358,9 @@ c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_dump(iu)
 
       use pcm_cntrl, only: ipcm
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
+      use pcm_grid3d_param, only: ipcm_nstep3d,pcm_endpt,pcm_origin
+      use pcm_grid3d_param, only: pcm_step3d
 
       implicit none
 
@@ -381,8 +381,9 @@ c-----------------------------------------------------------------------
       subroutine pcm_3dgrid_rstrt(iu)
 
       use pcm_cntrl, only: ipcm
-      use pcm_grid3d_param, only: ipcm_nstep3d, pcm_endpt, pcm_origin, pcm_step3d
       use pcm_grid3d_array, only: pcm_cart_from_int
+      use pcm_grid3d_param, only: ipcm_nstep3d,pcm_endpt,pcm_origin
+      use pcm_grid3d_param, only: pcm_step3d
 
       implicit none
 
@@ -401,8 +402,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine splpcm_dump(iu)
 
-      use pcm_grid3d_param, only: ipcm_nstep3d
       use m_pcm_num_spl, only: pcm_num_spl
+      use pcm_grid3d_param, only: ipcm_nstep3d
 
       implicit none
 
@@ -415,8 +416,8 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine splpcm_rstrt(iu)
-      use pcm_grid3d_param, only: ipcm_nstep3d
       use m_pcm_num_spl, only: pcm_num_spl
+      use pcm_grid3d_param, only: ipcm_nstep3d
 
       implicit none
 
@@ -434,11 +435,10 @@ c       Calculate e-qpol interactions (pcm)
 c       and adds nuclei-qpol interactions
 c......................................................
 
-      use pcm_parms, only: ch, nch, nchs
-      use pcm_parms, only: xpol
-
-      use pcm_fdc, only: rcol, rcolv
+      use pcm_fdc, only: rcol,rcolv
+      use pcm_parms, only: ch,nch,nchs,xpol
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: j

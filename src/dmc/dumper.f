@@ -5,54 +5,54 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
 
-      use vmc_mod, only: nrad
-      use dmc_mod, only: MWALK
-      use basis, only: zex
-      use basis, only: ns, np, nd, nf, ng
-      use const, only: hb, nelec
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
-      use age, only: iage, ioldest, ioldestmx
-      use contrldmc, only: idmc
-      use contrldmc, only: nfprod, rttau, tau
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use estcum, only: iblk, ipass
-      use config, only: xold_dmc
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum
-      use estcum, only: ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
-      use estcum, only: wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wgcum, wgcum1
-      use estcum, only: wgdcum
-      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2
-      use est2cm, only: ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21
-      use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
-      use derivest, only: derivcm2, derivcum, derivtotave_num_old
-      use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid
-      use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
-      use mpiblk, only: iblk_proc
-      use qua, only: nquad, wq, xq, yq, zq
-      use branch, only: eest, eigv, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
-      use jacobsave, only: ajacob
-      use pseudo, only: nloc
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
-      use coefs, only: coef, nbasis, norb
-      use ghostatom, only: newghostype, nghostcent
-      use velratio, only: fratio
-!      use contrl, only: nconf
+      use age,     only: iage,ioldest,ioldestmx
+      use basis,   only: ns, np, nd, nf, ng, zex
+      use branch,  only: eest,eigv,ff,fprod,nwalk,wdsumo,wgdsumo,wt
+      use branch,  only: wtgen
+      use coefs,   only: nbasis
+      use config,  only: xold_dmc
+      use constants, only: hb
+      use contrl_file, only: ounit
+      use contrldmc, only: idmc,nfprod,rttau,tau
+      use control, only: mode
       use control_dmc, only: dmc_nconf
-      use mpi
-      use contrl_file,    only: ounit
-      use precision_kinds, only: dp
-
+      use denupdn, only: rprobdn,rprobup
+      use derivest, only: derivcm2,derivcum,derivtotave_num_old
+      use dmc_mod, only: MWALK
       use dumper_gpop_mod, only: dumper_gpop
-      use mmpol,           only: mmpol_dump
-      use pcm_mod,         only: pcm_dump
-      use properties_mod,  only: prop_dump
-      use rannyu_mod,      only: savern
-      use strech_mod,      only: strech
+      use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
+      use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
+      use est2cm,  only: tjfcm_dmc,tpbcm2_dmc,wcm2,wcm21,wdcm2,wdcm21
+      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21,wgdcm2
+      use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
+      use estcum,  only: ei1cum,ei2cum,ei3cum,iblk,ipass,pecum_dmc
+      use estcum,  only: r2cum_dmc,ricum,taucum,tjfcum_dmc,tpbcum_dmc
+      use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
+      use estcum,  only: wgcum1,wgdcum
+      use jacobsave, only: ajacob
+      use mmpol,   only: mmpol_dump
+      use mpi
+      use mpiblk,  only: iblk_proc
+      use mpiconf, only: idtask,nproc,wid
+      use multiple_geo, only: fgcm2,fgcum,nforce,pecent
+      use pcm_mod, only: pcm_dump
+      use precision_kinds, only: dp
+      use properties_mod, only: prop_dump
+      use pseudo,  only: nloc
+      use qua,     only: nquad,wq,xq,yq,zq
+      use rannyu_mod, only: savern
+      use slater,  only: cdet,coef,ndet,norb
+      use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nbrnch
+      use stats,   only: nodecr,trymove
+      use step,    only: rprob
+      use strech_mod, only: strech
+      use system,  only: cent,iwctype,ncent,nctype,ndn,nelec,newghostype
+      use system,  only: nghostcent,nup,znuc
+      use velratio, only: fratio
+      use vmc_mod, only: nrad
+!      use contrl, only: nconf
+
+
       implicit none
 
       integer :: i, ib, ic, id, ierr

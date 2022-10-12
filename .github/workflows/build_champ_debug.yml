@@ -126,7 +126,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
+        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0108635 +-  0.0054667) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_double.out "total E" -1.0108635  0.0054667 --no_assert
@@ -152,7 +152,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
+        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0588247 +-  0.0022854) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0588247  0.0022854 --no_assert
@@ -178,7 +178,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
+        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0578796 +-  0.0018813) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0578796  0.0018813 --no_assert
@@ -207,7 +207,7 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
+        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
 
         echo "Comparing the energy with the reference one (Current energy = -1.0173833 +-  0.0082930) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0173833   0.0082930 --no_assert

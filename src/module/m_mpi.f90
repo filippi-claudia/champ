@@ -35,8 +35,8 @@ module custom_broadcast
 !! @author Ravindra Shinde
 !! @date 16 June 2021
 
-    use precision_kinds, only: dp
-    use mpi
+      use mpi
+      use precision_kinds, only: dp
     implicit none
     integer     :: MPIerror
 

@@ -5,9 +5,9 @@ c-----------------------------------------------------------------------
 
       ! this was not in master but I think it's needed
       ! this is so confusng ...
-      use optwf_contrl, only: nparm
-
+      use optwf_control, only: nparm
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: ip, n
@@ -32,14 +32,12 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_jastrow(p,n)
-      use atom, only: nctype
-      use jaspar3, only: b, c
-
-      use jaspar4, only: a4
-      use optwf_contrl, only: ioptjas
-      use optwf_nparmj, only: nparma, nparmb, nparmc
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc
+      use jastrow, only: a4,b,c
+      use optwf_control, only: ioptjas
+      use optwf_nparmj, only: nparma,nparmb,nparmc
+      use optwf_wjas, only: iwjasa,iwjasb,iwjasc
       use precision_kinds, only: dp
+      use system,  only: nctype
       implicit none
 
       integer :: i, ict, iparm, n
@@ -75,10 +73,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine fetch_lcao(p,n)
 
-      use optwf_contrl, only: ioptorb
       use optorb_cblock, only: norbterm
-
+      use optwf_control, only: ioptorb
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: i, n
@@ -100,11 +98,11 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
-      use csfs, only: ccsf, ncsf
-      use contrl_file,    only: ounit
-      use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci
+      use contrl_file, only: ounit
+      use csfs,    only: ccsf,ncsf
+      use optwf_control, only: ioptci
       use precision_kinds, only: dp
+      use slater,  only: cdet,ndet
       implicit none
 
       integer :: i, iadiag, icsf, idet, j

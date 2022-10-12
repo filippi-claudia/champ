@@ -3,29 +3,20 @@
       subroutine walksav_det(iw)
 c Written by Claudia Filippi
 
-      use precision_kinds, only: dp
-      use vmc_mod, only: nmat_dim
-      use vmc_mod, only: MEXCIT
+      use branch,  only: nwalk
+      use csfs,    only: nstates
       use dmc_mod, only: mwalk
-      use const, only: nelec
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: nmat_dim
-      use vmc_mod, only: MEXCIT
-      use dmc_mod, only: mwalk
-      use const, only: nelec
-      use mstates_mod, only: MSTATES
-      use branch, only: nwalk
-      use slater, only: ddx, fp, slmi
-      use dets, only: ndet
-      use elec, only: ndn, nup
-      use orbval, only: dorb, orb
-      use coefs, only: norb
-      use csfs, only: nstates
-      use ycompact, only: ymat
-      use multislater, only: detiab
-      use multidet, only: ivirt, kref, numrep_det
-      use multimat, only: aa, wfmat
       use mpi
+      use mstates_mod, only: MSTATES
+      use multidet, only: ivirt,numrep_det
+      use multimat, only: aa,wfmat
+      use multislater, only: detiab
+      use orbval,  only: dorb,orb
+      use precision_kinds, only: dp
+      use slater,  only: ddx,fp,kref,ndet,norb,slmi
+      use system,  only: ndn,nelec,nup
+      use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
+      use ycompact, only: ymat
 
       implicit none
 
