@@ -68,6 +68,8 @@ subroutine finalize_main()
     use contrl_file,    only: ounit
     use mpitimer,    only: time, time_start, time_final
 
+    implicit none
+    integer :: ierr
     ! call close_files()
     time_final = time()
 

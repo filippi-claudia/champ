@@ -18,7 +18,6 @@ IF(BUILD_UNIT_TESTS)
   set(FORTUTF_PROJECT_MOD_DIR "${CMAKE_BINARY_DIR}/src/module;${CMAKE_BINARY_DIR}/src/vmc")
 
   set( FORTUTF_ROOT ../FortUTF)
-  include(../FortUTF/cmake/fortutf.cmake)
-
+  include(${CMAKE_SOURCE_DIR}/CMakeModules/fortutf.cmake)
   FortUTF_Find_Tests()
 ENDIF()

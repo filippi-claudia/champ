@@ -3395,7 +3395,7 @@ endif ! (rank==0)
           'force   ', 'n         ', 1.d0, &
           'force   ', 'ev/ang    ', 1.60219d-9, &
           'force   ', 'ry/bohr   ', 4.11943d-8, &
-          'force   ', 'ha/bohr   ', 2.059715d-08 /
+          'force   ', 'ha/bohr   ', 8.23886d-08 /
 
       data (dimm(iu), name(iu), unit(iu), iu=45, 54) / &
           'pressure', 'pa        ', 1.d0, &
