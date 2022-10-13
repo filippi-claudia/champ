@@ -777,8 +777,7 @@ subroutine read_orbitals_file(file_orbitals)
         endif
     enddo
     call bcast(coef)
-    ! printing of the lcao orbitals coefficients will be done by write_orb_loc subroutine.
-    write(ounit,*) "Orbital coefficients are written to the output.log file"
+    ! printing of the lcao orbitals coefficients will be done by write_orb_loc subroutine after bf pointer file is read.
 
     ! set default ordering if we are not using trexio files.
     if (.not. allocated(champ_ao_ordering))      allocate(champ_ao_ordering(nbasis))
@@ -1658,6 +1657,8 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     ! Ravindra
     ! Basis function types and pointers to radial parts tables
     ! alternative name for keyword basis because of GAMBLE inputword basis because of GAMBLE input
+
+      
       use basis, only: ns, np, nd, nf, ng
       use coefs,   only: nbasis
       use contrl_file, only: errunit,ounit
@@ -1670,6 +1671,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
       use numbas_mod, only: MRWF
       use precision_kinds, only: dp
       use system,  only: nctype,newghostype
+      use write_orb_loc_mod, only: write_orb_loc
 
 
     implicit none
@@ -1783,6 +1785,10 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     ibasis_num = 1
     call bcast(ibasis_num)
     if (wid) close(iunit)
+
+    write(ounit,*) "Orbital coefficients are written to the output.log file"
+    call write_orb_loc()
+
 end subroutine read_basis_num_info_file
 
 
