@@ -125,8 +125,8 @@ module keywords
   integer                     :: num_modules  = 9   ! change this number after every adition/deletion
   character(len=12)           :: allowed_modules(9)
 
-  integer                     :: num_keywords = 157 ! change this number after every adition/deletion
-  character(len=20)           :: allowed_keywords(157)
+  integer                     :: num_keywords = 158 ! change this number after every adition/deletion
+  character(len=20)           :: allowed_keywords(158)
 
 
   private
@@ -177,7 +177,7 @@ module keywords
     'eigenvalues', 'basis_num_info', 'dmatrix',               &
     'cavity_spheres', 'gradients_cartesian','modify_zmatrix', &
     'gradients_zmatrix', 'hessian_zmatrix', 'efield',         &
-    'zmatrix_connection', 'weights_guiding' /)
+    'zmatrix_connection', 'weights_guiding', 'weights' /)
 
   end subroutine allocate_keywords
 
