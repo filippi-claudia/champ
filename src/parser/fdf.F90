@@ -114,6 +114,175 @@
 # endif
 #endif
 
+
+
+module keywords
+  !> @details This module contains a list of allowed keywords.
+  !> This is CHAMP code spe
+  !> @author Ravindra Shinde
+  !> @email r.l.shinde@utwente.nl
+  implicit none
+  integer                     :: num_modules  = 9   ! change this number after every adition/deletion
+  character(len=12)           :: allowed_modules(9)
+
+  integer                     :: num_keywords = 157 ! change this number after every adition/deletion
+  character(len=20)           :: allowed_keywords(157)
+
+
+  private
+  public  :: num_keywords, num_modules
+  public  :: allowed_keywords, allowed_modules
+  public  :: allocate_keywords, allocate_modulenames
+  public  :: validate_keywords, validate_modulenames
+
+  save
+  contains
+
+  subroutine allocate_keywords()
+
+    ! List of allowed keywords
+    allowed_keywords = (/                                     &
+    'mode',  'title', 'pool', 'pseudopot', 'basis', 'nforce', &
+    'nwftype', 'iperiodic', 'ibasis', 'seed', 'ipr', 'unit',  &
+    'mass', 'scalecoef', 'i3dgrid', 'i3dsplorb', 'i3dlagorb', &
+    'i3ddensity', 'backend', 'nelec', 'nup', 'newghostype',   &
+    'nghostcent', 'ijas', 'isc', 'nspin1', 'nspin2',          &
+    'ianalyt_lap', 'iforce_analy', 'iuse_zmat', 'izvzb',      &
+    'alfgeo', 'iroot_geo', 'delgrdxyz', 'igrdtype',           &
+    'ngradnts', 'delgrdbl', 'delgrdba', 'delgrdda',           &
+    'igrdtype', 'iguiding', 'iefficiency','iefield','imetro', &
+    'node_cutoff', 'enode_cutoff', 'delta','deltar','deltat', &
+    'fbias', 'vmc_nstep', 'vmc_nblk','vmc_nblkeq','nblk_max', &
+    'vmc_nconf_new', 'vmc_idump', 'vmc_irstar', 'vmc_isite',  &
+    'vmc_icharged_atom', 'vmc_nblk_ci', 'kref_fixed', 'idmc', &
+    'ipq','itau_eff', 'iacc_rej', 'icross', 'icuspg','idiv_v',&
+    'icut_br', 'icut_e','dmc_node_cutoff','dmc_enode_cutoff', &
+    'tau', 'etrial', 'nfprod', 'itausec', 'icasula',          &
+    'dmc_nstep', 'dmc_nblk', 'dmc_nblkeq','dmc_nconf',        &
+    'dmc_nconf_new', 'dmc_idump', 'dmc_irstar', 'dmc_isite',  &
+    'ioptwf', 'method', 'optwf', 'idl_flag', 'ilbfgs_flag',   &
+    'ilbfgs_m', 'sr_rescale', 'ibeta', 'ratio', 'iapprox',    &
+    'ncore', 'iuse_orbeigv', 'ioptjas', 'ioptorb', 'ioptci',  &
+    'no_active', 'energy_tol', 'dparm_norm_min', 'add_diag',  &
+    'nopt_iter', 'micro_iter_sr', 'func_omega', 'omega',      &
+    'n_omegaf', 'n_omegat', 'lin_nvec', 'lin_nvecx',          &
+    'lin_adiag', 'lin_eps', 'lin_jdav', 'multiple_adiag',     &
+    'sr_tau', 'sr_adiag', 'sr_eps', 'ilastvmc','dl_mom',      &
+    'dl_alg', 'ngrad_jas_blocks', 'isample_cmat', 'iciprt',   &
+    'save_blocks', 'force_blocks','iorbsample', 'sample',     &
+    'print', 'nloc','nquad','nextorb', 'trexio', 'basis',     &
+    'molecule','determinants','symmetry', 'jastrow',          &
+    'jastrow_der', 'orbitals', 'exponents', 'pseudo',         &
+    'optorb_mixvirt', 'multideterminants', 'forces',          &
+    'eigenvalues', 'basis_num_info', 'dmatrix',               &
+    'cavity_spheres', 'gradients_cartesian','modify_zmatrix', &
+    'gradients_zmatrix', 'hessian_zmatrix', 'efield',         &
+    'zmatrix_connection', 'weights_guiding' /)
+
+  end subroutine allocate_keywords
+
+  subroutine allocate_modulenames()
+
+    allowed_modules = (/                                      &
+    'general', 'electrons', 'blocking_vmc', 'blocking_dmc',   &
+    'optgeo', 'optwf', 'vmc', 'dmc', 'periodic' /)
+  end subroutine allocate_modulenames
+
+
+  subroutine validate_keywords(keyword)
+    use utils,          only: die, chrcap
+
+    implicit none
+    character(len=*), intent(in)        :: keyword
+    character(80)                       :: msg
+    integer                             :: i, j
+    logical                             :: completed, matched
+    integer                             :: len1, len2, lenc
+    character                           :: char1, char2
+    character(len=20)                   :: string1, string2
+
+    call allocate_keywords()
+
+    j = 1
+    do while((.not. matched) .and. (j .le. num_keywords))
+      i = 1
+      matched       = .true.
+      completed     = .false.
+
+      string1 = trim(adjustl(keyword))
+      string2 = trim(adjustl(allowed_keywords(j)))
+      len1 = len(trim(adjustl(keyword)))
+      len2 = len(trim(adjustl(allowed_keywords(j))))
+      lenc = max(len1, len2)
+      do while((.not. completed) .and. (i .le. lenc))
+        char1 = string1(i:i)
+        char2 = string2(i:i)
+        call chrcap(char1, 1)
+        call chrcap(char2, 1)
+        if (char1 .ne. char2) then
+          matched       = .false.
+          completed     = .true.
+          exit
+        endif
+        i = i + 1
+      enddo
+      j = j + 1
+      if (matched) exit
+    enddo
+    if (.not. matched) then
+      call die('Keyword not matching with valid keywords :: Check the spelling ', string1)
+    endif
+end subroutine validate_keywords
+
+
+  subroutine validate_modulenames(keyword)
+      use utils,          only: die, chrcap
+
+      implicit none
+      character(len=*), intent(in)        :: keyword
+      character(80)                       :: msg
+      integer                             :: i, j
+      logical                             :: completed, matched
+      integer                             :: len1, len2, lenc
+      character                           :: char1, char2
+      character(len=20)                   :: string1, string2
+
+
+      call allocate_modulenames()
+
+      j = 1
+      do while((.not. matched) .and. (j .le. num_modules))
+        i = 1
+        matched       = .true.
+        completed     = .false.
+
+        string1 = trim(adjustl(keyword))
+        string2 = trim(adjustl(allowed_modules(j)))
+        len1 = len(trim(adjustl(keyword)))
+        len2 = len(trim(adjustl(allowed_modules(j))))
+        lenc = max(len1, len2)
+        do while((.not. completed) .and. (i .le. lenc))
+          char1 = string1(i:i)
+          char2 = string2(i:i)
+          call chrcap(char1, 1)
+          call chrcap(char2, 1)
+          if (char1 .ne. char2) then
+            matched       = .false.
+            completed     = .true.
+            exit
+          endif
+          i = i + 1
+        enddo
+        j = j + 1
+        if (matched) exit
+      enddo
+      if (.not. matched) then
+        call die('Module not matching with valid modulenames :: Check the spelling ', string1)
+      endif
+  end subroutine validate_modulenames
+end module keywords
+
+
 MODULE fdf
   USE io_fdf
 
@@ -152,6 +321,7 @@ MODULE fdf
   public :: fdf_string, fdf_boolean
   public :: fdf_physical, fdf_convfac
   public :: fdf_load_filename         !> @author Ravindra Shinde
+  public :: labeleq                   ! for validating keywords
 
   ! Lists
   public :: fdf_islist, fdf_islinteger, fdf_islreal
@@ -884,10 +1054,12 @@ endif ! (rank==0)
 
 
     RECURSIVE SUBROUTINE fdf_read_custom(filein, blocklabel)
+      use keywords,           only: validate_keywords, validate_modulenames
       implicit none
 !--------------------------------------------------------------- Input Variables
       character(*)               :: filein
       character(*), optional     :: blocklabel
+      character(len=MAX_LENGTH)  :: keyword
 
 !--------------------------------------------------------------- Local Variables
       logical                    :: dump
@@ -945,6 +1117,7 @@ endif ! (rank==0)
 
 !               Add begin, body and end sections of block
                 label = tokens(pline, 2)
+
                 inc_file  = tokens(pline, 4)
                 call destroy(pline)
                 line = '%block ' // trim(label) // ' ' // trim(inc_file)
@@ -1037,6 +1210,7 @@ endif ! (rank==0)
             nullify(pline) ! it is stored in line
             nlstart = file_in%nlines
             modulename = trim(line(8:))
+            call validate_modulenames(modulename)
             if (fdf_output) write(fdf_out, '(A,1x,i1,1x,A)') "Module #", counter , modulename
             modulenames(counter) = modulename
             nullify(pline) ! it is stored in line
@@ -1132,6 +1306,11 @@ endif ! (rank==0)
 
 !         Add remaining kind of tokens to dynamic list as labels
           else
+            ! Following three lines will validate the keyword against allowed CHAMP keywords
+            keyword = trim(tokens(pline,1))
+            if (tokens(pline, 1) == "load" ) keyword = trim(tokens(pline,2))
+            call validate_keywords(keyword)
+
             if (label .eq. ' ') call setmorphol(1, 'l', pline)
             call fdf_addtoken(line, pline)
             nullify(pline) ! it is stored in line
@@ -1164,6 +1343,7 @@ endif ! (rank==0)
 !   structure that will contain the data and will help in searching
 !
     RECURSIVE SUBROUTINE fdf_read(filein, blocklabel)
+      use keywords,           only:validate_keywords
       implicit none
 !--------------------------------------------------------------- Input Variables
       character(*)               :: filein
@@ -1377,6 +1557,7 @@ endif ! (rank==0)
                      ' not found in ', TRIM(filein)
         call die('FDF module: fdf_read', msg, THIS_FILE, __LINE__, fdf_err)
       endif
+      call validate_keywords(label)
       call fdf_close()
 
       RETURN
@@ -2160,6 +2341,11 @@ endif ! (rank==0)
 
       file_in%last => mark
       file_in%nlines = file_in%nlines + 1
+
+      ! ! Ravindra debug
+      ! do i= 1, mark%pline%ntokens
+      !   write(*,*) '  Token:  ', i , ' ',  trim(tokens(pline,i))
+      ! enddo
 
       if (fdf_debug2) then
         write(fdf_log,*) '***FDF_ADDTOKEN*******************************'
