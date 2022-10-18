@@ -259,6 +259,8 @@ c Sample Green function for forward move
 
         dwt=1
 
+c     to initilialize pp
+        pp=1
         do i=1,nelec
 
           if(i.le.nup) then
