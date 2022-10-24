@@ -43,9 +43,11 @@ module vmc_mod
     integer :: norb_tot
     integer :: nctyp3x
     integer :: nordj
+    integer :: nwftypeorb
 
     integer :: nmat_dim, nmat_dim2
     integer :: nordj1   ! nordj+1
+    integer :: nwftypejas
 
     integer :: neqsx    ! 6*nordj
     integer :: mterms
@@ -55,11 +57,11 @@ module vmc_mod
     integer, parameter :: MEXCIT = 10
 
     private
-    public :: norb_tot, nctyp3x
+    public :: norb_tot, nctyp3x, nwftypeorb
     public :: nrad, nordj, nordj1, nmat_dim, nmat_dim2
     public :: radmax, delri
 
-    public :: neqsx, mterms
+    public :: neqsx, mterms, nwftypejas
 
     public :: ncent3, NCOEF, MEXCIT
     public :: set_vmc_size

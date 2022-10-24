@@ -282,6 +282,8 @@ subroutine parser
   nforce      = fdf_get('nforce', 1)
   MFORCE      = nforce
   nwftype     = fdf_get('nwftype', 1)
+  nwftypejas  = fdf_get('nwftypejas', 1)
+  nwftypeorb  = fdf_get('nwftypeorb', 1)
   iperiodic   = fdf_get('iperiodic', 0)
   ibasis      = fdf_get('ibasis', 1)
   cseed       = fdf_string('seed', "1837465927472523")
@@ -1168,9 +1170,13 @@ subroutine parser
   call elapsed_time ("Reading basis file : ")
 
   ! Basis information section ends here
+  
 
 ! check if the orbitals coefficients are to be multiplied by a constant parameter
   if(scalecoef.ne.1.0d0) then
+    if((method.eq.'sr_n'.and.nwftypeorb.gt.1)) then
+      nwftype = nstates
+    endif
     do  iwft=1,nwftype
       do  i=1,norb+nadorb
         do  j=1,nbasis

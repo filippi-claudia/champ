@@ -1,339 +1,339 @@
 module parser_read_data
-use error, only : fatal_error
+        use error, only : fatal_error
 contains
-subroutine header_printing()
-    !> This subroutine prints the header in each output file. It contains some
-    !! useful information about the compilers, version of the code, input and output file names.
-    !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+        subroutine header_printing()
+                !> This subroutine prints the header in each output file. It contains some
+                !! useful information about the compilers, version of the code, input and output file names.
+                !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
 
-    use mpi
-    use mpiconf, only: idtask, nproc
-    use, intrinsic :: iso_fortran_env, only: iostat_end
-    use contrl_file,    only: file_input, file_output, file_error
-    use contrl_file,    only: ounit, errunit
-#if defined(TREXIO_FOUND)
-    use trexio
-#endif
+                use mpi
+                use mpiconf, only: idtask, nproc
+                use, intrinsic :: iso_fortran_env, only: iostat_end
+                use contrl_file,    only: file_input, file_output, file_error
+                use contrl_file,    only: ounit, errunit
+                #if defined(TREXIO_FOUND)
+                use trexio
+                #endif
 
-    implicit none
+                implicit none
 
-    integer                             :: status, i
-    character(len=8)                    :: date
-    character(len=10)                   :: time
-    character(len=40)                   :: env_variable
-    character(len=100)                  :: input_filename, output
-
-
-
-    write(ounit,*) "____________________________________________________________________"
-    write(ounit,*)
-    write(ounit,*)
-    write(ounit,*) ' .d8888b.   888    888         d8888  888b     d888  8888888b. '
-    write(ounit,*) 'd88P  Y88b  888    888        d88888  8888b   d8888  888   Y88b'
-    write(ounit,*) '888    888  888    888       d88P888  88888b.d88888  888    888'
-    write(ounit,*) '888         8888888888      d88P 888  888Y88888P888  888   d88P'
-    write(ounit,*) '888         888    888     d88P  888  888 Y888P 888  8888888P" '
-    write(ounit,*) '888    888  888    888    d88P   888  888  Y8P  888  888       '
-    write(ounit,*) 'Y88b  d88P  888    888   d8888888888  888   "   888  888       '
-    write(ounit,*) ' "Y8888P"   888    888  d88P     888  888       888  888       '
-    write(ounit,*)
-    write(ounit,*) "____________________________________________________________________"
-    write(ounit,*)
-    write(ounit,*) ' Cornell Holland Ab-initio Materials Package'
-    write(ounit,*)
-    write(ounit,*)
-
-    write(ounit,*) " information about the contributors goes here"
-    write(ounit,*)
-    write(ounit,*)
-    write(ounit,*) " https://github.com/filippi-claudia/champ"
-    write(ounit,*)
-    write(ounit,*)
-
-    write(ounit,*) " paper to cite for this code goes here"
-    write(ounit,*)
-    write(ounit,*)
-    write(ounit,*)
-    write(ounit,*)
-
-    write(ounit,*) " license information goes here"
-
-    write(ounit,*) "____________________________________________________________________"
-    write(ounit,*)
-    write(ounit,*)
-    write(ounit,*)
-    write(ounit,*)
-
-    call date_and_time(date=date,time=time)
-    write(ounit, '(12a)') " Calculation started on     :: ",  &
-                            date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)
-    call get_command_argument(number=0, value=output)
-    write(ounit, '(2a)') " Executable                 :: ",   output
-
-#if defined(GIT_HEAD_BRANCH)
-    write(ounit,'(2a)')  " Git branch                 :: ", GIT_HEAD_BRANCH
-#endif
-
-#if defined(GIT_REVISION_HASH)
-    write(ounit,'(2a)')  " Git commit hash            :: ", GIT_REVISION_HASH
-#endif
-
-#if defined(CMAKE_Fortran_COMPILER)
-    write(ounit,'(2a)')  " Compiler                   :: ", CMAKE_Fortran_COMPILER
-#endif
-
-#if defined(CMAKE_Fortran_COMPILER_VERSION)
-    write(ounit,'(2a)')  " Compiler version           :: ", CMAKE_Fortran_COMPILER_VERSION
-#endif
-
-#if defined(TARGET_ARCHITECTURE)
-    write(ounit,'(2a)')  " Vectorization Instructions :: ", TARGET_ARCHITECTURE
-#endif
-
-#if defined(HDF5_VERSION)
-    write(ounit,'(2a)')  " HDF5 library version       :: ", HDF5_VERSION
-#endif
-
-    call hostnm(output)
-    write(ounit, '(2a)') " Hostname                   :: ",   output
-    call get_environment_variable ("PWD", output)
-    write(ounit, '(2a)') " Current directory          :: ",   output
-    call get_environment_variable ("USER", output)
-    write(ounit, '(2a)') " Username                   :: ",   output
-    write(ounit, '(2a)') " Input file                 :: ",   file_input
-    write(ounit, '(2a)') " Output file                :: ",   file_output
-    write(ounit, '(2a)') " Error file                 :: ",   file_error
-    write(ounit, '(4a)') " Code compiled on           :: ",__DATE__, " at ", __TIME__
-    write(ounit, '(a,i0)') " Number of processors       :: ", nproc
-#if defined(TREXIO_FOUND)
-    if (TREXIO_SUCCESS == 0) write(ounit,*) "TREXIO library version     :: ", TREXIO_PACKAGE_VERSION
-#endif
-    write(ounit,*)
+                integer                             :: status, i
+                character(len=8)                    :: date
+                character(len=10)                   :: time
+                character(len=40)                   :: env_variable
+                character(len=100)                  :: input_filename, output
 
 
 
-end subroutine header_printing
+                write(ounit,*) "____________________________________________________________________"
+                write(ounit,*)
+                write(ounit,*)
+                write(ounit,*) ' .d8888b.   888    888         d8888  888b     d888  8888888b. '
+                write(ounit,*) 'd88P  Y88b  888    888        d88888  8888b   d8888  888   Y88b'
+                write(ounit,*) '888    888  888    888       d88P888  88888b.d88888  888    888'
+                write(ounit,*) '888         8888888888      d88P 888  888Y88888P888  888   d88P'
+                write(ounit,*) '888         888    888     d88P  888  888 Y888P 888  8888888P" '
+                write(ounit,*) '888    888  888    888    d88P   888  888  Y8P  888  888       '
+                write(ounit,*) 'Y88b  d88P  888    888   d8888888888  888   "   888  888       '
+                write(ounit,*) ' "Y8888P"   888    888  d88P     888  888       888  888       '
+                write(ounit,*)
+                write(ounit,*) "____________________________________________________________________"
+                write(ounit,*)
+                write(ounit,*) ' Cornell Holland Ab-initio Materials Package'
+                write(ounit,*)
+                write(ounit,*)
 
+                write(ounit,*) " information about the contributors goes here"
+                write(ounit,*)
+                write(ounit,*)
+                write(ounit,*) " https://github.com/filippi-claudia/champ"
+                write(ounit,*)
+                write(ounit,*)
 
-subroutine read_molecule_file(file_molecule)
-    !> This subroutine reads the .xyz molecule file. It then computes the
-    !! number of types of atoms, nuclear charges (from the symbol), and
-    !! number of valence electrons if pseudopotential is provided.
-    !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
-    !! @date
-    use custom_broadcast,   only: bcast
-    use mpiconf,            only: wid
-    use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-    use ghostatom, 		    only: newghostype, nghostcent
-    use inputflags,         only: igeometry
-    use m_string_operations, only: wordcount
-    use periodic_table,     only: atom_t, element
-    use contrl_file,        only: ounit, errunit
-    use general,            only: pooldir
-    use precision_kinds,    only: dp
+                write(ounit,*) " paper to cite for this code goes here"
+                write(ounit,*)
+                write(ounit,*)
+                write(ounit,*)
+                write(ounit,*)
 
-    implicit none
+                write(ounit,*) " license information goes here"
 
-    !   local use
-    character(len=72), intent(in)   :: file_molecule
-    character(len=40)               :: temp1, temp2, temp3, temp4
-    character(len=80)               :: comment, file_molecule_path, line
-    integer                         :: iostat, i, j, k, iunit, count
-    logical                         :: exist
-    type(atom_t)                    :: atoms
-    character(len=2), allocatable   :: unique(:)
-    double precision, allocatable   :: nval(:)
+                write(ounit,*) "____________________________________________________________________"
+                write(ounit,*)
+                write(ounit,*)
+                write(ounit,*)
+                write(ounit,*)
 
-    !   Formatting
-    character(len=100)               :: int_format     = '(A, T60, I0)'
-    character(len=100)               :: float_format   = '(A, T60, f12.8)'
-    character(len=100)               :: string_format  = '(A, T60, A)'
+                call date_and_time(date=date,time=time)
+                write(ounit, '(12a)') " Calculation started on     :: ",  &
+                        date(1:4), "-", date(5:6), "-", date(7:8), " at ",  time(1:2), ":", time(3:4), ":", time(5:6)
+                call get_command_argument(number=0, value=output)
+                write(ounit, '(2a)') " Executable                 :: ",   output
 
-    !   External file reading
+                #if defined(GIT_HEAD_BRANCH)
+                write(ounit,'(2a)')  " Git branch                 :: ", GIT_HEAD_BRANCH
+                #endif
 
-    if((file_molecule(1:6) == '$pool/') .or. (file_molecule(1:6) == '$POOL/')) then
-        file_molecule_path = pooldir // file_molecule(7:)
-    else
-        file_molecule_path = file_molecule
-    endif
+                #if defined(GIT_REVISION_HASH)
+                write(ounit,'(2a)')  " Git commit hash            :: ", GIT_REVISION_HASH
+                #endif
 
-    write(ounit,*) '-----------------------------------------------------------------------'
-    write(ounit,string_format)  " Reading molecular coordinates from the file :: ",  file_molecule_path
-    write(ounit,*) '-----------------------------------------------------------------------'
+                #if defined(CMAKE_Fortran_COMPILER)
+                write(ounit,'(2a)')  " Compiler                   :: ", CMAKE_Fortran_COMPILER
+                #endif
 
-    if (wid) then
-        inquire(file=file_molecule_path, exist=exist)
-        if (exist) then
-            open (newunit=iunit,file=file_molecule_path, iostat=iostat, action='read' )
-            if (iostat .ne. 0) stop "Problem in opening the molecule file"
-        else
-            call fatal_error (" molecule file "// pooldir // trim(file_molecule) // " does not exist.")
-        endif
+                #if defined(CMAKE_Fortran_COMPILER_VERSION)
+                write(ounit,'(2a)')  " Compiler version           :: ", CMAKE_Fortran_COMPILER_VERSION
+                #endif
 
-        read(iunit,*) ncent
-    endif
-    call bcast(ncent)
+                #if defined(TARGET_ARCHITECTURE)
+                write(ounit,'(2a)')  " Vectorization Instructions :: ", TARGET_ARCHITECTURE
+                #endif
 
-    write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
-    write(ounit,*)
+                #if defined(HDF5_VERSION)
+                write(ounit,'(2a)')  " HDF5 library version       :: ", HDF5_VERSION
+                #endif
 
-    if (.not. allocated(cent)) allocate(cent(3,ncent))
-    if (.not. allocated(symbol)) allocate(symbol(ncent))
-    if (.not. allocated(iwctype)) allocate(iwctype(ncent))
-    if (.not. allocated(unique)) allocate(unique(ncent))
-    if (.not. allocated(nval)) allocate(nval(ncent))
-    unique = ''
-    symbol = ''
-
-    if (wid) read(iunit,'(A)')  comment
-    call bcast(comment)
-
-    write(ounit,*) "Comment from the molecule file :: ", trim(comment)
-    write(ounit,*)
-
-    if (wid) then
-        read(iunit,'(A)')  line
-        backspace(iunit)
-    endif
-    call bcast(line)
-    count = wordcount(line)
-
-    if (count == 4) then
-        ! Read the symbol and coords only
-        if (wid) then
-            do i = 1, ncent
-                read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
-            enddo
-        endif
-        call bcast(symbol)
-        call bcast(cent)
-
-        if (wid) close(iunit)
-    else
-        ! Read the symbol, coords, and nvalence (or znuc)
-        if (wid) then
-            do i = 1, ncent
-                read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i), nval(i)
-            enddo
-        endif
-        call bcast(symbol)
-        call bcast(cent)
-        call bcast(nval)
-        if (wid) close(iunit)
-    endif
-
-    ! Count unique type of elements
-    nctype = 1
-    unique(1) = symbol(1)
-    do j= 2, ncent
-        if (any(unique == symbol(j) ))  cycle
-        nctype = nctype + 1
-        unique(nctype) = symbol(j)
-    enddo
-
-    write(ounit,fmt=int_format) " Number of distinct types of elements (nctype) :: ", nctype
-    write(ounit,*)
-
-    if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))
-    if (.not. allocated(znuc)) allocate(znuc(nctype))
-
-    ! get the correspondence for each atom according to the rule defined for atomtypes
-    do j = 1, ncent
-        do k = 1, nctype
-            if (symbol(j) == unique(k))  then
-                iwctype(j) = k
-                if (count .gt. 4) znuc(k) = nval(j)
-            endif
-        enddo
-    enddo
-
-    ! Get the correspondence rule
-    do k = 1, nctype
-        atomtyp(k) = unique(k)
-    enddo
-
-    if (allocated(unique)) deallocate(unique)
-
-    if (count == 4) then
-        ! Get the znuc for each unique atom
-        do j = 1, nctype
-            atoms = element(atomtyp(j))
-            znuc(j) = atoms%nvalence
-        enddo
-    endif
-
-    ncent_tot = ncent + nghostcent
-    nctype_tot = nctype + newghostype
-
-    write(ounit,*) '-----------------------------------------------------------------------'
-    write(ounit,'(a, t15, a, t27, a, t39, a, t45, a)') 'Symbol', 'x', 'y', 'z', 'Type'
-    write(ounit,'(t14, a, t26, a, t38, a )') '(bohr)', '(bohr)', '(bohr)'
-    write(ounit,*) '-----------------------------------------------------------------------'
-
-    do j= 1, ncent
-        write(ounit,'(A4, 2x, 3F12.8, 2x, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
-    enddo
-
-    write(ounit,*) '-----------------------------------------------------------------------'
-    write(ounit,*) " Values of znuc (number of valence electrons) "
-    write(ounit,'(10F12.6)') (znuc(j), j = 1, nctype)
-    write(ounit,*) '-----------------------------------------------------------------------'
-    write(ounit,*)
-end subroutine read_molecule_file
+                call hostnm(output)
+                write(ounit, '(2a)') " Hostname                   :: ",   output
+                call get_environment_variable ("PWD", output)
+                write(ounit, '(2a)') " Current directory          :: ",   output
+                call get_environment_variable ("USER", output)
+                write(ounit, '(2a)') " Username                   :: ",   output
+                write(ounit, '(2a)') " Input file                 :: ",   file_input
+                write(ounit, '(2a)') " Output file                :: ",   file_output
+                write(ounit, '(2a)') " Error file                 :: ",   file_error
+                write(ounit, '(4a)') " Code compiled on           :: ",__DATE__, " at ", __TIME__
+                write(ounit, '(a,i0)') " Number of processors       :: ", nproc
+                #if defined(TREXIO_FOUND)
+                if (TREXIO_SUCCESS == 0) write(ounit,*) "TREXIO library version     :: ", TREXIO_PACKAGE_VERSION
+                #endif
+                write(ounit,*)
 
 
 
+        end subroutine header_printing
 
 
-subroutine read_determinants_file(file_determinants)
-    !> This subroutine reads the single state determinant file.
-    !! @author Ravindra Shinde
+        subroutine read_molecule_file(file_molecule)
+                !> This subroutine reads the .xyz molecule file. It then computes the
+                !! number of types of atoms, nuclear charges (from the symbol), and
+                !! number of valence electrons if pseudopotential is provided.
+                !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+                !! @date
+                use custom_broadcast,   only: bcast
+                use mpiconf,            only: wid
+                use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+                use ghostatom, 		    only: newghostype, nghostcent
+                use inputflags,         only: igeometry
+                use m_string_operations, only: wordcount
+                use periodic_table,     only: atom_t, element
+                use contrl_file,        only: ounit, errunit
+                use general,            only: pooldir
+                use precision_kinds,    only: dp
 
-    use custom_broadcast,   only: bcast
-    use mpiconf,            only: wid
-    use, intrinsic :: iso_fortran_env, only: iostat_eor
-    use contrl_file,    only: ounit, errunit
-    use dets,           only: cdet, ndet
-    use dorb_m,         only: iworbd
-    use coefs,          only: norb
-    use inputflags,     only: ideterminants
-    use wfsec,          only: nwftype
-    use csfs,           only: nstates
-    use mstates_mod,    only: MSTATES
-    use general,        only: pooldir
-    use elec,           only: ndn, nup
-    use const,          only: nelec
-    use method_opt,     only: method
-    use precision_kinds, only: dp
+                implicit none
 
-    implicit none
+                !   local use
+                character(len=72), intent(in)   :: file_molecule
+                character(len=40)               :: temp1, temp2, temp3, temp4
+                character(len=80)               :: comment, file_molecule_path, line
+                integer                         :: iostat, i, j, k, iunit, count
+                logical                         :: exist
+                type(atom_t)                    :: atoms
+                character(len=2), allocatable   :: unique(:)
+                double precision, allocatable   :: nval(:)
 
-    !   local use
-    character(len=72), intent(in)   :: file_determinants
-    character(len=80)               :: temp1, temp2, temp3
-    integer                         :: iostat, i, j, iunit, counter, istate
-    logical                         :: exist, skip = .true., found = .false.
+                !   Formatting
+                character(len=100)               :: int_format     = '(A, T60, I0)'
+                character(len=100)               :: float_format   = '(A, T60, f12.8)'
+                character(len=100)               :: string_format  = '(A, T60, A)'
 
-    !   Formatting
-    character(len=100)               :: int_format     = '(A, T40, I8)'
-    character(len=100)               :: string_format  = '(A, T40, A)'
+                !   External file reading
 
-    !   External file reading
-    write(ounit,*) '------------------------------------------------------'
-    write(ounit,string_format)  " Reading determinants from the file :: ",  trim(file_determinants)
-    write(ounit,*) '------------------------------------------------------'
+                if((file_molecule(1:6) == '$pool/') .or. (file_molecule(1:6) == '$POOL/')) then
+                        file_molecule_path = pooldir // file_molecule(7:)
+                else
+                        file_molecule_path = file_molecule
+                endif
 
-    if (wid) then
-        inquire(file=file_determinants, exist=exist)
-        if (exist) then
-            open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
-            if (iostat .ne. 0) stop "Problem in opening the determinant file"
-        else
-            call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
-        endif
-    endif
+                write(ounit,*) '-----------------------------------------------------------------------'
+                write(ounit,string_format)  " Reading molecular coordinates from the file :: ",  file_molecule_path
+                write(ounit,*) '-----------------------------------------------------------------------'
 
-    ndn  = nelec - nup
+                if (wid) then
+                        inquire(file=file_molecule_path, exist=exist)
+                        if (exist) then
+                                open (newunit=iunit,file=file_molecule_path, iostat=iostat, action='read' )
+                                if (iostat .ne. 0) stop "Problem in opening the molecule file"
+                        else
+                                call fatal_error (" molecule file "// pooldir // trim(file_molecule) // " does not exist.")
+                        endif
+
+                        read(iunit,*) ncent
+                endif
+                call bcast(ncent)
+
+                write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
+                write(ounit,*)
+
+                if (.not. allocated(cent)) allocate(cent(3,ncent))
+                if (.not. allocated(symbol)) allocate(symbol(ncent))
+                if (.not. allocated(iwctype)) allocate(iwctype(ncent))
+                if (.not. allocated(unique)) allocate(unique(ncent))
+                if (.not. allocated(nval)) allocate(nval(ncent))
+                unique = ''
+                symbol = ''
+
+                if (wid) read(iunit,'(A)')  comment
+                call bcast(comment)
+
+                write(ounit,*) "Comment from the molecule file :: ", trim(comment)
+                write(ounit,*)
+
+                if (wid) then
+                        read(iunit,'(A)')  line
+                        backspace(iunit)
+                endif
+                call bcast(line)
+                count = wordcount(line)
+
+                if (count == 4) then
+                        ! Read the symbol and coords only
+                        if (wid) then
+                                do i = 1, ncent
+                                read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i)
+                                enddo
+                        endif
+                        call bcast(symbol)
+                        call bcast(cent)
+
+                        if (wid) close(iunit)
+                else
+                        ! Read the symbol, coords, and nvalence (or znuc)
+                        if (wid) then
+                                do i = 1, ncent
+                                read(iunit,*) symbol(i), cent(1,i), cent(2,i), cent(3,i), nval(i)
+                                enddo
+                        endif
+                        call bcast(symbol)
+                        call bcast(cent)
+                        call bcast(nval)
+                        if (wid) close(iunit)
+                endif
+
+                ! Count unique type of elements
+                nctype = 1
+                unique(1) = symbol(1)
+                do j= 2, ncent
+                if (any(unique == symbol(j) ))  cycle
+                nctype = nctype + 1
+                unique(nctype) = symbol(j)
+                enddo
+
+                write(ounit,fmt=int_format) " Number of distinct types of elements (nctype) :: ", nctype
+                write(ounit,*)
+
+                if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))
+                if (.not. allocated(znuc)) allocate(znuc(nctype))
+
+                ! get the correspondence for each atom according to the rule defined for atomtypes
+                do j = 1, ncent
+                do k = 1, nctype
+                if (symbol(j) == unique(k))  then
+                        iwctype(j) = k
+                        if (count .gt. 4) znuc(k) = nval(j)
+                endif
+                enddo
+                enddo
+
+                ! Get the correspondence rule
+                do k = 1, nctype
+                atomtyp(k) = unique(k)
+                enddo
+
+                if (allocated(unique)) deallocate(unique)
+
+                if (count == 4) then
+                        ! Get the znuc for each unique atom
+                        do j = 1, nctype
+                        atoms = element(atomtyp(j))
+                        znuc(j) = atoms%nvalence
+                        enddo
+                endif
+
+                ncent_tot = ncent + nghostcent
+                nctype_tot = nctype + newghostype
+
+                write(ounit,*) '-----------------------------------------------------------------------'
+                write(ounit,'(a, t15, a, t27, a, t39, a, t45, a)') 'Symbol', 'x', 'y', 'z', 'Type'
+                write(ounit,'(t14, a, t26, a, t38, a )') '(bohr)', '(bohr)', '(bohr)'
+                write(ounit,*) '-----------------------------------------------------------------------'
+
+                do j= 1, ncent
+                write(ounit,'(A4, 2x, 3F12.8, 2x, i3)') symbol(j), (cent(i,j),i=1,3), iwctype(j)
+                enddo
+
+                write(ounit,*) '-----------------------------------------------------------------------'
+                write(ounit,*) " Values of znuc (number of valence electrons) "
+                write(ounit,'(10F12.6)') (znuc(j), j = 1, nctype)
+                write(ounit,*) '-----------------------------------------------------------------------'
+                write(ounit,*)
+        end subroutine read_molecule_file
+
+
+
+
+
+        subroutine read_determinants_file(file_determinants)
+                !> This subroutine reads the single state determinant file.
+                !! @author Ravindra Shinde
+
+                use custom_broadcast,   only: bcast
+                use mpiconf,            only: wid
+                use, intrinsic :: iso_fortran_env, only: iostat_eor
+                use contrl_file,    only: ounit, errunit
+                use dets,           only: cdet, ndet
+                use dorb_m,         only: iworbd
+                use coefs,          only: norb
+                use inputflags,     only: ideterminants
+                use wfsec,          only: nwftype
+                use csfs,           only: nstates
+                use mstates_mod,    only: MSTATES
+                use general,        only: pooldir
+                use elec,           only: ndn, nup
+                use const,          only: nelec
+                use method_opt,     only: method
+                use precision_kinds, only: dp
+
+                implicit none
+
+                !   local use
+                character(len=72), intent(in)   :: file_determinants
+                character(len=80)               :: temp1, temp2, temp3
+                integer                         :: iostat, i, j, iunit, counter, istate
+                logical                         :: exist, skip = .true., found = .false.
+
+                !   Formatting
+                character(len=100)               :: int_format     = '(A, T40, I8)'
+                character(len=100)               :: string_format  = '(A, T40, A)'
+
+                !   External file reading
+                write(ounit,*) '------------------------------------------------------'
+                write(ounit,string_format)  " Reading determinants from the file :: ",  trim(file_determinants)
+                write(ounit,*) '------------------------------------------------------'
+
+                if (wid) then
+                        inquire(file=file_determinants, exist=exist)
+                        if (exist) then
+                                open (newunit=iunit,file=file_determinants, iostat=iostat, action='read' )
+                                if (iostat .ne. 0) stop "Problem in opening the determinant file"
+                        else
+                                call fatal_error (" determinant file "// trim(file_determinants) // " does not exist.")
+                        endif
+                endif
+
+                ndn  = nelec - nup
 
     write(ounit,*)
     write(ounit,int_format) " Number of total electrons ", nelec
@@ -341,7 +341,7 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,int_format) " Number of beta  electrons ", ndn
     write(ounit,*)
 
-    nstates = 0
+    nstates = 0 ! we can leave this. It will set nstates = 1. I don't know where MSTATES is set.
     if (wid) then
         do while (.not. found)
             read(iunit,*, iostat=iostat) temp1
@@ -354,7 +354,7 @@ subroutine read_determinants_file(file_determinants)
         rewind(iunit)
     endif
 
-    if (wid) then
+    if (wid) then ! so you can put whatever you want before this line
         do while (skip)
             read(iunit,*, iostat=iostat) temp1
             temp1 = trim(temp1)
@@ -364,6 +364,13 @@ subroutine read_determinants_file(file_determinants)
             endif
         enddo
     endif
+    
+    !if((method.eq.'sr_n')) then
+    !    if (nstates.ne.nwftypeorb) then
+    !       call fatal_error (" determinant file: number of states found do not match those in jastrow and lcao. ")
+    !   endif
+    !endif
+
 
 !   Read the first main line
     if (wid) then
@@ -374,6 +381,9 @@ subroutine read_determinants_file(file_determinants)
             call fatal_error ("Error in reading number of determinants / number of wavefunction types")
         endif
     endif
+    !if((method.eq.'sr_n' .and. nwftypeorb.gt.1)) then  ! don't need this, nwftype has not been touched
+    !    nwftype = 1 ! I don't think there will be a case of this yet.
+    !endif
     call bcast(ndet)
     call bcast(nwftype)
 
@@ -519,7 +529,7 @@ subroutine read_jastrow_file(file_jastrow)
     use elec,               only: ndn
     use jaspar3,            only: b, c, scalek
     use jaspar4,            only: a4, norda, nordb, nordc
-    use vmc_mod,            only: nordj, nordj1, neqsx
+    use vmc_mod,            only: nordj, nordj1, neqsx, nwftypeorb, nwftypejas
     use jaspar6,            only: cutjas, cutjasi, allocate_jaspar6
     use bparm,              only: nocuspb, nspin2b
     use contr2,             only: ijas
@@ -538,7 +548,7 @@ subroutine read_jastrow_file(file_jastrow)
     !   local use
     character(len=72), intent(in)   :: file_jastrow
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
-    integer                         :: iunit, iostat, it, isp, iparm, iwft
+    integer                         :: iunit, iostat, it, isp, iparm, iwft, extra
     integer                         :: mparmja, mparmjb, mparmjc
     logical                         :: exist
     real(dp)                        :: cutjas_tmp
@@ -582,12 +592,48 @@ subroutine read_jastrow_file(file_jastrow)
         nspin2 = 1
     endif
 
+    !check how many sets of jastrows are listed. make only for sr_n, multistate?
+    if ((method .eq. 'sr_n')) then
+        nwftypejas = 0
+        extra = 1
+        if (wid) then
+            do while (.not. found)
+                read(iunit,*, iostat=iostat) temp2
+                if (is_iostat_end(iostat)) exit
+                temp1 = trim(temp2)
+                if (temp2 == "jastrows") then
+                    nwftypejas = nwftypejas + 1
+                endif
+            enddo
+            rewind(iunit)
+            if ((nwftypejas .eq. 0)) then
+                nwftypejas = 1
+                extra = 0
+            endif
+            if (nwftypejas .ne. nwftypeorb) then
+                write(ounit,int_format) " Using sr_n with multiple states requires a 'jastrow' line before each state's parameters are specified "
+                call fatal_error ( " Number of states specified in jastrow file do not match lcao file ")
+            endif
+        endif
+        call bcast(nwftypejas)
+        call bcast(extra)
+    endif
+
+
     ! read the first word of the file
     if (wid) then
         read (iunit, *, iostat=iostat)  temp2, iwft
         if (iostat == 0) then
             if (trim(temp2) == "jastrow_parameter") &
             write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
+            if((method .eq. 'sr_n')) then
+                if (nwftypejas .ne. nwftypeorb) then
+                    call fatal_error ( " Number of states specified in jastrow file do not match lcao file ")
+                else
+                    nwftype = nwftypejas
+                    call bcast(nwftype)
+                endif
+            endif
         else
             call fatal_error ("Error in reading jastrow parameters / number of wavefunction types")
         endif
@@ -597,7 +643,7 @@ subroutine read_jastrow_file(file_jastrow)
     if( (method(1:3) == 'lin')) then
         allocate (scalek(3))
     else
-        allocate (scalek(nwftype))
+        allocate (scalek(nwftype)) ! will we ever use different scalek for different jastrow?
     endif
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
@@ -613,7 +659,7 @@ subroutine read_jastrow_file(file_jastrow)
         write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc
 
         if (isc .ge. 2) then
-            if (wid) read (iunit, *) scalek(iwft)
+            if (wid) read (iunit, *) scalek(iwft) ! we set iwft = 1 for 'sr_n' so only the (1) will have the saclek value
         endif
         call bcast(scalek)
         write(ounit, '(A,f12.6)') " scalek = ", scalek(iwft)
@@ -624,50 +670,52 @@ subroutine read_jastrow_file(file_jastrow)
 
         if( (method(1:3) == 'lin')) then
             allocate (a4(mparmja, nctype, 3))
-        else
-            allocate (a4(mparmja, nctype, nwftype))
-        endif
-
-        write(ounit, '(A)') "Jastrow parameters :: "
-        write(ounit, '(A)') "mparmja : "
-        write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
-        do it = 1, nctype
-            if (wid) read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
-            !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)  !Intel Version
-            if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
-        enddo
-        call bcast(a4)
-
-        if( (method(1:3) == 'lin')) then
             allocate (b(mparmjb, 2, 3))
-        else
-            allocate (b(mparmjb, 2, nwftype))
-        endif
-
-        write(ounit, '(A)') "mparmjb : "
-        write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
-        do isp = nspin1, nspin2b
-            if (wid) read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
-            !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)  !Intel Version
-            if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
-        enddo
-        call bcast(b)
-
-        if( (method(1:3) == 'lin')) then
             allocate (c(mparmjc, nctype, 3))
         else
+            allocate (a4(mparmja, nctype, nwftype))
+            allocate (b(mparmjb, 2, nwftype))
             allocate (c(mparmjc, nctype, nwftype))
         endif
 
-        write(ounit, '(A)') "mparmjc : "
-        write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
-        do it = 1, nctype
-            if (wid) read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
-            !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
-            if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
-        enddo
-        call bcast(c)
 
+        do iwft = 1, nwftype
+            write(ounit, '(A)') "Jastrow parameters :: "
+            if( (method .eq. 'sr_n')) write(ounit, '(A)') "State :: ", iwft
+            write(ounit, '(A)') "mparmja : "
+            write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
+            if (method .eq. 'sr_n') then
+                if (extra .eq. 1) then
+                    read (iunit, *, iostat=iostat) temp1
+                    if (trim(temp1) .ne. "jastrows") then
+                        write(ounit, *) " Expected 'jastrows' on this line ", temp1
+                        call fatal_error ("Error in reading jastrow parameters")
+                    endif
+                endif
+            endif
+            do it = 1, nctype
+                if (wid) read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
+                !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)  !Intel Version
+                if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
+            enddo
+            write(ounit, '(A)') "mparmjb : "
+            write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
+            do isp = nspin1, nspin2b
+                if (wid) read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
+                !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)  !Intel Version
+                if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
+            enddo
+            write(ounit, '(A)') "mparmjc : "
+            write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
+            do it = 1, nctype
+                if (wid) read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+                !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
+                if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
+            enddo
+        enddo
+        call bcast(a4)
+        call bcast(b)
+        call bcast(c)
     endif
 
     !Read cutoff for Jastrow4, 5, 6
@@ -696,7 +744,7 @@ subroutine read_orbitals_file(file_orbitals)
     use inputflags, only: ilcao
     use orbval, only: nadorb
     use pcm_fdc, only: fs
-    use vmc_mod, only: norb_tot
+    use vmc_mod, only: norb_tot, nwftypeorb
     ! was not in master but is needed
     use wfsec, only: nwftype
     use general, only: pooldir
@@ -711,7 +759,7 @@ subroutine read_orbitals_file(file_orbitals)
     character(len=72), intent(in)   :: file_orbitals
     character(len=40)               :: temp1, temp2
     character(len=120)              :: temp3
-    integer                         :: iunit, iostat, iwft
+    integer                         :: iunit, iostat, iwft, extra
     integer                         :: iorb, ibasis, i, k, counter
     logical                         :: exist
     logical                         :: skip = .true.
@@ -736,6 +784,31 @@ subroutine read_orbitals_file(file_orbitals)
         endif
     endif
 
+    !check how many sets of orbitals are listed
+    if (method .eq. 'sr_n') then
+        nwftypeorb = 0
+        extra = 1
+        if (wid) then
+            do while (.not. found)
+                read(iunit,*, iostat=iostat) temp1
+                if (is_iostat_end(iostat)) exit
+                temp1 = trim(temp1)
+                if (temp1 == "orbitals") then
+                    nwftypeorb = nwftypeorb + 1
+                endif
+            enddo
+            rewind(iunit)
+            if (nwftypeorb .eq. 0) then
+                nwftypeorb = 1
+                extra = 0
+            endif
+            nwftype = nwftypeorb
+        endif
+        call bcast(nwftypeorb)
+        call bcast(nwftype)
+        call bcast(extra)
+    endif
+
     ! to escape the comments before the "lcao nbasis norb" line
     if (wid) then
         do while (skip)
@@ -749,6 +822,12 @@ subroutine read_orbitals_file(file_orbitals)
     endif
     ! read the first line
     if (wid) read(iunit, *, iostat=iostat)  temp1, norb_tot, nbasis, iwft
+    !if ((method.eq.'sr_n')) then
+        !nwftype = iwft ! nwftype represents nstates, and we are relying on this input as the correct one.
+    !    nwftypeorb = nwftype ! to make sure later that nwftypej and nstates (dets) are equal.
+        !iwft = 1 ! use as loop index later
+    !    call bcast(nwftype)
+    !endif
     call bcast(nbasis)
     call bcast(norb_tot)
     call bcast(iwft)
@@ -768,24 +847,37 @@ subroutine read_orbitals_file(file_orbitals)
     endif
     call bcast(norb)
 
-    if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype')
+    if (iwft .gt. nwftype) call fatal_error('LCAO: wave function type > nwftype') ! I don't think nwftype is calculated anywhere, besides default
 
     if( (method(1:3) == 'lin')) then
         if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
+    !elseif( (method == 'sr_n')) then ! doing this to avoid touching nwftype functionality
+    !    if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftypeorb))
+    !    nwftype = nwftypeorb
     else
         if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
     endif
 
-
-    do iorb = 1, norb
-        if (wid) then
-            read (iunit, *, iostat=iostat) (coef(ibasis, iorb, iwft), ibasis=1, nbasis)
-            if (iostat /= 0) call fatal_error( "Error in reading lcao orbitals ")
+    do iwft = 1, nwftype ! make sure nwftype = 1 at this point for all other methods.
+        if (method .eq. 'sr_n') then
+            if (extra .eq. 1) then
+                read (iunit, *, iostat=iostat) temp1
+                if (trim(temp1) .ne. "orbitals") then
+                    write(ounit, *) " Expected 'orbitals' on this line ", temp1
+                    call fatal_error ("Error in reading number of lcao orbitals / basis / number of wavefunction types")
+                endif
+            endif
         endif
+        do iorb = 1, norb
+            if (wid) then
+                read (iunit, *, iostat=iostat) (coef(ibasis, iorb, iwft), ibasis=1, nbasis)
+                if (iostat /= 0) call fatal_error( "Error in reading lcao orbitals ")
+            endif
+        enddo
     enddo
-    call bcast(coef)
     ! printing of the lcao orbitals coefficients will be done by write_orb_loc subroutine.
     write(ounit,*) "Orbital coefficients are written to the output.log file"
+    call bcast(coef)
 
     ! set default ordering if we are not using trexio files.
     if (.not. allocated(champ_ao_ordering))      allocate(champ_ao_ordering(nbasis))
@@ -815,6 +907,7 @@ subroutine read_csf_file(file_determinants)
     use csfs, only: ccsf, ncsf, nstates
     use mstates_mod, only: MSTATES
     use inputflags, only: icsfs
+    use vmc_mod, only: nwftypeorb
     use wfsec, only: nwftype
     use dets, only: ndet, cdet
 !   Not sure about the following two lines
@@ -869,6 +962,11 @@ subroutine read_csf_file(file_determinants)
         ! No csf information present. One to one mapping cdet == ccsf
         nstates = 1
         ncsf = ndet
+        if((method.eq.'sr_n')) then
+            if (nstates.ne.nwftypeorb) then
+                call fatal_error (" determinant file: number of states found do not match those in jastrow and lcao. ")
+            endif
+        endif
         if (ioptci .ne. 0) nciterm = nciprim
         printed = .true.
         ! if there is no mention of "csf" in the file:: allocate and assign
@@ -898,6 +996,12 @@ subroutine read_csf_file(file_determinants)
         if (wid) read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
         call bcast(ncsf)
         call bcast(nstates)
+
+        if((method.eq.'sr_n')) then
+            if (nstates.ne.nwftypeorb) then
+                call fatal_error (" determinant file: number of states found for csf's do not match those in jastrow and lcao. ")
+            endif
+        endif
 
         if( (method(1:3) == 'lin')) then
             if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3))
