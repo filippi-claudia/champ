@@ -78,7 +78,7 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
-      use csfs, only: nstates
+      use csfs, only: nstates, anormo
       use elec, only: nup
       use multidet, only: kref
       use slatn, only: slmin
@@ -98,8 +98,6 @@ c-----------------------------------------------------------------------
       use multislater, only: detiab
       use multideterminante_mod, only: multideterminante_grad
       use multideterminant_mod, only: compute_ymat
-
-      use config, only: anormo
 
       implicit none
 

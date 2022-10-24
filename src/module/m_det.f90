@@ -33,6 +33,7 @@ module csfs
 
     real(dp), dimension(:, :, :), allocatable :: ccsf !(MDET,MSTATES,MWF)
     real(dp), dimension(:), allocatable :: cxdet !(nmap)
+    real(dp), dimension(:), allocatable :: anormo !(MSTATES)
     integer, dimension(:), allocatable :: iadet !(MDET)
     integer, dimension(:), allocatable :: ibdet !(MDET)
     integer, dimension(:), allocatable :: icxdet !(nmap)
@@ -40,7 +41,7 @@ module csfs
     integer :: nstates
 
     private
-    public   :: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
+    public   :: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates, anormo
     public :: allocate_csfs, deallocate_csfs
     save
 contains
@@ -50,6 +51,7 @@ contains
         use dets, only: ndet, nmap
         if (.not. allocated(ccsf)) allocate (ccsf(ndet, MSTATES, nwftype))
         if (.not. allocated(cxdet)) allocate (cxdet(nmap))
+        if (.not. allocated(anormo)) allocate (anormo(MSTATES))
         if (.not. allocated(iadet)) allocate (iadet(ndet))
         if (.not. allocated(ibdet)) allocate (ibdet(ndet))
         if (.not. allocated(icxdet)) allocate (icxdet(nmap))
@@ -57,6 +59,7 @@ contains
 
     subroutine deallocate_csfs()
         if (allocated(icxdet)) deallocate (icxdet)
+        if (allocated(anormo)) deallocate (anormo)
         if (allocated(ibdet)) deallocate (ibdet)
         if (allocated(iadet)) deallocate (iadet)
         if (allocated(cxdet)) deallocate (cxdet)

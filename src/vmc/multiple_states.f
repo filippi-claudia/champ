@@ -53,10 +53,9 @@ c----------------------------------------------------------------------
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
       use contrl_file,    only: ounit, errunit
+      use csfs,           only: anormo
       use precision_kinds, only: dp
       
-      use config, only: anormo
-
       implicit none
 
       integer :: j

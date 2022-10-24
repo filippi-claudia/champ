@@ -2,7 +2,7 @@
       contains
       subroutine determinant_psig(psid,psig)
 
-      use csfs, only: nstates
+      use csfs, only: nstates, anormo
 
       use mstates3, only: iweight_g, weights_g
 
