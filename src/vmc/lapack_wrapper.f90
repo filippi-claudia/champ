@@ -451,6 +451,7 @@ contains
     !> \param info: Termination signal
     !> \param name: Name of the subroutine
     use contrl_file,    	only: iunit, ounit, errunit
+    use error,   only: fatal_error
     implicit none
     integer :: info
     character(len=*), intent(in) :: name
@@ -458,7 +459,7 @@ contains
     if (info /= 0) then
        print *, "call to subroutine: ", name, " has failed!"
        print *, "info: ", info
-       error stop
+       call fatal_error("Stopping in check_lapack_call subroutine")
     end if
 
   end subroutine check_lapack_call
