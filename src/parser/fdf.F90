@@ -123,14 +123,14 @@ module keywords
   !> @email r.l.shinde@utwente.nl
   !> @date October 15, 2022
   implicit none
-  integer                     :: num_modules  = 9   ! change this number after every adition/deletion
+  integer                     :: num_modules  = 10   ! change this number after every adition/deletion
   integer                     :: num_keywords = 158 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
-  type(string_t) allowed_modules(9)
+  type(string_t) allowed_modules(10)
   type(string_t) allowed_keywords(158)
 
 
@@ -227,15 +227,16 @@ module keywords
   end subroutine allocate_keywords
 
   subroutine allocate_modulenames()
-      allowed_modules(1)%keys = 'general'
-      allowed_modules(2)%keys = 'periodic'
-      allowed_modules(3)%keys = 'electrons'
-      allowed_modules(4)%keys = 'optgeo'
-      allowed_modules(5)%keys = 'optwf'
-      allowed_modules(6)%keys = 'vmc'
-      allowed_modules(7)%keys = 'dmc'
-      allowed_modules(8)%keys = 'blocking_vmc'
-      allowed_modules(9)%keys = 'blocking_dmc'
+      allowed_modules(1)%keys  = 'general'
+      allowed_modules(2)%keys  = 'periodic'
+      allowed_modules(3)%keys  = 'electrons'
+      allowed_modules(4)%keys  = 'optgeo'
+      allowed_modules(5)%keys  = 'optwf'
+      allowed_modules(6)%keys  = 'vmc'
+      allowed_modules(7)%keys  = 'dmc'
+      allowed_modules(8)%keys  = 'blocking_vmc'
+      allowed_modules(9)%keys  = 'blocking_dmc'
+      allowed_modules(10)%keys = 'mstates'
   end subroutine allocate_modulenames
 
 
