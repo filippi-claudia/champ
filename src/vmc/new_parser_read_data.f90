@@ -310,7 +310,7 @@ subroutine read_determinants_file(file_determinants)
     !   local use
     character(len=72), intent(in)   :: file_determinants
     character(len=80)               :: temp1, temp2, temp3
-    integer                         :: iostat, i, j, iunit, counter, istate
+    integer                         :: iostat, i, j, iunit, counter, istate, itmp
     logical                         :: exist, skip = .true., found = .false.
 
     !   Formatting
@@ -340,14 +340,14 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,int_format) " Number of beta  electrons ", ndn
     write(ounit,*)
 
-    nstates = 0
+    nwftype = 0
     if (wid) then
         do while (.not. found)
             read(iunit,*, iostat=iostat) temp1
             if (is_iostat_end(iostat)) exit
             temp1 = trim(temp1)
             if (temp1 == "determinants") then
-                nstates = nstates + 1
+                nwftype = nwftype + 1
             endif
         enddo
         rewind(iunit)
@@ -366,7 +366,7 @@ subroutine read_determinants_file(file_determinants)
 
 !   Read the first main line
     if (wid) then
-        read(iunit, *, iostat=iostat)  temp2, ndet, nwftype
+        read(iunit, *, iostat=iostat)  temp2, ndet, itmp
         if (iostat == 0) then
             if (trim(temp2) == "determinants") write(ounit,int_format) " Number of determinants ", ndet
         else
@@ -388,12 +388,12 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,int_format) " # of sets of dets read from the file ", nstates
 
     if (wid) then
-        do istate = 1, nstates
-            read(iunit,*, iostat=iostat) (cdet(i,istate,1), i=1,ndet)
+        do itmp = 1, nwftype
+            read(iunit,*, iostat=iostat) (cdet(i,1,itmp), i=1,ndet)
             if (iostat /= 0) call fatal_error( "Error in determinant coefficients ")
             write(ounit,*)
             write(ounit,*) " Determinant coefficients "
-            write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,istate,1), i=1,ndet)
+            write(ounit,'(10(1x, f11.8, 1x))') (cdet(i,1,itmp), i=1,ndet)
 
             do i = 1, ndet
                 read(iunit,*, iostat=iostat) (iworbd(j,i), j=1,nelec)
@@ -869,11 +869,8 @@ subroutine read_csf_file(file_determinants)
             if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
         endif
 
-
-        do i = 1, nstates
-            do j = 1, ndet
-                ccsf(j,i,nwftype) = cdet(j,i,nwftype)
-            enddo
+        do j = 1, ndet
+          ccsf(j,1,1) = cdet(j,1,1)
         enddo
         ! printing
         write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf

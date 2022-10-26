@@ -802,6 +802,36 @@ subroutine parser
 
   call elapsed_time ("Reading molecular coefficients file : ")
 
+! (9) Symmetry information of orbitals (either block or from a file)
+
+  if ( fdf_load_defined('symmetry') ) then
+    call read_symmetry_file(file_symmetry)
+  elseif ( fdf_load_defined('trexio') ) then
+#if defined(TREXIO_FOUND)
+    call read_trexio_symmetry_file(file_trexio)
+#endif
+  elseif ( fdf_block('symmetry', bfdf)) then
+  ! call fdf_read_symmetry_block(bfdf)
+    write(errunit,'(a)') "Warning:: No information about orbital symmetries provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!   if( mode(1:3) == 'vmc' ) error stop
+  else
+    write(errunit,'(a)') "Warning:: No information about orbital symmetries provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!    if( mode(1:3) == 'vmc' ) error stop
+    ! if no symmetry file present, assume same symmetry for all orbitals
+    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
+    irrep(1:norb_tot) = 1
+    write(ounit,*)
+    write(ounit,*) '____________________________________________________________________'
+    write(ounit, *) " Orbital symmetries are set to default "
+    write(ounit, '(10(1x, i3))') (irrep(i), i=1, norb_tot)
+    write(ounit,*) '____________________________________________________________________'
+    write(ounit,*)
+  endif
+
+  call elapsed_time ("Reading/setting symmetry file : ")
+
 ! Basis num information (either block or from a file)
 
   write(ounit,*)
@@ -977,36 +1007,6 @@ subroutine parser
   endif
 
   call elapsed_time ("Reading determinants only from a file : ")
-
-! (9) Symmetry information of orbitals (either block or from a file)
-
-  if ( fdf_load_defined('symmetry') ) then
-    call read_symmetry_file(file_symmetry)
-  elseif ( fdf_load_defined('trexio') ) then
-#if defined(TREXIO_FOUND)
-    call read_trexio_symmetry_file(file_trexio)
-#endif
-  elseif ( fdf_block('symmetry', bfdf)) then
-  ! call fdf_read_symmetry_block(bfdf)
-    write(errunit,'(a)') "Warning:: No information about orbital symmetries provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!   if( mode(1:3) == 'vmc' ) error stop
-  else
-    write(errunit,'(a)') "Warning:: No information about orbital symmetries provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    if( mode(1:3) == 'vmc' ) error stop
-    ! if no symmetry file present, assume same symmetry for all orbitals
-    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
-    irrep(1:norb_tot) = 1
-    write(ounit,*)
-    write(ounit,*) '____________________________________________________________________'
-    write(ounit, *) " Orbital symmetries are set to default "
-    write(ounit, '(10(1x, i3))') (irrep(i), i=1, norb_tot)
-    write(ounit,*) '____________________________________________________________________'
-    write(ounit,*)
-  endif
-
-  call elapsed_time ("Reading/setting symmetry file : ")
 
 ! (3) CSF only
 
@@ -1245,12 +1245,24 @@ subroutine parser
 
     if(ioptwf.gt.0) then
       write(ounit,'(a)' ) " Perform wave function optimization in vmc/dmc"
+      write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
+      if(nstates.gt.1 .and. ioptwf.gt.0 .and. method.eq.'sr_n') &
+          call fatal_error('READ_INPUT: nstates>1 and sr_n')
     elseif((ioptjas.eq.1) .or. (ioptorb.eq.1) .or. (ioptci.eq.1) ) then
       write(ounit,'(a)' ) " Only sample derivatives of wave function for external use"
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
     endif
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
+      if(method.eq.'lin_d' .or. method.eq.'mix_n') then
+        if(lin_jdav.eq.0) then 
+                write(ounit,'(a)' ) " Use old Regterg"
+        elseif(lin_jdav.eq.1) then
+                write(ounit,'(a)' ) " Use new Davidson"
+        else
+                write(ounit,'(a)' ) " Use new Jacobi-Davidson"
+        endif
+      endif
       if(method.eq.'linear' .and. mxreduced.ne.norbterm )  &
           call fatal_error('READ_INPUT: mxreduced .ne. norbterm')
     endif

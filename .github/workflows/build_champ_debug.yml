@@ -131,33 +131,8 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -1.0108635 +-  0.0054667) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_double.out "total E" -1.0108635  0.0054667 --no_assert
 
-    - name: "Test 03 (H2) sto basis optimize wf+jastrow using lin_d method on 1 processor"
-      if: matrix.toolchain == 'intel'
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
 
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0629156 +-  0.0032473) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0629156  0.0032473 --no_assert
-
-    - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method on 2 processors"
-      if: matrix.toolchain == 'intel'
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0588247 +-  0.0022854) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0588247  0.0022854 --no_assert
-
-    - name: "Test 05 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
+    - name: "Test 03 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
       if: matrix.toolchain == 'intel'
       run: |
         ulimit -s unlimited
@@ -170,7 +145,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -1.0608157 +-  0.0026295) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0608157  0.0026295 --no_assert
 
-    - name: "Test 06 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
+    - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
       if: matrix.toolchain == 'intel'
       run: |
         ulimit -s unlimited
@@ -183,7 +158,7 @@ jobs:
         echo "Comparing the energy with the reference one (total E = -1.0578796 +-  0.0018813) "
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0578796  0.0018813 --no_assert
 
-    - name: "Test 07 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
+    - name: "Test 05 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
       if: matrix.toolchain == 'intel'
       run: |
         ulimit -s unlimited
@@ -199,7 +174,7 @@ jobs:
         echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0018"
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0018 0.0114836 --no_assert
 
-    - name: "Test 08 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
+    - name: "Test 06 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
       if: matrix.toolchain == 'intel'
       run: |
         ulimit -s unlimited
