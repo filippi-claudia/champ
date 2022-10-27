@@ -341,6 +341,7 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,*)
 
     nwftype = 0
+    nstates = 1
     if (wid) then
         do while (.not. found)
             read(iunit,*, iostat=iostat) temp1
@@ -385,7 +386,7 @@ subroutine read_determinants_file(file_determinants)
     !       allocate the orbital mapping array
     if (.not. allocated(iworbd)) allocate(iworbd(nelec, ndet))
 
-    write(ounit,int_format) " # of sets of dets read from the file ", nstates
+    write(ounit,int_format) " # of sets of dets read from the file ", nwftype
 
     if (wid) then
         do itmp = 1, nwftype
