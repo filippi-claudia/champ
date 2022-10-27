@@ -255,6 +255,7 @@ module keywords
 
     call allocate_keywords()
 
+    matched = .false.
     j = 1
     do while((.not. matched) .and. (j .le. num_keywords))
       i = 1
@@ -302,6 +303,7 @@ end subroutine validate_keywords
 
       call allocate_modulenames()
 
+      matched = .false.
       j = 1
       do while((.not. matched) .and. (j .le. num_modules))
         i = 1
