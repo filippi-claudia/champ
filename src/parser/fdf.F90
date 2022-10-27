@@ -123,14 +123,14 @@ module keywords
   !> @email r.l.shinde@utwente.nl
   !> @date October 15, 2022
   implicit none
-  integer                     :: num_modules  = 10   ! change this number after every adition/deletion
+  integer                     :: num_modules  = 11  ! change this number after every adition/deletion
   integer                     :: num_keywords = 158 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
-  type(string_t) allowed_modules(10)
+  type(string_t) allowed_modules(11)
   type(string_t) allowed_keywords(158)
 
 
@@ -237,6 +237,7 @@ module keywords
       allowed_modules(8)%keys  = 'blocking_vmc'
       allowed_modules(9)%keys  = 'blocking_dmc'
       allowed_modules(10)%keys = 'mstates'
+      allowed_modules(11)%keys = 'properties'
   end subroutine allocate_modulenames
 
 
