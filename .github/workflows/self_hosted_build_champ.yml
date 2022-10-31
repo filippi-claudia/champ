@@ -333,8 +333,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000_single.out  -e error_vmc_optimization_5000
 
-        echo "Comparing the energy with the reference one (total E = -26.2227436 +-  0.0181604) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_single.out "total E" -26.2227436  0.0181604
+        echo "Comparing the energy with the reference one (total E = -26.1977494 +-  0.0194395) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_single.out "total E" -26.1977494  0.0194395
 
 
     - name: "Test 16 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 2 processors"
@@ -350,8 +350,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000_double.out  -e error_vmc_optimization_5000
 
-        echo "Comparing the energy with the reference one (total E = -26.2412390 +-  0.0149848) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_double.out "total E" -26.2412390  0.0149848
+        echo "Comparing the energy with the reference one (total E = -26.1883151 +-  0.0148606) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_double.out "total E" -26.1883151  0.0148606
 
     - name: "Test 17 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 1 processor"
       run: |
