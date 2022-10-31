@@ -140,7 +140,7 @@ c loop quadrature points
               iel=i
               call orbitals_quad(iel,x,rvec_en,r_en,orbn,dorbn,da_orbn,iforce_analy)
 
-              call nonlocd(iel,orbn,detiab(1,1),detiab(1,2),slmi(1,1),slmi(1,2),det_ratio)
+              call nonlocd(iel,orbn,slmi(1,1),slmi(1,2),det_ratio)
               if(ioptjas.gt.0) then
                 call deriv_nonlocj(iel,x,rshift,rvec_en,r_en,rr_en,rr_en2,dd1,psij_ratio,dpsij_ratio,vjn,da_ratio_jn)
                else
@@ -489,7 +489,7 @@ c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
       end
 
 c-----------------------------------------------------------------------
-      subroutine nonlocd(iel,orb,detu,detd,slmui,slmdi,ratio)
+      subroutine nonlocd(iel,orb,slmui,slmdi,ratio)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use dorb_m,  only: iworbd
@@ -503,8 +503,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       integer :: iel, ikel, j
       real(dp) :: ratio
       real(dp), dimension(3) :: x
-      real(dp), dimension(*) :: detu
-      real(dp), dimension(*) :: detd
       real(dp), dimension(nmat_dim) :: slmui
       real(dp), dimension(nmat_dim) :: slmdi
       real(dp), dimension(*) :: orb

@@ -16,7 +16,7 @@ contains
       use custom_broadcast, only: bcast
       use fitting_methods, only: exp_fit
       use general, only: bas_id,filename,filenames_bas_num,pooldir
-      use mpiconf, only: wid
+     use mpiconf, only: wid
       use numbas,  only: allocate_numbas,arg,d2rwf,igrid,nr,nrbas,r0
       use numbas,  only: rwf, rmaxwf
       use numbas_mod, only: MRWF,MRWF_PTS
@@ -268,7 +268,8 @@ subroutine readps_gauss
   integer         :: i, ic, idx, l
   integer         :: iunit, iostat, counter = 0
   logical         :: exist, skip = .true.
-
+  real(dp) ::  necp_power_tmp
+  
   character*80 label
 
 
@@ -343,13 +344,14 @@ subroutine readps_gauss
 
         do i=1,necp_term(idx,ic)
           if (wid) then
-            read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
+            read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power_tmp, ecp_exponent(i,idx,ic)
 
             if (iostat .ne. 0) then
               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
               write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
               write(errunit,'(a,i6)') "at line ", __LINE__
-            endif
+           endif
+           necp_power(i,idx,ic)=int(necp_power_tmp)
             write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic), &
                                                     necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
           endif

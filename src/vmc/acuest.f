@@ -286,9 +286,12 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
 c rewrite psi2o if you are sampling guiding
         psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
       endif
-
+      
+      
       if(ipr.gt.1) then
-        write(ounit,'(''psid, psidg='',2d12.4)') psido(1),psidg
+         if(iguiding.gt.0) then
+            write(ounit,'(''psid, psidg='',2d12.4)') psido(1),psidg
+         endif
         write(ounit,'(''psid2o='',f9.4)') psi2o(1,1)
       endif
 
