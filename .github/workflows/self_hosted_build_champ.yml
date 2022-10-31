@@ -399,7 +399,7 @@ jobs:
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ras1022_pVQZ_65000.inp  -o vmc_opt_ras1022_pVQZ_65000_single.out  -e error
 
         echo "Comparing the energy with the reference one (total E = -26.1094876 +-  0.0161510) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_opt_ras1022_pVQZ_65000_single.out "total E" -26.1094876 +-  0.0161510
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_opt_ras1022_pVQZ_65000_single.out "total E" -26.1094876  0.0161510
 
     - name: "Test 20 (Butadiene) Workload VMC optimization all using sr_n (65000 dets) on 2 processors"
       run: |
@@ -450,7 +450,7 @@ jobs:
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
 
         echo "Comparing the energy with the reference one ("total E" -29.8086370 +-  0.0380844) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.8086370 +-  0.0380844
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.8086370  0.0380844
 
 
     - name: "Test 23 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 2 processor"
@@ -468,7 +468,7 @@ jobs:
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
 
         echo "Comparing the energy with the reference one ("total E" -29.7412008 +-  0.0353753) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.7412008 +-  0.0353753
+        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.7412008  0.0353753
 
     - name: "Test 24 (Formaldehyde Ground State) Native TREXIO testing with HDF5 backend on 8 processors"
       run: |
