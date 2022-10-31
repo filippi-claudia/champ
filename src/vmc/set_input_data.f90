@@ -60,7 +60,7 @@ subroutine multideterminants_define(iflag, icheck)
       use multidet, only: allocate_multidet,iactv,irepcol_det
       use multidet, only: ireporb_det,ivirt,k_aux,k_det,k_det2,kref_old
       use multidet, only: ndet_req,ndetiab,ndetiab2,ndetsingle
-      use multidet, only: numrep_det
+      use multidet, only: numrep_det, ndetdouble
       use multideterminant_mod, only: idiff
       use multiple_geo, only: MFORCE,MFORCE_WT_PRD,MWF,nwftype
       use slater,  only: cdet,iwundet,kref,ndet,norb
@@ -328,6 +328,7 @@ subroutine multideterminants_define(iflag, icheck)
              numrep_det(kkn, iab)=numrep_det(kk, iab)
              numrep_det(kk, iab)=naux
              
+!             print*,"single kkn",kkn,"ndetiab",ndetiab(iab),"ndim",numrep_det(kkn,iab)
              
           
           endif
@@ -339,6 +340,53 @@ subroutine multideterminants_define(iflag, icheck)
        !       print*,"kkn singles",iab,kkn
 !       print*,"kkn singles",iab,ndetsingle(iab)
        
+
+
+!    ordering double excitations at the begining for specialization
+       !       keep counting on knn
+       do kk=1,ndetiab(iab)
+
+          if (numrep_det(kk, iab).eq.2) then
+             kkn=kkn+1
+             
+             k=1
+             do while (k_det(k,iab).ne.kk)
+                k=k+1
+             enddo
+             kaux=k_det(k,iab)
+             
+             kn=1
+             do while (k_det(kn,iab).ne.kkn)
+                kn=kn+1
+             enddo
+             
+             !             print*,"kk",kk,"k_det(kk,",iab,")",kaux
+             k_det(k,iab)=kkn
+             k_det(kn,iab)=kk
+
+
+             auxdet=irepcol_det(:, kkn, iab)                
+             irepcol_det(:, kkn, iab) = irepcol_det(:, kk, iab)
+             irepcol_det(:, kk, iab) = auxdet
+                
+             auxdet=ireporb_det(:, kkn, iab)
+             ireporb_det(:, kkn, iab) = ireporb_det(:, kk, iab)
+             ireporb_det(:, kk, iab) = auxdet
+                
+             naux=numrep_det(kkn, iab)
+             numrep_det(kkn, iab)=numrep_det(kk, iab)
+             numrep_det(kk, iab)=naux
+             
+!             print*,"double kkn",kkn,"ndetiab",ndetiab(iab),"ndim",numrep_det(kkn,iab)
+          
+          endif
+          
+       enddo
+
+       ndetdouble(iab)=kkn-ndetsingle(iab)
+
+
+!       print*,"ns,nd,ns+nd,ndet",ndetsingle(iab),ndetdouble(iab),ndetsingle(iab)+ndetdouble(iab), ndetiab(iab)
        
        
     enddo
