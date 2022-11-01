@@ -13,7 +13,7 @@
       use force_analy, only: iforce_analy, alfgeo
       use mstates_ctrl, only: iguiding
       use method_opt, only: method
-      use optwf_sr_mod, only: sr
+      use optwf_sr_mod, only: sr, sr_hs
       use optwf_corsam, only: sigma
       use force_analy, only: iforce_analy
       use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm

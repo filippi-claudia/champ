@@ -631,13 +631,13 @@ subroutine read_jastrow_file(file_jastrow)
                     call fatal_error ( " Number of states specified in jastrow file do not match lcao file ")
                 else
                     nwftype = nwftypejas
-                    call bcast(nwftype)
                 endif
             endif
         else
             call fatal_error ("Error in reading jastrow parameters / number of wavefunction types")
         endif
     endif
+    call bcast(nwftype)
     call bcast(iwft)
 
     if( (method(1:3) == 'lin')) then
@@ -681,7 +681,7 @@ subroutine read_jastrow_file(file_jastrow)
 
         do iwft = 1, nwftype
             write(ounit, '(A)') "Jastrow parameters :: "
-            if( (method .eq. 'sr_n')) write(ounit, '(A)') "State :: ", iwft
+            if( (method .eq. 'sr_n')) write(ounit, '(A,i0)') "State :: ", iwft
             write(ounit, '(A)') "mparmja : "
             write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
             if (method .eq. 'sr_n') then
