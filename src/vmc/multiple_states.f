@@ -72,7 +72,7 @@ c----------------------------------------------------------------------
         efficiency=effcum(j)*effcum(j)/effcm2(j)/passes
 c       write(ounit,*) effcum(j)*effcum(j)/passes,effcm2(j)
         write(ounit,'(''efficiency state '',i4,f8.3)') j,efficiency
-        write(6,'(''anorm correction '',i4, E15.8)') j,anormo(j)
+        write(ounit,'(''anorm correction '',i4, E15.8)') j,anormo(j)
       enddo
 
       end

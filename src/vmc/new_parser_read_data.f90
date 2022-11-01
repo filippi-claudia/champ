@@ -962,7 +962,7 @@ subroutine read_csf_file(file_determinants)
         ! No csf information present. One to one mapping cdet == ccsf
         nstates = 1
         ncsf = ndet
-        if((method.eq.'sr_n')) then
+        if((method.eq.'sr_n'.and.ioptci.eq.1)) then
             if (nstates.ne.nwftypeorb) then
                 call fatal_error (" determinant file: number of states found do not match those in jastrow and lcao. ")
             endif
@@ -997,7 +997,7 @@ subroutine read_csf_file(file_determinants)
         call bcast(ncsf)
         call bcast(nstates)
 
-        if((method.eq.'sr_n')) then
+        if((method.eq.'sr_n'.and.ioptci.eq.1)) then
             if (nstates.ne.nwftypeorb) then
                 call fatal_error (" determinant file: number of states found for csf's do not match those in jastrow and lcao. ")
             endif

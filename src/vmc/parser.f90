@@ -53,7 +53,7 @@ subroutine parser
   use const, 		        only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num
-  use csfs, 		        only: cxdet, ncsf, nstates
+  use csfs, 		        only: cxdet, ncsf, nstates, anormo
   use dets, 		        only: cdet, ndet
   use elec, 		        only: ndn, nup
   use forcepar, 	      only: nforce
@@ -1383,7 +1383,31 @@ subroutine parser
   endif ! if loop of condition of either vmc/dmc ends here
 
 ! Read in sr_lambda if multi-state sr_n
-  if(nstates.gt.1.and.method.eq.'sr_n') then
+  if(iguiding.gt.0) then
+    write(ounit, *) "ANORMO: Determining normalization constants for guiding wave function."
+
+    ! Part which handles the overlap penalty factors
+    if (.not. allocated(anormo)) allocate (anormo(MSTATES))
+      
+    if ( fdf_islreal('anorm') .and. fdf_islist('anorm') &
+        .and. (.not. fdf_islinteger('anorm')) ) then
+      i = -1
+      call fdf_list('anorm',i,anormo)
+      write(ounit,'(a)' )
+      write(ounit,'(tr1,a,i0,a)') ' anorm has ',i,' entries'
+      if(i.ne.nstates) call fatal_error('READ_INPUT: anorm array must contain nstate entries.')
+      !call fdf_list('weights_guiding',i,weights_g) ! why was this called again?
+      write(temp5, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
+      !write(ounit, '(a,<MSTATES>(f12.6))') ' anormo : ', anormo(1:i) ! Intel version
+      write(ounit, temp5) ' anorm : ', anormo(1:i)                   ! GNU version
+    else
+      anormo = 1.0d0
+      write(ounit,'(a,t40, 10f12.6)') 'Using default anorm correction ', anormo(1:nstates)
+    endif
+  endif
+
+! Read in sr_lambda if multi-state sr_n
+  if(nstates.gt.1.and.method.eq.'sr_n'.and.ioptwf.eq.1) then
     write(ounit, *) "SR lambda: imposing overlap penalties"
 
     ! Part which handles the overlap penalty factors
