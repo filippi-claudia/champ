@@ -1,0 +1,30 @@
+%module general
+    title        'butadiene'
+    pool         'pool/'
+    pseudopot    BFD
+    basis        BFD-T
+    mode         vmc
+%endmodule
+
+load molecule        $pool/champ_v3_butadiene.xyz
+load basis_num_info  $pool/champ_v3_BFD-T_basis_pointers.bfinfo
+
+load determinants    TZ_1M_500.det
+load orbitals        champ_v3_trexio_order_ci1010_pVTZ_1_orbitals.lcao
+load jastrow         jastrow_good_b3lyp.0
+load jastrow_der     jastrow.der
+load symmetry        ci1010_pVTZ_1_symmetry.sym
+
+
+%module electrons
+    nup           11
+    nelec         22
+%endmodule
+
+
+%module blocking_vmc
+    vmc_nstep     20
+    vmc_nblk      100
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+%endmodule

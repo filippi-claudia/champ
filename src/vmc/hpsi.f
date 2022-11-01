@@ -37,6 +37,8 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use optjas_mod,     only: optjas_deloc
       use optorb_f_mod,   only: optorb_compute
       use force_analytic, only: compute_force
+      use vmc_mod,        only: nwftypejas
+      use method_opt,     only: method
       use determinant_psit_mod, only: determinant_psit
       use multideterminant_mod, only: multideterminant_hpsi
       use nonloc_pot_mod, only: nonloc_pot
@@ -67,7 +69,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 c Calculates energy
 
 
-      iwf=iwftype(ifr)
+c      iwf=iwftype(ifr)
 
 c pe_ee computed in distances (called from distances if iperiodic != 0)
 c pe_en(loc) computed in distances if nloc=0 or called from distances if iperiodic!=0
@@ -114,24 +116,38 @@ c QM-MMPOL (charges+induced dipoles)
       if(ipr.ge.3) write(ounit,'(''pe_loc before nonloc_pot'',9f12.5)') pe_local
 
 c get contribution from jastrow (also compute derivatives wrt parameters and nuclei)
-      if(ianalyt_lap.eq.1) then
-        call jastrow(coord,vj,d2j,psij,ifr)
-       else
-        call jastrow_num(coord,vj,d2j,psij)
+      if(method.eq.'sr_n') then
+        do iwf=1,nwftypejas
+          if(ianalyt_lap.eq.1) then
+            call jastrow(coord,vj,d2j,psij,iwf)
+          else
+            call jastrow_num(coord,vj,d2j,psij)
+          endif
+        enddo
+c reset iwf to 1
+        iwf = 1
+      else
+        iwf=iwftype(ifr)
+        if(ianalyt_lap.eq.1) then
+          call jastrow(coord,vj,d2j,psij,ifr)
+        else
+          call jastrow_num(coord,vj,d2j,psij)
+        endif
       endif
+      
       if(ipr.ge.3) write(ounit,'(''d2j,psij'',9f12.5)') d2j,psij
 
 c compute reference determinant, its derivatives, and kinetic contribution to B_eloc and its derivatives
       call determinant(ipass,coord,rvec_en,r_en)
-
+c      write(ounit,'(A)') "We made it through the determinant part of hpsi brah"
       call compute_bmatrices_kin
-
+c      write(ounit,'(A)') "We made it through the bmatrices part of hpsi brah"
 c compute pseudo-potential contribution
 c nonloc_pot must be called after determinant because slater matrices are needed
 
       if(nloc.gt.0)
      &  call nonloc_pot(coord,rshift,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
-
+c      write(ounit,'(A)') "We made it through the nonloc_pot part of hpsi brah"
       if(ipr.ge.3) then
         write(ounit,'(''pe_loc after nonloc_pot'',9f12.5)') pe_local
         write(ounit,'(''pe_ref after nonloc_pot'',9f12.5)') (vpsp_det(ii),ii=1,2)
@@ -142,7 +158,7 @@ c nonloc_pot must be called after determinant because slater matrices are needed
       do i=1,nelec
         e_other=e_other-hb*(vj(1,i)**2+vj(2,i)**2+vj(3,i)**2)
       enddo
-
+c      write(ounit,'(A)') "We made it through the multideterminant part of hpsi brah"
       do istate=1,nstates
 c combine determinantal quantities to obtain trial wave function
         call determinant_psit(psid(istate),istate)
@@ -160,7 +176,7 @@ c compute energy using Ymat
         denergy(istate)=denergy(istate)*detiab(kref,1)*detiab(kref,2)/psid(istate)
 
         energy(istate)=denergy(istate)+eloc_det(kref,1)+eloc_det(kref,2)+e_other
-
+c        write(ounit,'(A)') "We got denergy and energy done brah"
         if(ipr.ge.2) then
           write(ounit,'(''state'',i4)') istate
           write(ounit,'(''psid,psij'',9d12.5)') psid(istate),psij
@@ -176,16 +192,18 @@ c  25         write(ounit,'(''vj'',2e18.11)') vj(k,i)
         endif
 
       enddo
+c      write(ounit,'(A)') "We made it through the istate loop brah"
       if(ifr.eq.1) then
         if(iforce_analy.eq.1) call compute_force(psid(1),denergy(1))
-
+        
         call optorb_compute(psid,energy,denergy)
-
+c        write(ounit,'(A)') "We opted the orbs brah"
         call optjas_deloc(psid,energy,dvpsp_dj,vj)
-
+c        write(ounit,'(A)') "We opted the jas deloc brah"
         call optci_deloc(eloc_det,e_other,psid(1),energy(1))
-
+c        write(ounit,'(A)') "We opted the ci deloc brah"
         call prop_compute(coord)
+c        write(ounit,'(A)') "We calculated props brah"
       endif
 
       return
