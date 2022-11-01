@@ -77,7 +77,11 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0) return
 
+c      if(nstates.eq.1) then
       filename='jastrow'//filetype(1:index(filetype,' ')-1)
+c      elseif(nstates.gt.1 .and. method(1:4)=='sr_n' .and. 
+c     & outtyp.eq.0) then
+
 
       open(2,file=filename,status='unknown')
 
@@ -1124,25 +1128,25 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0
 
       if(l.gt.mconf) call fatal_error('SR_STORE: l gt mconf')
-
-      if(nparmj /= 0) call dcopy(nparmj,gvalue,1,sr_o(1,l),1)
+c wrong, do a loop over istate, temporary for compiler, for jas and ci
+      if(nparmj /= 0) call dcopy(nparmj,gvalue,1,sr_o(1,l,1),1)
 
       ntmp=max(nciterm-i0,0)
-      if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l),1)
+      if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l,1),1)
 
       ijasci=nparmj+ntmp
       if(ijasci+nstates*norbterm+nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')
 
       do istate=1,nstates
         ii=ijasci+(istate-1)*norbterm
-        if (norbterm /= 0) call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l),1)
+        if (norbterm /= 0) call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l,istate),1)
         elocal(l,istate)=energy(istate)
         wtg(l,istate)=wt(istate)
       enddo
-
+c this part not quite right, added istate to compile right
       ii=ijasci+nstates*norbterm
       do istate=1,nstates
-        sr_o(ii+istate,l)=psid(istate)
+        sr_o(ii+istate,l,istate)=psid(istate)
       enddo
 
       nconf_n=l

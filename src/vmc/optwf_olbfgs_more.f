@@ -32,10 +32,10 @@ c we only need h_sr = - grad_parm E
 
       if(idtask.eq.0) then
 c update stored Hessian approximation
-        call update_hessian(parms_lbfgs, -h_sr)
+        call update_hessian(parms_lbfgs, -h_sr(:,1))
 
 c perform actual oLBFGS iteration
-        call olbfgs_iteration(parms_lbfgs, -h_sr, sr_tau, iter)
+        call olbfgs_iteration(parms_lbfgs, -h_sr(:,1), sr_tau, iter)
 
         deltap(1:nparm) = parms_lbfgs - parameters_old
         parameters(1:nparm) = parameters(1:nparm) + deltap(1:nparm)

@@ -36,12 +36,13 @@ subroutine parser
 
 ! variables from process input
   use sr_mod,         	only: mconf, mparm
+  use sr_mat_n,         only: isr_lambda, sr_lambda
   use pseudo_mod,     	only: MPS_QUAD
   use properties,     	only: MAXPROP
   use optorb_mod,     	only: mxreduced
   use optci,          	only: mxciterm
   use mstates_mod,      only: MSTATES
-  use vmc_mod,          only: nordj, nordj1, neqsx
+  use vmc_mod,          only: nordj, nordj1, neqsx, nwftypeorb, nwftypejas
   use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
   use force_mod,      	only: MFORCE, MWF
@@ -1381,6 +1382,41 @@ subroutine parser
     nstates=1
   endif ! if loop of condition of either vmc/dmc ends here
 
+! Read in sr_lambda if multi-state sr_n
+  if(nstates.gt.1.and.method.eq.'sr_n') then
+    write(ounit, *) "SR lambda: imposing overlap penalties"
+
+    ! Part which handles the overlap penalty factors
+    if (.not. allocated(isr_lambda)) allocate (isr_lambda(MSTATES*(MSTATES-1)/2))
+    if (.not. allocated(sr_lambda)) allocate (sr_lambda(MSTATES,MSTATES))
+      
+    if ( fdf_islreal('sr_lambda') .and. fdf_islist('sr_lambda') &
+        .and. (.not. fdf_islinteger('sr_lambda')) ) then
+      i = -1
+      call fdf_list('sr_lambda',i,isr_lambda)
+      write(ounit,'(a)' )
+      write(ounit,'(tr1,a,i0,a)') ' SR lambda has ',i,' entries'
+      if(i.ne.nstates*(nstates-1)/2) call fatal_error('READ_INPUT: sr_lambda array &
+              must contain nstates*(nstates-1)/2 entries, [ 1-2, 1-3, ..., 1-nstates,&
+              2-3, 2-4, ..., 2-nstates, ..., (nstates-1)-nstates ]')
+      !call fdf_list('weights_guiding',i,weights_g) ! why was this called again?
+      write(temp5, '(a,i0,a)') '(a,', MSTATES*(MSTATES-1)/2, '(f12.6))'
+      !write(ounit, '(a,<MSTATES*(MSTATES-1)/2>(f12.6))') ' SR lambda : ', sr_lambda(1:i) ! Intel version
+      write(ounit, temp5) ' SR lambda : ', isr_lambda(1:i)                   ! GNU version
+    else
+      isr_lambda = 0.0d0
+      write(ounit,'(a,t40, 10f12.6)') 'Default SR lambda ', isr_lambda(1:nstates)
+    endif
+    ! reshaping into symmetric matrix, its less messy to reference
+    do i = 1, nstates
+      do j = 1, nstates
+        if(j.gt.i) then
+          sr_lambda(i,j) = isr_lambda((i-1)*nstates-i*(i-1)/2+j-i)
+          sr_lambda(j,i) = sr_lambda(i,j)
+        endif
+      enddo
+    enddo
+  endif
 
 ! QMMM classical potential
   ! if(iqmmm.gt.0) then

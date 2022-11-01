@@ -550,7 +550,7 @@ subroutine read_jastrow_file(file_jastrow)
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iunit, iostat, it, isp, iparm, iwft, extra
     integer                         :: mparmja, mparmjb, mparmjc
-    logical                         :: exist
+    logical                         :: exist, found = .false.
     real(dp)                        :: cutjas_tmp
     integer                         :: i, j
 
@@ -762,7 +762,7 @@ subroutine read_orbitals_file(file_orbitals)
     integer                         :: iunit, iostat, iwft, extra
     integer                         :: iorb, ibasis, i, k, counter
     logical                         :: exist
-    logical                         :: skip = .true.
+    logical                         :: skip = .true., found = .false.
 
     !   Formatting
     character(len=100)               :: int_format     = '(A, T60, I0)'

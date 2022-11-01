@@ -190,6 +190,7 @@ c if the last step was a davidson then save the old energy before recomputing it
    6      continue
 
           if(method.eq.'sr_n') then
+            call sr_hs(nparm,sr_adiag)
             call sr(nparm,deltap,sr_adiag,sr_eps,i)
             call dscal(nparm,-sr_tau,deltap,1)
             adiag=sr_adiag

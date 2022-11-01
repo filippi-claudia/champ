@@ -98,7 +98,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine asolve(n,b,x)
 c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
 
-      use sr_mat_n, only: s_ii_inv
+      use sr_mat_n, only: s_ii_inv, sr_state
       use precision_kinds, only: dp
 
       implicit none
@@ -108,7 +108,7 @@ c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
       real(dp), dimension(*) :: b
 
       do i=1,n
-       x(i)=b(i)*s_ii_inv(i)
+       x(i)=b(i)*s_ii_inv(i, sr_state)
       enddo
 
       return
@@ -159,7 +159,7 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       if(ifunc_omega.eq.0) then
 
       do iconf=1,nconf_n
-        oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf),1)
+        oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf,1),1)
       enddo
 
       do istate=1,nstates
@@ -167,7 +167,7 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
         i0=nparm_jasci+(istate-1)*norbterm+1
         do iconf=1,nconf_n
-          oz_orb=ddot(norbterm,z(nparm_jasci+1),1,sr_o(i0,iconf),1)
+          oz_orb=ddot(norbterm,z(nparm_jasci+1),1,sr_o(i0,iconf,1),1)
           aux(iconf)=(oz_jasci(iconf)+oz_orb)*wtg(iconf,istate)
         enddo
 
@@ -176,7 +176,7 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 !          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),mparm)
 !        enddo
 
-        call dgemv('N', nparm_jasci, nconf_n, 1.0d0, sr_o(1,1), mparm, aux(1), 1, 0.0d0, rloc(1), 1)
+        call dgemv('N', nparm_jasci, nconf_n, 1.0d0, sr_o(1,1,1), mparm, aux(1), 1, 0.0d0, rloc(1), 1)
 
 
 !       Following code commented and replaced by dgemv after profiling
@@ -187,7 +187,7 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
         i0 = nparm_jasci + 1 +(istate-1)*norbterm
         i1 = nparm_jasci + 1
-        call dgemv('N', n - nparm_jasci, nconf_n, 1.0d0, sr_o(i0,1), mparm, aux(1), 1, 0.0d0, rloc(i1), 1)
+        call dgemv('N', n - nparm_jasci, nconf_n, 1.0d0, sr_o(i0,1,1), mparm, aux(1), 1, 0.0d0, rloc(i1), 1)
 
         call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
@@ -207,12 +207,12 @@ c ifunc_omega.gt.0
 
       do iconf=1,nconf_n
         hoz=ddot(n,z,1,sr_ho(1,iconf),1)
-        oz=ddot(n,z,1,sr_o(1,iconf),1)
+        oz=ddot(n,z,1,sr_o(1,iconf,1),1)
         aux(iconf)=(hoz-omega_hes*oz)*wtg(iconf,1)
       enddo
       do i=1,n
         rloc(i)=ddot(nconf_n,aux(1),1,sr_ho(i,1),mparm)
-        rloc(i)=rloc(i)-omega_hes*ddot(nconf_n,aux(1),1,sr_o(i,1),mparm)
+        rloc(i)=rloc(i)-omega_hes*ddot(nconf_n,aux(1),1,sr_o(i,1,1),mparm)
       enddo
       call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
