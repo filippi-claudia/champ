@@ -3,7 +3,7 @@
       subroutine startr
 
       use age,     only: iage,ioldest,ioldestmx
-      use basis,   only: zex
+      use basis,   only: zex, ns, np, nd, nf, ng
       use branch,  only: eest,eigv,eold,ff,fprod,nwalk,wdsumo,wgdsumo,wt
       use branch,  only: wtgen
       use casula,  only: i_vpsp,icasula
@@ -60,7 +60,7 @@
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
 !      use contrl, only: nconf
-      
+
       implicit none
 
       integer :: i, iage_id, ib, ic, id
@@ -71,6 +71,7 @@
       integer :: nghostcentx, nprock, nq_id, num
       integer :: nupx, nwalk_id
       integer, dimension(4, 0:nproc) :: irn
+      integer, dimension(nctype)      :: nsx,npx,ndx,nfx,ngx
       real(dp) :: different, eest_id
       real(dp) :: eigv_id, ff_id, fmt, fprod_id
       real(dp) :: fratio_id, hbx, taux, wdsumo_id
@@ -180,6 +181,20 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) ((centx(k,ic),k=1,3),ic=1,ncentx+nghostcentx)
       read(10) pecent
       read(10) (znucx(i),i=1,nctypex)
+
+      ! read the number of basis per shell type
+      read(10) (nsx(i),i=1,nctype)
+      read(10) (npx(i),i=1,nctype)
+      read(10) (ndx(i),i=1,nctype)
+      read(10) (nfx(i),i=1,nctype)
+      read(10) (ngx(i),i=1,nctype)
+      do i = 1, nctype
+        if (nsx(i) .ne. ns(i)) call fatal_error('STARTR: ns')
+        if (npx(i) .ne. np(i)) call fatal_error('STARTR: np')
+        if (ndx(i) .ne. nd(i)) call fatal_error('STARTR: nd')
+        if (nfx(i) .ne. nf(i)) call fatal_error('STARTR: nf')
+        if (ngx(i) .ne. ng(i)) call fatal_error('STARTR: ng')
+      enddo
 
       if (ncentx.ne.ncent) call fatal_error('STARTR: ncent')
       if (nctypex.ne.nctype) call fatal_error('STARTR: nctype')
