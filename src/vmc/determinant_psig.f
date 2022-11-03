@@ -22,7 +22,7 @@
       psig=0
       do i=1,nstates
         istate=iweight_g(i)
-        psig=psig+weights_g(i)*psid(istate)*psid(istate)/anormo(istate)
+        psig=psig+weights_g(i)*psid(istate)*psid(istate)/1.0d0!anormo(istate)
 c missing a exp(2*psij(istate)) term here compared to ortho
       enddo
 

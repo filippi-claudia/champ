@@ -1260,6 +1260,8 @@ subroutine parser
     elseif((ioptjas.eq.1) .or. (ioptorb.eq.1) .or. (ioptci.eq.1) ) then
       write(ounit,'(a)' ) " Only sample derivatives of wave function for external use"
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
+    !else
+      !method='none'
     endif
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
@@ -1382,7 +1384,7 @@ subroutine parser
     nstates=1
   endif ! if loop of condition of either vmc/dmc ends here
 
-! Read in sr_lambda if multi-state sr_n
+! Read in anormo if multi-state sr_n
   if(iguiding.gt.0) then
     write(ounit, *) "ANORMO: Determining normalization constants for guiding wave function."
 

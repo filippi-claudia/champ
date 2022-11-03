@@ -163,7 +163,7 @@ c All quantities saved (old) avaliable
             call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab),aa(1,1,iab),ymat(1,1,iab,istate),vd_s)
 
             do kk=1,3
-              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))/anormo(istate)
+              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))/1.0d0!anormo(istate)
 c missing a vj(kk,iel,istate) term, also no istate dim on vd_s and vref,
 c also missing exp(2*psij(istate))
             enddo
@@ -218,7 +218,7 @@ c Within single-electron move - quantities of electron iel not saved
             call multideterminante_grad(iel,dorbn,norb_tot,detratio,slmin,aan,ymatn(1,1,istate),vd_s)
 
             do kk=1,3
-              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))/anormo(istate)
+              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*(vd_s(kk)+vref(kk))/1.0d0!anormo(istate)
 c missing a vj(kk,iel,istate) term, also no istate dim on vd_s and vref,
 c also missing exp(2*psij(istate))
             enddo

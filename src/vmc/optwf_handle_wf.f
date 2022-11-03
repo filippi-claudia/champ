@@ -1139,14 +1139,14 @@ c wrong, do a loop over istate, temporary for compiler, for jas and ci
 
       do istate=1,nstates
         ii=ijasci+(istate-1)*norbterm
-        if (norbterm /= 0) call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l,istate),1)
+        if (norbterm /= 0) call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l,1),1)
         elocal(l,istate)=energy(istate)
         wtg(l,istate)=wt(istate)
       enddo
 c this part not quite right, added istate to compile right
       ii=ijasci+nstates*norbterm
       do istate=1,nstates
-        sr_o(ii+istate,l,istate)=psid(istate)
+        sr_o(ii+istate,l,1)=psid(istate)
       enddo
 
       nconf_n=l

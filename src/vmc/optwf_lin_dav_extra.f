@@ -665,6 +665,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use sr_mat_n, only: sr_o, wtg, obs_tot
       use mpi
       use precision_kinds, only: dp
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -699,6 +700,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
           do istate=2,nstates
             if(i0.eq.0) ratio=sr_o(nparm+1,iconf,1)/sr_o(nparm+istate,iconf,1)
+            !write(ounit,'(A,i4,f15.10)') "state, sr_o(nparm+istate", istate, sr_o(nparm+istate,iconf,1)
             overlap_psiloc(ivec,istate)=overlap_psiloc(ivec,istate)+dum*ratio*wtg(iconf,istate)
           enddo
         enddo

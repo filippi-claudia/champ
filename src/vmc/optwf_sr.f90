@@ -200,7 +200,7 @@ contains
                 endif
                 
                 ! if statement? do we only use compute norm lin in multistate?
-                if(nstates.gt.1) call compute_norm_lin(nparm,-deltap)
+                !if(nstates.gt.1) call compute_norm_lin(nparm,-deltap)
                 call compute_parameters(deltap, iflag, 1)
                 call write_wf(1, iter)
 
@@ -481,7 +481,7 @@ contains
                 obs(i, istate) = 0.d0
             enddo
 
-            ish = (istate - 1)*norbterm
+            ish = (istate-1)*norbterm
             do iconf = 1, nconf_n
                 obs(jelo, istate) = obs(jelo, istate) + elocal(iconf, istate)*wtg(iconf, istate)
                 do i = 1, nparm_jasci
