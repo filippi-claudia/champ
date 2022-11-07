@@ -11,7 +11,6 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use pseudo,  only: lpot,nloc,vps
       use pseudo_mod, only: MPS_QUAD
       use readps_gauss, only: getvps_gauss
-      use readps_tm_mod, only: getvps_tm
       use system,  only: iwctype,ncent,ncent_tot,nelec
       use error,   only: fatal_error
 
