@@ -1,8 +1,6 @@
 name: Unit Tests
 
 on:
-  #push:
-  #  branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -15,8 +13,7 @@ jobs:
     strategy:
       matrix:
         toolchain: ['gnu']
-        mode: ['DEBUG']
-      fail-fast: false
+        mode: ['RELEASE']
     defaults:
       run:
         shell: bash --noprofile --norc {0}
