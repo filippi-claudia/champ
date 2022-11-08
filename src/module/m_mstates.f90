@@ -21,8 +21,8 @@ end module mstates_ctrl
 
 module mstates2
     !> Arguments: effcum, effcm2
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: effcm2 !(MSTATES)
     real(dp), dimension(:), allocatable :: effcum !(MSTATES)
@@ -33,7 +33,7 @@ module mstates2
     save
 contains
     subroutine allocate_mstates2()
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
         if (.not. allocated(effcm2)) allocate (effcm2(MSTATES))
         if (.not. allocated(effcum)) allocate (effcum(MSTATES))
     end subroutine allocate_mstates2
@@ -47,7 +47,7 @@ end module mstates2
 
 module mstates3
     !> Arguments: weights_g, iweight_g
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     integer, dimension(:), allocatable :: iweight_g !(MSTATES)
     real(dp), dimension(:), allocatable :: weights_g !(MSTATES)
@@ -58,7 +58,7 @@ module mstates3
     save
 contains
     subroutine allocate_mstates3()
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
         if (.not. allocated(iweight_g)) allocate (iweight_g(MSTATES), source=0)
         if (.not. allocated(weights_g)) allocate (weights_g(MSTATES))
     end subroutine allocate_mstates3
@@ -73,16 +73,16 @@ end module mstates3
 module m_mstates
 contains
 subroutine allocate_m_mstates()
-    use mstates2, only: allocate_mstates2
-    use mstates3, only: allocate_mstates3
+      use mstates2, only: allocate_mstates2
+      use mstates3, only: allocate_mstates3
 
     call allocate_mstates2()
     call allocate_mstates3()
 end subroutine allocate_m_mstates
 
 subroutine deallocate_m_mstates()
-    use mstates2, only: deallocate_mstates2
-    use mstates3, only: deallocate_mstates3
+      use mstates2, only: deallocate_mstates2
+      use mstates3, only: deallocate_mstates3
 
     call deallocate_mstates2()
     call deallocate_mstates3()

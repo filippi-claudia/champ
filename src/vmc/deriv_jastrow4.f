@@ -2,36 +2,29 @@
       contains
       subroutine deriv_jastrow4(x,v,d2,value)
 c Written by Cyrus Umrigar and Claudia Filippi
-      use vmc_mod, only: nordj
-      use atom, only: iwctype, nctype, ncent
-      use const, only: nelec
-      use derivjas, only: d2g, g, go, gvalue
-      use elec, only: nup
-      use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
-      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-      use jaspar, only: sspinn
-      use jaspar3, only: b, c
-      use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r
-      use jaspar6, only: cutjas
-      use jaspointer, only: npoint, npointa
-      use optwf_contrl, only: ioptjas
-      use optwf_nparmj, only: nparma, nparmb
-      use optwf_parms, only: nparmj
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc
-      use wfsec, only: iwf
-      use bparm, only: nocuspb, nspin2b
-      use contr2, only: ijas
-      use contr2, only: isc
-      use contrl_file,    only: ounit
-      use vardep, only: cdep, iwdepend, nvdepend
-      use distance_mod, only: rshift, r_en, rvec_en
-      use force_analy, only: iforce_analy
-      use cuspmat4, only: d, iwc4
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      use precision_kinds, only: dp
-      use scale_dist_mod, only: scale_dist2, switch_scale2
+      use bparm,   only: nocuspb,nspin2b
+      use contrl_file, only: ounit
+      use cuspmat4, only: d,iwc4
+      use derivjas, only: d2g,g,go,gvalue
+      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
+      use jastrow, only: norda,nordb,nordc
+      use jaspar6, only: asymp_r,cutjas
+      use jaspointer, only: npoint,npointa
+      use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj
+      use jastrow, only: sspinn
       use jastrow4_mod, only: da_jastrow4
+      use jastrow_update, only: d2ijo,d2o,fijo,fjo,fso,fsumo
+      use m_force_analytic, only: iforce_analy
+      use multiple_geo, only: iwf
+      use optwf_control, only: ioptjas
+      use optwf_nparmj, only: nparma,nparmb
+      use optwf_parms, only: nparmj
+      use optwf_wjas, only: iwjasa,iwjasb,iwjasc
+      use precision_kinds, only: dp
+      use scale_dist_mod, only: scale_dist2,switch_scale2
+      use system,  only: iwctype,ncent,nctype,nelec,nup
+      use vardep,  only: cdep,iwdepend,nvdepend
       implicit none
 
       integer :: i, ic, id, ideriv, ij

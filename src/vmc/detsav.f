@@ -3,36 +3,27 @@
       subroutine detsav(iel,iflag)
 c Written by Claudia Filippi
 
-      use csfs, only: nstates
-
-      use dets, only: ndet
-      use elec, only: ndn, nup
-      use multidet, only: ivirt, kref, numrep_det, ndetiab, ndetsingle
-
-      use slatn, only: slmin
+      use csfs,    only: nstates
+      use dorb_m,  only: iworbd
+      use multidet, only: ivirt,ndetiab,ndetsingle,numrep_det, ndetdouble
+      use multimat, only: aa,wfmat
+      use multimatn, only: aan,wfmatn
+      use multislater, only: detiab
+      use multislatern, only: detn,dorbn,orbn
+      use orbval,  only: dorb,orb
+      use precision_kinds, only: dp
+      use slater,  only: fp,kref,ndet,norb,slmi
+      use slatn,   only: slmin
+      use system,  only: ndn,nelec,nup
+      use vmc_mod, only: MEXCIT
       use ycompact, only: ymat
       use ycompactn, only: ymatn
-      use coefs, only: norb
-      use dorb_m, only: iworbd
-      use multimat, only: aa, wfmat
-      use multimatn, only: aan, wfmatn
-      use multislatern, only: detn, dorbn, orbn
 
-      use orbval, only: dorb, orb
-      use slater, only: fp, slmi
-
-      use multislater, only: detiab
-
-      use vmc_mod, only: MEXCIT
-
-      use const, only: nelec
-
-      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iab, iel, iflag, ikel
       integer :: iorb, ish, istate, j
-      integer :: k, kk, ndim, nel, ndim2, kn
+      integer :: k, kk, ndim, nel, ndim2, kn,kcum
       integer, dimension(ndet) :: ku
       integer, dimension(ndet) :: auxdim
 
@@ -62,17 +53,29 @@ c Written by Claudia Filippi
       
 
 !     This loop should run just over unique or unequivalent determinants
-! single excitations
-      do k=1,ndetsingle(iab)
-          wfmat(k,1,iab)=wfmatn(k,1)
-       enddo
-! multiple excitations
-      do k=ndetsingle(iab)+1,ndetiab(iab)
-          ndim=numrep_det(k,iab)
-          ndim2=ndim*ndim
-          wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
-       enddo
+!     single excitations
+      if(ndetsingle(iab).ge.1)then
+         do k=1,ndetsingle(iab)
+            wfmat(k,1,iab)=wfmatn(k,1)
+         enddo
+      endif
+
+!     double excitations       
+      kcum=ndetsingle(iab)+ndetdouble(iab)
+      if(ndetdouble(iab).ge.1)then
+         do k=ndetsingle(iab)+1,kcum
+            wfmat(k,1:4,iab)=wfmatn(k,1:4)
+         enddo
+      endif
       
+!     multiple excitations
+      if(kcum.lt.ndetiab(iab))then
+         do k=ndetdouble(iab)+1,ndetiab(iab)
+            ndim=numrep_det(k,iab)
+            ndim2=ndim*ndim
+            wfmat(k,1:ndim2,iab)=wfmatn(k,1:ndim2)
+         enddo
+      endif
       
       
       

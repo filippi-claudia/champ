@@ -2,29 +2,28 @@
       contains
       subroutine optwf_lin_d
 
-      use sr_mod, only: mparm
-      use csfs, only: nstates
+      use contrl_file, only: ounit
+      use control_vmc, only: vmc_nblk,vmc_nblk_max
+      use csfs,    only: nstates
+      use error,   only: fatal_error
+      use m_force_analytic, only: alfgeo,iforce_analy
       use mstates_mod, only: MSTATES
-      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: energy, energy_err, sigma
-      use orbval, only: nadorb
-      use optwf_func, only: ifunc_omega, omega, omega0, n_omegaf, n_omegat
-      !use contrl, only: nblk, nblk_max
-      use control_vmc, only: vmc_nblk, vmc_nblk_max
-      use force_analy, only: iforce_analy, alfgeo
-      use method_opt, only: method
-      use precision_kinds, only: dp
-      use contrl_file,    only: ounit
-
-      use optwf_handle_wf,only: set_nparms_tot, save_nparms, write_wf
-      use optwf_handle_wf,only: set_nparms, save_wf, compute_parameters
-      use optwf_handle_wf,only: test_solution_parm
-      use error, only: fatal_error
-      use optgeo_lib, only: write_geometry, compute_positions
-      use sr_more, only: dscal
+      use optgeo_lib, only: compute_positions,write_geometry
+      use optwf_control, only: alin_adiag,alin_eps,dparm_norm_min
+      use optwf_control, only: energy_tol,ioptci,ioptjas,ioptorb,method
+      use optwf_control, only: micro_iter_sr,nopt_iter,nparm,nvec,nvecx
+      use optwf_corsam, only: energy,energy_err,sigma
+      use optwf_func, only: ifunc_omega,n_omegaf,n_omegat,omega,omega0
+      use optwf_handle_wf, only: compute_parameters,save_nparms,save_wf
+      use optwf_handle_wf, only: set_nparms,set_nparms_tot
+      use optwf_handle_wf, only: test_solution_parm,write_wf
       use optwf_lin_dav_more, only: lin_d
+      use orbval,  only: nadorb
+      use precision_kinds, only: dp
+      use sr_mod,  only: mparm
+      use sr_more, only: dscal
+      !use contrl, only: nblk, nblk_max
+
       implicit none
       interface
       subroutine qmc

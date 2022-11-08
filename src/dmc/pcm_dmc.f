@@ -2,14 +2,14 @@
       contains
       subroutine pcm_prt(iblk,wgcum,wgcm2)
 
-      use force_mod, only: MFORCE
-!      use contrl, only: nconf, nstep
-      use control_dmc, only: dmc_nconf, dmc_nstep
-      use pcm_cntrl, only: ipcm, ipcmprt
-      use pcm_averages, only: spcmcum, spcmcm2, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_cum, qopcm_cm2
+      use contrl_file, only: ounit
+      use control_dmc, only: dmc_nconf,dmc_nstep
+      use multiple_geo, only: MFORCE
+      use pcm_averages, only: qopcm_cm2,qopcm_cum,spcmcm2,spcmcum
+      use pcm_averages, only: vpcmcm2,vpcmcum
+      use pcm_cntrl, only: ipcm,ipcmprt
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+!      use contrl, only: nconf, nstep
       implicit none
 
       integer :: i, iblk, iqopcm_err, ispcmerr, ivpcmerr
@@ -69,10 +69,10 @@ c     gpcmkcal=spcmkcal+vpcmkcal
 c-----------------------------------------------------------------------
       subroutine pcm_fin(iblk,wgcum,wgcm2)
 
-      use force_mod, only: MFORCE
-      use pcm_cntrl, only: ipcm, ipcmprt
-
+      use multiple_geo, only: MFORCE
+      use pcm_cntrl, only: ipcm,ipcmprt
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: iblk, ipcmprt_sav
@@ -94,10 +94,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine pcm_save(iw)
 
-      use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
-      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
       use pcm_cntrl, only: ipcm
+      use pcm_hpsi, only: enfpcm,pcms,pcmv,qopcm
       use pcm_parms, only: nchs
+      use pcmo,    only: enfpcmo_dmc,qopcmo_dmc,spcmo_dmc,vpcmo_dmc
 
       implicit none
 
@@ -120,14 +120,13 @@ c     write(ounit,*) 'CIAO',qopcm,qopcmo_dmc(iw),iw,spcmo_dmc(iw),vpcmo_dmc(iw)
 c-----------------------------------------------------------------------
       subroutine pcm_sum(p,q,iw)
 
-      use pcm_hpsi, only: pcms, pcmv, qopcm, enfpcm
-      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
+      use pcm_averages, only: enfpcm_sum,qopcm_sum,spcmsum,vpcmsum
       use pcm_cntrl, only: ipcm
+      use pcm_hpsi, only: enfpcm,pcms,pcmv,qopcm
       use pcm_parms, only: nchs
-      use pcm_averages, only: spcmsum, vpcmsum
-      use pcm_averages, only: qopcm_sum, enfpcm_sum
-
+      use pcmo,    only: enfpcmo_dmc,qopcmo_dmc,spcmo_dmc,vpcmo_dmc
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: i, iw
@@ -150,12 +149,13 @@ c     write(ounit,*) 'HELLO',qopcm,qopcmo_dmc(iw),iw
 c-----------------------------------------------------------------------
       subroutine pcm_cum(wsum_dmc)
 
+      use pcm_averages, only: enfpcm_cm2,enfpcm_cum,enfpcm_sum,qopcm_cm2
+      use pcm_averages, only: qopcm_cum,qopcm_sum,spcmcm2,spcmcum
+      use pcm_averages, only: spcmsum,vpcmcm2,vpcmcum,vpcmsum
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: nchs
-      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2, enfpcm_sum, enfpcm_cum, enfpcm_cm2
-
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: i
@@ -187,8 +187,8 @@ c     write (6,*) 'HELLO-CIAO', qopcm_cum
 c-----------------------------------------------------------------------
       subroutine pcm_splitj(iw,iw2)
 
-      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
       use pcm_parms, only: nchs
+      use pcmo,    only: enfpcmo_dmc,qopcmo_dmc,spcmo_dmc,vpcmo_dmc
 
       implicit none
 

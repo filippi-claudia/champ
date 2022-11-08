@@ -2,32 +2,30 @@
       contains
       subroutine multideterminante(iel)
 
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: MEXCIT
-      use csfs, only: nstates
-      use dets, only: ndet
-      use elec, only: ndn, nup
-      use multidet, only: irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, k_det, ndetiab, ndet_req
-      use multidet, only: k_det2, ndetiab2, k_aux, ndetsingle
-      use slatn, only: slmin
-      use ycompactn, only: ymatn
-      use coefs, only: norb
-      use multimatn, only: aan, wfmatn
-      use multislatern, only: detn, orbn
-      use const, only: nelec
-      use orbval, only: orb
-      use multislater, only: detiab
-      use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
+      use csfs,    only: nstates
       use matinv_mod, only: matinv
+      use multidet, only: irepcol_det,ireporb_det,ivirt,k_aux,k_det
+      use multidet, only: k_det2,ndet_req,ndetiab,ndetiab2,ndetsingle, ndetdouble
+      use multidet, only: numrep_det
       use multideterminant_mod, only: compute_ymat
+      use multimatn, only: aan,wfmatn
+      use multislater, only: detiab
+      use multislatern, only: detn,orbn
+      use orbval,  only: orb
+      use precision_kinds, only: dp
+      use slater,  only: iwundet,kref,ndet,norb
+      use slatn,   only: slmin
+      use system,  only: ndn,nelec,nup
+      use vmc_mod, only: MEXCIT,norb_tot
+      use ycompactn, only: ymatn
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
       integer :: irep, ish, istate, jj
-      integer :: jorb, jrep, k, ndim, ndim2, kun, kw, kk
+      integer :: jorb, jrep, k, ndim, ndim2, kun, kw, kk, kcum
       integer :: nel
-      real(dp) :: det, dum1
+      real(dp) :: det, dum1, deti, auxdet
       real(dp), dimension(nelec, norb_tot, 3) :: gmat
       real(dp), dimension(MEXCIT**2, 3) :: gmatn
       real(dp), dimension(norb_tot, 3) :: b
@@ -69,15 +67,17 @@ c temporarely copy orbn to orb
 c compute wave function
 c     loop inequivalent determinants
 c     loop over single exitations
-      do k=1,ndetsingle(iab)
+      if(ndetsingle(iab).ge.1)then
+         do k=1,ndetsingle(iab)
          
-         jorb=ireporb_det(1,k,iab)
-         iorb=irepcol_det(1,k,iab)
-         wfmatn(k,1)=aan(iorb+nelec*(jorb-1))
-         ddetn(k)=wfmatn(k,1)
-         wfmatn(k,1)=1.0d0/wfmatn(k,1)
-      enddo
-
+            jorb=ireporb_det(1,k,iab)
+            iorb=irepcol_det(1,k,iab)
+            wfmatn(k,1)=aan(iorb+nelec*(jorb-1))
+            ddetn(k)=wfmatn(k,1)
+            wfmatn(k,1)=1.0d0/wfmatn(k,1)
+         enddo
+      endif
+      
 c     loop over single exitations      
 c         jorb=ireporb_det(1,1:ndetsingle(iab),iab)
 c         iorb=irepcol_det(1,1Kndetsingle(iab),iab)
@@ -86,25 +86,81 @@ c      wfmatn(1:ndetsingle(iab),1)=aan(irepcol_det(1,1:ndetsingle(iab),iab)+nele
 c      ddetn(1:ndetsingle(iab))=wfmatn(1:ndetsingle(iab),1)
 c      wfmatn(1:ndetsingle(iab),1)=1.0d0/wfmatn(1:ndetsingle(iab),1)
 
-      
-c     loop over multiple exitations      
-      do k=ndetsingle(iab)+1,ndetiab(iab)
-     
-         ndim=numrep_det(k,iab)
-         ndim2=ndim*ndim
-     
-         jj=0
-         do jrep=1,ndim
-            jorb=ireporb_det(jrep,k,iab)
-            do irep=1,ndim
-               iorb=irepcol_det(irep,k,iab)
-               jj=jj+1
-               wfmatn(k,jj)=aan(iorb+nelec*(jorb-1))
-            enddo
+
+      kcum=ndetsingle(iab)+ndetdouble(iab)
+
+      if(ndetdouble(iab).ge.1)then
+c     loop over double exitations      
+c     do k=ndetsingle(iab)+1,kcum
+c     
+c         ndim=numrep_det(k,iab)
+c     ndim2=ndim*ndim
+c     
+c     jj=0
+c     do jrep=1,ndim
+c     jorb=ireporb_det(jrep,k,iab)
+c     do irep=1,ndim
+c     iorb=irepcol_det(irep,k,iab)
+c     jj=jj+1
+c     wfmatn(k,jj)=aan(iorb+nelec*(jorb-1))
+c     enddo
+c     enddo
+c     call matinv(wfmatn(k,1:ndim2),ndim,ddetn(k))
+c     enddo
+c     endif
+
+         do k=ndetsingle(iab)+1,kcum
+             
+
+            jorb=ireporb_det(1,k,iab)
+            iorb=irepcol_det(1,k,iab)
+            wfmatn(k,1)=aan(iorb+nelec*(jorb-1))
+            iorb=irepcol_det(2,k,iab)
+            wfmatn(k,2)=aan(iorb+nelec*(jorb-1))
+            jorb=ireporb_det(2,k,iab)
+            iorb=irepcol_det(1,k,iab)
+            wfmatn(k,3)=aan(iorb+nelec*(jorb-1))
+            iorb=irepcol_det(2,k,iab)
+            wfmatn(k,4)=aan(iorb+nelec*(jorb-1))
+c     test to save         
+            
+            ddetn(k)=wfmatn(k,1)*wfmatn(k,4)-wfmatn(k,3)*wfmatn(k,2)
+            deti=1.d0/ddetn(k)
+            auxdet=wfmatn(k,1)
+            wfmatn(k,1)=wfmatn(k,4)*deti
+            wfmatn(k,2)=-wfmatn(k,2)*deti
+            wfmatn(k,3)=-wfmatn(k,3)*deti
+            wfmatn(k,4)=auxdet*deti
+
+                  
          enddo
-         call matinv(wfmatn(k,1:ndim2),ndim,ddetn(k))
-      enddo
+
+         
       
+      endif
+      
+
+         
+      
+c     loop over multiple exitations
+      if(kcum.lt.ndetiab(iab))then
+         do k=kcum+1,ndetiab(iab)
+     
+            ndim=numrep_det(k,iab)
+            ndim2=ndim*ndim
+            
+            jj=0
+            do jrep=1,ndim
+               jorb=ireporb_det(jrep,k,iab)
+               do irep=1,ndim
+                  iorb=irepcol_det(irep,k,iab)
+                  jj=jj+1
+                  wfmatn(k,jj)=aan(iorb+nelec*(jorb-1))
+               enddo
+            enddo
+            call matinv(wfmatn(k,1:ndim2),ndim,ddetn(k))
+         enddo
+      endif
       
 
 c     Unrolling determinats different to kref
@@ -144,16 +200,12 @@ c     enddo
 c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,b,norbs,detratio,slmi,aa,ymat,velocity)
 
+      use dorb_m,  only: iworbd
+      use multidet, only: iactv,ivirt
       use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: nmat_dim
-      use vmc_mod, only: MEXCIT
-      use dets, only: ndet
-      use elec, only: ndn, nup
-      use multidet, only: iactv, ivirt, kref
-      use coefs, only: norb
-      use dorb_m, only: iworbd
-      use const, only: nelec
+      use slater,  only: kref,ndet,norb
+      use system,  only: ndn,nelec,nup
+      use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
 
       implicit none
 

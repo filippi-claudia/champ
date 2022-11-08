@@ -4,67 +4,59 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
-      use precision_kinds, only: dp
-      use force_mod, only: MFORCE
-      use vmc_mod, only: nrad
-      use atom, only: znuc, cent, pecent, iwctype, ncent
-      use mstates_mod, only: MSTATES
-      use const, only: nelec, ipr
-      use config, only: eold, nearesto, psi2o
-      use config, only: psido, psijo, rmino, rvmino
-      use config, only: vold, xold
-      use csfs, only: nstates
-      use denupdn, only: rprobdn, rprobup
-      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
-      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
-      use estpsi, only: apsi, aref, detref
-      use estsig, only: ecm21s, ecum1s
-      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: nforce
-      use forcest, only: fcm2, fcum
-      use forcewt, only: wcum, wsum
-      use multidet, only: kref
-      use optwf_contrl, only: ioptorb
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
-      use pseudo, only: nloc
-      use qua, only: nquad, wq, xq, yq, zq
-      use mstates_ctrl, only: iguiding
-
-      use optorb_cblock, only: ns_current
-      use distance_mod, only: rshift, r_en, rvec_en
-      use multislater, only: detiab
-      use distance_mod, only: rshift, r_en, rvec_en
-      use inputflags, only: node_cutoff, eps_node_cutoff
+      use acuest_reduce_mod, only: acues1_reduce,acuest_reduce
+      use config,  only: eold,nearesto,psi2o,psido,psijo,rmino,rvmino
+      use config,  only: vold,xold
       use contrl_file, only: ounit
-      
-      use distances_mod, only: distances
-      use force_analytic, only: force_analy_save
-      use optorb_f_mod, only: optorb_save
-      use optci_mod, only: optci_save
-      use optjas_mod,   only: optjas_save
-      use mmpol_vmc,    only: mmpol_save, mmpol_cum
-      use pcm_vmc,      only: pcm_save, pcm_cum
-      use prop_vmc,     only: prop_save
-      use nodes_distance_mod, only: nodes_distance
+      use control, only: ipr
+      use csfs,    only: nstates
+      use denupdn, only: rprobdn,rprobup
+      use determinant_psig_mod, only: determinant_psig
       use determinante_mod, only: compute_determinante_grad
-      use determinant_psig_mod,  only: determinant_psig
+      use distance_mod, only: r_en,rshift,rvec_en
+      use distances_mod, only: distances
+      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tjfcm2,tpbcm2
+      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tjfcum,tpbcum
+      use estpsi,  only: apsi,aref,detref
+      use estsig,  only: ecm21s,ecum1s
+      use estsum,  only: acc,esum,esum1,pesum,r2sum,tjfsum,tpbsum
+      use force_analytic, only: force_analy_cum,force_analy_init
+      use force_analytic, only: force_analy_save
+      use forcewt, only: wcum,wsum
       use hpsi_mod, only: hpsi
-      use strech_mod, only: strech
-      use pot, only: pot_nn
+      use inputflags, only: eps_node_cutoff,node_cutoff
+      use mmpol,   only: mmpol_init
+      use mmpol_vmc, only: mmpol_cum,mmpol_save
+      use mstates_ctrl, only: iguiding
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE,fcm2,fcum,nforce,pecent
       use multiple_states, only: efficiency_init
-      use force_analytic, only: force_analy_init, force_analy_cum
-      use properties_mod, only: prop_init, prop_cum
-      use pcm_mod, only: pcm_init
-      use mmpol, only: mmpol_init
-      use optci_mod, only: optci_init, optci_cum
-      use optorb_f_mod, only: optorb_init, optorb_cum
-      use optjas_mod, only: optjas_init, optjas_cum
-      use optx_orb_ci, only: optx_orb_ci_init
+      use multislater, only: detiab
+      use nodes_distance_mod, only: nodes_distance,rnorm_nodes_num
+      use optci_mod, only: optci_cum,optci_init,optci_save
+      use optjas_mod, only: optjas_cum,optjas_init,optjas_save
+      use optorb_cblock, only: ns_current
+      use optorb_f_mod, only: optorb_cum,optorb_init,optorb_save
+      use optwf_control, only: ioptorb
       use optx_jas_ci, only: optx_jas_ci_init
       use optx_jas_orb, only: optx_jas_orb_init
+      use optx_orb_ci, only: optx_orb_ci_init
+      use pcm_mod, only: pcm_init
+      use pcm_vmc, only: pcm_cum,pcm_save
+      use pot,     only: pot_nn
+      use precision_kinds, only: dp
+      use prop_vmc, only: prop_save
+      use properties_mod, only: prop_cum,prop_init
+      use pseudo,  only: nloc
+      use qua,     only: nquad,wq,xq,yq,zq
       use rotqua_mod, only: gesqua
-      use acuest_reduce_mod, only: acuest_reduce, acues1_reduce
-      use nodes_distance_mod, only: rnorm_nodes_num
+      use slater,  only: kref
+      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use strech_mod, only: strech
+      use system,  only: cent,iwctype,ncent,nelec,znuc
+      use vmc_mod, only: nrad
+
+      
 
 
       implicit none
@@ -294,9 +286,12 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
 c rewrite psi2o if you are sampling guiding
         psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
       endif
-
+      
+      
       if(ipr.gt.1) then
-        write(ounit,'(''psid, psidg='',2d12.4)') psido(1),psidg
+         if(iguiding.gt.0) then
+            write(ounit,'(''psid, psidg='',2d12.4)') psido(1),psidg
+         endif
         write(ounit,'(''psid2o='',f9.4)') psi2o(1,1)
       endif
 

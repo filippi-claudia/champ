@@ -3,15 +3,12 @@
       subroutine pot_nn(cent,znuc,iwctype,ncent,pecent)
 c Written by Cyrus Umrigar
 c get nuclear potential energy
-      USE contrl_per , only:  iperiodic, ibasis
-      use contrl_per, only: iperiodic
-      USE da_pseudo , only:  da_pecent, da_vps
-      use da_pseudo, only: da_pecent, da_vps
-      use atom, only: ncent_tot, nctype_tot
-      use force_analy, only: iforce_analy
-      use da_pseudo, only: da_pecent, da_vps
+      use contrl_per, only: ibasis,iperiodic
+      use da_pseudo, only: da_pecent,da_vps
+      use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
       use pw_ewald, only: pot_nn_ewald
+      use system,  only: ncent_tot,nctype_tot
 
       implicit none
 

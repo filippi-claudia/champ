@@ -1,5 +1,5 @@
 module read_bas_num_mod
-use error, only: fatal_error
+      use error,   only: fatal_error
 interface !LAPACK interface
   SUBROUTINE DGESV( N, NRHS, A, LDA, IPIV, B, LDB, INFO )
     INTEGER            INFO, LDA, LDB, N, NRHS
@@ -10,40 +10,34 @@ end interface
 contains
       subroutine read_bas_num(iwf)
 
-      use custom_broadcast,   only: bcast
-      use mpiconf,            only: wid
+      use coefs,   only: nbasis
+      use contrl_file, only: errunit,ounit
+      use control, only: ipr
+      use custom_broadcast, only: bcast
+      use fitting_methods, only: exp_fit
+      use general, only: bas_id,filename,filenames_bas_num,pooldir
+     use mpiconf, only: wid
+      use numbas,  only: allocate_numbas,arg,d2rwf,igrid,nr,nrbas,r0
+      use numbas,  only: rwf, rmaxwf
+      use numbas_mod, only: MRWF,MRWF_PTS
+      use numexp,  only: ae,allocate_numexp,ce
+      use precision_kinds, only: dp
+      use pseudo,  only: nloc
+      use spline2_mod, only: spline2
+      use system,  only: atomtyp,nctype,nctype_tot,newghostype,znuc
+      use vmc_mod, only: NCOEF
 
-      use numbas_mod, only: MRWF, MRWF_PTS
-      use atom, only: znuc, nctype, nctype_tot
 ! c Written by Claudia Filippi
 ! c Modified by F. Schautz to use fancy file names
 ! c Reads in localized orbitals on a radial grid
-
-      use numbas_mod, only: MRWF, MRWF_PTS
-      use vmc_mod, only: NCOEF
-      use atom, only: znuc, nctype, nctype_tot
-      use ghostatom, only: newghostype
-      use const, only: ipr
-      use numbas, only: arg, d2rwf, igrid, nr, nrbas, r0, rwf!, rmax
-      use numbas, only: allocate_numbas
-      use coefs, only: nbasis
-      use numexp, only: ae, ce, ab, allocate_numexp
-      use pseudo, only: nloc
-      use general, only: filename, filenames_bas_num
-
-      use atom, 			        only: atomtyp
-      use general, 			      only: pooldir, bas_id
-      use contrl_file,        only: ounit, errunit
-      use precision_kinds,    only: dp
-      use spline2_mod,        only: spline2
-      use fitting_methods,    only: exp_fit
 
       implicit none
 
       integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
       integer         :: iwf, info
-      real(dp)        :: val, dwf1, wfm, dwfn, dwfm, a, b, temp
+      real(dp)        :: val, dwf1, wfm, dwfn, dwfm, temp
       integer         :: iunit, iostat = 0, counter = 0
+      real(dp)        :: cutoff_rmax = 1.0d-12
       logical         :: exist, skip = .true.
 
       real(dp), dimension(MRWF_PTS)       ::  x, work
@@ -123,6 +117,12 @@ contains
         call bcast(x)
         call bcast(rwf)
 
+!        Get the rmax value for each center. Set the cutoff to 10^-12
+
+        if (.not. allocated(rmaxwf)) allocate (rmaxwf(nrbas(ic), nctype_tot))
+
+
+
         if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
         if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)
         call bcast(arg)
@@ -191,43 +191,38 @@ contains
           dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
         enddo
 
-! c large radii wf(r)=a0*exp(-ak*r)
-! c       xm=0.5d0*(x(nr(ic))+x(nr(ic)-1))
-        wfm=0.5d0*(rwf(nr(ic),irb,ic,iwf)+rwf(nr(ic)-1,irb,ic,iwf))
-        dwfm=(rwf(nr(ic),irb,ic,iwf)-rwf(nr(ic)-1,irb,ic,iwf))/  &
-        (x(nr(ic))-x(nr(ic)-1))
-        if(dabs(wfm).gt.1.d-99) then
-          ae(2,irb,ic,iwf)=-dwfm/wfm
-          ae(1,irb,ic,iwf)=rwf(nr(ic),irb,ic,iwf)*    &
-                          dexp(ae(2,irb,ic,iwf)*x(nr(ic)))
-          dwfn=-ae(2,irb,ic,iwf)*rwf(nr(ic),irb,ic,iwf)
-        else
-          ae(1,irb,ic,iwf)=0.d0
-          ae(2,irb,ic,iwf)=0.d0
-          dwfn=0.d0
-        endif
+        ! Update the rmax at the point where rwf goes below cutoff (scanning from right to left)
+        rmaxwf(irb, ic) = 20.0d0
+        rloop: do ir=nr(ic),1,-1
+          if (dabs(rwf(ir,irb,ic,iwf)) .gt. cutoff_rmax ) then
+            rmaxwf(irb, ic) = x(ir)
+            exit rloop
+          endif
+        enddo rloop
 
-! Nonzero basis at the boundary : Ravindra Shinde
-        if(rwf(nr(ic),irb,ic,iwf).gt.1.d-12) then
-          call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ab(1,irb,ic,iwf), ab(2,irb,ic,iwf))
-          write(45, *) 'DEBUG :: exp_fit: ', ab(1,irb,ic,iwf), ab(2,irb,ic,iwf)
-        endif
+        write(45,'(a,i0,a,i0,a,g0)') "Initial rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
+
+! Nonzero basis at the boundary : Do exponential fitting.
+        if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
+          call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
+          rmaxwf(irb,ic)=-dlog(cutoff_rmax/ae(1,irb,ic,iwf))/ae(2,irb,ic,iwf)
 
 
-! c       if(ipr.gt.1) then
-          write(45,'(''check the large radius expansion'')')
-          write(45,'(''a0,ak'',1p2e22.10)')     &
-                            ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
-          write(45,'(''irad, rad, extrapolated value, correct value,  DEBUG new fit'')')
+
+          write(45,'(a)') 'check the large radius expansion'
+          write(45,'(a,g0,2x,g0)') 'Exponential fitting parameters : ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
+
+          write(45,'(a,i0,a,i0,a,g0)') "Final rmax (fit) for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
+          write(45, '(a)') 'irad,         rad                  rwf value            expo fit'
           do ir=1,10
-            val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
-            temp = ab(1,irb,ic,iwf)*dexp(-ab(2,irb,ic,iwf)*x(nr(ic)-ir))
-            write(45,'(i2,1p4e22.14)')      &
-            ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf), temp
+            temp = ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
+            write(45,'(i3,2x,1p4e22.14)') ir,x(nr(ic)-ir),rwf(nr(ic)-ir,irb,ic,iwf), temp
           enddo
           write(45,*) 'dwf1,dwfn',dwf1,dwfn
-! c       endif
-        if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+
+          if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+
+        endif
 
         call spline2(x(:),rwf(:,irb,ic,iwf),nr(ic),dwf1,dwfn,  &
                         d2rwf(:,irb,ic,iwf),work)
@@ -254,26 +249,27 @@ subroutine readps_gauss
   !
   ! NOTE: as usual power n means r**(n-2)
   !
-  use custom_broadcast,   only: bcast
-  use mpiconf,            only: wid
+      use contrl_file, only: errunit,ounit
+      use custom_broadcast, only: bcast
+      use gauss_ecp, only: allocate_gauss_ecp,ecp_coef,ecp_exponent
+      use gauss_ecp, only: necp_power,necp_term
+      use general, only: filename,filenames_ps_gauss,pooldir,pp_id
+      use mpiconf, only: wid
+      use precision_kinds, only: dp
+      use pseudo,  only: lpot
+      use pseudo_mod, only: MGAUSS,MPS_L,MPS_QUAD
+      use qua,     only: nquad,wq,xq0,yq0,zq0
+      use rotqua_mod, only: gesqua
+      use system,  only: atomtyp,nctype
 
-  use pseudo_mod, only: MPS_L, MGAUSS, MPS_QUAD
-  use atom, only: nctype, atomtyp
-  use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
-  use gauss_ecp, only: allocate_gauss_ecp
-  use pseudo, only: lpot
-  use qua, only: nquad, wq, xq0, yq0, zq0
-  use general, only: pooldir, filename, pp_id, filenames_ps_gauss
-  use contrl_file,        only: ounit, errunit
-  use rotqua_mod, only: gesqua
 
-  use precision_kinds, only: dp
   implicit none
 
   integer         :: i, ic, idx, l
   integer         :: iunit, iostat, counter = 0
   logical         :: exist, skip = .true.
-
+  real(dp) ::  necp_power_tmp
+  
   character*80 label
 
 
@@ -348,13 +344,14 @@ subroutine readps_gauss
 
         do i=1,necp_term(idx,ic)
           if (wid) then
-            read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
+            read(iunit,*,iostat=iostat) ecp_coef(i,idx,ic), necp_power_tmp, ecp_exponent(i,idx,ic)
 
             if (iostat .ne. 0) then
               write(errunit,'(a)') "Error:: Problem in reading the pseudopotential file: ecp_coeff, power, ecp_exponents"
               write(errunit,'(2a)') "Stats for nerds :: in file ",__FILE__
               write(errunit,'(a,i6)') "at line ", __LINE__
-            endif
+           endif
+           necp_power(i,idx,ic)=int(necp_power_tmp)
             write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic), &
                                                     necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
           endif
@@ -398,7 +395,7 @@ end subroutine readps_gauss
 !   use mpiconf,            only: wid
 
 !   use pseudo_mod, only: MPS_L, MGAUSS, MPS_QUAD
-!   use atom, only: nctype, atomtyp
+!   use system, only: nctype, atomtyp
 !   use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
 !   use gauss_ecp, only: allocate_gauss_ecp
 !   use pseudo, only: lpot

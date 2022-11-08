@@ -42,61 +42,65 @@ c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-      use vmc_mod, only: nrad
-      use vmc_mod, only: delri
-      use const, only: etrial, hb, ipr, nelec
-      use forcepar, only: istrech, nforce
-      use age, only: iage, ioldest, ioldestmx
-      use contrldmc, only: iacc_rej, icross, icut_br, icut_e, idmc, ipq, nfprod, rttau, tau
-      use atom, only: cent
-      use estcum, only: ipass
-      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nodecr, trymove
-      use estsum, only: efsum1, egsum1, esum1_dmc
-      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc
-      use estsum, only: wfsum1, wgsum1, wsum1
-      use force_dmc, only: itausec, nwprod
+      use age,     only: iage,ioldest,ioldestmx
+      use averages, only: average
+      use branch,  only: eest,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
+      use branch,  only: wgdsumo,wt,wthist
+      use casula,  only: i_vpsp,icasula
+      use config,  only: d2o,peo_dmc,psido_dmc,psijo_dmc,vold_dmc
+      use config,  only: xold_dmc
+      use const,   only: etrial
+      use constants, only: hb
+      use contrl_file, only: ounit
+      use contrldmc, only: iacc_rej,icross,icut_br,icut_e,idmc,ipq
+      use contrldmc, only: nfprod,rttau,tau
+      use control, only: ipr
+      use control_dmc, only: dmc_irstar,dmc_nconf
       use derivest, only: derivsum
-      use step, only: rprob
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt
-      use branch, only: wthist
-      use casula, only: i_vpsp, icasula
-      use jacobsave, only: ajacob, ajacold
-      use elec, only: nup
-      use velratio, only: fratio, xdrifted
-      use control_dmc, only: dmc_irstar, dmc_nconf
-      use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
-      use precision_kinds, only: dp
-      use contrl_file,    only: ounit
-
-      use distances_mod,  only: distances
-      use strech_mod,     only: strech
-      use splitj_mod,     only: splitj
-      use walksav_jas_mod,only: walksav_jas, walkstrjas
-      use walksav_det_mod,only: walksav_det, walkstrdet
-      use averages,       only: average
+      use determinante_mod, only: compute_determinante_grad
+      use detsav_mod, only: detsav
+      use distances_mod, only: distances,distancese_restore
+      use estcum,  only: ipass
+      use estsum,  only: efsum1,egsum1,esum1_dmc,pesum_dmc,r2sum,risum
+      use estsum,  only: tausum,tjfsum_dmc,tpbsum_dmc,wfsum1,wgsum1
+      use estsum,  only: wsum1
+      use gauss_mod, only: gauss
+      use hpsi_mod, only: hpsi
+      use hpsiedmc, only: psiedmc
+      use inputflags, only: eps_node_cutoff,icircular,idrifdifgfunc
+      use inputflags, only: node_cutoff
+      use jacobsave, only: ajacob,ajacold
+      use jassav_mod, only: jassav
+      use mmpol_dmc, only: mmpol_save,mmpol_sum
       use multideterminant_mod, only: update_ymat
-      use detsav_mod,     only: detsav 
-      use jassav_mod,     only: jassav
-      use hpsiedmc,       only: psiedmc
-      use nonloc_grid_mod,only: nonloc_grid, t_vpsp_get
-      use optx_orb_ci    ,only: optx_orb_ci_sum
-      use optx_jas_ci,    only: optx_jas_ci_sum
-      use optx_jas_orb,   only: optx_jas_orb_sum
-      use optci_mod,      only: optci_sum
-      use optorb_f_mod,   only: optorb_sum
-      use optjas_mod,     only: optjas_sum
-      use mmpol_dmc,      only: mmpol_sum, mmpol_save
-      use pcm_dmc,        only: pcm_sum, pcm_save
-      use prop_dmc,       only: prop_sum_dmc, prop_save_dmc
-      use determinante_mod,only: compute_determinante_grad
-      use nonloc_grid_mod, only: t_vpsp_sav
-      use hpsi_mod,        only: hpsi
       use multideterminant_tmove_mod, only: multideterminant_tmove
-      use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
-      use distances_mod,  only: distancese_restore
-      use rannyu_mod,     only: rannyu
-      use gauss_mod,      only: gauss
+      use multiple_geo, only: istrech,itausec,nforce,nwprod
+      use nodes_distance_mod, only: nodes_distance,rnorm_nodes_num
+      use nonloc_grid_mod, only: nonloc_grid,t_vpsp_get,t_vpsp_sav
+      use optci_mod, only: optci_sum
+      use optjas_mod, only: optjas_sum
+      use optorb_f_mod, only: optorb_sum
+      use optx_jas_ci, only: optx_jas_ci_sum
+      use optx_jas_orb, only: optx_jas_orb_sum
+      use optx_orb_ci, only: optx_orb_ci_sum
+      use pcm_dmc, only: pcm_save,pcm_sum
+      use precision_kinds, only: dp
+      use prop_dmc, only: prop_save_dmc,prop_sum_dmc
+      use rannyu_mod, only: rannyu
+      use splitj_mod, only: splitj
+      use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nodecr
+      use stats,   only: trymove
+      use step,    only: rprob
+      use strech_mod, only: strech
+      use system,  only: cent,nelec,nup
+      use velratio, only: fratio,xdrifted
+      use vmc_mod, only: delri,nrad
+      use walksav_det_mod, only: walksav_det,walkstrdet
+      use walksav_jas_mod, only: walksav_jas,walkstrjas
+
+
+
+
 
       implicit none
 
@@ -255,6 +259,8 @@ c Sample Green function for forward move
 
         dwt=1
 
+c     to initilialize pp
+        pp=1
         do i=1,nelec
 
           if(i.le.nup) then

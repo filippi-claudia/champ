@@ -2,11 +2,11 @@
       contains
       subroutine determinant_psig(psid,psig)
 
-      use csfs, only: nstates
-
-      use mstates3, only: iweight_g, weights_g
-
+      use csfs,    only: nstates
+      use mstates3, only: iweight_g,weights_g
       use precision_kinds, only: dp
+
+
       implicit none
 
       integer :: i, istate

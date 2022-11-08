@@ -3,80 +3,26 @@ module basis
     !>  zex    = screening constants for each basis function
     !>  betaq  =
     !>  cent   = positions of each center
-    !>
-    !>  ns     = number of 1s functions at each center
-    !>
-    !>  npx    = number of 2px functions of each type at each center
-    !>  npy    = number of 2py functions of each type at each center
-    !>  npz    = number of 2pz functions of each type at each center
-    !>
-    !>  ndxx   = number of XY d functions at each center
-    !>  ndxy   = number of XZ d functions at each center
-    !>  ndxz   = number of YZ d functions at each center
-    !>  ndyy   = number of YY d functions at each center
-    !>  ndyz   = number of YZ d functions at each center
-    !>  ndzz   = number of ZZ d functions at each center
-    !>
-    !>  nfxxx  = number of XYX f functions at each center
-    !>  nfxxy  = number of XZX f functions at each center
-    !>  nfxxz  = number of YZX f functions at each center
-    !>  nfxyy  = number of YYY f functions at each center
-    !>  nfxyz  = number of YZY f functions at each center
-    !>  nfxzz  = number of ZZX f functions at each center
-    !>  nfyyy  = number of YYY f functions at each center
-    !>  nfyyz  = number of YZY f functions at each center
-    !>  nfyzz  = number of ZZY f functions at each center
-    !>  nfzzz  = number of ZZZ f functions at each center
+    !>  ns      = number of s functions at each center
+    !>  np      = number of px functions of each type at each center
+    !>  nd      = number of d functions at each center
+    !>  nf      = number of f functions at each center
 
-
-
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
     real(dp), dimension(:, :), allocatable :: zex !(MBASIS,MWF)
     real(dp) :: betaq
     integer, dimension(:), allocatable :: ns !(MCTYPE)
-    integer, dimension(:), allocatable :: npx !(MCTYPE)
-    integer, dimension(:), allocatable :: npy !(MCTYPE)
-    integer, dimension(:), allocatable :: npz !(MCTYPE)
-    integer, dimension(:), allocatable :: ndxx !(MCTYPE)
-    integer, dimension(:), allocatable :: ndxy !(MCTYPE)
-    integer, dimension(:), allocatable :: ndxz !(MCTYPE)
-    integer, dimension(:), allocatable :: ndyy !(MCTYPE)
-    integer, dimension(:), allocatable :: ndyz !(MCTYPE)
-    integer, dimension(:), allocatable :: ndzz !(MCTYPE)
-    integer, dimension(:), allocatable :: nfxxx !(MCTYPE)
-    integer, dimension(:), allocatable :: nfxxy !(MCTYPE)
-    integer, dimension(:), allocatable :: nfxxz !(MCTYPE)
-    integer, dimension(:), allocatable :: nfxyy !(MCTYPE)
-    integer, dimension(:), allocatable :: nfxyz !(MCTYPE)
-    integer, dimension(:), allocatable :: nfxzz !(MCTYPE)
-    integer, dimension(:), allocatable :: nfyyy !(MCTYPE)
-    integer, dimension(:), allocatable :: nfyyz !(MCTYPE)
-    integer, dimension(:), allocatable :: nfyzz !(MCTYPE)
-    integer, dimension(:), allocatable :: nfzzz !(MCTYPE)
-    integer, dimension(:), allocatable :: ngxxxx !(MCTYPE)
-    integer, dimension(:), allocatable :: ngxxxy !(MCTYPE)
-    integer, dimension(:), allocatable :: ngxxxz !(MCTYPE)
-    integer, dimension(:), allocatable :: ngxxyy !(MCTYPE)
-    integer, dimension(:), allocatable :: ngxxyz !(MCTYPE)
-    integer, dimension(:), allocatable :: ngxxzz !(MCTYPE)
-    integer, dimension(:), allocatable :: ngxyyy !(MCTYPE)
-    integer, dimension(:), allocatable :: ngxyyz !(MCTYPE)
-    integer, dimension(:), allocatable :: ngxyzz !(MCTYPE)
-    integer, dimension(:), allocatable :: ngxzzz !(MCTYPE)
-    integer, dimension(:), allocatable :: ngyyyy !(MCTYPE)
-    integer, dimension(:), allocatable :: ngyyyz !(MCTYPE)
-    integer, dimension(:), allocatable :: ngyyzz !(MCTYPE)
-    integer, dimension(:), allocatable :: ngyzzz !(MCTYPE)
-    integer, dimension(:), allocatable :: ngzzzz !(MCTYPE)
+    integer, dimension(:), allocatable :: np !(MCTYPE)
+    integer, dimension(:), allocatable :: nd !(MCTYPE)
+    integer, dimension(:), allocatable :: nf !(MCTYPE)
+    integer, dimension(:), allocatable :: ng !(MCTYPE)
 
     private
     public :: zex, betaq
-    public :: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
-    public :: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
-    public :: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz, ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
+    public :: ns, np, nd, nf, ng
     public :: allocate_basis, deallocate_basis
     save
 contains
@@ -85,64 +31,18 @@ contains
         ! if (.not. allocated(zex)) allocate(zex(nbasis,MWF))
         ! if (.not. allocated(ns)) allocate(ns(nctype))
         ! if (.not. allocated(np)) allocate(np(3,nctype))
-        ! if (.not. allocated(ndxx)) allocate(ndxx(nctype))
-        ! if (.not. allocated(ndxy)) allocate(ndxy(nctype))
-        ! if (.not. allocated(ndxz)) allocate(ndxz(nctype))
-        ! if (.not. allocated(ndyy)) allocate(ndyy(nctype))
-        ! if (.not. allocated(ndyz)) allocate(ndyz(nctype))
-        ! if (.not. allocated(ndzz)) allocate(ndzz(nctype))
-        ! if (.not. allocated(nfxxx)) allocate(nfxxx(nctype))
-        ! if (.not. allocated(nfxxy)) allocate(nfxxy(nctype))
-        ! if (.not. allocated(nfxxz)) allocate(nfxxz(nctype))
-        ! if (.not. allocated(nfxyy)) allocate(nfxyy(nctype))
-        ! if (.not. allocated(nfxyz)) allocate(nfxyz(nctype))
-        ! if (.not. allocated(nfxzz)) allocate(nfxzz(nctype))
-        ! if (.not. allocated(nfyyy)) allocate(nfyyy(nctype))
-        ! if (.not. allocated(nfyyz)) allocate(nfyyz(nctype))
-        ! if (.not. allocated(nfyzz)) allocate(nfyzz(nctype))
-        ! if (.not. allocated(nfzzz)) allocate(nfzzz(nctype))
+        ! if (.not. allocated(nd)) allocate(nd(nctype))
+        ! if (.not. allocated(nf)) allocate(nf(nctype))
+        ! if (.not. allocated(ng)) allocate(ng(nctype))
 
     end subroutine allocate_basis
 
     subroutine deallocate_basis()
 
-        if (allocated(ngzzzz)) deallocate (ngzzzz)
-        if (allocated(ngyzzz)) deallocate (ngyzzz)
-        if (allocated(ngyyzz)) deallocate (ngyyzz)
-        if (allocated(ngyyyz)) deallocate (ngyyyz)
-        if (allocated(ngyyyy)) deallocate (ngyyyy)
-        if (allocated(ngxzzz)) deallocate (ngxzzz)
-        if (allocated(ngxyzz)) deallocate (ngxyzz)
-        if (allocated(ngxyyz)) deallocate (ngxyyz)
-        if (allocated(ngxyyy)) deallocate (ngxyyy)
-        if (allocated(ngxxzz)) deallocate (ngxxzz)
-        if (allocated(ngxxyz)) deallocate (ngxxyz)
-        if (allocated(ngxxyy)) deallocate (ngxxyy)
-        if (allocated(ngxxxz)) deallocate (ngxxxz)
-        if (allocated(ngxxxy)) deallocate (ngxxxy)
-        if (allocated(ngxxxx)) deallocate (ngxxxx)
-
-        if (allocated(nfzzz)) deallocate (nfzzz)
-        if (allocated(nfyzz)) deallocate (nfyzz)
-        if (allocated(nfyyz)) deallocate (nfyyz)
-        if (allocated(nfyyy)) deallocate (nfyyy)
-        if (allocated(nfxzz)) deallocate (nfxzz)
-        if (allocated(nfxyz)) deallocate (nfxyz)
-        if (allocated(nfxyy)) deallocate (nfxyy)
-        if (allocated(nfxxz)) deallocate (nfxxz)
-        if (allocated(nfxxy)) deallocate (nfxxy)
-        if (allocated(nfxxx)) deallocate (nfxxx)
-
-        if (allocated(ndzz)) deallocate (ndzz)
-        if (allocated(ndyz)) deallocate (ndyz)
-        if (allocated(ndyy)) deallocate (ndyy)
-        if (allocated(ndxz)) deallocate (ndxz)
-        if (allocated(ndxy)) deallocate (ndxy)
-        if (allocated(ndxx)) deallocate (ndxx)
-
-        if (allocated(npz)) deallocate (npz)
-        if (allocated(npy)) deallocate (npy)
-        if (allocated(npx)) deallocate (npx)
+        if (allocated(ng)) deallocate (ng)
+        if (allocated(nf)) deallocate (nf)
+        if (allocated(nd)) deallocate (nd)
+        if (allocated(np)) deallocate (np)
         if (allocated(ns)) deallocate (ns)
 
         if (allocated(zex)) deallocate (zex)
@@ -166,35 +66,32 @@ end module numbas_mod
 module numexp
     !> Arguments: ae, ce
 
-    use numbas_mod, only: MRWF
-    use force_mod, only: MFORCE
-    use precision_kinds, only: dp
-    use vmc_mod, only: NCOEF
+      use multiple_geo, only: MFORCE
+      use numbas_mod, only: MRWF
+      use precision_kinds, only: dp
+      use vmc_mod, only: NCOEF
 
     implicit none
 
     real(dp), dimension(:, :, :, :), allocatable :: ae !(2,MRWF,MCTYPE,MFORCE)
-    real(dp), dimension(:, :, :, :), allocatable :: ab !(2,MRWF,MCTYPE,MFORCE)
     real(dp), dimension(:, :, :, :), allocatable :: ce !(NCOEF,MRWF,MCTYPE,MFORCE)
 
     private
-    public :: ae, ab, ce
+    public :: ae, ce
     public :: allocate_numexp, deallocate_numexp
     save
 contains
     subroutine allocate_numexp()
-        use atom, only: nctype_tot
-        use numbas_mod, only: MRWF
-        use force_mod, only: MFORCE
-        use vmc_mod, only: NCOEF
+      use multiple_geo, only: MFORCE
+      use numbas_mod, only: MRWF
+      use system,  only: nctype_tot
+      use vmc_mod, only: NCOEF
         if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, MFORCE))
-        if (.not. allocated(ab)) allocate (ab(2, MRWF, nctype_tot, MFORCE))
         if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, nctype_tot, MFORCE))
     end subroutine allocate_numexp
 
     subroutine deallocate_numexp()
         if (allocated(ce)) deallocate (ce)
-        if (allocated(ab)) deallocate (ab)
         if (allocated(ae)) deallocate (ae)
     end subroutine deallocate_numexp
 
@@ -203,8 +100,8 @@ end module numexp
 module numbas
     !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
-    use numbas_mod, only: MRWF, MRWF_PTS
-    use precision_kinds, only: dp
+      use numbas_mod, only: MRWF,MRWF_PTS
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -216,19 +113,19 @@ module numbas
     integer, dimension(:), allocatable :: nrbas !(MCTYPE)
     integer :: numr
     real(dp), dimension(:), allocatable :: r0 !(MCTYPE)
-    ! real(dp), dimension(:,:), allocatable :: rmax !(nrbas, MCTYPE)
+    real(dp), dimension(:,:), allocatable :: rmaxwf !(nrbas, MCTYPE)
     real(dp), dimension(:, :, :, :), allocatable :: rwf !(MRWF_PTS,MRWF,MCTYPE,MWF)
 
     private
-    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf !, rmax
+    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf, rmaxwf
     public :: allocate_numbas, deallocate_numbas
     save
 contains
     subroutine allocate_numbas()
-        use wfsec, only: nwftype
-        use coefs, only: nbasis
-        use atom, only: nctype_tot
-        use numbas_mod, only: MRWF, MRWF_PTS
+      use coefs,   only: nbasis
+      use multiple_geo, only: nwftype
+      use numbas_mod, only: MRWF,MRWF_PTS
+      use system,  only: nctype_tot
         if (.not. allocated(arg)) allocate (arg(nctype_tot))
         if (.not. allocated(d2rwf)) allocate (d2rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
         if (.not. allocated(igrid)) allocate (igrid(nctype_tot), source=0)
@@ -236,11 +133,12 @@ contains
         if (.not. allocated(nr)) allocate (nr(nctype_tot), source=0)
         if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot), source=0)
         if (.not. allocated(r0)) allocate (r0(nctype_tot))
-        ! if (.not. allocated(rmax)) allocate (rmax(MRWF,nctype_tot), source=0.0d0) ! This source is needed.
+        if (.not. allocated(rmaxwf)) allocate (rmaxwf(MRWF,nctype_tot), source=0.0d0) ! This source is needed.
         if (.not. allocated(rwf)) allocate (rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
     end subroutine allocate_numbas
 
     subroutine deallocate_numbas()
+        if (allocated(rmaxwf)) deallocate (rmaxwf)
         if (allocated(rwf)) deallocate (rwf)
         if (allocated(r0)) deallocate (r0)
         if (allocated(nrbas)) deallocate (nrbas)
@@ -267,8 +165,8 @@ module numbas1
     save
 contains
     subroutine allocate_numbas1()
-        use coefs, only: nbasis
-        use atom, only: nctype_tot
+      use coefs,   only: nbasis
+      use system,  only: nctype_tot
         if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot), source=0)
         ! if (.not. allocated(nbastyp)) allocate (nbastyp(nctype_tot))
     end subroutine allocate_numbas1
@@ -294,7 +192,7 @@ module numbas2
     save
 contains
     subroutine allocate_numbas2()
-        use atom, only: ncent_tot
+      use system,  only: ncent_tot
         if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot), source=0)
         if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot), source=0)
     end subroutine allocate_numbas2
@@ -310,10 +208,10 @@ module m_basis
 contains
 subroutine allocate_m_basis()
     ! use basis, only: allocate_basis
-    use numexp, only: allocate_numexp
-    use numbas, only: allocate_numbas
-    use numbas1, only: allocate_numbas1
-    use numbas2, only: allocate_numbas2
+      use numbas,  only: allocate_numbas
+      use numbas1, only: allocate_numbas1
+      use numbas2, only: allocate_numbas2
+      use numexp,  only: allocate_numexp
 
     implicit none
 
@@ -325,11 +223,11 @@ subroutine allocate_m_basis()
 end subroutine allocate_m_basis
 
 subroutine deallocate_m_basis()
-    use basis, only: deallocate_basis
-    use numexp, only: deallocate_numexp
-    use numbas, only: deallocate_numbas
-    use numbas1, only: deallocate_numbas1
-    use numbas2, only: deallocate_numbas2
+      use basis,   only: deallocate_basis
+      use numbas,  only: deallocate_numbas
+      use numbas1, only: deallocate_numbas1
+      use numbas2, only: deallocate_numbas2
+      use numexp,  only: deallocate_numexp
 
     implicit none
 
@@ -343,7 +241,7 @@ end module
 
 ! subroutines required by the trexio modules
 module m_trexio_basis
-    use coefs, only: nbasis
+      use coefs,   only: nbasis
     implicit none
 
     integer, dimension(5)       :: slm_per_l = (/1, 3, 6, 10, 15/) !s,p,d,f,g

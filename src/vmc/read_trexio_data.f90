@@ -1,7 +1,7 @@
 module trexio_read_data
-    use error,                  only: fatal_error
-    use precision_kinds,        only: dp
-    use array_utils,            only: unique_elements
+    use error, only: fatal_error
+    use precision_kinds, only: dp
+    use array_utils, only: unique_elements
 
     logical :: trexio_has_group_molecule      = .false.
     logical :: trexio_has_group_symmetry      = .false.
@@ -35,20 +35,23 @@ module trexio_read_data
         !! number of valence electrons if pseudopotential is provided.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
         !! @date 07 October 2021
-        use custom_broadcast,   only: bcast
-        use mpiconf,            only: wid
-        use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-        use ghostatom, 		    only: newghostype, nghostcent
-        use inputflags,         only: igeometry
-        use periodic_table,     only: atom_t, element
-        use elec,           	only: ndn, nup
-        use const,          	only: nelec
-        use contrl_file,        only: ounit, errunit
-        use general,            only: pooldir
+        use custom_broadcast, only: bcast
+        use mpiconf, only: wid
+        use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+        use system, 		    only: newghostype, nghostcent
+        use inputflags, only: igeometry
+        use periodic_table, only: atom_t, element
+        use contrl_file, only: ounit, errunit
+        use general, only: pooldir
         use precision_kinds, only: dp
+        use system, only: nelec
+        use system, only: nup
+        use system, only: ndn
 #if defined(TREXIO_FOUND)
         use trexio
-        use contrl_file,        only: backend
+        use contrl_file, only: backend
+      use multiple_geo, only: pecent
+
 #endif
 
         implicit none
@@ -189,12 +192,19 @@ module trexio_read_data
         !! number of molecular and atomic orbitals and their corresponding coefficients.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
         !! @date 12 October 2021
+        use custom_broadcast, only: bcast
+        use mpiconf, only: wid
+        use contrl_file, only: ounit, errunit
+        use system, only: ncent, ncent_tot, iwctype, nctype_tot
+        use system, only: newghostype
+        use inputflags, only: ilcao
+        use numbas, only: nrbas
+        use numbas, only: iwrwf, numr
+        use numbas1, only: iwlbas, nbastyp
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
-        use atom,               only: ncent, ncent_tot, iwctype, nctype_tot
-        use ghostatom,          only: newghostype
-        use coefs,              only: coef, nbasis, norb
+        use coefs, only: nbasis
         use inputflags,         only: ilcao
         use numbas,             only: nrbas
         use numbas,             only: iwrwf, numr
@@ -203,20 +213,22 @@ module trexio_read_data
         use orbval,             only: nadorb
         use pcm_fdc,            only: fs
         use vmc_mod,            only: norb_tot
-        use wfsec,              only: nwftype
+        use multiple_geo,       only: nwftype
         use general,            only: pooldir
-        use method_opt,         only: method
+        use optwf_control,      only: method
         use precision_kinds, only: dp
+        use slater,             only: coef
 
 
-        use error,              only: trexio_error
+        use error, only: trexio_error
 #if defined(TREXIO_FOUND)
         use trexio
-        use contrl_file,        only: backend
+        use contrl_file, only: backend
 #endif
         use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent
         use m_trexio_basis,     only: basis_num_shell, basis_shell_ang_mom
         use m_trexio_basis,     only: num_ao_per_cent, champ_ao_ordering, ao_radial_index
+      use slater, only: norb
 
         implicit none
 
@@ -429,17 +441,14 @@ module trexio_read_data
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
-        use atom,               only: nctype_tot
+        use system,               only: nctype_tot
         use inputflags,         only: ibasis_num
         use numbas,             only: iwrwf, numr
         use numbas1,            only: iwlbas, nbastyp
 
-        use basis,              only: ns, npx, npy, npz, ndxx, ndxy, ndxz, ndyy, ndyz, ndzz
-        use basis,              only: nfxxx, nfxxy, nfxxz, nfxyy, nfxyz, nfxzz, nfyyy, nfyyz, nfyzz, nfzzz
-        use basis,              only: ngxxxx, ngxxxy, ngxxxz, ngxxyy, ngxxyz, ngxxzz, ngxyyy, ngxyyz
-        use basis,              only: ngxyzz, ngxzzz, ngyyyy, ngyyyz, ngyyzz, ngyzzz, ngzzzz
+        use basis,              only: ns, np, nd, nf, ng
 
-        use wfsec,              only: nwftype
+        use multiple_geo,              only: nwftype
 
         implicit none
 
@@ -454,13 +463,7 @@ module trexio_read_data
 
 
         do i = 1, nctype_tot
-            write (ounit, '(100i3)') ns(i), npx(i), npy(i), npz(i), &
-            ndxx(i), ndxy(i), ndxz(i), ndyy(i), ndyz(i), ndzz(i), &
-            nfxxx(i), nfxxy(i), nfxxz(i), nfxyy(i), nfxyz(i), nfxzz(i), &
-            nfyyy(i), nfyyz(i), nfyzz(i), nfzzz(i), &
-            ngxxxx(i), ngxxxy(i), ngxxxz(i), ngxxyy(i), ngxxyz(i), &
-            ngxxzz(i), ngxyyy(i), ngxyyz(i), ngxyzz(i), ngxzzz(i), &
-            ngyyyy(i), ngyyyz(i), ngyyzz(i), ngyzzz(i), ngzzzz(i)
+            write (ounit, '(100i3)') ns(i), np(i), nd(i), nf(i), ng(i)
 
             if (numr .gt. 0) then
                 write(ounit, '(100i3)') (iwrwf(ib, i), ib=1, nbastyp(i))
@@ -490,20 +493,20 @@ module trexio_read_data
 
         ! The following to be used to store the information
         use numbas_mod,         only: MRWF, MRWF_PTS
-        use atom,               only: znuc, nctype, nctype_tot, ncent_tot
-        use atom,               only: symbol, atomtyp
+        use system,               only: znuc, nctype, nctype_tot, ncent_tot
+        use system,               only: symbol, atomtyp
         use vmc_mod,            only: NCOEF
-        use ghostatom,          only: newghostype
-        use const,              only: ipr
-        use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf!, rmax
+        use system,          only: newghostype
+        use control,            only: ipr
+        use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
         use numbas,             only: allocate_numbas
         use coefs,              only: nbasis
-        use numexp,             only: ae, ce, ab, allocate_numexp
+        use numexp,             only: ae, ce, allocate_numexp
         use pseudo,             only: nloc
         use general,            only: filename, filenames_bas_num
 
         ! For processing the stored information
-        use atom, 			    only: atomtyp
+        use system, 			    only: atomtyp
         use general, 			only: pooldir, bas_id
         use contrl_file,        only: ounit, errunit
         use spline2_mod,        only: spline2
@@ -816,21 +819,6 @@ module trexio_read_data
             enddo
 
 
-!        Get the rmax value for each center. Set the cutoff to 10^-12
-!        Scanning from the bottom up to avoid false zeros.
-            ! rmax = x(nr(ic))  ! default rmax as the last point
-            ! do irb = 1, nrbas(ic)
-            !   do ir=nr(ic),1,-1
-            !     if (abs(rwf(ir,irb,ic,1)) .lt. cutoff_rmax ) then
-            !       rmax(irb, ic) = x(ir)
-            !     endif
-            !   enddo
-            ! enddo
-
-            ! write(ounit,*) "Rmax for center ic ", ic, " are ",  (rmax(irb, ic), irb=1, nrbas(ic))
-
-
-
             do irb=1,nrbas(ic)
 
                 if(nloc.eq.0.and.l(irb).eq.0.and.icusp(ic).eq.1) then
@@ -896,55 +884,41 @@ module trexio_read_data
                 dwf1=dwf1+(icoef-1)*ce(icoef,irb,ic,iwf)*x(1)**(icoef-2)
                 enddo
 
-        ! c large radii wf(r)=a0*exp(-ak*r)
-        ! c       xm=0.5d0*(x(nr(ic))+x(nr(ic)-1))
-                wfm=0.5d0*(rwf(nr(ic),irb,ic,iwf)+rwf(nr(ic)-1,irb,ic,iwf))
-                dwfm=(rwf(nr(ic),irb,ic,iwf)-rwf(nr(ic)-1,irb,ic,iwf))/  &
-                (x(nr(ic))-x(nr(ic)-1))
-                if(dabs(wfm).gt.1.d-99) then
-                ae(2,irb,ic,iwf)=-dwfm/wfm
-                ae(1,irb,ic,iwf)=rwf(nr(ic),irb,ic,iwf)*    &
-                                dexp(ae(2,irb,ic,iwf)*x(nr(ic)))
-                dwfn=-ae(2,irb,ic,iwf)*rwf(nr(ic),irb,ic,iwf)
-                else
-                ae(1,irb,ic,iwf)=0.d0
-                ae(2,irb,ic,iwf)=0.d0
-                dwfn=0.d0
-                endif
+        ! Update the rmax at the point where rwf goes below cutoff (scanning from right to left)
+                rmaxwf(irb, ic) = 20.0d0
+                rloop: do ir=nr(ic),1,-1
+                  if (dabs(rwf(ir,irb,ic,iwf)) .gt. cutoff_rmax ) then
+                    rmaxwf(irb, ic) = x(ir)
+                    exit rloop
+                  endif
+                enddo rloop
 
-        ! Nonzero basis at the boundary : Ravindra Shinde
-                if(rwf(nr(ic),irb,ic,iwf).gt.1.d-12) then
-                    call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ab(1,irb,ic,iwf), ab(2,irb,ic,iwf))
-                    write(45, *) 'DEBUG :: exp_fit: ', ab(1,irb,ic,iwf), ab(2,irb,ic,iwf)
-                endif
+                write(45,'(a,i0,a,i0,a,g0)') "Initial rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
 
-        ! c       if(ipr.gt.1) then
-                write(45,'(''check the large radius expansion'')')
-                write(45,'(''a0,ak'',1p2e22.10)')     &
-                                    ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
-                write(45,'(''irad, rad, extrapolated value, correct value,  DEBUG new fit'')')
-                do ir=1,10
-                    val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
-                    temp = ab(1,irb,ic,iwf)*dexp(-ab(2,irb,ic,iwf)*x(nr(ic)-ir))
-                    write(45,'(i2,1p4e22.14)')      &
-                    ir,x(nr(ic)-ir),val,rwf(nr(ic)-ir,irb,ic,iwf), temp
-                enddo
-                write(45,*) 'dwf1,dwfn',dwf1,dwfn
-        ! c       endif
-                if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+! Nonzero basis at the boundary : Do exponential fitting.
+                if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
+                    call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
+                    rmaxwf(irb,ic)=-dlog(cutoff_rmax/ae(1,irb,ic,iwf))/ae(2,irb,ic,iwf)
+
+                    write(45,'(a)') 'check the large radius expansion'
+                    write(45,'(a,g0,2x,g0)') 'Exponential fitting parameters : ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
+
+                    write(45,'(a,i0,a,i0,a,g0)') "Final rmax (fit) for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
+                    write(45, '(a)') 'irad,         rad                  rwf value            expo fit'
+                    do ir=1,10
+                      temp = ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
+                      write(45,'(i3,2x,1p4e22.14)') ir,x(nr(ic)-ir),rwf(nr(ic)-ir,irb,ic,iwf), temp
+                    enddo
+                    write(45,*) 'dwf1,dwfn',dwf1,dwfn
+
+                    if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+
+                endif
 
                 call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
 
             enddo ! loop on irb : number of radial shells
         enddo ! loop on ic : the unique atom types
-
-        ! ! debug part
-        ! do ic = 1, nctype_tot
-        !     do ir=1,nr(ic)
-        !         write(200+ic,'(6(E22.15,1x))') x(ir),(rwf(ir,irb,ic,iwf),irb=1,nrbas(ic))
-        !     enddo
-        ! enddo
-
 
         ! Do the deallocations of local arrays
         if (allocated(unique)) deallocate(unique)
@@ -979,7 +953,7 @@ module trexio_read_data
         use mpiconf,            only: wid, idtask
 
         use contrl_file,        only: ounit, errunit
-        use coefs,              only: norb
+        use slater,             only: norb
         use optorb,             only: irrep
         use vmc_mod,            only: norb_tot
         use general,            only: pooldir
@@ -1098,17 +1072,17 @@ module trexio_read_data
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
         use general,            only: pooldir
-        use dets,               only: cdet, ndet
+        use slater,             only: cdet, ndet
         use dorb_m,             only: iworbd
-        use coefs,              only: norb
+        use slater,             only: norb
         use inputflags,         only: ideterminants
-        use wfsec,              only: nwftype
+        use multiple_geo,              only: nwftype
         use csfs,               only: nstates
         use mstates_mod,        only: MSTATES
         use general,            only: pooldir
-        use elec,               only: ndn, nup
-        use const,              only: nelec
-        use method_opt,         only: method
+        use system,             only: ndn, nup
+        use system,             only: nelec
+        use optwf_control,      only: method
         use precision_kinds,    only: dp
 
 #if defined(TREXIO_FOUND)
@@ -1278,7 +1252,7 @@ module trexio_read_data
 #endif
 
         use pseudo_mod,         only: MPS_L, MGAUSS, MPS_QUAD
-        use atom,               only: symbol, nctype_tot, ncent_tot
+        use system,               only: symbol, nctype_tot, ncent_tot
         use gauss_ecp,          only: ecp_coef, ecp_exponent, necp_power, necp_term
         use gauss_ecp,          only: allocate_gauss_ecp
         use pseudo,             only: lpot
