@@ -9,7 +9,6 @@ module test_nuclear_repulsion_mod
   implicit none
   contains
   subroutine test_nuclear_repulsion
-    use contrl_file, only: file_input
     use pot, only: pot_nn
 
     implicit none
