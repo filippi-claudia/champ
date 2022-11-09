@@ -362,15 +362,25 @@ if (MPI_Fortran_FOUND)
     ${VMC_SOURCE}
     ${VMC90_SOURCE})
 
+  add_library(vmc SHARED
+    $<TARGET_OBJECTS:shared_modules>
+    $<TARGET_OBJECTS:shared_objects>
+    $<TARGET_OBJECTS:vmc.mov1>)
+
   #  Add headers
   target_include_directories(vmc.mov1
   PUBLIC
   ${CMAKE_BINARY_DIR}/src/module
   )
 
-
   # compilation
   target_compile_options(vmc.mov1
+    PRIVATE
+    ${Fortran_FLAGS}
+    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+    )
+
+  target_compile_options(vmc
     PRIVATE
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
