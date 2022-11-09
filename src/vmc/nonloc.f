@@ -418,15 +418,15 @@ c get the value from the 3d-interpolated orbitals
 c get basis functions for electron iel
           ider=0
           if(iforce_analy.gt.0) ider=1
-#if defined(TREXIO_FOUND)
-          if (trexio_has_group_orbitals) then
-            call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
-          else
-            call basis_fns(iel,iel,rvec_en,r_en,ider)
-          endif
-#else
+! #if defined(TREXIO_FOUND)
+!           if (trexio_has_group_orbitals) then
+!             call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
+!           else
+!             call basis_fns(iel,iel,rvec_en,r_en,ider)
+!           endif
+! #else
           call basis_fns(iel,iel,rvec_en,r_en,ider)
-#endif          
+! #endif
 
 
 ! Vectorization dependent code selection

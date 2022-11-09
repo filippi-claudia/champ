@@ -64,12 +64,12 @@ c ider = 3 -> value, gradient, laplacian, forces
 
 c loop through centers
       do ic=1,ncent+nghostcent
-        upper_range = lower_range + num_ao_per_cent(ic) -1
-        upper_rad_range = lower_rad_range + num_rad_per_cent(ic) -1
-
         it=iwctype(ic)
-        nrbasit   = num_rad_per_cent(ic)
-        nbastypit = num_ao_per_cent(ic)
+        nrbasit   = nrbas(it)
+        nbastypit = nbastyp(it)
+
+        upper_range = lower_range + nbastypit -1
+        upper_rad_range = lower_rad_range + nrbasit -1
 
         ! Get the maximum angular momentum for this center
         maxlval = maxval(basis_shell_ang_mom(lower_rad_range:upper_rad_range))

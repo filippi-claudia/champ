@@ -69,15 +69,15 @@ c spline interpolation
             enddo
 
             if(ier.eq.1) then
-#if defined(TREXIO_FOUND)
-              if (trexio_has_group_orbitals) then
-                call trexio_basis_fns(i,i,rvec_en,r_en,2)
-              else
-                call basis_fns(i,i,rvec_en,r_en,2)
-              endif
-#else
+! #if defined(TREXIO_FOUND)
+!               if (trexio_has_group_orbitals) then
+!                 call trexio_basis_fns(i,i,rvec_en,r_en,2)
+!               else
+!                 call basis_fns(i,i,rvec_en,r_en,2)
+!               endif
+! #else
               call basis_fns(i,i,rvec_en,r_en,2)
-#endif
+! #endif
               do iorb=1,norb+nadorb
                 orb(i,iorb)=0.d0
                 dorb(iorb,i,1)=0.d0
@@ -107,15 +107,15 @@ c spline interpolation
            call lagrange_mos_2(5,x(1,i),ddorb,i,ier)
 
            if(ier.eq.1) then
-#if defined(TREXIO_FOUND)
-            if (trexio_has_group_orbitals) then
-              call trexio_basis_fns(i,i,rvec_en,r_en,2)
-            else
-              call basis_fns(i,i,rvec_en,r_en,2)
-            endif
-#else
+! #if defined(TREXIO_FOUND)
+!             if (trexio_has_group_orbitals) then
+!               call trexio_basis_fns(i,i,rvec_en,r_en,2)
+!             else
+!               call basis_fns(i,i,rvec_en,r_en,2)
+!             endif
+! #else
             call basis_fns(i,i,rvec_en,r_en,2)
-#endif            
+! #endif
              do iorb=1,norb+nadorb
                orb(i,iorb)=0.d0
                dorb(iorb,i,1)=0.d0
@@ -140,15 +140,15 @@ c no 3d interpolation
 c get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
-#if defined(TREXIO_FOUND)
-         if (trexio_has_group_orbitals) then
-          call trexio_basis_fns(1,nelec,rvec_en,r_en,ider)
-         else
-          call basis_fns(1,nelec,rvec_en,r_en,ider)
-         endif
-#else
+! #if defined(TREXIO_FOUND)
+!          if (trexio_has_group_orbitals) then
+!           call trexio_basis_fns(1,nelec,rvec_en,r_en,ider)
+!          else
+!           call basis_fns(1,nelec,rvec_en,r_en,ider)
+!          endif
+! #else
          call basis_fns(1,nelec,rvec_en,r_en,ider)
-#endif
+! #endif
 
 c in alternativa al loop 26
 c        do jbasis=1,nbasis
