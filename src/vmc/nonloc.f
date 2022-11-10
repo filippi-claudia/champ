@@ -370,11 +370,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use slater,  only: coef,norb
       use sr_mod,  only: i_sr_rescale
       use system,  only: iwctype,ncent,ncent_tot,nelec
-      use trexio_read_data, only: trexio_has_group_orbitals
       use vmc_mod, only: norb_tot
-#if defined(TREXIO_FOUND)
-      use trexio_basis_fns_mod, only: trexio_basis_fns
-#endif
 
       implicit none
 
@@ -418,16 +414,8 @@ c get the value from the 3d-interpolated orbitals
 c get basis functions for electron iel
           ider=0
           if(iforce_analy.gt.0) ider=1
-! #if defined(TREXIO_FOUND)
-!           if (trexio_has_group_orbitals) then
-!             call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
-!           else
-!             call basis_fns(iel,iel,rvec_en,r_en,ider)
-!           endif
-! #else
-          call basis_fns(iel,iel,rvec_en,r_en,ider)
-! #endif
 
+          call basis_fns(iel,iel,rvec_en,r_en,ider)
 
 ! Vectorization dependent code selection
 #ifdef VECTORIZATION
