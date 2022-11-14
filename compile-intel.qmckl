@@ -1,0 +1,5 @@
+cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort  -DENABLE_QMCKL=ON -DBLAS_LIBRARIES="-qmkl=parallel"  -DQMCKL_FOUND="TRUE" -DQMCKL_INCLUDE_DIR="/home/landinez/Codes/qmckl_tune/_install/include" -DQMCKL_LIBRARY="/home/landinez/Codes/qmckl_tune/_install/lib/libqmckl.so" -DENABLE_TREXIO=ON -DTREXIO_FOUND="TRUE" -DTREXIO_INCLUDE_DIR="/home/landinez/Codes/trexio/build/include" -DTREXIO_LIBRARY="/home/landinez/Codes/trexio/build/lib/libtrexio.so" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+
+#check build/CMakeCache.txt to tune directoy paths probably
+
+cmake --build build
