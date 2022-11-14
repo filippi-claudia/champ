@@ -27,8 +27,6 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       real(dp), dimension(*) :: dvpsp_dj
       real(dp), dimension(ncent_tot, MPS_QUAD, *) :: t_vpsp
 
-
-
       if(i_vpsp.gt.0)then
         i1=i_vpsp
         i2=i_vpsp

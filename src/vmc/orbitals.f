@@ -73,10 +73,10 @@ c spline interpolation
               if (trexio_has_group_orbitals) then
                 call trexio_basis_fns(i,i,rvec_en,r_en,2)
               else
-                call basis_fns(i,i,rvec_en,r_en,2)
+                call basis_fns(i,i,nelec,rvec_en,r_en,2)
               endif
 #else
-              call basis_fns(i,i,rvec_en,r_en,2)
+              call basis_fns(i,i,nelec,rvec_en,r_en,2)
 #endif
               do iorb=1,norb+nadorb
                 orb(i,iorb)=0.d0
@@ -111,10 +111,10 @@ c spline interpolation
             if (trexio_has_group_orbitals) then
               call trexio_basis_fns(i,i,rvec_en,r_en,2)
             else
-              call basis_fns(i,i,rvec_en,r_en,2)
+              call basis_fns(i,i,nelec,rvec_en,r_en,2)
             endif
 #else
-            call basis_fns(i,i,rvec_en,r_en,2)
+            call basis_fns(i,i,nelec,rvec_en,r_en,2)
 #endif            
              do iorb=1,norb+nadorb
                orb(i,iorb)=0.d0
@@ -144,10 +144,10 @@ c get basis functions for all electrons
          if (trexio_has_group_orbitals) then
           call trexio_basis_fns(1,nelec,rvec_en,r_en,ider)
          else
-          call basis_fns(1,nelec,rvec_en,r_en,ider)
+          call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
          endif
 #else
-         call basis_fns(1,nelec,rvec_en,r_en,ider)
+         call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 #endif
 
 c in alternativa al loop 26
@@ -344,10 +344,10 @@ c get basis functions for electron iel
             if (trexio_has_group_orbitals) then
               call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
             else
-              call basis_fns(iel,iel,rvec_en,r_en,ider)
+              call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
             endif
 #else
-            call basis_fns(iel,iel,rvec_en,r_en,ider)
+            call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
 #endif
 
 !     Vectorization dependent code. useful for AVX512 and AVX2
