@@ -369,11 +369,14 @@ if (MPI_Fortran_FOUND)
     ${VMC90_SOURCE}
     )
 
+
+IF(UNIT_TESTS)
   add_library(vmc SHARED
     $<TARGET_OBJECTS:shared_modules>
     $<TARGET_OBJECTS:shared_objects>
     $<TARGET_OBJECTS:rng>
     $<TARGET_OBJECTS:vmc.mov1>)
+ENDIF()
 
   #  Add headers
   target_include_directories(vmc.mov1

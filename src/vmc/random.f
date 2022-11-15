@@ -46,10 +46,19 @@
           random_dp => std_reference_wrap
           call setrn_rannyu_std(legaseed)
         case default
-          random_dp => xoshiro_next
+          random_dp => xoshiro_wrap
           call xoshiro_seed(iseed)
       end select
       endsubroutine
+
+c--------------------------XOSHIRO----------
+
+      function xoshiro_wrap()
+      use precision_kinds, only: dp
+      implicit none
+        real(dp)                          :: xoshiro_wrap
+        xoshiro_wrap = xoshiro_next()
+      end function
 
 
 c--------------------------RANNYU-----------
