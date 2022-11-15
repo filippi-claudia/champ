@@ -376,6 +376,13 @@ IF(UNIT_TESTS)
     $<TARGET_OBJECTS:shared_objects>
     $<TARGET_OBJECTS:rng>
     $<TARGET_OBJECTS:vmc.mov1>)
+
+  target_compile_options(vmc
+    PRIVATE
+    ${Fortran_FLAGS}
+    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+    )
+
 ENDIF()
 
   #  Add headers
@@ -386,12 +393,6 @@ ENDIF()
 
   # compilation
   target_compile_options(vmc.mov1
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-    )
-
-  target_compile_options(vmc
     PRIVATE
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
