@@ -43,6 +43,10 @@ uint64_t next(void) {
 	return result;
 }
 
+double next_uniform_double(void) {
+  const uint64_t x = next();
+  return (x >> 11) * 0x1.0p-53;
+}
 
 /* This is the jump function for the generator. It is equivalent
    to 2^128 calls to next(); it can be used to generate 2^128

@@ -1,9 +1,10 @@
       module random_mod
       private
         interface ! xoshiro c bindings
-          function xoshiro_next() result(res)bind(c,name="next")
-            use iso_c_binding, only: c_int64_t
-            integer(c_int64_t) res
+          function xoshiro_next() result(res)
+     &          bind(c,name="next_uniform_double")
+            use iso_c_binding, only: c_double
+            real(c_double) res
           end function
           subroutine xoshiro_seed(s) bind(c,name="xoshiro_seed")
             use iso_c_binding, only: c_int64_t
@@ -45,19 +46,10 @@
           random_dp => std_reference_wrap
           call setrn_rannyu_std(legaseed)
         case default
-          random_dp => xoshiro_wrap
+          random_dp => xoshiro_next
           call xoshiro_seed(iseed)
       end select
       endsubroutine
-
-c--------------------------XOSHIRO----------
-
-      function xoshiro_wrap()
-      use precision_kinds, only: dp
-      implicit none
-        real(dp)                          :: xoshiro_wrap
-        xoshiro_wrap = transfer(xoshiro_next(),xoshiro_wrap)
-      end function
 
 
 c--------------------------RANNYU-----------
