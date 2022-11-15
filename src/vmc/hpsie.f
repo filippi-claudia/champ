@@ -48,7 +48,7 @@ c Calculates wave function
 
 c compute all determinants
 
-      call determinante(iel,x,rvec_en,r_en,iflag)
+      call determinante(iel,coord,rvec_en,r_en,iflag)
 
       if(detn(kref).eq.0.d0) then
         do istate=1,nstates

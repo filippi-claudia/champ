@@ -37,9 +37,15 @@ c Modified by A. Scemama
       use system,  only: ncent_tot,nelec
       use trexio_basis_fns_mod, only: trexio_basis_fns
       use trexio_read_data, only: trexio_has_group_orbitals
+      
 #if defined(TREXIO_FOUND)
 #endif
 
+#ifdef QMCKL_FOUND
+      use qmckl_data
+#endif
+
+      
 
       implicit none
 
@@ -53,6 +59,13 @@ c     real(dp), dimension(nelec,nbasis) :: bhin
 c     real(dp), dimension(3*nelec,nbasis) :: dbhin
 c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
+#ifdef QMCKL_FOUND
+      real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+      integer :: rc
+      integer*8 :: n8
+#endif   
+
+      
       ier=1
       if(iperiodic.eq.0) then
 
@@ -140,6 +153,59 @@ c no 3d interpolation
 c get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
+
+!         if (use_qmckl) then
+#ifdef QMCKL_FOUND
+            
+            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error getting mo_num from QMCkl'
+               stop
+            end if
+            
+            allocate(mo_vgl_qmckl(n8, 5, nelec))
+
+
+!                 Send electron coordinates to QMCkl to compute the MOs at these positions
+            rc = qmckl_set_point(qmckl_ctx, 'N', nelec*1_8, x, nelec*3_8)
+
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error setting electron coordinates in QMCkl'
+            end if
+
+!     Compute the MOs
+            rc = qmckl_get_mo_basis_mo_vgl(
+     &           qmckl_ctx,
+     &           mo_vgl_qmckl,
+     &           n8*nelec*5_8)
+
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error getting MOs from QMCkl'
+            end if
+
+
+!            print*, "inside qmckl"
+          
+          ! pass computed qmckl orbitals to qmckl
+          do i=1,nelec
+               do iorb=1,norb+nadorb
+                  orb  (  i,iorb) = mo_vgl_qmckl(iorb,1,i)
+                  dorb (iorb,i,1) = mo_vgl_qmckl(iorb,2,i)
+                  dorb (iorb,i,2) = mo_vgl_qmckl(iorb,3,i)
+                  dorb (iorb,i,3) = mo_vgl_qmckl(iorb,4,i)
+                  ddorb(  iorb,i) = mo_vgl_qmckl(iorb,5,i)
+               end do
+            end do
+
+            
+            
+            deallocate(mo_vgl_qmckl)
+            
+            
+          
+
+#else
+            
 #if defined(TREXIO_FOUND)
          if (trexio_has_group_orbitals) then
           call trexio_basis_fns(1,nelec,rvec_en,r_en,ider)
@@ -205,8 +271,15 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
              enddo
           enddo
 #endif
+
+!      endif
+#endif
+          
        endif
 
+       
+
+       
        if(iforce_analy.eq.1) call da_orbitals
 
        else
@@ -300,6 +373,10 @@ c-------------------------------------------------------------------------------
 #if defined(TREXIO_FOUND)
 #endif
 
+#ifdef QMCKL_FOUND
+      use qmckl_data
+#endif
+
 
       implicit none
 
@@ -310,6 +387,14 @@ c-------------------------------------------------------------------------------
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
+#ifdef QMCKL_FOUND
+      real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+      integer :: rc
+      integer*8 :: n8
+      character*(1024) :: err_message = ''
+#endif
+
+      
       if(iperiodic.eq.0) then
 
 c get the value and gradients from the 3d-interpolated orbitals
@@ -333,18 +418,84 @@ c     Lagrange interpolation
          else
             ier=1
          endif
-
+         
          if(ier.eq.1) then
 c get basis functions for electron iel
-
+            
             ider=1
             if(iflag.gt.0) ider=2
 
+#ifdef QMCKL_FOUND
+
+            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+              if (rc /= QMCKL_SUCCESS) then
+                 print *, 'Error getting mo_num from QMCkl'
+                 stop
+              end if
+
+
+
+!     Send electron coordinates to QMCkl to compute the MOs at these positions
+!     rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, x(:,iel), 3_8)
+
+!! set one electron coordinates
+              rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, x(1:3,iel), 3_8)
+
+              if (rc /= QMCKL_SUCCESS) then
+                 print *, 'Error setting electron coords orbitalse'
+                 call qmckl_last_error(qmckl_ctx,err_message)
+                 print *, trim(err_message)
+                 call abort()
+              end if
+
+
+!!allocate mo_vlg array
+              allocate(mo_vgl_qmckl(n8, 5, 1))
+              
+!     Compute the MOs
+              rc = qmckl_get_mo_basis_mo_vgl(
+     &             qmckl_ctx,
+     &             mo_vgl_qmckl,
+     &             n8*5_8)
+
+
+              if(iflag.gt.0) then
+
+                 do iorb=1,norb
+                    orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
+                    dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
+                    dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
+                    dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
+                    ddorbn(iorb)=mo_vgl_qmckl(iorb,5,1)
+                 enddo
+
+
+              else
+
+                 do iorb=1,norb
+                    orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
+                    dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
+                    dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
+                    dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
+              enddo
+
+
+           endif
+
+           
+
+           deallocate(mo_vgl_qmckl)
+
+              
+            
+#else
+
+            
 #if defined(TREXIO_FOUND)
             if (trexio_has_group_orbitals) then
-              call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
+               call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
             else
-              call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
+               call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
             endif
 #else
             call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
@@ -354,7 +505,7 @@ c get basis functions for electron iel
 #ifdef VECTORIZATION
 
             if(iflag.gt.0) then
-
+               
                do iorb=1,norb
                   orbn(iorb)=0.d0
                   dorbn(iorb,1)=0.d0
@@ -370,9 +521,9 @@ c get basis functions for electron iel
                   enddo
                enddo
 
-
+               
             else
-
+               
 
                do iorb=1,norb
                   orbn(iorb)=0.d0
@@ -387,13 +538,13 @@ c get basis functions for electron iel
                   enddo
                enddo
 
-
+               
             endif
 
-
+            
 #else
 !     Keep the localization for the non-vectorized code
-
+            
 
             if(iflag.gt.0) then
 
@@ -412,11 +563,11 @@ c get basis functions for electron iel
                      ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
                   enddo
                enddo
-
-
+               
+               
             else
-
-
+               
+               
                do iorb=1,norb
                   orbn(iorb)=0.d0
                   dorbn(iorb,1)=0.d0
@@ -431,11 +582,15 @@ c get basis functions for electron iel
                   enddo
                enddo
 
-
+               
             endif
 
 
 #endif
+
+            
+#endif
+            
          endif
 
       else
