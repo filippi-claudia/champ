@@ -6,6 +6,7 @@ module test_random_mod
 subroutine test_random
   use random_mod, only: setrn, random_dp
   use rnyucm, only: switch_rng
+  implicit none
 
   integer :: n                     
   real(dp) :: rn
