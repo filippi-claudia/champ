@@ -14,12 +14,12 @@ on:
 jobs:
   debug_build_test_champ:
     name: build and test with ${{ matrix.toolchain }} ${{ matrix.mode }} mode
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 200
     strategy:
       matrix:
         toolchain: ['intel','gnu']
-        mode: ['RELEASE','DEBUG']
+        mode: ['RELEASE']
         exclude:
           - toolchain: 'intel'
             mode: 'DEBUG'
