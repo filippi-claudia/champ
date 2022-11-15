@@ -315,6 +315,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use qua,     only: nquad
       use precision_kinds, only: dp
 
+#ifdef QMCKL_FOUND
+      use qmckl_data
+#endif
+
+      
       implicit none
 
       integer :: ic, iel, ider, ier, ii, iq
@@ -329,6 +334,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(3,ncent_tot, norb_tot, *) :: da_orbn
       real(dp), dimension(3) :: dtmp
       real(dp) :: ddtmp
+
+#ifdef QMCKL_FOUND
+      real(dp), allocatable :: mo_qmckl(:,:)
+      real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+      real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
+      integer :: rc
+      integer*8 :: n8
+#endif  
 
       nadorb_sav=nadorb
 
@@ -361,69 +374,185 @@ c get basis functions for electron iel
           ider=0
           if(iforce_analy.gt.0) ider=1
 
-          call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
 
-          do iq=1,nxquad
+          if (use_qmckl) then
+#ifdef QMCKL_FOUND
+!     Send electron coordinates to QMCkl to compute the MOs at these positions
+             rc = qmckl_set_point(qmckl_ctx, 'N', nxquad*1_8, xquad, nxquad*3_8)
+             if (rc /= QMCKL_SUCCESS) then
+                print *, 'Error setting electron coordinates in QMCkl'
+             end if
+             
+             rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+             if (rc /= QMCKL_SUCCESS) then
+                print *, 'Error getting mo_num from QMCkl'
+                stop
+             end if
 
-! Vectorization dependent code selection
-#ifdef VECTORIZATION
-          ! The following loop changed for better vectorization AVX512/AVX2
-          do iorb=1,norb+nadorb
-             orbn(iorb,iq)=0.d0
-             do m=1,nbasis
-                orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
-             enddo
-          enddo
-#else
-          do iorb=1,norb+nadorb
-             orbn(iorb,iq)=0.d0
-             do m0=1,n0_nbasis(iq)
-                m=n0_ibasis(m0,iq)
-                orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
-             enddo
-          enddo
+             if(iforce_analy.eq.0) then
+                
+               if (n8 /= norb_tot) then
+                  allocate(mo_qmckl(n8, nxquad))
+                
+!     Compute the MOs
+                  rc = qmckl_get_mo_basis_mo_value_inplace(
+     &                 qmckl_ctx,
+     &                 mo_qmckl,
+     &                 nxquad*n8)
+                
+                  if (rc /= QMCKL_SUCCESS) then
+                     print *, 'Error getting MOs from QMCkl'
+                  end if
+                  
+                  orbn(1:norb+nadorb,1:nxquad) = mo_qmckl(1:norb+nadorb,1:nxquad)
+                
+                  deallocate(mo_qmckl)
+                
+               else
+                
+                  rc = qmckl_get_mo_basis_mo_value_inplace(
+     &                 qmckl_ctx,
+     &                 orbn,
+     &                 nxquad*n8)
+                
+                  if (rc /= QMCKL_SUCCESS) then
+                     print *, 'Error getting MOs from QMCkl'
+                  end if
+                
+               endif
+
+             else !(iforce_analy.ne.0) 
+
+                             
+               allocate(mo_vgl_qmckl(n8, 5, nxquad))
+               allocate(ao_vgl_qmckl(norb, 5, nxquad))
+                
+!     Compute the MOs
+               rc = qmckl_get_mo_basis_mo_vgl_inplace(
+     &               qmckl_ctx,
+     &               mo_vgl_qmckl,
+     &               nxquad*n8*5_8)
+                
+               if (rc /= QMCKL_SUCCESS) then
+                   print *, 'Error getting MOs from QMCkl'
+               end if
+
+                ! Fetch the AOs
+               rc = qmckl_get_ao_basis_ao_vgl_inplace(
+     &               qmckl_ctx,
+     &               ao_vgl_qmckl,
+     &               nxquad*norb*5_8)
+                
+               if (rc /= QMCKL_SUCCESS) then
+                   print *, 'Error getting MOs from QMCkl'
+               end if
+
+               do iq=1,nxquad
+                  orbn (1:norb+nadorb,iq)   = mo_vgl_qmckl(1:norb+nadorb,1,iq)
+                  dorbn(1:norb+nadorb,iq,1) = mo_vgl_qmckl(1:norb+nadorb,2,iq)
+                  dorbn(1:norb+nadorb,iq,2) = mo_vgl_qmckl(1:norb+nadorb,3,iq)
+                  dorbn(1:norb+nadorb,iq,3) = mo_vgl_qmckl(1:norb+nadorb,4,iq)
+                 
+                  do iorb=1,norb
+                     do ic=1,ncent
+                        do k=1,3
+                           da_orbn(k,ic,iorb,iq)=0.d0
+                       enddo
+                     enddo
+                     do m0=1,n0_nbasis(iq)
+                        m=n0_ibasis(m0,iq)
+                        ic=n0_ic(m0,iq)
+                        ii=iwctype(ic)
+                        do k=1,3
+                           da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*ao_vgl_qmckl(m,k+1,iq)
+                        enddo
+                     enddo
+                  enddo
+               
+               enddo
+               
+               deallocate(mo_vgl_qmckl, ao_vgl_qmckl)
+
+             end if !(iforce_analy.ne.0) 
+              
 #endif
-
-          if(iforce_analy.gt.0) then
-            do iorb=1,norb
-              do ic=1,ncent
-                do k=1,3
-                  da_orbn(k,ic,iorb,iq)=0.d0
+          
+          else  ! (.not.use_qmckl)
+  
+!TODO: Check below if we can use TREXIO
+!#if defined(TREXIO_FOUND)
+!            if (trexio_has_group_orbitals) then
+!               call trexio_basis_fns(1,nxquad,rvec_en,r_en,ider)
+!            else
+!               call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
+!            endif
+!#else
+             call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
+!#endif
+             
+             do iq=1,nxquad
+                
+!     Vectorization dependent code selection
+#ifdef VECTORIZATION
+! The following loop changed for better vectorization AVX512/AVX2
+                do iorb=1,norb+nadorb
+                   orbn(iorb,iq)=0.d0
+                   do m=1,nbasis
+                      orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
+                   enddo
                 enddo
-              enddo
-              do m0=1,n0_nbasis(iq)
-                m=n0_ibasis(m0,iq)
-                ic=n0_ic(m0,iq)
-                ii=iwctype(ic)
-                do k=1,3
-                  da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
+#else
+                do iorb=1,norb+nadorb
+                   orbn(iorb,iq)=0.d0
+                   do m0=1,n0_nbasis(iq)
+                      m=n0_ibasis(m0,iq)
+                      orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
+                   enddo
                 enddo
-              enddo
-              do k=1,3
-                dorbn(iorb,iq,k)=0.d0
-              enddo
-              do ic=1,ncent
-                do k=1,3
-                   dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
-                enddo
-              enddo
-            enddo
-          endif
-c         write(ounit,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
-c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
+#endif
+                
+                if(iforce_analy.gt.0) then
+                   do iorb=1,norb
+                      do ic=1,ncent
+                         do k=1,3
+                            da_orbn(k,ic,iorb,iq)=0.d0
+                         enddo
+                      enddo
+                      do m0=1,n0_nbasis(iq)
+                         m=n0_ibasis(m0,iq)
+                         ic=n0_ic(m0,iq)
+                         ii=iwctype(ic)
+                         do k=1,3
+                            da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                         enddo
+                      enddo
+                      do k=1,3
+                         dorbn(iorb,iq,k)=0.d0
+                      enddo
+                      do ic=1,ncent
+                         do k=1,3
+                            dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
+                         enddo
+                      enddo
+                   enddo
+                endif ! (iforce_analy.gt.0)
 
-        enddo
+c     write(ounit,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
+c     write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
 
-        endif
+             enddo  ! iq
+        
+          endif  ! (use_qmckl)
+        endif !(ier.eq.1)
 
-       else
-
-        call orbitals_pwe(iel,xquad,orbn)
-
-      endif
-
+      else  !(iperiodic.ne.0)
+          
+         call orbitals_pwe(iel,xquad,orbn)
+         
+      endif  !(iperiodic.eq.0)
+      
       nadorb = nadorb_sav
-
+      
       return
       end
 

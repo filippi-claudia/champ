@@ -174,7 +174,7 @@ c get basis functions for all electrons
             end if
 
 !     Compute the MOs
-            rc = qmckl_get_mo_basis_mo_vgl(
+            rc = qmckl_get_mo_basis_mo_vgl_inplace(
      &           qmckl_ctx,
      &           mo_vgl_qmckl,
      &           n8*nelec*5_8)
@@ -453,7 +453,7 @@ c get basis functions for electron iel
               allocate(mo_vgl_qmckl(n8, 5, 1))
               
 !     Compute the MOs
-              rc = qmckl_get_mo_basis_mo_vgl(
+              rc = qmckl_get_mo_basis_mo_vgl_inplace(
      &             qmckl_ctx,
      &             mo_vgl_qmckl,
      &             n8*5_8)
