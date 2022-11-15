@@ -29,7 +29,7 @@ c job where it left off
       use properties_mod, only: prop_init
       use pseudo,  only: nloc
       use qua,     only: nquad,wq,xq,yq,zq
-      use rannyu_mod, only: rannyu,savern,setrn
+      use random_mod, only: random_dp,savern,setrn
       use step,    only: ekin,ekin2,rprob,suc,trunfb,try
       use system,  only: nelec
       use vmc_mod, only: nrad
@@ -150,7 +150,7 @@ c    &      ,idget,MPI_COMM_WORLD,irequest,ierr)
           enddo
          else
           do id=1,(3*nelec)*idtask
-            rnd=rannyu(0)
+            rnd=random_dp()
           enddo
           idfrom=mod(idtask,nproco)
 c xold from idfrom to idtask

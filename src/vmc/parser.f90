@@ -142,7 +142,7 @@ subroutine parser
       use pseudo_mod, only: MPS_QUAD
       use pw_read, only: read_orb_pw_tm
       use qua,     only: nquad,wq,xq,yq,zq
-      use rannyu_mod, only: setrn
+      use random_mod, only: setrn
       use read_bas_num_mod, only: read_bas_num,readps_gauss
       use sa_weights, only: iweight,nweight,weights
       use scale_dist_mod, only: set_scale_dist

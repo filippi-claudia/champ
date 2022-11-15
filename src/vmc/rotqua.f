@@ -338,7 +338,7 @@ c-----------------------------------------------------------------------
 c Written by Lubos Mitas
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
       use precision_kinds, only: dp
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       implicit none
 
       integer :: iq
@@ -351,8 +351,8 @@ c Written by Lubos Mitas
       real(dp) :: zz1, zz2, zz3
 
 
- 2	x1=1.d0-2.d0*rannyu(0)
-	x2=1.d0-2.d0*rannyu(0)
+ 2	x1=1.d0-2.d0*random_dp()
+	x2=1.d0-2.d0*random_dp()
 	xsum=x1*x1+x2*x2
 	if (xsum.ge.1.d0) goto 2
 	xsum2=2.d0*dsqrt(dabs(1.d0-xsum))
@@ -381,8 +381,8 @@ c Written by Lubos Mitas
 	zz2=cfi
 	zz3=0.d0
 
- 3      u1=rannyu(0)*2.d0-1.d0
-        u2=rannyu(0)*2.d0-1.d0
+ 3      u1=random_dp()*2.d0-1.d0
+        u2=random_dp()*2.d0-1.d0
         usum=u1*u1+u2*u2
         if(usum.ge.1.d0) goto 3
         uu=dsqrt(usum)
