@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         toolchain: ['gnu']
-        mode: ['RELEASE']
+        mode: ['DEBUG']
     defaults:
       run:
         shell: bash --noprofile --norc {0}
