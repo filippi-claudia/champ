@@ -8,12 +8,14 @@ subroutine test_random
   use rnyucm, only: switch_rng
 
   integer :: n                     
+  real(dp) :: rn
 
   call setrn([1,2,3,4])
 
   call tag_test("test if random is between 0 and 1, xoshiro")
   do n = 1,100
-    if (random_dp() > 1. .or. random_dp() < 0.) then
+    rn = random_dp()
+    if (rn > 1. .or. rn < 0.) then
       call FAIL()
     end if
   end do
@@ -21,12 +23,11 @@ subroutine test_random
   switch_rng = 0
   call setrn([1,2,3,4])
   do n = 1,100
-    if (random_dp() > 1. .or. random_dp() < 0.) then
+    rn = random_dp()
+    if (rn > 1. .or. rn < 0.) then
       call FAIL()
     end if
   end do
-
-  !call assert_equal(reshape(a,[9]),a_expected)
 
 end subroutine test_random
 
