@@ -18,11 +18,8 @@
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
-
-
-
-
-
+      real(dp), allocatable :: orbn_ordered(:)
+      real(dp) :: ratio_kref_inv
 
 
       call orbitalse(iel,x,rvec_en,r_en,iflag)
@@ -39,30 +36,47 @@
 
       ikel=nel*(iel-ish-1)
 
-      ratio_kref=0
+      allocate(orbn_ordered(nel))
       do j=1,nel
-        ratio_kref=ratio_kref+slmi(j+ikel,iab)*orbn(iworbd(j+ish,kref))
+        orbn_ordered(j) = orbn(iworbd(j+ish,kref))
+      enddo
+
+      ratio_kref=0.d0
+      do j=1,nel
+        ratio_kref=ratio_kref+slmi(j+ikel,iab)*orbn_ordered(j)
       enddo
 
       detn(kref)=detiab(kref,iab)*ratio_kref
 
       if(ratio_kref.eq.0.d0) return
 
+      ratio_kref_inv = 1.d0/ratio_kref
+
+
+      ik=nel*(iel-ish-1)
+      sum=0.d0
+      do j=1,nel
+        sum=sum+slmi(j+ik,iab)*orbn_ordered(j)
+      enddo
+      sum=-sum*ratio_kref_inv
+      do j=1,nel
+       slmin(j+ik)=slmi(j+ik,iab)-slmi(j+ikel,iab)*sum
+      enddo
       do i=1,nel
-        if(i+ish.ne.iel) then
+!        if(i+ish.ne.iel) then
           ik=nel*(i-1)
-          sum=0
+          sum=0.d0
           do j=1,nel
-            sum=sum+slmi(j+ik,iab)*orbn(iworbd(j+ish,kref))
+            sum=sum+slmi(j+ik,iab)*orbn_ordered(j)
           enddo
-          sum=sum/ratio_kref
+          sum=sum*ratio_kref_inv
           do j=1,nel
            slmin(j+ik)=slmi(j+ik,iab)-slmi(j+ikel,iab)*sum
           enddo
-        endif
+!       endif
       enddo
       do j=1,nel
-        slmin(j+ikel)=slmi(j+ikel,iab)/ratio_kref
+        slmin(j+ikel)=slmi(j+ikel,iab)*ratio_kref_inv
       enddo
 
       return
