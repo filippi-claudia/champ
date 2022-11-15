@@ -52,6 +52,8 @@ contains
 ! c         2 exponential r(i+1)=arg*r(i), r(1)=r0
 ! c         3 shifted exponential r(i+1)=r0*(arg**(i-1)-1)
 
+      dwfn = 0.d0
+
       if (.not. allocated(filenames_bas_num)) allocate(filenames_bas_num(nctype))
 
       call allocate_numbas()

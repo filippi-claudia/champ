@@ -1689,10 +1689,10 @@ subroutine parser
         write(ounit,*) "norb_qmckl",norb_qmckl
         write(ounit,*) "n8 mo's before selection", n8
         !! allocate orbital selection array for qmckl
-        allocate(keep(norb_qmckl))
+        allocate(keep(n8))
 
 
-        !! selecting range of orbitals to compute qith QMCkl
+        !! selecting range of orbitals to compute with QMCkl
         keep(1:norb_qmckl) = 1
         keep((norb_qmckl+1):n8) = 0
 

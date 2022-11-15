@@ -41,6 +41,7 @@ c ider = 3 -> value, gradient, laplacian, forces
       real(dp), allocatable :: dy(:,:)
       real(dp), allocatable :: ddy(:,:,:)
       real(dp), allocatable :: dlapy(:,:)
+      real(dp) :: tmp(3)
 
 #ifndef VECTORIZATION
       do j=ie1,ie2
@@ -105,6 +106,10 @@ c get distance to center
             iwlbas0 = iwlbas(i,it)
             irb = iwrwf(i,it)
             ilm = lower_range + i - 1
+
+            ! Avoid automatic copy in function call below
+            tmp(1:3) = dphin(ilm,k,1:3)
+
 !     compute sml and combine to generate molecular orbitals
             call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),
      &            y(iwlbas0),
@@ -113,7 +118,7 @@ c get distance to center
      &            ddy_lap(iwlbas0),
      &            dlapy(:,iwlbas0),
      &            phin(ilm,k),
-     &            dphin(ilm,k,:),
+     &            tmp,! dphin(ilm,k,1:3),
      &            d2phin(ilm,k),
      &            d2phin_all(1,1,ilm,k),
      &            d3phin(1,ilm,k),

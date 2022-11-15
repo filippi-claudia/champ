@@ -67,11 +67,16 @@ c compute orbitals
 
             jk=jk+nel
 
+!           call dcopy(nel,orb(1+ish,jorb),1,slmi(1+jk,iab),1)
+!           call dcopy(nel,dorb(jorb,1+ish:nel+ish,1),1,fp(1,j,iab),nel*3)
+!           call dcopy(nel,dorb(jorb,1+ish:nel+ish,2),1,fp(2,j,iab),nel*3)
+!           call dcopy(nel,dorb(jorb,1+ish:nel+ish,3),1,fp(3,j,iab),nel*3)
+!           call dcopy(nel,ddorb (jorb,1+ish:nel+ish),1,fpp (j,iab),nel)
             call dcopy(nel,orb(1+ish,jorb),1,slmi(1+jk,iab),1)
-            call dcopy(nel,dorb(jorb,1+ish:nel+ish,1),1,fp(1,j,iab),nel*3)
-            call dcopy(nel,dorb(jorb,1+ish:nel+ish,2),1,fp(2,j,iab),nel*3)
-            call dcopy(nel,dorb(jorb,1+ish:nel+ish,3),1,fp(3,j,iab),nel*3)
-            call dcopy(nel,ddorb (jorb,1+ish:nel+ish),1,fpp (j,iab),nel)
+            call dcopy(nel,dorb(jorb,1+ish,1),size(dorb,1),fp(1,j,iab),nel*3)
+            call dcopy(nel,dorb(jorb,1+ish,2),size(dorb,1),fp(2,j,iab),nel*3)
+            call dcopy(nel,dorb(jorb,1+ish,3),size(dorb,1),fp(3,j,iab),nel*3)
+            call dcopy(nel,ddorb (jorb,1+ish),size(dorb,1),fpp (j,iab),nel)
          enddo
 
 c     calculate the inverse transpose matrix and itsdeterminant
