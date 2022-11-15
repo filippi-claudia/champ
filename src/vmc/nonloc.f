@@ -633,7 +633,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm,   only: nocuspb,nspin2b
       use contrl_per, only: iperiodic
       use da_jastrow4val, only: da_j
-      use jastrow, only: isc,sspinn
+      use jastrow, only: isc,sspinn,nordc
+      use jaspar6, only: asymp_r
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
       use precision_kinds, only: dp
@@ -670,6 +671,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       real(dp), dimension(*) :: ratio_jn
       real(dp), dimension(3,ncent_tot,*) :: da_psij_ratio
       real(dp), parameter :: half = .5d0
+      real(dp), parameter :: eps = 1.d-12
+
 
       if(iforce_analy.eq.0) then
         do ic=1,ncent
@@ -770,11 +773,20 @@ c e-e-n terms
 c The scaling is switched in psinl, so do not do it here.
       if(isc.ge.12) call scale_dist(rij,u,3)
 
-        do ic=1,ncent
-          it=iwctype(ic)
-          fsn(i,j)=fsn(i,j) +
-     &    psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2_quad(ic),rr_en2(jj,ic),it)
-        enddo
+        if (nordc.gt.1) then
+           do ic=1,ncent
+             if( (rr_en2_quad(ic).eq.asymp_r) .or.
+     &           (rr_en2(jj,ic).eq.asymp_r) .or.
+     &           (abs(rshift(1,i,ic)-rshift(1,j,ic)).gt.eps) .or.
+     &           (abs(rshift(2,i,ic)-rshift(2,j,ic)).gt.eps) .or.
+     &           (abs(rshift(3,i,ic)-rshift(3,j,ic)).gt.eps) ) then
+               cycle
+             end if
+             it=iwctype(ic)
+             fsn(i,j)=fsn(i,j) +
+     &       psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2_quad(ic),rr_en2(jj,ic),it)
+           enddo
+        endif
 
         fsumn=fsumn+fsn(i,j)-fso(i,j)
    45 continue
@@ -808,6 +820,7 @@ c e-n terms
       enddo
 
       return
+
       end
 c-----------------------------------------------------------------------
       subroutine compute_da_bnl(nxquad,iequad,icquad,iqquad,r_en,rvec_en,costh,term_radial

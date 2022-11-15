@@ -15,7 +15,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       integer :: it, jp, k, l, l_hi
       integer :: ll, m, n
-      real(dp) :: rri, rrj, rrri, rrrj, u
+      real(dp) :: rri, rrj, rrri, rrrj, rrri0, rrrj0, u
       real(dp) :: uuu
       real(dp) :: psinl
       real(dp), dimension(0:nordj) :: uu
@@ -55,6 +55,20 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
         ss(jp)=rrri**jp+rrrj**jp
         tt(jp)=(rrri*rrrj)**jp
       enddo
+
+! Possible optimization: to be checked
+!      rrri0 = rrri
+!      rrrj0 = rrrj
+!      uu(1)=uuu
+!      ss(1)=rrri+rrrj
+!      tt(1)=rrri*rrrj
+!      do jp=2,nordc
+!        rrri = rrri*rrri0
+!        rrrj = rrrj*rrrj0
+!        uu(jp)=uu(jp-1)*uu(1)
+!        ss(jp)=rrri+rrrj
+!        tt(jp)=rrri*rrrj
+!      enddo
 
       ll=0
       do n=2,nordc
