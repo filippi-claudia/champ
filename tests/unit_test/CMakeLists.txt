@@ -2,14 +2,14 @@
 
 project(vmc)
 
-OPTION( BUILD_UNIT_TESTS "Build Project Unit tests" OFF )
+OPTION( UNIT_TESTS "Build Project Unit tests" OFF )
 message(STATUS "Build Unit Tests: ${BUILD_UNIT_TESTS}")
 
-IF(BUILD_UNIT_TESTS)
+IF(UNIT_TESTS)
   #string(REPLACE ";" " " CMAKE_Fortran_FLAGS "${Fortran_FLAGS}") #optional, to set compile flags
-  # IF(NOT ${CMAKE_BUILD_TYPE} STREQUAL "DEBUG")
-  #   message(FATAL_ERROR "if BUILD_UNIT_TESTS is specified, CMAKE_BUILD_TYPE must be DEBUG")
-  # ENDIF()
+  IF(NOT ${CMAKE_BUILD_TYPE} STREQUAL "DEBUG")
+    message(FATAL_ERROR "if UNIT_TESTS is specified, CMAKE_BUILD_TYPE must be DEBUG")
+  ENDIF()
 
   # set required project files variable e.g. files in 'src' directory within the project directory
   file(GLOB_RECURSE FORTUTF_PROJECT_SRC_FILES CONFIGURE_DEPENDS "*.f90")
