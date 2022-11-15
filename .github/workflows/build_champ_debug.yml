@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         toolchain: ['intel','gnu']
-        mode: ['RELEASE']
+        mode: ['RELEASE', 'DEBUG']
         exclude:
           - toolchain: 'intel'
             mode: 'DEBUG'
@@ -108,7 +108,6 @@ jobs:
         ulimit -s unlimited
 
     - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
-      continue-on-error: true
       run: |
         echo "Running the tests using the new parser. H2 "
         cd tests/CI_test/VMC-H2
@@ -120,7 +119,6 @@ jobs:
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_single.out "total E" -1.0059842   0.0070988
 
     - name: "Test 02 (H2) sto basis optimize jastrow sr_n method on 2 processors"
-      continue-on-error: true
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. H2 "
@@ -160,7 +158,6 @@ jobs:
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0578796  0.0018813
 
     - name: "Test 05 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
-      continue-on-error: true
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. H2 "
@@ -176,7 +173,6 @@ jobs:
         $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0018 0.0114836
 
     - name: "Test 06 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
-      continue-on-error: true
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. H2 "
