@@ -131,11 +131,17 @@ c-----------------------------------------------------------------------
 c    &  ,1,MPI_COMM_WORLD,irequest,ierr)
        else
         rewind 9
-        write(9,*) ((xold(ic,i),ic=1,3),i=1,nelec)
+        write(9,*,err=991) ((xold(ic,i),ic=1,3),i=1,nelec)
+        ! Print warning only if write is impossible.
+        go to 992
+  991   write(*, '(A)') 'WARNING: Unable to write mc_configs_start'
+  992   continue
+
         do id=1,nproc-1
           call mpi_recv(xnew,3*nelec,mpi_double_precision,id
      &    ,1,MPI_COMM_WORLD,istatus,ierr)
-          write(9,*) ((xnew(ic,i),ic=1,3),i=1,nelec)
+          write(9,err=993) ((xnew(ic,i),ic=1,3),i=1,nelec)
+  993     continue
         enddo
       endif
       close(9)
