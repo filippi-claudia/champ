@@ -3,15 +3,16 @@
 #endif
 
 module qmckl_data
+  use multiple_geo, only: MWF
 #ifdef QMCKL_FOUND
 
   use qmckl
-  integer(qmckl_context), public :: qmckl_ctx
+  integer(qmckl_context), public :: qmckl_ctx(MWF)
   logical, public :: use_qmckl = .True.
 
 #else
 
-  integer, public :: qmckl_ctx = 0
+  integer, public :: qmckl_ctx(MWF) = 0
   integer, public :: QMCKL_SUCCESS = 0
   logical, public :: use_qmckl = .False.
 

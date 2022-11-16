@@ -156,7 +156,7 @@ c endif iskip
       call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn,dorbn,da_orbn)
 
       call nonlocd_quad(nxquad,iequad,orbn,det_ratio)
-      if(ioptjas.eq.0) then 
+      if(ioptjas.eq.0) then
         call nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,rvec_en_quad,r_en_quad,psij_ratio,vjn,da_psij_ratio)
        else
         call deriv_nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,rvec_en_quad,r_en_quad,psij_ratio,dpsij_ratio,vjn,da_psij_ratio)
@@ -169,7 +169,7 @@ c endif iskip
         iqq=iqquad(iq)
 
         ict=iwctype(ic)
- 
+
         iab=1
         if(iel.gt.nup) iab=2
 
@@ -340,7 +340,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use qmckl_data
 #endif
 
-      
+
       implicit none
 
       integer :: ic, iel, ider, ier, ii, iq
@@ -362,7 +362,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
       integer :: rc
       integer*8 :: n8
-#endif  
+#endif
 
       nadorb_sav=nadorb
 
@@ -399,71 +399,71 @@ c get basis functions for electron iel
           if (use_qmckl) then
 #ifdef QMCKL_FOUND
 !     Send electron coordinates to QMCkl to compute the MOs at these positions
-             rc = qmckl_set_point(qmckl_ctx, 'N', nxquad*1_8, xquad, nxquad*3_8)
+             rc = qmckl_set_point(qmckl_ctx(iwf), 'N', nxquad*1_8, xquad, nxquad*3_8)
              if (rc /= QMCKL_SUCCESS) then
                 print *, 'Error setting electron coordinates in QMCkl'
              end if
-             
-             rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+
+             rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(iwf), n8)
              if (rc /= QMCKL_SUCCESS) then
                 print *, 'Error getting mo_num from QMCkl'
                 stop
              end if
 
              if(iforce_analy.eq.0) then
-                
+
                if (n8 /= norb_tot) then
                   allocate(mo_qmckl(n8, nxquad))
-                
+
 !     Compute the MOs
                   rc = qmckl_get_mo_basis_mo_value_inplace(
-     &                 qmckl_ctx,
+     &                 qmckl_ctx(iwf),
      &                 mo_qmckl,
      &                 nxquad*n8)
-                
+
                   if (rc /= QMCKL_SUCCESS) then
                      print *, 'Error getting MOs from QMCkl'
                   end if
-                  
+
                   orbn(1:norb+nadorb,1:nxquad) = mo_qmckl(1:norb+nadorb,1:nxquad)
-                
+
                   deallocate(mo_qmckl)
-                
+
                else
-                
+
                   rc = qmckl_get_mo_basis_mo_value_inplace(
-     &                 qmckl_ctx,
+     &                 qmckl_ctx(iwf),
      &                 orbn,
      &                 nxquad*n8)
-                
+
                   if (rc /= QMCKL_SUCCESS) then
                      print *, 'Error getting MOs from QMCkl'
                   end if
-                
+
                endif
 
-             else !(iforce_analy.ne.0) 
+             else !(iforce_analy.ne.0)
 
-                             
+
                allocate(mo_vgl_qmckl(n8, 5, nxquad))
                allocate(ao_vgl_qmckl(norb, 5, nxquad))
-                
+
 !     Compute the MOs
                rc = qmckl_get_mo_basis_mo_vgl_inplace(
-     &               qmckl_ctx,
+     &               qmckl_ctx(iwf),
      &               mo_vgl_qmckl,
      &               nxquad*n8*5_8)
-                
+
                if (rc /= QMCKL_SUCCESS) then
                    print *, 'Error getting MOs from QMCkl'
                end if
 
                 ! Fetch the AOs
                rc = qmckl_get_ao_basis_ao_vgl_inplace(
-     &               qmckl_ctx,
+     &               qmckl_ctx(iwf),
      &               ao_vgl_qmckl,
      &               nxquad*norb*5_8)
-                
+
                if (rc /= QMCKL_SUCCESS) then
                    print *, 'Error getting MOs from QMCkl'
                end if
@@ -473,7 +473,7 @@ c get basis functions for electron iel
                   dorbn(1:norb+nadorb,iq,1) = mo_vgl_qmckl(1:norb+nadorb,2,iq)
                   dorbn(1:norb+nadorb,iq,2) = mo_vgl_qmckl(1:norb+nadorb,3,iq)
                   dorbn(1:norb+nadorb,iq,3) = mo_vgl_qmckl(1:norb+nadorb,4,iq)
-                 
+
                   do iorb=1,norb
                      do ic=1,ncent
                         do k=1,3
@@ -489,17 +489,17 @@ c get basis functions for electron iel
                         enddo
                      enddo
                   enddo
-               
+
                enddo
-               
+
                deallocate(mo_vgl_qmckl, ao_vgl_qmckl)
 
-             end if !(iforce_analy.ne.0) 
-              
+             end if !(iforce_analy.ne.0)
+
 #endif
-          
+
           else  ! (.not.use_qmckl)
-  
+
 !TODO: Check below if we can use TREXIO
 !#if defined(TREXIO_FOUND)
 !            if (trexio_has_group_orbitals) then
@@ -510,9 +510,9 @@ c get basis functions for electron iel
 !#else
              call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
 !#endif
-             
+
              do iq=1,nxquad
-                
+
 !     Vectorization dependent code selection
 #ifdef VECTORIZATION
 ! The following loop changed for better vectorization AVX512/AVX2
@@ -531,7 +531,7 @@ c get basis functions for electron iel
                    enddo
                 enddo
 #endif
-                
+
                 if(iforce_analy.gt.0) then
                    do iorb=1,norb
                       do ic=1,ncent
@@ -562,18 +562,18 @@ c     write(ounit,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
 c     write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
 
              enddo  ! iq
-        
+
           endif  ! (use_qmckl)
         endif !(ier.eq.1)
 
       else  !(iperiodic.ne.0)
-          
+
          call orbitals_pwe(iel,xquad,orbn)
-         
+
       endif  !(iperiodic.eq.0)
-      
+
       nadorb = nadorb_sav
-      
+
       return
       end
 

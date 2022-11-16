@@ -84,7 +84,7 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
           if (use_qmckl) then
 #ifdef QMCKL_FOUND
 
-            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(iwf), n8)
             if (rc /= QMCKL_SUCCESS) then
               print *, 'Error getting mo_num from QMCkl'
               stop
@@ -94,7 +94,7 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
 
 !           Send electron coordinates to QMCkl to compute the MOs at these positions
-            rc = qmckl_set_point(qmckl_ctx, 'N', nelec*1_8, x, nelec*3_8)
+            rc = qmckl_set_point(qmckl_ctx(iwf), 'N', nelec*1_8, x, nelec*3_8)
 
             if (rc /= QMCKL_SUCCESS) then
               print *, 'Error setting electron coordinates in QMCkl'
@@ -102,7 +102,7 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
 !     Compute the MOs
             rc = qmckl_get_mo_basis_mo_vgl_inplace(
-     &           qmckl_ctx,
+     &           qmckl_ctx(iwf),
      &           mo_vgl_qmckl,
      &           n8*nelec*5_8)
 
@@ -348,17 +348,17 @@ c get basis functions for electron iel
             if (use_qmckl) then
 #ifdef QMCKL_FOUND
 
-              rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+              rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(iwf), n8)
               if (rc /= QMCKL_SUCCESS) then
                  print *, 'Error getting mo_num from QMCkl'
                  stop
               end if
 
-              rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, x(1:3,iel), 3_8)
+              rc = qmckl_set_point(qmckl_ctx(iwf), 'N', 1_8, x(1:3,iel), 3_8)
 
               if (rc /= QMCKL_SUCCESS) then
                  print *, 'Error setting electron coords orbitalse'
-                 call qmckl_last_error(qmckl_ctx,err_message)
+                 call qmckl_last_error(qmckl_ctx(iwf),err_message)
                  print *, trim(err_message)
                  call abort()
               end if
@@ -366,10 +366,17 @@ c get basis functions for electron iel
               allocate(mo_vgl_qmckl(n8, 5, 1))
 
               rc = qmckl_get_mo_basis_mo_vgl_inplace(
-     &             qmckl_ctx,
+     &             qmckl_ctx(iwf),
      &             mo_vgl_qmckl,
      &             n8*5_8)
 
+
+              if (rc /= QMCKL_SUCCESS) then
+                 print *, 'Error computing MOs in orbitalse'
+                 call qmckl_last_error(qmckl_ctx(iwf),err_message)
+                 print *, trim(err_message)
+                 call abort()
+              end if
 
               if(iflag.gt.0) then
 
