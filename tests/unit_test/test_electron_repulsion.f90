@@ -10,6 +10,7 @@ module test_nuclear_repulsion_mod
   contains
   subroutine test_nuclear_repulsion
     use pot, only: pot_nn
+    use system, only: ncent_tot, nctype_tot
 
     implicit none
 
@@ -61,6 +62,8 @@ module test_nuclear_repulsion_mod
 
     ! Get the pecent value
     call tag_test("Test pot_nn: Nuclear repulsion energy")
+    ncent_tot = 3 ! Necessary because pot_nn redefines the bounds of cent to be (3,ncent_tot)
+    nctype_tot = 2 ! Necessary becaue pot_nn redefines the bounds of znuc to be (nctype_tot)
     call pot_nn(cent,znuc,iwctype,ncent,pecent)
 
     ! Lower the precision because FortUTF does not yet provide double precision comparison
