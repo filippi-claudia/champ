@@ -1724,6 +1724,22 @@ subroutine parser
 
      endif
 
+
+     ! check if the orbitals coefficients are to be multiplied by a constant parameter
+     if(scalecoef.ne.1.0d0) then
+        
+        rc = qmckl_mo_basis_rescale(qmckl_ctx, scalecoef)
+        if (rc /= QMCKL_SUCCESS) then
+           print *, 'Error when rescaling mo coefficients'
+           stop
+        end if
+       
+        write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
+        write(ounit,*)
+     endif
+
+    
+
   endif
 #endif
 
