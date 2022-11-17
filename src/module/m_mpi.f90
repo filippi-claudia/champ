@@ -52,11 +52,13 @@ module custom_broadcast
         module procedure bcast_double
         module procedure bcast_real
         module procedure bcast_integer
+        module procedure bcast_int64
         module procedure bcast_logical
         module procedure bcast_character
         module procedure bcast_double_1d
         module procedure bcast_real_1d
         module procedure bcast_integer_1d
+        module procedure bcast_int64_1d
         module procedure bcast_character_1d
         module procedure bcast_double_2d
         module procedure bcast_real_2d
@@ -105,6 +107,16 @@ module custom_broadcast
         call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_integer
 
+    subroutine bcast_int64(scalar)
+    !>  Broadcasts a scalar integer variable from root processor
+    !!  to all other processors.
+        use iso_fortran_env, only: int64
+        implicit none
+        integer(int64), intent(in)       :: scalar               ! scalar to be broadcast
+
+        call MPI_BCAST(scalar, 1, MPI_INTEGER8, 0, MPI_Comm_World, MPIerror)
+        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+    end subroutine bcast_int64
 
 
     subroutine bcast_logical(scalar)
@@ -172,6 +184,20 @@ module custom_broadcast
         call MPI_BCAST(array, nelements, MPI_Integer, 0, MPI_Comm_World, MPIerror)
         call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_integer_1d
+
+    subroutine bcast_int64_1d(array)
+    !>  Broadcasts a vector integer variable from root processor
+    !!  to all other processors.
+        use iso_fortran_env, only: int64
+        implicit none
+        integer(int64), dimension(:), intent(in)   :: array             ! array to be broadcast
+        integer                                    :: nelements
+
+        nelements = size(array)
+
+        call MPI_BCAST(array, nelements, MPI_INTEGER8, 0, MPI_Comm_World, MPIerror)
+        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+    end subroutine bcast_int64_1d
 
     subroutine bcast_character_1d(array)
     !>  Broadcasts a vector character variable from root processor

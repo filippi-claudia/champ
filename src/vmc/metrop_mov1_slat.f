@@ -55,7 +55,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use precision_kinds, only: dp
       use prop_vmc, only: prop_sum
       use pseudo,  only: nloc
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       use stats,   only: rejmax
       use step,    only: ekin,ekin2,rprob,suc,trunfb,try
       use strech_mod, only: strech
@@ -250,11 +250,11 @@ c Determine the maximum value of radial function for rejection sampling
 
 c   Sample sqrt(r_f)*abs(1+co*r_f)*exp(-zeta*r_f) by rejection
         bot=sqrt(rmino(i))*abs(one+co*rmino(i))*dexp(-zeta*rmino(i))
-   40   rtry=((deltar-deltri)*rannyu(0)+deltri)*rmino(i)
+   40   rtry=((deltar-deltri)*random_dp()+deltri)*rmino(i)
           top=sqrt(rtry)*abs(one+co*rtry)*dexp(-zeta*rtry)
           ratio=top/fmax
           rejmax=max(rejmax,ratio)
-          if(ratio.gt.rannyu(0)) goto 50
+          if(ratio.gt.random_dp()) goto 50
         goto 40
    50   fxop=fxop*top/bot
 
@@ -298,7 +298,7 @@ c   Calculate the integral of T
 c Sample cos(theta)
         raver=half*(rmino(i)+rtry)
         deltt=thetamx(raver,znuc(iwctype(nearo)))
-        costht=one-deltt*rannyu(0)
+        costht=one-deltt*random_dp()
         zprime=rtry*costht
         sintht=dsqrt(one-costht*costht)
 
@@ -314,11 +314,11 @@ c If we do not limit term to be <=1 then use commented out lines.
         term=dmin1(voldp*raver*sintht,one)
 clim    term=voldp*raver*sintht
         fmax=one+term
-   60   phitry=pi*rannyu(0)
+   60   phitry=pi*random_dp()
           cosphi=dcos(phitry)
           top=one+term*cosphi
 clim      top=abs(one+term*cosphi)
-          if(top.gt.rannyu(0)*fmax) goto 70
+          if(top.gt.random_dp()*fmax) goto 70
         goto 60
    70   fxop=fxop*top
 
@@ -330,7 +330,7 @@ clim    endif
 c Calculate x and y coordinates in local coordinate system
         xprime=rtry*sintht*dcos(phitry)
         yprime=dsqrt(max(zero,rtry*rtry-xprime**2-zprime**2))
-        if(rannyu(0).lt.half) yprime=-yprime
+        if(random_dp().lt.half) yprime=-yprime
 
 c Convert back to original coordinate system
         do ic=1,3
@@ -629,7 +629,7 @@ c and q times old, and keep track of which bin the old was in
 
 c accept new move with probability p
 c Note when one electron moves the velocity on all electrons change.
-      if (rannyu(0).lt.p) then
+      if (random_dp().lt.p) then
         idist(i)=itryn
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)

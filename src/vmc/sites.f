@@ -5,7 +5,7 @@
 c Written by Cyrus Umrigar
       use contrl_file, only: ounit
       use precision_kinds, only: dp
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       use system,  only: cent,iwctype,ncent,znuc
       implicit none
 
@@ -42,8 +42,8 @@ c atoms then the up-spins have an additional electron.
 
 c sample position from exponentials around center
 
-             site=-dlog(rannyu(0))
-             site=sign(site,(rannyu(0)-half))
+             site=-dlog(random_dp())
+             site=sign(site,(random_dp()-half))
              x(ic,l)=sitsca*site+cent(ic,i)
             enddo
           enddo

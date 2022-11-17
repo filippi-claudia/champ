@@ -45,7 +45,7 @@
       use properties_mod, only: prop_init
       use pseudo,  only: nloc
       use qua,     only: nquad,wq,xq,yq,zq
-      use rannyu_mod, only: setrn
+      use random_mod, only: setrn
       use slater,  only: cdet,coef,ndet,norb
       use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nbrnch
       use stats,   only: nodecr,trymove

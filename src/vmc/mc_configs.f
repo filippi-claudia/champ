@@ -12,7 +12,7 @@
       use mpiconf, only: idtask,nproc
       use pcm_mod, only: pcm_qvol
       use precision_kinds, only: dp
-      use rannyu_mod, only: rannyu,savern,setrn
+      use random_mod, only: random_dp,savern,setrn
       use sites_mod, only: sites
       use system,  only: iwctype,ncent,ncent_tot,nelec,znuc
       !use contrl, only: irstar, isite, nconf_new, icharged_atom
@@ -44,11 +44,11 @@ c         endif
 
         if(nproc.gt.1) then
           do id=1,(3*nelec)*idtask
-            rnd=rannyu(0)
+            rnd=random_dp()
           enddo
           call savern(irn)
           do i=1,4
-            irn(i)=mod(irn(i)+int(rannyu(0)*idtask*9999),9999)
+            irn(i)=mod(irn(i)+int(random_dp()*idtask*9999),9999)
           enddo
           call setrn(irn)
         endif

@@ -80,7 +80,7 @@ jobs:
         cmake --build build -- -j2
         echo "ldd on executalbe after installation"
         ldd $GITHUB_WORKSPACE/bin/vmc.mov1
-        
+       
         cd build
         ctest --output-on-failure
 
@@ -573,8 +573,6 @@ jobs:
 #        exit -1;
 #        fi
 #
-
-
     # - name: "Zip the test reults"
     #   run: |
     #     echo "Compressing the test results from workflow"

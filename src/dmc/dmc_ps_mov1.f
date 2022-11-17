@@ -86,7 +86,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use pcm_dmc, only: pcm_save,pcm_sum
       use precision_kinds, only: dp
       use prop_dmc, only: prop_save_dmc,prop_sum_dmc
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       use splitj_mod, only: splitj
       use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nodecr
       use stats,   only: trymove
@@ -395,7 +395,7 @@ c If we are using weights rather than accept/reject
           endif
 
           iacc_elec(i)=0
-          if(rannyu(0).lt.p) then
+          if(random_dp().lt.p) then
             iaccept=1
             nacc=nacc+1
             iacc_elec(i)=1
