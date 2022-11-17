@@ -65,8 +65,8 @@ c spline interpolation
 
             if(ier.eq.1) then
 
-              call basis_fns(i,i,rvec_en,r_en,2)
-
+              call basis_fns(i,i,nelec,rvec_en,r_en,2)
+              
               do iorb=1,norb+nadorb
                 orb(i,iorb)=0.d0
                 dorb(iorb,i,1)=0.d0
@@ -97,8 +97,8 @@ c spline interpolation
 
            if(ier.eq.1) then
 
-            call basis_fns(i,i,rvec_en,r_en,2)
-
+             call basis_fns(i,i,nelec,rvec_en,r_en,2)
+             
              do iorb=1,norb+nadorb
                orb(i,iorb)=0.d0
                dorb(iorb,i,1)=0.d0
@@ -124,7 +124,7 @@ c get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
 
-         call basis_fns(1,nelec,rvec_en,r_en,ider)
+         call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 
 c in alternativa al loop 26
 c        do jbasis=1,nbasis
@@ -310,7 +310,7 @@ c get basis functions for electron iel
             ider=1
             if(iflag.gt.0) ider=2
 
-            call basis_fns(iel,iel,rvec_en,r_en,ider)
+            call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
 
 !     Vectorization dependent code. useful for AVX512 and AVX2
 #ifdef VECTORIZATION

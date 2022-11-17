@@ -262,7 +262,7 @@ c         Check that no atom is exactly on a grid point
           endif
 
 c         Calculate the value of the orbital
-          call basis_fns(1,1,rvec_en,r_en,0)
+          call basis_fns(1,1,nelec,rvec_en,r_en,0)
 
           do iorb=1,norb
            orb_num_spl(1,ix,iy,iz,iorb)=0.d0
@@ -317,7 +317,7 @@ c DEBUG
            r_en(1,ic)=dsqrt(r_en(1,ic))
           enddo
 
-          call basis_fns(1,1,rvec_en,r_en,0)
+          call basis_fns(1,1,nelec,rvec_en,r_en,0)
 
            value=0.
            do m=1,nbasis
@@ -448,6 +448,7 @@ c Lagrange interpolation routines
       use slater,  only: coef,norb
       use system,  only: cent,ncent,nghostcent
       use vmc_mod, only: norb_tot
+      use system,  only: nelec
       implicit none
 
       integer :: i, ic, idenom, ier, iok
@@ -525,7 +526,7 @@ c         Check that no atom is exactly on a grid point
           endif
 
 c         Calculate the grids
-          call basis_fns(1,1,rvec_en,r_en,2)
+          call basis_fns(1,1,nelec,rvec_en,r_en,2)
 
           do iorb=1,norb
            orb_num_lag(1,ix,iy,iz,iorb)=0.d0
@@ -601,7 +602,7 @@ c DEBUG
            r_en(1,ic)=dsqrt(r_en(1,ic))
           enddo
 
-          call basis_fns(1,1,rvec_en,r_en,0)
+          call basis_fns(1,1,nelec,rvec_en,r_en,0)
 
           value=0.
           do j=1,norb
