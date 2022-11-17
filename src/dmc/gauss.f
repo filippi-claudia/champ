@@ -11,13 +11,13 @@ c backward compatibility generate just 1.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use constants, only: pi
       use precision_kinds, only: dp
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       implicit none
 
       real(dp) :: gauss
 
-      gauss=dcos(2*pi*rannyu(0))
-      gauss=gauss*sqrt(-2*dlog(rannyu(0)))
+      gauss=dcos(2*pi*random_dp())
+      gauss=gauss*sqrt(-2*dlog(random_dp()))
 
       return
       end

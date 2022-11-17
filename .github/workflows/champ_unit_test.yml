@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         toolchain: ['gnu']
-        mode: ['RELEASE']
+        mode: ['DEBUG']
     defaults:
       run:
         shell: bash --noprofile --norc {0}
@@ -33,8 +33,8 @@ jobs:
         sudo apt install -y openmpi-bin
         sudo apt install -y libopenmpi-dev
         sudo apt install -y gawk
-        sudo apt install -y libblacs-mpi-dev
         sudo apt install -y liblapack-dev
+        sudo apt install -y libblas-dev
         sudo apt-get install -y gcc
         gawk --version
         mpirun --version
@@ -65,8 +65,8 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DVECTORIZED=no \
-                          -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DBUILD_UNIT_TESTS=on
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 \
+                          -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DUNIT_TESTS=on
         cmake --build build -- vmc_Tests -j2
         ulimit -s unlimited
 

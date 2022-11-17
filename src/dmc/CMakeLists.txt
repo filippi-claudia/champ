@@ -44,6 +44,7 @@ formatFortran("${DMC_SOURCE}") # Set Fixed format property
 add_executable(dmc.mov1
   $<TARGET_OBJECTS:shared_modules>
   $<TARGET_OBJECTS:shared_objects>
+  $<TARGET_OBJECTS:rng>
   # DMC source code
   ${DMC_SOURCE})
 

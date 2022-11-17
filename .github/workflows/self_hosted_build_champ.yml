@@ -266,8 +266,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optall_ci44.inp  -o vmc_optall_ci44_single.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.1148833 +-  0.0144842) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optall_ci44_single.out "total E" -26.1148833  0.0144842
+        echo "Comparing the energy with the reference one (total E = -26.1722626 +-  0.0144842) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optall_ci44_single.out "total E" -26.1722626  0.0144842
 
     - name: "Test 12 (Butadiene) VMC optimization + node cutoff including geometry and csfmap using sr_n (500 determinants) on 2 processors"
       run: |
@@ -299,8 +299,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500_single.out  -e error_vmc_optimization_500
 
-        echo "Comparing the energy with the reference one (total E = -26.1724891 +-  0.0226735) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_single.out "total E" -26.1724891   0.0226735
+        echo "Comparing the energy with the reference one (total E = -26.1242074 +-  0.0226735) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_single.out "total E" -26.1242074  0.0226735
 
 
     - name: "Test 14 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 2 processors"
@@ -333,8 +333,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000_single.out  -e error_vmc_optimization_5000
 
-        echo "Comparing the energy with the reference one (total E = -26.1977494 +-  0.0194395) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_single.out "total E" -26.1977494  0.0194395
+        echo "Comparing the energy with the reference one (total E = -26.2423387 +-  0.0194395) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_single.out "total E" -26.2423387  0.0194395
 
 
     - name: "Test 16 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 2 processors"
@@ -382,8 +382,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000_double.out  -e error_vmc_optimization_15000
 
-        echo "Comparing the energy with the reference one (total E = -26.2001997 +-  0.0171086) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_double.out "total E" -26.2001997  0.0171086
+        echo "Comparing the energy with the reference one (total E = -26.2415479 +-  0.0171086) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_double.out "total E" -26.2415479  0.0171086
 
     - name: "Test 19 (Butadiene) Workload VMC optimization all using sr_n (65000 dets) on 1 processor"
       run: |
@@ -414,8 +414,8 @@ jobs:
         echo "Running the optimization calculation"
         /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ras1022_pVQZ_65000.inp  -o vmc_opt_ras1022_pVQZ_65000_double.out  -e error
 
-        echo "Comparing the energy with the reference one (total E = -26.0765809 +-  0.0140059) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_opt_ras1022_pVQZ_65000_double.out "total E" -26.0765809  0.0140059
+        echo "Comparing the energy with the reference one (total E = -26.1058932 +-  0.0140059) "
+        $GITHUB_WORKSPACE/tools/compare_value.py vmc_opt_ras1022_pVQZ_65000_double.out "total E" -26.1058932  0.0140059
 
 
     - name: "Test 21 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 1 processor"

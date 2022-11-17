@@ -34,7 +34,7 @@ c job where it left off
       use precision_kinds, only: dp
       use pseudo,  only: nloc
       use qua,     only: nquad,wq,xq,yq,zq
-      use rannyu_mod, only: savern
+      use random_mod, only: savern
       use slater,  only: cdet,coef,ndet,norb
       use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nbrnch
       use stats,   only: nodecr,trymove

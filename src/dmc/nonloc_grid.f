@@ -16,7 +16,7 @@
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use qua,     only: nquad,xq,yq,zq
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       use system,  only: cent,ncent,nelec
       implicit none
 
@@ -92,7 +92,7 @@ c     enddo
       if(t_norm.eq.1.d0) return
 
       t_cum=0.d0
-      p=rannyu(0)
+      p=random_dp()
       do ii=i1,i2
         i=ii
         if(i.gt.nelec) i=i-nelec

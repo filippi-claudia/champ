@@ -15,7 +15,7 @@ c Written by Cyrus Umrigar
       use pcm_dmc, only: pcm_splitj
       use precision_kinds, only: dp
       use prop_dmc, only: prop_splitj
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       use stats,   only: nbrnch
       use system,  only: nelec
       use velratio, only: fratio,xdrifted
@@ -55,7 +55,7 @@ c Written by Cyrus Umrigar
               ipair=0
               iunder=iunder+1
               wttot=wt(iw)+wt(iw2)
-              if(rannyu(0).gt.(wt(iw)/wttot)) then
+              if(random_dp().gt.(wt(iw)/wttot)) then
                 wt(iw2)=wttot
                 iwundr(iunder)=iw
                else

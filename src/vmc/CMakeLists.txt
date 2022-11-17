@@ -98,7 +98,7 @@ if (MPI_Fortran_FOUND)
     pw_placeholder.f
     pw_read.f
     qmmm_placeholder.f
-    rannyu.f
+    random.f
     readps_gauss.f
     readps_tm.f
     rotqua.f
@@ -261,7 +261,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/spline2.f
     ${CMAKE_CURRENT_SOURCE_DIR}/read_bas_num.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/store_diag_hs.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/rannyu.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/random.f
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid_orbitals.f
     ${CMAKE_CURRENT_SOURCE_DIR}/distances.f
     ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f
@@ -352,18 +352,38 @@ if (MPI_Fortran_FOUND)
   # --------------------------------------------------------------------
   # Compile and link executable:
   # --------------------------------------------------------------------
+  add_library(rng OBJECT
+    xoshiro256starstar.c)
+  
+  target_compile_options(rng
+    PUBLIC
+    "-O3")
+
 
   add_executable(vmc.mov1
     $<TARGET_OBJECTS:shared_modules>
     $<TARGET_OBJECTS:shared_objects>
+    $<TARGET_OBJECTS:rng>
     # source that is not already included in the objects
     ${VMC_SOURCE}
-    ${VMC90_SOURCE})
+    ${VMC90_SOURCE}
+    )
 
+
+IF(UNIT_TESTS)
   add_library(vmc SHARED
     $<TARGET_OBJECTS:shared_modules>
     $<TARGET_OBJECTS:shared_objects>
+    $<TARGET_OBJECTS:rng>
     $<TARGET_OBJECTS:vmc.mov1>)
+
+  target_compile_options(vmc
+    PRIVATE
+    ${Fortran_FLAGS}
+    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+    )
+
+ENDIF()
 
   #  Add headers
   target_include_directories(vmc.mov1
@@ -373,12 +393,6 @@ if (MPI_Fortran_FOUND)
 
   # compilation
   target_compile_options(vmc.mov1
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-    )
-
-  target_compile_options(vmc
     PRIVATE
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
