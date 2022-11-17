@@ -80,497 +80,499 @@ jobs:
         cmake --build build -- -j2
         echo "ldd on executalbe after installation"
         ldd $GITHUB_WORKSPACE/bin/vmc.mov1
-
-
-    - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
-      run: |
-        echo "Running the testsuite:: Test : . H2 "
-        cd tests/CI_test/VMC-H2
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_LIBRARY_PATH
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0152558 +-  0.0067031) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_single.out "total E" -1.0152558   0.0067031
-
-    - name: "Test 02 (H2) sto basis optimize jastrow sr_n method on 2 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0073545 +-  0.0048051) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_double.out "total E" -1.0073545  0.0048051
-
-    - name: "Test 03 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
-      continue-on-error: true
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0537256 +-  0.0031706 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0537256   0.0031706
-
-    - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
-      continue-on-error: true
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0628286 +-  0.0019904) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0628286  0.0019904
-
-    - name: "Test 05 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
-
-        echo "Comparing the energy with the reference one (Current energy = -1.0024307 +-  0.0096179) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0024307   0.0096179
-
-        echo "Comparing the energy with the reference one Current best energy + 2*error = -0.9938"
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -0.9938 0.0096179
-
-    - name: "Test 06 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
-
-        echo "Comparing the energy with the reference one (Current energy = -1.0110592 +-  0.0074666) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0110592  0.0074666
-
-        echo "Comparing the energy with the reference one Current best energy + 2*error = -0.9961"
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -0.9961  0.0074666
-
-
-    - name: "Test 07 (Butadiene) Workload DMC on 1 processor"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the DMC tests using the new parser. Butadiene DMC from workload single core"
-        cd tests/CI_test/DMC-Butadiene-ci1010_pVTZ-500-dets
-
-        echo "Running the dmc.mov1 on one processor"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_single.out  -e dmc_single_core.error
-
-        echo "Comparing the energy with the reference one (total energy (  100) = -26.2740598 +-  0.0149203) "
-        $GITHUB_WORKSPACE/tools/compare_value.py dmc_workload_single.out "total energy (  100)" -26.2740598  0.0149203
-
-
-    - name: "Test 08 (Butadiene) Workload DMC on 2 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the DMC tests using the new parser. Butadiene DMC  from workload two cores"
-        cd tests/CI_test/DMC-Butadiene-ci1010_pVTZ-500-dets
-
-        echo "Running the dmc.mov1 on two processors"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_double.out  -e dmc_double_core.error
-
-        echo "Comparing the energy with the reference one (total energy (  100) = -26.2756575 +-  0.0115056) "
-        $GITHUB_WORKSPACE/tools/compare_value.py dmc_workload_double.out "total energy (  100)" -26.2756575  0.0115056
-
-
-
-    - name: "Test 09 (Butadiene cas44) VMC only on 1 processor"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene/ci44_pVQZ_20_dets_12_csf_noopt
-
-        echo "Running the calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_noopt_ci44.inp  -o vmc_noopt_ci44_single.out  -e error
-
-        echo "Comparing the energy with the reference one (total E = -26.2545772 +-  0.0141336) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_noopt_ci44_single.out "total E" -26.2545772   0.0141336
-
-
-    - name: "Test 10 (Butadiene cas44) VMC only on 2 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene/ci44_pVQZ_20_dets_12_csf_noopt
-
-        echo "Running the calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_noopt_ci44.inp  -o vmc_noopt_ci44_double.out  -e error
-
-        echo "Comparing the energy with the reference one (total E = -26.2340010 +-  0.0100626) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_noopt_ci44_double.out "total E" -26.2340010  0.0100626
-
-
-    - name: "Test 11 (Butadiene) VMC optimization + node cutoff including geometry and csfmap using sr_n (500 determinants) on 1 processor"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene/ci44_pVQZ_20_dets_12_csf_optall
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optall_ci44.inp  -o vmc_optall_ci44_single.out  -e error
-
-        echo "Comparing the energy with the reference one (total E = -26.1148833 +-  0.0144842) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optall_ci44_single.out "total E" -26.1148833  0.0144842
-
-    - name: "Test 12 (Butadiene) VMC optimization + node cutoff including geometry and csfmap using sr_n (500 determinants) on 2 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene/ci44_pVQZ_20_dets_12_csf_optall
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optall_ci44.inp  -o vmc_optall_ci44_double.out  -e error
-
-        echo "Comparing the energy with the reference one (total E = -26.1942233 +-  0.0098956) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optall_ci44_double.out "total E" -26.1942233  0.0098956
-
-
-    - name: "Test 13 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 1 processor"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-500-dets
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500_single.out  -e error_vmc_optimization_500
-
-        echo "Comparing the energy with the reference one (total E = -26.1724891 +-  0.0226735) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_single.out "total E" -26.1724891   0.0226735
-
-
-    - name: "Test 14 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 2 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-500-dets
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500_double.out  -e error_vmc_optimization_500
-
-        echo "Comparing the energy with the reference one (total E = -26.1975057 +-  0.0199623) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_double.out "total E" -26.1975057   0.0199623
-
-
-    - name: "Test 15 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 1 processor"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-5000-dets
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000_single.out  -e error_vmc_optimization_5000
-
-        echo "Comparing the energy with the reference one (total E = -26.1977494 +-  0.0194395) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_single.out "total E" -26.1977494  0.0194395
-
-
-    - name: "Test 16 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 2 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-5000-dets
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000_double.out  -e error_vmc_optimization_5000
-
-        echo "Comparing the energy with the reference one (total E = -26.1883151 +-  0.0148606) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_double.out "total E" -26.1883151  0.0148606
-
-    - name: "Test 17 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 1 processor"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-15000-dets
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000_single.out  -e error_vmc_optimization_15000
-
-        echo "Comparing the energy with the reference one (total E = -26.2261043 +-  0.0270063) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_single.out "total E" -26.2261043  0.0270063
-
-    - name: "Test 18 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 2 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-15000-dets
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000_double.out  -e error_vmc_optimization_15000
-
-        echo "Comparing the energy with the reference one (total E = -26.2001997 +-  0.0171086) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_double.out "total E" -26.2001997  0.0171086
-
-    - name: "Test 19 (Butadiene) Workload VMC optimization all using sr_n (65000 dets) on 1 processor"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene-ras1022_Q_optWF+geo-64000dets
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ras1022_pVQZ_65000.inp  -o vmc_opt_ras1022_pVQZ_65000_single.out  -e error
-
-        echo "Comparing the energy with the reference one (total E = -26.1094876 +-  0.0161510) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_opt_ras1022_pVQZ_65000_single.out "total E" -26.1094876  0.0161510
-
-    - name: "Test 20 (Butadiene) Workload VMC optimization all using sr_n (65000 dets) on 2 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Butadiene VMC "
-        cd tests/CI_test/VMC-Butadiene-ras1022_Q_optWF+geo-64000dets
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ras1022_pVQZ_65000.inp  -o vmc_opt_ras1022_pVQZ_65000_double.out  -e error
-
-        echo "Comparing the energy with the reference one (total E = -26.0765809 +-  0.0140059) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_opt_ras1022_pVQZ_65000_double.out "total E" -26.0765809  0.0140059
-
-
-    - name: "Test 21 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 1 processor"
-      continue-on-error: True
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . PSB3 lin_d regterg "
-        cd tests/CI_test/VMC-PSB3-400_dets-175_csfs_ci66_BFD-Da
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_single.out -e error
-
-        echo "Comparing the energy with the reference one (total E of second state = -40.7922829 +-  0.0451666) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_single.out "total E" -40.7922829  0.0451666
-
-    - name: "Test 22 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
-      continue-on-error: true
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . PSB2 "
-        cd tests/CI_test/VMC-PSB2-36_dets-20_csfs_ci44_BFD-Da
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
-
-        echo "Comparing the energy with the reference one ("total E" -29.8086370 +-  0.0380844) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.8086370  0.0380844
-
-
-    - name: "Test 23 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 2 processor"
-      continue-on-error: true
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . PSB2 "
-        cd tests/CI_test/VMC-PSB2-36_dets-20_csfs_ci44_BFD-Da
-
-        echo "Running the optimization calculation"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
-
-        echo "Comparing the energy with the reference one ("total E" -29.7412008 +-  0.0353753) "
-        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.7412008  0.0353753
-
-    - name: "Test 24 (Formaldehyde Ground State) Native TREXIO testing with HDF5 backend on 8 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Formaldehyde VMC with 1862 dets"
-        cd tests/CI_test/TREXIO-VMC-formaldehyde-ground-state
-
-        echo "Running the calculation with trexio library linked"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i trexio_vmc_COH2_gs.inp  -o trexio_vmc_COH2_gs.out  -e error
-
-        echo "Comparing the energy with the reference one (total E = -22.5785664 +-  0.0045834   ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_gs.out "total E" -22.5785664  0.0045834
-
-    - name: "Test 25 (Formaldehyde Excited State) Native TREXIO testing with HDF5 backend on 8 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : . Formaldehyde VMC with 8724 dets"
-        cd tests/CI_test/TREXIO-VMC-formaldehyde-excited-state
-
-        echo "Running the calculation with trexio library linked"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i trexio_vmc_COH2_excited_state.inp  -o trexio_vmc_COH2_excited_state.out  -e error
-
-        echo "Comparing the energy with the reference one (total E = -22.6195267 +-  0.0031049 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_excited_state.out "total E" -22.6195267  0.0031049
-
-    - name: "Test 26 (Water optall) Native TREXIO testing with HDF5 backend on 2 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : Water VMC optimize all using 2 procs"
-        cd tests/CI_test/TREXIO-VMC-water-DFT-OptAll
-
-        echo "Running the calculation with trexio library linked"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_h2o_dft_optall.inp  -o vmc_h2o_dft_optall.out  -e error
-
-        echo "Comparing the energy with the reference one (total E = -17.2259531 +-  0.0019156 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py vmc_h2o_dft_optall.out "total E" -17.2259531   0.0019156
-
-    - name: "Test 27 (Water DMC) Native TREXIO testing with HDF5 backend on 8 processors"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : Water DMC on optimized orbitals and Jastrow using 8 procs"
-        cd tests/CI_test/TREXIO-DMC-water-DFT-dmc2body_optall_tau0.05
-
-        echo "Running the calculation with trexio library linked"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_h2o_dft_jas2body_optall.inp -o vmc_h2o_dft_jas2body_optall.out -e error
-        cat mc_configs_new* >> mc_configs
-        rm -v mc_configs_new*
-
-        echo "First step completed"
-
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/dmc.mov1 -i dmc_h2o_dft_jas2body_optall.inp -o dmc_h2o_dft_jas2body_optall.out -e error
-        rm -v problem*
-        rm -v mc_configs_new*
-
-        tail -20 dmc_h2o_dft_jas2body_optall.out
-        echo "Comparing the energy with the reference one (total E = -17.2625985 +-  0.0008871 ) "
-        $GITHUB_WORKSPACE/tools/compare_value.py dmc_h2o_dft_jas2body_optall.out "total energy (  100)" -17.2625985  0.0008871
-
-    - name: "Test 28 (Butadiene) Native TREXIO with TEXT backend on 1 processor"
-      run: |
-        ulimit -s unlimited
-        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-
-        echo "Running the testsuite:: Test : Butadiene VMC optimization of Jastrow and determinants using 1 processor using TEXT backend of trexio"
-        cd tests/CI_test/TREXIO-TEXT-VMC-butadiene
-
-        echo "Running the HDF5 backend calculation with trexio library linked"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ci1010_pVTZ_1522_hdf5.inp  -o vmc_opt_ci1010_pVTZ_1522_hdf5_single.out  -e error_hdf5_single
-
-        echo "Running the TEXT backend calculation with trexio library linked"
-        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ci1010_pVTZ_1522_text.inp  -o vmc_opt_ci1010_pVTZ_1522_text_single.out  -e error_text_single
-
-
-        HDF=`tail -13 vmc_opt_ci1010_pVTZ_1522_hdf5_single.out | head -n 1 | awk 'NR == 1 {print $4}'`
-        echo $HDF
-        TEXT=`tail -13 vmc_opt_ci1010_pVTZ_1522_text_single.out | head -n 1 | awk 'NR == 1 {print $4}'`
-        echo $TEXT
-        if (($(echo "$HDF == $TEXT" |bc -l))); then
-        echo "success"
-        exit 0;
-        else
-        exit -1;
-        fi
-
+        
+        cd build
+        ctest --output-on-failure
+
+#    - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
+#      run: |
+#        echo "Running the testsuite:: Test : . H2 "
+#        cd tests/CI_test/VMC-H2
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_LIBRARY_PATH
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -1.0152558 +-  0.0067031) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_single.out "total E" -1.0152558   0.0067031
+#
+#    - name: "Test 02 (H2) sto basis optimize jastrow sr_n method on 2 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . H2 "
+#        cd tests/CI_test/VMC-H2
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -1.0073545 +-  0.0048051) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_double.out "total E" -1.0073545  0.0048051
+#
+#    - name: "Test 03 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
+#      continue-on-error: true
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . H2 "
+#        cd tests/CI_test/VMC-H2
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -1.0537256 +-  0.0031706 ) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0537256   0.0031706
+#
+#    - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
+#      continue-on-error: true
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . H2 "
+#        cd tests/CI_test/VMC-H2
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -1.0628286 +-  0.0019904) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0628286  0.0019904
+#
+#    - name: "Test 05 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . H2 "
+#        cd tests/CI_test/VMC-H2
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
+#
+#        echo "Comparing the energy with the reference one (Current energy = -1.0024307 +-  0.0096179) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0024307   0.0096179
+#
+#        echo "Comparing the energy with the reference one Current best energy + 2*error = -0.9938"
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -0.9938 0.0096179
+#
+#    - name: "Test 06 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . H2 "
+#        cd tests/CI_test/VMC-H2
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
+#
+#        echo "Comparing the energy with the reference one (Current energy = -1.0110592 +-  0.0074666) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0110592  0.0074666
+#
+#        echo "Comparing the energy with the reference one Current best energy + 2*error = -0.9961"
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -0.9961  0.0074666
+#
+#
+#    - name: "Test 07 (Butadiene) Workload DMC on 1 processor"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the DMC tests using the new parser. Butadiene DMC from workload single core"
+#        cd tests/CI_test/DMC-Butadiene-ci1010_pVTZ-500-dets
+#
+#        echo "Running the dmc.mov1 on one processor"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_single.out  -e dmc_single_core.error
+#
+#        echo "Comparing the energy with the reference one (total energy (  100) = -26.2740598 +-  0.0149203) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py dmc_workload_single.out "total energy (  100)" -26.2740598  0.0149203
+#
+#
+#    - name: "Test 08 (Butadiene) Workload DMC on 2 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the DMC tests using the new parser. Butadiene DMC  from workload two cores"
+#        cd tests/CI_test/DMC-Butadiene-ci1010_pVTZ-500-dets
+#
+#        echo "Running the dmc.mov1 on two processors"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/dmc.mov1 -i dmc.inp  -o dmc_workload_double.out  -e dmc_double_core.error
+#
+#        echo "Comparing the energy with the reference one (total energy (  100) = -26.2756575 +-  0.0115056) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py dmc_workload_double.out "total energy (  100)" -26.2756575  0.0115056
+#
+#
+#
+#    - name: "Test 09 (Butadiene cas44) VMC only on 1 processor"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene/ci44_pVQZ_20_dets_12_csf_noopt
+#
+#        echo "Running the calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_noopt_ci44.inp  -o vmc_noopt_ci44_single.out  -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -26.2545772 +-  0.0141336) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_noopt_ci44_single.out "total E" -26.2545772   0.0141336
+#
+#
+#    - name: "Test 10 (Butadiene cas44) VMC only on 2 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene/ci44_pVQZ_20_dets_12_csf_noopt
+#
+#        echo "Running the calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_noopt_ci44.inp  -o vmc_noopt_ci44_double.out  -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -26.2340010 +-  0.0100626) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_noopt_ci44_double.out "total E" -26.2340010  0.0100626
+#
+#
+#    - name: "Test 11 (Butadiene) VMC optimization + node cutoff including geometry and csfmap using sr_n (500 determinants) on 1 processor"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene/ci44_pVQZ_20_dets_12_csf_optall
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optall_ci44.inp  -o vmc_optall_ci44_single.out  -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -26.1148833 +-  0.0144842) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optall_ci44_single.out "total E" -26.1148833  0.0144842
+#
+#    - name: "Test 12 (Butadiene) VMC optimization + node cutoff including geometry and csfmap using sr_n (500 determinants) on 2 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene/ci44_pVQZ_20_dets_12_csf_optall
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optall_ci44.inp  -o vmc_optall_ci44_double.out  -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -26.1942233 +-  0.0098956) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optall_ci44_double.out "total E" -26.1942233  0.0098956
+#
+#
+#    - name: "Test 13 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 1 processor"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-500-dets
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500_single.out  -e error_vmc_optimization_500
+#
+#        echo "Comparing the energy with the reference one (total E = -26.1724891 +-  0.0226735) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_single.out "total E" -26.1724891   0.0226735
+#
+#
+#    - name: "Test 14 (Butadiene) Workload VMC optimization all using sr_n (500 determinants) on 2 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-500-dets
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_500.inp  -o vmc_optimization_500_double.out  -e error_vmc_optimization_500
+#
+#        echo "Comparing the energy with the reference one (total E = -26.1975057 +-  0.0199623) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_500_double.out "total E" -26.1975057   0.0199623
+#
+#
+#    - name: "Test 15 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 1 processor"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-5000-dets
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000_single.out  -e error_vmc_optimization_5000
+#
+#        echo "Comparing the energy with the reference one (total E = -26.1977494 +-  0.0194395) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_single.out "total E" -26.1977494  0.0194395
+#
+#
+#    - name: "Test 16 (Butadiene) Workload VMC optimization all using sr_n (5000 determinants) on 2 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-5000-dets
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_5000.inp  -o vmc_optimization_5000_double.out  -e error_vmc_optimization_5000
+#
+#        echo "Comparing the energy with the reference one (total E = -26.1883151 +-  0.0148606) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_5000_double.out "total E" -26.1883151  0.0148606
+#
+#    - name: "Test 17 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 1 processor"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-15000-dets
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000_single.out  -e error_vmc_optimization_15000
+#
+#        echo "Comparing the energy with the reference one (total E = -26.2261043 +-  0.0270063) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_single.out "total E" -26.2261043  0.0270063
+#
+#    - name: "Test 18 (Butadiene) Workload VMC optimization all using sr_n (15000 determinants) on 2 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene-ci1010_pVTZ-15000-dets
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_optimization_15000.inp  -o vmc_optimization_15000_double.out  -e error_vmc_optimization_15000
+#
+#        echo "Comparing the energy with the reference one (total E = -26.2001997 +-  0.0171086) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_optimization_15000_double.out "total E" -26.2001997  0.0171086
+#
+#    - name: "Test 19 (Butadiene) Workload VMC optimization all using sr_n (65000 dets) on 1 processor"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene-ras1022_Q_optWF+geo-64000dets
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ras1022_pVQZ_65000.inp  -o vmc_opt_ras1022_pVQZ_65000_single.out  -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -26.1094876 +-  0.0161510) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_opt_ras1022_pVQZ_65000_single.out "total E" -26.1094876  0.0161510
+#
+#    - name: "Test 20 (Butadiene) Workload VMC optimization all using sr_n (65000 dets) on 2 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Butadiene VMC "
+#        cd tests/CI_test/VMC-Butadiene-ras1022_Q_optWF+geo-64000dets
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ras1022_pVQZ_65000.inp  -o vmc_opt_ras1022_pVQZ_65000_double.out  -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -26.0765809 +-  0.0140059) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_opt_ras1022_pVQZ_65000_double.out "total E" -26.0765809  0.0140059
+#
+#
+#    - name: "Test 21 (psb3) optimize wavefunction and ci using lin_d method Regterg Calculation (400 determinants, 2 states, csfmap) on 1 processor"
+#      continue-on-error: True
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . PSB3 lin_d regterg "
+#        cd tests/CI_test/VMC-PSB3-400_dets-175_csfs_ci66_BFD-Da
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_regterg.inp -o revised_regterg_single.out -e error
+#
+#        echo "Comparing the energy with the reference one (total E of second state = -40.7922829 +-  0.0451666) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_regterg_single.out "total E" -40.7922829  0.0451666
+#
+#    - name: "Test 22 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 1 processor"
+#      continue-on-error: true
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . PSB2 "
+#        cd tests/CI_test/VMC-PSB2-36_dets-20_csfs_ci44_BFD-Da
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_single.out -e error
+#
+#        echo "Comparing the energy with the reference one ("total E" -29.8086370 +-  0.0380844) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_single.out "total E" -29.8086370  0.0380844
+#
+#
+#    - name: "Test 23 (psb2) optimize wfn, ci, jas, and orb using mix_n method on 2 processor"
+#      continue-on-error: true
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . PSB2 "
+#        cd tests/CI_test/VMC-PSB2-36_dets-20_csfs_ci44_BFD-Da
+#
+#        echo "Running the optimization calculation"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i revised_psb2_mix_n.inp -o revised_psb2_mix_n_double.out -e error
+#
+#        echo "Comparing the energy with the reference one ("total E" -29.7412008 +-  0.0353753) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py revised_psb2_mix_n_double.out "total E" -29.7412008  0.0353753
+#
+#    - name: "Test 24 (Formaldehyde Ground State) Native TREXIO testing with HDF5 backend on 8 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Formaldehyde VMC with 1862 dets"
+#        cd tests/CI_test/TREXIO-VMC-formaldehyde-ground-state
+#
+#        echo "Running the calculation with trexio library linked"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i trexio_vmc_COH2_gs.inp  -o trexio_vmc_COH2_gs.out  -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -22.5785664 +-  0.0045834   ) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_gs.out "total E" -22.5785664  0.0045834
+#
+#    - name: "Test 25 (Formaldehyde Excited State) Native TREXIO testing with HDF5 backend on 8 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : . Formaldehyde VMC with 8724 dets"
+#        cd tests/CI_test/TREXIO-VMC-formaldehyde-excited-state
+#
+#        echo "Running the calculation with trexio library linked"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i trexio_vmc_COH2_excited_state.inp  -o trexio_vmc_COH2_excited_state.out  -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -22.6195267 +-  0.0031049 ) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py trexio_vmc_COH2_excited_state.out "total E" -22.6195267  0.0031049
+#
+#    - name: "Test 26 (Water optall) Native TREXIO testing with HDF5 backend on 2 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : Water VMC optimize all using 2 procs"
+#        cd tests/CI_test/TREXIO-VMC-water-DFT-OptAll
+#
+#        echo "Running the calculation with trexio library linked"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 2  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_h2o_dft_optall.inp  -o vmc_h2o_dft_optall.out  -e error
+#
+#        echo "Comparing the energy with the reference one (total E = -17.2259531 +-  0.0019156 ) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py vmc_h2o_dft_optall.out "total E" -17.2259531   0.0019156
+#
+#    - name: "Test 27 (Water DMC) Native TREXIO testing with HDF5 backend on 8 processors"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : Water DMC on optimized orbitals and Jastrow using 8 procs"
+#        cd tests/CI_test/TREXIO-DMC-water-DFT-dmc2body_optall_tau0.05
+#
+#        echo "Running the calculation with trexio library linked"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_h2o_dft_jas2body_optall.inp -o vmc_h2o_dft_jas2body_optall.out -e error
+#        cat mc_configs_new* >> mc_configs
+#        rm -v mc_configs_new*
+#
+#        echo "First step completed"
+#
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 8  $GITHUB_WORKSPACE/bin/dmc.mov1 -i dmc_h2o_dft_jas2body_optall.inp -o dmc_h2o_dft_jas2body_optall.out -e error
+#        rm -v problem*
+#        rm -v mc_configs_new*
+#
+#        tail -20 dmc_h2o_dft_jas2body_optall.out
+#        echo "Comparing the energy with the reference one (total E = -17.2625985 +-  0.0008871 ) "
+#        $GITHUB_WORKSPACE/tools/compare_value.py dmc_h2o_dft_jas2body_optall.out "total energy (  100)" -17.2625985  0.0008871
+#
+#    - name: "Test 28 (Butadiene) Native TREXIO with TEXT backend on 1 processor"
+#      run: |
+#        ulimit -s unlimited
+#        export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
+#        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+#        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.4.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
+#
+#        echo "Running the testsuite:: Test : Butadiene VMC optimization of Jastrow and determinants using 1 processor using TEXT backend of trexio"
+#        cd tests/CI_test/TREXIO-TEXT-VMC-butadiene
+#
+#        echo "Running the HDF5 backend calculation with trexio library linked"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ci1010_pVTZ_1522_hdf5.inp  -o vmc_opt_ci1010_pVTZ_1522_hdf5_single.out  -e error_hdf5_single
+#
+#        echo "Running the TEXT backend calculation with trexio library linked"
+#        /software/intel/oneapi/mpi/2021.4.0//bin/mpirun -np 1  $GITHUB_WORKSPACE/bin/vmc.mov1 -i vmc_opt_ci1010_pVTZ_1522_text.inp  -o vmc_opt_ci1010_pVTZ_1522_text_single.out  -e error_text_single
+#
+#
+#        HDF=`tail -13 vmc_opt_ci1010_pVTZ_1522_hdf5_single.out | head -n 1 | awk 'NR == 1 {print $4}'`
+#        echo $HDF
+#        TEXT=`tail -13 vmc_opt_ci1010_pVTZ_1522_text_single.out | head -n 1 | awk 'NR == 1 {print $4}'`
+#        echo $TEXT
+#        if (($(echo "$HDF == $TEXT" |bc -l))); then
+#        echo "success"
+#        exit 0;
+#        else
+#        exit -1;
+#        fi
+#
 
 
     # - name: "Zip the test reults"
