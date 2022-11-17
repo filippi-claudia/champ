@@ -315,6 +315,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use qua,     only: nquad
       use precision_kinds, only: dp
 
+      use qua,     only: nquad
+      use precision_kinds, only: dp
+
       implicit none
 
       integer :: ic, iel, ider, ier, ii, iq

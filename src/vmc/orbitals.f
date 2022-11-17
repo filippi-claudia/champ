@@ -66,7 +66,7 @@ c spline interpolation
             if(ier.eq.1) then
 
               call basis_fns(i,i,nelec,rvec_en,r_en,2)
-              
+
               do iorb=1,norb+nadorb
                 orb(i,iorb)=0.d0
                 dorb(iorb,i,1)=0.d0
@@ -98,7 +98,7 @@ c spline interpolation
            if(ier.eq.1) then
 
              call basis_fns(i,i,nelec,rvec_en,r_en,2)
-             
+
              do iorb=1,norb+nadorb
                orb(i,iorb)=0.d0
                dorb(iorb,i,1)=0.d0
