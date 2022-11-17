@@ -1,0 +1,61 @@
+%module general
+    title        'butadiene ci44 vmc calculation with 20 dets and 12 csf'
+    pool         './pool/'
+    pseudopot    BFD
+    basis        BFD-Q
+    mode         'vmc_one_mpi1'
+%endmodule
+
+load molecule        $pool/champ_v3_butadiene_champ_v2_gamess_ci44_pVQZ_1_geom.xyz
+load basis_num_info  $pool/champ_v3_champ_v2_gamess_ci44_pVQZ_basis_pointers.bfinfo
+
+load determinants    champ_v2_gamess_ci44_pVQZ_cart.det
+load orbitals        champ_v3_trexio_order_champ_v2_gamess_ci44_pVQZ_cart.lcao
+load symmetry        champ_v2_gamess_ci44_pVQZ_cart.sym
+load jastrow         jastrow_good_b3lyp.0
+load jastrow_der     jastrow.der
+
+
+
+%module electrons
+    nup           11
+    nelec         22
+%endmodule
+
+%module optgeo
+    iforce_analy 1
+    iuse_zmat    0     #default anyway
+    alfgeo       0.5
+%endmodule
+
+%module optwf
+    ioptwf        1
+    ioptci        1
+    ioptjas       1
+    ioptorb       1
+    method        'sr_n'
+    multiple_adiag 0
+    ncore         0
+    nextorb       280
+    nblk_max      200
+    no_active     0
+    nopt_iter     1
+    sr_tau        0.05
+    sr_eps        0.001
+    sr_adiag      0.01
+    isample_cmat  0
+    energy_tol    0.0
+%endmodule
+
+%module vmc
+    node_cutoff   1
+    enode_cutoff  0.001d0
+%endmodule
+
+
+%module blocking_vmc
+    vmc_nstep     20
+    vmc_nblk      200
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+%endmodule

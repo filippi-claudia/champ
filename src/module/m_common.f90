@@ -566,54 +566,6 @@ contains
 
 end module orbval
 
-module phifun
-    !> Arguments: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
-      use precision_kinds, only: dp
-      use system,  only: nelec
-
-    implicit none
-
-    real(dp), dimension(:, :), allocatable :: d2phin !(MBASIS,MELEC)
-    real(dp), dimension(:, :, :, :), allocatable :: d2phin_all !(3,3,MBASIS,MELEC)
-    real(dp), dimension(:, :, :), allocatable :: d3phin !(3,MBASIS,MELEC)
-    real(dp), dimension(:, :, :), allocatable :: dphin !(MBASIS,MELEC,3)
-    integer, dimension(:, :), allocatable :: n0_ibasis !(MBASIS,MELEC)
-    integer, dimension(:, :), allocatable :: n0_ic !(MBASIS,MELEC)
-    integer, dimension(:), allocatable :: n0_nbasis !(MELEC)
-    real(dp), dimension(:, :), allocatable :: phin !(MBASIS,MELEC)
-
-    private
-    public :: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
-    public :: allocate_phifun, deallocate_phifun
-    save
-contains
-    subroutine allocate_phifun()
-      use coefs,   only: nbasis
-      use system,  only: nelec
-
-        if (.not. allocated(d2phin)) allocate (d2phin(nbasis, nelec))
-        if (.not. allocated(d2phin_all)) allocate (d2phin_all(3, 3, nbasis, nelec))
-        if (.not. allocated(d3phin)) allocate (d3phin(3, nbasis, nelec))
-        if (.not. allocated(dphin)) allocate (dphin(nbasis, nelec, 3))
-        if (.not. allocated(n0_ibasis)) allocate (n0_ibasis(nbasis, nelec), source=0)
-        if (.not. allocated(n0_ic)) allocate (n0_ic(nbasis, nelec), source=0)
-        if (.not. allocated(n0_nbasis)) allocate (n0_nbasis(nelec), source=0)
-        if (.not. allocated(phin)) allocate (phin(nbasis, nelec))
-    end subroutine allocate_phifun
-
-    subroutine deallocate_phifun()
-        if (allocated(phin)) deallocate (phin)
-        if (allocated(n0_nbasis)) deallocate (n0_nbasis)
-        if (allocated(n0_ic)) deallocate (n0_ic)
-        if (allocated(n0_ibasis)) deallocate (n0_ibasis)
-        if (allocated(dphin)) deallocate (dphin)
-        if (allocated(d3phin)) deallocate (d3phin)
-        if (allocated(d2phin_all)) deallocate (d2phin_all)
-        if (allocated(d2phin)) deallocate (d2phin)
-    end subroutine deallocate_phifun
-
-end module phifun
-
 module qua
     !> Arguments: nquad, wq, xq, xq0, yq, yq0, zq, zq0
       use precision_kinds, only: dp
@@ -623,6 +575,7 @@ module qua
     implicit none
 
     integer :: nquad
+
     real(dp), dimension(:), allocatable :: wq !(MPS_QUAD)
     real(dp), dimension(:), allocatable :: xq !(MPS_QUAD)
     real(dp), dimension(:), allocatable :: xq0 !(MPS_QUAD)
@@ -659,6 +612,56 @@ contains
     end subroutine deallocate_qua
 
 end module qua
+
+module phifun
+    !> Arguments: d2phin, d2phin_all, d3phin, dphin, n0_ibasis, n0_ic, n0_nbasis, phin
+      use precision_kinds, only: dp
+      use system,  only: nelec
+      use qua, only: nquad
+
+    implicit none
+
+    real(dp), dimension(:, :), allocatable :: d2phin !(MBASIS,MELEC)
+    real(dp), dimension(:, :, :, :), allocatable :: d2phin_all !(3,3,MBASIS,MELEC)
+    real(dp), dimension(:, :, :), allocatable :: d3phin !(3,MBASIS,MELEC)
+    real(dp), dimension(:, :, :), allocatable :: dphin !(MBASIS,MELEC,3)
+    real(dp), dimension(:, :), allocatable :: phin !(MBASIS,MELEC)
+
+    integer, dimension(:, :), allocatable :: n0_ibasis !(MBASIS,MELEC)
+    integer, dimension(:, :), allocatable :: n0_ic !(MBASIS,MELEC)
+    integer, dimension(:), allocatable :: n0_nbasis !(MELEC)
+
+    private
+    public :: d2phin, d2phin_all, d3phin, dphin, phin, n0_ibasis, n0_ic, n0_nbasis
+    public :: allocate_phifun, deallocate_phifun
+    save
+contains
+    subroutine allocate_phifun()
+      use coefs,   only: nbasis
+      use system,  only: nelec
+
+        if (.not. allocated(d2phin)) allocate (d2phin(nbasis, nquad*nelec*2))
+        if (.not. allocated(d2phin_all)) allocate (d2phin_all(3, 3, nbasis, nquad*nelec*2))
+        if (.not. allocated(d3phin)) allocate (d3phin(3, nbasis, nquad*nelec*2))
+        if (.not. allocated(dphin)) allocate (dphin(nbasis, nquad*nelec*2, 3))
+        if (.not. allocated(n0_ibasis)) allocate (n0_ibasis(nbasis, nquad*nelec*2), source=0)
+        if (.not. allocated(n0_ic)) allocate (n0_ic(nbasis, nquad*nelec*2), source=0)
+        if (.not. allocated(n0_nbasis)) allocate (n0_nbasis(nquad*nelec*2), source=0)
+        if (.not. allocated(phin)) allocate (phin(nbasis, nquad*nelec*2))
+    end subroutine allocate_phifun
+
+    subroutine deallocate_phifun()
+        if (allocated(phin)) deallocate (phin)
+        if (allocated(n0_nbasis)) deallocate (n0_nbasis)
+        if (allocated(n0_ic)) deallocate (n0_ic)
+        if (allocated(n0_ibasis)) deallocate (n0_ibasis)
+        if (allocated(dphin)) deallocate (dphin)
+        if (allocated(d3phin)) deallocate (d3phin)
+        if (allocated(d2phin_all)) deallocate (d2phin_all)
+        if (allocated(d2phin)) deallocate (d2phin)
+    end subroutine deallocate_phifun
+
+end module phifun
 
 module b_tmove
     !> Arguments: b_t, iskip
@@ -1067,8 +1070,8 @@ subroutine allocate_m_common()
     call allocate_multislater()
     call allocate_multislatern()
     call allocate_orbval()
-    call allocate_phifun()
     call allocate_qua()
+    call allocate_phifun()
     call allocate_scratch()
     call allocate_slater()
     call allocate_slatn()
@@ -1133,8 +1136,8 @@ subroutine deallocate_m_common()
     call deallocate_multislater()
     call deallocate_multislatern()
     call deallocate_orbval()
-    call deallocate_phifun()
     call deallocate_qua()
+    call deallocate_phifun()
     call deallocate_scratch()
     call deallocate_slater()
     call deallocate_slatn()

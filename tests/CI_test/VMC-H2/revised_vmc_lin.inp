@@ -33,14 +33,14 @@ load jastrow_der     jastrow.der
     nextorb       280
     nblk_max      400
     no_active     1
-    nopt_iter     20
-    lin_eps     0.1
-    lin_adiag   0.01
+    nopt_iter     1
+    lin_eps     0.1d0
+    lin_adiag   0.01d0
     lin_jdav    1
     lin_nvec    2
     lin_nvecx   10
     isample_cmat  0
-    energy_tol    0.0
+    energy_tol    0.0d0
 %endmodule
 
 %module blocking_vmc
