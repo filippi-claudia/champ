@@ -264,7 +264,7 @@ subroutine parser
   real(dp), parameter        :: two  = 2.d0
 
 !! qmckl arrays
-#ifdef QMCKL_FOUND  
+#ifdef QMCKL_FOUND
   integer , allocatable :: keep(:)
   integer :: rc
   integer*8 :: n8
@@ -1268,7 +1268,7 @@ subroutine parser
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
       if(method.eq.'lin_d' .or. method.eq.'mix_n') then
-        if(lin_jdav.eq.0) then 
+        if(lin_jdav.eq.0) then
                 write(ounit,'(a)' ) " Use old Regterg"
         elseif(lin_jdav.eq.1) then
                 write(ounit,'(a)' ) " Use new Davidson"
@@ -1739,23 +1739,22 @@ subroutine parser
        endif
 
        call jastrow_init_qmckl(iwft)
+       if(scalecoef.ne.1.0d0) then
+
+          rc = qmckl_mo_basis_rescale(qmckl_ctx(iwft), scalecoef)
+          if (rc /= QMCKL_SUCCESS) then
+             print *, 'Error when rescaling mo coefficients'
+             stop
+          end if
+
+          write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
+          write(ounit,*)
+       endif
+
      end do ! iwft
 
 
      ! check if the orbitals coefficients are to be multiplied by a constant parameter
-     if(scalecoef.ne.1.0d0) then
-        
-        rc = qmckl_mo_basis_rescale(qmckl_ctx, scalecoef)
-        if (rc /= QMCKL_SUCCESS) then
-           print *, 'Error when rescaling mo coefficients'
-           stop
-        end if
-       
-        write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
-        write(ounit,*)
-     endif
-
-    
 
   endif
 #endif
