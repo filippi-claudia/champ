@@ -1,2 +1,20 @@
-mpirun -np 1 ../../../bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
-mpirun -np 2 ../../../bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
+echo "H2 energy with corsamp method"
+
+input="revised_vmc_corsamp.inp"
+output="revised_vmc_corsamp"
+
+# Unicore test
+N=1
+ReferenceEnergy=-0.9926131
+ReferenceError=0.0120065
+mpirun -np $N ../../../bin/vmc.mov1 -i $input -o $output_core_$N.out -e error
+echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
+../../../tools/compare_value.py $output_core_$N.out     "total E"  $ReferenceEnergy     $ReferenceError
+
+# Multicore test
+N=2
+ReferenceEnergy=-1.0135052
+ReferenceError=0.0069582
+mpirun -np $N ../../../bin/vmc.mov1 -i $input -o $output_core_$N.out -e error
+echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
+../../../tools/compare_value.py $output_core_$N.out     "total E"  $ReferenceEnergy     $ReferenceError

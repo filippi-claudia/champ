@@ -53,6 +53,8 @@ jobs:
         cmake --version
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=/home/filippi/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=/home/filippi/include/ -DHDF5_LIBRARIES=/home/filippi/lib/libhdf5.so -DHDF5_INCLUDE_DIRS=/home/filippi/include
         cmake --build build -- -j8
+        cd build
+        ctest --output-on-failure --verbose
 
     - name: Compile the CHAMP code
       if: matrix.toolchain == 'gnu'
