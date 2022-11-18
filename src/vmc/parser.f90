@@ -166,6 +166,7 @@ subroutine parser
       use vmc_mod, only: mterms,norb_tot
       use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
+      use jastrow_qmckl_mod, only: jastrow_init_qmckl
 #if defined(TREXIO_FOUND)
       use contrl_file, only: backend
       use trexio            ! trexio library for reading and writing hdf5 files
@@ -1653,9 +1654,21 @@ subroutine parser
 
 #ifdef QMCKL_FOUND
   if (use_qmckl) then
-     qmckl_ctx = qmckl_context_create()
 
-     iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
+     if (nwftype > 1) then
+        print *, 'QMCKL not yet implemented for multiple wave functions.'
+        print *, 'see parser.f90, ', __LINE__
+        call abort()
+     endif
+
+     do iwft=1,nwftype
+       qmckl_ctx(iwft) = qmckl_context_create()
+     enddo
+
+
+     ! TODO : generalize for multiple iwft
+     iwft=1
+     iostat = qmckl_trexio_read(qmckl_ctx(iwft), file_trexio, 1_8*len(trim(file_trexio)))
      if (iostat /= QMCKL_SUCCESS) then
         print *, 'Error: Unable to read TREXIO file '//trim(file_trexio)
         call abort()
@@ -1672,57 +1685,61 @@ subroutine parser
      write(ounit,*) "nadorb",nadorb
      write(ounit,*) "norb_qmckl", norb_qmckl
 
-     !!get mo's numbr should correspond to norb_tot
-     rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
-     if (rc /= QMCKL_SUCCESS) then
-        print *, '00 Error getting mo_num from verify orbitals'
-        stop
-     end if
+     do iwft=1,nwftype
+       !!get mo's numbr should correspond to norb_tot
+       rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(iwft), n8)
+       if (rc /= QMCKL_SUCCESS) then
+          print *, '00 Error getting mo_num from verify orbitals'
+          stop
+       end if
 
 
-     write(ounit,*) "n8", n8
+       write(ounit,*) "n8", n8
 
-     if (n8 > norb_qmckl) then
-
-
-        write(ounit,*) "inside if mo's to compute change in parser"
-        write(ounit,*) "norb_qmckl",norb_qmckl
-        write(ounit,*) "n8 mo's before selection", n8
-        !! allocate orbital selection array for qmckl
-        allocate(keep(n8))
+       if (n8 > norb_qmckl) then
 
 
-        !! selecting range of orbitals to compute with QMCkl
-        keep(1:norb_qmckl) = 1
-        keep((norb_qmckl+1):n8) = 0
-
-        rc = qmckl_mo_basis_select_mo(qmckl_ctx, keep, n8)
-        if (rc /= QMCKL_SUCCESS) then
-           print *, '01 Error selecting MOs in verify orbitals'
-           stop
-        end if
-
-        !!deallocate keep
-        deallocate(keep)
-
-        !!getting new number of orbitals to be computed
-        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
-        if (rc /= QMCKL_SUCCESS) then
-           print *, 'Error 02  mo_num from verify orbitals'
-           stop
-        end if
-        write(ounit,*) "n8 after mo's selec", n8
-        write(ounit,*) "norb_qmckl after mo's selec", norb_qmckl
+          write(ounit,*) "inside if mo's to compute change in parser"
+          write(ounit,*) "norb_qmckl",norb_qmckl
+          write(ounit,*) "n8 mo's before selection", n8
+          !! allocate orbital selection array for qmckl
+          allocate(keep(n8))
 
 
-        !! checking if the current number of orbitals in qmckl is consistent
+          !! selecting range of orbitals to compute with QMCkl
+          keep(1:norb_qmckl) = 1
+          keep((norb_qmckl+1):n8) = 0
 
-        if (n8 /= norb_qmckl) then
-           print *, 'Bug in MO selection in QMCkl verify orb'
-           stop
-        end if
+          rc = qmckl_mo_basis_select_mo(qmckl_ctx(iwft), keep, n8)
+          if (rc /= QMCKL_SUCCESS) then
+             print *, '01 Error selecting MOs in verify orbitals'
+             stop
+          end if
 
-     endif
+          !!deallocate keep
+          deallocate(keep)
+
+          !!getting new number of orbitals to be computed
+          rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(iwft), n8)
+          if (rc /= QMCKL_SUCCESS) then
+             print *, 'Error 02  mo_num from verify orbitals'
+             stop
+          end if
+          write(ounit,*) "n8 after mo's selec", n8
+          write(ounit,*) "norb_qmckl after mo's selec", norb_qmckl
+
+
+          !! checking if the current number of orbitals in qmckl is consistent
+
+          if (n8 /= norb_qmckl) then
+             print *, 'Bug in MO selection in QMCkl verify orb'
+             stop
+          end if
+
+       endif
+
+       call jastrow_init_qmckl(iwft)
+     end do ! iwft
 
 
      ! check if the orbitals coefficients are to be multiplied by a constant parameter
@@ -1977,7 +1994,7 @@ subroutine parser
     integer                    :: i,j,k, iwft
     integer                    :: mparmja, mparmjb, mparmjc
 !   Format of the jastrow block
-!   %block csf
+!   %block jastrow
 !   jastrow_parameter 1
 !    5  5  0           norda,nordb,nordc
 !     0.60000000   0.00000000     scalek

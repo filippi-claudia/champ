@@ -1,5 +1,5 @@
-#cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort  -DENABLE_QMCKL=ON -DENABLE_TREXIO=ON -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBLAS_LIBRARIES="-qmkl=parallel" -DCMAKE_Fortran_FLAGS="-traceback -g -C" -DVECTORIZED=NO
+cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort  -DENABLE_QMCKL=ON -DENABLE_TREXIO=ON -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBLAS_LIBRARIES="-qmkl=parallel" -DCMAKE_Fortran_FLAGS="-traceback -g -C -check noarg_temp_created -check nooutput_conversion" -DVECTORIZED=NO
 
-cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort  -DENABLE_QMCKL=ON -DENABLE_TREXIO=ON -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBLAS_LIBRARIES="-qmkl=parallel" -DCMAKE_Fortran_FLAGS="-traceback -g" 
+#cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort  -DENABLE_QMCKL=ON -DENABLE_TREXIO=ON -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBLAS_LIBRARIES="-qmkl=parallel" -DCMAKE_Fortran_FLAGS="-traceback -g" 
 
 cmake --build build  -j 8
