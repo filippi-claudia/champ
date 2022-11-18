@@ -47,7 +47,7 @@
       if (rc /= QMCKL_SUCCESS) stop __LINE__
 
       rc = qmckl_set_jastrow_b_vector (qmckl_ctx(iwft),
-     &      b(1:(nordb_l+1),1:nctype,iwft), (nordb_l+1)*nctype*1_8)
+     &      b(1:(nordb_l+1),2,iwft), (nordb_l+1)*2_8)
       rc2 = qmckl_check(qmckl_ctx(iwft), rc)
       if (rc /= QMCKL_SUCCESS) stop __LINE__
 
