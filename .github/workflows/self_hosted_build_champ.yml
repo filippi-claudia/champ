@@ -5,8 +5,6 @@ on:
     branches:
       - 'releases/**'
       - main
-      - rmax
-      - debug_intel
       - feature/debug-ci
       - optimization
     # Sequence of patterns matched against refs/tags
@@ -16,9 +14,7 @@ on:
     branches:
       - 'releases/**'
       - main
-      - rmax
       - cartesian_d_qmckl
-      - debug_intel
       - optimization
       - feature/debug-ci
 
@@ -78,9 +74,8 @@ jobs:
         export OMPI_FC=gfortran-11
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort -DVECTORIZED=no -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=/software/trexio/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=/software/trexio/include/
         cmake --build build -- -j2
-        echo "ldd on executalbe after installation"
-        ldd $GITHUB_WORKSPACE/bin/vmc.mov1
-       
+        #        echo "ldd on executalbe after installation"
+        #ldd $GITHUB_WORKSPACE/bin/vmc.mov1       
         cd build
         ctest --output-on-failure
 
