@@ -58,8 +58,12 @@ c the matrix a is replaced by its inverse.
 
         if(info.gt.0) then
           write(ounit,'(''MATINV: u(k,k)=0 with k= '',i5)') info
+          if (maxval(dabs(a(info,:))) == 0.d0) then
+             ! Electron is too far away and all MOs are zero
+             print *,
+     &      'matinv: Electron is too far away and all MOs are zero'
+          endif
           call fatal_error('MATINV: info ne 0 in dgetrf')
-
         endif
 
         det(1) = 1.0d0
@@ -83,7 +87,7 @@ c        ...exit
         enddo
    60   continue
 
-        determinant = det(1)*10.0**det(2)
+        determinant = det(1)*10.d0**det(2)
 
         call dgetri(nsub,a,nsub,ipvt,work,nelec,info)
 

@@ -122,6 +122,10 @@ c Written by Claudia Filippi
 
       call mpi_bcast(collect,jo_tot
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+ 
+!     TODO: The call above could be replaced by allreduce. To check.  (Anthony)
+!      call mpi_allreduce(local_obs,collect,jo_tot
+!     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
       jo=0
       do istate=1,nstates

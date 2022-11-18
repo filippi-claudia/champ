@@ -120,7 +120,6 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
 !            print*, "inside qmckl"
 
-! pass computed qmckl orbitals to qmckl
             do i=1,nelec
               do iorb=1,norb+nadorb
                 orb  (  i,iorb) = mo_vgl_qmckl(iorb,1,i)
@@ -129,7 +128,34 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
                 dorb (iorb,i,3) = mo_vgl_qmckl(iorb,4,i)
                 ddorb(  iorb,i) = mo_vgl_qmckl(iorb,5,i)
               end do
+!              if (maxval(dabs(orb(i,:))) == 0.d0) then
+!                 print *, 'Electron ', i, ' is zero in all MOs'
+!                 call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
+!                 orb(i,iorb)=0.d0
+!                 dorb(iorb,i,1)=0.d0
+!                 dorb(iorb,i,2)=0.d0
+!                 dorb(iorb,i,3)=0.d0
+!                 ddorb(iorb,i)=0.d0
+!                 do m=1,nbasis
+!                   orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
+!                   dorb (iorb,i,1)=dorb (iorb,i,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+!                   dorb (iorb,i,2)=dorb (iorb,i,2)+coef(m,iorb,iwf)*dphin (m,i,2)
+!                   dorb (iorb,i,3)=dorb (iorb,i,3)+coef(m,iorb,iwf)*dphin (m,i,3)
+!                   ddorb(  iorb,i)=ddorb(iorb,i)+coef(m,iorb,iwf)*d2phin( m,i)
+!                 enddo
+!                 do iorb=1,nelec
+!                 print *, iorb, x(:,iorb)
+!                 enddo
+!                 stop
+!
+!              endif
             end do
+!            do iorb=1,norb+nadorb
+!              if (maxval(dabs(orb(:,iorb))) == 0.d0) then
+!                 print *, 'Orbital ', iorb, ' is zero everywhere'
+!                 stop
+!              endif
+!            enddo
 
             deallocate(mo_vgl_qmckl)
 
@@ -412,6 +438,10 @@ c get basis functions for electron iel
                 enddo
 
               endif
+!              if (maxval(dabs(orbn(:))) == 0.d0) then
+!                 print *, 'Electron ', iorb, ' is zero in all MOs'
+!                 stop
+!              endif
 
               deallocate(mo_vgl_qmckl)
 #else

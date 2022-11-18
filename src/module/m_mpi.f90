@@ -78,7 +78,7 @@ module custom_broadcast
         real(dp), intent(in)    :: scalar               ! scalar to be broadcast
 
         call MPI_BCAST(scalar, 1, MPI_Double_Precision, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_double
 
 
@@ -90,7 +90,7 @@ module custom_broadcast
         real, intent(in)         :: scalar               ! scalar to be broadcast
 
         call MPI_BCAST(scalar, 1, MPI_Real, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_real
 
 
@@ -102,7 +102,7 @@ module custom_broadcast
         integer, intent(in)       :: scalar               ! scalar to be broadcast
 
         call MPI_BCAST(scalar, 1, MPI_INTEGER, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_integer
 
 
@@ -114,7 +114,7 @@ module custom_broadcast
         logical, intent(in)       :: scalar        ! scalar to be broadcast
 
         call MPI_BCAST(scalar, 1, MPI_LOGICAL, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_logical
 
 
@@ -129,7 +129,7 @@ module custom_broadcast
         clength = len(scalar)
 
         call MPI_BCAST(scalar, clength, MPI_CHARACTER, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_character
 
 
@@ -144,7 +144,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Double_Precision, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_double_1d
 
     subroutine bcast_real_1d(array)
@@ -157,7 +157,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Real, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_real_1d
 
     subroutine bcast_integer_1d(array)
@@ -170,7 +170,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Integer, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_integer_1d
 
     subroutine bcast_character_1d(array)
@@ -185,7 +185,7 @@ module custom_broadcast
         nelements   = size(array)
 
         call MPI_BCAST(array, clength*nelements, MPI_CHARACTER, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_character_1d
 
     subroutine bcast_double_2d(array)
@@ -198,7 +198,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Double_Precision, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_double_2d
 
     subroutine bcast_real_2d(array)
@@ -211,7 +211,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Real, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_real_2d
 
     subroutine bcast_integer_2d(array)
@@ -224,7 +224,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Integer, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_integer_2d
 
 
@@ -238,7 +238,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Double_Precision, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_double_3d
 
     subroutine bcast_real_3d(array)
@@ -251,7 +251,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Real, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_real_3d
 
     subroutine bcast_integer_3d(array)
@@ -264,7 +264,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Integer, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_integer_3d
 
     subroutine bcast_double_4d(array)
@@ -277,7 +277,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Double_Precision, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_double_4d
 
     subroutine bcast_real_4d(array)
@@ -290,7 +290,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Real, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_real_4d
 
     subroutine bcast_integer_4d(array)
@@ -303,7 +303,7 @@ module custom_broadcast
         nelements = size(array)
 
         call MPI_BCAST(array, nelements, MPI_Integer, 0, MPI_Comm_World, MPIerror)
-        call MPI_BARRIER(MPI_Comm_World, MPIerror)
+!        call MPI_BARRIER(MPI_Comm_World, MPIerror)
     end subroutine bcast_integer_4d
 
   end module custom_broadcast
