@@ -166,6 +166,7 @@ subroutine parser
       use vmc_mod, only: mterms,norb_tot
       use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
+      use jastrow_qmckl_mod, only: jastrow_init_qmckl
 #if defined(TREXIO_FOUND)
       use contrl_file, only: backend
       use trexio            ! trexio library for reading and writing hdf5 files
@@ -1737,6 +1738,7 @@ subroutine parser
 
        endif
 
+       call jastrow_init_qmckl(iwft)
      end do ! iwft
 
   endif

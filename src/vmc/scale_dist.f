@@ -65,9 +65,9 @@ c used for J_en and J_ee when isc=16,17.
 c Calculate asymptotic value of A and B terms
       asymp_r=c1_jas6i/scalek(1)
       do it=1,nctype
-        asymp_jasa(it)=a4(1,it,1)*asymp_r/(1+a4(2,it,1)*asymp_r)
+        asymp_jasa(it)=a4(1,it,1) * asymp_r/(1+a4(2,it,1)*asymp_r)
         do iord=2,norda
-          asymp_jasa(it)=asymp_jasa(it)+a4(iord+1,it,1)*asymp_r**iord
+          asymp_jasa(it)=asymp_jasa(it) + a4(iord+1,it,1) * asymp_r**iord
         enddo
       enddo
 

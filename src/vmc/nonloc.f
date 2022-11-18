@@ -364,6 +364,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       integer*8 :: n8
 #endif
 
+      if (nxquad == 0) return
       nadorb_sav=nadorb
 
       if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
@@ -402,11 +403,17 @@ c get basis functions for electron iel
              rc = qmckl_set_point(qmckl_ctx(iwf), 'N', nxquad*1_8, xquad, nxquad*3_8)
              if (rc /= QMCKL_SUCCESS) then
                 print *, 'Error setting electron coordinates in QMCkl'
+                print *, __FILE__, __LINE__
+                print *, 'nxquad', nxquad
+                rc = qmckl_check(qmckl_ctx(iwf), rc)
+                stop
              end if
 
              rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(iwf), n8)
              if (rc /= QMCKL_SUCCESS) then
                 print *, 'Error getting mo_num from QMCkl'
+                print *, __FILE__, __LINE__
+                rc = qmckl_check(qmckl_ctx(iwf), rc)
                 stop
              end if
 
@@ -423,6 +430,9 @@ c get basis functions for electron iel
 
                   if (rc /= QMCKL_SUCCESS) then
                      print *, 'Error getting MOs from QMCkl'
+                     print *, __FILE__, __LINE__
+                     rc = qmckl_check(qmckl_ctx(iwf), rc)
+                     stop
                   end if
 
                   orbn(1:norb+nadorb,1:nxquad) = mo_qmckl(1:norb+nadorb,1:nxquad)
@@ -438,6 +448,8 @@ c get basis functions for electron iel
 
                   if (rc /= QMCKL_SUCCESS) then
                      print *, 'Error getting MOs from QMCkl'
+                     print *, __FILE__, __LINE__
+                     rc = qmckl_check(qmckl_ctx(iwf), rc)
                   end if
 
                endif
@@ -456,6 +468,8 @@ c get basis functions for electron iel
 
                if (rc /= QMCKL_SUCCESS) then
                    print *, 'Error getting MOs from QMCkl'
+                   print *, __FILE__, __LINE__
+                   rc = qmckl_check(qmckl_ctx(iwf), rc)
                end if
 
                 ! Fetch the AOs
@@ -466,6 +480,8 @@ c get basis functions for electron iel
 
                if (rc /= QMCKL_SUCCESS) then
                    print *, 'Error getting MOs from QMCkl'
+                   print *, __FILE__, __LINE__
+                   rc = qmckl_check(qmckl_ctx(iwf), rc)
                end if
 
                do iq=1,nxquad

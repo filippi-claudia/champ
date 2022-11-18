@@ -87,6 +87,8 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
             rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(iwf), n8)
             if (rc /= QMCKL_SUCCESS) then
               print *, 'Error getting mo_num from QMCkl'
+              print *, __FILE__, __LINE__
+              rc = qmckl_check(qmckl_ctx(iwf), rc)
               stop
             end if
 
@@ -95,9 +97,11 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
 !           Send electron coordinates to QMCkl to compute the MOs at these positions
             rc = qmckl_set_point(qmckl_ctx(iwf), 'N', nelec*1_8, x, nelec*3_8)
-
             if (rc /= QMCKL_SUCCESS) then
-              print *, 'Error setting electron coordinates in QMCkl'
+              print *, 'Error setting electron coordinates in QMCkl', iwf
+              print *, __FILE__, __LINE__
+              rc = qmckl_check(qmckl_ctx(iwf), rc)
+              stop
             end if
 
 !     Compute the MOs
@@ -108,6 +112,9 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
             if (rc /= QMCKL_SUCCESS) then
               print *, 'Error getting MOs from QMCkl'
+              print *, __FILE__, __LINE__
+              rc = qmckl_check(qmckl_ctx(iwf), rc)
+              stop
             end if
 
 
@@ -127,6 +134,7 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
             deallocate(mo_vgl_qmckl)
 
 #else
+            print *, __FILE__, __LINE__
             stop 'QMCkl not found (orbitals.f)'
 #endif
 
@@ -351,6 +359,7 @@ c get basis functions for electron iel
               rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(iwf), n8)
               if (rc /= QMCKL_SUCCESS) then
                  print *, 'Error getting mo_num from QMCkl'
+                 print *, __FILE__, __LINE__
                  stop
               end if
 
@@ -361,6 +370,8 @@ c get basis functions for electron iel
                  call qmckl_last_error(qmckl_ctx(iwf),err_message)
                  print *, trim(err_message)
                  call abort()
+                 print *, __FILE__, __LINE__
+                 stop
               end if
 
               allocate(mo_vgl_qmckl(n8, 5, 1))
@@ -376,6 +387,8 @@ c get basis functions for electron iel
                  call qmckl_last_error(qmckl_ctx(iwf),err_message)
                  print *, trim(err_message)
                  call abort()
+                 print *, __FILE__, __LINE__
+                 stop
               end if
 
               if(iflag.gt.0) then

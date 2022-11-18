@@ -8,6 +8,8 @@ c Written by Cyrus Umrigar
       use optwf_control, only: ioptjas
       use precision_kinds, only: dp
       use system,  only: nelec
+      use jastrow_qmckl_mod, only: jastrow_qmckl
+      use qmckl_data
 
       implicit none
 
@@ -26,7 +28,15 @@ c Written by Cyrus Umrigar
       d2=0
 
       if(ifr.gt.1.or.ioptjas.eq.0) then
-        call jastrow4(x,v,d2,div_vj,value)
+!        if (use_qmckl) then
+!#ifdef QMCKL_FOUND
+!        call jastrow_qmckl(x,v,d2,div_vj,value)
+!#else
+!        stop 'QMCKL not found'
+!#endif
+!        else
+          call jastrow4(x,v,d2,div_vj,value)
+!        end if
       else
         call deriv_jastrow4(x,v,d2,value)
       endif

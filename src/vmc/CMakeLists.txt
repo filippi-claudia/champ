@@ -38,6 +38,7 @@ if (MPI_Fortran_FOUND)
     jassav.f
     jastrow.f
     jastrow4.f
+    jastrow_qmckl.f
     jastrow4e.f
     jastrow_num.f
     jastrowe.f
@@ -269,6 +270,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f
     ${CMAKE_CURRENT_SOURCE_DIR}/parser.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f
     ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4e.f
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid.f

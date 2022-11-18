@@ -256,7 +256,8 @@ c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
   50  continue
       enddo
 
-  55  fsum=fsum+fso(i,j)
+  55  continue
+      fsum=fsum+fso(i,j)
       v(1,i)=v(1,i)+fijo(1,i,j)
       v(2,i)=v(2,i)+fijo(2,i,j)
       v(3,i)=v(3,i)+fijo(3,i,j)
@@ -339,6 +340,7 @@ c       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
         div_vj(i)=div_vj(i)+d2ijo(i,i)
         d2=d2+d2ijo(i,i)
       enddo
+!      print *, '----- Fee+Fen:', fsum
 
       if(ijas.eq.6) then
         term=1/(c1_jas6*scalek(iwf))
