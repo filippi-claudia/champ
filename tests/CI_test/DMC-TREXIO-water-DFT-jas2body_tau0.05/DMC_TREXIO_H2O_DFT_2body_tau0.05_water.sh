@@ -19,4 +19,4 @@ mpirun -np $N ../../../bin/dmc.mov1 -i $input -o ${output}_core_${N}.out -e erro
 \rm problem*
 \rm mc_configs_new*
 echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
-../../../tools/compare_value.py ${output}_core_${N}.out  "total energy ( 100) ="  $ReferenceEnergy     $ReferenceError
+../../../tools/compare_value.py ${output}_core_${N}.out  "total energy ( 100) "  $ReferenceEnergy     $ReferenceError
