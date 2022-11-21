@@ -1,2 +1,21 @@
-mpirun -np 1  ../../../bin/vmc.mov1 -i vmc_optimization_1522.inp  -o vmc_optimization_1522_single.out  -e error_vmc_optimization_1522
-mpirun -np 2  ../../../bin/vmc.mov1 -i vmc_optimization_1522.inp  -o vmc_optimization_1522_double.out  -e error_vmc_optimization_1522
+echo "VMC butadiene ci1010 pVTZ "
+
+input="vmc_optimization_1522.inp"
+output="vmc_optimization_1522"
+
+# unicore test
+N=1
+ReferenceEnergy=-26.1893487
+ReferenceError=0.0216832
+mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
+echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
+../../../tools/compare_value.py ${output}_core_${N}.out     "total E"  $ReferenceEnergy     $ReferenceError
+
+
+# Multicore test
+N=2
+ReferenceEnergy=-26.2418760
+ReferenceError=0.0154310
+mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
+echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
+../../../tools/compare_value.py ${output}_core_${N}.out     "total E"  $ReferenceEnergy     $ReferenceError

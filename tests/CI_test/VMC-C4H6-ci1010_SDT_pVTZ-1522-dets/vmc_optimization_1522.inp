@@ -33,7 +33,7 @@ load symmetry        champ_v2_gamess_ci1010_SDT_pVTZ_symmetry.sym
     nextorb       280
     no_active     0
     nblk_max      100
-    nopt_iter     2
+    nopt_iter     1
     sr_tau        0.025
     sr_eps        0.001
     sr_adiag      0.01
