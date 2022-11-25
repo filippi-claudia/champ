@@ -33,6 +33,7 @@ c ider = 3 -> value, gradient, laplacian, forces
       real(dp), dimension(ncoord, *) :: r_en
       real(dp), dimension(4, MRWF) :: wfv
       real(dp), dimension(3) :: xc
+      real(dp), dimension(3) :: dtmp
       real(dp), parameter :: one = 1.d0
 
       ! Temporary arrays for basis function values and derivatives
@@ -106,6 +107,7 @@ c get distance to center
             irb = iwrwf(i,it)
             ilm = lower_range + i - 1
 !     compute sml and combine to generate molecular orbitals
+            dtmp(:)=dphin(ilm,k,:)
             call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),
      &            y(iwlbas0),
      &            dy(:,iwlbas0),
@@ -113,7 +115,7 @@ c get distance to center
      &            ddy_lap(iwlbas0),
      &            dlapy(:,iwlbas0),
      &            phin(ilm,k),
-     &            dphin(ilm,k,:),
+     &            dtmp,
      &            d2phin(ilm,k),
      &            d2phin_all(1,1,ilm,k),
      &            d3phin(1,ilm,k),

@@ -75,8 +75,8 @@ contains
       use m_force_analytic, only: alfgeo
       use mstates_mod, only: MSTATES
       use optwf_control, only: ioptci,ioptjas,ioptorb,method,nparm
-      use optwf_corsam, only: energy,energy_err
-      use optwf_func, only: ifunc_omega,n_omegaf,n_omegat,omega0
+      use optwf_corsam, only: energy,energy_err,sigma
+      use optwf_func, only: ifunc_omega,n_omegaf,n_omegat,omega,omega0
       use optwf_func, only: omega_hes
       use orbval,  only: nadorb
       use sr_mod,  only: mparm
@@ -85,7 +85,7 @@ contains
         implicit none
 
         real(dp) :: adiag, denergy, alpha_omega, denergy_err, dparm_norm
-        real(dp) :: energy_sav, energy_err_sav, omega, sigma, sigma_sav, nadorb_sav
+        real(dp) :: energy_sav, energy_err_sav, sigma_sav, nadorb_sav
         integer :: i, iflag, iter, miter
 
         sigma_sav = 0.0
