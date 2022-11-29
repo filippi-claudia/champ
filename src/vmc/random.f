@@ -1,14 +1,20 @@
       module random_mod
       private
-        interface ! xoshiro c bindings
-          function xoshiro_next() result(res)
+        interface ! xoroshiro c bindings
+          function xoroshiro_next() result(res)
      &          bind(c,name="next_uniform_double")
             use iso_c_binding, only: c_double
             real(c_double) res
           end function
-          subroutine xoshiro_seed(s) bind(c,name="xoshiro_seed")
-            use iso_c_binding, only: c_int64_t
-            integer(c_int64_t), intent(in) :: s(4)
+          subroutine xoroshiro_set_state(s)
+     &               bind(c,name="xoroshiro_set_state")
+            use iso_c_binding, only: c_int32_t
+            integer(c_int32_t), intent(in) :: s(4)
+          end subroutine
+          subroutine xoroshiro_get_state(s)
+     &               bind(c,name="xoroshiro_get_state")
+            use iso_c_binding, only: c_int32_t
+            integer(c_int32_t), intent(out) :: s(4)
           end subroutine
         end interface
 
@@ -22,44 +28,34 @@
       public :: random_dp
       public :: setrn, savern
       contains
-      subroutine setrn(legaseed)
+      subroutine setrn(iseed)
 
-      use iso_c_binding, only: c_int64_t
       use contrl_file, only: ounit
       use precision_kinds, only: dp
       use random,  only: ll,switch_rng
       implicit none
 
-      integer(c_int64_t)         :: iseed(4)
-      integer       , intent(in) :: legaseed(4)
-
-      iseed(1) = splitmix64(legaseed(1))
-      iseed(2) = splitmix64(legaseed(2))
-      iseed(3) = splitmix64(legaseed(3))
-      iseed(4) = splitmix64(legaseed(4))
+      integer       , intent(in) :: iseed(4)
 
       ll = legaseed ! Store the seed in the array used for saving
 
       select case(switch_rng)
         case(0)
           random_dp => rannyu_reference_wrap
-          call setrn_rannyu_reference(legaseed)
-        case(-1)
-          random_dp => std_reference_wrap
-          call setrn_rannyu_std(legaseed)
+          call setrn_rannyu_reference(iseed)
         case default
-          random_dp => xoshiro_wrap
-          call xoshiro_seed(iseed)
+          random_dp => xoroshiro_wrap
+          call xoroshiro_set_state(iseed)
       end select
       endsubroutine
 
-c--------------------------XOSHIRO----------
+c--------------------------XOROSHIRO----------
 
-      function xoshiro_wrap()
+      function xoroshiro_wrap()
       use precision_kinds, only: dp
       implicit none
-        real(dp)                          :: xoshiro_wrap
-        xoshiro_wrap = xoshiro_next()
+        real(dp)                          :: xoroshiro_wrap
+        xoroshiro_wrap = xoroshiro_next()
       end function
 
 
@@ -124,96 +120,19 @@ c     Therefore use original verion of code instead of this one.
         call rannyu_reference(rannyu_reference_wrap, idum)
       end function
 
-c------------------------------COMPILER SPECIFIC----------------
-      subroutine setrn_rannyu_std(iseed)
-      use contrl_file, only: ounit
-      use precision_kinds, only: dp
-      implicit none
-
-      integer, intent(in) :: iseed(4)
-      integer size
-      integer, allocatable :: new_seed(:)
-      integer i
-
-      ! determine the seed size
-      call random_seed(size = size)
-
-      ! allocate the new seed
-      allocate(new_seed(size))
-
-      ! input the seed
-      do i=1,min(size,4)
-            new_seed(i) = iseed(i)
-      end do
-
-      ! check the new seed
-      write(ounit, *) 'seed size', size
-      do i=1,size
-            write(ounit, *) 'seed     ', i, new_seed(i)
-      end do
-
-      ! set the new seed
-      call random_seed(put=new_seed)
-
-      ! deallocate
-      deallocate(new_seed)
-      return
-      end
-
-      function std_reference_wrap()
-      use precision_kinds, only: dp
-      implicit none
-        real(dp)                          :: std_reference_wrap
-        call random_number(std_reference_wrap)
-      end function
-
 c-----------------------------------------------------------------------
 
       subroutine savern(iseed)
-      use random, only: ll
+      use random, only: ll, switch_rng
       implicit none
-
-      integer :: i
-
-
       integer iseed(4)
-      do i=1,4
-         iseed(i)=ll(i)
-      enddo
-      return
+
+      select case(switch_rng)
+        case(0) ! Rannyu
+          iseed=ll
+        case default ! xoroshiro
+          call xoroshiro_get_state(iseed)
+      end select
       end
 
-c------------------------------------SPLITMIX HELPER
-c helps with generating a quality seed (64bit) with only 32bit of input
-c needed because of legacy reasons the seed is 4x32=128bit, but
-c xoshiro needs 256bits of seed (preferably not half being zero) which happens with a simple cast
-c Victor Azizi
-      function splitmix64(seed) result(res)
-        use iso_fortran_env, only: int64
-        integer       , intent(in) :: seed
-        integer(int64)             :: res
-
-        integer(INT64),parameter::cnst_step1= -7046029254386353131_int64
-        integer(INT64),parameter::cnst_step2= -4658895280553007687_int64 
-        integer(INT64),parameter::cnst_step3= -7723592293110705685_int64
-        integer(INT64) :: state
-
-        state   = seed + cnst_step1
-        state   = ieor_shiftr( i= state , shift= 30 ) * cnst_step2
-        state   = ieor_shiftr( i= state , shift= 27 ) * cnst_step3
-        res     = ieor_shiftr( i= state , shift= 31 )
-      contains
-      pure elemental function ieor_shiftr ( i , shift )
-
-          ! argument(s) for this <function>
-          integer (INT64) , intent(in) :: i
-          integer         , intent(in) :: shift
-
-          ! return value of this <function>
-          integer(INT64) :: ieor_shiftr
-
-          ieor_shiftr = ieor( i= i, j= shiftr( i= i , shift= shift ) )
-
-      end function ieor_shiftr
-      end function
       end module
