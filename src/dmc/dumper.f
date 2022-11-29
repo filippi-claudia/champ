@@ -39,7 +39,7 @@ c job where it left off
       use precision_kinds, only: dp
       use properties_mod, only: prop_dump
       use pseudo,  only: nloc
-      use qua,     only: nquad,wq,xq,yq,zq
+      use qua,     only: nquad,wq,xq,yq,zq,xq0,yq0,zq0
       use random_mod, only: savern
       use slater,  only: cdet,coef,ndet,norb
       use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nbrnch
@@ -113,6 +113,12 @@ c job where it left off
      &  ,14,MPI_COMM_WORLD,irequest,ierr)
         call mpi_isend(zq,nquad,mpi_double_precision,0
      &  ,15,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_isend(xq0,nquad,mpi_double_precision,0
+     &  ,16,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_isend(yq0,nquad,mpi_double_precision,0
+     &  ,17,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_isend(zq0,nquad,mpi_double_precision,0
+     &  ,18,MPI_COMM_WORLD,irequest,ierr)
        else
         open(unit=10,status='unknown',form='unformatted',file='restart_dmc')
         write(10) nproc
@@ -122,8 +128,10 @@ c job where it left off
      &  ,eigv,eest,wdsumo
         write(10) (iage(i),i=1,nwalk),ioldest,ioldestmx
         write(10) nforce,((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
-        if(nloc.gt.0)
-     &  write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+        if(nloc.gt.0) then
+          write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+          write(10) (xq0(i),yq0(i),zq0(i),i=1,nquad)
+        endif 
 c       if(nforce.gt.1) write(10) nwprod
 c    &  ,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
@@ -158,14 +166,22 @@ c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
      &    ,14,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(zq,nquad,mpi_double_precision,id
      &    ,15,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(xq0,nquad,mpi_double_precision,id
+     &    ,16,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(yq0,nquad,mpi_double_precision,id
+     &    ,17,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(zq0,nquad,mpi_double_precision,id
+     &    ,18,MPI_COMM_WORLD,istatus,ierr)
           write(10) nwalk
           write(10) (((xold_dmc(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk)
           write(10) nfprod,(ff(i),i=0,nfprod),(wt(i),i=1,nwalk),fprod
      &    ,eigv,eest,wdsumo
           write(10) (iage(i),i=1,nwalk),ioldest,ioldestmx
           write(10) nforce,((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
-          if(nloc.gt.0)
-     &    write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+          if(nloc.gt.0) then
+            write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+            write(10) (xq(i),yq(i),zq(i),i=1,nquad)
+          endif
 c         if(nforce.gt.1) write(10) nwprod
 c    &    ,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)

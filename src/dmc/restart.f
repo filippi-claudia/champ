@@ -46,7 +46,7 @@
       use prop_dmc, only: prop_save_dmc
       use properties_mod, only: prop_init,prop_rstrt
       use pseudo,  only: nloc
-      use qua,     only: nquad,wq,xq,yq,zq
+      use qua,     only: nquad,wq,xq,yq,zq,xq0,yq0,zq0
       use random_mod, only: setrn
       use restart_gpop, only: startr_gpop
       use slater,  only: cdet,coef,ndet,norb
@@ -115,8 +115,10 @@
 c       read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i)
 c    &  wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),taucum(i),
 c    &  i=1,nforce)
-        if(nloc.gt.0)
-     &  read(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+        if(nloc.gt.0) then
+          read(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+          read(10) (xq0(i),yq0(i),zq0(i),i=1,nquad)
+        endif
       enddo
       do id=idtask+1,nproc-1
         read(10) nwalk_id
@@ -128,8 +130,10 @@ c    &  i=1,nforce)
 c       read(10) (wgcum_id,egcum_id,pecum_dmc_id,tpbcum_dmc_id,
 c    &  wgcm2_id,egcm2_id,pecm2_dmc_id,tpbcm2_dmc_id,taucum_id,
 c    &  i=1,nforce)
-        if(nloc.gt.0)
-     &  read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nquad)
+        if(nloc.gt.0) then
+          read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nquad)
+          read(10) (xq_id,yq_id,zq_id,i=1,nquad)
+        endif
       enddo
 c     if(nforce.gt.1) read(10) nwprod
 c    &,((pwt(i,j),i=1,nwalk),j=1,nforce)
