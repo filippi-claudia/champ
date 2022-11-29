@@ -27,7 +27,7 @@
       use iso_c_binding, only: c_int64_t
       use contrl_file, only: ounit
       use precision_kinds, only: dp
-      use rnyucm,  only: ll,switch_rng
+      use random,  only: ll,switch_rng
       implicit none
 
       integer(c_int64_t)         :: iseed(4)
@@ -37,6 +37,8 @@
       iseed(2) = splitmix64(legaseed(2))
       iseed(3) = splitmix64(legaseed(3))
       iseed(4) = splitmix64(legaseed(4))
+
+      ll = legaseed ! Store the seed in the array used for saving
 
       select case(switch_rng)
         case(0)
@@ -69,7 +71,7 @@ c Uses 48 bits, rather than the usual 32 bits.
 
       use contrl_file, only: ounit
       use precision_kinds, only: dp
-      use rnyucm,  only: ll
+      use random,  only: ll
       implicit none
 
       integer :: i
@@ -83,7 +85,7 @@ c Uses 48 bits, rather than the usual 32 bits.
       end
 
       subroutine rannyu_reference(val, idum)
-      use rnyucm, only: ll, mm
+      use random, only: ll, mm
       use precision_kinds, only: dp
       implicit none
 
@@ -168,7 +170,7 @@ c------------------------------COMPILER SPECIFIC----------------
 c-----------------------------------------------------------------------
 
       subroutine savern(iseed)
-      use rnyucm, only: ll
+      use random, only: ll
       implicit none
 
       integer :: i
