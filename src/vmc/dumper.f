@@ -28,7 +28,7 @@ c job where it left off
       use precision_kinds, only: dp
       use properties_mod, only: prop_init
       use pseudo,  only: nloc
-      use qua,     only: nquad,wq,xq,yq,zq
+      use qua,     only: nquad,wq,xq0,yq0,zq0,xq,yq,zq
       use random_mod, only: random_dp,savern,setrn
       use step,    only: ekin,ekin2,rprob,suc,trunfb,try
       use system,  only: nelec
@@ -78,12 +78,24 @@ c    &  ,3,MPI_COMM_WORLD,irequest,ierr)
         call mpi_send(zq,nquad,mpi_double_precision,0
      &  ,4,MPI_COMM_WORLD,ierr)
 c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_send(xq0,nquad,mpi_double_precision,0
+     &  ,5,MPI_COMM_WORLD,ierr)
+c    &  ,5,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_send(yq0,nquad,mpi_double_precision,0
+     &  ,6,MPI_COMM_WORLD,ierr)
+c    &  ,6,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_send(zq0,nquad,mpi_double_precision,0
+     &  ,7,MPI_COMM_WORLD,ierr)
+c    &  ,7,MPI_COMM_WORLD,irequest,ierr)
        else
         write(10) nproc
         write(10) ((irn_tmp(i,j),i=1,4),j=0,nproc-1)
         write(10) nelec,nforce,nloc
         write(10) ((xold(k,i),k=1,3),i=1,nelec)
-        if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+        if(nloc.gt.0) then
+          write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+          write(10) (xq0(i),yq0(i),zq0(i),i=1,nquad)
+        endif
         do id=1,nproc-1
           call mpi_recv(xold,3*nelec,mpi_double_precision,id
      &    ,1,MPI_COMM_WORLD,istatus,ierr)
@@ -93,8 +105,17 @@ c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
      &    ,3,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(zq,nquad,mpi_double_precision,id
      &    ,4,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(xq0,nquad,mpi_double_precision,id
+     &    ,5,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(yq0,nquad,mpi_double_precision,id
+     &    ,6,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(zq0,nquad,mpi_double_precision,id
+     &    ,7,MPI_COMM_WORLD,istatus,ierr)
           write(10) ((xold(k,i),k=1,3),i=1,nelec)
-          if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+          if(nloc.gt.0) then
+            write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+            write(10) (xq0(i),yq0(i),zq0(i),i=1,nquad)
+          endif
         enddo
       endif
 
@@ -125,17 +146,26 @@ c-----------------------------------------------------------------------
       if(idtask.le.nproco-1) then
         do id=0,idtask
           read(10) ((xold(k,i),k=1,3),i=1,nelec)
-          if(nloc.gt.0) read(10) nqx,(xq(i),yq(i),zq(i),wq(i),i=1,nqx)
+          if(nloc.gt.0) then
+            read(10) nqx,(xq(i),yq(i),zq(i),wq(i),i=1,nqx)
+            read(10) (xq0(i),yq0(i),zq0(i),i=1,nqx)
+          endif
         enddo
         if(nqx.ne.nquad) call fatal_error('STARTR: nquad')
         do id=idtask+1,nproco-1
           read(10) (x_id,i=1,3*nelec)
-          if(nloc.gt.0) read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nqd_id)
+          if(nloc.gt.0) then
+            read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nqd_id)
+            read(10) (xq_id,yq_id,zq_id,i=1,nqd_id)
+          endif
         enddo
        else
         do id=0,nproco-1
           read(10) (x_id,i=1,3*nelec)
-          if(nloc.gt.0) read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nqd_id)
+          if(nloc.gt.0) then
+            read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nqd_id)
+            read(10) (xq_id,yq_id,zq_id,i=1,nqd_id)
+          endif
         enddo
       endif
 
