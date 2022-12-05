@@ -186,9 +186,11 @@ c The scaling is switched in deriv_psinl, so do not do it here.
 
         do ic=1,ncent
           it=iwctype(ic)
-          iparm0=npoint(it)
-          fsn(i,j)=fsn(i,j) +
-     &    deriv_psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2_quad(ic),rr_en2(jj,ic),dpsij_ratio(iparm0+1,iq),it)
+          if(nparmc(it).gt.0) then
+            iparm0=npoint(it)
+            fsn(i,j)=fsn(i,j) +
+     &      deriv_psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2_quad(ic),rr_en2(jj,ic),dpsij_ratio(iparm0+1,iq),it)
+          endif
         enddo
 
         do it=1,nctype
