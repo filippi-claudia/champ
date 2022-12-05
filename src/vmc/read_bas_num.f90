@@ -221,7 +221,7 @@ contains
 
           dwfn=-ae(2,irb,ic,iwf)*ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)))
 
-         else
+        else
           dwfn=0.d0
         endif
         write(45,*) 'dwf1,dwfn',dwf1,dwfn
@@ -270,7 +270,7 @@ subroutine readps_gauss
   integer         :: iunit, iostat, counter = 0
   logical         :: exist, skip = .true.
   real(dp) ::  necp_power_tmp
-  
+
   character*80 label
 
 
