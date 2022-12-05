@@ -33,6 +33,7 @@ c ider = 3 -> value, gradient, laplacian, forces
       real(dp), dimension(ncoord, *) :: r_en
       real(dp), dimension(4, MRWF) :: wfv
       real(dp), dimension(3) :: xc
+      real(dp), dimension(3) :: temp_dphin
       real(dp), parameter :: one = 1.d0
 
       ! Temporary arrays for basis function values and derivatives
@@ -113,11 +114,12 @@ c get distance to center
      &            ddy_lap(iwlbas0),
      &            dlapy(:,iwlbas0),
      &            phin(ilm,k),
-     &            dphin(ilm,k,:),
+     &            temp_dphin,
      &            d2phin(ilm,k),
      &            d2phin_all(1,1,ilm,k),
      &            d3phin(1,ilm,k),
      &            ider)
+            dphin(ilm,k,:)=temp_dphin(:)
 
 #ifndef VECTORIZATION
             ! localization
