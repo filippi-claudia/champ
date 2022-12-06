@@ -192,6 +192,7 @@ module trexio_read_data
         !! number of molecular and atomic orbitals and their corresponding coefficients.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
         !! @date 12 October 2021
+        use basis, only: ns, np, nd, nf, ng
         use custom_broadcast, only: bcast
         use mpiconf, only: wid
         use contrl_file, only: ounit, errunit
@@ -234,10 +235,10 @@ module trexio_read_data
         character(len=120)              :: temp3, file_trexio_path
         integer                         :: iunit, iostat, iwft
         integer                         :: iorb, ibasis, i, j, k, l, ic, it
-        integer                         :: counter, count0, count1, count2, count3, summ
-        integer                         :: index_ao, index_nrad
+        integer                         :: counter, count1, count2, count3
+        integer                         :: index_ao
         integer                         :: lower_range, upper_range
-        integer                         :: count_s, count_p, count_d, count_f, count_g
+        integer                         :: count
         integer                         :: cum_rad_per_cent, cum_ao_per_cent
         integer                         :: lower_rad_range, upper_rad_range
         logical                         :: exist
@@ -245,9 +246,7 @@ module trexio_read_data
 
 !       trexio
         integer, allocatable            :: basis_nucleus_index(:), ao_index(:), ao_frequency(:), unique_index(:)
-        integer, allocatable            :: compare(:), ao_index_per_cent(:)
-        integer, allocatable            :: local_array_s(:,:), local_array_p(:,:), local_array_d(:,:), local_array_f(:,:), local_array_g(:,:)
-        real(dp), allocatable           :: unshuffled_coef(:,:,:)
+        integer, allocatable            :: res(:)
 
         !   Formatting
         character(len=100)               :: int_format     = '(A, T60, I0)'
@@ -301,12 +300,9 @@ module trexio_read_data
         ! Do the allocations based on the number of shells and primitives
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
-        if (.not. allocated(compare))    allocate(compare(basis_num_shell))
         if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
-        ! if (.not. allocated(ao_index)) allocate (ao_index(35), source=0)            ! ao upto g orbitals
-        if (.not. allocated(ao_index_per_cent)) allocate (ao_index_per_cent(ncent_tot))            ! ao upto g orbitals
 
         ! Read the orbitals
         if (wid) then
@@ -356,7 +352,6 @@ module trexio_read_data
         index_ao = 0; jj = 1
         ! The following loop will generate the index_slm array which tells
         ! which AO is of which type (from the above list)
-        compare = 0
         do l = 1, basis_num_shell
             k = basis_shell_ang_mom(l)
 
@@ -404,12 +399,20 @@ module trexio_read_data
 
         allocate (nbastyp(nctype_tot))
 
+        if (.not. allocated(ns)) allocate (ns(nctype_tot))
+        if (.not. allocated(np)) allocate (np(nctype_tot))
+        if (.not. allocated(nd)) allocate (nd(nctype_tot))
+        if (.not. allocated(nf)) allocate (nf(nctype_tot))
+        if (.not. allocated(ng)) allocate (ng(nctype_tot))
+
+
         ! Obtain the index of radials for each unique center (iwrwf)
         if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot))
         if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot), source=0)
         if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctype_tot))
-        if (.not. allocated(ao_frequency)) allocate (ao_frequency(35), source=0)          ! ao upto g orbitals
+        if (.not. allocated(ao_frequency)) allocate (ao_frequency(35), source=0)    ! ao upto g orbitals
         if (.not. allocated(unique_index)) allocate (unique_index(35), source=0)    ! ao upto g orbitals
+        if (.not. allocated(res)) allocate (res(5), source=0)                       ! shells upto g orbitals
 
         do i = 1, ncent_tot
             if (numr .gt. 0) then
@@ -426,6 +429,17 @@ module trexio_read_data
             upper_rad_range = lower_rad_range + num_rad_per_cent(ic) - 1
             iwlbas(1:num_ao_per_cent(iwctype(ic)), it) = ao_index(lower_range:upper_range)
             iwrwf(1:num_ao_per_cent(iwctype(ic)), it) = ao_radial_index(lower_range:upper_range)
+
+            ! The following block of code is for generating the ns,np,nf,nd, and ng arrays
+            call unique_elements(num_rad_per_cent(ic), basis_shell_ang_mom(lower_rad_range:upper_rad_range), &
+                                 res, count, ao_frequency(lower_rad_range:upper_rad_range), &
+                                 unique_index(lower_rad_range:upper_rad_range))
+            ns(iwctype(ic)) = ao_frequency(lower_rad_range)
+            np(iwctype(ic)) = ao_frequency(lower_rad_range+1)
+            nd(iwctype(ic)) = ao_frequency(lower_rad_range+2)
+            nf(iwctype(ic)) = ao_frequency(lower_rad_range+3)
+            ng(iwctype(ic)) = ao_frequency(lower_rad_range+4)
+            ! End of block of code
             lower_range = upper_range + 1
             lower_rad_range = upper_rad_range + 1
         enddo

@@ -843,7 +843,7 @@ subroutine parser
     call read_basis_num_info_file(file_basis_num_info)
   elseif ( fdf_load_defined('trexio') ) then
 #if defined(TREXIO_FOUND)
-    ! call write_trexio_basis_num_info_file(file_trexio)
+    call write_trexio_basis_num_info_file(file_trexio)
     write(ounit,*) "Numerical basis information not needed when orbitals are read from trexio file"
 #endif
   elseif (.not. fdf_block('basis_num_info', bfdf)) then
@@ -1255,7 +1255,7 @@ subroutine parser
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
       if(method.eq.'lin_d' .or. method.eq.'mix_n') then
-        if(lin_jdav.eq.0) then 
+        if(lin_jdav.eq.0) then
                 write(ounit,'(a)' ) " Use old Regterg"
         elseif(lin_jdav.eq.1) then
                 write(ounit,'(a)' ) " Use new Davidson"
