@@ -125,7 +125,7 @@ contains
         if (allocated(rvec_en)) deallocate (rvec_en)
         if (allocated(r_en)) deallocate (r_en)
         if (allocated(rvec_en)) deallocate (rvec_ee)
-        if (allocated(r_en)) deallocate (r_ee)
+        if (allocated(r_ee)) deallocate (r_ee)
         if (allocated(rshift)) deallocate (rshift)
     end subroutine deallocate_distance_mod
 
