@@ -4,11 +4,11 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use branch,  only: eest,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
+      use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wtgen,wthist
       use casula,  only: i_vpsp,icasula
       use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
-      use const,   only: etrial
+      use const,   only: etrial,esigmatrial
       use control, only: mode
       use control_dmc, only: dmc_nconf
       use determinante_mod, only: compute_determinante_grad
@@ -58,6 +58,7 @@ c get nuclear potential energy
 
       eigv=one
       eest=etrial
+      esigma=esigmatrial
       nwalk=dmc_nconf
       fprod=one
 

@@ -53,6 +53,7 @@ module branch
   implicit none
 
    real(dp) :: eest
+   real(dp) :: esigma
    real(dp) :: eigv
    real(dp), dimension(:,:), allocatable :: eold !(mwalk,MFORCE)
    real(dp), dimension(:), allocatable :: ff !(MFPRD1)
@@ -66,7 +67,7 @@ module branch
    real(dp), dimension(:,:,:), allocatable :: wthist!(mwalk,MFORCE_WT_PRD,MFORCE)
 
    private
-   public :: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt
+   public :: eest, esigma, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt
    public :: wtgen, wthist
    public :: allocate_branch, deallocate_branch
    save
