@@ -224,7 +224,7 @@ module trexio_read_data
 #endif
         use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent
         use m_trexio_basis,     only: basis_num_shell, basis_shell_ang_mom
-        use m_trexio_basis,     only: num_ao_per_cent, champ_ao_ordering, ao_radial_index
+        use m_trexio_basis,     only: num_ao_per_cent, ao_radial_index
       use slater, only: norb
 
         implicit none
@@ -327,6 +327,14 @@ module trexio_read_data
         endif
         call bcast(basis_shell_ang_mom)
         call bcast(basis_nucleus_index)
+
+!         if (wid) then
+! #if defined(TREXIO_FOUND)
+!             rc = trexio_close(trex_orbitals_file)
+!             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_orbital_file', __FILE__, __LINE__)
+! #endif
+!         endif
+
 
         numr = 1            ! Debug Check this statement. Not sure how to store multiple bfinfo files in single trexio
 
@@ -443,11 +451,6 @@ module trexio_read_data
             lower_range = upper_range + 1
             lower_rad_range = upper_rad_range + 1
         enddo
-
-#if defined(TREXIO_FOUND)
-        if (wid) rc = trexio_close(trex_orbitals_file)
-#endif
-
 
     ! debug Ravindra
         write(ounit,int_format) " Number of basis functions ", nbasis
@@ -626,13 +629,13 @@ module trexio_read_data
 #if defined(TREXIO_FOUND)
             trex_basis_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
-            rc = trexio_read_basis_prim_num(trex_basis_file, basis_num_prim)
-            if (trexio_has_basis(trex_basis_file) == 0) trexio_has_group_basis = .true.
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_prim_num', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_num(trex_basis_file, basis_num_shell)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_num', __FILE__, __LINE__)
             rc = trexio_read_ao_num(trex_basis_file, ao_num)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
+            rc = trexio_read_basis_prim_num(trex_basis_file, basis_num_prim)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_prim_num', __FILE__, __LINE__)
+            if (trexio_has_basis(trex_basis_file) == 0) trexio_has_group_basis = .true.
 #endif
         endif
         call bcast(trexio_has_group_basis)
@@ -998,7 +1001,6 @@ module trexio_read_data
         use contrl_file,        only: backend
         use error,              only: trexio_error
 #endif
-        use m_trexio_basis,     only: champ_ao_ordering
 
         implicit none
 
