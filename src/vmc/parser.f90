@@ -845,16 +845,15 @@ subroutine parser
     call read_basis_num_info_file(file_basis_num_info)
   elseif ( fdf_load_defined('trexio') ) then
 #if defined(TREXIO_FOUND)
-    ! call write_trexio_basis_num_info_file(file_trexio)
-    write(ounit,*) "Numerical basis information not needed when orbitals are read from trexio file"
+    call write_trexio_basis_num_info_file(file_trexio)
 #endif
   elseif (.not. fdf_block('basis_num_info', bfdf)) then
   ! call fdf_read_eigenvalues_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(a)') "Error :: No information about basis num info provided in the block."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(a)') "Error :: No information about basis num info provided in the block."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif

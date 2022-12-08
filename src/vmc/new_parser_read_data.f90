@@ -686,7 +686,6 @@ subroutine read_orbitals_file(file_orbitals)
       use custom_broadcast, only: bcast
       use general, only: pooldir
       use inputflags, only: ilcao
-      use m_trexio_basis, only: champ_ao_ordering
       use mpiconf, only: wid
       use multiple_geo, only: nwftype
       use optwf_control, only: method
@@ -779,12 +778,6 @@ subroutine read_orbitals_file(file_orbitals)
     enddo
     call bcast(coef)
     ! printing of the lcao orbitals coefficients will be done by write_orb_loc subroutine after bf pointer file is read.
-
-    ! set default ordering if we are not using trexio files.
-    if (.not. allocated(champ_ao_ordering))      allocate(champ_ao_ordering(nbasis))
-    do i = 1, nbasis
-        champ_ao_ordering(i) = i
-    enddo
 
     ilcao = ilcao + 1
 
@@ -1656,7 +1649,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     ! Basis function types and pointers to radial parts tables
     ! alternative name for keyword basis because of GAMBLE inputword basis because of GAMBLE input
 
-      
+
       use basis, only: ns, np, nd, nf, ng
       use coefs,   only: nbasis
       use contrl_file, only: errunit,ounit
