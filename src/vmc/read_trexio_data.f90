@@ -224,7 +224,7 @@ module trexio_read_data
 #endif
         use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent
         use m_trexio_basis,     only: basis_num_shell, basis_shell_ang_mom
-        use m_trexio_basis,     only: num_ao_per_cent, champ_ao_ordering, ao_radial_index
+        use m_trexio_basis,     only: num_ao_per_cent, ao_radial_index
       use slater, only: norb
 
         implicit none
@@ -235,7 +235,7 @@ module trexio_read_data
         character(len=120)              :: temp3, file_trexio_path
         integer                         :: iunit, iostat, iwft
         integer                         :: iorb, ibasis, i, j, k, l, ic, it
-        integer                         :: counter, count1, count2, count3
+        integer                         :: counter, count1, count2
         integer                         :: index_ao
         integer                         :: lower_range, upper_range
         integer                         :: count
@@ -301,6 +301,7 @@ module trexio_read_data
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
         if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
+        if (.not. allocated(ao_index))               allocate(ao_index(nbasis))
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
 
@@ -328,6 +329,14 @@ module trexio_read_data
         call bcast(basis_shell_ang_mom)
         call bcast(basis_nucleus_index)
 
+!         if (wid) then
+! #if defined(TREXIO_FOUND)
+!             rc = trexio_close(trex_orbitals_file)
+!             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_orbital_file', __FILE__, __LINE__)
+! #endif
+!         endif
+
+
         numr = 1            ! Debug Check this statement. Not sure how to store multiple bfinfo files in single trexio
 
         ! Generate the index of the slm for each AO
@@ -346,7 +355,7 @@ module trexio_read_data
         !       +-----------------------------------------------------------------------------
         !          xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
 
-        counter = 0; count1 = 1; count2 = 0; count3 = 0
+        counter = 0; count1 = 1; count2 = 0
         cum_rad_per_cent = 0
         cum_ao_per_cent  = 0
         index_ao = 0; jj = 1
@@ -360,22 +369,18 @@ module trexio_read_data
             do ii = 1, slm_per_l(k+1)
 
                 index_ao = index_ao + 1
-                index_slm(index_ao) = sum(slm_per_l(1:k)) + 1 + count2
+                index_slm(index_ao) = sum(slm_per_l(1:k)) + count2 + 1
+
                 count2 = count2 + 1
+
+                if (k == 0) then
+                    ao_index(index_ao) = count2
+                else
+                    ao_index(index_ao) = count2 + sum(slm_per_l(1:k))
+                endif
 
                 cum_ao_per_cent = cum_ao_per_cent + 1
             end do
-
-            if (k == 0) then
-                count3 = count2 - 1
-            else
-                count3 = count2 - 2
-            endif
-
-            do ii = 1, count2
-                count3 = count3 + 1
-                ao_index = [ao_index, count3]
-            enddo
 
             jj = jj + 1
 
@@ -427,27 +432,28 @@ module trexio_read_data
             it=iwctype(ic)
             upper_range = lower_range + num_ao_per_cent(ic) - 1
             upper_rad_range = lower_rad_range + num_rad_per_cent(ic) - 1
-            iwlbas(1:num_ao_per_cent(iwctype(ic)), it) = ao_index(lower_range:upper_range)
-            iwrwf(1:num_ao_per_cent(iwctype(ic)), it) = ao_radial_index(lower_range:upper_range)
+            iwlbas(1:num_ao_per_cent(ic), it) = ao_index(lower_range:upper_range)
+            iwrwf(1:num_ao_per_cent(ic), it) = ao_radial_index(lower_range:upper_range)
 
             ! The following block of code is for generating the ns,np,nf,nd, and ng arrays
             call unique_elements(num_rad_per_cent(ic), basis_shell_ang_mom(lower_rad_range:upper_rad_range), &
-                                 res, count, ao_frequency(lower_rad_range:upper_rad_range), &
-                                 unique_index(lower_rad_range:upper_rad_range))
-            ns(iwctype(ic)) = ao_frequency(lower_rad_range)
-            np(iwctype(ic)) = ao_frequency(lower_rad_range+1)
-            nd(iwctype(ic)) = ao_frequency(lower_rad_range+2)
-            nf(iwctype(ic)) = ao_frequency(lower_rad_range+3)
-            ng(iwctype(ic)) = ao_frequency(lower_rad_range+4)
+                                 res, count, ao_frequency(1:num_rad_per_cent(ic)), &
+                                 unique_index(1:num_rad_per_cent(ic)))
+            ns(iwctype(ic)) = ao_frequency(1)
+            np(iwctype(ic)) = ao_frequency(2)
+            nd(iwctype(ic)) = ao_frequency(3)
+            nf(iwctype(ic)) = ao_frequency(4)
+            ng(iwctype(ic)) = ao_frequency(5)
             ! End of block of code
             lower_range = upper_range + 1
             lower_rad_range = upper_rad_range + 1
         enddo
 
-#if defined(TREXIO_FOUND)
-        if (wid) rc = trexio_close(trex_orbitals_file)
-#endif
-
+        deallocate(basis_nucleus_index)
+        deallocate(ao_index)
+        deallocate(ao_frequency)
+        deallocate(unique_index)
+        deallocate(res)
 
     ! debug Ravindra
         write(ounit,int_format) " Number of basis functions ", nbasis
@@ -494,6 +500,7 @@ module trexio_read_data
             write (ounit, '(100i3)') ns(i), np(i), nd(i), nf(i), ng(i)
 
             if (numr .gt. 0) then
+                write(ounit, '(100i3)') (iwlbas(ib, i), ib=1, nbastyp(i))
                 write(ounit, '(100i3)') (iwrwf(ib, i), ib=1, nbastyp(i))
             endif
             write(ounit,*)
@@ -626,13 +633,13 @@ module trexio_read_data
 #if defined(TREXIO_FOUND)
             trex_basis_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
-            rc = trexio_read_basis_prim_num(trex_basis_file, basis_num_prim)
-            if (trexio_has_basis(trex_basis_file) == 0) trexio_has_group_basis = .true.
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_prim_num', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_num(trex_basis_file, basis_num_shell)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_num', __FILE__, __LINE__)
             rc = trexio_read_ao_num(trex_basis_file, ao_num)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
+            rc = trexio_read_basis_prim_num(trex_basis_file, basis_num_prim)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_prim_num', __FILE__, __LINE__)
+            if (trexio_has_basis(trex_basis_file) == 0) trexio_has_group_basis = .true.
 #endif
         endif
         call bcast(trexio_has_group_basis)
@@ -998,7 +1005,6 @@ module trexio_read_data
         use contrl_file,        only: backend
         use error,              only: trexio_error
 #endif
-        use m_trexio_basis,     only: champ_ao_ordering
 
         implicit none
 
