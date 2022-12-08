@@ -245,7 +245,7 @@ module trexio_read_data
         logical                         :: skip = .true.
 
 !       trexio
-        integer, allocatable            :: basis_nucleus_index(:), ao_index(:), ao_frequency(:), unique_index(:)
+        integer, allocatable            :: basis_nucleus_index(:), ao_frequency(:), unique_index(:)
         integer, allocatable            :: res(:)
 
         !   Formatting
@@ -301,7 +301,6 @@ module trexio_read_data
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
         if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
-        if (.not. allocated(ao_index))               allocate(ao_index(nbasis))
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
 
@@ -373,12 +372,6 @@ module trexio_read_data
 
                 count2 = count2 + 1
 
-                if (k == 0) then
-                    ao_index(index_ao) = count2
-                else
-                    ao_index(index_ao) = count2 + sum(slm_per_l(1:k))
-                endif
-
                 cum_ao_per_cent = cum_ao_per_cent + 1
             end do
 
@@ -432,7 +425,7 @@ module trexio_read_data
             it=iwctype(ic)
             upper_range = lower_range + num_ao_per_cent(ic) - 1
             upper_rad_range = lower_rad_range + num_rad_per_cent(ic) - 1
-            iwlbas(1:num_ao_per_cent(ic), it) = ao_index(lower_range:upper_range)
+            iwlbas(1:num_ao_per_cent(ic), it) = index_slm(lower_range:upper_range)
             iwrwf(1:num_ao_per_cent(ic), it) = ao_radial_index(lower_range:upper_range)
 
             ! The following block of code is for generating the ns,np,nf,nd, and ng arrays
@@ -450,7 +443,6 @@ module trexio_read_data
         enddo
 
         deallocate(basis_nucleus_index)
-        deallocate(ao_index)
         deallocate(ao_frequency)
         deallocate(unique_index)
         deallocate(res)
