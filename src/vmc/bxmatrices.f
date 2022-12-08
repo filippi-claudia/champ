@@ -1,19 +1,18 @@
       module bxmatrices
       contains
-      subroutine bxmatrix(kref,xmatu,xmatd,b)
+      subroutine bxmatrix(kref,xmatu,xmatd,b,k)
 
       use vmc_mod, only: norb_tot
-      use elec, only: ndn, nup
+      use system, only: ndn, nup, nelec
       use dorb_m, only: iworbd
       use slater, only: slmi
-      use const, only: nelec
 
       use precision_kinds, only: dp
       use multiply_slmi_mderiv, only: multiply_slmi_mderiv_simple
 
       implicit none
 
-      integer :: i, iab, iel, ish, j
+      integer :: i, iab, iel, ish, j, k
       integer :: kref, nel
 
       real(dp), dimension(norb_tot, nelec) :: b
@@ -42,9 +41,9 @@
           enddo
         enddo
       enddo
-
-      call multiply_slmi_mderiv_simple(nup,btemp(1,1),work,slmi(1,1),xmatu)
-      call multiply_slmi_mderiv_simple(ndn,btemp(1,2),work,slmi(1,2),xmatd)
+      !STU mapping needed here? k, (nwftypejas) is passed in as j in the call
+      call multiply_slmi_mderiv_simple(nup,btemp(1,1),work,slmi(1,1,k),xmatu)
+      call multiply_slmi_mderiv_simple(ndn,btemp(1,2),work,slmi(1,2,k),xmatd)
 
       return
       end

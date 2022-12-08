@@ -37,7 +37,7 @@ module mmpol_dipol
     save
 contains
     subroutine allocate_mmpol_dipol()
-        use mmpol_mod, only: MCHMM
+      use mmpol_mod, only: MCHMM
         if (.not. allocated(alfa)) allocate (alfa(MCHMM))
         if (.not. allocated(dipo)) allocate (dipo(3, MCHMM))
     end subroutine allocate_mmpol_dipol
@@ -64,7 +64,7 @@ module mmpol_hpsi
     save
 contains
     subroutine allocate_mmpol_hpsi()
-        use mmpol_mod, only: MCHMM
+      use mmpol_mod, only: MCHMM
         if (.not. allocated(eek_pol)) allocate (eek_pol(3, MCHMM))
     end subroutine allocate_mmpol_hpsi
 
@@ -90,7 +90,7 @@ module mmpol_parms
     save
 contains
     subroutine allocate_mmpol_parms()
-        use mmpol_mod, only: MCHMM
+      use mmpol_mod, only: MCHMM
         if (.not. allocated(chmm)) allocate (chmm(MCHMM))
         if (.not. allocated(rqq)) allocate (rqq(MCHMM, MCHMM))
         if (.not. allocated(x_mmpol)) allocate (x_mmpol(3, MCHMM))
@@ -106,9 +106,9 @@ end module mmpol_parms
 
 module mmpolo
     !> Arguments: cmmpolo, dmmpolo, eeko
+    use dmc_mod, only: mwalk
     use mmpol_mod, only: MCHMM
     use precision_kinds, only: dp
-    use dmc_mod, only: mwalk
 
     real(dp) :: cmmpolo
     real(dp) :: dmmpolo
@@ -128,7 +128,7 @@ module mmpolo
     save
 contains
     subroutine allocate_mmpolo()
-        use mmpol_mod, only: MCHMM
+      use mmpol_mod, only: MCHMM
         if (.not. allocated(eeko)) allocate(eeko(3, MCHMM))
         if (.not. allocated(cmmpolo_dmc)) allocate(cmmpolo_dmc(mwalk))
         if (.not. allocated(dmmpolo_dmc)) allocate(dmmpolo_dmc(mwalk))
@@ -162,7 +162,7 @@ module mmpol_ahpol
     save
 contains
     subroutine allocate_mmpol_ahpol()
-        use mmpol_mod, only: MCHMM
+      use mmpol_mod, only: MCHMM
         if (.not. allocated(ah_pol)) allocate (ah_pol(3*MCHMM, 3*MCHMM))
         if (.not. allocated(bh_pol)) allocate (bh_pol(3*MCHMM))
     end subroutine allocate_mmpol_ahpol
@@ -201,7 +201,7 @@ module mmpol_averages
     save
 contains
     subroutine allocate_mmpol_averages()
-        use mmpol_mod, only: MCHMM
+      use mmpol_mod, only: MCHMM
         if (.not. allocated(eek1_cm2)) allocate (eek1_cm2(MCHMM))
         if (.not. allocated(eek1_cum)) allocate (eek1_cum(MCHMM))
         if (.not. allocated(eek2_cm2)) allocate (eek2_cm2(MCHMM))
@@ -239,7 +239,7 @@ module mmpol_fdc
     save
 contains
     subroutine allocate_mmpol_fdc()
-        use mmpol_mod, only: MCHMM
+      use mmpol_mod, only: MCHMM
         if (.not. allocated(screen1)) allocate (screen1(MCHMM, MCHMM))
         if (.not. allocated(screen2)) allocate (screen2(MCHMM, MCHMM))
     end subroutine allocate_mmpol_fdc
@@ -265,7 +265,7 @@ module mmpol_field
     save
 contains
     subroutine allocate_mmpol_field()
-        use mmpol_mod, only: MCHMM
+      use mmpol_mod, only: MCHMM
         if (.not. allocated(enk_pol)) allocate (enk_pol(3, MCHMM))
         if (.not. allocated(eqk_pol)) allocate (eqk_pol(3, MCHMM))
     end subroutine allocate_mmpol_field
@@ -289,7 +289,7 @@ module mmpol_inds
     save
 contains
     subroutine allocate_mmpol_inds()
-        use mmpol_mod, only: MCHMM
+      use mmpol_mod, only: MCHMM
         if (.not. allocated(inds_pol)) allocate (inds_pol(MCHMM), source=0)
     end subroutine allocate_mmpol_inds
 
@@ -320,15 +320,15 @@ end module mmpol_pot
 module m_mmpol
 contains
 subroutine allocate_m_mmpol()
-    use mmpol_dipol, only: allocate_mmpol_dipol
-    use mmpol_hpsi, only: allocate_mmpol_hpsi
-    use mmpol_parms, only: allocate_mmpol_parms
-    use mmpolo, only: allocate_mmpolo
     use mmpol_ahpol, only: allocate_mmpol_ahpol
     use mmpol_averages, only: allocate_mmpol_averages
+    use mmpol_dipol, only: allocate_mmpol_dipol
     use mmpol_fdc, only: allocate_mmpol_fdc
     use mmpol_field, only: allocate_mmpol_field
+    use mmpol_hpsi, only: allocate_mmpol_hpsi
     use mmpol_inds, only: allocate_mmpol_inds
+    use mmpol_parms, only: allocate_mmpol_parms
+    use mmpolo, only: allocate_mmpolo
 
     call allocate_mmpol_dipol()
     call allocate_mmpol_hpsi()
@@ -342,15 +342,15 @@ subroutine allocate_m_mmpol()
 end subroutine allocate_m_mmpol
 
 subroutine deallocate_m_mmpol()
-    use mmpol_dipol, only: deallocate_mmpol_dipol
-    use mmpol_hpsi, only: deallocate_mmpol_hpsi
-    use mmpol_parms, only: deallocate_mmpol_parms
-    use mmpolo, only: deallocate_mmpolo
     use mmpol_ahpol, only: deallocate_mmpol_ahpol
     use mmpol_averages, only: deallocate_mmpol_averages
+    use mmpol_dipol, only: deallocate_mmpol_dipol
     use mmpol_fdc, only: deallocate_mmpol_fdc
     use mmpol_field, only: deallocate_mmpol_field
+    use mmpol_hpsi, only: deallocate_mmpol_hpsi
     use mmpol_inds, only: deallocate_mmpol_inds
+    use mmpol_parms, only: deallocate_mmpol_parms
+    use mmpolo, only: deallocate_mmpolo
 
     call deallocate_mmpol_dipol()
     call deallocate_mmpol_hpsi()

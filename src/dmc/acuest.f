@@ -4,8 +4,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
+      use multiple_geo, only: fgcm2, fgcum, nforce, MFORCE
       use age, only: ioldest
       use estcum, only: iblk
       use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
@@ -20,9 +19,8 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: wfcm2, wgcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
       use mpiconf, only: nproc, wid
-      use contr3, only: mode
+      use control, only: mode
       use mpiblk, only: iblk_proc
-      use force_mod, only: MFORCE
       use control_dmc, only: dmc_nstep
       use mpi
       use contrl_file,    only: ounit

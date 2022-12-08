@@ -2,7 +2,8 @@
       contains
       subroutine mc_configs
 
-      use const, only: ipr, nelec
+      use control, only: ipr
+      use system, only: nelec
       use config, only: psido_dmc, psijo_dmc, xold_dmc
       use mpiconf, only: idtask, nproc
       use branch, only: eold, nwalk
@@ -13,7 +14,7 @@
 
       use precision_kinds, only: dp
       use error,          only: fatal_error
-      use rannyu_mod,     only: rannyu, savern, setrn
+      use random_mod,     only: random_dp, savern, setrn
       use restart,        only: startr
 
       implicit none
@@ -45,11 +46,11 @@ c set the random number seed, setrn already called in read_input
       if(dmc_irstar.ne.1) then
         if(nproc.gt.1) then
           do id=1,(3*nelec)*idtask
-            rnd=rannyu(0)
+            rnd=random_dp()
           enddo
           call savern(irn)
           do i=1,4
-            irn(i)=mod(irn(i)+int(rannyu(0)*idtask*9999),9999)
+            irn(i)=mod(irn(i)+int(random_dp()*idtask*9999),9999)
           enddo
           call setrn(irn)
         endif

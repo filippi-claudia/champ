@@ -15,7 +15,7 @@ c nlo                 # of processors that should have nwalk_av_int walkers
 c nhi                 # of processors that should have nwalk_av_int+1 walkers
 c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
 
-      use const, only: ipr
+      use control, only: ipr
       use mpiconf, only: idtask, nproc
       use branch, only: nwalk
       use mpi

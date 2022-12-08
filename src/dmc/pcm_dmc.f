@@ -2,7 +2,7 @@
       contains
       subroutine pcm_prt(iblk,wgcum,wgcm2)
 
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
 !      use contrl, only: nconf, nstep
       use control_dmc, only: dmc_nconf, dmc_nstep
       use pcm_cntrl, only: ipcm, ipcmprt
@@ -69,7 +69,7 @@ c     gpcmkcal=spcmkcal+vpcmkcal
 c-----------------------------------------------------------------------
       subroutine pcm_fin(iblk,wgcum,wgcm2)
 
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE
       use pcm_cntrl, only: ipcm, ipcmprt
 
       use precision_kinds, only: dp

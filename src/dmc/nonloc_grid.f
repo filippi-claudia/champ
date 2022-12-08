@@ -2,23 +2,22 @@
       contains
       subroutine nonloc_grid(iel,iw,x,psid,imove)
 
-      use const, only: nelec
+      use system, only: nelec, cent, ncent
       use contrl_per, only: iperiodic
       use contrldmc, only: tau
-      use atom, only: cent, ncent
       use config, only: xold_dmc
       use optwf_parms, only: nparmj
       use qua, only: nquad, xq, yq, zq
       use casula, only: icasula, t_vpsp
       use distance_mod, only: r_en, rshift, rvec_en
-      use wfsec, only: iwf, iwftype
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use multiple_geo, only: iwf, iwftype
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
       use distances_mod, only: distances
       use nonloc_pot_mod, only: nonloc_pot
       use multideterminant_tmove_mod, only: multideterminant_tmove
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       implicit none
 
       integer :: i, i1, i2, ic, ic_good
@@ -93,7 +92,7 @@ c     enddo
       if(t_norm.eq.1.d0) return
 
       t_cum=0.d0
-      p=rannyu(0)
+      p=random_dp()
       do ii=i1,i2
         i=ii
         if(i.gt.nelec) i=i-nelec
@@ -142,8 +141,7 @@ c-----------------------------------------------------------------------
       subroutine t_vpsp_sav
 
 
-      use const, only: nelec
-      use atom, only: ncent, ncent_tot
+      use system, only: nelec, ncent, ncent_tot
       use qua, only: nquad
       use pseudo_mod, only: MPS_QUAD
 

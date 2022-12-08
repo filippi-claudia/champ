@@ -12,11 +12,10 @@
 c written by Claudia Filippi
       use precision_kinds, only: dp
       use csfs, only: nstates
-      use forcepar, only: nforce
       use numbas, only: numr
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
-      use wfsec, only: iwftype, nwftype
+      use multiple_geo, only: iwftype, nwftype, nforce
       use orbval, only: nadorb
 
 !     use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
@@ -24,8 +23,8 @@ c written by Claudia Filippi
       use control_vmc, only: vmc_nblk, vmc_nblk_max, vmc_nblk_ci
 
       use gradhess_all, only: nparmall
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
-      use optwf_contrl, only: energy_tol, dparm_norm_min, ilastvmc
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
+      use optwf_control, only: energy_tol, dparm_norm_min, ilastvmc
       ! I think that's needed
       use gradhess_all, only: grad, h, s
       use optwf_corsam, only: add_diag
@@ -696,12 +695,12 @@ c-----------------------------------------------------------------------
       use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmj
       use gradhess_all, only: h, s
       use ci000, only: nciterm
       use contrl_file,    only: ounit
-      use method_opt, only: method
+      use optwf_control, only: method
       use optorb_cblock, only: nreduced
       use contrl_file,    only: ounit
       implicit none

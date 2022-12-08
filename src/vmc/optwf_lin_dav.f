@@ -5,16 +5,16 @@
       use sr_mod, only: mparm
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-      use optwf_contrl, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+      use optwf_control, only: nvec, nvecx, alin_adiag, alin_eps
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err, sigma
       use orbval, only: nadorb
       use optwf_func, only: ifunc_omega, omega, omega0, n_omegaf, n_omegat
       !use contrl, only: nblk, nblk_max
       use control_vmc, only: vmc_nblk, vmc_nblk_max
-      use force_analy, only: iforce_analy, alfgeo
-      use method_opt, only: method
+      use m_force_analytic, only: iforce_analy, alfgeo
+      use optwf_control, only: method
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
 

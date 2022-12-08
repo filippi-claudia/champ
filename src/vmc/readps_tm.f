@@ -19,8 +19,8 @@ c
 c Modified by F. Schautz to use fancy file names
       use pseudo_mod, only: MPS_GRID
       use vmc_mod, only: NCOEF
-      use atom, only: znuc, nctype
-      use const, only: ipr
+      use system, only: znuc, nctype
+      use control, only: ipr
       use pseudo_tm, only: arg, d2pot, nr_ps, r0, rmax, vpseudo
       use pseudo, only: lpot, nloc, vps
       use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
@@ -218,9 +218,8 @@ c-----------------------------------------------------------------------
 c compute tm-pseudopotential for electron iel
       subroutine getvps_tm(r_en,iel)
 
-      use atom, only: znuc, iwctype, ncent, ncent_tot
+      use system, only: znuc, iwctype, ncent, ncent_tot, nelec
       use pseudo_tm, only: rmax
-      use const, only: nelec
       use pseudo, only: lpot, vps
 
       use precision_kinds, only: dp

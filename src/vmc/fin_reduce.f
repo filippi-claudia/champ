@@ -9,13 +9,13 @@ c MPI version written by Claudia Filippi
       use est2cm, only: ecm21
       use estcum, only: ecum1, iblk
       use estsig, only: ecm21s, ecum1s
-      use forcepar, only: nforce
+      use multiple_geo, only: nforce
       use forcewt, only: wcum
       use mpiconf, only: nproc, wid
       use step, only: rprob, suc, try
       !use contrl, only: nstep
       use control_vmc, only: vmc_nstep
-      use method_opt, only: method
+      use optwf_control, only: method
       use mpi
       use custom_broadcast,   only: bcast
       use precision_kinds, only: dp

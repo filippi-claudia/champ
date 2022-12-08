@@ -3,18 +3,16 @@
       subroutine multideterminant_tmove(psid,iel_move)
 
       use vmc_mod, only: norb_tot
-      use const, only: nelec
-      use atom, only: ncent
+      use system, only: nelec, ncent, ndn, nup
       use qua, only: nquad
       use b_tmove, only: b_t, iskip
       use casula, only: icasula, t_vpsp
-      use slater, only: slmi
-      use elec, only: ndn, nup
+      use slater, only: slmi, kref
       use dorb_m, only: iworbd
-      use coefs, only: norb
+      use slater, only: norb
       use ycompact, only: ymat
       use multislater, only: detiab
-      use multidet, only: iactv, ivirt, kref
+      use multidet, only: iactv, ivirt
       use multimat, only: aa
 
       use precision_kinds, only: dp
@@ -54,7 +52,7 @@
         ish=nup
       endif
 
-      detratio=detiab(kref,1)*detiab(kref,2)/psid
+      detratio=detiab(kref,1,1)*detiab(kref,2,1)/psid
 
       jel=iel-ish
 
@@ -63,12 +61,12 @@
         do jrep=ivirt(iab),norb
           dum=0
           do j=1,nel
-            dum=dum+b_t(iworbd(j+ish,kref),iq,ic,iel)*aa(j,jrep,iab)
+            dum=dum+b_t(iworbd(j+ish,kref),iq,ic,iel)*aa(j,jrep,iab,1)
           enddo
           dum=b_t(jrep,iq,ic,iel)-dum
 
           do irep=iactv(iab),nel
-            gmat(irep,jrep)=dum*slmi(irep+(jel-1)*nel,iab)
+            gmat(irep,jrep)=dum*slmi(irep+(jel-1)*nel,iab,1)
           enddo
         enddo
 

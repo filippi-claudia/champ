@@ -3,15 +3,14 @@ use error, only: fatal_error
 contains
 subroutine inputzex
     ! Set the exponents to one when using a numerical basis
-    use force_mod, only: MWF
+    use multiple_geo, only: MWF, nwftype
     use numbas, only: numr
     use coefs, only: nbasis
     use basis, only: zex
 
     ! are they needed ??!!
     use contrl_per, only: iperiodic
-    use wfsec, only: nwftype
-    use method_opt, only: method
+    use optwf_control, only: method
     use precision_kinds,    only: dp
       implicit none
 
@@ -36,12 +35,12 @@ subroutine inputcsf
     ! Check that the required blocks are there in the input
 
 
-    use csfs, only: ncsf, nstates
-    use inputflags, only: ici_def
-    use ci000, only: nciprim, nciterm
+      use ci000, only: nciprim, nciterm
+      use csfs, only: ncsf, nstates
+      use inputflags, only: ici_def
+      use optwf_control, only: ioptci
 
     ! are they needed ??!!
-    use optwf_contrl, only: ioptci
     implicit none
 
 
@@ -54,24 +53,22 @@ end subroutine inputcsf
 
 subroutine multideterminants_define(iflag, icheck)
 
-    use force_mod, only: MFORCE, MFORCE_WT_PRD, MWF
-    use vmc_mod, only: nrad, nordj, nordj1, nmat_dim, nmat_dim2
-    use vmc_mod, only: radmax, delri
-    use vmc_mod, only: neqsx
-    use const, only: nelec
-    use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use dets, only: cdet, ndet
-    use elec, only: ndn, nup
-    use multidet, only: iactv, irepcol_det, ireporb_det, ivirt, iwundet, kref, numrep_det, allocate_multidet
-    use multidet, only: k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old
-    use coefs, only: norb
-    use dorb_m, only: iworbd
+      use contrl_file, only: ounit, errunit
+      use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use dorb_m, only: iworbd
+      use jastrow, only: neqsx, nordj, nordj1
+      use multidet, only: iactv, irepcol_det, ireporb_det, ivirt
+      use multidet, only: numrep_det, allocate_multidet
+      use multidet, only: k_det, ndetiab, ndet_req, k_det2, k_aux
+      use multidet, only: ndetiab2, ndetsingle, kref_old, ndetdouble
+      use multideterminant_mod, only: idiff
+      use multiple_geo, only: MFORCE, MFORCE_WT_PRD, MWF, nwftype
+      use slater, only: ndet, cdet, iwundet, kref, norb
+      use system, only: nelec, ndn, nup 
+      use vmc_mod, only: nrad, nmat_dim, nmat_dim2, radmax, delri
 
-    use contrl_file,    	only: ounit, errunit
 
     ! not sure about that one either ....
-    use wfsec, only: nwftype
-    use multideterminant_mod, only: idiff
 
     implicit none
 
@@ -100,7 +97,7 @@ subroutine multideterminants_define(iflag, icheck)
 
     endif
 !    write (ounit, *) 'I am in multi_def',kref,kref_old
-       
+
     if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
     if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
     if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
@@ -226,29 +223,29 @@ subroutine multideterminants_define(iflag, icheck)
         enddo
     else
         do iab = 1, 2
-            do i = 1, ndet
-                iwundet(i, iab) = i
-                if (i .ne. kref) then
-                if (idiff(kref, i, iab) .eq. 0) then
-                   iwundet(i, iab) = kref
-                 else
-                    j=1
-                    do while (idiff(j, i, iab) .ne. 0  .and. j.ne.i)
-                       j= j+1
-                    enddo
-                    iwundet(i, iab) = j
-                 endif
+          do i = 1, ndet
+            iwundet(i, iab) = i
+            if (i .ne. kref) then
+              if (idiff(kref, i, iab) .eq. 0) then
+                iwundet(i, iab) = kref
+              else
+                j=1
+                do while (j.ne.i .and. idiff(j, i, iab) .ne. 0)
+                  j= j+1
+                enddo
+                iwundet(i, iab) = j
               endif
-            enddo
-         enddo
+            endif
+          enddo
+        enddo
         do iab = 1, 2
-            ndet_dist = 0
-            do i = 1, ndet
-                if (iwundet(i, iab) .eq. i) then
-                    ndet_dist = ndet_dist + 1
-                endif
-            enddo
-            write (ounit, *) iab, ndet_dist, ' distinct out of ', ndet
+           ndet_dist = 0
+           do i = 1, ndet
+             if (iwundet(i, iab) .eq. i) then
+               ndet_dist = ndet_dist + 1
+             endif
+           enddo
+           write (ounit, *) iab, ndet_dist, ' distinct out of ', ndet
         enddo
     endif
 
@@ -342,12 +339,59 @@ subroutine multideterminants_define(iflag, icheck)
        !       print*,"kkn singles",iab,kkn
 !       print*,"kkn singles",iab,ndetsingle(iab)
        
+
+
+!    ordering double excitations at the begining for specialization
+       !       keep counting on knn
+       do kk=1,ndetiab(iab)
+
+          if (numrep_det(kk, iab).eq.2) then
+             kkn=kkn+1
+             
+             k=1
+             do while (k_det(k,iab).ne.kk)
+                k=k+1
+             enddo
+             kaux=k_det(k,iab)
+             
+             kn=1
+             do while (k_det(kn,iab).ne.kkn)
+                kn=kn+1
+             enddo
+             
+             !             print*,"kk",kk,"k_det(kk,",iab,")",kaux
+             k_det(k,iab)=kkn
+             k_det(kn,iab)=kk
+
+
+             auxdet=irepcol_det(:, kkn, iab)                
+             irepcol_det(:, kkn, iab) = irepcol_det(:, kk, iab)
+             irepcol_det(:, kk, iab) = auxdet
+                
+             auxdet=ireporb_det(:, kkn, iab)
+             ireporb_det(:, kkn, iab) = ireporb_det(:, kk, iab)
+             ireporb_det(:, kk, iab) = auxdet
+                
+             naux=numrep_det(kkn, iab)
+             numrep_det(kkn, iab)=numrep_det(kk, iab)
+             numrep_det(kk, iab)=naux
+             
+!             print*,"double kkn",kkn,"ndetiab",ndetiab(iab),"ndim",numrep_det(kkn,iab)
+          
+          endif
+          
+       enddo
+
+       ndetdouble(iab)=kkn-ndetsingle(iab)
+
+
+!       print*,"ns,nd,ns+nd,ndet",ndetsingle(iab),ndetdouble(iab),ndetsingle(iab)+ndetdouble(iab), ndetiab(iab)
        
        
     enddo
 
     !setting larger number of required determinants for unequivalent or unique determinants 
-    if(ndetiab(1).le.ndetiab(2)) then
+    if(ndetiab(1).ge.ndetiab(2)) then
        ndet_req=ndetiab(1)
     else
        ndet_req=ndetiab(2)
@@ -369,19 +413,23 @@ subroutine multideterminants_define(iflag, icheck)
        ndetiab2(iab)=kk
     enddo
     
+    !do iab = 1, 2
+    !   do k = 1, ndetiab2(iab)
+          !write(ounit,*) 'LAST',iab,k,k_aux(k,iab),k_det2(k,iab)
+    !   enddo
+    !enddo
     
     return
 end subroutine multideterminants_define
 
 subroutine inputforces
 ! Set all force displacements to zero
-!    use force_mod, only: MWF
-!    use force_mod, only: MFORCE
-    use forcepar, only: nforce
-    use forcestr, only: delc
-    use wfsec, only: iwftype, nwftype
+!    use multiple_geo, only: MWF
+!    use multiple_geo, only: MFORCE
+    use multiple_geo, only: nforce, delc
+    use multiple_geo, only: iwftype, nwftype
     use contrl_file, only: errunit
-    use atom, only: ncent
+    use system, only: ncent
     use precision_kinds,    only: dp
 
     implicit none
@@ -407,11 +455,11 @@ end subroutine inputforces
 
 subroutine inputdet()
     ! Set the cdet to be equal
-    use dets, only: cdet, ndet
+    use slater, only: ndet, cdet
     use csfs, only: nstates
 !    use mstates_mod, only: MSTATES
-    use wfsec, only: nwftype
-    use method_opt, only: method
+    use multiple_geo, only: nwftype
+    use optwf_control, only: method
     use precision_kinds,    only: dp
 
     implicit none
@@ -434,9 +482,10 @@ end subroutine inputdet
 subroutine inputlcao()
     ! Set the lcao to be equal
     use vmc_mod, only: norb_tot
-    use coefs, only: coef, nbasis, norb
-    use wfsec, only: nwftype
-    use method_opt, only: method
+    use coefs, only: nbasis
+    use slater, only: norb, coef
+    use multiple_geo, only: nwftype
+    use optwf_control, only: method
     use precision_kinds,    only: dp
 
     implicit none
@@ -462,14 +511,10 @@ end subroutine inputlcao
 subroutine inputjastrow()
     ! Set the jastrow to be equal
 
-    use jaspar, only: nspin1, nspin2
-    use jaspar3, only: b, c, scalek
-    use jaspar4, only: a4, norda, nordb, nordc
+    use jastrow, only: nspin1, nspin2, b, c, scalek, a4, norda, nordb, nordc, ijas, isc
     use bparm, only: nspin2b
-    use contr2, only: ijas
-    use contr2, only: isc
-    use wfsec, only: nwftype
-    use atom, only: ncent, nctype
+    use multiple_geo, only: nwftype
+    use system, only: ncent, nctype
     use precision_kinds,    only: dp
     use jastrow4_mod,       only: nterms4
 
@@ -516,12 +561,12 @@ end subroutine inputjastrow
 
 subroutine set_displace_zero(nforce_tmp)
     use pcm, only: MCHS
-    use forcestr, only: delc
+    use multiple_geo, only: delc
     use pcm_force, only: sch_s
     use pcm_cntrl, only: ipcm
     use pcm_parms, only: ch, nchs
 
-    use atom, only: ncent
+    use system, only: ncent
     use precision_kinds,    only: dp
 
     implicit none
@@ -547,7 +592,7 @@ end subroutine set_displace_zero
 subroutine modify_zmat_define
 
     use grdntsmv, only: igrdmv
-    use atom, only: ncent
+    use system, only: ncent
     implicit none
 
     integer :: ic, k
@@ -567,7 +612,7 @@ end subroutine modify_zmat_define
 subroutine hessian_zmat_define
 
     use grdnthes, only: hessian_zmat
-    use atom, only: ncent
+    use system, only: ncent
     use precision_kinds,    only: dp
 
     implicit none

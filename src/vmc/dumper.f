@@ -6,7 +6,7 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
 
       use vmc_mod, only: nrad
-      use const, only: nelec
+      use system, only: nelec
       use config, only: xold
       use csfs, only: nstates
 
@@ -14,8 +14,7 @@ c job where it left off
       use estcum, only: ecum, ecum1, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
-      use forcepar, only: nforce
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: nforce, fcm2, fcum
       use forcewt, only: wcum
       use mpiconf, only: idtask, nproc, wid
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
@@ -26,10 +25,10 @@ c job where it left off
       use precision_kinds, only: dp
 
       use multiple_states, only: efficiency_init
-      use rannyu_mod,      only: savern
+      use random_mod,      only: savern
       use dumper_more_mod, only: dumper_more, startr_more
       use error, only: fatal_error
-      use rannyu_mod, only: setrn, rannyu
+      use random_mod, only: setrn, random_dp
       use optci_mod, only: optci_init
       use optorb_f_mod, only: optorb_init
       use optjas_mod, only: optjas_init
@@ -152,7 +151,7 @@ c    &      ,idget,MPI_COMM_WORLD,irequest,ierr)
           enddo
          else
           do id=1,(3*nelec)*idtask
-            rnd=rannyu(0)
+            rnd=random_dp()
           enddo
           idfrom=mod(idtask,nproco)
 c xold from idfrom to idtask

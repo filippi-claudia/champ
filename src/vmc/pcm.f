@@ -27,7 +27,7 @@ c     read data for pcm calculations
 c     comput nuclei-qpol interactions (penups,penupv)
 c...........................................................
 
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
       use pcm_cntrl, only: icall, ichpol, ipcm, isurf
       use pcm_unit, only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
       use pcm_parms, only: ch, eps_solv, nch, nchs, nchs1, nchs2
@@ -187,7 +187,7 @@ C     contribution from nuclei to polarization charghes
 C     ***************************************************************
 
       use pcm, only: MCHS
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
       use pcm_parms, only: eps_solv, nchs
       use pcm_parms, only: surk, xpol
       use pcm_ameta, only: amdlg, eta
@@ -490,7 +490,7 @@ c............................................................
 c     compute penupv of volume charges
 c............................................................
 
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, nch, nchs
       use pcm_parms, only: xpol
@@ -908,7 +908,7 @@ c     This subroutine computes the coordinates of point charges
 c     on the cavity surface
 C     ***************************************************************
 
-      use atom, only: cent, iwctype, ncent
+      use system, only: cent, iwctype, ncent
       use spc, only: nsf, num
       use spc1, only: csf, qsf, rsf
       use spc2, only: nxyz, sfxyz, usf
@@ -919,7 +919,7 @@ C     ***************************************************************
       use pcm_inda, only: inda
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
 
       implicit none
 
@@ -1112,7 +1112,7 @@ c------------------------TRIAL VERSION----------------------------
       uy=usf(i1,2)+usf(i2,2)
       uz=usf(i1,3)+usf(i2,3)
       uu=dsqrt(ux**2+uy**2+uz**2)
-      prdm=rannyu(0)
+      prdm=random_dp()
       if (prdm.le.0.5d0) then
       usf(i1,1)=ux/uu
       usf(i1,2)=uy/uu
@@ -1198,7 +1198,7 @@ c..................................................
       use spc, only: nsf, num
       use spc1, only: csf, rsf
       use precision_kinds, only: dp
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
 
       implicit none
 
@@ -1251,13 +1251,13 @@ c..................................................
       icount=icount+1
       pol=0.d0
       do i=1,np5
-300   rrand=rannyu(0)
+300   rrand=random_dp()
       a1=rrand
 c     theta=pigreco*a1
 c     qm=r0*dcos(theta)
       cos_theta=-1.d0+2.d0*a1
       qm=r0*cos_theta
-      qf=pi25*rannyu(0)
+      qf=pi25*random_dp()
       el1(i)=qm
       el2(i)=qf
 c     f1=r0*dsin(theta)
@@ -1340,7 +1340,7 @@ c     f1=r0*dsin(theta)
       use spc, only: nsf, num
       use spc1, only: csf, rsf
       use precision_kinds, only: dp
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
 
       implicit none
 
@@ -1412,8 +1412,8 @@ c----------------------------------------------------------
       pol=0.d0
       do i=1,np5
 300   continue
-      f1=ff1*(rannyu(0)-0.5d0)
-      f2=ff1*(rannyu(0)-0.5d0)
+      f1=ff1*(random_dp()-0.5d0)
+      f2=ff1*(random_dp()-0.5d0)
       c1=dcos(f1)
       s1=dsin(f1)
       c2=dcos(f2)

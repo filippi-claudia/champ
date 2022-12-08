@@ -6,11 +6,10 @@
 ! Modified by A. Scemama (printing in a GAMESS-like format)
 ! 1) a slater basis
 ! 2) a gaussian basis
-      use atom, only: znuc, iwctype, nctype, ncent
-      use ghostatom, only: newghostype
-      use const, only: nelec
+      use system, only: znuc, iwctype, nctype, ncent, newghostype, nelec
       use numbas, only: numr
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis
+      use slater, only: norb, coef
       use basis, only: zex, betaq
       use contrl_file,    only: ounit, errunit
       use error, only: fatal_error

@@ -3,7 +3,7 @@
       subroutine cuspinit4(iprin)
 c Written by Cyrus Umrigar
       use vmc_mod, only: mterms
-      use jaspar4, only: nordc
+      use jastrow, only: nordc
       use cuspmat4, only: d, iwc4, nterms
       use contrl_file,    only: ounit
       implicit none
@@ -74,8 +74,8 @@ c Written by Cyrus Umrigar
       end
 c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
-      use atom, only: nctype
-      use jaspar4, only: nordc
+      use system, only: nctype
+      use jastrow, only: nordc
       use optwf_nparmj, only: nparmc
       use optwf_wjas, only: iwjasc
 

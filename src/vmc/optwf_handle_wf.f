@@ -58,14 +58,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
 
-      use atom, only: nctype
-      use jaspar, only: nspin1, nspin2
-      use jaspar3, only: b, c, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
+      use system, only: nctype
+      use jastrow, only: nspin1, nspin2, b, c, scalek, a4, norda, nordb, nordc, ianalyt_lap, ijas, isc
       use bparm, only: nspin2b
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
-      use contr2, only: ianalyt_lap, ijas, isc
       use precision_kinds, only: dp
 
       implicit none
@@ -130,8 +127,9 @@ c-----------------------------------------------------------------------
       subroutine write_lcao(iwf_fit,filetype)
 
       use numbas, only: numr
-      use optwf_contrl, only: ioptorb
-      use coefs, only: coef, nbasis, norb
+      use optwf_control, only: ioptorb
+      use coefs, only: nbasis
+      use slater, only: norb, coef
       use orbval, only: nadorb
       use inputflags, only: scalecoef
       use precision_kinds, only: dp
@@ -162,12 +160,10 @@ c-----------------------------------------------------------------------
       subroutine write_ci(iwf_fit,filetype)
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use dets, only: cdet, ndet
-      use multidet, only: kref
-      use optwf_contrl, only: ioptci
+      use slater, only: ndet, cdet, kref
+      use optwf_control, only: ioptci
       use dorb_m, only: iworbd
-      use elec, only: nup
-      use const, only: nelec
+      use system, only: nup, nelec
 
       implicit none
 
@@ -240,7 +236,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine save_wf
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
 
       implicit none
 
@@ -253,7 +249,7 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine restore_wf(iadiag)
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
 
       implicit none
 
@@ -282,11 +278,9 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow
 
       use precision_kinds, only: dp
-      use vmc_mod, only: nordj1
-      use atom, only: nctype, nctype_tot
-      use wfsec, only: nwftype
-      use jaspar3, only: b, c
-      use jaspar4, only: a4, norda, nordb, nordc
+      use system, only: nctype, nctype_tot
+      use multiple_geo, only: nwftype
+      use jastrow, only: b, c, a4, norda, nordb, nordc, nordj1
       use bparm, only: nspin2b
 
       implicit none
@@ -362,8 +356,9 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
-      use coefs, only: coef, nbasis, norb
-      use wfsec, only: nwftype
+      use coefs, only: nbasis
+      use slater, only: norb, coef
+      use multiple_geo, only: nwftype
 
       implicit none
 
@@ -399,7 +394,7 @@ c-----------------------------------------------------------------------
       use precision_kinds, only: dp
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
       use mstates_mod, only: MSTATES
-      use dets, only: cdet, ndet
+      use slater, only: ndet, cdet
       use set_input_data, only: multideterminants_define
 
       implicit none
@@ -468,9 +463,8 @@ c reset kref=1
 c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
 
-      use atom, only: nctype
-      use jaspar3, only: b, c, scalek
-      use jaspar4, only: a4, norda, nordb, nordc
+      use system, only: nctype
+      use jastrow, only: b, c, scalek, a4, norda, nordb, nordc
       use bparm, only: nspin2b
 
       implicit none
@@ -505,7 +499,8 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine copy_lcao(iadiag)
 
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis
+      use slater, only: norb, coef
       use orbval, only: nadorb
 
       implicit none
@@ -524,7 +519,7 @@ c-----------------------------------------------------------------------
       subroutine copy_ci(iadiag)
 
       use csfs, only: ccsf, ncsf, nstates
-      use dets, only: cdet, ndet
+      use slater, only: ndet, cdet
 
       implicit none
 
@@ -564,11 +559,9 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
       use precision_kinds, only: dp
-      use vmc_mod, only: nordj1
-      use atom, only: nctype, nctype_tot
-      use wfsec, only: nwftype
-      use jaspar3, only: b, c
-      use jaspar4, only: a4, norda, nordb, nordc
+      use system, only: nctype, nctype_tot
+      use multiple_geo, only: nwftype
+      use jastrow, only: b, c, a4, norda, nordb, nordc, nordj1
       use bparm, only: nspin2b
 
       implicit none
@@ -641,8 +634,9 @@ c-----------------------------------------------------------------------
 
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
-      use coefs, only: coef, nbasis, norb
-      use wfsec, only: nwftype
+      use coefs, only: nbasis
+      use slater, only: norb, coef
+      use multiple_geo, only: nwftype
 
       implicit none
 
@@ -680,7 +674,7 @@ c-----------------------------------------------------------------------
       use csfs, only: ccsf, ncsf, nstates
       use csfs, only: cxdet, iadet, ibdet, icxdet
       use mstates_mod, only: MSTATES
-      use dets, only: cdet, ndet
+      use slater, only: ndet, cdet
       use set_input_data, only: multideterminants_define
 
       implicit none
@@ -770,11 +764,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
-      use atom, only: nctype
-      use jaspar3, only: b, c
-      use jaspar4, only: a4
+      use system, only: nctype
+      use jastrow, only: b, c, a4
       use bparm, only: nspin2b
-      use optwf_contrl, only: ioptjas
+      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
@@ -822,9 +815,10 @@ c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
 
       use vmc_mod, only: norb_tot
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use optwf_parms, only: nparmd, nparmj
-      use coefs, only: coef, nbasis, norb
+      use coefs, only: nbasis
+      use slater, only: norb, coef
       use optorb_cblock, only: norbterm
       use orb_mat_022, only: ideriv
       use precision_kinds, only: dp
@@ -864,10 +858,10 @@ c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-      use dets, only: cdet, ndet
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use slater, only: ndet, cdet
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmj
-      use method_opt, only: method
+      use optwf_control, only: method
       use precision_kinds, only: dp
 
       implicit none
@@ -925,9 +919,8 @@ c90     write(ounit,'(''csf ='',1000f20.15)') (ccsf(i,j,iadiag),i=1,ncsf)
 c-----------------------------------------------------------------------
       subroutine check_parms_jas(iflag)
 
-      use atom, only: nctype
-      use jaspar3, only: b, scalek
-      use jaspar4, only: a4
+      use system, only: nctype
+      use jastrow, only: b, scalek, a4
       use bparm, only: nspin2b
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
@@ -998,7 +991,7 @@ c Calculate rms change in parameters
 c-----------------------------------------------------------------------
       subroutine save_nparms
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm, nreduced
       use ci000, only: nciterm
@@ -1049,11 +1042,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine set_nparms_tot
 
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
-      use method_opt, only: method
+      use optwf_control, only: method
       use contrl_file,    only: ounit
       implicit none
 
@@ -1094,27 +1087,28 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use optwf_parms, only: nparmj
       use csfs, only: nstates
       use derivjas, only: gvalue
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_func, only: ifunc_omega
       use optwf_parms, only: nparmj
       use sr_mat_n, only: elocal, nconf_n, sr_ho
       use sr_mat_n, only: sr_o, wtg
       use deloc_dj_m, only: denergy
-      use force_analy, only: iforce_analy
+      use m_force_analytic, only: iforce_analy
       use optorb_cblock, only: norbterm
       use orb_mat_001, only: orb_ho, orb_o
       use ci000, only: nciterm
       use ci001_blk, only: ci_o
       use ci003_blk, only: ci_e
-      use method_opt, only: method
+      use optwf_control, only: method
       use sr_mod, only: izvzb, i_sr_rescale
       use precision_kinds, only: dp
       use optgeo_lib, only: force_store
+      use vmc_mod, only: nwftypeorb, nwftypejas
 
       implicit none
 
       integer :: i0, ii, ijasci, istate, j
-      integer :: l, ntmp
+      integer :: l, ntmp, k
       real(dp), dimension(nparmj) :: tmp_ho
       real(dp), dimension(*) :: wt
       real(dp), dimension(*) :: psid
@@ -1128,22 +1122,27 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0
 
       if(l.gt.mconf) call fatal_error('SR_STORE: l gt mconf')
-c wrong, do a loop over istate, temporary for compiler, for jas and ci
-      if(nparmj /= 0) call dcopy(nparmj,gvalue,1,sr_o(1,l,1),1)
+
+      do k=1,nwftypejas
+        if(nparmj /= 0) call dcopy(nparmj,gvalue(1,k),1,sr_o(1,l,k),1)
+      enddo
 
       ntmp=max(nciterm-i0,0)
-      if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0),1,sr_o(nparmj+1,l,1),1)
-
+      do k=1,nwftypeorb
+        if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0,k),1,sr_o(nparmj+1,l,k),1)
+      enddo
+      
       ijasci=nparmj+ntmp
       if(ijasci+nstates*norbterm+nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')
 
+      !STU do mapping here if necessary
       do istate=1,nstates
         ii=ijasci+(istate-1)*norbterm
-        if (norbterm /= 0) call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l,1),1)
+        if (norbterm /= 0) call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l,istate),1)
         elocal(l,istate)=energy(istate)
         wtg(l,istate)=wt(istate)
       enddo
-c this part not quite right, added istate to compile right
+c this part not quite right, added istate to compile right, don't remember here
       ii=ijasci+nstates*norbterm
       do istate=1,nstates
         sr_o(ii+istate,l,1)=psid(istate)
@@ -1155,12 +1154,12 @@ c this part not quite right, added istate to compile right
 
 c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secular problem
       do j=1,nparmj
-        tmp_ho(j)=denergy(j,1)+gvalue(j)*energy(1)
+        tmp_ho(j)=denergy(j,1)+gvalue(j,1)*energy(1)
       enddo
 
       if(nparmj /= 0) call dcopy(nparmj,tmp_ho,1,sr_ho(1,l),1)
 
-      if(ntmp /= 0) call dcopy(ntmp,ci_e(1+i0),1,sr_ho(nparmj+1,l),1)
+      if(ntmp /= 0) call dcopy(ntmp,ci_e(1+i0,1),1,sr_ho(nparmj+1,l),1)
 
       if(norbterm /= 0) call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)
 

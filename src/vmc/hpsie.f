@@ -3,32 +3,35 @@
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 c Written by Claudia Filippi by modifying hpsi
 
-      use csfs, only: nstates
-      use mstates_mod, only: MSTATES
-      use estpsi, only: apsi, aref
-      use multidet, only: kref
-      use wfsec, only: iwf, iwftype
-      use contr2, only: ianalyt_lap
-      use velocity_jastrow, only: vjn
-      use multislatern, only: detn
-      use distance_mod, only: r_en, rvec_en
-      use const, only: nelec
-      use precision_kinds, only: dp
       use contrl_file, only: ounit
-      use distances_mod, only: distances
-      use jastrowe_mod, only: jastrowe
-      use error, only: fatal_error
+      use csfs, only: nstates
       use determinante_mod, only: determinante
-      use multideterminante_mod, only: multideterminante
       use determinante_psit_mod, only: determinante_psit
+      use distance_mod, only: r_en, rvec_en
+      use distances_mod, only: distances
+      use error, only: fatal_error
+      use estpsi, only: apsi, aref
+      use jastrow, only: ianalyt_lap
+      use jastrowe_mod, only: jastrowe
+      use mstates_mod, only: MSTATES
+      use multideterminante_mod, only: multideterminante
+      use multiple_geo, only: iwf, iwftype
+      use multislatern, only: detn
+      use precision_kinds, only: dp
+      use slater, only: kref
+      use system, only: nelec
+      use velocity_jastrow, only: vjn
+      use vmc_mod, only: nwftypejas
 
       implicit none
 
-      integer :: iel, iflag, ipass, istate
+      integer :: iel, iflag, ipass, istate, icheck
       real(dp) :: apsi_now, aref_now, check_apsi, check_apsi_min, check_dref
-      real(dp) :: d2j, psij, x(3,nelec)
+      real(dp), dimension(3, nelec) :: x
       real(dp), dimension(3, nelec) :: coord
       real(dp), dimension(MSTATES) :: psid
+      real(dp), dimension(nwftypejas) :: psij
+      real(dp), dimension(nwftypejas) :: d2j
 
 c Calculates wave function
 
@@ -50,12 +53,22 @@ c compute all determinants
 
       call determinante(iel,x,rvec_en,r_en,iflag)
 
-      if(detn(kref).eq.0.d0) then
-        do istate=1,nstates
+c      if(detn(kref).eq.0.d0) then
+c        do istate=1,nstates
+c          psid(istate)=0.d0
+c        enddo
+c        return
+c      endif
+
+      icheck=0
+      !STU check state mapping / orb in detn
+      do istate=1,nstates
+        if(detn(kref,istate).eq.0.d0) then
           psid(istate)=0.d0
-        enddo
-        return
-      endif
+          icheck=1
+        endif
+      enddo
+      if(icheck.eq.1) return
 
 
       call multideterminante(iel)
@@ -66,19 +79,19 @@ c combine determinantal quantities to obtain trial wave function
         call determinante_psit(iel,psid(istate),istate)
       enddo
 
-
+c !STU check state mapping in aref, detn
       if(ipass.gt.2) then
 
-        check_apsi_min=1.d+99
         do istate=1,nstates
+          check_apsi_min=1.d+99
           apsi_now=apsi(istate)/(ipass-1)
           check_apsi=abs(psid(istate))/apsi_now
-
-         check_apsi_min=min(check_apsi,check_apsi_min)
+          check_apsi_min=min(check_apsi,check_apsi_min)
+          aref_now=aref(istate)/(ipass-1)
+          check_dref=abs(detn(kref,istate))/aref_now
+          write(ounit,*) 'apsi,apsi_now,psid,check_apsi,aref,aref_now',
+     &     apsi(istate),apsi_now,psid(istate),check_apsi,aref(istate),aref_now 
         enddo
-
-        aref_now=aref/(ipass-1)
-        check_dref=abs(detn(kref))/aref_now
 
       endif
 

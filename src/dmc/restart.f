@@ -5,14 +5,13 @@
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nrad
       use basis, only: zex
-      use const, only: hb, ipr, nelec
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: istrech, nforce
+      use constants, only: hb 
+      use control, only: ipr, mode
+      use system, only: nelec, cent, iwctype, ncent, nctype, znuc, ncent_tot, ndn, nup, nghostcent
+      use multiple_geo, only: istrech, nforce, pecent, fgcm2, fgcum
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use atom, only: ncent_tot
       use estcum, only: iblk, ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
@@ -30,17 +29,14 @@
       use step, only: rprob
       use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
       use mpiblk, only: iblk_proc
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
       use casula, only: i_vpsp, icasula
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: nloc
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
-      use coefs, only: coef, nbasis, norb
-      use ghostatom, only: nghostcent
+      use slater, only: ndet, norb, cdet, coef
+      use coefs, only: nbasis
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
@@ -50,7 +46,7 @@
 
       use restart_gpop,    only: startr_gpop
       use error,           only: fatal_error
-      use rannyu_mod,      only: setrn
+      use random_mod,      only: setrn
       use mmpol,           only: mmpol_init, mmpol_rstrt
       use pcm_mod,         only: pcm_init, pcm_rstrt
       use properties_mod,  only: prop_init, prop_rstrt
@@ -233,7 +229,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
           call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
           i_vpsp=0
           do i=1,nelec
-            call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
+            call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
           enddo
           if(ifr.eq.1) then
             call walksav_det(iw)

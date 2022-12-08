@@ -7,23 +7,22 @@ c Written by Claudia Filippi
       use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: mwalk
-      use const, only: nelec
+      use system, only: nelec, ndn, nup
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim
       use vmc_mod, only: MEXCIT
       use dmc_mod, only: mwalk
-      use const, only: nelec
       use mstates_mod, only: MSTATES
       use branch, only: nwalk
       use slater, only: ddx, fp, slmi
-      use dets, only: ndet
-      use elec, only: ndn, nup
+      use slater, only: ndet
       use orbval, only: dorb, orb
-      use coefs, only: norb
+      use slater, only: norb
       use csfs, only: nstates
       use ycompact, only: ymat
       use multislater, only: detiab
-      use multidet, only: ivirt, kref, numrep_det
+      use multidet, only: ivirt, numrep_det
+      use slater, only: kref
       use multimat, only: aa, wfmat
       use mpi
 
@@ -76,27 +75,27 @@ c Written by Claudia Filippi
 
 
        do k=1,ndet
-         detuw(k,iw)=detiab(k,1)
-         detdw(k,iw)=detiab(k,2)
+         detuw(k,iw)=detiab(k,1,1)
+         detdw(k,iw)=detiab(k,2,1)
        enddo
 
        krefw(iw)=kref
        do j=1,nup*nup
-         slmuiw(j,iw)=slmi(j,1)
-         fpuw(1,j,iw)=fp(1,j,1)
-         fpuw(2,j,iw)=fp(2,j,1)
-         fpuw(3,j,iw)=fp(3,j,1)
+         slmuiw(j,iw)=slmi(j,1,1)
+         fpuw(1,j,iw)=fp(1,j,1,1)
+         fpuw(2,j,iw)=fp(2,j,1,1)
+         fpuw(3,j,iw)=fp(3,j,1,1)
        enddo
        do j=1,ndn*ndn
-         slmdiw(j,iw)=slmi(j,2)
-         fpdw(1,j,iw)=fp(1,j,2)
-         fpdw(2,j,iw)=fp(2,j,2)
-         fpdw(3,j,iw)=fp(3,j,2)
+         slmdiw(j,iw)=slmi(j,2,1)
+         fpdw(1,j,iw)=fp(1,j,2,1)
+         fpdw(2,j,iw)=fp(2,j,2,1)
+         fpdw(3,j,iw)=fp(3,j,2,1)
        enddo
        do i=1,nelec
-         ddxw(1,i,iw)=ddx(1,i)
-         ddxw(2,i,iw)=ddx(2,i)
-         ddxw(3,i,iw)=ddx(3,i)
+         ddxw(1,i,iw)=ddx(1,i,1)
+         ddxw(2,i,iw)=ddx(2,i,1)
+         ddxw(3,i,iw)=ddx(3,i,1)
        enddo
 
        do iab=1,2
@@ -107,26 +106,26 @@ c Written by Claudia Filippi
             do istate=1,nstates
               ymatw(j,i,iw,iab,istate)=ymat(j,i,iab,istate)
             enddo
-            aaw(i,j,iw,iab)=aa(i,j,iab)
+            aaw(i,j,iw,iab)=aa(i,j,iab,1)
           enddo
          enddo
          do k=1,kref-1
               ndim=numrep_det(k,iab)
               ndim2=ndim*ndim
-              wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab)
+              wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab,1)
          enddo
          do k=kref+1,ndet
             ndim=numrep_det(k,iab)
             ndim2=ndim*ndim
-            wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab)
+            wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab,1)
           enddo
        enddo
 
        do i=1,nelec
          do iorb=1,norb
-           orbw(i,iorb,iw)=orb(i,iorb)
+           orbw(i,iorb,iw)=orb(i,iorb,1)
            do kk=1,3
-             dorbw(kk,i,iorb,iw)=dorb(iorb,i,kk)
+             dorbw(kk,i,iorb,iw)=dorb(iorb,i,kk,1)
            enddo
          enddo
        enddo
@@ -136,27 +135,27 @@ c Written by Claudia Filippi
       entry walkstrdet(iw)
 
       do k=1,ndet
-        detiab(k,1)=detuw(k,iw)
-        detiab(k,2)=detdw(k,iw)
+        detiab(k,1,1)=detuw(k,iw)
+        detiab(k,2,1)=detdw(k,iw)
       enddo
 
       kref=krefw(iw)
       do j=1,nup*nup
-        slmi(j,1)=slmuiw(j,iw)
-        fp(1,j,1)=fpuw(1,j,iw)
-        fp(2,j,1)=fpuw(2,j,iw)
-        fp(3,j,1)=fpuw(3,j,iw)
+        slmi(j,1,1)=slmuiw(j,iw)
+        fp(1,j,1,1)=fpuw(1,j,iw)
+        fp(2,j,1,1)=fpuw(2,j,iw)
+        fp(3,j,1,1)=fpuw(3,j,iw)
       enddo
       do j=1,ndn*ndn
-        slmi(j,2)=slmdiw(j,iw)
-        fp(1,j,2)=fpdw(1,j,iw)
-        fp(2,j,2)=fpdw(2,j,iw)
-        fp(3,j,2)=fpdw(3,j,iw)
+        slmi(j,2,1)=slmdiw(j,iw)
+        fp(1,j,2,1)=fpdw(1,j,iw)
+        fp(2,j,2,1)=fpdw(2,j,iw)
+        fp(3,j,2,1)=fpdw(3,j,iw)
       enddo
       do i=1,nelec
-        ddx(1,i)=ddxw(1,i,iw)
-        ddx(2,i)=ddxw(2,i,iw)
-        ddx(3,i)=ddxw(3,i,iw)
+        ddx(1,i,1)=ddxw(1,i,iw)
+        ddx(2,i,1)=ddxw(2,i,iw)
+        ddx(3,i,1)=ddxw(3,i,iw)
       enddo
 
        do iab=1,2
@@ -167,26 +166,26 @@ c Written by Claudia Filippi
             do istate=1,nstates
               ymat(j,i,iab,istate)=ymatw(j,i,iw,iab,istate)
             enddo
-            aa(i,j,iab)=aaw(i,j,iw,iab)
+            aa(i,j,iab,1)=aaw(i,j,iw,iab)
           enddo
          enddo
           do k=1,kref-1
              ndim=numrep_det(k,iab)
              ndim2=ndim*ndim
-             wfmat(k,1:ndim2,iab)=wfmatw(k,1:ndim2,iw,iab)
+             wfmat(k,1:ndim2,iab,1)=wfmatw(k,1:ndim2,iw,iab)
           enddo
           do k=kref+1,ndet
               ndim=numrep_det(k,iab)
               ndim2=ndim*ndim
-              wfmat(k,1:ndim2,iab)=wfmatw(k,1:ndim2,iw,iab)
+              wfmat(k,1:ndim2,iab,1)=wfmatw(k,1:ndim2,iw,iab)
           enddo
        enddo
 
        do i=1,nelec
          do iorb=1,norb
-           orb(i,iorb)=orbw(i,iorb,iw)
+           orb(i,iorb,1)=orbw(i,iorb,iw)
            do kk=1,3
-             dorb(iorb,i,kk)=dorbw(kk,i,iorb,iw)
+             dorb(iorb,i,kk,1)=dorbw(kk,i,iorb,iw)
            enddo
          enddo
        enddo

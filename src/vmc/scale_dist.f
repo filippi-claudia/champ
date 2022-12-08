@@ -2,17 +2,17 @@
       contains
       subroutine set_scale_dist(ipr)
 c Written by Cyrus Umrigar
-      use atom, only: nctype
+      use system, only: nctype
 
-      use jaspar, only: sspinn
-      use jaspar3, only: b, scalek
+      use jastrow, only: sspinn
+      use jastrow, only: b, scalek
 
-      use jaspar4, only: a4, norda, nordb
-      use jaspar6, only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
-      use jaspar6, only: cutjas
+      use jastrow, only: a4, norda, nordb
+      use jastrow, only: asymp_jasa, asymp_jasb
+      use jaspar6, only: cutjas, asymp_r, c1_jas6, c1_jas6i, c2_jas6
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: ijas
-      use contr2, only: isc
+      use jastrow, only: ijas
+      use jastrow, only: isc
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
       implicit none
@@ -69,9 +69,9 @@ c used for J_en and J_ee when isc=16,17.
 c Calculate asymptotic value of A and B terms
       asymp_r=c1_jas6i/scalek(1)
       do it=1,nctype
-        asymp_jasa(it)=a4(1,it,1)*asymp_r/(1+a4(2,it,1)*asymp_r)
+        asymp_jasa(it,1)=a4(1,it,1)*asymp_r/(1+a4(2,it,1)*asymp_r)
         do iord=2,norda
-          asymp_jasa(it)=asymp_jasa(it)+a4(iord+1,it,1)*asymp_r**iord
+          asymp_jasa(it,1)=asymp_jasa(it,1)+a4(iord+1,it,1)*asymp_r**iord
         enddo
       enddo
 
@@ -88,9 +88,9 @@ c Calculate asymptotic value of A and B terms
             endif
             isp=nspin2b
           endif
-          asymp_jasb(i)=sspinn*b(1,isp,1)*asymp_r/(1+b(2,isp,1)*asymp_r)
+          asymp_jasb(i,1)=sspinn*b(1,isp,1)*asymp_r/(1+b(2,isp,1)*asymp_r)
           do iord=2,nordb
-            asymp_jasb(i)=asymp_jasb(i)+b(iord+1,isp,1)*asymp_r**iord
+            asymp_jasb(i,1)=asymp_jasb(i,1)+b(iord+1,isp,1)*asymp_r**iord
           enddo
         enddo
        elseif(ijas.eq.5) then
@@ -106,17 +106,17 @@ c Calculate asymptotic value of A and B terms
             endif
             isp=nspin2b
           endif
-          asymp_jasb(i)=b(1,isp,1)*asymp_r/(1+b(2,isp,1)*asymp_r)
+          asymp_jasb(i,1)=b(1,isp,1)*asymp_r/(1+b(2,isp,1)*asymp_r)
           do iord=2,nordb
-            asymp_jasb(i)=asymp_jasb(i)+b(iord+1,isp,1)*asymp_r**iord
+            asymp_jasb(i,1)=asymp_jasb(i,1)+b(iord+1,isp,1)*asymp_r**iord
           enddo
-          asymp_jasb(i)=sspinn*asymp_jasb(i)
+          asymp_jasb(i,1)=sspinn*asymp_jasb(i,1)
         enddo
       endif
       if((ijas.eq.4.or.ijas.eq.5).and.ipr.gt.1) then
         write(ounit,'(''asymp_r='',f10.6)') asymp_r
-        write(ounit,'(''asympa='',10f10.6)') (asymp_jasa(it),it=1,nctype)
-        write(ounit,'(''asympb='',10f10.6)') (asymp_jasb(i),i=1,2)
+        write(ounit,'(''asympa='',10f10.6)') (asymp_jasa(it,1),it=1,nctype)
+        write(ounit,'(''asympb='',10f10.6)') (asymp_jasb(i,1),i=1,2)
       endif
 
       return
@@ -126,13 +126,13 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Scale interparticle distances.
 
-      use jaspar3, only: scalek
+      use jastrow, only: scalek
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
-      use wfsec, only: iwf
-      use contr2, only: ijas
-      use contr2, only: isc
+      use multiple_geo, only: iwf
+      use jastrow, only: ijas
+      use jastrow, only: isc
       use precision_kinds, only: dp
       implicit none
 
@@ -283,13 +283,13 @@ c Scale interparticle distances and calculate the 1st derivative
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
-      use jaspar3, only: scalek
+      use jastrow, only: scalek
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
-      use wfsec, only: iwf
-      use contr2, only: ijas
-      use contr2, only: isc
+      use multiple_geo, only: iwf
+      use jastrow, only: ijas
+      use jastrow, only: isc
       use precision_kinds, only: dp
       implicit none
 
@@ -472,14 +472,14 @@ c Scale interparticle distances and calculate the 1st and 2nd derivs
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
-      use jaspar3, only: scalek
+      use jastrow, only: scalek
 
       use jaspar6, only: asymp_r, c1_jas6, c2_jas6
       use jaspar6, only: cutjas, cutjasi
       use scale_more, only: dd3
-      use wfsec, only: iwf
-      use contr2, only: ijas
-      use contr2, only: isc
+      use multiple_geo, only: iwf
+      use jastrow, only: ijas
+      use jastrow, only: isc
       use precision_kinds, only: dp
       implicit none
 
@@ -689,10 +689,10 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist.
 
-      use jaspar3, only: scalek
+      use jastrow, only: scalek
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -714,10 +714,10 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st deriv.
 
-      use jaspar3, only: scalek
+      use jastrow, only: scalek
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -740,10 +740,10 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st two derivs.
 
-      use jaspar3, only: scalek
+      use jastrow, only: scalek
 
       use jaspar6, only: c1_jas6
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 

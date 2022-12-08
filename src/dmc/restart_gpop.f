@@ -5,14 +5,13 @@
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nrad
       use basis, only: zex
-      use const, only: hb, ipr, nelec
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: istrech, nforce
+      use constants, only: hb
+      use control, only: ipr
+      use multiple_geo, only: fgcm2, fgcum, istrech, nforce, pecent
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
-      use atom, only: ncent_tot
+      use system, only: cent, iwctype, ncent, nctype, znuc, nelec, ncent_tot, ndn, nup, nghostcent
       use estcum, only: iblk, ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
@@ -35,10 +34,8 @@
       use casula, only: i_vpsp, icasula
       use jacobsave, only: ajacob, ajacold
       use pseudo, only: nloc
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
-      use coefs, only: coef, nbasis, norb
-      use ghostatom, only: nghostcent
+      use slater, only: ndet, norb, cdet, coef
+      use coefs, only: nbasis
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
@@ -54,7 +51,7 @@
       use pcm_mod,         only: pcm_init
       use properties_mod,  only: prop_init
       use nonloc_grid_mod, only: t_vpsp_sav
-      use rannyu_mod,      only: setrn
+      use random_mod,      only: setrn
       use strech_mod,      only: strech
       use hpsi_mod,        only: hpsi
       use determinante_mod,only: compute_determinante_grad
@@ -213,7 +210,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
           call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
           i_vpsp=0
           do i=1,nelec
-            call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
+            call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr), vold_dmc(1,i,iw,ifr),1)
           enddo
           if(ifr.eq.1) then
             call walksav_det(iw)

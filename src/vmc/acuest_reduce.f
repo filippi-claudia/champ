@@ -5,7 +5,7 @@ c Written by Claudia Filippi
 
       use mpi
       use precision_kinds, only: dp
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE, nforce, fcm2, fcum
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
 
@@ -13,8 +13,6 @@ c Written by Claudia Filippi
       use est2cm, only: ecm2, pecm2, tpbcm2, tjfcm2
       use estpsi, only: apsi, aref, detref
       use estsum, only: acc
-      use forcepar, only: nforce
-      use forcest, only: fcm2, fcum
       use forcewt, only: wcum
       use mpiconf, only: nproc, wid
       use mpi
@@ -64,14 +62,15 @@ c Written by Claudia Filippi
 
         jo=jo+1
         local_obs(jo)=apsi(istate)
-      enddo
+c      enddo
 
-      jo=jo+1
-      local_obs(jo)=aref
+        jo=jo+1 !STU mapping here, although will be save multple times regardless
+        local_obs(jo)=aref(istate)
 
-      do iab=1,2
-        jo=jo+1
-        local_obs(jo)=detref(iab)
+        do iab=1,2
+          jo=jo+1
+          local_obs(jo)=detref(iab,istate)
+        enddo
       enddo
 
       do ifr=1,nforce
@@ -133,14 +132,15 @@ c Written by Claudia Filippi
 
         jo=jo+1
         apsi(istate)=collect(jo)/nproc
-      enddo
-
-      jo=jo+1
-      aref=collect(jo)/nproc
-
-      do iab=1,2
+c      enddo
+c       !STU mapping here?, aref, detref
         jo=jo+1
-        detref(iab)=collect(jo)/nproc
+        aref(istate)=collect(jo)/nproc
+
+        do iab=1,2
+          jo=jo+1
+          detref(iab,istate)=collect(jo)/nproc
+        enddo
       enddo
 
       do ifr=1,nforce

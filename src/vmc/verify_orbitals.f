@@ -2,10 +2,10 @@
       contains
       subroutine verify_orbitals
 
-      use const, only: nelec
-      use dets, only: ndet
-      use optwf_contrl, only: ioptorb
-      use coefs, only: norb
+      use system, only: nelec
+      use slater, only: ndet
+      use optwf_control, only: ioptorb
+      use slater, only: norb
       use dorb_m, only: iworbd
       use orbval, only: nadorb, ndetorb, orb
       use error, only: fatal_error

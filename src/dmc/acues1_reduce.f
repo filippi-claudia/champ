@@ -4,7 +4,7 @@
 
       use precision_kinds, only: dp
       use vmc_mod, only: nrad
-      use forcepar, only: nforce
+      use multiple_geo, only: nforce, MFORCE
       use estcum, only: iblk
       use stats, only: acc, nacc, nodecr, trymove
       use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
@@ -14,8 +14,7 @@
       use est2cm, only: wfcm21, wgcm21
       use step, only: rprob
       use mpiconf, only: nproc, wid
-      use contr3, only: mode
-      use force_mod, only: MFORCE
+      use control, only: mode
       use contrl_per, only: iperiodic
       use mpi
 

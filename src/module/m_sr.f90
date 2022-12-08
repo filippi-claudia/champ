@@ -25,9 +25,9 @@ end module sr_index
 
 module sr_mat_n
     !> Arguments: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
-    use sr_mod, only: mparm, mobs, mconf
-    use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use precision_kinds, only: dp
+      use sr_mod, only: mparm, mobs, mconf
 
     real(dp), dimension(:, :), allocatable :: elocal !(mconf,MSTATES)
     real(dp), dimension(:, :), allocatable :: h_sr !(mparm,MSTATES)
@@ -47,15 +47,15 @@ module sr_mat_n
     real(dp), dimension(:, :), allocatable :: obs_tot !(mobs,MSTATES)
 
     private
-    public :: elocal, h_sr, h_sr_penalty, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot, isr_lambda, sr_lambda, sr_state
+    public :: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot, isr_lambda, sr_lambda, sr_state, h_sr_penalty
     ! public :: obs
     public :: allocate_sr_mat_n, deallocate_sr_mat_n
     save
 contains
     subroutine allocate_sr_mat_n()
-        use sr_mod, only: mparm, mobs, mconf, izvzb, i_sr_rescale
-        use optwf_func, only: ifunc_omega
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optwf_func, only: ifunc_omega
+      use sr_mod, only: mparm, mobs, mconf, izvzb, i_sr_rescale
         if (.not. allocated(elocal)) allocate (elocal(mconf, MSTATES))
         if (.not. allocated(h_sr)) allocate (h_sr(mparm, MSTATES))
         if (.not. allocated(h_sr_penalty)) allocate (h_sr_penalty(mparm,MSTATES))
@@ -88,14 +88,14 @@ end module sr_mat_n
 module m_sr
 contains
 subroutine allocate_m_sr()
-    use sr_mat_n, only: allocate_sr_mat_n
+      use sr_mat_n, only: allocate_sr_mat_n
 
     call allocate_sr_mat_n()
 end subroutine allocate_m_sr
 
 
 subroutine deallocate_m_sr()
-    use sr_mat_n, only: deallocate_sr_mat_n
+      use sr_mat_n, only: deallocate_sr_mat_n
 
     call deallocate_sr_mat_n()
 end subroutine deallocate_m_sr

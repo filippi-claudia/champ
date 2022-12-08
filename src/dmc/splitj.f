@@ -4,12 +4,11 @@
 c Written by Cyrus Umrigar
 
       use dmc_mod, only: MWALK
-      use const, only: nelec
-      use forcepar, only: nforce
+      use system, only: nelec
+      use multiple_geo, only: nforce, nwprod
       use age, only: iage
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use stats, only: nbrnch
-      use force_dmc, only: nwprod
       use branch, only: eold, nwalk, pwt, wt
       use branch, only: wthist
       use jacobsave, only: ajacold
@@ -22,7 +21,7 @@ c Written by Cyrus Umrigar
       use walksav_jas_mod,only: splitjjas
       use walksav_det_mod,only: splitjdet
       use error,          only: fatal_error
-      use rannyu_mod,     only: rannyu
+      use random_mod,     only: random_dp
 
       implicit none
 
@@ -56,7 +55,7 @@ c Written by Cyrus Umrigar
               ipair=0
               iunder=iunder+1
               wttot=wt(iw)+wt(iw2)
-              if(rannyu(0).gt.(wt(iw)/wttot)) then
+              if(random_dp().gt.(wt(iw)/wttot)) then
                 wt(iw2)=wttot
                 iwundr(iunder)=iw
                else

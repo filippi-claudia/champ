@@ -5,14 +5,13 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
       use dmc_mod, only: MFPRD1
-      use const, only: etrial, nelec
-      use forcepar, only: istrech, nforce
-      use atom, only: cent, iwctype, ncent, pecent, znuc
+      use const, only: etrial
+      use multiple_geo, only: istrech, nforce, pecent, nwprod
+      use system, only: cent, iwctype, ncent, znuc, nelec
       use estcum, only: ipass
       use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use force_dmc, only: nwprod
       use mpiconf, only: nproc
-      use contr3, only: mode
+      use control, only: mode
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen
       use branch, only: wthist
@@ -87,8 +86,8 @@ c get nuclear potential energy
           if(icasula.lt.0) i_vpsp=icasula
           call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
           i_vpsp=0
-          do i=1,nelec
-            call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
+          do i=1,nelec !STU check psijo_dmc, should be one state so should be ok?
+            call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
           enddo
 
           if(ifr.eq.1) then

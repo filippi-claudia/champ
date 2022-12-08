@@ -9,8 +9,8 @@ contains
     subroutine optwf()
 
         !> Main switch for optimization
-        use method_opt, only: method
-        use optwf_contrl, only: ioptwf, idl_flag, ilbfgs_flag
+        use optwf_control, only: method
+        use optwf_control, only: ioptwf, idl_flag, ilbfgs_flag
         use optwf_dl_mod, only: optwf_dl
         use optwf_sr_mod, only: optwf_sr
         use optwf_dl_mod, only: optwf_dl

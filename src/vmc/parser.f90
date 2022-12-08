@@ -20,19 +20,15 @@ subroutine parser
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
 ! CHAMP modules
-  use contr3,         	only: mode
+  use control,          only: mode, ipr
   use contrl_file,    	only: file_input, file_output, file_error
   use contrl_file,    	only: iunit, ounit, errunit
   use allocation_mod, 	only: allocate_vmc, allocate_dmc
   use periodic_table, 	only: atom_t, element
 
 ! in the replacement of preprocess input
-  use elec,           	only: ndn, nup
-  use const,          	only: nelec
-  use atom,           	only: nctype, ncent
-  use wfsec,          	only: nwftype
-  use forcepar,       	only: nforce
-  use force_mod,      	only: MFORCE
+  use system,           only: ndn, nup, nelec, nctype, ncent, newghostype, nghostcent
+  use multiple_geo,    	only: nforce, MFORCE, nwftype, MWF, iwftype, pecent, itausec, nwprod, delc
 
 ! variables from process input
   use sr_mod,         	only: mconf, mparm
@@ -42,49 +38,44 @@ subroutine parser
   use optorb_mod,     	only: mxreduced
   use optci,          	only: mxciterm
   use mstates_mod,      only: MSTATES
-  use vmc_mod,          only: nordj, nordj1, neqsx, nwftypeorb, nwftypejas
+  use vmc_mod,          only: nwftypeorb, nwftypejas
   use pcm,              only: MCHS
   use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
-  use force_mod,      	only: MFORCE, MWF
   use vmc_mod, 		      only: norb_tot, mterms
-  use atom, 		        only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-  use jaspar, 		      only: nspin1, nspin2, is
-  use ghostatom, 	      only: newghostype, nghostcent
-  use const, 		        only: pi, hb, etrial, delta, deltai, fbias, nelec, imetro, ipr
+  use system, 		      only: znuc, cent, iwctype, ncent_tot, nctype_tot, symbol, atomtyp
+  use jastrow, 		      only: nspin1, nspin2, is, b, c, scalek, a4, norda, nordb, nordc
+  use jastrow,                only: asymp_jasa, asymp_jasb, ijas, isc, nordj, nordj1, neqsx
+  use constants, 	      only: pi, hb
+  use metropolis,             only: delta, deltai, fbias, imetro, deltar, deltat
+  use const,                  only: etrial
   use general, 		      only: pooldir, pp_id, bas_id
   use general, 		      only: filenames_bas_num
-  use csfs, 		        only: cxdet, ncsf, nstates, anormo
-  use dets, 		        only: cdet, ndet
-  use elec, 		        only: ndn, nup
-  use forcepar, 	      only: nforce
+  use csfs, 		      only: cxdet, ncsf, nstates, anormo
+  use slater,                 only: ndet, cdet
   use grdntspar, 	      only: igrdtype, ngradnts
   use header, 		      only: title
-  use jaspar3, 		      only: b, c, scalek
-  use jaspar4, 		      only: a4, norda, nordb, nordc
-  use jaspar6, 		      only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
-  use jaspar6, 		      only: cutjas, cutjasi, allocate_jaspar6
+  use jaspar6, 		      only: asymp_r, c1_jas6, c1_jas6i, c2_jas6
+  use jaspar6, 		      only: cutjas, cutjasi
+  use jastrow,                only: allocate_jaspar6, ianalyt_lap
   use numbas, 		      only: numr
   use numbas1, 		      only: nbastyp
   use numbas2, 		      only: ibas0, ibas1
-  use optwf_contrl, 	  only: ioptci, ioptjas, ioptorb, ioptwf, nparm
-  use optwf_contrl, 	  only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
-  use optwf_contrl, 	  only: ibeta, ratio_j, iapprox, ncore
-  use optwf_contrl, 	  only: iuse_orbeigv
-  use optwf_contrl, 	  only: no_active
-  use optwf_parms, 	    only: nparmj
-  use sr_mod,           only: i_sr_rescale, izvzb
-  use sa_weights, 	    only: iweight, nweight, weights
-  use wfsec, 		        only: nwftype
-  use zmatrix, 		      only: izmatrix
-  use bparm, 		        only: nocuspb, nspin2b
-  use casula, 		      only: i_vpsp, icasula
-  use coefs, 		        only: coef, nbasis, norb, next_max
-  use optorb,           only: irrep
-  use const2, 		      only: deltar, deltat
-  use contr2, 		      only: ianalyt_lap, ijas
-  use contr2, 		      only: isc
-  use contrldmc, 	      only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
-  use contrldmc, 	      only: itau_eff, nfprod, rttau, tau
+  use optwf_control,          only: ioptci, ioptjas, ioptorb, ioptwf, nparm
+  use optwf_control,          only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
+  use optwf_control,          only: ibeta, ratio_j, iapprox, ncore
+  use optwf_control,          only: iuse_orbeigv
+  use optwf_control,          only: no_active
+  use optwf_parms,            only: nparmj
+  use sr_mod,                 only: i_sr_rescale, izvzb
+  use sa_weights,             only: iweight, nweight, weights
+  use zmatrix,                only: izmatrix
+  use bparm,                  only: nocuspb, nspin2b
+  use casula,                 only: i_vpsp, icasula
+  use coefs,                  only: nbasis, next_max
+  use slater,                 only: norb, coef
+  use optorb,                 only: irrep
+  use contrldmc,              only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
+  use contrldmc,              only: itau_eff, nfprod, rttau, tau
 
 ! Note the additions: Ravindra
   use control_vmc, 	    only: vmc_idump,  vmc_irstar, vmc_isite, vmc_nconf, vmc_nblk, vmc_nblk_max
@@ -93,12 +84,9 @@ subroutine parser
   use control_dmc, 	    only: dmc_idump, dmc_irstar, dmc_isite, dmc_nconf, dmc_nblk
   use control_dmc, 	    only: dmc_nblkeq, dmc_nconf_new, dmc_nstep
 
-  use dorb_m, 		      only: iworbd
+  use dorb_m, 		    only: iworbd
   use contrl_per, 	    only: iperiodic, ibasis
-  use force_analy, 	    only: iforce_analy, iuse_zmat, alfgeo
-  use force_dmc, 	      only: itausec, nwprod
-  use forcestr,         only: delc
-  use wfsec,            only: iwftype
+  use m_force_analytic,     only: iforce_analy, iuse_zmat, alfgeo
   use pseudo, 		      only: nloc
   use optorb_cblock, 	  only: idump_blockav
   use gradjerrb, 	      only: ngrad_jas_blocks
@@ -122,16 +110,16 @@ subroutine parser
   use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d, pcm_origin, pcm_endpt, allocate_pcm_grid3d_param
   use pcm_3dgrid, 	    only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED
   use prp003, 		      only: cc_nuc
-  use method_opt, 	    only: method
+  use optwf_control, 	    only: method
   use optorb_cblock, 	  only: nefp_blocks, isample_cmat, iorbsample
   use orbval, 		      only: ddorb, dorb, nadorb, ndetorb, orb
   use array_resize_utils, only: resize_tensor
   use grid3d_param, 	  only: endpt, nstep3d, origin, step3d
   use inputflags, 	    only: node_cutoff, eps_node_cutoff, dmc_node_cutoff, dmc_eps_node_cutoff, iqmmm, scalecoef
-  use optwf_contrl, 	  only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-  use optwf_contrl, 	  only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
-  use optwf_contrl, 	  only: ilastvmc, iroot_geo
-  use optwf_contrl, 	  only: sr_tau , sr_adiag, sr_eps
+  use optwf_control, 	  only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
+  use optwf_control, 	  only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
+  use optwf_control, 	  only: ilastvmc, iroot_geo
+  use optwf_control, 	  only: sr_tau , sr_adiag, sr_eps
   use optwf_func, 	    only: ifunc_omega, omega0, n_omegaf, n_omegat
   use optwf_corsam, 	  only: add_diag
   use dmc_mod, 		      only: mwalk, set_mwalk
@@ -188,7 +176,7 @@ subroutine parser
   use optwf_handle_wf,  only: set_nparms_tot
   use get_norbterm_mod, only: get_norbterm
   use scale_dist_mod,   only: set_scale_dist
-  use rannyu_mod,       only: setrn
+  use random_mod,       only: setrn
   use read_bas_num_mod, only: readps_gauss
   use multidet,         only: kref_fixed
 
@@ -290,7 +278,7 @@ subroutine parser
   cseed       = fdf_string('seed', "1837465927472523")
   ipr         = fdf_get('ipr', -1)
   eunit       = fdf_get('unit', 'Hartrees')
-  hb          = fdf_get('mass', 0.5d0)
+  !hb          = fdf_get('mass', 0.5d0) ! Always 0.5
   scalecoef   = fdf_get('scalecoef',1.0d0)
   i3dgrid     = fdf_get('i3dgrid',0)
   i3dsplorb   = fdf_get('i3dsplorb',0)
@@ -745,7 +733,7 @@ subroutine parser
 
     if (dmc_node_cutoff.gt.0) write(ounit,real_format) " enode cutoff = ", dmc_eps_node_cutoff
 
-    if (idmc.ne.2) call fatal_error('INPUT: only idmc=2 supported')
+    if (iabs(idmc).ne.2) call fatal_error('INPUT: only idmc=2 supported')
 
     if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
   else
@@ -809,6 +797,36 @@ subroutine parser
   endif
 
   call elapsed_time ("Reading molecular coefficients file : ")
+
+! (9) Symmetry information of orbitals (either block or from a file)
+
+  if ( fdf_load_defined('symmetry') ) then
+    call read_symmetry_file(file_symmetry)
+  elseif ( fdf_load_defined('trexio') ) then
+#if defined(TREXIO_FOUND)
+    call read_trexio_symmetry_file(file_trexio)
+#endif
+  elseif ( fdf_block('symmetry', bfdf)) then
+  ! call fdf_read_symmetry_block(bfdf)
+    write(errunit,'(a)') "Warning:: No information about orbital symmetries provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!   if( mode(1:3) == 'vmc' ) error stop
+  else
+    write(errunit,'(a)') "Warning:: No information about orbital symmetries provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+!    if( mode(1:3) == 'vmc' ) error stop
+    ! if no symmetry file present, assume same symmetry for all orbitals
+    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
+    irrep(1:norb_tot) = 1
+    write(ounit,*)
+    write(ounit,*) '____________________________________________________________________'
+    write(ounit, *) " Orbital symmetries are set to default "
+    write(ounit, '(10(1x, i3))') (irrep(i), i=1, norb_tot)
+    write(ounit,*) '____________________________________________________________________'
+    write(ounit,*)
+  endif
+
+  call elapsed_time ("Reading/setting symmetry file : ")
 
 ! Basis num information (either block or from a file)
 
@@ -928,7 +946,7 @@ subroutine parser
         cutjas=1.d99
         cutjasi=0
     endif
-    call set_scale_dist(1)
+    call set_scale_dist(ipr)
   else
     cutjas=1.d99
     cutjasi=0
@@ -937,14 +955,16 @@ subroutine parser
     c2_jas6=0
     asymp_r=0
     call allocate_jaspar6()  ! Needed for the following two arrays
-    do i=1,nctype
-        asymp_jasa(i)=0
-    enddo
-    do i=1,2
-        asymp_jasb(i)=0
+    do j=1,nwftypejas
+        do i=1,nctype
+            asymp_jasa(i,j)=0
+        enddo
+        do i=1,2
+            asymp_jasb(i,j)=0
+        enddo
     enddo
   endif
-  call set_scale_dist(1)
+  call set_scale_dist(ipr)
 
   call elapsed_time ("Setting Jastrow parameters : ")
 
@@ -986,36 +1006,6 @@ subroutine parser
 
   call elapsed_time ("Reading determinants only from a file : ")
 
-! (9) Symmetry information of orbitals (either block or from a file)
-
-  if ( fdf_load_defined('symmetry') ) then
-    call read_symmetry_file(file_symmetry)
-  elseif ( fdf_load_defined('trexio') ) then
-#if defined(TREXIO_FOUND)
-    call read_trexio_symmetry_file(file_trexio)
-#endif
-  elseif ( fdf_block('symmetry', bfdf)) then
-  ! call fdf_read_symmetry_block(bfdf)
-    write(errunit,'(a)') "Warning:: No information about orbital symmetries provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!   if( mode(1:3) == 'vmc' ) error stop
-  else
-    write(errunit,'(a)') "Warning:: No information about orbital symmetries provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-!    if( mode(1:3) == 'vmc' ) error stop
-    ! if no symmetry file present, assume same symmetry for all orbitals
-    if (.not. allocated(irrep)) allocate (irrep(norb_tot))
-    irrep(1:norb_tot) = 1
-    write(ounit,*)
-    write(ounit,*) '____________________________________________________________________'
-    write(ounit, *) " Orbital symmetries are set to default "
-    write(ounit, '(10(1x, i3))') (irrep(i), i=1, norb_tot)
-    write(ounit,*) '____________________________________________________________________'
-    write(ounit,*)
-  endif
-
-  call elapsed_time ("Reading/setting symmetry file : ")
-
 ! (3) CSF only
 
   if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
@@ -1049,7 +1039,6 @@ subroutine parser
 
   ! Jastrow mterms needed for allocations
   mterms = nterms4(nordc)
-
   ! Add up all the parameters. It will be used to allocate arrays.
   nciterm = mxciterm
   call set_nparms_tot()
@@ -1129,7 +1118,7 @@ subroutine parser
   if(ibasis.eq.1) then
     write(ounit,'(a)') " Orbitals on localized basis "
     write(ounit, int_format) " Total no. of basis = ", nbasis
-    call write_orb_loc
+    ! call write_orb_loc
 
     if ( fdf_defined('basis') ) then
       if(numr.gt.0) then
@@ -1171,11 +1160,11 @@ subroutine parser
   call elapsed_time ("Reading basis file : ")
 
   ! Basis information section ends here
-  
 
 ! check if the orbitals coefficients are to be multiplied by a constant parameter
   if(scalecoef.ne.1.0d0) then
     if((method.eq.'sr_n'.and.nwftypeorb.gt.1)) then
+      k = nwftype
       nwftype = nstates
     endif
     do  iwft=1,nwftype
@@ -1187,6 +1176,9 @@ subroutine parser
     enddo
     write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
     write(ounit,*)
+  endif
+  if((method.eq.'sr_n'.and.nwftypeorb.gt.1)) then
+    nwftype = k
   endif
 
 ! verify number of orbitals and setup optorb
@@ -1265,6 +1257,15 @@ subroutine parser
     endif
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
+      if(method.eq.'lin_d' .or. method.eq.'mix_n') then
+        if(lin_jdav.eq.0) then 
+                write(ounit,'(a)' ) " Use old Regterg"
+        elseif(lin_jdav.eq.1) then
+                write(ounit,'(a)' ) " Use new Davidson"
+        else
+                write(ounit,'(a)' ) " Use new Jacobi-Davidson"
+        endif
+      endif
       if(method.eq.'linear' .and. mxreduced.ne.norbterm )  &
           call fatal_error('READ_INPUT: mxreduced .ne. norbterm')
     endif
@@ -1422,9 +1423,9 @@ subroutine parser
       call fdf_list('sr_lambda',i,isr_lambda)
       write(ounit,'(a)' )
       write(ounit,'(tr1,a,i0,a)') ' SR lambda has ',i,' entries'
-      if(i.ne.nstates*(nstates-1)/2) call fatal_error('READ_INPUT: sr_lambda array &
-              must contain nstates*(nstates-1)/2 entries, [ 1-2, 1-3, ..., 1-nstates,&
-              2-3, 2-4, ..., 2-nstates, ..., (nstates-1)-nstates ]')
+      if(i.ne.nstates*(nstates-1)/2) call fatal_error('READ_INPUT: sr_lambda array, & 
+          &must contain nstates*(nstates-1)/2 entries, [ 1-2, 1-3, ..., 1-nstates, & 
+          &2-3, 2-4, ..., 2-nstates, ..., (nstates-1)-nstates ]')
       !call fdf_list('weights_guiding',i,weights_g) ! why was this called again?
       write(temp5, '(a,i0,a)') '(a,', MSTATES*(MSTATES-1)/2, '(f12.6))'
       !write(ounit, '(a,<MSTATES*(MSTATES-1)/2>(f12.6))') ' SR lambda : ', sr_lambda(1:i) ! Intel version
@@ -2034,7 +2035,7 @@ subroutine compute_mat_size_new()
   !> compute various size that are derived from the input
   ! use vmc_mod, only: nmat_dim, nmat_dim2
   ! use const, only: nelec
-  ! use atom, only: nctype_tot, ncent_tot
+  ! use system, only: nctype_tot, ncent_tot
 
   use sr_mod, only: mparm, mobs, mconf
   use control_vmc, only: vmc_nstep, vmc_nblk_max

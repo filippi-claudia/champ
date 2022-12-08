@@ -3,15 +3,16 @@
       contains
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
-      use dets, only: ndet
-      use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf
-      use optwf_contrl, only: ioptci
+      use slater, only: ndet
+      use csfs, only: cxdet, iadet, ibdet, icxdet, ncsf, nstates
+      use optwf_control, only: ioptci
       use ci000, only: nciprim
       use ci001_blk, only: ci_o, ci_oe
       use ci003_blk, only: ci_e
       use ci004_blk, only: ci_de
+      use vmc_mod, only: nwftypeorb
 
-      use method_opt, only: method
+      use optwf_control, only: method
 
       use multislater, only: detiab
       use precision_kinds, only: dp
@@ -20,12 +21,14 @@
       implicit none
 
       integer :: i, icsf, idet, ix, j
-      integer :: jcsf, k
-      real(dp) :: ci_e_csf, ci_o_csf, e_other, energy, psid
+      integer :: jcsf, k, istate
+      real(dp) :: ci_e_csf, ci_o_csf, e_other
       real(dp) :: psidi
-      real(dp), dimension(ndet) :: ciprim
-      real(dp), dimension(ndet) :: cieprim
+      real(dp), dimension(ndet,nwftypeorb) :: ciprim
+      real(dp), dimension(ndet,nwftypeorb) :: cieprim
       real(dp), dimension(ndet, 2) :: eloc_det
+      real(dp), dimension(nstates) :: psid
+      real(dp), dimension(nstates) :: energy
 
 
 
@@ -34,118 +37,126 @@
 
       if(ioptci.eq.0) return
 
-      psidi=1.d0/psid
+      do istate=1,nstates !STU check state mapping
+        psidi=1.d0/psid(istate)
 
-      do k=1,nciprim
-        ciprim(k)=detiab(k,1)*detiab(k,2)*psidi
-        cieprim(k)=(eloc_det(k,1)+eloc_det(k,2)+e_other)*ciprim(k)
-      enddo
+        do k=1,nciprim
+          ciprim(k,istate)=detiab(k,1,istate)*detiab(k,2,istate)*psidi
+          cieprim(k,istate)=(eloc_det(k,1)+eloc_det(k,2)+e_other)*ciprim(k,istate)
+        enddo
 
 c Update <Oi>,<Ei>,<dEi>,<Oi*Ej>
 c Correlation matrix <Oi*Oj> is computed in ci_sum
 
-      if(ncsf.eq.0) then
-        do i=1,nciprim
-         ci_o(i)=ciprim(i)
-         ci_e(i)=cieprim(i)
-         ci_de(i)=cieprim(i)-ciprim(i)*energy
-        enddo
-       else
-        do icsf=1,ncsf
-          ci_o_csf=0
-          ci_e_csf=0
-          do ix=iadet(icsf),ibdet(icsf)
-            idet=icxdet(ix)
-            ci_o_csf=ci_o_csf+ciprim(idet)*cxdet(ix)
-            ci_e_csf=ci_e_csf+cieprim(idet)*cxdet(ix)
+        if(ncsf.eq.0) then
+          do i=1,nciprim
+            ci_o(i,istate)=ciprim(i,istate)
+            ci_e(i,istate)=cieprim(i,istate)
+            ci_de(i,istate)=cieprim(i,istate)-ciprim(i,istate)*energy(istate)
           enddo
-        ci_o(icsf)=ci_o_csf
-        ci_e(icsf)=ci_e_csf
-        ci_de(icsf)=ci_e_csf-ci_o_csf*energy
-        enddo
-
-      endif
-
-      if(method.eq.'sr_n'.or.method.eq.'lin_d') return
-
-      if(ncsf.eq.0) then
-       do i=1,nciprim
-         do j=1,nciprim
-           ci_oe(i,j) = ciprim(i)*cieprim(j)
-         enddo
-       enddo
-      else
-        do icsf=1,ncsf
-          do jcsf=1,ncsf
-            ci_oe(icsf,jcsf)=ci_o(icsf)*ci_e(jcsf)
+        else
+          do icsf=1,ncsf
+            ci_o_csf=0
+            ci_e_csf=0
+            do ix=iadet(icsf),ibdet(icsf)
+              idet=icxdet(ix)
+              ci_o_csf=ci_o_csf+ciprim(idet,istate)*cxdet(ix)
+              ci_e_csf=ci_e_csf+cieprim(idet,istate)*cxdet(ix)
+            enddo
+            ci_o(icsf,istate)=ci_o_csf
+            ci_e(icsf,istate)=ci_e_csf
+            ci_de(icsf,istate)=ci_e_csf-ci_o_csf*energy(istate)
           enddo
-        enddo
-      endif
+
+        endif
+      enddo
+
+      if(method.eq.'sr_n'.or.method.eq.'lin_d') return !STU this line requires 2 local variables and 2 global to be given an extra index.
+
+      do istate=1,nstates !STU also here
+        if(ncsf.eq.0) then
+          do i=1,nciprim
+            do j=1,nciprim
+              ci_oe(i,j,istate) = ciprim(i,istate)*cieprim(j,istate)
+            enddo
+          enddo
+        else
+          do icsf=1,ncsf
+            do jcsf=1,ncsf
+              ci_oe(icsf,jcsf,istate)=ci_o(icsf,istate)*ci_e(jcsf,istate)
+            enddo
+          enddo
+        endif
+      enddo
 
       end
 c-----------------------------------------------------------------------
       subroutine optci_init(iflg)
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum, ci_o_sum
       use ci006_blk, only: ci_de_cum, ci_de_sum
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
+      use vmc_mod, only: nwftypeorb
 
-      use method_opt, only: method
+      use optwf_control, only: method
 
       use precision_kinds, only: dp
       implicit none
 
-      integer :: i, idx, iflg, j
+      integer :: i, idx, iflg, j, k
       real(dp) :: guid_weight, guid_weight_sq
 
 
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do i=1,nciterm
-       ci_o_sum(i) =0.d0
-       ci_de_sum(i) =0.d0
-       do j=1,nciterm
-        ci_oe_sum(j,i) =0.d0
-       enddo
-      enddo
+      do k=1,nwftypeorb
+        do i=1,nciterm
+          ci_o_sum(i,k) =0.d0
+          ci_de_sum(i,k) =0.d0
+          do j=1,nciterm
+            ci_oe_sum(j,i,k) =0.d0
+          enddo
+        enddo
 
-      idx=0
-      do i=1,nciterm
-       do j=1,i
-        idx=idx+1
-        ci_oo_sum(idx)=0.d0
-        ci_ooe_sum(idx)=0.d0
-       enddo
+        idx=0
+        do i=1,nciterm
+          do j=1,i
+            idx=idx+1
+            ci_oo_sum(idx,k)=0.d0
+            ci_ooe_sum(idx,k)=0.d0
+          enddo
+        enddo
       enddo
 
 C$ iflg = 0: init *cum, *cm2 as well
       if(iflg.gt.0) return
+      
+      do k=1,nwftypeorb
+        guid_weight=0.d0
+        guid_weight_sq=0.d0
+        do i=1,nciterm
+          ci_o_cum(i,k)=0.d0
+          ci_de_cum(i,k)=0.d0
+          do j=1,nciterm
+            ci_oe_cum(j,i,k)=0.d0
+            ci_oe_cm2(j,i,k)=0.d0
+          enddo
+        enddo
 
-      guid_weight=0.d0
-      guid_weight_sq=0.d0
-
-      do i=1,nciterm
-       ci_o_cum(i)=0.d0
-       ci_de_cum(i)=0.d0
-       do j=1,nciterm
-        ci_oe_cum(j,i)=0.d0
-        ci_oe_cm2(j,i)=0.d0
-       enddo
-      enddo
-
-      idx=0
-      do i=1,nciterm
-       do j=1,i
-        idx=idx+1
-        ci_oo_cum(idx)=0.d0
-        ci_oo_cm2(idx)=0.d0
-        ci_ooe_cum(idx)=0.d0
-       enddo
+        idx=0
+        do i=1,nciterm
+          do j=1,i
+            idx=idx+1
+            ci_oo_cum(idx,k)=0.d0
+            ci_oo_cm2(idx,k)=0.d0
+            ci_ooe_cum(idx,k)=0.d0
+          enddo
+        enddo
       enddo
 
       end
@@ -153,69 +164,75 @@ C$ iflg = 0: init *cum, *cm2 as well
 c-----------------------------------------------------------------------
       subroutine optci_save
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
       use ci003_blk, only: ci_e, ci_e_old
       use ci004_blk, only: ci_de, ci_de_old
+      use vmc_mod, only: nwftypeorb
 
-      use method_opt, only: method
+      use optwf_control, only: method
 
       implicit none
 
-      integer :: i, j
+      integer :: i, j, k
 
 
 
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do i=1,nciterm
-       ci_o_old(i)=ci_o(i)
-       ci_e_old(i)=ci_e(i)
-       ci_de_old(i)=ci_de(i)
-       do j=1,nciterm
-        ci_oe_old(j,i)=ci_oe(j,i)
-       enddo
+      do k=1, nwftypeorb
+        do i=1,nciterm
+          ci_o_old(i,k)=ci_o(i,k)
+          ci_e_old(i,k)=ci_e(i,k)
+          ci_de_old(i,k)=ci_de(i,k)
+          do j=1,nciterm
+            ci_oe_old(j,i,k)=ci_oe(j,i,k)
+          enddo
+        enddo
       enddo
 
       end
 c-----------------------------------------------------------------------
       subroutine optci_restore
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
       use ci002_blk, only: ci_o_old, ci_oe_old
       use ci003_blk, only: ci_e, ci_e_old
       use ci004_blk, only: ci_de, ci_de_old
+      use vmc_mod, only: nwftypeorb
 
-      use method_opt, only: method
+      use optwf_control, only: method
 
       implicit none
 
-      integer :: i, j
+      integer :: i, j, k
 
 
 
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do i=1,nciterm
-       ci_o(i)=ci_o_old(i)
-       ci_e(i)=ci_e_old(i)
-       ci_de(i)=ci_de_old(i)
-       do j=1,nciterm
-        ci_oe(j,i)=ci_oe_old(j,i)
-       enddo
+      do k=1,nwftypeorb
+        do i=1,nciterm
+          ci_o(i,k)=ci_o_old(i,k)
+          ci_e(i,k)=ci_e_old(i,k)
+          ci_de(i,k)=ci_de_old(i,k)
+          do j=1,nciterm
+            ci_oe(j,i,k)=ci_oe_old(j,i,k)
+          enddo
+        enddo
       enddo
 
       end
 c-----------------------------------------------------------------------
       subroutine optci_sum(p,q,enew,eold)
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
 
       use ci000, only: nciterm
       use ci001_blk, only: ci_o, ci_oe
@@ -226,13 +243,14 @@ c-----------------------------------------------------------------------
       use ci008_blk, only: ci_oe_sum
       use ci009_blk, only: ci_oo_sum
       use ci010_blk, only: ci_ooe_sum
+      use vmc_mod, only: nwftypeorb
 
-      use method_opt, only: method
+      use optwf_control, only: method
 
       use precision_kinds, only: dp
       implicit none
 
-      integer :: i, idx, j
+      integer :: i, idx, j, k
       real(dp) :: ci_oo_new, ci_oo_old, enew, eold, p
       real(dp) :: q
 
@@ -240,30 +258,32 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do j=1,nciterm
-       ci_o_sum(j) =ci_o_sum(j)+p*ci_o(j)+q*ci_o_old(j)
-       ci_de_sum(j) =ci_de_sum(j)+p*ci_de(j)+q*ci_de_old(j)
-       do i=1,nciterm
-        ci_oe_sum(i,j) =ci_oe_sum(i,j)+p*ci_oe(i,j)+q*ci_oe_old(i,j)
-       enddo
-      enddo
+      do k=1,nwftypeorb !STU orb or max? check other subroutines in here
+        do j=1,nciterm
+          ci_o_sum(j,k) =ci_o_sum(j,k)+p*ci_o(j,k)+q*ci_o_old(j,k)
+          ci_de_sum(j,k) =ci_de_sum(j,k)+p*ci_de(j,k)+q*ci_de_old(j,k)
+          do i=1,nciterm
+            ci_oe_sum(i,j,k)=ci_oe_sum(i,j,k)+p*ci_oe(i,j,k)+q*ci_oe_old(i,j,k)
+          enddo
+        enddo
 
-      idx=0
-      do i=1,nciterm
-       do j=1,i
-        idx=idx+1
-        ci_oo_new=ci_o(i)*ci_o(j)
-        ci_oo_old=ci_o_old(i)*ci_o_old(j)
-        ci_oo_sum(idx)=ci_oo_sum(idx)  +p*ci_oo_new+q*ci_oo_old
-        ci_ooe_sum(idx)=ci_ooe_sum(idx)+p*ci_oo_new*enew+q*ci_oo_old*eold
-       enddo
+        idx=0
+        do i=1,nciterm
+          do j=1,i
+            idx=idx+1
+            ci_oo_new=ci_o(i,k)*ci_o(j,k)
+            ci_oo_old=ci_o_old(i,k)*ci_o_old(j,k)
+            ci_oo_sum(idx,k)=ci_oo_sum(idx,k)  +p*ci_oo_new+q*ci_oo_old
+            ci_ooe_sum(idx,k)=ci_ooe_sum(idx,k)+p*ci_oo_new*enew+q*ci_oo_old*eold
+          enddo
+        enddo
       enddo
 
       end
 c-----------------------------------------------------------------------
       subroutine optci_cum(wsum)
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
 
       use ci000, only: nciterm
 
@@ -273,72 +293,76 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
-      use method_opt, only: method
+      use optwf_control, only: method
+      use vmc_mod, only: nwftypeorb
 
       use precision_kinds, only: dp
       implicit none
 
-      integer :: i, idx, j
+      integer :: i, idx, j, k
       real(dp) :: ci_oe_now, wsum
 
 
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do i=1,nciterm
-       ci_o_cum(i)=ci_o_cum(i)+ci_o_sum(i)
-       ci_de_cum(i)=ci_de_cum(i)+ci_de_sum(i)
-       do j=1,nciterm
-        ci_oe_now=ci_oe_sum(i,j)/wsum
-        ci_oe_cum(i,j)=ci_oe_cum(i,j)+ci_oe_sum(i,j)
-        ci_oe_cm2(i,j)=ci_oe_cm2(i,j)+ci_oe_sum(i,j)*ci_oe_now
-       enddo
-      enddo
+      do k=1,nwftypeorb
+        do i=1,nciterm
+          ci_o_cum(i,k)=ci_o_cum(i,k)+ci_o_sum(i,k)
+          ci_de_cum(i,k)=ci_de_cum(i,k)+ci_de_sum(i,k)
+          do j=1,nciterm
+            ci_oe_now=ci_oe_sum(i,j,k)/wsum
+            ci_oe_cum(i,j,k)=ci_oe_cum(i,j,k)+ci_oe_sum(i,j,k)
+            ci_oe_cm2(i,j,k)=ci_oe_cm2(i,j,k)+ci_oe_sum(i,j,k)*ci_oe_now
+          enddo
+        enddo
 
-      idx=0
-      do i=1,nciterm
-       do j=1,i
-        idx=idx+1
-        ci_oo_cum(idx)=ci_oo_cum(idx)+ci_oo_sum(idx)
-        ci_oo_cm2(idx)=ci_oo_cm2(idx)+ci_oo_sum(idx)*ci_oo_sum(idx)/wsum
-        ci_ooe_cum(idx)=ci_ooe_cum(idx)+ci_ooe_sum(idx)
-       enddo
+        idx=0
+        do i=1,nciterm
+          do j=1,i
+            idx=idx+1
+            ci_oo_cum(idx,k)=ci_oo_cum(idx,k)+ci_oo_sum(idx,k)
+            ci_oo_cm2(idx,k)=ci_oo_cm2(idx,k)+ci_oo_sum(idx,k)*ci_oo_sum(idx,k)/wsum
+            ci_ooe_cum(idx,k)=ci_ooe_cum(idx,k)+ci_ooe_sum(idx,k)
+          enddo
+        enddo
       enddo
 
       end
 c-----------------------------------------------------------------------
       subroutine optci_dump(iu)
 
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciprim, nciterm
       use ci005_blk, only: ci_o_cum
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
 
-      use method_opt, only: method
+      use optwf_control, only: method
 
       implicit none
 
-      integer :: i, iu, j, matdim
-
+      integer :: i, iu, j, matdim, k
 
 
 
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
+      
+      k=1 !STU decode how to print multiple state info later
 
       matdim=nciterm*(nciterm+1)/2
       write(iu) nciprim,nciterm
-      write(iu) (ci_o_cum(i),i=1,nciterm)
-      write(iu) ((ci_oe_cum(i,j),ci_oe_cm2(i,j),i=1,nciterm),j=1,nciterm)
-      write(iu) (ci_oo_cum(i),ci_oo_cm2(i),i=1,matdim)
-      write(iu) (ci_ooe_cum(i),i=1,matdim)
+      write(iu) (ci_o_cum(i,k),i=1,nciterm)
+      write(iu) ((ci_oe_cum(i,j,k),ci_oe_cm2(i,j,k),i=1,nciterm),j=1,nciterm)
+      write(iu) (ci_oo_cum(i,k),ci_oo_cm2(i,k),i=1,matdim)
+      write(iu) (ci_ooe_cum(i,k),i=1,matdim)
 
       end
 c-----------------------------------------------------------------------
       subroutine optci_rstrt(iu)
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciprim, nciterm
 
       use ci005_blk, only: ci_o_cum
@@ -346,17 +370,19 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
 
-      use method_opt, only: method
+      use optwf_control, only: method
       use contrl_file,    only: ounit
       implicit none
 
-      integer :: i, iu, j, matdim, mciprim
+      integer :: i, iu, j, matdim, mciprim, k
       integer :: mciterm
 
-
+      
 
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
+
+      k=1 !STU decide how to setup restart file with multiple state
 
       read(iu) mciprim,mciterm
       if(mciprim.ne.nciprim) then
@@ -370,18 +396,18 @@ c-----------------------------------------------------------------------
        call fatal_error('CI: Restart, inconsistent CI information')
       endif
 
-      read(iu) (ci_o_cum(i),i=1,nciterm)
-      read(iu) ((ci_oe_cum(i,j),ci_oe_cm2(i,j),i=1,nciterm),j=1,nciterm)
+      read(iu) (ci_o_cum(i,k),i=1,nciterm)
+      read(iu) ((ci_oe_cum(i,j,k),ci_oe_cm2(i,j,k),i=1,nciterm),j=1,nciterm)
       matdim=nciterm*(nciterm+1)/2
-      read(iu) (ci_oo_cum(i),ci_oo_cm2(i),i=1,matdim)
-      read(iu) (ci_ooe_cum(i),i=1,matdim)
+      read(iu) (ci_oo_cum(i,k),ci_oo_cm2(i,k),i=1,matdim)
+      read(iu) (ci_ooe_cum(i,k),i=1,matdim)
 
       end
 c-----------------------------------------------------------------------
-      subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
+      subroutine optci_avrg(wcum,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav,k)
 
       use optci, only: mxciterm, mxcireduced, ncimatdim
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
@@ -389,12 +415,12 @@ c-----------------------------------------------------------------------
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
 
-      use method_opt, only: method
+      use optwf_control, only: method
 
       use precision_kinds, only: dp
       implicit none
 
-      integer :: i, iblk, idx, j
+      integer :: i, iblk, idx, j, k
       real(dp) :: err, wcum, x, x2
       real(dp), dimension(mxciterm) :: oav
       real(dp), dimension(mxciterm) :: deav
@@ -412,14 +438,14 @@ c-----------------------------------------------------------------------
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       do i=1,nciterm
-       oav(i)=ci_o_cum(i)/wcum
-       deav(i)=ci_de_cum(i)/wcum
+       oav(i)=ci_o_cum(i,k)/wcum
+       deav(i)=ci_de_cum(i,k)/wcum
        do j=1,nciterm
-        oeav(i,j)=ci_oe_cum(i,j)/wcum
+        oeav(i,j)=ci_oe_cum(i,j,k)/wcum
        enddo
 
        do j=1,nciterm
-        oeerr(i,j)=err(ci_oe_cum(i,j),ci_oe_cm2(i,j))
+        oeerr(i,j)=err(ci_oe_cum(i,j,k),ci_oe_cm2(i,j,k))
        enddo
       enddo
 
@@ -427,9 +453,9 @@ c-----------------------------------------------------------------------
       do i=1,nciterm
        do j=1,i
         idx=idx+1
-        ooav(idx)=ci_oo_cum(idx)/wcum
-        ooeav(idx)=ci_ooe_cum(idx)/wcum
-        ooerr(idx)=err(ci_oo_cum(idx),ci_oo_cm2(idx))
+        ooav(idx)=ci_oo_cum(idx,k)/wcum
+        ooeav(idx)=ci_ooe_cum(idx,k)/wcum
+        ooerr(idx)=err(ci_oo_cum(idx,k),ci_oo_cm2(idx,k))
        enddo
       enddo
 
@@ -439,19 +465,19 @@ c-----------------------------------------------------------------------
 
       use optci, only: mxciterm, mxcireduced, ncimatdim
       use csfs, only: ccsf, ncsf
-      use dets, only: cdet
+      use slater, only: cdet
       use gradhess_ci, only: grad_ci, h_ci, s_ci
       use linear_norm, only: ci_oav
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb
       use ci000, only: iciprt, nciterm
 
-      use method_opt, only: method
+      use optwf_control, only: method
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
       integer :: i, iblk, iciprt_sav, idx, is
-      integer :: j
+      integer :: j, k
       real(dp) :: etot, passes
       real(dp), dimension(mxciterm) :: deav
       real(dp), dimension(mxciterm, mxcireduced) :: oeav
@@ -468,9 +494,11 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
+      k=1 !STU not sure what type of calculation calls this
+
       iciprt_sav=iciprt
       iciprt=-1
-      call optci_avrg(passes,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
+      call optci_avrg(passes,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav,k)
       iciprt=iciprt_sav
 
       if(ncsf.eq.0) then
@@ -575,16 +603,16 @@ c h_0,0, h_0,ci, h_ci,0, s_0,ci, s_ci,0
 c-----------------------------------------------------------------------
       subroutine optci_prt(w,iblk,iu)
       use optci, only: mxciterm, mxcireduced, ncimatdim
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use ci000, only: iciprt, nciterm
       use m_icount, only: icount_ci
-      use method_opt, only: method
+      use optwf_control, only: method
 
       use precision_kinds, only: dp
       implicit none
 
       integer :: i, iblk, idx, iu, j
-      integer :: jmax, k
+      integer :: jmax, k, istate
       integer, dimension(5) :: itemp_print
       real(dp) :: w
       real(dp), dimension(mxciterm) :: deav
@@ -605,6 +633,8 @@ c compute averages and print then out
 
       if(iciprt.eq.0) return
 
+      istate=1 !STU when is this called? will change
+
 c iciprt 0 no printout
 c         1 each iteration full printout
 c        >1 after iciprt iterations reduced printout
@@ -617,7 +647,7 @@ c        -1 force printout
 
       icount_ci=1
 
-      call optci_avrg(w,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav)
+      call optci_avrg(w,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav,istate)
 
 c     print the Ok
       write (45,*)
@@ -679,13 +709,13 @@ c-----------------------------------------------------------------------
       subroutine optci_define
 
       use csfs, only: ncsf
-      use dets, only: ndet
-      use optwf_contrl, only: ioptjas, ioptorb
+      use slater, only: ndet
+      use optwf_control, only: ioptjas, ioptorb
       use inputflags, only: ici_def
 
       use ci000, only: nciprim, nciterm
 
-      use method_opt, only: method
+      use optwf_control, only: method
 
       implicit none
 

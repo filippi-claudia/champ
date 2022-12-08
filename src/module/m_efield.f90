@@ -25,8 +25,8 @@ module efield_mod
 
  module efield_blk
      !> Arguments: zcharge, bscreen, qcharge, ycharge, xcharge, ascreen
-     use precision_kinds, only: dp
      use efield_mod, only: MCHARGES
+     use precision_kinds, only: dp
 
      implicit none
 

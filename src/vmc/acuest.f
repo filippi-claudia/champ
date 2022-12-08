@@ -5,11 +5,11 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
       use precision_kinds, only: dp
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE, pecent, nforce, fcm2, fcum
       use vmc_mod, only: nrad
-      use atom, only: znuc, cent, pecent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent, nelec
       use mstates_mod, only: MSTATES
-      use const, only: nelec, ipr
+      use control, only: ipr
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino
       use config, only: vold, xold
@@ -20,11 +20,9 @@ c routine to accumulate estimators for energy etc.
       use estpsi, only: apsi, aref, detref
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: nforce
-      use forcest, only: fcm2, fcum
       use forcewt, only: wcum, wsum
-      use multidet, only: kref
-      use optwf_contrl, only: ioptorb
+      use slater, only: kref
+      use optwf_control, only: ioptorb
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
@@ -166,12 +164,12 @@ c statistical fluctuations without blocking
         esum1(istate)=0
 
         apsi(istate)=apsi(istate)+dabs(psido(istate))
+c !STU state mapping below aref, detiab, detref, can also loop over orb or nwftypemax
+        aref(istate)=aref(istate)+dabs(detiab(kref,1,istate)*detiab(kref,2,istate))
+
+        detref(1,istate)=detref(1,istate)+dlog10(dabs(detiab(kref,1,istate)))
+        detref(2,istate)=detref(2,istate)+dlog10(dabs(detiab(kref,2,istate)))
       enddo
-
-      aref=aref+dabs(detiab(kref,1)*detiab(kref,2))
-
-      detref(1)=detref(1)+dlog10(dabs(detiab(kref,1)))
-      detref(2)=detref(2)+dlog10(dabs(detiab(kref,2)))
 
       call acues1_reduce
 
@@ -217,12 +215,13 @@ c zero out estimators
         tjfsum(istate)=0
 
         apsi(istate)=0
+c      enddo
+c      !STU mapping to avoid errors
+        detref(1,istate)=0
+        detref(2,istate)=0
+
+        aref(istate)=0
       enddo
-
-      detref(1)=0
-      detref(2)=0
-
-      aref=0
 
       r2cm2=0
       r2cum=0
@@ -276,7 +275,7 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
         do istate=1,nstates
-          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(1))+dlog(ajacob)
         enddo
       enddo
 
@@ -285,24 +284,22 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,eold(1,1),0,1)
 
-      do istate=1,nstates
-        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+      do istate=1,nstates !STU mapping psijo, do we want this if no guiding?
+        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(istate))
+        if(ipr.gt.1) write(ounit,'(''zerest STATE,psido,psijo,psi2o='',i4,3d12.4)') 
+     &                istate,psido(istate),psijo(istate),psi2o(istate,1)
       enddo
 
       if(iguiding.gt.0) then
-        call determinant_psig(psido,psidg)
+        call determinant_psig(psido,psijo,psidg)
 c rewrite psi2o if you are sampling guiding
-        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
-      endif
-
-      if(ipr.gt.1) then
-        write(ounit,'(''psid, psidg='',2d12.4)') psido(1),psidg
-        write(ounit,'(''psid2o='',f9.4)') psi2o(1,1)
+        psi2o(1,1)=2*(dlog(dabs(psidg)))
+        if(ipr.gt.1) write(ounit,'(''zerest after guiding: psig,psi2o='',2d12.4)') psidg,psi2o(1,1)
       endif
 
       if(node_cutoff.gt.0) then
-        do jel=1,nelec
-          call compute_determinante_grad(jel,psido(1),psido,vold(1,jel),1)
+        do jel=1,nelec !STU check if putting psijo is right here
+          call compute_determinante_grad(jel,psido(1),psido,psijo,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node

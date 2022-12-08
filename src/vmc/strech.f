@@ -14,16 +14,11 @@ c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
       use precision_kinds, only: dp
       use pcm, only: MCHS, MCHV
-      use force_mod, only: MFORCE, MFORCE_WT_PRD
-      use forcepar, only: istrech, alfstr
-      use atom, only: znuc, cent, pecent, iwctype, ncent, ncent_tot
-      use const, only: nelec
-      use force_dmc, only: itausec, nwprod
-      use forcepar, only: istrech, nforce
-      use forcestr, only: delc
+      use multiple_geo, only: istrech, nforce, delc, iwftype, alfstr
+      use multiple_geo, only: MFORCE, MFORCE_WT_PRD, pecent, itausec, nwprod
+      use system, only: znuc, cent, iwctype, ncent, ncent_tot, nelec
       use pcm_force, only: sch_s
-      use wfsec, only: iwftype
-      use contr3, only: mode
+      use control, only: mode
       use pcm_cntrl, only: ipcm
       use pcm_parms, only: ch, nch, nchs
       use pcm_parms, only: nesph
@@ -31,7 +26,7 @@ c rigidly with that nucleus
       use pcm_ameta, only: eta
       use pcm_pot, only: penups, penupv
       use pcm_inda, only: inda
-      use optwf_contrl, only: ioptwf
+      use optwf_control, only: ioptwf
       use contrl_file,    only: ounit
       use matinv_mod, only: matinv
       use error, only: fatal_error

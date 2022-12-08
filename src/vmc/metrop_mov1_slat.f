@@ -11,28 +11,26 @@ c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use atom, only: znuc, cent, iwctype, ncent
+      use system, only: znuc, cent, iwctype, ncent, nup, nelec
       use mstates_mod, only: MSTATES
-      use const, only: pi, fbias, nelec, ipr
+      use constants, only: pi
+      use control, only: ipr, mode
+      use metropolis, only: deltar, deltat, fbias
       use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
       use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
       use config, only: tjfoo, vnew, vold, xnew, xold
       use csfs, only: nstates
-      use elec, only: nup
       use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: nforce
+      use multiple_geo, only: nforce
       use forcewt, only: wsum
       use kinet, only: dtdx2n, dtdx2o
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
       use tmpnode, only: distance_node_sum
-      use const2, only: deltar, deltat
-      use contr3, only: mode
       use pseudo, only: nloc
       use mmpol_cntrl, only: ich_mmpol
       use mstates_ctrl, only: iguiding
       use pcm_cntrl, only: ichpol
-      use const, only: nelec
       use inputflags, only: node_cutoff, eps_node_cutoff
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
@@ -56,7 +54,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use hpsi_mod,       only: hpsi
       use determinant_psig_mod, only: determinant_psig
       use strech_mod,     only: strech
-      use rannyu_mod,     only: rannyu
+      use random_mod,     only: random_dp
       use jassav_mod,     only: jassav
       use detsav_mod,     only: detsav
       use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
@@ -65,6 +63,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use hpsie, only: psie
       use distances_mod,  only: distancese_restore
       use multideterminant_mod, only: update_ymat
+      use vmc_mod, only: nwftypejas
 
       implicit none
 
@@ -83,7 +82,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp) :: g32dif, g32dif1, g32dif2, g52bot
       real(dp) :: g52dif, g52dif1, g52dif2, g52top
       real(dp) :: g52zer, p, phitry, phizer
-      real(dp) :: psidg, psig, psijn, q
+      real(dp) :: psidg, psig, q
       real(dp) :: r, ratio, raver, ravern
       real(dp) :: rbot, rmax1, rmax2 = 0d0, rnew
       real(dp) :: rnorm, rnorm_nodes, rold, root
@@ -100,6 +99,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp), dimension(3) :: zaxis
       real(dp), dimension(3) :: ddx_ref
       real(dp), dimension(MSTATES) :: psidn
+      real(dp), dimension(nwftypejas) :: psijn
       real(dp), dimension(MSTATES) :: wtg
       real(dp), parameter :: zero = 0.d0
       real(dp), dimension(MSTATES) :: zero_array = 0.0_dp
@@ -157,16 +157,16 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
 
         if(iguiding.eq.0) then
           psig=psido(1)
-         else
-          call determinant_psig(psido,psig)
+        else
+          call determinant_psig(psido,psijo,psig)
         endif
-        call compute_determinante_grad(i,psig,psido,vold(1,i),1)
+        call compute_determinante_grad(i,psig,psido,psijo,vold(1,i),1)
 
         fxop=one
         nearo=nearesto(i)
         if(nloc.eq.0) then
           zcusp=znuc(iwctype(nearo))
-         else
+        else
           zcusp=zero
         endif
 c Although rmino is saved, recalculate it, otherwise there may be a
@@ -252,11 +252,11 @@ c Determine the maximum value of radial function for rejection sampling
 
 c   Sample sqrt(r_f)*abs(1+co*r_f)*exp(-zeta*r_f) by rejection
         bot=sqrt(rmino(i))*abs(one+co*rmino(i))*dexp(-zeta*rmino(i))
-   40   rtry=((deltar-deltri)*rannyu(0)+deltri)*rmino(i)
+   40   rtry=((deltar-deltri)*random_dp()+deltri)*rmino(i)
           top=sqrt(rtry)*abs(one+co*rtry)*dexp(-zeta*rtry)
           ratio=top/fmax
           rejmax=max(rejmax,ratio)
-          if(ratio.gt.rannyu(0)) goto 50
+          if(ratio.gt.random_dp()) goto 50
         goto 40
    50   fxop=fxop*top/bot
 
@@ -300,7 +300,7 @@ c   Calculate the integral of T
 c Sample cos(theta)
         raver=half*(rmino(i)+rtry)
         deltt=thetamx(raver,znuc(iwctype(nearo)))
-        costht=one-deltt*rannyu(0)
+        costht=one-deltt*random_dp()
         zprime=rtry*costht
         sintht=dsqrt(one-costht*costht)
 
@@ -316,11 +316,11 @@ c If we do not limit term to be <=1 then use commented out lines.
         term=dmin1(voldp*raver*sintht,one)
 clim    term=voldp*raver*sintht
         fmax=one+term
-   60   phitry=pi*rannyu(0)
+   60   phitry=pi*random_dp()
           cosphi=dcos(phitry)
           top=one+term*cosphi
 clim      top=abs(one+term*cosphi)
-          if(top.gt.rannyu(0)*fmax) goto 70
+          if(top.gt.random_dp()*fmax) goto 70
         goto 60
    70   fxop=fxop*top
 
@@ -332,7 +332,7 @@ clim    endif
 c Calculate x and y coordinates in local coordinate system
         xprime=rtry*sintht*dcos(phitry)
         yprime=dsqrt(max(zero,rtry*rtry-xprime**2-zprime**2))
-        if(rannyu(0).lt.half) yprime=-yprime
+        if(random_dp().lt.half) yprime=-yprime
 
 c Convert back to original coordinate system
         do ic=1,3
@@ -406,8 +406,8 @@ c calculate psi at new configuration
       if(iguiding.eq.0) then
 
         psig=psidn(1)
-       else
-        call determinant_psig(psidn,psig)
+      else
+        call determinant_psig(psidn,psijn,psig)
       endif
 
       if(psig.eq.0.d0) then
@@ -416,21 +416,25 @@ c calculate psi at new configuration
         goto 208
       endif
 
-      call compute_determinante_grad(iel,psig,psidn,vnew(1,iel),0)
+      call compute_determinante_grad(iel,psig,psidn,psijn,vnew(1,iel),0)
 
       if(ipr.gt.1) then
         write(ounit,'(''psidn,psig ='',2d12.4)') psidn(1),psig
       endif
 
-      psi2n(1)=2*(dlog(dabs(psig))+psijn)
+      if (nwftypejas.gt.1) then
+        psi2n(1)=2*(dlog(dabs(psig))) !det..psig(..) takes care of jastrow now
+      else
+        psi2n(1)=2*(dlog(dabs(psig))+psijn(1))
+      endif
 
       if(node_cutoff.ne.0) then
         do jel=1,nup
-          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,vnew(1,jel),iflag_up)
+          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,psijn,vnew(1,jel),iflag_up)
         enddo
 
         do jel=nup+1,nelec
-          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,vnew(1,jel),iflag_dn)
+          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,psijn,vnew(1,jel),iflag_dn)
         enddo
 
         call nodes_distance(vnew,distance_node,0)
@@ -631,7 +635,7 @@ c and q times old, and keep track of which bin the old was in
 
 c accept new move with probability p
 c Note when one electron moves the velocity on all electrons change.
-      if (rannyu(0).lt.p) then
+      if (random_dp().lt.p) then
         idist(i)=itryn
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
@@ -674,7 +678,7 @@ c loop over secondary configurations
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido(1),psijo,eold(1,ifr),ipass,ifr)
         do istate=1,nstates
-          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(1))+dlog(ajacob)
         enddo
       enddo
 
@@ -684,14 +688,14 @@ c loop over secondary configurations
 c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
-      do istate=1,nstates
-         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+      do istate=1,nstates !STU mapping psijo
+         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(istate))
       enddo
 
       if(iguiding.eq.0) then
         psidg=psido(1)
        else
-        call determinant_psig(psido,psidg)
+        call determinant_psig(psido,psijo,psidg)
       endif
 
       if(ipr.gt.1) then
@@ -702,7 +706,7 @@ c primary configuration
       rnorm_nodes=1.d0
       if(node_cutoff.gt.0) then
         do jel=1,nelec
-          call compute_determinante_grad(jel,psidg,psido(1),vold(1,jel),1)
+          call compute_determinante_grad(jel,psidg,psido(1),psijo,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
@@ -715,8 +719,9 @@ c primary configuration
         distance_node_sum=distance_node_sum+distance_node
       endif
 
-      do istate=1,nstates
+      do istate=1,nstates !STU mapping of psijo
         wtg(istate)=psido(istate)/psidg
+        if(nwftypejas.gt.1) wtg(istate)=wtg(istate)*exp(psijo(istate))
         wtg(istate)=wtg(istate)*wtg(istate)
 
 c form expected values of e, pe, etc.
@@ -751,7 +756,7 @@ c use 'new' not 'old' value
 
       if(irun.eq.1) call optwf_store(ipass,wtg,psido,eold(1,1))
 
-      call efficiency_sample(ipass,psido,psidg)
+      call efficiency_sample(ipass,psido,psijo,psidg)
 
       call acues1(wtg)
 
@@ -774,7 +779,7 @@ c use 'new' not 'old' value
       enddo
 
 c rewrite psi2o for next metropolis step if you are sampling guiding
-      if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
+      if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psidg)))
 
       if(node_cutoff.gt.0) then
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)

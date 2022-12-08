@@ -3,7 +3,7 @@
       subroutine nodes_distance(v,distance_node,iflag)
 c Written by Claudia Filippi
 
-      use const, only: nelec
+      use system, only: nelec
       use velocity_jastrow, only: vj, vjn
       use precision_kinds, only: dp
       implicit none
@@ -13,25 +13,16 @@ c Written by Claudia Filippi
       real(dp), dimension(3, *) :: v
       real(dp), dimension(3, nelec) :: vdonly
 
-
-
-
-
-
-
-
-
-
       if(iflag.eq.0) then
         do k=1,3
           do i=1,nelec
-            vdonly(k,i)=v(k,i)-vjn(k,i)
+            vdonly(k,i)=v(k,i)-vjn(k,i,1)
           enddo
         enddo
        else
         do k=1,3
           do i=1,nelec
-            vdonly(k,i)=v(k,i)-vj(k,i)
+            vdonly(k,i)=v(k,i)-vj(k,i,1)
           enddo
         enddo
       endif

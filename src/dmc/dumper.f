@@ -9,13 +9,12 @@ c job where it left off
       use dmc_mod, only: MWALK
       use basis, only: zex
       use basis, only: ns, np, nd, nf, ng
-      use const, only: hb, nelec
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
+      use constants, only: hb
+      use multiple_geo, only: fgcm2, fgcum, nforce, pecent
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: idmc
       use contrldmc, only: nfprod, rttau, tau
-      use atom, only: cent, iwctype, ncent, nctype, pecent, znuc
+      use system, only: cent, iwctype, ncent, nctype, znuc, nelec, ndn, nup, newghostype, nghostcent
       use estcum, only: iblk, ipass
       use config, only: xold_dmc
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
@@ -30,16 +29,14 @@ c job where it left off
       use step, only: rprob
       use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
+      use control, only: mode
       use mpiblk, only: iblk_proc
       use qua, only: nquad, wq, xq, yq, zq
       use branch, only: eest, eigv, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
       use jacobsave, only: ajacob
       use pseudo, only: nloc
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
-      use coefs, only: coef, nbasis, norb
-      use ghostatom, only: newghostype, nghostcent
+      use slater, only: ndet, norb, cdet, coef
+      use coefs, only: nbasis
       use velratio, only: fratio
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
@@ -51,7 +48,7 @@ c job where it left off
       use mmpol,           only: mmpol_dump
       use pcm_mod,         only: pcm_dump
       use properties_mod,  only: prop_dump
-      use rannyu_mod,      only: savern
+      use random_mod,      only: savern
       use strech_mod,      only: strech
       implicit none
 

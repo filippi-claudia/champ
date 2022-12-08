@@ -44,25 +44,25 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use const, only: etrial, hb, ipr, nelec
-      use forcepar, only: istrech, nforce
+      use const, only: etrial 
+      use constants, only: hb
+      use control, only: ipr
+      use multiple_geo, only: istrech, nforce, itausec, nwprod
       use age, only: iage, ioldest, ioldestmx
       use contrldmc, only: iacc_rej, icross, icut_br, icut_e, idmc, ipq, nfprod, rttau, tau
-      use atom, only: cent
+      use system, only: cent, nelec, nup
       use estcum, only: ipass
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
       use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nodecr, trymove
       use estsum, only: efsum1, egsum1, esum1_dmc
       use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc
       use estsum, only: wfsum1, wgsum1, wsum1
-      use force_dmc, only: itausec, nwprod
       use derivest, only: derivsum
       use step, only: rprob
       use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt
       use branch, only: wthist
       use casula, only: i_vpsp, icasula
       use jacobsave, only: ajacob, ajacold
-      use elec, only: nup
       use velratio, only: fratio, xdrifted
       use control_dmc, only: dmc_irstar, dmc_nconf
       use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
@@ -95,7 +95,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use multideterminant_tmove_mod, only: multideterminant_tmove
       use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
       use distances_mod,  only: distancese_restore
-      use rannyu_mod,     only: rannyu
+      use random_mod,     only: random_dp
       use gauss_mod,      only: gauss
 
       implicit none
@@ -116,7 +116,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, ginv
       real(dp) :: p, pen, pp, psi2savo
-      real(dp) :: psidn(1), psijn, q, r2n
+      real(dp) :: psidn(1), psijn(1), q, r2n
       real(dp) :: r2o, r2sume, risume
       real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new
       real(dp) :: rnorm_nodes_old, ro, taunow
@@ -224,7 +224,7 @@ c Sample Green function for forward move
               call psiedmc(i,iw,xnew,psidn,psijn,0)
               nmove_casula=nmove_casula+1
 
-              call compute_determinante_grad(i,psidn(1),psidn,vnew(1,i),0)
+              call compute_determinante_grad(i,psidn(1),psidn,psijn,vnew(1,i),0)
               iaccept=1
               iage(iw)=0
               do k=1,3
@@ -232,7 +232,7 @@ c Sample Green function for forward move
                 vold_dmc(k,i,iw,1)=vnew(k,i)
               enddo
               psido_dmc(iw,1)=psidn(1)
-              psijo_dmc(iw,1)=psijn
+              psijo_dmc(iw,1)=psijn(1)
               call jassav(i,0)
               call detsav(i,0)
 
@@ -264,8 +264,8 @@ c Sample Green function for forward move
             iflag_up=3
             iflag_dn=2
           endif
-
-          call compute_determinante_grad(i,psido_dmc(iw,1),psido_dmc(iw,1),vold_dmc(1,i,iw,1),1)
+          !STU check here and all other compute_determin...
+          call compute_determinante_grad(i,psido_dmc(iw,1),psido_dmc(iw,1),psijo_dmc(iw,1),vold_dmc(1,i,iw,1),1)
 
 c Use more accurate formula for the drift
           v2old=vold_dmc(1,i,iw,1)**2+vold_dmc(2,i,iw,1)**2+vold_dmc(3,i,iw,1)**2
@@ -293,16 +293,16 @@ c Tau primary -> tratio=one
 c calculate psi and velocity at new configuration
           call psiedmc(i,iw,xnew,psidn,psijn,0)
 
-          call compute_determinante_grad(i,psidn(1),psidn,vnew(1,i),0)
+          call compute_determinante_grad(i,psidn(1),psidn,psijn,vnew(1,i),0)
 
           distance_node_ratio2=1.d0
           if(node_cutoff.gt.0) then
             do jel=1,nup
-              if(jel.ne.i) call compute_determinante_grad(jel,psidn(1),psidn,vnew(1,jel),iflag_up)
+              if(jel.ne.i) call compute_determinante_grad(jel,psidn(1),psidn,psijn,vnew(1,jel),iflag_up)
             enddo
 
             do jel=nup+1,nelec
-              if(jel.ne.i) call compute_determinante_grad(jel,psidn(1),psidn,vnew(1,jel),iflag_dn)
+              if(jel.ne.i) call compute_determinante_grad(jel,psidn(1),psidn,psijn,vnew(1,jel),iflag_dn)
             enddo
 
             call nodes_distance(vold_dmc(1,1,iw,1),distance_node,1)
@@ -339,16 +339,16 @@ c Calculate Green function for the reverse move
             write(ounit,'(''xold_dmc'',9f10.6)')(xold_dmc(k,i,iw,1),k=1,3),
      &      (xnew(k),k=1,3), (xbac(k),k=1,3)
             write(ounit,'(''dfus2o'',9f10.6)')dfus2o,dfus2n,
-     &      psido_dmc(iw,1),psidn,psijo_dmc(iw,1),psijn
+     &      psido_dmc(iw,1),psidn,psijo_dmc(iw,1),psijn(1)
           endif
 
-          p=(psidn(1)/psido_dmc(iw,1))**2*exp(2*(psijn-psijo_dmc(iw,1)))*
+          p=(psidn(1)/psido_dmc(iw,1))**2*exp(2*(psijn(1)-psijo_dmc(iw,1)))*
      &    exp((dfus2o-dfus2n)/(two*tau))*distance_node_ratio2
 
           if(ipr.ge.1) write(ounit,'(''p'',11f10.6)')
-     &    p,(psidn/psido_dmc(iw,1))**2*exp(2*(psijn-psijo_dmc(iw,1))),
+     &    p,(psidn/psido_dmc(iw,1))**2*exp(2*(psijn(1)-psijo_dmc(iw,1))),
      &    exp((dfus2o-dfus2n)/(two*tau)),psidn,psido_dmc(iw,1),
-     &    psijn,psijo_dmc(iw,1),dfus2o,dfus2n
+     &    psijn(1),psijo_dmc(iw,1),dfus2o,dfus2n
 
 c The following is one reasonable way to cure persistent configurations
 c Not needed if itau_eff <=0 and in practice we have never needed it even
@@ -389,7 +389,7 @@ c If we are using weights rather than accept/reject
           endif
 
           iacc_elec(i)=0
-          if(rannyu(0).lt.p) then
+          if(random_dp().lt.p) then
             iaccept=1
             nacc=nacc+1
             iacc_elec(i)=1
@@ -401,7 +401,7 @@ c If we are using weights rather than accept/reject
               xold_dmc(k,i,iw,1)=xnew(k)
             enddo
             psido_dmc(iw,1)=psidn(1)
-            psijo_dmc(iw,1)=psijn
+            psijo_dmc(iw,1)=psijn(1)
             call jassav(i,0)
             call detsav(i,0)
 
@@ -478,7 +478,7 @@ c Compute streched electronic positions for all nucleus displacement
           endif
 
           do i=1,nelec
-              call compute_determinante_grad(i,psidn(1),psidn,vold_dmc(1,i,iw,ifr),1)
+              call compute_determinante_grad(i,psidn(1),psidn,psijn,vold_dmc(1,i,iw,ifr),1)
           enddo
 
           vav2sumn=zero
@@ -589,7 +589,7 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
 
           if(dabs((enew(1)-etrial)/etrial).gt.0.2d+0) then
            write(18,'(i6,f8.2,2d10.2,(8f8.4))') ipass,
-     &     enew(1)-etrial,psidn,psijn,(xnew(ii),ii=1,3)
+     &     enew(1)-etrial,psidn,psijn(1),(xnew(ii),ii=1,3)
           endif
 
           if(wt(iw).gt.3) write(18,'(i6,i4,3f8.2,30f8.4)') ipass,iw,
@@ -605,7 +605,7 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
           ! d2o(iw,ifr)=d2n <= dn2 is not initialized I don't think it' s mispelled
           d2o(iw,ifr)=0.0_dp ! I set it to 0 but we must check with Claudia
           psido_dmc(iw,ifr)=psidn(1)
-          psijo_dmc(iw,ifr)=psijn
+          psijo_dmc(iw,ifr)=psijn(1)
           fratio(iw,ifr)=fration
           do i=1,nelec
             do k=1,3
@@ -721,7 +721,7 @@ c           call compute_determinante_grad(iel,psidn,psidn,vnew(1,iel),0)
             enddo
 c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
             psido_dmc(iw,1)=psidn(1)
-            psijo_dmc(iw,1)=psijn
+            psijo_dmc(iw,1)=psijn(1)
             call jassav(iel,0)
             call detsav(iel,0)
 

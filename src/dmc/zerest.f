@@ -4,8 +4,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 
       use vmc_mod, only: nrad
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
+      use multiple_geo, only: fgcm2, fgcum, nforce
       use estcum, only: iblk
       use stats, only: acc, nacc, nbrnch, nodecr, trymove
       use estsum, only: efsum, efsum1, egsum, egsum1, ei1sum, ei2sum, ei3sum, esum1_dmc, esum_dmc

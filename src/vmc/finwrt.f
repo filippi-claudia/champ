@@ -4,19 +4,16 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
-      use force_mod, only: MFORCE
+      use multiple_geo, only: MFORCE, nforce, fcm2, fcum
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use atom, only: ncent
-      use const, only: nelec
+      use system, only: ncent, nelec
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
-      use forcepar, only: nforce
-      use forcest, only: fcm2, fcum
       use forcewt, only: wcum
       use grdntspar, only: igrdtype, ngradnts
       use header, only: title
@@ -24,7 +21,7 @@ c routine to print out final results
       use sa_weights, only: weights
       use step, only: rprob, suc, try
       use tmpnode, only: distance_node_sum
-      use contr3, only: mode
+      use control, only: mode
       !use contrl, only: nblk, nstep
       use control_vmc, only: vmc_nblk, vmc_nstep
       use contrl_per, only: iperiodic

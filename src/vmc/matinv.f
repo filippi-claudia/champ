@@ -20,7 +20,7 @@
       end interface
       contains
       subroutine matinv(a,nsub,determinant)
-      use const, only: nelec
+      use system, only: nelec
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
       implicit none

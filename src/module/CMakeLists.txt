@@ -24,6 +24,8 @@ if (MPI_Fortran_FOUND)
     m_pseudo.f90
     m_sampling.f90
     m_sr.f90
+    m_slater.f90
+    m_metropolis.f90
     m_dmc.f90
     m_vmc.f90
     m_grid.f90

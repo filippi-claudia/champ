@@ -9,15 +9,15 @@ c the order in which the 2 rannyu's are evaluated.
 c Could generate 2 numbers for almost the same price, but for
 c backward compatibility generate just 1.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      use const, only: pi
+      use constants, only: pi
       use precision_kinds, only: dp
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       implicit none
 
       real(dp) :: gauss
 
-      gauss=dcos(2*pi*rannyu(0))
-      gauss=gauss*sqrt(-2*dlog(rannyu(0)))
+      gauss=dcos(2*pi*random_dp())
+      gauss=gauss*sqrt(-2*dlog(random_dp()))
 
       return
       end

@@ -123,14 +123,15 @@ subroutine read_molecule_file(file_molecule)
     !! @date
       use custom_broadcast,   only: bcast
       use mpiconf,            only: wid
-      use atom,               only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-      use ghostatom, 		    only: newghostype, nghostcent
+      use system,             only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
+      use system,             only: newghostype, nghostcent
       use inputflags,         only: igeometry
       use m_string_operations, only: wordcount
       use periodic_table,     only: atom_t, element
       use contrl_file,        only: ounit, errunit
       use general,            only: pooldir
       use precision_kinds,    only: dp
+      use multiple_geo,       only: pecent
 
     implicit none
 
@@ -293,17 +294,16 @@ subroutine read_determinants_file(file_determinants)
       use mpiconf,            only: wid
       use, intrinsic :: iso_fortran_env, only: iostat_eor
       use contrl_file,    only: ounit, errunit
-      use dets,           only: cdet, ndet
+      use slater,         only: ndet, cdet
       use dorb_m,         only: iworbd
-      use coefs,          only: norb
+      use slater,          only: norb
       use inputflags,     only: ideterminants
-      use wfsec,          only: nwftype
+      use multiple_geo,          only: nwftype
       use csfs,           only: nstates
       use mstates_mod,    only: MSTATES
       use general,        only: pooldir
-      use elec,           only: ndn, nup
-      use const,          only: nelec
-      use method_opt,     only: method
+      use system,           only: ndn, nup, nelec
+      use optwf_control,     only: method
       use precision_kinds, only: dp
 
     implicit none
@@ -444,9 +444,10 @@ subroutine read_multideterminants_file(file_multideterminants)
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
     use contrl_file,    only: ounit, errunit
-    use dets, only: ndet
-    use const, only: nelec
-    use multidet, only: irepcol_det, ireporb_det, numrep_det, iwundet
+    use slater, only: ndet
+    use system, only: nelec
+    use multidet, only: irepcol_det, ireporb_det, numrep_det
+    use slater, only: iwundet
     use inputflags, only: imultideterminants
     use general, only: pooldir
 
@@ -486,6 +487,7 @@ subroutine read_multideterminants_file(file_multideterminants)
         endif
     endif
 
+
     if (.not. allocated(iwundet)) allocate(iwundet(ndet, 2))
     if (.not. allocated(numrep_det)) allocate(numrep_det(ndet, 2))
     if (.not. allocated(irepcol_det)) allocate(irepcol_det(nelec, ndet, 2))
@@ -524,24 +526,20 @@ subroutine read_jastrow_file(file_jastrow)
     use, intrinsic :: iso_fortran_env, only: iostat_eor !, iostat_eof
     use contrl_file,    only: ounit, errunit
 
-    use force_mod,          only: MWF
-    use jaspar,             only: nspin1, nspin2
-    use elec,               only: ndn
-    use jaspar3,            only: b, c, scalek
-    use jaspar4,            only: a4, norda, nordb, nordc
-    use vmc_mod,            only: nordj, nordj1, neqsx, nwftypeorb, nwftypejas
-    use jaspar6,            only: cutjas, cutjasi, allocate_jaspar6
+    use multiple_geo,       only: MWF, nwftype
+    use jastrow,            only: nspin1, nspin2, b, c, scalek, a4, norda, nordb, nordc
+    use jastrow,            only: nordj, nordj1, neqsx, ijas, isc, asymp_jasa, asymp_jasb
+    use jastrow,            only: allocate_jaspar6
+    use vmc_mod,            only: nwftypeorb, nwftypejas, nwftypemax
+    use jaspar6,            only: cutjas, cutjasi
     use bparm,              only: nocuspb, nspin2b
-    use contr2,             only: ijas
-    use contr2,             only: isc
     use inputflags,         only: ijastrow_parameter
-    use wfsec,              only: nwftype
-    use atom,               only: ncent, nctype
+    use system,             only: ncent, nctype, ndn
     use precision_kinds,    only: dp
-    use contrl_per, 		only: iperiodic
-    use jaspar6, 			only: asymp_jasa, asymp_jasb, asymp_r, c1_jas6, c1_jas6i, c2_jas6
+    use contrl_per,         only: iperiodic
+    use jaspar6,            only: asymp_r, c1_jas6, c1_jas6i, c2_jas6
     use general,            only: pooldir
-    use method_opt,         only: method
+    use optwf_control,      only: method
     use jastrow4_mod,       only: nterms4
     implicit none
 
@@ -618,7 +616,8 @@ subroutine read_jastrow_file(file_jastrow)
         call bcast(nwftypejas)
         call bcast(extra)
     endif
-
+    nwftypemax=max(nwftypejas,nwftypeorb)
+    call bcast(nwftypemax)
 
     ! read the first word of the file
     if (wid) then
@@ -626,7 +625,7 @@ subroutine read_jastrow_file(file_jastrow)
         if (iostat == 0) then
             if (trim(temp2) == "jastrow_parameter") &
             write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
-            if((method .eq. 'sr_n')) then
+            if((method .eq. 'sr_n')) then !STU this will have to change with new input
                 if (nwftypejas .ne. nwftypeorb) then
                     call fatal_error ( " Number of states specified in jastrow file do not match lcao file ")
                 else
@@ -661,6 +660,21 @@ subroutine read_jastrow_file(file_jastrow)
         if (isc .ge. 2) then
             if (wid) read (iunit, *) scalek(iwft) ! we set iwft = 1 for 'sr_n' so only the (1) will have the saclek value
         endif
+
+        !if (nwftypejas.gt.1) then !STU necessary the way scale_dist is written
+        !  do i=1,nwftypejas
+        !    scalek(i)=scalek(1)
+        !    write(ounit,*) scalek(i)
+        !  enddo
+        !endif
+
+        if (method.eq.'sr_n') then !STU necessary the way scale_dist is written
+          do i=1,nwftype
+            scalek(i)=scalek(1)
+            !write(ounit,*) scalek(i)
+          enddo
+        endif
+
         call bcast(scalek)
         write(ounit, '(A,f12.6)') " scalek = ", scalek(iwft)
 
@@ -740,15 +754,16 @@ subroutine read_orbitals_file(file_orbitals)
     use mpiconf,            only: wid
 
     use contrl_file,    only: ounit, errunit
-    use coefs, only: coef, nbasis, norb
+    use coefs, only: nbasis
+    use slater, only: norb, coef
     use inputflags, only: ilcao
     use orbval, only: nadorb
     use pcm_fdc, only: fs
     use vmc_mod, only: norb_tot, nwftypeorb
     ! was not in master but is needed
-    use wfsec, only: nwftype
+    use multiple_geo, only: nwftype
     use general, only: pooldir
-    use method_opt, only: method
+    use optwf_control, only: method
     use precision_kinds, only: dp
     use write_orb_loc_mod, only: write_orb_loc
     use m_trexio_basis,   only: champ_ao_ordering
@@ -908,13 +923,13 @@ subroutine read_csf_file(file_determinants)
     use mstates_mod, only: MSTATES
     use inputflags, only: icsfs
     use vmc_mod, only: nwftypeorb
-    use wfsec, only: nwftype
-    use dets, only: ndet, cdet
+    use multiple_geo, only: nwftype
+    use slater, only: ndet, cdet
 !   Not sure about the following two lines
     use ci000, only: nciprim, nciterm
-    use optwf_contrl, only: ioptci
+    use optwf_control, only: ioptci
     use general, only: pooldir
-    use method_opt, only: method
+    use optwf_control, only: method
     use precision_kinds, only: dp
     implicit none
 
@@ -977,11 +992,11 @@ subroutine read_csf_file(file_determinants)
         endif
 
 
-        do i = 1, nstates
+        !do i = 1, nstates ! i think this was wrong
             do j = 1, ndet
-                ccsf(j,i,nwftype) = cdet(j,i,nwftype)
+                ccsf(j,1,nwftype) = cdet(j,1,nwftype)
             enddo
-        enddo
+        !enddo
         ! printing
         write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
         write(ounit,int_format) " Number of states (nstates) ", nstates
@@ -1045,8 +1060,9 @@ subroutine read_csfmap_file(file_determinants)
     use, intrinsic :: iso_fortran_env
     use contrl_file,    only: ounit, errunit
     use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use dets, only: cdet, ndet, nmap
-    use wfsec, only: nwftype
+    use dets, only: nmap
+    use slater, only: ndet, cdet
+    use multiple_geo, only: nwftype
     use precision_kinds,    only: dp
     use general,            only: pooldir
 
@@ -1201,9 +1217,9 @@ subroutine read_exponents_file(file_exponents)
     use coefs,              only: nbasis
     use basis,              only: zex
     use inputflags,         only: iexponents
-    use wfsec,              only: nwftype
+    use multiple_geo,              only: nwftype
     use general,            only: pooldir
-    use method_opt,         only: method
+    use optwf_control,         only: method
     use precision_kinds, only: dp
     implicit none
 
@@ -1269,9 +1285,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
     use mpiconf,            only: wid
 
     use contrl_file,        only: ounit, errunit
-    use atom,               only: nctype
-    use jaspar,             only: nspin1, is
-    use jaspar4,            only: norda, nordb, nordc
+    use jastrow,             only: nspin1, is, norda, nordb, nordc, ijas, isc
     use jaspointer,         only: npoint, npointa
     use numbas,             only: numr
 
@@ -1279,10 +1293,8 @@ subroutine read_jasderiv_file(file_jastrow_der)
     use optwf_parms,        only: nparmj
     use optwf_wjas,         only: iwjasa, iwjasb, iwjasc, iwjasf
     use bparm,              only: nspin2b
-    use contr2,             only: ijas
-    use contr2,             only: isc
     use vmc_mod,            only: nctyp3x
-    use atom,               only: nctype_tot
+    use system,               only: nctype_tot, nctype
     use general,            only: pooldir
 
     implicit none
@@ -1464,14 +1476,11 @@ subroutine read_forces_file(file_forces)
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
 
-    use atom,               only: symbol
+    use system,               only: symbol, ncent
     use contrl_file,        only: ounit, errunit
-    use forcepar,           only: nforce
-    use forcestr,           only: delc
-    use wfsec,              only: iwftype
+    use multiple_geo,           only: nforce, delc, iwftype
     use inputflags,         only: iforces
     use general,            only: pooldir
-    use atom,               only: ncent
     use precision_kinds,    only: dp
 
     implicit none
@@ -1548,7 +1557,7 @@ subroutine read_symmetry_file(file_symmetry)
     use mpiconf,            only: wid, idtask
 
     use contrl_file,        only: ounit, errunit
-    use coefs,              only: norb
+    use slater,              only: norb
     use optorb,             only: irrep
     use vmc_mod,            only: norb_tot
     use general,            only: pooldir
@@ -1628,7 +1637,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
 
     use contrl_file,        only: ounit, errunit
     use optorb_mix,         only: iwmix_virt, norbopt, norbvirt
-    use coefs,              only: norb
+    use slater,              only: norb
     use inputflags,         only: ioptorb_mixvirt
     use general,            only: pooldir
     use precision_kinds,    only: dp
@@ -1708,7 +1717,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     use mpiconf,            only: wid
 
     use contrl_file,        only: ounit, errunit
-    use coefs,              only: norb
+    use slater,              only: norb
     use vmc_mod,            only: norb_tot
     use optorb,             only: orb_energy
     use general,            only: pooldir
@@ -1789,8 +1798,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     use coefs, only: nbasis
     use general, only: pooldir
 
-    use atom, only: nctype
-    use ghostatom, only: newghostype
+    use system, only: nctype, newghostype
     use precision_kinds,    only: dp
 
     implicit none
@@ -1920,7 +1928,7 @@ subroutine read_dmatrix_file(file_dmatrix)
     use csfs, only: nstates
     use sa_weights, only: iweight, nweight, weights
     use mstates_mod, only: MSTATES
-    use coefs, only: norb
+    use slater, only: norb
     use optorb, only: dmat_diag
     use general,    only: pooldir
 
@@ -2094,15 +2102,12 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     use mpiconf,            only: wid
 
     use contrl_file,        only: ounit, errunit
-    use forcepar,           only: nforce
-    use force_mod,          only: MFORCE
-    use forcestr,           only: delc
+    use multiple_geo,       only: nforce, MFORCE, delc, iwftype
     use grdntsmv,           only: igrdaidx, igrdcidx, igrdmv
     use grdntspar,          only: delgrdxyz, igrdtype, ngradnts
-    use wfsec,              only: iwftype
     use inputflags,         only: igradients
     use general,            only: pooldir
-    use atom,               only: ncent
+    use system,               only: ncent
     use precision_kinds,    only: dp
 
     implicit none
@@ -2194,16 +2199,13 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     use custom_broadcast,   only: bcast
     use mpiconf,            only: wid
     use contrl_file,    only: ounit, errunit
-    use forcepar, only: nforce
-    use force_mod, only: MFORCE
-    use forcestr, only: delc
+    use multiple_geo, only: nforce, MFORCE, iwftype, delc
     use grdntsmv, only: igrdaidx, igrdcidx, igrdmv
     use grdntspar, only: delgrdba, delgrdbl, delgrdda, igrdtype, ngradnts
     use zmatrix, only: izmatrix
-    use wfsec, only: iwftype
     use inputflags, only: igradients
     use general, only:pooldir
-    use atom, only: ncent
+    use system, only: ncent
     use precision_kinds,    only: dp
     use misc_grdnts, only: grdzmat_displ
 
@@ -2298,7 +2300,7 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     use grdntsmv,           only: igrdmv
     use inputflags,         only: imodify_zmat
     use general,            only: pooldir
-    use atom,               only: ncent
+    use system,               only: ncent
 
     implicit none
 
@@ -2369,7 +2371,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     use contrl_file,        only: ounit, errunit
     use grdnthes,           only: hessian_zmat
     use inputflags,         only: ihessian_zmat
-    use atom,               only: ncent
+    use system,               only: ncent
     use precision_kinds,    only: dp
 
     implicit none
@@ -2443,7 +2445,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     use mpiconf,            only: wid
     use general,            only: pooldir
     use contrl_file,    only: ounit, errunit
-    use atom, only: cent, ncent
+    use system, only: cent, ncent
     use zmatrix, only: czcart, czint, czcart_ref, izcmat, izmatrix
     use inputflags, only: izmatrix_check
     use precision_kinds,    only: dp

@@ -2,7 +2,7 @@
       use error, only: fatal_error
       contains
 c----------------------------------------------------------------------
-      subroutine efficiency_sample(ipass,determ_s,determ_psig)
+      subroutine efficiency_sample(ipass,determ_s,psij,determ_psig)
 
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
@@ -12,6 +12,7 @@ c----------------------------------------------------------------------
       integer :: ipass, j
       real(dp) :: determ_psig, determ_psigi, ratio, wi
       real(dp), dimension(*) :: determ_s
+      real(dp), dimension(*) :: psij
 
 
 
@@ -22,7 +23,7 @@ c----------------------------------------------------------------------
 c     write(ounit,*) ((determ_s(j)*determ_psigi)**2,j=1,nstates_psig)
 
       do j=1,nstates_psig
-        ratio=determ_s(j)*determ_psigi
+        ratio=determ_s(j)*exp(psij(j))*determ_psigi
         wi=ratio*ratio
         effcum(j)=effcum(j)+wi
         effcm2(j)=effcm2(j)+wi*wi

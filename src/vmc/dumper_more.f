@@ -6,30 +6,29 @@ c routine to pick up and dump everything needed to restart
 c job where it left off
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nrad
-      use atom, only: znuc, cent, pecent, iwctype, nctype, ncent, ncent_tot, nctype_tot
+      use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
-      use ghostatom, only: newghostype, nghostcent
-      use const, only: hb, delta, nelec
+      use system, only: newghostype, nghostcent, nelec, ndn, nup
+      use constants, only: hb
+      use metropolis, only: delta, deltar, deltat
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino, tjfo
       use config, only: vold, xnew, xold
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
-      use dets, only: cdet, ndet
-      use elec, only: ndn, nup
+      use slater, only: ndet, cdet
       use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc, esum, pesum, r2sum, tjfsum, tpbsum
-      use forcepar, only: nforce
-      use forcest, only: fcm2, fcum
+      use multiple_geo, only: nforce, iwftype, nwftype, pecent
+      use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum, wsum
-      use optwf_contrl, only: ioptorb
+      use optwf_control, only: ioptorb
       use stats, only: rejmax
       use step, only: ekin, ekin2, rprob, suc, trunfb, try
-      use wfsec, only: iwftype, nwftype
-      use coefs, only: coef, nbasis, norb
-      use const2, only: deltar, deltat
+      use coefs, only: nbasis
+      use slater, only: norb, coef
 !      use contrl, only: nstep
       use control_vmc, only: vmc_nstep
       use basis, only: zex
@@ -221,8 +220,8 @@ c loop over secondary config
 c set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
-        do istate=1,nforce
-          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+        do istate=1,nforce !STU check mapping and just if this is right
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(istate))+dlog(ajacob)
         enddo
       enddo
 
@@ -230,21 +229,21 @@ c primary config
 c set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,eold(1,1),0,1)
-      do istate=1,nforce
-        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+      do istate=1,nforce !STU also here
+        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(istate))
         tjfo(istate)=d2(istate)
         tjfo(istate)=-tjfo(istate)*half*hb
       enddo
 
       if(iguiding.gt.0) then
-        call determinant_psig(psido,psidg)
+        call determinant_psig(psido,psijo,psidg)
 c rewrite psi2o if you are sampling guiding
-        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
+        psi2o(1,1)=2*(dlog(dabs(psidg)))
       endif
 
-      if(node_cutoff.gt.0) then
+      if(node_cutoff.gt.0) then !STU need to check what to input to compute_deter... this file was removed from CMakelist in ramons
         do jel=1,nelec
-          call compute_determinante_grad(jel,psido(1),psido,vold(1,jel),1)
+          call compute_determinante_grad(jel,psido(1),psido,psijo,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node

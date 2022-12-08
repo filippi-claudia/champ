@@ -6,11 +6,11 @@
 
       use mpi
       use sr_mod, only: mparm
-      use const, only: ipr
+      use control, only: ipr
       use mstates_mod, only: MSTATES
       use csfs, only: nstates
       use mpiconf, only: idtask
-      use optwf_contrl, only: ioptjas, ioptorb, lin_jdav
+      use optwf_control, only: ioptjas, ioptorb, lin_jdav
       use optwf_corsam, only: energy
       use optwf_parms, only: nparmd, nparmj
       use sr_mat_n, only: jfj

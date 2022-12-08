@@ -1,11 +1,11 @@
       module force_analy_reduce_mod
       contains
       subroutine force_analy_reduce
-      use atom, only: ncent, ncent_tot
+      use system, only: ncent, ncent_tot
 
       use mpiconf, only: wid
       use da_energy_sumcum, only: da_energy_cm2, da_energy_cum, da_psi_cum
-      use force_analy, only: iforce_analy
+      use m_force_analytic, only: iforce_analy
       use mpi
 
       use precision_kinds, only: dp

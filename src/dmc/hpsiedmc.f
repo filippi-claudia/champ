@@ -4,7 +4,7 @@
 c Written by Claudia Filippi
 
 
-      use const, only: nelec
+      use system, only: nelec
       use config, only: xold_dmc
       use hpsie, only: psie
       use mstates_mod, only: MSTATES
@@ -14,7 +14,7 @@ c Written by Claudia Filippi
 
       integer :: i, ic, idum, iel, iflag
       integer :: iw
-      real(dp) :: psid(*), psij
+      real(dp) :: psid(*), psij(*)
       real(dp), dimension(3) :: coord
       real(dp), dimension(3, nelec) :: x
 

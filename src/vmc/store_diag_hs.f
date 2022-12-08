@@ -3,7 +3,7 @@
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
       use sr_mod, only: mparm
-      use optwf_contrl, only: ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptjas, ioptorb, nparm
 
       use sr_index, only: jelo, jelo2, jelohfj
       use sr_mat_n, only: jefj, jfj, jhfj

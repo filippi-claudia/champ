@@ -1,24 +1,15 @@
       module jastrow4e_mod
       contains
-      subroutine jastrow4e(iel,x,v,d2,value,iflag)
+      subroutine jastrow4e(iel,x,fjn,d2n,fsumn,fsn,fijn,d2ijn,
+     &                           fjo,d2o,fsumo,fso,fijo,d2ijo,iflag)
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
-      use vmc_mod, only: nordj
-      use atom, only: iwctype, ncent
-      use jaspar, only: sspinn
-      use const, only: nelec
-      use elec, only: nup
-      use jaso, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-      use jaspar3, only: b, c
-      use jaspar4, only: a4, norda, nordb, nordc
-      use jaspar6, only: asymp_jasa, asymp_jasb
+      use system, only: iwctype, ncent, nelec, nup
+      use jastrow, only: sspinn, b, c, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, ijas, isc, nordj
       use jaspar6, only: cutjas
-      use wfsec, only: iwf
+      use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
-      use contr2, only: ijas
-      use contr2, only: isc
-      use jasn, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
       use scale_dist_mod, only: scale_dist1, scale_dist2
@@ -31,7 +22,7 @@ c Jastrow 6   must be used with one of isc=6,7
       integer :: j, jj, k, l
       integer :: l_hi, ll, m, n
       real(dp) :: bot, bot2, boti, botii, botu
-      real(dp) :: botuu, d2, dd1, dd10
+      real(dp) :: botuu, dd1, dd10
       real(dp) :: dd2, dd7, dd8, dd9
       real(dp) :: fc, fee, feeu, feeuu
       real(dp) :: fen, feni, fenii, fi
@@ -39,9 +30,8 @@ c Jastrow 6   must be used with one of isc=6,7
       real(dp) :: fui, fuj, fuu, ri
       real(dp) :: rij, rj, s, t
       real(dp) :: top, topi, topii, topu
-      real(dp) :: topuu, u2mst, u2pst, value
+      real(dp) :: topuu, u2mst, u2pst
       real(dp), dimension(3, *) :: x
-      real(dp), dimension(3, *) :: v
       real(dp), dimension(-2:nordj) :: uu
       real(dp), dimension(-2:nordj) :: ss
       real(dp), dimension(-2:nordj) :: tt
@@ -49,6 +39,16 @@ c Jastrow 6   must be used with one of isc=6,7
       real(dp), dimension(-2:nordj) :: rrj
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: eps = 1.d-12
+      real(dp) :: fsumo, d2o
+      real(dp), dimension(3, *) :: fjo
+      real(dp), dimension(nelec, *) :: fso
+      real(dp), dimension(3, nelec, *) :: fijo
+      real(dp), dimension(nelec, *) :: d2ijo
+      real(dp) :: fsumn, d2n
+      real(dp), dimension(3, *) :: fjn
+      real(dp), dimension(nelec, *) :: fsn
+      real(dp), dimension(3, nelec, *) :: fijn
+      real(dp), dimension(nelec, *) :: d2ijn
 
       do i=-2,-1
         uu(i)=0
@@ -122,7 +122,7 @@ c Jastrow 6   must be used with one of isc=6,7
       botu=b(2,isb,iwf)
       bot2=bot*bot
 
-      fee=top/bot-asymp_jasb(ipar+1)
+      fee=top/bot-asymp_jasb(ipar+1,iwf)
       feeu=topu/bot-botu*top/bot2
 
       do iord=2,nordb
@@ -324,7 +324,7 @@ c e-n terms
 
         bot=1+bot
         bot2=bot*bot
-        fen=top/bot-asymp_jasa(it)
+        fen=top/bot-asymp_jasa(it,iwf)
         feni=topi/bot-boti*top/bot2
 
         do iord=2,norda
@@ -362,13 +362,11 @@ c e-n terms
       fjn(3,iel)=fjn(3,iel)+fijn(3,iel,iel)-fijo(3,iel,iel)
       d2n=d2n+d2ijn(iel,iel)-d2ijo(iel,iel)
 
-      do i=1,nelec
-        v(1,i)=fjn(1,i)
-        v(2,i)=fjn(2,i)
-        v(3,i)=fjn(3,i)
-      enddo
-      value=fsumn
-      d2=d2n
+c      do i=1,nelec
+c        v(1,i)=fjn(1,i)
+c        v(2,i)=fjn(2,i)
+c        v(3,i)=fjn(3,i)
+c      enddo
 
       return
       end

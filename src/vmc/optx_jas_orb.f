@@ -5,13 +5,13 @@
       use csfs, only: nstates
       use derivjas, only: gvalue
       use gradhessjo, only: denergy_old, gvalue_old
-      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_control, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use deloc_dj_m, only: denergy
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
       use orb_mat_001, only: orb_ho, orb_o, orb_oe
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
-      use method_opt, only: method
+      use optwf_control, only: method
       use optorb_cblock, only: nreduced
       use precision_kinds, only: dp
 
@@ -25,13 +25,13 @@
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       do istate=1,nstates
-
+      !STU must add jastrow state mapping here for gvalue and gvalue_old
       p=wtg_new(istate)
       do i=1,nparmj
         do j=1,nreduced
-        dj_o(i,j,istate)=dj_o(i,j,istate)  +p*gvalue(i)*orb_o(j,istate)
-        dj_oe(i,j,istate)=dj_oe(i,j,istate)+p*gvalue(i)*orb_oe(j,istate)
-        dj_ho(i,j,istate)=dj_ho(i,j,istate)+p*gvalue(i)*orb_ho(j,istate)
+        dj_o(i,j,istate)=dj_o(i,j,istate)  +p*gvalue(i,istate)*orb_o(j,istate)
+        dj_oe(i,j,istate)=dj_oe(i,j,istate)+p*gvalue(i,istate)*orb_oe(j,istate)
+        dj_ho(i,j,istate)=dj_ho(i,j,istate)+p*gvalue(i,istate)*orb_ho(j,istate)
         de_o(i,j,istate)=de_o(i,j,istate)  +p*denergy(i,istate)*orb_o(j,istate)
         enddo
       enddo
@@ -45,9 +45,9 @@
       q=wtg_old(istate)
       do i=1,nparmj
         do j=1,nreduced
-        dj_o(i,j,istate)=dj_o(i,j,istate)  +q*gvalue_old(i)*orb_o_old(j,istate)
-        dj_oe(i,j,istate)=dj_oe(i,j,istate)+q*gvalue_old(i)*orb_oe_old(j,istate)
-        dj_ho(i,j,istate)=dj_ho(i,j,istate)+q*gvalue_old(i)*orb_ho_old(j,istate)
+        dj_o(i,j,istate)=dj_o(i,j,istate)  +q*gvalue_old(i,istate)*orb_o_old(j,istate)
+        dj_oe(i,j,istate)=dj_oe(i,j,istate)+q*gvalue_old(i,istate)*orb_oe_old(j,istate)
+        dj_ho(i,j,istate)=dj_ho(i,j,istate)+q*gvalue_old(i,istate)*orb_ho_old(j,istate)
         de_o(i,j,istate)=de_o(i,j,istate)  +q*denergy_old(i,istate)*orb_o_old(j,istate)
         enddo
       enddo
@@ -60,10 +60,10 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_orb_init
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_control, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-      use method_opt, only: method
+      use optwf_control, only: method
       use optorb_cblock, only: nreduced
 
       implicit none
@@ -94,10 +94,10 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_orb_dump(iu)
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_control, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-      use method_opt, only: method
+      use optwf_control, only: method
       use optorb_cblock, only: nreduced
 
       implicit none
@@ -118,10 +118,10 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_orb_rstrt(iu)
 
       use csfs, only: nstates
-      use optwf_contrl, only: ioptjas, ioptorb
+      use optwf_control, only: ioptjas, ioptorb
       use optwf_parms, only: nparmj
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
-      use method_opt, only: method
+      use optwf_control, only: method
       use optorb_cblock, only: nreduced
 
       implicit none
@@ -143,7 +143,7 @@ c-----------------------------------------------------------------------
       use optorb_mod, only: mxreduced
       use csfs, only: nstates
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
-      use optwf_contrl, only: ioptjas, ioptorb, iuse_orbeigv, iapprox
+      use optwf_control, only: ioptjas, ioptorb, iuse_orbeigv, iapprox
       use optwf_parms, only: nparmj
       use sa_weights, only: weights
       use gradhessj, only: de, dj, dj_e
@@ -151,7 +151,7 @@ c-----------------------------------------------------------------------
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
-      use method_opt, only: method
+      use optwf_control, only: method
       use optorb_cblock, only: nreduced
       ! I think this one is not needed ...
       ! use gradhess_jas, only: grad_jas

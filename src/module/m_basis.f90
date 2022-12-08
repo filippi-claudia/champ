@@ -67,34 +67,31 @@ module numexp
     !> Arguments: ae, ce
 
     use numbas_mod, only: MRWF
-    use force_mod, only: MFORCE
+    use multiple_geo, only: MFORCE
     use precision_kinds, only: dp
     use vmc_mod, only: NCOEF
 
     implicit none
 
     real(dp), dimension(:, :, :, :), allocatable :: ae !(2,MRWF,MCTYPE,MFORCE)
-    real(dp), dimension(:, :, :, :), allocatable :: ab !(2,MRWF,MCTYPE,MFORCE)
     real(dp), dimension(:, :, :, :), allocatable :: ce !(NCOEF,MRWF,MCTYPE,MFORCE)
 
     private
-    public :: ae, ab, ce
+    public :: ae, ce
     public :: allocate_numexp, deallocate_numexp
     save
 contains
     subroutine allocate_numexp()
-        use atom, only: nctype_tot
-        use numbas_mod, only: MRWF
-        use force_mod, only: MFORCE
-        use vmc_mod, only: NCOEF
+      use multiple_geo, only: MFORCE
+      use numbas_mod, only: MRWF
+      use system, only: nctype_tot
+      use vmc_mod, only: NCOEF
         if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, MFORCE))
-        if (.not. allocated(ab)) allocate (ab(2, MRWF, nctype_tot, MFORCE))
         if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, nctype_tot, MFORCE))
     end subroutine allocate_numexp
 
     subroutine deallocate_numexp()
         if (allocated(ce)) deallocate (ce)
-        if (allocated(ab)) deallocate (ab)
         if (allocated(ae)) deallocate (ae)
     end subroutine deallocate_numexp
 
@@ -103,8 +100,8 @@ end module numexp
 module numbas
     !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
-    use numbas_mod, only: MRWF, MRWF_PTS
-    use precision_kinds, only: dp
+      use numbas_mod, only: MRWF, MRWF_PTS
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -116,19 +113,19 @@ module numbas
     integer, dimension(:), allocatable :: nrbas !(MCTYPE)
     integer :: numr
     real(dp), dimension(:), allocatable :: r0 !(MCTYPE)
-    ! real(dp), dimension(:,:), allocatable :: rmax !(nrbas, MCTYPE)
+    real(dp), dimension(:,:), allocatable :: rmaxwf !(nrbas, MCTYPE)
     real(dp), dimension(:, :, :, :), allocatable :: rwf !(MRWF_PTS,MRWF,MCTYPE,MWF)
 
     private
-    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf !, rmax
+    public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf, rmaxwf
     public :: allocate_numbas, deallocate_numbas
     save
 contains
     subroutine allocate_numbas()
-        use wfsec, only: nwftype
-        use coefs, only: nbasis
-        use atom, only: nctype_tot
-        use numbas_mod, only: MRWF, MRWF_PTS
+      use coefs, only: nbasis
+      use multiple_geo, only: nwftype
+      use numbas_mod, only: MRWF, MRWF_PTS
+      use system, only: nctype_tot
         if (.not. allocated(arg)) allocate (arg(nctype_tot))
         if (.not. allocated(d2rwf)) allocate (d2rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
         if (.not. allocated(igrid)) allocate (igrid(nctype_tot), source=0)
@@ -136,11 +133,12 @@ contains
         if (.not. allocated(nr)) allocate (nr(nctype_tot), source=0)
         if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot), source=0)
         if (.not. allocated(r0)) allocate (r0(nctype_tot))
-        ! if (.not. allocated(rmax)) allocate (rmax(MRWF,nctype_tot), source=0.0d0) ! This source is needed.
+        if (.not. allocated(rmaxwf)) allocate (rmaxwf(MRWF,nctype_tot), source=0.0d0) ! This source is needed.
         if (.not. allocated(rwf)) allocate (rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
     end subroutine allocate_numbas
 
     subroutine deallocate_numbas()
+        if (allocated(rmaxwf)) deallocate (rmaxwf)
         if (allocated(rwf)) deallocate (rwf)
         if (allocated(r0)) deallocate (r0)
         if (allocated(nrbas)) deallocate (nrbas)
@@ -167,9 +165,9 @@ module numbas1
     save
 contains
     subroutine allocate_numbas1()
-        use coefs, only: nbasis
-        use atom, only: nctype_tot
-        ! if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot), source=0)
+      use coefs, only: nbasis
+      use system, only: nctype_tot
+        if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot), source=0)
         ! if (.not. allocated(nbastyp)) allocate (nbastyp(nctype_tot))
     end subroutine allocate_numbas1
 
@@ -194,7 +192,7 @@ module numbas2
     save
 contains
     subroutine allocate_numbas2()
-        use atom, only: ncent_tot
+      use system, only: ncent_tot
         if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot), source=0)
         if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot), source=0)
     end subroutine allocate_numbas2
@@ -210,10 +208,10 @@ module m_basis
 contains
 subroutine allocate_m_basis()
     ! use basis, only: allocate_basis
-    use numexp, only: allocate_numexp
     use numbas, only: allocate_numbas
     use numbas1, only: allocate_numbas1
     use numbas2, only: allocate_numbas2
+    use numexp, only: allocate_numexp
 
     implicit none
 
@@ -226,10 +224,10 @@ end subroutine allocate_m_basis
 
 subroutine deallocate_m_basis()
     use basis, only: deallocate_basis
-    use numexp, only: deallocate_numexp
     use numbas, only: deallocate_numbas
     use numbas1, only: deallocate_numbas1
     use numbas2, only: deallocate_numbas2
+    use numexp, only: deallocate_numexp
 
     implicit none
 

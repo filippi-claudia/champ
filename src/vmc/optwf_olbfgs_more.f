@@ -6,7 +6,7 @@
       use sr_mat_n, only: h_sr
       use optwf_sr_mod, only: sr_hs
       use mpiconf, only: idtask
-      use optwf_contrl, only: sr_tau, sr_adiag
+      use optwf_control, only: sr_tau, sr_adiag
       use mpi
       use precision_kinds, only: dp
 

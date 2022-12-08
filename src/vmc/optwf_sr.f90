@@ -13,12 +13,12 @@
 module optwf_sr_mod
 
     use precision_kinds, only: dp
-    use optwf_contrl, only: ioptci, ioptjas, ioptorb
-    use force_analy, only: iforce_analy
+    use optwf_control, only: ioptci, ioptjas, ioptorb
+    use m_force_analytic, only: iforce_analy
 !    use contrl, only: nblk_max
     use control_vmc, only: vmc_nblk_max
-    use optwf_contrl, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
-    use optwf_contrl, only: sr_tau , sr_adiag, sr_eps
+    use optwf_control, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
+    use optwf_control, only: sr_tau , sr_adiag, sr_eps
     use orbval, only: nadorb
     use contrl_file,    only: ounit
     use mpitimer,    only: elapsed_time
@@ -72,15 +72,15 @@ contains
 
         use sr_mod, only: mparm
         use sr_mat_n, only: sr_lambda, sr_state
-        use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+        use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
         use mstates_mod, only: MSTATES
-        use optwf_corsam, only: energy, energy_err
-        use optwf_func, only: ifunc_omega, omega0, n_omegaf, n_omegat, omega_hes
+        use optwf_corsam, only: energy, energy_err, sigma
+        use optwf_func, only: ifunc_omega, omega0, omega, n_omegaf, n_omegat, omega_hes
         !use contrl, only: nblk
         use control_vmc, only: vmc_nblk
-        use force_analy, only: alfgeo
-        use optwf_contrl, only: nparm
-        use method_opt, only: method
+        use m_force_analytic, only: alfgeo
+        use optwf_control, only: nparm
+        use optwf_control, only: method
         use orbval, only: nadorb
         use contrl_file,    only: ounit
 
@@ -89,7 +89,7 @@ contains
         implicit none
 
         real(dp) :: adiag, denergy, alpha_omega, denergy_err, dparm_norm
-        real(dp) :: energy_sav, energy_err_sav, omega, sigma, sigma_sav, nadorb_sav
+        real(dp) :: energy_sav, energy_err_sav, sigma_sav, nadorb_sav
         integer :: i, iflag, iter, miter, istate, jstate
         integer :: iflagin
 
@@ -121,7 +121,7 @@ contains
         write (ounit, '(''SR tau:   '',f10.5)') sr_tau
         write (ounit, '(''SR eps:   '',f10.5)') sr_eps
         if (nstates .gt. 1) then
-            write (ounit, '(''SR lambda:   '',f10.5)') & 
+            write (ounit, '(''SR lambda:   '',f10.5)') &
                   ((istate,jstate,sr_lambda(istate,jstate),istate=1,nstates-1),jstate=istate+1,nstates)
         endif
 
@@ -413,7 +413,7 @@ contains
         use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho
         use sr_mat_n, only: sr_o, wtg, obs_tot
         use optorb_cblock, only: norbterm
-        use method_opt, only: method
+        use optwf_control, only: method
         use contrl_file,    only: ounit
         implicit none
 
@@ -624,7 +624,7 @@ contains
         use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho
         use sr_mat_n, only: sr_o, wtg, obs_tot, h_sr_penalty, sr_lambda
         use optorb_cblock, only: norbterm
-        use method_opt, only: method
+        use optwf_control, only: method
 
         implicit none
 
@@ -824,7 +824,7 @@ contains
         use sr_mat_n, only: jefj, jfj, jhfj
         use sr_mat_n, only: obs_tot
         use sr_index, only: jelo, jelo2, jelohfj
-        use optwf_contrl, only: sr_tau
+        use optwf_control, only: sr_tau
         use contrl_file,    only: ounit
 
         implicit none
@@ -888,9 +888,8 @@ contains
 
         use mpi
         use sr_mod, only: mparm
-        use atom, only: ncent
-        use force_fin, only: da_energy_ave
-        use force_mat_n, only: force_o
+        use system, only: ncent
+        use m_force_analytic, only: da_energy_ave, force_o
         use mpiconf, only: idtask
         use sr_mat_n, only: elocal, jefj, jfj, jhfj, nconf_n, obs_tot, sr_ho
         use sr_mat_n, only: sr_o, wtg

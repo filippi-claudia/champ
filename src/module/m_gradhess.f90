@@ -20,9 +20,9 @@ module gradhess_all
 contains
 
     subroutine set_gradhess_all_size()
-        use optci, only: mxcireduced
-        use optwf_parms, only: nparmj
-        use optorb_mod, only: mxreduced
+      use optci, only: mxcireduced
+      use optorb_mod, only: mxreduced
+      use optwf_parms, only: nparmj
         nparmall = nparmj + mxcireduced + mxreduced
     end subroutine set_gradhess_all_size
 
@@ -42,9 +42,9 @@ end module gradhess_all
 
 module gradhessj
     !> Arguments: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2, e2
+    use mstates_mod, only: MSTATES
     use optwf_parms, only: nparmj
     use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
 
     implicit none
 
@@ -67,8 +67,8 @@ module gradhessj
     save
 contains
     subroutine allocate_gradhessj()
-        use optwf_parms, only: nparmj
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optwf_parms, only: nparmj
         if (.not. allocated(d2j)) allocate (d2j(nparmj, nparmj, MSTATES))
         if (.not. allocated(d2j_e)) allocate (d2j_e(nparmj, nparmj, MSTATES))
         if (.not. allocated(de)) allocate (de(nparmj, MSTATES))
@@ -102,9 +102,9 @@ end module gradhessj
 
 module gradhessjo
     !> Arguments: d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
+    use mstates_mod, only: MSTATES
     use optwf_parms, only: nparmj
     use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
 
     implicit none
 
@@ -113,7 +113,7 @@ module gradhessjo
     real(dp), dimension(:), allocatable :: d2d2a_old !(MCTYPE)
     real(dp), dimension(:), allocatable :: d2d2b_old !(2)
     real(dp), dimension(:, :), allocatable :: denergy_old !(nparmj,MSTATES)
-    real(dp), dimension(:), allocatable :: gvalue_old !(nparmj)
+    real(dp), dimension(:, :), allocatable :: gvalue_old !(nparmj,nwftypejas)
 
     private
     public   ::  d1d2a_old, d1d2b_old, d2d2a_old, d2d2b_old, denergy_old, gvalue_old
@@ -121,15 +121,16 @@ module gradhessjo
     save
 contains
     subroutine allocate_gradhessjo()
-        use atom, only: nctype_tot
-        use optwf_parms, only: nparmj
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optwf_parms, only: nparmj
+      use system, only: nctype_tot
+      use vmc_mod, only: nwftypejas
         if (.not. allocated(d1d2a_old)) allocate (d1d2a_old(nctype_tot))
         if (.not. allocated(d1d2b_old)) allocate (d1d2b_old(2))
         if (.not. allocated(d2d2a_old)) allocate (d2d2a_old(nctype_tot))
         if (.not. allocated(d2d2b_old)) allocate (d2d2b_old(2))
         if (.not. allocated(denergy_old)) allocate (denergy_old(nparmj, MSTATES))
-        if (.not. allocated(gvalue_old)) allocate (gvalue_old(nparmj))
+        if (.not. allocated(gvalue_old)) allocate (gvalue_old(nparmj,nwftypejas))
     end subroutine allocate_gradhessjo
 
     subroutine deallocate_gradhessjo()
@@ -160,7 +161,7 @@ module gradhess_ci
     save
 contains
     subroutine allocate_gradhess_ci()
-        use optci, only: mxciterm, mxcireduced
+      use optci, only: mxciterm, mxcireduced
         if (.not. allocated(grad_ci)) allocate (grad_ci(mxciterm))
         if (.not. allocated(h_ci)) allocate (h_ci(mxciterm, mxcireduced))
         if (.not. allocated(s_ci)) allocate (s_ci(mxciterm, mxcireduced))
@@ -207,8 +208,8 @@ end module gradhess_jas
 
 module gradhess_mix_jas_ci
     !> Arguments: h_mix_jas_ci, s_mix_jas_ci
-    use optwf_parms, only: nparmj
     use optci, only: mxciterm
+    use optwf_parms, only: nparmj
     use precision_kinds, only: dp
 
     implicit none
@@ -222,8 +223,8 @@ module gradhess_mix_jas_ci
     save
 contains
     subroutine allocate_gradhess_mix_jas_ci()
-        use optwf_parms, only: nparmj
-        use optci, only: mxciterm
+      use optci, only: mxciterm
+      use optwf_parms, only: nparmj
         if (.not. allocated(h_mix_jas_ci)) allocate (h_mix_jas_ci(2*nparmj, mxciterm))
         if (.not. allocated(s_mix_jas_ci)) allocate (s_mix_jas_ci(nparmj, mxciterm))
     end subroutine allocate_gradhess_mix_jas_ci
@@ -252,8 +253,8 @@ module gradhess_mix_jas_orb
     save
 contains
     subroutine allocate_gradhess_mix_jas_orb()
-        use optorb_mod, only: mxreduced
-        use optwf_parms, only: nparmj
+      use optorb_mod, only: mxreduced
+      use optwf_parms, only: nparmj
         if (.not. allocated(h_mix_jas_orb)) allocate (h_mix_jas_orb(2*nparmj, mxreduced))
         if (.not. allocated(s_mix_jas_orb)) allocate (s_mix_jas_orb(nparmj, mxreduced))
     end subroutine allocate_gradhess_mix_jas_orb
@@ -267,8 +268,8 @@ end module gradhess_mix_jas_orb
 
 module gradhess_mix_orb_ci
     !> Arguments: h_mix_ci_orb, s_mix_ci_orb
-    use optorb_mod, only: mxreduced
     use optci, only: mxciterm
+    use optorb_mod, only: mxreduced
     use precision_kinds, only: dp
 
     implicit none
@@ -282,8 +283,8 @@ module gradhess_mix_orb_ci
     save
 contains
     subroutine allocate_gradhess_mix_orb_ci()
-        use optorb_mod, only: mxreduced
-        use optci, only: mxciterm
+      use optci, only: mxciterm
+      use optorb_mod, only: mxreduced
         if (.not. allocated(h_mix_ci_orb)) allocate (h_mix_ci_orb(2*mxciterm, mxreduced))
         if (.not. allocated(s_mix_ci_orb)) allocate (s_mix_ci_orb(mxciterm, mxreduced))
     end subroutine allocate_gradhess_mix_orb_ci
@@ -297,9 +298,9 @@ end module gradhess_mix_orb_ci
 
 module gradjerr
     !> Arguments: dj_bsum, dj_e_bsum, dj_e_save, dj_save, e_bsum, grad_jas_bcm2, grad_jas_bcum
+    use mstates_mod, only: MSTATES
     use optwf_parms, only: nparmj
     use precision_kinds, only: dp
-    use mstates_mod, only: MSTATES
 
     implicit none
 
@@ -317,8 +318,8 @@ module gradjerr
     save
 contains
     subroutine allocate_gradjerr()
-        use optwf_parms, only: nparmj
-        use mstates_mod, only: MSTATES
+      use mstates_mod, only: MSTATES
+      use optwf_parms, only: nparmj
         if (.not. allocated(dj_bsum)) allocate (dj_bsum(nparmj, MSTATES))
         if (.not. allocated(dj_e_bsum)) allocate (dj_e_bsum(nparmj, MSTATES))
         if (.not. allocated(dj_e_save)) allocate (dj_e_save(nparmj, MSTATES))
@@ -344,13 +345,13 @@ module m_gradhess
 contains
 subroutine allocate_m_gradhess()
     use gradhess_all, only: allocate_gradhess_all
-    use gradhessj, only: allocate_gradhessj
-    use gradhessjo, only: allocate_gradhessjo
     use gradhess_ci, only: allocate_gradhess_ci
     use gradhess_jas, only: allocate_gradhess_jas
     use gradhess_mix_jas_ci, only: allocate_gradhess_mix_jas_ci
     use gradhess_mix_jas_orb, only: allocate_gradhess_mix_jas_orb
     use gradhess_mix_orb_ci, only: allocate_gradhess_mix_orb_ci
+    use gradhessj, only: allocate_gradhessj
+    use gradhessjo, only: allocate_gradhessjo
     use gradjerr, only: allocate_gradjerr
 
     implicit none
@@ -368,13 +369,13 @@ end subroutine allocate_m_gradhess
 
 subroutine deallocate_m_gradhess()
     use gradhess_all, only: deallocate_gradhess_all
-    use gradhessj, only: deallocate_gradhessj
-    use gradhessjo, only: deallocate_gradhessjo
     use gradhess_ci, only: deallocate_gradhess_ci
     use gradhess_jas, only: deallocate_gradhess_jas
     use gradhess_mix_jas_ci, only: deallocate_gradhess_mix_jas_ci
     use gradhess_mix_jas_orb, only: deallocate_gradhess_mix_jas_orb
     use gradhess_mix_orb_ci, only: deallocate_gradhess_mix_orb_ci
+    use gradhessj, only: deallocate_gradhessj
+    use gradhessjo, only: deallocate_gradhessjo
     use gradjerr, only: deallocate_gradjerr
 
     implicit none

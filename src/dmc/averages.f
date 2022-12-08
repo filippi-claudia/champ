@@ -2,7 +2,7 @@
       contains
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
 
-      use forcepar, only: nforce
+      use multiple_geo, only: nforce
       use c_averages, only: prop, wprop
       use c_averages_index, only: jderiv
 
@@ -37,7 +37,7 @@
 
       subroutine init_averages_index
 
-      use forcepar, only: nforce
+      use multiple_geo, only: nforce
       use c_averages_index, only: jeloc, jderiv
       use prp000, only: nprop
 
@@ -103,7 +103,7 @@ c deriv
 
       subroutine average_write
 
-      use forcepar, only: nforce
+      use multiple_geo, only: nforce
       use c_averages, only: cum_av, cum_w
       use c_averages_index, only: jderiv
 

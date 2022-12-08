@@ -3,8 +3,8 @@ module error
       public :: fatal_error, trexio_error
       contains
       subroutine fatal_error(msg)
-            use contrl_file,    only: ounit, errunit
-            use mpi
+      use contrl_file,    only: ounit, errunit
+      use mpi
             implicit none
             integer  :: ierr
 
@@ -27,8 +27,8 @@ module error
             !> \param[in] line      : the line number where the error occurred
 
 
-            use contrl_file,    	only: ounit, errunit
-            use mpi,            	only: mpi_abort, MPI_COMM_WORLD
+      use contrl_file,    	only: ounit, errunit
+      use mpi,            	only: mpi_abort, MPI_COMM_WORLD
             implicit none
 
             integer, intent(in), value :: trexio_rc

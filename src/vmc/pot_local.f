@@ -1,13 +1,13 @@
       module pot_local_mod
       contains
       subroutine pot_local(pe)
-      use atom, only: znuc, pecent, iwctype, ncent
-      use ghostatom, only: nghostcent
-      use const, only: nelec, ipr
+      use system, only: znuc, iwctype, ncent, nghostcent, nelec
+      use multiple_geo, only: pecent
+      use control, only: ipr
       use contrl_per, only: iperiodic
       use distance_mod, only: r_en, r_ee
       use pseudo, only: nloc
-      use contrl_file, only:ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use pw_ewald, only: pot_en_ewald, pot_ee_ewald
       implicit none
@@ -22,7 +22,7 @@ c  pe from nucleus-nucleus repulsion
       if(iperiodic.eq.0) then
         do i=1,nelec
           do ic=1,ncent+nghostcent
-            if(nloc.eq.0.and.ic.le.ncent) pe=pe-znuc(iwctype(ic))/r_en(i,ic)
+            if(nloc.eq.0.and.ic.le.ncent)  pe=pe-znuc(iwctype(ic))/r_en(i,ic)
           enddo
         enddo
         ij=0

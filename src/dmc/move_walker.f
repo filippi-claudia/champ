@@ -3,11 +3,10 @@
       subroutine send_walker(irecv)
 c Written by Claudia Filippi
 
-      use const, only: nelec
-      use forcepar, only: nforce
+      use system, only: nelec
+      use multiple_geo, only: nforce, nwprod
       use age, only: iage
       use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use force_dmc, only: nwprod
       use branch, only: eold, nwalk, pwt, wt
       use branch, only: wthist
       use jacobsave, only: ajacold

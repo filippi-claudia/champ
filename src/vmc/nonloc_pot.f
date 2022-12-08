@@ -5,17 +5,18 @@ c Written by Claudia Filippi; modified by Cyrus Umrigar
 c Calculates the local and nonlocal components of the pseudopotential
 c Calculates non-local potential derivatives
 c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
-      use pseudo_mod, only: MPS_QUAD
-      use atom, only: iwctype, ncent, ncent_tot
-      use const, only: nelec
       use contrl_per, only: iperiodic
-
-      use pseudo, only: lpot, nloc, vps
-
-      use precision_kinds, only: dp
-      use readps_gauss, only: getvps_gauss
-      use readps_tm_mod, only: getvps_tm
       use nonloc_mod, only: nonloc
+      use precision_kinds, only: dp
+      use pseudo,  only: lpot,nloc,vps
+      use pseudo_mod, only: MPS_QUAD
+      use readps_gauss, only: getvps_gauss
+      use system,  only: iwctype,ncent,ncent_tot,nelec
+      use error,   only: fatal_error
+      use optwf_parms, only: nparmj
+      use vmc_mod, only: nwftypeorb, nwftypejas
+      use contrl_file, only: ounit
+
       implicit none
 
       integer :: i, i1, i2, i_vpsp, ic
@@ -25,11 +26,9 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       real(dp), dimension(3, nelec, ncent_tot) :: rshift
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
-      real(dp), dimension(*) :: vpsp_det
-      real(dp), dimension(*) :: dvpsp_dj
+      real(dp), dimension(2, nwftypeorb) :: vpsp_det
+      real(dp), dimension(nparmj, nwftypejas) :: dvpsp_dj
       real(dp), dimension(ncent_tot, MPS_QUAD, *) :: t_vpsp
-
-
 
       if(i_vpsp.gt.0)then
         i1=i_vpsp
@@ -38,17 +37,14 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
         i1=1
         i2=nelec
       endif
-      do i=i1,i2
-        if(nloc.eq.1) then
-c         call getvps(r_en,i)
-         elseif(nloc.eq.2.or.nloc.eq.3) then
-          call getvps_tm(r_en,i)
-         elseif(nloc.eq.4) then
-          call getvps_gauss(rvec_en,r_en,i)
-         elseif(nloc.eq.5) then
-c         call getvps_champ(r_en,i)
-        endif
-      enddo
+      if(nloc.eq.4) then
+         do i=i1,i2
+            call getvps_gauss(rvec_en,r_en,i)
+         enddo
+      else
+         call fatal_error('nonloc different to 4 is not supported')
+      endif
+      
       
 c local component (highest angular momentum)
       if(iperiodic.eq.0) then
@@ -58,7 +54,6 @@ c local component (highest angular momentum)
           enddo
         enddo
       endif
-      
 c non-local component (division by the Jastrow already in nonloc)
       call nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
       

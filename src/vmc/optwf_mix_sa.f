@@ -10,17 +10,16 @@
 !      use contrl, only: nblk, nblk_max, nblk_ci
       use control_vmc, only: vmc_nblk, vmc_nblk_max, vmc_nblk_ci
       use orbval, only: nadorb
-      use force_analy, only: iforce_analy, alfgeo
+      use m_force_analytic, only: iforce_analy, alfgeo
       use mstates_ctrl, only: iguiding
-      use method_opt, only: method
+      use optwf_control, only: method
       use optwf_sr_mod, only: sr, sr_hs
       use optwf_corsam, only: sigma
-      use force_analy, only: iforce_analy
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_contrl, only: iroot_geo
-      use optwf_contrl, only: dparm_norm_min, nopt_iter, micro_iter_sr
-      use optwf_contrl, only: sr_tau, sr_adiag, sr_eps
-      use optwf_contrl, only: nvec, nvecx, alin_adiag, alin_eps
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: iroot_geo
+      use optwf_control, only: dparm_norm_min, nopt_iter, micro_iter_sr
+      use optwf_control, only: sr_tau, sr_adiag, sr_eps
+      use optwf_control, only: nvec, nvecx, alin_adiag, alin_eps
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
 
@@ -292,7 +291,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use csfs, only: ccsf, cxdet, iadet, ibdet, icxdet, ncsf
 
-      use dets, only: cdet, ndet
+      use slater, only: ndet, cdet
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
 

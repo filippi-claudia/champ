@@ -3,8 +3,7 @@
       subroutine mc_configs_start
 
       use mpi
-      use atom, only: znuc, iwctype, ncent, ncent_tot
-      use const, only: nelec
+      use system, only: znuc, iwctype, ncent, ncent_tot, nelec
       use config, only: xnew, xold
       use mpiconf, only: idtask, nproc
       !use contrl, only: irstar, isite, nconf_new, icharged_atom
@@ -12,7 +11,7 @@
       use mpi
       use contrl_file,    only: ounit, errunit
       use precision_kinds, only: dp
-      use rannyu_mod, only: savern, setrn, rannyu
+      use random_mod, only: savern, setrn, random_dp
       use sites_mod, only: sites
       use error, only: fatal_error
       use pcm_mod, only: pcm_qvol
@@ -45,11 +44,11 @@ c         endif
 
         if(nproc.gt.1) then
           do id=1,(3*nelec)*idtask
-            rnd=rannyu(0)
+            rnd=random_dp()
           enddo
           call savern(irn)
           do i=1,4
-            irn(i)=mod(irn(i)+int(rannyu(0)*idtask*9999),9999)
+            irn(i)=mod(irn(i)+int(random_dp()*idtask*9999),9999)
           enddo
           call setrn(irn)
         endif

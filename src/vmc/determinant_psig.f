@@ -1,6 +1,6 @@
       module determinant_psig_mod
       contains
-      subroutine determinant_psig(psid,psig)
+      subroutine determinant_psig(psid,psij,psig)
 
       use csfs, only: nstates, anormo
 
@@ -12,18 +12,12 @@
       integer :: i, istate
       real(dp) :: psig
       real(dp), dimension(*) :: psid
-
-
-
-
-
-
-
+      real(dp), dimension(*) :: psij
+    
       psig=0
-      do i=1,nstates
+      do i=1,nstates !STU state map psij
         istate=iweight_g(i)
-        psig=psig+weights_g(i)*psid(istate)*psid(istate)/1.0d0!anormo(istate)
-c missing a exp(2*psij(istate)) term here compared to ortho
+        psig=psig+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(istate))/1.0d0!anormo(istate)
       enddo
 
       psig=dsqrt(psig)

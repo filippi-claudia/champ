@@ -4,7 +4,7 @@
 
       use precision_kinds, only: dp
       use optci, only: mxciterm, mxcireduced, ncimatdim
-      use optwf_contrl, only: ioptci
+      use optwf_control, only: ioptci
       use mstates_ctrl, only: iefficiency, nstates_psig
       use mstates2, only: effcm2, effcum
       use ci000, only: nciterm
@@ -13,14 +13,15 @@
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
-      use method_opt, only: method
+      use optwf_control, only: method
       use mpi
       use optorb_mod, only: nmatdim
       use optorb_cblock, only: norbterm
+      use vmc_mod, only: nwftypeorb
 
       implicit none
 
-      integer :: i, ierr, j, matdim
+      integer :: i, ierr, j, matdim, k
       ! real(dp) :: nmatdim, MXORBTERM
 
 c     parameter(MXTMP=max(MXORBTERM,nmatdim))
@@ -68,80 +69,83 @@ c     max does not work with g77
         return
       endif
 
-      call mpi_reduce(ci_o_cum(1),optci_reduce_collect(1),nciterm
+      do k=1,nwftypeorb
+        call mpi_reduce(ci_o_cum(1,k),optci_reduce_collect(1),nciterm
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(optci_reduce_collect,nciterm
+        call mpi_bcast(optci_reduce_collect,nciterm
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do i=1,nciterm
-        ci_o_cum(i)=optci_reduce_collect(i)
-      enddo
+        do i=1,nciterm
+          ci_o_cum(i,k)=optci_reduce_collect(i)
+        enddo
 
-      call mpi_reduce(ci_de_cum(1),optci_reduce_collect(1),nciterm
+        call mpi_reduce(ci_de_cum(1,k),optci_reduce_collect(1),nciterm
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(optci_reduce_collect,nciterm
+        call mpi_bcast(optci_reduce_collect,nciterm
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do i=1,nciterm
-        ci_de_cum(i)=optci_reduce_collect(i)
-      enddo
+        do i=1,nciterm
+          ci_de_cum(i,k)=optci_reduce_collect(i)
+        enddo
 
-      call mpi_reduce(ci_oe_cum,optci_reduce_collect2,mxciterm*nciterm
+        call mpi_reduce(ci_oe_cum(1,1,k),optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(optci_reduce_collect2,mxciterm*nciterm
+        call mpi_bcast(optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do i=1,nciterm
-       do j=1,nciterm
-        ci_oe_cum(i,j) = optci_reduce_collect2(i,j)
-       enddo
-      enddo
+        do i=1,nciterm
+          do j=1,nciterm
+            ci_oe_cum(i,j,k) = optci_reduce_collect2(i,j)
+          enddo
+        enddo
 
-      call mpi_reduce(ci_oe_cm2,optci_reduce_collect2,mxciterm*nciterm
+        call mpi_reduce(ci_oe_cm2(1,1,k),optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(optci_reduce_collect2,mxciterm*nciterm
+        call mpi_bcast(optci_reduce_collect2,mxciterm*nciterm
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do i=1,nciterm
-       do j=1,nciterm
-        ci_oe_cm2(i,j) = optci_reduce_collect2(i,j)
-       enddo
-      enddo
+        do i=1,nciterm
+          do j=1,nciterm
+            ci_oe_cm2(i,j,k) = optci_reduce_collect2(i,j)
+          enddo
+        enddo
 
-      matdim=nciterm*(nciterm+1)/2
+        matdim=nciterm*(nciterm+1)/2
 
-      call mpi_reduce(ci_oo_cum(1),optci_reduce_collect(1),matdim
+        call mpi_reduce(ci_oo_cum(1,k),optci_reduce_collect(1),matdim
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(optci_reduce_collect,matdim
+        call mpi_bcast(optci_reduce_collect,matdim
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do i=1,matdim
-        ci_oo_cum(i)=optci_reduce_collect(i)
-      enddo
+        do i=1,matdim
+          ci_oo_cum(i,k)=optci_reduce_collect(i)
+        enddo
 
-      call mpi_reduce(ci_oo_cm2(1),optci_reduce_collect(1),matdim
+        call mpi_reduce(ci_oo_cm2(1,k),optci_reduce_collect(1),matdim
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(optci_reduce_collect,matdim
+        call mpi_bcast(optci_reduce_collect,matdim
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do i=1,matdim
-        ci_oo_cm2(i)=optci_reduce_collect(i)
-      enddo
+        do i=1,matdim
+          ci_oo_cm2(i,k)=optci_reduce_collect(i)
+        enddo
 
-      call mpi_reduce(ci_ooe_cum(1),optci_reduce_collect(1),matdim
+        call mpi_reduce(ci_ooe_cum(1,k),optci_reduce_collect(1),matdim
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_bcast(optci_reduce_collect,matdim
+        call mpi_bcast(optci_reduce_collect,matdim
      &     ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-      do i=1,matdim
-        ci_ooe_cum(i)=optci_reduce_collect(i)
+        do i=1,matdim
+          ci_ooe_cum(i,k)=optci_reduce_collect(i)
+        enddo
+
       enddo
 
       deallocate(optci_reduce_collect)

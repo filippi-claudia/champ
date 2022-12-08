@@ -3,13 +3,13 @@
       subroutine optwf_olbfgs
       use sr_mod, only: mparm
       use olbfgs, only: initialize_olbfgs
-      use optwf_contrl, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
       use optwf_corsam, only: energy, energy_err
       use control_vmc, only: vmc_nblk, vmc_nblk_max
-      use optwf_contrl, only: idl_flag, ilbfgs_flag
-      use optwf_contrl, only: sr_tau, sr_adiag, sr_eps
-      use optwf_contrl, only: dparm_norm_min, nopt_iter
-      use method_opt, only: method
+      use optwf_control, only: idl_flag, ilbfgs_flag
+      use optwf_control, only: sr_tau, sr_adiag, sr_eps
+      use optwf_control, only: dparm_norm_min, nopt_iter
+      use optwf_control, only: method
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
 

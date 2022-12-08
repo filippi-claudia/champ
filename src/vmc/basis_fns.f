@@ -1,39 +1,39 @@
       module basis_fns_mod
       contains
-      subroutine basis_fns(ie1,ie2,rvec_en,r_en,ider)
+      subroutine basis_fns(ie1,ie2,ncoord,rvec_en,r_en,ider)
 c calculate the values of the basis functions and their derivatives
 c ider = 0 -> value
 c ider = 1 -> value, gradient
 c ider = 2 -> value, gradient, laplacian
 c ider = 3 -> value, gradient, laplacian, forces
 
+      use m_force_analytic, only: iforce_analy
+      use multiple_geo, only: iwf
+      use numbas,  only: iwrwf,nrbas,rmaxwf
+      use numbas1, only: iwlbas,nbastyp
       use numbas_mod, only: MRWF
-      use atom, only: iwctype, ncent, ncent_tot
-      use ghostatom, only: nghostcent
-      use const, only: nelec
-      use numbas, only: iwrwf, nrbas, numr!, rmax
-      use numbas1, only: iwlbas, nbastyp
-      use basis, only: ns, np, nd, nf, ng
-      use phifun, only: phin, dphin, d2phin, d2phin_all, d3phin, n0_nbasis
-      use wfsec, only: iwf
-      use force_analy, only: iforce_analy
-      use splfit_mod, only: splfit
-      use slm_mod, only: slm
-
+      use phifun,  only: d2phin,d2phin_all,d3phin,dphin,n0_nbasis,phin
       use precision_kinds, only: dp
+      use slm_mod, only: slm
+      use splfit_mod, only: splfit
+      use system,  only: iwctype,ncent,ncent_tot,nelec,nghostcent
+
       implicit none
 
       integer :: it, ic, ider, irb
       integer :: iwlbas0
-      integer :: j, k, nrbasit, nbastypit, i
+      integer :: j, k, ncoord, nrbasit, nbastypit, i
       integer :: ie1, ie2, l, ilm, num_slms, maxlval
 
+      integer :: upper_range, lower_range
+      integer :: upper_rad_range, lower_rad_range
 
       real(dp) :: r, r2, ri, ri2
-      real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
-      real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), dimension(3, ncoord, *) :: rvec_en
+      real(dp), dimension(ncoord, *) :: r_en
       real(dp), dimension(4, MRWF) :: wfv
       real(dp), dimension(3) :: xc
+      real(dp), dimension(3) :: dtmp
       real(dp), parameter :: one = 1.d0
 
       ! Temporary arrays for basis function values and derivatives
@@ -43,9 +43,6 @@ c ider = 3 -> value, gradient, laplacian, forces
       real(dp), allocatable :: ddy(:,:,:)
       real(dp), allocatable :: dlapy(:,:)
 
-      integer                       :: upper_range, lower_range
-      integer                       :: upper_rad_range, lower_rad_range
-
 #ifndef VECTORIZATION
       do j=ie1,ie2
         n0_nbasis(j)=0
@@ -54,7 +51,6 @@ c ider = 3 -> value, gradient, laplacian, forces
 
       lower_range = 1
       lower_rad_range = 1
-
 
 c loop through centers
       do ic=1,ncent+nghostcent
@@ -89,12 +85,12 @@ c get distance to center
           ri2=ri*ri
 
           do irb=1,nrbasit
-          ! only evaluate for r <= rmax
-          ! if (r <= rmax(irb,it)) then
-            call splfit(r,irb,it,iwf,wfv(1,irb),ider)
-          ! else
-          !   wfv(1:4,irb)=0.d0
-          ! endif
+          !  only evaluate for r <= rmaxwf
+            if (r <= rmaxwf(irb,it)) then
+              call splfit(r,irb,it,iwf,wfv(1,irb),ider)
+            else
+              wfv(1:4,irb)=0.d0
+            endif
           enddo
 
           ! Get the Slm evaluated and store them arrays
@@ -118,11 +114,13 @@ c get distance to center
      &            ddy_lap(iwlbas0),
      &            dlapy(:,iwlbas0),
      &            phin(ilm,k),
-     &            dphin(ilm,k,:),
+     &            dtmp,
+!     &            dphin(ilm,k,:),
      &            d2phin(ilm,k),
      &            d2phin_all(1,1,ilm,k),
      &            d3phin(1,ilm,k),
      &            ider)
+            dphin(ilm,k,:)=dtmp(:)
 
 #ifndef VECTORIZATION
             ! localization
@@ -228,7 +226,7 @@ c     phi is computed for all ider values
 c-------------------------------------------------------------------
       subroutine n0_inc(l,k,ic)
 
-      use phifun, only: phin, dphin, n0_ibasis, n0_ic, n0_nbasis
+      use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
       implicit none
 
       integer :: ic, k, l

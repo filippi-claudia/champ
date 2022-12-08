@@ -6,13 +6,13 @@ c routine to print out final results
 
       use vmc_mod, only: nrad
       use vmc_mod, only: delri
-      use const, only: etrial, ipr, nelec
-      use forcest, only: fgcm2, fgcum
-      use forcepar, only: nforce
+      use const, only: etrial
+      use control, only: ipr, mode
+      use multiple_geo, only: fgcm2, fgcum, nforce, MFORCE
       use age, only: iage, ioldest, ioldestmx
       use contrl_per, only: iperiodic
       use contrldmc, only: idmc, nfprod, tau
-      use atom, only: ncent
+      use system, only: ncent, nelec
       use estcum, only: iblk
       use config, only: vold_dmc, xold_dmc
       use stats, only: acc, nacc, nodecr, trymove
@@ -25,11 +25,9 @@ c routine to print out final results
       use step, only: rprob
       use mpiconf, only: nproc, wid
       use denupdn, only: rprobdn, rprobup
-      use contr3, only: mode
       use header, only: title
       use grdntspar, only: igrdtype, ngradnts
       use mpiblk, only: iblk_proc
-      use force_mod, only: MFORCE
       use branch, only: eold, nwalk
       use optwf_corsam, only: energy, energy_err, force, force_err
 !      use contrl, only: nblkeq, nconf, nstep

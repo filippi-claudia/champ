@@ -33,6 +33,7 @@
 #===========================================
 
 set(TREXIO_SEARCH_PATHS
+	/software/trexio
 	~/Library/Frameworks
 	/Library/Frameworks
 	/usr/local

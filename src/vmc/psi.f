@@ -7,13 +7,10 @@ c **Warning** This routine needs to be upgraded to check rshifts
 c if we add in the capability to use numerical Laplacian for
 c periodic systems.
 
-      use vmc_mod, only: nordj
-      use jaspar3, only: c
+      use jastrow, only: c, nordc, ijas, nordj
 
-      use jaspar4, only: nordc
       use jaspar6, only: cutjas
-      use wfsec, only: iwf
-      use contr2, only: ijas
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -100,11 +97,9 @@ c-----------------------------------------------------------------------
       function psia(ri,it)
 
 
-      use jaspar4, only: a4, norda
-      use jaspar6, only: asymp_jasa
+      use jastrow, only: a4, norda, ijas, asymp_jasa
       use jaspar6, only: cutjas
-      use wfsec, only: iwf
-      use contr2, only: ijas
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -131,7 +126,7 @@ c-----------------------------------------------------------------------
       call scale_dist(ri,rri,1)
 
       if(ijas.eq.4.or.ijas.eq.5) then
-        psia=a4(1,it,iwf)*rri/(one+a4(2,it,iwf)*rri)-asymp_jasa(it)
+        psia=a4(1,it,iwf)*rri/(one+a4(2,it,iwf)*rri)-asymp_jasa(it,iwf)
         do i=2,norda
           psia=psia+a4(i+1,it,iwf)*rri**i
         enddo
@@ -147,14 +142,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       function psib(rij,isb,ipar)
 
-      use jaspar, only: sspinn
-      use jaspar3, only: b
+      use jastrow, only: sspinn, b, nordb, ijas, asymp_jasb
 
-      use jaspar4, only: nordb
-      use jaspar6, only: asymp_jasb
       use jaspar6, only: cutjas
-      use wfsec, only: iwf
-      use contr2, only: ijas
+      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
 
@@ -182,12 +173,12 @@ c-----------------------------------------------------------------------
       call scale_dist(rij,u,1)
 
       if(ijas.eq.4) then
-        psib=sspinn*b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1)
+        psib=sspinn*b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1,iwf)
         do i=2,nordb
           psib=psib+b(i+1,isb,iwf)*u**i
         enddo
        elseif(ijas.eq.5) then
-        psib=b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1)
+        psib=b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1,iwf)
         do i=2,nordb
           psib=psib+b(i+1,isb,iwf)*u**i
         enddo

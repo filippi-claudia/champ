@@ -7,13 +7,11 @@ c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
 c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
 
       use precision_kinds, only: dp
-      use const, only: pi
-      use forcepar, only: nforce
+      use constants, only: pi
+      use multiple_geo, only: nforce, iwftype, nwftype, nwprod
       use contrldmc, only: idmc
       use estcum, only: ipass
-      use force_dmc, only: nwprod
       use pseudo, only: nloc
-      use wfsec, only: iwftype, nwftype
 !      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
       use control_dmc, only: dmc_idump, dmc_irstar, dmc_nblk, dmc_nblkeq
       use control_dmc, only: dmc_nconf, dmc_nstep
@@ -127,7 +125,8 @@ c                         Parallel-spin b's = antipar-spin b's
 c                    (12) a's and b's for par and antipar are indep.
 c                 The above applies to good psi.
 
-      pi=four*datan(one)
+c getting compiler error, doesn't make sense to redifine a stored parameter
+c     pi=four*datan(one)
 
       open(unit=8,form='formatted',file='tape8')
       rewind 8
