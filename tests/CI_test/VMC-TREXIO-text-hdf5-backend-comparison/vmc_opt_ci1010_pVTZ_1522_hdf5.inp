@@ -3,7 +3,8 @@
     pool            'pool/'
     backend         hdf5
     mode            vmc
-    ipr             4
+    pseudopot	    BFD
+    ipr 	    4
 %endmodule
 
 load trexio          gamess_butadiene_ci1010_pVTZ.hdf5

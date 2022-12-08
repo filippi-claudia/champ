@@ -3,6 +3,7 @@
     pool            'pool/'
     mode            'vmc'
     backend         'text'
+    pseudopot	    BFD
     ipr 	    4
 %endmodule
 
