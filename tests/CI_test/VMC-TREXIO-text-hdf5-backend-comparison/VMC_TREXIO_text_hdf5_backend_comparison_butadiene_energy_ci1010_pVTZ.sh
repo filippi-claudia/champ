@@ -4,8 +4,8 @@ output="vmc_opt_ci1010_pVTZ_1522_hdf5"
 
 # unicore test
 N=1
-ReferenceEnergyhdf5=-26.0085168
-ReferenceError=0.0221974
+ReferenceEnergyhdf5=-26.3490325
+ReferenceError=0.0000002
 mpirun -np $N ../../../bin/vmc.mov1 -i ${input} -o ${output}_core_${N}.out -e error
 echo "Comparing energy with reference Core=${N}           (total E = $ReferenceEnergyhdf5 +-  $ReferenceError ) "
 ../../../tools/compare_value.py ${output}_core_${N}.out     "total E"  $ReferenceEnergyhdf5     $ReferenceError
@@ -17,8 +17,8 @@ output="vmc_opt_ci1010_pVTZ_1522_text"
 
 # unicore test
 N=1
-ReferenceEnergytext=-26.0085168
-ReferenceError=0.0221974
+ReferenceEnergytext=-26.3490325
+ReferenceError=0.0000002
 mpirun -np $N ../../../bin/vmc.mov1 -i ${input} -o ${output}_core_${N}.out -e error
 echo "Comparing energy with reference Core=${N}           (total E = $ReferenceEnergytext +-  $ReferenceError ) "
 ../../../tools/compare_value.py ${output}_core_${N}.out     "total E"  $ReferenceEnergytext     $ReferenceError

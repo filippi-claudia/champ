@@ -13,8 +13,8 @@ echo "Comparing energy with reference Core=$N           (total E = $ReferenceEne
 
 # Multicore test
 N=2
-ReferenceEnergy=-1.0073545
-ReferenceError=0.0048051
+ReferenceEnergy=-1.0097594
+ReferenceError=0.0049086
 mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
 echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
 ../../../tools/compare_value.py ${output}_core_${N}.out         "total E"  $ReferenceEnergy     $ReferenceError
