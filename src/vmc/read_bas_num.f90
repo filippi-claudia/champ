@@ -192,7 +192,7 @@ contains
         enddo
 
         ! Update the rmax at the point where rwf goes below cutoff (scanning from right to left)
-        rmaxwf(irb, ic) = 20.0d0
+        rmaxwf(irb, ic) = x(nr(ic))
         rloop: do ir=nr(ic),1,-1
           if (dabs(rwf(ir,irb,ic,iwf)) .gt. cutoff_rmax ) then
             rmaxwf(irb, ic) = x(ir)
