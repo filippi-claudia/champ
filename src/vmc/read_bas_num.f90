@@ -207,7 +207,7 @@ contains
           call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
           if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
-          rmaxwf(irb,ic)=-dlog(cutoff_rmax/ae(1,irb,ic,iwf))/ae(2,irb,ic,iwf)
+          rmaxwf(irb,ic)=-dlog(cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
 
           write(45,'(a)') 'check the large radius expansion'
           write(45,'(a,g0,2x,g0)') 'Exponential fitting parameters : ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
