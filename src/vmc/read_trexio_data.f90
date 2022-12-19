@@ -533,8 +533,8 @@ module trexio_read_data
         use general,            only: filename, filenames_bas_num
 
         ! For processing the stored information
-        use system, 			    only: atomtyp
-        use general, 			only: pooldir, bas_id
+        use system,             only: atomtyp
+        use general,            only: pooldir, bas_id
         use contrl_file,        only: ounit, errunit
         use spline2_mod,        only: spline2
         use fitting_methods,    only: exp_fit
@@ -785,9 +785,10 @@ module trexio_read_data
             x(i) = rgrid(i)
         enddo
 
+
         do ic = 1, nctype + newghostype            ! loop over all the unique atoms
 
-            nrbas(ic)   = nshells_per_atom(ic)
+            nrbas(ic)   = nshells_per_atom(unique_atom_index(ic))
             igrid(ic)   = gridtype       ! grid type default is 3
             nr(ic)      = gridpoints     ! number of grid points default is 2000
             arg(ic)     = gridarg        ! grid spacing default is 1.003
@@ -844,7 +845,6 @@ module trexio_read_data
                 enddo
 
             enddo
-
 
             do irb=1,nrbas(ic)
 
