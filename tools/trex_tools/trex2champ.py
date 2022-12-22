@@ -526,6 +526,10 @@ class Champ:
         # The determinants and csf information is obtained from the GAMESS output file using the resultsFile package.
         # It will be replaced by the data stored by trexio later in the future.
 
+        # Write the basis on the radial grid file
+        if self.save_basis:
+            write_champ_file_basis_grid(filename, dict_basis, nucleus_label, self.basis_prefix)
+
         # Write the .xyz file containing cartesian coordinates (Bohr) of nuclei
         if self.save_geometry:
             write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coord)
@@ -542,10 +546,6 @@ class Champ:
         if self.save_lcao:
             write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label)
             write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num)
-
-        # Write the basis on the radial grid file
-        if self.save_basis:
-            write_champ_file_basis_grid(filename, dict_basis, nucleus_label, self.basis_prefix)
 
         # Write the eigenvalues for a given type of orbitals using the resultsFile package. Currently it is optional.
         if self.save_eigenvalues:
