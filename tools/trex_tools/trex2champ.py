@@ -44,6 +44,7 @@ import numpy as np
 from collections import Counter
 import argparse
 import pytest
+import copy
 
 # Before we do anything else, we need to check if trexio and resultsFile are installed
 try:
@@ -597,6 +598,7 @@ def write_champ_file_basis_grid(filename, dict_basis, nucleus_label, basis_prefi
         basis[k]["contr"]         += [ contr[i] ]
 
 
+    ### Failsafe mechanism to check same element name with different type of basis
     # get the sublists of  dict_basis["shell_ang_mom"] for each unique value in dict_basis["nucleus_index"] list.
     list_shell_index_per_atom = []; list_shell_count_per_atom = [];
     for i, val in enumerate(nucleus_label):
@@ -613,7 +615,7 @@ def write_champ_file_basis_grid(filename, dict_basis, nucleus_label, basis_prefi
 
     # print ("dict_nucleus_label", dict_nucleus_label)
 
-    new_nucleus_label = nucleus_label
+    new_nucleus_label = copy.deepcopy(nucleus_label)
     nuc_index = 0
     # if the same nucleus label is present in more than one value of the dictionary,
     # then relabel the nucleus with a different label
@@ -625,16 +627,19 @@ def write_champ_file_basis_grid(filename, dict_basis, nucleus_label, basis_prefi
                     nuc_index = nucleus_label.index(i)
                     new_nucleus_label[nuc_index] = nucleus_label[nucleus_label.index(i)]+ str(key)
 
-    # print warning here
-    print ("----------------------------------------------------------")
-    print ("                        Warning!                          ")
-    print ("----------------------------------------------------------")
-    print ("Same element label with different number of shells detected. Relabeling the nucleus with shell count.")
-    print ("Elements after relabeling :: ", new_nucleus_label)
-    print ("----------------------------------------------------------")
+    if new_nucleus_label != nucleus_label:
+        # print warning here
+        print ("----------------------------------------------------------")
+        print ("                        Warning!                          ")
+        print ("----------------------------------------------------------")
+        print ("Same element label with different number of shells detected. Relabeling the nucleus with shell count.")
+        print ("Elements after relabeling :: ", new_nucleus_label)
+        print ("----------------------------------------------------------")
 
-    # replace the nucleus_label with the new_nucleus_label
-    nucleus_label = new_nucleus_label
+        # replace the nucleus_label with the new_nucleus_label
+        nucleus_label = copy.deepcopy(new_nucleus_label)
+
+    ### Failsafe mechanisn ends here
 
     # Get the index array of the primitives for each atom
     index_primitive = []; counter = 0;
