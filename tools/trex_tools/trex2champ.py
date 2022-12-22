@@ -633,6 +633,9 @@ def write_champ_file_basis_grid(filename, dict_basis, nucleus_label, basis_prefi
     print ("Elements after relabeling :: ", new_nucleus_label)
     print ("----------------------------------------------------------")
 
+    # replace the nucleus_label with the new_nucleus_label
+    nucleus_label = new_nucleus_label
+
     # Get the index array of the primitives for each atom
     index_primitive = []; counter = 0;
     index_primitive.append(0) # The starting index of the first primitive of the first atom
