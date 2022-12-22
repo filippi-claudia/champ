@@ -615,29 +615,28 @@ def write_champ_file_basis_grid(filename, dict_basis, nucleus_label, basis_prefi
 
     # print ("dict_nucleus_label", dict_nucleus_label)
 
-    new_nucleus_label = copy.deepcopy(nucleus_label)
+    new_nucleus_label = nucleus_label
     nuc_index = 0
     # if the same nucleus label is present in more than one value of the dictionary,
     # then relabel the nucleus with a different label
+    warning_message = False
     for key, val in dict_nucleus_label.items():
         nuc_index += 1
         for key2, val2 in dict_nucleus_label.items():
             if key != key2 and val[0] in val2:
+                warning_message = True
                 for i in val:
                     nuc_index = nucleus_label.index(i)
                     new_nucleus_label[nuc_index] = nucleus_label[nucleus_label.index(i)]+ str(key)
 
-    if new_nucleus_label != nucleus_label:
-        # print warning here
+    # check if each element in new_nucleus_label is same as nucleus_label
+    if warning_message:
         print ("----------------------------------------------------------")
         print ("                        Warning!                          ")
         print ("----------------------------------------------------------")
         print ("Same element label with different number of shells detected. Relabeling the nucleus with shell count.")
         print ("Elements after relabeling :: ", new_nucleus_label)
         print ("----------------------------------------------------------")
-
-        # replace the nucleus_label with the new_nucleus_label
-        nucleus_label = copy.deepcopy(new_nucleus_label)
 
     ### Failsafe mechanisn ends here
 
