@@ -400,7 +400,7 @@ module trexio_read_data
             end if
         enddo ! loop on shells
 
-        allocate (nbastyp(nctype_tot))
+        if (.not. allocated(nbastyp)) allocate (nbastyp(nctype_tot))
 
         if (.not. allocated(ns)) allocate (ns(nctype_tot))
         if (.not. allocated(np)) allocate (np(nctype_tot))
