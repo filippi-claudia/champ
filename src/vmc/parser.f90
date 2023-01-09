@@ -788,7 +788,7 @@ subroutine parser
     call read_orbitals_file(file_orbitals)
   elseif ( fdf_load_defined('trexio') ) then
 #if defined(TREXIO_FOUND)
-    call read_trexio_orbitals_file(file_trexio)
+    call read_trexio_orbitals_file(file_trexio, .false.)
 #endif
   elseif ( fdf_block('orbitals', bfdf)) then
   ! call fdf_read_orbitals_block(bfdf)

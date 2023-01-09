@@ -187,7 +187,7 @@ module trexio_read_data
     end subroutine read_trexio_molecule_file
 
 
-    subroutine read_trexio_orbitals_file(file_trexio)
+    subroutine read_trexio_orbitals_file(file_trexio, build_only_basis)
         !> This subroutine reads the .hdf5 trexio generated file/folder. It then reads the
         !! number of molecular and atomic orbitals and their corresponding coefficients.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
@@ -231,6 +231,7 @@ module trexio_read_data
 
     !   local use
         character(len=72), intent(in)   :: file_trexio
+        logical, intent(in), optional   :: build_only_basis
         character(len=40)               :: temp1, temp2
         character(len=120)              :: temp3, file_trexio_path
         integer                         :: iunit, iostat, iwft
@@ -267,9 +268,11 @@ module trexio_read_data
             file_trexio_path = file_trexio
         endif
 
+        if (.not. build_only_basis) then
         write(ounit,*) '---------------------------------------------------------------------------'
         write(ounit,*) " Reading LCAO orbitals from the file :: ",  trim(file_trexio_path)
         write(ounit,*) '---------------------------------------------------------------------------'
+        endif
         ! Check if the file exists
 
         if (wid) then
@@ -304,6 +307,7 @@ module trexio_read_data
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
 
+        if (.not. build_only_basis) then
         ! Read the orbitals
         if (wid) then
 #if defined(TREXIO_FOUND)
@@ -314,6 +318,7 @@ module trexio_read_data
         endif
         call bcast(trexio_has_group_orbitals)
         call bcast(coef(:,:,1))
+        endif
 
 
 !   Generate the basis information (which radial to be read for which Slm)
@@ -395,7 +400,7 @@ module trexio_read_data
             end if
         enddo ! loop on shells
 
-        allocate (nbastyp(nctype_tot))
+        if (.not. allocated(nbastyp)) allocate (nbastyp(nctype_tot))
 
         if (.not. allocated(ns)) allocate (ns(nctype_tot))
         if (.not. allocated(np)) allocate (np(nctype_tot))
@@ -447,7 +452,7 @@ module trexio_read_data
         deallocate(unique_index)
         deallocate(res)
 
-    ! debug Ravindra
+        if (.not. build_only_basis) then
         write(ounit,int_format) " Number of basis functions ", nbasis
         write(ounit,int_format) " Number of lcao orbitals ", norb
         write(ounit,int_format) " Type of wave functions ", iwft
@@ -456,6 +461,7 @@ module trexio_read_data
         write(ounit,*)
         ilcao = ilcao + 1
         write(ounit,*) "----------------------------------------------------------"
+        endif
 
     end subroutine read_trexio_orbitals_file
 
@@ -481,12 +487,14 @@ module trexio_read_data
     !   local use
         character(len=72), intent(in)   :: file_trexio
         integer                         :: i, ib
+        logical                         :: build_only_basis
 
         write(ounit,*) '---------------------------------------------------------------------------'
         write(ounit,'(a)')  " Basis function types and pointers to radial parts tables generated from :: " &
                             // trim(file_trexio)
         write(ounit,*) '---------------------------------------------------------------------------'
 
+        call read_trexio_orbitals_file(file_trexio, build_only_basis=.true.)
 
         do i = 1, nctype_tot
             write (ounit, '(100i3)') ns(i), np(i), nd(i), nf(i), ng(i)
