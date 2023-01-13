@@ -237,7 +237,7 @@ module trexio_read_data
         integer                         :: iunit, iostat, iwft
         integer                         :: iorb, ibasis, i, j, k, l, ic, it
         integer                         :: counter, count1, count2
-        integer                         :: index_ao
+        integer                         :: index_ao, index_ao_copy
         integer                         :: lower_range, upper_range
         integer                         :: count
         integer                         :: cum_rad_per_cent, cum_ao_per_cent
@@ -303,6 +303,7 @@ module trexio_read_data
         ! Do the allocations based on the number of shells and primitives
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
+        if (.not. allocated(ao_radial_index))        allocate(ao_radial_index(nbasis))
         if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
@@ -362,7 +363,7 @@ module trexio_read_data
         counter = 0; count1 = 1; count2 = 0
         cum_rad_per_cent = 0
         cum_ao_per_cent  = 0
-        index_ao = 0; jj = 1
+        index_ao = 0; jj = 1; index_ao_copy = 0
         ! The following loop will generate the index_slm array which tells
         ! which AO is of which type (from the above list)
         do l = 1, basis_num_shell
@@ -389,12 +390,14 @@ module trexio_read_data
             if (count1 == basis_nucleus_index(l)) then
                 num_rad_per_cent(count1) = cum_rad_per_cent
                 do ii = 1, slm_per_l(k+1)
-                    ao_radial_index = [ao_radial_index, cum_rad_per_cent]
+                    index_ao_copy = index_ao_copy + 1
+                    ao_radial_index(index_ao_copy) = cum_rad_per_cent
                 enddo
                 num_ao_per_cent(count1) = cum_ao_per_cent
             else
                 cum_rad_per_cent = 1
-                ao_radial_index = [ao_radial_index, cum_rad_per_cent]
+                index_ao_copy = index_ao_copy + 1
+                ao_radial_index(index_ao_copy) = cum_rad_per_cent
                 cum_ao_per_cent  = 1
                 count1 = count1 + 1
             end if
@@ -415,7 +418,7 @@ module trexio_read_data
         if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctype_tot))
         if (.not. allocated(ao_frequency)) allocate (ao_frequency(35), source=0)    ! ao upto g orbitals
         if (.not. allocated(unique_index)) allocate (unique_index(35), source=0)    ! ao upto g orbitals
-        if (.not. allocated(res)) allocate (res(5), source=0)                       ! shells upto g orbitals
+        if (.not. allocated(res)) allocate (res(basis_num_shell), source=0)                       ! shells upto g orbitals
 
         do i = 1, ncent_tot
             if (numr .gt. 0) then
@@ -447,10 +450,10 @@ module trexio_read_data
             lower_rad_range = upper_rad_range + 1
         enddo
 
-        deallocate(basis_nucleus_index)
-        deallocate(ao_frequency)
-        deallocate(unique_index)
-        deallocate(res)
+        if (allocated(basis_nucleus_index)) deallocate(basis_nucleus_index)
+        if (allocated(ao_frequency)) deallocate(ao_frequency)
+        if (allocated(unique_index)) deallocate(unique_index)
+        if (allocated(res)) deallocate(res)
 
         if (.not. build_only_basis) then
         write(ounit,int_format) " Number of basis functions ", nbasis
@@ -692,7 +695,12 @@ module trexio_read_data
         call bcast(ao_shell)
         call bcast(ao_normalization)
 
-
+        if (wid) then
+#if defined(TREXIO_FOUND)
+            rc = trexio_close(trex_basis_file)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_basis_file', __FILE__, __LINE__)
+#endif
+        endif
 
         write(ounit,fmt=int_format) " Number of primitives  ::  ", basis_num_prim
         write(ounit,fmt=int_format) " Number of shells      ::  ", basis_num_shell
@@ -708,8 +716,8 @@ module trexio_read_data
         ! Get the number of shells per atom (information needed to reshuffle AOs)
 
         allocate(atom_index(basis_num_shell))
-        allocate(nshells_per_atom(ncent_tot*10))
-        allocate(shell_index_atom(ncent_tot*10))
+        allocate(nshells_per_atom(basis_num_shell))
+        allocate(shell_index_atom(basis_num_shell))
 
 
 
