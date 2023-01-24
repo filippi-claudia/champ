@@ -353,7 +353,7 @@ subroutine parser
   vmc_nblkeq    = fdf_get('vmc_nblkeq', 2)
   vmc_nblk_max  = fdf_get('nblk_max', vmc_nblk)
   vmc_nconf     = fdf_get('vmc_nconf', 1)
-  vmc_nconf_new = fdf_get('vmc_nconf_new', 1)
+  vmc_nconf_new = fdf_get('vmc_nconf_new', 0)
   vmc_idump     = fdf_get('vmc_idump', 1)
   vmc_irstar    = fdf_get('vmc_irstar', 0)
   vmc_isite     = fdf_get('vmc_isite', 1)
@@ -385,7 +385,7 @@ subroutine parser
   dmc_nblk      = fdf_get('dmc_nblk', 1)
   dmc_nblkeq    = fdf_get('dmc_nblkeq', 2)
   dmc_nconf     = fdf_get('dmc_nconf', 1)
-  dmc_nconf_new = fdf_get('dmc_nconf_new', 1)
+  dmc_nconf_new = fdf_get('dmc_nconf_new', 0)
   dmc_idump     = fdf_get('dmc_idump', 1)
   dmc_irstar    = fdf_get('dmc_irstar', 0)
   dmc_isite     = fdf_get('dmc_isite', 1)
@@ -399,6 +399,10 @@ subroutine parser
   if (fdf_defined("optwf")) then
     if ( method .eq. 'linear' ) then
       MFORCE = 3  ! Only set MFORCE here. nwftype=3 is set just before the allocation
+    endif
+    if ( method .eq. 'sr_n' .or. method .eq. 'lin_dav' .or. method .eq. 'mix_n') then
+      isample_cmat=0
+      energy_tol=0.d0
     endif
   endif
 
@@ -1255,7 +1259,7 @@ subroutine parser
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
       if(method.eq.'lin_d' .or. method.eq.'mix_n') then
-        if(lin_jdav.eq.0) then 
+        if(lin_jdav.eq.0) then
                 write(ounit,'(a)' ) " Use old Regterg"
         elseif(lin_jdav.eq.1) then
                 write(ounit,'(a)' ) " Use new Davidson"
