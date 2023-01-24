@@ -213,6 +213,13 @@ order = [[0],
          [0, 1, 2, 3, 4, 5],
          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]
 
+## OLD champ shell ordering
+old_shells = {}
+old_shells[0] = ['S']
+old_shells[1] = ['X','Y','Z']
+old_shells[2] = ['XX','YY','ZZ','XY','XZ','YZ']
+old_shells[3] = ['XXX','YYY','ZZZ','XXY','XXZ','XYY','YYZ','XZZ','YZZ','XYZ']
+
 ## NEW champ shell ordering
 shells = {}
 shells[0] = ['S']
@@ -220,12 +227,6 @@ shells[1] = ['X','Y','Z']
 shells[2] = ['XX','XY','XZ','YY','YZ','ZZ']
 shells[3] = ['XXX','XXY','XXZ','XYY','XYZ','XZZ','YYY','YYZ','YZZ','ZZZ']
 
-## OLD champ shell ordering
-old_shells = {}
-old_shells[0] = ['S']
-old_shells[1] = ['X','Y','Z']
-old_shells[2] = ['XX','YY','ZZ','XY','XZ','YZ']
-old_shells[3] = ['XXX','YYY','ZZZ','XXY','XXZ','YYX','YYZ','ZZX','ZZY','XYZ']
 
 
 dict_l_of_shells = {1:0, 3:1, 6:2, 10:3}
@@ -520,13 +521,18 @@ for index, element in enumerate(atom_type_symbol):
     # print ("indexed A ", indexed_A)
     # print ("indexed B ", indexed_B)
 
+    # Get the indices of the new ordering with respect to the old ordering
     xsorted = np.argsort(indexed_B)
     res = xsorted[np.searchsorted(indexed_B[xsorted], indexed_A)]
+
+    # These two should match
+    # for i,el in enumerate(res):
+    #     print (":: ", indexed_A[i], "  ", indexed_B[el])
 
     temporary = [str(a + summ) for a in res]
     final_list_indices.extend(temporary)
     summ = summ + basis_per_atom[index]
-
+    # print ("final list indices ", final_list_indices)
 
     ## Do the molecular coefficient transformation here.
     # Select the XX, YY, ZZ coefficients from the old file for each atom

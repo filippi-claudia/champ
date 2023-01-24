@@ -44,15 +44,15 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use age,     only: iage,ioldest,ioldestmx
       use averages, only: average
-      use branch,  only: eest,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
+      use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
       use casula,  only: i_vpsp,icasula
       use config,  only: d2o,peo_dmc,psido_dmc,psijo_dmc,vold_dmc
       use config,  only: xold_dmc
-      use const,   only: etrial
+      use const,   only: etrial,esigmatrial
       use constants, only: hb
       use contrl_file, only: ounit
-      use contrldmc, only: iacc_rej,icross,icut_br,icut_e,idmc,ipq
+      use contrldmc, only: iacc_rej,icross,icut_br,icut_e,idmc,ipq,limit_wt_dmc
       use contrldmc, only: nfprod,rttau,tau
       use control, only: ipr
       use control_dmc, only: dmc_irstar,dmc_nconf
@@ -86,7 +86,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use pcm_dmc, only: pcm_save,pcm_sum
       use precision_kinds, only: dp
       use prop_dmc, only: prop_save_dmc,prop_sum_dmc
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       use splitj_mod, only: splitj
       use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nodecr
       use stats,   only: trymove
@@ -116,7 +116,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
       real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
       real(dp) :: drifdifr, drifdifs, drift, dwt
-      real(dp) :: dx, e_cutoff, enew(1)
+      real(dp) :: dx, e_cutoff, dwt_cutoff, enew(1)
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, ginv
       real(dp) :: p, pen, pp, psi2savo
@@ -395,7 +395,7 @@ c If we are using weights rather than accept/reject
           endif
 
           iacc_elec(i)=0
-          if(rannyu(0).lt.p) then
+          if(random_dp().lt.p) then
             iaccept=1
             nacc=nacc+1
             iacc_elec(i)=1
@@ -531,6 +531,12 @@ c Use more accurate formula for the drift and tau secondary in drift
              else
               dwt=0.5d0+1/(1+exp(-4*expon))
             endif
+          endif
+
+c Limit the weights for LA
+          if(limit_wt_dmc.gt.0) then
+            dwt_cutoff=exp((etrial-eest+limit_wt_dmc*esigma/rttau)*tau)
+            if(dwt.gt.dwt_cutoff) dwt=dwt_cutoff
           endif
 
 c If we are using weights rather than accept/reject

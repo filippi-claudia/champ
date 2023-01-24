@@ -35,11 +35,6 @@ c Modified by A. Scemama
       use pw_orbitals, only: orbitals_pw
       use slater,  only: coef,norb
       use system,  only: ncent_tot,nelec
-      use trexio_basis_fns_mod, only: trexio_basis_fns
-      use trexio_read_data, only: trexio_has_group_orbitals
-#if defined(TREXIO_FOUND)
-#endif
-
 
       implicit none
 
@@ -69,15 +64,9 @@ c spline interpolation
             enddo
 
             if(ier.eq.1) then
-#if defined(TREXIO_FOUND)
-              if (trexio_has_group_orbitals) then
-                call trexio_basis_fns(i,i,rvec_en,r_en,2)
-              else
-                call basis_fns(i,i,rvec_en,r_en,2)
-              endif
-#else
-              call basis_fns(i,i,rvec_en,r_en,2)
-#endif
+
+              call basis_fns(i,i,nelec,rvec_en,r_en,2)
+
               do iorb=1,norb+nadorb
                 orb(i,iorb)=0.d0
                 dorb(iorb,i,1)=0.d0
@@ -107,15 +96,9 @@ c spline interpolation
            call lagrange_mos_2(5,x(1,i),ddorb,i,ier)
 
            if(ier.eq.1) then
-#if defined(TREXIO_FOUND)
-            if (trexio_has_group_orbitals) then
-              call trexio_basis_fns(i,i,rvec_en,r_en,2)
-            else
-              call basis_fns(i,i,rvec_en,r_en,2)
-            endif
-#else
-            call basis_fns(i,i,rvec_en,r_en,2)
-#endif            
+
+             call basis_fns(i,i,nelec,rvec_en,r_en,2)
+
              do iorb=1,norb+nadorb
                orb(i,iorb)=0.d0
                dorb(iorb,i,1)=0.d0
@@ -140,15 +123,8 @@ c no 3d interpolation
 c get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
-#if defined(TREXIO_FOUND)
-         if (trexio_has_group_orbitals) then
-          call trexio_basis_fns(1,nelec,rvec_en,r_en,ider)
-         else
-          call basis_fns(1,nelec,rvec_en,r_en,ider)
-         endif
-#else
-         call basis_fns(1,nelec,rvec_en,r_en,ider)
-#endif
+
+         call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 
 c in alternativa al loop 26
 c        do jbasis=1,nbasis
@@ -294,12 +270,6 @@ c-------------------------------------------------------------------------------
       use pw_orbitals, only: orbitals_pw_grade
       use slater,  only: coef,norb
       use system,  only: ncent_tot,nelec
-      use trexio_basis_fns_mod, only: trexio_basis_fns
-      use trexio_read_data, only: trexio_has_group_orbitals
-
-#if defined(TREXIO_FOUND)
-#endif
-
 
       implicit none
 
@@ -340,15 +310,7 @@ c get basis functions for electron iel
             ider=1
             if(iflag.gt.0) ider=2
 
-#if defined(TREXIO_FOUND)
-            if (trexio_has_group_orbitals) then
-              call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
-            else
-              call basis_fns(iel,iel,rvec_en,r_en,ider)
-            endif
-#else
-            call basis_fns(iel,iel,rvec_en,r_en,ider)
-#endif
+            call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
 
 !     Vectorization dependent code. useful for AVX512 and AVX2
 #ifdef VECTORIZATION

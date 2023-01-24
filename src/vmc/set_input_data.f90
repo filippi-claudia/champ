@@ -392,7 +392,7 @@ subroutine multideterminants_define(iflag, icheck)
     enddo
 
     !setting larger number of required determinants for unequivalent or unique determinants 
-    if(ndetiab(1).le.ndetiab(2)) then
+    if(ndetiab(1).ge.ndetiab(2)) then
        ndet_req=ndetiab(1)
     else
        ndet_req=ndetiab(2)

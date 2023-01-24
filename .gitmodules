@@ -1,0 +1,3 @@
+[submodule "tests/unit_test/FortUTF"]
+	path = tests/FortUTF
+	url = https://github.com/artemis-beta/FortUTF.git

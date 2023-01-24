@@ -18,13 +18,13 @@ subroutine parser
       use casula,  only: i_vpsp,icasula
       use ci000,   only: iciprt,nciprim,nciterm
       use coefs,   only: nbasis,next_max
-      use const,   only: etrial
+      use const,   only: etrial, esigmatrial
       use constants, only: hb,pi
       use contrl_file, only: errunit,file_error,file_input
       use contrl_file, only: file_output,iunit,ounit
       use contrl_per, only: ibasis,iperiodic
       use contrldmc, only: iacc_rej,icross,icuspg,icut_br,icut_e,idiv_v
-      use contrldmc, only: idmc,ipq,itau_eff,nfprod,rttau,tau
+      use contrldmc, only: idmc,ipq,itau_eff,nfprod,rttau,tau,limit_wt_dmc
       use control, only: ipr,mode
       use control_dmc, only: dmc_idump,dmc_irstar,dmc_isite,dmc_nblk
       use control_dmc, only: dmc_nblkeq,dmc_nconf,dmc_nconf_new
@@ -142,7 +142,7 @@ subroutine parser
       use pseudo_mod, only: MPS_QUAD
       use pw_read, only: read_orb_pw_tm
       use qua,     only: nquad,wq,xq,yq,zq
-      use rannyu_mod, only: setrn
+      use random_mod, only: setrn
       use read_bas_num_mod, only: read_bas_num,readps_gauss
       use sa_weights, only: iweight,nweight,weights
       use scale_dist_mod, only: set_scale_dist
@@ -372,10 +372,12 @@ subroutine parser
   idiv_v      = fdf_get('idiv_v', 0)
   icut_br     = fdf_get('icut_br', 0)
   icut_e      = fdf_get('icut_e', 0)
+  limit_wt_dmc= fdf_get('limit_wt_dmc', 0)
   dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)
   dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)
   tau         = fdf_get('tau', 1.0d0)
   etrial      = fdf_get('etrial', 1.0d0)
+  esigmatrial = fdf_get('esigmatrial', 1.0d0)
   nfprod      = fdf_get('nfprod', 100)
   itausec     = fdf_get('itausec', 1)
   icasula     = fdf_get('icasula', 0)
@@ -744,6 +746,9 @@ subroutine parser
     if (iabs(idmc).ne.2) call fatal_error('INPUT: only idmc=2 supported')
 
     if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
+
+    if (.not. fdf_defined('etrial')) call fatal_error("etrial required for DMC calculations")
+
   else
     icasula=0
   endif
@@ -787,7 +792,7 @@ subroutine parser
     call read_orbitals_file(file_orbitals)
   elseif ( fdf_load_defined('trexio') ) then
 #if defined(TREXIO_FOUND)
-    call read_trexio_orbitals_file(file_trexio)
+    call read_trexio_orbitals_file(file_trexio, .false.)
 #endif
   elseif ( fdf_block('orbitals', bfdf)) then
   ! call fdf_read_orbitals_block(bfdf)
@@ -847,16 +852,15 @@ subroutine parser
     call read_basis_num_info_file(file_basis_num_info)
   elseif ( fdf_load_defined('trexio') ) then
 #if defined(TREXIO_FOUND)
-    ! call write_trexio_basis_num_info_file(file_trexio)
-    write(ounit,*) "Numerical basis information not needed when orbitals are read from trexio file"
+    call write_trexio_basis_num_info_file(file_trexio)
 #endif
   elseif (.not. fdf_block('basis_num_info', bfdf)) then
   ! call fdf_read_eigenvalues_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(a)') "Error :: No information about basis num info provided in the block."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(a)') "Error :: No information about basis num info provided in the block."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif

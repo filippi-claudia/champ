@@ -902,7 +902,7 @@ C     ***************************************************************
       use pcm_parms, only: nch,nchs,nchs1,nchs2,nesph,re,surk,xe,xpol,ye
       use pcm_parms, only: ze
       use precision_kinds, only: dp
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       use spc,     only: nsf,num
       use spc1,    only: csf,qsf,rsf
       use spc2,    only: nxyz,sfxyz,usf
@@ -1099,7 +1099,7 @@ c------------------------TRIAL VERSION----------------------------
       uy=usf(i1,2)+usf(i2,2)
       uz=usf(i1,3)+usf(i2,3)
       uu=dsqrt(ux**2+uy**2+uz**2)
-      prdm=rannyu(0)
+      prdm=random_dp()
       if (prdm.le.0.5d0) then
       usf(i1,1)=ux/uu
       usf(i1,2)=uy/uu
@@ -1183,7 +1183,7 @@ c..................................................
       subroutine prep
 
       use precision_kinds, only: dp
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       use spc,     only: nsf,num
       use spc1,    only: csf,rsf
 
@@ -1238,13 +1238,13 @@ c..................................................
       icount=icount+1
       pol=0.d0
       do i=1,np5
-300   rrand=rannyu(0)
+300   rrand=random_dp()
       a1=rrand
 c     theta=pigreco*a1
 c     qm=r0*dcos(theta)
       cos_theta=-1.d0+2.d0*a1
       qm=r0*cos_theta
-      qf=pi25*rannyu(0)
+      qf=pi25*random_dp()
       el1(i)=qm
       el2(i)=qf
 c     f1=r0*dsin(theta)
@@ -1325,7 +1325,7 @@ c     f1=r0*dsin(theta)
       subroutine prep1
 
       use precision_kinds, only: dp
-      use rannyu_mod, only: rannyu
+      use random_mod, only: random_dp
       use spc,     only: nsf,num
       use spc1,    only: csf,rsf
 
@@ -1399,8 +1399,8 @@ c----------------------------------------------------------
       pol=0.d0
       do i=1,np5
 300   continue
-      f1=ff1*(rannyu(0)-0.5d0)
-      f2=ff1*(rannyu(0)-0.5d0)
+      f1=ff1*(random_dp()-0.5d0)
+      f2=ff1*(random_dp()-0.5d0)
       c1=dcos(f1)
       s1=dsin(f1)
       c2=dcos(f2)

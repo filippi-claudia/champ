@@ -18,6 +18,7 @@
 !> \param[out] a: Fitted parameter a.
 !> \param[out] b: Fitted parameter b.
 
+        use error,   only: fatal_error
         implicit none
         integer, parameter :: dp = kind(1.0d0)
         integer, intent(in) :: n
@@ -42,12 +43,16 @@
         xx_sum = 0.0
 
         do i = 1, n
-            w(i) = log(y(i))
+            
+            w(i) = log(dabs(y(i)))
             x_sum = x_sum + x(i)
             y_sum = y_sum + y(i)
             w_sum = w_sum + w(i)
             xw_sum = xw_sum + x(i)*w(i)
             xx_sum = xx_sum + x(i)*x(i)
+
+            if(i.lt.n.and.y(i+1)*y(i).lt.0.d0) call fatal_error('FIT NUM BASIS: changing sign')
+
 
         end do
 
@@ -60,6 +65,8 @@
         denom = xx_sum - n*x_mean*x_mean
         b = (n*x_mean*w_mean - xw_sum )/denom
         a = dexp((w_mean*xx_sum - x_mean * xw_sum)/denom)
+
+        if(y(1).lt.0) a=-a
 
     end subroutine exp_fit
 end module

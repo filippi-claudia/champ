@@ -44,6 +44,7 @@ import numpy as np
 from collections import Counter
 import argparse
 import pytest
+import copy
 
 # Before we do anything else, we need to check if trexio and resultsFile are installed
 try:
@@ -526,6 +527,10 @@ class Champ:
         # The determinants and csf information is obtained from the GAMESS output file using the resultsFile package.
         # It will be replaced by the data stored by trexio later in the future.
 
+        # Write the basis on the radial grid file
+        if self.save_basis:
+            write_champ_file_basis_grid(filename, dict_basis, nucleus_label, self.basis_prefix)
+
         # Write the .xyz file containing cartesian coordinates (Bohr) of nuclei
         if self.save_geometry:
             write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coord)
@@ -542,10 +547,6 @@ class Champ:
         if self.save_lcao:
             write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label)
             write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num)
-
-        # Write the basis on the radial grid file
-        if self.save_basis:
-            write_champ_file_basis_grid(filename, dict_basis, nucleus_label, self.basis_prefix)
 
         # Write the eigenvalues for a given type of orbitals using the resultsFile package. Currently it is optional.
         if self.save_eigenvalues:
@@ -596,6 +597,48 @@ def write_champ_file_basis_grid(filename, dict_basis, nucleus_label, basis_prefi
         basis[k]["shell_index"]   += [ dict_basis["shell_index"][i] ]
         basis[k]["contr"]         += [ contr[i] ]
 
+
+    ### Failsafe mechanism to check same element name with different type of basis
+    # get the sublists of  dict_basis["shell_ang_mom"] for each unique value in dict_basis["nucleus_index"] list.
+    list_shell_index_per_atom = []; list_shell_count_per_atom = [];
+    for i, val in enumerate(nucleus_label):
+        list_shell_index_per_atom.append([j for j, x in enumerate(dict_basis["nucleus_index"]) if x == i])
+        list_shell_count_per_atom.append(len(list_shell_index_per_atom[i]))
+
+    # create a dictionary with the nucleus label as key and list_shell_count_per_atom[i] as value if the length of the list_shell_count_per_atom is different then store under a different key
+    dict_nucleus_label = {}
+    for i, val in enumerate(nucleus_label):
+        if list_shell_count_per_atom[i] not in dict_nucleus_label:
+            dict_nucleus_label[list_shell_count_per_atom[i]] = [nucleus_label[i]]
+        else:
+            dict_nucleus_label[list_shell_count_per_atom[i]].append(nucleus_label[i])
+
+    # print ("dict_nucleus_label", dict_nucleus_label)
+
+    new_nucleus_label = nucleus_label
+    nuc_index = 0
+    # if the same nucleus label is present in more than one value of the dictionary,
+    # then relabel the nucleus with a different label
+    warning_message = False
+    for key, val in dict_nucleus_label.items():
+        nuc_index += 1
+        for key2, val2 in dict_nucleus_label.items():
+            if key != key2 and val[0] in val2:
+                warning_message = True
+                for i in val:
+                    nuc_index = nucleus_label.index(i)
+                    new_nucleus_label[nuc_index] = nucleus_label[nucleus_label.index(i)]+ str(key)
+
+    # check if each element in new_nucleus_label is same as nucleus_label
+    if warning_message:
+        print ("----------------------------------------------------------")
+        print ("                        Warning!                          ")
+        print ("----------------------------------------------------------")
+        print ("Same element label with different number of shells detected. Relabeling the nucleus with shell count.")
+        print ("Elements after relabeling :: ", new_nucleus_label)
+        print ("----------------------------------------------------------")
+
+    ### Failsafe mechanisn ends here
 
     # Get the index array of the primitives for each atom
     index_primitive = []; counter = 0;
@@ -1045,7 +1088,7 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
     Returns:
         None as a function value
     """
-    aos_per_l = [1,3,6,10,15,21]
+    slm_per_l = [1,3,6,10,15]
 
     shells = {}
     shells[0] = ['S']
@@ -1110,55 +1153,23 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
 
 
 
-    # This part is for reshuffling to make the AO basis in the CHAMP's own ordering
-    index_dict = {}; shell_representation = {}; bf_representation = {}
-    counter = 0; basis_per_atom = []
-    champ_ao_ordering = []
+    # This part is for getting the number of basis per atom
+    basis_per_atom = []
     for atom_index in range(len(index_radial)):
-        bfcounter = 1; basis_per_atom_counter = 0
+        basis_per_atom_counter = 0
         for i in index_radial[atom_index]:
             l = dict_basis["shell_ang_mom"][i]
 
-            # run a small loop to reshuffle the shell ordering
-
             # Get number of AO basis per atom
-            ind = 0
             for k in order[l]:
-                ind = ind + 1
-                shell_representation[counter] = shells[l][k]
-                index_dict[counter] =  counter
-                bf_representation[counter] = bfcounter
-                counter += 1
                 basis_per_atom_counter += 1
-            bfcounter += 1
         basis_per_atom.append(basis_per_atom_counter)
 
-    # print ("old_shell_representation: ", shell_representation.values())
-    # print ("old_shell_representation keys : ", shell_representation.keys())
-    # print ("basis per atom: ", basis_per_atom)
-    # print ("BF representation: ", bf_representation.values())
+    # print ("basis per atom: ", basis_per_atom , len(basis_per_atom))
 
-
-    champ_ao_ordering = [ _ for _ in range(ao_num) ]
-    ## Reorder orbitals according to the ordering of the CHAMP ordering
-
-
-    # The next two arrays are needed for bfinfo file
-    reordered_bf_array = {k: bf_representation[k] for k in champ_ao_ordering}
-    reordered_bf_array_values = list(reordered_bf_array.values())
-    shell_representation_values = list(shell_representation.values())
-
-
-    accumumulated_basis_per_atom = np.cumsum(basis_per_atom)
-
-    start_index = 0
-    basis_pointer_per_atom = []
-    shell_reprensentation_per_atom = []
-    for i in range(len(basis_per_atom)):
-        end_index = accumumulated_basis_per_atom[i]
-        basis_pointer_per_atom.append(reordered_bf_array_values[start_index:end_index])
-        shell_reprensentation_per_atom.append(shell_representation_values[start_index:end_index])
-        start_index = end_index
+    # The bfinfo file contains two lines for each unique atom
+    # The first line contains the slm index of each AO basis function
+    # The second line contains the index of column of numerical radial grid.
 
 #   #   #
         # ! Generate the index of the slm for each AO
@@ -1177,6 +1188,7 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
         # !       +-----------------------------------------------------------------------------
         # !          xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
 
+    for i in range(len(basis_per_atom)):
         counter = 0; count1 = 1; count2 = 0
         cum_rad_per_cent = 0
         cum_ao_per_cent  = 0
@@ -1192,49 +1204,27 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
                 l = dict_basis["shell_ang_mom"][i]
                 dict_num_shells_per_l[atom_index][l] += 1
 
-                counter = counter + aos_per_l[l]
-                count2 = 0
+                counter = counter + slm_per_l[l]
+                count2 = 1
                 index_rad += 1
-                for ii in range(aos_per_l[l]):
-                    count2   += 1
+                for ii in range(slm_per_l[l]):
                     if l == 0:
-                        index_slm.append(count2)
+                        index_slm.append(sum(slm_per_l[1:l]) + count2)
                     else:
-                        index_slm.append(aos_per_l[l-1] + l - 1 + count2)
+                        index_slm.append(sum(slm_per_l[1:l]) + count2 + 1)
+                    count2   += 1
                     ao_radial_index[atom_index].append(index_rad)
-
                     cum_ao_per_cent = cum_ao_per_cent + 1
+
                 cum_rad_per_cent = cum_rad_per_cent + 1
-            # ao_radial_index[atom_index] = [item for sublist in index_slm for item in sublist]
 
         # print("dict num shells per l: ", dict_num_shells_per_l)
         # print("index slm ", index_slm)
         # print("cum_ao_per_cent ", cum_ao_per_cent)
         # print("cum_rad_per_cent ", cum_rad_per_cent)
-        # print("ao_radial_index before ", ao_radial_index)
-        # reshape the ao_radial_index array in the groups of shells from the dict_num_shells_per_l
-
-        # ao_radial_index = [[] for _ in range(len(index_radial))]
-        for atom_index in range(len(index_radial)):
-            # print("dict num shells values ", dict_num_shells_per_l[atom_index].values())
-            index_rad = 0
-
-            radials_per_l = [ [] for _ in range(5) ]
-            for i in index_radial[atom_index]:
-                l = dict_basis["shell_ang_mom"][i]
-                index_rad += 1
-                radials_per_l[l].append(index_rad)
+        # print("ao_radial_index ", ao_radial_index)
 
 
-            for l, num in dict_num_shells_per_l[atom_index].items():
-                if l == 0:
-                    radials_per_l[l] = radials_per_l[l]*1
-                else:
-                    radials_per_l[l] = radials_per_l[l]*aos_per_l[l]
-
-            # ao_radial_index[atom_index] = [item for sublist in radials_per_l for item in sublist]
-
-        # print("ao_radial_index written ", ao_radial_index)
     slm_index_per_atom = []; count1 = 0
     for i in basis_per_atom:
         slm_index_per_atom.append(index_slm[count1:count1+i])

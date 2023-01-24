@@ -1,6 +1,6 @@
       module basis_fns_mod
       contains
-      subroutine basis_fns(ie1,ie2,rvec_en,r_en,ider)
+      subroutine basis_fns(ie1,ie2,ncoord,rvec_en,r_en,ider)
 c calculate the values of the basis functions and their derivatives
 c ider = 0 -> value
 c ider = 1 -> value, gradient
@@ -22,15 +22,18 @@ c ider = 3 -> value, gradient, laplacian, forces
 
       integer :: it, ic, ider, irb
       integer :: iwlbas0
-      integer :: j, k, nrbasit, nbastypit, i
+      integer :: j, k, ncoord, nrbasit, nbastypit, i
       integer :: ie1, ie2, l, ilm, num_slms, maxlval
 
+      integer :: upper_range, lower_range
+      integer :: upper_rad_range, lower_rad_range
 
       real(dp) :: r, r2, ri, ri2
-      real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
-      real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), dimension(3, ncoord, *) :: rvec_en
+      real(dp), dimension(ncoord, *) :: r_en
       real(dp), dimension(4, MRWF) :: wfv
       real(dp), dimension(3) :: xc
+      real(dp), dimension(3) :: temp_dphin
       real(dp), parameter :: one = 1.d0
 
       ! Temporary arrays for basis function values and derivatives
@@ -40,9 +43,6 @@ c ider = 3 -> value, gradient, laplacian, forces
       real(dp), allocatable :: ddy(:,:,:)
       real(dp), allocatable :: dlapy(:,:)
 
-      integer                       :: upper_range, lower_range
-      integer                       :: upper_rad_range, lower_rad_range
-
 #ifndef VECTORIZATION
       do j=ie1,ie2
         n0_nbasis(j)=0
@@ -51,7 +51,6 @@ c ider = 3 -> value, gradient, laplacian, forces
 
       lower_range = 1
       lower_rad_range = 1
-
 
 c loop through centers
       do ic=1,ncent+nghostcent
@@ -115,11 +114,12 @@ c get distance to center
      &            ddy_lap(iwlbas0),
      &            dlapy(:,iwlbas0),
      &            phin(ilm,k),
-     &            dphin(ilm,k,:),
+     &            temp_dphin,
      &            d2phin(ilm,k),
      &            d2phin_all(1,1,ilm,k),
      &            d3phin(1,ilm,k),
      &            ider)
+            dphin(ilm,k,:)=temp_dphin(:)
 
 #ifndef VECTORIZATION
             ! localization

@@ -124,14 +124,14 @@ module keywords
   !> @date October 15, 2022
   implicit none
   integer                     :: num_modules  = 11   ! change this number after every adition/deletion
-  integer                     :: num_keywords = 158 ! change this number after every adition/deletion
+  integer                     :: num_keywords = 160 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
   type(string_t) allowed_modules(11)
-  type(string_t) allowed_keywords(158)
+  type(string_t) allowed_keywords(160)
 
 
   private
@@ -224,6 +224,7 @@ module keywords
     allowed_keywords(153)%keys = 'weights';         allowed_keywords(154)%keys = 'gradients_cartesian'
     allowed_keywords(155)%keys = 'print';           allowed_keywords(156)%keys = 'gradients_zmatrix'
     allowed_keywords(157)%keys = 'nquad';           allowed_keywords(158)%keys = 'hessian_zmatrix'
+    allowed_keywords(159)%keys = 'esigmatrial';     allowed_keywords(160)%keys = 'limit_wt_dmc'
   end subroutine allocate_keywords
 
   subroutine allocate_modulenames()
@@ -302,7 +303,7 @@ end subroutine validate_keywords
 
       call allocate_modulenames()
       matched=.false.
-      
+
       j = 1
       do while((.not. matched) .and. (j .le. num_modules))
         i = 1
@@ -3634,7 +3635,7 @@ endif ! (rank==0)
           'force   ', 'n         ', 1.d0, &
           'force   ', 'ev/ang    ', 1.60219d-9, &
           'force   ', 'ry/bohr   ', 4.11943d-8, &
-          'force   ', 'ha/bohr   ', 2.059715d-08 /
+          'force   ', 'ha/bohr   ', 8.23886d-08 /
 
       data (dimm(iu), name(iu), unit(iu), iu=45, 54) / &
           'pressure', 'pa        ', 1.d0, &
