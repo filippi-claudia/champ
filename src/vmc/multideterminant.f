@@ -1,8 +1,8 @@
       module multideterminant_mod
       contains
-      subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
+      subroutine multideterminant_hpsi(vj,ekin_det,vpsp_det,eloc_det)
 
-      use Bloc,    only: b,tildem,xmat
+      use Bloc,    only: b,bkin,tildem,tildemkin,xmat, xmatkin
       use bxmatrices, only: bxmatrix
       use constants, only: hb
       use csfs,    only: nstates
@@ -21,34 +21,22 @@
       use system,  only: ndn,nelec,nup
       use ycompact, only: dymat,ymat
       use zcompact, only: aaz,dzmat,emz,zmat
+      use dorb_m,  only: iworbd
+      use contrl_file, only: errunit,ounit
 
       implicit none
 
       integer :: i, iab, iel, index_det, iorb, kun, kw
       integer :: irep, ish, istate, jorb
       integer :: jrep, k, ndim, nel, ndim2, kk, kcum
-      real(dp) :: det, dum1, dum2, dum3, deti, auxdet
+      real(dp) :: det, dum1, dum2, dum3, dum4, dum5, deti, auxdet
       real(dp), dimension(ndet, 2) :: eloc_det
       real(dp), dimension(3, nelec) :: vj
+      real(dp), dimension(*) :: ekin_det
       real(dp), dimension(*) :: vpsp_det
       real(dp), dimension(nelec**2, 2) :: btemp
       real(dp), dimension(ndet_req,2) :: ddetiab
       real(dp), dimension(ndet_req,2) :: ddenergy_det
-
-
-c note that the dimension of the slater matrices is assumed
-c to be given by nmat_dim = (MELEC/2)**2, that is there are
-c as many ups as downs. If this is not true then be careful if
-c nelec is close to MELEC. The Slater matrices must be
-c dimensioned at least max(nup**2,ndn**2)
-
-
-
-
-      ! call resize_matrix(b, norb+nadorb, 1)
-      ! call resize_matrix(orb, norb+nadorb, 2)
-      ! call resize_tensor(tildem, norb+nadorb, 2)
-      ! call resize_tensor(aa, norb+nadorb, 2)
 
       nel=nup
       ish=0
@@ -57,16 +45,20 @@ c dimensioned at least max(nup**2,ndn**2)
           nel=ndn
           ish=nup
         endif
-        eloc_det(kref,iab)=vpsp_det(iab)
+        ekin_det(iab)=0.d0
         do i=1,nel
-          eloc_det(kref,iab)=eloc_det(kref,iab)
+          ekin_det(iab)=ekin_det(iab)
      &    -hb*(d2dx2(i+ish)+2.d0*(vj(1,i+ish)*ddx(1,i+ish)+vj(2,i+ish)*ddx(2,i+ish)+vj(3,i+ish)*ddx(3,i+ish)))
         enddo
+        eloc_det(kref,iab)=ekin_det(iab)+vpsp_det(iab)
       enddo
 
 c     write(ounit,*) 'eloc_ref',eloc_det(kref,1),eloc_det(kref,2)
 
-      if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) call bxmatrix(kref,xmat(1,1),xmat(1,2),b)
+      if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) then
+        call bxmatrix(kref,xmat(1,1),xmat(1,2),b)
+        call bxmatrix(kref,xmatkin(1,1),xmatkin(1,2),bkin)
+      endif
 
       if(ndet.eq.1.and.ioptorb.eq.0) return
 
@@ -79,10 +71,12 @@ c     write(ounit,*) 'eloc_ref',eloc_det(kref,1),eloc_det(kref,2)
         endif
 
 c       ish=-nel
-c       do 110 i=1,nel
+c       do i=1,nel
 c         ish=ish+nel
-c         do 110 j=1,nel
-c 110       btemp(j+ish,iab)=b(iworbd(j+iel,kref),i+iel)
+c         do j=1,nel
+c           btemp(j+ish,iab)=b(iworbd(j+iel,kref),i+iel)
+c         enddo
+c       enddo
 
 c       do jrep=ivirt(iab),norb+nadorb
         do jrep=1,norb+nadorb
@@ -91,13 +85,20 @@ c       do jrep=ivirt(iab),norb+nadorb
             dum1=0.d0
             dum2=0.d0
             dum3=0.d0
+            dum4=0.d0
+            dum5=0.d0
             do i=1,nel
               dum1=dum1+slmi(irep+(i-1)*nel,iab)*orb(i+iel,jrep)
               dum2=dum2+slmi(irep+(i-1)*nel,iab)*b(jrep,i+iel)
               dum3=dum3+xmat(i+(irep-1)*nel,iab)*orb(i+iel,jrep)
+
+              dum4=dum4+slmi(irep+(i-1)*nel,iab)*bkin(jrep,i+iel)
+              dum5=dum5+xmatkin(i+(irep-1)*nel,iab)*orb(i+iel,jrep)
             enddo
             aa(irep,jrep,iab)=dum1
             tildem(irep,jrep,iab)=dum2-dum3
+
+            tildemkin(irep,jrep,iab)=dum4-dum5
           enddo
 
 c         do irep=1,nel
@@ -164,7 +165,6 @@ c                     wfmat(k,irep+(jrep-1)*ndim,iab)=aa(iorb,jorb,iab)
 c                  enddo
 c     enddo
 
-               
 c               ndim2=ndim*ndim
 c               call matinv(wfmat(k,1:ndim2,iab),ndim,det)
 c               ddetiab(k,iab)=det
@@ -191,8 +191,6 @@ c               ddetiab(k,iab)=det
                wfmat(k,3,iab)=-wfmat(k,3,iab)*deti
                wfmat(k,4,iab)=auxdet*deti
                
-               
-               
 c               do irep=1,ndim
 c                  iorb=irepcol_det(irep,k,iab)
 c                  do jrep=1,ndim
@@ -212,11 +210,6 @@ c               enddo
                jorb=ireporb_det(2,k,iab)
                ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,4,iab)*tildem(iorb,jorb,iab)
 
-
-               
-               
-
-               
             enddo
          endif
 
@@ -262,7 +255,6 @@ c               enddo
            denergy_det(k,iab)=ddenergy_det(kw,iab)
            eloc_det(k,iab)=eloc_det(k,iab)+denergy_det(k,iab)
 
-c!     print *, 'CIAO',k,eloc_det(k,iab),detiab(k,iab)
         enddo
 
 c        detiab(k_det2(1:ndetiab2(iab),iab),iab)=detiab(k_det2(1:ndetiab2(iab),iab),iab)*ddetiab(k_aux(1:ndetiab2(iab),iab),iab)
@@ -270,12 +262,7 @@ c        denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndeti
 c        eloc_det(k_det2(1:ndetiab2(iab),iab),iab)=eloc_det(k_det2(1:ndetiab2(iab),iab),iab)+
 c     &       denergy_det(k_det2(1:ndetiab2(iab),iab),iab)
         
-        
-        
-        
-
       enddo
-      
          
          
 c compute Ymat for future use

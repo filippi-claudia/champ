@@ -96,8 +96,6 @@ c        eold   = local energy at current position
 c        enew   = same after trial move
 c        peo_dmc    = local potential at current position
 c        pen    = same after trial move
-c        tjfo   = Jackson Feenberg kinetic energy at current position
-c        tjfn   = same after trial move
 c        psio   = psi
 c        coef   = read in coefficients of the basis functions
 c                 to get the molecular orbitals used in determinant

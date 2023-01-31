@@ -1,11 +1,11 @@
       module hpsi_mod
       contains
-      subroutine hpsi(coord,psid,psij,energy,ipass,ifr)
+      subroutine hpsi(coord,psid,psij,ekin,energy,ipass,ifr)
 
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
-      use Bloc,    only: tildem
+      use Bloc,    only: tildem,tildemkin
       use casula,  only: i_vpsp,t_vpsp
       use constants, only: hb
       use contrl_file, only: ounit
@@ -53,13 +53,16 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       integer :: i, iab, ifr, ii, ipass
       integer :: irep, istate, jrep, nel
-      real(dp) :: d2j, e_other, ext_pot, peQM, pe_local
+      real(dp) :: d2j, e_other, ekin_other, ext_pot, peQM, pe_local
       real(dp) :: pepcm, psij
       real(dp), dimension(3, *) :: coord
       real(dp), dimension(*) :: psid
       real(dp), dimension(*) :: energy
+      real(dp), dimension(*) :: ekin
+      real(dp), dimension(MSTATES) :: dekin
       real(dp), dimension(MSTATES) :: denergy
       real(dp), dimension(ndet, 2) :: eloc_det
+      real(dp), dimension(2) :: ekin_det
       real(dp), dimension(2) :: vpsp_det
       real(dp), dimension(nparmj) :: dvpsp_dj
 
@@ -136,29 +139,35 @@ c nonloc_pot must be called after determinant because slater matrices are needed
         write(ounit,'(''pe_ref after nonloc_pot'',9f12.5)') (vpsp_det(ii),ii=1,2)
       endif
 
-      call multideterminant_hpsi(vj,vpsp_det,eloc_det)
-      e_other=pe_local-hb*d2j
+      call multideterminant_hpsi(vj,ekin_det,vpsp_det,eloc_det)
+
+      ekin_other=-hb*d2j
       do i=1,nelec
-        e_other=e_other-hb*(vj(1,i)**2+vj(2,i)**2+vj(3,i)**2)
+        ekin_other=ekin_other-hb*(vj(1,i)**2+vj(2,i)**2+vj(3,i)**2)
       enddo
+      e_other=ekin_other+pe_local
 
       do istate=1,nstates
 c combine determinantal quantities to obtain trial wave function
         call determinant_psit(psid(istate),istate)
 c compute energy using Ymat
         denergy(istate)=0
+        dekin(istate)=0
         do iab=1,2
           nel=nup
           if(iab.eq.2) nel=ndn
           do jrep=ivirt(iab),norb
             do irep=iactv(iab),nel
               denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,iab)
+              dekin(istate)=dekin(istate)+ymat(jrep,irep,iab,istate)*tildemkin(irep,jrep,iab)
             enddo
           enddo
         enddo
         denergy(istate)=denergy(istate)*detiab(kref,1)*detiab(kref,2)/psid(istate)
+        dekin(istate)=dekin(istate)*detiab(kref,1)*detiab(kref,2)/psid(istate)
 
         energy(istate)=denergy(istate)+eloc_det(kref,1)+eloc_det(kref,2)+e_other
+        ekin(istate)=dekin(istate)+ekin_det(1)+ekin_det(2)+ekin_other
 
         if(ipr.ge.2) then
           write(ounit,'(''state'',i4)') istate

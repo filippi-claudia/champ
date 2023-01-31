@@ -204,7 +204,7 @@ contains
 
 ! Nonzero basis at the boundary : Do exponential fitting.
         if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
-          call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
+          call exp_fit(x(nr(ic)-9), rwf(nr(ic)-9,irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
           if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
           rmaxwf(irb,ic)=-dlog(cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)

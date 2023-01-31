@@ -41,6 +41,7 @@ c routine to accumulate estimators for energy etc.
       integer :: i, ie, ifr, ip, iw
       integer :: k
 
+      real(dp) :: ekino(1)
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
@@ -85,7 +86,7 @@ c get nuclear potential energy
           endif
           ajacold(iw,ifr)=ajacob
           if(icasula.lt.0) i_vpsp=icasula
-          call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
+          call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),ekino,eold(iw,ifr),0,ifr)
           i_vpsp=0
           do i=1,nelec
             call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)

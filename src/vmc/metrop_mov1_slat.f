@@ -10,9 +10,9 @@ c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
       use acuest_mod, only: acues1,acusig
-      use config,  only: delttn,eold,nearestn,nearesto,peo,psi2n,psi2o
+      use config,  only: delttn,eold,nearestn,nearesto,psi2n,psi2o
       use config,  only: psido,psijo,rminn,rminno,rmino,rminon,rvminn
-      use config,  only: rvminno,rvmino,rvminon,tjfoo,vnew,vold,xnew
+      use config,  only: rvminno,rvmino,rvminon,vnew,vold,xnew
       use config,  only: xold
       use constants, only: pi
       use contrl_file, only: ounit
@@ -22,7 +22,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use determinante_mod, only: compute_determinante_grad
       use detsav_mod, only: detsav
       use distances_mod, only: distancese_restore
-      use estsum,  only: acc,esum,esum1,pesum,r2sum,tjfsum,tpbsum
+      use estsum,  only: acc,esum,esum1,pesum,r2sum,tpbsum
       use force_analytic, only: force_analy_sum
       use forcewt, only: wsum
       use gammai_mod, only: gammai
@@ -97,6 +97,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp), dimension(3) :: yaxis
       real(dp), dimension(3) :: zaxis
       real(dp), dimension(3) :: ddx_ref
+      real(dp), dimension(MSTATES) :: ekino
       real(dp), dimension(MSTATES) :: psidn
       real(dp), dimension(MSTATES) :: wtg
       real(dp), parameter :: zero = 0.d0
@@ -670,18 +671,17 @@ c Note when one electron moves the velocity on all electrons change.
 c loop over secondary configurations
       do ifr=2,nforce
         call strech(xold,xstrech,ajacob,ifr,1)
-        call hpsi(xstrech,psido(1),psijo,eold(1,ifr),ipass,ifr)
+        call hpsi(xstrech,psido(1),psijo,ekino,eold(1,ifr),ipass,ifr)
         do istate=1,nstates
           psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
         enddo
       enddo
 
-
       call check_orbitals_reset
 
 c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
-      call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
+      call hpsi(xold,psido(1),psijo,ekino,eold(1,1),ipass,1)
       do istate=1,nstates
          psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
       enddo
@@ -721,9 +721,8 @@ c form expected values of e, pe, etc.
         esum1(istate)=eold(istate,1)
         wsum(istate,1)=wsum(istate,1)+wtg(istate)
         esum(istate,1)=esum(istate,1)+eold(istate,1)*wtg(istate)
-        pesum(istate)=pesum(istate)+peo(istate)*wtg(istate)
-        tpbsum(istate)=tpbsum(istate)+(eold(istate,1)-peo(istate))*wtg(istate)
-        tjfsum(istate)=tjfsum(istate)+tjfoo*wtg(istate)
+        pesum(istate)=pesum(istate)+(eold(istate,1)-ekino(istate))*wtg(istate)
+        tpbsum(istate)=tpbsum(istate)+ekino(istate)*wtg(istate)
       enddo
 
       if(ipr.gt.1) write(ounit,'(''energy reweighted '',d12.4)') eold(1,1)*wtg(1)

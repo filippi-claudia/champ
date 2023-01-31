@@ -47,7 +47,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
       use casula,  only: i_vpsp,icasula
-      use config,  only: d2o,peo_dmc,psido_dmc,psijo_dmc,vold_dmc
+      use config,  only: psido_dmc,psijo_dmc,vold_dmc
       use config,  only: xold_dmc
       use const,   only: etrial,esigmatrial
       use constants, only: hb
@@ -62,7 +62,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use distances_mod, only: distances,distancese_restore
       use estcum,  only: ipass
       use estsum,  only: efsum1,egsum1,esum1_dmc,pesum_dmc,r2sum,risum
-      use estsum,  only: tausum,tjfsum_dmc,tpbsum_dmc,wfsum1,wgsum1
+      use estsum,  only: tausum,tpbsum_dmc,wfsum1,wgsum1
       use estsum,  only: wsum1
       use gauss_mod, only: gauss
       use hpsi_mod, only: hpsi
@@ -99,9 +99,6 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use walksav_jas_mod, only: walksav_jas,walkstrjas
 
 
-
-
-
       implicit none
 
       integer :: i, iaccept, iel
@@ -116,7 +113,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
       real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
       real(dp) :: drifdifr, drifdifs, drift, dwt
-      real(dp) :: dx, e_cutoff, dwt_cutoff, enew(1)
+      real(dp) :: dx, e_cutoff, dwt_cutoff, ekino(1), enew(1)
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, ginv
       real(dp) :: p, pen, pp, psi2savo
@@ -128,6 +125,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: v2sumn, v2sumo, vav2sumn, vav2sumo
       real(dp) :: vavvn, vavvo, vavvt, wtg(1)
       real(dp) :: wtg_derivsum1, wtnow
+
       real(dp), dimension(3, nelec) :: xstrech
       real(dp), dimension(3) :: xnew
       real(dp), dimension(3, nelec) :: vnew
@@ -136,11 +134,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp), dimension(nelec) :: unacp
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
+
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: adrift = 0.5d0
       real(dp), parameter :: zero_1d(1) = (/0.d0/)
-
 
 
       data ncall /0/
@@ -437,7 +435,7 @@ c Primary configuration
             drifdifr=one
             if(nforce.gt.1)
      &      call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
-            call hpsi(xold_dmc(1,1,iw,1),psidn(1),psijn,enew,ipass,1)
+            call hpsi(xold_dmc(1,1,iw,1),psidn(1),psijn,ekino,enew,ipass,1)
             call walksav_det(iw)
             call walksav_jas(iw)
             if(icasula.lt.0) call multideterminant_tmove(psidn(1),0)
@@ -479,7 +477,7 @@ c Compute streched electronic positions for all nucleus displacement
               endif
             endif
             if(icasula.lt.0) i_vpsp=icasula
-            call hpsi(xold_dmc(1,1,iw,ifr),psidn,psijn,enew,ipass,ifr)
+            call hpsi(xold_dmc(1,1,iw,ifr),psidn,psijn,ekino,enew,ipass,ifr)
             i_vpsp=0
           endif
 
@@ -608,14 +606,6 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
      &    wt(iw),enew(1)-etrial,eold(iw,ifr)-etrial,(xnew(ii),ii=1,3)
 
           eold(iw,ifr)=enew(1)
-          ! peo_dmc(iw,ifr)=pen <= pen is undefined, could be den mispelled ?
-          if(icut_e .ne. 0) then  ! <= check that with claudia
-            peo_dmc(iw,ifr)=den
-          else
-            peo_dmc(iw,ifr)=0.0_dp
-          end if
-          ! d2o(iw,ifr)=d2n <= dn2 is not initialized I don't think it' s mispelled
-          d2o(iw,ifr)=0.0_dp ! I set it to 0 but we must check with Claudia
           psido_dmc(iw,ifr)=psidn(1)
           psijo_dmc(iw,ifr)=psijn
           fratio(iw,ifr)=fration
@@ -639,9 +629,8 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
 
             wsum1(ifr)=wsum1(ifr)+wtnow
             esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)
-            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*peo_dmc(iw,ifr)
-            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-peo_dmc(iw,ifr))
-            tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg(1)*half*hb*d2o(iw,ifr)
+            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))
+            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)
 
             derivsum(1,ifr)=derivsum(1,ifr)+wtg(1)*eold(iw,ifr)
 
@@ -672,9 +661,8 @@ c           write(ounit,*) 'IN DMC',ajacold(iw,ifr)
 
             wsum1(ifr)=wsum1(ifr)+wtnow*ro
             esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)*ro
-            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*peo_dmc(iw,ifr)*ro
-            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-peo_dmc(iw,ifr))*ro
-            tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg(1)*half*hb*d2o(iw,ifr)*ro
+            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))*ro
+            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)*ro
 
             wtg=wt(iw)*fprod/rnorm_nodes**2
             wtg_derivsum1=wtg(1)

@@ -51,7 +51,9 @@
             xw_sum = xw_sum + x(i)*w(i)
             xx_sum = xx_sum + x(i)*x(i)
 
-            if(i.lt.n.and.y(i+1)*y(i).lt.0.d0) call fatal_error('FIT NUM BASIS: changing sign')
+            if(i.lt.n) then
+              if(y(i+1)*y(i).lt.0.d0) call fatal_error('FIT NUM BASIS: changing sign')
+            endif
 
 
         end do

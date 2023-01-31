@@ -9,13 +9,13 @@ c routine to accumulate estimators for energy etc.
       use control_dmc, only: dmc_nstep
       use derivest, only: derivcum,derivsum
       use est2cm,  only: ecm2_dmc,efcm2,egcm2,ei1cm2,ei2cm2,pecm2_dmc
-      use est2cm,  only: r2cm2_dmc,ricm2,tjfcm_dmc,tpbcm2_dmc,wcm2,wfcm2
+      use est2cm,  only: r2cm2_dmc,ricm2,tpbcm2_dmc,wcm2,wfcm2
       use est2cm,  only: wgcm2
       use estcum,  only: ecum_dmc,efcum,egcum,ei1cum,ei2cum,iblk
-      use estcum,  only: pecum_dmc,r2cum_dmc,ricum,taucum,tjfcum_dmc
+      use estcum,  only: pecum_dmc,r2cum_dmc,ricum,taucum
       use estcum,  only: tpbcum_dmc,wcum_dmc,wdcum,wfcum,wgcum,wgdcum
       use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
-      use estsum,  only: r2sum,risum,tausum,tjfsum_dmc,tpbsum_dmc,wdsum
+      use estsum,  only: r2sum,risum,tausum,tpbsum_dmc,wdsum
       use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
       use mmpol,   only: mmpol_init
       use mmpol_dmc, only: mmpol_cum,mmpol_prt
@@ -37,19 +37,18 @@ c routine to accumulate estimators for energy etc.
       implicit none
 
       integer :: i, iegerr, ierr, ifgerr, ifr
-      integer :: ioldest_collect, ioldestmx_collect, ipeerr, itjfer
+      integer :: ioldest_collect, ioldestmx_collect, ipeerr
       integer :: itpber, k, npass
       real(dp) :: derivtotave, dum, efnow, egave, egave1
       real(dp) :: egerr, egnow, ei1now, ei2now
       real(dp) :: enow, errg, error, fgave
       real(dp) :: fgerr, peave, peerr, penow
-      real(dp) :: r2now, rinow, rn_eff, tjfave
-      real(dp) :: tjferr, tjfnow, tpbave, tpberr
+      real(dp) :: r2now, rinow, rn_eff
+      real(dp) :: tpbave, tpberr
       real(dp) :: tpbnow, w, w2, wfnow
       real(dp) :: wgnow, wnow, x, x2
       real(dp), dimension(MFORCE) :: pecollect
       real(dp), dimension(MFORCE) :: tpbcollect
-      real(dp), dimension(MFORCE) :: tjfcollect
       real(dp), dimension(MFORCE) :: taucollect
       real(dp), dimension(10, MFORCE) :: derivcollect
       real(dp), parameter :: zero = 0.d0
@@ -75,8 +74,6 @@ c xerr = current error of x
       call mpi_reduce(pesum_dmc,pecollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(tpbsum_dmc,tpbcollect,MFORCE
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tjfsum_dmc,tjfcollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(tausum,taucollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -134,7 +131,6 @@ c xerr = current error of x
 
         pesum_dmc(ifr)=pecollect(ifr)
         tpbsum_dmc(ifr)=tpbcollect(ifr)
-        tjfsum_dmc(ifr)=tjfcollect(ifr)
         tausum(ifr)=taucollect(ifr)
         do k=1,3
           derivsum(k,ifr)=derivcollect(k,ifr)
@@ -144,19 +140,16 @@ c xerr = current error of x
         egnow=egsum(ifr)/wgsum(ifr)
         penow=pesum_dmc(ifr)/wgsum(ifr)
         tpbnow=tpbsum_dmc(ifr)/wgsum(ifr)
-        tjfnow=tjfsum_dmc(ifr)/wgsum(ifr)
 
         wgcm2(ifr)=wgcm2(ifr)+wgsum(ifr)**2
         egcm2(ifr)=egcm2(ifr)+egsum(ifr)*egnow
         pecm2_dmc(ifr)=pecm2_dmc(ifr)+pesum_dmc(ifr)*penow
         tpbcm2_dmc(ifr)=tpbcm2_dmc(ifr)+tpbsum_dmc(ifr)*tpbnow
-        tjfcm_dmc(ifr)=tjfcm_dmc(ifr)+tjfsum_dmc(ifr)*tjfnow
 
         wgcum(ifr)=wgcum(ifr)+wgsum(ifr)
         egcum(ifr)=egcum(ifr)+egsum(ifr)
         pecum_dmc(ifr)=pecum_dmc(ifr)+pesum_dmc(ifr)
         tpbcum_dmc(ifr)=tpbcum_dmc(ifr)+tpbsum_dmc(ifr)
-        tjfcum_dmc(ifr)=tjfcum_dmc(ifr)+tjfsum_dmc(ifr)
         taucum(ifr)=taucum(ifr)+tausum(ifr)
         do k=1,3
           derivcum(k,ifr)=derivcum(k,ifr)+derivsum(k,ifr)
@@ -166,18 +159,15 @@ c xerr = current error of x
           egerr=0
           peerr=0
           tpberr=0
-          tjferr=0
          else
           egerr=errg(egcum(ifr),egcm2(ifr),ifr)
           peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
           tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
-          tjferr=errg(tjfcum_dmc(ifr),tjfcm_dmc(ifr),ifr)
         endif
 
         egave=egcum(ifr)/wgcum(ifr)
         peave=pecum_dmc(ifr)/wgcum(ifr)
         tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
-        tjfave=tjfcum_dmc(ifr)/wgcum(ifr)
 
         if(ifr.gt.1) then
           fgcum(ifr)=fgcum(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))
@@ -204,29 +194,27 @@ c write out header first time
         if (iblk.eq.1.and.ifr.eq.1)
      &  write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
      &  ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
-     &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t89,''(fgerr)'',
-     &  t101,''npass'',t111,''wgsum'',t121,''ioldest'')')
+     &  ''fgave'',t74,''(fgerr)'',t85,''npass'',t95,''wgsum'',t101,''ioldest'')')
 
 c write out current values of averages etc.
 
         iegerr=nint(100000* egerr)
         ipeerr=nint(100000* peerr)
         itpber=nint(100000*tpberr)
-        itjfer=nint(100000*tjferr)
 
         if(ifr.eq.1) then
-          write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)')
+          write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),17x,3i10)')
      &    egsum(ifr)/wgsum(ifr),
-     &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,
+     &    egave,iegerr,peave,ipeerr,tpbave,itpber,npass,
      &    nint(wgsum(ifr)),ioldest
 
           call prop_prt_dmc(iblk,0,wgcum,wgcm2)
           call pcm_prt(iblk,wgcum,wgcm2)
           call mmpol_prt(iblk,wgcum,wgcm2)
          else
-          write(ounit,'(f10.5,5(f10.5,''('',i5,'')''),f10.5,10x,i10)')
+          write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),f10.5,10x,i10)')
      &    egsum(ifr)/wgsum(ifr),
-     &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
+     &    egave,iegerr,peave,ipeerr,tpbave,itpber,
      &    fgave,ifgerr,derivtotave,nint(wgsum(ifr))
         endif
       enddo
@@ -251,7 +239,6 @@ c zero out xsum variables for metrop
         wgsum(ifr)=zero
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
-        tjfsum_dmc(ifr)=zero
         tausum(ifr)=zero
         do k=1,10
           derivsum(k,ifr)=zero

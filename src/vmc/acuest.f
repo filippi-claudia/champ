@@ -15,11 +15,11 @@ c routine to accumulate estimators for energy etc.
       use determinante_mod, only: compute_determinante_grad
       use distance_mod, only: r_en,rshift,rvec_en
       use distances_mod, only: distances
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tjfcm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tjfcum,tpbcum
+      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
+      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum
       use estpsi,  only: apsi,aref,detref
       use estsig,  only: ecm21s,ecum1s
-      use estsum,  only: acc,esum,esum1,pesum,r2sum,tjfsum,tpbsum
+      use estsum,  only: acc,esum,esum1,pesum,r2sum,tpbsum
       use force_analytic, only: force_analy_cum,force_analy_init
       use force_analytic, only: force_analy_save
       use forcewt, only: wcum,wsum
@@ -56,21 +56,15 @@ c routine to accumulate estimators for energy etc.
       use system,  only: cent,iwctype,ncent,nelec,znuc
       use vmc_mod, only: nrad
 
-      
-
-
       implicit none
 
-      integer :: i, ic, ifr, istate, jel
-      integer :: k
-      real(dp) :: ajacob, distance_node, penow
-      real(dp) :: psidg, r2now, rnorm_nodes, tjfnow
-      real(dp) :: tpbnow
+      integer :: i, ic, ifr, istate, jel, k
+      real(dp) :: ajacob, distance_node
+      real(dp) :: psidg, r2now, rnorm_nodes
+      real(dp) :: penow, tpbnow
       real(dp), dimension(3,nelec) :: xstrech
+      real(dp), dimension(MSTATES) :: ekino
       real(dp), dimension(MSTATES) :: wtg
-      real(dp), parameter :: half = .5d0
-
-
 
       real(dp), dimension(:,:), allocatable :: enow
 
@@ -95,17 +89,14 @@ c collect cumulative averages
         if(ifr.eq.1) then
           penow=pesum(istate)/wsum(istate,ifr)
           tpbnow=tpbsum(istate)/wsum(istate,ifr)
-          tjfnow=tjfsum(istate)/wsum(istate,ifr)
           r2now=r2sum/(wsum(istate,ifr)*nelec)
 
           pecm2(istate)=pecm2(istate)+pesum(istate)*penow
           tpbcm2(istate)=tpbcm2(istate)+tpbsum(istate)*tpbnow
-          tjfcm2(istate)=tjfcm2(istate)+tjfsum(istate)*tjfnow
           r2cm2=r2cm2+r2sum*r2now/nelec
 
           pecum(istate)=pecum(istate)+pesum(istate)
           tpbcum(istate)=tpbcum(istate)+tpbsum(istate)
-          tjfcum(istate)=tjfcum(istate)+tjfsum(istate)
           r2cum=r2cum+r2sum/nelec
 
          else
@@ -133,7 +124,6 @@ c zero out xsum variables for metrop
         enddo
         pesum(istate)=0
         tpbsum(istate)=0
-        tjfsum(istate)=0
       enddo
       r2sum=0
 
@@ -194,19 +184,16 @@ c zero out estimators
       do istate=1,nstates
         pecum(istate)=0
         tpbcum(istate)=0
-        tjfcum(istate)=0
         ecum1(istate)=0
         ecum1s(istate)=0
 
         pecm2(istate)=0
         tpbcm2(istate)=0
-        tjfcm2(istate)=0
         ecm21(istate)=0
         ecm21s(istate)=0
 
         pesum(istate)=0
         tpbsum(istate)=0
-        tjfsum(istate)=0
 
         apsi(istate)=0
       enddo
@@ -266,7 +253,7 @@ c secondary configs
 c set n- and e-coords and n-n potentials before getting wavefn. etc.
       do ifr=2,nforce
         call strech(xold,xstrech,ajacob,ifr,1)
-        call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
+        call hpsi(xstrech,psido,psijo,ekino,eold(1,ifr),0,ifr)
         do istate=1,nstates
           psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
         enddo
@@ -275,7 +262,7 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
 c primary config
 c set n- and e-coords and n-n potentials before getting wavefn. etc.
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
-      call hpsi(xold,psido,psijo,eold(1,1),0,1)
+      call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
 
       do istate=1,nstates
         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)

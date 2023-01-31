@@ -37,9 +37,6 @@ c Modified by A. Scemama
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
-      real(dp), parameter :: one = 1.d0
-      real(dp), parameter :: half = 0.5d0
-
 
 c compute orbitals
       call orbitals(x,rvec_en,r_en)
@@ -203,7 +200,7 @@ c to change kref if the change is accepted or required
 c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
-      use Bloc,    only: b,b_da,b_dj
+      use Bloc,    only: bkin,b_da,b_dj
       use constants, only: hb
       use da_jastrow4val, only: da_vj
       use da_orbval, only: da_d2orb,da_dorb
@@ -222,19 +219,10 @@ c-----------------------------------------------------------------------
 
       integer :: i, ic, iorb, iparm, l
 
-      real(dp), parameter :: one = 1.d0
-      real(dp), parameter :: half = 0.5d0
-
-
-      ! resize ddor and dorb if necessary
-      ! call resize_matrix(ddorb, norb+nadorb, 2)
-      ! call resize_matrix(b, norb+nadorb, 1)
-      ! call resize_tensor(dorb, norb+nadorb, 3)
-
 c compute kinetic contribution of B+Btilde to compute Eloc
       do i=1,nelec
         do iorb=1,norb+nadorb
-          b(iorb,i)=-hb*(ddorb(iorb,i)+2*(vj(1,i)*dorb(iorb,i,1)+vj(2,i)*dorb(iorb,i,2)+vj(3,i)*dorb(iorb,i,3)))
+          bkin(iorb,i)=-hb*(ddorb(iorb,i)+2*(vj(1,i)*dorb(iorb,i,1)+vj(2,i)*dorb(iorb,i,2)+vj(3,i)*dorb(iorb,i,3)))
         enddo
       enddo
 

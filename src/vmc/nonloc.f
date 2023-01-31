@@ -4,7 +4,7 @@
 
       subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
-      use Bloc,    only: b,b_dj
+      use Bloc,    only: b,bkin,b_dj
       use b_tmove, only: b_t,iskip
       use contrl_file, only: ounit
       use control, only: ipr,mode
@@ -73,6 +73,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       nxquad=0
       do i=i1,i2
+
+        do iorb=1,norb+nadorb
+          b(iorb,i)=bkin(iorb,i)
+        enddo
 
         do ic=1,ncent
           ict=iwctype(ic)

@@ -1,6 +1,6 @@
 
 module Bloc
-    !> Arguments: b, tildem, xmat
+    !> Arguments: b, bkin, tildem, tildemkin, xmat, xmatkin
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
@@ -8,8 +8,11 @@ module Bloc
     implicit none
 
     real(dp), dimension(:, :), allocatable :: b !(norb_tot,MELEC)
+    real(dp), dimension(:, :), allocatable :: bkin !(norb_tot,MELEC)
     real(dp), dimension(:, :, :), allocatable :: tildem !(MELEC,norb_tot,2)
+    real(dp), dimension(:, :, :), allocatable :: tildemkin !(MELEC,norb_tot,2)
     real(dp), dimension(:, :), allocatable :: xmat !(MELEC**2,2)
+    real(dp), dimension(:, :), allocatable :: xmatkin !(MELEC**2,2)
 
     !> Former Bloc_da
     real(dp), dimension(:, :, :, :), allocatable :: b_da !(3,MELEC,norb_tot,MCENT)
@@ -18,7 +21,7 @@ module Bloc
     real(dp), dimension(:, :, :), allocatable :: b_dj !(norb_tot,MELEC,nparmj)
 
     private
-    public :: b, tildem, xmat
+    public :: b, bkin, tildem, tildemkin, xmat, xmatkin
     public :: b_da
     public :: b_dj
     public :: allocate_Bloc, deallocate_Bloc
@@ -31,8 +34,11 @@ contains
       use vmc_mod, only: norb_tot
 
         if (.not. allocated(b)) allocate (b(norb_tot, nelec))
+        if (.not. allocated(bkin)) allocate (bkin(norb_tot, nelec))
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2))
+        if (.not. allocated(tildemkin)) allocate (tildemkin(nelec, norb_tot, 2))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2))
+        if (.not. allocated(xmatkin)) allocate (xmatkin(nelec**2, 2))
         if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb_tot, ncent_tot))
         if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj))
 
@@ -42,8 +48,11 @@ contains
         if (allocated(b_dj)) deallocate (b_dj)
         if (allocated(b_da)) deallocate (b_da)
         if (allocated(xmat)) deallocate (xmat)
+        if (allocated(xmatkin)) deallocate (xmatkin)
         if (allocated(tildem)) deallocate (tildem)
+        if (allocated(tildemkin)) deallocate (tildemkin)
         if (allocated(b)) deallocate (b)
+        if (allocated(bkin)) deallocate (bkin)
     end subroutine deallocate_Bloc
 
 end module Bloc

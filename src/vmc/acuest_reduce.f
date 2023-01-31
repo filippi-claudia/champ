@@ -6,8 +6,8 @@ c Written by Claudia Filippi
       use acuest_write_mod, only: acuest_write
       use csfs,    only: nstates
       use error,   only: fatal_error
-      use est2cm,  only: ecm2,pecm2,tjfcm2,tpbcm2
-      use estcum,  only: ecum,iblk,pecum,tjfcum,tpbcum
+      use est2cm,  only: ecm2,pecm2,tpbcm2
+      use estcum,  only: ecum,iblk,pecum,tpbcum
       use estpsi,  only: apsi,aref,detref
       use estsum,  only: acc
       use forcewt, only: wcum
@@ -98,16 +98,10 @@ c Written by Claudia Filippi
         local_obs(jo)=tpbcum(i)
 
         jo=jo+1
-        local_obs(jo)=tjfcum(i)
-
-        jo=jo+1
         local_obs(jo)=pecm2(i)
 
         jo=jo+1
         local_obs(jo)=tpbcm2(i)
-
-        jo=jo+1
-        local_obs(jo)=tjfcm2(i)
       enddo
 
       jo=jo+1
@@ -167,16 +161,10 @@ c Written by Claudia Filippi
         tpbcum(i)=collect(jo)
 
         jo=jo+1
-        tjfcum(i)=collect(jo)
-
-        jo=jo+1
         pecm2(i)=collect(jo)
 
         jo=jo+1
         tpbcm2(i)=collect(jo)
-
-        jo=jo+1
-        tjfcm2(i)=collect(jo)
       enddo
 
       jo=jo+1
@@ -214,10 +202,8 @@ c optorb reduced at the end of the run: set printout to 0
         do i=1,nstates
           pecum(i)=0
           tpbcum(i)=0
-          tjfcum(i)=0
           pecm2(i)=0
           tpbcm2(i)=0
-          tjfcm2(i)=0
         enddo
 
         acc=0

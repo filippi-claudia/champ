@@ -71,10 +71,7 @@ c        psi2o  = psi**2 at current position
 c        psi2n  = same after trial move
 c        eold   = local energy at current position
 c        enew   = same after trial move
-c        peo    = local potential at current position
-c        pen    = same after trial move
-c        tjfo   = Jackson Feenberg kinetic energy at current position
-c        tjfn   = same after trial move
+c        ekino   = local kinetic energy at current position
 c        psido  = determinantal part of wave function
 c        psijo  = log(Jastrow)
 c   /coefs/

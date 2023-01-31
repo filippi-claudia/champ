@@ -11,8 +11,8 @@ c routine to print out final results
       use control_vmc, only: vmc_nblk,vmc_nstep
       use csfs,    only: nstates
       use denupdn, only: rprobdn,rprobup
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tjfcm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tjfcum,tpbcum
+      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
+      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum
       use estsig,  only: ecm21s,ecum1s
       use estsum,  only: acc
       use finwrt_more_mod, only: finwrt_more
@@ -47,7 +47,7 @@ c routine to print out final results
       real(dp) :: err, err1, ferr, ffin
       real(dp) :: passes, peerr, pefin, r2err
       real(dp) :: r2fin, rtpass, sucsum
-      real(dp) :: tcsq, term, tjferr, tjffin
+      real(dp) :: tcsq, term
       real(dp) :: tpberr, tpbfin, trysum, x
       real(dp) :: x2
       real(dp), dimension(MFORCE) :: ffin_grdnts
@@ -105,13 +105,11 @@ c quantities also computed in acuest_write
       efin=ecum(istate,1)/wcum(istate,1)
       pefin=pecum(istate)/wcum(istate,1)
       tpbfin=tpbcum(istate)/wcum(istate,1)
-      tjffin=tjfcum(istate)/wcum(istate,1)
       r2fin=r2cum/wcum(istate,1)
 
       eerr=err(ecum(istate,1),ecm2(istate,1),istate,1)
       peerr=err(pecum(istate),pecm2(istate),istate,1)
       tpberr=err(tpbcum(istate),tpbcm2(istate),istate,1)
-      tjferr=err(tjfcum(istate),tjfcm2(istate),istate,1)
       r2err=err(r2cum,r2cm2,1,1)
 
       energy(1)=energy(1)+weights(istate)*efin
@@ -138,12 +136,12 @@ c is precisely what is being reflected when we get T_corr < 1.
 
       if(istate.eq.1) then
         write(ounit,'(a12,2x,a20)') mode,title
-        write(ounit,'(''results after '',f12.0,'' passes,  nstep, nblk ='',3i6)')
+        write(ounit,'(''results after '',f12.0,'' passes,  nstep, nblk ='',i6,2x,i6)')
      &  passes, vmc_nstep,iblk
       endif
       if(nstates.gt.1) write(ounit,'(/,''State '',i4)') istate
       write(ounit,'(''physical variable'',t20,''average'',t34,''rms error''
-     &,t47,''rms er*rt(pass)'',t65,''sigma'',t72,''Tcor'')')
+     &,t47,''rms er*rt(pass)'',t65,''sigma'',t74,''Tcor'')')
 
       write(ounit,'(''total E ='',t17,f12.7,'' +-'',f11.7,3f9.5,f8.2)')
      & efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,tcsq*tcsq
@@ -179,7 +177,6 @@ c Done by Omar Valsson 2008-12-01
         write(ounit,'(''force   ='',t17,e19.10,'' +-'',e16.8,f9.5)') ffin,ferr,ferr*rtpass
       enddo
       write(ounit,'(''potential E ='',t17,f12.7,'' +-'',f11.7,f9.5)') pefin,peerr,peerr*rtpass
-      write(ounit,'(''jf kinetic E ='',t17,f12.7,'' +-'',f11.7,f9.5)') tjffin,tjferr,tjferr*rtpass
       write(ounit,'(''pb kinetic E ='',t17,f12.7,'' +-'',f11.7,f9.5)') tpbfin,tpberr,tpberr*rtpass
 
       enddo

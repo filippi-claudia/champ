@@ -10,8 +10,8 @@ c job where it left off
       use csfs,    only: nstates
       use dumper_more_mod, only: dumper_more,startr_more
       use error,   only: fatal_error
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tjfcm2,tpbcm2
-      use estcum,  only: ecum,ecum1,pecum,r2cum,tjfcum,tpbcum
+      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
+      use estcum,  only: ecum,ecum1,pecum,r2cum,tpbcum
       use estsig,  only: ecm21s,ecum1s
       use estsum,  only: acc
       use force_analytic, only: force_analy_init
@@ -171,11 +171,9 @@ c xold from idfrom to idtask
 
       pecum(istate)=0
       tpbcum(istate)=0
-      tjfcum(istate)=0
 
       pecm2(istate)=0
       tpbcm2(istate)=0
-      tjfcm2(istate)=0
 
       ecum1(istate)=0
       ecum1s(istate)=0

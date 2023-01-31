@@ -11,13 +11,13 @@ c routine to accumulate estimators for energy etc.
       use control_dmc, only: dmc_nstep
       use derivest, only: derivcm2,derivcum,derivsum,derivtotave_num_old
       use est2cm,  only: ecm2_dmc,efcm2,egcm2,ei1cm2,ei2cm2,pecm2_dmc
-      use est2cm,  only: r2cm2_dmc,ricm2,tjfcm_dmc,tpbcm2_dmc,wcm2,wfcm2
+      use est2cm,  only: r2cm2_dmc,ricm2,tpbcm2_dmc,wcm2,wfcm2
       use est2cm,  only: wgcm2
       use estcum,  only: ecum_dmc,efcum,egcum,ei1cum,ei2cum,iblk
-      use estcum,  only: pecum_dmc,r2cum_dmc,ricum,taucum,tjfcum_dmc
+      use estcum,  only: pecum_dmc,r2cum_dmc,ricum,taucum
       use estcum,  only: tpbcum_dmc,wcum_dmc,wdcum,wfcum,wgcum,wgdcum
       use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
-      use estsum,  only: r2sum,risum,tausum,tjfsum_dmc,tpbsum_dmc,wdsum
+      use estsum,  only: r2sum,risum,tausum,tpbsum_dmc,wdsum
       use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
       use mmpol,   only: mmpol_init
       use mmpol_dmc, only: mmpol_prt
@@ -41,7 +41,7 @@ c routine to accumulate estimators for energy etc.
       implicit none
 
       integer :: i, iderivgerr, iegerr, ierr, ifgerr
-      integer :: ifr, ipeerr, itjfer, itpber
+      integer :: ifr, ipeerr, itpber
       integer :: k, npass
       real(dp) :: delta_derivtotave_num, derivgerr, derivtotave, derivtotave_num, e2collect
       real(dp) :: e2sum, ecollect, ef2collect, ef2sum
@@ -49,8 +49,8 @@ c routine to accumulate estimators for energy etc.
       real(dp) :: egerr, egnow, ei1now, ei2now
       real(dp) :: enow, errg, error, fgave
       real(dp) :: fgerr, peave, peerr, penow
-      real(dp) :: r2now, rinow, rn_eff, tjfave
-      real(dp) :: tjferr, tjfnow, tpbave, tpberr
+      real(dp) :: r2now, rinow, rn_eff
+      real(dp) :: tpbave, tpberr
       real(dp) :: tpbnow, w, w2, w2collect
       real(dp) :: w2sum, wcollect, wf2collect, wf2sum
       real(dp) :: wfcollect, wfnow, wgnow, wnow
@@ -59,19 +59,16 @@ c routine to accumulate estimators for energy etc.
       real(dp), dimension(MFORCE) :: wgcollect
       real(dp), dimension(MFORCE) :: pecollect
       real(dp), dimension(MFORCE) :: tpbcollect
-      real(dp), dimension(MFORCE) :: tjfcollect
       real(dp), dimension(MFORCE) :: eg2collect
       real(dp), dimension(MFORCE) :: wg2collect
       real(dp), dimension(MFORCE) :: pe2collect
       real(dp), dimension(MFORCE) :: tpb2collect
-      real(dp), dimension(MFORCE) :: tjf2collect
       real(dp), dimension(MFORCE) :: fsum
       real(dp), dimension(MFORCE) :: f2sum
       real(dp), dimension(MFORCE) :: eg2sum
       real(dp), dimension(MFORCE) :: wg2sum
       real(dp), dimension(MFORCE) :: pe2sum
       real(dp), dimension(MFORCE) :: tpb2sum
-      real(dp), dimension(MFORCE) :: tjf2sum
       real(dp), dimension(MFORCE) :: taucollect
       real(dp), dimension(MFORCE) :: fcollect
       real(dp), dimension(MFORCE) :: f2collect
@@ -133,13 +130,11 @@ c xerr = current error of x
         egnow=egsum(ifr)/wgsum(ifr)
         penow=pesum_dmc(ifr)/wgsum(ifr)
         tpbnow=tpbsum_dmc(ifr)/wgsum(ifr)
-        tjfnow=tjfsum_dmc(ifr)/wgsum(ifr)
 
         wg2sum(ifr)=wgsum(ifr)**2
         eg2sum(ifr)=egsum(ifr)*egnow
         pe2sum(ifr)=pesum_dmc(ifr)*penow
         tpb2sum(ifr)=tpbsum_dmc(ifr)*tpbnow
-        tjf2sum(ifr)=tjfsum_dmc(ifr)*tjfnow
         if(ifr.gt.1) then
           fsum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))
           f2sum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
@@ -163,8 +158,6 @@ c xerr = current error of x
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(tpbsum_dmc,tpbcollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tjfsum_dmc,tjfcollect,MFORCE
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       call mpi_reduce(wg2sum,wg2collect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -173,8 +166,6 @@ c xerr = current error of x
       call mpi_reduce(pe2sum,pe2collect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(tpb2sum,tpb2collect,MFORCE
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tjf2sum,tjf2collect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       call mpi_reduce(fsum,fcollect,MFORCE
@@ -229,11 +220,9 @@ c xerr = current error of x
         egcm2(ifr)=egcm2(ifr)+eg2collect(ifr)
         pecm2_dmc(ifr)=pecm2_dmc(ifr)+pe2collect(ifr)
         tpbcm2_dmc(ifr)=tpbcm2_dmc(ifr)+tpb2collect(ifr)
-        tjfcm_dmc(ifr)=tjfcm_dmc(ifr)+tjf2collect(ifr)
 
         pecum_dmc(ifr)=pecum_dmc(ifr)+pecollect(ifr)
         tpbcum_dmc(ifr)=tpbcum_dmc(ifr)+tpbcollect(ifr)
-        tjfcum_dmc(ifr)=tjfcum_dmc(ifr)+tjfcollect(ifr)
         do k=1,3
           derivcum(k,ifr)=derivcum(k,ifr)+derivcollect(k,ifr)
         enddo
@@ -242,18 +231,15 @@ c xerr = current error of x
           egerr=0
           peerr=0
           tpberr=0
-          tjferr=0
          else
           egerr=errg(egcum(ifr),egcm2(ifr),ifr)
           peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
           tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
-          tjferr=errg(tjfcum_dmc(ifr),tjfcm_dmc(ifr),ifr)
         endif
 
         egave=egcum(ifr)/wgcum(ifr)
         peave=pecum_dmc(ifr)/wgcum(ifr)
         tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
-        tjfave=tjfcum_dmc(ifr)/wgcum(ifr)
 
         if(ifr.gt.1) then
           fgcum(ifr)=fgcum(ifr)+fcollect(ifr)
@@ -288,29 +274,42 @@ c xerr = current error of x
 
 c write out header first time
 
-        if (iblk.eq.1.and.ifr.eq.1)
-     &  write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
-     &  ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
-     &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t96,''(fgerr)'',
-     &  t114,''fgave_n'',t131,''(fgerr_n)'',t146,''npass'',t156,''wgsum'',t164,''ioldest'')')
+        if (iblk.eq.1.and.ifr.eq.1) then
+          if(nforce.gt.1) then
+            write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
+     &      ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
+     &      ,''fgave'',t79,''(fgerr)'',t93,''fgave_n'',t106,''(fgerr_n)'',t123
+     &      ,''npass'',t132,''wgsum'',t142,''ioldest'')')
+          else
+            write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
+     &      ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t67
+     &      ,''npass'',t77,''wgsum'',t85,''ioldest'')')
+          endif
+        endif
 
 c write out current values of averages etc.
 
         iegerr=nint(100000* egerr)
         ipeerr=nint(100000* peerr)
         itpber=nint(100000*tpberr)
-        itjfer=nint(100000*tjferr)
 
         if(ifr.eq.1) then
-          write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),62x,3i10)')
-     &    egcollect(ifr)/wgcollect(ifr),
-     &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,
-     &    nint(wgcollect(ifr)/nproc),ioldest
+          if(nforce.gt.1) then
+            write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),62x,3i10)')
+     &      egcollect(ifr)/wgcollect(ifr),
+     &      egave,iegerr,peave,ipeerr,tpbave,itpber,npass,
+     &      nint(wgcollect(ifr)/nproc),ioldest
+           else
+            write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),3i10)')
+     &      egcollect(ifr)/wgcollect(ifr),
+     &      egave,iegerr,peave,ipeerr,tpbave,itpber,npass,
+     &      nint(wgcollect(ifr)/nproc),ioldest
+          endif
          else
-          write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),f17.12,
+          write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),f17.12,
      &    ''('',i12,'')'',f17.12,''('',i12,'')'',10x,i10)')
      &    egcollect(ifr)/wgcollect(ifr),
-     &    egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
+     &    egave,iegerr,peave,ipeerr,tpbave,itpber,
      &    fgave,ifgerr,derivtotave,iderivgerr,nint(wgcollect(ifr)/nproc)
         endif
       enddo
@@ -333,7 +332,6 @@ c zero out xsum variables for metrop
         wgsum(ifr)=zero
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
-        tjfsum_dmc(ifr)=zero
         tausum(ifr)=zero
         do k=1,10
           derivsum(k,ifr)=zero

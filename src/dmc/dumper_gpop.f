@@ -20,11 +20,11 @@ c job where it left off
       use dmc_mod, only: MWALK
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
       use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
-      use est2cm,  only: tjfcm_dmc,tpbcm2_dmc,wcm2,wcm21,wdcm2,wdcm21
+      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21,wdcm2,wdcm21
       use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21,wgdcm2
       use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
       use estcum,  only: ei1cum,ei2cum,ei3cum,iblk,ipass,pecum_dmc
-      use estcum,  only: r2cum_dmc,ricum,taucum,tjfcum_dmc,tpbcum_dmc
+      use estcum,  only: r2cum_dmc,ricum,taucum,tpbcum_dmc
       use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
       use estcum,  only: wgcum1,wgdcum
       use jacobsave, only: ajacob
@@ -134,8 +134,8 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
 
       if(.not.wid) return
 
-      write(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),tjfcum_dmc(i)
-     &,wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),tjfcm_dmc(i),taucum(i)
+      write(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i)
+     &,wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),taucum(i)
      &,i=1,nforce)
       write(10) ((irn_tmp(i,j),i=1,4),j=0,nproc-1)
       write(10) hb

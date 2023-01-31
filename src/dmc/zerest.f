@@ -8,15 +8,15 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use derivest, only: derivcm2,derivcum,derivsum
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
       use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
-      use est2cm,  only: tjfcm_dmc,tpbcm2_dmc,wcm2,wcm21,wdcm2,wfcm2
+      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21,wdcm2,wfcm2
       use est2cm,  only: wfcm21,wgcm2,wgcm21,wgdcm2
       use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
       use estcum,  only: ei1cum,ei2cum,ei3cum,iblk,pecum_dmc,r2cum_dmc
-      use estcum,  only: ricum,taucum,tjfcum_dmc,tpbcum_dmc,wcum1
+      use estcum,  only: ricum,taucum,tpbcum_dmc,wcum1
       use estcum,  only: wcum_dmc,wdcum,wfcum,wfcum1,wgcum,wgcum1,wgdcum
       use estsum,  only: efsum,efsum1,egsum,egsum1,ei1sum,ei2sum,ei3sum
       use estsum,  only: esum1_dmc,esum_dmc,pesum_dmc,r2sum,risum,tausum
-      use estsum,  only: tjfsum_dmc,tpbsum_dmc,wdsum,wfsum,wfsum1,wgdsum
+      use estsum,  only: tpbsum_dmc,wdsum,wfsum,wfsum1,wgdsum
       use estsum,  only: wgsum,wgsum1,wsum1,wsum_dmc
       use mmpol,   only: mmpol_init
       use mpiblk,  only: iblk_proc
@@ -120,13 +120,10 @@ c zero out estimators
         egsum(ifr)=zero
         pecum_dmc(ifr)=zero
         tpbcum_dmc(ifr)=zero
-        tjfcum_dmc(ifr)=zero
         pecm2_dmc(ifr)=zero
         tpbcm2_dmc(ifr)=zero
-        tjfcm_dmc(ifr)=zero
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
-        tjfsum_dmc(ifr)=zero
         fgcum(ifr)=zero
         fgcm2(ifr)=zero
         derivcm2(ifr)=zero

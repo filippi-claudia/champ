@@ -15,10 +15,10 @@ c routine to print out final results
       use control_dmc, only: dmc_nblkeq,dmc_nconf,dmc_nstep
       use denupdn, only: rprobdn,rprobup
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
-      use est2cm,  only: pecm2_dmc,tjfcm_dmc,tpbcm2_dmc,wcm2,wcm21,wfcm2
+      use est2cm,  only: pecm2_dmc,tpbcm2_dmc,wcm2,wcm21,wfcm2
       use est2cm,  only: wfcm21,wgcm2,wgcm21
       use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
-      use estcum,  only: iblk,pecum_dmc,taucum,tjfcum_dmc,tpbcum_dmc
+      use estcum,  only: iblk,pecum_dmc,taucum,tpbcum_dmc
       use estcum,  only: wcum1,wcum_dmc,wfcum,wfcum1,wgcum,wgcum1
       use finwrt_more_mod, only: finwrt_more
       use grdntspar, only: igrdtype,ngradnts
@@ -53,7 +53,7 @@ c routine to print out final results
       real(dp) :: fgerr, pass_proc, passes, peave
       real(dp) :: peerr, rn, rn_eff, rteval_eff1
       real(dp) :: rtevalf_eff1, rtevalg_eff1, rtpass1, term
-      real(dp) :: tjfave, tjferr, tpbave, tpberr
+      real(dp) :: tpbave, tpberr
       real(dp) :: trymove_collect, w, w2, wave
       real(dp) :: werr, werr1, wfave, wferr
       real(dp) :: wferr1, wgave, wgerr, wgerr1
@@ -252,15 +252,11 @@ c    & f10.5)') dr2ac/trymove
       do ifr=1,nforce
         peave=pecum_dmc(ifr)/wgcum(ifr)
         tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
-        tjfave=tjfcum_dmc(ifr)/wgcum(ifr)
 
         peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
         tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
-        tjferr=errg(tjfcum_dmc(ifr),tjfcm_dmc(ifr),ifr)
         write(ounit,'(''potential energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
-        write(ounit,'(''jf kinetic energy ='',t24,f12.7,'' +-''
-     &  ,f11.7,f9.5)') tjfave,tjferr,tjferr*rtevalg_eff1
         write(ounit,'(''pb kinetic energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
       enddo

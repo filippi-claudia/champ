@@ -7,7 +7,7 @@ c job where it left off
       use basis,   only: zex
       use coefs,   only: nbasis
       use config,  only: eold,nearesto,psi2o,psido,psijo,rmino,rvmino
-      use config,  only: tjfo,vold,xnew,xold
+      use config,  only: vold,xnew,xold
       use constants, only: hb
       use contrl_file, only: errunit,ounit
       use control_vmc, only: vmc_nstep
@@ -16,10 +16,10 @@ c job where it left off
       use determinant_psig_mod, only: determinant_psig
       use determinante_mod, only: compute_determinante_grad
       use error,   only: fatal_error
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tjfcm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tjfcum,tpbcum
+      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
+      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum
       use estsig,  only: ecm21s,ecum1s
-      use estsum,  only: acc,esum,pesum,r2sum,tjfsum,tpbsum
+      use estsum,  only: acc,esum,pesum,r2sum,tpbsum
       use force_analytic, only: force_analy_dump,force_analy_rstrt
       use forcewt, only: wcum,wsum
       use hpsi_mod, only: hpsi
@@ -70,7 +70,7 @@ c job where it left off
       real(dp), dimension(nctype_tot) :: znucx
       real(dp), dimension(ndet) :: cdetx
       real(dp), dimension(3,nelec) :: xstrech
-      real(dp), dimension(MSTATES) :: d2
+      real(dp), dimension(MSTATES) :: ekino
       real(dp), parameter :: half = 0.5d0
       real(dp), parameter :: small = 1.d-6
 
@@ -82,8 +82,8 @@ c job where it left off
 
       write(10) vmc_nstep,iblk
       do istate=1,nstates
-        write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),tjfcum(istate),r2cum,acc
-        write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),tjfcm2(istate),r2cm2
+        write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),r2cum,acc
+        write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),r2cm2
         if(nforce.gt.1) then
           write(10) (wcum(istate,i),fcum(istate,i),fcm2(istate,i),i=1,nforce)
          else
@@ -133,8 +133,8 @@ c-----------------------------------------------------------------------
       read(10) nstepx,iblk
       if (nstepx.ne.vmc_nstep) call fatal_error('STARTR: nstep')
       do istate=1,nstates
-        read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),tjfcum(istate),r2cum,acc
-        read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),tjfcm2(istate),r2cm2
+        read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),r2cum,acc
+        read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),r2cm2
         if(nforce.gt.1) then
           read(10) (wcum(istate,i),fcum(istate,i),fcm2(istate,i),i=1,nforce)
          else
@@ -197,8 +197,7 @@ c-----------------------------------------------------------------------
 
       write(ounit,'(1x,''succesful read from unit 10'')')
       write(ounit,'(t5,''enow'',t15,''eave'',t25,''eerr'',t35,''peave'',
-     &t45,''peerr'',t55,''tpbave'',t65,''tpberr'',t75,''tjfave'',
-     &t85,''tjferr'',t95,''accept'',t105,''iter'')')
+     &t45,''peerr'',t55,''tpbave'',t65,''tpberr'',t75,''accept'',t85,''iter'')')
 
       if(nforce.gt.1) then
         call setup_force
@@ -211,7 +210,7 @@ c loop over secondary config
       do ifr=2,nforce
 c set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
-        call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
+        call hpsi(xstrech,psido,psijo,ekino,eold(1,ifr),0,ifr)
         do istate=1,nforce
           psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
         enddo
@@ -220,11 +219,9 @@ c set n- and e-coord and n-n potential
 c primary config
 c set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
-      call hpsi(xold,psido,psijo,eold(1,1),0,1)
+      call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
       do istate=1,nforce
         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
-        tjfo(istate)=d2(istate)
-        tjfo(istate)=-tjfo(istate)*half*hb
       enddo
 
       if(iguiding.gt.0) then
@@ -281,7 +278,6 @@ c rewrite psi2o if you are sampling guiding
         enddo
         pesum(istate)=0
         tpbsum(istate)=0
-        tjfsum(istate)=0
       enddo
       r2sum=0
 
