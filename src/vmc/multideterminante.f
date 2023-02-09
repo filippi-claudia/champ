@@ -16,14 +16,14 @@
       use slater, only: iwundet, kref, ndet, norb
       use slatn, only: slmin
       use system, only: ndn, nup, nelec
-      use vmc_mod, only: norb_tot, MEXCIT
+      use vmc_mod, only: norb_tot, MEXCIT, stoo
       use ycompactn, only: ymatn
       implicit none
 
       integer :: i, iab, iel, index_det, iorb
       integer :: irep, ish, istate, jj
       integer :: jorb, jrep, k, ndim, ndim2, kun, kw, kk, kcum
-      integer :: nel
+      integer :: nel, o
       real(dp) :: det, dum1, deti, auxdet
       real(dp), dimension(nelec, norb_tot, 3) :: gmat
       real(dp), dimension(MEXCIT**2, 3) :: gmatn
@@ -37,6 +37,7 @@
       if(ndet.eq.1) return
 
       do istate=1,nstates !STU check if should use nstate and mapping or nwftypemax
+        o=stoo(istate)
         iab=1
         nel=nup
         ish=0
@@ -48,8 +49,8 @@
 
 c temporarely copy orbn to orb
         do iorb=1,norb
-          orb_sav(iorb)=orb(iel,iorb,istate)
-          orb(iel,iorb,istate)=orbn(iorb,istate)
+          orb_sav(iorb)=orb(iel,iorb,o)
+          orb(iel,iorb,o)=orbn(iorb,o)
         enddo
 
         do jrep=ivirt(iab),norb
@@ -57,9 +58,9 @@ c temporarely copy orbn to orb
 
             dum1=0.d0
             do i=1,nel
-             dum1=dum1+slmin(irep+(i-1)*nel,istate)*orb(i+ish,jrep,istate)
+             dum1=dum1+slmin(irep+(i-1)*nel,o)*orb(i+ish,jrep,o)
             enddo
-            aan(irep,jrep,istate)=dum1
+            aan(irep,jrep,o)=dum1
           enddo
         enddo
 
@@ -70,9 +71,9 @@ c     loop over single exitations
           do k=1,ndetsingle(iab)
             jorb=ireporb_det(1,k,iab)
             iorb=irepcol_det(1,k,iab)
-            wfmatn(k,1,istate)=aan(iorb,jorb,istate)
-            ddetn(k)=wfmatn(k,1,istate)
-            wfmatn(k,1,istate)=1.0d0/wfmatn(k,1,istate)
+            wfmatn(k,1,o)=aan(iorb,jorb,o)
+            ddetn(k)=wfmatn(k,1,o)
+            wfmatn(k,1,o)=1.0d0/wfmatn(k,1,o)
           enddo
         endif
 
@@ -111,23 +112,23 @@ c       endif
              
             jorb=ireporb_det(1,k,iab)
             iorb=irepcol_det(1,k,iab)
-            wfmatn(k,1,istate)=aan(iorb,jorb,istate)
+            wfmatn(k,1,o)=aan(iorb,jorb,o)
             iorb=irepcol_det(2,k,iab)
-            wfmatn(k,2,istate)=aan(iorb,jorb,istate)
+            wfmatn(k,2,o)=aan(iorb,jorb,o)
             jorb=ireporb_det(2,k,iab)
             iorb=irepcol_det(1,k,iab)
-            wfmatn(k,3,istate)=aan(iorb,jorb,istate)
+            wfmatn(k,3,o)=aan(iorb,jorb,o)
             iorb=irepcol_det(2,k,iab)
-            wfmatn(k,4,istate)=aan(iorb,jorb,istate)
+            wfmatn(k,4,o)=aan(iorb,jorb,o)
 c     test to save         
             
-            ddetn(k)=wfmatn(k,1,istate)*wfmatn(k,4,istate)-wfmatn(k,3,istate)*wfmatn(k,2,istate)
+            ddetn(k)=wfmatn(k,1,o)*wfmatn(k,4,o)-wfmatn(k,3,o)*wfmatn(k,2,o)
             deti=1.d0/ddetn(k)
-            auxdet=wfmatn(k,1,istate)
-            wfmatn(k,1,istate)=wfmatn(k,4,istate)*deti
-            wfmatn(k,2,istate)=-wfmatn(k,2,istate)*deti
-            wfmatn(k,3,istate)=-wfmatn(k,3,istate)*deti
-            wfmatn(k,4,istate)=auxdet*deti
+            auxdet=wfmatn(k,1,o)
+            wfmatn(k,1,o)=wfmatn(k,4,o)*deti
+            wfmatn(k,2,o)=-wfmatn(k,2,o)*deti
+            wfmatn(k,3,o)=-wfmatn(k,3,o)*deti
+            wfmatn(k,4,o)=auxdet*deti
 
                   
           enddo
@@ -152,19 +153,19 @@ c     loop over multiple exitations
               do irep=1,ndim
                 iorb=irepcol_det(irep,k,iab)
                 jj=jj+1
-                wfmatn(k,jj,istate)=aan(iorb,jorb,istate)
+                wfmatn(k,jj,o)=aan(iorb,jorb,o)
               enddo
             enddo
-            call matinv(wfmatn(k,1:ndim2,istate),ndim,ddetn(k))
+            call matinv(wfmatn(k,1:ndim2,o),ndim,ddetn(k))
           enddo
         endif 
       
 c     Unrolling determinats different to kref, !STU what is being done here?
-        detn(:,istate)=detn(kref,istate)
+        detn(:,o)=detn(kref,o)
         do kk=1,ndetiab2(iab)
           k=k_det2(kk,iab)
           kw=k_aux(kk,iab)  
-          detn(k,istate)=detn(k,istate)*ddetn(kw)
+          detn(k,o)=detn(k,o)*ddetn(kw)
 c     print *, "k ",k,"detn(k) ",detn(k)
         enddo
 c      k_det2(1:ndetiab2(iab),iab)
@@ -177,16 +178,16 @@ c     if(iab.eq.2) call compute_ymat(iab,detiab(1,1),detn,wfmatn,ymatn(1,1,istat
 c     enddo
         if (iab.eq.1) then
 c         do istate=1,nstates
-          call compute_ymat(iab,detn(1,istate),detiab(1,2,istate),wfmatn,ymatn(1,1,istate),istate)
+          call compute_ymat(iab,detn(1,o),detiab(1,2,o),wfmatn,ymatn(1,1,istate),istate)
 c         enddo
         else
 c         do istate=1,nstates
-          call compute_ymat(iab,detiab(1,1,istate),detn(1,istate),wfmatn,ymatn(1,1,istate),istate)
+          call compute_ymat(iab,detiab(1,1,o),detn(1,o),wfmatn,ymatn(1,1,istate),istate)
 c         enddo
         endif
       !STU mapping orb state
         do iorb=1,norb
-          orb(iel,iorb,istate)=orb_sav(iorb)
+          orb(iel,iorb,o)=orb_sav(iorb)
         enddo
 
 
@@ -206,6 +207,7 @@ c-----------------------------------------------------------------------
       use slater, only: kref
       use slater, only: norb
       use dorb_m, only: iworbd
+      use contrl_file, only: ounit
 
       implicit none
 

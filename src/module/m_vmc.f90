@@ -27,6 +27,16 @@ module vmc_mod
     integer, parameter :: nrad = 3001
     real(dp), parameter :: delri = (nrad - 1)/radmax
 
+    integer, dimension(:), allocatable :: nstoo !(nwftypeorb) allocate later
+    integer, dimension(:), allocatable :: nstoj !(nwftypejas) allocate later
+    integer, dimension(:, :), allocatable :: jtos  !(nwftypejas,entry) allocate later
+    integer, dimension(:, :), allocatable :: otos  !(nwftypeorb,entry) allocate later
+    integer, dimension(:), allocatable :: stoj  !(nstates) allocate later
+    integer, dimension(:), allocatable :: stoo  !(nstates) allocate later
+    integer, dimension(:), allocatable :: stobjx  !(nstates) allocate later
+    integer, dimension(:), allocatable :: bjxtoo  !(nbjx) allocate later
+    integer, dimension(:), allocatable :: bjxtoj  !(nbjx) allocate later
+
     integer :: norb_tot
     integer :: nctyp3x
 
@@ -34,6 +44,13 @@ module vmc_mod
     integer :: nwftypeorb
     integer :: nwftypejas
     integer :: nwftypemax
+    integer :: nstojmax
+    integer :: nstoomax
+    integer :: nbjx
+    integer :: nstoo_tot
+    integer :: nstoj_tot
+    integer :: extraj
+    integer :: extrao
 
     integer :: mterms
     integer :: ncent3
@@ -46,7 +63,8 @@ module vmc_mod
     public :: nrad, nmat_dim, nmat_dim2
     public :: radmax, delri
 
-    public :: mterms, nwftypejas, nwftypeorb, nwftypemax
+    public :: mterms, nwftypejas, nwftypeorb, nwftypemax, nstojmax, nstoomax, nbjx, nstoj_tot, nstoo_tot
+    public :: nstoo, nstoj, jtos, otos, stoj, stoo, stobjx, extrao, extraj, bjxtoo, bjxtoj
 
     public :: ncent3, NCOEF, MEXCIT
     public :: set_vmc_size

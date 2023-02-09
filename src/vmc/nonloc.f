@@ -25,6 +25,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use vmc_mod, only: norb_tot, nwftypeorb, nwftypejas
       use contrl_per, only: iperiodic
       use csfs,    only: nstates
+      use vmc_mod, only: stoj, stoo, nbjx, bjxtoo, bjxtoj
 
       implicit none
 
@@ -34,15 +35,15 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(3,nelec,ncent_tot) :: rshift
-      real(dp), dimension(2,nwftypeorb) :: vpsp_det
-      real(dp), dimension(nparmj,nwftypejas) :: dvpsp_dj
+      real(dp), dimension(2,nbjx) :: vpsp_det
+      real(dp), dimension(nparmj,nbjx) :: dvpsp_dj
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
 
       ! local variables
-      integer :: i, i1, i2, iab, istate
+      integer :: i, i1, i2, iab, istate, jstate, check
       integer :: ic, ict, iel, index
       integer :: iorb, iparm, iq, iqq
-      integer :: jc, k, l, nxquad, j, ndim
+      integer :: jc, k, l, nxquad, j, ndim, iwforb, iwfjas, imax, ibjx, xo, xj
       real(dp) :: ri, term1, term2
       real(dp), parameter :: one = 1.d0
       
@@ -53,10 +54,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       real(dp), allocatable :: costh(:)
       real(dp), allocatable :: term_radial(:)
+      real(dp), allocatable :: term_radial_jas(:,:)
       real(dp), allocatable :: xquad(:,:)
-      real(dp), allocatable :: det_ratio(:)
-      real(dp), allocatable :: psij_ratio(:)
-      real(dp), allocatable :: dpsij_ratio(:,:)
+      real(dp), allocatable :: det_ratio(:,:)
+      real(dp), allocatable :: psij_ratio(:,:)
+      real(dp), allocatable :: dpsij_ratio(:,:,:)
       real(dp), allocatable :: da_psij_ratio(:,:,:)
       real(dp), allocatable :: r_en_quad(:,:)
       real(dp), allocatable :: rvec_en_quad(:,:,:)
@@ -75,10 +77,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       allocate(costh(ndim))
         ! real dp arrays
       allocate(term_radial(ndim))
+      allocate(term_radial_jas(ndim,nwftypejas))
       allocate(xquad(3,ndim))
-      allocate(det_ratio(ndim))
-      allocate(psij_ratio(ndim))
-      allocate(dpsij_ratio(nparmj,ndim))
+      allocate(det_ratio(ndim,nwftypeorb))
+      allocate(psij_ratio(ndim,nwftypejas))
+      allocate(dpsij_ratio(nparmj,ndim,nwftypejas))
       allocate(da_psij_ratio(3,ncent_tot,ndim))
       allocate(r_en_quad(ndim,ncent_tot))
       allocate(rvec_en_quad(3,ndim,ncent_tot))
@@ -88,11 +91,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       allocate(vjn(3,ndim))
 
       !STU mapping? or specify full dimensions and do (:,:)=0
-      do j=1,nwftypeorb
+      do j=1,nbjx
         vpsp_det(1,j)=0.d0
         vpsp_det(2,j)=0.d0
-      enddo
-      do j=1,nwftypejas
         do iparm=1,nparmj
           dvpsp_dj(iparm,j)=0.d0
         enddo
@@ -169,70 +170,89 @@ c endif iskip
 
       if(nxquad.eq.0) return
 
-      do istate=1,nstates !STU mapping etc
-        call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,istate),dorbn(1,1,1,istate),da_orbn,istate)
-        call nonlocd_quad(nxquad,iequad,orbn(1,1,istate),det_ratio,istate)
-        if(ioptjas.eq.0) then 
-          call nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
-     &         rvec_en_quad,r_en_quad,psij_ratio,vjn,da_psij_ratio,
-     &         fso(1,1,istate),istate)
-         else
-          call deriv_nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
-     &         rvec_en_quad,r_en_quad,psij_ratio,dpsij_ratio,vjn,
-     &         da_psij_ratio,istate)
-        endif
+      do iwforb=1,nwftypeorb !STU mapping etc
+        call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,iwforb),
+     &                   dorbn(1,1,1,iwforb),da_orbn,iwforb)
+        call nonlocd_quad(nxquad,iequad,orbn(1,1,iwforb),det_ratio(1,iwforb),iwforb)
+      enddo
+      if(ioptjas.eq.0) then
+        do iwfjas=1,nwftypejas 
+            call nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
+     &         rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio,
+     &         fso(1,1,iwfjas),iwfjas)
+        enddo
+      else
+        do iwfjas=1,nwftypejas
+            call deriv_nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
+     &         rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),dpsij_ratio(1,1,iwfjas),vjn,
+     &         da_psij_ratio,iwfjas)
+        enddo
+      endif
 
-        do iq=1,nxquad
+      do iq=1,nxquad
 
-          iel=iequad(iq)
-          ic=icquad(iq)
-          iqq=iqquad(iq)
+        iel=iequad(iq)
+        ic=icquad(iq)
+        iqq=iqquad(iq)
 
-          ict=iwctype(ic)
- 
-          iab=1
-          if(iel.gt.nup) iab=2
+        ict=iwctype(ic)
 
-          term_radial(iq)=0.d0
-          do l=1,lpot(ict)-1
-            term_radial(iq)=term_radial(iq)+yl0(l,costh(iq))*vps(iel,ic,l)
-          enddo
-          term_radial(iq)=term_radial(iq)*wq(iqq)*exp(psij_ratio(iq))
-
+        iab=1
+        if(iel.gt.nup) iab=2
+        
+        term_radial(iq)=0.d0
+        do l=1,lpot(ict)-1
+          term_radial(iq)=term_radial(iq)+yl0(l,costh(iq))*vps(iel,ic,l)
+        enddo
+        do iwfjas=1,nwftypejas
+          term_radial_jas(iq,iwfjas)=term_radial(iq)*wq(iqq)*exp(psij_ratio(iq,iwfjas))
+        enddo
 c         write(ounit,*) 'term1',term_radial(iq),det_ratio(iq),psij_ratio(iq)
 c vpsp_det  = vnl(D_kref J)/(D_kref J)
-          vpsp_det(iab,istate)=vpsp_det(iab,istate)+term_radial(iq)*det_ratio(iq)
-
+        do ibjx=1,nbjx
+          xj=bjxtoj(ibjx)
+          xo=bjxtoo(ibjx)
+          vpsp_det(iab,ibjx)=vpsp_det(iab,ibjx)+term_radial_jas(iq,xj)*det_ratio(iq,xo)
 c pseudopotential contribution to B_eloc matrix
           do iorb=1,norb+nadorb
-            b(iorb,iel,istate)=b(iorb,iel,istate)+term_radial(iq)*orbn(iorb,iq,istate)
+            b(iorb,iel,ibjx)=b(iorb,iel,ibjx)+term_radial_jas(iq,xj)*orbn(iorb,iq,xo)
           enddo
+        enddo
 
 c dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
-          if(ioptjas.gt.0) then
-            term2=term_radial(iq)*det_ratio(iq)
+        if(ioptjas.gt.0) then
+          do ibjx=1,nbjx
+            xj=bjxtoj(ibjx)
+            xo=bjxtoo(ibjx)
+            term2=term_radial_jas(iq,xj)*det_ratio(iq,xo)
             do iparm=1,nparmj
-              dvpsp_dj(iparm,istate)=dvpsp_dj(iparm,istate)+term2*dpsij_ratio(iparm,iq)
-
+              dvpsp_dj(iparm,ibjx)=dvpsp_dj(iparm,ibjx)+term2*dpsij_ratio(iparm,iq,xj)
+            enddo
+            do iparm=1,nparmj
               do iorb=1,norb
-                b_dj(iorb,iel,iparm,istate)=b_dj(iorb,iel,iparm,istate)+orbn(iorb,iq,istate)*term_radial(iq)*dpsij_ratio(iparm,iq)
+                b_dj(iorb,iel,iparm,ibjx)=b_dj(iorb,iel,iparm,ibjx)
+     &          +orbn(iorb,iq,xo)*term_radial_jas(iq,xj)*dpsij_ratio(iparm,iq,xj)
               enddo
             enddo
-          endif
+          enddo
+        endif
 
 c transition probabilities for Casula's moves in DMC
+        do istate=1,nstates !STU check eventually what loop to do here
           if(index(mode,'dmc').ne.0) then
-            t_vpsp(ic,iqq,iel)=det_ratio(iq)*term_radial(iq)
+            t_vpsp(ic,iqq,iel)=det_ratio(iq,1)*term_radial_jas(iq,1)
             do iorb=1,norb
-              b_t(iorb,iqq,ic,iel)=orbn(iorb,iq,istate)*term_radial(iq)
+              b_t(iorb,iqq,ic,iel)=orbn(iorb,iq,istate)*term_radial_jas(iq,1)
             enddo
           endif
-
         enddo
-      enddo
 
-      if(iforce_analy.gt.0) call compute_da_bnl(nxquad,iequad,icquad,iqquad,r_en,rvec_en,costh,term_radial
-     &,orbn(1,1,1),dorbn(1,1,1,1),da_orbn,psij_ratio,vjn,da_psij_ratio)
+
+      enddo !loop over nquad
+
+      if(iforce_analy.gt.0) call compute_da_bnl(nxquad,iequad,icquad,iqquad,r_en,rvec_en,costh,term_radial_jas(1,1)
+     &,orbn(1,1,1),dorbn(1,1,1,1),da_orbn,psij_ratio(1,1),vjn,da_psij_ratio)
+      !STU just used jsa and orb type=1 in psij_ratio and dorbn, term_radial probably need to add for da_psij_ratio
 
       if(ipr.ge.4) write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
      & (vpsp_det(iab,1),detiab(1,iab,1),iab=1,2),r_en(1,1)
@@ -381,7 +401,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
 
 
-      if(nwftypeorb.gt.1) iwf=iwforb
+c      if(nwftypeorb.gt.1) iwf=iwforb !STU moved below
 
       if(iperiodic.eq.0) then
 
@@ -410,7 +430,9 @@ c get basis functions for electron iel
           ider=0
           if(iforce_analy.gt.0) ider=1
 
+          if(nwftypeorb.gt.1) iwf=1 !STU sort out later
           call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
+          if(nwftypeorb.gt.1) iwf=iwforb !STU sort out later
 
           do iq=1,nxquad
 

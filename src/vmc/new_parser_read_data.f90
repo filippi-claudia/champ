@@ -375,6 +375,8 @@ subroutine read_determinants_file(file_determinants)
 !   Read the first main line
     if (wid) then
         read(iunit, *, iostat=iostat)  temp2, ndet, nwftype
+        !STU for old formats
+        if (nwftype.eq.0) call fatal_error ("Error in determinant file: nwftype must be gt 0")
         if (iostat == 0) then
             if (trim(temp2) == "determinants") write(ounit,int_format) " Number of determinants ", ndet
         else
@@ -530,7 +532,7 @@ subroutine read_jastrow_file(file_jastrow)
     use jastrow,            only: nspin1, nspin2, b, c, scalek, a4, norda, nordb, nordc
     use jastrow,            only: nordj, nordj1, neqsx, ijas, isc, asymp_jasa, asymp_jasb
     use jastrow,            only: allocate_jaspar6
-    use vmc_mod,            only: nwftypeorb, nwftypejas, nwftypemax
+    use vmc_mod,            only: nwftypeorb, nwftypejas, nwftypemax, nstoj, jtos, stoj, nstojmax, extraj, nstoj_tot
     use jaspar6,            only: cutjas, cutjasi
     use bparm,              only: nocuspb, nspin2b
     use inputflags,         only: ijastrow_parameter
@@ -546,8 +548,8 @@ subroutine read_jastrow_file(file_jastrow)
     !   local use
     character(len=72), intent(in)   :: file_jastrow
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
-    integer                         :: iunit, iostat, it, isp, iparm, iwft, extra
-    integer                         :: mparmja, mparmjb, mparmjc
+    integer                         :: iunit, iostat, it, isp, iparm, iwft
+    integer                         :: mparmja, mparmjb, mparmjc, int1, int2
     logical                         :: exist, found = .false.
     real(dp)                        :: cutjas_tmp
     integer                         :: i, j
@@ -591,31 +593,69 @@ subroutine read_jastrow_file(file_jastrow)
     endif
 
     !check how many sets of jastrows are listed. make only for sr_n, multistate?
+    extraj = 0
     if ((method .eq. 'sr_n')) then
         nwftypejas = 0
-        extra = 1
+        extraj = 1
         if (wid) then
             do while (.not. found)
                 read(iunit,*, iostat=iostat) temp2
                 if (is_iostat_end(iostat)) exit
                 temp1 = trim(temp2)
-                if (temp2 == "jastrows") then
+                if (temp2 == "jastrows_to_states") then
                     nwftypejas = nwftypejas + 1
                 endif
             enddo
             rewind(iunit)
             if ((nwftypejas .eq. 0)) then
                 nwftypejas = 1
-                extra = 0
+                extraj = 0
             endif
-            if (nwftypejas .ne. nwftypeorb) then
-                write(ounit,int_format) " Using sr_n with multiple states requires a 'jastrow' line before each state's parameters are specified "
-                call fatal_error ( " Number of states specified in jastrow file do not match lcao file ")
+            write(ounit,'(A,i4,A)') " Found ", nwftypejas, " types of jastrows in the input file. "
+            if (extraj .eq. 0) then
+               write(ounit,int_format) " For a multistate sr_n calculation , a 'jastrows_to_states' line is required before each jastrow's parameters are specified "
+               write(ounit,'(A,i4,A)') " Assuming single state calculation. "
             endif
+            !if (nwftypejas .ne. nwftypeorb) then
+                !write(ounit,int_format) " Using sr_n with multiple states requires a 'jastrow' line before each state's parameters are specified "
+                !call fatal_error ( " Number of states specified in jastrow file do not match lcao file ")
+            !endif
         endif
         call bcast(nwftypejas)
-        call bcast(extra)
+        call bcast(extraj)
+        allocate (nstoj(nwftypejas))
+        i = 0
+        if (extraj.eq.1) then
+          if (wid) then
+            do while (.not. found)
+              read(iunit,*, iostat=iostat) temp1, int1
+              if (is_iostat_end(iostat)) exit
+              temp1 = trim(temp1)
+              if (temp1 == "jastrows_to_states") then
+                i = i + 1
+                nstoj(i) = int1
+              endif
+            enddo
+            rewind(iunit)
+          endif
+        else
+          write(ounit,int_format) " Assuming 1 jastrow type and 1 state. "
+          nstoj(1) = 1
+        endif
+        call bcast(nstoj)
+    else ! assuming 1-jastrow listing with sr_n does not need 'jastrows line', annoying because could imply use for all states.
+        allocate (nstoj(1))
+        nstoj(1)=1
+        call bcast(nstoj)
     endif
+
+    nstoj_tot=0
+    do i=1,nwftypejas
+      nstoj_tot=nstoj_tot+nstoj(i)
+    enddo
+
+    write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypejas, " jastrow types to be assigned to ", nstoj_tot, " states."
+
     nwftypemax=max(nwftypejas,nwftypeorb)
     call bcast(nwftypemax)
 
@@ -626,11 +666,11 @@ subroutine read_jastrow_file(file_jastrow)
             if (trim(temp2) == "jastrow_parameter") &
             write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
             if((method .eq. 'sr_n')) then !STU this will have to change with new input
-                if (nwftypejas .ne. nwftypeorb) then
-                    call fatal_error ( " Number of states specified in jastrow file do not match lcao file ")
-                else
-                    nwftype = nwftypejas
-                endif
+                !if (nwftypejas .ne. nwftypeorb) then
+                    !call fatal_error ( " Number of states specified in jastrow file do not match lcao file ")
+                !else
+              nwftype = nwftypejas
+                !endif
             endif
         else
             call fatal_error ("Error in reading jastrow parameters / number of wavefunction types")
@@ -639,11 +679,12 @@ subroutine read_jastrow_file(file_jastrow)
     call bcast(nwftype)
     call bcast(iwft)
 
-    if( (method(1:3) == 'lin')) then
+    if((method(1:3) == 'lin')) then
         allocate (scalek(3))
     else
         allocate (scalek(nwftype)) ! will we ever use different scalek for different jastrow?
     endif
+          
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
         if (wid) read (iunit, *) norda, nordb, nordc
@@ -654,7 +695,7 @@ subroutine read_jastrow_file(file_jastrow)
         nordj = max(norda, nordb, nordc)
         nordj1 = nordj + 1
         neqsx = 6*nordj
-
+        
         write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc
 
         if (isc .ge. 2) then
@@ -691,45 +732,67 @@ subroutine read_jastrow_file(file_jastrow)
             allocate (b(mparmjb, 2, nwftype))
             allocate (c(mparmjc, nctype, nwftype))
         endif
+       
+        nstojmax=maxval(nstoj)
+        write(ounit,*) "nstoj,nstojmax", nstoj(1), nstojmax
+        allocate(jtos(nwftypejas,nstojmax))
 
-
+        if (wid) then !STU moved if outside
         do iwft = 1, nwftype
             write(ounit, '(A)') "Jastrow parameters :: "
-            if( (method .eq. 'sr_n')) write(ounit, '(A,i0)') "State :: ", iwft
+            if( (method .eq. 'sr_n')) write(ounit, '(A,i0)') "Jastrow type :: ", iwft
             write(ounit, '(A)') "mparmja : "
             write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
             if (method .eq. 'sr_n') then
-                if (extra .eq. 1) then
-                    read (iunit, *, iostat=iostat) temp1
-                    if (trim(temp1) .ne. "jastrows") then
-                        write(ounit, *) " Expected 'jastrows' on this line ", temp1
+                if (extraj .eq. 1) then
+                    read (iunit, *, iostat=iostat) temp1, int1, (jtos(iwft,i),i=1,nstoj(iwft))
+                    write(ounit,*) 'jastrows_to_states'
+                    write(ounit,*) '# of states assigned: ', int1 
+                    write(ounit,*) 'states assigned: ', (jtos(iwft,i),i=1,nstoj(iwft))
+                    int2=int1+1
+                    do i=int2,nstojmax ! setting unused spaces to zero.
+                       jtos(iwft,i) = 0
+                    enddo
+                    if (trim(temp1) .ne. "jastrows_to_states") then
+                        write(ounit, *) " Expected 'jastrows_to_states' on this line ", temp1
                         call fatal_error ("Error in reading jastrow parameters")
                     endif
+                    if (iostat .ne. 0) call fatal_error ("Error in reading jastrows_to_states")
+                else
+                  jtos(1,1)=1
                 endif
+            else
+                jtos(1,1)=1
             endif
             do it = 1, nctype
-                if (wid) read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
+                read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
                 !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)  !Intel Version
                 if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
             enddo
             write(ounit, '(A)') "mparmjb : "
             write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
             do isp = nspin1, nspin2b
-                if (wid) read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
+                read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
                 !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)  !Intel Version
                 if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
             enddo
             write(ounit, '(A)') "mparmjc : "
             write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
             do it = 1, nctype
-                if (wid) read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+                read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
                 !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
                 if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
             enddo
         enddo
+        endif
         call bcast(a4)
         call bcast(b)
         call bcast(c)
+        !call bcast(extraj)
+        if (extraj.gt.0) then
+           call bcast(jtos)
+           call bcast(nstoj)
+        endif
     endif
 
     !Read cutoff for Jastrow4, 5, 6
@@ -743,6 +806,9 @@ subroutine read_jastrow_file(file_jastrow)
     call bcast(ijastrow_parameter)
 
     if (wid) close(iunit)
+
+    ! for now do this:
+    if (method .eq. 'sr_n') nwftype=1
 
 end subroutine read_jastrow_file
 
@@ -759,7 +825,7 @@ subroutine read_orbitals_file(file_orbitals)
     use inputflags, only: ilcao
     use orbval, only: nadorb
     use pcm_fdc, only: fs
-    use vmc_mod, only: norb_tot, nwftypeorb
+    use vmc_mod, only: norb_tot, nwftypeorb, nstoo, nstoomax, otos, extrao, nstoo_tot
     ! was not in master but is needed
     use multiple_geo, only: nwftype
     use general, only: pooldir
@@ -774,8 +840,8 @@ subroutine read_orbitals_file(file_orbitals)
     character(len=72), intent(in)   :: file_orbitals
     character(len=40)               :: temp1, temp2
     character(len=120)              :: temp3
-    integer                         :: iunit, iostat, iwft, extra
-    integer                         :: iorb, ibasis, i, k, counter
+    integer                         :: iunit, iostat, iwft
+    integer                         :: iorb, ibasis, i, k, counter, int1, int2
     logical                         :: exist
     logical                         :: skip = .true., found = .false.
 
@@ -800,32 +866,68 @@ subroutine read_orbitals_file(file_orbitals)
     endif
 
     !check how many sets of orbitals are listed
+    extrao = 0
     if (method .eq. 'sr_n') then
         nwftypeorb = 0
-        extra = 1
+        extrao = 1
         if (wid) then
             do while (.not. found)
                 read(iunit,*, iostat=iostat) temp1
                 if (is_iostat_end(iostat)) exit
                 temp1 = trim(temp1)
-                if (temp1 == "orbitals") then
+                if (temp1 == "orbitals_to_states") then
                     nwftypeorb = nwftypeorb + 1
                 endif
             enddo
             rewind(iunit)
             if (nwftypeorb .eq. 0) then
                 nwftypeorb = 1
-                extra = 0
+                extrao = 0
             endif
-            nwftype = nwftypeorb
+            write(ounit,'(A,i4,A)') " Found ", nwftypeorb, " sets of orbitals in the input file. "
+            if (extrao .eq. 0) then
+               write(ounit,int_format) " For a multistate sr_n calculation, a 'orbitals_to_states' line is required before each orbital set's parameters are specified "
+               write(ounit,'(A,i4,A)') " Assuming single state calculation. "
+            endif
+            nwftype = nwftypeorb !nwftype is used by force stuff outside this subroutine. don't really know how nwftype is used
         endif
         call bcast(nwftypeorb)
         call bcast(nwftype)
-        call bcast(extra)
+        call bcast(extrao)
+        allocate (nstoo(nwftypeorb))
+        i = 0
+        if (extrao.eq.1) then
+          if (wid) then
+            do while (.not. found)
+               read(iunit,*, iostat=iostat) temp1, int1
+               if (is_iostat_end(iostat)) exit
+               temp1 = trim(temp1)
+               if (temp1 == "orbitals_to_states") then
+                 i = i + 1
+                 nstoo(i) = int1
+               endif
+            enddo
+            rewind(iunit)
+          endif
+        else
+          write(ounit,int_format) " Assuming 1 set of orbitals and 1 state. "
+          nstoo(1)=1
+        endif
+        call bcast(nstoo)
+    else
+        allocate (nstoo(1))
+        nstoo(1)=1
+        call bcast(nstoo)
     endif
+
+    nstoo_tot=0
+    do i=1,nwftypeorb
+      nstoo_tot=nstoo_tot+nstoo(i)
+    enddo
 
     ! to escape the comments before the "lcao nbasis norb" line
     if (wid) then
+        write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypeorb, " orbital sets to be assigned to ", nstoo_tot, " states."
         do while (skip)
             read(iunit,*, iostat=iostat) temp1
             temp1 = trim(temp1)
@@ -873,26 +975,45 @@ subroutine read_orbitals_file(file_orbitals)
         if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
     endif
 
+    nstoomax=maxval(nstoo)
+    write(ounit,*) "nstoo,nstoomax", nstoo(1), nstoomax
+    allocate(otos(nwftypeorb,nstoomax))
+
+    if (wid) then ! Moved if to outside, all the important quantities are bcast later.
     do iwft = 1, nwftype ! make sure nwftype = 1 at this point for all other methods.
-        if (method .eq. 'sr_n') then
-            if (extra .eq. 1) then
-                read (iunit, *, iostat=iostat) temp1
-                if (trim(temp1) .ne. "orbitals") then
-                    write(ounit, *) " Expected 'orbitals' on this line ", temp1
-                    call fatal_error ("Error in reading number of lcao orbitals / basis / number of wavefunction types")
-                endif
-            endif
+      if (method .eq. 'sr_n') then
+        if (extrao .eq. 1) then
+          read (iunit, *, iostat=iostat) temp1, int1, (otos(iwft,i),i=1,nstoo(iwft))
+          int2=int1+1
+          do i=int2,nstoomax ! setting unused to 0
+            otos(iwft,i) = 0
+          enddo
+          if (trim(temp1) .ne. "orbitals_to_states") then
+            write(ounit, *) " Expected 'orbitals_to_states' on this line ", temp1
+            call fatal_error ("Error in reading number of lcao orbitals / basis / number of wavefunction types")
+            if (iostat .ne. 0) call fatal_error ("Error in reading orbitals_to_states.")
+          endif
+        else
+          otos(1,1)=1
         endif
-        do iorb = 1, norb
-            if (wid) then
-                read (iunit, *, iostat=iostat) (coef(ibasis, iorb, iwft), ibasis=1, nbasis)
-                if (iostat /= 0) call fatal_error( "Error in reading lcao orbitals ")
-            endif
-        enddo
+      else
+        otos(1,1)=1
+      endif
+      do iorb = 1, norb
+        !if (wid) then
+          read (iunit, *, iostat=iostat) (coef(ibasis, iorb, iwft), ibasis=1, nbasis)
+          if (iostat /= 0) call fatal_error( "Error in reading lcao orbitals ")
+        !endif
+      enddo
     enddo
+    endif
     ! printing of the lcao orbitals coefficients will be done by write_orb_loc subroutine.
     write(ounit,*) "Orbital coefficients are written to the output.log file"
     call bcast(coef)
+    if (extrao.gt.0) then
+       call bcast(otos)
+       call bcast(nstoo)
+    endif
 
     ! set default ordering if we are not using trexio files.
     if (.not. allocated(champ_ao_ordering))      allocate(champ_ao_ordering(nbasis))
@@ -906,6 +1027,9 @@ subroutine read_orbitals_file(file_orbitals)
     if (wid) close(iunit)
 
     write(ounit,*) "----------------------------------------------------------"
+
+    ! for now do this:
+    if (method .eq. 'sr_n') nwftype=1
 
 end subroutine read_orbitals_file
 
@@ -922,7 +1046,7 @@ subroutine read_csf_file(file_determinants)
     use csfs, only: ccsf, ncsf, nstates
     use mstates_mod, only: MSTATES
     use inputflags, only: icsfs
-    use vmc_mod, only: nwftypeorb
+    use vmc_mod, only: nwftypeorb, nstoj_tot, nstoo_tot
     use multiple_geo, only: nwftype
     use slater, only: ndet, cdet
 !   Not sure about the following two lines
@@ -978,7 +1102,7 @@ subroutine read_csf_file(file_determinants)
         nstates = 1
         ncsf = ndet
         if((method.eq.'sr_n'.and.ioptci.eq.1)) then
-            if (nstates.ne.nwftypeorb) then
+            if (nstates.ne.nstoj_tot.or.nstates.ne.nstoo_tot) then
                 call fatal_error (" determinant file: number of states found do not match those in jastrow and lcao. ")
             endif
         endif
@@ -1013,15 +1137,16 @@ subroutine read_csf_file(file_determinants)
         call bcast(nstates)
 
         if((method.eq.'sr_n'.and.ioptci.eq.1)) then
-            if (nstates.ne.nwftypeorb) then
+            if (nstates.ne.nstoj_tot.or.nstates.ne.nstoo_tot) then
+                write(ounit,*) 'nstates, nstoj_tot, nstoo_tot', nstates, nstoj_tot, nstoo_tot
                 call fatal_error (" determinant file: number of states found for csf's do not match those in jastrow and lcao. ")
             endif
         endif
 
         if( (method(1:3) == 'lin')) then
-            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3))
+            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3)) !STU, should this also be ncsf?
         else
-            if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+            if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
         endif
 
         if (wid) then
@@ -1165,9 +1290,10 @@ subroutine read_csfmap_file(file_determinants)
         enddo
         if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
         nmap = nptr - 1
-!        if (allocated(cdet)) deallocate (cdet)
-!        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
+        if (allocated(cdet)) deallocate (cdet)
+        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype)) 
 
+        write(ounit, *) "ncsf", ncsf
         write(ounit, '(''Warning: det coef overwritten with csf'')')
 
         do k = 1, nstates
@@ -1446,22 +1572,24 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
         call bcast(nparmj)
 
+        if (wid) then
         do it = 1, nctype
-            if (wid) read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
+            read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
             write(ounit, '(A,30i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
         enddo
-        call bcast(iwjasa)
         do isp = nspin1, nspin2b
-            if (wid) read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+            read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
             write(ounit, '(A,30i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
         enddo
-        call bcast(iwjasb)
         do it = 1, nctype
-            if (wid) read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
+            read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
             write(ounit, '(A,30i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
         enddo
-        call bcast(iwjasc)
             ! end of reading the jasderiv file block
+        endif
+        call bcast(iwjasa)
+        call bcast(iwjasb)
+        call bcast(iwjasc)
 
     endif ! if the file containing jasderiv exists
 

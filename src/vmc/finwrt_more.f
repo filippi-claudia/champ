@@ -13,7 +13,7 @@ c written by Claudia Filippi
       use optwf_corsam, only: energy, energy_err, force, force_err, sigma
       use precision_kinds, only: dp
       use sa_check, only: energy_all, energy_err_all
-      use vmc_mod, only: nwftypeorb
+      use vmc_mod, only: nwftypeorb, stoo
       implicit none
 
       integer :: iab, ierr, istate
@@ -27,8 +27,8 @@ c written by Claudia Filippi
       passes=dfloat(iblk*vmc_nstep)
       
       do istate=1, nstates
-        write(ounit,'(''average psid, det_ref '',2d12.5)') apsi(istate)*nproc/passes, aref(istate)*nproc/passes
-        write(ounit,'(''orb set,log detref '',i4,2d12.5)') istate, (detref(iab,istate)*nproc/passes,iab=1,2)
+        write(ounit,'(''average psid, det_ref '',2d12.5)') apsi(istate)*nproc/passes, aref(stoo(istate))*nproc/passes
+        write(ounit,'(''orb set,log detref '',i4,2d13.5)') istate, (detref(iab,stoo(istate))*nproc/passes,iab=1,2)
       enddo
 
       call mpi_bcast(energy,3,mpi_double_precision,0,MPI_COMM_WORLD,ierr)

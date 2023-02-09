@@ -20,7 +20,7 @@ c Written by Claudia Filippi
       use orbval, only: dorb, orb
       use slater, only: fp, slmi
       use multislater, only: detiab
-      use vmc_mod, only: MEXCIT
+      use vmc_mod, only: MEXCIT, stoo
       use precision_kinds, only: dp
 
       implicit none
@@ -45,12 +45,12 @@ c Written by Claudia Filippi
       ikel=nel*(iel-ish-1)
       do istate=1,nstates
         do j=1,nel*nel
-          slmi(j,iab,istate)=slmin(j,istate) !STU also here
+          slmi(j,iab,stoo(istate))=slmin(j,stoo(istate))
         enddo
         do j=ivirt(iab),norb
           do i=1,nel
             ymat(j,i,iab,istate)=ymatn(j,i,istate)
-            aa(i,j,iab,istate)=aan(i,j,istate) !STU check state orb mapping here
+            aa(i,j,iab,stoo(istate))=aan(i,j,stoo(istate))
           enddo
         enddo
       
@@ -58,33 +58,33 @@ c Written by Claudia Filippi
 !     This loop should run just over unique or unequivalent determinants
 ! single excitations
         do k=1,ndetsingle(iab)
-          wfmat(k,1,iab,istate)=wfmatn(k,1,istate) !STU also here
+          wfmat(k,1,iab,stoo(istate))=wfmatn(k,1,stoo(istate))
         enddo
 ! multiple excitations
         do k=ndetsingle(iab)+1,ndetiab(iab)
           ndim=numrep_det(k,iab)
           ndim2=ndim*ndim 
-          wfmat(k,1:ndim2,iab,istate)=wfmatn(k,1:ndim2,istate) !STU also here
+          wfmat(k,1:ndim2,iab,stoo(istate))=wfmatn(k,1:ndim2,stoo(istate))
         enddo
       
       
       
       
-        do j=1,nel !STU also here if all below just orbital dependent, close istate loop above and just loop over nwftypeorb
-          fp(1,j+ikel,iab,istate)=dorbn(iworbd(j+ish,kref),1,istate)
-          fp(2,j+ikel,iab,istate)=dorbn(iworbd(j+ish,kref),2,istate)
-          fp(3,j+ikel,iab,istate)=dorbn(iworbd(j+ish,kref),3,istate)
+        do j=1,nel
+          fp(1,j+ikel,iab,stoo(istate))=dorbn(iworbd(j+ish,kref),1,stoo(istate))
+          fp(2,j+ikel,iab,stoo(istate))=dorbn(iworbd(j+ish,kref),2,stoo(istate))
+          fp(3,j+ikel,iab,stoo(istate))=dorbn(iworbd(j+ish,kref),3,stoo(istate))
         enddo
-        do k=1,ndet !STU also here
-          detiab(k,iab,istate)=detn(k,istate)
+        do k=1,ndet
+          detiab(k,iab,stoo(istate))=detn(k,stoo(istate))
         enddo
 
       
-        do iorb=1,norb !STU also here
-          orb(iel,iorb,istate)=orbn(iorb,istate)
-          dorb(iorb,iel,1,istate)=dorbn(iorb,1,istate)
-          dorb(iorb,iel,1,istate)=dorbn(iorb,1,istate)
-          dorb(iorb,iel,1,istate)=dorbn(iorb,1,istate)
+        do iorb=1,norb
+          orb(iel,iorb,stoo(istate))=orbn(iorb,stoo(istate))
+          dorb(iorb,iel,1,stoo(istate))=dorbn(iorb,1,stoo(istate))
+          dorb(iorb,iel,1,stoo(istate))=dorbn(iorb,1,stoo(istate))
+          dorb(iorb,iel,1,stoo(istate))=dorbn(iorb,1,stoo(istate))
         enddo
       enddo
       

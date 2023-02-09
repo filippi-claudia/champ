@@ -14,7 +14,7 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use system,  only: iwctype,ncent,ncent_tot,nelec
       use error,   only: fatal_error
       use optwf_parms, only: nparmj
-      use vmc_mod, only: nwftypeorb, nwftypejas
+      use vmc_mod, only: nwftypeorb, nwftypejas, nbjx
       use contrl_file, only: ounit
 
       implicit none
@@ -26,8 +26,8 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       real(dp), dimension(3, nelec, ncent_tot) :: rshift
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
-      real(dp), dimension(2, nwftypeorb) :: vpsp_det
-      real(dp), dimension(nparmj, nwftypejas) :: dvpsp_dj
+      real(dp), dimension(2, nbjx) :: vpsp_det
+      real(dp), dimension(nparmj, nbjx) :: dvpsp_dj
       real(dp), dimension(ncent_tot, MPS_QUAD, *) :: t_vpsp
 
       if(i_vpsp.gt.0)then

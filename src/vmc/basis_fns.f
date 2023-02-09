@@ -17,6 +17,7 @@ c ider = 3 -> value, gradient, laplacian, forces
       use slm_mod, only: slm
       use splfit_mod, only: splfit
       use system,  only: iwctype,ncent,ncent_tot,nelec,nghostcent
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -72,7 +73,6 @@ c loop through centers
 
 c     numerical atomic orbitals
         do k=ie1,ie2
-
 c get distance to center
 
           xc(1)=rvec_en(1,k,ic)
@@ -83,7 +83,6 @@ c get distance to center
           r2=r*r
           ri=one/r
           ri2=ri*ri
-
           do irb=1,nrbasit
           !  only evaluate for r <= rmaxwf
             if (r <= rmaxwf(irb,it)) then

@@ -3,10 +3,10 @@ module mix_jas_ci
      use optwf_parms, only: nparmj
      use precision_kinds, only: dp
 
-     real(dp), dimension(:, :, :), allocatable :: de_o_ci !(nparmj,MDET,nwftypemax)
-     real(dp), dimension(:, :, :), allocatable :: dj_de_ci !(nparmj,MDET,nwftypemax)
-     real(dp), dimension(:, :, :), allocatable :: dj_o_ci !(nparmj,MDET,nwftypemax)
-     real(dp), dimension(:, :, :), allocatable :: dj_oe_ci !(nparmj,MDET,nwftypemax)
+     real(dp), dimension(:, :, :), allocatable :: de_o_ci !(nparmj,MDET,MSTATES)
+     real(dp), dimension(:, :, :), allocatable :: dj_de_ci !(nparmj,MDET,MSTATES)
+     real(dp), dimension(:, :, :), allocatable :: dj_o_ci !(nparmj,MDET,MSTATES)
+     real(dp), dimension(:, :, :), allocatable :: dj_oe_ci !(nparmj,MDET,MSTATES)
 
      private
      public :: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
@@ -16,11 +16,11 @@ module mix_jas_ci
      subroutine allocate_mix_jas_ci()
       use optwf_parms, only: nparmj
       use slater, only: ndet
-      use vmc_mod, only: nwftypemax
-         if (.not. allocated(de_o_ci)) allocate (de_o_ci(nparmj, ndet, nwftypemax))
-         if (.not. allocated(dj_de_ci)) allocate (dj_de_ci(nparmj, ndet, nwftypemax))
-         if (.not. allocated(dj_o_ci)) allocate (dj_o_ci(nparmj, ndet, nwftypemax))
-         if (.not. allocated(dj_oe_ci)) allocate (dj_oe_ci(nparmj, ndet, nwftypemax))
+      use mstates_mod, only: MSTATES
+         if (.not. allocated(de_o_ci)) allocate (de_o_ci(nparmj, ndet, MSTATES))
+         if (.not. allocated(dj_de_ci)) allocate (dj_de_ci(nparmj, ndet, MSTATES))
+         if (.not. allocated(dj_o_ci)) allocate (dj_o_ci(nparmj, ndet, MSTATES))
+         if (.not. allocated(dj_oe_ci)) allocate (dj_oe_ci(nparmj, ndet, MSTATES))
      end subroutine allocate_mix_jas_ci
 
      subroutine deallocate_mix_jas_ci()

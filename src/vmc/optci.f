@@ -10,23 +10,22 @@
       use ci001_blk, only: ci_o, ci_oe
       use ci003_blk, only: ci_e
       use ci004_blk, only: ci_de
-      use vmc_mod, only: nwftypeorb
+      use vmc_mod, only: nwftypeorb, stoo, stobjx, nbjx
 
       use optwf_control, only: method
-
       use multislater, only: detiab
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
 
       implicit none
 
-      integer :: i, icsf, idet, ix, j
-      integer :: jcsf, k, istate
+      integer :: i, icsf, idet, ix, j, o, x
+      integer :: jcsf, k, istate, nstates_eff
       real(dp) :: ci_e_csf, ci_o_csf, e_other
       real(dp) :: psidi
-      real(dp), dimension(ndet,nwftypeorb) :: ciprim
-      real(dp), dimension(ndet,nwftypeorb) :: cieprim
-      real(dp), dimension(ndet, 2) :: eloc_det
+      real(dp), dimension(ndet,nstates) :: ciprim
+      real(dp), dimension(ndet,nstates) :: cieprim
+      real(dp), dimension(ndet, 2, nbjx) :: eloc_det
       real(dp), dimension(nstates) :: psid
       real(dp), dimension(nstates) :: energy
 
@@ -37,12 +36,24 @@
 
       if(ioptci.eq.0) return
 
-      do istate=1,nstates !STU check state mapping
-        psidi=1.d0/psid(istate)
+      if (method.eq.'lin_d') then
+        nstates_eff = 1
+      elseif(method.eq.'sr') then
+        nstates_eff = nstates
+      else
+        nstates_eff = nstates
+      endif
 
-        do k=1,nciprim
-          ciprim(k,istate)=detiab(k,1,istate)*detiab(k,2,istate)*psidi
-          cieprim(k,istate)=(eloc_det(k,1)+eloc_det(k,2)+e_other)*ciprim(k,istate)
+      do istate=1,nstates_eff !STU check state mapping, there may be a better way
+        psidi=1.d0/psid(istate)
+        o=stoo(istate)
+        x=stobjx(istate)
+
+        do k=1,nciprim   ! keep ciprim and cieprim indecies because second part below.
+          ciprim(k,istate)=detiab(k,1,o)*detiab(k,2,o)*psidi
+c          write(ounit,*) "ciprim(nciprim,stoo(istate),detiab up/dn, psidi",
+c     &                    ciprim(k,j), detiab(k,1,j), detiab(k,2,j), psidi
+          cieprim(k,istate)=(eloc_det(k,1,x)+eloc_det(k,2,x)+e_other)*ciprim(k,istate)
         enddo
 
 c Update <Oi>,<Ei>,<dEi>,<Oi*Ej>
@@ -66,6 +77,7 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
             ci_o(icsf,istate)=ci_o_csf
             ci_e(icsf,istate)=ci_e_csf
             ci_de(icsf,istate)=ci_e_csf-ci_o_csf*energy(istate)
+c            write(ounit,*) "ci_o(icsf,j)", ci_o(icsf,j)
           enddo
 
         endif
@@ -73,7 +85,7 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
 
       if(method.eq.'sr_n'.or.method.eq.'lin_d') return !STU this line requires 2 local variables and 2 global to be given an extra index.
 
-      do istate=1,nstates !STU also here
+      do istate=1,nstates_eff !STU also here, there may be a better way.
         if(ncsf.eq.0) then
           do i=1,nciprim
             do j=1,nciprim
@@ -100,7 +112,7 @@ c-----------------------------------------------------------------------
       use ci008_blk, only: ci_oe_cm2, ci_oe_cum, ci_oe_sum
       use ci009_blk, only: ci_oo_cm2, ci_oo_cum, ci_oo_sum
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
-      use vmc_mod, only: nwftypeorb
+      use csfs, only: nstates
 
       use optwf_control, only: method
 
@@ -114,7 +126,7 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do k=1,nwftypeorb
+      do k=1,nstates
         do i=1,nciterm
           ci_o_sum(i,k) =0.d0
           ci_de_sum(i,k) =0.d0
@@ -136,7 +148,7 @@ c-----------------------------------------------------------------------
 C$ iflg = 0: init *cum, *cm2 as well
       if(iflg.gt.0) return
       
-      do k=1,nwftypeorb
+      do k=1,nstates
         guid_weight=0.d0
         guid_weight_sq=0.d0
         do i=1,nciterm
@@ -170,7 +182,7 @@ c-----------------------------------------------------------------------
       use ci002_blk, only: ci_o_old, ci_oe_old
       use ci003_blk, only: ci_e, ci_e_old
       use ci004_blk, only: ci_de, ci_de_old
-      use vmc_mod, only: nwftypeorb
+      use csfs, only: nstates
 
       use optwf_control, only: method
 
@@ -183,7 +195,7 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do k=1, nwftypeorb
+      do k=1,nstates 
         do i=1,nciterm
           ci_o_old(i,k)=ci_o(i,k)
           ci_e_old(i,k)=ci_e(i,k)
@@ -204,7 +216,7 @@ c-----------------------------------------------------------------------
       use ci002_blk, only: ci_o_old, ci_oe_old
       use ci003_blk, only: ci_e, ci_e_old
       use ci004_blk, only: ci_de, ci_de_old
-      use vmc_mod, only: nwftypeorb
+      use csfs, only: nstates
 
       use optwf_control, only: method
 
@@ -217,7 +229,7 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do k=1,nwftypeorb
+      do k=1,nstates
         do i=1,nciterm
           ci_o(i,k)=ci_o_old(i,k)
           ci_e(i,k)=ci_e_old(i,k)
@@ -243,7 +255,7 @@ c-----------------------------------------------------------------------
       use ci008_blk, only: ci_oe_sum
       use ci009_blk, only: ci_oo_sum
       use ci010_blk, only: ci_ooe_sum
-      use vmc_mod, only: nwftypeorb
+      use csfs, only: nstates
 
       use optwf_control, only: method
 
@@ -258,7 +270,7 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do k=1,nwftypeorb !STU orb or max? check other subroutines in here
+      do k=1,nstates !STU orb or max? check other subroutines in here
         do j=1,nciterm
           ci_o_sum(j,k) =ci_o_sum(j,k)+p*ci_o(j,k)+q*ci_o_old(j,k)
           ci_de_sum(j,k) =ci_de_sum(j,k)+p*ci_de(j,k)+q*ci_de_old(j,k)
@@ -294,7 +306,7 @@ c-----------------------------------------------------------------------
       use ci010_blk, only: ci_ooe_cum, ci_ooe_sum
 
       use optwf_control, only: method
-      use vmc_mod, only: nwftypeorb
+      use csfs, only: nstates
 
       use precision_kinds, only: dp
       implicit none
@@ -306,7 +318,7 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do k=1,nwftypeorb
+      do k=1,nstates
         do i=1,nciterm
           ci_o_cum(i,k)=ci_o_cum(i,k)+ci_o_sum(i,k)
           ci_de_cum(i,k)=ci_de_cum(i,k)+ci_de_sum(i,k)

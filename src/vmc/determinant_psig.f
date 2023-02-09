@@ -6,7 +6,10 @@
 
       use mstates3, only: iweight_g, weights_g
 
+      use vmc_mod, only: stoj
+
       use precision_kinds, only: dp
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, istate
@@ -17,7 +20,7 @@
       psig=0
       do i=1,nstates !STU state map psij
         istate=iweight_g(i)
-        psig=psig+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(istate))/1.0d0!anormo(istate)
+        psig=psig+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(stoj(istate)))/anormo(istate)
       enddo
 
       psig=dsqrt(psig)

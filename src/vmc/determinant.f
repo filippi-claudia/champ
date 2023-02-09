@@ -235,6 +235,8 @@ c-----------------------------------------------------------------------
       use optwf_handle_wf, only: dcopy
       use sr_more, only: daxpy
       use csfs, only: nstates
+      use vmc_mod, only: nwftypemax, stoo, stoj, stobjx, nbjx, nwftypeorb, nwftypejas, bjxtoo, bjxtoj
+      use contrl_file, only: ounit
       implicit none
 
       integer :: i, ic, iorb, iparm, l, k
@@ -248,24 +250,25 @@ c-----------------------------------------------------------------------
       ! call resize_matrix(b, norb+nadorb, 1)
       ! call resize_tensor(dorb, norb+nadorb, 3)
 
-      do k=1,nstates !STU use jastrow and orbital mapping
+      do k=1,nbjx !STU only storing nbjx of these, us the mapping later
 c compute kinetic contribution of B+Btilde to compute Eloc
         do i=1,nelec
           do iorb=1,norb+nadorb
-            b(iorb,i,k)=-hb*(ddorb(iorb,i,k)+2*(vj(1,i,k)*dorb(iorb,i,1,k)
-     &                  +vj(2,i,k)*dorb(iorb,i,2,k)+vj(3,i,k)*dorb(iorb,i,3,k)))
+            b(iorb,i,k)=-hb*(ddorb(iorb,i,bjxtoo(k))+2*(vj(1,i,bjxtoj(k))*dorb(iorb,i,1,bjxtoo(k))
+     &      +vj(2,i,bjxtoj(k))*dorb(iorb,i,2,bjxtoo(k))+vj(3,i,bjxtoj(k))*dorb(iorb,i,3,bjxtoo(k))))
+c            write(ounit,*) "config,elec,orb,b", k,i,iorb,b(iorb,i,k)
           enddo
         enddo
       enddo
 c compute derivative of kinetic contribution of B+Btilde wrt jastrow parameters
       if(ioptjas.gt.0) then
-        do k=1,nstates !STU use jastrow and orbital mapping
+        do k=1,nbjx !STU use jastrow and orbital mappingi, similar to above
           do iparm=1,nparmj
             do i=1,nelec
               do iorb=1,norb
-                b_dj(iorb,i,iparm,k)=-2*hb*(g(1,i,iparm,k)*dorb(iorb,i,1,k)
-     &                               +g(2,i,iparm,k)*dorb(iorb,i,2,k)
-     &                               +g(3,i,iparm,k)*dorb(iorb,i,3,k))
+                b_dj(iorb,i,iparm,k)=-2*hb*(g(1,i,iparm,bjxtoj(k))*dorb(iorb,i,1,bjxtoo(k))
+     &                      +g(2,i,iparm,bjxtoj(k))*dorb(iorb,i,2,bjxtoo(k))
+     &                      +g(3,i,iparm,bjxtoj(k))*dorb(iorb,i,3,bjxtoo(k)))
               enddo
             enddo
           enddo

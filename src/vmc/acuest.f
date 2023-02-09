@@ -6,7 +6,7 @@ c routine to accumulate estimators for energy etc.
 
       use precision_kinds, only: dp
       use multiple_geo, only: MFORCE, pecent, nforce, fcm2, fcum
-      use vmc_mod, only: nrad
+      use vmc_mod, only: nrad, stoj, nwftypeorb
       use system, only: znuc, cent, iwctype, ncent, nelec
       use mstates_mod, only: MSTATES
       use control, only: ipr
@@ -63,6 +63,7 @@ c routine to accumulate estimators for energy etc.
       use rotqua_mod, only: gesqua
       use acuest_reduce_mod, only: acuest_reduce, acues1_reduce
       use nodes_distance_mod, only: rnorm_nodes_num
+      use mstates3, only: iweight_g !STU remove
 
 
       implicit none
@@ -164,11 +165,13 @@ c statistical fluctuations without blocking
         esum1(istate)=0
 
         apsi(istate)=apsi(istate)+dabs(psido(istate))
+      enddo
+      do k=1,nwftypeorb
 c !STU state mapping below aref, detiab, detref, can also loop over orb or nwftypemax
-        aref(istate)=aref(istate)+dabs(detiab(kref,1,istate)*detiab(kref,2,istate))
+        aref(k)=aref(k)+dabs(detiab(kref,1,k)*detiab(kref,2,k))
 
-        detref(1,istate)=detref(1,istate)+dlog10(dabs(detiab(kref,1,istate)))
-        detref(2,istate)=detref(2,istate)+dlog10(dabs(detiab(kref,2,istate)))
+        detref(1,k)=detref(1,k)+dlog10(dabs(detiab(kref,1,k)))
+        detref(2,k)=detref(2,k)+dlog10(dabs(detiab(kref,2,k)))
       enddo
 
       call acues1_reduce
@@ -215,12 +218,13 @@ c zero out estimators
         tjfsum(istate)=0
 
         apsi(istate)=0
-c      enddo
+      enddo
+      do k=1,nwftypeorb
 c      !STU mapping to avoid errors
-        detref(1,istate)=0
-        detref(2,istate)=0
+        detref(1,k)=0
+        detref(2,k)=0
 
-        aref(istate)=0
+        aref(k)=0
       enddo
 
       r2cm2=0
@@ -284,17 +288,18 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,eold(1,1),0,1)
 
-      do istate=1,nstates !STU mapping psijo, do we want this if no guiding?
-        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(istate))
+      do istate=1,nstates
+        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
         if(ipr.gt.1) write(ounit,'(''zerest STATE,psido,psijo,psi2o='',i4,3d12.4)') 
-     &                istate,psido(istate),psijo(istate),psi2o(istate,1)
+     &                istate,psido(istate),psijo(stoj(istate)),psi2o(istate,1)
       enddo
 
       if(iguiding.gt.0) then
         call determinant_psig(psido,psijo,psidg)
 c rewrite psi2o if you are sampling guiding
         psi2o(1,1)=2*(dlog(dabs(psidg)))
-        if(ipr.gt.1) write(ounit,'(''zerest after guiding: psig,psi2o='',2d12.4)') psidg,psi2o(1,1)
+c        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo(1))
+        if(ipr.gt.1) write(ounit,'(''zerest after guiding: psig,psi2o='',2d12.4)') psidg/exp(psijo(1)),psi2o(1,1)
       endif
 
       if(node_cutoff.gt.0) then

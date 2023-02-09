@@ -63,7 +63,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use hpsie, only: psie
       use distances_mod,  only: distancese_restore
       use multideterminant_mod, only: update_ymat
-      use vmc_mod, only: nwftypejas
+      use vmc_mod, only: nwftypejas, stoj
 
       implicit none
 
@@ -101,6 +101,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp), dimension(MSTATES) :: psidn
       real(dp), dimension(nwftypejas) :: psijn
       real(dp), dimension(MSTATES) :: wtg
+      real(dp), dimension(MSTATES) :: wtg_sqrt 
       real(dp), parameter :: zero = 0.d0
       real(dp), dimension(MSTATES) :: zero_array = 0.0_dp
       real(dp), parameter :: one = 1.d0
@@ -403,9 +404,12 @@ c calculate psi at new configuration
       iel=i
 
       call psie(iel,xnew,psidn,psijn,ipass,0)
-      if(iguiding.eq.0) then
 
-        psig=psidn(1)
+      if(iguiding.eq.0) then
+        psidg=psidn(1)
+        psig=psidn(1)*exp(psijn(1))
+c       psig=psidn(1)
+c       psi2n(1)=2*(dlog(dabs(psig))+psijn(1))
       else
         call determinant_psig(psidn,psijn,psig)
       endif
@@ -422,11 +426,7 @@ c calculate psi at new configuration
         write(ounit,'(''psidn,psig ='',2d12.4)') psidn(1),psig
       endif
 
-      if (nwftypejas.gt.1) then
-        psi2n(1)=2*(dlog(dabs(psig))) !det..psig(..) takes care of jastrow now
-      else
-        psi2n(1)=2*(dlog(dabs(psig))+psijn(1))
-      endif
+      psi2n(1)=2*(dlog(dabs(psig))) !det..psig(..) takes care of jastrow now
 
       if(node_cutoff.ne.0) then
         do jel=1,nup
@@ -615,6 +615,8 @@ c The K.E. is not quite correct, since we should use p times new
 c and q times old, and keep track of which bin the old was in
       rold=dsqrt(xold(1,i)**2+xold(2,i)**2+xold(3,i)**2)
       rnew=dsqrt(xnew(1,i)**2+xnew(2,i)**2+xnew(3,i)**2)
+      !write(ounit,*) 'rold,min(int(delri*rold),itryo', rold, int(delri*rold)+1,nrad 
+      !write(ounit,*) 'rnew,min(int(delri*rnew),itryn', rnew, int(delri*rnew)+1,nrad 
       itryo=min(int(delri*rold)+1,nrad)
       itryn=min(int(delri*rnew)+1,nrad)
       try(itryo)=try(itryo)+1
@@ -688,29 +690,30 @@ c loop over secondary configurations
 c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
-      do istate=1,nstates !STU mapping psijo
-         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(istate))
+      do istate=1,nstates
+         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
       enddo
 
       if(iguiding.eq.0) then
         psidg=psido(1)
+	psig=psido(1)*exp(psijo(1))
        else
-        call determinant_psig(psido,psijo,psidg)
+        call determinant_psig(psido,psijo,psig)
       endif
 
       if(ipr.gt.1) then
-        write(ounit,'(''psid,psig ='',2d12.4)') psido(1),psidg
+        write(ounit,'(''psid,psig ='',2d12.4)') psido(1),psig
       endif
 
 
       rnorm_nodes=1.d0
       if(node_cutoff.gt.0) then
         do jel=1,nelec
-          call compute_determinante_grad(jel,psidg,psido(1),psijo,vold(1,jel),1)
+          call compute_determinante_grad(jel,psig,psido(1),psijo,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
-        psidg=psido(1)*rnorm_nodes
+        psig=psig*rnorm_nodes
         if(ipr.gt.1) then
           write(ounit,'(''distance_node='',d12.4)') distance_node
           write(ounit,'(''rnorm_nodes='',d12.4)') rnorm_nodes
@@ -719,10 +722,9 @@ c primary configuration
         distance_node_sum=distance_node_sum+distance_node
       endif
 
-      do istate=1,nstates !STU mapping of psijo
-        wtg(istate)=psido(istate)/psidg
-        if(nwftypejas.gt.1) wtg(istate)=wtg(istate)*exp(psijo(istate))
-        wtg(istate)=wtg(istate)*wtg(istate)
+      do istate=1,nstates 
+        wtg_sqrt(istate)=psido(istate)*exp(psijo(stoj(istate)))/psig
+        wtg(istate)=wtg_sqrt(istate)*wtg_sqrt(istate) !STU need later in ortho calc
 
 c form expected values of e, pe, etc.
         esum1(istate)=eold(istate,1)
@@ -744,7 +746,7 @@ c use 'new' not 'old' value
       call pcm_sum(wtg(1),0.d0)
       call mmpol_sum(wtg(1),0.d0)
       call prop_sum(wtg(1),0.d0)
-      call force_analy_sum(wtg(1),0.d0,eold(1,1),0.0d0)
+      call force_analy_sum(wtg(1),0.d0,eold(1,1),0.0d0) !STU, Ramon added a state index here check all of these
 
       call optjas_sum(wtg,zero_array,eold(1,1),eold(1,1),0)
       call optorb_sum(wtg,zero_array,eold(1,1),eold(1,1),0)
@@ -754,9 +756,9 @@ c use 'new' not 'old' value
       call optx_jas_ci_sum(wtg(1),0.d0,eold(1,1),eold(1,1))
       call optx_orb_ci_sum(wtg(1),0.d0)
 
-      if(irun.eq.1) call optwf_store(ipass,wtg,psido,eold(1,1))
+      if(irun.eq.1) call optwf_store(ipass,wtg,wtg_sqrt,psido,eold(1,1))
 
-      call efficiency_sample(ipass,psido,psijo,psidg)
+      call efficiency_sample(ipass,psido,psijo,psig)
 
       call acues1(wtg)
 
@@ -779,7 +781,7 @@ c use 'new' not 'old' value
       enddo
 
 c rewrite psi2o for next metropolis step if you are sampling guiding
-      if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psidg)))
+      if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psig)))
 
       if(node_cutoff.gt.0) then
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)

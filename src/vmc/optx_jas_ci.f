@@ -14,6 +14,8 @@
       use ci004_blk, only: ci_de, ci_de_old
       use precision_kinds, only: dp
       use csfs, only: nstates
+      use vmc_mod, only: stoj
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -22,13 +24,35 @@
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
+      !STU in principle shouldn't the denergy (which have a nparmj index), (found in de_o_ci) use a stoj(k), and not just a '1' as shown. Then these will all be nbjx (mixed) sized quantities.
       do k=1,nstates !STU add jastrow/orb mapping here 
         do j=1,nciterm !STU ci variables need an index added eventually
-          do i=1,nparmj
-            dj_o_ci(i,j,k)=dj_o_ci(i,j,k)+p*gvalue(i,k)*ci_o(j,k)+q*gvalue_old(i,k)*ci_o_old(j,k)
-            dj_oe_ci(i,j,k)=dj_oe_ci(i,j,k)+p*gvalue(i,k)*ci_o(j,k)*enew+q*gvalue_old(i,k)*ci_o_old(j,k)*eold
-            de_o_ci(i,j,k)=de_o_ci(i,j,k)+p*denergy(i,1)*ci_o(j,k)+q*denergy_old(i,1)*ci_o_old(j,k)
-            dj_de_ci(i,j,k)=dj_de_ci(i,j,k)+p*gvalue(i,k)*ci_de(j,k)+q*gvalue_old(i,k)*ci_de_old(j,k)
+          do i=1,nparmj !STU i think you should use your stobjx mapping IF ci_o is indeed a istate object (because psidi(istate)) then all of  these are istate objects!!!
+            dj_o_ci(i,j,k)=dj_o_ci(i,j,k)+p*gvalue(i,stoj(k))*ci_o(j,k)
+     &              +q*gvalue_old(i,stoj(k))*ci_o_old(j,k)
+            dj_oe_ci(i,j,k)=dj_oe_ci(i,j,k)+p*gvalue(i,stoj(k))*ci_o(j,k)*enew
+     &              +q*gvalue_old(i,stoj(k))*ci_o_old(j,k)*eold
+            de_o_ci(i,j,k)=de_o_ci(i,j,k)+p*denergy(i,k)*ci_o(j,k)
+     &              +q*denergy_old(i,k)*ci_o_old(j,k)
+            dj_de_ci(i,j,k)=dj_de_ci(i,j,k)+p*gvalue(i,stoj(k))*ci_de(j,k)
+     &              +q*gvalue_old(i,stoj(k))*ci_de_old(j,k)
+
+c            dj_o_ci(i,j,stobjx(k))=dj_o_ci(i,j,stobjx(k))+p*gvalue(i,stoj(k))*ci_o(j,stoo(k))
+c     &              +q*gvalue_old(i,stoj(k))*ci_o_old(j,stoo(k))
+c            dj_oe_ci(i,j,stobjx(k))=dj_oe_ci(i,j,stobjx(k))+p*gvalue(i,stoj(k))*ci_o(j,stoo(k))*enew
+c     &              +q*gvalue_old(i,stoj(k))*ci_o_old(j,stoo(k))*eold
+c            de_o_ci(i,j,stoo(k))=de_o_ci(i,j,stoo(k))+p*denergy(i,1)*ci_o(j,stoo(k))
+c     &              +q*denergy_old(i,1)*ci_o_old(j,stoo(k))
+c            dj_de_ci(i,j,stobjx(k))=dj_de_ci(i,j,stobjx(k))+p*gvalue(i,stoj(k))*ci_de(j,stoo(k))
+c     &              +q*gvalue_old(i,stoj(k))*ci_de_old(j,stoo(k))
+
+c            write(ounit,*) "state,stobjx(k),stoj(k),stoo(k),ci,jas,gn,cn,go,co",
+c     &                      k, stobjx(k), stoj(k),stoo(k), j, i, gvalue(i,stoj(k)), ci_o(j,stoo(k)),
+c     &                      gvalue_old(i,stoj(k)), ci_o_old(j,stoo(k))
+c            write(ounit,*) "dj_o_ci(jas,ci,stobjx(state)), dj_oe_ci, de_o_ci(i,j,stoo(k)), dj_de_ci",
+c     &                      dj_o_ci(i,j,stobjx(k)), dj_oe_ci(i,j,stobjx(k)),
+c     &                      de_o_ci(i,j,stoo(k)), dj_de_ci(i,j,stobjx(k))
+
           enddo
         enddo
       enddo
@@ -42,7 +66,8 @@ c-----------------------------------------------------------------------
       use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
-      use vmc_mod, only: nwftypemax
+      use vmc_mod, only: nwftypemax, stoo, stobjx
+      use csfs, only: nstates
 
       implicit none
 
@@ -50,12 +75,12 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
-      do k=1,nwftypemax
+      do k=1,nstates
         do i=1,nparmj
           do j=1,nciterm
             dj_o_ci(i,j,k)=0
             dj_oe_ci(i,j,k)=0
-            de_o_ci(i,j,k)=0
+            de_o_ci(i,j,k)=0 !STU change to stobjx if we use jastrow dependent denergy, was stoo
             dj_de_ci(i,j,k)=0
           enddo
         enddo
@@ -78,7 +103,7 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
-      k=1 !STU need to set up for nwftypemax
+      k=1 !STU need to set up for nwftypemax, nbjx.
 
       write(iu) ((dj_o_ci(i,j,k),dj_oe_ci(i,j,k),dj_de_ci(i,j,k),de_o_ci(i,j,k),i=1,nparmj),j=1,nciterm)
 
@@ -98,7 +123,7 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
-      k=1 !STU need to set up for nwftypemax
+      k=1 !STU need to set up for nwftypemax, nbjx
 
       read(iu) ((dj_o_ci(i,j,k),dj_oe_ci(i,j,k),dj_de_ci(i,j,k),de_o_ci(i,j,k),i=1,nparmj),j=1,nciterm)
 
@@ -133,7 +158,7 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      k=1 !STU need to set up for nwftypemax 
+      k=1 !STU need to set up with nbjx, stobjx etc, not needed for sr_n
 
       if(method.eq.'hessian') then
 

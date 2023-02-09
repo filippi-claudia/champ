@@ -7,6 +7,7 @@ c 1st and 2nd derivs also calculated if ider=1.
 
       use vmc_mod, only: NCOEF
       use numbas, only: arg, d2rwf, igrid, nr, r0, rwf
+      use contrl_file, only: ounit
 
       use numexp, only: ae, ce
       use precision_kinds, only: dp
@@ -90,7 +91,6 @@ c cubic spline interpolation
           wfv(4)=(-d2rwf(jx,irb,ic,iwf)+d2rwf(jx+1,irb,ic,iwf))*delhi
         endif
       endif
-
       return
       end
       end module

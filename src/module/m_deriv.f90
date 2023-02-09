@@ -191,7 +191,7 @@ module denergy_det_m
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: denergy_det !(MDET, 2, nwftypeorb)
+    real(dp), dimension(:, :, :), allocatable :: denergy_det !(MDET, 2, nbjx)
 
     private
     public :: denergy_det
@@ -200,8 +200,8 @@ module denergy_det_m
 contains
     subroutine allocate_denergy_det_m()
       use slater, only: ndet
-      use vmc_mod, only: nwftypeorb
-        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2, nwftypeorb))
+      use vmc_mod, only: nbjx
+        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2, nbjx))
     end subroutine allocate_denergy_det_m
 
     subroutine deallocate_denergy_det_m()

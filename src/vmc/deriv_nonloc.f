@@ -22,6 +22,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use qua, only: nquad
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nctype,nelec,nup
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -104,9 +105,11 @@ c   5   dpsij_ratio(iparm)=gvalue(iparm)
       if (nelec.lt.2) goto 47
 
       ipara=nparma(1)
+c      write(ounit,*) 'nparmj,nparma(1),ijas', nparmj, nparma(1), ijas
       if(ijas.ge.4.and.ijas.le.6) then
         do it=2,nctype
           ipara=ipara+nparma(it)
+c          write(ounit,*) 'it,nparma(it)', it, nparma(it)
         enddo
       endif
 
@@ -177,6 +180,7 @@ c e-e terms
 
         do jparm=1,nparmb(isb)
           iparm=iparm0+jparm
+c          write(ounit,*) 'jparm,iparm0,iparm,nparmb(isb),isb', jparm,iparm0,iparm,nparmb(isb),isb
           dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(i,j,iparm,iwfjas)
         enddo
 
@@ -214,12 +218,14 @@ c e-n terms
           iparm0=npointa(it)
           fsn(iel,iel)=fsn(iel,iel)+
      &    deriv_psianl(rr_en_quad(ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
+c          write(ounit,*) 'ic,it,iwctype(ic),iparm0,iparm0+1', ic,it,iwctype(ic),iparm0,iparm0+1
         enddo
         do it=1,nctype
           iparm0=npointa(it)
           do jparm=1,nparma(it)
             iparm=iparm0+jparm
             dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(iel,iel,iparm,iwfjas)
+c            write(ounit,*) 'it,npointa(it),jparm,iparm0,iparm', it,npointa(it),jparm,iparm0,iparm
           enddo
         enddo
       endif

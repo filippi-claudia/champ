@@ -14,10 +14,11 @@
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
       use precision_kinds, only: dp
+      use vmc_mod, only: stoj
 
       implicit none
 
-      integer :: i, iflag, istate, j
+      integer :: i, iflag, istate, j, js
       real(dp) :: p, q
       real(dp), dimension(*) :: wtg_new
       real(dp), dimension(*) :: wtg_old
@@ -26,12 +27,15 @@
 
       do istate=1,nstates
       !STU must add jastrow state mapping here for gvalue and gvalue_old
+      ! although this is not called during sr_n apparently. maybe
+      ! istate=1 in gvalue.
+      js=stoj(istate)
       p=wtg_new(istate)
       do i=1,nparmj
         do j=1,nreduced
-        dj_o(i,j,istate)=dj_o(i,j,istate)  +p*gvalue(i,istate)*orb_o(j,istate)
-        dj_oe(i,j,istate)=dj_oe(i,j,istate)+p*gvalue(i,istate)*orb_oe(j,istate)
-        dj_ho(i,j,istate)=dj_ho(i,j,istate)+p*gvalue(i,istate)*orb_ho(j,istate)
+        dj_o(i,j,istate)=dj_o(i,j,istate)  +p*gvalue(i,js)*orb_o(j,istate)
+        dj_oe(i,j,istate)=dj_oe(i,j,istate)+p*gvalue(i,js)*orb_oe(j,istate)
+        dj_ho(i,j,istate)=dj_ho(i,j,istate)+p*gvalue(i,js)*orb_ho(j,istate)
         de_o(i,j,istate)=de_o(i,j,istate)  +p*denergy(i,istate)*orb_o(j,istate)
         enddo
       enddo
@@ -41,13 +45,14 @@
       if(iflag.eq.0) return
 
       do istate=1,nstates
+      js=stoj(istate)
 
       q=wtg_old(istate)
       do i=1,nparmj
         do j=1,nreduced
-        dj_o(i,j,istate)=dj_o(i,j,istate)  +q*gvalue_old(i,istate)*orb_o_old(j,istate)
-        dj_oe(i,j,istate)=dj_oe(i,j,istate)+q*gvalue_old(i,istate)*orb_oe_old(j,istate)
-        dj_ho(i,j,istate)=dj_ho(i,j,istate)+q*gvalue_old(i,istate)*orb_ho_old(j,istate)
+        dj_o(i,j,istate)=dj_o(i,j,istate)  +q*gvalue_old(i,js)*orb_o_old(j,istate)
+        dj_oe(i,j,istate)=dj_oe(i,j,istate)+q*gvalue_old(i,js)*orb_oe_old(j,istate)
+        dj_ho(i,j,istate)=dj_ho(i,j,istate)+q*gvalue_old(i,js)*orb_ho_old(j,istate)
         de_o(i,j,istate)=de_o(i,j,istate)  +q*denergy_old(i,istate)*orb_o_old(j,istate)
         enddo
       enddo

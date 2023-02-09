@@ -60,7 +60,7 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
 c spline interpolation
         if(i3dsplorb.eq.2) then
           do k=1,nwftypeorb
-            if(nwftypeorb.gt.1) iwf=k
+c            if(nwftypeorb.gt.1) iwf=k !STU sort this out later.
             do i=1,nelec
             ier = 0.d0 ! should this be double prec?
               do iorb=1,norb+nadorb
@@ -70,7 +70,6 @@ c spline interpolation
                 dorb(iorb,i,3,k)=1.d0   ! compute the gradients
                 call spline_mo(x(1,i),iorb,orb(i,iorb,k),dorb(iorb,i,:,k),ddorb(iorb,i,k),ier)
               enddo
-
               if(ier.eq.1) then
 c#if defined(TREXIO_FOUND)
 c                if (trexio_has_group_orbitals) then
@@ -79,7 +78,9 @@ c                else
 c                  call basis_fns(i,i,rvec_en,r_en,2)
 c                endif
 c#else
+c                if(nwftypeorb.gt.1) iwf=1 !STU sort this out later     
                 call basis_fns(i,i,nelec,rvec_en,r_en,2)
+c                if(nwftypeorb.gt.1) iwf=k !STU sort this out later
 c#endif
                 do iorb=1,norb+nadorb
                   orb(i,iorb,k)=0.d0
@@ -103,7 +104,7 @@ c#endif
 ! Lagrange interpolation, did not inclue multiorb here yet
         elseif(i3dlagorb.eq.2) then
          do k=1,nwftypeorb
-           if(nwftypeorb.gt.1) iwf=k
+c           if(nwftypeorb.gt.1) iwf=k !STU sort this out later
            do i=1,nelec
              ier=0
              call lagrange_mos(1,x(1,i),orb(1,1,k),i,ier)
@@ -120,7 +121,9 @@ c              else
 c                call basis_fns(i,i,rvec_en,r_en,2)
 c              endif
 c#else
+              if(nwftypeorb.gt.1) iwf=1 !STU sort this out later
               call basis_fns(i,i,nelec,rvec_en,r_en,2)
+              if(nwftypeorb.gt.1) iwf=k !STU sort this out later
 c#endif            
                do iorb=1,norb+nadorb
                  orb(i,iorb,k)=0.d0
@@ -154,6 +157,7 @@ c         else
 c          call basis_fns(1,nelec,rvec_en,r_en,ider)
 c         endif
 c#else
+c         if(nwftypeorb.gt.1) iwf=1 !STU, doing this for now
          call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 c#endif
 
@@ -370,6 +374,7 @@ c            else
 c              call basis_fns(iel,iel,rvec_en,r_en,ider)
 c            endif
 c#else
+            if(nwftypeorb.gt.1) iwf=1 !STU doing this for now
             call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
 c#endif
 

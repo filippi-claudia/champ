@@ -21,7 +21,7 @@ c Written by Claudia Filippi by modifying hpsi
       use slater, only: kref
       use system, only: nelec
       use velocity_jastrow, only: vjn
-      use vmc_mod, only: nwftypejas
+      use vmc_mod, only: nwftypejas, stoo
 
       implicit none
 
@@ -63,7 +63,7 @@ c      endif
       icheck=0
       !STU check state mapping / orb in detn
       do istate=1,nstates
-        if(detn(kref,istate).eq.0.d0) then
+        if(detn(kref,stoo(istate)).eq.0.d0) then
           psid(istate)=0.d0
           icheck=1
         endif
@@ -87,10 +87,10 @@ c !STU check state mapping in aref, detn
           apsi_now=apsi(istate)/(ipass-1)
           check_apsi=abs(psid(istate))/apsi_now
           check_apsi_min=min(check_apsi,check_apsi_min)
-          aref_now=aref(istate)/(ipass-1)
-          check_dref=abs(detn(kref,istate))/aref_now
-          write(ounit,*) 'apsi,apsi_now,psid,check_apsi,aref,aref_now',
-     &     apsi(istate),apsi_now,psid(istate),check_apsi,aref(istate),aref_now 
+          aref_now=aref(stoo(istate))/(ipass-1)
+          check_dref=abs(detn(kref,stoo(istate)))/aref_now
+c          write(ounit,*) 'apsi,apsi_now,psid,check_apsi,aref,aref_now',
+c     &    apsi(istate),apsi_now,psid(istate),check_apsi,aref(stoo(istate)),aref_now 
         enddo
 
       endif

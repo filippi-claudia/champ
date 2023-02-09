@@ -3,7 +3,7 @@
       contains
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim,istate)
 
-      use vmc_mod, only: norb_tot
+      use vmc_mod, only: norb_tot, stoo, stobjx
       use system, only: ndn, nup
       use slater, only: kref
       use multidet, only: ivirt
@@ -40,7 +40,7 @@ c     ns_current=ns_current+1
 c     if(ns_current.ne.iorbsample) return
 c ns_current reset in optorb_sum
       !STU add state to orb mapping here.
-      detratio=detiab(kref,1,istate)*detiab(kref,2,istate)/psid
+      detratio=detiab(kref,1,stoo(istate))*detiab(kref,2,stoo(istate))/psid
       do iterm=1,norbterm
 
         io=ideriv(1,iterm)
@@ -63,19 +63,19 @@ c ns_current reset in optorb_sum
 
           if(io.ge.ivirt(iab)) then
             do i=1,nel
-              dorb_psi=dorb_psi+zmat(io,i,iab)*orb(i+ish,jo,istate)
-              dorb_energy=dorb_energy+dzmat(io,i,iab)*orb(i+ish,jo,istate)+zmat(io,i,iab)*b(jo,i+ish,istate)
+              dorb_psi=dorb_psi+zmat(io,i,iab)*orb(i+ish,jo,stoo(istate))
+              dorb_energy=dorb_energy+dzmat(io,i,iab)*orb(i+ish,jo,stoo(istate))+zmat(io,i,iab)*b(jo,i+ish,stobjx(istate))
             enddo
           endif
           if(ideriv_ref(iterm,iab).gt.0) then
             irep=irepcol_ref(iterm,iab)
 
-            dorb_psi_ref=dorb_psi_ref+aa(irep,jo,iab,istate)
-            dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,iab,istate)
+            dorb_psi_ref=dorb_psi_ref+aa(irep,jo,iab,stoo(istate))
+            dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,iab,stoo(istate))
 
             do i=1,nel
-              dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo,istate)
-              dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo,istate)-aaz(irep,i,iab)*b(jo,i+ish,istate)
+              dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo,stoo(istate))
+              dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo,stoo(istate))-aaz(irep,i,iab)*b(jo,i+ish,stobjx(istate))
             enddo
           endif
 

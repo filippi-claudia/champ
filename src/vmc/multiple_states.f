@@ -4,9 +4,10 @@
 c----------------------------------------------------------------------
       subroutine efficiency_sample(ipass,determ_s,psij,determ_psig)
 
-      use mstates_ctrl, only: iefficiency, nstates_psig
+      use mstates_ctrl, only: iefficiency, nstates_psig, iguiding
       use mstates2, only: effcm2, effcum
       use precision_kinds, only: dp
+      use vmc_mod, only: stoj
       implicit none
 
       integer :: ipass, j
@@ -23,7 +24,7 @@ c----------------------------------------------------------------------
 c     write(ounit,*) ((determ_s(j)*determ_psigi)**2,j=1,nstates_psig)
 
       do j=1,nstates_psig
-        ratio=determ_s(j)*exp(psij(j))*determ_psigi
+        ratio=determ_s(j)*exp(psij(stoj(j)))*determ_psigi
         wi=ratio*ratio
         effcum(j)=effcum(j)+wi
         effcm2(j)=effcm2(j)+wi*wi

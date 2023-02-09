@@ -26,6 +26,7 @@ c Written by Claudia Filippi
       use acuest_write_mod, only: acuest_write
       use pcm_mod, only: qpcm_update_vol, pcm_compute_penupv
       use pcm_reduce_mod, only: pcm_reduce_chvol
+      use vmc_mod, only: stoo
 
       implicit none
 
@@ -65,11 +66,11 @@ c Written by Claudia Filippi
 c      enddo
 
         jo=jo+1 !STU mapping here, although will be save multple times regardless
-        local_obs(jo)=aref(istate)
+        local_obs(jo)=aref(stoo(istate))
 
         do iab=1,2
           jo=jo+1
-          local_obs(jo)=detref(iab,istate)
+          local_obs(jo)=detref(iab,stoo(istate))
         enddo
       enddo
 
@@ -135,11 +136,11 @@ c      enddo
 c      enddo
 c       !STU mapping here?, aref, detref
         jo=jo+1
-        aref(istate)=collect(jo)/nproc
+        aref(stoo(istate))=collect(jo)/nproc
 
         do iab=1,2
           jo=jo+1
-          detref(iab,istate)=collect(jo)/nproc
+          detref(iab,stoo(istate))=collect(jo)/nproc
         enddo
       enddo
 

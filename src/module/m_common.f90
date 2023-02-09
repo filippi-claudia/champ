@@ -5,15 +5,15 @@ module Bloc
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: b !(norb_tot,MELEC,nwftypemax)
-    real(dp), dimension(:, :, :, :), allocatable :: tildem !(MELEC,norb_tot,2,nwftypemax)
-    real(dp), dimension(:, :, :), allocatable :: xmat !(MELEC**2,2,nwftypemax)
+    real(dp), dimension(:, :, :), allocatable :: b !(norb_tot,MELEC,nbjx)
+    real(dp), dimension(:, :, :, :), allocatable :: tildem !(MELEC,norb_tot,2,nbjx)
+    real(dp), dimension(:, :, :), allocatable :: xmat !(MELEC**2,2,nbjx)
 
     !> Former Bloc_da
     real(dp), dimension(:, :, :, :), allocatable :: b_da !(3,MELEC,norb_tot,MCENT)
 
     !> former Bloc_dj
-    real(dp), dimension(:, :, :, :), allocatable :: b_dj !(norb_tot,MELEC,nparmj,nwftypemax)
+    real(dp), dimension(:, :, :, :), allocatable :: b_dj !(norb_tot,MELEC,nparmj,nbjx)
 
     private
     public :: b, tildem, xmat
@@ -26,13 +26,14 @@ contains
       use optwf_parms, only: nparmj
       use slater, only: norb
       use system, only: ncent_tot, ncent, nelec
-      use vmc_mod, only: norb_tot, nwftypemax
+      use vmc_mod, only: norb_tot, nbjx
+      use mstates_mod, only: MSTATES
 
-        if (.not. allocated(b)) allocate (b(norb_tot, nelec, nwftypemax))
-        if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2, nwftypemax))
-        if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2, nwftypemax))
+        if (.not. allocated(b)) allocate (b(norb_tot, nelec, MSTATES)) !STU nbjx (< MSTATES) would be right instead of MSTATES
+        if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2, MSTATES))
+        if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2, MSTATES))
         if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb_tot, ncent_tot))
-        if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj, nwftypemax))
+        if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj, MSTATES))
 
     end subroutine allocate_Bloc
 
@@ -694,7 +695,7 @@ module scratch
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: denergy_det !(MDET,2,nwftypeorb)
+    real(dp), dimension(:, :, :), allocatable :: denergy_det !(MDET,2,nbjx)
     real(dp), dimension(:, :, :), allocatable :: dtildem !(MELEC,norb_tot,2)
 
     private
@@ -705,8 +706,8 @@ contains
     subroutine allocate_scratch()
       use slater, only: ndet
       use system, only: nelec
-      use vmc_mod, only: norb_tot, nwftypeorb
-        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2, nwftypeorb))
+      use vmc_mod, only: norb_tot, nbjx
+        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2, nbjx))
         if (.not. allocated(dtildem)) allocate (dtildem(nelec, norb_tot, 2))
     end subroutine allocate_scratch
 

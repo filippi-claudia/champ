@@ -18,6 +18,7 @@
       use optorb_mod, only: nmatdim
       use optorb_cblock, only: norbterm
       use vmc_mod, only: nwftypeorb
+      use csfs, only: nstates
 
       implicit none
 
@@ -69,7 +70,7 @@ c     max does not work with g77
         return
       endif
 
-      do k=1,nwftypeorb
+      do k=1,nstates
         call mpi_reduce(ci_o_cum(1,k),optci_reduce_collect(1),nciterm
      &      ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 

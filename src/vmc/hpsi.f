@@ -39,7 +39,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use optjas_mod,     only: optjas_deloc
       use optorb_f_mod,   only: optorb_compute
       use force_analytic, only: compute_force
-      use vmc_mod,        only: nwftypejas, nwftypeorb, nwftypemax
+      use vmc_mod,        only: nwftypejas, nwftypeorb, nwftypemax, nbjx, stoo, stoj, stobjx
       use optwf_control,  only: method
       use determinant_psit_mod, only: determinant_psit
       use multideterminant_mod, only: multideterminant_hpsi
@@ -56,7 +56,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       implicit none
 
-      integer :: i, iab, ifr, ii, ipass
+      integer :: i, iab, ifr, ii, ipass, j, o, x
       integer :: irep, istate, jrep, nel
       real(dp) :: e_other, ext_pot, peQM, pe_local
       real(dp) :: pepcm
@@ -66,9 +66,9 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       real(dp), dimension(*) :: energy
       real(dp), dimension(nwftypejas) :: d2j
       real(dp), dimension(nstates) :: denergy
-      real(dp), dimension(ndet, 2, nwftypeorb) :: eloc_det
-      real(dp), dimension(2, nwftypeorb) :: vpsp_det
-      real(dp), dimension(nparmj,nwftypejas) :: dvpsp_dj
+      real(dp), dimension(ndet, 2, nbjx) :: eloc_det
+      real(dp), dimension(2, nbjx) :: vpsp_det
+      real(dp), dimension(nparmj,nbjx) :: dvpsp_dj !STU questionable
 
 c Calculates energy
 
@@ -152,19 +152,24 @@ c nonloc_pot must be called after determinant because slater matrices are needed
      &  call nonloc_pot(coord,rshift,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
       if(ipr.ge.3) then
         write(ounit,'(''pe_loc after nonloc_pot'',9f12.5)') pe_local
-        do i=1,nstates !STU use state mapping
+        do i=1,nstates
           write(ounit,'(''pe_ref after nonloc_pot, state ,up/down: 
-     &             '',i4,9f12.5)') i,(vpsp_det(ii,i),ii=1,2)
+     &             '',i4,9f12.5)') i,(vpsp_det(ii,stobjx(i)),ii=1,2)
         enddo
       endif
 
       call multideterminant_hpsi(vj,vpsp_det,eloc_det)
 
       do istate=1,nstates !STU need mapping here in d2j, vj, tildem, detiab, eloc_det
-        e_other=pe_local-hb*d2j(istate)
+        j=stoj(istate)
+        o=stoo(istate)
+        x=stobjx(istate)
+
+        e_other=pe_local-hb*d2j(j)
         do i=1,nelec
-          e_other=e_other-hb*(vj(1,i,istate)**2+vj(2,i,istate)**2+vj(3,i,istate)**2)
+          e_other=e_other-hb*(vj(1,i,j)**2+vj(2,i,j)**2+vj(3,i,j)**2)
         enddo
+        !write(ounit,*) "e_other", e_other
 c combine determinantal quantities to obtain trial wave function
         call determinant_psit(psid(istate),istate)
 c compute energy using Ymat
@@ -174,19 +179,21 @@ c compute energy using Ymat
           if(iab.eq.2) nel=ndn
           do jrep=ivirt(iab),norb
             do irep=iactv(iab),nel
-              denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,iab,istate)
+              denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,iab,x)
             enddo
             !write(ounit,*) jrep,'Y',(ymat(jrep,irep,iab,istate),irep=iactv(iab),nel)
-            !write(ounit,*) jrep,'M',(tildem(irep,jrep,iab,istate),irep=iactv(iab),nel)
+            !write(ounit,*) jrep,'M',(tildem(irep,jrep,iab,x),irep=iactv(iab),nel)
           enddo
         enddo
-        denergy(istate)=denergy(istate)*detiab(kref,1,istate)*detiab(kref,2,istate)/psid(istate)
+        write(ounit,*) "state,denergy", istate, denergy(istate)
+        denergy(istate)=denergy(istate)*detiab(kref,1,o)*detiab(kref,2,o)/psid(istate)
 
-        energy(istate)=denergy(istate)+eloc_det(kref,1,istate)+eloc_det(kref,2,istate)+e_other
+        energy(istate)=denergy(istate)+eloc_det(kref,1,x)+eloc_det(kref,2,x)+e_other
+
         if(ipr.ge.2) then
           write(ounit,'(''state'',i4)') istate
-          write(ounit,'(''psid,psij'',9d12.5)') psid(istate),psij(istate)
-          write(ounit,'(''psitot   '',e18.11)') psid(istate)*exp(psij(istate))
+          write(ounit,'(''psid,psij'',9d12.5)') psid(istate),psij(stoj(istate))
+          write(ounit,'(''psitot   '',e18.11)') psid(istate)*exp(psij(stoj(istate)))
 c         do k=1,ndet
 c           write(ounit,'(''psitot_k '',i6,3e18.8)') k, detiab(k,1),detiab(k,2),detiab(k,1)*detiab(k,2)*exp(psij)
 c           write(ounit,'(''psitot_k '',i6,3e18.8)') k, detiab(k,1),detiab(k,2),cdet(k,1,1)*detiab(k,1)*detiab(k,2)*exp(psij)

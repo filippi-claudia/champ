@@ -32,6 +32,7 @@
       use optwf_lin_dav_extra, only: select_ci_root
       use optwf_lin_dav_more,  only: lin_d
       use sr_more, only: dscal
+      use sr_mat_n, only: h_sr, sr_state, ortho
       implicit none
       interface
       subroutine qmc
@@ -190,7 +191,9 @@ c if the last step was a davidson then save the old energy before recomputing it
 
           if(method.eq.'sr_n') then
             call sr_hs(nparm,sr_adiag)
-            call sr(nparm,deltap,sr_adiag,sr_eps,i)
+            sr_state = 1
+            ortho=0
+            call sr(nparm,h_sr(1:nparm,1),deltap,sr_adiag,sr_eps,i)
             call dscal(nparm,-sr_tau,deltap,1)
             adiag=sr_adiag
            else

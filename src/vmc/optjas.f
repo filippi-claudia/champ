@@ -21,7 +21,7 @@
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
       use bxmatrices, only: bxmatrix
-      use vmc_mod, only: nwftypejas
+      use vmc_mod, only: nwftypejas, stoj, stoo, stobjx, bjxtoj, nbjx
 
       implicit none
 
@@ -35,7 +35,7 @@
       real(dp), dimension(nparmj, *) :: dvpsp_dj
       real(dp), dimension(*) :: energy
       real(dp), dimension(3, nelec, *) :: vj
-      real(dp), dimension(nwftypejas) :: deloc_dj_kref
+      real(dp), dimension(nbjx) :: deloc_dj_kref
       real(dp), dimension(ndet_req,2) :: ddenergy_det
 
       real(dp) :: cum_deloc_k_state
@@ -44,25 +44,27 @@
       
       do iparm=1,nparmj
         
-        do j=1,nwftypejas
+        do j=1,nbjx
           deloc_dj_kref(j)=dvpsp_dj(iparm,j)
           do i=1,nelec
             deloc_dj_kref(j)=deloc_dj_kref(j)
-     &         -2.d0*hb*(g(1,i,iparm,j)*ddx(1,i,j)+g(2,i,iparm,j)*ddx(2,i,j)+g(3,i,iparm,j)*ddx(3,i,j))
+     &      -2.d0*hb*(g(1,i,iparm,bjxtoj(j))*ddx(1,i,bjxtoj(j))
+     &      +g(2,i,iparm,bjxtoj(j))*ddx(2,i,bjxtoj(j))
+     &      +g(3,i,iparm,bjxtoj(j))*ddx(3,i,bjxtoj(j)))
           enddo
         enddo
 
         if(ndet.eq.1) then
-c         !STU add jastrow state mapping here
+c         !STU done add jastrow state mapping here
           do istate=1,nstates
-            denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref(istate)*detiab(kref,1,istate)*detiab(kref,2,istate)
+            denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref(stobjx(istate))
+     &              *detiab(kref,1,stoo(istate))*detiab(kref,2,stoo(istate))
           enddo
 
         else
-c         !STU this should be nstates ( i changed it), and use mapping, b_dj, xmat, slmi, orb
-          do j=1,nstates
+          do j=1,nstates !STU check b_dj, and j, need mapping?
 
-            call bxmatrix(kref,xmat(1,1,j),xmat(1,2,j),b_dj(1,1,iparm,j),j)
+            call bxmatrix(kref,xmat(1,1,stobjx(j)),xmat(1,2,stobjx(j)),b_dj(1,1,iparm,stobjx(j)),stobjx(j))
 
             do iab=1,2
               if(iab.eq.1) then
@@ -78,8 +80,8 @@ c         !STU this should be nstates ( i changed it), and use mapping, b_dj, xm
                   dum2=0.d0
                   dum3=0.d0
                   do i=1,nel
-                    dum2=dum2+slmi(irep+(i-1)*nel,iab,j)*b_dj(jrep,i+ish,iparm,j)
-                    dum3=dum3+xmat(i+(irep-1)*nel,iab,j)*orb(i+ish,jrep,j)
+                    dum2=dum2+slmi(irep+(i-1)*nel,iab,stoo(j))*b_dj(jrep,i+ish,iparm,stobjx(j))
+                    dum3=dum3+xmat(i+(irep-1)*nel,iab,stobjx(j))*orb(i+ish,jrep,stoo(j))
                   enddo
                   dtildem(irep,jrep,iab)=dum2-dum3
 
@@ -97,7 +99,7 @@ c             ddenergy_det(:,iab)=0
 
                 iorb=irepcol_det(1,k,iab)
                 jorb=ireporb_det(1,k,iab)
-                ddenergy_det(k,iab)=wfmat(k,1,iab,j)*dtildem(iorb,jorb,iab)
+                ddenergy_det(k,iab)=wfmat(k,1,iab,stoo(j))*dtildem(iorb,jorb,iab)
              
               enddo          
 
@@ -110,7 +112,7 @@ c             do k=1,ndetiab(iab)
                    iorb=irepcol_det(irep,k,iab)
                    do jrep=1,ndim
                       jorb=ireporb_det(jrep,k,iab)
-                      ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab,j)*dtildem(iorb,jorb,iab)
+                      ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab,stoo(j))*dtildem(iorb,jorb,iab)
                    enddo
                 enddo
               enddo          
@@ -120,7 +122,7 @@ c     Unrolling determinants different to kref
               do kk=1,ndetiab2(iab)
                 k=k_det2(kk,iab)
                 kw=k_aux(kk,iab)
-                denergy_det(k,iab,j)=ddenergy_det(kw,iab)
+                denergy_det(k,iab,stobjx(j))=ddenergy_det(kw,iab)
               enddo
 c             k_det2(1:ndetiab2(iab),iab)
 c             k_aux(1:ndetiab2(iab),iab)
@@ -138,15 +140,15 @@ c             enddo
 c           enddo
 
           enddo 
-c enddo for nwfjastype
+c enddo for nstates, can we combine these into the same loop?
 c         !STU add jastrow state mapping here: denergy_det,deloc_dj_kref
 c         !STU add orb state mapping: detiab
           do istate=1,nstates
             cum_deloc_k_state=0.0d0
             do k=1,ndet
               cum_deloc_k_state=cum_deloc_k_state+cdet(k,istate,1)
-     &        *(denergy_det(k,1,istate)+denergy_det(k,2,istate)+deloc_dj_kref(istate))
-     &        *detiab(k,1,istate)*detiab(k,2,istate)
+     &        *(denergy_det(k,1,stobjx(istate))+denergy_det(k,2,stobjx(istate))
+     &        +deloc_dj_kref(stobjx(istate)))*detiab(k,1,stoo(istate))*detiab(k,2,stoo(istate))
             enddo
             denergy(iparm,istate)=cum_deloc_k_state
           enddo
@@ -164,7 +166,7 @@ c d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
         enddo
 c        !STU add jas state mapping (termjas)
         do istate=1,nstates
-          denergy(iparm,istate)=term_jas(istate)+denergy(iparm,istate)/psid(istate)
+          denergy(iparm,istate)=term_jas(stoj(istate))+denergy(iparm,istate)/psid(istate)
         enddo
       enddo
 c     iparm loop
@@ -196,11 +198,12 @@ c Written by Claudia Filippi
       use gradhessj, only: d2j, d2j_e, de, de_de, de_e, dj, dj_de, dj_dj, dj_dj_e, dj_e, dj_e2
       use gradhessj, only: e2
       use precision_kinds, only: dp
+      use vmc_mod, only: stoj
 
       implicit none
 
       integer :: i, iflag, iparm, iparm0, isb
-      integer :: istate, it, j, jparm
+      integer :: istate, it, j, jparm, js
       integer :: kparm, lparm
       real(dp) :: p, q, sav1, sav2
       real(dp), dimension(*) :: enew
@@ -211,21 +214,21 @@ c Written by Claudia Filippi
 
       if(ioptjas.eq.0) return
 
-      do istate=1,nstates
+      do istate=1,nstates !STU was already here, only added state to gvalue, gvalue_old
         p=wtg_new(istate)
-c       !STU add in jsatrow state mapping here: gvalue, gvalue_old,
+        js=stoj(istate)
         do i=1,nparmj
-          dj(i,istate)=dj(i,istate)      +p*gvalue(i,istate)
+          dj(i,istate)=dj(i,istate)      +p*gvalue(i,js)
           de(i,istate)=de(i,istate)      +p*denergy(i,istate)
-          dj_e(i,istate)=dj_e(i,istate)  +p*gvalue(i,istate)*enew(istate)
+          dj_e(i,istate)=dj_e(i,istate)  +p*gvalue(i,js)*enew(istate)
           de_e(i,istate)=de_e(i,istate)  +p*denergy(i,istate)*enew(istate)
-          dj_e2(i,istate)=dj_e2(i,istate)+p*gvalue(i,istate)*enew(istate)**2
+          dj_e2(i,istate)=dj_e2(i,istate)+p*gvalue(i,js)*enew(istate)**2
           e2(i,istate)=e2(i,istate)      +p*enew(istate)**2
           do j=1,i
-            dj_dj(i,j,istate)=dj_dj(i,j,istate)+p*gvalue(i,istate)*gvalue(j,istate)
-            dj_de(i,j,istate)=dj_de(i,j,istate)+p*gvalue(i,istate)*denergy(j,istate)
-            if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+p*gvalue(j,istate)*denergy(i,istate)
-            dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)+p*gvalue(i,istate)*gvalue(j,istate)*enew(istate)
+            dj_dj(i,j,istate)=dj_dj(i,j,istate)+p*gvalue(i,js)*gvalue(j,js)
+            dj_de(i,j,istate)=dj_de(i,j,istate)+p*gvalue(i,js)*denergy(j,istate)
+            if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+p*gvalue(j,js)*denergy(i,istate)
+            dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)+p*gvalue(i,js)*gvalue(j,js)*enew(istate)
             de_de(i,j,istate)=de_de(i,j,istate)           +p*denergy(i,istate)*denergy(j,istate)
           enddo
         enddo
@@ -287,20 +290,22 @@ c     !STU check mapping
       do istate=1,nstates
 
         q=wtg_old(istate)
+        js=stoj(istate)
 
         do i=1,nparmj
-          dj(i,istate)=dj(i,istate)      +q*gvalue_old(i,istate)
+          dj(i,istate)=dj(i,istate)      +q*gvalue_old(i,js)
           de(i,istate)=de(i,istate)      +q*denergy_old(i,istate)
-          dj_e(i,istate)=dj_e(i,istate)  +q*gvalue_old(i,istate)*eold(istate)
+          dj_e(i,istate)=dj_e(i,istate)  +q*gvalue_old(i,js)*eold(istate)
           de_e(i,istate)=de_e(i,istate)  +q*denergy_old(i,istate)*eold(istate)
-          dj_e2(i,istate)=dj_e2(i,istate)+q*gvalue_old(i,istate)*eold(istate)**2
+          dj_e2(i,istate)=dj_e2(i,istate)+q*gvalue_old(i,stoj(istate))*eold(istate)**2
           e2(i,istate)=e2(i,istate)      +q*eold(istate)**2
           do j=1,i
-            dj_dj(i,j,istate)=dj_dj(i,j,istate)+q*gvalue_old(i,istate)*gvalue_old(j,istate)
-            dj_de(i,j,istate)=dj_de(i,j,istate)+q*gvalue_old(i,istate)*denergy_old(j,istate)
-            if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+q*gvalue_old(j,istate)*denergy_old(i,istate)
-            dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)+q*gvalue_old(i,istate)*gvalue_old(j,istate)*eold(istate)
-            de_de(i,j,istate)=de_de(i,j,istate)           +q*denergy_old(i,istate)*denergy_old(j,istate)
+            dj_dj(i,j,istate)=dj_dj(i,j,istate)+q*gvalue_old(i,js)*gvalue_old(j,js)
+            dj_de(i,j,istate)=dj_de(i,j,istate)+q*gvalue_old(i,js)*denergy_old(j,istate)
+            if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+q*gvalue_old(j,js)*denergy_old(i,istate)
+            dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)+q*gvalue_old(i,js)
+     &                               *gvalue_old(j,js)*eold(istate)
+            de_de(i,j,istate)=de_de(i,j,istate)+q*denergy_old(i,istate)*denergy_old(j,istate)
           enddo
         enddo
 
@@ -436,6 +441,7 @@ c Written by Claudia Filippi
       use optwf_parms, only: nparmj
       use bparm, only: nspin2b
       use deloc_dj_m, only: denergy
+      use vmc_mod, only: stoj
 
       implicit none
 
@@ -446,7 +452,7 @@ c Written by Claudia Filippi
       do istate=1,nstates
 c     !STU check if mapping is needed here for jas, yes I think
         do i=1,nparmj
-          gvalue_old(i,istate)=gvalue(i,istate)
+          gvalue_old(i,stoj(istate))=gvalue(i,stoj(istate))
           denergy_old(i,istate)=denergy(i,istate)
         enddo
 

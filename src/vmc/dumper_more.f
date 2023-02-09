@@ -5,7 +5,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
       use vmc_mod, only: norb_tot
-      use vmc_mod, only: nrad
+      use vmc_mod, only: nrad, stoj
       use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use mstates_mod, only: MSTATES
       use system, only: newghostype, nghostcent, nelec, ndn, nup
@@ -221,7 +221,7 @@ c set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
         do istate=1,nforce !STU check mapping and just if this is right
-          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(istate))+dlog(ajacob)
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))+dlog(ajacob)
         enddo
       enddo
 
@@ -230,7 +230,7 @@ c set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,eold(1,1),0,1)
       do istate=1,nforce !STU also here
-        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(istate))
+        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
         tjfo(istate)=d2(istate)
         tjfo(istate)=-tjfo(istate)*half*hb
       enddo

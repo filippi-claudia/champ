@@ -35,6 +35,7 @@ module sr_mat_n
     real(dp), dimension(:), allocatable :: isr_lambda !(MSTATES*(MSTATES-1)/2)
     real(dp), dimension(:, :), allocatable :: sr_lambda !(MSTATES,MSTATES)
     integer :: sr_state
+    integer :: ortho=0
     integer :: jefj
     integer :: jfj
     integer :: jhfj
@@ -47,7 +48,7 @@ module sr_mat_n
     real(dp), dimension(:, :), allocatable :: obs_tot !(mobs,MSTATES)
 
     private
-    public :: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot, isr_lambda, sr_lambda, sr_state, h_sr_penalty
+    public :: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot, isr_lambda, sr_lambda, sr_state, h_sr_penalty, ortho
     ! public :: obs
     public :: allocate_sr_mat_n, deallocate_sr_mat_n
     save

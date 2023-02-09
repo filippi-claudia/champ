@@ -36,6 +36,7 @@ c and sa, pa, da asymptotic functions
       use rotqua_mod, only: rotqua
       use acuest_mod, only: acuest
       use metrop_mov1_slat, only: metrop6
+      use mstates3, only: iweight_g !STU remove
       implicit none
 
       integer :: i, ii, j, jj, l
