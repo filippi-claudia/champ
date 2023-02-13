@@ -27,60 +27,35 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       implicit none
 
-      !variables in subroutine call
-      integer :: i_vpsp
-      real(dp), dimension(3,*) :: x
-      real(dp), dimension(nelec,ncent_tot) :: r_en
-      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
-      real(dp), dimension(3,nelec,ncent_tot) :: rshift
-      real(dp), dimension(*) :: vpsp_det
-      real(dp), dimension(*) :: dvpsp_dj
-      real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
-
-      ! local variables
-      integer :: i, i1, i2, iab
+      integer :: i, i1, i2, i_vpsp, iab
       integer :: ic, ict, iel, index
       integer :: iorb, iparm, iq, iqq
       integer :: jc, k, l, nxquad
-      real(dp) :: ri, term1, term2
+      integer, dimension(nquad*nelec*2) :: iequad
+      integer, dimension(nquad*nelec*2) :: icquad
+      integer, dimension(nquad*nelec*2) :: iqquad
+
+      real(dp) :: costh(nquad*nelec*2), ri
+      real(dp) :: term1, term2, term_radial(nquad*nelec*2)
+      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nquad*nelec*2) :: xquad
+      real(dp), dimension(nquad*nelec*2) :: det_ratio
+      real(dp), dimension(nquad*nelec*2) :: psij_ratio
+      real(dp), dimension(nparmj,nquad*nelec*2) :: dpsij_ratio
+      real(dp), dimension(3,ncent_tot,nquad*nelec*2) :: da_psij_ratio
+      real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+      real(dp), dimension(3,nelec,ncent_tot) :: rshift
+      real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
+      real(dp), dimension(3,nquad*nelec*2,ncent_tot) :: rvec_en_quad
+      real(dp), dimension(*) :: vpsp_det
+      real(dp), dimension(*) :: dvpsp_dj
+      real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
+      real(dp), dimension(norb_tot,nquad*nelec*2) :: orbn
+      real(dp), dimension(norb_tot,nquad*nelec*2,3) :: dorbn
+      real(dp), dimension(3,ncent_tot,norb_tot,nquad*nelec*2) :: da_orbn
+      real(dp), dimension(3,nquad*nelec*2) :: vjn
       real(dp), parameter :: one = 1.d0
-
-      ! local allocatable arrays
-      integer, allocatable :: iequad(:)
-      integer, allocatable :: icquad(:)
-      integer, allocatable :: iqquad(:)
-      real(dp), allocatable :: costh(:)
-      real(dp), allocatable :: term_radial(:)
-      real(dp), allocatable :: xquad(:,:)
-      real(dp), allocatable :: det_ratio(:)
-      real(dp), allocatable :: psij_ratio(:)
-      real(dp), allocatable :: dpsij_ratio(:,:)
-      real(dp), allocatable :: da_psij_ratio(:,:,:)
-      real(dp), allocatable :: r_en_quad(:,:)
-      real(dp), allocatable :: rvec_en_quad(:,:,:)
-      real(dp), allocatable :: orbn(:,:)
-      real(dp), allocatable :: dorbn(:,:,:)
-      real(dp), allocatable :: da_orbn(:,:,:,:)
-      real(dp), allocatable :: vjn(:,:)
-
-      ! allocating local arrays
-      allocate(iequad(nquad*nelec*2))
-      allocate(icquad(nquad*nelec*2))
-      allocate(iqquad(nquad*nelec*2))
-      allocate(costh(nquad*nelec*2))
-      allocate(term_radial(nquad*nelec*2))
-      allocate(xquad(3,nquad*nelec*2))
-      allocate(det_ratio(nquad*nelec*2))
-      allocate(psij_ratio(nquad*nelec*2))
-      allocate(dpsij_ratio(nparmj,nquad*nelec*2))
-      allocate(da_psij_ratio(3,ncent_tot,nquad*nelec*2))
-      allocate(r_en_quad(nquad*nelec*2,ncent_tot))
-      allocate(rvec_en_quad(3,nquad*nelec*2,ncent_tot))
-      allocate(orbn(norb_tot,nquad*nelec*2))
-      allocate(dorbn(norb_tot,nquad*nelec*2,3))
-      allocate(da_orbn(3,ncent_tot,norb_tot,nquad*nelec*2))
-      allocate(vjn(3,nquad*nelec*2))
-
 
       vpsp_det(1)=0
       vpsp_det(2)=0
