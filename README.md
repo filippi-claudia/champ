@@ -178,6 +178,15 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 		```
+	- To enable TREXIO library:
+		```
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON
+		```		
+	- To disable vectorization of the code:
+		```
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DVECTORIZED=no
+		```				
+		
 	- To run the code with Intel Compilers and MPI:
 	    ```bash
         mpirun -np 24  champ/bin/vmc.mov1 -i input.inp -o output.out -e error
