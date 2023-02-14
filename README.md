@@ -111,7 +111,7 @@ Clean and build:
 cmake --build build --clean-first
 ```
 Compared to the previous Makefiles the dependencies for the include files
-(e.g include/vmc.h) are correctly setup and no `--clean-first` is required.
+(e.g include/vmc.h) are correctly setup and no `--clean-first` is required. ##
 
 #### CMAKE Recipes
 
