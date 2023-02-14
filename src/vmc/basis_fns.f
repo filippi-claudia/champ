@@ -123,7 +123,7 @@ c get distance to center
 
 #ifndef VECTORIZATION
             ! localization
-            call n0_inc(l,k,ic)
+            call n0_inc(ilm,k,ic)
 #endif
             l = l + 1
           enddo
