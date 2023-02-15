@@ -33,10 +33,6 @@ c Modified by A. Scemama
       use contrl_file,    only: ounit
       use grid3d_orbitals, only: spline_mo
       use grid3d_orbitals, only: lagrange_mos, lagrange_mos_grad, lagrange_mos_2
-      use trexio_read_data, only: trexio_has_group_orbitals
-#if defined(TREXIO_FOUND)
-      use trexio_basis_fns_mod, only: trexio_basis_fns
-#endif
       use basis_fns_mod, only: basis_fns
       use coefs,   only: nbasis
       use contrl_file, only: ounit
@@ -81,17 +77,11 @@ c            if(nwftypeorb.gt.1) iwf=k !STU sort this out later.
                 call spline_mo(x(1,i),iorb,orb(i,iorb,k),dorb(iorb,i,:,k),ddorb(iorb,i,k),ier)
               enddo
               if(ier.eq.1) then
-c#if defined(TREXIO_FOUND)
-c                if (trexio_has_group_orbitals) then
-c                  call trexio_basis_fns(i,i,rvec_en,r_en,2)
-c                else
-c                  call basis_fns(i,i,rvec_en,r_en,2)
-c                endif
-c#else
+
 c                if(nwftypeorb.gt.1) iwf=1 !STU sort this out later     
                 call basis_fns(i,i,nelec,rvec_en,r_en,2)
 c                if(nwftypeorb.gt.1) iwf=k !STU sort this out later
-c#endif
+
                 do iorb=1,norb+nadorb
                   orb(i,iorb,k)=0.d0
                   dorb(iorb,i,1,k)=0.d0
@@ -124,17 +114,11 @@ c           if(nwftypeorb.gt.1) iwf=k !STU sort this out later
              call lagrange_mos_2(5,x(1,i),ddorb(1,1,k),i,ier)
 
              if(ier.eq.1) then
-c#if defined(TREXIO_FOUND)
-c              if (trexio_has_group_orbitals) then
-c                call trexio_basis_fns(i,i,rvec_en,r_en,2)
-c              else
-c                call basis_fns(i,i,rvec_en,r_en,2)
-c              endif
-c#else
+
               if(nwftypeorb.gt.1) iwf=1 !STU sort this out later
               call basis_fns(i,i,nelec,rvec_en,r_en,2)
               if(nwftypeorb.gt.1) iwf=k !STU sort this out later
-c#endif            
+
                do iorb=1,norb+nadorb
                  orb(i,iorb,k)=0.d0
                  dorb(iorb,i,1,k)=0.d0
@@ -160,16 +144,10 @@ c no 3d interpolation
 c get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
-c#if defined(TREXIO_FOUND)
-c         if (trexio_has_group_orbitals) then
-c          call trexio_basis_fns(1,nelec,rvec_en,r_en,ider)
-c         else
-c          call basis_fns(1,nelec,rvec_en,r_en,ider)
-c         endif
-c#else
+
 c         if(nwftypeorb.gt.1) iwf=1 !STU, doing this for now
          call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
-c#endif
+
 
 c in alternativa al loop 26
 c        do jbasis=1,nbasis
@@ -335,15 +313,9 @@ c-------------------------------------------------------------------------------
       use phifun,  only: d2phin,dphin,n0_ibasis,n0_nbasis,phin
       use precision_kinds, only: dp
       use pw_orbitals, only: orbitals_pw_grade
-      use trexio_read_data, only: trexio_has_group_orbitals
       use vmc_mod, only: nwftypeorb
       use control, only: ipr
       use contrl_file, only: ounit
-
-c#if defined(TREXIO_FOUND)
-c      use trexio_basis_fns_mod, only: trexio_basis_fns
-c#endif
-
 
       implicit none
 
@@ -388,13 +360,6 @@ c get basis functions for electron iel
             ider=1
             if(iflag.gt.0) ider=2
 
-c#if defined(TREXIO_FOUND)
-c            if (trexio_has_group_orbitals) then
-c              call trexio_basis_fns(iel,iel,rvec_en,r_en,ider)
-c            else
-c              call basis_fns(iel,iel,rvec_en,r_en,ider)
-c            endif
-c#else
             if(nwftypeorb.gt.1) iwf=1 !STU doing this for now
             call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
 c#endif
