@@ -1,0 +1,24 @@
+%module general
+    title           'butadiene'
+    pool            'pool/'
+    backend         hdf5
+    mode            vmc
+    pseudopot	    BFD
+    ipr 	    4
+%endmodule
+
+load trexio          gamess_butadiene_ci1010_pVTZ.hdf5
+load jastrow         jastrow_good_b3lyp.0
+load jastrow_der     jastrow.der
+
+%module electrons
+   nup     11
+   nelec   22
+%endmodule 
+
+%module blocking_vmc
+    vmc_nstep     1
+    vmc_nblk      1
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+%endmodule

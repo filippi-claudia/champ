@@ -6,14 +6,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use vmc_mod, only: nwftypejas
       use jastrow, only: c, nordc, ijas, nordj
       use jaspar6, only: asymp_r
-      use optwf_wjas, only: iwjasc
+      use jastrow, only: c,ijas,nordj
       use multiple_geo, only: iwf
-
+      use optwf_wjas, only: iwjasc
       use vardep, only: cdep, iwdepend, nvdepend
-
       use cuspmat4, only: d, iwc4
       use precision_kinds, only: dp
       use scale_dist_mod, only: switch_scale
+      use vardep,  only: cdep,iwdepend,nvdepend
       implicit none
 
       integer :: id, ideriv, iparm, it, jj
@@ -181,12 +181,13 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
 c-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar,iwfjas)
 
-      use jastrow, only: sspinn, b, nordb, ijas, asymp_jasb
 
+      use jastrow, only: nordb
       use jaspar6, only: asymp_r
+      use jastrow, only: asymp_jasb,b,ijas,sspinn
+      use multiple_geo, only: iwf
       use optwf_nparmj, only: nparmb
       use optwf_wjas, only: iwjasb
-      use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use vmc_mod, only: nwftypejas
 

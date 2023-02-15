@@ -10,28 +10,28 @@
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
 c Modified by A. Scemama
 
-      use control, only: ipr, mode
-      use slater, only: ndet
-      use system, only: ndn, nup, nelec, ncent_tot
-      use multidet, only: kchange, kref_fixed
-      use dorb_m, only: iworbd
-
-      use orbval, only: ddorb, dorb, orb
-      use slater, only: d2dx2, ddx, fp, fpp, slmi, kref
-
-      use multislater, only: detiab, allocate_multislater
-      use precision_kinds, only: dp
       use contrl_file, only: ounit
-      use optwf_handle_wf, only: dcopy
+      use control, only: ipr,mode
+      use dorb_m,  only: iworbd
       use matinv_mod, only: matinv
-      use orbitals_mod, only: orbitals
-      use set_input_data, only: multideterminants_define
+      use multidet, only: kchange,kref_fixed
+      use multislater, only: allocate_multislater,detiab
       use optorb_f_mod, only: optorb_define
       use optwf_control, only: ioptorb
-      use slater, only: norb
-      use orbval, only: nadorb
+      use optwf_handle_wf, only: dcopy
+      use orbitals_mod, only: orbitals
+      use orbval,  only: ddorb,dorb,nadorb,orb
+      use precision_kinds, only: dp
+      use set_input_data, only: multideterminants_define
+      use slater,  only: d2dx2,ddx,fp,fpp,kref,ndet,norb,slmi
+      use system,  only: ncent_tot,ndn,nelec,nup
+      use vmc_mod, only: norb_tot
       use vmc_mod, only: norb_tot, nwftypeorb
-      use csfs, only: nstates
+      use csfs,    only: nstates
+
+
+
+
 
       implicit none
 
@@ -41,9 +41,6 @@ c Modified by A. Scemama
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
-      real(dp), parameter :: one = 1.d0
-      real(dp), parameter :: half = 0.5d0
-
 
 c compute orbitals
       call orbitals(x,rvec_en,r_en)
@@ -161,6 +158,9 @@ c-----------------------------------------------------------------------
       use contrl_file, only: ounit
       use slater, only: ndet
       use multideterminant_mod, only: idiff
+      use multislater, only: allocate_multislater,detiab
+      use precision_kinds, only: dp
+      use slater,  only: kref,ndet
       use error, only: fatal_error
       implicit none
 
@@ -218,9 +218,10 @@ c-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
       use system, only: ncent, nelec
+      use Bloc,    only: bkin,b_da,b_dj
       use constants, only: hb
       use da_jastrow4val, only: da_vj
-      use da_orbval, only: da_d2orb, da_dorb
+      use da_orbval, only: da_d2orb,da_dorb
       use derivjas, only: g
       use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
@@ -233,6 +234,10 @@ c-----------------------------------------------------------------------
       use orbval, only: ddorb, dorb, nadorb
       use precision_kinds, only: dp
       use optwf_handle_wf, only: dcopy
+      use optwf_parms, only: nparmj
+      use orbval,  only: ddorb,dorb,nadorb
+      use precision_kinds, only: dp
+      use slater,  only: norb
       use sr_more, only: daxpy
       use csfs, only: nstates
       use vmc_mod, only: nwftypemax, stoo, stoj, stobjx, nbjx, nwftypeorb, nwftypejas, bjxtoo, bjxtoj
@@ -254,9 +259,9 @@ c-----------------------------------------------------------------------
 c compute kinetic contribution of B+Btilde to compute Eloc
         do i=1,nelec
           do iorb=1,norb+nadorb
-            b(iorb,i,k)=-hb*(ddorb(iorb,i,bjxtoo(k))+2*(vj(1,i,bjxtoj(k))*dorb(iorb,i,1,bjxtoo(k))
+            bkin(iorb,i,k)=-hb*(ddorb(iorb,i,bjxtoo(k))+2*(vj(1,i,bjxtoj(k))*dorb(iorb,i,1,bjxtoo(k))
      &      +vj(2,i,bjxtoj(k))*dorb(iorb,i,2,bjxtoo(k))+vj(3,i,bjxtoj(k))*dorb(iorb,i,3,bjxtoo(k))))
-c            write(ounit,*) "config,elec,orb,b", k,i,iorb,b(iorb,i,k)
+c            write(ounit,*) "config,elec,orb,bkin", k,i,iorb,bkin(iorb,i,k)
           enddo
         enddo
       enddo

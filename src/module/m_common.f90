@@ -8,6 +8,9 @@ module Bloc
     real(dp), dimension(:, :, :), allocatable :: b !(norb_tot,MELEC,nbjx)
     real(dp), dimension(:, :, :, :), allocatable :: tildem !(MELEC,norb_tot,2,nbjx)
     real(dp), dimension(:, :, :), allocatable :: xmat !(MELEC**2,2,nbjx)
+    real(dp), dimension(:, :, :), allocatable :: bkin !(norb_tot,MELEC, nbjx)
+    real(dp), dimension(:, :, :, :), allocatable :: tildemkin !(MELEC,norb_tot,2, nbjx)
+    real(dp), dimension(:, :, :), allocatable :: xmatkin !(MELEC**2,2, MSTATES)
 
     !> Former Bloc_da
     real(dp), dimension(:, :, :, :), allocatable :: b_da !(3,MELEC,norb_tot,MCENT)
@@ -16,7 +19,7 @@ module Bloc
     real(dp), dimension(:, :, :, :), allocatable :: b_dj !(norb_tot,MELEC,nparmj,nbjx)
 
     private
-    public :: b, tildem, xmat
+    public :: b, bkin, tildem, tildemkin, xmat, xmatkin
     public :: b_da
     public :: b_dj
     public :: allocate_Bloc, deallocate_Bloc
@@ -30,8 +33,11 @@ contains
       use mstates_mod, only: MSTATES
 
         if (.not. allocated(b)) allocate (b(norb_tot, nelec, MSTATES)) !STU nbjx (< MSTATES) would be right instead of MSTATES
+        if (.not. allocated(bkin)) allocate (bkin(norb_tot, nelec, MSTATES))
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2, MSTATES))
+        if (.not. allocated(tildemkin)) allocate (tildemkin(nelec, norb_tot, 2, MSTATES))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2, MSTATES))
+        if (.not. allocated(xmatkin)) allocate (xmatkin(nelec**2, 2, MSTATES))        
         if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb_tot, ncent_tot))
         if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj, MSTATES))
 
@@ -41,8 +47,11 @@ contains
         if (allocated(b_dj)) deallocate (b_dj)
         if (allocated(b_da)) deallocate (b_da)
         if (allocated(xmat)) deallocate (xmat)
+        if (allocated(xmatkin)) deallocate (xmatkin)
         if (allocated(tildem)) deallocate (tildem)
+        if (allocated(tildemkin)) deallocate (tildemkin)
         if (allocated(b)) deallocate (b)
+        if (allocated(bkin)) deallocate (bkin)
     end subroutine deallocate_Bloc
 
 end module Bloc
@@ -130,7 +139,7 @@ end module distance_mod
 
 module distances_sav
     !> Arguments: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -328,7 +337,7 @@ module multidet
     integer, dimension(:), allocatable :: ndetdouble !(2)
 
     private
-    public :: iactv, irepcol_det, ireporb_det, ivirt, kref_fixed, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old, kchange!, iwundet
+    public :: iactv, irepcol_det, ireporb_det, ivirt, kref_fixed, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old, kchange
     public :: allocate_multidet, deallocate_multidet, ndetdouble
     save
 contains
@@ -368,7 +377,9 @@ end module multidet
 
 module multimat
     !> Arguments: aa, wfmat
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
+      use slater,  only: ndet
+      use system,  only: nelec
 
     implicit none
 
@@ -383,9 +394,9 @@ contains
     subroutine allocate_multimat()
       use slater, only: ndet, norb
       use system, only: nelec
-      use vmc_mod, only: norb_tot, MEXCIT, nwftypemax
-        if (.not. allocated(aa)) allocate (aa(nelec, norb_tot, 2, nwftypemax))
-        if (.not. allocated(wfmat)) allocate (wfmat(ndet, MEXCIT**2, 2, nwftypemax))
+      use vmc_mod, only: norb_tot, MEXCIT, nwftypeorb
+        if (.not. allocated(aa)) allocate (aa(nelec, norb_tot, 2, nwftypeorb))
+        if (.not. allocated(wfmat)) allocate (wfmat(ndet, MEXCIT**2, 2, nwftypeorb))
     end subroutine allocate_multimat
 
     subroutine deallocate_multimat()
@@ -397,7 +408,9 @@ end module multimat
 
 module multimatn
     !> Arguments: aan, wfmatn
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
+      use slater,  only: ndet
+      use system,  only: nelec
 
     implicit none
 
@@ -412,9 +425,9 @@ contains
     subroutine allocate_multimatn()
       use slater, only: ndet
       use system, only: nelec
-      use vmc_mod, only: MEXCIT, norb_tot, nwftypemax
-        if (.not. allocated(aan)) allocate (aan(nelec, norb_tot, nwftypemax))
-        if (.not. allocated(wfmatn)) allocate (wfmatn(ndet,MEXCIT**2, nwftypemax))
+      use vmc_mod, only: MEXCIT, norb_tot, nwftypeorb
+        if (.not. allocated(aan)) allocate (aan(nelec, norb_tot, nwftypeorb))
+        if (.not. allocated(wfmatn)) allocate (wfmatn(ndet,MEXCIT**2, nwftypeorb))
     end subroutine allocate_multimatn
 
     subroutine deallocate_multimatn()
@@ -426,7 +439,9 @@ end module multimatn
 
 module multislater
     !> Arguments: detiab
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
+      use slater,  only: ndet
+      use system,  only: nelec
 
     implicit none
 
@@ -558,6 +573,7 @@ module qua
     implicit none
 
     integer :: nquad
+
     real(dp), dimension(:), allocatable :: wq !(MPS_QUAD)
     real(dp), dimension(:), allocatable :: xq !(MPS_QUAD)
     real(dp), dimension(:), allocatable :: xq0 !(MPS_QUAD)
@@ -678,7 +694,7 @@ end module b_tmove
 
 module scale_more
     !> Arguments: dd3
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -724,7 +740,7 @@ module slatn
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: slmin !(nmat_dim,nwftypemax)
+    real(dp), dimension(:, :), allocatable :: slmin !(nmat_dim,nwftypeorb)
 
     private
     public :: slmin
@@ -732,8 +748,8 @@ module slatn
     save
 contains
     subroutine allocate_slatn()
-        use vmc_mod, only: nmat_dim, nwftypemax
-        if (.not. allocated(slmin)) allocate (slmin(nmat_dim, nwftypemax))
+        use vmc_mod, only: nmat_dim, nwftypeorb
+        if (.not. allocated(slmin)) allocate (slmin(nmat_dim, nwftypeorb))
     end subroutine allocate_slatn
 
     subroutine deallocate_slatn()
@@ -757,7 +773,9 @@ end module svd_mod
 
 module vardep
     !> Arguments: cdep, iwdepend, nvdepend
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
+      use slater,  only: ndet
+      use system,  only: nelec
 
     real(dp), dimension(:, :, :), allocatable :: cdep !(neqsx,83,MCTYPE)
     integer, dimension(:, :, :), allocatable :: iwdepend !(neqsx,83,MCTYPE)
@@ -786,7 +804,9 @@ end module vardep
 
 module velocity_jastrow
     !> Arguments: vj, vjn
-    use precision_kinds, only: dp
+      use jastrow, only: neqsx
+      use precision_kinds, only: dp
+      use system,  only: nelec
 
     implicit none
 
@@ -904,7 +924,8 @@ end module zcompact
 
 module zmatrix
     !> Arguments: czcart, czint, czcart_ref, izcmat, izmatrix
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
+      use system,  only: nelec
 
     implicit none
 
@@ -939,7 +960,8 @@ end module zmatrix
 module zmatrix_grad
     !> never called
     !> Arguments: transform_grd
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
+      use system,  only: nelec
 
     implicit none
 

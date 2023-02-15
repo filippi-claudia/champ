@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #   trex2champ is a tool which allows to read output files of quantum
 #   chemistry codes (GAMESS and trexio files) and write input files for
-#   CHAMP in V2.0 format.
+#   CHAMP in V3.0 format.
 #
 # Copyright (c) 2021, TREX Center of Excellence
 # All rights reserved.
@@ -37,21 +37,14 @@
 #   r.l.shinde@utwente.nl
 
 
-__author__ = "Ravindra Shinde, Evgeny Posenitskiy"
-__copyright__ = "Copyright 2022, The TREX Project"
-__version__ = "1.1.0"
-__maintainer__ = "Ravindra Shinde"
-__email__ = "r.l.shinde@utwente.nl"
-__status__ = "Development"
 
-
-from operator import index
 import sys
 import os
 import numpy as np
 from collections import Counter
 import argparse
-import warnings
+import pytest
+import copy
 
 # Before we do anything else, we need to check if trexio and resultsFile are installed
 try:
@@ -67,15 +60,31 @@ except:
     sys.exit(1)
 
 
-class Champ:
-    """
-    Class to convert TREXIO files to CHAMP v2.0 format.
-    """
 
-    def __init__(self):
+class Champ:
+
+    def __init__(self) -> None:
+        self.__author__ = "Ravindra Shinde "
+        self.__copyright__ = "@Copyright 2022, The TREX Project "
+        self.__version__ = "v1.2.0"
+        self.__maintainer__ = "Ravindra Shinde"
+        self.__email__ = "r.l.shinde@utwente.nl"
+        self.__status__ = "Development"
+
+
+    def __repr__(self) -> str:
+        docs ="trex2champ is a tool which allows to read output files " \
+        "of quantum chemistry codes (GAMESS and trexio files) " \
+        "and write input files for CHAMP in V3.0 format. \n "
+        return docs + self.__author__ + self.__copyright__ + self.__version__ + "\n"
+
+
+    def __main__(self):
         """
-        Initialize the class.
+        Main driver function.
         """
+        self.__init__()
+        print (self.__repr__())
         self.parse_arguments()
         self.champ_file = None
         self.champ_file_name = None
@@ -183,6 +192,7 @@ class Champ:
         self.save_symmetry = args.save_symmetry
         self.save_determinants = args.save_determinants
         self.save_csfs = args.save_csfs
+        self.back_end = args.back_end
 
         # Optional argument for controlling the names of the output files
         self.basis_prefix = args.basis_prefix
@@ -199,32 +209,24 @@ class Champ:
         print ('\n')
 
 
+
+    def run(self):
+        self.__main__
+        filename = self.filename
+        if self.gamessfile is not None:
+            gamessfile = self.gamessfile
+        motype = self.motype
+
         # Default backend is HDF5
-        if args.back_end is not None:
-            if str(args.back_end).lower() == "hdf5":
-                back_end_t = trexio.TREXIO_HDF5
-            elif str(args.back_end).lower() == "text":
-                back_end_t = trexio.TREXIO_TEXT
+        if self.back_end is not None:
+            if str(self.back_end).lower() == "hdf5":
+                back_end = trexio.TREXIO_HDF5
+            elif str(self.back_end).lower() == "text":
+                back_end = trexio.TREXIO_TEXT
             else:
                 raise ValueError
         else:
-            back_end_t = trexio.TREXIO_HDF5
-
-        self.back_end = back_end_t
-
-
-    def __main__(self):
-        """
-        Main function.
-        """
-
-
-    def run(self):
-
-        filename = self.filename
-        gamessfile = self.gamessfile
-        motype = self.motype
-        back_end = self.back_end
+            back_end = trexio.TREXIO_HDF5
 
         trexio_file = trexio.File(filename, mode='r', back_end=back_end)
 
@@ -273,11 +275,13 @@ class Champ:
         if self.save_geometry is True:
             try:
                 nucleus_num = trexio.read_nucleus_num(trexio_file)
+                self.nucleus_num = nucleus_num
             except:
                 raise AttributeError("TREXIO :: Nucleus : Number of nuclei not found")
 
             try:
                 nucleus_charge = trexio.read_nucleus_charge(trexio_file)
+                self.nucleus_charge = nucleus_charge
             except:
                 raise AttributeError("TREXIO :: Nucleus : Charge not found")
 
@@ -304,6 +308,7 @@ class Champ:
         if self.save_ecp is True:
             try:
                 ecp_num = trexio.read_ecp_num(trexio_file)
+                self.ecp_num = ecp_num
             except trexio.Error:
                 print ('TREXIO Error :: ECP : num not found')
 
@@ -356,11 +361,13 @@ class Champ:
 
             try:
                 dict_basis["shell_num"] = trexio.read_basis_shell_num(trexio_file)
+                self.shell_num = dict_basis["shell_num"]
             except trexio.Error:
                 print('TREXIO Error :: Basis : shell num not found')
 
             try:
                 dict_basis["prim_num"] = trexio.read_basis_prim_num(trexio_file)
+                self.prim_num = dict_basis["prim_num"]
             except trexio.Error:
                 print('TREXIO Error :: Basis : prim num not found')
 
@@ -410,6 +417,7 @@ class Champ:
 
             try:
                 ao_num = trexio.read_ao_num(trexio_file)
+                self.ao_num = ao_num
             except trexio.Error:
                 print('TREXIO Error :: AO : number not found')
 
@@ -437,6 +445,7 @@ class Champ:
 
             try:
                 dict_mo["num"] = trexio.read_mo_num(trexio_file)
+                self.mo_num = dict_mo["num"]
             except trexio.Error:
                 print('TREXIO Error :: MO : num not found')
 
@@ -459,12 +468,14 @@ class Champ:
                     # Read number of determinants
                     try:
                         num_dets = trexio.read_determinant_num(trexio_file)
+                        self.num_dets = num_dets
                     except trexio.Error:
                         print('TREXIO Error :: Determinant : number not found')
 
                     # Read number of states
                     try:
                         num_states = trexio.read_state_num(trexio_file)
+                        self.num_states = num_states
                     except trexio.Error:
                         print('TREXIO Error :: State : number not found')
                         num_states = 1
@@ -516,6 +527,10 @@ class Champ:
         # The determinants and csf information is obtained from the GAMESS output file using the resultsFile package.
         # It will be replaced by the data stored by trexio later in the future.
 
+        # Write the basis on the radial grid file
+        if self.save_basis:
+            write_champ_file_basis_grid(filename, dict_basis, nucleus_label, self.basis_prefix)
+
         # Write the .xyz file containing cartesian coordinates (Bohr) of nuclei
         if self.save_geometry:
             write_champ_file_geometry(filename, nucleus_num, nucleus_label, nucleus_coord)
@@ -533,12 +548,9 @@ class Champ:
             write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label)
             write_champ_file_orbitals_trex_aligned(filename, dict_mo, ao_num)
 
-        # Write the basis on the radial grid file
-        if self.save_basis:
-            write_champ_file_basis_grid(filename, dict_basis, nucleus_label, self.basis_prefix)
-
         # Write the eigenvalues for a given type of orbitals using the resultsFile package. Currently it is optional.
         if self.save_eigenvalues:
+            file = resultsFile.getFile(self.gamessfile)
             write_champ_file_eigenvalues(filename, file, dict_mo["type"])
         return
 
@@ -585,6 +597,48 @@ def write_champ_file_basis_grid(filename, dict_basis, nucleus_label, basis_prefi
         basis[k]["shell_index"]   += [ dict_basis["shell_index"][i] ]
         basis[k]["contr"]         += [ contr[i] ]
 
+
+    ### Failsafe mechanism to check same element name with different type of basis
+    # get the sublists of  dict_basis["shell_ang_mom"] for each unique value in dict_basis["nucleus_index"] list.
+    list_shell_index_per_atom = []; list_shell_count_per_atom = [];
+    for i, val in enumerate(nucleus_label):
+        list_shell_index_per_atom.append([j for j, x in enumerate(dict_basis["nucleus_index"]) if x == i])
+        list_shell_count_per_atom.append(len(list_shell_index_per_atom[i]))
+
+    # create a dictionary with the nucleus label as key and list_shell_count_per_atom[i] as value if the length of the list_shell_count_per_atom is different then store under a different key
+    dict_nucleus_label = {}
+    for i, val in enumerate(nucleus_label):
+        if list_shell_count_per_atom[i] not in dict_nucleus_label:
+            dict_nucleus_label[list_shell_count_per_atom[i]] = [nucleus_label[i]]
+        else:
+            dict_nucleus_label[list_shell_count_per_atom[i]].append(nucleus_label[i])
+
+    # print ("dict_nucleus_label", dict_nucleus_label)
+
+    new_nucleus_label = nucleus_label
+    nuc_index = 0
+    # if the same nucleus label is present in more than one value of the dictionary,
+    # then relabel the nucleus with a different label
+    warning_message = False
+    for key, val in dict_nucleus_label.items():
+        nuc_index += 1
+        for key2, val2 in dict_nucleus_label.items():
+            if key != key2 and val[0] in val2:
+                warning_message = True
+                for i in val:
+                    nuc_index = nucleus_label.index(i)
+                    new_nucleus_label[nuc_index] = nucleus_label[nucleus_label.index(i)]+ str(key)
+
+    # check if each element in new_nucleus_label is same as nucleus_label
+    if warning_message:
+        print ("----------------------------------------------------------")
+        print ("                        Warning!                          ")
+        print ("----------------------------------------------------------")
+        print ("Same element label with different number of shells detected. Relabeling the nucleus with shell count.")
+        print ("Elements after relabeling :: ", new_nucleus_label)
+        print ("----------------------------------------------------------")
+
+    ### Failsafe mechanisn ends here
 
     # Get the index array of the primitives for each atom
     index_primitive = []; counter = 0;
@@ -1034,7 +1088,7 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
     Returns:
         None as a function value
     """
-    aos_per_l = [1,3,6,10,15,21]
+    slm_per_l = [1,3,6,10,15]
 
     shells = {}
     shells[0] = ['S']
@@ -1099,55 +1153,23 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
 
 
 
-    # This part is for reshuffling to make the AO basis in the CHAMP's own ordering
-    index_dict = {}; shell_representation = {}; bf_representation = {}
-    counter = 0; basis_per_atom = []
-    champ_ao_ordering = []
+    # This part is for getting the number of basis per atom
+    basis_per_atom = []
     for atom_index in range(len(index_radial)):
-        bfcounter = 1; basis_per_atom_counter = 0
+        basis_per_atom_counter = 0
         for i in index_radial[atom_index]:
             l = dict_basis["shell_ang_mom"][i]
 
-            # run a small loop to reshuffle the shell ordering
-
             # Get number of AO basis per atom
-            ind = 0
             for k in order[l]:
-                ind = ind + 1
-                shell_representation[counter] = shells[l][k]
-                index_dict[counter] =  counter
-                bf_representation[counter] = bfcounter
-                counter += 1
                 basis_per_atom_counter += 1
-            bfcounter += 1
         basis_per_atom.append(basis_per_atom_counter)
 
-    # print ("old_shell_representation: ", shell_representation.values())
-    # print ("old_shell_representation keys : ", shell_representation.keys())
-    # print ("basis per atom: ", basis_per_atom)
-    # print ("BF representation: ", bf_representation.values())
+    # print ("basis per atom: ", basis_per_atom , len(basis_per_atom))
 
-
-    champ_ao_ordering = [ _ for _ in range(ao_num) ]
-    ## Reorder orbitals according to the ordering of the CHAMP ordering
-
-
-    # The next two arrays are needed for bfinfo file
-    reordered_bf_array = {k: bf_representation[k] for k in champ_ao_ordering}
-    reordered_bf_array_values = list(reordered_bf_array.values())
-    shell_representation_values = list(shell_representation.values())
-
-
-    accumumulated_basis_per_atom = np.cumsum(basis_per_atom)
-
-    start_index = 0
-    basis_pointer_per_atom = []
-    shell_reprensentation_per_atom = []
-    for i in range(len(basis_per_atom)):
-        end_index = accumumulated_basis_per_atom[i]
-        basis_pointer_per_atom.append(reordered_bf_array_values[start_index:end_index])
-        shell_reprensentation_per_atom.append(shell_representation_values[start_index:end_index])
-        start_index = end_index
+    # The bfinfo file contains two lines for each unique atom
+    # The first line contains the slm index of each AO basis function
+    # The second line contains the index of column of numerical radial grid.
 
 #   #   #
         # ! Generate the index of the slm for each AO
@@ -1166,6 +1188,7 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
         # !       +-----------------------------------------------------------------------------
         # !          xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
 
+    for i in range(len(basis_per_atom)):
         counter = 0; count1 = 1; count2 = 0
         cum_rad_per_cent = 0
         cum_ao_per_cent  = 0
@@ -1181,49 +1204,27 @@ def write_champ_file_bfinfo(filename, dict_basis, dict_mo, ao_num, nucleus_label
                 l = dict_basis["shell_ang_mom"][i]
                 dict_num_shells_per_l[atom_index][l] += 1
 
-                counter = counter + aos_per_l[l]
-                count2 = 0
+                counter = counter + slm_per_l[l]
+                count2 = 1
                 index_rad += 1
-                for ii in range(aos_per_l[l]):
-                    count2   += 1
+                for ii in range(slm_per_l[l]):
                     if l == 0:
-                        index_slm.append(count2)
+                        index_slm.append(sum(slm_per_l[1:l]) + count2)
                     else:
-                        index_slm.append(aos_per_l[l-1] + l - 1 + count2)
+                        index_slm.append(sum(slm_per_l[1:l]) + count2 + 1)
+                    count2   += 1
                     ao_radial_index[atom_index].append(index_rad)
-
                     cum_ao_per_cent = cum_ao_per_cent + 1
+
                 cum_rad_per_cent = cum_rad_per_cent + 1
-            # ao_radial_index[atom_index] = [item for sublist in index_slm for item in sublist]
 
         # print("dict num shells per l: ", dict_num_shells_per_l)
         # print("index slm ", index_slm)
         # print("cum_ao_per_cent ", cum_ao_per_cent)
         # print("cum_rad_per_cent ", cum_rad_per_cent)
-        # print("ao_radial_index before ", ao_radial_index)
-        # reshape the ao_radial_index array in the groups of shells from the dict_num_shells_per_l
-
-        # ao_radial_index = [[] for _ in range(len(index_radial))]
-        for atom_index in range(len(index_radial)):
-            # print("dict num shells values ", dict_num_shells_per_l[atom_index].values())
-            index_rad = 0
-
-            radials_per_l = [ [] for _ in range(5) ]
-            for i in index_radial[atom_index]:
-                l = dict_basis["shell_ang_mom"][i]
-                index_rad += 1
-                radials_per_l[l].append(index_rad)
+        # print("ao_radial_index ", ao_radial_index)
 
 
-            for l, num in dict_num_shells_per_l[atom_index].items():
-                if l == 0:
-                    radials_per_l[l] = radials_per_l[l]*1
-                else:
-                    radials_per_l[l] = radials_per_l[l]*aos_per_l[l]
-
-            # ao_radial_index[atom_index] = [item for sublist in radials_per_l for item in sublist]
-
-        # print("ao_radial_index written ", ao_radial_index)
     slm_index_per_atom = []; count1 = 0
     for i in basis_per_atom:
         slm_index_per_atom.append(index_slm[count1:count1+i])
@@ -1340,7 +1341,7 @@ def write_champ_file_ecp_trexio(filename, nucleus_num, nucleus_label, ecp_num, e
                     np.savetxt(file, [len(lmax_index_array)], fmt='%d')
                     # Write down the coeff, power and exponent terms in the ECP for local parts.
                     for i in lmax_index_array:
-                        file.write(f"{ecp_array[i,1]:0.8f} \t {ecp_array[i,2]:02} \t {ecp_array[i,3]:0.8f} ")
+                        file.write(f"{ecp_array[i,1]:0.8f} \t {int(ecp_array[i,2])} \t {ecp_array[i,3]:0.8f} ")
                         file.write("\n")
 
                     # write down the remaining terms in the ECP for non-local parts.
@@ -1353,7 +1354,7 @@ def write_champ_file_ecp_trexio(filename, nucleus_num, nucleus_label, ecp_num, e
                         file.write(f"{j}")
                         file.write("\n")
                         for i in range(j):
-                            file.write(f"{ecp_array[ind,1]:0.8f} \t {ecp_array[ind,2]:02} \t {ecp_array[ind,3]:0.8f} ")
+                            file.write(f"{ecp_array[ind,1]:0.8f} \t {int(ecp_array[ind,2])} \t {ecp_array[ind,3]:0.8f} ")
                             ind += 1
                             file.write("\n")
                     file.write("\n")
@@ -1507,9 +1508,9 @@ def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets,
         beta_orbitals[i] = orb_list_dn
 
     if filename is not None:
-        if isinstance(champ.filename, str):
+        if isinstance(filename.filename, str):
             ## Write down a determinant file in the new champ v2.0 format
-            filename_determinant = os.path.splitext("champ_v2_" + champ.filename)[0]+'_determinants.det'
+            filename_determinant = os.path.splitext("champ_v2_" + filename.filename)[0]+'_determinants.det'
             with open(filename_determinant, 'w') as f:
                 # header line printed below
                 f.write("# Determinants from the TREXIO file. \n")
@@ -1533,18 +1534,74 @@ def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets,
                 f.write("end \n")
             f.close()
         else:
+            print ("in the value error part")
             raise ValueError
     # If filename is None, return a string representation of the output.
     else:
         return None
 
 
+def test_formaldehyde_ground_state():
+    champ = Champ()
+    champ.filename="COH2_GS.trexio"
+    champ.motype="RHF"
+    champ.back_end=trexio.TREXIO_HDF5
+    champ.gamessfile=None
+    champ.save_geometry=True
+    champ.save_lcao = True
+    champ.save_basis = True
+    champ.save_eigenvalues = False
+    champ.save_ecp = True
+    champ.save_symmetry = False
+    champ.save_determinants = True
+    champ.save_csfs = False
+
+    # Optional argument for controlling the names of the output files
+    champ.basis_prefix = "TEST1"
+
+    champ.run()
+    assert champ is not None
+    assert champ.nucleus_num == 4
+    assert champ.ao_num == 66
+    assert champ.mo_num == 66
+    assert champ.shell_num == 26
+    assert champ.prim_num == 62
+    assert champ.ecp_num == 14
+    assert champ.num_dets == 1862
+    assert champ.num_states == 1
+
+def test_benzene_ground_state():
+    champ = Champ()
+    champ.filename="benzene.hdf5"
+    champ.motype="RHF"
+    champ.back_end=trexio.TREXIO_HDF5
+    champ.gamessfile=None
+    champ.save_geometry=True
+    champ.save_lcao = True
+    champ.save_basis = True
+    champ.save_eigenvalues = False
+    champ.save_ecp = True
+    champ.save_symmetry = False
+    champ.save_determinants = False
+    champ.save_csfs = False
+
+    # Optional argument for controlling the names of the output files
+    champ.basis_prefix = "TEST2"
+
+    champ.run()
+    assert champ is not None
+    assert champ.nucleus_num == 12
+    assert champ.ao_num == 114
+    assert champ.mo_num == 108
+    assert champ.shell_num == 48
+    assert champ.prim_num == 186
+    assert champ.ecp_num == 42
+
+
+
+
 
 if __name__ == "__main__":
-    print ("Converting the trexio file to the champ v2.0 format")
-
-    # Instantiate the class
     champ = Champ()
-
-    # Run the class instance
+    champ.__main__()
     champ.run()

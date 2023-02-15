@@ -1,64 +1,60 @@
       module hpsi_mod
       contains
-      subroutine hpsi(coord,psid,psij,energy,ipass,ifr)
+      subroutine hpsi(coord,psid,psij,ekin,energy,ipass,ifr)
 
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
-      use optwf_parms, only: nparmj
-      use slater, only: ndet
-      use system, only: nelec, ndn, nup
-      use control, only:  ipr
+      use Bloc,    only: tildem,tildemkin
+      use casula,  only: i_vpsp,t_vpsp
       use constants, only: hb
-      use mstates_mod, only: MSTATES
-      use csfs, only: nstates
-      use mmpol_hpsi, only: peQMdp, peQMq
-      use multidet, only: iactv, ivirt
-      use slater, only: kref
-      use pcm_hpsi, only: pcms, pcmv
-      use multiple_geo, only: iwf, iwftype, nforce
-      use ycompact, only: ymat
-      use casula, only: i_vpsp, t_vpsp
-      use slater, only: norb
-      use jastrow, only: ianalyt_lap
-      use Bloc, only: tildem
-      use m_force_analytic, only: iforce_analy
-      use pseudo, only: nloc
-      use velocity_jastrow, only: vj
-      use mmpol_cntrl, only: immpol
-      use efield, only: iefield
-      use pcm_cntrl, only: ipcm
-      use distance_mod, only: rshift, r_en, rvec_en
-      use multislater, only: detiab
-      use inputflags, only: iqmmm
-      use precision_kinds, only: dp
       use contrl_file, only: ounit
-
-      use properties_mod, only: prop_compute
-      use optci_mod,      only: optci_deloc
-      use optjas_mod,     only: optjas_deloc
-      use optorb_f_mod,   only: optorb_compute
-      use force_analytic, only: compute_force
-      use vmc_mod,        only: nwftypejas, nwftypeorb, nwftypemax, nbjx, stoo, stoj, stobjx
-      use optwf_control,  only: method
+      use control, only: ipr
+      use csfs,    only: nstates
+      use determinant_mod, only: compute_bmatrices_kin,determinant
       use determinant_psit_mod, only: determinant_psit
+      use distance_mod, only: r_en,rshift,rvec_en
+      use distances_mod, only: distances
+      use efield,  only: iefield
+      use efield_f_mod, only: efield_extpot_ene
+      use force_analytic, only: compute_force
+      use inputflags, only: iqmmm
+      use jastrow, only: ianalyt_lap
+      use jastrow_mod, only: jastrow_f => jastrow
+      use jastrow_num_mod, only: jastrow_num
+      use m_force_analytic, only: iforce_analy
+      use mmpol,   only: mmpol_extpot_ene
+      use mmpol_cntrl, only: immpol
+      use mmpol_hpsi, only: peQMdp,peQMq
+      use mstates_mod, only: MSTATES
+      use multidet, only: iactv,ivirt
       use multideterminant_mod, only: multideterminant_hpsi
+      use multiple_geo, only: iwf,iwftype, nforce
+      use multislater, only: detiab
       use nonloc_pot_mod, only: nonloc_pot
-      use determinant_mod,only: determinant, compute_bmatrices_kin
-      use jastrow_num_mod,only: jastrow_num
-      use jastrow_mod,    only: jastrow_f => jastrow
-      use mmpol,          only: mmpol_extpot_ene
-      use pcm_mod,        only: pcm_extpot_ene
-      use distances_mod,  only: distances
-      use pot_local_mod,  only: pot_local
-      use qmmm_pot,       only: qmmm_extpot_ene
-      use efield_f_mod,   only: efield_extpot_ene
+      use vmc_mod,        only: nwftypejas, nwftypeorb, nwftypemax, nbjx, stoo, stoj, stobjx
+      use optci_mod, only: optci_deloc
+      use optjas_mod, only: optjas_deloc
+      use optorb_f_mod, only: optorb_compute
+      use optwf_parms, only: nparmj
+      use pcm_cntrl, only: ipcm
+      use pcm_hpsi, only: pcms,pcmv
+      use pcm_mod, only: pcm_extpot_ene
+      use pot_local_mod, only: pot_local
+      use precision_kinds, only: dp
+      use properties_mod, only: prop_compute
+      use pseudo,  only: nloc
+      use qmmm_pot, only: qmmm_extpot_ene
+      use slater,  only: kref,ndet, norb
+      use system,  only: ndn,nelec,nup
+      use velocity_jastrow, only: vj
+      use ycompact, only: ymat
 
       implicit none
 
       integer :: i, iab, ifr, ii, ipass, j, o, x
       integer :: irep, istate, jrep, nel
-      real(dp) :: e_other, ext_pot, peQM, pe_local
+      real(dp) :: e_other, ekin_other, ext_pot, peQM, pe_local
       real(dp) :: pepcm
       real(dp), dimension(3, *) :: coord
       real(dp), dimension(*) :: psid
@@ -67,8 +63,10 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       real(dp), dimension(nwftypejas) :: d2j
       real(dp), dimension(nstates) :: denergy
       real(dp), dimension(ndet, 2, nbjx) :: eloc_det
-      real(dp), dimension(2, nbjx) :: vpsp_det
+      real(dp), dimension(2, nbjx) :: vpsp_det, ekin_det
       real(dp), dimension(nparmj,nbjx) :: dvpsp_dj !STU questionable
+      real(dp), dimension(*) :: ekin
+      real(dp), dimension(MSTATES) :: dekin
 
 c Calculates energy
 
@@ -158,28 +156,31 @@ c nonloc_pot must be called after determinant because slater matrices are needed
         enddo
       endif
 
-      call multideterminant_hpsi(vj,vpsp_det,eloc_det)
+      call multideterminant_hpsi(vj,ekin_det,vpsp_det,eloc_det)
 
       do istate=1,nstates !STU need mapping here in d2j, vj, tildem, detiab, eloc_det
         j=stoj(istate)
         o=stoo(istate)
         x=stobjx(istate)
 
-        e_other=pe_local-hb*d2j(j)
+        ekin_other=-hb*d2j(j)
         do i=1,nelec
-          e_other=e_other-hb*(vj(1,i,j)**2+vj(2,i,j)**2+vj(3,i,j)**2)
+          ekin_other=ekin_other-hb*(vj(1,i,j)**2+vj(2,i,j)**2+vj(3,i,j)**2)
         enddo
+        e_other=ekin_other+pe_local
         !write(ounit,*) "e_other", e_other
 c combine determinantal quantities to obtain trial wave function
         call determinant_psit(psid(istate),istate)
 c compute energy using Ymat
         denergy(istate)=0
+        dekin(istate)=0
         do iab=1,2
           nel=nup
           if(iab.eq.2) nel=ndn
           do jrep=ivirt(iab),norb
             do irep=iactv(iab),nel
               denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,iab,x)
+              dekin(istate)=dekin(istate)+ymat(jrep,irep,iab,istate)*tildemkin(irep,jrep,iab,x)
             enddo
             !write(ounit,*) jrep,'Y',(ymat(jrep,irep,iab,istate),irep=iactv(iab),nel)
             !write(ounit,*) jrep,'M',(tildem(irep,jrep,iab,x),irep=iactv(iab),nel)
@@ -187,8 +188,10 @@ c compute energy using Ymat
         enddo
         write(ounit,*) "state,denergy", istate, denergy(istate)
         denergy(istate)=denergy(istate)*detiab(kref,1,o)*detiab(kref,2,o)/psid(istate)
+        dekin(istate)=dekin(istate)*detiab(kref,1,o)*detiab(kref,2,o)/psid(istate)
 
         energy(istate)=denergy(istate)+eloc_det(kref,1,x)+eloc_det(kref,2,x)+e_other
+        ekin(istate)=dekin(istate)+ekin_det(1,x)+ekin_det(2,x)+ekin_other
 
         if(ipr.ge.2) then
           write(ounit,'(''state'',i4)') istate

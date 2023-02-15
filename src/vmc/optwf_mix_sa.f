@@ -30,7 +30,12 @@
       use optwf_handle_wf,only: restore_ci_best, set_nparms_tot
       use optgeo_lib, only: write_geometry, compute_positions
       use optwf_lin_dav_extra, only: select_ci_root
-      use optwf_lin_dav_more,  only: lin_d
+      use optwf_lin_dav_more, only: lin_d
+      use optwf_sr_mod, only: sr
+      use orbval,  only: nadorb
+      use precision_kinds, only: dp
+      use sa_check, only: energy_all,energy_err_all
+      use sr_mod,  only: mparm
       use sr_more, only: dscal
       use sr_mat_n, only: h_sr, sr_state, ortho
       implicit none
@@ -296,7 +301,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       use slater, only: ndet, cdet
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use slater,  only: cdet,ndet
+
 
       implicit none
 

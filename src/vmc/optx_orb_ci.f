@@ -12,6 +12,9 @@
       use ci004_blk, only: ci_de, ci_de_old
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: ioptci,ioptorb,method
+      use orb_mat_001, only: orb_ho,orb_o,orb_oe
+      use orb_mat_002, only: orb_ho_old,orb_o_old,orb_oe_old
       use precision_kinds, only: dp
 
       implicit none
@@ -42,6 +45,7 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: ioptci,ioptorb,method
 
       implicit none
 
@@ -68,6 +72,7 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: ioptci,ioptorb,method
 
       implicit none
 
@@ -86,6 +91,7 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: ioptci,ioptorb,method
 
       implicit none
 
@@ -119,6 +125,7 @@ c-----------------------------------------------------------------------
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
       use precision_kinds, only: dp
+      use slater,  only: cdet
 
       implicit none
 

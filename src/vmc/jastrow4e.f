@@ -12,8 +12,10 @@ c Jastrow 6   must be used with one of isc=6,7
       use bparm, only: nocuspb, nspin2b
       use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
-      use scale_dist_mod, only: scale_dist1, scale_dist2
-      use scale_dist_mod, only: switch_scale1, switch_scale2
+      use scale_dist_mod, only: scale_dist1,scale_dist2,switch_scale1
+      use scale_dist_mod, only: switch_scale2
+      use system,  only: iwctype,ncent,nelec,nup
+
 
       implicit none
 

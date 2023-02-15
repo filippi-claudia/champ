@@ -1,0 +1,76 @@
+name: Unit Tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  debug_build_test_champ:
+    name: unit test with ${{ matrix.toolchain }} ${{ matrix.mode }} mode
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        toolchain: ['gnu']
+        mode: ['DEBUG']
+    defaults:
+      run:
+        shell: bash --noprofile --norc {0}
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Cmake and HDF5
+      run: |
+        sudo apt install -y cmake
+        sudo apt install -y libhdf5-serial-dev
+
+    - name: Install GNU compilers and libraries
+      if: matrix.toolchain == 'gnu'
+      run: |
+        #sudo apt-get update
+        sudo apt install -y gfortran
+        sudo apt install -y openmpi-bin
+        sudo apt install -y libopenmpi-dev
+        sudo apt install -y gawk
+        sudo apt install -y liblapack-dev
+        sudo apt install -y libblas-dev
+        sudo apt-get install -y gcc
+        gawk --version
+        mpirun --version
+        gfortran --version
+        gcc --version
+
+    - name: Install Trexio
+      run: |
+        wget https://github.com/TREX-CoE/trexio/releases/download/v1.0/trexio-1.0.0.tar.gz
+        tar -xzf trexio-1.0.0.tar.gz
+        cd trexio-1.0.0/
+        ./configure FC=gfortran CC=gcc
+        make all
+        make check
+        sudo make install
+        sudo cp include/* /usr/local/include/
+
+    - name: Install FortUTF for Unit Testing
+      run: |
+        git submodule init
+        git submodule update
+
+    - name: Compile with GNU
+      if: matrix.toolchain == 'gnu'
+      run: |
+        printenv >> $GITHUB_ENV
+        which mpif90
+        MPIRUN=`which mpirun`
+        echo "mpirun used is " $MPIRUN
+        cmake --version
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 \
+                          -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DUNIT_TESTS=on
+        cmake --build build -- vmc_Tests -j2
+        ulimit -s unlimited
+
+    - name: "run vmc testing suite"
+      run: |
+        cd tests/unit_test
+        ./run_tests.sh

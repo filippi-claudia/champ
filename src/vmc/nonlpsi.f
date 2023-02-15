@@ -1,12 +1,12 @@
       module nonlpsi
-      use error, only: fatal_error
+      use error,   only: fatal_error
       contains
       function psinl(u,rshifti,rshiftj,rri,rrj,it,iwfjas)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-
       use vmc_mod, only: nwftypejas
-      use jastrow, only: c, nordc, ijas, nordj
+      use jastrow, only: nordc
       use jaspar6, only: asymp_r
+      use jastrow, only: c,ijas,nordj
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use scale_dist_mod, only: switch_scale
@@ -83,8 +83,10 @@ c-----------------------------------------------------------------------
       function psianl(rri,it,iwfjas)
 
 
-      use jastrow, only: a4, norda, asymp_jasa, ijas
+
+      use jastrow, only: norda
       use jaspar6, only: asymp_r
+      use jastrow, only: a4,asymp_jasa,ijas
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use vmc_mod, only: nwftypejas
@@ -116,8 +118,9 @@ c-----------------------------------------------------------------------
 
       function psibnl(u,isb,ipar,iwfjas)
 
-      use jastrow, only: sspinn, b, nordb, asymp_jasb, ijas
+      use jastrow, only: nordb
       use jaspar6, only: asymp_r
+      use jastrow, only: asymp_jasb,b,ijas,sspinn
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use vmc_mod, only: nwftypejas
@@ -150,8 +153,9 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsianl(rri,it,iwfjas)
 
-      use jastrow, only: a4, norda, ijas
+      use jastrow, only: norda
       use jaspar6, only: asymp_r
+      use jastrow, only: a4,ijas
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use vmc_mod, only: nwftypejas
@@ -181,8 +185,9 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function dpsibnl(u,isb,ipar,iwfjas)
 
-      use jastrow, only: sspinn, b, nordb, ijas
+      use jastrow, only: nordb
       use jaspar6, only: asymp_r
+      use jastrow, only: b,ijas,sspinn
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use vmc_mod, only: nwftypejas

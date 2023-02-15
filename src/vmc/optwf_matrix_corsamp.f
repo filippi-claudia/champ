@@ -1,5 +1,5 @@
       module optwf_matrix_corsamp_mod
-      use error, only: fatal_error
+      use error,   only: fatal_error
       interface ! Let linking decide between dmc/vmc
         subroutine qmc
         end subroutine
@@ -10,33 +10,30 @@
       contains
       subroutine optwf_matrix_corsamp
 c written by Claudia Filippi
+      use contrl_file, only: ounit
+      use control_vmc, only: vmc_idump,vmc_irstar,vmc_isite,vmc_nblk
+      use control_vmc, only: vmc_nblk_ci,vmc_nblk_max
+      use csfs,    only: nstates
+      use gradhess_all, only: grad,h,nparmall,s
+      use multiple_geo, only: iwftype,nforce,nwftype
+      use numbas,  only: numr
+      use optwf_control, only: dparm_norm_min,energy_tol,ilastvmc,ioptci
+      use optwf_control, only: ioptjas,ioptorb,multiple_adiag,nopt_iter
+      use optwf_control, only: nparm
+      use optwf_corsam, only: add_diag,energy,energy_err,force,force_err
+      use optwf_handle_wf, only: compute_parameters,copy_zex,restore_wf
+      use optwf_handle_wf, only: save_nparms,save_wf,save_wf_best
+      use optwf_handle_wf, only: set_nparms,setup_wf,test_solution_parm
+      use optwf_handle_wf, only: write_wf,write_wf_best
+      use optwf_lin_matrix, only: compute_dparm,setup_optimization
+      use orbval,  only: nadorb
       use precision_kinds, only: dp
-      use csfs, only: nstates
-      use numbas, only: numr
-      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_corsam, only: add_diag, energy, energy_err, force, force_err
-      use multiple_geo, only: iwftype, nwftype, nforce
-      use orbval, only: nadorb
+      use read_bas_num_mod, only: read_bas_num
+      use set_input_data, only: set_displace_zero
 
 !     use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
-      use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite
-      use control_vmc, only: vmc_nblk, vmc_nblk_max, vmc_nblk_ci
 
-      use gradhess_all, only: nparmall
-      use optwf_control, only: ioptci, ioptjas, ioptorb, nopt_iter, multiple_adiag
-      use optwf_control, only: energy_tol, dparm_norm_min, ilastvmc
       ! I think that's needed
-      use gradhess_all, only: grad, h, s
-      use optwf_corsam, only: add_diag
-      use contrl_file,    only: ounit
-      use optwf_handle_wf, only: write_wf_best, save_wf_best
-      use optwf_handle_wf, only: save_wf, write_wf, set_nparms
-      use optwf_handle_wf, only: restore_wf, test_solution_parm
-      use optwf_handle_wf, only: save_nparms, copy_zex, setup_wf
-      use optwf_handle_wf, only: compute_parameters
-      use optwf_lin_matrix, only: compute_dparm, setup_optimization
-      use set_input_data, only: set_displace_zero
-      use read_bas_num_mod, only: read_bas_num
       implicit none
 
       integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk
@@ -533,8 +530,8 @@ c end of optimization loop
 c-----------------------------------------------------------------------
       subroutine check_length_run(iter,increase_nblk,nblk,nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
 
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
       implicit none
 
       integer :: increase_nblk, iter, nblk, nblk_max, nblk_new
@@ -588,10 +585,10 @@ c Always increase nblk by a factor of 2 every other iteration
 c-----------------------------------------------------------------------
       subroutine quad_min
 
-      use optwf_corsam, only: add_diag, energy, force, force_err
+      use contrl_file, only: ounit
+      use optwf_corsam, only: add_diag,energy,force,force_err
+      use optwf_lib, only: chlsky,lxb,uxb
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
-      use optwf_lib, only: chlsky, lxb, uxb
       use read_bas_num_mod, only: read_bas_num
       implicit none
 
@@ -690,19 +687,17 @@ c Solve linear equations
 c-----------------------------------------------------------------------
       subroutine combine_derivatives
 
-      use gradhess_ci, only: h_ci, s_ci
-      use gradhess_jas, only: h_jas, s_jas
-      use gradhess_mix_jas_ci, only: h_mix_jas_ci, s_mix_jas_ci
-      use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
-      use gradhess_mix_orb_ci, only: h_mix_ci_orb, s_mix_ci_orb
-      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
-      use optwf_parms, only: nparmj
-      use gradhess_all, only: h, s
-      use ci000, only: nciterm
-      use contrl_file,    only: ounit
-      use optwf_control, only: method
+      use ci000,   only: nciterm
+      use contrl_file, only: ounit
+      use gradhess_all, only: h,s
+      use gradhess_ci, only: h_ci,s_ci
+      use gradhess_jas, only: h_jas,s_jas
+      use gradhess_mix_jas_ci, only: h_mix_jas_ci,s_mix_jas_ci
+      use gradhess_mix_jas_orb, only: h_mix_jas_orb,s_mix_jas_orb
+      use gradhess_mix_orb_ci, only: h_mix_ci_orb,s_mix_ci_orb
       use optorb_cblock, only: nreduced
-      use contrl_file,    only: ounit
+      use optwf_control, only: ioptci,ioptjas,ioptorb,method,nparm
+      use optwf_parms, only: nparmj
       implicit none
 
       integer :: i, i0, is, ishift, j

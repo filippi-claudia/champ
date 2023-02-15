@@ -42,61 +42,61 @@ c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-      use vmc_mod, only: nrad
-      use vmc_mod, only: delri
-      use const, only: etrial 
+      use age,     only: iage,ioldest,ioldestmx
+      use averages, only: average
+      use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
+      use branch,  only: wgdsumo,wt,wthist
+      use casula,  only: i_vpsp,icasula
+      use config,  only: psido_dmc,psijo_dmc,vold_dmc
+      use config,  only: xold_dmc
+      use const,   only: etrial,esigmatrial
       use constants, only: hb
+      use contrl_file, only: ounit
+      use contrldmc, only: iacc_rej,icross,icut_br,icut_e,idmc,ipq,limit_wt_dmc
+      use contrldmc, only: nfprod,rttau,tau
       use control, only: ipr
-      use multiple_geo, only: istrech, nforce, itausec, nwprod
-      use age, only: iage, ioldest, ioldestmx
-      use contrldmc, only: iacc_rej, icross, icut_br, icut_e, idmc, ipq, nfprod, rttau, tau
-      use system, only: cent, nelec, nup
-      use estcum, only: ipass
-      use config, only: d2o, peo_dmc, psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nodecr, trymove
-      use estsum, only: efsum1, egsum1, esum1_dmc
-      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc
-      use estsum, only: wfsum1, wgsum1, wsum1
+      use control_dmc, only: dmc_irstar,dmc_nconf
       use derivest, only: derivsum
-      use step, only: rprob
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt
-      use branch, only: wthist
-      use casula, only: i_vpsp, icasula
-      use jacobsave, only: ajacob, ajacold
-      use velratio, only: fratio, xdrifted
-      use control_dmc, only: dmc_irstar, dmc_nconf
-      use inputflags, only: node_cutoff, eps_node_cutoff, icircular, idrifdifgfunc
-      use precision_kinds, only: dp
-      use contrl_file,    only: ounit
-
-      use distances_mod,  only: distances
-      use strech_mod,     only: strech
-      use splitj_mod,     only: splitj
-      use walksav_jas_mod,only: walksav_jas, walkstrjas
-      use walksav_det_mod,only: walksav_det, walkstrdet
-      use averages,       only: average
+      use determinante_mod, only: compute_determinante_grad
+      use detsav_mod, only: detsav
+      use distances_mod, only: distances,distancese_restore
+      use estcum,  only: ipass
+      use estsum,  only: efsum1,egsum1,esum1_dmc,pesum_dmc,r2sum,risum
+      use estsum,  only: tausum,tpbsum_dmc,wfsum1,wgsum1
+      use estsum,  only: wsum1
+      use gauss_mod, only: gauss
+      use hpsi_mod, only: hpsi
+      use hpsiedmc, only: psiedmc
+      use inputflags, only: eps_node_cutoff,icircular,idrifdifgfunc
+      use inputflags, only: node_cutoff
+      use jacobsave, only: ajacob,ajacold
+      use jassav_mod, only: jassav
+      use mmpol_dmc, only: mmpol_save,mmpol_sum
       use multideterminant_mod, only: update_ymat
-      use detsav_mod,     only: detsav 
-      use jassav_mod,     only: jassav
-      use hpsiedmc,       only: psiedmc
-      use nonloc_grid_mod,only: nonloc_grid, t_vpsp_get
-      use optx_orb_ci    ,only: optx_orb_ci_sum
-      use optx_jas_ci,    only: optx_jas_ci_sum
-      use optx_jas_orb,   only: optx_jas_orb_sum
-      use optci_mod,      only: optci_sum
-      use optorb_f_mod,   only: optorb_sum
-      use optjas_mod,     only: optjas_sum
-      use mmpol_dmc,      only: mmpol_sum, mmpol_save
-      use pcm_dmc,        only: pcm_sum, pcm_save
-      use prop_dmc,       only: prop_sum_dmc, prop_save_dmc
-      use determinante_mod,only: compute_determinante_grad
-      use nonloc_grid_mod, only: t_vpsp_sav
-      use hpsi_mod,        only: hpsi
       use multideterminant_tmove_mod, only: multideterminant_tmove
-      use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
-      use distances_mod,  only: distancese_restore
-      use random_mod,     only: random_dp
-      use gauss_mod,      only: gauss
+      use multiple_geo, only: istrech,itausec,nforce,nwprod
+      use nodes_distance_mod, only: nodes_distance,rnorm_nodes_num
+      use nonloc_grid_mod, only: nonloc_grid,t_vpsp_get,t_vpsp_sav
+      use optci_mod, only: optci_sum
+      use optjas_mod, only: optjas_sum
+      use optorb_f_mod, only: optorb_sum
+      use optx_jas_ci, only: optx_jas_ci_sum
+      use optx_jas_orb, only: optx_jas_orb_sum
+      use optx_orb_ci, only: optx_orb_ci_sum
+      use pcm_dmc, only: pcm_save,pcm_sum
+      use precision_kinds, only: dp
+      use prop_dmc, only: prop_save_dmc,prop_sum_dmc
+      use random_mod, only: random_dp
+      use splitj_mod, only: splitj
+      use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nodecr
+      use stats,   only: trymove
+      use step,    only: rprob
+      use strech_mod, only: strech
+      use system,  only: cent,nelec,nup
+      use velratio, only: fratio,xdrifted
+      use vmc_mod, only: delri,nrad
+      use walksav_det_mod, only: walksav_det,walkstrdet
+      use walksav_jas_mod, only: walksav_jas,walkstrjas
 
       implicit none
 
@@ -112,7 +112,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
       real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
       real(dp) :: drifdifr, drifdifs, drift, dwt
-      real(dp) :: dx, e_cutoff, enew(1)
+      real(dp) :: dx, e_cutoff, dwt_cutoff, ekino(1), enew(1)
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, ginv
       real(dp) :: p, pen, pp, psi2savo
@@ -124,6 +124,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: v2sumn, v2sumo, vav2sumn, vav2sumo
       real(dp) :: vavvn, vavvo, vavvt, wtg(1)
       real(dp) :: wtg_derivsum1, wtnow
+
       real(dp), dimension(3, nelec) :: xstrech
       real(dp), dimension(3) :: xnew
       real(dp), dimension(3, nelec) :: vnew
@@ -132,11 +133,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp), dimension(nelec) :: unacp
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
+
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: adrift = 0.5d0
       real(dp), parameter :: zero_1d(1) = (/0.d0/)
-
 
 
       data ncall /0/
@@ -255,6 +256,8 @@ c Sample Green function for forward move
 
         dwt=1
 
+c     to initilialize pp
+        pp=1
         do i=1,nelec
 
           if(i.le.nup) then
@@ -431,7 +434,7 @@ c Primary configuration
             drifdifr=one
             if(nforce.gt.1)
      &      call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
-            call hpsi(xold_dmc(1,1,iw,1),psidn(1),psijn,enew,ipass,1)
+            call hpsi(xold_dmc(1,1,iw,1),psidn(1),psijn,ekino,enew,ipass,1)
             call walksav_det(iw)
             call walksav_jas(iw)
             if(icasula.lt.0) call multideterminant_tmove(psidn(1),0)
@@ -473,7 +476,7 @@ c Compute streched electronic positions for all nucleus displacement
               endif
             endif
             if(icasula.lt.0) i_vpsp=icasula
-            call hpsi(xold_dmc(1,1,iw,ifr),psidn,psijn,enew,ipass,ifr)
+            call hpsi(xold_dmc(1,1,iw,ifr),psidn,psijn,ekino,enew,ipass,ifr)
             i_vpsp=0
           endif
 
@@ -525,6 +528,12 @@ c Use more accurate formula for the drift and tau secondary in drift
              else
               dwt=0.5d0+1/(1+exp(-4*expon))
             endif
+          endif
+
+c Limit the weights for LA
+          if(limit_wt_dmc.gt.0) then
+            dwt_cutoff=exp((etrial-eest+limit_wt_dmc*esigma/rttau)*tau)
+            if(dwt.gt.dwt_cutoff) dwt=dwt_cutoff
           endif
 
 c If we are using weights rather than accept/reject
@@ -596,14 +605,6 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
      &    wt(iw),enew(1)-etrial,eold(iw,ifr)-etrial,(xnew(ii),ii=1,3)
 
           eold(iw,ifr)=enew(1)
-          ! peo_dmc(iw,ifr)=pen <= pen is undefined, could be den mispelled ?
-          if(icut_e .ne. 0) then  ! <= check that with claudia
-            peo_dmc(iw,ifr)=den
-          else
-            peo_dmc(iw,ifr)=0.0_dp
-          end if
-          ! d2o(iw,ifr)=d2n <= dn2 is not initialized I don't think it' s mispelled
-          d2o(iw,ifr)=0.0_dp ! I set it to 0 but we must check with Claudia
           psido_dmc(iw,ifr)=psidn(1)
           psijo_dmc(iw,ifr)=psijn(1)
           fratio(iw,ifr)=fration
@@ -627,9 +628,8 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
 
             wsum1(ifr)=wsum1(ifr)+wtnow
             esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)
-            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*peo_dmc(iw,ifr)
-            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-peo_dmc(iw,ifr))
-            tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg(1)*half*hb*d2o(iw,ifr)
+            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))
+            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)
 
             derivsum(1,ifr)=derivsum(1,ifr)+wtg(1)*eold(iw,ifr)
 
@@ -660,9 +660,8 @@ c           write(ounit,*) 'IN DMC',ajacold(iw,ifr)
 
             wsum1(ifr)=wsum1(ifr)+wtnow*ro
             esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)*ro
-            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*peo_dmc(iw,ifr)*ro
-            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-peo_dmc(iw,ifr))*ro
-            tjfsum_dmc(ifr)=tjfsum_dmc(ifr)-wtg(1)*half*hb*d2o(iw,ifr)*ro
+            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))*ro
+            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)*ro
 
             wtg=wt(iw)*fprod/rnorm_nodes**2
             wtg_derivsum1=wtg(1)

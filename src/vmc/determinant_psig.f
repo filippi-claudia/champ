@@ -3,11 +3,8 @@
       subroutine determinant_psig(psid,psij,psig)
 
       use csfs, only: nstates, anormo
-
       use mstates3, only: iweight_g, weights_g
-
       use vmc_mod, only: stoj
-
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       implicit none

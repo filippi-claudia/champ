@@ -2,63 +2,65 @@
       contains
       subroutine startr
 
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: nrad
-      use basis, only: zex
-      use constants, only: hb 
-      use control, only: ipr, mode
-      use system, only: nelec, cent, iwctype, ncent, nctype, znuc, ncent_tot, ndn, nup, nghostcent
-      use multiple_geo, only: istrech, nforce, pecent, fgcm2, fgcum
-      use age, only: iage, ioldest, ioldestmx
-      use contrldmc, only: idmc
-      use contrldmc, only: nfprod, rttau, tau
-      use estcum, only: iblk, ipass
-      use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-      use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
-      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, wdsum
-      use estsum, only: wfsum, wgdsum, wgsum, wsum_dmc
-      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum
-      use estcum, only: ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
-      use estcum, only: wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wgcum, wgcum1
-      use estcum, only: wgdcum
-      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2
-      use est2cm, only: ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21
-      use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
-      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
-      use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid
-      use denupdn, only: rprobdn, rprobup
-      use mpiblk, only: iblk_proc
-      use qua, only: nquad, wq, xq, yq, zq
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
-      use casula, only: i_vpsp, icasula
-      use jacobsave, only: ajacob, ajacold
-      use pseudo, only: nloc
-      use slater, only: ndet, norb, cdet, coef
-      use coefs, only: nbasis
-      use velratio, only: fratio
-!      use contrl, only: nconf
+      use age,     only: iage,ioldest,ioldestmx
+      use basis,   only: zex, ns, np, nd, nf, ng
+      use branch,  only: eest,eigv,eold,ff,fprod,nwalk,wdsumo,wgdsumo,wt
+      use branch,  only: wtgen
+      use casula,  only: i_vpsp,icasula
+      use coefs,   only: nbasis
+      use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
+      use constants, only: hb
+      use contrl_file, only: ounit
+      use contrldmc, only: idmc,nfprod,rttau,tau
+      use control, only: ipr,mode
       use control_dmc, only: dmc_nconf
+      use denupdn, only: rprobdn,rprobup
+      use derivest, only: derivcm2,derivcum,derivsum,derivtotave_num_old
+      use determinante_mod, only: compute_determinante_grad
+      use error,   only: fatal_error
+      use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
+      use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
+      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21,wdcm2,wdcm21
+      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21,wgdcm2
+      use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
+      use estcum,  only: ei1cum,ei2cum,ei3cum,iblk,ipass,pecum_dmc
+      use estcum,  only: r2cum_dmc,ricum,taucum,tpbcum_dmc
+      use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
+      use estcum,  only: wgcum1,wgdcum
+      use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
+      use estsum,  only: r2sum,risum,tausum,tpbsum_dmc,wdsum
+      use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
+      use hpsi_mod, only: hpsi
+      use jacobsave, only: ajacob,ajacold
+      use mmpol,   only: mmpol_init,mmpol_rstrt
+      use mmpol_dmc, only: mmpol_save
       use mpi
-      use contrl_file,    only: ounit
-      use precision_kinds, only: dp
-
-      use restart_gpop,    only: startr_gpop
-      use error,           only: fatal_error
-      use random_mod,      only: setrn
-      use mmpol,           only: mmpol_init, mmpol_rstrt
-      use pcm_mod,         only: pcm_init, pcm_rstrt
-      use properties_mod,  only: prop_init, prop_rstrt
-      use mmpol_dmc,       only: mmpol_save
-      use pcm_dmc,         only: pcm_save
-      use prop_dmc,        only: prop_save_dmc
+      use mpiblk,  only: iblk_proc
+      use mpiconf, only: idtask,nproc,wid
+      use multiple_geo, only: fgcm2,fgcum,istrech,nforce,pecent
       use nonloc_grid_mod, only: t_vpsp_sav
+      use pcm_dmc, only: pcm_save
+      use pcm_mod, only: pcm_init,pcm_rstrt
+      use precision_kinds, only: dp
+      use prop_dmc, only: prop_save_dmc
+      use properties_mod, only: prop_init,prop_rstrt
+      use pseudo,  only: nloc
+      use qua,     only: nquad,wq,xq,yq,zq
+      use random_mod, only: setrn
+      use restart_gpop, only: startr_gpop
+      use slater,  only: cdet,coef,ndet,norb
+      use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nbrnch
+      use stats,   only: nodecr,trymove
+      use step,    only: rprob
+      use strech_mod, only: strech
+      use system,  only: cent,iwctype,ncent,ncent_tot,nctype,ndn,nelec
+      use system,  only: nghostcent,nup,znuc
+      use velratio, only: fratio
+      use vmc_mod, only: norb_tot,nrad
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
-      use determinante_mod,only: compute_determinante_grad
-      use hpsi_mod,        only: hpsi
-      use strech_mod,      only: strech
+!      use contrl, only: nconf
+
       implicit none
 
       integer :: i, iage_id, ib, ic, id
@@ -69,11 +71,13 @@
       integer :: nghostcentx, nprock, nq_id, num
       integer :: nupx, nwalk_id
       integer, dimension(4, 0:nproc) :: irn
+      integer, dimension(nctype)      :: nsx,npx,ndx,nfx,ngx
       real(dp) :: different, eest_id
       real(dp) :: eigv_id, ff_id, fmt, fprod_id
       real(dp) :: fratio_id, hbx, taux, wdsumo_id
       real(dp) :: wq_id, wt_id, xold_dmc_id, xq_id
       real(dp) :: yq_id, zq_id
+      real(dp) :: ekino(1)
       real(dp), dimension(nbasis, norb_tot) :: coefx
       real(dp), dimension(nbasis) :: zexx
       real(dp), dimension(3, ncent_tot) :: centx
@@ -107,8 +111,8 @@
      &  ,eigv,eest,wdsumo
         read(10) (iage(i),i=1,nwalk),ioldest,ioldestmx
         read(10) nforce,((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
-c       read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),tjfcum_dmc(i),
-c    &  wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),tjfcm_dmc(i),taucum(i),
+c       read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i)
+c    &  wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),taucum(i),
 c    &  i=1,nforce)
         if(nloc.gt.0)
      &  read(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
@@ -120,8 +124,8 @@ c    &  i=1,nforce)
      &  ,eigv_id,eest_id,wdsumo_id
         read(10) (iage_id,i=1,nwalk_id),ioldest_id,ioldestmx_id
         read(10) n2_id,((fratio_id,iw=1,nwalk_id),ifr=1,n2_id)
-c       read(10) (wgcum_id,egcum_id,pecum_dmc_id,tpbcum_dmc_id,tjfcum_dmc_id,
-c    &  wgcm2_id,egcm2_id,pecm2_dmc_id,tpbcm2_dmc_id,tjfcm_dmc_id,taucum_id,
+c       read(10) (wgcum_id,egcum_id,pecum_dmc_id,tpbcum_dmc_id,
+c    &  wgcm2_id,egcm2_id,pecm2_dmc_id,tpbcm2_dmc_id,taucum_id,
 c    &  i=1,nforce)
         if(nloc.gt.0)
      &  read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nquad)
@@ -129,8 +133,8 @@ c    &  i=1,nforce)
 c     if(nforce.gt.1) read(10) nwprod
 c    &,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
-      read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),tjfcum_dmc(i),
-     &wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),tjfcm_dmc(i),taucum(i),
+      read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),
+     &wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),taucum(i),
      &i=1,nforce)
       read(10) ((irn(i,j),i=1,4),j=0,nproc-1)
       call setrn(irn(1,idtask))
@@ -179,6 +183,20 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) pecent
       read(10) (znucx(i),i=1,nctypex)
 
+      ! read the number of basis per shell type
+      read(10) (nsx(i),i=1,nctype)
+      read(10) (npx(i),i=1,nctype)
+      read(10) (ndx(i),i=1,nctype)
+      read(10) (nfx(i),i=1,nctype)
+      read(10) (ngx(i),i=1,nctype)
+      do i = 1, nctype
+        if (nsx(i) .ne. ns(i)) call fatal_error('STARTR: ns')
+        if (npx(i) .ne. np(i)) call fatal_error('STARTR: np')
+        if (ndx(i) .ne. nd(i)) call fatal_error('STARTR: nd')
+        if (nfx(i) .ne. nf(i)) call fatal_error('STARTR: nf')
+        if (ngx(i) .ne. ng(i)) call fatal_error('STARTR: ng')
+      enddo
+
       if (ncentx.ne.ncent) call fatal_error('STARTR: ncent')
       if (nctypex.ne.nctype) call fatal_error('STARTR: nctype')
       do i=1,nbasis
@@ -201,8 +219,8 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(ounit,'(1x,''succesful read from unit 10'')')
       write(ounit,'(t5,''egnow'',t15,''egave'',t21
      &,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55
-     &,''(tpberr)'' ,t66,''tjfave'',t72,''(tjferr)'',t83,''npass'',t93
-     &,''wgsum'',t103 ,''ioldest'')')
+     &,''(tpberr)'' ,t66,''npass'',t77
+     &,''wgsum'',t88 ,''ioldest'')')
 
       do iw=1,nwalk
         if(istrech.eq.0) then
@@ -226,7 +244,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
           endif
           ajacold(iw,ifr)=ajacob
           if(icasula.lt.0) i_vpsp=icasula
-          call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
+          call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),ekino,eold(iw,ifr),0,ifr)
           i_vpsp=0
           do i=1,nelec
             call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
@@ -261,7 +279,6 @@ c zero out xsum variables for metrop
         wgsum(ifr)=zero
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
-        tjfsum_dmc(ifr)=zero
         tausum(ifr)=zero
         do k=1,3
           derivsum(k,ifr)=zero

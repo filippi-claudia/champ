@@ -7,7 +7,7 @@ c Written by Claudia Filippi
 
       use slater, only: ndet
       use system, only: ndn, nup, nelec
-      use multidet, only: ivirt, numrep_det, ndetiab, ndetsingle
+      use multidet, only: ivirt, numrep_det, ndetiab, numrep_det, ndetsingle, ndetdouble
       use slater, only: kref
       use slatn, only: slmin
       use ycompact, only: ymat
@@ -27,7 +27,7 @@ c Written by Claudia Filippi
 
       integer :: i, iab, iel, iflag, ikel
       integer :: iorb, ish, istate, j
-      integer :: k, kk, ndim, nel, ndim2, kn
+      integer :: k, kk, ndim, nel, ndim2, kn, kcum
       integer, dimension(ndet) :: ku
       integer, dimension(ndet) :: auxdim
 
@@ -56,17 +56,29 @@ c Written by Claudia Filippi
       
 
 !     This loop should run just over unique or unequivalent determinants
-! single excitations
-        do k=1,ndetsingle(iab)
-          wfmat(k,1,iab,stoo(istate))=wfmatn(k,1,stoo(istate))
-        enddo
-! multiple excitations
-        do k=ndetsingle(iab)+1,ndetiab(iab)
-          ndim=numrep_det(k,iab)
-          ndim2=ndim*ndim 
-          wfmat(k,1:ndim2,iab,stoo(istate))=wfmatn(k,1:ndim2,stoo(istate))
-        enddo
-      
+!     single excitations
+        if(ndetsingle(iab).ge.1)then
+          do k=1,ndetsingle(iab)
+            wfmat(k,1,iab,stoo(istate))=wfmatn(k,1,stoo(istate))
+          enddo
+        endif
+
+!     double excitations  
+        kcum=ndetsingle(iab)+ndetdouble(iab)
+        if(ndetdouble(iab).ge.1)then
+           do k=ndetsingle(iab)+1,kcum
+              wfmat(k,1:4,iab,stoo(istate))=wfmatn(k,1:4,stoo(istate))
+           enddo
+        endif
+
+!     multiple excitations
+      if(kcum.lt.ndetiab(iab))then
+         do k=ndetdouble(iab)+1,ndetiab(iab)
+            ndim=numrep_det(k,iab)
+            ndim2=ndim*ndim
+            wfmat(k,1:ndim2,iab,stoo(istate))=wfmatn(k,1:ndim2,stoo(istate))
+         enddo
+      endif
       
       
       

@@ -31,7 +31,7 @@ load jastrow_der     jastrow.der
     nextorb       280
     nblk_max      200
     no_active     1
-    nopt_iter     20
+    nopt_iter     1
     sr_tau        0.05
     sr_eps        0.001
     sr_adiag      0.01

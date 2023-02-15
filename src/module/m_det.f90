@@ -8,7 +8,7 @@ end module dets
 
 module csfs
     !> Arguments: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :, :), allocatable :: ccsf !(MDET,MSTATES,MWF)
     real(dp), dimension(:), allocatable :: cxdet !(nmap)

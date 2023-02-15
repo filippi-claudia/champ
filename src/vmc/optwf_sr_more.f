@@ -31,9 +31,9 @@
       subroutine pcg(n,b,x,i,imax,imod,eps)
 c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
-      use mpiconf, only: idtask
+      use contrl_file, only: ounit
       use mpi
-      use contrl_file,    only: ounit
+      use mpiconf, only: idtask
       use sr_mat_n, only: ortho
       implicit none
 
@@ -133,6 +133,9 @@ c r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
       use optorb_cblock, only: norbterm
       use mpiconf, only: idtask
       use mpi
+      use mpiconf, only: idtask
+      use optorb_cblock, only: norbterm
+      use optwf_func, only: ifunc_omega,omega,omega_hes
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use sr_mat_n, only: elocal, h_sr 

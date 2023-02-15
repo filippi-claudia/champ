@@ -1,7 +1,7 @@
 module mix_jas_ci
      !> Arguments: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-     use optwf_parms, only: nparmj
-     use precision_kinds, only: dp
+      use optwf_parms, only: nparmj
+      use precision_kinds, only: dp
 
      real(dp), dimension(:, :, :), allocatable :: de_o_ci !(nparmj,MDET,MSTATES)
      real(dp), dimension(:, :, :), allocatable :: dj_de_ci !(nparmj,MDET,MSTATES)
@@ -105,9 +105,9 @@ module mix_jas_ci
  module m_mixderiv
  contains
  subroutine allocate_m_mixderiv()
-     use mix_jas_ci, only: allocate_mix_jas_ci
-     use mix_jas_orb, only: allocate_mix_jas_orb
-     use mix_orb_ci, only: allocate_mix_orb_ci
+      use mix_jas_ci, only: allocate_mix_jas_ci
+      use mix_jas_orb, only: allocate_mix_jas_orb
+      use mix_orb_ci, only: allocate_mix_orb_ci
 
      call allocate_mix_jas_ci()
      call allocate_mix_jas_orb()
@@ -115,9 +115,9 @@ module mix_jas_ci
  end subroutine allocate_m_mixderiv
 
  subroutine deallocate_m_mixderiv()
-     use mix_jas_ci, only: deallocate_mix_jas_ci
-     use mix_jas_orb, only: deallocate_mix_jas_orb
-     use mix_orb_ci, only: deallocate_mix_orb_ci
+      use mix_jas_ci, only: deallocate_mix_jas_ci
+      use mix_jas_orb, only: deallocate_mix_jas_orb
+      use mix_orb_ci, only: deallocate_mix_orb_ci
 
      call deallocate_mix_jas_ci()
      call deallocate_mix_jas_orb()

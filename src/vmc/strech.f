@@ -12,26 +12,24 @@ c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 
 c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
-      use precision_kinds, only: dp
-      use pcm, only: MCHS, MCHV
-      use multiple_geo, only: istrech, nforce, delc, iwftype, alfstr
-      use multiple_geo, only: MFORCE, MFORCE_WT_PRD, pecent, itausec, nwprod
-      use system, only: znuc, cent, iwctype, ncent, ncent_tot, nelec
-      use pcm_force, only: sch_s
+      use contrl_file, only: ounit
       use control, only: mode
-      use pcm_cntrl, only: ipcm
-      use pcm_parms, only: ch, nch, nchs
-      use pcm_parms, only: nesph
-      use pcm_parms, only: xpol
-      use pcm_ameta, only: eta
-      use pcm_pot, only: penups, penupv
-      use pcm_inda, only: inda
-      use optwf_control, only: ioptwf
-      use contrl_file,    only: ounit
+      use error,   only: fatal_error
       use matinv_mod, only: matinv
-      use error, only: fatal_error
-      use pot, only: pot_nn
+      use multiple_geo, only: MFORCE,MFORCE_WT_PRD,alfstr,delc,istrech
+      use multiple_geo, only: itausec,iwftype,nforce,nwprod,pecent
+      use optwf_control, only: ioptwf
+      use pcm,     only: MCHS,MCHV
+      use pcm_ameta, only: eta
+      use pcm_cntrl, only: ipcm
+      use pcm_force, only: sch_s
+      use pcm_inda, only: inda
       use pcm_mod, only: sigma_R
+      use pcm_parms, only: ch,nch,nchs,nesph,xpol
+      use pcm_pot, only: penups,penupv
+      use pot,     only: pot_nn
+      use precision_kinds, only: dp
+      use system,  only: cent,iwctype,ncent,ncent_tot,nelec,znuc
 
       implicit none
 

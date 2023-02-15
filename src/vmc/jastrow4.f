@@ -402,6 +402,7 @@ c-----------------------------------------------------------------------
       use jastrow, only: a4, norda, nordj
       use scale_more, only: dd3
       use precision_kinds, only: dp
+      use scale_more, only: dd3
 
       implicit none
 

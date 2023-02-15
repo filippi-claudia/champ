@@ -1,6 +1,6 @@
 module grdnthes
      !> Arguments: hessian_zmat
-     use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -55,7 +55,7 @@ module grdnthes
 
  module grdntspar
      !> Arguments: delgrdba, delgrdbl, delgrdda, delgrdxyz, igrdtype, ngradnts
-     use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -74,8 +74,8 @@ module grdnthes
 module m_grdnt
 contains
  subroutine allocate_m_grdnt()
-     use grdnthes, only: allocate_grdnthes
-     use grdntsmv, only: allocate_grdntsmv
+      use grdnthes, only: allocate_grdnthes
+      use grdntsmv, only: allocate_grdntsmv
 
      implicit none
 
@@ -84,8 +84,8 @@ contains
  end subroutine allocate_m_grdnt
 
  subroutine deallocate_m_grdnt()
-     use grdnthes, only: deallocate_grdnthes
-     use grdntsmv, only: deallocate_grdntsmv
+      use grdnthes, only: deallocate_grdnthes
+      use grdntsmv, only: deallocate_grdntsmv
 
      implicit none
 

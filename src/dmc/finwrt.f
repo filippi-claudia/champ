@@ -4,43 +4,41 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to print out final results
 
-      use vmc_mod, only: nrad
-      use vmc_mod, only: delri
-      use const, only: etrial
-      use control, only: ipr, mode
-      use multiple_geo, only: fgcm2, fgcum, nforce, MFORCE
-      use age, only: iage, ioldest, ioldestmx
+      use age,     only: iage,ioldest,ioldestmx
+      use branch,  only: eold,nwalk
+      use config,  only: vold_dmc,xold_dmc
+      use const,   only: etrial
+      use contrl_file, only: ounit
       use contrl_per, only: iperiodic
-      use contrldmc, only: idmc, nfprod, tau
-      use system, only: ncent, nelec
-      use estcum, only: iblk
-      use config, only: vold_dmc, xold_dmc
-      use stats, only: acc, nacc, nodecr, trymove
-      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1
-      use estcum, only: pecum_dmc, taucum, tjfcum_dmc, tpbcum_dmc
-      use estcum, only: wcum1, wcum_dmc, wfcum, wfcum1, wgcum, wgcum1
-      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21
-      use est2cm, only: pecm2_dmc, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21
-      use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21
-      use step, only: rprob
-      use mpiconf, only: nproc, wid
-      use denupdn, only: rprobdn, rprobup
-      use header, only: title
-      use grdntspar, only: igrdtype, ngradnts
-      use mpiblk, only: iblk_proc
-      use branch, only: eold, nwalk
-      use optwf_corsam, only: energy, energy_err, force, force_err
-!      use contrl, only: nblkeq, nconf, nstep
-      use control_dmc, only: dmc_nblkeq, dmc_nconf, dmc_nstep
-      use mpi
-      use contrl_file,    only: ounit
-      use precision_kinds, only: dp
-      use prop_dmc,        only: prop_prt_dmc
-      use pcm_dmc,         only: pcm_fin
-      use mmpol_dmc,       only: mmpol_fin
+      use contrldmc, only: idmc,nfprod,tau
+      use control, only: ipr,mode
+      use control_dmc, only: dmc_nblkeq,dmc_nconf,dmc_nstep
+      use denupdn, only: rprobdn,rprobup
+      use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
+      use est2cm,  only: pecm2_dmc,tpbcm2_dmc,wcm2,wcm21,wfcm2
+      use est2cm,  only: wfcm21,wgcm2,wgcm21
+      use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
+      use estcum,  only: iblk,pecum_dmc,taucum,tpbcum_dmc
+      use estcum,  only: wcum1,wcum_dmc,wfcum,wfcum1,wgcum,wgcum1
       use finwrt_more_mod, only: finwrt_more
-      use misc_grdnts,     only: finwrt_grdnts_cart, finwrt_grdnts_zmat
-      use misc_grdnts,     only: finwrt_diaghess_zmat
+      use grdntspar, only: igrdtype,ngradnts
+      use header,  only: title
+      use misc_grdnts, only: finwrt_diaghess_zmat,finwrt_grdnts_cart
+      use misc_grdnts, only: finwrt_grdnts_zmat
+      use mmpol_dmc, only: mmpol_fin
+      use mpi
+      use mpiblk,  only: iblk_proc
+      use mpiconf, only: nproc,wid
+      use multiple_geo, only: MFORCE,fgcm2,fgcum,nforce
+      use optwf_corsam, only: energy,energy_err,force,force_err
+      use pcm_dmc, only: pcm_fin
+      use precision_kinds, only: dp
+      use prop_dmc, only: prop_prt_dmc
+      use stats,   only: acc,nacc,nodecr,trymove
+      use step,    only: rprob
+      use system,  only: ncent,nelec
+      use vmc_mod, only: delri,nrad
+!      use contrl, only: nblkeq, nconf, nstep
       implicit none
 
       integer :: i, ierr, ifr, j, k
@@ -55,7 +53,7 @@ c routine to print out final results
       real(dp) :: fgerr, pass_proc, passes, peave
       real(dp) :: peerr, rn, rn_eff, rteval_eff1
       real(dp) :: rtevalf_eff1, rtevalg_eff1, rtpass1, term
-      real(dp) :: tjfave, tjferr, tpbave, tpberr
+      real(dp) :: tpbave, tpberr
       real(dp) :: trymove_collect, w, w2, wave
       real(dp) :: werr, werr1, wfave, wferr
       real(dp) :: wferr1, wgave, wgerr, wgerr1
@@ -254,15 +252,11 @@ c    & f10.5)') dr2ac/trymove
       do ifr=1,nforce
         peave=pecum_dmc(ifr)/wgcum(ifr)
         tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
-        tjfave=tjfcum_dmc(ifr)/wgcum(ifr)
 
         peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
         tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
-        tjferr=errg(tjfcum_dmc(ifr),tjfcm_dmc(ifr),ifr)
         write(ounit,'(''potential energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
-        write(ounit,'(''jf kinetic energy ='',t24,f12.7,'' +-''
-     &  ,f11.7,f9.5)') tjfave,tjferr,tjferr*rtevalg_eff1
         write(ounit,'(''pb kinetic energy ='',t24,f12.7,'' +-''
      &  ,f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
       enddo

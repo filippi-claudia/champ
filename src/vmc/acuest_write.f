@@ -23,11 +23,11 @@ c routine to write out estimators for energy etc.
       implicit none
 
       integer :: i, ieerr, iferr, ifr, index
-      integer :: ipeerr, istate, itjfer, itpber
+      integer :: ipeerr, istate, itpber
       integer :: j, nproc
       real(dp) :: acc_denom, accept, eave, eerr, err
       real(dp) :: fave, ferr, peave, peerr
-      real(dp) :: tjfave, tjferr, tpbave, tpberr
+      real(dp) :: tpbave, tpberr
       real(dp) :: x, x2
       real(dp), dimension(MSTATES, MFORCE) :: enow
 
@@ -40,13 +40,17 @@ c xerr = current error of x
 
 c write out header first time
 
-      if (iblk.eq.nproc) write(ounit,'(t5,''enow'',t15,''eave'',t21,''(eerr )''
-     &,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)''
-     &,t66,''tjfave'',t72,''(tjferr)'',t83,''fave'',t97,''(ferr)''
-     &,t108,''accept'',t119,''iter'')')
-
-
-
+      if (iblk.eq.nproc) then
+        if(nforce.gt.1) then
+          write(ounit,'(t5,''enow'',t15,''eave'',t21,''(eerr )''
+     &    ,t32,''peave'',t38,''(peerr)'',t48,''tpbave'',t54,''(tpberr)''
+     &    ,t66,''fave'',t80,''(ferr)'',t93,''accept'',t101,''iter'')')
+         else
+          write(ounit,'(t5,''enow'',t15,''eave'',t21,''(eerr )''
+     &    ,t32,''peave'',t38,''(peerr)'',t48,''tpbave'',t54,''(tpberr)''
+     &    ,t67,''accept'',t79,''iter'')')
+        endif
+      endif
 
 c write out current values of averages
       acc_denom=dfloat(vmc_nstep*iblk)
@@ -60,56 +64,40 @@ c write out current values of averages
         do istate=1,nstates
           eave=ecum(istate,ifr)/wcum(istate,ifr)
           if(iblk.eq.1) then
-            eerr=0
+            peerr=0.
+            tpberr=0.
            else
-            eerr=err(ecum(istate,ifr),ecm2(istate,ifr),istate,ifr)
+            peerr=err(pecum(istate),pecm2(istate),istate,ifr)
+            tpberr=err(tpbcum(istate),tpbcm2(istate),istate,ifr)
           endif
+          peave=pecum(istate)/wcum(istate,ifr)
+          tpbave=tpbcum(istate)/wcum(istate,ifr)
 
-          ieerr=nint(100000*eerr)
-          if(ifr.eq.1) then
-            if(iblk.eq.1) then
-              peerr=0.
-              tpberr=0.
-              tjferr=0.
-            else
-              peerr=err(pecum(istate),pecm2(istate),istate,ifr)
-              tpberr=err(tpbcum(istate),tpbcm2(istate),istate,ifr)
-              tjferr=err(tjfcum(istate),tjfcm2(istate),istate,ifr)
-            endif
-            peave=pecum(istate)/wcum(istate,ifr)
-            tpbave=tpbcum(istate)/wcum(istate,ifr)
-            tjfave=tjfcum(istate)/wcum(istate,ifr)
-
-          ! The definition peer tpberr tjferr contains uninitialized variables
-          ! for example pecum
-          ! That sometimes lead to issues ....
-            ipeerr=nint(100000*peerr, i2b)
-            itpber=nint(100000*tpberr, i2b)
-            itjfer=nint(100000*tjferr, i2b)
+          ipeerr=nint(100000*peerr)
+          itpber=nint(100000*tpberr)
 
             if(istate.eq.1) then
 c           with single-state, fine, with multi gives write out errors, same for the else
-              write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
-     &        enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,accept,iblk*vmc_nstep
+c              write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
+c     &        enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,accept,iblk*vmc_nstep
 
-              call prop_prt(wcum(1,ifr),iblk,ounit)
-              call optci_prt(wcum(1,ifr),iblk,ounit)
-c             call optorb_prt(wcum(1,ifr),eave,6)
+            if(nforce.gt.1) then
+              write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),25x,f10.5,i10)')
+     &        enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,accept,iblk*vmc_nstep
+            else
+              write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),1x,f10.5,i10)')
+     &        enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,accept,iblk*vmc_nstep
+            endif
+
+            call prop_prt(wcum(1,ifr),iblk,ounit)
+            call optci_prt(wcum(1,ifr),iblk,ounit)
+c           call optorb_prt(wcum(1,ifr),eave,6)
 c different meaning of last argument: 0 acuest, 1 finwrt
               call pcm_prt(wcum(1,ifr),iblk)
 
-            else
-              write(ounit,'(f10.5,4(f10.5,''('',i5,'')''))')
-     &        enow(istate,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer
-            endif
-
-
-          else
-            fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))
-            ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)
-            iferr=nint(1.0d9*ferr)
-            write(ounit,'(f10.5,f10.5,''('',i5,'')'',51x,f14.9,''('',i9,'')'')
-     &      ') enow(istate,ifr),eave,ieerr,fave,iferr
+           else
+            write(ounit,'(f10.5,3(f10.5,''('',i5,'')''))')
+     &      enow(istate,1),eave,ieerr,peave,ipeerr,tpbave,itpber
           endif
         enddo
       enddo

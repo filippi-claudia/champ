@@ -11,20 +11,20 @@
 ! URL           : https://github.com/filippi-claudia/champ
 !---------------------------------------------------------------------------
 
-program main
-
-    use mpi
-    use mpiconf, only: idtask, nproc
-    use mpiconf, only: mpiconf_init
-    use control, only: init_control_mode
-    use contrl_file, only: init_logfile, init_procfile, close_files, initialize
-    use allocation_mod, only: deallocate_vmc
-    use optwf_mod, only: optwf
-    use mpiconf, only: wid      ! logical :: true only for mpirank=0
-    use precision_kinds,    only: dp
-    use contrl_file,    only: ounit
-    use mpitimer,    only: time, elapsed_time, time_start, time_check1, time_final
-    use parser_mod,  only: parser
+module main_mod
+    contains
+subroutine initialize_main
+      use allocation_mod, only: deallocate_vmc
+      use contrl_file, only: close_files,init_logfile,init_procfile
+      use contrl_file, only: initialize,ounit
+      use control, only: init_control_mode
+      use mpi
+      use mpiconf, only: idtask,mpiconf_init,nproc,wid
+      use mpitimer, only: elapsed_time,time,time_check1,time_final
+      use mpitimer, only: time_start
+      use optwf_mod, only: optwf
+      use parser_mod, only: parser
+      use precision_kinds, only: dp
 
     implicit None
     integer :: ierr
@@ -59,9 +59,16 @@ program main
     call MPI_BARRIER(MPI_Comm_World, ierr)
     call elapsed_time("MPI Barrier before optwf : ")
 
-    ! ! run the the optimization
-    call optwf()
+end subroutine
 
+subroutine finalize_main()
+    use mpi_f08
+    use allocation_mod, only: deallocate_vmc
+    use contrl_file,    only: ounit
+    use mpitimer,    only: time, time_start, time_final
+
+    implicit none
+    integer :: ierr
     ! call close_files()
     time_final = time()
 
@@ -69,5 +76,22 @@ program main
 
     call mpi_finalize(ierr)
     call deallocate_vmc()
+end subroutine
 
+end module
+
+
+program main
+    use main_mod, only: initialize_main, finalize_main
+    use optwf_mod, only: optwf
+
+    implicit None
+    integer :: ierr
+
+    call initialize_main()
+
+    ! ! run the the optimization
+    call optwf()
+
+    call finalize_main()
 end

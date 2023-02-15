@@ -2,28 +2,27 @@
       contains
       subroutine deriv_jastrow4(x,fjo,d2o,fsumo,fso,fijo,d2ijo,g,go,d2g,gvalue)
 c Written by Cyrus Umrigar and Claudia Filippi
-      use system, only: iwctype, nctype, ncent, nelec, nup
-      use ijasnonlin, only: d1d2a, d1d2b, d2d2a, d2d2b
-      use jastrow, only: sspinn, b, c, a4, norda, nordb, nordc
-      use jastrow, only: asymp_jasa, asymp_jasb, ijas, isc, nordj
-      use jaspar6, only: asymp_r
-      use jaspar6, only: cutjas
-      use jaspointer, only: npoint, npointa
-      use optwf_control, only: ioptjas
-      use optwf_nparmj, only: nparma, nparmb
-      use optwf_parms, only: nparmj
-      use optwf_wjas, only: iwjasa, iwjasb, iwjasc
-      use multiple_geo, only: iwf
-      use bparm, only: nocuspb, nspin2b
-      use contrl_file,    only: ounit
-      use vardep, only: cdep, iwdepend, nvdepend
-      use distance_mod, only: rshift, r_en, rvec_en
-      use m_force_analytic, only: iforce_analy
-      use cuspmat4, only: d, iwc4
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
-      use precision_kinds, only: dp
-      use scale_dist_mod, only: scale_dist2, switch_scale2
+      use bparm,   only: nocuspb,nspin2b
+      use contrl_file, only: ounit
+      use cuspmat4, only: d,iwc4
+      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
+      use jastrow, only: norda,nordb,nordc
+      use jaspar6, only: asymp_r,cutjas
+      use jaspointer, only: npoint,npointa
+      use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj
+      use jastrow, only: sspinn
       use jastrow4_mod, only: da_jastrow4
+      use m_force_analytic, only: iforce_analy
+      use multiple_geo, only: iwf
+      use optwf_control, only: ioptjas
+      use optwf_nparmj, only: nparma,nparmb
+      use optwf_parms, only: nparmj
+      use optwf_wjas, only: iwjasa,iwjasb,iwjasc
+      use precision_kinds, only: dp
+      use scale_dist_mod, only: scale_dist2,switch_scale2
+      use system,  only: iwctype,ncent,nctype,nelec,nup
+      use vardep,  only: cdep,iwdepend,nvdepend
       implicit none
 
       integer :: i, ic, id, ideriv, ij

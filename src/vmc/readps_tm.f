@@ -1,5 +1,5 @@
       module readps_tm_mod
-      use error, only: fatal_error
+      use error,   only: fatal_error
       interface !LAPACK interface
         SUBROUTINE DGESV( N, NRHS, A, LDA, IPIV, B, LDB, INFO )
           INTEGER            INFO, LDA, LDB, N, NRHS
@@ -17,19 +17,18 @@ c c) subtracts out local part from all except highest l component.
 c Also eval pot. at 0 and initializes quadrature pts.
 c
 c Modified by F. Schautz to use fancy file names
-      use pseudo_mod, only: MPS_GRID
-      use vmc_mod, only: NCOEF
-      use system, only: znuc, nctype
+      use contrl_file, only: ounit
       use control, only: ipr
-      use pseudo_tm, only: arg, d2pot, nr_ps, r0, rmax, vpseudo
-      use pseudo, only: lpot, nloc, vps
-      use qua, only: nquad, wq, xq, xq0, yq, yq0, zq, zq0
-      use general, only: pooldir, pp_id
-      use general, only: filename, filenames_ps_tm
-      use contrl_file,    only: ounit
+      use general, only: filename,filenames_ps_tm,pooldir,pp_id
       use precision_kinds, only: dp
-      use spline2_mod, only: spline2
+      use pseudo,  only: lpot,nloc,vps
+      use pseudo_mod, only: MPS_GRID
+      use pseudo_tm, only: arg,d2pot,nr_ps,r0,rmax,vpseudo
+      use qua,     only: nquad,wq,xq,xq0,yq,yq0,zq,zq0
       use rotqua_mod, only: gesqua
+      use spline2_mod, only: spline2
+      use system,  only: nctype,znuc
+      use vmc_mod, only: NCOEF
       implicit none
 
       integer :: i, ic, icoef, ii, index
@@ -218,11 +217,11 @@ c-----------------------------------------------------------------------
 c compute tm-pseudopotential for electron iel
       subroutine getvps_tm(r_en,iel)
 
-      use system, only: znuc, iwctype, ncent, ncent_tot, nelec
-      use pseudo_tm, only: rmax
-      use pseudo, only: lpot, vps
-
       use precision_kinds, only: dp
+      use pseudo,  only: lpot,vps
+      use pseudo_tm, only: rmax
+      use system,  only: iwctype,ncent,ncent_tot,nelec,znuc
+
       implicit none
 
       integer :: ic, ict, iel, l
@@ -264,10 +263,10 @@ c-----------------------------------------------------------------------
 c get spline_fit at r of TM potential for center ic and angular momentum l
 c stored on shifted exponential grid
 
-      use pseudo_mod, only: MPS_GRID
-      use pseudo_tm, only: arg, d2pot, r0, vpseudo
-
       use precision_kinds, only: dp
+      use pseudo_mod, only: MPS_GRID
+      use pseudo_tm, only: arg,d2pot,r0,vpseudo
+
       implicit none
 
       integer :: ic, jx, l

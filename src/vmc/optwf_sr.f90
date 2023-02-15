@@ -391,7 +391,7 @@ contains
     end subroutine sr
 
     subroutine check_length_run_sr(iter, increase_nblk, nblk, nblk_max, denergy, denergy_err, energy_err_sav, energy_tol)
-        use contrl_file,    only: ounit
+      use contrl_file, only: ounit
         implicit none
 
         integer :: iter, increase_nblk, nblk, nblk_max, nblk_new, nbkl

@@ -2,22 +2,22 @@
       contains
       subroutine nonloc_grid(iel,iw,x,psid,imove)
 
-      use system, only: nelec, cent, ncent
+      use casula,  only: icasula,t_vpsp
+      use config,  only: xold_dmc
+      use contrl_file, only: ounit
       use contrl_per, only: iperiodic
       use contrldmc, only: tau
-      use config, only: xold_dmc
-      use optwf_parms, only: nparmj
-      use qua, only: nquad, xq, yq, zq
-      use casula, only: icasula, t_vpsp
-      use distance_mod, only: r_en, rshift, rvec_en
-      use multiple_geo, only: iwf, iwftype
-      use optwf_control, only: ioptci, ioptjas, ioptorb
-      use contrl_file,    only: ounit
-      use precision_kinds, only: dp
+      use distance_mod, only: r_en,rshift,rvec_en
       use distances_mod, only: distances
-      use nonloc_pot_mod, only: nonloc_pot
       use multideterminant_tmove_mod, only: multideterminant_tmove
+      use multiple_geo, only: iwf,iwftype
+      use nonloc_pot_mod, only: nonloc_pot
+      use optwf_control, only: ioptci,ioptjas,ioptorb
+      use optwf_parms, only: nparmj
+      use precision_kinds, only: dp
+      use qua,     only: nquad,xq,yq,zq
       use random_mod, only: random_dp
+      use system,  only: cent,ncent,nelec
       implicit none
 
       integer :: i, i1, i2, ic, ic_good
@@ -141,12 +141,12 @@ c-----------------------------------------------------------------------
       subroutine t_vpsp_sav
 
 
-      use system, only: nelec, ncent, ncent_tot
-      use qua, only: nquad
-      use pseudo_mod, only: MPS_QUAD
-
-      use casula, only: t_vpsp
+      use casula,  only: t_vpsp
       use precision_kinds, only: dp
+      use pseudo_mod, only: MPS_QUAD
+      use qua,     only: nquad
+      use system,  only: ncent,ncent_tot,nelec
+
       implicit none
 
       integer :: i, ic, iq

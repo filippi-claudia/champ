@@ -290,15 +290,15 @@ end module ci010_blk
 module m_optci
 contains
 subroutine allocate_m_optci()
-    use ci001_blk, only: allocate_ci001_blk
-    use ci002_blk, only: allocate_ci002_blk
-    use ci003_blk, only: allocate_ci003_blk
-    use ci004_blk, only: allocate_ci004_blk
-    use ci005_blk, only: allocate_ci005_blk
-    use ci006_blk, only: allocate_ci006_blk
-    use ci008_blk, only: allocate_ci008_blk
-    use ci009_blk, only: allocate_ci009_blk
-    use ci010_blk, only: allocate_ci010_blk
+      use ci001_blk, only: allocate_ci001_blk
+      use ci002_blk, only: allocate_ci002_blk
+      use ci003_blk, only: allocate_ci003_blk
+      use ci004_blk, only: allocate_ci004_blk
+      use ci005_blk, only: allocate_ci005_blk
+      use ci006_blk, only: allocate_ci006_blk
+      use ci008_blk, only: allocate_ci008_blk
+      use ci009_blk, only: allocate_ci009_blk
+      use ci010_blk, only: allocate_ci010_blk
 
     call allocate_ci001_blk()
     call allocate_ci002_blk()
@@ -312,15 +312,15 @@ subroutine allocate_m_optci()
 end subroutine allocate_m_optci
 
 subroutine deallocate_m_optci()
-    use ci001_blk, only: deallocate_ci001_blk
-    use ci002_blk, only: deallocate_ci002_blk
-    use ci003_blk, only: deallocate_ci003_blk
-    use ci004_blk, only: deallocate_ci004_blk
-    use ci005_blk, only: deallocate_ci005_blk
-    use ci006_blk, only: deallocate_ci006_blk
-    use ci008_blk, only: deallocate_ci008_blk
-    use ci009_blk, only: deallocate_ci009_blk
-    use ci010_blk, only: deallocate_ci010_blk
+      use ci001_blk, only: deallocate_ci001_blk
+      use ci002_blk, only: deallocate_ci002_blk
+      use ci003_blk, only: deallocate_ci003_blk
+      use ci004_blk, only: deallocate_ci004_blk
+      use ci005_blk, only: deallocate_ci005_blk
+      use ci006_blk, only: deallocate_ci006_blk
+      use ci008_blk, only: deallocate_ci008_blk
+      use ci009_blk, only: deallocate_ci009_blk
+      use ci010_blk, only: deallocate_ci010_blk
 
     call deallocate_ci001_blk()
     call deallocate_ci002_blk()

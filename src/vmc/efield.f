@@ -2,11 +2,12 @@
       contains
       subroutine efield_extpot_ene(coord,nelec,efield_pot)
 
-      use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
-
-      use efield, only: iscreen, ncharges
-
+      use efield,  only: iscreen,ncharges
+      use efield_blk, only: ascreen,bscreen,qcharge,xcharge,ycharge
+      use efield_blk, only: zcharge
       use precision_kinds, only: dp
+
+
       implicit none
 
       integer :: i, j, nelec
@@ -38,6 +39,8 @@ c-----------------------------------------------------------------------
       use efield, only: iscreen, ncharges
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use system,  only: cent,iwctype,ncent,znuc
+
       implicit none
 
       integer :: i, j

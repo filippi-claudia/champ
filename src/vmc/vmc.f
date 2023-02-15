@@ -12,31 +12,27 @@ c Currently this program contains
 c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater basis states.
 c and sa, pa, da asymptotic functions
 
-      use system, only: nelec
-      use config, only: eold
-      use config, only: psido, psijo
-      use config, only: xold
-      use multiple_geo, only: nforce, iwftype, nwftype
-      use coefs, only: nbasis
-      use slater, only: coef
-!      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
-      use control_vmc, only: vmc_idump, vmc_irstar, vmc_nconf, vmc_nblk
-      use control_vmc, only: vmc_nblkeq, vmc_nconf_new, vmc_nstep
-      use pseudo, only: nloc
-      use mpitimer,    only: elapsed_time
-      use contrl_file,    only: ounit
-
-      use precision_kinds, only: dp
-      use strech_mod, only: setup_force
-      use dumper_mod, only: dumper, startr
-      use mc_configs, only: mc_configs_start, mc_configs_write
-      use acuest_mod, only: zerest
-      use error, only: fatal_error
+      use acuest_mod, only: acuest,zerest
+      use coefs,   only: nbasis
+      use config,  only: eold,psido,psijo,xold
+      use contrl_file, only: ounit
+      use control_vmc, only: vmc_idump,vmc_irstar,vmc_nblk,vmc_nblkeq
+      use control_vmc, only: vmc_nconf,vmc_nconf_new,vmc_nstep
+      use dumper_mod, only: dumper,startr
+      use error,   only: fatal_error
       use finwrt_mod, only: finwrt
-      use rotqua_mod, only: rotqua
-      use acuest_mod, only: acuest
+      use mc_configs, only: mc_configs_start,mc_configs_write
       use metrop_mov1_slat, only: metrop6
-      use mstates3, only: iweight_g !STU remove
+      use mpitimer, only: elapsed_time
+      use multiple_geo, only: iwftype,nforce,nwftype
+      use precision_kinds, only: dp
+      use pseudo,  only: nloc
+      use rotqua_mod, only: rotqua
+      use slater,  only: coef
+      use strech_mod, only: setup_force
+      use system,  only: nelec
+!      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
+
       implicit none
 
       integer :: i, ii, j, jj, l
@@ -75,10 +71,7 @@ c        psi2o  = psi**2 at current position
 c        psi2n  = same after trial move
 c        eold   = local energy at current position
 c        enew   = same after trial move
-c        peo    = local potential at current position
-c        pen    = same after trial move
-c        tjfo   = Jackson Feenberg kinetic energy at current position
-c        tjfn   = same after trial move
+c        ekino   = local kinetic energy at current position
 c        psido  = determinantal part of wave function
 c        psijo  = log(Jastrow)
 c   /coefs/

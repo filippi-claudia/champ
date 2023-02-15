@@ -4,6 +4,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
+      use basis,   only: zex
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nrad, stoj
       use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot
@@ -12,15 +13,15 @@ c job where it left off
       use constants, only: hb
       use metropolis, only: delta, deltar, deltat
       use config, only: eold, nearesto, psi2o
-      use config, only: psido, psijo, rmino, rvmino, tjfo
+      use config, only: psido, psijo, rmino, rvmino
       use config, only: vold, xnew, xold
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use slater, only: ndet, cdet
-      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
-      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tpbcum
       use estsig, only: ecm21s, ecum1s
-      use estsum, only: acc, esum, pesum, r2sum, tjfsum, tpbsum
+      use estsum, only: acc, esum, pesum, r2sum, tpbsum
       use multiple_geo, only: nforce, iwftype, nwftype, pecent
       use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum, wsum
@@ -31,35 +32,48 @@ c job where it left off
       use slater, only: norb, coef
 !      use contrl, only: nstep
       use control_vmc, only: vmc_nstep
-      use basis, only: zex
+      use csfs,    only: nstates
+      use denupdn, only: rprobdn,rprobup
+      use determinant_psig_mod, only: determinant_psig
+      use determinante_mod, only: compute_determinante_grad
+      use error,   only: fatal_error
+      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
+      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum
+      use estsig,  only: ecm21s,ecum1s
+      use estsum,  only: acc,esum,pesum,r2sum,tpbsum
+      use force_analytic, only: force_analy_dump,force_analy_rstrt
+      use forcewt, only: wcum,wsum
+      use hpsi_mod, only: hpsi
+      use inputflags, only: eps_node_cutoff,node_cutoff
+      use metropolis, only: delta,deltar,deltat
       use mstates_ctrl, only: iguiding
-      use inputflags, only: node_cutoff, eps_node_cutoff
-      use contrl_file,    only: ounit, errunit
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: fcm2,fcum,iwftype,nforce,nwftype,pecent
+      use multiple_states, only: efficiency_dump,efficiency_rstrt
+      use nodes_distance_mod, only: nodes_distance,rnorm_nodes_num
+      use optci_mod, only: optci_dump,optci_rstrt,optci_save
+      use optjas_mod, only: optjas_dump,optjas_rstrt,optjas_save
+      use optorb_cblock, only: ns_current
+      use optorb_f_mod, only: optorb_dump,optorb_rstrt,optorb_save
+      use optwf_control, only: ioptorb
+      use optx_jas_ci, only: optx_jas_ci_dump,optx_jas_ci_rstrt
+      use optx_jas_orb, only: optx_jas_orb_dump,optx_jas_orb_rstrt
+      use optx_orb_ci, only: optx_orb_ci_dump,optx_orb_ci_rstrt
+      use pcm_mod, only: pcm_dump,pcm_rstrt
+      use precision_kinds, only: dp
+      use prop_vmc, only: prop_save
+      use properties_mod, only: prop_dump,prop_rstrt
+      use slater,  only: cdet,coef,ndet,norb
+      use stats,   only: rejmax
+      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use strech_mod, only: setup_force,strech
+      use system,  only: cent,iwctype,ncent,ncent_tot,nctype,nctype_tot
+      use system,  only: ndn,nelec,newghostype,nghostcent,nup,znuc
+      use vmc_mod, only: norb_tot,nrad
+      use contrl_file, only: errunit,ounit      
+!      use contrl, only: nstep
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h
-      use optorb_cblock, only: ns_current
-      use precision_kinds, only: dp
-
-      use optorb_f_mod, only: optorb_save, optorb_rstrt
-      use optci_mod,    only: optci_save, optci_rstrt
-      use optjas_mod,   only: optjas_dump, optjas_rstrt, optjas_save
-      use prop_vmc,     only: prop_save
-      use pcm_mod,      only: pcm_rstrt, pcm_dump
-      use nodes_distance_mod,   only: nodes_distance
-      use determinante_mod, only: compute_determinante_grad
-      use error, only: fatal_error
-      use optorb_f_mod,   only: optorb_dump
-      use optci_mod,      only: optci_dump
-      use nodes_distance_mod, only: rnorm_nodes_num
-      use determinant_psig_mod, only: determinant_psig
-      use hpsi_mod, only: hpsi
-      use strech_mod, only: strech, setup_force
-      use optx_orb_ci, only: optx_orb_ci_rstrt, optx_orb_ci_dump
-      use optx_jas_ci, only: optx_jas_ci_rstrt, optx_jas_ci_dump
-      use optx_jas_orb, only: optx_jas_orb_rstrt, optx_jas_orb_dump
-      use force_analytic, only: force_analy_rstrt, force_analy_dump
-      use multiple_states, only: efficiency_rstrt, efficiency_dump
-      use properties_mod, only: prop_rstrt, prop_dump
 
       implicit none
 
@@ -78,7 +92,7 @@ c job where it left off
       real(dp), dimension(nctype_tot) :: znucx
       real(dp), dimension(ndet) :: cdetx
       real(dp), dimension(3,nelec) :: xstrech
-      real(dp), dimension(MSTATES) :: d2
+      real(dp), dimension(MSTATES) :: ekino
       real(dp), parameter :: half = 0.5d0
       real(dp), parameter :: small = 1.d-6
 
@@ -90,8 +104,8 @@ c job where it left off
 
       write(10) vmc_nstep,iblk
       do istate=1,nstates
-        write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),tjfcum(istate),r2cum,acc
-        write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),tjfcm2(istate),r2cm2
+        write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),r2cum,acc
+        write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),r2cm2
         if(nforce.gt.1) then
           write(10) (wcum(istate,i),fcum(istate,i),fcm2(istate,i),i=1,nforce)
          else
@@ -141,8 +155,8 @@ c-----------------------------------------------------------------------
       read(10) nstepx,iblk
       if (nstepx.ne.vmc_nstep) call fatal_error('STARTR: nstep')
       do istate=1,nstates
-        read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),tjfcum(istate),r2cum,acc
-        read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),tjfcm2(istate),r2cm2
+        read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),r2cum,acc
+        read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),r2cm2
         if(nforce.gt.1) then
           read(10) (wcum(istate,i),fcum(istate,i),fcm2(istate,i),i=1,nforce)
          else
@@ -205,8 +219,7 @@ c-----------------------------------------------------------------------
 
       write(ounit,'(1x,''succesful read from unit 10'')')
       write(ounit,'(t5,''enow'',t15,''eave'',t25,''eerr'',t35,''peave'',
-     &t45,''peerr'',t55,''tpbave'',t65,''tpberr'',t75,''tjfave'',
-     &t85,''tjferr'',t95,''accept'',t105,''iter'')')
+     &t45,''peerr'',t55,''tpbave'',t65,''tpberr'',t75,''accept'',t85,''iter'')')
 
       if(nforce.gt.1) then
         call setup_force
@@ -219,7 +232,7 @@ c loop over secondary config
       do ifr=2,nforce
 c set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
-        call hpsi(xstrech,psido,psijo,eold(1,ifr),0,ifr)
+        call hpsi(xstrech,psido,psijo,ekino,eold(1,ifr),0,ifr)
         do istate=1,nforce !STU check mapping and just if this is right
           psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))+dlog(ajacob)
         enddo
@@ -228,11 +241,9 @@ c set n- and e-coord and n-n potential
 c primary config
 c set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
-      call hpsi(xold,psido,psijo,eold(1,1),0,1)
+      call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
       do istate=1,nforce !STU also here
         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
-        tjfo(istate)=d2(istate)
-        tjfo(istate)=-tjfo(istate)*half*hb
       enddo
 
       if(iguiding.gt.0) then
@@ -289,7 +300,6 @@ c rewrite psi2o if you are sampling guiding
         enddo
         pesum(istate)=0
         tpbsum(istate)=0
-        tjfsum(istate)=0
       enddo
       r2sum=0
 

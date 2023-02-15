@@ -72,6 +72,16 @@
 c-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psig,psid,psij,vd,iflag_move)
 
+      use csfs,    only: nstates
+      use mstates3, only: iweight_g,weights_g
+      use mstates_ctrl, only: iguiding
+      use multideterminant_mod, only: compute_ymat
+      use multideterminante_mod, only: multideterminante_grad
+      use multimat, only: aa,wfmat
+      use multimatn, only: aan
+      use multislater, only: detiab
+      use multislatern, only: detn,dorbn
+      use orbval,  only: dorb
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot, nwftypeorb, stoo, stoj
       use csfs, only: nstates, anormo
@@ -306,6 +316,7 @@ c iel has different spin than the electron moved
 c-----------------------------------------------------------------------
       subroutine determinante_ref_grad(iel,slmi,dorb,norbs,ddx_ref)
 
+      use dorb_m,  only: iworbd
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim

@@ -13,6 +13,10 @@
       use orb_mat_002, only: orb_ho_old, orb_o_old, orb_oe_old
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: ioptjas,ioptorb,method
+      use optwf_parms, only: nparmj
+      use orb_mat_001, only: orb_ho,orb_o,orb_oe
+      use orb_mat_002, only: orb_ho_old,orb_o_old,orb_oe_old
       use precision_kinds, only: dp
       use vmc_mod, only: stoj
 
@@ -70,6 +74,8 @@ c-----------------------------------------------------------------------
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: ioptjas,ioptorb,method
+      use optwf_parms, only: nparmj
 
       implicit none
 
@@ -104,6 +110,8 @@ c-----------------------------------------------------------------------
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: ioptjas,ioptorb,method
+      use optwf_parms, only: nparmj
 
       implicit none
 
@@ -128,6 +136,8 @@ c-----------------------------------------------------------------------
       use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
+      use optwf_control, only: ioptjas,ioptorb,method
+      use optwf_parms, only: nparmj
 
       implicit none
 
@@ -145,23 +155,26 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_orb_fin(wcum,ecum)
 
+      use csfs,    only: nstates
+      use error,   only: fatal_error
+      use gradhess_mix_jas_orb, only: h_mix_jas_orb,s_mix_jas_orb
+      use gradhessj, only: de,dj,dj_e
+      use mix_jas_orb, only: de_o,dj_ho,dj_o,dj_oe
+      use optorb_cblock, only: nreduced
       use optorb_mod, only: mxreduced
       use csfs, only: nstates
       use gradhess_mix_jas_orb, only: h_mix_jas_orb, s_mix_jas_orb
       use optwf_control, only: ioptjas, ioptorb, iuse_orbeigv, iapprox
       use optwf_parms, only: nparmj
-      use sa_weights, only: weights
-      use gradhessj, only: de, dj, dj_e
-      use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
       use orb_mat_003, only: orb_o_cum
       use orb_mat_004, only: orb_oe_cum
       use orb_mat_005, only: orb_ho_cum
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
+      use precision_kinds, only: dp
+      use sa_weights, only: weights
       ! I think this one is not needed ...
       ! use gradhess_jas, only: grad_jas
-      use precision_kinds, only: dp
-      use error, only: fatal_error
       implicit none
 
       integer :: i, istate, j

@@ -114,6 +114,229 @@
 # endif
 #endif
 
+
+
+module keywords
+  !> @details This module contains a list of allowed keywords.
+  !> @details This is CHAMP code specific list of keywords.
+  !> @author Ravindra Shinde
+  !> @email r.l.shinde@utwente.nl
+  !> @date October 15, 2022
+  implicit none
+  integer                     :: num_modules  = 11   ! change this number after every adition/deletion
+  integer                     :: num_keywords = 160 ! change this number after every adition/deletion
+
+  type :: string_t
+    character(:), allocatable    :: keys
+  end type string_t
+
+  type(string_t) allowed_modules(11)
+  type(string_t) allowed_keywords(160)
+
+
+  private
+  public  :: num_keywords, num_modules
+  public  :: allowed_keywords, allowed_modules
+  public  :: allocate_keywords, allocate_modulenames
+  public  :: validate_keywords, validate_modulenames
+
+  save
+  contains
+
+  subroutine allocate_keywords()
+    ! List of allowed keywords
+    allowed_keywords(1)%keys = 'mode';              allowed_keywords(02)%keys = 'title'
+    allowed_keywords(3)%keys = 'pool';              allowed_keywords(04)%keys = 'pseudopot'
+    allowed_keywords(5)%keys = 'basis';             allowed_keywords(06)%keys = 'nforce'
+    allowed_keywords(7)%keys = 'nwftype';           allowed_keywords(08)%keys = 'iperiodic'
+    allowed_keywords(9)%keys = 'ibasis';            allowed_keywords(10)%keys = 'seed'
+    allowed_keywords(11)%keys = 'ipr';              allowed_keywords(12)%keys = 'unit'
+    allowed_keywords(13)%keys = 'mass';             allowed_keywords(14)%keys = 'scalecoef'
+    allowed_keywords(15)%keys = 'i3dgrid';          allowed_keywords(16)%keys = 'i3dsplorb'
+    allowed_keywords(17)%keys = 'i3dlagorb';        allowed_keywords(18)%keys = 'i3ddensity'
+    allowed_keywords(19)%keys = 'backend';          allowed_keywords(20)%keys = 'nelec'
+    allowed_keywords(21)%keys = 'nup';              allowed_keywords(22)%keys = 'newghostype'
+    allowed_keywords(23)%keys = 'nghostcent';       allowed_keywords(24)%keys = 'ijas'
+    allowed_keywords(25)%keys = 'isc';              allowed_keywords(26)%keys = 'nspin1'
+    allowed_keywords(27)%keys = 'nspin2';           allowed_keywords(28)%keys = 'ianalyt_lap'
+    allowed_keywords(29)%keys = 'iforce_analy';     allowed_keywords(30)%keys = 'iuse_zmat'
+    allowed_keywords(31)%keys = 'izvzb';            allowed_keywords(32)%keys = 'alfgeo'
+    allowed_keywords(33)%keys = 'iroot_geo';        allowed_keywords(34)%keys = 'delgrdxyz'
+    allowed_keywords(35)%keys = 'igrdtype';         allowed_keywords(36)%keys = 'ngradnts'
+    allowed_keywords(37)%keys = 'delgrdbl';         allowed_keywords(38)%keys = 'delgrdba'
+    allowed_keywords(39)%keys = 'delgrdda';         allowed_keywords(40)%keys = 'igrdtype'
+    allowed_keywords(41)%keys = 'iguiding';         allowed_keywords(42)%keys = 'iefficiency'
+    allowed_keywords(43)%keys = 'iefield';          allowed_keywords(44)%keys = 'imetro'
+    allowed_keywords(45)%keys = 'node_cutoff';      allowed_keywords(46)%keys = 'enode_cutoff'
+    allowed_keywords(47)%keys = 'delta';            allowed_keywords(48)%keys = 'deltar'
+    allowed_keywords(49)%keys = 'deltat';           allowed_keywords(50)%keys = 'fbias'
+    allowed_keywords(51)%keys = 'vmc_nstep';        allowed_keywords(52)%keys = 'vmc_nblk'
+    allowed_keywords(53)%keys = 'vmc_nblkeq';       allowed_keywords(54)%keys = 'nblk_max'
+    allowed_keywords(55)%keys = 'vmc_nconf_new';    allowed_keywords(56)%keys = 'vmc_idump'
+    allowed_keywords(57)%keys = 'vmc_irstar';       allowed_keywords(58)%keys = 'vmc_isite'
+    allowed_keywords(59)%keys = 'vmc_nblk_ci';      allowed_keywords(60)%keys = 'vmc_icharged_atom'
+    allowed_keywords(61)%keys = 'kref_fixed';       allowed_keywords(62)%keys = 'idmc'
+    allowed_keywords(63)%keys = 'ipq';              allowed_keywords(64)%keys = 'itau_eff'
+    allowed_keywords(65)%keys = 'iacc_rej';         allowed_keywords(66)%keys = 'icross'
+    allowed_keywords(67)%keys = 'icuspg';           allowed_keywords(68)%keys = 'idiv_v'
+    allowed_keywords(69)%keys = 'icut_br';          allowed_keywords(70)%keys = 'icut_e'
+    allowed_keywords(71)%keys = 'tau';              allowed_keywords(72)%keys = 'dmc_node_cutoff'
+    allowed_keywords(73)%keys = 'etrial';           allowed_keywords(74)%keys = 'dmc_enode_cutoff'
+    allowed_keywords(75)%keys = 'nfprod';           allowed_keywords(76)%keys = 'itausec'
+    allowed_keywords(77)%keys = 'icasula';          allowed_keywords(78)%keys = 'dmc_nstep'
+    allowed_keywords(79)%keys = 'dmc_nblk';         allowed_keywords(80)%keys = 'dmc_nblkeq'
+    allowed_keywords(81)%keys = 'dmc_nconf';        allowed_keywords(82)%keys = 'dmc_nconf_new'
+    allowed_keywords(83)%keys = 'dmc_idump';        allowed_keywords(84)%keys = 'dmc_irstar'
+    allowed_keywords(85)%keys = 'dmc_isite';        allowed_keywords(86)%keys = 'ioptwf'
+    allowed_keywords(87)%keys = 'method';           allowed_keywords(88)%keys = 'optwf'
+    allowed_keywords(89)%keys = 'idl_flag';         allowed_keywords(90)%keys = 'ilbfgs_flag'
+    allowed_keywords(91)%keys = 'ilbfgs_m';         allowed_keywords(92)%keys = 'sr_rescale'
+    allowed_keywords(93)%keys = 'ibeta';            allowed_keywords(94)%keys = 'ratio'
+    allowed_keywords(95)%keys = 'iapprox';          allowed_keywords(96)%keys = 'ncore'
+    allowed_keywords(97)%keys = 'iuse_orbeigv';     allowed_keywords(98)%keys = 'ioptjas'
+    allowed_keywords(99)%keys = 'ioptorb';          allowed_keywords(100)%keys = 'ioptci'
+    allowed_keywords(101)%keys = 'no_active';       allowed_keywords(102)%keys = 'energy_tol'
+    allowed_keywords(103)%keys = 'add_diag';        allowed_keywords(104)%keys = 'dparm_norm_min'
+    allowed_keywords(105)%keys = 'nopt_iter';       allowed_keywords(106)%keys = 'micro_iter_sr'
+    allowed_keywords(107)%keys = 'func_omega';      allowed_keywords(108)%keys = 'omega'
+    allowed_keywords(109)%keys = 'n_omegaf';        allowed_keywords(110)%keys = 'n_omegat'
+    allowed_keywords(111)%keys = 'lin_nvec';        allowed_keywords(112)%keys = 'lin_nvecx'
+    allowed_keywords(113)%keys = 'lin_adiag';       allowed_keywords(114)%keys = 'lin_eps'
+    allowed_keywords(115)%keys = 'lin_jdav';        allowed_keywords(116)%keys = 'multiple_adiag'
+    allowed_keywords(117)%keys = 'sr_tau';          allowed_keywords(118)%keys = 'sr_adiag'
+    allowed_keywords(119)%keys = 'sr_eps';          allowed_keywords(120)%keys = 'ilastvmc'
+    allowed_keywords(121)%keys = 'dl_mom';          allowed_keywords(122)%keys = 'dl_alg'
+    allowed_keywords(123)%keys = 'isample_cmat';    allowed_keywords(124)%keys = 'ngrad_jas_blocks'
+    allowed_keywords(125)%keys = 'iciprt';          allowed_keywords(126)%keys = 'save_blocks'
+    allowed_keywords(127)%keys = 'force_blocks';    allowed_keywords(128)%keys = 'iorbsample'
+    allowed_keywords(129)%keys = 'sample';          allowed_keywords(130)%keys = 'weights_guiding'
+    allowed_keywords(131)%keys = 'nloc';            allowed_keywords(132)%keys = 'zmatrix_connection'
+    allowed_keywords(133)%keys = 'nextorb';         allowed_keywords(134)%keys = 'trexio'
+    allowed_keywords(135)%keys = 'basis';           allowed_keywords(136)%keys = 'molecule'
+    allowed_keywords(137)%keys = 'determinants';    allowed_keywords(138)%keys = 'symmetry'
+    allowed_keywords(139)%keys = 'jastrow';         allowed_keywords(140)%keys = 'jastrow_der'
+    allowed_keywords(141)%keys = 'orbitals';        allowed_keywords(142)%keys = 'exponents'
+    allowed_keywords(143)%keys = 'pseudo';          allowed_keywords(144)%keys = 'optorb_mixvirt'
+    allowed_keywords(145)%keys = 'forces';          allowed_keywords(146)%keys = 'multideterminants'
+    allowed_keywords(147)%keys = 'eigenvalues';     allowed_keywords(148)%keys = 'basis_num_info'
+    allowed_keywords(149)%keys = 'dmatrix';         allowed_keywords(150)%keys = 'cavity_spheres'
+    allowed_keywords(151)%keys = 'efield';          allowed_keywords(152)%keys = 'modify_zmatrix'
+    allowed_keywords(153)%keys = 'weights';         allowed_keywords(154)%keys = 'gradients_cartesian'
+    allowed_keywords(155)%keys = 'print';           allowed_keywords(156)%keys = 'gradients_zmatrix'
+    allowed_keywords(157)%keys = 'nquad';           allowed_keywords(158)%keys = 'hessian_zmatrix'
+    allowed_keywords(159)%keys = 'esigmatrial';     allowed_keywords(160)%keys = 'limit_wt_dmc'
+  end subroutine allocate_keywords
+
+  subroutine allocate_modulenames()
+      allowed_modules(1)%keys  = 'general'
+      allowed_modules(2)%keys  = 'periodic'
+      allowed_modules(3)%keys  = 'electrons'
+      allowed_modules(4)%keys  = 'optgeo'
+      allowed_modules(5)%keys  = 'optwf'
+      allowed_modules(6)%keys  = 'vmc'
+      allowed_modules(7)%keys  = 'dmc'
+      allowed_modules(8)%keys  = 'blocking_vmc'
+      allowed_modules(9)%keys  = 'blocking_dmc'
+      allowed_modules(10)%keys = 'mstates'
+      allowed_modules(11)%keys = 'properties'
+  end subroutine allocate_modulenames
+
+
+  subroutine validate_keywords(keyword)
+    use utils,          only: die, chrcap
+
+    implicit none
+    character(len=*), intent(in)        :: keyword
+    character(80)                       :: msg
+    integer                             :: i, j
+    logical                             :: completed, matched
+    integer                             :: len1, len2, lenc
+    character                           :: char1, char2
+    character(len=20)                   :: string1, string2
+
+    call allocate_keywords()
+    matched       = .false.
+    j = 1
+    do while((.not. matched) .and. (j .le. num_keywords))
+      i = 1
+      matched       = .true.
+      completed     = .false.
+
+      string1 = trim(adjustl(keyword))
+      string2 = allowed_keywords(j)%keys
+      len1 = len(trim(adjustl(keyword)))
+      len2 = len(trim(adjustl(allowed_keywords(j)%keys)))
+      lenc = max(len1, len2)
+      do while((.not. completed) .and. (i .le. lenc))
+        char1 = string1(i:i)
+        char2 = string2(i:i)
+        call chrcap(char1, 1)
+        call chrcap(char2, 1)
+        if (char1 .ne. char2) then
+          matched       = .false.
+          completed     = .true.
+          exit
+        endif
+        i = i + 1
+      enddo
+      j = j + 1
+      if (matched) exit
+    enddo
+    if (.not. matched) then
+      call die('Keyword not matching with valid keywords :: Check the spelling ', string1)
+    endif
+end subroutine validate_keywords
+
+
+  subroutine validate_modulenames(keyword)
+      use utils,          only: die, chrcap
+
+      implicit none
+      character(len=*), intent(in)        :: keyword
+      character(80)                       :: msg
+      integer                             :: i, j
+      logical                             :: completed, matched
+      integer                             :: len1, len2, lenc
+      character                           :: char1, char2
+      character(len=20)                   :: string1, string2
+
+
+      call allocate_modulenames()
+      matched=.false.
+
+      j = 1
+      do while((.not. matched) .and. (j .le. num_modules))
+        i = 1
+        matched       = .true.
+        completed     = .false.
+
+        string1 = trim(adjustl(keyword))
+        string2 = trim(adjustl(allowed_modules(j)%keys))
+        len1 = len(trim(adjustl(keyword)))
+        len2 = len(trim(adjustl(allowed_modules(j)%keys)))
+        lenc = max(len1, len2)
+        do while((.not. completed) .and. (i .le. lenc))
+          char1 = string1(i:i)
+          char2 = string2(i:i)
+          call chrcap(char1, 1)
+          call chrcap(char2, 1)
+          if (char1 .ne. char2) then
+            matched       = .false.
+            completed     = .true.
+            exit
+          endif
+          i = i + 1
+        enddo
+        j = j + 1
+        if (matched) exit
+      enddo
+      if (.not. matched) then
+        call die('Module not matching with valid modulenames :: Check the spelling ', string1)
+      endif
+  end subroutine validate_modulenames
+end module keywords
+
+
 MODULE fdf
   USE io_fdf
 
@@ -152,6 +375,7 @@ MODULE fdf
   public :: fdf_string, fdf_boolean
   public :: fdf_physical, fdf_convfac
   public :: fdf_load_filename         !> @author Ravindra Shinde
+  public :: labeleq                   ! for validating keywords
 
   ! Lists
   public :: fdf_islist, fdf_islinteger, fdf_islreal
@@ -884,10 +1108,12 @@ endif ! (rank==0)
 
 
     RECURSIVE SUBROUTINE fdf_read_custom(filein, blocklabel)
+      use keywords,           only: validate_keywords, validate_modulenames
       implicit none
 !--------------------------------------------------------------- Input Variables
       character(*)               :: filein
       character(*), optional     :: blocklabel
+      character(len=MAX_LENGTH)  :: keyword
 
 !--------------------------------------------------------------- Local Variables
       logical                    :: dump
@@ -945,6 +1171,7 @@ endif ! (rank==0)
 
 !               Add begin, body and end sections of block
                 label = tokens(pline, 2)
+
                 inc_file  = tokens(pline, 4)
                 call destroy(pline)
                 line = '%block ' // trim(label) // ' ' // trim(inc_file)
@@ -1037,6 +1264,7 @@ endif ! (rank==0)
             nullify(pline) ! it is stored in line
             nlstart = file_in%nlines
             modulename = trim(line(8:))
+            call validate_modulenames(modulename)
             if (fdf_output) write(fdf_out, '(A,1x,i1,1x,A)') "Module #", counter , modulename
             modulenames(counter) = modulename
             nullify(pline) ! it is stored in line
@@ -1132,6 +1360,11 @@ endif ! (rank==0)
 
 !         Add remaining kind of tokens to dynamic list as labels
           else
+            ! Following three lines will validate the keyword against allowed CHAMP keywords
+            keyword = trim(tokens(pline,1))
+            if (tokens(pline, 1) == "load" ) keyword = trim(tokens(pline,2))
+            call validate_keywords(keyword)
+
             if (label .eq. ' ') call setmorphol(1, 'l', pline)
             call fdf_addtoken(line, pline)
             nullify(pline) ! it is stored in line
@@ -1164,6 +1397,7 @@ endif ! (rank==0)
 !   structure that will contain the data and will help in searching
 !
     RECURSIVE SUBROUTINE fdf_read(filein, blocklabel)
+      use keywords,           only:validate_keywords
       implicit none
 !--------------------------------------------------------------- Input Variables
       character(*)               :: filein
@@ -1377,6 +1611,7 @@ endif ! (rank==0)
                      ' not found in ', TRIM(filein)
         call die('FDF module: fdf_read', msg, THIS_FILE, __LINE__, fdf_err)
       endif
+      call validate_keywords(label)
       call fdf_close()
 
       RETURN
@@ -2160,6 +2395,11 @@ endif ! (rank==0)
 
       file_in%last => mark
       file_in%nlines = file_in%nlines + 1
+
+      ! ! Ravindra debug
+      ! do i= 1, mark%pline%ntokens
+      !   write(*,*) '  Token:  ', i , ' ',  trim(tokens(pline,i))
+      ! enddo
 
       if (fdf_debug2) then
         write(fdf_log,*) '***FDF_ADDTOKEN*******************************'
@@ -3395,7 +3635,7 @@ endif ! (rank==0)
           'force   ', 'n         ', 1.d0, &
           'force   ', 'ev/ang    ', 1.60219d-9, &
           'force   ', 'ry/bohr   ', 4.11943d-8, &
-          'force   ', 'ha/bohr   ', 2.059715d-08 /
+          'force   ', 'ha/bohr   ', 8.23886d-08 /
 
       data (dimm(iu), name(iu), unit(iu), iu=45, 54) / &
           'pressure', 'pa        ', 1.d0, &

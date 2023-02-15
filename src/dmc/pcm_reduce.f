@@ -2,14 +2,14 @@
       contains
       subroutine pcm_reduce(wgsum)
 
-      use mpiconf, only: wid
       use control, only: mode
-      use pcm_cntrl, only: ipcm
-      use pcm_averages, only: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
-      use pcm_averages, only: qopcm_sum, qopcm_cum, qopcm_cm2
       use mpi
-
+      use mpiconf, only: wid
+      use pcm_averages, only: qopcm_cm2,qopcm_cum,qopcm_sum,spcmcm2
+      use pcm_averages, only: spcmcum,spcmsum,vpcmcm2,vpcmcum,vpcmsum
+      use pcm_cntrl, only: ipcm
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: ierr
@@ -81,10 +81,10 @@
 
       subroutine pcm_send(irecv,itag_s)
 
-      use branch, only: nwalk
-      use pcmo, only: spcmo_dmc, vpcmo_dmc, qopcmo_dmc
-      use pcm_cntrl, only: ipcm
+      use branch,  only: nwalk
       use mpi
+      use pcm_cntrl, only: ipcm
+      use pcmo,    only: qopcmo_dmc,spcmo_dmc,vpcmo_dmc
 
       implicit none
 

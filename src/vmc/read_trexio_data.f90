@@ -187,11 +187,12 @@ module trexio_read_data
     end subroutine read_trexio_molecule_file
 
 
-    subroutine read_trexio_orbitals_file(file_trexio)
+    subroutine read_trexio_orbitals_file(file_trexio, build_only_basis)
         !> This subroutine reads the .hdf5 trexio generated file/folder. It then reads the
         !! number of molecular and atomic orbitals and their corresponding coefficients.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
         !! @date 12 October 2021
+        use basis, only: ns, np, nd, nf, ng
         use custom_broadcast, only: bcast
         use mpiconf, only: wid
         use contrl_file, only: ounit, errunit
@@ -223,31 +224,30 @@ module trexio_read_data
 #endif
         use m_trexio_basis,     only: slm_per_l, index_slm, num_rad_per_cent
         use m_trexio_basis,     only: basis_num_shell, basis_shell_ang_mom
-        use m_trexio_basis,     only: num_ao_per_cent, champ_ao_ordering, ao_radial_index
+        use m_trexio_basis,     only: num_ao_per_cent, ao_radial_index
       use slater, only: norb
 
         implicit none
 
     !   local use
         character(len=72), intent(in)   :: file_trexio
+        logical, intent(in), optional   :: build_only_basis
         character(len=40)               :: temp1, temp2
         character(len=120)              :: temp3, file_trexio_path
         integer                         :: iunit, iostat, iwft
         integer                         :: iorb, ibasis, i, j, k, l, ic, it
-        integer                         :: counter, count0, count1, count2, count3, summ
-        integer                         :: index_ao, index_nrad
+        integer                         :: counter, count1, count2
+        integer                         :: index_ao, index_ao_copy
         integer                         :: lower_range, upper_range
-        integer                         :: count_s, count_p, count_d, count_f, count_g
+        integer                         :: count
         integer                         :: cum_rad_per_cent, cum_ao_per_cent
         integer                         :: lower_rad_range, upper_rad_range
         logical                         :: exist
         logical                         :: skip = .true.
 
 !       trexio
-        integer, allocatable            :: basis_nucleus_index(:), ao_index(:), ao_frequency(:), unique_index(:)
-        integer, allocatable            :: compare(:), ao_index_per_cent(:)
-        integer, allocatable            :: local_array_s(:,:), local_array_p(:,:), local_array_d(:,:), local_array_f(:,:), local_array_g(:,:)
-        real(dp), allocatable           :: unshuffled_coef(:,:,:)
+        integer, allocatable            :: basis_nucleus_index(:), ao_frequency(:), unique_index(:)
+        integer, allocatable            :: res(:)
 
         !   Formatting
         character(len=100)               :: int_format     = '(A, T60, I0)'
@@ -268,9 +268,11 @@ module trexio_read_data
             file_trexio_path = file_trexio
         endif
 
+        if (.not. build_only_basis) then
         write(ounit,*) '---------------------------------------------------------------------------'
         write(ounit,*) " Reading LCAO orbitals from the file :: ",  trim(file_trexio_path)
         write(ounit,*) '---------------------------------------------------------------------------'
+        endif
         ! Check if the file exists
 
         if (wid) then
@@ -301,13 +303,12 @@ module trexio_read_data
         ! Do the allocations based on the number of shells and primitives
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
-        if (.not. allocated(compare))    allocate(compare(basis_num_shell))
+        if (.not. allocated(ao_radial_index))        allocate(ao_radial_index(nbasis))
         if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
-        ! if (.not. allocated(ao_index)) allocate (ao_index(35), source=0)            ! ao upto g orbitals
-        if (.not. allocated(ao_index_per_cent)) allocate (ao_index_per_cent(ncent_tot))            ! ao upto g orbitals
 
+        if (.not. build_only_basis) then
         ! Read the orbitals
         if (wid) then
 #if defined(TREXIO_FOUND)
@@ -318,6 +319,7 @@ module trexio_read_data
         endif
         call bcast(trexio_has_group_orbitals)
         call bcast(coef(:,:,1))
+        endif
 
 
 !   Generate the basis information (which radial to be read for which Slm)
@@ -331,6 +333,14 @@ module trexio_read_data
         endif
         call bcast(basis_shell_ang_mom)
         call bcast(basis_nucleus_index)
+
+!         if (wid) then
+! #if defined(TREXIO_FOUND)
+!             rc = trexio_close(trex_orbitals_file)
+!             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_orbital_file', __FILE__, __LINE__)
+! #endif
+!         endif
+
 
         numr = 1            ! Debug Check this statement. Not sure how to store multiple bfinfo files in single trexio
 
@@ -350,13 +360,12 @@ module trexio_read_data
         !       +-----------------------------------------------------------------------------
         !          xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
 
-        counter = 0; count1 = 1; count2 = 0; count3 = 0
+        counter = 0; count1 = 1; count2 = 0
         cum_rad_per_cent = 0
         cum_ao_per_cent  = 0
-        index_ao = 0; jj = 1
+        index_ao = 0; jj = 1; index_ao_copy = 0
         ! The following loop will generate the index_slm array which tells
         ! which AO is of which type (from the above list)
-        compare = 0
         do l = 1, basis_num_shell
             k = basis_shell_ang_mom(l)
 
@@ -365,22 +374,12 @@ module trexio_read_data
             do ii = 1, slm_per_l(k+1)
 
                 index_ao = index_ao + 1
-                index_slm(index_ao) = sum(slm_per_l(1:k)) + 1 + count2
+                index_slm(index_ao) = sum(slm_per_l(1:k)) + count2 + 1
+
                 count2 = count2 + 1
 
                 cum_ao_per_cent = cum_ao_per_cent + 1
             end do
-
-            if (k == 0) then
-                count3 = count2 - 1
-            else
-                count3 = count2 - 2
-            endif
-
-            do ii = 1, count2
-                count3 = count3 + 1
-                ao_index = [ao_index, count3]
-            enddo
 
             jj = jj + 1
 
@@ -391,25 +390,35 @@ module trexio_read_data
             if (count1 == basis_nucleus_index(l)) then
                 num_rad_per_cent(count1) = cum_rad_per_cent
                 do ii = 1, slm_per_l(k+1)
-                    ao_radial_index = [ao_radial_index, cum_rad_per_cent]
+                    index_ao_copy = index_ao_copy + 1
+                    ao_radial_index(index_ao_copy) = cum_rad_per_cent
                 enddo
                 num_ao_per_cent(count1) = cum_ao_per_cent
             else
                 cum_rad_per_cent = 1
-                ao_radial_index = [ao_radial_index, cum_rad_per_cent]
+                index_ao_copy = index_ao_copy + 1
+                ao_radial_index(index_ao_copy) = cum_rad_per_cent
                 cum_ao_per_cent  = 1
                 count1 = count1 + 1
             end if
         enddo ! loop on shells
 
-        allocate (nbastyp(nctype_tot))
+        if (.not. allocated(nbastyp)) allocate (nbastyp(nctype_tot))
+
+        if (.not. allocated(ns)) allocate (ns(nctype_tot))
+        if (.not. allocated(np)) allocate (np(nctype_tot))
+        if (.not. allocated(nd)) allocate (nd(nctype_tot))
+        if (.not. allocated(nf)) allocate (nf(nctype_tot))
+        if (.not. allocated(ng)) allocate (ng(nctype_tot))
+
 
         ! Obtain the index of radials for each unique center (iwrwf)
         if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot))
         if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot), source=0)
         if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctype_tot))
-        if (.not. allocated(ao_frequency)) allocate (ao_frequency(35), source=0)          ! ao upto g orbitals
+        if (.not. allocated(ao_frequency)) allocate (ao_frequency(35), source=0)    ! ao upto g orbitals
         if (.not. allocated(unique_index)) allocate (unique_index(35), source=0)    ! ao upto g orbitals
+        if (.not. allocated(res)) allocate (res(basis_num_shell), source=0)                       ! shells upto g orbitals
 
         do i = 1, ncent_tot
             if (numr .gt. 0) then
@@ -424,18 +433,29 @@ module trexio_read_data
             it=iwctype(ic)
             upper_range = lower_range + num_ao_per_cent(ic) - 1
             upper_rad_range = lower_rad_range + num_rad_per_cent(ic) - 1
-            iwlbas(1:num_ao_per_cent(iwctype(ic)), it) = ao_index(lower_range:upper_range)
-            iwrwf(1:num_ao_per_cent(iwctype(ic)), it) = ao_radial_index(lower_range:upper_range)
+            iwlbas(1:num_ao_per_cent(ic), it) = index_slm(lower_range:upper_range)
+            iwrwf(1:num_ao_per_cent(ic), it) = ao_radial_index(lower_range:upper_range)
+
+            ! The following block of code is for generating the ns,np,nf,nd, and ng arrays
+            call unique_elements(num_rad_per_cent(ic), basis_shell_ang_mom(lower_rad_range:upper_rad_range), &
+                                 res, count, ao_frequency(1:num_rad_per_cent(ic)), &
+                                 unique_index(1:num_rad_per_cent(ic)))
+            ns(iwctype(ic)) = ao_frequency(1)
+            np(iwctype(ic)) = ao_frequency(2)
+            nd(iwctype(ic)) = ao_frequency(3)
+            nf(iwctype(ic)) = ao_frequency(4)
+            ng(iwctype(ic)) = ao_frequency(5)
+            ! End of block of code
             lower_range = upper_range + 1
             lower_rad_range = upper_rad_range + 1
         enddo
 
-#if defined(TREXIO_FOUND)
-        if (wid) rc = trexio_close(trex_orbitals_file)
-#endif
+        if (allocated(basis_nucleus_index)) deallocate(basis_nucleus_index)
+        if (allocated(ao_frequency)) deallocate(ao_frequency)
+        if (allocated(unique_index)) deallocate(unique_index)
+        if (allocated(res)) deallocate(res)
 
-
-    ! debug Ravindra
+        if (.not. build_only_basis) then
         write(ounit,int_format) " Number of basis functions ", nbasis
         write(ounit,int_format) " Number of lcao orbitals ", norb
         write(ounit,int_format) " Type of wave functions ", iwft
@@ -444,6 +464,7 @@ module trexio_read_data
         write(ounit,*)
         ilcao = ilcao + 1
         write(ounit,*) "----------------------------------------------------------"
+        endif
 
     end subroutine read_trexio_orbitals_file
 
@@ -469,17 +490,20 @@ module trexio_read_data
     !   local use
         character(len=72), intent(in)   :: file_trexio
         integer                         :: i, ib
+        logical                         :: build_only_basis
 
         write(ounit,*) '---------------------------------------------------------------------------'
         write(ounit,'(a)')  " Basis function types and pointers to radial parts tables generated from :: " &
                             // trim(file_trexio)
         write(ounit,*) '---------------------------------------------------------------------------'
 
+        call read_trexio_orbitals_file(file_trexio, build_only_basis=.true.)
 
         do i = 1, nctype_tot
             write (ounit, '(100i3)') ns(i), np(i), nd(i), nf(i), ng(i)
 
             if (numr .gt. 0) then
+                write(ounit, '(100i3)') (iwlbas(ib, i), ib=1, nbastyp(i))
                 write(ounit, '(100i3)') (iwrwf(ib, i), ib=1, nbastyp(i))
             endif
             write(ounit,*)
@@ -520,8 +544,8 @@ module trexio_read_data
         use general,            only: filename, filenames_bas_num
 
         ! For processing the stored information
-        use system, 			    only: atomtyp
-        use general, 			only: pooldir, bas_id
+        use system,             only: atomtyp
+        use general,            only: pooldir, bas_id
         use contrl_file,        only: ounit, errunit
         use spline2_mod,        only: spline2
         use fitting_methods,    only: exp_fit
@@ -612,13 +636,13 @@ module trexio_read_data
 #if defined(TREXIO_FOUND)
             trex_basis_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
-            rc = trexio_read_basis_prim_num(trex_basis_file, basis_num_prim)
-            if (trexio_has_basis(trex_basis_file) == 0) trexio_has_group_basis = .true.
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_prim_num', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_num(trex_basis_file, basis_num_shell)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_shell_num', __FILE__, __LINE__)
             rc = trexio_read_ao_num(trex_basis_file, ao_num)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
+            rc = trexio_read_basis_prim_num(trex_basis_file, basis_num_prim)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_prim_num', __FILE__, __LINE__)
+            if (trexio_has_basis(trex_basis_file) == 0) trexio_has_group_basis = .true.
 #endif
         endif
         call bcast(trexio_has_group_basis)
@@ -671,7 +695,12 @@ module trexio_read_data
         call bcast(ao_shell)
         call bcast(ao_normalization)
 
-
+        if (wid) then
+#if defined(TREXIO_FOUND)
+            rc = trexio_close(trex_basis_file)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_basis_file', __FILE__, __LINE__)
+#endif
+        endif
 
         write(ounit,fmt=int_format) " Number of primitives  ::  ", basis_num_prim
         write(ounit,fmt=int_format) " Number of shells      ::  ", basis_num_shell
@@ -687,8 +716,8 @@ module trexio_read_data
         ! Get the number of shells per atom (information needed to reshuffle AOs)
 
         allocate(atom_index(basis_num_shell))
-        allocate(nshells_per_atom(ncent_tot*10))
-        allocate(shell_index_atom(ncent_tot*10))
+        allocate(nshells_per_atom(basis_num_shell))
+        allocate(shell_index_atom(basis_num_shell))
 
 
 
@@ -772,9 +801,10 @@ module trexio_read_data
             x(i) = rgrid(i)
         enddo
 
+
         do ic = 1, nctype + newghostype            ! loop over all the unique atoms
 
-            nrbas(ic)   = nshells_per_atom(ic)
+            nrbas(ic)   = nshells_per_atom(unique_atom_index(ic))
             igrid(ic)   = gridtype       ! grid type default is 3
             nr(ic)      = gridpoints     ! number of grid points default is 2000
             arg(ic)     = gridarg        ! grid spacing default is 1.003
@@ -831,7 +861,6 @@ module trexio_read_data
                 enddo
 
             enddo
-
 
             do irb=1,nrbas(ic)
 
@@ -899,7 +928,7 @@ module trexio_read_data
                 enddo
 
         ! Update the rmax at the point where rwf goes below cutoff (scanning from right to left)
-                rmaxwf(irb, ic) = 20.0d0
+                rmaxwf(irb, ic) = x(nr(ic))
                 rloop: do ir=nr(ic),1,-1
                   if (dabs(rwf(ir,irb,ic,iwf)) .gt. cutoff_rmax ) then
                     rmaxwf(irb, ic) = x(ir)
@@ -912,7 +941,9 @@ module trexio_read_data
 ! Nonzero basis at the boundary : Do exponential fitting.
                 if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
                     call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
-                    rmaxwf(irb,ic)=-dlog(cutoff_rmax/ae(1,irb,ic,iwf))/ae(2,irb,ic,iwf)
+                    if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+
+                    rmaxwf(irb,ic)=-dlog(cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
 
                     write(45,'(a)') 'check the large radius expansion'
                     write(45,'(a,g0,2x,g0)') 'Exponential fitting parameters : ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
@@ -923,11 +954,13 @@ module trexio_read_data
                       temp = ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
                       write(45,'(i3,2x,1p4e22.14)') ir,x(nr(ic)-ir),rwf(nr(ic)-ir,irb,ic,iwf), temp
                     enddo
-                    write(45,*) 'dwf1,dwfn',dwf1,dwfn
 
-                    if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+                    dwfn=-ae(2,irb,ic,iwf)*ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)))
 
+                else
+                    dwfn=0.d0
                 endif
+                write(45,*) 'dwf1,dwfn',dwf1,dwfn
 
                 call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
 
@@ -980,7 +1013,6 @@ module trexio_read_data
         use contrl_file,        only: backend
         use error,              only: trexio_error
 #endif
-        use m_trexio_basis,     only: champ_ao_ordering
 
         implicit none
 
@@ -1090,11 +1122,12 @@ module trexio_read_data
         use dorb_m,             only: iworbd
         use slater,             only: norb
         use inputflags,         only: ideterminants
-        use multiple_geo,       only: nwftype
+        use multiple_geo,              only: nwftype
         use csfs,               only: nstates
         use mstates_mod,        only: MSTATES
         use general,            only: pooldir
-        use system,             only: ndn, nup, nelec
+        use system,             only: ndn, nup
+        use system,             only: nelec
         use optwf_control,      only: method
         use precision_kinds,    only: dp
 

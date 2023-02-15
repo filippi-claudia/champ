@@ -1,6 +1,6 @@
 module da_energy_sumcum
     !> Arguments: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -16,7 +16,7 @@ module da_energy_sumcum
     save
 contains
     subroutine allocate_da_energy_sumcum()
-      use system, only: ncent_tot
+      use system,  only: ncent_tot
         if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, ncent_tot))
         if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, ncent_tot))
         if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, ncent_tot))
@@ -36,7 +36,7 @@ end module da_energy_sumcum
 
 module da_jastrow4val
     !> Arguments: da_d2j, da_j, da_vj
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -50,7 +50,7 @@ module da_jastrow4val
     save
 contains
     subroutine allocate_da_jastrow4val()
-      use system, only: nelec, ncent_tot
+      use system,  only: ncent_tot,nelec
         if (.not. allocated(da_d2j)) allocate (da_d2j(3, nelec, ncent_tot))
         if (.not. allocated(da_j)) allocate (da_j(3, nelec, ncent_tot))
         if (.not. allocated(da_vj)) allocate (da_vj(3, 3, nelec, ncent_tot))
@@ -66,8 +66,8 @@ end module da_jastrow4val
 
 module da_orbval
     !> Arguments: da_d2orb, da_dorb, da_orb
-    use precision_kinds, only: dp
-    use vmc_mod, only: norb_tot
+      use precision_kinds, only: dp
+      use vmc_mod, only: norb_tot
 
     implicit none
 
@@ -133,7 +133,7 @@ end module da_pseudo
 
 module da_energy_now
     !> Arguments: da_energy, da_psi
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -187,7 +187,7 @@ end module deloc_dj_m
 
 module denergy_det_m
     !> Arguments: denergy_det
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -300,7 +300,7 @@ end module dorb_m
 
 module ijasnonlin
     !> Arguments: d1d2a, d1d2b, d2d2a, d2d2b
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 

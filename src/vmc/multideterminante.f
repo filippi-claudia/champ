@@ -199,6 +199,8 @@ c         enddo
 c-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,b,norbs,detratio,slmi,aa,ymat,velocity)
 
+      use dorb_m,  only: iworbd
+      use multidet, only: iactv,ivirt
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot, nmat_dim, MEXCIT
       use slater, only: ndet

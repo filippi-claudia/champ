@@ -11,7 +11,13 @@
       use ci000, only: nciterm
       use ci001_blk, only: ci_o
       use ci002_blk, only: ci_o_old
-      use ci004_blk, only: ci_de, ci_de_old
+      use ci004_blk, only: ci_de,ci_de_old
+      use deloc_dj_m, only: denergy
+      use derivjas, only: gvalue
+      use gradhessjo, only: denergy_old,gvalue_old
+      use mix_jas_ci, only: de_o_ci,dj_de_ci,dj_o_ci,dj_oe_ci
+      use optwf_control, only: ioptci,ioptjas
+      use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use csfs, only: nstates
       use vmc_mod, only: stoj
@@ -91,10 +97,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_dump(iu)
 
+      use ci000,   only: nciterm
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
       use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
-      use ci000, only: nciterm
 
       implicit none
 
@@ -112,10 +118,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine optx_jas_ci_rstrt(iu)
 
+      use ci000,   only: nciterm
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
       use optwf_control, only: ioptci, ioptjas
       use optwf_parms, only: nparmj
-      use ci000, only: nciterm
 
       implicit none
 
@@ -148,6 +154,7 @@ c-----------------------------------------------------------------------
       use ci008_blk, only: ci_oe_cum
       use optwf_control, only: method
       use precision_kinds, only: dp
+      use slater,  only: cdet
 
       implicit none
 

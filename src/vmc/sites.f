@@ -1,12 +1,12 @@
       module sites_mod
-      use error, only: fatal_error
+      use error,   only: fatal_error
       contains
       subroutine sites(x,nelec,nsite)
 c Written by Cyrus Umrigar
-      use contrl_file,    only: ounit
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use random_mod, only: random_dp
-      use system, only: znuc, cent, iwctype, ncent
+      use system,  only: cent,iwctype,ncent,znuc
       implicit none
 
       integer :: i, ic, ispin, j, ju

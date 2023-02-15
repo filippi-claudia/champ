@@ -8,19 +8,25 @@ c Written by Claudia Filippi
       use multiple_geo, only: MFORCE, nforce, fcm2, fcum
       use csfs, only: nstates
       use mstates_mod, only: MSTATES
-
+      use error, only: fatal_error
       use estcum, only: ecum, pecum, tpbcum, tjfcum, iblk
       use est2cm, only: ecm2, pecm2, tpbcm2, tjfcm2
       use estpsi, only: apsi, aref, detref
       use estsum, only: acc
       use forcewt, only: wcum
-      use mpiconf, only: nproc, wid
       use mpi
-      use error, only: fatal_error
+      use mpiconf, only: nproc,wid
+      use mstates_mod, only: MSTATES
+      use multiple_geo, only: MFORCE,fcm2,fcum,nforce
+      use optorb_cblock, only: iorbprt,iorbprt_sav
+      use pcm_mod, only: pcm_compute_penupv,qpcm_update_vol
+      use pcm_reduce_mod, only: pcm_reduce_chvol
+      use precision_kinds, only: dp
+      use prop_reduce_mod, only: prop_reduce
+
 
       ! this in not even in the master as the line
       ! is commented in optorb.h !
-      use optorb_cblock, only: iorbprt, iorbprt_sav
 
       use prop_reduce_mod, only: prop_reduce
       use acuest_write_mod, only: acuest_write
@@ -101,16 +107,10 @@ c      enddo
         local_obs(jo)=tpbcum(i)
 
         jo=jo+1
-        local_obs(jo)=tjfcum(i)
-
-        jo=jo+1
         local_obs(jo)=pecm2(i)
 
         jo=jo+1
         local_obs(jo)=tpbcm2(i)
-
-        jo=jo+1
-        local_obs(jo)=tjfcm2(i)
       enddo
 
       jo=jo+1
@@ -171,16 +171,10 @@ c       !STU mapping here?, aref, detref
         tpbcum(i)=collect(jo)
 
         jo=jo+1
-        tjfcum(i)=collect(jo)
-
-        jo=jo+1
         pecm2(i)=collect(jo)
 
         jo=jo+1
         tpbcm2(i)=collect(jo)
-
-        jo=jo+1
-        tjfcm2(i)=collect(jo)
       enddo
 
       jo=jo+1
@@ -218,10 +212,8 @@ c optorb reduced at the end of the run: set printout to 0
         do i=1,nstates
           pecum(i)=0
           tpbcum(i)=0
-          tjfcum(i)=0
           pecm2(i)=0
           tpbcm2(i)=0
-          tjfcm2(i)=0
         enddo
 
         acc=0

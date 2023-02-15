@@ -11,8 +11,12 @@ c Written by Claudia Filippi
       use optwf_control, only: method
       use optorb_cblock, only: nreduced
       use mpi
-
+      use optci,   only: mxciterm
+      use optorb_cblock, only: nreduced
+      use optorb_mod, only: mxreduced
+      use optwf_control, only: ioptci,ioptorb,method
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: i, ierr, j

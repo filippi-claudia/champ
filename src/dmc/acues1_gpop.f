@@ -4,7 +4,6 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use precision_kinds, only: dp
       use const, only: etrial
       use control, only: ipr
       use multiple_geo, only: nforce, MFORCE
@@ -23,8 +22,11 @@ c routine to accumulate estimators for energy etc.
       use mpiconf, only: wid
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
       use mpi
-      use contrl_file,    only: ounit
+      use mpiconf, only: wid
+      use multiple_geo, only: MFORCE,nforce
+      use precision_kinds, only: dp
       use redistribute_mod, only: redistribute
+      use contrl_file, only: errunit,ounit
       implicit none
 
       integer :: ierr, ifr, ipmod, mod, iabs, nfpro

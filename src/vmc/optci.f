@@ -1,5 +1,5 @@
       module optci_mod
-      use error, only: fatal_error
+      use error,   only: fatal_error
       contains
       subroutine optci_deloc(eloc_det,e_other,psid,energy)
 
@@ -14,8 +14,11 @@
 
       use optwf_control, only: method
       use multislater, only: detiab
+      use optwf_control, only: ioptci,method
       use precision_kinds, only: dp
-      use contrl_file,    only: ounit
+      use slater,  only: ndet
+
+
 
       implicit none
 
@@ -117,6 +120,8 @@ c-----------------------------------------------------------------------
       use optwf_control, only: method
 
       use precision_kinds, only: dp
+
+
       implicit none
 
       integer :: i, idx, iflg, j, k
@@ -260,6 +265,9 @@ c-----------------------------------------------------------------------
       use optwf_control, only: method
 
       use precision_kinds, only: dp
+
+
+
       implicit none
 
       integer :: i, idx, j, k
@@ -309,6 +317,10 @@ c-----------------------------------------------------------------------
       use csfs, only: nstates
 
       use precision_kinds, only: dp
+
+
+
+
       implicit none
 
       integer :: i, idx, j, k
@@ -347,9 +359,10 @@ c-----------------------------------------------------------------------
       use optwf_control, only: ioptci
       use ci000, only: nciprim, nciterm
       use ci005_blk, only: ci_o_cum
-      use ci008_blk, only: ci_oe_cm2, ci_oe_cum
-      use ci009_blk, only: ci_oo_cm2, ci_oo_cum
+      use ci008_blk, only: ci_oe_cm2,ci_oe_cum
+      use ci009_blk, only: ci_oo_cm2,ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
+      use optwf_control, only: ioptci,method
 
       use optwf_control, only: method
 
@@ -378,9 +391,12 @@ c-----------------------------------------------------------------------
       use ci000, only: nciprim, nciterm
 
       use ci005_blk, only: ci_o_cum
-      use ci008_blk, only: ci_oe_cm2, ci_oe_cum
-      use ci009_blk, only: ci_oo_cm2, ci_oo_cum
+      use ci008_blk, only: ci_oe_cm2,ci_oe_cum
+      use ci009_blk, only: ci_oo_cm2,ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
+      use contrl_file, only: ounit
+      use optwf_control, only: ioptci,method
+
 
       use optwf_control, only: method
       use contrl_file,    only: ounit
@@ -423,13 +439,15 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
-      use ci008_blk, only: ci_oe_cm2, ci_oe_cum
-      use ci009_blk, only: ci_oo_cm2, ci_oo_cum
+      use ci008_blk, only: ci_oe_cm2,ci_oe_cum
+      use ci009_blk, only: ci_oo_cm2,ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
 
       use optwf_control, only: method
 
       use precision_kinds, only: dp
+
+
       implicit none
 
       integer :: i, iblk, idx, j, k
@@ -486,6 +504,8 @@ c-----------------------------------------------------------------------
       use optwf_control, only: method
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use slater,  only: cdet
+
       implicit none
 
       integer :: i, iblk, iciprt_sav, idx, is
@@ -621,6 +641,7 @@ c-----------------------------------------------------------------------
       use optwf_control, only: method
 
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: i, iblk, idx, iu, j
@@ -720,12 +741,14 @@ c     print the OkEL
 c-----------------------------------------------------------------------
       subroutine optci_define
 
+      use ci000,   only: nciprim,nciterm
       use csfs, only: ncsf
       use slater, only: ndet
       use optwf_control, only: ioptjas, ioptorb
       use inputflags, only: ici_def
+      use optwf_control, only: ioptjas,ioptorb,method
+      use slater,  only: ndet
 
-      use ci000, only: nciprim, nciterm
 
       use optwf_control, only: method
 

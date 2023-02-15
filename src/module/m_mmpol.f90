@@ -25,8 +25,8 @@ end module mmpol_cntrl
 
 module mmpol_dipol
     !> Arguments: dipo, alfa
-    use mmpol_mod, only: MCHMM
-    use precision_kinds, only: dp
+      use mmpol_mod, only: MCHMM
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: alfa !(MCHMM)
     real(dp), dimension(:, :), allocatable :: dipo !(3,MCHMM)
@@ -51,8 +51,8 @@ end module mmpol_dipol
 
 module mmpol_hpsi
     !> Arguments: eek_pol, peQMdp, peQMq
-    use mmpol_mod, only: MCHMM
-    use precision_kinds, only: dp
+      use mmpol_mod, only: MCHMM
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: eek_pol !(3,MCHMM)
     real(dp) :: peQMdp
@@ -76,8 +76,8 @@ end module mmpol_hpsi
 
 module mmpol_parms
     !> Arguments: x_mmpol, nchmm, chmm, rqq
-    use mmpol_mod, only: MCHMM
-    use precision_kinds, only: dp
+      use mmpol_mod, only: MCHMM
+      use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: chmm !(MCHMM)
     integer :: nchmm = 1
@@ -150,8 +150,8 @@ end module mmpolo
 
 module mmpol_ahpol
     !> Arguments: ah_pol, bh_pol
-    use mmpol_mod, only: MCHMM
-    use precision_kinds, only: dp
+      use mmpol_mod, only: MCHMM
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: ah_pol !(3*MCHMM,3*MCHMM)
     real(dp), dimension(:), allocatable :: bh_pol !(3*MCHMM)
@@ -177,8 +177,8 @@ end module mmpol_ahpol
 module mmpol_averages
     !> Arguments: cmmpol_cum, cmmpol_cm2, eek2_cum, dmmpol_sum, eek1_cm2, eek_sum, eek2_cm2,
     !> cmmpol_sum, dmmpol_cum, dmmpol_cm2, eek3_cum, eek1_cum, eek3_cm2
-    use mmpol_mod, only: MCHMM
-    use precision_kinds, only: dp
+      use mmpol_mod, only: MCHMM
+      use precision_kinds, only: dp
 
     real(dp) :: cmmpol_cm2
     real(dp) :: cmmpol_cum
@@ -225,8 +225,8 @@ end module mmpol_averages
 
 module mmpol_fdc
     !> Arguments: a_cutoff, rcolm, screen1, screen2
-    use mmpol_mod, only: MCHMM
-    use precision_kinds, only: dp
+      use mmpol_mod, only: MCHMM
+      use precision_kinds, only: dp
 
     real(dp) :: a_cutoff
     real(dp) :: rcolm
@@ -253,8 +253,8 @@ end module mmpol_fdc
 
 module mmpol_field
     !> Arguments: eqk_pol, enk_pol
-    use mmpol_mod, only: MCHMM
-    use precision_kinds, only: dp
+      use mmpol_mod, only: MCHMM
+      use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: enk_pol !(3,MCHMM)
     real(dp), dimension(:, :), allocatable :: eqk_pol !(3,MCHMM)
@@ -278,7 +278,7 @@ contains
 end module mmpol_field
 
 module mmpol_inds
-    use mmpol_mod, only: MCHMM
+      use mmpol_mod, only: MCHMM
     !> Arguments: inds_pol
 
     integer, dimension(:), allocatable :: inds_pol !(MCHMM)
@@ -301,7 +301,7 @@ end module mmpol_inds
 
 module mmpol_pot
     !> Arguments: peqq, pepol_dp, pepol_q, penu_q, peq_dp, penu_dp, u_dd, u_self
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     real(dp) :: penu_dp
     real(dp) :: penu_q

@@ -2,15 +2,16 @@
       contains
       subroutine deriv_jastrow(x,v,d2j,psij)
 c Written by Claudia Filippi
-c !STU this not called currently. I removed div_v
-      use system, only: nelec
+
+
       use precision_kinds, only: dp
-      use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo
+      use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo      
+      use system,  only: nelec
       use multiple_geo, only: iwf
       use vmc_mod, only: nwftypejas
       use derivjas, only: d2g, g, go, gvalue
       use optwf_control, only: ioptjas
-      use deriv_jastrow4_mod, only: deriv_jastrow4
+      use deriv_jastrow4_mod, only: deriv_jastrow4      
 
       implicit none
 

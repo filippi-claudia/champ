@@ -1,5 +1,5 @@
       module psi_mod
-      use scale_dist_mod, only: scale_dist, switch_scale
+      use scale_dist_mod, only: scale_dist,switch_scale
       contains
       function psi(rij,ri,rj,it)
 c Written by Cyrus Umrigar, modified by Claudia Filippi
@@ -7,9 +7,10 @@ c **Warning** This routine needs to be upgraded to check rshifts
 c if we add in the capability to use numerical Laplacian for
 c periodic systems.
 
-      use jastrow, only: c, nordc, ijas, nordj
 
+      use jastrow, only: nordc
       use jaspar6, only: cutjas
+      use jastrow, only: c,ijas,nordj
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
@@ -97,8 +98,9 @@ c-----------------------------------------------------------------------
       function psia(ri,it)
 
 
-      use jastrow, only: a4, norda, ijas, asymp_jasa
+      use jastrow, only: norda
       use jaspar6, only: cutjas
+      use jastrow, only: a4,asymp_jasa,ijas
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none
@@ -142,9 +144,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       function psib(rij,isb,ipar)
 
-      use jastrow, only: sspinn, b, nordb, ijas, asymp_jasb
 
+      use jastrow, only: nordb
       use jaspar6, only: cutjas
+      use jastrow, only: asymp_jasb,b,ijas,sspinn
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       implicit none

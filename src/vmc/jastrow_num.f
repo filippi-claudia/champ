@@ -15,7 +15,9 @@ c numerical Laplacian for periodic systems.
       use bparm, only: nocuspb, nspin2b
       use distance_mod, only: r_en, r_ee
       use precision_kinds, only: dp
-      use psi_mod, only: psia, psib, psi
+      use psi_mod, only: psi,psia,psib
+      use system,  only: cent,iwctype,ncent,ncent_tot,nelec,nup
+      use vmc_mod, only: nmat_dim2
 
       implicit none
 

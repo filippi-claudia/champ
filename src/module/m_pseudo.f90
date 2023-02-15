@@ -47,7 +47,7 @@ end module pseudo
 module pseudo_tm
     !> Arguments: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
 
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
 
     real(dp), dimension(:), allocatable :: arg !(MCTYPE)

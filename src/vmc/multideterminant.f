@@ -1,8 +1,8 @@
       module multideterminant_mod
       contains
-      subroutine multideterminant_hpsi(vj,vpsp_det,eloc_det)
+      subroutine multideterminant_hpsi(vj,ekin_det,vpsp_det,eloc_det)
 
-      use Bloc, only: b, tildem, xmat
+      use Bloc,    only: b, bkin,tildem,tildemkin,xmat, xmatkin
       use bxmatrices, only: bxmatrix
       use constants, only: hb
       use csfs, only: nstates
@@ -30,10 +30,11 @@
       integer :: i, iab, iel, index_det, iorb, kun, kw
       integer :: irep, ish, istate, jorb, j, o, x
       integer :: jrep, k, ndim, nel, ndim2, kk, kcum
-      real(dp) :: det, dum1, dum2, dum3, deti, auxdet
+      real(dp) :: det, dum1, dum2, dum3, dum4, dum5, deti, auxdet
       real(dp), dimension(ndet, 2, nbjx) :: eloc_det
       real(dp), dimension(3, nelec, nwftypejas) :: vj
       real(dp), dimension(2, nbjx) :: vpsp_det
+      real(dp), dimension(2, nbjx) :: ekin_det
       real(dp), dimension(nelec**2, 2) :: btemp
       real(dp), dimension(ndet_req,2) :: ddetiab
       real(dp), dimension(ndet_req,2) :: ddenergy_det
@@ -64,18 +65,21 @@ c dimensioned at least max(nup**2,ndn**2)
             nel=ndn
             ish=nup
           endif
-          eloc_det(kref,iab,x)=vpsp_det(iab,x)
+          ekin_det(iab,x)=0.d0
           do i=1,nel
-            eloc_det(kref,iab,x)=eloc_det(kref,iab,x)
+            ekin_det(iab,x)=ekin_det(iab,x)
      &      -hb*(d2dx2(i+ish,o)+2.d0*(vj(1,i+ish,j)*ddx(1,i+ish,o)+vj(2,i+ish,j)*ddx(2,i+ish,o)+vj(3,i+ish,j)*ddx(3,i+ish,o)))
           enddo
+          eloc_det(kref,iab,x)=ekin_det(iab,x) + vpsp_det(iab,x)
         enddo
 
 c     write(ounit,*) 'eloc_ref',eloc_det(kref,1),eloc_det(kref,2)
         !STU check the bjx mapping here
         !STU looks right
-        if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) 
-     &      call bxmatrix(kref,xmat(1,1,x),xmat(1,2,x),b(1,1,x),x)
+        if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) then
+          call bxmatrix(kref,xmat(1,1,x),xmat(1,2,x),b(1,1,x),x)
+          call bxmatrix(kref,xmatkin(1,1,x),xmatkin(1,2,x),bkin(1,1,x),x)
+        endif
 
         if(ndet.eq.1.and.ioptorb.eq.0) return
 
@@ -100,17 +104,21 @@ c         do jrep=ivirt(iab),norb+nadorb
               dum1=0.d0
               dum2=0.d0
               dum3=0.d0
+              dum4=0.d0 
+              dum5=0.d0
               do i=1,nel  !STU check these and b, and tildem
                 dum1=dum1+slmi(irep+(i-1)*nel,iab,o)*orb(i+iel,jrep,o)
                 dum2=dum2+slmi(irep+(i-1)*nel,iab,o)*b(jrep,i+iel,x)
                 dum3=dum3+xmat(i+(irep-1)*nel,iab,x)*orb(i+iel,jrep,o)
-                !write(ounit,*) "i,irep,jrep,b,xmat", i, irep, jrep, 
-c     &           b(jrep,i+iel,x), xmat(i+(irep-1)*nel,iab,x)
+
+                dum4=dum4+slmi(irep+(i-1)*nel,iab,o)*bkin(jrep,i+iel,x)
+                dum5=dum5+xmatkin(i+(irep-1)*nel,iab,x)*orb(i+iel,jrep,o)
               enddo
               !write(ounit,*) "dum1,dum2,dum3", dum1, dum2, dum3
               aa(irep,jrep,iab,o)=dum1
               !STU recent change to tildem, o -> x
               tildem(irep,jrep,iab,x)=dum2-dum3
+              tildemkin(irep,jrep,iab,x)=dum4-dum5
             enddo
 
 c           do irep=1,nel
@@ -273,7 +281,6 @@ c               enddo
             denergy_det(k,iab,x)=ddenergy_det(kw,iab)
             eloc_det(k,iab,x)=eloc_det(k,iab,x)+denergy_det(k,iab,x)
 
-c!     print *, 'CIAO',k,eloc_det(k,iab),detiab(k,iab)
           enddo
 
 c        detiab(k_det2(1:ndetiab2(iab),iab),iab)=detiab(k_det2(1:ndetiab2(iab),iab),iab)*ddetiab(k_aux(1:ndetiab2(iab),iab),iab)
@@ -394,9 +401,7 @@ c     &     ymat(ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1
 c     &     cdet_equiv(1:ndetsingle(iab))*wfmat(1:ndetsingle(iab),1)
       
       kcum=ndetsingle(iab)+ndetdouble(iab)
-!      kcum=ndetsingle(iab)!+ndetdouble(iab)
       if(ndetdouble(iab).ge.1)then
-!      if(ndetdouble(iab).ge.1000000)then
 
          do kk=ndetsingle(iab)+1,kcum !ndetiab(iab)
          
@@ -465,8 +470,12 @@ c-----------------------------------------------------------------------
       use slater, only: iwundet, kref, norb, ndet, cdet_equiv, dcdet_equiv
       use Bloc, only: tildem
       use multimat, only: wfmat
-
       use precision_kinds, only: dp
+      use slater,  only: cdet_equiv,dcdet_equiv,iwundet,kref,ndet,norb
+      use system,  only: nelec
+      use vmc_mod, only: MEXCIT,norb_tot
+
+
       implicit none
 
       integer :: i, iab, iorb, irep, j, istate, o, x
@@ -518,7 +527,6 @@ c-----------------------------------------------------------------------
 !                  enddo
 !               enddo
 !            enddo
-
 
             dmat1(1:4)=0.d0
             
@@ -642,6 +650,10 @@ c-----------------------------------------------------------------------
       use system, only: nelec, ndn, nup
 
       use precision_kinds, only: dp
+      use slater,  only: norb,slmi
+      use system,  only: ndn,nelec,nup
+      use vmc_mod, only: norb_tot
+
       implicit none
 
       integer :: iab, irep, ish, jrep, krep
@@ -710,6 +722,9 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: stoo
 
       use multislater, only: detiab
+      use system,  only: ndn,nelec,nup
+      use ycompact, only: ymat
+
       implicit none
 
       integer :: iab, iel, istate

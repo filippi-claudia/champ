@@ -1,5 +1,5 @@
       module grid3d
-      use error, only: fatal_error
+      use error,   only: fatal_error
       contains
 c 3d grid module
 c Written by Anthony Scemama
@@ -21,9 +21,8 @@ c----------------------------------------------------------------------
       use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
       use grid_mod, only: grid3d, cart_from_int
       use system, only: cent, ncent
-!      use contrl, only: irstar
       use control_vmc, only: vmc_irstar
-      use grid3d_param, only: endpt, nstep3d, origin, step3d
+      use grid3d_param, only: endpt,nstep3d,origin,step3d
 
       implicit none
 
@@ -137,8 +136,8 @@ c     Print the parameters to the output file
 c----------------------------------------------------------------------
 
       function int_from_cart(value,iaxis)
+      use grid3d_param, only: endpt,origin,step3d
       use grid_mod, only: IUNDEFINED
-      use grid3d_param, only: endpt, origin, step3d
       use precision_kinds, only: dp
       implicit none
 
@@ -160,10 +159,10 @@ c----------------------------------------------------------------------
 
       subroutine write_cube(cube_file)
 
+      use grid3d_param, only: nstep3d,origin,step3d
       use grid_mod, only: grid3d
       use system, only: znuc, cent, iwctype, ncent
       use system, only: nghostcent
-      use grid3d_param, only: nstep3d, origin, step3d
 
       implicit none
 

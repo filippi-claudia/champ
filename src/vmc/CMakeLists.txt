@@ -8,7 +8,6 @@ if (MPI_Fortran_FOUND)
     acuest_reduce.f
     acuest_write.f
     basis_fns.f
-    # trexio_basis_fns.f
     bxmatrices.f
     cuspexact4.f
     cuspinit4.f
@@ -99,7 +98,6 @@ if (MPI_Fortran_FOUND)
     pw_placeholder.f
     pw_read.f
     qmmm_placeholder.f
-    #rannyu.f
     random.f
     readps_gauss.f
     readps_tm.f
@@ -208,7 +206,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/new_parser_read_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/read_trexio_data.f90
-    # ${CMAKE_CURRENT_SOURCE_DIR}/trexio_basis_fns.f
     ${CMAKE_CURRENT_SOURCE_DIR}/set_input_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f
@@ -264,7 +261,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/spline2.f
     ${CMAKE_CURRENT_SOURCE_DIR}/read_bas_num.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/store_diag_hs.f
-    # ${CMAKE_CURRENT_SOURCE_DIR}/rannyu.f
     ${CMAKE_CURRENT_SOURCE_DIR}/random.f
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid_orbitals.f
     ${CMAKE_CURRENT_SOURCE_DIR}/distances.f

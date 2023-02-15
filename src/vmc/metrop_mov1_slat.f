@@ -9,61 +9,60 @@ c    C.J. Umrigar, in "Quantum Monte Carlo Methods in Physics and Chemistry",
 c    edited by M.P. Nightingale and C.J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
-      use vmc_mod, only: nrad
-      use vmc_mod, only: delri
-      use system, only: znuc, cent, iwctype, ncent, nup, nelec
-      use mstates_mod, only: MSTATES
+      use acuest_mod, only: acues1,acusig
+      use config,  only: delttn,eold,nearestn,nearesto,psi2n,psi2o
+      use config,  only: psido,psijo,rminn,rminno,rmino,rminon,rvminn
+      use config,  only: rvminno,rvmino,rvminon,vnew,vold,xnew
+      use config,  only: xold
       use constants, only: pi
-      use control, only: ipr, mode
-      use metropolis, only: deltar, deltat, fbias
-      use config, only: delttn, eold, nearestn, nearesto, peo, psi2n, psi2o
-      use config, only: psido, psijo, rminn, rminno, rmino, rminon, rvminn, rvminno, rvmino, rvminon
-      use config, only: tjfoo, vnew, vold, xnew, xold
-      use csfs, only: nstates
-      use estsum, only: acc, esum, esum1, pesum, r2sum, tjfsum, tpbsum
-      use multiple_geo, only: nforce
-      use forcewt, only: wsum
-      use kinet, only: dtdx2n, dtdx2o
-      use stats, only: rejmax
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
-      use tmpnode, only: distance_node_sum
-      use pseudo, only: nloc
-      use mmpol_cntrl, only: ich_mmpol
-      use mstates_ctrl, only: iguiding
-      use pcm_cntrl, only: ichpol
-      use inputflags, only: node_cutoff, eps_node_cutoff
-      use precision_kinds, only: dp
-      use contrl_file,    only: ounit
-
-      use acuest_mod, only: acues1, acusig
-      use multiple_states, only: efficiency_sample
-      use optwf_handle_wf, only: optwf_store
-      use optx_orb_ci    ,only: optx_orb_ci_sum
-      use optx_jas_ci,    only: optx_jas_ci_sum
-      use optx_jas_orb,   only: optx_jas_orb_sum
-      use optci_mod,      only: optci_sum
-      use optorb_f_mod,   only: optorb_sum
-      use optjas_mod,     only: optjas_sum
-      use force_analytic, only: force_analy_sum
-      use prop_vmc,       only: prop_sum
-      use mmpol_vmc,      only: mmpol_sum
-      use mmpol,          only: mmpol_efield
-      use pcm_mod,        only: qpcm_efield
-      use pcm_vmc,        only: pcm_sum
-      use gammai_mod,     only: gammai
-      use hpsi_mod,       only: hpsi
+      use contrl_file, only: ounit
+      use control, only: ipr,mode
+      use csfs,    only: nstates
       use determinant_psig_mod, only: determinant_psig
-      use strech_mod,     only: strech
-      use random_mod,     only: random_dp
-      use jassav_mod,     only: jassav
-      use detsav_mod,     only: detsav
-      use nodes_distance_mod, only: rnorm_nodes_num, nodes_distance
-      use determinante_mod,only: compute_determinante_grad
-      use optorb_f_mod,        only: check_orbitals_reset, check_orbitals
-      use hpsie, only: psie
-      use distances_mod,  only: distancese_restore
+      use determinante_mod, only: compute_determinante_grad
+      use detsav_mod, only: detsav
+      use distances_mod, only: distancese_restore
+      use estsum,  only: acc,esum,esum1,pesum,r2sum,tpbsum
+      use force_analytic, only: force_analy_sum
+      use forcewt, only: wsum
+      use gammai_mod, only: gammai
+      use hpsi_mod, only: hpsi
+      use hpsie,   only: psie
+      use inputflags, only: eps_node_cutoff,node_cutoff
+      use jassav_mod, only: jassav
+      use kinet,   only: dtdx2n,dtdx2o
+      use metropolis, only: deltar,deltat,fbias
+      use mmpol,   only: mmpol_efield
+      use mmpol_cntrl, only: ich_mmpol
+      use mmpol_vmc, only: mmpol_sum
+      use mstates_ctrl, only: iguiding
+      use mstates_mod, only: MSTATES
       use multideterminant_mod, only: update_ymat
-      use vmc_mod, only: nwftypejas, stoj
+      use multiple_geo, only: nforce
+      use multiple_states, only: efficiency_sample
+      use nodes_distance_mod, only: nodes_distance,rnorm_nodes_num
+      use optci_mod, only: optci_sum
+      use optjas_mod, only: optjas_sum
+      use optorb_f_mod, only: check_orbitals,check_orbitals_reset
+      use optorb_f_mod, only: optorb_sum
+      use optwf_handle_wf, only: optwf_store
+      use optx_jas_ci, only: optx_jas_ci_sum
+      use optx_jas_orb, only: optx_jas_orb_sum
+      use optx_orb_ci, only: optx_orb_ci_sum
+      use pcm_cntrl, only: ichpol
+      use pcm_mod, only: qpcm_efield
+      use pcm_vmc, only: pcm_sum
+      use precision_kinds, only: dp
+      use prop_vmc, only: prop_sum
+      use pseudo,  only: nloc
+      use random_mod, only: random_dp
+      use stats,   only: rejmax
+      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use strech_mod, only: strech
+      use system,  only: cent,iwctype,ncent,nelec,nup,znuc
+      use tmpnode, only: distance_node_sum
+      use vmc_mod, only: delri,nrad, nwftypejas, stoj
+
 
       implicit none
 
@@ -98,6 +97,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp), dimension(3) :: yaxis
       real(dp), dimension(3) :: zaxis
       real(dp), dimension(3) :: ddx_ref
+      real(dp), dimension(MSTATES) :: ekino
       real(dp), dimension(MSTATES) :: psidn
       real(dp), dimension(nwftypejas) :: psijn
       real(dp), dimension(MSTATES) :: wtg
@@ -678,18 +678,17 @@ c Note when one electron moves the velocity on all electrons change.
 c loop over secondary configurations
       do ifr=2,nforce
         call strech(xold,xstrech,ajacob,ifr,1)
-        call hpsi(xstrech,psido(1),psijo,eold(1,ifr),ipass,ifr)
+        call hpsi(xstrech,psido(1),psijo,ekino,eold(1,ifr),ipass,ifr)
         do istate=1,nstates
           psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(1))+dlog(ajacob)
         enddo
       enddo
 
-
       call check_orbitals_reset
 
 c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
-      call hpsi(xold,psido(1),psijo,eold(1,1),ipass,1)
+      call hpsi(xold,psido(1),psijo,ekino,eold(1,1),ipass,1)
       do istate=1,nstates
          psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
       enddo
@@ -730,9 +729,8 @@ c form expected values of e, pe, etc.
         esum1(istate)=eold(istate,1)
         wsum(istate,1)=wsum(istate,1)+wtg(istate)
         esum(istate,1)=esum(istate,1)+eold(istate,1)*wtg(istate)
-        pesum(istate)=pesum(istate)+peo(istate)*wtg(istate)
-        tpbsum(istate)=tpbsum(istate)+(eold(istate,1)-peo(istate))*wtg(istate)
-        tjfsum(istate)=tjfsum(istate)+tjfoo*wtg(istate)
+        pesum(istate)=pesum(istate)+(eold(istate,1)-ekino(istate))*wtg(istate)
+        tpbsum(istate)=tpbsum(istate)+ekino(istate)*wtg(istate)
       enddo
 
       if(ipr.gt.1) write(ounit,'(''energy reweighted '',d12.4)') eold(1,1)*wtg(1)

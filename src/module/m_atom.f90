@@ -1,6 +1,6 @@
 module system
     !> Arguments: znuc, cent, pecent, iwctype, nctype, ncent
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -10,7 +10,7 @@ module system
 
     real(dp), dimension(:, :), allocatable :: cent
     real(dp), dimension(:), allocatable :: znuc
-
+    
     integer, dimension(:), allocatable :: iwctype
     integer :: nctype, ncent
     integer :: nctype_tot, ncent_tot

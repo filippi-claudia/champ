@@ -2,61 +2,63 @@
       contains
       subroutine startr_gpop
 
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: nrad
-      use basis, only: zex
+      use age,     only: iage,ioldest,ioldestmx
+      use basis,   only: zex
+      use branch,  only: eest,eigv,eold,ff,fprod,nwalk,wdsumo,wgdsumo,wt
+      use branch,  only: wtgen
+      use casula,  only: i_vpsp,icasula
+      use coefs,   only: nbasis
+      use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
       use constants, only: hb
+      use contrl_file, only: ounit
+      use contrldmc, only: idmc,nfprod,rttau,tau
       use control, only: ipr
-      use multiple_geo, only: fgcm2, fgcum, istrech, nforce, pecent
-      use age, only: iage, ioldest, ioldestmx
-      use contrldmc, only: idmc
-      use contrldmc, only: nfprod, rttau, tau
-      use system, only: cent, iwctype, ncent, nctype, znuc, nelec, ncent_tot, ndn, nup, nghostcent
-      use estcum, only: iblk, ipass
-      use config, only: psido_dmc, psijo_dmc, vold_dmc, xold_dmc
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-      use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
-      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, wdsum
-      use estsum, only: wfsum, wgdsum, wgsum, wsum_dmc
-      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum
-      use estcum, only: ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
-      use estcum, only: wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wgcum, wgcum1
-      use estcum, only: wgdcum
-      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2
-      use est2cm, only: ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21
-      use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
-      use derivest, only: derivcum, derivsum
-      use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid
-      use denupdn, only: rprobdn, rprobup
-      use qua, only: nquad, wq, xq, yq, zq
-      use branch, only: eest, eigv, eold, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
-      use casula, only: i_vpsp, icasula
-      use jacobsave, only: ajacob, ajacold
-      use pseudo, only: nloc
-      use slater, only: ndet, norb, cdet, coef
-      use coefs, only: nbasis
-      use velratio, only: fratio
-!      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
+      use denupdn, only: rprobdn,rprobup
+      use derivest, only: derivcum,derivsum
+      use determinante_mod, only: compute_determinante_grad
+      use error,   only: fatal_error
+      use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
+      use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
+      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21,wdcm2,wdcm21
+      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21,wgdcm2
+      use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
+      use estcum,  only: ei1cum,ei2cum,ei3cum,iblk,ipass,pecum_dmc
+      use estcum,  only: r2cum_dmc,ricum,taucum,tpbcum_dmc
+      use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
+      use estcum,  only: wgcum1,wgdcum
+      use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
+      use estsum,  only: r2sum,risum,tausum,tpbsum_dmc,wdsum
+      use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
+      use hpsi_mod, only: hpsi
+      use jacobsave, only: ajacob,ajacold
+      use mmpol,   only: mmpol_init
+      use mmpol_dmc, only: mmpol_save
       use mpi
-      use contrl_file,    only: ounit
-      use precision_kinds, only: dp
-
-      use error,           only: fatal_error
-      use mmpol,           only: mmpol_init
-      use mmpol_dmc,       only: mmpol_save
-      use pcm_dmc,         only: pcm_save
-      use prop_dmc,        only: prop_save_dmc
-      use pcm_mod,         only: pcm_init
-      use properties_mod,  only: prop_init
+      use mpiconf, only: idtask,nproc,wid
+      use multiple_geo, only: fgcm2,fgcum,istrech,nforce,pecent
       use nonloc_grid_mod, only: t_vpsp_sav
-      use random_mod,      only: setrn
-      use strech_mod,      only: strech
-      use hpsi_mod,        only: hpsi
-      use determinante_mod,only: compute_determinante_grad
+      use pcm_dmc, only: pcm_save
+      use pcm_mod, only: pcm_init
+      use precision_kinds, only: dp
+      use prop_dmc, only: prop_save_dmc
+      use properties_mod, only: prop_init
+      use pseudo,  only: nloc
+      use qua,     only: nquad,wq,xq,yq,zq
+      use random_mod, only: setrn
+      use slater,  only: cdet,coef,ndet,norb
+      use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nbrnch
+      use stats,   only: nodecr,trymove
+      use step,    only: rprob
+      use strech_mod, only: strech
+      use system,  only: cent,iwctype,ncent,ncent_tot,nctype,ndn,nelec
+      use system,  only: nghostcent,nup,znuc
+      use velratio, only: fratio
+      use vmc_mod, only: norb_tot,nrad
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
+!      use contrl, only: nconf
+
       implicit none
 
       integer :: i, iage_id, ib, ic, id
@@ -67,6 +69,7 @@
       integer :: num, nupx, nwalk_id
       integer, dimension(4, 0:nproc) :: irn
       real(dp) :: different, fmt
+      real(dp) :: ekino(1)
       real(dp) :: fratio_id, hbx, taux, wq_id
       real(dp) :: wt_id, xold_dmc_id, xq_id, yq_id
       real(dp) :: zq_id
@@ -79,12 +82,7 @@
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: small = 1.e-6
 
-
-
-
       character*13 filename
-
-
 
       write(ounit,'(1x,''attempting restart from unit 10'')')
       rewind 10
@@ -111,8 +109,8 @@
 c     if(nforce.gt.1) read(10) nwprod
 c    &,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
-      read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),tjfcum_dmc(i),
-     &wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),tjfcm_dmc(i),taucum(i),
+      read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),
+     &wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),taucum(i),
      &i=1,nforce)
       read(10) ((irn(i,j),i=1,4),j=0,nproc-1)
       call setrn(irn(1,idtask))
@@ -182,8 +180,8 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(ounit,'(1x,''succesful read from unit 10'')')
       write(ounit,'(t5,''egnow'',t15,''egave'',t21
      &,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55
-     &,''(tpberr)'' ,t66,''tjfave'',t72,''(tjferr)'',t83,''npass'',t93
-     &,''wgsum'',t103 ,''ioldest'')')
+     &,''(tpberr)'' ,t66,''npass'',t77
+     &,''wgsum'',t88 ,''ioldest'')')
 
       do iw=1,nwalk
         if(istrech.eq.0) then
@@ -207,7 +205,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
           endif
           ajacold(iw,ifr)=ajacob
           if(icasula.lt.0) i_vpsp=icasula
-          call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),eold(iw,ifr),0,ifr)
+          call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),ekino,eold(iw,ifr),0,ifr)
           i_vpsp=0
           do i=1,nelec
             call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr), vold_dmc(1,i,iw,ifr),1)
@@ -242,7 +240,6 @@ c zero out xsum variables for metrop
         wgsum(ifr)=zero
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
-        tjfsum_dmc(ifr)=zero
         tausum(ifr)=zero
         do k=1,3
           derivsum(k,ifr)=zero

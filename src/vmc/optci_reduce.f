@@ -10,12 +10,14 @@
       use ci000, only: nciterm
       use ci005_blk, only: ci_o_cum
       use ci006_blk, only: ci_de_cum
-      use ci008_blk, only: ci_oe_cm2, ci_oe_cum
-      use ci009_blk, only: ci_oo_cm2, ci_oo_cum
+      use ci008_blk, only: ci_oe_cm2,ci_oe_cum
+      use ci009_blk, only: ci_oo_cm2,ci_oo_cum
       use ci010_blk, only: ci_ooe_cum
       use optwf_control, only: method
       use mpi
-      use optorb_mod, only: nmatdim
+      use mstates2, only: effcm2,effcum
+      use mstates_ctrl, only: iefficiency,nstates_psig
+      use optci,   only: mxcireduced,mxciterm,ncimatdim
       use optorb_cblock, only: norbterm
       use vmc_mod, only: nwftypeorb
       use csfs, only: nstates

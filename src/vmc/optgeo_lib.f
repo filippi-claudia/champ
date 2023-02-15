@@ -87,6 +87,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use system, only: ncent
       use m_force_analytic, only: iforce_analy, da_energy_ave
       use mpi
+      use system,  only: ncent
 
       implicit none
 

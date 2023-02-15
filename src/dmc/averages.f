@@ -5,8 +5,9 @@
       use multiple_geo, only: nforce
       use c_averages, only: prop, wprop
       use c_averages_index, only: jderiv
-
+      use multiple_geo, only: nforce
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: idrifdifgfunc, ifr, iw, mwalk
@@ -65,10 +66,10 @@ c deriv
 
       subroutine average(ido)
 
-      use c_averages, only: mprop, prop, wprop, cum_av, cum_av2, cum_w
-      use prp000, only: nprop
-
+      use c_averages, only: cum_av,cum_av2,cum_w,mprop,prop,wprop
       use precision_kinds, only: dp
+      use prp000,  only: nprop
+
       implicit none
 
       integer :: i, ido
@@ -103,11 +104,11 @@ c deriv
 
       subroutine average_write
 
-      use multiple_geo, only: nforce
       use c_averages, only: cum_av, cum_w
       use c_averages_index, only: jderiv
-
+      use multiple_geo, only: nforce
       use precision_kinds, only: dp
+
       implicit none
 
       integer :: ifr

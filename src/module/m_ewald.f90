@@ -89,11 +89,10 @@ module ewald_mod
      !> ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big,
      !> nkvec, np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
      !> vcell_sim, znuc2_sum, znuc_sum
-     use ewald_mod, only: IVOL_RATIO
-     use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
-     use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
-     use precision_kinds, only: dp
-     use vmc_mod, only: norb_tot
+      use ewald_mod, only: IVOL_RATIO,NGNORM_BIGX,NGNORM_SIM_BIGX
+      use ewald_mod, only: NGVEC_BIGX,NGVEC_SIM_BIGX
+      use precision_kinds, only: dp
+      use vmc_mod, only: norb_tot
 
      implicit none
 
@@ -161,7 +160,7 @@ module ewald_mod
       use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
       use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
-         use vmc_mod, only: norb_tot
+      use vmc_mod, only: norb_tot
          if (.not. allocated(glatt)) allocate (glatt(3, 3))
          if (.not. allocated(glatt_inv)) allocate (glatt_inv(3, 3))
          if (.not. allocated(glatt_sim)) allocate (glatt_sim(3, 3))
@@ -219,10 +218,9 @@ module ewald_mod
 
  module pworbital
      !> Arguments: c_im, c_ip, c_rm, c_rp, icmplx, isortg, isortk, ngorb
-     use ewald_mod, only: IVOL_RATIO
-     use ewald_mod, only: NGVECX
-     use precision_kinds, only: dp
-     use vmc_mod, only: norb_tot
+      use ewald_mod, only: IVOL_RATIO,NGVECX
+      use precision_kinds, only: dp
+      use vmc_mod, only: norb_tot
 
      implicit none
 
@@ -267,9 +265,8 @@ module ewald_mod
 
  module test
      !> Arguments: f, vbare_coul, vbare_jas, vbare_psp
-     use ewald_mod, only: NGNORM_BIGX
-     use ewald_mod, only: NGNORM_SIM_BIGX
-     use precision_kinds, only: dp
+      use ewald_mod, only: NGNORM_BIGX,NGNORM_SIM_BIGX
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -301,7 +298,7 @@ module ewald_mod
 
  module tempor
      !> Arguments: dist_nn
-     use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
      implicit none
 
@@ -314,9 +311,8 @@ module ewald_mod
 
  module tempor_test
      !> Arguments: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
-     use ewald_mod, only: IVOL_RATIO
-     use ewald_mod, only: NGVEC_BIGX
-     use precision_kinds, only: dp
+      use ewald_mod, only: IVOL_RATIO,NGVEC_BIGX
+      use precision_kinds, only: dp
 
      implicit none
 

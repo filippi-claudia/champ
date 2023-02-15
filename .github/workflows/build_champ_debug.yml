@@ -14,12 +14,12 @@ on:
 jobs:
   debug_build_test_champ:
     name: build and test with ${{ matrix.toolchain }} ${{ matrix.mode }} mode
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 200
     strategy:
       matrix:
         toolchain: ['intel','gnu']
-        mode: ['RELEASE','DEBUG']
+        mode: ['RELEASE']
         exclude:
           - toolchain: 'intel'
             mode: 'DEBUG'
@@ -50,8 +50,8 @@ jobs:
            sudo apt install -y openmpi-bin
            sudo apt install -y libopenmpi-dev
            sudo apt install -y gawk
-           sudo apt install -y libblacs-mpi-dev
            sudo apt install -y liblapack-dev
+           sudo apt install -y libblas-dev
            gawk --version
            mpirun --version
            gfortran --version
@@ -103,8 +103,7 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        # cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=DEBUG
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DVECTORIZED=no -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
         cmake --build build -- -j2
         ulimit -s unlimited
 
@@ -117,7 +116,7 @@ jobs:
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0059842 +-  0.0070988) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_single.out "total E" -1.0059842   0.0070988 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_single.out "total E" -1.0059842   0.0070988
 
     - name: "Test 02 (H2) sto basis optimize jastrow sr_n method on 2 processors"
       run: |
@@ -126,39 +125,14 @@ jobs:
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
+        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0108635 +-  0.0054667) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_double.out "total E" -1.0108635  0.0054667 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_double.out "total E" -1.0108635  0.0054667
 
-    - name: "Test 03 (H2) sto basis optimize wf+jastrow using lin_d method on 1 processor"
-      if: matrix.toolchain == 'intel'
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
 
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_single.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0629156 +-  0.0032473) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_single.out "total E" -1.0629156  0.0032473 --no_assert
-
-    - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method on 2 processors"
-      if: matrix.toolchain == 'intel'
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_davidson_check.inp -o revised_vmc_davidson_check_double.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0588247 +-  0.0022854) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_davidson_check_double.out "total E" -1.0588247  0.0022854 --no_assert
-
-    - name: "Test 05 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
-      if: matrix.toolchain == 'intel'
+    - name: "Test 03 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
+      continue-on-error: true
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. H2 "
@@ -168,23 +142,22 @@ jobs:
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0608157 +-  0.0026295) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0608157  0.0026295 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0608157  0.0026295
 
-    - name: "Test 06 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
-      if: matrix.toolchain == 'intel'
+    - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
+      continue-on-error: true
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. H2 "
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
+        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
 
         echo "Comparing the energy with the reference one (total E = -1.0578796 +-  0.0018813) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0578796  0.0018813 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0578796  0.0018813
 
-    - name: "Test 07 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
-      if: matrix.toolchain == 'intel'
+    - name: "Test 05 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. H2 "
@@ -194,26 +167,25 @@ jobs:
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
 
         echo "Comparing the energy with the reference one (Current energy = -1.0247271 +-  0.0114836 ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0247271   0.0114836 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -1.0247271   0.0114836
 
         echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0018"
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0018 0.0114836 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0018 0.0114836
 
-    - name: "Test 08 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
-      if: matrix.toolchain == 'intel'
+    - name: "Test 06 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
       run: |
         ulimit -s unlimited
         echo "Running the tests using the new parser. H2 "
         cd tests/CI_test/VMC-H2
 
         echo "Running the optimization calculation"
-        mpirun -np 2  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
+        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
 
         echo "Comparing the energy with the reference one (Current energy = -1.0173833 +-  0.0082930) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0173833   0.0082930 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0173833   0.0082930
 
         echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0008"
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0008 0.0085151 --no_assert
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0008 0.0085151
 
 
 

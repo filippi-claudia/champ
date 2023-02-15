@@ -2,15 +2,14 @@
       contains
       subroutine store_diag_hs(nparm_p1,hii,sii)
 
-      use sr_mod, only: mparm
-      use optwf_control, only: ioptjas, ioptorb, nparm
-
-      use sr_index, only: jelo, jelo2, jelohfj
-      use sr_mat_n, only: jefj, jfj, jhfj
-      use sr_mat_n, only: obs_tot
+      use contrl_file, only: errunit,ounit
       use mpi
-      use contrl_file,    only: ounit, errunit
+      use optwf_control, only: ioptjas,ioptorb,nparm
       use precision_kinds, only: dp
+      use sr_index, only: jelo,jelo2,jelohfj
+      use sr_mat_n, only: jefj,jfj,jhfj,obs_tot
+      use sr_mod,  only: mparm
+
       implicit none
 
       integer :: i, ish, jfhfj, jfifj, jwtg

@@ -36,6 +36,26 @@ c job where it left off
       use pcm_mod, only: pcm_init
       use mmpol, only: mmpol_init
       use force_analytic, only: force_analy_init
+      use forcewt, only: wcum
+      use mmpol,   only: mmpol_init
+      use mpi
+      use mpiconf, only: idtask,nproc,wid
+      use multiple_geo, only: fcm2,fcum,nforce
+      use multiple_states, only: efficiency_init
+      use optci_mod, only: optci_init
+      use optjas_mod, only: optjas_init
+      use optorb_f_mod, only: optorb_init
+      use pcm_mod, only: pcm_init
+      use precision_kinds, only: dp
+      use properties_mod, only: prop_init
+      use pseudo,  only: nloc
+      use qua,     only: nquad,wq,xq,yq,zq
+      use random_mod, only: random_dp,savern,setrn
+      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use system,  only: nelec
+      use vmc_mod, only: nrad
+
+
       implicit none
 
       integer :: i, id, idfrom, idget, ierr
@@ -172,11 +192,9 @@ c xold from idfrom to idtask
 
       pecum(istate)=0
       tpbcum(istate)=0
-      tjfcum(istate)=0
 
       pecm2(istate)=0
       tpbcm2(istate)=0
-      tjfcm2(istate)=0
 
       ecum1(istate)=0
       ecum1s(istate)=0

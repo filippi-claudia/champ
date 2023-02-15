@@ -4,7 +4,6 @@
 
       use slater, only: ndet, cdet
       use multiple_geo, only: iwf
-
       use multislater, only: detiab
       use precision_kinds, only: dp
       use vmc_mod, only: stoo, nwftypeorb

@@ -192,7 +192,7 @@ contains
         enddo
 
         ! Update the rmax at the point where rwf goes below cutoff (scanning from right to left)
-        rmaxwf(irb, ic) = 20.0d0
+        rmaxwf(irb, ic) = x(nr(ic))
         rloop: do ir=nr(ic),1,-1
           if (dabs(rwf(ir,irb,ic,iwf)) .gt. cutoff_rmax ) then
             rmaxwf(irb, ic) = x(ir)
@@ -204,10 +204,10 @@ contains
 
 ! Nonzero basis at the boundary : Do exponential fitting.
         if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
-          call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
+          call exp_fit(x(nr(ic)-9), rwf(nr(ic)-9,irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
           if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
-          rmaxwf(irb,ic)=-dlog(cutoff_rmax/ae(1,irb,ic,iwf))/ae(2,irb,ic,iwf)
+          rmaxwf(irb,ic)=-dlog(cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
 
           write(45,'(a)') 'check the large radius expansion'
           write(45,'(a,g0,2x,g0)') 'Exponential fitting parameters : ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
@@ -221,7 +221,7 @@ contains
 
           dwfn=-ae(2,irb,ic,iwf)*ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)))
 
-         else
+        else
           dwfn=0.d0
         endif
         write(45,*) 'dwf1,dwfn',dwf1,dwfn
@@ -270,7 +270,6 @@ subroutine readps_gauss
   integer         :: iunit, iostat, counter = 0
   logical         :: exist, skip = .true.
   real(dp) ::  necp_power_tmp
-  
   character*80 label
 
 

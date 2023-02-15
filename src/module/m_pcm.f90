@@ -9,7 +9,7 @@ end module pcm
 
 module pcm_3dgrid
     !     flags and dimensions for the 3d grid objects
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
     integer, parameter :: MGRID_PCM = 1
     integer, parameter :: IUNDEFINED = -1234567890
     integer, parameter :: MGRID_PCM2 = MGRID_PCM*MGRID_PCM
@@ -386,7 +386,7 @@ end module pcm_parms
 
 module pcm_pot
     !> Arguments: penupol, penups, penupv
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     real(dp) :: penupol
     real(dp) :: penups

@@ -2,8 +2,8 @@ module gradhess_all
     !> Arguments: nparmall, grad, h, s
     ! use optorb_mod, only: mxreduced
       use optwf_parms, only: nparmj
+      use precision_kinds, only: dp
     ! use optci, only: mxcireduced
-    use precision_kinds, only: dp
 
     implicit none
 
@@ -146,8 +146,8 @@ end module gradhessjo
 
 module gradhess_ci
     !> Arguments: grad_ci, h_ci, s_ci
-    use optci, only: mxciterm, mxcireduced
-    use precision_kinds, only: dp
+      use optci,   only: mxcireduced,mxciterm
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -177,8 +177,8 @@ end module gradhess_ci
 
 module gradhess_jas
     !> Arguments: grad_jas, h_jas, s_jas
-    use optwf_parms, only: nparmj
-    use precision_kinds, only: dp
+      use optwf_parms, only: nparmj
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -192,7 +192,7 @@ module gradhess_jas
     save
 contains
     subroutine allocate_gradhess_jas()
-        use optwf_parms, only: nparmj
+      use optwf_parms, only: nparmj
         if (.not. allocated(grad_jas)) allocate (grad_jas(nparmj))
         if (.not. allocated(h_jas)) allocate (h_jas(nparmj, nparmj))
         if (.not. allocated(s_jas)) allocate (s_jas(nparmj, nparmj))
@@ -238,9 +238,9 @@ end module gradhess_mix_jas_ci
 
 module gradhess_mix_jas_orb
     !> Arguments: h_mix_jas_orb, s_mix_jas_orb
-    use optorb_mod, only: mxreduced
-    use optwf_parms, only: nparmj
-    use precision_kinds, only: dp
+      use optorb_mod, only: mxreduced
+      use optwf_parms, only: nparmj
+      use precision_kinds, only: dp
 
     implicit none
 

@@ -38,8 +38,18 @@ c Modified by A. Scemama
       use trexio_basis_fns_mod, only: trexio_basis_fns
 #endif
       use basis_fns_mod, only: basis_fns
-
-
+      use coefs,   only: nbasis
+      use contrl_file, only: ounit
+      use contrl_per, only: iperiodic
+      use control, only: ipr
+      use grid3d_orbitals, only: lagrange_mos,lagrange_mos_2
+      use grid3d_orbitals, only: lagrange_mos_grad,spline_mo
+      use grid3dflag, only: i3dlagorb,i3dsplorb
+      use m_force_analytic, only: iforce_analy
+      use multiple_geo, only: iwf
+      use orbval,  only: ddorb,dorb,nadorb,orb
+      use phifun,  only: d2phin,dphin,n0_ibasis,n0_nbasis,phin
+      use precision_kinds, only: dp
       use pw_orbitals, only: orbitals_pw
       use vmc_mod, only: nwftypeorb
       implicit none
@@ -260,6 +270,8 @@ c-------------------------------------------------------------------------------
       use coefs, only: nbasis
       use slater, only: norb, coef
       use precision_kinds, only: dp
+      use slater,  only: coef,norb
+      use system,  only: ncent,nelec
 
       implicit none
 
@@ -313,6 +325,15 @@ c-------------------------------------------------------------------------------
       use grid3d_orbitals, only: spline_mo, lagrange_mose
       use grid3d_orbitals, only: lagrange_mos_grade
       use basis_fns_mod, only: basis_fns
+      use coefs,   only: nbasis
+      use contrl_per, only: iperiodic
+      use grid3d_orbitals, only: lagrange_mos_grade,lagrange_mose
+      use grid3d_orbitals, only: spline_mo
+      use grid3dflag, only: i3dlagorb,i3dsplorb
+      use multiple_geo, only: iwf
+      use multislatern, only: ddorbn,dorbn,orbn
+      use phifun,  only: d2phin,dphin,n0_ibasis,n0_nbasis,phin
+      use precision_kinds, only: dp
       use pw_orbitals, only: orbitals_pw_grade
       use trexio_read_data, only: trexio_has_group_orbitals
       use vmc_mod, only: nwftypeorb

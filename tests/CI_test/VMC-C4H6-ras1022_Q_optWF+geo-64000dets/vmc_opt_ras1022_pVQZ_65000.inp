@@ -1,0 +1,59 @@
+%module general
+    title        'butadiene vmc optimization 65000 dets'
+    pool         'pool/'
+    pseudopot    BFD
+    basis        BFD-Q
+    mode         vmc
+%endmodule
+
+load molecule        $pool/champ_v3_butadiene.xyz
+load basis_num_info  $pool/champ_v3_BFD-Q_basis_pointers.bfinfo
+
+load determinants    ras1022_SDT_pVQZ_determinants_state1.det
+load orbitals        champ_v3_trexio_order_ras1022_SDT_pVQZ_orbitals.lcao
+load jastrow         jastrow_optimal.1_start
+load jastrow_der     jastrow.der
+load symmetry        ras1022_SDT_pVQZ_symmetry.sym
+
+
+%module electrons
+    nup           11
+    nelec         22
+%endmodule
+
+%module optwf
+    ioptwf        1
+    ioptci        1
+    ioptjas       1
+    ioptorb       1
+    method        'sr_n'
+    multiple_adiag 0
+    ncore         0
+    nextorb       500
+    no_active     0
+    nblk_max      1000
+    nopt_iter     1
+    sr_tau        0.03d0
+    sr_eps        0.001d0
+    sr_adiag      0.01d0
+    isample_cmat  0
+    energy_tol    0.0d0
+%endmodule
+
+%module optgeo
+    iforce_analy  1
+    iuse_zmat     0
+    alfgeo        0.25d0
+%endmodule
+
+%module vmc
+    node_cutoff   1
+    enode_cutoff  0.01d0
+%endmodule
+
+%module blocking_vmc
+    vmc_nstep     20
+    vmc_nblk      200
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+%endmodule

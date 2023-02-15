@@ -1,5 +1,6 @@
 module parser_mod
-use error, only: fatal_error
+      use error,   only: fatal_error
+implicit none
 contains
 subroutine parser
   !> This subroutine parses the input file using the modified libfdf parser
@@ -10,179 +11,171 @@ subroutine parser
   !> @version 1.2
 
   use fdf               ! modified libfdf
-#if defined(TREXIO_FOUND)
-  use trexio            ! trexio library for reading and writing hdf5 files
-  use contrl_file,      only: backend
-#endif
-  use custom_broadcast, only: bcast
-  use mpiconf,          only: wid
-  use mpitimer,         only: elapsed_time
-  use, intrinsic :: iso_fortran_env, only : iostat_end
-
-! CHAMP modules
-  use control,          only: mode, ipr
-  use contrl_file,    	only: file_input, file_output, file_error
-  use contrl_file,    	only: iunit, ounit, errunit
-  use allocation_mod, 	only: allocate_vmc, allocate_dmc
-  use periodic_table, 	only: atom_t, element
-
-! in the replacement of preprocess input
-  use system,           only: ndn, nup, nelec, nctype, ncent, newghostype, nghostcent
-  use multiple_geo,    	only: nforce, MFORCE, nwftype, MWF, iwftype, pecent, itausec, nwprod, delc
-
-! variables from process input
-  use sr_mod,         	only: mconf, mparm
-  use sr_mat_n,         only: isr_lambda, sr_lambda
-  use pseudo_mod,     	only: MPS_QUAD
-  use properties,     	only: MAXPROP
-  use optorb_mod,     	only: mxreduced
-  use optci,          	only: mxciterm
-  use mstates_mod,      only: MSTATES
-  use vmc_mod,          only: nwftypeorb, nwftypejas, stoj, stoo, stobjx, jtos, otos, nstojmax, nstoomax, extrao, extraj
-  use Bloc,             only: allocate_Bloc
-  use pcm,              only: MCHS
-  use mmpol_mod,      	only: mmpolfile_sites, mmpolfile_chmm
-  use vmc_mod, 		      only: norb_tot, mterms, nbjx, bjxtoo, bjxtoj, nstoj_tot, nstoo_tot
-  use system, 		      only: znuc, cent, iwctype, ncent_tot, nctype_tot, symbol, atomtyp
-  use jastrow, 		      only: nspin1, nspin2, is, b, c, scalek, a4, norda, nordb, nordc
-  use jastrow,                only: asymp_jasa, asymp_jasb, ijas, isc, nordj, nordj1, neqsx
-  use constants, 	      only: pi, hb
-  use metropolis,             only: delta, deltai, fbias, imetro, deltar, deltat
-  use const,                  only: etrial
-  use general, 		      only: pooldir, pp_id, bas_id
-  use general, 		      only: filenames_bas_num
-  use csfs, 		      only: cxdet, ncsf, nstates, anormo
-  use slater,                 only: ndet, cdet
-  use grdntspar, 	      only: igrdtype, ngradnts
-  use header, 		      only: title
-  use jaspar6, 		      only: asymp_r, c1_jas6, c1_jas6i, c2_jas6
-  use jaspar6, 		      only: cutjas, cutjasi
-  use jastrow,                only: allocate_jaspar6, ianalyt_lap
-  use numbas, 		      only: numr
-  use numbas1, 		      only: nbastyp
-  use numbas2, 		      only: ibas0, ibas1
-  use optwf_control,          only: ioptci, ioptjas, ioptorb, ioptwf, nparm
-  use optwf_control,          only: idl_flag, ilbfgs_flag, ilbfgs_m, dl_mom, dl_alg
-  use optwf_control,          only: ibeta, ratio_j, iapprox, ncore
-  use optwf_control,          only: iuse_orbeigv
-  use optwf_control,          only: no_active
-  use optwf_parms,            only: nparmj
-  use sr_mod,                 only: i_sr_rescale, izvzb
-  use sa_weights,             only: iweight, nweight, weights
-  use zmatrix,                only: izmatrix
-  use bparm,                  only: nocuspb, nspin2b
-  use casula,                 only: i_vpsp, icasula
-  use coefs,                  only: nbasis, next_max
-  use slater,                 only: norb, coef
-  use optorb,                 only: irrep
-  use contrldmc,              only: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq
-  use contrldmc,              only: itau_eff, nfprod, rttau, tau
-
-! Note the additions: Ravindra
-  use control_vmc, 	    only: vmc_idump,  vmc_irstar, vmc_isite, vmc_nconf, vmc_nblk, vmc_nblk_max
-  use control_vmc, 	    only: vmc_nblkeq, vmc_nconf_new, vmc_nstep, vmc_icharged_atom, vmc_nblk_ci
-! Note the additions: Ravindra
-  use control_dmc, 	    only: dmc_idump, dmc_irstar, dmc_isite, dmc_nconf, dmc_nblk
-  use control_dmc, 	    only: dmc_nblkeq, dmc_nconf_new, dmc_nstep
-
-  use dorb_m, 		    only: iworbd
-  use contrl_per, 	    only: iperiodic, ibasis
-  use m_force_analytic,     only: iforce_analy, iuse_zmat, alfgeo
-  use pseudo, 		      only: nloc
-  use optorb_cblock, 	  only: idump_blockav
-  use gradjerrb, 	      only: ngrad_jas_blocks
-  use qua, 		          only: nquad, wq, xq, yq, zq
-  use mmpol_cntrl, 	    only: ich_mmpol, immpol, immpolprt, isites_mmpol
-  use mmpol_parms, 	    only: chmm
-  use mmpol_fdc, 	      only: a_cutoff, rcolm
-  use grid3dflag, 	    only: i3ddensity, i3dgrid, i3dlagorb, i3dsplorb
-  use grid_mod, 	      only: UNDEFINED, IUNDEFINED
-  use efield, 		      only: iefield, ncharges
-  use mstates_ctrl, 	  only: iefficiency, iguiding, nstates_psig
-  use mstates3, 	      only: iweight_g, weights_g
-  use ci000, 		        only: iciprt, nciprim, nciterm
-  use pcm_cntrl, 	      only: ichpol, ipcm, ipcmprt, isurf
-  use pcm_unit, 	      only: pcmfile_cavity, pcmfile_chs, pcmfile_chv
-  use pcm_parms, 	      only: eps_solv, iscov
-  use pcm_parms, 	      only: ncopcm, nscv, nvopcm
-  use prp000, 		      only: iprop, ipropprt, nprop
-  use pcm_fdc, 		      only: qfree, rcolv
-  use pcm_grid3d_contrl,only: ipcm_3dgrid
-  use pcm_grid3d_param, only: ipcm_nstep3d, pcm_step3d, pcm_origin, pcm_endpt, allocate_pcm_grid3d_param
-  use pcm_3dgrid, 	    only: PCM_SHIFT, PCM_UNDEFINED, PCM_IUNDEFINED
-  use prp003, 		      only: cc_nuc
-  use optwf_control, 	    only: method
-  use optorb_cblock, 	  only: nefp_blocks, isample_cmat, iorbsample
-  use orbval, 		      only: ddorb, dorb, nadorb, ndetorb, orb
+  use allocation_mod, only: allocate_dmc,allocate_vmc
   use array_resize_utils, only: resize_tensor
-  use grid3d_param, 	  only: endpt, nstep3d, origin, step3d
-  use inputflags, 	    only: node_cutoff, eps_node_cutoff, dmc_node_cutoff, dmc_eps_node_cutoff, iqmmm, scalecoef
-  use optwf_control, 	  only: energy_tol, dparm_norm_min, nopt_iter, micro_iter_sr
-  use optwf_control, 	  only: nvec, nvecx, alin_adiag, alin_eps, lin_jdav, multiple_adiag
-  use optwf_control, 	  only: ilastvmc, iroot_geo
-  use optwf_control, 	  only: sr_tau , sr_adiag, sr_eps
-  use optwf_func, 	    only: ifunc_omega, omega0, n_omegaf, n_omegat
-  use optwf_corsam, 	  only: add_diag
-  use dmc_mod, 		      only: mwalk, set_mwalk
-
-  use optorb_mix,       only: norbopt, norbvirt
-  use optorb_cblock,    only: norbterm
-
-  use grdntspar, 	      only: delgrdxyz, igrdtype, ngradnts
-  use grdntspar, 	      only: delgrdba, delgrdbl, delgrdda, ngradnts
-
-  use inputflags, 	    only: iznuc, igeometry, ibasis_num, ilcao, iexponents
-  use inputflags, 	    only: ideterminants, ijastrow_parameter, ioptorb_def, ilattice
-  use inputflags, 	    only: ici_def, iforces, icsfs, icharge_efield
-  use inputflags, 	    only: imultideterminants, imodify_zmat, izmatrix_check
-  use inputflags,       only: ioptorb_mixvirt, ihessian_zmat, igradients
-  use basis,            only: zex
-
-  use pot,              only: pot_nn
-  use parser_read_data, only: read_efield_file, read_zmatrix_connection_file
-  use parser_read_data, only: read_hessian_zmatrix_file, read_modify_zmatrix_file
-  use parser_read_data, only: read_gradients_zmatrix_file, read_gradients_cartesian_file
-  use parser_read_data, only: read_optorb_mixvirt_file, read_dmatrix_file
-  use parser_read_data, only: read_forces_file, read_eigenvalues_file
-  use parser_read_data, only: read_exponents_file, read_multideterminants_file
-  use parser_read_data, only: read_csf_file, read_csfmap_file
-  use parser_read_data, only: read_determinants_file, read_jasderiv_file
-  use parser_read_data, only: read_jastrow_file, read_basis_num_info_file
-  use parser_read_data, only: read_symmetry_file, read_orbitals_file
+  use basis,   only: zex
+  use bparm,   only: nocuspb,nspin2b
+  use casula,  only: i_vpsp,icasula
+  use ci000,   only: iciprt,nciprim,nciterm
+  use coefs,   only: nbasis,next_max
+  use const,   only: etrial, esigmatrial
+  use constants, only: hb,pi
+  use contrl_file, only: errunit,file_error,file_input
+  use contrl_file, only: file_output,iunit,ounit
+  use contrl_per, only: ibasis,iperiodic
+  use contrldmc, only: iacc_rej,icross,icuspg,icut_br,icut_e,idiv_v
+  use contrldmc, only: idmc,ipq,itau_eff,nfprod,rttau,tau,limit_wt_dmc
+  use control, only: ipr,mode
+  use control_dmc, only: dmc_idump,dmc_irstar,dmc_isite,dmc_nblk
+  use control_dmc, only: dmc_nblkeq,dmc_nconf,dmc_nconf_new
+  use control_dmc, only: dmc_nstep
+  use control_vmc, only: vmc_icharged_atom,vmc_idump,vmc_irstar
+  use control_vmc, only: vmc_isite,vmc_nblk,vmc_nblk_ci,vmc_nblk_max
+  use control_vmc, only: vmc_nblkeq,vmc_nconf,vmc_nconf_new
+  use control_vmc, only: vmc_nstep
+  use csfs,    only: cxdet,ncsf,nstates
+  use csfs,    only: anormo
+  use cuspinit4_mod, only: cuspinit4
+  use custom_broadcast, only: bcast
+  use dmc_mod, only: mwalk,set_mwalk
+  use dorb_m,  only: iworbd
+  use efield,  only: iefield,ncharges
+  use efield_f_mod, only: efield_compute_extint
+  use general, only: bas_id,filenames_bas_num,pooldir,pp_id
+  use get_norbterm_mod, only: get_norbterm
+  use gradjerrb, only: ngrad_jas_blocks
+  use grdntspar, only: delgrdba,delgrdbl,delgrdda,delgrdxyz,igrdtype
+  use grdntspar, only: ngradnts
+  use grid3d,  only: setup_grid
+  use grid3d_orbitals, only: setup_3dlagorb,setup_3dsplorb
+  use grid3d_param, only: endpt,nstep3d,origin,step3d
+  use grid3dflag, only: i3ddensity,i3dgrid,i3dlagorb,i3dsplorb
+  use grid_mod, only: IUNDEFINED,UNDEFINED
+  use header,  only: title
+  use inputflags, only: dmc_eps_node_cutoff,dmc_node_cutoff
+  use inputflags, only: eps_node_cutoff,ibasis_num,icharge_efield
+  use inputflags, only: ici_def,icsfs,ideterminants,iexponents
+  use inputflags, only: iforces,igeometry,igradients,ihessian_zmat
+  use inputflags, only: ijastrow_parameter,ilattice,ilcao
+  use inputflags, only: imodify_zmat,imultideterminants,ioptorb_def
+  use inputflags, only: ioptorb_mixvirt,iqmmm,izmatrix_check,iznuc
+  use inputflags, only: node_cutoff,scalecoef
+  use jastrow, only: norda,nordb,nordc
+  use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
+  use jastrow, only: a4,allocate_jaspar6,asymp_jasa,asymp_jasb,b,c
+  use jastrow, only: ianalyt_lap,ijas,is,isc,neqsx,nordj,nordj1
+  use jastrow, only: nspin1,nspin2,scalek
+  use jastrow4_mod, only: nterms4
+  use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
+  use metropolis, only: delta,deltai,deltar,deltat,fbias,imetro
+  use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
+  use misc_grdnts, only: inpwrt_zmatrix
+  use mmpol_cntrl, only: ich_mmpol,immpol,immpolprt,isites_mmpol
+  use mmpol_fdc, only: a_cutoff,rcolm
+  use mmpol_mod, only: mmpolfile_chmm,mmpolfile_sites
+  use mmpol_parms, only: chmm
+  use mpiconf, only: wid
+  use mpitimer, only: elapsed_time
+  use mstates3, only: iweight_g,weights_g
+  use mstates_ctrl, only: iefficiency,iguiding,nstates_psig
+  use mstates_mod, only: MSTATES
+  use multidet, only: kref_fixed
+  use multiple_geo, only: MFORCE,MWF,delc,itausec,iwftype,nforce
+  use multiple_geo, only: nwftype,nwprod,pecent
+  use numbas,  only: numr
+  use numbas1, only: nbastyp
+  use numbas2, only: ibas0,ibas1
+  use optci,   only: mxciterm
+  use optci_mod, only: optci_define
+  use optorb,  only: irrep
+  use optorb_cblock, only: idump_blockav,iorbsample,isample_cmat
+  use optorb_cblock, only: nefp_blocks,norbterm
+  use optorb_f_mod, only: optorb_define
+  use optorb_mix, only: norbopt,norbvirt
+  use optorb_mod, only: mxreduced
+  use optwf_control, only: alin_adiag,alin_eps,dl_alg,dl_mom
+  use optwf_control, only: dparm_norm_min,energy_tol,iapprox,ibeta
+  use optwf_control, only: idl_flag,ilastvmc,ilbfgs_flag,ilbfgs_m
+  use optwf_control, only: ioptci,ioptjas,ioptorb,ioptwf,iroot_geo
+  use optwf_control, only: iuse_orbeigv,lin_jdav,method
+  use optwf_control, only: micro_iter_sr,multiple_adiag,ncore
+  use optwf_control, only: no_active,nopt_iter,nparm,nvec,nvecx
+  use optwf_control, only: ratio_j,sr_adiag,sr_eps,sr_tau
+  use optwf_corsam, only: add_diag
+  use optwf_func, only: ifunc_omega,n_omegaf,n_omegat,omega0
+  use optwf_handle_wf, only: set_nparms_tot
+  use optwf_parms, only: nparmj
+  use orbval,  only: ddorb,dorb,nadorb,ndetorb,orb
+  use parser_read_data, only: header_printing
+  use parser_read_data, only: read_basis_num_info_file,read_csf_file
+  use parser_read_data, only: read_csfmap_file
+  use parser_read_data, only: read_determinants_file
+  use parser_read_data, only: read_dmatrix_file,read_efield_file
+  use parser_read_data, only: read_eigenvalues_file
+  use parser_read_data, only: read_exponents_file,read_forces_file
+  use parser_read_data, only: read_gradients_cartesian_file
+  use parser_read_data, only: read_gradients_zmatrix_file
+  use parser_read_data, only: read_hessian_zmatrix_file
+  use parser_read_data, only: read_jasderiv_file,read_jastrow_file
+  use parser_read_data, only: read_modify_zmatrix_file
   use parser_read_data, only: read_molecule_file
-  use trexio_read_data, only: read_trexio_molecule_file
-  use trexio_read_data, only: read_trexio_orbitals_file
+  use parser_read_data, only: read_multideterminants_file
+  use parser_read_data, only: read_optorb_mixvirt_file
+  use parser_read_data, only: read_orbitals_file,read_symmetry_file
+  use parser_read_data, only: read_zmatrix_connection_file
+  use pcm,     only: MCHS
+  use pcm_3dgrid, only: PCM_IUNDEFINED,PCM_SHIFT,PCM_UNDEFINED
+  use pcm_cntrl, only: ichpol,ipcm,ipcmprt,isurf
+  use pcm_fdc, only: qfree,rcolv
+  use pcm_grid3d_contrl, only: ipcm_3dgrid
+  use pcm_grid3d_param, only: allocate_pcm_grid3d_param,ipcm_nstep3d
+  use pcm_grid3d_param, only: pcm_endpt,pcm_origin,pcm_step3d
+  use pcm_parms, only: eps_solv,iscov,ncopcm,nscv,nvopcm
+  use pcm_unit, only: pcmfile_cavity,pcmfile_chs,pcmfile_chv
+  use periodic_table, only: atom_t,element
+  use pot,     only: pot_nn
+  use precision_kinds, only: dp
+  use properties, only: MAXPROP
+  use properties_mod, only: prop_cc_nuc
+  use prp000,  only: iprop,ipropprt,nprop
+  use prp003,  only: cc_nuc
+  use pseudo,  only: nloc
+  use pseudo_mod, only: MPS_QUAD
+  use pw_read, only: read_orb_pw_tm
+  use qua,     only: nquad,wq,xq,yq,zq
+  use random_mod, only: setrn
+  use read_bas_num_mod, only: read_bas_num,readps_gauss
+  use sa_weights, only: iweight,nweight,weights
+  use scale_dist_mod, only: set_scale_dist
+  use set_input_data, only: hessian_zmat_define,inputdet,inputforces
+  use set_input_data, only: inputjastrow,inputlcao
+  use set_input_data, only: modify_zmat_define
+  use set_input_data, only: multideterminants_define
+  use slater,  only: cdet,coef,ndet,norb
+  use sr_mat_n, only: isr_lambda, sr_lambda
+  use sr_mod,  only: i_sr_rescale,izvzb,mconf,mparm
+  use system,  only: atomtyp,cent,iwctype,ncent,ncent_tot,nctype
+  use system,  only: nctype_tot,ndn,nelec,newghostype,nghostcent,nup
+  use system,  only: symbol,znuc
   use trexio_read_data, only: read_trexio_basis_file
-  use trexio_read_data, only: read_trexio_symmetry_file
   use trexio_read_data, only: read_trexio_determinant_file
   use trexio_read_data, only: read_trexio_ecp_file
+  use trexio_read_data, only: read_trexio_molecule_file
+  use trexio_read_data, only: read_trexio_orbitals_file
+  use trexio_read_data, only: read_trexio_symmetry_file
   use trexio_read_data, only: write_trexio_basis_num_info_file
-  use parser_read_data, only: header_printing
-  use misc_grdnts,      only: inpwrt_zmatrix, inpwrt_grdnts_zmat, inpwrt_grdnts_cart
-  use set_input_data,   only: hessian_zmat_define, modify_zmat_define
-  use set_input_data,   only: inputforces, multideterminants_define
-  use set_input_data,   only: inputdet, inputlcao, inputjastrow
-  use jastrow4_mod,     only: nterms4
-  use properties_mod,   only: prop_cc_nuc
-  use efield_f_mod,     only: efield_compute_extint
-  use cuspinit4_mod,    only: cuspinit4
-  use optci_mod,        only: optci_define
-  use optorb_f_mod,     only: optorb_define
   use verify_orbitals_mod, only: verify_orbitals
-  use grid3d_orbitals,  only: setup_3dsplorb, setup_3dlagorb
-  use grid3d,           only: setup_grid
-  use pw_read,          only: read_orb_pw_tm
-  use read_bas_num_mod, only: read_bas_num
-  use write_orb_loc_mod,only: write_orb_loc
-  use optwf_handle_wf,  only: set_nparms_tot
-  use get_norbterm_mod, only: get_norbterm
-  use scale_dist_mod,   only: set_scale_dist
-  use random_mod,       only: setrn
-  use read_bas_num_mod, only: readps_gauss
-  use multidet,         only: kref_fixed
-
-  use precision_kinds,  only: dp
-! Note the following modules are new additions
+  use vmc_mod, only: mterms,norb_tot
+  use vmc_mod, only: nwftypejas, stoj, jtos, nstoj_tot, nstojmax, extraj
+  use vmc_mod, only: nwftypeorb, stoo, otos, nstoo_tot, nstoomax, extrao
+  use vmc_mod, only: nbjx,       stobjx, bjxtoj, bjxtoo, nstoj_tot, nstoo_tot
+  use write_orb_loc_mod, only: write_orb_loc
+  use zmatrix, only: izmatrix
+#if defined(TREXIO_FOUND)
+  use contrl_file, only: backend
+  use trexio            ! trexio library for reading and writing hdf5 files
+#endif
+use, intrinsic :: iso_fortran_env, only : iostat_end
 
 !
   implicit none
@@ -350,7 +343,7 @@ subroutine parser
   vmc_nblkeq    = fdf_get('vmc_nblkeq', 2)
   vmc_nblk_max  = fdf_get('nblk_max', vmc_nblk)
   vmc_nconf     = fdf_get('vmc_nconf', 1)
-  vmc_nconf_new = fdf_get('vmc_nconf_new', 1)
+  vmc_nconf_new = fdf_get('vmc_nconf_new', 0)
   vmc_idump     = fdf_get('vmc_idump', 1)
   vmc_irstar    = fdf_get('vmc_irstar', 0)
   vmc_isite     = fdf_get('vmc_isite', 1)
@@ -369,10 +362,12 @@ subroutine parser
   idiv_v      = fdf_get('idiv_v', 0)
   icut_br     = fdf_get('icut_br', 0)
   icut_e      = fdf_get('icut_e', 0)
+  limit_wt_dmc= fdf_get('limit_wt_dmc', 0)
   dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)
   dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)
   tau         = fdf_get('tau', 1.0d0)
   etrial      = fdf_get('etrial', 1.0d0)
+  esigmatrial = fdf_get('esigmatrial', 1.0d0)
   nfprod      = fdf_get('nfprod', 100)
   itausec     = fdf_get('itausec', 1)
   icasula     = fdf_get('icasula', 0)
@@ -382,7 +377,7 @@ subroutine parser
   dmc_nblk      = fdf_get('dmc_nblk', 1)
   dmc_nblkeq    = fdf_get('dmc_nblkeq', 2)
   dmc_nconf     = fdf_get('dmc_nconf', 1)
-  dmc_nconf_new = fdf_get('dmc_nconf_new', 1)
+  dmc_nconf_new = fdf_get('dmc_nconf_new', 0)
   dmc_idump     = fdf_get('dmc_idump', 1)
   dmc_irstar    = fdf_get('dmc_irstar', 0)
   dmc_isite     = fdf_get('dmc_isite', 1)
@@ -396,6 +391,10 @@ subroutine parser
   if (fdf_defined("optwf")) then
     if ( method .eq. 'linear' ) then
       MFORCE = 3  ! Only set MFORCE here. nwftype=3 is set just before the allocation
+    endif
+    if ( method .eq. 'sr_n' .or. method .eq. 'lin_dav' .or. method .eq. 'mix_n') then
+      isample_cmat=0
+      energy_tol=0.d0
     endif
   endif
 
@@ -737,6 +736,9 @@ subroutine parser
     if (iabs(idmc).ne.2) call fatal_error('INPUT: only idmc=2 supported')
 
     if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
+
+    if (.not. fdf_defined('etrial')) call fatal_error("etrial required for DMC calculations")
+
   else
     icasula=0
   endif
@@ -780,7 +782,7 @@ subroutine parser
     call read_orbitals_file(file_orbitals)
   elseif ( fdf_load_defined('trexio') ) then
 #if defined(TREXIO_FOUND)
-    call read_trexio_orbitals_file(file_trexio)
+    call read_trexio_orbitals_file(file_trexio, .false.)
 #endif
   elseif ( fdf_block('orbitals', bfdf)) then
   ! call fdf_read_orbitals_block(bfdf)
@@ -840,16 +842,15 @@ subroutine parser
     call read_basis_num_info_file(file_basis_num_info)
   elseif ( fdf_load_defined('trexio') ) then
 #if defined(TREXIO_FOUND)
-    ! call write_trexio_basis_num_info_file(file_trexio)
-    write(ounit,*) "Numerical basis information not needed when orbitals are read from trexio file"
+    call write_trexio_basis_num_info_file(file_trexio)
 #endif
   elseif (.not. fdf_block('basis_num_info', bfdf)) then
   ! call fdf_read_eigenvalues_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(a)') "Error :: No information about basis num info provided in the block."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   else
-    write(errunit,'(a)') "Error:: No information about eigenvalues provided in the block."
+    write(errunit,'(a)') "Error :: No information about basis num info provided in the block."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif
@@ -1121,10 +1122,6 @@ subroutine parser
     allocate(bjxtoj(1))
     bjxtoo(1)=1
     bjxtoj(1)=1
-    !allocate (b(norb_tot, nelec, 1))
-    !allocate (tildem(nelec, norb_tot, 2, 1))
-    !allocate (xmat(nelec**2, 2, 1))
-    !allocate (b_dj(norb_tot, nelec, nparmj, 1))
     do istate=1,nstates
       stobjx(istate) = 1
     enddo
@@ -1384,11 +1381,12 @@ subroutine parser
 
     if(ioptwf.gt.0) then
       write(ounit,'(a)' ) " Perform wave function optimization in vmc/dmc"
+      write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
+      if(nstates.gt.1 .and. ioptwf.gt.0 .and. method.eq.'sr_n') &
+          call fatal_error('READ_INPUT: nstates>1 and sr_n')
     elseif((ioptjas.eq.1) .or. (ioptorb.eq.1) .or. (ioptci.eq.1) ) then
       write(ounit,'(a)' ) " Only sample derivatives of wave function for external use"
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
-    !else
-      !method='none'
     endif
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
@@ -1490,7 +1488,6 @@ subroutine parser
 
       wsum = 0.d0
       nweight = 0
-      write(ounit,*) "nstates", nstates
       do i = 1, nstates
         if (weights_g(i) .gt. 1d-6) then
             nweight = nweight + 1

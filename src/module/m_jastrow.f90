@@ -1,6 +1,6 @@
 module jastrow_update
     !> Arguments: d2ijn, d2n, fijn, fjn, fsn, fsumn
-    use precision_kinds, only: dp
+      use precision_kinds, only: dp
 
     implicit none
 
@@ -149,7 +149,6 @@ module jastrow
     integer :: nordj
     integer :: nordj1   ! nordj+1
     integer :: neqsx    ! 6*nordj
-
     save
 contains
 
@@ -233,43 +232,43 @@ contains
 
 end module cuspmat4
 
-!module m_jastrow
-!contains
+! module m_jastrow
+! contains
 
-!subroutine allocate_m_jastrow()
-!    use jasn, only: allocate_jasn
-!    use jaso, only: allocate_jaso
-!    use jaspar3, only: allocate_jaspar3
-!    use jaspar4, only: allocate_jaspar4
-!    use jaspar6, only: allocate_jaspar6
-!    use jaspointer, only: allocate_jaspointer
+! subroutine allocate_m_jastrow()
+!     use jastrow_update, only: allocate_jasn
+!     use jastrow_update, only: allocate_jaso
+!     use jaspar3, only: allocate_jaspar3
+! !    use jaspar4, only: allocate_jaspar4
+!     use jaspar6, only: allocate_jaspar6
+!     use jaspointer, only: allocate_jaspointer
 
-!    implicit none
+!     implicit none
 
-!    call allocate_jasn()
-!    call allocate_jaso()
-!    call allocate_jaspar3()
-    ! call allocate_jaspar4()
-!    call allocate_jaspar6()
-!    call allocate_jaspointer()
-!end subroutine allocate_m_jastrow
+!     call allocate_jasn()
+!     call allocate_jaso()
+!     call allocate_jaspar3()
+!     ! call allocate_jaspar4()
+!     call allocate_jaspar6()
+!     call allocate_jaspointer()
+! end subroutine allocate_m_jastrow
 
 
-!subroutine deallocate_m_jastrow()
-!    use jasn, only: deallocate_jasn
-!    use jaso, only: deallocate_jaso
-!    use jaspar3, only: deallocate_jaspar3
-!    use jaspar4, only: deallocate_jaspar4
-!    use jaspar6, only: deallocate_jaspar6
-!    use jaspointer, only: deallocate_jaspointer
+! subroutine deallocate_m_jastrow()
+!     use jastrow_update, only: deallocate_jasn
+!     use jastrow_update, only: deallocate_jaso
+!     use jaspar3, only: deallocate_jaspar3
+!     use jaspar4, only: deallocate_jaspar4
+!     use jaspar6, only: deallocate_jaspar6
+!     use jaspointer, only: deallocate_jaspointer
 
-!    implicit none
+!     implicit none
 
-!    call deallocate_jasn()
-!    call deallocate_jaso()
-!    call deallocate_jaspar3()
-!    call deallocate_jaspar4()
-!    call deallocate_jaspar6()
-!    call deallocate_jaspointer()
-!end subroutine deallocate_m_jastrow
-!end module
+!     call deallocate_jasn()
+!     call deallocate_jaso()
+!     call deallocate_jaspar3()
+!     call deallocate_jaspar4()
+!     call deallocate_jaspar6()
+!     call deallocate_jaspointer()
+! end subroutine deallocate_m_jastrow
+! end module

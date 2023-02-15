@@ -11,6 +11,8 @@ c Written by Claudia Filippi
       use ci000, only: nciterm
       use optwf_control, only: method
       use mpi
+      use optwf_control, only: ioptci,ioptjas,method
+      use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use vmc_mod, only: nbjx, nwftypeorb
 
