@@ -71,7 +71,7 @@ c-----------------------------------------------------------------------
 
       integer :: i, isp, ict, index, iwf_fit, mparmja, k
       integer :: mparmjb, mparmjc
-      character*50 fmt
+      character*50 fmt, temp
       character*40 filename,filetype
 
       if(ioptjas.eq.0) return
@@ -83,8 +83,11 @@ c-----------------------------------------------------------------------
 c tmp
       write(2,'(f13.8,a15)') scalek(1),' scalek'
       do k=1,nwftypejas
-        if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)')
-     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))
+        write(temp, '(a,i0,a)') '( jastrows_to_states', nstoj(k), '(i4))'        
+    !     if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)') 
+    !  &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             ! Intel version
+          if (extraj.eq.1) write(2,temp) (jtos(k,i),i=1,nstoj(k))               ! GNU version
+
 
         mparmja=2+max(0,norda-1)
         mparmjb=2+max(0,nordb-1)
@@ -137,7 +140,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, index, iwf_fit, j, k
-      character*40 filename,filetype
+      character*40 filename,filetype, temp
 
       ! call resize_tensor(coef, norb+nadorb, 2)
 
@@ -148,8 +151,11 @@ c-----------------------------------------------------------------------
       write(2,'(''lcao '',3i4)') norb+nadorb,nbasis,iwf_fit
 
       do k=1,nwftypeorb
-        if (extrao.eq.1) write(2,'(''orbitals_to_states'',i6,<nstoo(k)>i4)')
-     &                         nstoo(k), (otos(k,i),i=1,nstoo(k))
+    !     if (extrao.eq.1) write(2,'(''orbitals_to_states'',i6,<nstoo(k)>i4)')
+    !  &                         nstoo(k), (otos(k,i),i=1,nstoo(k))           ! Intel version
+        write(temp, '(a,i0,a)') '( orbitals_to_states', nstoo(k), '(i4))'        
+        if (extrao.eq.1) write(2,temp) (otos(k,i),i=1,nstoo(k))               ! GNU version
+
         do i=1,norb+nadorb
           write(2,'(1000e20.8)') (coef(j,i,k)/scalecoef,j=1,nbasis)
         enddo
