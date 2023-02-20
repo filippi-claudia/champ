@@ -1,7 +1,7 @@
       module cuspinit4_mod
       contains
       subroutine cuspinit4(iprin)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4,nterms
       use jastrow, only: nordc
@@ -72,7 +72,7 @@ c Written by Cyrus Umrigar
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4,nterms
@@ -106,8 +106,8 @@ c-----------------------------------------------------------------------
         enddo
       enddo
 
-c Figure out dependence of all dependent variables except that from
-c the 2nd order e-n cusp cond.
+! Figure out dependence of all dependent variables except that from
+! the 2nd order e-n cusp cond.
       do i=1,neqs
         if(i.eq.nordc) goto 40
         do j=1,nterms
@@ -127,13 +127,13 @@ c the 2nd order e-n cusp cond.
    40 continue
       enddo
 
-c Now do the one from the 2nd order e-n cusp cond.
-c The dep. variable from the 2nd-order e-n cc depends directly on all the
-c other dependent variables and only on the other dependent variables.
-c Figure out what dependence on the independent variables is implied by that.
+! Now do the one from the 2nd order e-n cusp cond.
+! The dep. variable from the 2nd-order e-n cc depends directly on all the
+! other dependent variables and only on the other dependent variables.
+! Figure out what dependence on the independent variables is implied by that.
 
-c Since it depends directly on all other dependent variables, it depends
-c indirectly on all the independent variables that are being varied.
+! Since it depends directly on all other dependent variables, it depends
+! indirectly on all the independent variables that are being varied.
       do it=1,nctype
       do l=1,nparmc(it)
         nvdepend(nordc,it)=nvdepend(nordc,it)+1
@@ -148,7 +148,7 @@ c indirectly on all the independent variables that are being varied.
           do it=1,nctype
             do l=1,nparmc(it)
               if(j.eq.iwjasc(l,it)) then
-                cdep(nordc,l,it)= cdep(nordc,l,it)-
+                cdep(nordc,l,it)= cdep(nordc,l,it)- &
      &          factor*(d(i,j)/d(i,iwc4(i)))
               endif
             enddo
@@ -161,9 +161,9 @@ c indirectly on all the independent variables that are being varied.
       write(ounit,'(''i  it nvdepend iwdepend or cdep'')')
       do i=1,neqs
         do it=1,nctype
-          write(ounit,'(i2,2i4,2x,50i4)') i,it,nvdepend(i,it),
+          write(ounit,'(i2,2i4,2x,50i4)') i,it,nvdepend(i,it), &
      &   (iwdepend(i,j,it),j=1,nvdepend(i,it))
-          write(ounit,'(i2,2i4,2x,50f4.0)') i,it,nvdepend(i,it),
+          write(ounit,'(i2,2i4,2x,50f4.0)') i,it,nvdepend(i,it), &
      &   (cdep(i,j,it),j=1,nvdepend(i,it))
         enddo
       enddo
@@ -173,3 +173,4 @@ c indirectly on all the independent variables that are being varied.
       end
 
       end module
+
