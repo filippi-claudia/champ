@@ -11,7 +11,6 @@ if (MPI_Fortran_FOUND)
     bxmatrices.f
     cuspexact4.f
     deriv_jastrow.f
-    deriv_jastrow4.f
     deriv_nonloc.f
     deriv_nonlpsi.f
     determinant.f
@@ -116,6 +115,7 @@ if (MPI_Fortran_FOUND)
     cuspinit4.f90
     davidson.f90
     davidson_wrap.f90
+    deriv_jastrow4.f90
     get_norbterm.f90
     lapack_wrapper.f90
     main.f90
@@ -219,7 +219,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/fitting.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f    # This file should be refactored and eliminated.
     ${CMAKE_CURRENT_SOURCE_DIR}/efield.f
     ${CMAKE_CURRENT_SOURCE_DIR}/nodes_distance.f

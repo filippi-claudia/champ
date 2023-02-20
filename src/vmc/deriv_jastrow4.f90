@@ -1,7 +1,7 @@
       module deriv_jastrow4_mod
       contains
       subroutine deriv_jastrow4(x,fjo,d2o,fsumo,fso,fijo,d2ijo,g,go,d2g,gvalue)
-c Written by Cyrus Umrigar and Claudia Filippi
+! Written by Cyrus Umrigar and Claudia Filippi
       use bparm,   only: nocuspb,nspin2b
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4
@@ -118,7 +118,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
       if (nelec.lt.2) goto 65
 
-c e-e and e-e-n terms
+! e-e and e-e-n terms
       ij=0
       do i=2,nelec
       im1=i-1
@@ -151,7 +151,7 @@ c e-e and e-e-n terms
 
       call scale_dist2(rij,uu(1),dd1,dd2,1)
 
-c Check rij after scaling because uu(1) used in e-e-n terms too
+! Check rij after scaling because uu(1) used in e-e-n terms too
       if(rij.gt.cutjas) goto 30
 
       top=sspinn*b(1,isb,iwf)*uu(1)
@@ -185,7 +185,7 @@ c Check rij after scaling because uu(1) used in e-e-n terms too
       enddo
       d2ijo(i,j)=d2ijo(i,j)+2*(feeuu+2*feeu)
 
-c derivatives of wave function wrt b(1),b(2) and rest of b(i)
+! derivatives of wave function wrt b(1),b(2) and rest of b(i)
       iparm0=iparma
       if(isb.eq.2) iparm0=iparm0+nparmb(1)
       do jparm=1,nparmb(isb)
@@ -257,7 +257,7 @@ c derivatives of wave function wrt b(1),b(2) and rest of b(i)
 
       enddo
 
-c There are no C terms to order 1.
+! There are no C terms to order 1.
    30 if(nordc.le.1) goto 58
 
       if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
@@ -289,11 +289,11 @@ c There are no C terms to order 1.
 
         s=ri+rj
         t=ri-rj
-c       u2mt2=rij*rij-t*t
+!       u2mt2=rij*rij-t*t
         u2pst=rij*rij+s*t
         u2mst=rij*rij-s*t
-c       s2mu2=s*s-rij*rij
-c       s2mt2=s*s-t*t
+!       s2mu2=s*s-rij*rij
+!       s2mt2=s*s-t*t
 
         do iord=1,nordc
           rri(iord)=rri(1)*rri(iord-1)
@@ -328,19 +328,19 @@ c       s2mt2=s*s-t*t
                 pc=uu(k)*ss(l)*tt(m)
                 pu=k*uu(k-1)*ss(l)*tt(m)
                 puu=k*(k-1)*uu(k-2)*ss(l)*tt(m)
-                ppi=uu(k)
+                ppi=uu(k) &
      &          *((l+m)*rri(l+m-1)*rrj(m)+m*rri(m-1)*rrj(l+m))
-                pii=uu(k)
-     &          *((l+m)*(l+m-1)*rri(l+m-2)*rrj(m)
+                pii=uu(k) &
+     &          *((l+m)*(l+m-1)*rri(l+m-2)*rrj(m) &
      &          +m*(m-1)*rri(m-2)*rrj(l+m))
-                pj=uu(k)
+                pj=uu(k) &
      &          *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
-                pjj=uu(k)
-     &          *((l+m)*(l+m-1)*rrj(l+m-2)*rri(m)
+                pjj=uu(k) &
+     &          *((l+m)*(l+m-1)*rrj(l+m-2)*rri(m) &
      &          +m*(m-1)*rrj(m-2)*rri(l+m))
-                pui=k*uu(k-1)
+                pui=k*uu(k-1) &
      &          *((l+m)*rri(l+m-1)*rrj(m)+m*rri(m-1)*rrj(l+m))
-                puj=k*uu(k-1)
+                puj=k*uu(k-1) &
      &          *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
 
                 fc=fc+c(ll,it,iwf)*pc
@@ -353,17 +353,17 @@ c       s2mt2=s*s-t*t
                 fui=fui+c(ll,it,iwf)*pui
                 fuj=fuj+c(ll,it,iwf)*puj
 
-c derivatives of wave function wrt c-parameters
-c               ideriv=0
-c               if(ll.eq.iwc4(jj)) then
-c                 if(nvdepend(jj,it).gt.0) then
-c                   ideriv=1
-c                  else
-c                   jj=jj+1
-c                 endif
-c                elseif(ll.eq.iwjasc(jparm,it)) then
-c                 ideriv=2
-c               endif
+! derivatives of wave function wrt c-parameters
+!               ideriv=0
+!               if(ll.eq.iwc4(jj)) then
+!                 if(nvdepend(jj,it).gt.0) then
+!                   ideriv=1
+!                  else
+!                   jj=jj+1
+!                 endif
+!                elseif(ll.eq.iwjasc(jparm,it)) then
+!                 ideriv=2
+!               endif
 
                 ideriv=0
                 if(ll.eq.iwjasc(jparm,it)) then
@@ -416,12 +416,12 @@ c               endif
                   g(2,j,iparm)=g(2,j,iparm)+cd*(gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij))
                   g(3,j,iparm)=g(3,j,iparm)+cd*(gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij))
 
-                  d2g(iparm)=d2g(iparm) + cd*(2*(guu + 2*gu)
-     &            + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
+                  d2g(iparm)=d2g(iparm) + cd*(2*(guu + 2*gu) &
+     &            + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij) &
      &            + gii + 2*gi + gjj + 2*gj)
                   enddo
 
-c                 jj=jj+1
+!                 jj=jj+1
 
                   elseif(ideriv.eq.2) then
 
@@ -437,8 +437,8 @@ c                 jj=jj+1
                   g(2,j,iparm)=g(2,j,iparm)+gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij)
                   g(3,j,iparm)=g(3,j,iparm)+gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij)
 
-                  d2g(iparm)=d2g(iparm) + 2*(guu + 2*gu)
-     &            + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
+                  d2g(iparm)=d2g(iparm) + 2*(guu + 2*gu) &
+     &            + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij) &
      &            + gii + 2*gi + gjj + 2*gj
 
                   jparm=jparm+1
@@ -469,14 +469,15 @@ c                 jj=jj+1
         fijo(1,j,i)=fijo(1,j,i) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
         fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
         fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
-c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
+!       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
 
-        d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
+        d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij) &
      &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
 
    57 continue
       enddo
 
+<<<<<<< HEAD:src/vmc/deriv_jastrow4.f
    58 fsumo=fsumo+fso(i,j)
       fjo(1,i)=fjo(1,i)+fijo(1,i,j)
       fjo(2,i)=fjo(2,i)+fijo(2,i,j)
@@ -484,13 +485,13 @@ c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
       fjo(1,j)=fjo(1,j)+fijo(1,j,i)
       fjo(2,j)=fjo(2,j)+fijo(2,j,i)
       fjo(3,j)=fjo(3,j)+fijo(3,j,i)
-c     div_vj(i)=div_vj(i)+d2ijo(i,j)/2
-c     div_vj(j)=div_vj(j)+d2ijo(i,j)/2
+!     div_vj(i)=div_vj(i)+d2ijo(i,j)/2
+!     div_vj(j)=div_vj(j)+d2ijo(i,j)/2
       d2o=d2o+d2ijo(i,j)
       enddo
       enddo
 
-c e-n terms
+! e-n terms
    65 do i=1,nelec
 
         fso(i,i)=0
@@ -543,7 +544,7 @@ c e-n terms
           fijo(1,i,i)=fijo(1,i,i) + feni*rvec_en(1,i,ic)
           fijo(2,i,i)=fijo(2,i,i) + feni*rvec_en(2,i,ic)
           fijo(3,i,i)=fijo(3,i,i) + feni*rvec_en(3,i,ic)
-c         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
+!         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
 
@@ -594,7 +595,7 @@ c         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i
               genii=iord*(iord-1)*rri(iord-2)
 
             endif
-c           write(ounit,*) 'CIAO',iord,rri(iord),genii,d77,geni,dd9
+!           write(ounit,*) 'CIAO',iord,rri(iord),genii,d77,geni,dd9
 
             genii=genii*dd7*dd7+geni*dd9
             geni=geni*dd7/r_en(i,ic)
@@ -615,16 +616,17 @@ c           write(ounit,*) 'CIAO',iord,rri(iord),genii,d77,geni,dd9
         fjo(1,i)=fjo(1,i)+fijo(1,i,i)
         fjo(2,i)=fjo(2,i)+fijo(2,i,i)
         fjo(3,i)=fjo(3,i)+fijo(3,i,i)
-c       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
-c       div_vj(i)=div_vj(i)+d2ijo(i,i)
+!       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
+!       div_vj(i)=div_vj(i)+d2ijo(i,i)
         d2o=d2o+d2ijo(i,i)
       enddo
 
-c     write(ounit,*) (d2g(iparm),iparm=1,nparmj)
+!     write(ounit,*) (d2g(iparm),iparm=1,nparmj)
 
-c     write(ounit,*) 'd2d2',nspin2b,d2d2b(1),d2d2b(2),asymp_r
-c     write(ounit,*) 'asym',asymp_r,asymp_jasa(1,1),asymp_jasb(1,1)
+!     write(ounit,*) 'd2d2',nspin2b,d2d2b(1),d2d2b(2),asymp_r
+!     write(ounit,*) 'asym',asymp_r,asymp_jasa(1,1),asymp_jasb(1,1)
 
       return
       end
       end module
+
