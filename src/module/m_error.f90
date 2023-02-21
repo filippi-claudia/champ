@@ -12,8 +12,7 @@ module error
 
             write(ounit,'(''Fatal error: '',a)') msg
             write(errunit,'(''Fatal error: '',a)') msg
-            call mpi_abort(MPI_COMM_WORLD,0,ierr)
-
+            error stop "Stopping with error stop"
       end
 
       subroutine trexio_error(trexio_rc, check_rc, message, filename, line)
