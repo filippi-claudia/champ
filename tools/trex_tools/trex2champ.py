@@ -842,31 +842,59 @@ def write_champ_file_determinants(filename, file):
             for d in csf[i].coefficients:
                 csf_for_each_det.append(c)
 
-    # Get the reduced determinant coefficients
+    # Get the reduced determinant coefficients by comapring one-by-one
     state_index = 0
     for state_coef in file.csf_coefficients:
+        unique_determinants = [];
         vector = []
-        counter = 0; counter2 = 0       # Counter2 is required for keeping correspondence of determinants in the reduced list
+        match_counter = 0
+        counter = 0; copy_list_determintants = []       # Counter2 is required for keeping correspondence of determinants in the reduced list
         for i,c in enumerate(state_coef):
             for d in csf[i].coefficients:
                 temp = 0.0
-                indices = [i for i, x in enumerate(file.determinants) if x == file.determinants[counter]]
-                if counter == indices[0]:
-                    copy_list_determintants.append(counter2)
-                    counter2 += 1
-                    reduced_list_determintants[state_index].append(indices[0])
-                    for index in indices:
-                        if len(indices) == 1:
-                            temp =  csf_for_each_det[index] * flat_array_coeff[index]
-                        else:
-                            temp += csf_for_each_det[index] * flat_array_coeff[index]
-                    vector.append(temp)
+                # print( "All counter ", counter,  file.determinants[counter])
+                # Check if the determinant is already present in the unique_determinants list
+                try:
+                    pos = unique_determinants.index(file.determinants[counter])
+                    # print ("pos", pos)
+                except ValueError:
+                    pos = None
+                if  (pos is None):
+                    # print ("match_counter", match_counter)
+                    # print ("counter ", counter)
+                    copy_list_determintants.append(counter-match_counter)
+                    # print ("not in unique")
+                    # print ("unique_determinants", counter, file.determinants[counter])
+                    reduced_list_determintants[state_index].append(counter)
+                    # temp = csf_for_each_det[counter] * flat_array_coeff[counter]
+                    unique_determinants.append(file.determinants[counter])
+                    counter += 1
                 else:
-                    copy_list_determintants.append(indices[0])
-                counter += 1
-        reduced_det_coefficients.append(vector)
-        state_index += 1
+                    # print ("in unique")
+                    # print ("match_counter matched ", match_counter)
+                    # print ("counter ", counter)
+                    copy_list_determintants.append(pos)
+                    # temp += csf_for_each_det[counter] * flat_array_coeff[counter]
+                    counter += 1
+                    match_counter += 1
 
+                # vector.append(temp)
+        # reduced_det_coefficients.append(vector)
+        state_index += 1
+        # print ("length unique_determinants", len(unique_determinants))
+        # print ("tracking ", copy_list_determintants)
+        # print ("full unique_determinants", unique_determinants)
+        # print ("reduced_det_coefficients", reduced_det_coefficients)
+        # print ("length reduced_det_coefficients", len(reduced_det_coefficients[0]))
+        # print ("reduced list determinants ", reduced_list_determintants)
+
+    counter = 0
+    reduced_det_coefficients = np.zeros(len(unique_determinants))
+    for ind in copy_list_determintants:
+        # print ("counter ind", counter, ind, csf_for_each_det[counter], flat_array_coeff[counter])
+        reduced_det_coefficients[ind] += csf_for_each_det[counter] * flat_array_coeff[counter]
+        # print ("ind coeff", ind , reduced_det_coefficients[ind])
+        counter += 1
 
     if filename is not None:
         if isinstance(filename, str):
@@ -877,7 +905,7 @@ def write_champ_file_determinants(filename, file):
                 # header line printed below
                 f.write("# Determinants, CSF, and CSF mapping from the GAMESS output / TREXIO file. \n")
                 f.write("# Converted from the trexio file using trex2champ converter https://github.com/TREX-CoE/trexio_tools \n")
-                f.write("determinants {} {} \n".format(len(reduced_list_determintants[0]), 1))
+                f.write("determinants {} {} \n".format(len(unique_determinants), 1))
 
                 f2.write("# Determinants, CSF, and CSF mapping from the GAMESS output / TREXIO file. \n")
                 f2.write("# Converted from the trexio file using trex2champ converter https://github.com/TREX-CoE/trexio_tools \n")
@@ -885,9 +913,9 @@ def write_champ_file_determinants(filename, file):
 
 
                 # print the determinant coefficients
-                for det in range(len(reduced_list_determintants[0])):
-                    f.write("{} ".format(reduced_det_coefficients[0][det]))
-                    f2.write("{} ".format(reduced_det_coefficients[0][det]))
+                for det in range(len(unique_determinants)):
+                    f.write("{} ".format(reduced_det_coefficients[det]))
+                    f2.write("{} ".format(reduced_det_coefficients[det]))
                 f.write("\n")
                 f2.write("\n")
 
