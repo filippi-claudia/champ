@@ -15,8 +15,8 @@
       integer :: i, ish, jfhfj, jfifj, jwtg
       integer :: n_obs, nparm_p1
 
-      real(dp), dimension(mparm) :: hii
-      real(dp), dimension(mparm) :: sii
+      real(dp), dimension(:) :: hii
+      real(dp), dimension(:) :: sii
 
 
       write(ounit,*) 'nparm_p1,nparm',nparm_p1,nparm
