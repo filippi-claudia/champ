@@ -37,8 +37,6 @@
 
       integer       , intent(in) :: iseed(4)
 
-      ll = legaseed ! Store the seed in the array used for saving
-
       select case(switch_rng)
         case(0)
           random_dp => rannyu_reference_wrap
