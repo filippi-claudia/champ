@@ -26,7 +26,7 @@ c Written by Claudia Filippi by modifying hpsi
 
       integer :: iel, iflag, ipass, istate
       real(dp) :: apsi_now, aref_now, check_apsi, check_apsi_min, check_dref
-      real(dp) :: d2j, psij, x(3,nelec)
+      real(dp) :: d2j, psij
       real(dp), dimension(3, nelec) :: coord
       real(dp), dimension(MSTATES) :: psid
 
@@ -48,7 +48,7 @@ c Calculates wave function
 
 c compute all determinants
 
-      call determinante(iel,x,rvec_en,r_en,iflag)
+      call determinante(iel,coord,rvec_en,r_en,iflag)
 
       if(detn(kref).eq.0.d0) then
         do istate=1,nstates
