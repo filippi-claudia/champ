@@ -186,7 +186,7 @@ c compute energy using Ymat
             !write(ounit,*) jrep,'M',(tildem(irep,jrep,iab,x),irep=iactv(iab),nel)
           enddo
         enddo
-        write(ounit,*) "state,denergy", istate, denergy(istate)
+        !write(ounit,*) "state,denergy", istate, denergy(istate)
         denergy(istate)=denergy(istate)*detiab(kref,1,o)*detiab(kref,2,o)/psid(istate)
         dekin(istate)=dekin(istate)*detiab(kref,1,o)*detiab(kref,2,o)/psid(istate)
 

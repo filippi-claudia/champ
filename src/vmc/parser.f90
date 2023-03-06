@@ -152,7 +152,7 @@ subroutine parser
   use set_input_data, only: modify_zmat_define
   use set_input_data, only: multideterminants_define
   use slater,  only: cdet,coef,ndet,norb
-  use sr_mat_n, only: isr_lambda, sr_lambda
+  use sr_mat_n, only: isr_lambda, sr_lambda, ortho
   use sr_mod,  only: i_sr_rescale,izvzb,mconf,mparm
   use system,  only: atomtyp,cent,iwctype,ncent,ncent_tot,nctype
   use system,  only: nctype_tot,ndn,nelec,newghostype,nghostcent,nup
@@ -1045,6 +1045,10 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
           call fatal_error('Some states have not been assigned a jastrow type')
   if (extrao.eq.1.and.nstoo_tot.ne.nstates) &
           call fatal_error('Some states have not been assigned an orbital set')
+  if (method.eq.'sr_n'.and.extraj.eq.0.and.ioptwf.ge.1.and.nstates.gt.1) &
+          call fatal_error('For multistate sr_n optimization must use jastrows_to_states in jastrow input')
+  if (method.eq.'sr_n'.and.extrao.eq.0.and.ioptwf.ge.1.and.nstates.gt.1) &
+          call fatal_error('For multistate sr_n optimization must use orbitals_to_states in lcao input')
 
   write(ounit,'(A)') 'Mapping of jastrow, orbital, and mixed quantities to each state.'
   allocate(stoj(nstates))
@@ -1175,8 +1179,12 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
   call set_nparms_tot()
   ! Set maximum number of parameters. For multistate orbital optimization
   ! the following additional terms will be present. The last +1 is failsafe mechanism.
- ! mparm = nparm + (nstates-1)*(norbterm) + 1
-  mparm = nparm + (nstates-1)*(norbterm) + 1 + nstates
+  if (method.eq.'sr_n') then
+    mparm = nparm*nstates + 2 !necessary because storing 2 quantities in sr_o, and atimesn increments ddot by mparm. 
+  else
+    mparm = nparm + (nstates-1)*(norbterm) + 1
+  endif
+
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
@@ -1382,8 +1390,11 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
     if(ioptwf.gt.0) then
       write(ounit,'(a)' ) " Perform wave function optimization in vmc/dmc"
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
-      if(nstates.gt.1 .and. ioptwf.gt.0 .and. method.eq.'sr_n') &
-          call fatal_error('READ_INPUT: nstates>1 and sr_n')
+      if(nstates.gt.1 .and. ioptwf.gt.0 .and. method.eq.'sr_n') then 
+      !    call fatal_error('READ_INPUT: nstates>1 and sr_n')
+           write(ounit,'(a)' ) " Performing multi-state sr_n, setting ortho=1"
+           ortho=1
+      endif
     elseif((ioptjas.eq.1) .or. (ioptorb.eq.1) .or. (ioptci.eq.1) ) then
       write(ounit,'(a)' ) " Only sample derivatives of wave function for external use"
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
@@ -1532,7 +1543,7 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
       write(ounit,'(a)' )
       write(ounit,'(tr1,a,i0,a)') ' anorm has ',i,' entries'
       if(i.ne.nstates) call fatal_error('READ_INPUT: anorm array must contain nstate entries.')
-      !call fdf_list('weights_guiding',i,weights_g) ! why was this called again?
+      call fdf_list('anorm',i,anormo)
       write(temp5, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
       !write(ounit, '(a,<MSTATES>(f12.6))') ' anormo : ', anormo(1:i) ! Intel version
       write(ounit, temp5) ' anorm : ', anormo(1:i)                   ! GNU version
@@ -1559,7 +1570,7 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
       if(i.ne.nstates*(nstates-1)/2) call fatal_error('READ_INPUT: sr_lambda array, & 
           &must contain nstates*(nstates-1)/2 entries, [ 1-2, 1-3, ..., 1-nstates, & 
           &2-3, 2-4, ..., 2-nstates, ..., (nstates-1)-nstates ]')
-      !call fdf_list('weights_guiding',i,weights_g) ! why was this called again?
+      call fdf_list('sr_lambda',i,isr_lambda)
       write(temp5, '(a,i0,a)') '(a,', MSTATES*(MSTATES-1)/2, '(f12.6))'
       !write(ounit, '(a,<MSTATES*(MSTATES-1)/2>(f12.6))') ' SR lambda : ', sr_lambda(1:i) ! Intel version
       write(ounit, temp5) ' SR lambda : ', isr_lambda(1:i)                   ! GNU version

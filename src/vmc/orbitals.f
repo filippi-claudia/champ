@@ -466,22 +466,22 @@ c endif for ier
          enddo
       endif
 c endif for periodic
-      if(ipr.ge.0) then
-        write(ounit,*) 'orbitalse, one electron changed'
-        do j=1,nwftypeorb
-          do iorb=1,norb
-            write(ounit,'(''orb set,iorb,orbn='',2i4,1f15.11)') j,iorb,orbn(iorb,j)
-          enddo
-          do iorb=1,norb
-            write(ounit,'(''orb set,iorb,d2orbn='',2i4,1f15.11)') j,iorb,ddorbn(iorb,j)
-          enddo
-          do k=1,3
-            do iorb=1,norb
-              write(ounit,'(''orb set,dir,iorb,dorbn='',3i4,1f12.8)') j,k,iorb,dorbn(iorb,k,j)
-            enddo
-          enddo
-        enddo
-      endif
+c      if(ipr.ge.0) then
+c        write(ounit,*) 'orbitalse, one electron changed'
+c        do j=1,nwftypeorb
+c          do iorb=1,norb
+c            write(ounit,'(''orb set,iorb,orbn='',2i4,1f15.11)') j,iorb,orbn(iorb,j)
+c          enddo
+c          do iorb=1,norb
+c            write(ounit,'(''orb set,iorb,d2orbn='',2i4,1f15.11)') j,iorb,ddorbn(iorb,j)
+c          enddo
+c          do k=1,3
+c            do iorb=1,norb
+c              write(ounit,'(''orb set,dir,iorb,dorbn='',3i4,1f12.8)') j,k,iorb,dorbn(iorb,k,j)
+c            enddo
+c          enddo
+c        enddo
+c      endif
 
       return
       end

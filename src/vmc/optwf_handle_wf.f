@@ -83,10 +83,10 @@ c-----------------------------------------------------------------------
 c tmp
       write(2,'(f13.8,a15)') scalek(1),' scalek'
       do k=1,nwftypejas
-        write(temp, '(a,i0,a)') '( jastrows_to_states', nstoj(k), '(i4))'        
-    !     if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)') 
-    !  &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             ! Intel version
-          if (extraj.eq.1) write(2,temp) (jtos(k,i),i=1,nstoj(k))               ! GNU version
+        if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)') 
+     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             ! Intel version
+c        write(temp, '(a,i0,a)') '( jastrows_to_states', nstoj(k), '(i4))'        
+c        if (extraj.eq.1) write(2,temp) (jtos(k,i),i=1,nstoj(k))               ! GNU version
 
 
         mparmja=2+max(0,norda-1)
@@ -151,10 +151,10 @@ c-----------------------------------------------------------------------
       write(2,'(''lcao '',3i4)') norb+nadorb,nbasis,iwf_fit
 
       do k=1,nwftypeorb
-    !     if (extrao.eq.1) write(2,'(''orbitals_to_states'',i6,<nstoo(k)>i4)')
-    !  &                         nstoo(k), (otos(k,i),i=1,nstoo(k))           ! Intel version
-        write(temp, '(a,i0,a)') '( orbitals_to_states', nstoo(k), '(i4))'        
-        if (extrao.eq.1) write(2,temp) (otos(k,i),i=1,nstoo(k))               ! GNU version
+        if (extrao.eq.1) write(2,'(''orbitals_to_states'',i6,<nstoo(k)>i4)')
+     &                         nstoo(k), (otos(k,i),i=1,nstoo(k))           ! Intel version
+c        write(temp, '(a,i0,a)') '( orbitals_to_states', nstoo(k), '(i4))'        
+c        if (extrao.eq.1) write(2,temp) (otos(k,i),i=1,nstoo(k))               ! GNU version
 
         do i=1,norb+nadorb
           write(2,'(1000e20.8)') (coef(j,i,k)/scalecoef,j=1,nbasis)
@@ -800,7 +800,9 @@ c-----------------------------------------------------------------------
       ! dimension coef_best(nbasis,norb,MWF)
       ! save coef_best
 
-      !STU is this only used for geometry optimization??
+      !STU is this only used for geometry optimization?? Restore to
+      !before, allocate nwftype, remove loops over nwftypeorb, replace
+      !3rd index with 1.
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftypeorb))
         do k=1,nwftypeorb
@@ -1113,6 +1115,7 @@ c-----------------------------------------------------------------------
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use slater,  only: cdet,ndet
+      use sr_mat_n, only: sr_state
 
       implicit none
 
@@ -1145,20 +1148,20 @@ c Update the ci coef
           endif
 
         enddo
-       else
-         if(ncsf.eq.0) then
-           do idet=2,ndet
-             cdet(idet,1,iadiag)=cdet(idet,1,iadiag)-dparm(idet-1+nparmj)
-           enddo
-          else
-           do icsf=2,ncsf
-             do j=iadet(icsf),ibdet(icsf)
-               jx=icxdet(j)
-               cdet(jx,1,iadiag)=cdet(jx,1,iadiag)-dparm(icsf-1+nparmj)*cxdet(j)
-             enddo
-             ccsf(icsf,1,iadiag)=ccsf(icsf,1,iadiag)-dparm(icsf-1+nparmj)
-           enddo
-         endif
+      else ! does this only leave sr_n? 
+        if(ncsf.eq.0) then
+          do idet=2,ndet
+            cdet(idet,sr_state,iadiag)=cdet(idet,sr_state,iadiag)-dparm(idet-1+nparmj)
+          enddo
+        else
+          do icsf=2,ncsf
+            do j=iadet(icsf),ibdet(icsf)
+              jx=icxdet(j)
+              cdet(jx,sr_state,iadiag)=cdet(jx,sr_state,iadiag)-dparm(icsf-1+nparmj)*cxdet(j)
+            enddo
+            ccsf(icsf,sr_state,iadiag)=ccsf(icsf,sr_state,iadiag)-dparm(icsf-1+nparmj)
+          enddo
+        endif
       endif
 
 c     do 90 j=1,nstates
@@ -1382,7 +1385,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_func, only: ifunc_omega
       use optwf_parms, only: nparmj
-      use sr_mat_n, only: elocal, nconf_n, sr_ho
+      use sr_mat_n, only: elocal, nconf_n, sr_ho, ortho
       use sr_mat_n, only: sr_o, wtg
       use deloc_dj_m, only: denergy
       use m_force_analytic, only: iforce_analy
@@ -1436,13 +1439,13 @@ c      ijasci=nparmj+ntmp
 c      if(ijasci+nstates*norbterm+nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')
 
       !STU do mapping here if necessary, lin_d called below
-      if (method.eq.'sr_n') then
+      if (method.eq.'sr_n'.and.ortho.eq.1.or.nstates.eq.1) then ! for sr_n w/ ortho, or sr_n 1-state
         do istate=1,nstates
           if(nparmj /= 0) call dcopy(nparmj,gvalue(1,stoj(istate)),1,sr_o(1,l,istate),1)
           ntmp=max(nciterm-i0,0)
           if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0,istate),1,sr_o(nparmj+1,l,istate),1)
           ijasci=nparmj+ntmp
-          if(ijasci+nstates*norbterm+nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')
+          if((ijasci+norbterm)*nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')
           ii=ijasci
           if (norbterm /= 0) call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l,istate),1)
           elocal(l,istate)=energy(istate)
@@ -1452,7 +1455,7 @@ c      if(ijasci+nstates*norbterm+nstates.gt.mparm) call fatal_error('SR_STORE: 
           sr_o(ii+1,l,istate)=psid(istate)
           sr_o(ii+2,l,istate)=wt_sqrt(istate) !STU yes we need 
         enddo
-      else !for lin_d (in mix_n)
+      else !for lin_d or sr_n in mix_n
         if(nparmj /= 0) call dcopy(nparmj,gvalue(1,1),1,sr_o(1,l,1),1)
         ntmp=max(nciterm-i0,0)
         if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0,1),1,sr_o(nparmj+1,l,1),1)
@@ -1478,7 +1481,7 @@ c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secu
       enddo
 
       if(nparmj /= 0) call dcopy(nparmj,tmp_ho,1,sr_ho(1,l),1)
-
+      !STU could add loop ovre states if ever called with multiple ci_e
       if(ntmp /= 0) call dcopy(ntmp,ci_e(1+i0,1),1,sr_ho(nparmj+1,l),1)
 
       if(norbterm /= 0) call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)

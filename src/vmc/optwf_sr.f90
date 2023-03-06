@@ -170,7 +170,7 @@ contains
                 if (nstates .eq. 1) then
                     call sr_hs(nparm, sr_adiag)
                 elseif (nstates .gt. 1) then !STU note the current sub is not called by anything except a full sr run
-                    ortho=1
+                    !ortho=1 ! should be removable
                     call compute_gradients_sr_ortho(nparm, sr_adiag)
                 endif
                 
@@ -186,7 +186,7 @@ contains
                     if (iflag .ne. 0) iflagin = 1
                 enddo
 
-                call print_gradients(nparm, deltap)
+                !call print_gradients(nparm, deltap)
 
                 !call test_solution_parm(nparm, deltap, dparm_norm, dparm_norm_min, adiag, iflag)
                 !write (ounit, '(''Norm of parm variation '',d12.5)') dparm_norm
@@ -203,7 +203,7 @@ contains
                 
                 ! if statement? do we only use compute norm lin in multistate?
                 if(nstates.gt.1) call compute_norm_lin(nparm,-deltap)
-                do istate=1,nstates
+                do istate=1,nstates ! this is done so the allocation of detlap doesn't have to change in other methods
                   sr_state = istate
                   call compute_parameters(deltap(:,sr_state), iflag, 1)
                 enddo
@@ -313,9 +313,11 @@ contains
               tmp = 0.0d0
               do i = 1, nparm
                  tmp = tmp + deltap(i, istate)*sr_o(i, iconf, istate)
+                 !write(ounit,*) "istate,i,tmp,deltap,sr_o", istate,i,tmp,deltap(i, istate),sr_o(i, iconf, istate)
               enddo
               obs_norm(jwfj, istate) = obs_norm(jwfj, istate) + tmp*wtg(iconf, istate)
               obs_norm(jsqfj,istate) = obs_norm(jsqfj, istate) + tmp*tmp*wtg(iconf, istate)
+              !write(ounit,*) "istate,wtg", istate, wtg(iconf, istate)
            enddo
            obs_norm(jwfj, istate) = 2.0d0*obs_norm(jwfj, istate)
            call MPI_REDUCE(obs_norm(1, istate), obs_norm_tot(1, istate),&
@@ -328,7 +330,7 @@ contains
               if(istate.eq.1) tmp1 = tmp
               anormo(istate) = obs_tot(jwtg, istate) + obs_norm_tot(jwfj, istate)&
                       + obs_norm_tot(jsqfj, istate)
-              write(ounit, '(''NORMS'',i3,10f20.8)') istate, obs_tot(jwtg,istate)/passes, anormo(istate)/passes,&
+              write(ounit, '(''NORMS'',i3,10f25.20)') istate, obs_tot(jwtg,istate)/passes, anormo(istate)/passes,&
                                  obs_tot(jwtg, istate)/obs_tot(jwtg, 1), anormo(istate)/anormo(1),tmp/tmp1
            enddo
            ! Ramon was using the anormo
@@ -499,7 +501,7 @@ contains
             obs_tot(jwtg, istate) = obs_wtg_tot(istate)
         enddo
 
-        !write(ounit,*) 'nparm, nparm_jasci, norbterm', nparm, nparm_jasci, norbterm
+        write(ounit,*) 'nparm, nparm_jasci, norbterm', nparm, nparm_jasci, norbterm
         do istate = 1, nstates_eff
             do i = 2, n_obs
                 obs(i, istate) = 0.d0

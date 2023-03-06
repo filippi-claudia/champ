@@ -522,7 +522,7 @@ subroutine read_jastrow_file(file_jastrow)
       use jastrow4_mod, only: nterms4
       use mpiconf, only: wid
       use multiple_geo, only: MWF,nwftype
-      use optwf_control, only: method
+      use optwf_control, only: method, ioptwf
       use vmc_mod, only: nwftypeorb, nwftypejas, nwftypemax, nstoj, jtos, stoj, nstojmax, extraj, nstoj_tot
       use precision_kinds, only: dp
       use system,  only: ncent,nctype,ndn
@@ -597,8 +597,8 @@ subroutine read_jastrow_file(file_jastrow)
             endif
             write(ounit,'(A,i4,A)') " Found ", nwftypejas, " types of jastrows in the input file. "
             if (extraj .eq. 0) then
-               write(ounit,int_format) " For a multistate sr_n calculation , a 'jastrows_to_states' line is required before each jastrow's parameters are specified "
-               write(ounit,'(A,i4,A)') " Assuming single state calculation. "
+               write(ounit,int_format) " For a multistate sr_n optimization , a 'jastrows_to_states' line is required before each jastrow's parameters are specified "
+               write(ounit,'(A,i4,A)') " Assuming 1-state sr_n optimization for the moment. "
             endif
             !if (nwftypejas .ne. nwftypeorb) then
                 !write(ounit,int_format) " Using sr_n with multiple states requires a 'jastrow' line before each state's parameters are specified "
@@ -623,8 +623,12 @@ subroutine read_jastrow_file(file_jastrow)
             rewind(iunit)
           endif
         else
-          write(ounit,int_format) " Assuming 1 jastrow type and 1 state. "
-          nstoj(1) = 1
+          nstoj(1) = 1 ! will redefine later, no, we don't need it.
+          if (ioptwf.ge.1) then
+            write(ounit,int_format) " This is an sr_n optimization. Assuming 1 jastrow type and 1-state for the moment."
+          else
+            write(ounit,int_format) " No optimization to be performed. Will decide jastrow mapping once we know how many states. "
+          endif
         endif
         call bcast(nstoj)
     else ! assuming 1-jastrow listing with sr_n does not need 'jastrows line', annoying because could imply use for all states.
@@ -638,7 +642,7 @@ subroutine read_jastrow_file(file_jastrow)
       nstoj_tot=nstoj_tot+nstoj(i)
     enddo
 
-    write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypejas, " jastrow types to be assigned to ", nstoj_tot, " states."
+    write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypejas, " jastrow types to be assigned to ", nstoj_tot, " states. If only sampling, ignore."
 
     nwftypemax=max(nwftypejas,nwftypeorb)
     call bcast(nwftypemax)
@@ -711,6 +715,7 @@ subroutine read_jastrow_file(file_jastrow)
        
         nstojmax=maxval(nstoj)
         write(ounit,*) "nstoj,nstojmax", nstoj(1), nstojmax
+        write(ounit,*) "Ignore if only sampling."
         allocate(jtos(nwftypejas,nstojmax))
 
         if (wid) then !STU moved if outside
@@ -799,7 +804,7 @@ subroutine read_orbitals_file(file_orbitals)
       use inputflags, only: ilcao
       use mpiconf, only: wid
       use multiple_geo, only: nwftype
-      use optwf_control, only: method
+      use optwf_control, only: method, ioptwf
       use orbval,  only: nadorb
       use pcm_fdc, only: fs
       use precision_kinds, only: dp
@@ -861,8 +866,8 @@ subroutine read_orbitals_file(file_orbitals)
             endif
             write(ounit,'(A,i4,A)') " Found ", nwftypeorb, " sets of orbitals in the input file. "
             if (extrao .eq. 0) then
-               write(ounit,int_format) " For a multistate sr_n calculation, a 'orbitals_to_states' line is required before each orbital set's parameters are specified "
-               write(ounit,'(A,i4,A)') " Assuming single state calculation. "
+               write(ounit,int_format) " For a multistate sr_n optimization , a 'orbitals_to_states' line is required before each orbital set's parameters are specified "
+               write(ounit,'(A,i4,A)') " Assuming 1-state sr_n optimization for the moment. "
             endif
             nwftype = nwftypeorb !nwftype is used by force stuff outside this subroutine. don't really know how nwftype is used
         endif
@@ -885,8 +890,12 @@ subroutine read_orbitals_file(file_orbitals)
             rewind(iunit)
           endif
         else
-          write(ounit,int_format) " Assuming 1 set of orbitals and 1 state. "
           nstoo(1)=1
+          if(ioptwf.eq.1) then
+            write(ounit,int_format) " This is an sr_n optimization. Assuming 1 orbital set and 1-state for the moment. "
+          else
+            write(ounit,int_format) " No optimization to be performed. Will decide orbital mapping once we know how many states. "
+          endif
         endif
         call bcast(nstoo)
     else
@@ -902,7 +911,7 @@ subroutine read_orbitals_file(file_orbitals)
 
     ! to escape the comments before the "lcao nbasis norb" line
     if (wid) then
-        write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypeorb, " orbital sets to be assigned to ", nstoo_tot, " states."
+        write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypeorb, " orbital sets to be assigned to ", nstoo_tot, " states. Ignore if only sampling"
         do while (skip)
             read(iunit,*, iostat=iostat) temp1
             temp1 = trim(temp1)
@@ -943,6 +952,7 @@ subroutine read_orbitals_file(file_orbitals)
 
     nstoomax=maxval(nstoo)
     write(ounit,*) "nstoo,nstoomax", nstoo(1), nstoomax
+    write(ounit,*) "Ignore, if only sampling"
     allocate(otos(nwftypeorb,nstoomax))
 
     if (wid) then ! Moved if to outside, all the important quantities are bcast later.
@@ -1246,9 +1256,9 @@ subroutine read_csfmap_file(file_determinants)
         enddo
         if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
         nmap = nptr - 1
-        if (allocated(cdet)) deallocate (cdet)
-        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype)) 
-
+!        if (allocated(cdet)) deallocate (cdet)
+!        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype)) 
+        write(ounit, *) "ndet, nstates, nwftype", ndet, nstates, nwftype
         write(ounit, *) "ncsf", ncsf
         write(ounit, '(''Warning: det coef overwritten with csf'')')
 

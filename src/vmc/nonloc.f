@@ -109,8 +109,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       nxquad=0
       do i=i1,i2
-        do iorb=1,norb+nadorb
-          b(iorb,i,:)=bkin(iorb,i,:)
+
+        do j=1,nbjx
+          do iorb=1,norb+nadorb
+            b(iorb,i,j)=bkin(iorb,i,j)
+          enddo
         enddo
 
         do ic=1,ncent
@@ -210,7 +213,6 @@ c endif iskip
         do iwfjas=1,nwftypejas
           term_radial_jas(iq,iwfjas)=term_radial(iq)*wq(iqq)*exp(psij_ratio(iq,iwfjas))
         enddo
-c         write(ounit,*) 'term1',term_radial(iq),det_ratio(iq),psij_ratio(iq)
 c vpsp_det  = vnl(D_kref J)/(D_kref J)
         do ibjx=1,nbjx
           xj=bjxtoj(ibjx)

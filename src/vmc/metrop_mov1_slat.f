@@ -162,7 +162,7 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
           call determinant_psig(psido,psijo,psig)
         endif
         call compute_determinante_grad(i,psig,psido,psijo,vold(1,i),1)
-
+c        write(ounit,'(a,f25.20)'), "psijo", psijo
         fxop=one
         nearo=nearesto(i)
         if(nloc.eq.0) then
@@ -655,8 +655,8 @@ c Note when one electron moves the velocity on all electrons change.
         endif
         do istate=1,nstates
           psido(istate)=psidn(istate)
+          psijo(stoj(istate))=psijn(stoj(istate))
         enddo
-        psijo=psijn
         acc=acc+one
         call jassav(i,0)
         call detsav(i,0)
