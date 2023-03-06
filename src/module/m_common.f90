@@ -607,6 +607,7 @@ contains
         if (.not. allocated(yq)) allocate (yq(MPS_QUAD))
         if (.not. allocated(yq0)) allocate (yq0(MPS_QUAD))
         if (.not. allocated(zq)) allocate (zq(MPS_QUAD))
+        zq = 0. ! not all entries are filled, set the rest to zero
         if (.not. allocated(zq0)) allocate (zq0(MPS_QUAD))
     end subroutine allocate_qua
 

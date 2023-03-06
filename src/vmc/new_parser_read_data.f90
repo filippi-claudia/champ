@@ -625,9 +625,11 @@ subroutine read_jastrow_file(file_jastrow)
         write(ounit, '(A)') "mparmja : "
         write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
         do it = 1, nctype
-            if (wid) read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
+            if (wid) then
+              read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
             !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)  !Intel Version
-            if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
+              if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
+            endif ! wid
         enddo
         call bcast(a4)
 
@@ -640,9 +642,11 @@ subroutine read_jastrow_file(file_jastrow)
         write(ounit, '(A)') "mparmjb : "
         write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
         do isp = nspin1, nspin2b
-            if (wid) read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
+            if (wid) then 
+              read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
             !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)  !Intel Version
-            if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
+              if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
+            endif ! wid
         enddo
         call bcast(b)
 
@@ -655,9 +659,11 @@ subroutine read_jastrow_file(file_jastrow)
         write(ounit, '(A)') "mparmjc : "
         write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
         do it = 1, nctype
-            if (wid) read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+            if (wid) then
+              read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
             !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
-            if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
+              if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
+            endif ! wid
         enddo
         call bcast(c)
 
@@ -665,8 +671,10 @@ subroutine read_jastrow_file(file_jastrow)
 
     !Read cutoff for Jastrow4, 5, 6
     if (isc .eq. 6 .or. isc .eq. 7) then
-        if (wid) read (iunit, *) cutjas
-        write(iunit, '(A,2X,f12.8)') " cutjas = ", cutjas
+        if (wid) then
+          read (iunit, *) cutjas
+          write(iunit, '(A,2X,f12.8)') " cutjas = ", cutjas
+        endif
     endif
     call bcast(cutjas)
 
@@ -999,6 +1007,8 @@ subroutine read_csfmap_file(file_determinants)
                 if (ndet_check .ne. ndet) call fatal_error('CSFMAP: wrong number of determinants')
                 if (ncsf_check .ne. ncsf) call fatal_error('CSFMAP: wrong number of csf')
                 if (nmap_check .gt. float(ndet)*ndet) call fatal_error('CSFMAP: too many determinants in map list')
+            else
+              call fatal_error('CSFMAP: error reading in file')
             endif
         endif
         call bcast(ncsf_check)
@@ -1020,6 +1030,7 @@ subroutine read_csfmap_file(file_determinants)
                 if (wid) read (iunit, *) id, c
                 call bcast(id)
                 call bcast(c)
+                if (id > ndet) call fatal_error ('id in CSFMAP larger than ndet_check')
                 icxdet(nptr) = id
                 cxdet(nptr) = c
                 nptr = nptr + 1
@@ -1309,18 +1320,24 @@ subroutine read_jasderiv_file(file_jastrow_der)
         call bcast(nparmj)
 
         do it = 1, nctype
-            if (wid) read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
-            write(ounit, '(A,30i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
+            if (wid) then
+              read (iunit, *) (iwjasa(iparm, it), iparm=1, nparma(it))
+              write(ounit, '(A,30i4)') " iwjasa = ", (iwjasa(iparm, it), iparm=1, nparma(it))
+            endif ! wid
         enddo
         call bcast(iwjasa)
         do isp = nspin1, nspin2b
-            if (wid) read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
-            write(ounit, '(A,30i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+            if (wid) then
+              read (iunit, *) (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+              write(ounit, '(A,30i4)') " iwjasb = ", (iwjasb(iparm, isp), iparm=1, nparmb(isp))
+            endif ! wid
         enddo
         call bcast(iwjasb)
         do it = 1, nctype
-            if (wid) read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
-            write(ounit, '(A,30i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
+            if (wid) then
+              read (iunit, *) (iwjasc(iparm, it), iparm=1, nparmc(it))
+              write(ounit, '(A,30i4)') " iwjasc = ", (iwjasc(iparm, it), iparm=1, nparmc(it))
+            endif ! wid
         enddo
         call bcast(iwjasc)
             ! end of reading the jasderiv file block

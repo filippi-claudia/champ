@@ -61,11 +61,14 @@ module estcum
      subroutine allocate_estcum()
       use mstates_mod, only: MSTATES
       use multiple_geo, only: MFORCE
+      implicit none
          if (.not. allocated(ecum)) allocate (ecum(MSTATES, MFORCE))
          if (.not. allocated(ecum1)) allocate (ecum1(MSTATES))
          if (.not. allocated(pecum)) allocate (pecum(MSTATES))
+         pecum = 0. ! its written in acuest, needs to be defined
          if (.not. allocated(tjfcum)) allocate (tjfcum(MSTATES))
          if (.not. allocated(tpbcum)) allocate (tpbcum(MSTATES))
+         tpbcum = 0.
 
      end subroutine allocate_estcum
 
@@ -194,8 +197,10 @@ module estcum
          if (.not. allocated(esum)) allocate (esum(MSTATES, MFORCE))
          if (.not. allocated(esum1)) allocate (esum1(MSTATES))
          if (.not. allocated(pesum)) allocate (pesum(MSTATES))
+         pesum = 0.
          if (.not. allocated(tjfsum)) allocate (tjfsum(MSTATES))
          if (.not. allocated(tpbsum)) allocate (tpbsum(MSTATES))
+         tpbsum = 0.
      end subroutine allocate_estsum
 
      subroutine deallocate_estsum()
