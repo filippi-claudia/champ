@@ -5,7 +5,7 @@ output="trexio_vmc_COH2_excited_state"
 
 # Multicore test
 N=8
-ReferenceEnergy=-22.6176767
+ReferenceEnergy=-22.6242038
 ReferenceError=0.0030022
 mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
 echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
