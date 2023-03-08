@@ -65,6 +65,7 @@ contains
         if (.not. allocated(nearestn)) allocate (nearestn(nelec), source=0)
         if (.not. allocated(nearesto)) allocate (nearesto(nelec), source=0)
         if (.not. allocated(peo)) allocate (peo(MSTATES))
+        peo = 0. ! Necessary since it is used in metrop_mov1_slat in vmc, but never set
         if (.not. allocated(psi2n)) allocate (psi2n(MFORCE))
         if (.not. allocated(psi2o)) allocate (psi2o(MSTATES, MFORCE))
         if (.not. allocated(psido)) allocate (psido(MSTATES))

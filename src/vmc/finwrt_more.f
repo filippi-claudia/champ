@@ -31,10 +31,10 @@ c written by Claudia Filippi
         write(ounit,'(''orb set,log detref '',i4,2d13.5)') istate, (detref(iab,stoo(istate))*nproc/passes,iab=1,2)
       enddo
 
-      call mpi_bcast(energy,3,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
-      call mpi_bcast(energy_err,3,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
-      call mpi_bcast(force,3,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
-      call mpi_bcast(force_err,3,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(energy,size(energy),mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(energy_err,size(energy_err),mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(force,size(force),mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(force_err,size(force_err),mpi_double_precision,0,MPI_COMM_WORLD,ierr)
       call mpi_bcast(sigma,1,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
       call mpi_bcast(energy_all,nstates,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
       call mpi_bcast(energy_err_all,nstates,mpi_double_precision,0,MPI_COMM_WORLD,ierr)

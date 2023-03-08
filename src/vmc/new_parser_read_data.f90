@@ -778,8 +778,10 @@ subroutine read_jastrow_file(file_jastrow)
 
     !Read cutoff for Jastrow4, 5, 6
     if (isc .eq. 6 .or. isc .eq. 7) then
-        if (wid) read (iunit, *) cutjas
-        write(iunit, '(A,2X,f12.8)') " cutjas = ", cutjas
+        if (wid) then
+          read (iunit, *) cutjas
+          write(iunit, '(A,2X,f12.8)') " cutjas = ", cutjas
+        endif
     endif
     call bcast(cutjas)
 
@@ -1227,6 +1229,8 @@ subroutine read_csfmap_file(file_determinants)
                 if (ndet_check .ne. ndet) call fatal_error('CSFMAP: wrong number of determinants')
                 if (ncsf_check .ne. ncsf) call fatal_error('CSFMAP: wrong number of csf')
                 if (nmap_check .gt. float(ndet)*ndet) call fatal_error('CSFMAP: too many determinants in map list')
+            else
+              call fatal_error('CSFMAP: error reading in file')
             endif
         endif
         call bcast(ncsf_check)
@@ -1248,6 +1252,7 @@ subroutine read_csfmap_file(file_determinants)
                 if (wid) read (iunit, *) id, c
                 call bcast(id)
                 call bcast(c)
+                if (id > ndet) call fatal_error ('id in CSFMAP larger than ndet_check')
                 icxdet(nptr) = id
                 cxdet(nptr) = c
                 nptr = nptr + 1

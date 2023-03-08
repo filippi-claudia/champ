@@ -27,7 +27,6 @@ c Written by Claudia Filippi by modifying hpsi
 
       integer :: iel, iflag, ipass, istate, icheck
       real(dp) :: apsi_now, aref_now, check_apsi, check_apsi_min, check_dref
-      real(dp), dimension(3, nelec) :: x
       real(dp), dimension(3, nelec) :: coord
       real(dp), dimension(MSTATES) :: psid
       real(dp), dimension(nwftypejas) :: psij

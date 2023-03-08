@@ -68,26 +68,43 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), allocatable :: vjn(:,:)
 
       ndim = nquad*nelec*2
-   
-      ! Allocating local arrays
+
+      ! allocating local arrays
         ! integer arrays
+      if(allocated(iequad)) deallocate(iequad)
       allocate(iequad(ndim))
+      if(allocated(icquad)) deallocate(icquad)
       allocate(icquad(ndim))
+      if(allocated(iqquad)) deallocate(iqquad)
       allocate(iqquad(ndim))
+      if(allocated(costh)) deallocate(costh)
       allocate(costh(ndim))
-        ! real dp arrays
+        ! dp real arrays
+      if(allocated(term_radial)) deallocate(term_radial)
       allocate(term_radial(ndim))
+      if(allocated(term_radial_jas)) deallocate(term_radial_jas)
       allocate(term_radial_jas(ndim,nwftypejas))
+      if(allocated(xquad)) deallocate(xquad)
       allocate(xquad(3,ndim))
+      if(allocated(det_ratio)) deallocate(det_ratio)
       allocate(det_ratio(ndim,nwftypeorb))
+      if(allocated(psij_ratio)) deallocate(psij_ratio)
       allocate(psij_ratio(ndim,nwftypejas))
+      if(allocated(dpsij_ratio)) deallocate(dpsij_ratio)
       allocate(dpsij_ratio(nparmj,ndim,nwftypejas))
+      if(allocated(da_psij_ratio)) deallocate(da_psij_ratio)
       allocate(da_psij_ratio(3,ncent_tot,ndim))
+      if(allocated(r_en_quad)) deallocate(r_en_quad)
       allocate(r_en_quad(ndim,ncent_tot))
+      if(allocated(rvec_en_quad)) deallocate(rvec_en_quad)
       allocate(rvec_en_quad(3,ndim,ncent_tot))
+      if(allocated(orbn)) deallocate(orbn)
       allocate(orbn(norb_tot,ndim,nwftypeorb))
+      if(allocated(dorbn)) deallocate(dorbn)
       allocate(dorbn(norb_tot,ndim,3,nwftypeorb))
+      if(allocated(da_orbn)) deallocate(da_orbn)
       allocate(da_orbn(3,ncent_tot,norb_tot,ndim))
+      if(allocated(vjn)) deallocate(vjn)
       allocate(vjn(3,ndim))
 
       !STU mapping? or specify full dimensions and do (:,:)=0

@@ -701,7 +701,6 @@ CONTAINS
 #ifdef _MPI_
       if (rank==0) then
 #endif
-
       ! Find a job-specific number
       call system_clock( count )
       count = mod(count,100000)
@@ -716,6 +715,12 @@ CONTAINS
       else                  ! set a job-specific file name
         write(fileOut,'(a,i5.5,a)') 'fdf_',count,'.log'
       endif
+
+#ifdef _MPI_
+else 
+  write(fileOut,*) ''
+endif ! (rank==0)
+#endif
 
       ! Set input file
       if (present(optFileIn)) then     ! just copy the file name
@@ -769,9 +774,6 @@ CONTAINS
 
       endif ! (present(optFileIn))
 
-#ifdef _MPI_
-endif ! (rank==0)
-#endif
 !--------------------------------------------------------------------------- END
       END SUBROUTINE set_file_names
 
