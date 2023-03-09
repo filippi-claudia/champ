@@ -95,6 +95,9 @@ c     &        enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,acc
               else
                 write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),1x,f10.5,i10)')
      &          enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,accept,iblk*vmc_nstep
+c                write(ounit,'(f10.5,3(f10.5,a,i0,a),1x,f10.5,i10)')
+c     &          enow(1,1),eave,"(", ieerr, ")", peave, "(", ipeerr , 
+c     &          ")", tpbave, "(", itpber, ")", accept,iblk*vmc_nstep
               endif
 
               call prop_prt(wcum(1,ifr),iblk,ounit)
