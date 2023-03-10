@@ -6,13 +6,14 @@
       use mpi
       use optwf_control, only: ioptjas,ioptorb,nparm
       use precision_kinds, only: dp
-      use sr_index, only: jelo,jelo2,jelohfj
-      use sr_mat_n, only: jefj,jfj,jhfj,obs_tot
+      use sr_mat_n, only: obs_tot
       use sr_mod,  only: mparm
 
       implicit none
 
       integer :: i, ish, jfhfj, jfifj, jwtg
+      integer :: jelo,jelo2,jelohfj
+      integer :: jefj,jfj,jhfj
       integer :: n_obs, nparm_p1
 
       real(dp), dimension(:) :: hii
@@ -44,12 +45,12 @@
       ish=0
       if(ioptorb+ioptjas.gt.0) then
         ish=1
-        hii( 1)=obs_tot(jelo, 1)
+        hii( 1)=obs_tot(2, 1)
         sii( 1)=1
       endif
-      do i=1,nparm
-        hii( i+ish)=obs_tot(jfhfj-1+i,1)
-        sii( i+ish)=obs_tot(jfifj-1+i,1)
+      do i=2,nparm_p1
+        hii( i)=obs_tot(jfhfj+i,1)
+        sii( i)=obs_tot(jfifj+i,1)
       enddo
 
       return

@@ -14,7 +14,7 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
     !
       use array_utils, only: eye,write_matrix,write_vector
       use contrl_file, only: errunit,ounit
-      use davidson, only: davidson_parameters,fun_mtx_gemv,fun_stx_gemv
+      use davidson, only: davidson_parameters
       use davidson, only: generalized_eigensolver
       use error,   only: fatal_error
       use mpi
@@ -62,8 +62,8 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
 
     ! Allocate variables
     IF (nvec > nvecx/2) CALL fatal_error('regter: nvecx is too small')
-    call generalized_eigensolver(fun_mtx_gemv, eigenvalues, ritz_vectors, nparm, &
-                                 nparmx, nvec, nvecx, method, 200, ethr, dav_iter, fun_stx_gemv, nproc, idtask)
+    call generalized_eigensolver(eigenvalues, ritz_vectors, nparm, &
+                                 nparmx, nvec, nvecx, method, 200, ethr, dav_iter, nproc, idtask)
 
     if (idtask == 0) then
         do i = 1, size(eigenvalues)

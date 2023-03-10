@@ -4,66 +4,48 @@ module array_utils
       use precision_kinds, only: dp
     implicit none
 
-    !> \private
-    private
-    !> \public
-    public :: concatenate, diagonal, eye, generate_diagonal_dominant, norm, &
-              initialize_subspace, write_matrix, write_vector, check_deallocate_vector, &
-              check_deallocate_matrix, modified_gram_schmidt, diag_mat
-    public :: unique_elements, unique_string_elements
-
 contains
 
-    pure function eye(m, n, alpha)
+   pure subroutine eye(diag, alpha)
         !> Create a matrix with ones in the diagonal and zero everywhere else
         !> \param m: number of rows
         !> \param n: number of colums
         !> \param alpha: optional diagonal value
         !>
         !> return matrix of size n x m
-        integer, intent(in) :: n, m
-        real(dp), dimension(m, n) :: eye
+        real(dp), dimension(:, :), intent(inout) :: diag
         real(dp), intent(in), optional :: alpha
 
         !local variable
-        integer :: i, j, min_dim
+        integer :: i
         real(dp) :: x
 
         ! check optional values
-        x = 1.d0
-        if (present(alpha)) x = alpha
+        if (present(alpha)) then 
+          x = alpha
+        else
+          x = 1.d0
+        endif
 
-        ! that's sooooo costly
-        do i = 1, m
-            do j = 1, n
-                if (i /= j) then
-                    eye(i, j) = 0.d0
-                else
-                    eye(i, i) = x
-                end if
-            end do
+        diag = 0.0_dp
+
+        do i = 1, min(size(diag,1),size(diag,2))
+          diag(i, i) = x
         end do
 
-        ! why not that ?
-        !  eye = 0.0_dp
-        !  min_dim = min(m,n)
-        !  do i=1, min_dim
-        !    eye(i,i) = x
-        !  end do
+    end subroutine eye
 
-    end function eye
-
-    pure function diag_mat(vec)
+    pure subroutine diag_mat(vec,mat)
         real(dp), dimension(:), intent(in) :: vec
-        real(dp), dimension(size(vec, 1), size(vec, 1)) :: diag_mat
+        real(dp), dimension(:,:), intent(out) :: mat
 
         integer :: i
-        diag_mat = 0.0_dp
+        mat = 0.0_dp
         do i = 1, size(vec, 1)
-            diag_mat(i, i) = vec(i)
+            mat(i, i) = vec(i)
         end do
 
-    end function diag_mat
+    end subroutine diag_mat
 
     pure function norm(vector)
         !> compute the norm-2 of a vector
@@ -82,7 +64,7 @@ contains
         !>
         !> return arr concatenate brr(overwrites arr)
 
-        real(dp), dimension(:, :), intent(inout), allocatable :: arr
+        real(dp), dimension(:, :), allocatable, intent(inout) :: arr
         real(dp), dimension(:, :), intent(in) :: brr
         real(dp), dimension(:, :), allocatable :: tmp_array
         integer :: new_dim, dim_cols, dim_rows
@@ -99,24 +81,28 @@ contains
         tmp_array(:, :dim_cols) = arr
 
         ! Move to new expanded matrix
-        deallocate (arr)
         call move_alloc(tmp_array, arr)
 
         arr(:, dim_cols + 1:) = brr
 
     end subroutine concatenate
 
-    function generate_diagonal_dominant(m, sparsity, diag_val) result(arr)
+    subroutine generate_diagonal_dominant(m, sparsity, diag_val, arr)
         !> Generate a diagonal dominant square matrix of dimension m
         !> \param m dimension of the matrix
         !> \param sparsity magnitude order of the off-diagonal values
+        use random_mod, only: random_dp
 
         integer, intent(in) :: m ! size of the square matrix
         real(dp), optional :: diag_val
         integer :: i, j
         real(dp) :: sparsity
-        real(dp), dimension(m, m) :: arr
-        call random_number(arr)
+        real(dp), dimension(:, :) :: arr
+        do i = 1,m
+          do j = 1,m
+            arr(j,i) = random_dp()
+          end do
+        end do
 
         arr = arr*sparsity
         do j = 1, m
@@ -133,30 +119,26 @@ contains
             end do
         end do
 
-    end function generate_diagonal_dominant
+    end subroutine generate_diagonal_dominant
 
-    function diagonal(matrix)
+    subroutine diagonal(matrix, vector)
         !> return the diagonal of a matrix
         real(dp), dimension(:, :), intent(in) :: matrix
-        real(dp), dimension(size(matrix, 1)) :: diagonal
+        real(dp), dimension(:) :: vector
 
         ! local variables
-        integer :: i, j, m
+        integer :: i, m
 
         ! dimension of the matrix
-        m = size(matrix, 1)
+        m = min(size(matrix, 1),size(matrix,2))
 
         do i = 1, m
-            do j = 1, m
-                if (i == j) then
-                    diagonal(i) = matrix(i, j)
-                end if
-            end do
+            vector(i) = matrix(i, i)
         end do
 
-    end function diagonal
+    end subroutine diagonal
 
-    function initialize_subspace(diag, dim_sub, dim_base) result(precond)
+    subroutine initialize_subspace(diag, dim_sub, dim_base, precond)
         !> Brief generates a diagonal preconditioner for .
         !>
         !> return diagonal matrix
@@ -166,12 +148,15 @@ contains
         integer, intent(in) :: dim_sub, dim_base
 
         ! local variables
-        real(dp), dimension(dim_base, dim_sub) :: precond
-        integer, dimension(size(diag)) :: keys
+        real(dp), dimension(:, :) :: precond
+        integer, dimension(:), allocatable :: keys
         integer :: i, k
 
+        allocate(keys(size(diag)))
+        keys = 0
+
         ! sort diagonal
-        keys = lapack_sort('I', diag)
+        call lapack_sort('I', diag, keys)
         ! Fill matrix with zeros
         precond = 0.0_dp
 
@@ -181,7 +166,8 @@ contains
             precond(k, i) = 1.d0
         end do
 
-    end function initialize_subspace
+        deallocate(keys)
+    end subroutine initialize_subspace
 
     subroutine modified_gram_schmidt(mat, nstart)
         !> Brief use modifed gram-schmidt orthogonalization on mat
@@ -194,7 +180,7 @@ contains
         integer :: i
         integer :: nrows, ncols
         integer :: idx_start
-        real(dp), dimension(:), allocatable :: tmp_array
+        real(dp), dimension(:), allocatable :: tmp_array, tmp_array2
 
         idx_start = 1
         if (present(nstart)) idx_start = nstart
@@ -203,17 +189,17 @@ contains
         ncols = size(mat, 2)
 
         allocate (tmp_array(nrows))
+        allocate (tmp_array2(nrows))
 
         do i = idx_start, ncols
-
-            tmp_array = 0.0_dp
-            tmp_array = lapack_matrix_vector('T', mat(:, :i - 1), mat(:, i))
-            mat(:, i) = mat(:, i) - lapack_matrix_vector('N', mat(:, :i - 1), tmp_array)
+            call lapack_matrix_vector('T', mat(:, :i - 1), mat(:, i), tmp_array)
+            call lapack_matrix_vector('N', mat(:, :i - 1), tmp_array, tmp_array2)
+            mat(:, i) = mat(:, i) - tmp_array2 
             mat(:, i) = mat(:, i)/norm(mat(:, i))
-
         end do
 
         deallocate (tmp_array)
+        deallocate (tmp_array2)
 
     end subroutine modified_gram_schmidt
 
@@ -305,11 +291,11 @@ contains
 
         implicit none
         integer, intent(in)                         :: n
-        integer, dimension(n), intent(in)           :: arr    ! The input
-        integer, dimension(n), intent(out)          :: res    ! The output
+        integer, dimension(:), intent(in)           :: arr    ! The input
+        integer, dimension(:), intent(out)          :: res    ! The output
         integer, intent(out)                        :: count                   ! The number of unique elements
-        integer, dimension(n), intent(out)          :: frequency ! The output
-        integer, dimension(n), intent(out),optional :: ind
+        integer, dimension(:), intent(out)          :: frequency ! The output
+        integer, dimension(:), intent(out),optional :: ind
         integer                                     :: i,j,k, counter1, counter2
 
         k = 1
@@ -359,8 +345,8 @@ contains
 
         implicit none
         integer, intent(in)                         :: n
-        character(len=3), dimension(n), intent(in)  :: arr    ! The input
-        character(len=3), dimension(n), intent(out) :: res    ! The output
+        character(len=3), dimension(:), intent(in)  :: arr    ! The input
+        character(len=3), dimension(:), intent(out) :: res    ! The output
         integer, intent(out)                        :: count                   ! The number of unique elements
         integer, dimension(n)          :: frequency ! The output
         integer, dimension(n)          :: ind
@@ -405,7 +391,7 @@ contains
         !   find "indices", the list of unique numbers in "list"
 
         integer :: n, kx, i, nitems
-        integer, dimension(n) :: list
+        integer, dimension(:) :: list
         logical, dimension(n) :: mask
         integer, dimension(:), allocatable :: indices, sorted
 

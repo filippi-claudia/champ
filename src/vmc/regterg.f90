@@ -298,7 +298,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      !
      nb1=nbase+1
      !
-     CALL h_psi_lin_d( nparm, notcnv, psi(1,nb1), hpsi(1,nb1) )
+     CALL h_psi_lin_d( nparm, notcnv, psi(1:,nb1:), hpsi(1:,nb1:) )
      !
      CALL s_psi_lin_d( nparm, notcnv, psi(1,nb1), spsi(1,nb1) )
      !
