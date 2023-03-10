@@ -1040,7 +1040,7 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
 !Algo to rearrange otos and jtos
 ! add checks that each state has an orbital set and jastrow set assigned, and others etc.
   
-  write(ounit, *) "nstoj_tot, nstoo_tot, nstates", nstoj_tot, nstoo_tot, nstates
+  if (mode(1:3) == 'vmc') write(ounit, *) "nstoj_tot, nstoo_tot, nstates", nstoj_tot, nstoo_tot, nstates
   if (extraj.eq.1.and.nstoj_tot.ne.nstates) &
           call fatal_error('Some states have not been assigned a jastrow type')
   if (extrao.eq.1.and.nstoo_tot.ne.nstates) &
@@ -1062,8 +1062,8 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
   if (extraj.eq.0) then
     do istate=1,nstates
       stoj(istate)=1
-      write(ounit,'(A)') "State  -->  Jastrow #"
-      write(ounit,'(i4,A,i4)') istate, '   -->', stoj(istate)
+      if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Jastrow #"
+      if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4)') istate, '   -->', stoj(istate)
     enddo
   else
     do i=1,nwftypejas
@@ -1073,8 +1073,8 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
         istate=jtos(i,j)
         if (istate.ne.0) stoj(istate)=i
         if (istate.ne.0) then
-          write(ounit,'(A)') "State  -->  Jastrow #"
-          write(ounit,'(i4,A,i4)') istate, '   -->', stoj(istate)
+          if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Jastrow #"
+          if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4)') istate, '   -->', stoj(istate)
         endif
       enddo
     enddo
@@ -1082,7 +1082,7 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
 
   do istate=1,nstates
     if (stoj(istate) .eq. 0) then 
-      write(ounit,'(A,i4,A)') " State ", istate, " has not been assigned a jastrow type. "
+      if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " State ", istate, " has not been assigned a jastrow type. "
       call fatal_error('JASTROW INPUT: a state has not been assigned a jastrow type.')
     endif
   enddo
@@ -1091,8 +1091,8 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
   if (extrao.eq.0) then
     do istate=1,nstates
       stoo(istate)=1
-      write(ounit,'(A)') "State  -->  Orbital set"
-      write(ounit,'(i4,A,i4)') istate, '   -->', stoo(istate)
+      if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Orbital set"
+      if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4)') istate, '   -->', stoo(istate)
     enddo
   else
     do i=1,nwftypeorb
@@ -1102,8 +1102,8 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
         istate=otos(i,j)
         if (istate.ne.0) stoo(istate)=i
         if (istate.ne.0) then
-          write(ounit,'(A)') "State  -->  Orbital set "
-          write(ounit,'(i4,A,i4)') istate, '   -->', stoo(istate)
+          if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Orbital set "
+          if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4)') istate, '   -->', stoo(istate)
        endif
       enddo
     enddo
@@ -1113,7 +1113,7 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
 
   do istate=1,nstates
     if (stoo(istate) .eq. 0) then 
-      write(ounit,'(A,i4,A)') " State ", istate, " has not been assigned an orbital set . "
+      if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " State ", istate, " has not been assigned an orbital set . "
       call fatal_error('LCAO INPUT: a state has not been assigned an orbital set.')
     endif
   enddo
@@ -1164,8 +1164,8 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
   endif
  
   do istate=1,nstates
-    write(ounit,'(A)') "State  -->  Mixed Quantity #  <--  Jastrow #, Orbital set"
-    write(ounit,'(i4,A,i4,A,2i4)') istate, '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
+    if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Mixed Quantity #  <--  Jastrow #, Orbital set"
+    if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4,A,2i4)') istate, '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
   enddo
 !STU added before calling allocate_vmc()
 

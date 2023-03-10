@@ -512,6 +512,7 @@ subroutine read_jastrow_file(file_jastrow)
       use bparm,   only: nocuspb,nspin2b
       use contrl_file, only: errunit,ounit
       use contrl_per, only: iperiodic
+      use control, only: mode
       use custom_broadcast, only: bcast
       use general, only: pooldir
       use inputflags, only: ijastrow_parameter
@@ -595,10 +596,10 @@ subroutine read_jastrow_file(file_jastrow)
                 nwftypejas = 1
                 extraj = 0
             endif
-            write(ounit,'(A,i4,A)') " Found ", nwftypejas, " types of jastrows in the input file. "
+            if(mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " Found ", nwftypejas, " types of jastrows in the input file. "
             if (extraj .eq. 0) then
-               write(ounit,int_format) " For a multistate sr_n optimization , a 'jastrows_to_states' line is required before each jastrow's parameters are specified "
-               write(ounit,'(A,i4,A)') " Assuming 1-state sr_n optimization for the moment. "
+               if(mode(1:3) == 'vmc') write(ounit,int_format) " For a multistate sr_n optimization , a 'jastrows_to_states' line is required before each jastrow's parameters are specified "
+               if(mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " Assuming 1-state sr_n optimization for the moment. "
             endif
             !if (nwftypejas .ne. nwftypeorb) then
                 !write(ounit,int_format) " Using sr_n with multiple states requires a 'jastrow' line before each state's parameters are specified "
@@ -625,9 +626,9 @@ subroutine read_jastrow_file(file_jastrow)
         else
           nstoj(1) = 1 ! will redefine later, no, we don't need it.
           if (ioptwf.ge.1) then
-            write(ounit,int_format) " This is an sr_n optimization. Assuming 1 jastrow type and 1-state for the moment."
+            if(mode(1:3) == 'vmc') write(ounit,int_format) " This is an sr_n optimization. Assuming 1 jastrow type and 1-state for the moment."
           else
-            write(ounit,int_format) " No optimization to be performed. Will decide jastrow mapping once we know how many states. "
+            if(mode(1:3) == 'vmc') write(ounit,int_format) " No optimization to be performed. Will decide jastrow mapping once we know how many states. "
           endif
         endif
         call bcast(nstoj)
@@ -642,7 +643,7 @@ subroutine read_jastrow_file(file_jastrow)
       nstoj_tot=nstoj_tot+nstoj(i)
     enddo
 
-    write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypejas, " jastrow types to be assigned to ", nstoj_tot, " states. If only sampling, ignore."
+    if(mode(1:3) == 'vmc') write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypejas, " jastrow types to be assigned to ", nstoj_tot, " states. If only sampling, ignore."
 
     nwftypemax=max(nwftypejas,nwftypeorb)
     call bcast(nwftypemax)
@@ -714,8 +715,8 @@ subroutine read_jastrow_file(file_jastrow)
         endif
        
         nstojmax=maxval(nstoj)
-        write(ounit,*) "nstoj,nstojmax", nstoj(1), nstojmax
-        write(ounit,*) "Ignore if only sampling."
+        if(mode(1:3) == 'vmc') write(ounit,*) "nstoj,nstojmax", nstoj(1), nstojmax
+        if(mode(1:3) == 'vmc') write(ounit,*) "Ignore if only sampling."
         allocate(jtos(nwftypejas,nstojmax))
 
         if (wid) then !STU moved if outside
@@ -801,6 +802,7 @@ subroutine read_orbitals_file(file_orbitals)
 
       use coefs,   only: nbasis
       use contrl_file, only: errunit,ounit
+      use control, only: mode
       use custom_broadcast, only: bcast
       use general, only: pooldir
       use inputflags, only: ilcao
@@ -866,10 +868,10 @@ subroutine read_orbitals_file(file_orbitals)
                 nwftypeorb = 1
                 extrao = 0
             endif
-            write(ounit,'(A,i4,A)') " Found ", nwftypeorb, " sets of orbitals in the input file. "
+            if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " Found ", nwftypeorb, " sets of orbitals in the input file. "
             if (extrao .eq. 0) then
-               write(ounit,int_format) " For a multistate sr_n optimization , a 'orbitals_to_states' line is required before each orbital set's parameters are specified "
-               write(ounit,'(A,i4,A)') " Assuming 1-state sr_n optimization for the moment. "
+               if (mode(1:3) == 'vmc') write(ounit,int_format) " For a multistate sr_n optimization , a 'orbitals_to_states' line is required before each orbital set's parameters are specified "
+               if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " Assuming 1-state sr_n optimization for the moment. "
             endif
             nwftype = nwftypeorb !nwftype is used by force stuff outside this subroutine. don't really know how nwftype is used
         endif
@@ -894,9 +896,9 @@ subroutine read_orbitals_file(file_orbitals)
         else
           nstoo(1)=1
           if(ioptwf.eq.1) then
-            write(ounit,int_format) " This is an sr_n optimization. Assuming 1 orbital set and 1-state for the moment. "
+            if (mode(1:3) == 'vmc') write(ounit,int_format) " This is an sr_n optimization. Assuming 1 orbital set and 1-state for the moment. "
           else
-            write(ounit,int_format) " No optimization to be performed. Will decide orbital mapping once we know how many states. "
+            if (mode(1:3) == 'vmc') write(ounit,int_format) " No optimization to be performed. Will decide orbital mapping once we know how many states. "
           endif
         endif
         call bcast(nstoo)
@@ -913,7 +915,7 @@ subroutine read_orbitals_file(file_orbitals)
 
     ! to escape the comments before the "lcao nbasis norb" line
     if (wid) then
-        write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypeorb, " orbital sets to be assigned to ", nstoo_tot, " states. Ignore if only sampling"
+        if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypeorb, " orbital sets to be assigned to ", nstoo_tot, " states. Ignore if only sampling"
         do while (skip)
             read(iunit,*, iostat=iostat) temp1
             temp1 = trim(temp1)
@@ -953,8 +955,8 @@ subroutine read_orbitals_file(file_orbitals)
     endif
 
     nstoomax=maxval(nstoo)
-    write(ounit,*) "nstoo,nstoomax", nstoo(1), nstoomax
-    write(ounit,*) "Ignore, if only sampling"
+    if (mode(1:3) == 'vmc') write(ounit,*) "nstoo,nstoomax", nstoo(1), nstoomax
+    if (mode(1:3) == 'vmc') write(ounit,*) "Ignore, if only sampling"
     allocate(otos(nwftypeorb,nstoomax))
 
     if (wid) then ! Moved if to outside, all the important quantities are bcast later.
