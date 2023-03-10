@@ -2,6 +2,7 @@ module lapack_wrapper
 
       use precision_kinds, only: dp
   implicit none
+  private
   interface!LAPACK interface
 !*  -- LAPACK driver routine (version 3.1) --
      SUBROUTINE DSYSV( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, WORK, LWORK, INFO )
@@ -56,9 +57,6 @@ module lapack_wrapper
       END SUBROUTINE
   end interface
 
-  !> \private
-  private
-  !> \public
   public :: lapack_generalized_eigensolver, lapack_generalized_eigensolver_lowest, &
        lapack_matmul, lapack_matrix_vector, lapack_qr, lapack_solver, lapack_sort
 
@@ -77,15 +75,15 @@ contains
     implicit none
     real(dp), dimension(:, :), intent(in) :: mtx
     real(dp), dimension(:, :), intent(in), optional :: stx
-    real(dp), dimension(size(mtx, 1)), intent(inout) :: eigenvalues
-    real(dp), dimension(size(mtx, 1), size(mtx, 2)), intent(inout) :: eigenvectors
+    real(dp), dimension(:), intent(inout) :: eigenvalues
+    real(dp), dimension(:, :), intent(inout) :: eigenvectors
 
     real(dp), dimension(:, :), allocatable :: mtx_copy
     real(dp), dimension(:, :), allocatable :: stx_copy
 
 
     ! Local variables
-    integer :: dim, info, lwork, itype = 1
+    integer :: dim, info, lwork, itype = 1, n
     logical :: gev
 
      ! ALL the eigenvalues of the subpace (re, im)
@@ -158,8 +156,8 @@ contains
     implicit none
     real(dp), dimension(:, :), intent(in) :: mtx
     real(dp), dimension(:, :), intent(in) :: stx
-    real(dp), dimension(lowest), intent(out) :: eigenvalues
-    real(dp), dimension(size(mtx, 1), lowest), intent(out) :: eigenvectors
+    real(dp), dimension(:), intent(out) :: eigenvalues
+    real(dp), dimension(:, :), intent(out) :: eigenvectors
     integer :: lowest
 
     ! Local variables
@@ -244,7 +242,7 @@ contains
     !> \return orthogonal basis
 
     implicit none
-    real(dp), dimension(:, :), intent(inout) :: basis
+    real(dp), dimension(:, :), contiguous, intent(inout) :: basis
     real(dp), dimension(:), allocatable :: work ! workspace, see lapack documentation
     real(dp), dimension(size(basis, 2)) :: tau ! see DGEQRF documentation
     integer :: info, lwork, m, n
@@ -297,7 +295,7 @@ contains
 
     implicit none
 
-    real(dp), dimension(:, :), intent(inout) :: arr, brr
+    real(dp), dimension(:, :), contiguous, intent(inout) :: arr, brr
 
     ! local variables
     real(dp), dimension(:), allocatable :: work
@@ -330,7 +328,7 @@ contains
 
   end subroutine lapack_solver
 
-    function lapack_matmul(transA, transB, arr, brr, alpha) result (mtx)
+    subroutine lapack_matmul(transA, transB, arr, brr, mtx, alpha)
     !> perform the matrix multiplication alpha * arr ^ (transA) * brr ^ (transB)
     !> see Lapack DGEMM for further details
     !> \param transA: 'T' transpose A, 'N' do not tranpose
@@ -343,9 +341,9 @@ contains
     implicit none
 
     character(len=1), intent(in) :: transA, transB
-    real(dp), dimension(:, :), intent(in) :: arr, brr
+    real(dp), dimension(:, :), contiguous, intent(in) :: arr, brr
     real(dp), optional, intent(in) :: alpha
-    real(dp), dimension(:, :), allocatable :: mtx
+    real(dp), dimension(:, :), contiguous :: mtx
 
     ! local variables
     real(dp) :: x
@@ -374,14 +372,13 @@ contains
     end if
 
     ! resulting array
-    allocate(mtx(m, n))
     mtx = 0.d0
 
     call DGEMM(transA, transB, m, n, k, x, arr, lda, brr, ldb, 0.d0, mtx, m)
 
-  end function lapack_matmul
+  end subroutine lapack_matmul
 
-  function lapack_matrix_vector(transA, mtx, vector, alpha) result(rs)
+  subroutine lapack_matrix_vector(transA, mtx, vector, rs, alpha)
     !> perform the Matrix vector multiplication alpha * mtx ^ (transA) * vector
     !> see DGEMV for details
     !> \param transA: 'T' transpose A; 'N' do not transpose
@@ -393,10 +390,10 @@ contains
     implicit none
 
     character(len=1), intent(in) :: transA
-    real(dp), dimension(:, :), intent(in) :: mtx
-    real(dp), dimension(:), intent(in) :: vector
+    real(dp), dimension(:, :), contiguous, intent(in) :: mtx
+    real(dp), dimension(:), contiguous, intent(in) :: vector
     real(dp), optional, intent(in) :: alpha
-    real(dp), dimension(:), allocatable :: rs
+    real(dp), dimension(:), contiguous :: rs
 
     ! local variable
     integer :: m, n
@@ -410,22 +407,21 @@ contains
     m = size(mtx, 1)
     n = size(mtx, 2)
 
-    allocate(rs(m))
     rs = 0.d0
 
     call DGEMV(transA, m, n, scalar, mtx, m, vector, 1, 0.d0, rs, 1)
 
-  end function lapack_matrix_vector
+  end subroutine lapack_matrix_vector
 
 
-  function lapack_sort(id, vector) result(keys)
+  subroutine lapack_sort(id, vector,keys)
     !> \brief sort a vector of douboles
     !> \param vector Array to sort
     !> \param keys Indices of the sorted array
     !> \param id Sorted either `I` increasing or `D` decreasing
-    real(dp), dimension(:), intent(inout) :: vector
+    real(dp), dimension(:), contiguous, intent(inout) :: vector
     character(len=1), intent(in) :: id
-    integer, dimension(size(vector)) :: keys
+    integer, dimension(:) :: keys
 
     ! local variables
     real(dp), dimension(size(vector)) :: xs
@@ -443,7 +439,7 @@ contains
        end do
     end do
 
-  end function lapack_sort
+  end subroutine lapack_sort
 
 
   subroutine check_lapack_call(info, name)
