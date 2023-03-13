@@ -141,13 +141,14 @@ c      print*,"norb",norb,"norb_tot",norb_tot
 c All quantities saved (old) avaliable
       if(iflag_move.eq.1) then
         do istate=1,nstates !STU added, use mapping
+          k=stoo(istate)
           do kk=1,3
             do iorb=1,norb
-              dorb_tmp(iorb,kk,stoo(istate))=dorb(iorb,iel,kk,stoo(istate))
+              dorb_tmp(iorb,kk,k)=dorb(iorb,iel,kk,k)
             enddo
           enddo
         
-          call determinante_ref_grad(iel,slmi(1,iab,stoo(istate)),dorb_tmp(1,1,stoo(istate)),norb,vref(1,stoo(istate)))
+          call determinante_ref_grad(iel,slmi(1,iab,k),dorb_tmp(1,1,k),norb,vref(1,k))
         enddo
 
         if(iguiding.eq.0) then

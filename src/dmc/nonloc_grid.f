@@ -18,6 +18,7 @@
       use qua,     only: nquad,xq,yq,zq
       use random_mod, only: random_dp
       use system,  only: cent,ncent,nelec
+      use vmc_mod, only: nbjx
       implicit none
 
       integer :: i, i1, i2, ic, ic_good
@@ -27,8 +28,8 @@
       real(dp) :: costh, p, pe, psid
       real(dp) :: psidi, ri, t_cum
       real(dp) :: t_norm, t_normi, tauprim
-      real(dp), dimension(2) :: vpsp_det
-      real(dp), dimension(nparmj) :: dvpsp_dj
+      real(dp), dimension(2,nbjx) :: vpsp_det
+      real(dp), dimension(nparmj,nbjx) :: dvpsp_dj
       real(dp), dimension(*) :: x
       real(dp), parameter :: one = 1.0_dp !was uninit
 

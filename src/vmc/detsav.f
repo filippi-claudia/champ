@@ -95,8 +95,8 @@ c Written by Claudia Filippi
         do iorb=1,norb
           orb(iel,iorb,stoo(istate))=orbn(iorb,stoo(istate))
           dorb(iorb,iel,1,stoo(istate))=dorbn(iorb,1,stoo(istate))
-          dorb(iorb,iel,1,stoo(istate))=dorbn(iorb,1,stoo(istate))
-          dorb(iorb,iel,1,stoo(istate))=dorbn(iorb,1,stoo(istate))
+          dorb(iorb,iel,2,stoo(istate))=dorbn(iorb,2,stoo(istate))
+          dorb(iorb,iel,3,stoo(istate))=dorbn(iorb,3,stoo(istate))
         enddo
       enddo
       

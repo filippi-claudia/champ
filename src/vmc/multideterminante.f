@@ -217,7 +217,7 @@ c-----------------------------------------------------------------------
       integer :: j, jel, jrep, k
       integer :: kk, nel
       real(dp) :: detratio, dum
-      real(dp), dimension(nelec*norb_tot) :: aa
+      real(dp), dimension(nelec,norb_tot) :: aa
       real(dp), dimension(norb_tot, nelec) :: ymat
       real(dp), dimension(norbs, 3) :: b
       real(dp), dimension(nelec, norb_tot, 3) :: gmat
@@ -250,7 +250,7 @@ c-----------------------------------------------------------------------
         do jrep=ivirt(iab),norb
           dum=0
           do j=1,nel
-             dum=dum+b(iworbd(j+ish,kref),kk)*aa(j+nelec*(jrep-1))
+             dum=dum+b(iworbd(j+ish,kref),kk)*aa(j,jrep)
           enddo
           dum=b(jrep,kk)-dum
           do irep=iactv(iab),nel
