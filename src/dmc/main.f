@@ -2,7 +2,7 @@
 c Written by Claudia Filippi
       use allocation_mod, only: deallocate_dmc
       use contrl_file, only: initialize,ounit
-      use control, only: mode
+      use control, only: mode, ipr
       use dmc_f_mod, only: dmc
       use error,   only: fatal_error
       use mpi
@@ -37,8 +37,10 @@ c Open the standard output and the log file only on the master
         open(45, file='trash.log')
       endif
 
-      write(filename, '(''problem.'',i0)') idtask
-      open(18,file=filename, status='unknown')
+      if(ipr.gt.5) then
+            write(filename, '(''problem.'',i0)') idtask
+            open(18,file=filename, status='unknown')
+      endif
 
 
 !     read the input from parser
