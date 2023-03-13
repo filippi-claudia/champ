@@ -8,6 +8,7 @@
       use control_dmc, only: dmc_irstar,dmc_nblk,dmc_nblkeq,dmc_nconf
       use control_dmc, only: dmc_nconf_new,dmc_nstep
       use error,   only: fatal_error
+      use general, only: write_walkalize
       use mpi
       use mpiconf, only: idtask,nproc
       use precision_kinds, only: dp
@@ -30,7 +31,7 @@
 
       save ngfmc
 
-      if(ipr.gt.-2) then
+      if(write_walkalize) then
         if(idtask.le.9) then
           write(filename,'(''walkalize.'',i1)') idtask
          elseif(idtask.le.99) then
@@ -72,7 +73,7 @@ c set the random number seed, setrn already called in read_input
         goto 345
   340   call fatal_error('DMC: error reading mc_configs')
   345   close (1)
-        if(ipr.gt.-2) then
+        if(write_walkalize) then
           open(11,file=filename)
           rewind 11
           write(11,'(i3,'' nblkeq to be added to nblock at file end'')')

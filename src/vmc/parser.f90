@@ -40,7 +40,7 @@ subroutine parser
       use dorb_m,  only: iworbd
       use efield,  only: iefield,ncharges
       use efield_f_mod, only: efield_compute_extint
-      use general, only: bas_id,filenames_bas_num,pooldir,pp_id
+      use general, only: bas_id,filenames_bas_num,pooldir,pp_id,write_walkalize
       use get_norbterm_mod, only: get_norbterm
       use gradjerrb, only: ngrad_jas_blocks
       use grdntspar, only: delgrdba,delgrdbl,delgrdda,delgrdxyz,igrdtype
@@ -288,6 +288,7 @@ subroutine parser
   i3dsplorb   = fdf_get('i3dsplorb',0)
   i3dlagorb   = fdf_get('i3dlagorb',0)
   i3ddensity  = fdf_get('i3ddensity',0)
+  write_walkalize  = fdf_get('write_walkalize', .false.)
 
   ! trexio
   trex_backend = fdf_get('backend', 'hdf5')
