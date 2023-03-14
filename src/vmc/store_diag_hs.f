@@ -45,12 +45,13 @@
       ish=0
       if(ioptorb+ioptjas.gt.0) then
         ish=1
-        hii( 1)=obs_tot(2, 1)
+        hii( 1)=obs_tot(jelo, 1)
         sii( 1)=1
       endif
-      do i=2,nparm_p1
-        hii( i)=obs_tot(jfhfj+i,1)
-        sii( i)=obs_tot(jfifj+i,1)
+      do i=1,nparm
+        hii( i+ish)=obs_tot(jfhfj-1+i,1)
+        sii( i+ish)=obs_tot(jfifj-1+i,1) -
+     &              obs_tot(jfj-1+i,1)*obs_tot(jfj-1+i,1)
       enddo
 
       return

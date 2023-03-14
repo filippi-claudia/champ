@@ -47,7 +47,7 @@ contains
 
     end subroutine diag_mat
 
-    pure function norm(vector)
+    function norm(vector)
         !> compute the norm-2 of a vector
         real(dp), dimension(:), intent(in) :: vector
         real(dp) :: norm
@@ -169,21 +169,19 @@ contains
         deallocate(keys)
     end subroutine initialize_subspace
 
-    subroutine modified_gram_schmidt(mat, nstart)
+    subroutine modified_gram_schmidt(mat)
         !> Brief use modifed gram-schmidt orthogonalization on mat
         !> Brief nstart is the index of the first vector to orthogonalize
 
         ! input
         real(dp), dimension(:, :), intent(inout) :: mat
-        integer, optional, intent(in) :: nstart
 
-        integer :: i
+        integer :: i, n , m
         integer :: nrows, ncols
         integer :: idx_start
         real(dp), dimension(:), allocatable :: tmp_array, tmp_array2
 
         idx_start = 1
-        if (present(nstart)) idx_start = nstart
 
         nrows = size(mat, 1)
         ncols = size(mat, 2)
@@ -191,12 +189,19 @@ contains
         allocate (tmp_array(nrows))
         allocate (tmp_array2(nrows))
 
-        do i = idx_start, ncols
+        do i = 1, ncols
             call lapack_matrix_vector('T', mat(:, :i - 1), mat(:, i), tmp_array)
             call lapack_matrix_vector('N', mat(:, :i - 1), tmp_array, tmp_array2)
             mat(:, i) = mat(:, i) - tmp_array2 
             mat(:, i) = mat(:, i)/norm(mat(:, i))
         end do
+        write(*,*) "MAT", idx_start, ncols
+                do n = 1,size(mat,2)
+                  do m = 1,size(mat,1)
+                    write(*,'("  ",E10.4)',advance='no') mat(m,n)
+                  end do
+                  write(*,*) sqrt( sum(mat(:,n)**2))
+                end do
 
         deallocate (tmp_array)
         deallocate (tmp_array2)

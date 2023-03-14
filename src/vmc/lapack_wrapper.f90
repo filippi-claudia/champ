@@ -55,6 +55,14 @@ module lapack_wrapper
         INTEGER            INFO, K, LDA, LWORK, M, N
         DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
       END SUBROUTINE
+      SUBROUTINE dggev( JOBVL, JOBVR, N, A, LDA, B, LDB, ALPHAR, ALPHAI, &
+                        BETA, VL, LDVL, VR, LDVR, WORK, LWORK, INFO )
+      CHARACTER          JOBVL, JOBVR
+      INTEGER            INFO, LDA, LDB, LDVL, LDVR, LWORK, N
+      DOUBLE PRECISION   A( LDA, * ), ALPHAI( * ), ALPHAR( * ), &
+                         b( ldb, * ), beta( * ), vl( ldvl, * ), &
+                         vr( ldvr, * ), work( * )
+      END SUBROUTINE
   end interface
 
   public :: lapack_generalized_eigensolver, lapack_generalized_eigensolver_lowest, &
@@ -83,11 +91,12 @@ contains
 
 
     ! Local variables
-    integer :: dim, info, lwork, itype = 1, n
+    integer :: dim, info, lwork, itype = 1, n, m
     logical :: gev
 
      ! ALL the eigenvalues of the subpace (re, im)
-    real(dp), dimension(size(mtx, 1)) :: eigenvalues_work
+    real(dp), dimension(size(mtx, 1)) :: eigenvalues_work, alphar, alphai, beta, unused
+    real(dp), dimension(size(mtx, 1), size(mtx,2)) :: vl
     real(dp), dimension(:), allocatable :: work ! workspace, see lapack documentation
 
     ! ! dimension of the guess space
@@ -108,7 +117,9 @@ contains
     allocate(work(1))
 
     if (gev) then
-      call DSYGV(itype,"V", "U", dim, mtx_copy, dim, stx_copy, dim, eigenvalues_work, work, -1, info)
+      call dggev('V', 'N', dim, mtx_copy, dim, stx_copy, dim, ALPHAR, ALPHAI, &
+                        BETA, VL, dim, unused, 1, WORK, -1, INFO )
+      !call DGGEV(itype,"V", "U", dim, mtx_copy, dim, stx_copy, dim, eigenvalues_work, work, -1, info)
       call check_lapack_call(info, "DSYGV")
     else
       call DSYEV("V", "U", dim, mtx_copy, dim, eigenvalues_work, work, -1, info)
@@ -122,16 +133,34 @@ contains
 
     ! Compute Eigenvalues
     if (gev) then
-      call DSYGV(itype,"V", "U", dim, mtx_copy, dim, stx_copy, dim, eigenvalues_work, work, lwork, info)
+      call dggev('V', 'N', dim, mtx_copy, dim, stx_copy, dim, ALPHAR, ALPHAI, &
+                        BETA, vl, dim, unused, 1, WORK, lwork, INFO )
+      !call DSYGV(itype,"V", "U", dim, mtx_copy, dim, stx_copy, dim, eigenvalues_work, work, lwork, info)
       call check_lapack_call(info, "DSYGV")
     else
       call DSYEV("V", "U", dim, mtx_copy, dim, eigenvalues_work, work, lwork, info)
       call check_lapack_call(info, "DSYEV")
     end if
+    write(*,*) "ALPHAR", alphar
+    write(*,*) "ALPHAi", alphai
+    write(*,*) "beta", beta
 
+                write(*,*) "eigenvector"
+                do n = 1,size(Vl,2)
+                  do m = 1,size(Vl,1)
+                    write(*,'("  ",E10.4)',advance='no') Vl(m,n)
+                  end do
+                  write(*,*) 
+                end do
     ! Sort the eigenvalues and eigenvectors of the basis
-    eigenvalues = eigenvalues_work
-    eigenvectors = mtx_copy
+    do n=1,size(eigenvalues)
+      if (beta(n).ne.0._dp) then
+        eigenvalues(n) = alphar(n)/beta(n)
+      else
+        eigenvalues(n) = 0._dp
+      endif
+    end do
+    eigenvectors = vl
 
     ! release memory
     deallocate(work)

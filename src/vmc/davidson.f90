@@ -126,7 +126,7 @@ contains
         logical, parameter :: use_gs_ortho = .true. ! which orthogonalization method to use gs/qr
         logical, parameter :: bool_export_matrices = .false. ! turn true if you want to export matrices
         integer :: not_cnv
-        integer :: ii, jj
+        integer :: ii, jj, m, n 
 
         ! Iteration subpsace dimension
         init_subspace_size = lowest*2
@@ -160,11 +160,17 @@ contains
         allocate (diag_mtx_cpy(parameters%nparm))
         allocate (diag_stx(parameters%nparm))
 
-        diag_mtx( 1)=obs_tot(2, 1)
-        diag_stx( 1)=1
-        do i=2,nparm
-          diag_stx( i)=obs_tot(nparm*2+2+i,1)
-          diag_mtx( i)=obs_tot(nparm*4+2+i,1)
+        allocate (mtx(parameters%nparm, parameters%nparm))
+        allocate (stx(parameters%nparm, parameters%nparm))
+        allocate (identity(parameters%nparm, parameters%nparm))
+
+        call eye(identity)
+
+        call fun_mtx_gemv(parameters, identity, mtx)
+        call fun_stx_gemv(parameters, identity, stx)
+        do i=1,nparm
+          diag_stx( i)=stx(i,i)
+          diag_mtx( i)=mtx(i,i)
         enddo
 
         if (nproc > 1) then
@@ -177,6 +183,7 @@ contains
         diag_mtx_cpy = diag_mtx
         call initialize_subspace(diag_mtx_cpy(1:init_subspace_size), init_subspace_size, nparm, V) ! Initial orthonormal basis
         deallocate (diag_mtx_cpy)
+        deallocate (mtx, stx, identity)
 
         if (idtask == 0) write(ounit, '(''DAV: Setup subspace problem'')')
 
@@ -240,7 +247,7 @@ contains
 
 
                 ! update the projected matrices in the small subspace
-                if (update_proj) then
+                if (.false.) then
 
                     ! update the projected matrices
                     call update_projection(V, mtxV, mtx_proj)
@@ -262,6 +269,27 @@ contains
                 end if
 
                 ! Solve the small eigenvalue problem
+                write(*,*) "Full V"
+                do n = 1,size(V,2)
+                  do m = 1,size(V,1)
+                    write(*,'("  ",E10.4)',advance='no') V(m,n)
+                  end do
+                  write(*,*) sqrt( sum(V(:,n)**2))
+                end do
+                write(*,*) "MTX proj"
+                do n = 1,size(mtx_proj,2)
+                  do m = 1,size(mtx_proj,1)
+                    write(*,'("  ",E10.4)',advance='no') mtx_proj(m,n)
+                  end do
+                  write(*,*)
+                end do
+                write(*,*) "STX proj"
+                do n = 1,size(stx_proj,2)
+                  do m = 1,size(stx_proj,1)
+                    write(*,'("  ",E10.4)',advance='no') stx_proj(m,n)
+                  end do
+                  write(*,*)
+                end do;
                 call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
                 write(ounit, '(''DAV: eigv'',1000d12.5)') (eigenvalues_sub(j), j=1, parameters%lowest)
 
@@ -304,11 +332,12 @@ contains
                     end select
 
                     ! Add the correction vectors to the current basis.
+
                     call concatenate(V, correction(:, :not_cnv))
 
                     ! Orthogonalize basis using modified GS
                     if (use_gs_ortho) then
-                        call modified_gram_schmidt(V, parameters%basis_size + 1)
+                        call modified_gram_schmidt(V)
                         update_proj = .true.
                     else
                         call lapack_qr(V)
@@ -320,6 +349,9 @@ contains
 
                     write(ounit, '(''DAV: --- Restart ---'')')
                     V = ritz_vectors(:, :init_subspace_size)
+                    do n=1,size(V,2)
+                      V(:,n) = V(:,n)/sqrt(sum(V(:,n)**2))
+                    end do
                     update_proj = .false.
 
                 end if
@@ -419,12 +451,13 @@ contains
             call check_deallocate_matrix(correction)
             deallocate (eigenvalues_sub, ritz_vectors)
             deallocate (eigenvectors_sub)
-            deallocate (diag_mtx, diag_stx)
             deallocate (residues)
             deallocate (lambda, tmp_res_array)
             deallocate (mtx_proj)
             call check_deallocate_matrix(stx_proj)
         endif
+
+        deallocate (diag_mtx, diag_stx)
 
         if (idtask == 0) then
             write(ounit, '(''DAV: Exiting Davidson'')')
@@ -458,7 +491,6 @@ contains
         tmp_array(old_dim + 1:, :old_dim) = transpose(tmp_array(:old_dim, old_dim + 1:))
 
         ! Move to new expanded matrix
-        deallocate (mtx_proj)
         call move_alloc(tmp_array, mtx_proj)
 
     end subroutine update_projection
@@ -539,7 +571,7 @@ contains
         real(dp), dimension(:, :) :: correction
         integer :: k, m
         logical :: gev
-        real(dp), dimension(:, :), allocatable   ::  F
+        real(dp), dimension(parameters%nparm, parameters%nparm) ::  F
         real(dp), dimension(parameters%nparm, 1) :: brr
 
         do k = 1, parameters%basis_size
@@ -552,9 +584,6 @@ contains
             correction(:, k) = brr(:, 1)
 
         end do
-
-        ! Deallocate
-        deallocate (F)
 
     end subroutine compute_GJD_free
 
@@ -571,19 +600,14 @@ contains
         use array_utils, only: eye
 
         real(dp), dimension(:, :), intent(in) :: ritz_vectors
+        real(dp), dimension(:, :) :: F_matrix
         type(davidson_parameters) :: parameters
         integer   :: eigen_index
         real(dp) :: eigenvalue
 
-        real(dp), dimension(:,:), allocatable :: F_matrix
         real(dp), dimension(parameters%nparm, parameters%nparm) :: lambda
-        real(dp), dimension(parameters%nparm, 1) :: ritz_tmp, stx, mtx
-        real(dp), dimension(:, :), allocatable :: ys
-        real(dp), dimension(parameters%nparm, parameters%nparm) :: I
-        real(dp), dimension(:, :), allocatable :: ubut, uubt, tmp
-
-
-        if (allocated(F_matrix)) deallocate(F_matrix)
+        real(dp), dimension(parameters%nparm, 1) :: ritz_tmp, stx
+        real(dp), dimension(parameters%nparm, parameters%nparm) :: I, ubut, uubt, tmp, ys, mtx
 
         ritz_tmp(:, 1) = ritz_vectors(:, eigen_index)
 
@@ -597,8 +621,8 @@ contains
         call lapack_matmul('N', 'T', ritz_tmp, stx, uubt)
         uubt = I - uubt
         
-        call fun_stx_gemv(parameters, uubt, stx)
-        call lapack_matmul('N', 'N', lambda, stx, ys)
+        call fun_stx_gemv(parameters, uubt, tmp)
+        call lapack_matmul('N', 'N', lambda, tmp, ys)
 
         call fun_mtx_gemv(parameters, uubt, mtx)
         call lapack_matmul('N', 'N', ubut, mtx, F_matrix)
@@ -616,7 +640,7 @@ contains
         real(dp), dimension(:, :), allocatable :: I
         real(dp), dimension(:, :), allocatable :: mtx
         real(dp), dimension(:, :), allocatable :: stx
-        integer n
+        integer n, m
 
         allocate (mtx(parameters%nparm, parameters%nparm))
         allocate (stx(parameters%nparm, parameters%nparm))
@@ -629,11 +653,17 @@ contains
 
         write(*,*) "Full STX"
         do n = 1,parameters%nparm
-          write(*,*) stx(:,n)
+          do m = 1,parameters%nparm
+            write(*,'("  ",E10.4)',advance='no') stx(m,n)
+          end do
+          write(*,*)
         end do
         write(*,*) "Full MTX"
         do n = 1,parameters%nparm
-          write(*,*) mtx(:,n)
+          do m = 1,parameters%nparm
+            write(*,'("  ",E10.4)',advance='no') mtx(m,n)
+          end do
+          write(*,*)
         end do
 
         deallocate (mtx)

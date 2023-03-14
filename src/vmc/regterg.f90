@@ -537,6 +537,7 @@ SUBROUTINE rdiaghg( n, m, h, s, ldh, e, v )
   !
   ! ... save the diagonal of input S (it will be overwritten)
   !
+  info = 0
   ALLOCATE( sdiag( n ) )
   DO i = 1, n
      sdiag(i) = s(i,i)
@@ -559,6 +560,8 @@ SUBROUTINE rdiaghg( n, m, h, s, ldh, e, v )
   END IF
   !
   ALLOCATE( work( lwork ) )
+  work = 0
+  e =0 
   !
   IF ( all_eigenvalues ) THEN
      !
