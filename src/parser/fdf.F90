@@ -124,15 +124,14 @@ module keywords
   !> @date October 15, 2022
   implicit none
   integer                     :: num_modules  = 11   ! change this number after every adition/deletion
-  integer                     :: num_keywords = 162 ! change this number after every adition/deletion
+  integer                     :: num_keywords = 163 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
   type(string_t) allowed_modules(11)
-  type(string_t) allowed_keywords(162)
-
+  type(string_t) allowed_keywords(163)
 
   private
   public  :: num_keywords, num_modules
@@ -225,7 +224,8 @@ module keywords
     allowed_keywords(155)%keys = 'print';           allowed_keywords(156)%keys = 'gradients_zmatrix'
     allowed_keywords(157)%keys = 'nquad';           allowed_keywords(158)%keys = 'hessian_zmatrix'
     allowed_keywords(159)%keys = 'esigmatrial';     allowed_keywords(160)%keys = 'limit_wt_dmc'
-    allowed_keywords(161)%keys = 'sr_lambda';       allowed_keywords(162)%keys = 'anorm'
+    allowed_keywords(161)%keys = 'write_walkalize'; allowed_keywords(162)%keys = 'sr_lambda'
+    allowed_keywords(163)%keys = 'anorm'
   end subroutine allocate_keywords
 
   subroutine allocate_modulenames()
@@ -717,7 +717,7 @@ CONTAINS
       endif
 
 #ifdef _MPI_
-else 
+else
   write(fileOut,*) ''
 endif ! (rank==0)
 #endif

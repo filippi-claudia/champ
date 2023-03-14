@@ -30,6 +30,7 @@
       use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
       use estsum,  only: r2sum,risum,tausum,tpbsum_dmc,wdsum
       use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
+      use general, only: write_walkalize
       use hpsi_mod, only: hpsi
       use jacobsave, only: ajacob,ajacold
       use mmpol,   only: mmpol_init,mmpol_rstrt
@@ -289,7 +290,7 @@ c zero out xsum variables for metrop
       call pcm_init(1)
       call mmpol_init(1)
 
-      if(ipr.ge.-2) then
+      if(write_walkalize) then
         if(idtask.le.9) then
           write(filename,'(''walkalize.'',i1)') idtask
          elseif(idtask.le.99) then

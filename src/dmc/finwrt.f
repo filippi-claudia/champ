@@ -23,6 +23,7 @@ c routine to print out final results
       use estcum,  only: wcum1,wcum_dmc,wfcum,wfcum1,wgcum,wgcum1
       use finwrt_more_mod, only: finwrt_more
       use grdntspar, only: igrdtype,ngradnts
+      use general, only: write_walkalize
       use header,  only: title
       use misc_grdnts, only: finwrt_diaghess_zmat,finwrt_grdnts_cart
       use misc_grdnts, only: finwrt_grdnts_zmat
@@ -143,7 +144,7 @@ c Collect radial charge density for atoms
 
       endif
 
-      if (ipr.gt.-2)
+      if (write_walkalize)
      &  write(11,'(3i5,f11.5,f7.4,f10.7,
      &  '' nstep,nblk,nconf,etrial,tau,taueff'')')
      &  dmc_nstep,iblk,dmc_nconf,etrial,tau,taucum(1)/wgcum(1)

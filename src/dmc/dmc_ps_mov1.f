@@ -65,6 +65,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use estsum,  only: tausum,tpbsum_dmc,wfsum1,wgsum1
       use estsum,  only: wsum1
       use gauss_mod, only: gauss
+      use general, only: write_walkalize
       use hpsi_mod, only: hpsi
       use hpsiedmc, only: psiedmc
       use inputflags, only: eps_node_cutoff,icircular,idrifdifgfunc
@@ -766,7 +767,7 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
 
       call splitj
       if(icasula.eq.0) ncount_casula=1
-      if(ipr.gt.-2) write(11,'(i8,f9.6,f12.5,f11.6,i5,f11.5)') ipass,ffn,
+      if(write_walkalize) write(11,'(i8,f9.6,f12.5,f11.6,i5,f11.5)') ipass,ffn,
      &wsum1(1),esum1_dmc(1)/wsum1(1),nwalk
      &,float(nmove_casula)/float(ncount_casula)
 
