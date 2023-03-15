@@ -117,9 +117,9 @@ contains
     allocate(work(1))
 
     if (gev) then
-      call dggev('V', 'N', dim, mtx_copy, dim, stx_copy, dim, ALPHAR, ALPHAI, &
-                        BETA, VL, dim, unused, 1, WORK, -1, INFO )
-      !call DGGEV(itype,"V", "U", dim, mtx_copy, dim, stx_copy, dim, eigenvalues_work, work, -1, info)
+      ! call dggev('V', 'N', dim, mtx_copy, dim, stx_copy, dim, ALPHAR, ALPHAI, &
+                        ! BETA, VL, dim, unused, 1, WORK, -1, INFO )
+      call DSYGV(itype,"V", "U", dim, mtx_copy, dim, stx_copy, dim, eigenvalues_work, work, -1, info)
       call check_lapack_call(info, "DSYGV")
     else
       call DSYEV("V", "U", dim, mtx_copy, dim, eigenvalues_work, work, -1, info)
@@ -130,37 +130,43 @@ contains
     lwork = max(1, int(work(1)))
     deallocate(work)
     allocate(work(lwork))
-
+    
     ! Compute Eigenvalues
     if (gev) then
-      call dggev('V', 'N', dim, mtx_copy, dim, stx_copy, dim, ALPHAR, ALPHAI, &
-                        BETA, vl, dim, unused, 1, WORK, lwork, INFO )
-      !call DSYGV(itype,"V", "U", dim, mtx_copy, dim, stx_copy, dim, eigenvalues_work, work, lwork, info)
+      ! call dggev('V', 'N', dim, mtx_copy, dim, stx_copy, dim, ALPHAR, ALPHAI, &
+                        ! BETA, vl, dim, unused, 1, WORK, lwork, INFO )
+      call DSYGV(itype,"V", "U", dim, mtx_copy, dim, stx_copy, dim, eigenvalues_work, work, lwork, info)
       call check_lapack_call(info, "DSYGV")
     else
       call DSYEV("V", "U", dim, mtx_copy, dim, eigenvalues_work, work, lwork, info)
       call check_lapack_call(info, "DSYEV")
     end if
-    write(*,*) "ALPHAR", alphar
-    write(*,*) "ALPHAi", alphai
-    write(*,*) "beta", beta
 
-                write(*,*) "eigenvector"
-                do n = 1,size(Vl,2)
-                  do m = 1,size(Vl,1)
-                    write(*,'("  ",E10.4)',advance='no') Vl(m,n)
-                  end do
-                  write(*,*) 
-                end do
-    ! Sort the eigenvalues and eigenvectors of the basis
-    do n=1,size(eigenvalues)
-      if (beta(n).ne.0._dp) then
-        eigenvalues(n) = alphar(n)/beta(n)
-      else
-        eigenvalues(n) = 0._dp
-      endif
-    end do
-    eigenvectors = vl
+    ! write(*,*) "ALPHAR", alphar
+    ! write(*,*) "ALPHAi", alphai
+    ! write(*,*) "beta", beta
+
+    ! write(*,*) "eigenvector"
+    ! do n = 1,size(Vl,2)
+    !   do m = 1,size(Vl,1)
+    !     write(*,'("  ",E10.4)',advance='no') Vl(m,n)
+    !   end do
+    !   write(*,*) 
+    ! end do
+
+    ! ! Sort the eigenvalues and eigenvectors of the basis
+    ! do n=1,size(eigenvalues)
+    !   if (beta(n).ne.0._dp) then
+    !     eigenvalues(n) = alphar(n)/beta(n)
+    !   else
+    !     eigenvalues(n) = 0._dp
+    !   endif
+    ! end do
+
+    ! eigenvectors = vl
+
+    eigenvalues = eigenvalues_work
+    eigenvectors = mtx_copy
 
     ! release memory
     deallocate(work)

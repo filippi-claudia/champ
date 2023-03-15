@@ -483,6 +483,7 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      END IF
      !
   END DO iterate
+  write(*,*) e
   !
   DEALLOCATE( conv )
   DEALLOCATE( ew )

@@ -173,6 +173,22 @@ contains
           diag_mtx( i)=mtx(i,i)
         enddo
 
+        write(*,*) "Full MTX"
+        do n = 1,parameters%nparm
+          do m = 1,parameters%nparm
+            write(*,'("  ",E10.4)',advance='no') mtx(m,n)
+          end do
+          write(*,*)
+        end do
+
+        write(*,*) "Full STX"
+        do n = 1,parameters%nparm
+          do m = 1,parameters%nparm
+            write(*,'("  ",E10.4)',advance='no') stx(m,n)
+          end do
+          write(*,*)
+        end do
+
         if (nproc > 1) then
             call MPI_BCAST(diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
             call MPI_BCAST(diag_stx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
@@ -689,9 +705,13 @@ contains
         allocate (psi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
         allocate (hpsi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
 
+        ! allocate (psi(parameters%nparm_max, size(input_vect, 2)), source=0.0_dp)
+        ! allocate (hpsi(parameters%nparm_max, size(input_vect, 2)), source=0.0_dp)
+
+
         psi = 0.0_dp
         psi(1:size(input_vect, 1), 1:size(input_vect, 2)) = input_vect
-
+        write(*,*) size(input_vect, 2)
         call h_psi_lin_d(parameters%nparm, size(input_vect, 2), psi, hpsi)
 
         output_vect = hpsi(1:size(input_vect, 1), 1:size(input_vect, 2))
@@ -715,6 +735,9 @@ contains
 
         allocate (psi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
         allocate (spsi(parameters%nparm_max, 2*parameters%nvecx), source=0.0_dp)
+
+        ! allocate (psi(parameters%nparm_max, size(input_vect, 2)), source=0.0_dp)
+        ! allocate (spsi(parameters%nparm_max, size(input_vect, 2)), source=0.0_dp)
 
         psi = 0.0_dp
         psi(1:size(input_vect, 1), 1:size(input_vect, 2)) = input_vect
