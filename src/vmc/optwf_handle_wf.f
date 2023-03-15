@@ -85,7 +85,7 @@ c tmp
       do k=1,nwftypejas
 c        if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)') 
 c     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             ! Intel version
-        write(temp, '(a,i0,a)') '( jastrows_to_states', nstoj(k), '(i4))'        
+        if (extraj.eq.1) write(temp, '(a,i0,a)') '( jastrows_to_states', nstoj(k), '(i4))'        
         if (extraj.eq.1) write(2,temp) (jtos(k,i),i=1,nstoj(k))               ! GNU version
 
 
@@ -153,7 +153,7 @@ c-----------------------------------------------------------------------
       do k=1,nwftypeorb
 c        if (extrao.eq.1) write(2,'(''orbitals_to_states'',i6,<nstoo(k)>i4)')
 c     &                         nstoo(k), (otos(k,i),i=1,nstoo(k))           ! Intel version
-        write(temp, '(a,i0,a)') '( orbitals_to_states', nstoo(k), '(i4))'        
+        if (extrao.eq.1) write(temp, '(a,i0,a)') '( orbitals_to_states', nstoo(k), '(i4))'        
         if (extrao.eq.1) write(2,temp) (otos(k,i),i=1,nstoo(k))               ! GNU version
 
         do i=1,norb+nadorb
