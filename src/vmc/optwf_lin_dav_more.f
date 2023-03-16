@@ -65,7 +65,6 @@
       ! regterg
       if(lin_jdav.eq.0) then
        write(ounit,*) "USING OLD REGTERG"
-
         call regterg( nparm_p1, mparm, nvec, nvecx, evc, ethr,
      &                e, itype, notcnv, idav_iter, ipr, idtask )
 

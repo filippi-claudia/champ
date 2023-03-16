@@ -24,7 +24,7 @@
       real(dp), dimension(:,:) :: psi
       real(dp), dimension(:,:) :: hpsi
       real(dp), dimension(mconf) :: aux
-      real(dp), dimension(mparm,nvecx) :: hpsiloc
+      real(dp), dimension(mparm,2*nvecx) :: hpsiloc
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -124,7 +124,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real(dp) :: aux0
       real(dp), dimension(mparm,*) :: psi
       real(dp), dimension(mparm,*) :: spsi
-      real(dp), dimension(mparm,nvecx) :: spsiloc
+      real(dp), dimension(mparm,2*  nvecx) :: spsiloc
       real(dp), dimension(mconf) :: aux
 
       i0=1

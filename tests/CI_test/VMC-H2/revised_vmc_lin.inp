@@ -36,8 +36,8 @@ load jastrow_der     jastrow.der
     nopt_iter     1
     lin_eps     0.1d0
     lin_adiag   0.01d0
-    lin_jdav    0
-    lin_nvec    5
+    lin_jdav    1
+    lin_nvec    2
     lin_nvecx   10
     isample_cmat  0
     energy_tol    0.0d0
@@ -45,7 +45,7 @@ load jastrow_der     jastrow.der
 
 %module blocking_vmc
     vmc_nstep     20
-    vmc_nblk      400
+    vmc_nblk      200
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule

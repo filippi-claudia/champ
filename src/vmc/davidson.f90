@@ -173,6 +173,23 @@ contains
           diag_mtx( i)=mtx(i,i)
         enddo
 
+        write(*,*) "Full MTX"
+        do n = 1,parameters%nparm
+          do m = 1,parameters%nparm
+            write(*,'("  ",E10.4)',advance='no') mtx(m,n)
+          end do
+          write(*,*)
+        end do
+
+        write(*,*) "Full STX"
+        do n = 1,parameters%nparm
+          do m = 1,parameters%nparm
+            write(*,'("  ",E10.4)',advance='no') stx(m,n)
+          end do
+          write(*,*)
+        end do
+        ! call exit()
+
         if (nproc > 1) then
             call MPI_BCAST(diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
             call MPI_BCAST(diag_stx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
@@ -290,6 +307,7 @@ contains
                   end do
                   write(*,*)
                 end do;
+
                 call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
                 write(ounit, '(''DAV: eigv'',1000d12.5)') (eigenvalues_sub(j), j=1, parameters%lowest)
 
@@ -312,13 +330,19 @@ contains
 
                 ! Check which eigenvalues has converged
                 errors = norm2(residues(:, :parameters%lowest), 1)
+                not_cnv = 0
                 do j = 1, parameters%lowest
-                    if (errors(j) < tolerance) has_converged(j) = .true.
+                    if (errors(j) < tolerance) then
+                        has_converged(j) = .true.
+                    else
+                        not_cnv = not_cnv + 1 
+                    endif
                 end do
                 write(ounit, '(''DAV: resd'',1000d12.5)') (errors(j), j=1, parameters%lowest)
-
-                not_cnv = count(.not. has_converged(:))
                 write(ounit, '(''DAV: Root not yet converged     : '', I10)') not_cnv
+
+                ! exit the loop if all eigenvalues have been found
+                if(not_cnv == 0)    exit
 
                 ! Append correction vectors
                 if (parameters%basis_size + size_update <= nvecx) then
@@ -691,7 +715,7 @@ contains
 
         psi = 0.0_dp
         psi(1:size(input_vect, 1), 1:size(input_vect, 2)) = input_vect
-
+        write(*,*) size(input_vect, 2)
         call h_psi_lin_d(parameters%nparm, size(input_vect, 2), psi, hpsi)
 
         output_vect = hpsi(1:size(input_vect, 1), 1:size(input_vect, 2))
@@ -722,6 +746,7 @@ contains
         call s_psi_lin_d(parameters%nparm, size(input_vect, 2), psi, spsi)
 
         output_vect = spsi(1:size(input_vect, 1), 1:size(input_vect, 2))
+        ! output_vect = input_vect
         deallocate (psi, spsi)
 
     end subroutine fun_stx_gemv
