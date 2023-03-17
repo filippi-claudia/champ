@@ -177,7 +177,7 @@ contains
         real(dp), dimension(:, :), intent(inout) :: mat
         integer, optional, intent(in) :: nstart
 
-        integer :: i, n , m
+        integer :: i
         integer :: nrows, ncols
         integer :: idx_start
         real(dp), dimension(:), allocatable :: tmp_array, tmp_array2
