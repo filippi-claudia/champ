@@ -18,6 +18,7 @@
 
       real(dp), dimension(:) :: hii
       real(dp), dimension(:) :: sii
+      real(dp) :: aux0, aux1, aux2
 
 
       write(ounit,*) 'nparm_p1,nparm',nparm_p1,nparm
@@ -49,10 +50,17 @@
         sii( 1)=1
       endif
       do i=1,nparm
-        hii( i+ish)=obs_tot(jfhfj-1+i,1)
+        aux0=obs_tot(jfj-1+i,1)
+        aux1=obs_tot(jefj-1+i,1)
+        aux2=obs_tot(jhfj-1+i,1)
+        hii(i+ish)=aux0*obs_tot(jelo,1)*obs_tot(jfj+i-1,1)
+     &     -0.5d0*(aux0*(obs_tot(jefj+i-1,1)+obs_tot(jhfj+i-1,1))
+     &                  +obs_tot(jfj+i-1,1)*(aux1+aux2))
         sii( i+ish)=obs_tot(jfifj-1+i,1) -
-     &              obs_tot(jfj-1+i,1)*obs_tot(jfj-1+i,1)
+     &              obs_tot(jfj-1+i,1)**2
       enddo
+
+ 
 
       return
       end

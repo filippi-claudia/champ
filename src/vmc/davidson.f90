@@ -31,7 +31,7 @@
 !> return eigenvalues and ritz_vectors of the matrix.
 module davidson
       use array_utils, only: check_deallocate_matrix
-      use array_utils, only: check_deallocate_vector, concatenate
+      use array_utils, only: check_deallocate_vector,concatenate
       use array_utils, only: diag_mat,eye,initialize_subspace
       use array_utils, only: modified_gram_schmidt,norm,write_matrix
       use array_utils, only: write_vector
@@ -80,7 +80,7 @@ contains
         !> return eigenvalues and ritz_vectors of the matrix
 
         use mpi
-        use sr_mat_n, only: obs_tot
+        use store_diag_hs_mod, only: store_diag_hs
 
         implicit none
 
@@ -108,7 +108,7 @@ contains
         real(dp), dimension(:, :), allocatable :: ritz_vectors
         real(dp), dimension(:, :), allocatable :: correction, eigenvectors_sub, mtx_proj, stx_proj, V
         real(dp), dimension(:, :), allocatable :: mtxV, stxV
-        real(dp), dimension(:, :), allocatable :: mtx, stx, identity
+        real(dp), dimension(:, :), allocatable :: mtx, identity
 
         ! tmp arrays for the vectorsi residue calculation
         real(dp), dimension(:, :), allocatable :: lambda              ! eigenvalues_sub in a diagonal matrix
@@ -126,7 +126,7 @@ contains
         logical, parameter :: use_gs_ortho = .true. ! which orthogonalization method to use gs/qr
         logical, parameter :: bool_export_matrices = .false. ! turn true if you want to export matrices
         integer :: not_cnv
-        integer :: ii, jj, m, n 
+        integer :: ii, jj, n 
 
         ! Iteration subpsace dimension
         init_subspace_size = lowest*2
@@ -160,35 +160,17 @@ contains
         allocate (diag_mtx_cpy(parameters%nparm))
         allocate (diag_stx(parameters%nparm))
 
+        if (idtask == 0) call store_diag_hs(parameters%nparm, diag_mtx, diag_stx)
+
+        ! mtx is incorrect so use a identity multiplication to get the diagonal
         allocate (mtx(parameters%nparm, parameters%nparm))
-        allocate (stx(parameters%nparm, parameters%nparm))
         allocate (identity(parameters%nparm, parameters%nparm))
-
         call eye(identity)
-
         call fun_mtx_gemv(parameters, identity, mtx)
-        call fun_stx_gemv(parameters, identity, stx)
         do i=1,nparm
-          diag_stx( i)=stx(i,i)
           diag_mtx( i)=mtx(i,i)
         enddo
-
-        write(*,*) "Full MTX"
-        do n = 1,parameters%nparm
-          do m = 1,parameters%nparm
-            write(*,'("  ",E10.4)',advance='no') mtx(m,n)
-          end do
-          write(*,*)
-        end do
-
-        write(*,*) "Full STX"
-        do n = 1,parameters%nparm
-          do m = 1,parameters%nparm
-            write(*,'("  ",E10.4)',advance='no') stx(m,n)
-          end do
-          write(*,*)
-        end do
-        ! call exit()
+        deallocate (mtx, identity)
 
         if (nproc > 1) then
             call MPI_BCAST(diag_mtx, parameters%nparm, MPI_REAL8, 0, MPI_COMM_WORLD, ier)
@@ -200,7 +182,6 @@ contains
         diag_mtx_cpy = diag_mtx
         call initialize_subspace(diag_mtx_cpy(1:init_subspace_size), init_subspace_size, nparm, V) ! Initial orthonormal basis
         deallocate (diag_mtx_cpy)
-        deallocate (mtx, stx, identity)
 
         if (idtask == 0) write(ounit, '(''DAV: Setup subspace problem'')')
 
@@ -264,7 +245,7 @@ contains
 
 
                 ! update the projected matrices in the small subspace
-                if (.false.) then
+                if (update_proj) then
 
                     ! update the projected matrices
                     call update_projection(V, mtxV, mtx_proj)
@@ -285,29 +266,7 @@ contains
 
                 end if
 
-                ! Solve the small eigenvalue problem
-                write(*,*) "Full V"
-                do n = 1,size(V,2)
-                  do m = 1,size(V,1)
-                    write(*,'("  ",E10.4)',advance='no') V(m,n)
-                  end do
-                  write(*,*) sqrt( sum(V(:,n)**2))
-                end do
-                write(*,*) "MTX proj"
-                do n = 1,size(mtx_proj,2)
-                  do m = 1,size(mtx_proj,1)
-                    write(*,'("  ",E10.4)',advance='no') mtx_proj(m,n)
-                  end do
-                  write(*,*)
-                end do
-                write(*,*) "STX proj"
-                do n = 1,size(stx_proj,2)
-                  do m = 1,size(stx_proj,1)
-                    write(*,'("  ",E10.4)',advance='no') stx_proj(m,n)
-                  end do
-                  write(*,*)
-                end do;
-
+                ! Solve theV small eigenvalue problem
                 call lapack_generalized_eigensolver(mtx_proj, eigenvalues_sub, eigenvectors_sub, stx_proj)
                 write(ounit, '(''DAV: eigv'',1000d12.5)') (eigenvalues_sub(j), j=1, parameters%lowest)
 
@@ -361,7 +320,7 @@ contains
 
                     ! Orthogonalize basis using modified GS
                     if (use_gs_ortho) then
-                        call modified_gram_schmidt(V)
+                        call modified_gram_schmidt(V, parameters%basis_size+1)
                         update_proj = .true.
                     else
                         call lapack_qr(V)
@@ -373,7 +332,7 @@ contains
 
                     write(ounit, '(''DAV: --- Restart ---'')')
                     V = ritz_vectors(:, :init_subspace_size)
-                    do n=1,size(V,2)
+                    do n=1,size(V,2) ! normalize V
                       V(:,n) = V(:,n)/sqrt(sum(V(:,n)**2))
                     end do
                     update_proj = .false.
@@ -689,6 +648,8 @@ contains
           end do
           write(*,*)
         end do
+        ! call write_matrix("H.dat", mtx)
+        ! call write_matrix("S.dat", stx)
 
         deallocate (mtx)
         deallocate (stx)

@@ -135,7 +135,7 @@ gitinfo(${CMAKE_SOURCE_DIR})
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-cpp" "-ffree-line-length-none")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-ffree-line-length-none")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
@@ -144,7 +144,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
         "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
         "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
         "-Wno-c-binding-type" "-Wno-function-elimination"
-        "-fno-check-array-temporaries" "-O0"
+        "-fno-check-array-temporaries"
         # "-ffpe-trap=invalid,zero,overflow" 
         )
   endif()

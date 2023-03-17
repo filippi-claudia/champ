@@ -483,7 +483,6 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
      END IF
      !
   END DO iterate
-  write(*,*) e
   !
   DEALLOCATE( conv )
   DEALLOCATE( ew )
@@ -561,8 +560,6 @@ SUBROUTINE rdiaghg( n, m, h, s, ldh, e, v )
   END IF
   !
   ALLOCATE( work( lwork ) )
-  work = 0
-  e =0 
   !
   IF ( all_eigenvalues ) THEN
      !
