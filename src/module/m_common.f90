@@ -1,3 +1,26 @@
+module Cell
+  !> Arguments: b, bkin, tildem, tildemkin, xmat, xmatkin
+  use precision_kinds, only: dp
+  implicit none
+  real(dp), dimension(:, :), allocatable :: rlatt !(3,3)
+  real(dp), dimension(:, :), allocatable :: rlatt_inv !(3,3)
+  private
+  public :: rlatt, rlatt_inv
+  public :: allocate_Cell, deallocate_Cell
+  save
+contains
+  
+  subroutine allocate_Cell()
+    if (.not. allocated(rlatt)) allocate (rlatt(3, 3), source=0.d0)
+    if (.not. allocated(rlatt_inv)) allocate (rlatt_inv(3, 3), source=0.d0)
+  end subroutine allocate_Cell
+
+  subroutine deallocate_Cell()
+    if (allocated(rlatt)) deallocate (rlatt)
+    if (allocated(rlatt_inv)) deallocate (rlatt_inv)
+  end subroutine deallocate_Cell  
+  
+end module Cell
 
 module Bloc
     !> Arguments: b, bkin, tildem, tildemkin, xmat, xmatkin
@@ -1026,6 +1049,7 @@ module m_common
 contains
 subroutine allocate_m_common()
 
+      use Cell, only: allocate_Cell
       use Bloc,    only: allocate_Bloc
       use b_tmove, only: allocate_b_tmove
       use casula,  only: allocate_casula
@@ -1061,6 +1085,7 @@ subroutine allocate_m_common()
 
     implicit none
 
+    call allocate_Cell()
     call allocate_atom()
     call allocate_b_tmove()
     call allocate_Bloc()
@@ -1096,7 +1121,8 @@ subroutine allocate_m_common()
 end subroutine allocate_m_common
 
 subroutine deallocate_m_common()
-    ! use system, only: deallocate_atom
+  ! use system, only: deallocate_atom
+      use Cell, only: deallocate_Cell
       use Bloc,    only: deallocate_Bloc
       use b_tmove, only: deallocate_b_tmove
       use casula,  only: deallocate_casula
@@ -1130,6 +1156,7 @@ subroutine deallocate_m_common()
     implicit none
 
     ! call deallocate_atom()
+    call deallocate_Cell()
     call deallocate_b_tmove()
     call deallocate_Bloc()
     call deallocate_casula()

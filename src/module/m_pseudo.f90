@@ -44,66 +44,15 @@ contains
 
 end module pseudo
 
-module pseudo_tm
-    !> Arguments: arg, arg_ps, d2pot, nr_ps, r0, r0_ps, rmax, rmax_ps, vpseudo
-
-      use precision_kinds, only: dp
-
-
-    real(dp), dimension(:), allocatable :: arg !(MCTYPE)
-    real(dp), dimension(:), allocatable :: arg_ps !(MCTYPE)
-    real(dp), dimension(:, :, :), allocatable :: d2pot !(MPS_GRID,MCTYPE,MPS_L)
-    integer, dimension(:), allocatable :: nr_ps !(MCTYPE)
-    real(dp), dimension(:), allocatable :: r0 !(MCTYPE)
-    real(dp), dimension(:), allocatable :: rmax !(MCTYPE)
-    real(dp), dimension(:, :, :), allocatable :: vpseudo !(MPS_GRID,MCTYPE,MPS_L)
-
-    private
-    public :: arg, arg_ps, d2pot, nr_ps, r0, rmax, vpseudo
-    ! public rmax_ps, r0_ps
-    public :: allocate_pseudo_tm, deallocate_pseudo_tm
-    save
-contains
-    subroutine allocate_pseudo_tm()
-      use pseudo_mod, only: MPS_GRID,MPS_L
-      use system,  only: nctype_tot
-
-        if (.not. allocated(arg)) allocate (arg(nctype_tot))
-        if (.not. allocated(arg_ps)) allocate (arg_ps(nctype_tot))
-        if (.not. allocated(d2pot)) allocate (d2pot(MPS_GRID, nctype_tot, MPS_L))
-        if (.not. allocated(nr_ps)) allocate (nr_ps(nctype_tot), source=0)
-        if (.not. allocated(r0)) allocate (r0(nctype_tot))
-        if (.not. allocated(rmax)) allocate (rmax(nctype_tot))
-        if (.not. allocated(vpseudo)) allocate (vpseudo(MPS_GRID, nctype_tot, MPS_L))
-    end subroutine allocate_pseudo_tm
-
-    subroutine deallocate_pseudo_tm()
-        if (allocated(vpseudo)) deallocate (vpseudo)
-        if (allocated(rmax)) deallocate (rmax)
-        if (allocated(r0)) deallocate (r0)
-        if (allocated(nr_ps)) deallocate (nr_ps)
-        if (allocated(d2pot)) deallocate (d2pot)
-        if (allocated(arg_ps)) deallocate (arg_ps)
-        if (allocated(arg)) deallocate (arg)
-    end subroutine deallocate_pseudo_tm
-
-end module pseudo_tm
-
 module m_pseudo
 contains
-subroutine allocate_m_pseudo()
-      use pseudo,  only: allocate_pseudo
-      use pseudo_tm, only: allocate_pseudo_tm
-
+  subroutine allocate_m_pseudo()
+    use pseudo,  only: allocate_pseudo
     call allocate_pseudo()
-    call allocate_pseudo_tm()
-end subroutine allocate_m_pseudo
+  end subroutine allocate_m_pseudo
 
-subroutine deallocate_m_pseudo()
-      use pseudo,  only: deallocate_pseudo
-      use pseudo_tm, only: deallocate_pseudo_tm
-
+  subroutine deallocate_m_pseudo()
+    use pseudo,  only: deallocate_pseudo
     call deallocate_pseudo()
-    call deallocate_pseudo_tm()
-end subroutine deallocate_m_pseudo
+  end subroutine deallocate_m_pseudo
 end module

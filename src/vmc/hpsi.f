@@ -79,7 +79,8 @@ c pe_en(nonloc) computed in nonloc_pot if nloc !=0
 c distances needed for Jastrow, determinants, and potential energy
       call distances(0,coord)
 c local potential contributions
-      call pot_local(pe_local)
+c     call pot_local(pe_local)
+      call pot_local(coord, pe_local)
 
 c external potential on a grid (e.g. MM from CPMD)
       if(iqmmm.eq.1) then

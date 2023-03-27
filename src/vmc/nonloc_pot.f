@@ -10,15 +10,19 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use precision_kinds, only: dp
       use pseudo,  only: lpot,nloc,vps
       use pseudo_mod, only: MPS_QUAD
-      use readps_gauss, only: getvps_gauss
-      use system,  only: iwctype,ncent,ncent_tot,nelec
+      use readps_gauss, only: getvps_gauss, gauss_pot
+      use system,  only: iwctype,ncent,ncent_tot,nelec, znuc
       use error,   only: fatal_error
 
+      use pw_ewald, only: pot_en_ewald, pot_en_ewald_single
+      use pw_ewald, only: pot_en_ewald_local, pot_en_ewald_lambda
+
+      
       implicit none
 
       integer :: i, i1, i2, i_vpsp, ic
-      integer :: ifr
-      real(dp) :: pe
+      integer :: ifr, ict
+      real(dp) :: pe, pe_en, r, ri, ri2,vcoule,dvpot
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rshift
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
@@ -34,15 +38,26 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
         i1=1
         i2=nelec
       endif
-      if(nloc.eq.4) then
-         do i=i1,i2
-            call getvps_gauss(rvec_en,r_en,i)
-         enddo
-      else
-         call fatal_error('nonloc different to 4 is not supported')
-      endif
+
+
+c     if(nloc.eq.4) then
+c      do i=i1,i2
+c         call getvps_gauss(rvec_en,r_en,i)
+c      enddo
+c     else
+c     call fatal_error('nonloc different to 4 is not supported')
+c     endif
+
       
+      if(nloc.ne.4) call fatal_error('nonloc different to 4 is not supported')
+      do i=i1,i2
+         call getvps_gauss(rvec_en,r_en,i)
+      enddo
       
+         
+      
+
+         
 c local component (highest angular momentum)
       if(iperiodic.eq.0) then
         do ic=1,ncent
@@ -50,6 +65,41 @@ c local component (highest angular momentum)
             pe=pe+vps(i,ic,lpot(iwctype(ic)))
           enddo
         enddo
+      else
+
+c this add coulumb pe_en contribution from PBC/ Ewald split
+         call pot_en_ewald(x,pe_en)
+         pe=pe+pe_en
+         
+
+c Add and fix remaining local component BFD pseudo
+c It can be two ways
+c this to be improved and updated later
+
+         do ic=1,ncent
+            ict=iwctype(ic)
+            do i=i1,i2
+               r=max(1.0d-10,r_en(i,ic))                                                                                                                                              
+               ri=1.d0/r
+
+
+c 1- substract Coulumb term obc in local component vps(:,:lpot(ict)               
+c current simplest one
+c     pe=pe+vps(i,ic,lpot(ict))+(znuc(ict)*ri)
+
+
+c 2- get local component without coulmb regarding local was added from pot_loc with pot_en_ewald
+c implies recompute gauss pot need to be a better way 
+               call gauss_pot(r,lpot(ict),ict,vcoule,dvpot)               
+               pe=pe+vcoule
+               
+               
+            enddo
+         enddo
+
+
+
+
       endif
       
 c non-local component (division by the Jastrow already in nonloc)

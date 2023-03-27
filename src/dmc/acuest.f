@@ -36,7 +36,7 @@ c routine to accumulate estimators for energy etc.
       use prop_dmc, only: prop_prt_dmc
       use prop_reduce_mod, only: prop_reduce
       use properties_mod, only: prop_init
-
+      use contrldmc, only: idmc
 
       implicit none
 
@@ -99,32 +99,34 @@ c xerr = current error of x
 
       npass=iblk_proc*dmc_nstep
 
-      wnow=wsum_dmc/dmc_nstep
-      wfnow=wfsum/dmc_nstep
-      enow=esum_dmc/wsum_dmc
-      efnow=efsum/wfsum
-      ei1now=wfsum/wdsum
-      ei2now=wgsum(1)/wgdsum
-      rinow=risum/wgsum(1)
-      r2now=r2sum/wgsum(1)
+      if(idmc.gt.0) then
+         wnow=wsum_dmc/dmc_nstep
+         wfnow=wfsum/dmc_nstep
+         enow=esum_dmc/wsum_dmc
+         efnow=efsum/wfsum
+         ei1now=wfsum/wdsum
+         ei2now=wgsum(1)/wgdsum
+         rinow=risum/wgsum(1)
+         r2now=r2sum/wgsum(1)
+         
+         ei1cm2=ei1cm2+ei1now**2
+         ei2cm2=ei2cm2+ei2now**2
+         r2cm2_dmc=r2cm2_dmc+r2sum*r2now
+         ricm2=ricm2+risum*rinow
 
-      ei1cm2=ei1cm2+ei1now**2
-      ei2cm2=ei2cm2+ei2now**2
-      r2cm2_dmc=r2cm2_dmc+r2sum*r2now
-      ricm2=ricm2+risum*rinow
-
-      wdcum=wdcum+wdsum
-      wgdcum=wgdcum+wgdsum
-      ei1cum=ei1cum+ei1now
-      ei2cum=ei2cum+ei2now
-      r2cum_dmc=r2cum_dmc+r2sum
-      ricum=ricum+risum
-
-      w2sum=wsum_dmc**2
-      wf2sum=wfsum**2
-      e2sum=esum_dmc*enow
-      ef2sum=efsum*efnow
-
+         wdcum=wdcum+wdsum
+         wgdcum=wgdcum+wgdsum
+         ei1cum=ei1cum+ei1now
+         ei2cum=ei2cum+ei2now
+         r2cum_dmc=r2cum_dmc+r2sum
+         ricum=ricum+risum
+         
+         w2sum=wsum_dmc**2
+         wf2sum=wfsum**2
+         e2sum=esum_dmc*enow
+         ef2sum=efsum*efnow
+      endif
+      
       do ifr=1,nforce
         wgnow=wgsum(ifr)/dmc_nstep
         egnow=egsum(ifr)/wgsum(ifr)

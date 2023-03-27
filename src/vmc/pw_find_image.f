@@ -14,13 +14,15 @@ c Warning:  I need to fix the above:
 c Also return rlenmin to set cutr to 1/2 the shortest lattice vector.  I think that is
 c good enough -- no need to use 1/2 the shortest perpendicular distance.
 
-      use contrl_file, only: ounit
       use jaspar6, only: cutjas
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
+      use error, only: fatal_error
+      
       implicit none
 
       integer :: i, i1, i2, i3, imax
-      integer :: imin, isim_cell, k
+      integer :: imin, isim_cell, k   
       real(dp) :: cutr, rlen, rlenmax, rlenmin
       real(dp), dimension(3,3) :: rlatt
       real(dp), parameter :: eps = 1.d-12
@@ -182,7 +184,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c For any vector (from one particle to another) it finds the
 c image that is closest.
-      use contrl_file, only: ounit
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -339,7 +341,7 @@ c Written by Cyrus Umrigar
 c For any vector r (from one particle to another) it replaces the vector
 c by its closest image and finds its norm
 
-      use periodic, only: rlatt,rlatt_inv
+      use Cell, only: rlatt, rlatt_inv
       use precision_kinds, only: dp
       implicit none
 
@@ -356,7 +358,13 @@ c by its closest image and finds its norm
 
 
 
+c COMMENTED!
+c     rlatt=0.0d0
 
+c      print*, 'rlatt',rlatt
+c      print*, 'rlatt_inv', rlatt_inv
+c       if(.true.)stop
+      
 
 c Warning: tempor
       do k=1,3
@@ -439,7 +447,7 @@ c Written by Cyrus Umrigar
 c For any vector r (from one particle to another) it replaces the vector
 c by its closest image and finds its norm and the shift needed.
 
-      use periodic, only: rlatt,rlatt_inv
+      use Cell, only: rlatt, rlatt_inv
       use precision_kinds, only: dp
       implicit none
 

@@ -144,15 +144,15 @@ c loop quadrature points
               costh(nxquad)=rvec_en(1,i,ic)*xq(iq)+rvec_en(2,i,ic)*yq(iq)+rvec_en(3,i,ic)*zq(iq)
               costh(nxquad)=costh(nxquad)*ri
 
-              if(iperiodic.eq.0) then
+c              if(iperiodic.eq.0) then
                 xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)
                 xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)
                 xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)
-               else
-                xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)+rshift(1,i,ic)
-                xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)+rshift(2,i,ic)
-                xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
-              endif
+c               else
+c                xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)+rshift(1,i,ic)
+c                xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)+rshift(2,i,ic)
+c                xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
+c              endif
 
               r_en_quad(nxquad,ic)=r_en(i,ic)
               call distance_quad(nxquad,ic,xquad(1,nxquad),r_en_quad,rvec_en_quad,rshift)
@@ -312,10 +312,13 @@ c-----------------------------------------------------------------------
 
       real(dp), dimension(3) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rshift
+      real(dp), dimension(3) :: rshift_tmp
       real(dp), dimension(3,nquad*nelec*2,ncent_tot) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
       real(dp), parameter :: one = 1.d0
 
+      rshift_tmp=0.d0
+      
       do jc=1,ncent
         do k=1,3
           rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
@@ -329,7 +332,8 @@ c-----------------------------------------------------------------------
             enddo
             r_en_quad(iq,jc)=dsqrt(r_en_quad(iq,jc))
            else
-            call find_image4(rshift(1,iq,jc),rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
+c     call find_image4(rshift(1,iq,jc),rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
+              call find_image4(rshift_tmp,rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
           endif
 
         endif
@@ -352,7 +356,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use optwf_control, only: ioptorb,method
       use orbval,  only: ddorb,nadorb
       use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
-      use pw_orbitals_e, only: orbitals_pwe
+c     use pw_orbitals_e, only: orbitals_pwe
       use slater,  only: coef,norb
       use sr_mod,  only: i_sr_rescale
       use system,  only: iwctype,ncent,ncent_tot,nelec
@@ -382,93 +386,93 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
 
-      if(iperiodic.eq.0) then
+c      if(iperiodic.eq.0) then
 
 c get the value from the 3d-interpolated orbitals
-        ier=0
-        if(i3dsplorb.ge.1) then
-          do iq=1,nxquad
+      ier=0
+      if(i3dsplorb.ge.1) then
+         do iq=1,nxquad
             do iorb=1,norb+nadorb
-              ddtmp=0     ! Don't compute the laplacian
-              dtmp(1)=0   ! Don't compute the gradients
-              dtmp(2)=0   ! Don't compute the gradients
-              dtmp(3)=0   ! Don't compute the gradients
-              call spline_mo(xquad(1,iq),iorb,orbn(iorb,iq),dtmp,ddtmp,ier)
+               ddtmp=0          ! Don't compute the laplacian
+               dtmp(1)=0        ! Don't compute the gradients
+               dtmp(2)=0        ! Don't compute the gradients
+               dtmp(3)=0        ! Don't compute the gradients
+               call spline_mo(xquad(1,iq),iorb,orbn(iorb,iq),dtmp,ddtmp,ier)
             enddo
-          enddo
-         elseif(i3dlagorb.ge.1) then
-          do iq=1,nxquad
+         enddo
+      elseif(i3dlagorb.ge.1) then
+         do iq=1,nxquad
             call lagrange_mose(1,xquad(1,iq),orbn(iorb,iq),ier)
-          enddo
-         else
-          ier=1
-        endif
+         enddo
+      else
+         ier=1
+      endif
 
-        if(ier.eq.1) then
-c get basis functions for electron iel
-          ider=0
-          if(iforce_analy.gt.0) ider=1
+      if(ier.eq.1) then
+c     get basis functions for electron iel
+         ider=0
+         if(iforce_analy.gt.0) ider=1
+         
+         call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
 
-          call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
+         do iq=1,nxquad
 
-          do iq=1,nxquad
-
-! Vectorization dependent code selection
+!     Vectorization dependent code selection
 #ifdef VECTORIZATION
-          ! The following loop changed for better vectorization AVX512/AVX2
-          do iorb=1,norb+nadorb
-             orbn(iorb,iq)=0.d0
-             do m=1,nbasis
-                orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
-             enddo
-          enddo
-#else
-          do iorb=1,norb+nadorb
-             orbn(iorb,iq)=0.d0
-             do m0=1,n0_nbasis(iq)
-                m=n0_ibasis(m0,iq)
-                orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
-             enddo
-          enddo
-#endif
-
-          if(iforce_analy.gt.0) then
-            do iorb=1,norb
-              do ic=1,ncent
-                do k=1,3
-                  da_orbn(k,ic,iorb,iq)=0.d0
-                enddo
-              enddo
-              do m0=1,n0_nbasis(iq)
-                m=n0_ibasis(m0,iq)
-                ic=n0_ic(m0,iq)
-                ii=iwctype(ic)
-                do k=1,3
-                  da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
-                enddo
-              enddo
-              do k=1,3
-                dorbn(iorb,iq,k)=0.d0
-              enddo
-              do ic=1,ncent
-                do k=1,3
-                   dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
-                enddo
-              enddo
+! The following loop changed for better vectorization AVX512/AVX2
+            do iorb=1,norb+nadorb
+               orbn(iorb,iq)=0.d0
+               do m=1,nbasis
+                  orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
+               enddo
             enddo
-          endif
-c         write(ounit,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
-c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
+#else
+            do iorb=1,norb+nadorb
+               orbn(iorb,iq)=0.d0
+               do m0=1,n0_nbasis(iq)
+                  m=n0_ibasis(m0,iq)
+                  orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
+               enddo
+            enddo
+#endif
+            
+            if(iforce_analy.gt.0) then
+               do iorb=1,norb
+                  do ic=1,ncent
+                     do k=1,3
+                        da_orbn(k,ic,iorb,iq)=0.d0
+                     enddo
+                  enddo
+                  do m0=1,n0_nbasis(iq)
+                     m=n0_ibasis(m0,iq)
+                     ic=n0_ic(m0,iq)
+                     ii=iwctype(ic)
+                     do k=1,3
+                        da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                     enddo
+                  enddo
+                  do k=1,3
+                     dorbn(iorb,iq,k)=0.d0
+                  enddo
+                  do ic=1,ncent
+                     do k=1,3
+                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
+                     enddo
+                  enddo
+               enddo
+            endif
+c     write(ounit,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
+c     write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
 
-        enddo
-
-        endif
-
-       else
-
-        call orbitals_pwe(iel,xquad,orbn)
+         enddo
 
       endif
+      
+c     else
+c     
+c     call orbitals_pwe(iel,xquad,orbn)
+c     
+c     endif
 
       nadorb = nadorb_sav
 
@@ -527,7 +531,7 @@ c-----------------------------------------------------------------------
       subroutine nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-
+      
       use bparm,   only: nocuspb,nspin2b
       use contrl_per, only: iperiodic
       use da_jastrow4val, only: da_j
@@ -541,13 +545,13 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use optwf_control, only: ioptjas
       use jastrow_update, only: fso
       use qua,     only: nquad
-
+      
       implicit none
-
+      
       integer :: i, ic, iel, ipar, isb
       integer :: iq, it, j, jj, k, nxquad
       integer, dimension(*) :: iequad
-
+      
       real(dp) :: dd1u, dum, dumk, fsumn
       real(dp) :: rij, u
       real(dp), dimension(3,*) :: x
@@ -570,138 +574,138 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       real(dp), parameter :: half = .5d0
 
       if(iforce_analy.eq.0) then
-        do ic=1,ncent
-          do i=1,nelec
-            call scale_dist(r_en(i,ic),rr_en(i,ic),1)
-            call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
-          enddo
-        enddo
+         do ic=1,ncent
+            do i=1,nelec
+               call scale_dist(r_en(i,ic),rr_en(i,ic),1)
+               call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
+            enddo
+         enddo
 
-       else
-        do ic=1,ncent
-          do i=1,nelec
-            call scale_dist1(r_en(i,ic),rr_en(i,ic),dd1(i,ic),1)
-cJF added to see what happens --> gives same as iforce_analy = 0
-c           call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
-            if(ioptjas.gt.0) call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
-          enddo
-        enddo
+      else
+         do ic=1,ncent
+            do i=1,nelec
+               call scale_dist1(r_en(i,ic),rr_en(i,ic),dd1(i,ic),1)
+c     JF added to see what happens --> gives same as iforce_analy = 0
+c     call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
+               if(ioptjas.gt.0) call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
+            enddo
+         enddo
       endif
 
       do iq=1,nxquad
 
-      iel=iequad(iq)
+         iel=iequad(iq)
 
-      if(iforce_analy.eq.0) then
-        do ic=1,ncent
-          call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic),1)
-          call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
-        enddo
-       else
-        do ic=1,ncent
-          call scale_dist1(r_en_quad(iq,ic),rr_en_quad(ic),dd1_quad(ic),1)
-cJF added to see what happens --> gives same as iforce_analy = 0
-c         call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
-          if(ioptjas.gt.0) call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
-        enddo
-      endif
-
-      fsumn=0
-      do k=1,3
-         vjn(k,iq)=0.d0
-      enddo
-
-      if (nelec.lt.2) goto 47
-
-      do jj=1,nelec
-
-        if(jj.eq.iel) goto 45
-        if(jj.lt.iel) then
-          i=iel
-          j=jj
+         if(iforce_analy.eq.0) then
+            do ic=1,ncent
+               call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic),1)
+               call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
+            enddo
          else
-          i=jj
-          j=iel
-        endif
+            do ic=1,ncent
+               call scale_dist1(r_en_quad(iq,ic),rr_en_quad(ic),dd1_quad(ic),1)
+c     JF added to see what happens --> gives same as iforce_analy = 0
+c     call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
+               if(ioptjas.gt.0) call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
+            enddo
+         endif
+         
+         fsumn=0
+         do k=1,3
+            vjn(k,iq)=0.d0
+         enddo
 
-        sspinn=1
-        ipar=0
-        isb=1
-        if(i.le.nup .or. j.gt.nup) then
-          if(nspin2b.eq.2) then
-            isb=2
-           elseif(nocuspb.eq.0) then
-            sspinn=half
-          endif
-          ipar=1
-        endif
+         if (nelec.lt.2) goto 47
 
-        do k=1,3
-          dx(k)=x(k,jj)-xquad(k,iq)
-        enddo
+         do jj=1,nelec
 
-        if(iperiodic.eq.0) then
-          rij=0
-          do k=1,3
-            rij=rij+dx(k)**2
-          enddo
-          rij=dsqrt(rij)
-         else
-          call find_image3(dx,rij)
-        endif
+            if(jj.eq.iel) goto 45
+            if(jj.lt.iel) then
+               i=iel
+               j=jj
+            else
+               i=jj
+               j=iel
+            endif
 
+            sspinn=1
+            ipar=0
+            isb=1
+            if(i.le.nup .or. j.gt.nup) then
+               if(nspin2b.eq.2) then
+                  isb=2
+               elseif(nocuspb.eq.0) then
+                  sspinn=half
+               endif
+               ipar=1
+            endif
+
+            do k=1,3
+               dx(k)=x(k,jj)-xquad(k,iq)
+            enddo
+            
+            if(iperiodic.eq.0) then
+               rij=0
+               do k=1,3
+                  rij=rij+dx(k)**2
+               enddo
+               rij=dsqrt(rij)
+            else
+               call find_image3(dx,rij)
+            endif
+            
 c e-e terms
-        if(iforce_analy.eq.0) then
-          call scale_dist(rij,u,1)
-         else
-          call scale_dist1(rij,u,dd1u,1)
-          dum=dpsibnl(u,isb,ipar)*dd1u/rij
-          do k=1,3
-            dumk=-dum*dx(k)
-            vjn(k,iq)=vjn(k,iq)+dumk
-          enddo
-        endif
+            if(iforce_analy.eq.0) then
+               call scale_dist(rij,u,1)
+            else
+               call scale_dist1(rij,u,dd1u,1)
+               dum=dpsibnl(u,isb,ipar)*dd1u/rij
+               do k=1,3
+                  dumk=-dum*dx(k)
+                  vjn(k,iq)=vjn(k,iq)+dumk
+               enddo
+            endif
 
-        fsn(i,j)=psibnl(u,isb,ipar)
+            fsn(i,j)=psibnl(u,isb,ipar)
 
-c e-e-n terms
-c The scaling is switched in psinl, so do not do it here.
-      if(isc.ge.12) call scale_dist(rij,u,3)
+c     e-e-n terms
+c     The scaling is switched in psinl, so do not do it here.
+            if(isc.ge.12) call scale_dist(rij,u,3)
 
-        do ic=1,ncent
-          it=iwctype(ic)
-          fsn(i,j)=fsn(i,j) +
-     &    psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2_quad(ic),rr_en2(jj,ic),it)
-        enddo
+            do ic=1,ncent
+               it=iwctype(ic)
+               fsn(i,j)=fsn(i,j) +
+     &              psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2_quad(ic),rr_en2(jj,ic),it)
+            enddo
 
-        fsumn=fsumn+fsn(i,j)-fso(i,j)
-   45 continue
-      enddo
+            fsumn=fsumn+fsn(i,j)-fso(i,j)
+ 45         continue
+         enddo
 
-c e-n terms
-   47 fsn(iel,iel)=0
+c     e-n terms
+ 47      fsn(iel,iel)=0
+         
+         do ic=1,ncent
+            it=iwctype(ic)
+            fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en_quad(ic),it)
+         enddo
+         
+         fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
+         ratio_jn(iq)=fsumn
+         
+         if(iforce_analy.gt.0) then
 
-      do ic=1,ncent
-        it=iwctype(ic)
-        fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en_quad(ic),it)
-      enddo
+            do ic=1,ncent
+               it=iwctype(ic)
+               dum=dpsianl(rr_en_quad(ic),it)*dd1_quad(ic)/r_en_quad(iq,ic)
+               do k=1,3
+                  dumk=dum*rvec_en_quad(k,iq,ic)
+                  vjn(k,iq)=vjn(k,iq)+dumk
+                  da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,ic)
+               enddo
+            enddo
 
-      fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
-      ratio_jn(iq)=fsumn
-
-      if(iforce_analy.gt.0) then
-
-       do ic=1,ncent
-        it=iwctype(ic)
-        dum=dpsianl(rr_en_quad(ic),it)*dd1_quad(ic)/r_en_quad(iq,ic)
-        do k=1,3
-          dumk=dum*rvec_en_quad(k,iq,ic)
-          vjn(k,iq)=vjn(k,iq)+dumk
-          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,ic)
-        enddo
-       enddo
-
-      endif
+         endif
 
       enddo
 
@@ -721,7 +725,7 @@ c-----------------------------------------------------------------------
       use slater,  only: norb
       use system,  only: iwctype,ncent,ncent_tot,nelec
       use vmc_mod, only: norb_tot
-
+      
       implicit none
 
       integer :: i, ic, ict, iorb, nxquad
@@ -729,7 +733,7 @@ c-----------------------------------------------------------------------
       integer, dimension(nquad*nelec*2) :: iequad
       integer, dimension(nquad*nelec*2) :: icquad
       integer, dimension(nquad*nelec*2) :: iqquad
-
+      
       real(dp) :: da_term_radial, db_tmp1, db_tmp2, db_tmp3
       real(dp) :: dum, r_eni, r_eni2, sav_db
       real(dp), dimension(nquad*nelec*2) :: costh
@@ -744,61 +748,61 @@ c-----------------------------------------------------------------------
       real(dp), dimension(3,ncent_tot,*) :: da_psij_ratio
       real(dp), dimension(3) :: term_radial_da_vps
       real(dp), parameter :: one = 1.d0
-
+      
       if(iforce_analy.eq.0) return
-
+      
       do iq=1,nxquad
 
-      i=iequad(iq)
-      ic=icquad(iq)
-      iqq=iqquad(iq)
-
-      ict=iwctype(ic)
+         i=iequad(iq)
+         ic=icquad(iq)
+         iqq=iqquad(iq)
+      
+         ict=iwctype(ic)
 c     sav_db=b_da(1,i,1,ic)
-
-      da_term_radial=0.d0
-      do k=1,3
-        term_radial_da_vps(k)=0.d0
-      enddo
-      do l=1,lpot(ict)-1
-        da_term_radial=da_term_radial+dyl0(l,costh(iq))*vps(i,ic,l)
-        do k=1,3
-          term_radial_da_vps(k)=term_radial_da_vps(k)+yl0(l,costh(iq))*da_vps(k,i,ic,l)
-        enddo
-      enddo
-      da_term_radial=da_term_radial*wq(iqq)*exp(psij_ratio(iq))
-      do k=1,3
-        term_radial_da_vps(k)=term_radial_da_vps(k)*wq(iqq)*exp(psij_ratio(iq))
-      enddo
-
-      r_eni=1.d0/r_en(i,ic)
-      r_eni2=r_eni*r_eni
-      do iorb=1,norb
-        b_da(1,i,iorb,ic)=b_da(1,i,iorb,ic)+term_radial_da_vps(1)*orbn(iorb,iq)
-     &                   +da_term_radial*(-xq(iqq)*r_eni+costh(iq)*rvec_en(1,i,ic)*r_eni2)*orbn(iorb,iq)
-        b_da(2,i,iorb,ic)=b_da(2,i,iorb,ic)+term_radial_da_vps(2)*orbn(iorb,iq)
-     &                   +da_term_radial*(-yq(iqq)*r_eni+costh(iq)*rvec_en(2,i,ic)*r_eni2)*orbn(iorb,iq)
-        b_da(3,i,iorb,ic)=b_da(3,i,iorb,ic)+term_radial_da_vps(3)*orbn(iorb,iq)
-     &                   +da_term_radial*(-zq(iqq)*r_eni+costh(iq)*rvec_en(3,i,ic)*r_eni2)*orbn(iorb,iq)
-
-         db_tmp1=term_radial(iq)*(dorbn(iorb,iq,1)+orbn(iorb,iq)*vjn(1,iq))
-         db_tmp2=term_radial(iq)*(dorbn(iorb,iq,2)+orbn(iorb,iq)*vjn(2,iq))
-         db_tmp3=term_radial(iq)*(dorbn(iorb,iq,3)+orbn(iorb,iq)*vjn(3,iq))
-
-         dum=xq(iqq)*db_tmp1+yq(iqq)*db_tmp2+zq(iqq)*db_tmp3
-
-         b_da(1,i,iorb,ic)=b_da(1,i,iorb,ic)-dum*rvec_en(1,i,ic)*r_eni+db_tmp1
-         b_da(2,i,iorb,ic)=b_da(2,i,iorb,ic)-dum*rvec_en(2,i,ic)*r_eni+db_tmp2
-         b_da(3,i,iorb,ic)=b_da(3,i,iorb,ic)-dum*rvec_en(3,i,ic)*r_eni+db_tmp3
-
-         do jc=1,ncent
-c          if(jc.ne.ic) then
-             do k=1,3
-               b_da(k,i,iorb,jc)=b_da(k,i,iorb,jc)+term_radial(iq)*(da_orbn(k,jc,iorb,iq)+orbn(iorb,iq)*da_psij_ratio(k,jc,iq))
-             enddo
-c          endif
+         
+         da_term_radial=0.d0
+         do k=1,3
+            term_radial_da_vps(k)=0.d0
          enddo
-      enddo
+         do l=1,lpot(ict)-1
+            da_term_radial=da_term_radial+dyl0(l,costh(iq))*vps(i,ic,l)
+            do k=1,3
+               term_radial_da_vps(k)=term_radial_da_vps(k)+yl0(l,costh(iq))*da_vps(k,i,ic,l)
+            enddo
+         enddo
+         da_term_radial=da_term_radial*wq(iqq)*exp(psij_ratio(iq))
+         do k=1,3
+            term_radial_da_vps(k)=term_radial_da_vps(k)*wq(iqq)*exp(psij_ratio(iq))
+         enddo
+
+         r_eni=1.d0/r_en(i,ic)
+         r_eni2=r_eni*r_eni
+         do iorb=1,norb
+            b_da(1,i,iorb,ic)=b_da(1,i,iorb,ic)+term_radial_da_vps(1)*orbn(iorb,iq)
+     &           +da_term_radial*(-xq(iqq)*r_eni+costh(iq)*rvec_en(1,i,ic)*r_eni2)*orbn(iorb,iq)
+            b_da(2,i,iorb,ic)=b_da(2,i,iorb,ic)+term_radial_da_vps(2)*orbn(iorb,iq)
+     &           +da_term_radial*(-yq(iqq)*r_eni+costh(iq)*rvec_en(2,i,ic)*r_eni2)*orbn(iorb,iq)
+            b_da(3,i,iorb,ic)=b_da(3,i,iorb,ic)+term_radial_da_vps(3)*orbn(iorb,iq)
+     &           +da_term_radial*(-zq(iqq)*r_eni+costh(iq)*rvec_en(3,i,ic)*r_eni2)*orbn(iorb,iq)
+
+            db_tmp1=term_radial(iq)*(dorbn(iorb,iq,1)+orbn(iorb,iq)*vjn(1,iq))
+            db_tmp2=term_radial(iq)*(dorbn(iorb,iq,2)+orbn(iorb,iq)*vjn(2,iq))
+            db_tmp3=term_radial(iq)*(dorbn(iorb,iq,3)+orbn(iorb,iq)*vjn(3,iq))
+            
+            dum=xq(iqq)*db_tmp1+yq(iqq)*db_tmp2+zq(iqq)*db_tmp3
+
+            b_da(1,i,iorb,ic)=b_da(1,i,iorb,ic)-dum*rvec_en(1,i,ic)*r_eni+db_tmp1
+            b_da(2,i,iorb,ic)=b_da(2,i,iorb,ic)-dum*rvec_en(2,i,ic)*r_eni+db_tmp2
+            b_da(3,i,iorb,ic)=b_da(3,i,iorb,ic)-dum*rvec_en(3,i,ic)*r_eni+db_tmp3
+
+            do jc=1,ncent
+c     if(jc.ne.ic) then
+               do k=1,3
+                  b_da(k,i,iorb,jc)=b_da(k,i,iorb,jc)+term_radial(iq)*(da_orbn(k,jc,iorb,iq)+orbn(iorb,iq)*da_psij_ratio(k,jc,iq))
+               enddo
+c     endif
+            enddo
+         enddo
 
       enddo
 

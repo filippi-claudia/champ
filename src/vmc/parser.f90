@@ -10,6 +10,9 @@ subroutine parser
   !> @date   11-08-2021
   !> @version 1.2
 
+  !! Modified by Edgar J Landinez Borda 
+  
+  
       use fdf               ! modified libfdf
       use allocation_mod, only: allocate_dmc,allocate_vmc
       use array_resize_utils, only: resize_tensor
@@ -140,7 +143,6 @@ subroutine parser
       use prp003,  only: cc_nuc
       use pseudo,  only: nloc
       use pseudo_mod, only: MPS_QUAD
-      use pw_read, only: read_orb_pw_tm
       use qua,     only: nquad,wq,xq,yq,zq
       use random_mod, only: setrn
       use read_bas_num_mod, only: read_bas_num,readps_gauss
@@ -173,22 +175,33 @@ subroutine parser
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
 ! CHAMP modules
-
+  
+  
 ! in the replacement of preprocess input
 
 ! variables from process input
 
-! Note the additions: Ravindra
-! Note the additions: Ravindra
-
-
-
-
-
-
+  
+! Note the additions: 
+! Note the additions: 
 
 ! Note the following modules are new additions
 
+
+  !, allocate_periodic
+  
+  use periodic,         only: npoly,np,cutg,cutg_big,cutg_sim,cutg_sim_big, alattice, rlatt_sim, rkvec_shift, n_images, ell
+  use Cell,             only: rlatt, rlatt_inv
+  
+  
+
+  use pw_ewald, only: pot_en_ewald, pot_ee_ewald, set_ewald
+  use  m_ewald, only : allocate_m_ewald
+  use  m_pseudo, only : allocate_m_pseudo
+
+
+
+  
 !
   implicit none
 
@@ -238,7 +251,7 @@ subroutine parser
   character(:), allocatable  :: file_trexio
   character(:), allocatable  :: file_trexio_path
   character(:), allocatable  :: trex_backend
-
+  character(:), allocatable  :: file_lattice
 
 ! from process input subroutine
 
@@ -297,6 +310,22 @@ subroutine parser
   if (trex_backend == "text") backend = TREXIO_TEXT
 #endif
 
+
+  ! Ewald module for periodic
+  !  if (iperiodic.gt.0) call allocate_periodic()
+  npoly  = fdf_get('npoly', 1)
+  np     = fdf_get('np', 3)
+  cutg   = fdf_get('cutg', 1.0d0)
+  cutg_sim   = fdf_get('cutg_sim', 1.0d0)
+  cutg_big   = fdf_get('cutg_big', 1.d0)
+  cutg_sim_big   = fdf_get('cutg_sim_big', 1.0d0)
+  n_images  = fdf_get('n_images', 1)
+  !alattice = fdf_get('alattice', 1.0d0)
+  write(ounit,*) "Ewald split npoly",npoly
+  write(ounit,*) "Ewald split cutg", cutg
+  !write(ounit,*) "alattice", alattice
+
+  
 ! %module electrons (complete)
   nelec       = fdf_get('nelec', 1)
   nup         = fdf_get('nup', 1)
@@ -534,7 +563,8 @@ subroutine parser
   file_hessian_zmatrix      = fdf_load_filename('hessian_zmatrix', 	'default.hzmat')
   file_zmatrix_connection   = fdf_load_filename('zmatrix_connection',   'default.zmcon')
   file_efield	       	    = fdf_load_filename('efield', 		'default.efield')
-
+  file_lattice              = fdf_load_filename('lattice',              'lattice.txt')
+  
   call header_printing()
 
 ! to be moved in a separate subroutine
@@ -1061,6 +1091,19 @@ subroutine parser
   call allocate_vmc()
   call allocate_dmc()
 
+  ! for periodic calculations
+  if ( fdf_load_defined('lattice') ) then
+     call read_lattice_file(file_lattice)      
+  endif
+
+  ! allocate ewald module and initialize the module 
+  if (iperiodic.gt.0) then
+     call allocate_m_ewald()
+     call set_ewald
+  endif
+
+
+  
 ! (17) multideterminants information (either block or from a file)
 
   if ( fdf_load_defined('multideterminants') ) then
@@ -1124,63 +1167,63 @@ subroutine parser
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
 
-  if(ibasis.eq.2) write(ounit,'(a)') " PW orbitals "
+!  if(ibasis.eq.2) write(ounit,'(a)') " PW orbitals "
   if(numr.gt.0)   write(ounit,'(a)') " Numerical basis used"
 
   if(ibasis.eq.1) then
-    write(ounit,'(a)') " Orbitals on localized basis "
-    write(ounit, int_format) " Total no. of basis = ", nbasis
-    ! call write_orb_loc
+     write(ounit,'(a)') " Orbitals on localized basis "
+     write(ounit, int_format) " Total no. of basis = ", nbasis
+     ! call write_orb_loc
 
-    if ( fdf_defined('basis') ) then
-      if(numr.gt.0) then
-        do iwft=1,nwftype
-          call read_bas_num(iwft)
-        enddo
+     if ( fdf_defined('basis') ) then
+        if(numr.gt.0) then
+           do iwft=1,nwftype
+              call read_bas_num(iwft)
+           enddo
+           ! Check if this is really allocated at this point
+           if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
+           if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
+           ibas0(1)=1
+           ibas1(1)=nbastyp(iwctype(1))
+           do ic=2,ncent
+              ibas0(ic)=ibas1(ic-1)+1
+              ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
+           enddo
+        endif
+        ! elseif (fdf_block('basis', bfdf)) then
+        !   call fdf_read_basis_block(bfdf)
+     elseif ( fdf_load_defined('trexio') ) then
+        call read_trexio_basis_file(file_trexio)
         ! See if this is really allocated at this point
         if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
         if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
-        ibas0(1)=1
-        ibas1(1)=nbastyp(iwctype(1))
-        do ic=2,ncent
-          ibas0(ic)=ibas1(ic-1)+1
-          ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
-        enddo
-      endif
-    ! elseif (fdf_block('basis', bfdf)) then
-    !   call fdf_read_basis_block(bfdf)
-    elseif ( fdf_load_defined('trexio') ) then
-      call read_trexio_basis_file(file_trexio)
-      ! See if this is really allocated at this point
-     if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
-     if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
-    !  ibas0(1)=1
-    !  ibas1(1)=nbastyp(iwctype(1))
-    !  do ic=2,ncent
-    !    ibas0(ic)=ibas1(ic-1)+1
-    !    ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
-    !  enddo
-    else
-      write(errunit,'(a)') "Error:: No information about basis provided in the block."
-      write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-      error stop
-    endif
-  elseif (ibasis.eq.2) then
-    call read_orb_pw_tm
+        !  ibas0(1)=1
+        !  ibas1(1)=nbastyp(iwctype(1))
+        !  do ic=2,ncent
+        !    ibas0(ic)=ibas1(ic-1)+1
+        !    ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
+        !  enddo
+     else
+        write(errunit,'(a)') "Error:: No information about basis provided in the block."
+        write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+        error stop
+     endif
+     !elseif (ibasis.eq.2) then
+     !   call read_orb_pw_tm
   endif
 
   call elapsed_time ("Reading basis file : ")
-
+  
   ! Basis information section ends here
-
-! check if the orbitals coefficients are to be multiplied by a constant parameter
+  
+  ! check if the orbitals coefficients are to be multiplied by a constant parameter
   if(scalecoef.ne.1.0d0) then
-    do  iwft=1,nwftype
+     do  iwft=1,nwftype
       do  i=1,norb+nadorb
-        do  j=1,nbasis
+         do  j=1,nbasis
             coef(j,i,iwft)=coef(j,i,iwft)*scalecoef
         enddo
-      enddo
+     enddo
     enddo
     write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
     write(ounit,*)
@@ -1643,16 +1686,17 @@ subroutine parser
 
   call fdf_shutdown()
 
+  
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some
   ! arrays if something is missing.
 !----------------------------------------------------------------------------END
   contains
 
-  !! Here all the subroutines that handle the block data are written
-  !! Quick Tutorial about FDF syntax
-  !!   'v' ('value') is matched by both an 'integer' and a 'real'.
-  !!   'j' is matched by both an 'integer' and a 'name'.
+    !! Here all the subroutines that handle the block data are written
+    !! Quick Tutorial about FDF syntax
+    !!   'v' ('value') is matched by both an 'integer' and a 'real'.
+    !!   'j' is matched by both an 'integer' and a 'name'.
   !!   's' is matched by an 'integer', a 'real', and a 'name'.
   !!   'x' is matched by any kind of token.
   !!   'a' is matched by a list with integers
@@ -1660,6 +1704,68 @@ subroutine parser
   !!   'e' is matched by a list with integers or reals
   !!   'd' is reserved for future dictionaries...
 
+
+    !! for periodic
+    subroutine read_lattice_file(file_lattice)
+      use periodic, only: rkvec_shift, rlatt_sim, alattice
+      use contrl_file,        only: ounit, errunit
+      use jaspar6, only: cutjas, cutjasi
+      use Cell, only: rlatt, rlatt_inv
+      
+      implicit none
+      
+      character(len=72), intent(in)   :: file_lattice
+      real(dp) :: latt
+      !!integer :: iunit
+      
+
+      
+      
+      
+      write(ounit,*) 'Readding lattice file'
+      
+      write(ounit,*) '-----------------------------------------------------------------------'
+      write(ounit,string_format)  " Reading Lattice Parameters from the file :: ",  file_lattice
+      write(ounit,*)
+      
+      open (666, file =file_lattice, action='read')
+      read(666,*) alattice
+      close(666)
+
+      write(ounit,*) 'lattice constant', alattice
+
+      
+      !Asuming a rectangular cell 
+      
+      rlatt_sim =0.0d0
+      rlatt = 0.0d0
+      rlatt_inv = 0.0d0
+      
+      rlatt_sim(1,1) = alattice
+      rlatt_sim(2,2) = alattice
+      rlatt_sim(3,3) = alattice
+
+
+      rlatt(1,1) = alattice
+      rlatt(2,2) = alattice
+      rlatt(3,3) = alattice
+
+      rlatt_inv(1,1) = 1.d0/rlatt(1,1)
+      rlatt_inv(2,2) = 1.d0/rlatt(1,1)
+      rlatt_inv(3,3) = 1.d0/rlatt(1,1) 
+
+      !! set twist k-shift vector
+      rkvec_shift =0.0d0
+
+!!! override kastrow cutoff to half of the lattice parameter
+      cutjas = 0.5*alattice
+      cutjasi=1/cutjas
+      
+  end subroutine read_lattice_file
+  
+    
+
+    
   subroutine fdf_read_molecule_block(bfdf)
     implicit none
 

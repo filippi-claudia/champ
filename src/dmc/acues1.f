@@ -32,21 +32,27 @@ c routine to accumulate estimators for energy etc.
         call acues1_gpop
         return
       endif
-c statistical fluctuations without blocking
-      wdsum1=wdsumo
+c     statistical fluctuations without blocking
+       if(idmc.gt.0) then
+          wdsum1=wdsumo
+
+          
+          wcum1=wcum1+wsum1(1)
+          wfcum1=wfcum1+wfsum1
+          ecum1_dmc=ecum1_dmc+esum1_dmc(1)
+          efcum1=efcum1+efsum1
+          ei3cum=ei3cum+wfsum1/wdsum1
+
+          wcm21=wcm21+wsum1(1)**2
+          wfcm21=wfcm21+wfsum1**2
+          ecm21_dmc=ecm21_dmc+esum1_dmc(1)**2/wsum1(1)
+          efcm21=efcm21+efsum1**2/wfsum1
+          ei3cm2=ei3cm2+(wfsum1/wdsum1)**2
+
+       endif
       wgdsum1=wgdsumo
 
-      wcum1=wcum1+wsum1(1)
-      wfcum1=wfcum1+wfsum1
-      ecum1_dmc=ecum1_dmc+esum1_dmc(1)
-      efcum1=efcum1+efsum1
-      ei3cum=ei3cum+wfsum1/wdsum1
-
-      wcm21=wcm21+wsum1(1)**2
-      wfcm21=wfcm21+wfsum1**2
-      ecm21_dmc=ecm21_dmc+esum1_dmc(1)**2/wsum1(1)
-      efcm21=efcm21+efsum1**2/wfsum1
-      ei3cm2=ei3cm2+(wfsum1/wdsum1)**2
+      
       do ifr=1,nforce
         wgcum1(ifr)=wgcum1(ifr)+wgsum1(ifr)
         egcum1(ifr)=egcum1(ifr)+egsum1(ifr)

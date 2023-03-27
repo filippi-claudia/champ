@@ -93,14 +93,9 @@ if (MPI_Fortran_FOUND)
     psi.f
     pw_ewald.f
     pw_find_image.f
-    pw_orbitals.f
-    pw_orbitals_e.f
-    pw_placeholder.f
-    pw_read.f
     qmmm_placeholder.f
     random.f
     readps_gauss.f
-    readps_tm.f
     rotqua.f
     scale_dist.f
     sites.f
@@ -175,15 +170,7 @@ if (MPI_Fortran_FOUND)
   if (NOT ENABLE_PERIODIC)
     message(STATUS "PERIODIC is NOT enabled!")
     list(REMOVE_ITEM VMC_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f)
-  else()
-    message(STATUS "PERIODIC is enabled!")
-    list(REMOVE_ITEM VMC_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f)
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f)
   endif()
 
   find_package(FortranFormat)
@@ -239,7 +226,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f
     ${CMAKE_CURRENT_SOURCE_DIR}/orbitals.f
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_gauss.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/readps_tm.f
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante_psit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pot.f
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f
@@ -249,7 +235,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/determinant.f
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante.f
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc_pot.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f    # This file should be refactored and eliminated.
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_num.f
     ${CMAKE_CURRENT_SOURCE_DIR}/bxmatrices.f
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonlpsi.f
@@ -263,6 +248,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/store_diag_hs.f
     ${CMAKE_CURRENT_SOURCE_DIR}/random.f
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid_orbitals.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f
     ${CMAKE_CURRENT_SOURCE_DIR}/distances.f
     ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f
     ${CMAKE_CURRENT_SOURCE_DIR}/parser.f90
@@ -304,14 +290,8 @@ if (MPI_Fortran_FOUND)
   endif()
 
   if (ENABLE_PERIODIC)
-    list(REMOVE_ITEM SHARED_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f)
     list(APPEND SHARED_OBJECTS
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f)
+      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f)
   endif()
 
 

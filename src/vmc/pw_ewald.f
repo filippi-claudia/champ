@@ -1,83 +1,136 @@
       module pw_ewald
+      use error, only: fatal_error
+      interface                 !LAPACK interface      
+      SUBROUTINE DPOSV( UPLO, N, NRHS, A, LDA, B, LDB, INFO )
+!     *  -- LAPACK computational routine --
+!     *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!     *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+      CHARACTER          UPLO
+      INTEGER            INFO, LDA, LDB, N, NRHS
+      DOUBLE PRECISION   A( LDA, * ), B( LDB, * )
+
+      END SUBROUTINE
+      
+      
+      end interface
+
+      
       contains
       subroutine set_ewald
 c Written by Cyrus Umrigar
 
-      use atom,    only: iwctype,ncent,nctype,nctype_tot,pecent,znuc
-      use const,   only: ipr,pi
-      use constants, only: pi,twopi
-      use contrl_file, only: ounit
-      use contrl_per, only: iperiodic
-      use control, only: ipr
-      use ewald,   only: b_coul,b_coul_sim,y_coul,y_coul_sim
-      use ewald_basis, only: vps_basis_fourier
-      use ewald_mod, only: NG1DX,NGNORMX,NGNORM_SIMX,NGVECX,NGVEC_SIMX
-      use grid3d_param, only: origin
+      use pseudo_mod, only: MPS_L, MPS_GRID
+      use ewald_mod, only: NGNORMX, NGVECX, NG1DX
+      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX
+      use system, only: znuc, iwctype, nctype, ncent, nctype_tot, ncent_tot
       use multiple_geo, only: pecent
-      use periodic, only: cutg,cutg_big,cutg_sim,cutg_sim_big,cutr
-      use periodic, only: cutr_sim,glatt,glatt_inv,glatt_sim,gnorm
-      use periodic, only: gnorm_sim,gvec,gvec_sim,igmult,igmult_sim
-      use periodic, only: igvec,igvec_sim,isrange,ncoef_per,ng1d
-      use periodic, only: ng1d_sim,ngnorm,ngnorm_big,ngnorm_sim
-      use periodic, only: ngnorm_sim_big,ngvec,ngvec_big,ngvec_sim
-      use periodic, only: ngvec_sim_big,np,npoly,rkvec_shift,rlatt
-      use periodic, only: rlatt_inv,rlatt_sim,rlatt_sim_inv,vcell
-      use periodic, only: vcell_sim,znuc2_sum,znuc_sum
-      use precision_kinds, only: dp
-      use pseudo,  only: lpot,nloc,vps
-      use pseudo_mod, only: MPS_GRID,MPS_L
-      use pseudo_tm, only: d2pot,nr_ps,vpseudo
-      use system,  only: iwctype,ncent,nctype,nctype_tot,znuc
-      use tempor,  only: dist_nn
-      use test,    only: f,vbare_coul,vbare_jas,vbare_psp
-<<<<<<< HEAD
-=======
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
+      use control, only: ipr
+      use ewald, only: b_coul, b_coul_sim, b_psp, b_jas, y_coul, y_coul_sim, y_psp, y_jas
+      use ewald_basis, only: vps_basis_fourier
+      use periodic, only: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt
+      use periodic, only: glatt_inv, glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim
+      use periodic, only: isrange, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big
+      use periodic, only: ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_sim, ngvec_sim_big
+      use periodic, only: np, npoly, rkvec_shift, rlatt_sim, rlatt_sim_inv, vcell
+      use Cell, only: rlatt, rlatt_inv
+      use periodic, only: vcell_sim, znuc2_sum, znuc_sum
+c      use pseudo_tm, only: d2pot, nr_ps, vpseudo
+      use tempor, only: dist_nn
+      use test, only: f, vbare_coul, vbare_jas, vbare_psp
+c      use constants, only: pi
+      use contrl_per, only: iperiodic
+      use pseudo, only: lpot, nloc, vps
+      use contrl_file,    only: ounit
+      use grid3d_param, only: origin
+      use error, only: fatal_error
+      use pw_find_image, only: check_lattice
+      use matinv_mod, only: matinv
+      use spline2_mod, only: spline2
+c      use pseudo_tm, only: arg, r0, rmax
+c      use pseudo_tm, only: rmax
+c      use numbas, only: arg, r0 !!, rmax
+c      use readps_tm_mod, only: splfit_tm
+      use readps_gauss, only: gauss_pot 
+      use periodic, only : n_images, ell
 
-<<<<<<< HEAD
-=======
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
+      
+      use precision_kinds, only: dp
+      
       implicit none
 
       integer :: i, ict, ifcon, ig, in
       integer :: ir, j, k, lowest_pow
       integer :: npts
-      real(dp) :: alpha, arg, as
-      real(dp) :: b0, b_jas, b_psp, because
+      real(dp) :: pi, twopi
+      real(dp) :: alpha, as
+      real(dp) :: b0, because
       real(dp) :: chisq
-      real(dp) :: coefs, components, const
+      real(dp) :: coefs, components, constv, short_ewald
       real(dp) :: datan, derf, det, det1
       real(dp) :: det_sim, discontinuity, dist_min, dpot1
-      real(dp) :: dpotn, dx, ewa, ewald_pot
-      real(dp) :: ewald_pot_psp, g2, g2a
+      real(dp) :: dpotn, dx, ewa
+      real(dp) :: g2, g2a
       real(dp) :: gdistmin, gdistmin_sim
-      real(dp) :: psp, r0, rmax, rms
-      real(dp) :: rr, sum, test, test_s
+      real(dp) :: psp, rms
+      real(dp) :: rr, sum, testv, test_s
       real(dp) :: those, true, true_s, vgcell
-      real(dp) :: vgcell_sim, vl, vlrange_old, vpot
-      real(dp) :: vs, vsrange, vsrange1, vsrange2
-      real(dp) :: vsrange3, wt, y_jas, y_psp
-      real(dp), dimension(MPS_GRID) :: r
-      real(dp), dimension(MPS_GRID) :: vps_short
-      real(dp), dimension(MPS_GRID) :: work
+      real(dp) :: vgcell_sim, vl, vpot, dvpot, rg
+      real(dp) :: vs, wt
+      real(dp) :: deltar
+      real(dp) :: vps_test
+c      real(dp), dimension(MPS_GRID) :: r
+c      real(dp), dimension(MPS_GRID) :: vps_short
+c     real(dp), dimension(MPS_GRID) :: work
+      real(dp), allocatable :: r(:)
+      real(dp), allocatable :: vps_short(:)
       real(dp), dimension(3) :: rdist
       real(dp), dimension(3) :: gdist
       real(dp), dimension(3) :: rdist_sim
       real(dp), dimension(3) :: gdist_sim
       real(dp), dimension(3) :: rkvec_shift_tmp
       real(dp), dimension(3) :: r_tmp
+      real(dp), dimension(3) :: r_fk
       real(dp), parameter :: eps = 1.d-12
-
-
-
-
-
-
-
-c Temporary
+      real(dp), dimension(nctype_tot) :: r0
+      real(dp), dimension(nctype_tot) :: arg
+      integer, dimension(nctype_tot) :: nr_ps
+c this array is just for testing purposes
+      real(dp), dimension(101) :: w_gauss
 
       pi=4.d0*datan(1.d0)
       twopi=2*pi
+
+c     temporal parameters grid short range potential fft log-shifted grid 
+      r0=20.d0
+c      r0=10.d0
+c     arg=1.0003
+c      arg=1.0003
+c      define number of grid points for fft integration shor range potential 
+      nr_ps=2000
+
+c      r0=cutr/(arg**(nr_ps-1)-1)
+      
+      
+c      arg(1)=cutr/((nr_ps(1)-1)*r0(1)))     
+
+      
+
+      
+c     allocate grid and vps_short / a.k.a fft  compontents 
+      allocate(r(nr_ps(1)))
+      allocate(vps_short(nr_ps(1)))
+      
+
+      
+c      print*,"r0", r0(1)
+c      print*,"arg", arg(1)
+
+
+
+c     Temporary
+
+
+
 
       ncoef_per=npoly+1
 
@@ -88,6 +141,18 @@ c of a nucleus or an electron is present within cutr and cutr_sim respectively.
       call check_lattice(rlatt_sim,cutr_sim,1)
       write(ounit,'(''cutr,cutr_sim ='',9f9.5)') cutr,cutr_sim
 
+c this parameters setiing are necessary for FFT on the pseudopotential integral exponential grid       
+c     computing arg depending on how to compute r (upper limit) it should be cutr in principle for vps(short)
+c      print*,"cutr,deltar",cutr,deltar
+      deltar=1.0*cutr/(r0(1)*(nr_ps(1)-1))
+c      deltar=10.2*cutr/(r0(1)*(nr_ps(1)-1))
+      write(ounit,*) "cutr",cutr,deltar
+      arg=(1.0d0+deltar)
+      write(ounit,*) "arg",arg(1)
+
+
+
+      
 c Calculate inverse transformations (from lattice coordinates to real coordinates)
 c and cell volumes
       do i=1,3
@@ -259,10 +324,11 @@ c Convert k-vector shift from simulation-cell recip. lattice vector units to car
       write(ounit,'(/,''rkvec_shift in sim-cell recip. lat. vec. units'',9f9.4)') (rkvec_shift_tmp(k),k=1,3)
       write(ounit,'(''rkvec_shift in cartesian coodinates'',9f9.4)') (rkvec_shift(k),k=1,3)
 
-c Generate k-vectors, i.e. simulation-cell recip. lattice vectors shifted by rkvec_shift that are
+c     Generate k-vectors, i.e. simulation-cell recip. lattice vectors shiftedby rkvec_shift that are
 c not related by a primitive-cell recip. lattice vector.
       call k_vectors
 
+      
 
 c Coulomb interactions in primitive and simulation cells
       lowest_pow=-1
@@ -270,17 +336,51 @@ c Coulomb interactions in primitive and simulation cells
       ifcon=1
       isrange=0
 
+
+      
 c n-n, e-n interactions (primitive cell)
 c put in uniform background by setting k=0 term to zero
       vbare_coul(1)=0.d0
       do k=2,ngnorm_big
-c Fourier transfom of 1/r
-        vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)
+c     Fourier transfom of 1/r
+         vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)      
       enddo
 
-      call separate(vbare_coul,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm
-     &,cutr,vcell,ncoef_per,np,b_coul,y_coul,chisq,ifcon,isrange)
 
+
+      write(ounit,'(''Compare Coulomb reconstructed'')')
+      write(ounit,'(''1/r  vs vps_rest  diff'')')
+      r_fk=0.d0
+      ict=1
+      write(ounit,*) "nr_ps(ict)", nr_ps(ict)
+      do ir=2,nr_ps(ict),100
+         r_fk(1)=r0(ict)*(arg(ict)**(ir-1)-1.d0)
+c         write(ounit,*) "ir",ir,"r_fk(ir)",r_fk(ir)
+         vps_test=0.d0
+         r_fk(1)=max(1.0d-10,r_fk(1))
+         call fourier_it(r_fk,gvec,ngnorm_big,igmult,vbare_coul, vps_test)
+c         write(ounit, *) ir, 1/r_fk(1), vps_test
+      write(ounit,*) ir, r_fk(1), 1.d0/r_fk(1), vps_test, (1.d0/r_fk(1))-vps_test   
+      enddo
+      write(ounit,'(''finnish check Coulomb reconstruted'')')
+
+
+      
+c      print*,"parameters for separate"
+c      print*,'ngnorm_big',ngnorm_big
+c      print*,'igmult',igmult
+c      print*,"gnorm",gnorm
+c      print*,"ngnorm",ngnorm
+      write(ounit,*) "cutr",cutr
+      write(ounit,*) "ncoef_per",ncoef_per
+      
+      
+      write(ounit,'(''start vbare_coul separate primitive'')')
+      if(ipr.eq.1) write(ounit,'(''check vbare_coul = '',20d12.4)') (vbare_coul(k),k=1,ngnorm)
+      call separate(vbare_coul,b0,lowest_pow,ngnorm_big,igmult,gnorm,
+     & ngnorm,cutr,vcell,ncoef_per,np,b_coul,y_coul,chisq,ifcon,isrange)
+      write(ounit,'(''finish vbare_coul separate primitive'')')
+      
       if(chisq.gt.0) then
         write(ounit,'(''Rms error in 1/r separation in primitive cell'',d12.5)') dsqrt(chisq)
        else
@@ -294,10 +394,13 @@ c Fourier transfom of 1/r
       if(ipr.ge.0) write(ounit,'(''y_coul = '',20d12.4)') (y_coul(k),k=1,ngnorm)
       if(ipr.ge.0) write(ounit,'(''b_coul = '',20d12.4)') (b_coul(k),k=1,ncoef_per)
 
+
+
+
 c debug n-n interaction (primitive cell)
       if(ipr.ge.0) then
-        write(ounit, &
-        '(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
+        write(ounit,
+     & '(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
         lowest_pow=-1
         npts=101
         dx=cutr/(npts-1)
@@ -312,35 +415,42 @@ c debug n-n interaction (primitive cell)
           endif
           sum=sum+wt*rr**2*vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_coul)
         enddo
-        const=2*twopi*sum*dx/vcell
-        write(ounit,'(''const='',9f12.8)') const
+        constv=2*twopi*sum*dx/vcell
+        write(ounit,'(''const='',9f12.8)') constv
 
-        rms=0
+        rms=0.d0
         do i=1,npts
           r_tmp(1)=(i-1)*dx+1.d-20
-          r_tmp(2)=0
-          r_tmp(3)=0
+          r_tmp(2)=0.d0
+          r_tmp(3)=0.d0
           rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
           vs=vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_coul)
           vl=vlrange_old(r_tmp,gvec,ngnorm,igmult,y_coul)
-          test=vs+vl
+          testv=vs+vl
 c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
           true=ewald_pot(r_tmp,rr,gvec,gnorm,ngnorm_big,igmult,vbare_coul,cutr,vcell)
           ewa=ewald_pot(r_tmp,rr,gvec,gnorm,ngnorm,igmult,vbare_coul,cutr,vcell)
-          if(i.ne.1) rms=rms+(true-test)**2
+c          short_ewald=derfc((5/cutr)*rr)/rr
+          if(i.ne.1) rms=rms+(true-testv)**2
           if(i.eq.1) then
-            write(ounit,'(''1/r'',f8.4,4f12.6,30x,2f12.6)') rr,true,ewa,test,test-true,vs,vl
-           else
-            write(ounit,'(''1/r'',f8.4,5f12.6,2f9.3,2f12.6)') rr,true,ewa,test,test-true
-     &      ,1/rr,(true-true_s)/dx,(test-test_s)/dx,vs,vl
+c             write(ounit,'(''1/r'',f8.4,4f12.6,30x,2f12.6)') rr,true,ewa,short_ewald,testv,testv-true,vs,vl
+            write(ounit,'(''1/r'',f8.4,5f12.6,30x,2f12.6)') rr,true,ewa,testv,testv-true,vs,vl
+          else
+c            write(ounit,'(''1/r'',f8.4,6f12.6,2f9.3,2f12.6)') rr,true,ewa,short_ewald,testv,testv-true
+c     &      ,1/rr,(true-true_s)/dx,(testv-test_s)/dx,vs,vl
+c     write(ounit,'(''1/r'',f8.4,5f12.6,2f9.3,2f12.6)') rr,true,ewa,short_ewald,testv,testv-true
+             write(ounit,'(''1/r'',f8.4,5f12.6,2f9.3,2f12.6)') rr,true,ewa,testv,testv-true
+     &      ,1/rr,(true-true_s)/dx,(testv-test_s)/dx,vs,vl
           endif
           true_s=true
-        test_s=test
+        test_s=testv
         enddo
         rms=sqrt(rms/(npts-1))
         write(ounit,'(''Rms error of 1/r (prim cell) fit ='',d12.4)') rms
         if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of 1/r (prim cell) fit too large'',d12.4)') rms
       endif
+
+      write(ounit,*) "end separate 0"
 
 
 c e-e interactions (simulation cell) (we can reuse vbare_coul)
@@ -353,9 +463,14 @@ c Fourier transfom of 1/r
 c Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
         vbare_jas(k)=-vbare_coul(k)/(1+(f*gnorm_sim(k))**2)
       enddo
-
+      
+      write(ounit,'(''start vbare_coul separate sim cell'')')
       call separate(vbare_coul,b0,lowest_pow,ngnorm_sim_big,igmult_sim,gnorm_sim,ngnorm_sim
      &,cutr_sim,vcell_sim,ncoef_per,np,b_coul_sim,y_coul_sim,chisq,ifcon,isrange)
+      write(ounit,'(''finish vbare_coul separate sim cell'')')
+      
+
+
 
       if(chisq.gt.0) then
         write(ounit,'(''Rms error in 1/r separation in simulation cell'',d12.5)') dsqrt(chisq)
@@ -370,13 +485,15 @@ c Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
       if(ipr.ge.0) write(ounit,'(''y_coul_sim = '',20d12.4)') (y_coul_sim(k),k=1,ngnorm_sim)
       if(ipr.ge.0) write(ounit,'(''b_coul_sim = '',20d12.4)') (b_coul_sim(k),k=1,ncoef_per)
 
+
+      
 c debug e-e interaction (simulation cell)
 c Note vbare_coul is used both for primitive and simulation cells
 c Since Jastrow has singlularity at 0, cannot match there, so evaluate
 c rms error only for latter 3/4 of interval
       if(ipr.ge.0) then
-        write(ounit,&
-        '(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')
+         write(ounit,
+     & '(''      r       "true"      ewald       test        test-true    1/r     d_true  d_test   vsrange   vlrange'')')         
         lowest_pow=-1
         npts=101
         dx=cutr_sim/(npts-1)
@@ -391,45 +508,55 @@ c rms error only for latter 3/4 of interval
           endif
           sum=sum+wt*rr**2*vsrange(rr,cutr_sim,lowest_pow,ncoef_per,np,b_coul_sim)
         enddo
-        const=2*twopi*sum*dx/vcell_sim
-        write(ounit,'(''const='',9f12.8)') const
+        constv=2*twopi*sum*dx/vcell_sim
+        write(ounit,'(''const='',9f12.8)') constv
 
-        rms=0
+        rms=0.d0
         do i=1,npts
           r_tmp(1)=(i-1)*dx+1.d-20
-          r_tmp(2)=0
-          r_tmp(3)=0
+          r_tmp(2)=0.d0
+          r_tmp(3)=0.d0
           rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
           vs=vsrange(rr,cutr_sim,lowest_pow,ncoef_per,np,b_coul_sim)
           vl=vlrange_old(r_tmp,gvec_sim,ngnorm_sim,igmult_sim,y_coul_sim)
-          test=vs+vl
+          testv=vs+vl
 c         true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_coul)
           true=ewald_pot(r_tmp,rr,gvec_sim,gnorm_sim,ngnorm_sim_big,igmult_sim,vbare_coul,cutr_sim,vcell_sim)
           ewa=ewald_pot(r_tmp,rr,gvec_sim,gnorm_sim,ngnorm_sim,igmult_sim,vbare_coul,cutr_sim,vcell_sim)
-          if(i.ne.1) rms=rms+(true-test)**2
+          if(i.ne.1) rms=rms+(true-testv)**2
           if(i.eq.1) then
-            write(ounit,'(''1/r'',f8.4,4f12.6,30x,2f12.6)') rr,true,ewa,test,test-true,vs,vl
+            write(ounit,'(''1/r'',f8.4,4f12.6,30x,2f12.6)') rr,true,ewa,testv,testv-true,vs,vl
            else
-            write(ounit,'(''1/r'',f8.4,5f12.6,2f9.3,2f12.6)') rr,true,ewa,test,test-true
-     &      ,1/rr,(true-true_s)/dx,(test-test_s)/dx,vs,vl
+            write(ounit,'(''1/r'',f8.4,5f12.6,2f9.3,2f12.6)') rr,true,ewa,testv,testv-true
+     &      ,1/rr,(true-true_s)/dx,(testv-test_s)/dx,vs,vl
           endif
           true_s=true
-        test_s=test
+        test_s=testv
         enddo
         rms=sqrt(rms/(npts-1))
         write(ounit,'(''Rms error of 1/r fit (sim cell) ='',d12.4)') rms
         if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of 1/r (sim cell) fit too large'',d12.4)') rms
       endif
 
-c e-e Jastrow
+
+
+      write(ounit,*) "end separate 1"
+      
+c     e-e Jastrow
+      write(ounit,*) "nloc before computing e-ion local part", nloc 
       if(iperiodic.eq.1) goto 88
       lowest_pow=0
       b0=0.5d0/f**2
       ifcon=1
       isrange=0
+      
+      write(ounit,*) "end separate 00005"
 
-      call separate(vbare_jas,b0,lowest_pow,ngnorm_sim_big,igmult_sim,gnorm_sim,ngnorm_sim
-     &,cutr_sim,vcell_sim,ncoef_per,np,b_jas,y_jas,chisq,ifcon,isrange)
+      write(ounit,'(''start vbare_jas separate'')')
+      call separate(vbare_jas,b0,lowest_pow,ngnorm_sim_big,igmult_sim,
+     &     gnorm_sim, ngnorm_sim, cutr_sim,vcell_sim,ncoef_per,np,
+     &     b_jas,y_jas,chisq,ifcon,isrange)
+      write(ounit,'(''finnish vbare_jas separate'')') 
 
       if(chisq.gt.0) then
         write(ounit,'(''Rms error in Jastrow separation'',d12.5)') dsqrt(chisq)
@@ -452,24 +579,24 @@ c rms error only for latter 3/4 of interval
         lowest_pow=0
         npts=101
         dx=cutr_sim/(npts-1)
-        rms=0
+        rms=0.d0
         do i=1,npts
           r_tmp(1)=(i-1)*dx+1.d-20
-          r_tmp(2)=0
-          r_tmp(3)=0
+          r_tmp(2)=0.d0
+          r_tmp(3)=0.d0
           rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
-          test=vsrange(rr,cutr_sim,lowest_pow,ncoef_per,np,b_jas)
-          test=test+vlrange_old(r_tmp,gvec_sim,ngnorm_sim,igmult_sim,y_jas)
+          testv=vsrange(rr,cutr_sim,lowest_pow,ncoef_per,np,b_jas)
+          testv=testv+vlrange_old(r_tmp,gvec_sim,ngnorm_sim,igmult_sim,y_jas)
           true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_jas)
-          if(4*i.ge.npts) rms=rms+(true-test)**2
+          if(4*i.ge.npts) rms=rms+(true-testv)**2
           if(i.eq.1) then
-            write(ounit,'(''jas'',f8.4,4f12.6,2f8.3)') rr,true,test,test-true
+            write(ounit,'(''jas'',f8.4,4f12.6,2f8.3)') rr,true,testv,testv-true
            else
-            write(ounit,'(''jas'',f8.4,4f12.6,2f8.3)') rr,true,test,test-true
-     &      ,-1/rr*(1-exp(-rr/f)),(true-true_s)/dx,(test-test_s)/dx
+            write(ounit,'(''jas'',f8.4,4f12.6,2f8.3)') rr,true,testv,testv-true
+     &      ,-1/rr*(1-exp(-rr/f)),(true-true_s)/dx,(testv-test_s)/dx
           endif
           true_s=true
-        test_s=test
+        test_s=testv
         enddo
         rms=sqrt(4*rms/(3*npts))
         write(ounit,'(''Rms error of jas fit on larger 3/4 interval='',d12.4)') rms
@@ -483,10 +610,14 @@ c One cannot numerically fourier transform a function with a long 1/r
 c tail.  So, add in potential due to gaussian distribution, that cancels
 c 1/r tail and subtract out the fourier components of this gaussian
 c distribution after doing the numerical fourier transform.
-
+      
+      
       if(nloc.eq.0) goto 197
 
-   88 do ict=1,nctype
+      
+   88 write(ounit,*) "compute vps_gauss and its fourier transform for range separation"
+      do ict=1,nctype
+
 
 c If this is done just to find fourier components of potential, the cut-off
 c radius can be rmax(ict), but if we are to use it also for one of the basis
@@ -494,33 +625,31 @@ c functions for the optimal separation, then the cutoff has to be cutr.
 c     alpha=5/rmax(ict)
       alpha=5/cutr
 c     r0=rmax/(arg**(nr-1)-1)
+
       r(1)=1.d-10
-      vps_short(1)=vpseudo(1,ict,lpot(ict))+znuc(ict)*2*alpha/sqrt(pi)
-      vpseudo(1,ict,lpot(ict))=vps_short(1)
-      write(ounit,'(''alpha'',9d12.4)') alpha,rmax(ict),arg(ict)
+      vpot=0.d0
+      dvpot=0.d0
+      write(ounit,*) "lpot",lpot(ict)
+      call gauss_pot(r(1),lpot(ict),ict,vpot,dvpot)
+      vps_short(1)=vpot-znuc(ict)/r(1)+znuc(ict)*2*alpha/sqrt(pi)
+      write(ounit,'(''alpha'',20d12.4)') alpha
+      write(ounit,'(''arg'',20d12.4)') arg(ict)
+c      write(ounit,'(''lalalla CHECK rg, vpot, vps_short'',3d12.4)') r(ir), vpot, vps_short(1)
+      
       do ir=2,nr_ps(ict)
-        r(ir)=r0(ict)*(arg(ict)**(ir-1)-1.d0)
-        vps_short(ir)=vpseudo(ir,ict,lpot(ict))+znuc(ict)*derf(alpha*r(ir))/r(ir)
-c       write(ounit,'(''r,vpseudo,z*derf/r,z/r'',9d12.4)') r(ir),vpseudo(ir,ict,lpot(ict))+znuc(ict)/r(ir),
-c    & -znuc(ict)*derf(alpha*r(ir))/r(ir)+znuc(ict)/r(ir),vpseudo(ir,ict,lpot(ict))+znuc(ict)*derf(alpha*r(ir))/r(ir)
-
-        vpseudo(ir,ict,lpot(ict))=vps_short(ir)
+c         write(ounit,*) 'ir',ir
+         r(ir)=r0(ict)*(arg(ict)**(ir-1)-1.d0) 
+         vpot=0.d0
+         dvpot=0.d0
+         rg=max(1.0d-10,r(ir))
+         call gauss_pot(rg,lpot(ict),ict,vpot,dvpot)
+         vps_short(ir)=vpot-(znuc(ict)/rg)+(znuc(ict)*derf(alpha*rg)/rg)
+c     write(ounit,'(''here CHECK ir rg, vpot, vps_short'',i20, 3d12.4)') ir, r(ir), vpot, vps_short(ir)
       enddo
-
-c Derivative at origin 0 because of nature of psp, and at last pt 0 because we subtracted out asymp behaviour
-      dpot1=0
-      dpotn=0
-      call spline2(r,vpseudo(1,ict,lpot(ict)),nr_ps(ict),dpot1,dpotn,d2pot(1,ict,lpot(ict)),work)
-
-      do ir=1,nr_ps(ict),50
-        call splfit_tm(r(ir),lpot(ict),ict,vpot)
-c 100   write(ounit,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vps_short(ir)
-        write(ounit,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vpseudo(ir,ict,lpot(ict)),vpot
-      enddo
-
-      write(ounit,'(/,''Grid parameters, r0,rmax,arg  '',d10.4,2f10.5)')
-     & r0(ict),r(nr_ps(ict)),arg(ict)
-
+      
+      write(ounit,'(/,''Grid parameters, r0,rmax,arg  '', 3d13.5, i2)')
+     &     r0(ict),r(nr_ps(ict)),arg(ict),nr_ps(ict)
+      
       if(gnorm(ngnorm_big).gt.twopi/(100*(r(nr_ps(ict)-1)+r0(ict))*(arg(ict)-1))) then
         write(ounit,'(''**Warning: not enough grid pts in psp to do accurate numerical FT;
      &  using a non-uniform grid only makes it worse'')')
@@ -529,24 +658,40 @@ c 100   write(ounit,'(''CHECK SR'',i5,g12.5,9d12.4)') ir,r(ir),vps_short(ir)
      &  ,twopi/(100*r(nr_ps(ict))*(arg(ict)-1))
       endif
 
-c     call fourier_transform(r,arg(ict),r0(ict),nr_ps(ict),vps_short,vcell,gnorm,ngnorm_big,
-c    & vbare_psp)
+c      write(ounit,'(''CHECK vps_short'',d12.4)') vps_short(1:nr_ps(ict))
+      
       call fourier_transform(r,arg(ict),r0(ict),nr_ps(ict),vps_short,vcell,gnorm,ngnorm_big,
      & vps_basis_fourier)
 
+      write(ounit,'(''start check vps_basis_fourier from vps_short'')')
       do ig=1,ngnorm_big,10
-c 110   write(ounit,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vbare_psp(ig)
         write(ounit,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vps_basis_fourier(ig)
       enddo
+      write(ounit,'(''finnish check vps_basis_fourier from vps_short'')')
 
+
+
+      write(ounit,'(''Compare vps_short(ir) vs vps_shortf reconstructed'')')
+      write(ounit,'(''vps_short   vps_shortf  diff'')')
+      r_fk=0.d0
+      do ir=2,nr_ps(ict)
+         r_fk(1)=r0(ict)*(arg(ict)**(ir-1)-1.d0) 
+         vps_test=0.d0
+         r_fk(1)=max(1.0d-10,r_fk(1))
+         call fourier_it(r_fk,gvec,ngnorm_big,igmult,vps_basis_fourier, vps_test)
+         write(ounit,*) r_fk(1), vps_short(ir), vps_test, vps_short(ir)-vps_test   
+      enddo
+      write(ounit,'(''finnish check vps_short reconstruted'')')
+
+
+
+      
+      write(ounit,*) "Add in (4*pi*Z/V) to get correct background contribution"
 c Add in (4*pi*Z/V) Integ d^3r (1-erf(alpha*r))/r to get correct background contribution
-c     vbare_psp(1)=vbare_psp(1)+pi*znuc(ict)/(vcell*alpha**2)
       vbare_psp(1)=vps_basis_fourier(1)+pi*znuc(ict)/(vcell*alpha**2)
       do ig=2,ngnorm_big
         g2=gnorm(ig)**2
         g2a=0.25d0*g2/alpha**2
-c       write(ounit,*) ig,twopi,znuc(ict),exp(-g2a),(vcell*g2)
-c 120   vbare_psp(ig)=vbare_psp(ig)-2*twopi*znuc(ict)*exp(-g2a)/(vcell*g2)
         vbare_psp(ig)=vps_basis_fourier(ig)-2*twopi*znuc(ict)*exp(-g2a)/(vcell*g2)
       enddo
 
@@ -601,14 +746,23 @@ c If isrange=0,1 set ifcon=1, if isrange=2,3 set ifcon=0
       ifcon=1
       isrange=1
 
-      call separate(vbare_psp,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm
-     &,cutr,vcell,ncoef_per,np,b_psp(1,ict),y_psp(1,ict),chisq,ifcon,isrange)
 
+      write(ounit,'(''start vbare_psp separate short range potential'')')
+      write(ounit,'(''vbare_psp'', 20d12.4)') vbare_psp(1:ngnorm)
+      call separate(vbare_psp,b0,lowest_pow,ngnorm_big,igmult,gnorm,
+     &     ngnorm,cutr,vcell,ncoef_per,np,b_psp(1,ict),y_psp(1,ict),chisq,
+     &     ifcon,isrange)
+      
+      
+      write(ounit,'(''finnish vbare_psp separate short range potential'')')
+
+ 
+      
       if(chisq.gt.0) then
         write(ounit,'(''Rms error in pseudopotential separation'',d12.5)') dsqrt(chisq)
-       else
-        write(ounit,'(''Warning: Rms error missing, chisq negative in pseudopotential separate'',d12.4)') chisq
-        if(chisq.lt.0.d0) call fatal_error ('chisq<0 in separate')
+      else
+         write(ounit,'(''Warning: Rms error missing, chisq negative in pseudopotential separate'',d12.4)') chisq
+         if(chisq.lt.0.d0) call fatal_error ('chisq<0 in separate')
       endif
 
       if(ipr.ge.0) write(ounit,'(/,''Separation of pseudopotential in primitive cell'')')
@@ -621,11 +775,11 @@ c If sim cell is not primitive cell, vbare_coul has been overwritten, so restore
 c n-n, e-n interactions (primitive cell)
 c put in uniform background by setting k=0 term to zero
       if(vcell_sim.ne.vcell) then
-        vbare_coul(1)=0.d0
-        do k=2,ngnorm_big
-c Fourier transfom of 1/r
-          vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)
-        enddo
+         vbare_coul(1)=0.d0
+         do k=2,ngnorm_big
+c     Fourier transfom of 1/r
+            vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)
+         enddo
       endif
 
 c Note that 1/r and Jastrow have singlularities at r=0 and so at short r we cannot test
@@ -633,33 +787,60 @@ c the separation into short-range and long-range parts by just summing the
 c bare long-range parts.  The psp does not have a singularity so we can test it everywhere.
       if(ipr.ge.0) then
         write(ounit,'(''      r       "true"      ewald       test        test-true   d_true  d_test   vsrange  vlrange'')')
+c         write(ounit,'(''      r       "true"      ewald       test        test-true   d_true  d_test   vsrange  vlrange  w(r)'')')
         npts=101
         dx=cutr/(npts-1)
-        rms=0
+c        dx=1.35cutr/(npts-1)
+        rms=0.d0
+        write(ounit,*)'when computing short range separate range is ',isrange
+
+        print*, 'cutr',cutr,'dx',dx
+        write(ounit,'(''start loop vsrange1'')')
+        write(ounit,'(''npts'',i20)') npts
         do i=1,npts
           r_tmp(1)=(i-1)*dx+1.d-20
-          r_tmp(2)=0
-          r_tmp(3)=0
+          r_tmp(2)=0.d0
+          r_tmp(3)=0.d0
           rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
+c          print*,'r_tmp',r_tmp
+c          print*,'rr',rr
+          
+c          write(ounit,'(''i'',i20)') i
           if(isrange.eq.0) vs=vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
           if(isrange.eq.1) vs=vsrange1(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
           if(isrange.eq.2) vs=vsrange2(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
           if(isrange.eq.3) vs=vsrange3(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
+c          write(ounit,'(''getting close'')')
           vl=vlrange_old(r_tmp,gvec,ngnorm,igmult,y_psp(1,ict))
-          test=vs+vl
+          testv=vs+vl
 c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_psp)
+c         to compute w_approach in this case not sure if I should add corrections
+c          call wf(rr,w_gauss(i),b_psp(1:ncoef_per,ict))      
+          if(rr.gt.cutr) write(ounit,*) "rr",rr,"pass the cutr limit", cutr 
+c     if(rr.lt.cutr) then
           true=ewald_pot_psp(r_tmp,rr,gvec,gnorm,ngnorm_big,igmult,vbare_coul,cutr,vcell,ict,lpot(ict),znuc(ict))
           ewa=ewald_pot_psp(r_tmp,rr,gvec,gnorm,ngnorm,igmult,vbare_coul,cutr,vcell,ict,lpot(ict),znuc(ict))
-          rms=rms+(true-test)**2
+c          else
+c             true=ewald_pot(r_tmp,rr,gvec,gnorm,ngnorm_big,igmult,vbare_coul,cutr,vcell)
+c             ewa=ewald_pot(r_tmp,rr,gvec,gnorm,ngnorm,igmult,vbare_coul,cutr,vcell)
+c          endif
+
+          rms=rms+(true-testv)**2
+          
           if(i.eq.1) then
-            write(ounit,'(''vps'',f8.4,4f12.6,16x,9f12.6)') rr,true,ewa,test,test-true,vs,vl
+            write(ounit,'(''rr'',f8.4,4f12.6,16x,9f12.6)') rr,true,ewa,testv,testv-true,vs,vl
+c             write(ounit,'(''vps'',f8.4,4f12.6,16x,9f12.6)') rr,true,ewa,testv,testv-true,vs,vl, w_gauss(i)
            else
-            write(ounit,'(''vps'',f8.4,4f12.6,2f8.3,9f12.6)') rr,true,ewa,test,test-true
-     &      ,(true-true_s)/dx,(test-test_s)/dx,vs,vl
+            write(ounit,'(''rr'',f8.4,4f12.6,2f8.3,9f12.6)') rr,true,ewa,testv,testv-true
+     &      ,(true-true_s)/dx,(testv-test_s)/dx,vs,vl
+c            write(ounit,'(''rr'',f8.4,4f12.6,2f8.3,9f12.6)') rr,true,ewa,testv,testv-true
+c     &      ,(true-true_s)/dx,(testv-test_s)/dx,vs,vl, w_gauss(i)
           endif
           true_s=true
-        test_s=test
-        enddo
+        test_s=testv
+c        write(ounit,*) "rms current", dsqrt(rms/i)
+      enddo
+      write(ounit,'(''Finish loop vsrange1'')')
         rms=sqrt(rms/npts)
         write(ounit,'(''Rms error of psp fit='',d12.4)') rms
         if(rms.gt.1.d-3) write(ounit,'(''Warning: rms error of psp fit too large'',d12.4)') rms
@@ -683,6 +864,59 @@ c     c_madelung=pecent*dist_nn/(znuc(1)*znuc(2)*ncent/2)
       write(ounit,'(''pecent='',f12.6)') pecent
 c     write(ounit,'(''c_madelung='',f10.6)') c_madelung
 
+c images for periodic basis functions
+      if(n_images.ne.1)then
+       n_images=26
+       deallocate (ell)
+       allocate (ell(3, n_images))
+       ell=0.d0
+
+       ell(1,1)=rlatt_sim(1,1)
+       ell(2,2)=rlatt_sim(2,2)
+       ell(3,3)=rlatt_sim(3,3)
+
+       ell(1,4)=-rlatt_sim(1,1)
+       ell(2,5)=-rlatt_sim(2,2)
+       ell(3,6)=-rlatt_sim(3,3)
+
+       ell(1, 7)= rlatt_sim(1,1); ell(2, 7)= rlatt_sim(2,2)
+       ell(1, 8)= rlatt_sim(1,1); ell(2, 8)=-rlatt_sim(2,2)
+       ell(1, 9)=-rlatt_sim(1,1); ell(2, 9)= rlatt_sim(2,2)
+       ell(1,10)=-rlatt_sim(1,1); ell(2,10)=-rlatt_sim(2,2)
+
+       ell(1,11)= rlatt_sim(1,1); ell(3,11)= rlatt_sim(3,3)
+       ell(1,12)= rlatt_sim(1,1); ell(3,12)=-rlatt_sim(3,3)
+       ell(1,13)=-rlatt_sim(1,1); ell(3,13)= rlatt_sim(3,3)
+       ell(1,14)=-rlatt_sim(1,1); ell(3,14)=-rlatt_sim(3,3)
+
+       ell(2,15)= rlatt_sim(2,2); ell(3,15)= rlatt_sim(3,3)
+       ell(2,16)= rlatt_sim(2,2); ell(3,16)=-rlatt_sim(3,3)
+       ell(2,17)=-rlatt_sim(2,2); ell(3,17)= rlatt_sim(3,3)
+       ell(2,18)=-rlatt_sim(2,2); ell(3,18)=-rlatt_sim(3,3)
+
+       ell(1,19)= rlatt_sim(1,1); ell(2,19)= rlatt_sim(2,2); ell(3,19)= rlatt_sim(3,3)
+       ell(1,20)=-rlatt_sim(1,1); ell(2,20)= rlatt_sim(2,2); ell(3,20)= rlatt_sim(3,3)
+       ell(1,21)= rlatt_sim(1,1); ell(2,21)=-rlatt_sim(2,2); ell(3,21)= rlatt_sim(3,3)
+       ell(1,22)= rlatt_sim(1,1); ell(2,22)= rlatt_sim(2,2); ell(3,22)=-rlatt_sim(3,3)
+       ell(1,23)= rlatt_sim(1,1); ell(2,23)=-rlatt_sim(2,2); ell(3,23)=-rlatt_sim(3,3)
+       ell(1,24)=-rlatt_sim(1,1); ell(2,24)= rlatt_sim(2,2); ell(3,24)=-rlatt_sim(3,3)
+       ell(1,25)=-rlatt_sim(1,1); ell(2,25)=-rlatt_sim(2,2); ell(3,25)= rlatt_sim(3,3)
+       ell(1,26)=-rlatt_sim(1,1); ell(2,26)=-rlatt_sim(2,2); ell(3,26)=-rlatt_sim(3,3)
+
+!      write(*,*)'rlatt_sim'
+!      do i=1,3
+!       write(*,'(3e20.5)')rlatt_sim(1,i),rlatt_sim(2,i),rlatt_sim(3,i)
+!      enddo
+
+!      write(*,*)'ell'
+!      do i=1,n_images
+!       write(*,'(3e20.5)')ell(1,i),ell(2,i),ell(3,i)
+!      enddo
+       
+!      if(.true.)stop
+
+      endif
+
       return
       end
 c-----------------------------------------------------------------------
@@ -695,7 +929,7 @@ c dist_min is the shortest of these three.
 c By choosing the range of the short-range part of the Ewald sums to be
 c <= half the shortest perpendicular distance we ensure that the short-range
 c part has zero or one terms.
-      use contrl_file, only: ounit
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
 
@@ -753,7 +987,14 @@ c-----------------------------------------------------------------------
       subroutine cross(v1,v2,v3)
 c evaluates the cross-product of v1 and v2 and puts it in v3
 
+      use precision_kinds, only: dp
       implicit none
+
+      real(dp), dimension(3) :: v1
+      real(dp), dimension(3) :: v2
+      real(dp), dimension(3) :: v3
+
+      
 
 
 
@@ -766,13 +1007,15 @@ c evaluates the cross-product of v1 and v2 and puts it in v3
 c-----------------------------------------------------------------------
 
       subroutine shells(cutg,glatt,gdist,igvec,gvec,gnorm,igmult,ngvec_big,ngnorm_big,ng1d,icell)
-      use ewald_mod, only: NGVEC_BIGX,NGVEC_SIM_BIGX
-      use precision_kinds, only: dp
+      use ewald_mod, only: NGVEC_BIGX
+      use ewald_mod, only: NGVEC_SIM_BIGX
 c Written by Cyrus Umrigar
 
 c icell = 0  primitive cell
 c         1  simulation cell
 
+      use precision_kinds, only: dp
+      use error, only: fatal_error
       implicit none
 
       integer :: i1, i2, i2min, i3, i3min
@@ -810,7 +1053,7 @@ c       do 10 i2=-ng1d(2),ng1d(2)
            else
             i3min=0
           endif
-c         do 10 i3=-ng1d(3),ng1d(3)
+c     do 10 i3=-ng1d(3),ng1d(3)
           do i3=i3min,ng1d(3)
 
             gx=i1*glatt(1,1)+i2*glatt(1,2)+i3*glatt(1,3)
@@ -848,10 +1091,12 @@ c         do 10 i3=-ng1d(3),ng1d(3)
 c-----------------------------------------------------------------------
 
       subroutine sort(igvec,gvec,gnorm_tmp,gnorm,igmult,ngvec_big,ngnorm_big,icell)
-      use contrl_file, only: ounit
-      use ewald_mod, only: NGNORM_BIGX,NGNORM_SIM_BIGX
-      use precision_kinds, only: dp
+      use ewald_mod, only: NGNORM_BIGX
+      use ewald_mod, only: NGNORM_SIM_BIGX
 c Written by Cyrus Umrigar
+      use contrl_file,    only: ounit
+      use error, only: fatal_error
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, icell, icheck, icount, it
@@ -941,12 +1186,16 @@ c related by primitive cell reciprocal lattice vectors to inverses of
 c other vectors.  We should come back to the issue of whether that is
 c a symmetry one could use later on.
 
-      use contrl_file, only: ounit
       use ewald_mod, only: NSYM
-      use periodic, only: cutg,cutg_sim,glatt_inv,gvec,gvec_sim
-      use periodic, only: igvec_sim,k_inv,kvec,ngvec,ngvec_sim,nkvec
-      use periodic, only: rknorm,rkvec,rkvec_shift,vcell,vcell_sim
+      use periodic, only: cutg, cutg_sim
+      use periodic, only: glatt_inv, gvec, gvec_sim, igvec_sim
+      use periodic, only: k_inv, kvec
+      use periodic, only: ngvec, ngvec_sim, nkvec
+      use periodic, only: rknorm, rkvec, rkvec_shift, vcell
+      use periodic, only: vcell_sim
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
+      use error, only: fatal_error
       implicit none
 
       integer :: i, ikv, j, k, l
@@ -1059,6 +1308,8 @@ c Write out k-pts in reciprocal lattice units for input to pw program
      &  call fatal_error ('You probably need to increase cutg rel. to cutg_sim if nkvec_tot > vcell_sim/vcell')
       endif
 
+
+
       return
       end
 c-----------------------------------------------------------------------
@@ -1070,43 +1321,48 @@ c Note: vps_short overwritten
 c g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
 c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
-      use constant, only: twopi
-      use ewald_mod, only: NGNORM_BIGX
-      use precision_kinds, only: dp
       use pseudo_mod, only: MPS_GRID
+      use ewald_mod, only: NGNORM_BIGX
+c      use constant, only: twopi
+      use precision_kinds, only: dp
       implicit none
 
       integer :: ig, ir, ngnorm_big, nr
       real(dp) :: anorm, arg, dx, r0, rlogarg
-      real(dp) :: vcell
+      real(dp) :: vcell, pi,twopi
       real(dp), dimension(*) :: r
       real(dp), dimension(*) :: vps_short
       real(dp), dimension(*) :: gnorm
-      real(dp), dimension(MPS_GRID) :: y
+c      real(dp), dimension(MPS_GRID) :: y
+      real(dp), dimension(nr) :: y
       real(dp), dimension(NGNORM_BIGX) :: vbare_psp
 
 
+      pi=4.d0*datan(1.d0)
+      twopi=2*pi
 
 
-
+      
       anorm=2*twopi/vcell
-
+c      anorm=4*twopi/vcell
+      
 c shifted exponential grid
       rlogarg=dlog(arg)
       do ir=1,nr
         vps_short(ir)=(r(ir)+r0)*vps_short(ir)*rlogarg
       enddo
-
+      
       dx=1.d0
 c g != 0 components
       do ig=2,ngnorm_big
-        do  ir=1,nr
-   20     y(ir)=r(ir)*vps_short(ir)*sin(gnorm(ig)*r(ir))
-        enddo
-        call simson(y,vbare_psp(ig),dx,nr)
-c       nrr=((nr-1)/4)*4+1
-c       vbare_psp(ig)=bode(y,dx,nrr)
-        vbare_psp(ig)=anorm*vbare_psp(ig)/gnorm(ig)
+         do  ir=1,nr
+c     20         y(ir)=r(ir)*vps_short(ir)*sin(gnorm(ig)*r(ir))
+            y(ir)=r(ir)*vps_short(ir)*sin(gnorm(ig))
+         enddo
+         call simson(y,vbare_psp(ig),dx,nr)
+c     nrr=((nr-1)/4)*4+1
+c     vbare_psp(ig)=bode(y,dx,nrr)
+         vbare_psp(ig)=anorm*vbare_psp(ig)/gnorm(ig)
       enddo
 
 c g=0 component
@@ -1119,13 +1375,56 @@ c g=0 component
       return
       end
 c-----------------------------------------------------------------------
-      subroutine separate(v,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm,cutr,vcell,ncoef_per,np,b,y,chisq,ifcon,isrange)
+
+      subroutine fourier_it(rvec,gvec,ngnorm_big,igmult,vps_k,vps_r)
+      
+      use ewald_mod, only: NGNORM_BIGX
+      use contrl_file,    only: ounit  
+      use precision_kinds, only: dp 
+      implicit none
+      
+      integer :: im, ivec, k, ngnorm_big
+      integer, dimension(*) :: igmult
+      real(dp) :: cos, product, vps_r
+      real(dp), dimension(3) :: rvec
+      real(dp), dimension(3,*) :: gvec
+      real(dp), dimension(NGNORM_BIG) :: vps_k
+            
+c      wirte(ounit,*)  rvec
+
+c Note: vpsp_k are:
+c     g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
+c     g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
+      
+      ivec=1
+c     add other terms 
+c     since it has been assumed v_k = v_{-k}
+      do k=2,ngnorm_big
+         do im=1,igmult(k)
+            ivec=ivec+1
+            product=rvec(1)*gvec(1,ivec)+
+     &           rvec(2)*gvec(2,ivec)+
+     &           rvec(3)*gvec(3,ivec)
+            vps_r=vps_r+cos(product)*vps_k(k)
+         enddo
+      enddo
+      
+c     a0 term k=0 
+      vps_r=2.d0*vps_r+vps_k(1)
+      
+      
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine separate(v,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm,
+     & cutr,vcell,ncoef_per,np,b,y,chisq,ifcon,isrange)
 c Written by Cyrus Umrigar and Claudia Filippi
 
-      use constant, only: twopi
-      use contrl_file, only: ounit
-      use ewald_mod, only: NCOEFX,NPX
+      use ewald_mod, only: NCOEFX, NPX
+c      use constant, only: twopi
       use precision_kinds, only: dp
+      use contrl_file,    only: ounit
+      use error, only: fatal_error
       implicit none
 
       integer :: i, i0, ifcon, ig, info
@@ -1135,7 +1434,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       integer, dimension(*) :: igmult
       real(dp) :: anorm, b0, beta1, beta2, chisq
       real(dp) :: cutr, gr, rcond, vcell
-      real(dp) :: vk
+      real(dp) :: vk, pi,twopi
       real(dp), dimension(NCOEFX,NCOEFX) :: a
       real(dp), dimension(NCOEFX+NPX) :: c
       real(dp), dimension(NCOEFX) :: work
@@ -1147,6 +1446,8 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
 c     parameter(NPX=6)
 
+      pi=4.d0*datan(1.d0)
+      twopi=2*pi
 
 
 
@@ -1188,28 +1489,38 @@ c zero right and left hand side of fitting equation
           a(j,i)=0.d0
         enddo
       enddo
-
+      
       chisq=0.d0
-c go over k values larger than those explicitly used
+      write(ounit,*) "chisq", chisq
+c     go over k values larger than those explicitly used
+      write(ounit,'(''do ewald breakup compute ckn'')') 
+      write(ounit,'(''ngnorm, ngnorm_big'',2i3)') ngnorm, ngnorm_big
+      
+      
       do k=ngnorm+1,ngnorm_big
         gr=gnorm(k)*cutr
         ig=k
         if(isrange.eq.0) then
-          call integral_sin_poly(gr,lowest_pow,ncoef_per,np,anorm,c)
-         elseif(isrange.eq.1) then
-          call integral_sin_poly1(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
-         elseif(isrange.eq.2) then
-          call integral_sin_poly2(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
-         elseif(isrange.eq.3) then
-          call integral_sin_poly3(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
+           call integral_sin_poly(gr,lowest_pow,ncoef_per,np,anorm,c)
+        elseif(isrange.eq.1) then
+           call integral_sin_poly1(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
+        elseif(isrange.eq.2) then
+           call integral_sin_poly2(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
+        elseif(isrange.eq.3) then
+           call integral_sin_poly3(gr,ig,lowest_pow,ncoef_per,np,anorm,c)
         endif
 
-c Constraints.  That for c(2) is for cusp constraint only.
+c     Constraints.  That for c(2) is for cusp constraint only.
+        
         vk=v(k)-beta1*c(1)
         c(2)=c(2)+beta2*c(1)
 
         chisq=chisq+igmult(k)*vk**2
+        
+c        write(ounit,*) "k",k,"chisq(k)", chisq
 
+c        write(ounit,'(''vk='',d14.5)') vk
+        
 c add to right hand side
         do i=i0,ncoef_per
           b(i)=b(i)+igmult(k)*vk*c(i)
@@ -1220,16 +1531,18 @@ c add to left hand side
         enddo
       enddo
 
-c     write(ounit,'(''a='',10d14.5)') ((a(i,j),i=i0,ncoef_per),j=i0,ncoef_per)
-c     write(ounit,'(''b='',10d14.5)') (b(i),i=i0,ncoef_per)
+      write(ounit,'(''c='',10d14.5)') (c(i),i=i0,ncoef_per)
+      write(ounit,'(''a='',10d14.5)') ((a(i,j),i=i0,ncoef_per),j=i0,ncoef_per)
+      write(ounit,'(''b='',10d14.5)') (b(i),i=i0,ncoef_per)
 
+c to be reinserted     
 c invert right hand side
-      if(nfree.gt.0) then
-        call dpoco(a(i0,i0),NCOEFX,nfree,rcond,work,info)
-        write(ounit,'(''condition #, rcond, after return from dpoco'',d12.4)') rcond
-        if(rcond.lt.1.d-14) call fatal_error ('rcond too small in dpoco')
-        if(info.ne.0) call fatal_error ('info in dpoco.ne.0 when called from separate')
-      endif
+c      if(nfree.gt.0) then
+c        call dpoco(a(i0,i0),NCOEFX,nfree,rcond,work,info)
+c        write(ounit,'(''condition #, rcond, after return from dpoco'',d12.4)') rcond
+c        if(rcond.lt.1.d-14) call fatal_error ('rcond too small in dpoco')
+c        if(info.ne.0) call fatal_error ('info in dpoco.ne.0 when called from separate')
+c      endif
 
 c make a spare copy of right hand side
       do i=i0,ncoef_per
@@ -1237,7 +1550,12 @@ c make a spare copy of right hand side
       enddo
 
 c solve linear equations
-      call dposl(a(i0,i0),NCOEFX,nfree,b(i0))
+c     call dposl(a(i0,i0),NCOEFX,nfree,b(i0))
+      call dposv('U',nfree,1,a(i0,i0),NCOEFX,b(i0),nfree,info)
+      
+
+      
+      
 c     write(ounit,*) (b(i),i=i0,ncoef_per)
 
 c b is now the solution (t in Ceperley's paper)
@@ -1292,14 +1610,18 @@ c output coefficients c
       implicit none
 
       integer :: i, j, k, lowest_pow, n
-      integer :: np, npts
+c     integer :: np, npts
+      integer :: np
       real(dp) :: anorm,  dcmplx, dx, g
-      real(dp) :: gi, sin, ti,et,em, x
+c     real(dp) :: gi, sin, ti,et,em, x
+      real(dp) :: gi, sin, x
       real(dp), dimension(*) :: c
+      integer, parameter :: NPTS = 2001
       real(dp), dimension(NPTS) :: y
-      real(dp), parameter :: NPTS = 1001
+      
       complex*16 ti,et,em
 
+      
 
 c integrates sin(g*x)*x**i for i=lowest_pow+1 to n+np+lowest_pow and x from 0 to 1
       if(dabs(g).gt.1.d-10) then
@@ -1373,12 +1695,13 @@ c output coefficients c
       implicit none
 
       integer :: i, ig, j, k, lowest_pow
-      integer :: n, np, npts
+      integer :: n, np
       real(dp) :: anorm, dcmplx, dx, g
-      real(dp) :: gi, sin, ti,et,em, x
+c     real(dp) :: gi, sin, ti,et,em, x
+      real(dp) :: gi, sin, x
       real(dp), dimension(*) :: c
+      integer, parameter :: NPTS = 2001
       real(dp), dimension(NPTS) :: y
-      real(dp), parameter :: NPTS = 1001
 
       complex*16 ti,et,em
 
@@ -1454,20 +1777,22 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
+      use ewald_mod, only: NCOEFX, NPX
       use ewald_basis, only: vps_basis_fourier
-      use ewald_mod, only: NCOEFX,NPX
       use precision_kinds, only: dp
       implicit none
 
       integer :: i, ig, j, lowest_pow, n
-      integer :: np, npts
-      real(dp) :: anorm, choose, dcmplx, dx
-      real(dp) :: g, gi, sin, ti,et,em
+      integer :: np
+      real(dp) :: anorm, dcmplx, dx
+c     real(dp) :: g, gi, sin, ti,et,em
+      real(dp) :: g, gi, sin
       real(dp) :: x
       real(dp), dimension(*) :: c
       real(dp), dimension(NPX*(NCOEFX+1)) :: d
+      integer, parameter :: NPTS = 1001
       real(dp), dimension(NPTS) :: y
-      real(dp), parameter :: NPTS = 1001
+      
 
       complex*16 ti,et,em
 
@@ -1545,20 +1870,23 @@ c g = g*cutr
 c x = r/cutr
 c output coefficients c
 
+      use ewald_mod, only: NCOEFX, NPX
       use ewald_basis, only: vps_basis_fourier
-      use ewald_mod, only: NCOEFX,NPX
       use precision_kinds, only: dp
       implicit none
 
       integer :: i, ig, j, lowest_pow, n
-      integer :: np, npts
-      real(dp) :: anorm, choose, dcmplx, dx
-      real(dp) :: g, gi, sin, ti,et,em
+      integer :: np
+      real(dp) :: anorm, dcmplx, dx
+c     real(dp) :: g, gi, sin, ti,et,em
+      real(dp) :: g, gi, sin
       real(dp) :: x
       real(dp), dimension(*) :: c
       real(dp), dimension(NPX*(NCOEFX+1)) :: d
+      integer, parameter :: NPTS = 1001
+
       real(dp), dimension(NPTS) :: y
-      real(dp), parameter :: NPTS = 1001
+      
 
       complex*16 ti,et,em
 
@@ -1628,14 +1956,14 @@ c     do 40 i=1,n
       end
 c-----------------------------------------------------------------------
 
-      function choose(n,m)
+      real*8 function choose(n,m)
 c Written by Cyrus Umrigar
 c Binomial coefficients ^nC_m
       use precision_kinds, only: dp
       implicit none
 
       integer :: i, m, n
-      real(dp) :: choose
+      
 
       choose=1
       do i=1,m
@@ -1645,7 +1973,7 @@ c Binomial coefficients ^nC_m
       end
 c-----------------------------------------------------------------------
 
-      function vsrange(r,cutr,lowest_pow,ncoef_per,np,b)
+      real*8 function vsrange(r,cutr,lowest_pow,ncoef_per,np,b)
 c Written by Cyrus Umrigar and Claudia Filippi
 c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
 
@@ -1653,14 +1981,15 @@ c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
       implicit none
 
       integer :: i, lowest_pow, ncoef_per, np
-      real(dp) :: cutr, r, vsrange, x
+      real(dp) :: cutr, r, x
       real(dp), dimension(*) :: b
 
 
 
       x=r/cutr
 
-      vsrange=0
+      vsrange=0.d0
+      
       if(x.gt.1.d0) return
 
       do i=1,ncoef_per
@@ -1675,56 +2004,110 @@ c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
       end
 c-----------------------------------------------------------------------
 
-      function vsrange1(r,cutr,lowest_pow,ncoef_per,np,b,ict,l)
+      real*8 function vsrange1(r,cutr,lowest_pow,ncoef_per,np,b,ict,l)
 c Written by Cyrus Umrigar
 c h(x)= \sum_{i=1}^ncoef_per b_i x^{i-1} (1-x)^np, x=r/cutr
-
+c     use readps_tm_mod, only: splfit_tm
+      use readps_gauss, only: gauss_pot
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
+      use system, only: znuc
       implicit none
 
-      integer :: i, ict, l, ncoef_per, np
-      real(dp) :: cutr, r, vpot, vsrange1, x
+      integer :: i, ict, l, ncoef_per, np, lowest_pow
+      real(dp) :: cutr, r, vpot, dvpot, x, vsrange
       real(dp), dimension(*) :: b
 
+      vpot=0.d0
+      dvpot=0.d0
 
-
+      r=max(1.0d-10,r)
       x=r/cutr
+      
+c      print*,'inside vsrange1'
+c      print*, 'ncoef_per', ncoef_per
+c      print*,'x',x,'r',r,'cutr',cutr
+c     print*,"b",b(1:ncoef_per)
+c      write(ounit,'(''inside vsrange1'')') 
+c      write(ounit,'(''ncoef_per'',i3)') ncoef_per 
+c      write(ounit,'(''b'',9f9.5)') b(1:ncoef_per) 
+      
 
-      vsrange1=0
-      if(x.gt.1.d0) return
+c     This is added to guarantee it goes correctly to the limit matching condition at cutr
+c     however it should not be used at larger range than rcut since is zero  
+
+      vsrange1=0.d0
+
+
+c     to compute the expansion we got from the fit for w(r) potential no first coefficient
+      vsrange=0.d0
 
 c     do 10 i=1,ncoef_per
-c  10   vsrange1=b(ncoef_per-i+1)+x*vsrange1
+c     10   vsrange1=b(ncoef_per-i+1)+x*vsrange1
+
       do i=1,ncoef_per-1
-        vsrange1=b(ncoef_per-i)+x*vsrange1
+c     print*,'b(i)', ncoef_per-i, b(ncoef_per-i)
+c        write(ounit,'(''i,b(i)'',i3,9f9.5)') i,b(ncoef_per-i) 
+        vsrange=b(ncoef_per-i)+x*vsrange
       enddo
 
-      vsrange1=vsrange1*(1-x)**np
+c      print*,"vsrange1  before scaling", vsrange
+      vsrange=vsrange*(1-x)**np
+c      write(ounit,*) " "
+c      write(ounit,*) "vsrange1 incomplete",vsrange
+      
+c     print*,'splfit_tm input',cutr,r,l,ict,vpot
+      
+     
+      
 
-      call splfit_tm(r,l,ict,vpot)
-c     write(ounit,'(''ict,l,r,vsrange1,vpot'',2i3,9f9.5)') ict,l,r,vsrange1,vpot
+C      write(ounit,'(''ict,l,r,vsrange1,vpot'',2i3,9f9.5)') ict,l,r,vsrange1,vpot
+c      call splfit_tm(r,l,ict,vpot)
+c      vsrange1=vsrange+b(ncoef_per)*vpot
+      call gauss_pot(r,l,ict,vpot,dvpot)
+      vpot=vpot-znuc(ict)/r
       vsrange1=vsrange1+b(ncoef_per)*vpot
 
+c     Adding term with correction (last term of expansion) 
+      vsrange1=vsrange1+vsrange
+
+
+      
+c     write(ounit,*) "b(n), vpot, b(n)*vpot",b(ncoef_per), vpot, b(ncoef_per)*vpot
+c     write(ounit,*) "vsrange1 complete",vsrange1
+
+      
+      if(x.gt.1.d0) then
+c        write(ounit,*) "Warning reached cutr threshold", vsrange1
+         vsrange1=0.d0
+         return
+      endif
+
+
+c      write(ounit,*) " "
+      
 c     if(lowest_pow.eq.-1) vsrange1=vsrange1/x
 
       return
       end
 c-----------------------------------------------------------------------
 
-      function vsrange2(r,cutr,lowest_pow,ncoef_per,np,b,ict,l)
+      real*8 function vsrange2(r,cutr,lowest_pow,ncoef_per,np,b,ict,l)
 c Written by Cyrus Umrigar
 c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^np)^{i+1}, x=r/cutr
-
+c     use readps_tm_mod, only: splfit_tm
+      use system, only: znuc
+      use readps_gauss, only: gauss_pot
       use precision_kinds, only: dp
       implicit none
 
-      integer :: i, ict, l, ncoef_per, np
-      real(dp) :: cutr, r, term, vpot, vsrange2
+      integer :: i, ict, l, ncoef_per, np, lowest_pow
+      real(dp) :: cutr, r, term, vpot,dvpot
       real(dp) :: x
       real(dp), dimension(*) :: b
 
 
-
+      r=max(1.0d-10,r)
       x=r/cutr
 
       vsrange2=0
@@ -1736,10 +2119,12 @@ c  10   vsrange2=b(ncoef_per-i+1)+term*vsrange2
       do i=1,ncoef_per-1
         vsrange2=b(ncoef_per-i)+term*vsrange2
       enddo
-
+      
       vsrange2=vsrange2*term*term
 
-      call splfit_tm(r,l,ict,vpot)
+c     call splfit_tm(r,l,ict,vpot)
+      call gauss_pot(r,l,ict,vpot,dvpot)
+      vpot=vpot-znuc(ict)/r
 c     write(ounit,'(''ict,l,r,vsrange2,vpot'',2i3,9f9.5)') ict,l,r,vsrange2,vpot
       vsrange2=vsrange2+b(ncoef_per)*vpot
 
@@ -1749,19 +2134,21 @@ c     if(lowest_pow.eq.-1) vsrange2=vsrange2/x
       end
 c-----------------------------------------------------------------------
 
-      function vsrange3(r,cutr,lowest_pow,ncoef_per,np,b,ict,l)
+      real*8 function vsrange3(r,cutr,lowest_pow,ncoef_per,np,b,ict,l)
 c Written by Cyrus Umrigar
 c h(x)= \sum_{i=1}^ncoef_per b_i (1-x^{i+1})^np, x=r/cutr
-
+c     use readps_tm_mod, only: splfit_tm
+      use readps_gauss, only: gauss_pot
+      use system, only: znuc
       use precision_kinds, only: dp
       implicit none
 
-      integer :: i, ict, l, ncoef_per, np
-      real(dp) :: cutr, r, vpot, vsrange3, x
+      integer :: i, ict, l, ncoef_per, np, lowest_pow
+      real(dp) :: cutr, r, vpot, x, dvpot
       real(dp), dimension(*) :: b
 
 
-
+      r=max(1.0d-10,r)
       x=r/cutr
 
       vsrange3=0
@@ -1772,7 +2159,9 @@ c     do 10 i=1,ncoef_per
         vsrange3=vsrange3+b(i)*(1-x**(i+1))**np
       enddo
 
-      call splfit_tm(r,l,ict,vpot)
+c     call splfit_tm(r,l,ict,vpot)
+      call gauss_pot(r,l,ict,vpot,dvpot)
+      vpot=vpot-znuc(ict)/r
 c     write(ounit,'(''ict,l,r,vsrange3,vpot'',2i3,9f9.5)') ict,l,r,vsrange3,vpot
       vsrange3=vsrange3+b(ncoef_per)*vpot
 
@@ -1782,16 +2171,16 @@ c     if(lowest_pow.eq.-1) vsrange3=vsrange3/x
       end
 c-----------------------------------------------------------------------
 
-      function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
+      real*8 function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
 c Written by Cyrus Umrigar
 
-      use constants, only: pi
+c      use constants, only: pi
       use precision_kinds, only: dp
       implicit none
 
       integer :: im, ivec, k, ngnorm
       integer, dimension(*) :: igmult
-      real(dp) :: cos, cutr, derfc, ewald_pot, expon
+      real(dp) :: cos, cutr, derfc, expon, pi
       real(dp) :: gaus_exp, product, rr, vcell
       real(dp), dimension(3) :: rvec
       real(dp), dimension(3,*) :: gvec
@@ -1799,7 +2188,8 @@ c Written by Cyrus Umrigar
       real(dp), dimension(*) :: y
 
 
-
+      pi=4.d0*datan(1.d0)
+      
 
       gaus_exp=5/cutr
       ivec=1
@@ -1820,28 +2210,35 @@ c last line, which is there because we keep only half the vectors in the star.
 
       return
       end
+
+
+
 c-----------------------------------------------------------------------
 
-      function ewald_pot_psp(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell,ict,l,z)
-c Written by Cyrus Umrigar
 
-      use constants, only: pi
+      real*8 function ewald_pot_psp(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell,ict,l,z)
+c Written by Cyrus Umrigar
+c     use readps_tm_mod, only: splfit_tm
+      use readps_gauss, only: gauss_pot
+c      use constants, only: pi
+      use system, only: znuc
       use precision_kinds, only: dp
       implicit none
 
       integer :: ict, im, ivec, k, l
       integer :: ngnorm
       integer, dimension(*) :: igmult
-      real(dp) :: cos, cutr, ewald_pot_psp, expon, gaus_exp
-      real(dp) :: product, rr, vcell, vpot
-      real(dp) :: z
+      real(dp) :: cos, cutr, expon, gaus_exp
+      real(dp) :: product, rr, vcell, vpot, dvpot
+      real(dp) :: z, pi
       real(dp), dimension(3) :: rvec
       real(dp), dimension(3,*) :: gvec
       real(dp), dimension(*) :: gnorm
       real(dp), dimension(*) :: y
 
 
-
+      pi=4.d0*datan(1.d0)
+      
 
       gaus_exp=5/cutr
       ivec=1
@@ -1858,23 +2255,26 @@ c last line, which is there because we keep only half the vectors in the star.
           ewald_pot_psp=ewald_pot_psp+cos(product)*y(k)*expon
         enddo
       enddo
-      call splfit_tm(rr,l,ict,vpot)
-c     write(ounit,'(''rr,ewald_pot_psp'',f8.4,9f9.5)') rr,-z*(2*ewald_pot_psp+y(1)),vpot,-z*(2*ewald_pot_psp+y(1))+vpot
+c     call splfit_tm(rr,l,ict,vpot)
+      call gauss_pot(rr,l,ict,vpot,dvpot)
+      vpot=vpot-znuc(ict)/rr
+c      wrtie(ounit,*) "inside ewald_psp y(1)",Y(1)
+c      write(ounit,'(''rr,ewald_pot_psp'',f8.4,9f9.5)') rr,-z*(2*ewald_pot_psp+y(1)),vpot,-z*(2*ewald_pot_psp+y(1))+vpot
       ewald_pot_psp=-z*(2*ewald_pot_psp+y(1))+vpot
 
       return
       end
 c-----------------------------------------------------------------------
-      function vlrange_old(rvec,gvec,ngnorm,igmult,y)
-      use ewald_mod, only: NGNORM_SIM_BIGX,NGVEC_SIM_BIGX
-      use precision_kinds, only: dp
+      real*8 function vlrange_old(rvec,gvec,ngnorm,igmult,y)
+      use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
 c Written by Cyrus Umrigar
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: im, ivec, k, ngnorm
       integer, dimension(*) :: igmult
-      real(dp) :: cos, product, vlrange, vlrange_old
+      real(dp) :: cos, product, vlrange
       real(dp), dimension(3) :: rvec
       real(dp), dimension(3,*) :: gvec
       real(dp), dimension(*) :: y
@@ -1883,7 +2283,7 @@ c Written by Cyrus Umrigar
 c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_SIM_BIGX)
 
       ivec=1
-      vlrange=0
+      vlrange=0.d0
       do k=2,ngnorm
         do im=1,igmult(k)
           ivec=ivec+1
@@ -1899,18 +2299,18 @@ c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_
       end
 c-----------------------------------------------------------------------
 
-      function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
+      real*8 function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
+      use system, only: nelec
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
-      use system,  only: nelec
       implicit none
 
       integer :: i, im, ivec, k, ncent
       integer :: ngnorm
       integer, dimension(*) :: iwctype
       integer, dimension(*) :: igmult
-      real(dp) :: cos_sum, sin_sum, vl, vlrange_nn_old2, znuci
+      real(dp) :: cos_sum, sin_sum, vl, znuci
       real(dp), dimension(*) :: znuc
       real(dp), dimension(nelec,*) :: cos_g
       real(dp), dimension(nelec,*) :: sin_g
@@ -1919,12 +2319,12 @@ c Written by Cyrus Umrigar
 
 
       ivec=1
-      vl=0
+      vl=0.d0
       do k=2,ngnorm
         do im=1,igmult(k)
           ivec=ivec+1
-          cos_sum=0
-          sin_sum=0
+          cos_sum=0.d0
+          sin_sum=0.d0
           do i=1,ncent
             znuci=znuc(iwctype(i))
             cos_sum=cos_sum+znuci*cos_g(i,ivec)
@@ -1939,16 +2339,16 @@ c Written by Cyrus Umrigar
       end
 c-----------------------------------------------------------------------
 
-      function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
+      real*8 function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
+!      use system, only: nelec
 c Written by Cyrus Umrigar
-
+  
       use precision_kinds, only: dp
-      use system,  only: nelec
       implicit none
-
+      integer nelec
       integer :: i, im, ivec, k, ngnorm
       integer, dimension(*) :: igmult
-      real(dp) :: cos_sum, sin_sum, vl, vlrange_ee_old2
+      real(dp) :: cos_sum, sin_sum, vl
       real(dp), dimension(nelec,*) :: cos_g
       real(dp), dimension(nelec,*) :: sin_g
       real(dp), dimension(*) :: y
@@ -1956,12 +2356,12 @@ c Written by Cyrus Umrigar
 
 
       ivec=1
-      vl=0
+      vl=0.d0
       do k=2,ngnorm
         do im=1,igmult(k)
           ivec=ivec+1
-          cos_sum=0
-          sin_sum=0
+          cos_sum=0.d0
+          sin_sum=0.d0
           do i=1,nelec
             cos_sum=cos_sum+cos_g(i,ivec)
             sin_sum=sin_sum+sin_g(i,ivec)
@@ -1975,7 +2375,7 @@ c Written by Cyrus Umrigar
       end
 c-----------------------------------------------------------------------
 
-      function vlrange(ngnorm,igmult,cos1_sum,cos2_sum,sin1_sum,sin2_sum,y)
+      real*8 function vlrange(ngnorm,igmult,cos1_sum,cos2_sum,sin1_sum,sin2_sum,y)
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
@@ -1983,7 +2383,7 @@ c Written by Cyrus Umrigar
 
       integer :: im, ivec, k, ngnorm
       integer, dimension(*) :: igmult
-      real(dp) :: vl, vlrange
+      real(dp) :: vl
       real(dp), dimension(*) :: cos1_sum
       real(dp), dimension(*) :: cos2_sum
       real(dp), dimension(*) :: sin1_sum
@@ -2006,7 +2406,7 @@ c Written by Cyrus Umrigar
       end
 c-----------------------------------------------------------------------
 
-      function vlrange_p(ngnorm,igmult,cos1_sum,cos2_sum,sin1_sum,sin2_sum)
+      real*8 function vlrange_p(ngnorm,igmult,cos1_sum,cos2_sum,sin1_sum,sin2_sum)
 c Written by Cyrus Umrigar
 
       use precision_kinds, only: dp
@@ -2014,7 +2414,7 @@ c Written by Cyrus Umrigar
 
       integer :: im, ivec, k, ngnorm
       integer, dimension(*) :: igmult
-      real(dp) :: vl, vlrange_p
+      real(dp) :: vl
       real(dp), dimension(*) :: cos1_sum
       real(dp), dimension(*) :: cos2_sum
       real(dp), dimension(*) :: sin1_sum
@@ -2034,27 +2434,102 @@ c Written by Cyrus Umrigar
 
       return
       end
+
+      real*8 function bode(y,h,n)
+
+      use precision_kinds, only: dp
+      implicit none
+
+c  need to recover pw_ewald original Cyrus Umrigar implementation      
+
+      real(dp), parameter :: oneb45=1.d0/45.d0
+      real(dp), parameter :: c0=28.d0
+      real(dp), parameter :: c1=64.d0
+      real(dp), parameter :: c2=24.d0
+      real(dp), parameter :: half=.5d0
+      real(dp), dimension (*) :: y
+      real(dp) :: s, h
+      
+      integer :: n, n1, i
+      
+      if(mod(n-1,4).ne.0) stop 'n must be 4*n+1 in bode'
+      
+      n1=n-1
+      s=half*c0*(y(n)-y(1))
+      do i=1,n1,4
+         s=s+c0*y(i)+c1*(y(i+1)+y(i+3))+c2*y(i+2)
+      enddo
+      bode=s*h*oneb45
+      return
+      end
+
+
+
+      subroutine simson(y,s,h,n)
+
+      
+      use precision_kinds, only: dp
+      implicit none
+
+      real(dp), parameter :: c3=0.125d0
+      real(dp), parameter :: c2=-0.625d0
+      real(dp), parameter :: c1=1.375d0
+      real(dp), parameter :: c0=-2.875d0
+      real(dp), dimension (*) :: y
+      real(dp) :: s, h, h3, odd, eve
+      integer :: n, n1, i
+
+      h3=0.333333333333333d0*h
+      n1=n-1
+      odd=0.d0
+      eve=0.d0
+      
+      do i=1,n1,2
+        odd=odd+y(i)
+        eve=eve+y(i+1)
+      enddo
+
+      s=2.d0*(odd+2.d0*eve) - y(1)
+
+      if(mod(n,2).eq.1) then
+         s=(s+y(n)) * h3
+      else
+         s=(s+c3*y(n-3)+c2*y(n-2)+c1*y(n-1)+c0*y(n)) * h3
+      endif
+
+      
+      
+      return
+      end
+
+      
+      
 c-----------------------------------------------------------------------
 
       subroutine pot_nn_ewald_old
 c Written by Cyrus Umrigar
 
-      use ewald,   only: b_coul,y_coul
+      use system, only: znuc, cent, iwctype, ncent
       use multiple_geo, only: pecent
-      use periodic, only: cutr,gvec,igmult,ncoef_per,ngnorm,np,vcell
-      use periodic, only: vcell_sim,znuc2_sum
+      use contrl_file,    only: ounit
+      use ewald, only: b_coul, y_coul
+
+      use periodic, only: cutr
+      use periodic, only: gvec, igmult
+      use periodic, only: ncoef_per, ngnorm
+      use periodic, only: np, vcell
+      use periodic, only: vcell_sim, znuc2_sum
+      use pw_find_image, only: find_image3
       use precision_kinds, only: dp
-      use system,  only: cent,iwctype,ncent,znuc
-
-
       implicit none
 
       integer :: i, j, k, lowest_pow
-      real(dp) :: c0, rnorm, vl, vlr, vlrange_old
-      real(dp) :: vs, vsrange, zprod
+      real(dp) :: c0, rnorm, vl, vlr
+c     real(dp) :: vs, vsrange, zprod
+      real(dp) :: vs, zprod
       real(dp), dimension(3) :: r
 
-
+      
 
 
 
@@ -2091,21 +2566,27 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald
 c Written by Cyrus Umrigar
 
-      use ewald,   only: b_coul,y_coul
+      use contrl_file,    only: ounit
+      use system, only: znuc, cent, iwctype, ncent
       use multiple_geo, only: pecent
-      use periodic, only: cutr,glatt,igmult,igvec,ncoef_per,ng1d,ngnorm
-      use periodic, only: ngvec,np,vcell,vcell_sim,znuc2_sum,znuc_sum
+
+      use ewald, only: b_coul, y_coul, cos_n_sum, sin_n_sum
+
+      use periodic, only: cutr, glatt
+      use periodic, only: igmult, igvec
+      use periodic, only: ncoef_per, ng1d, ngnorm
+      use periodic, only: ngvec
+      use periodic, only: np, vcell
+      use periodic, only: vcell_sim, znuc2_sum, znuc_sum
       use precision_kinds, only: dp
-      use system,  only: cent,iwctype,ncent,znuc
-
-
+      use ewald_mod, only: NGVECX
+      use pw_find_image, only: find_image3
       implicit none
 
       integer :: i, j, k, lowest_pow
-      real(dp) :: c0, cos_n_sum, rnorm, sin_n_sum, vl
-      real(dp) :: vlrange, vs, vsrange, zprod
+      real(dp) :: c0, rnorm, vl
+      real(dp) :: vs, zprod
       real(dp), dimension(3) :: r
-
 
 
 
@@ -2121,8 +2602,13 @@ c short-range sum
           do k=1,3
             r(k)=cent(k,j)-cent(k,i)
           enddo
+c          print *, 'CIAO',i,j
+c          print *, 'CIAO',(r(k),k=1,3)
           call find_image3(r,rnorm)
+c          print *, 'CIAO',(r(k),k=1,3)
+c          print *, 'CIAO',sqrt(r(1)**2+r(2)**2+r(3)**2),rnorm
           vs=vs+zprod*vsrange(rnorm,cutr,lowest_pow,ncoef_per,np,b_coul)
+c          print *, 'CIAO',vsrange(rnorm,cutr,lowest_pow,ncoef_per,np,b_coul)
         enddo
       enddo
 
@@ -2142,79 +2628,114 @@ c     vl=vl+0.5d0*y_coul(1)*znuc_sum**2
 
       return
       end
+
+
 c-----------------------------------------------------------------------
 
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
-      use control, only: ipr
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
-      use ewald,   only: b_coul,y_coul
-      use periodic, only: cutr,glatt,igmult,igvec,isrange,ncoef_per,ng1d
-      use periodic, only: ngnorm,ngvec,np,znuc_sum
-      use precision_kinds, only: dp
-      use pseudo,  only: lpot,nloc
-      use system,  only: cent,iwctype,ncent,nelec,znuc
+      use contrl_file,    only: ounit
       use vmc_mod, only: nmat_dim2
+      use system, only: znuc, cent, iwctype, ncent, ncent_tot
+      use control, only: ipr
+      use system, only: nelec
+      use ewald, only: b_coul, y_coul, y_psp, b_psp, y_jas, b_jas
+      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_e_sum_sim, sin_e_sum_sim, cos_p_sum, sin_p_sum
+      use periodic, only: cutr, glatt
+      use periodic, only: igmult, igvec
+      use periodic, only: isrange, ncoef_per, ng1d, ngnorm
+      use periodic, only: ngvec
+      use periodic, only: np
+      use periodic, only: znuc_sum
+      use pseudo, only: lpot, nloc
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
 
-
-
+      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
+      use pw_find_image, only: find_image4
+      
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ict, j, k, lowest_pow
-      real(dp) :: b_psp, cos_e_sum, cos_n_sum, cos_p_sum, pe_en
-      real(dp) :: sin_e_sum, sin_n_sum, sin_p_sum, vl
-      real(dp) :: vlrange, vlrange_p, vs, vsrange
-      real(dp) :: vsrange1, vsrange2, vsrange3, y_psp
+      real(dp) :: pe_en, vl
+      real(dp) :: vs, vs_aux
+c      real(dp) :: vsrange, vsrange1, vsrange2, vsrange3
       real(dp), dimension(3,*) :: x
+     
 
-
-
-
-
+c      write(ounit,*) "inside pot_en_ewald isrange", isrange
+c      write(ounit,*) "inside pot_en_ewald nloc", nloc
 
 
 
 
 c short-range sum
 c Warning: I need to call the appropriate vsrange
-      vs=0
+      vs=0.d0
       do i=1,ncent
         ict=iwctype(i)
         do j=1,nelec
           do k=1,3
-            rvec_en(k,j,i)=x(k,j)-cent(k,i)
-          enddo
+             rvec_en(k,j,i)=x(k,j)-cent(k,i)
+c             write(ounit,'(''x, cent '',3d12.4)') x(k,j),cent(k,i)
+         enddo
+c         write(ounit,'(''rvec_en '',3d12.4)') rvec_en(:,j,i)
 c         call find_image3(rvec_en(1,j,i),r_en(j,i))
           call find_image4(rshift(1,j,i),rvec_en(1,j,i),r_en(j,i))
-          if(nloc.eq.0) then
+c          if(nloc.eq.0) then
             lowest_pow=-1
             vs=vs-znuc(iwctype(i))*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
-           else
-            lowest_pow=0
-c           vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
-            if(isrange.eq.0) vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
-            if(isrange.eq.1) vs=vs+vsrange1(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
-            if(isrange.eq.2) vs=vs+vsrange2(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
-            if(isrange.eq.3) vs=vs+vsrange3(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
-          endif
+c            write(ounit,'(''vs if nloc==0'',1d12.4)') vs
+c           else
+c            lowest_pow=0
+c     vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
+c            write(ounit,'(''before compute tutut  pot_en_ewald '')')
+c            write(ounit,'(''ict'', i20)') ict
+c            write(ounit,'(''j'', i20)') j
+c            write(ounit,'(''r_en '',20d12.4)') r_en(j,i)
+c            if(isrange.eq.0) vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
+c            if(isrange.eq.1) vs=vs+vsrange1(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
+c            if(isrange.eq.2) vs=vs+vsrange2(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
+c            if(isrange.eq.3) vs=vs+vsrange3(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
+c     here this function is 
+c            vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
+c            write(ounit,'(''isrange, local_vs'',i20, d12.4)') isrange, vs
+c            write(ounit,'(''after compute tutut pot_en_ewald '')')
+c          endif
         enddo
       enddo
 
+      
+      
 c long-range sum
 c     call cossin_e(glatt,igvec,ngvec,xold,nelec,ng1d,cos_e_sum,sin_e_sum)
       call cossin_e(glatt,igvec,ngvec,x,nelec,ng1d,cos_e_sum,sin_e_sum)
+
+
 
       if(nloc.eq.0) then
         vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
 c       vl=vl-y_coul(1)*znuc_sum*nelec
        else
-        call cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,cent,ncent,ng1d,cos_p_sum,sin_p_sum)
-        vl=+2*vlrange_p(ngnorm,igmult,cos_p_sum,cos_e_sum,sin_p_sum,sin_e_sum)
+c        call cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,cent,ncent,ng1d,cos_p_sum,sin_p_sum)
+c        vl=+2*vlrange_p(ngnorm,igmult,cos_p_sum,cos_e_sum,sin_p_sum,sin_e_sum)
 c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
+        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
+c        write(ounit,*) "tralalata here we are vl vl vl"
       endif
 
+
+c      write(ounit,'(''before print vl'')')
+
       pe_en=vs+vl
+c      write(ounit,'(''pe_en='',20d12.4)') pe_en
+      
+c      write(ounit,'(''vs1='',20f12.4)') vs
+c      write(ounit,'(''vl='',20f12.4)') vl
+c      write(ounit,'(''vl1='',20f12.4)') -y_coul(1)*znuc_sum
+
+      
       vs=vs/nelec
       vl=vl/nelec
       if(ipr.ge.2) then
@@ -2222,29 +2743,378 @@ c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
         if(nloc.ne.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,y_psp(1,1)*znuc_sum
       endif
 
+
+c      write(ounit,'(''after print vl'')')
+
+      
       return
       end
+
+c-----------------------------------------------------------------------
+
+      subroutine pot_en_ewald_single(x,pe_en,iel)
+c Written by Cyrus Umrigar
+
+      use contrl_file,    only: ounit
+      use vmc_mod, only: nmat_dim2
+      use system, only: znuc, cent, iwctype, ncent, ncent_tot
+      use control, only: ipr
+      use system, only: nelec
+      use ewald, only: b_coul, y_coul, y_psp, b_psp, y_jas, b_jas
+      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_e_sum_sim, sin_e_sum_sim, cos_p_sum, sin_p_sum
+      use periodic, only: cutr, glatt
+      use periodic, only: igmult, igvec
+      use periodic, only: isrange, ncoef_per, ng1d, ngnorm
+      use periodic, only: ngvec
+      use periodic, only: np
+      use periodic, only: znuc_sum
+      use pseudo, only: lpot, nloc
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+
+      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
+      use pw_find_image, only: find_image4
+      
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, iel, k, lowest_pow, nelec_l
+      integer :: i1,i2
+      real(dp) :: pe_en, vl
+      real(dp) :: vs, vs_aux
+c      real(dp) :: vsrange, vsrange1, vsrange2, vsrange3
+      real(dp), dimension(3,*) :: x
+     
+
+c      write(ounit,*) "inside pot_en_ewald isrange", isrange
+c      write(ounit,*) "inside pot_en_ewald nloc", nloc
+
+
+
+
+c short-range sum
+c Warning: I need to call the appropriate vsrange
+      vs=0.d0
+      do i=1,ncent
+        ict=iwctype(i)
+        
+          do k=1,3
+             rvec_en(k,iel,i)=x(k,iel)-cent(k,i)
+
+         enddo
+c         write(ounit,'(''rvec_en '',3d12.4)') rvec_en(:,iel,i)
+
+          call find_image4(rshift(1,iel,i),rvec_en(1,iel,i),r_en(iel,i))
+
+            lowest_pow=-1
+            vs=vs-znuc(iwctype(i))*vsrange(r_en(iel,i),cutr,lowest_pow,ncoef_per,np,b_coul)
+c            write(ounit,'(''vs if nloc==0'',1d12.4)') vs
+        
+      enddo
+
+      
+      
+c long-range sum
+c     call cossin_e(glatt,igvec,ngvec,xold,nelec,ng1d,cos_e_sum,sin_e_sum)
+      call cossin_e(glatt,igvec,ngvec,x(1:3,iel:iel),1,ng1d,cos_e_sum,sin_e_sum)
+
+
+
+      if(nloc.eq.0) then
+        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
+c       vl=vl-y_coul(1)*znuc_sum*nelec
+       else
+c        call cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,cent,ncent,ng1d,cos_p_sum,sin_p_sum)
+c        vl=+2*vlrange_p(ngnorm,igmult,cos_p_sum,cos_e_sum,sin_p_sum,sin_e_sum)
+c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
+        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
+c        write(ounit,*) "tralalata here we are vl vl vl"
+      endif
+
+
+c      write(ounit,'(''before print vl'')')
+
+      pe_en=vs+vl
+c      write(ounit,'(''pe_en='',20d12.4)') pe_en
+      
+c      write(ounit,'(''vs1='',20f12.4)') vs
+c      write(ounit,'(''vl='',20f12.4)') vl
+c      write(ounit,'(''vl1='',20f12.4)') -y_coul(1)*znuc_sum
+
+      
+      vs=vs
+      vl=vl
+      if(ipr.ge.2) then
+        if(nloc.eq.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en,vs,vl,-y_coul(1)*znuc_sum
+        if(nloc.ne.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en,vs,vl,y_psp(1,1)*znuc_sum
+      endif
+
+
+c      write(ounit,'(''after print vl'')')
+
+      
+      return
+      end
+
+
+c-----------------------------------------------------------------------
+
+      subroutine pot_en_ewald_local(x,pe_en,i1,i2)
+c Written by Cyrus Umrigar
+
+      use contrl_file,    only: ounit
+      use vmc_mod, only: nmat_dim2
+      use system, only: znuc, cent, iwctype, ncent, ncent_tot
+      use control, only: ipr
+      use system, only: nelec
+      use ewald, only: b_coul, y_coul, y_psp, b_psp, y_jas, b_jas
+      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_e_sum_sim, sin_e_sum_sim, cos_p_sum, sin_p_sum
+      use periodic, only: cutr, glatt
+      use periodic, only: igmult, igvec
+      use periodic, only: isrange, ncoef_per, ng1d, ngnorm
+      use periodic, only: ngvec
+      use periodic, only: np
+      use periodic, only: znuc_sum
+      use pseudo, only: lpot, nloc
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      
+      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
+      use pw_find_image, only: find_image4
+      
+      use precision_kinds, only: dp
+      implicit none
+      
+      integer :: i, ict, j, k, lowest_pow
+      integer :: i1,i2, nelec_l
+      real(dp) :: pe_en, vl
+      real(dp) :: vs, vs_aux
+      real(dp), dimension(ngvec) :: cos_1n_sum
+      real(dp), dimension(ngvec) :: sin_1n_sum
+      real(dp), dimension(ngvec) :: cos_1e_sum
+      real(dp), dimension(ngvec) :: sin_1e_sum
+      real(dp) :: pe_1en
+c      real(dp) :: vsrange, vsrange1, vsrange2, vsrange3
+      real(dp), dimension(3,*) :: x
+     
+
+c      write(ounit,*) "inside pot_en_ewald isrange", isrange
+c      write(ounit,*) "inside pot_en_ewald nloc", nloc
+
+
+c     local number of electrons       
+      nelec_l=i2-i1+1
+
+c short-range sum
+c Warning: I need to call the appropriate vsrange
+      vs=0.d0
+      vl=0.d0
+      do i=1,ncent
+        ict=iwctype(i)
+        call cossin_cent(znuc(ict),glatt,igvec,ngvec,cent(1:3,i),ng1d,cos_1n_sum,sin_1n_sum)
+        do j=i1,i2
+          do k=1,3
+             rvec_en(k,j,i)=x(k,j)-cent(k,i)
+c             write(ounit,'(''x, cent '',3d12.4)') x(k,j),cent(k,i)
+         enddo
+c         write(ounit,'(''rvec_en '',3d12.4)') rvec_en(:,j,i)
+c         call find_image3(rvec_en(1,j,i),r_en(j,i))
+          call find_image4(rshift(1,j,i),rvec_en(1,j,i),r_en(j,i))
+c          if(nloc.eq.0) then
+            lowest_pow=-1
+            vs=vs-znuc(ict)*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
+            call cossin_1e(glatt,igvec,ngvec,x(1:3,j),ng1d,cos_1e_sum,sin_1e_sum)
+            vl=-vl-2*vlrange(ngnorm,igmult,cos_1n_sum,cos_1e_sum,sin_1n_sum,sin_1e_sum,y_coul)
+
+        enddo
+      enddo
+
+      
+      
+c long-range sum
+c     call cossin_e(glatt,igvec,ngvec,xold,nelec,ng1d,cos_e_sum,sin_e_sum)
+c      call cossin_e(glatt,igvec,ngvec,x(1:3,i1:i2),nelec_l,ng1d,cos_e_sum,sin_e_sum)
+
+
+
+c      if(nloc.eq.0) then
+c        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
+c       vl=vl-y_coul(1)*znuc_sum*nelec
+c       else
+c        call cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,cent,ncent,ng1d,cos_p_sum,sin_p_sum)
+c        vl=+2*vlrange_p(ngnorm,igmult,cos_p_sum,cos_e_sum,sin_p_sum,sin_e_sum)
+c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
+c        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
+c        write(ounit,*) "tralalata here we are vl vl vl"
+c      endif
+
+
+c      write(ounit,'(''before print vl'')')
+
+      pe_en=vs+vl
+c      write(ounit,'(''pe_en='',20d12.4)') pe_en
+      
+c      write(ounit,'(''vs1='',20f12.4)') vs
+c      write(ounit,'(''vl='',20f12.4)') vl
+c      write(ounit,'(''vl1='',20f12.4)') -y_coul(1)*znuc_sum
+
+      
+c      vs=vs/nelec
+c      vl=vl/nelec
+      if(ipr.ge.2) then
+        if(nloc.eq.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,-y_coul(1)*znuc_sum
+        if(nloc.ne.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,y_psp(1,1)*znuc_sum
+      endif
+
+
+c      write(ounit,'(''after print vl'')')
+
+      
+      return
+      end
+
+
+c-----------------------------------------------------------------------
+
+      subroutine pot_en_ewald_lambda(x,pe_en,i1,i2)
+c Written by Cyrus Umrigar
+
+      use contrl_file,    only: ounit
+      use vmc_mod, only: nmat_dim2
+      use system, only: znuc, cent, iwctype, ncent, ncent_tot
+      use control, only: ipr
+      use system, only: nelec
+      use ewald, only: b_coul, y_coul, y_psp, b_psp, y_jas, b_jas
+      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_e_sum_sim, sin_e_sum_sim, cos_p_sum, sin_p_sum
+      use periodic, only: cutr, glatt
+      use periodic, only: igmult, igvec
+      use periodic, only: isrange, ncoef_per, ng1d, ngnorm
+      use periodic, only: ngvec
+      use periodic, only: np
+      use periodic, only: znuc_sum
+      use pseudo, only: lpot, nloc, vps
+      use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+
+      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
+      use pw_find_image, only: find_image4
+      
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, j, k, lowest_pow,i1,i2, nelec_l
+      real(dp) :: pe_en, vl
+      real(dp) :: vs, vs_aux, rsq
+c      real(dp) :: vsrange, vsrange1, vsrange2, vsrange3
+      real(dp), dimension(3,*) :: x
+     
+
+c      write(ounit,*) "inside pot_en_ewald isrange", isrange
+c      write(ounit,*) "inside pot_en_ewald nloc", nloc
+
+
+      nelec_l=i2-i1+1
+
+
+
+c short-range sum
+c Warning: I need to call the appropriate vsrange
+      vs=0.d0
+      lowest_pow=-1
+      do i=1,ncent
+        ict=iwctype(i)
+        do j=i1,i2
+           do k=1,3
+              rvec_en(k,j,i)=x(k,j)-cent(k,i)
+c     write(ounit,'(''x, cent '',3d12.4)') x(k,j),cent(k,i)
+           enddo
+           call find_image4(rshift(1,j,i),rvec_en(1,j,i),r_en(j,i))
+           rsq=max(1.0d-10,r_en(j,i))
+           rsq=1.d0/rsq
+           rsq=rsq*rsq
+           vs=vs-znuc(ict)*(1.0-exp(-ecp_exponent(i,lpot(ict),ict)*rsq))*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
+        enddo
+      enddo
+
+      
+      
+c long-range sum
+c     call cossin_e(glatt,igvec,ngvec,xold,nelec,ng1d,cos_e_sum,sin_e_sum)
+c     call cossin_e(glatt,igvec,ngvec,x,nelec,ng1d,cos_e_sum,sin_e_sum)
+      call cossin_e(glatt,igvec,ngvec,x(1:3,i1:i2),nelec_l,ng1d,cos_e_sum,sin_e_sum)
+
+
+
+
+      if(nloc.eq.0) then
+        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
+c       vl=vl-y_coul(1)*znuc_sum*nelec
+       else
+c        call cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,cent,ncent,ng1d,cos_p_sum,sin_p_sum)
+c        vl=+2*vlrange_p(ngnorm,igmult,cos_p_sum,cos_e_sum,sin_p_sum,sin_e_sum)
+c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
+        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
+c        write(ounit,*) "tralalata here we are vl vl vl"
+      endif
+
+
+c      write(ounit,'(''before print vl'')')
+
+      pe_en=vs+vl
+c      write(ounit,'(''pe_en='',20d12.4)') pe_en
+      
+c      write(ounit,'(''vs1='',20f12.4)') vs
+c      write(ounit,'(''vl='',20f12.4)') vl
+c      write(ounit,'(''vl1='',20f12.4)') -y_coul(1)*znuc_sum
+
+      
+      vs=vs/nelec
+      vl=vl/nelec
+      if(ipr.ge.2) then
+        if(nloc.eq.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,-y_coul(1)*znuc_sum
+        if(nloc.ne.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,y_psp(1,1)*znuc_sum
+      endif
+
+
+c      write(ounit,'(''after print vl'')')
+
+      
+      return
+      end
+
+
+
 c-----------------------------------------------------------------------
 
       subroutine pot_ee_ewald(x,pe_ee)
 c Written by Cyrus Umrigar
 
-      use control, only: ipr
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
-      use ewald,   only: b_coul_sim,y_coul_sim
-      use periodic, only: cutr_sim,glatt_sim,igmult_sim,igvec_sim
-      use periodic, only: ncoef_per,ng1d_sim,ngnorm_sim,ngvec_sim,np
-      use precision_kinds, only: dp
-      use system,  only: nelec
+      use contrl_file,    only: ounit
       use vmc_mod, only: nmat_dim2
-
+      use control, only: ipr
+      use system, only: nelec
+      use ewald, only: b_coul_sim, y_coul_sim
+      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_e_sum_sim, sin_e_sum_sim, cos_p_sum, sin_p_sum
+      
+      use periodic, only: cutr_sim, isrange
+      use periodic, only: glatt_sim, igmult_sim, igvec_sim
+      use periodic, only: ncoef_per, ng1d_sim
+      use periodic, only: ngnorm_sim, ngvec_sim
+      use periodic, only: np
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
+      use pw_find_image, only: find_image3
+      use pseudo, only: lpot, nloc
+      
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ij, j, k, lowest_pow
-      real(dp) :: c0, cos_e_sum_sim, pe_ee, sin_e_sum_sim, vl
-      real(dp) :: vlrange, vs, vsrange
+      real(dp) :: c0, pe_ee, vl
+      real(dp) :: vs
       real(dp), dimension(3,*) :: x
+      
 
+c      write(ounit,*) "inside pot_ee_ewald isrange", isrange
+c      write(ounit,*) "inside pot_ee_ewald nloc", nloc
 
 
 c short-range sum
@@ -2263,30 +3133,37 @@ c short-range sum
         enddo
       enddo
 
+
+
+      
 c long-range sum
 c     call cossin_old2(glatt_sim,igvec_sim,ngvec_sim,xold,nelec,ng1d_sim,cos_g,sin_g)
 c     call cossin_e(glatt_sim,igvec_sim,ngvec_sim,xold,nelec,ng1d_sim,cos_e_sum_sim,sin_e_sum_sim)
       call cossin_e(glatt_sim,igvec_sim,ngvec_sim,x,nelec,ng1d_sim,cos_e_sum_sim,sin_e_sum_sim)
 
+
 c     vl=vlrange_ee_old2(nelec,ngnorm_sim,igmult_sim,cos_g,sin_g,y_coul_sim)
       vl=vlrange(ngnorm_sim,igmult_sim,cos_e_sum_sim,cos_e_sum_sim,sin_e_sum_sim,sin_e_sum_sim,y_coul_sim)
 c     vl=vl+0.5d0*y_coul_sim(1)*nelec**2
 
+c      write(ounit,'(''before call v_ee'')')
       pe_ee=vs+vl
+
       vs=vs*2/nelec
       vl=vl*2/nelec
       if(ipr.ge.2) write(ounit,'(''v_ee,vs,vl,vs1,vl1='',9f12.8)') pe_ee*2/nelec,vs,vl,c0*2,y_coul_sim(1)*nelec
-
+c      write(ounit,'(''after call v_ee_ewald'')')
+      
       return
       end
 c-----------------------------------------------------------------------
 
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
       use ewald_mod, only: NG1DX
-      use precision_kinds, only: dp
-      use system,  only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ir, k, n, ngvec
@@ -2345,14 +3222,15 @@ c-----------------------------------------------------------------------
       subroutine cossin_psi(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
       use ewald_mod, only: NG1DX
-      use precision_kinds, only: dp
-      use system,  only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
 c Presently using cossin_psi_g and cossin_psi_k instead.
 
+      use error, only: fatal_error
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, iflag, ir, k, n
@@ -2445,12 +3323,12 @@ c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng
       subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
       use ewald_mod, only: NG1DX
-      use precision_kinds, only: dp
-      use system,  only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
 c Needed for orbitals and their Laplacian.
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, im, in, ir, k
@@ -2560,12 +3438,12 @@ c-----------------------------------------------------------------------
 c     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,ir,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
+      use system, only: nelec
 c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
 c For the k-vectors do it straightforwardly since there are few of them
 
       use precision_kinds, only: dp
-      use system,  only: nelec
       implicit none
 
       integer :: i, ir, k, ngvec
@@ -2619,11 +3497,11 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_n(znuc,iwctype,glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use precision_kinds, only: dp
-      use system,  only: ncent_tot
+      use system, only: ncent_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ir, k, n, ngvec
@@ -2683,15 +3561,82 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
 
       return
       end
+
+
+c-----------------------------------------------------------------------
+
+      subroutine cossin_cent(znuc,glatt,igvec,ngvec,r,ng1d,cos_sum,sin_sum)
+      use ewald_mod, only: NG1DX
+      use system, only: ncent_tot
+c Written by Cyrus Umrigar
+c Calculate cos_sum and sin_sum for nuclei
+
+      use precision_kinds, only: dp
+      implicit none
+      integer :: i, k, n, ngvec
+      integer, dimension(3,*) :: igvec
+      integer, dimension(3) :: ng1d
+      real(dp) :: cos, cos_tmp, dot, sin, sin_tmp
+      real(dp) :: znuc
+      real(dp), dimension(3,3) :: glatt
+      real(dp), dimension(3) :: r
+      real(dp), dimension(*) :: cos_sum
+      real(dp), dimension(*) :: sin_sum
+      real(dp), dimension(-NG1DX:NG1DX,3) :: cos_gr
+      real(dp), dimension(-NG1DX:NG1DX,3) :: sin_gr
+
+
+
+c Calculate cosines and sines for all positions and reciprocal lattice vectors
+        do i=1,3
+          dot=0.d0
+          do k=1,3
+            dot=dot+glatt(k,i)*r(k)
+          enddo
+          cos_gr(1,i)=cos(dot)
+          sin_gr(1,i)=sin(dot)
+          cos_gr(-1,i)=cos_gr(1,i)
+          sin_gr(-1,i)=-sin_gr(1,i)
+          cos_gr(0,i)=1.d0
+          sin_gr(0,i)=0.d0
+          do n=2,ng1d(i)
+            cos_gr(n,i)=cos_gr(n-1,i)*cos_gr(1,i)-sin_gr(n-1,i)*sin_gr(1,i)
+            sin_gr(n,i)=sin_gr(n-1,i)*cos_gr(1,i)+cos_gr(n-1,i)*sin_gr(1,i)
+            cos_gr(-n,i)=cos_gr(n,i)
+   20       sin_gr(-n,i)=-sin_gr(n,i)
+          enddo
+        enddo
+      
+
+      do i=1,ngvec
+        cos_sum(i)=0.d0
+        sin_sum(i)=0.d0
+        
+          cos_tmp=cos_gr(igvec(1,i),1)*cos_gr(igvec(2,i),2)
+     &           -sin_gr(igvec(1,i),1)*sin_gr(igvec(2,i),2)
+          sin_tmp=sin_gr(igvec(1,i),1)*cos_gr(igvec(2,i),2)
+     &           +cos_gr(igvec(1,i),1)*sin_gr(igvec(2,i),2)
+          cos_sum(i)=cos_sum(i)+znuc*
+     &               (cos_tmp*cos_gr(igvec(3,i),3)
+     &               -sin_tmp*sin_gr(igvec(3,i),3))
+          sin_sum(i)=sin_sum(i)+znuc*
+     &               (sin_tmp*cos_gr(igvec(3,i),3)
+     &               +cos_tmp*sin_gr(igvec(3,i),3))
+        
+      enddo
+
+      return
+      end
+
 c-----------------------------------------------------------------------
 
       subroutine cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,r,nr,ng1d,cos_sum,sin_sum)
-      use ewald_mod, only: NG1DX,NGNORMX
-      use precision_kinds, only: dp
-      use system,  only: ncent_tot,nctype_tot
+      use ewald_mod, only: NGNORMX, NG1DX
+      use system, only: ncent_tot, nctype_tot
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, im, ir, k, n
@@ -2760,11 +3705,11 @@ c-----------------------------------------------------------------------
 
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use precision_kinds, only: dp
-      use system,  only: nelec
+      use system, only: nelec
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 
+      use precision_kinds, only: dp
       implicit none
 
       integer :: i, ir, k, n, ngvec
@@ -2822,5 +3767,116 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
 
       return
       end
+
+
+c---------------------------single electron--------------
+      subroutine cossin_1e(glatt,igvec,ngvec,r,ng1d,cos_sum,sin_sum)
+      use ewald_mod, only: NG1DX
+      use system, only: nelec
+c Written by Cyrus Umrigar
+c Calculate cos_sum and sin_sum for electrons
+
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, k, n, ngvec
+      integer :: nr
+      integer, dimension(3,*) :: igvec
+      integer, dimension(3) :: ng1d
+      real(dp) :: cos, cos_tmp, dot, sin, sin_tmp
+      real(dp), dimension(3,3) :: glatt
+      real(dp), dimension(3) :: r
+      real(dp), dimension(*) :: cos_sum
+      real(dp), dimension(*) :: sin_sum
+      real(dp), dimension(-NG1DX:NG1DX,3) :: cos_gr
+      real(dp), dimension(-NG1DX:NG1DX,3) :: sin_gr
+
+
+
+c Calculate cosines and sines for all positions and reciprocal lattice vectors
+      do i=1,3
+         dot=0
+         do k=1,3
+            dot=dot+glatt(k,i)*r(k)
+         enddo
+         cos_gr(1,i)=cos(dot)
+         sin_gr(1,i)=sin(dot)
+         cos_gr(-1,i)=cos_gr(1,i)
+         sin_gr(-1,i)=-sin_gr(1,i)
+         cos_gr(0,i)=1.d0
+         sin_gr(0,i)=0.d0
+         do n=2,ng1d(i)
+            cos_gr(n,i)=cos_gr(n-1,i)*cos_gr(1,i)-sin_gr(n-1,i)*sin_gr(1,i)
+            sin_gr(n,i)=sin_gr(n-1,i)*cos_gr(1,i)+cos_gr(n-1,i)*sin_gr(1,i)
+            cos_gr(-n,i)=cos_gr(n,i)
+   20       sin_gr(-n,i)=-sin_gr(n,i)
+         enddo
+      enddo
+      
+
+      do i=1,ngvec
+        cos_sum(i)=0
+        sin_sum(i)=0
+        
+          cos_tmp=cos_gr(igvec(1,i),1)*cos_gr(igvec(2,i),2)
+     &           -sin_gr(igvec(1,i),1)*sin_gr(igvec(2,i),2)
+          sin_tmp=sin_gr(igvec(1,i),1)*cos_gr(igvec(2,i),2)
+     &           +cos_gr(igvec(1,i),1)*sin_gr(igvec(2,i),2)
+          cos_sum(i)=cos_sum(i)+
+     &               (cos_tmp*cos_gr(igvec(3,i),3)
+     &               -sin_tmp*sin_gr(igvec(3,i),3))
+          sin_sum(i)=sin_sum(i)+
+     &               (sin_tmp*cos_gr(igvec(3,i),3)
+     &               +cos_tmp*sin_gr(igvec(3,i),3))
+        
+      enddo
+
+      return
+      end
+
+
+
+
+c----------------------------------add for testing -------------------------------
+
+      subroutine wf(x,wx,b)
+
+      use periodic, only: cutr, np, npoly 
+      
+      use precision_kinds, only: dp      
+      implicit none
+
+      integer :: i,ncoef_per
+      real(dp)  :: hf,xs, wx, x
+      real(dp), dimension(*) :: b
+
+      ncoef_per=npoly+1
+      xs=x/cutr
+      wx=0.d0
+      
+      do i=1,ncoef_per
+         wx=wx+b(i)*((xs**i)*((1-xs)**np))
+      enddo
+
+      
+      
+      return
+      end
+
+
+
+
+
+c----------------------------------add for testing -------------------------------
+
+
+c to keep adding
+c--------------------
+
+
+
 c-----------------------------------------------------------------------
       end module
+
+
+

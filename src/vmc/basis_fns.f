@@ -17,7 +17,9 @@ c ider = 3 -> value, gradient, laplacian, forces
       use slm_mod, only: slm
       use splfit_mod, only: splfit
       use system,  only: iwctype,ncent,ncent_tot,nelec,nghostcent
-
+      use contrl_per, only: iperiodic
+      use periodic, only : n_images, ell
+      
       implicit none
 
       integer :: it, ic, ider, irb
@@ -25,6 +27,7 @@ c ider = 3 -> value, gradient, laplacian, forces
       integer :: j, k, ncoord, nrbasit, nbastypit, i
       integer :: ie1, ie2, l, ilm, num_slms, maxlval
 
+      integer :: i_image
       integer :: upper_range, lower_range
       integer :: upper_rad_range, lower_rad_range
 
@@ -33,7 +36,9 @@ c ider = 3 -> value, gradient, laplacian, forces
       real(dp), dimension(ncoord, *) :: r_en
       real(dp), dimension(4, MRWF) :: wfv
       real(dp), dimension(3) :: xc
-      real(dp), dimension(3) :: temp_dphin
+      real(dp)                  :: temp_phin, temp_d2phin
+      real(dp), dimension(3)    :: temp_dphin, temp_d3phin
+      real(dp), dimension(3, 3) :: temp_d2phin_all
       real(dp), parameter :: one = 1.d0
 
       ! Temporary arrays for basis function values and derivatives
@@ -128,6 +133,82 @@ c get distance to center
             l = l + 1
           enddo
         enddo ! loop over electrons
+
+        
+c     numerical atomic orbitals
+        if(iperiodic.eq.1.and.n_images.gt.1)then
+           do i_image=1,n_images
+
+
+c     numerical atomic orbitals
+              do k=ie1,ie2
+
+c     get distance to center
+
+                 xc(1)=rvec_en(1,k,ic)+ell(1,i_image)
+                 xc(2)=rvec_en(2,k,ic)+ell(2,i_image)
+                 xc(3)=rvec_en(3,k,ic)+ell(3,i_image)
+
+
+                 r=sqrt(xc(1)**2+xc(2)**2+xc(3)**2)
+                 r2=r*r
+                 ri=one/r
+                 ri2=ri*ri
+
+
+                 do irb=1,nrbasit
+!  only evaluate for r <= rmaxwf
+                    if (r <= rmaxwf(irb,it)) then
+                       call splfit(r,irb,it,iwf,wfv(1,irb),ider)
+                    else
+                       wfv(1:4,irb)=0.d0
+                    endif
+                 enddo
+
+! Get the Slm evaluated and store them arrays
+                 do i=1, num_slms
+                    call slm(i,xc,r2,y(i),dy(1,i),ddy(1,1,i),ddy_lap(i),dlapy(1,i),ider)
+                 enddo
+                 
+
+                 l = 1
+                 iwlbas0=0
+! Run a loop over all the AOs in this center
+                 do i=1, nbastypit
+                    iwlbas0 = iwlbas(i,it)
+                    irb = iwrwf(i,it)
+                    ilm = lower_range + i - 1
+!     compute sml and combine to generate molecular orbitals
+                    call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),
+     &                   y(iwlbas0),
+     &                   dy(:,iwlbas0),
+     &                   ddy(:,:,iwlbas0),
+     &                   ddy_lap(iwlbas0),
+     &                   dlapy(:,iwlbas0),
+     &                   temp_phin,
+     &                   temp_dphin,
+     &                   temp_d2phin,
+     &                   temp_d2phin_all,
+     &                   temp_d3phin,
+     &                   ider)
+                    
+                    phin(ilm,k)=phin(ilm,k)+temp_phin
+                    if(ider.ge.1)dphin(ilm,k,:)=dphin(ilm,k,:)+temp_dphin                                                                                                                    
+                    if(ider.ge.2)d2phin(ilm,k)=d2phin(ilm,k)+temp_d2phin                                                                                                                     
+                    if(ider.ge.3)d2phin_all(1:3,1:3,ilm,k)=d2phin_all(1:3,1:3,ilm,k)+temp_d2phin_all                                                                                         
+                    if(ider.ge.3)d3phin(1:3,ilm,k)=d3phin(1:3,ilm,k)+temp_d3phin
+                    
+                    l = l + 1
+                 enddo
+              enddo             ! loop over electrons
+              
+
+              
+
+           enddo                ! loop images
+        endif ! if periodic images
+        
+        
         lower_range = upper_range + 1
         lower_rad_range = upper_rad_range + 1
 
@@ -138,6 +219,8 @@ c get distance to center
         deallocate (ddy)
         deallocate (dlapy)
 
+
+        
       enddo ! loop over all atoms
       return
       end
@@ -197,7 +280,7 @@ c     phi is computed for all ider values
         if(ider.eq.3) then
 
           do jj=1,3
-            dum1=0
+            dum1=0.d0
             do ii=1,3
               dum1=dum1+ddy(jj,ii)*xcri(ii)
             enddo
