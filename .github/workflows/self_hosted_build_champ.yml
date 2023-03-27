@@ -8,6 +8,7 @@ on:
       - feature/debug-ci
       - optimization
       - champ-ortho-merge
+      - champ-solids-dev
     # Sequence of patterns matched against refs/tags
     tags:
       - v2.*.*
@@ -19,6 +20,7 @@ on:
       - cartesian_d_qmckl
       - optimization
       - feature/debug-ci
+      - champ-solids-dev
 
 jobs:
   build_champ:
