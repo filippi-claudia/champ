@@ -167,11 +167,11 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f)
   endif()
 
-  if (NOT ENABLE_PERIODIC)
-    message(STATUS "PERIODIC is NOT enabled!")
-    list(REMOVE_ITEM VMC_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f)
-  endif()
+#  if (NOT ENABLE_PERIODIC)
+#    message(STATUS "PERIODIC is NOT enabled!")
+#    list(REMOVE_ITEM VMC_SOURCE
+#      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f)
+#  endif()
 
   find_package(FortranFormat)
   formatFortran("${VMC_SOURCE}") # Set Fixed format property
@@ -289,10 +289,10 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_writecube.f90)
   endif()
 
-  if (ENABLE_PERIODIC)
+#  if (ENABLE_PERIODIC)
     list(APPEND SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f)
-  endif()
+#  endif()
 
 
 
