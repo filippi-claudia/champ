@@ -88,13 +88,7 @@
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: small = 1.e-6
 
-
-
-
-
-      character*13 filename
-
-
+      character(len=13) filename
 
       if(mode.eq.'dmc_one_mpi2') then
         call startr_gpop

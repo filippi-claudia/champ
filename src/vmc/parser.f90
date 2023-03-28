@@ -209,7 +209,7 @@ subroutine parser
   character(len=72)          :: fname, key
   character(len=20)          :: temp1, temp2, temp3, temp4, temp5
   integer                    :: ratio, isavebl
-  real(dp)                   :: cutjas_tmp
+  real(dp)                   :: cutjas_tmp = 0
 
   real(dp)                   :: wsum
 
@@ -493,19 +493,19 @@ subroutine parser
 
   ! call allocate_pcm_grid3d_param()
   ! ipcm_3dgrid   = fdf_get('ipcm_3dgrid',0)
-  ! ipcm_nstep3d(1) 	= fdf_get('nx_pcm',PCM_IUNDEFINED)
-  ! ipcm_nstep3d(2) 	= fdf_get('ny_pcm',PCM_IUNDEFINED)
-  ! ipcm_nstep3d(3) 	= fdf_get('nz_pcm',PCM_IUNDEFINED)
-  ! pcm_step3d(1) 	= fdf_get('dx_pcm',PCM_UNDEFINED)
-  ! pcm_step3d(2) 	= fdf_get('dy_pcm',PCM_UNDEFINED)
-  ! pcm_step3d(3) 	= fdf_get('dz_pcm',PCM_UNDEFINED)
-  ! pcm_origin(1) 	= fdf_get('x0_pcm',PCM_UNDEFINED)
-  ! pcm_origin(2) 	= fdf_get('y0_pcm',PCM_UNDEFINED)
-  ! pcm_origin(3) 	= fdf_get('z0_pcm',PCM_UNDEFINED)
-  ! pcm_endpt(1)  	= fdf_get('xn_pcm',PCM_UNDEFINED)
-  ! pcm_endpt(2)  	= fdf_get('yn_pcm',PCM_UNDEFINED)
-  ! pcm_endpt(3)  	= fdf_get('zn_pcm',PCM_UNDEFINED)
-  ! PCM_SHIFT     	= fdf_get('shift',4.d0)
+  ! ipcm_nstep3d(1)  = fdf_get('nx_pcm',PCM_IUNDEFINED)
+  ! ipcm_nstep3d(2)  = fdf_get('ny_pcm',PCM_IUNDEFINED)
+  ! ipcm_nstep3d(3)  = fdf_get('nz_pcm',PCM_IUNDEFINED)
+  ! pcm_step3d(1)  = fdf_get('dx_pcm',PCM_UNDEFINED)
+  ! pcm_step3d(2)  = fdf_get('dy_pcm',PCM_UNDEFINED)
+  ! pcm_step3d(3)  = fdf_get('dz_pcm',PCM_UNDEFINED)
+  ! pcm_origin(1)  = fdf_get('x0_pcm',PCM_UNDEFINED)
+  ! pcm_origin(2)  = fdf_get('y0_pcm',PCM_UNDEFINED)
+  ! pcm_origin(3)  = fdf_get('z0_pcm',PCM_UNDEFINED)
+  ! pcm_endpt(1)   = fdf_get('xn_pcm',PCM_UNDEFINED)
+  ! pcm_endpt(2)   = fdf_get('yn_pcm',PCM_UNDEFINED)
+  ! pcm_endpt(3)   = fdf_get('zn_pcm',PCM_UNDEFINED)
+  ! PCM_SHIFT      = fdf_get('shift',4.d0)
 
 ! %module mmpol (complete)
   ! immpol        = fdf_get('immpol',0)
@@ -530,29 +530,29 @@ subroutine parser
 
 
   ! Filenames parsing
-  file_trexio     	    = fdf_load_filename('trexio', 		'default.hdf5')
-  file_basis        	    = fdf_load_filename('basis', 		'default.bas')
-  file_molecule     	    = fdf_load_filename('molecule', 		'default.xyz')
-  file_determinants 	    = fdf_load_filename('determinants', 	'default.det')
-  file_symmetry     	    = fdf_load_filename('symmetry', 		'default.sym')
-  file_jastrow      	    = fdf_load_filename('jastrow', 		'default.jas')
-  file_jastrow_der  	    = fdf_load_filename('jastrow_der', 		'default.jasder')
-  file_orbitals     	    = fdf_load_filename('orbitals', 		'default.orb')
-  file_exponents    	    = fdf_load_filename('exponents', 		'exponents.exp')
-  file_pseudo 		    = fdf_load_filename('pseudo', 		'default.psp')
-  file_optorb_mixvirt       = fdf_load_filename('optorb_mixvirt', 	'default.mix')
+  file_trexio          = fdf_load_filename('trexio',   'default.hdf5')
+  file_basis             = fdf_load_filename('basis',   'default.bas')
+  file_molecule          = fdf_load_filename('molecule',   'default.xyz')
+  file_determinants      = fdf_load_filename('determinants',  'default.det')
+  file_symmetry          = fdf_load_filename('symmetry',   'default.sym')
+  file_jastrow           = fdf_load_filename('jastrow',   'default.jas')
+  file_jastrow_der       = fdf_load_filename('jastrow_der',   'default.jasder')
+  file_orbitals          = fdf_load_filename('orbitals',   'default.orb')
+  file_exponents         = fdf_load_filename('exponents',   'exponents.exp')
+  file_pseudo       = fdf_load_filename('pseudo',   'default.psp')
+  file_optorb_mixvirt       = fdf_load_filename('optorb_mixvirt',  'default.mix')
   file_multideterminants    = fdf_load_filename('multideterminants',    'default.mdet')
-  file_forces       	    = fdf_load_filename('forces', 		'default.for')
-  file_eigenvalues	    = fdf_load_filename('eigenvalues', 		'default.eig')
-  file_basis_num_info       = fdf_load_filename('basis_num_info', 	'default.bni')
-  file_dmatrix		    = fdf_load_filename('dmatrix', 		'default.dmat')
-  file_cavity_spheres       = fdf_load_filename('cavity_spheres', 	'default.cav')
+  file_forces            = fdf_load_filename('forces',   'default.for')
+  file_eigenvalues     = fdf_load_filename('eigenvalues',   'default.eig')
+  file_basis_num_info       = fdf_load_filename('basis_num_info',  'default.bni')
+  file_dmatrix      = fdf_load_filename('dmatrix',   'default.dmat')
+  file_cavity_spheres       = fdf_load_filename('cavity_spheres',  'default.cav')
   file_gradients_zmatrix    = fdf_load_filename('gradients_zmatrix',    'default.gzmat')
   file_gradients_cartesian  = fdf_load_filename('gradients_cartesian',  'default.gcart')
-  file_modify_zmatrix       = fdf_load_filename('modify_zmatrix', 	'default.mzmat')
-  file_hessian_zmatrix      = fdf_load_filename('hessian_zmatrix', 	'default.hzmat')
+  file_modify_zmatrix       = fdf_load_filename('modify_zmatrix',  'default.mzmat')
+  file_hessian_zmatrix      = fdf_load_filename('hessian_zmatrix',  'default.hzmat')
   file_zmatrix_connection   = fdf_load_filename('zmatrix_connection',   'default.zmcon')
-  file_efield	       	    = fdf_load_filename('efield', 		'default.efield')
+  file_efield             = fdf_load_filename('efield',   'default.efield')
 
   call header_printing()
 
@@ -1981,7 +1981,7 @@ subroutine parser
     type(block_fdf)                 :: bfdf
     type(parsed_line), pointer      :: pline
     double precision, allocatable   :: nval(:)
-    integer                         :: count
+    integer                         :: count = 0
     ! %block molecule
     ! 4
     ! some comment (symbol, x,y,z)
@@ -2001,9 +2001,13 @@ subroutine parser
     ! H2    3.706633 -2.326423  0   1.0
     ! %endblock
 
+    ! Keep compiler happy
+    if (.not.allocated(nval)) allocate(nval(1))
+    nval = 0._8
+
     write(ounit,*) ' Molecular Coordinates from molecule block '
 
-	  j = 1 !local counter
+   j = 1 !local counter
     do while((fdf_bline(bfdf, pline)))
 !     get the integer from the first line
       if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then  ! check if it is the only integer present in a line

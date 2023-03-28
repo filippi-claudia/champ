@@ -423,9 +423,9 @@ end module pcm_xv_new
 module pcm_unit
     !> Arguments: pcmfile_cavity, pcmfile_chv, pcmfile_chs
 
-    character*80 :: pcmfile_cavity
-    character*80 :: pcmfile_chs
-    character*80 :: pcmfile_chv
+    character(len=80) :: pcmfile_cavity
+    character(len=80) :: pcmfile_chs
+    character(len=80) :: pcmfile_chv
 
     private
     public :: pcmfile_cavity, pcmfile_chv, pcmfile_chs

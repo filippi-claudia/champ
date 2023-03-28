@@ -1,5 +1,6 @@
 module parser_read_data
       use error,   only: fatal_error
+      implicit none
 contains
 subroutine header_printing()
     !> This subroutine prints the header in each output file. It contains some
@@ -8,7 +9,7 @@ subroutine header_printing()
 
       use contrl_file, only: errunit,file_error,file_input,file_output
       use contrl_file, only: ounit
-      use mpi
+      use mpi_f08
       use mpiconf, only: idtask,nproc
 #if defined(TREXIO_FOUND)
       use trexio
@@ -22,7 +23,7 @@ subroutine header_printing()
     character(len=10)                   :: time
     character(len=40)                   :: env_variable
     character(len=100)                  :: input_filename, output
-
+    character(len=MPI_MAX_PROCESSOR_NAME):: hostname
 
 
     write(ounit,*) "____________________________________________________________________"
@@ -94,8 +95,8 @@ subroutine header_printing()
     write(ounit,'(2a)')  " HDF5 library version       :: ", HDF5_VERSION
 #endif
 
-    call hostnm(output)
-    write(ounit, '(2a)') " Hostname                   :: ",   output
+    call MPI_Get_processor_name(hostname,i)
+    write(ounit, '(2a)') " Hostname                   :: ",   hostname
     call get_environment_variable ("PWD", output)
     write(ounit, '(2a)') " Current directory          :: ",   output
     call get_environment_variable ("USER", output)

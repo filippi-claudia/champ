@@ -7,7 +7,7 @@
       implicit none
 
       integer :: i, index, iter, k
-      character*40 filename,itn
+      character(len=40) filename,itn
 
       if(iter.lt.0) then
         filename='geo_optimal_final'
@@ -62,7 +62,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
           write (ounit,*) 'INTERNAL'
           do ic=1,ncent
-            write (ounit,'(x 3f10.5)') czint(1:3, ic)
+            write (ounit,'(1x, 3f10.5)') czint(1:3, ic)
           enddo
 
           write (ounit,*) 'CENT'

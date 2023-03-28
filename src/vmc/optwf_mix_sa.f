@@ -60,7 +60,7 @@
       real(dp), dimension(MSTATES) :: energy_err_old
       real(dp), dimension(6,MSTATES) :: energy_davidson
       real(dp), dimension(mparm) :: deltap_new
-      character*20 method_sav
+      character(len=20) method_sav
 
       save method_sav
 

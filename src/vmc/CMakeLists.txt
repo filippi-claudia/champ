@@ -322,6 +322,7 @@ if (MPI_Fortran_FOUND)
   target_include_directories(shared_objects
   PUBLIC
   ${CMAKE_BINARY_DIR}/src/module
+  ${CMAKE_BINARY_DIR}/src/parser
   )
 
   target_compile_options(shared_objects
@@ -331,6 +332,7 @@ if (MPI_Fortran_FOUND)
 
   # add_dependencies(shared_objects parser)
   add_dependencies(shared_objects shared_modules)
+  add_dependencies(shared_objects parser)
 
   # --------------------------------------------------------------------
   # Remove code that has been already compiled:

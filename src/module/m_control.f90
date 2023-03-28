@@ -3,7 +3,7 @@ module control
 
     implicit none
 
-    character*12 :: mode
+    character(len=12) :: mode
     integer  :: ipr
     private
     public :: mode, ipr, init_control_mode

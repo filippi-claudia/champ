@@ -156,11 +156,11 @@ contains
 
     ! input/output
     implicit none
+    integer :: lowest
     real(dp), dimension(:, :), intent(in) :: mtx
     real(dp), dimension(:, :), intent(in) :: stx
     real(dp), dimension(lowest), intent(out) :: eigenvalues
     real(dp), dimension(size(mtx, 1), lowest), intent(out) :: eigenvectors
-    integer :: lowest
 
     ! Local variables
     real(dp), dimension(:, :), allocatable :: mtx_copy
@@ -450,8 +450,8 @@ contains
     !> Check if a subroutine finishes sucessfully
     !> \param info: Termination signal
     !> \param name: Name of the subroutine
-    use contrl_file,    	only: iunit, ounit, errunit
-    use error,   only: fatal_error
+    use contrl_file, only: iunit, ounit, errunit
+    use error,       only: fatal_error
     implicit none
     integer :: info
     character(len=*), intent(in) :: name

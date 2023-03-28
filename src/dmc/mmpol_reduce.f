@@ -89,9 +89,17 @@
       call mpi_isend(cmmpolo_dmc(nwalk),1,mpi_double_precision,irecv
      &     ,itag_s,MPI_COMM_WORLD,irequest,ierr)
 
-      return
+      end subroutine
 
-      entry mmpol_recv(isend,itag_r)
+      subroutine mmpol_recv(isend,itag_r)
+      use branch,  only: nwalk
+      use mmpol_cntrl, only: immpol
+      use mmpolo,  only: cmmpolo_dmc,dmmpolo_dmc
+      use mpi
+      implicit none
+      integer :: ierr, irecv, irequest, isend, itag_r
+      integer :: itag_s
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
       if(immpol.eq.0) return
 

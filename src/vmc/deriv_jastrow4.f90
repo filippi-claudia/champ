@@ -39,7 +39,7 @@
       real(dp) :: feni_save, fenii, fenii_save, fi
       real(dp) :: fii, fj, fjj
       real(dp) :: fu, fui, fuj, fuu
-      real(dp) :: gee, geeu, geeuu, gen
+      real(dp) :: gee=0, geeu=0, geeuu=0, gen
       real(dp) :: geni, genii, gi, gii
       real(dp) :: gj, gjj, gp, gu
       real(dp) :: gui, guj, guu, pc

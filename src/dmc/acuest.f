@@ -69,9 +69,9 @@ c routine to accumulate estimators for energy etc.
       real(dp) :: e2sum, ecollect, ef2collect, ef2sum
       real(dp) :: efcollect, efnow, egave, egave1
       real(dp) :: egerr, egnow, ei1now, ei2now
-      real(dp) :: enow, errg, error, fgave
+      real(dp) :: enow, fgave
       real(dp) :: fgerr, peave, peerr, penow
-      real(dp) :: r2now, rinow, rn_eff
+      real(dp) :: r2now, rinow
       real(dp) :: tpbave, tpberr
       real(dp) :: tpbnow, w, w2, w2collect
       real(dp) :: w2sum, wcollect, wf2collect, wf2sum
@@ -97,11 +97,6 @@ c routine to accumulate estimators for energy etc.
       real(dp), dimension(10, MFORCE) :: derivcollect
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
-
-c Statement function for error calculation, it might be reaplaced in the near future:
-      rn_eff(w,w2)=w**2/w2
-      error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
-      errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
 
       if(mode.eq.'dmc_one_mpi2') then
         call acuest_gpop
@@ -368,5 +363,25 @@ c zero out xsum variables for metrop
       call mmpol_init(1)
 
       return
+      contains
+        elemental pure function rn_eff(w,w2)
+          implicit none
+          real(dp), intent(in) :: w, w2
+          real(dp)             :: rn_eff
+          rn_eff=w**2/w2
+        end function
+        elemental pure function error(x,x2,w,w2)
+          implicit none
+          real(dp), intent(in) :: x, x2,w,w2
+          real(dp)             :: error
+          error=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
+        end function
+        elemental pure function errg(x,x2,i)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          integer, intent(in)  :: i
+          real(dp)             :: errg
+          errg=error(x,x2,wgcum(i),wgcm2(i))
+        end function
       end
       end module

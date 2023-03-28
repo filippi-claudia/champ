@@ -415,7 +415,7 @@ c-----------------------------------------------------------------------
 
       is=1
       if(ioptjas.eq.0.and.ioptorb.eq.0) then
-	is=0
+        is=0
         idx=0
         do i=1,nparm+is
           do j=1,i

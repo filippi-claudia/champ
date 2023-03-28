@@ -1,7 +1,4 @@
       module walksav_jas_mod
-      contains
-      subroutine walksav_jas(iw)
-c Written by Claudia Filippi
 
       use branch,  only: nwalk
       use dmc_mod, only: MWALK
@@ -10,20 +7,23 @@ c Written by Claudia Filippi
       use precision_kinds, only: dp
       use system,  only: nelec
       use velocity_jastrow, only: vj
-
       implicit none
-
-      integer :: i, ierr, irecv, irequest, isend
-      integer :: itag, iw, iw2, j
-      integer :: kk
-      integer, dimension(MPI_STATUS_SIZE) :: istatus
-
 
       real(dp), allocatable, save :: fsow(:, :, :)
       real(dp), allocatable, save :: fijow(:, :, :, :)
       real(dp), allocatable, save :: fsumow(:)
       real(dp), allocatable, save :: fjow(:, :, :)
       real(dp), allocatable, save :: vjw(:, :, :)
+
+      contains
+      subroutine walksav_jas(iw)
+c Written by Claudia Filippi
+      implicit none
+
+      integer :: i, ierr, irecv, irequest, isend
+      integer :: itag, iw, iw2, j
+      integer :: kk
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
       if(.not.allocated(fsow)) allocate(fsow(nelec, nelec, MWALK))
       if(.not.allocated(fijow)) allocate(fijow(3, nelec, nelec, MWALK))
@@ -73,9 +73,15 @@ c Written by Claudia Filippi
         enddo
       enddo
 
-      return
+      end subroutine
 
-      entry walkstrjas(iw)
+      subroutine walkstrjas(iw)
+      implicit none
+
+      integer :: i, ierr, irecv, irequest, isend
+      integer :: itag, iw, iw2, j
+      integer :: kk
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
       fsumo(1)=fsumow(iw)
 
@@ -110,9 +116,15 @@ c Written by Claudia Filippi
         enddo
       enddo
 
-      return
+      end subroutine
 
-      entry splitjjas(iw,iw2)
+      subroutine splitjjas(iw,iw2)
+      implicit none
+
+      integer :: i, ierr, irecv, irequest, isend
+      integer :: itag, iw, iw2, j
+      integer :: kk
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
       fsumow(iw2)=fsumow(iw)
 
@@ -147,9 +159,15 @@ c Written by Claudia Filippi
         enddo
       enddo
 
-      return
+      end subroutine
 
-      entry send_jas(irecv)
+      subroutine send_jas(irecv)
+      implicit none
+
+      integer :: i, ierr, irecv, irequest, isend
+      integer :: itag, iw, iw2, j
+      integer :: kk
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
       itag=0
       call mpi_isend(fsumow(nwalk),1,mpi_double_precision,irecv
@@ -164,9 +182,15 @@ c Written by Claudia Filippi
       call mpi_isend(vjw(1,1,nwalk),3*nelec,mpi_double_precision,irecv
      &,itag+5,MPI_COMM_WORLD,irequest,ierr)
 
-      return
+      end subroutine
 
-      entry recv_jas(isend)
+      subroutine recv_jas(isend)
+      implicit none
+
+      integer :: i, ierr, irecv, irequest, isend
+      integer :: itag, iw, iw2, j
+      integer :: kk
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
       itag=0
       call mpi_recv(fsumow(nwalk),1,mpi_double_precision,isend
@@ -181,6 +205,5 @@ c Written by Claudia Filippi
       call mpi_recv(vjw(1,1,nwalk),3*nelec,mpi_double_precision,isend
      &,itag+5,MPI_COMM_WORLD,istatus,ierr)
 
-      return
-      end
+      end subroutine
       end module

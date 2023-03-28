@@ -1,6 +1,4 @@
       module dumper_mod
-      contains
-      subroutine dumper
 c MPI version created by Claudia Filippi starting from serial version
 c routine to pick up and dump everything needed to restart
 c job where it left off
@@ -58,6 +56,9 @@ c job where it left off
 
       implicit none
 
+      contains
+      subroutine dumper
+      implicit none
       integer :: i, id, idfrom, idget, ierr
       integer :: ifr, istate, j, k
       integer :: nelecx, nforcex, nlocx, nproco
@@ -69,8 +70,6 @@ c job where it left off
       integer, dimension(0:nproc) :: idispls
       real(dp) :: rnd, wq_id, x_id, xq_id, yq_id
       real(dp) :: zq_id
-
-
 
       rewind 10
 
@@ -125,10 +124,22 @@ c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
 
       call dumper_more
 
-      return
+      end subroutine
 
 c-----------------------------------------------------------------------
-      entry startr
+      subroutine startr
+      implicit none
+      integer :: i, id, idfrom, idget, ierr
+      integer :: ifr, istate, j, k
+      integer :: nelecx, nforcex, nlocx, nproco
+      integer :: nq_id, nqd_id, nqx, nscounts
+      integer, dimension(4,0:nproc) :: irn
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      integer, dimension(4,0:nproc) :: irn_tmp
+      integer, dimension(0:nproc) :: ircounts
+      integer, dimension(0:nproc) :: idispls
+      real(dp) :: rnd, wq_id, x_id, xq_id, yq_id
+      real(dp) :: zq_id
 
       write(ounit,'(1x,''attempting restart from unit 10'')')
 

@@ -29,7 +29,7 @@
       real(dp), dimension(mparm) :: deltap
       real(dp), dimension(mparm) :: parameters
 
-      character*20 dl_alg
+      character(len=20) dl_alg
 
 c vector of wave function parameters
 

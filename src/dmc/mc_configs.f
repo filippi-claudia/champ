@@ -1,7 +1,4 @@
       module mc_configs_mod
-      contains
-      subroutine mc_configs
-
       use branch,  only: eold,nwalk
       use config,  only: psido_dmc,psijo_dmc,xold_dmc
       use control, only: ipr
@@ -15,6 +12,11 @@
       use random_mod, only: random_dp,savern,setrn
       use restart, only: startr
       use system,  only: nelec
+      implicit none
+      integer, save :: ngfmc
+      contains
+      subroutine mc_configs
+
 !      use contrl, only: irstar, nblk, nblkeq, nconf, nconf_new, nstep
 
 
@@ -22,14 +24,13 @@
 
       integer :: i, iblk, ic, id, ii
       integer :: index, ipass, iwalk, j
-      integer :: jj, ngfmc
+      integer :: jj
       integer, dimension(8) :: irn
       real(dp) :: rnd
 
-      character*25 fmt
-      character*20 filename
+      character(len=25) fmt
+      character(len=20) filename
 
-      save ngfmc
 
       if(write_walkalize) then
         if(idtask.le.9) then
@@ -106,10 +107,19 @@ c If nconf_new = 0, then no configurations are written.
         rewind 7
       endif
 
-      return
+      end subroutine
 
 c-----------------------------------------------------------------------
-      entry mc_configs_write(iblk,ipass)
+      subroutine mc_configs_write(iblk,ipass)
+      implicit none
+      integer :: i, iblk, ic, id, ii
+      integer :: index, ipass, iwalk, j
+      integer :: jj
+      integer, dimension(4) :: irn
+      real(dp) :: rnd
+
+      character(len=25) fmt
+      character(len=20) filename
 
 c Write out configuration for optimization/dmc/gfmc here
           if (iblk.gt.2*dmc_nblkeq .and. (mod(ipass,ngfmc).eq.1 .or.  ngfmc.eq.1)) then

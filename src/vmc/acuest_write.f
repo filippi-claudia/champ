@@ -25,15 +25,13 @@ c routine to write out estimators for energy etc.
       integer :: i, ieerr, iferr, ifr, index
       integer :: ipeerr, istate, itpber
       integer :: j, nproc
-      real(dp) :: acc_denom, accept, eave, eerr, err
+      real(dp) :: acc_denom, accept, eave, eerr
       real(dp) :: fave, ferr, peave, peerr
       real(dp) :: tpbave, tpberr
-      real(dp) :: x, x2
       real(dp), dimension(MSTATES, MFORCE) :: enow
 
 
 c statement function for error calculation
-      err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
 
 c xave = current average value of x
 c xerr = current error of x
@@ -53,7 +51,7 @@ c write out header first time
       endif
 
 c write out current values of averages
-      acc_denom=dfloat(vmc_nstep*iblk)
+      acc_denom=dble(vmc_nstep*iblk)
       if(index(mode,'mov1').eq.0) then
         accept=acc/acc_denom
        else
@@ -126,5 +124,13 @@ c enddo over istate, nstates
 c enddo over ifr, nforce
 
       return
+      contains
+        elemental pure function err(x,x2,j,i)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          integer, intent(in)  :: i, j
+          real(dp)             :: err
+          err=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
+        end function
       end
       end module

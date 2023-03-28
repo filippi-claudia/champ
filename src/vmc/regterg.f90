@@ -62,14 +62,14 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
     ! maximum dimension of the reduced basis set
     !    (the basis set is refreshed when its dimension would exceed nvecx)
     ! printing level
-  REAL*8, INTENT(INOUT) :: evc(nparmx,nvec)
+  real(8), INTENT(INOUT) :: evc(nparmx,nvec)
     !  evc   contains the  refined estimates of the eigenvectors
-  REAL*8, INTENT(IN) :: ethr
+  real(8), INTENT(IN) :: ethr
     ! energy threshold for convergence: root improvement is stopped,
     ! when two consecutive estimates of the root differ by less than ethr.
   INTEGER, INTENT(IN) :: btype(nvec)
     ! band type ( 1 = occupied, 0 = empty )
-  REAL*8, INTENT(OUT) :: e(nvec)
+  real(8), INTENT(OUT) :: e(nvec)
     ! contains the estimated roots.
   INTEGER, INTENT(OUT) :: dav_iter, notcnv
     ! integer  number of iterations performed
@@ -90,24 +90,24 @@ SUBROUTINE regterg( nparm, nparmx, nvec, nvecx, evc, ethr, &
     ! counter on the bands
   INTEGER :: ierr
   INTEGER :: i,j
-  REAL*8, ALLOCATABLE :: hr(:,:), sr(:,:), vr(:,:), ew(:)
+  real(8), ALLOCATABLE :: hr(:,:), sr(:,:), vr(:,:), ew(:)
     ! Hamiltonian on the reduced basis
     ! S matrix on the reduced basis
     ! eigenvectors of the Hamiltonian
     ! eigenvalues of the reduced hamiltonian
-  REAL*8, ALLOCATABLE :: hhr(:,:), ssr(:,:)
-  REAL*8, ALLOCATABLE :: psi(:,:), hpsi(:,:), spsi(:,:)
-  REAL*8, ALLOCATABLE :: res(:,:)
-  REAL*8, ALLOCATABLE :: res_norm(:)
+  real(8), ALLOCATABLE :: hhr(:,:), ssr(:,:)
+  real(8), ALLOCATABLE :: psi(:,:), hpsi(:,:), spsi(:,:)
+  real(8), ALLOCATABLE :: res(:,:)
+  real(8), ALLOCATABLE :: res_norm(:)
 
     ! work space, contains psi
     ! the product of H and psi
     ! the product of S and psi
   LOGICAL, ALLOCATABLE :: conv(:)
     ! true if the root is converged
-  REAL*8 :: empty_ethr
+  real(8) :: empty_ethr
     ! threshold for empty bands
-  !REAL*8, EXTERNAL :: ddot
+  !real(8), EXTERNAL :: ddot
   !
   ! EXTERNAL  h_psi_lin_d, s_psi_lin_d, g_psi_lin_d
     ! h_psi_lin_d(nparm,nvec,psi,hpsi)
@@ -515,22 +515,22 @@ SUBROUTINE rdiaghg( n, m, h, s, ldh, e, v )
     ! dimension of the matrix to be diagonalized
     ! number of eigenstates to be calculated
     ! leading dimension of h, as declared in the calling pgm unit
-  REAL*8, INTENT(INOUT) :: h(ldh,n), s(ldh,n)
+  real(8), INTENT(INOUT) :: h(ldh,n), s(ldh,n)
     ! matrix to be diagonalized
     ! overlap matrix
   !
-  REAL*8, INTENT(OUT) :: e(n)
+  real(8), INTENT(OUT) :: e(n)
     ! eigenvalues
-  REAL*8, INTENT(OUT) :: v(ldh,m)
+  real(8), INTENT(OUT) :: v(ldh,m)
     ! eigenvectors (column-wise)
   !
   INTEGER               :: i, j, lwork, nb, mm, info
     ! mm = number of calculated eigenvectors
-  REAL*8              :: abstol
-  REAL*8, PARAMETER   :: one = 1.d0
-  REAL*8, PARAMETER   :: zero = 0.d0
+  real(8)              :: abstol
+  real(8), PARAMETER   :: one = 1.d0
+  real(8), PARAMETER   :: zero = 0.d0
   INTEGER,  ALLOCATABLE :: iwork(:), ifail(:)
-  REAL*8, ALLOCATABLE :: work(:), sdiag(:), hdiag(:)
+  real(8), ALLOCATABLE :: work(:), sdiag(:), hdiag(:)
   LOGICAL               :: all_eigenvalues
   !INTEGER,  EXTERNAL    :: ILAENV
     ! ILAENV returns optimal block size "nb"

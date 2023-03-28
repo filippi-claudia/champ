@@ -1,6 +1,4 @@
       module dumper_more_mod
-      contains
-      subroutine dumper_more
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
@@ -77,6 +75,9 @@ c job where it left off
 
       implicit none
 
+      contains
+      subroutine dumper_more
+      implicit none
       integer :: i, ib, ic, ifr, istate
       integer :: j, jel, k, nbasx
       integer :: ncentx, nctypex, ndetx, ndnx
@@ -95,10 +96,6 @@ c job where it left off
       real(dp), dimension(MSTATES) :: ekino
       real(dp), parameter :: half = 0.5d0
       real(dp), parameter :: small = 1.d-6
-
-
-
-
 
       write(10) delta,deltar,deltat
 
@@ -142,10 +139,29 @@ c job where it left off
 
       write(ounit,'(1x,''successful dump to unit 10'')')
 
-      return
+      end subroutine
 
 c-----------------------------------------------------------------------
-      entry startr_more
+      subroutine startr_more
+      implicit none
+      integer :: i, ib, ic, ifr, istate
+      integer :: j, jel, k, nbasx
+      integer :: ncentx, nctypex, ndetx, ndnx
+      integer :: newghostypex, nghostcentx, norbx, nstepx
+      integer :: nupx
+
+      real(dp) :: ajacob, deltarx
+      real(dp) :: deltatx, deltax, dist, distance_node
+      real(dp) :: pecx, psidg, rnorm_nodes
+      real(dp), dimension(nbasis,norb_tot) :: coefx
+      real(dp), dimension(nbasis) :: zexx
+      real(dp), dimension(3,ncent_tot) :: centx
+      real(dp), dimension(nctype_tot) :: znucx
+      real(dp), dimension(ndet) :: cdetx
+      real(dp), dimension(3,nelec) :: xstrech
+      real(dp), dimension(MSTATES) :: ekino
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: small = 1.d-6
 
       read(10) deltax,deltarx,deltatx
       if (dabs(deltax-delta).gt.small) call fatal_error('STARTR: delta')

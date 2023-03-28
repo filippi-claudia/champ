@@ -11,11 +11,10 @@
 
       integer :: iblk, icmmpol_err, idmmpol_err
       real(dp) :: cmmpol_ave, cmmpol_err, cmmpol_merr, dmmpol_ave, dmmpol_err
-      real(dp) :: err, qmmpol_ave, qmmpol_err, rtpass
-      real(dp) :: wcum, x, x2
+      real(dp) :: qmmpol_ave, qmmpol_err, rtpass
+      real(dp) :: wcum
 
 
-      err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
       if(immpol.eq.0.or.immpolprt.eq.0) return
 
@@ -47,6 +46,13 @@
       endif
 
       return
+      contains
+        elemental pure function err(x,x2)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          real(dp)             :: err
+          err=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
+        end function
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_fin(wcum,iblk)
@@ -65,9 +71,8 @@ c-----------------------------------------------------------------------
       integer :: i, iblk, icmmpol_err, idmmpol_err
       real(dp) :: cekcal, cmmpol_ave, cmmpol_err, cmmpol_kcal, cmmpol_merr
       real(dp) :: dckcal, dekcal, dmmpol_ave, dmmpol_err
-      real(dp) :: dmmpol_kcal, err, hatokc, qmmpol_ave
-      real(dp) :: qmmpol_err, rtpass, wcum, x
-      real(dp) :: x2
+      real(dp) :: dmmpol_kcal, hatokc, qmmpol_ave
+      real(dp) :: qmmpol_err, rtpass, wcum
       real(dp), dimension(MCHMM) :: eek1_ave
       real(dp), dimension(MCHMM) :: eek1_err
       real(dp), dimension(MCHMM) :: eek2_ave
@@ -80,9 +85,6 @@ c-----------------------------------------------------------------------
 
 
       data hatokc/627.509541d0/
-
-
-      err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
       if(immpol.eq.0) return
 
@@ -126,17 +128,17 @@ c-----------------------------------------------------------------------
           eek_ave(3,i)=eek3_cum(i)/wcum
           eek_err(3,i)=err(eek3_cum(i),eek3_cm2(i))
         enddo
- 	call mmpol_dipoles(eek_ave,eek_err)
+         call mmpol_dipoles(eek_ave,eek_err)
 
-	dmmpol_kcal=dmmpol_ave*hatokc
-	cmmpol_kcal=cmmpol_ave*hatokc
-	dekcal=dmmpol_err*hatokc
-	cekcal=cmmpol_err*hatokc
-	dckcal=dmmpol_kcal+cmmpol_kcal
-	write(ounit,*)'    <H(QM/MM)/dipoles/charges/tot +- err (kcal/mol) '
-	write(ounit,1000)dmmpol_kcal,dekcal,cmmpol_kcal,cekcal,dckcal
-	write(ounit,*)'    <H(QM/MM)/dipoles/charges/tot +- err (hartree) '
-	write(ounit,1000)dmmpol_ave,dmmpol_err,cmmpol_ave,cmmpol_err,dckcal/hatokc
+        dmmpol_kcal=dmmpol_ave*hatokc
+        cmmpol_kcal=cmmpol_ave*hatokc
+        dekcal=dmmpol_err*hatokc
+        cekcal=cmmpol_err*hatokc
+        dckcal=dmmpol_kcal+cmmpol_kcal
+        write(ounit,*)'    <H(QM/MM)/dipoles/charges/tot +- err (kcal/mol) '
+        write(ounit,1000)dmmpol_kcal,dekcal,cmmpol_kcal,cekcal,dckcal
+        write(ounit,*)'    <H(QM/MM)/dipoles/charges/tot +- err (hartree) '
+        write(ounit,1000)dmmpol_ave,dmmpol_err,cmmpol_ave,cmmpol_err,dckcal/hatokc
         write(ounit,*)
       endif
 
@@ -144,6 +146,13 @@ c-----------------------------------------------------------------------
  1000 format(9F12.5)
 
       return
+      contains
+        elemental pure function err(x,x2)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          real(dp)             :: err
+          err=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
+        end function
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_save

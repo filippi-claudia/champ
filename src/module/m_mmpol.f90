@@ -2,8 +2,8 @@ module mmpol_mod
     !> Arguments MCHMM, mmpolfile_sites, mmpolfile_chmm
 
     integer, parameter :: MCHMM = 1
-    character*80 mmpolfile_sites
-    character*80 mmpolfile_chmm
+    character(len=80) mmpolfile_sites
+    character(len=80) mmpolfile_chmm
     private
     public :: MCHMM, mmpolfile_sites, mmpolfile_chmm
     save

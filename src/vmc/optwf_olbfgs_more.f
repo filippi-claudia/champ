@@ -16,7 +16,7 @@
 
       real(dp), dimension(*) :: deltap
       real(dp), dimension(*) :: parameters
-      character*20 dl_alg
+      character(len=20) dl_alg
       real(dp), dimension(1), allocatable :: parameters_old(:)
       real(dp), dimension(1), allocatable :: parms_lbfgs(:)
 

@@ -1,5 +1,6 @@
       module optorb_f_mod
       use error,   only: fatal_error
+
       contains
       subroutine optorb_deriv(psid,denergy,zmat,dzmat,emz,aaz,orbprim,eorbprim,istate)
 
@@ -485,7 +486,6 @@ c-----------------------------------------------------------------------
       real(dp), dimension(*) :: fo
       real(dp), dimension(*) :: foerr
 
-      errn(x,x2,n)=dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
 
       if(ioptorb.eq.0) return
 
@@ -493,12 +493,15 @@ c-----------------------------------------------------------------------
         oav(i)=orb_o_cum(i,istate)/wcum
         eoav(i)=orb_oe_cum(i,istate)/wcum
         fo(i)=eoav(i)-eave*oav(i)
-        foerr(i)=errn(orb_f_bcum(i,istate),orb_f_bcm2(i,istate),norb_f_bcum)
+        x = orb_f_bcum(i,istate)
+        x2= orb_f_bcm2(i,istate)
+        n = norb_f_bcum
+        errn = dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
+        foerr(i)=errn
       enddo
 
       write(ounit,'(''ORB-PT: forces collected'',i4)') norb_f_bcum
-
-      end
+      end subroutine
 c-----------------------------------------------------------------------
       subroutine optorb_dump(iu)
 
@@ -1060,25 +1063,23 @@ c if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
       end
 c-----------------------------------------------------------------------
       subroutine check_orbitals
-
 c Do not compute virtual orbitals during single-electron move
       use orbval,  only: nadorb
-
+      use optorb_mod, only: nadorb_save
       implicit none
-
-      integer :: nadorb_save
-
-      save nadorb_save
 
       nadorb_save=nadorb
       nadorb=0
 
-      return
+      end subroutine
 
-      entry check_orbitals_reset
+      subroutine check_orbitals_reset
+      use orbval,  only: nadorb
+      use optorb_mod, only: nadorb_save
+      implicit none
 
       nadorb=nadorb_save
 
-      return
-      end
+      end subroutine
+
       end module

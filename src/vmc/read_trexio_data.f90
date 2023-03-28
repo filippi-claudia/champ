@@ -38,7 +38,7 @@ module trexio_read_data
         use custom_broadcast, only: bcast
         use mpiconf, only: wid
         use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot, symbol, atomtyp
-        use system, 		    only: newghostype, nghostcent
+        use system, only: newghostype, nghostcent
         use inputflags, only: igeometry
         use periodic_table, only: atom_t, element
         use contrl_file, only: ounit, errunit
@@ -1024,7 +1024,7 @@ module trexio_read_data
 
 
         ! trexio
-        integer(8)                      :: trex_symmetry_file
+        integer(8)                      :: trex_symmetry_file = -1
         integer                         :: rc = 1
 
         character(len=3), dimension(:), allocatable :: unique_irrep       ! The output
@@ -1088,7 +1088,7 @@ module trexio_read_data
         write(ounit,fmt=int_format) " Number of irreducible representations       ::  ", num_irrep
         write(ounit,*)
         write(ounit,'(a)')          " Irreducible representations correspondence  ::  "
-        write(ounit,'(1x,10(a2,a,i2,a,x))') (unique_irrep(i), "=", i ,";", i=1, num_irrep)
+        write(ounit,'(1x,10(a2,a,i2,a,1x))') (unique_irrep(i), "=", i ,";", i=1, num_irrep)
         write(ounit,*)
 
         ! get the correspondence for each atom according to the rule defined for atomtypes
@@ -1154,12 +1154,12 @@ module trexio_read_data
         character(len=100)              :: string_format  = '(A, T60, A)'
 
         ! determinant data
-        integer*8, allocatable          :: buffer(:,:,:)
+        integer(8), allocatable          :: buffer(:,:,:)
         integer(8)                      :: offset, icount, BUFSIZE
         integer                         :: int64_num, m           ! Number of intergers required per spin component
-        integer*8                       :: determinant_num
-        integer*4, allocatable          :: orb_list_up(:), orb_list_dn(:)
-        integer*4                       :: occ_num_up, occ_num_dn, occupied_num
+        integer(8)                       :: determinant_num
+        integer(4), allocatable          :: orb_list_up(:), orb_list_dn(:)
+        integer(4)                       :: occ_num_up, occ_num_dn, occupied_num
 
 
         trex_determinant_file = 0

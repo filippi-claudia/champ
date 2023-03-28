@@ -139,7 +139,7 @@ contains
             if (ifunc_omega .gt. 0) then
                 omega_hes = energy_sav
                 if (iter .gt. n_omegaf) then
-                    alpha_omega = dfloat(n_omegaf + n_omegat - iter)/n_omegat
+                    alpha_omega = dble(n_omegaf + n_omegat - iter)/n_omegat
                     omega = alpha_omega*omega0 + (1.d0 - alpha_omega)*(energy_sav - sigma_sav)
                     if (ifunc_omega .eq. 1 .or. ifunc_omega .eq. 2) omega = alpha_omega*omega0 + (1.d0 - alpha_omega)*energy_sav
                 endif

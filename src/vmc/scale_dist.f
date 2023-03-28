@@ -171,18 +171,18 @@ c       This is used to scale r_ee in J_een for solids.
         if(isc.eq.2 .or. (isc.eq.12.and.iflag.eq.1)) then
           rr=(one-dexp(-scalek(iwf)*r))/scalek(iwf)
 c     write(ounit,'(''r,rr='',9d12.4)') r,rr,scalek(iwf)
-	 elseif(isc.eq.3) then
-	  rsc=scalek(iwf)*r
+        elseif(isc.eq.3) then
+         rsc=scalek(iwf)*r
           rsc2=rsc*rsc
           rsc3=rsc*rsc2
-	  exprij=dexp(-rsc-half*rsc2-third*rsc3)
-	  rr=(one-exprij)/scalek(iwf)
-	 elseif(isc.eq.4 .or. (isc.eq.14.and.iflag.eq.1)) then
-	  deni=one/(one+scalek(iwf)*r)
-	  rr=r*deni
- 	 elseif(isc.eq.5) then
-	  deni=one/(one+(scalek(iwf)*r)**3)**third
-	  rr=r*deni
+         exprij=dexp(-rsc-half*rsc2-third*rsc3)
+         rr=(one-exprij)/scalek(iwf)
+        elseif(isc.eq.4 .or. (isc.eq.14.and.iflag.eq.1)) then
+         deni=one/(one+scalek(iwf)*r)
+         rr=r*deni
+         elseif(isc.eq.5) then
+         deni=one/(one+(scalek(iwf)*r)**3)**third
+         rr=r*deni
          elseif(isc.eq.6 .or. (isc.eq.16.and.iflag.eq.1)) then
           if(r.gt.cutjas) then
             if(ijas.eq.4.or.ijas.eq.5) then
@@ -216,8 +216,8 @@ c     write(ounit,'(''r,rr='',9d12.4)') r,rr,scalek(iwf)
               rr=r*term*deni
              elseif(ijas.eq.6) then
               rr=c1_jas6*deni-c2_jas6
-	    endif
-	  endif
+           endif
+         endif
          elseif(isc.eq.16 .and. iflag.eq.2) then
           if(r.gt.cutjas) then
             if(ijas.eq.4.or.ijas.eq.5) then
@@ -257,16 +257,16 @@ c     write(ounit,'(''r,rr='',9d12.4)') r,rr,scalek(iwf)
               rr=r**2*term*deni
              elseif(ijas.eq.6) then
               rr=c1_jas6*deni-c2_jas6
-	    endif
-	  endif
+           endif
+         endif
          elseif((isc.eq.14 .and. iflag.ge.2) .or. (isc.eq.17 .and. iflag.eq.3)) then
           deni=1/(1+scalek(iwf)*r**2)
           if(ijas.eq.4.or.ijas.eq.5) then
             rr=r**2*deni
            elseif(ijas.eq.6) then
             rr=c1_jas6*deni-c2_jas6
-	  endif
-	endif
+         endif
+       endif
        else
         rr=r
       endif
@@ -326,21 +326,21 @@ c       This is used to scale r_ee in J_een for solids.
           rr=(one-dexp(-scalek(iwf)*r))/scalek(iwf)
           dd1=one-scalek(iwf)*rr
 c     write(ounit,'(''r,rr='',9d12.4)') r,rr,dd1,scalek(iwf)
-	 elseif(isc.eq.3) then
-	  rsc=scalek(iwf)*r
+        elseif(isc.eq.3) then
+         rsc=scalek(iwf)*r
           rsc2=rsc*rsc
           rsc3=rsc*rsc2
-	  exprij=dexp(-rsc-half*rsc2-third*rsc3)
-	  rr=(one-exprij)/scalek(iwf)
-	  dd1=(one+rsc+rsc2)*exprij
-	 elseif(isc.eq.4 .or. (isc.eq.14.and.iflag.eq.1)) then
-	  deni=one/(one+scalek(iwf)*r)
-	  rr=r*deni
-	  dd1=deni*deni
- 	 elseif(isc.eq.5) then
-	  deni=one/(one+(scalek(iwf)*r)**3)**third
-	  rr=r*deni
-	  dd1=deni**4
+         exprij=dexp(-rsc-half*rsc2-third*rsc3)
+         rr=(one-exprij)/scalek(iwf)
+         dd1=(one+rsc+rsc2)*exprij
+        elseif(isc.eq.4 .or. (isc.eq.14.and.iflag.eq.1)) then
+         deni=one/(one+scalek(iwf)*r)
+         rr=r*deni
+         dd1=deni*deni
+         elseif(isc.eq.5) then
+         deni=one/(one+(scalek(iwf)*r)**3)**third
+         rr=r*deni
+         dd1=deni**4
          elseif(isc.eq.6 .or. (isc.eq.16.and.iflag.eq.1)) then
           if(r.gt.cutjas) then
             if(ijas.eq.4.or.ijas.eq.5) then
@@ -385,8 +385,8 @@ c             dd1=-scalek(iwf)*rr_plus_c2*term2
               rr=c1_jas6*deni-c2_jas6
 c             rr_plus_c2=rr+c2_jas6
 c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
-	    endif
-	  endif
+           endif
+         endif
          elseif(isc.eq.16 .and. iflag.eq.2) then
           if(r.gt.cutjas) then
             if(ijas.eq.4.or.ijas.eq.5) then
@@ -439,8 +439,8 @@ c           dd1=-scalek(iwf)*rr_plus_c2*term2
               rr=c1_jas6*deni-c2_jas6
 c             rr_plus_c2=rr+c2_jas6
 c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
-	    endif
-	  endif
+           endif
+         endif
          elseif((isc.eq.14 .and. iflag.ge.2) .or. (isc.eq.17 .and. iflag.eq.3)) then
           deni=1/(1+scalek(iwf)*r**2)
           if(ijas.eq.4.or.ijas.eq.5) then
@@ -450,8 +450,8 @@ c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
             rr=c1_jas6*deni-c2_jas6
 c           rr_plus_c2=rr+c2_jas6
 c           dd1=-scalek(iwf)*rr_plus_c2*deni*term2
-	  endif
-	endif
+         endif
+       endif
        else
         rr=r
         dd1=one
@@ -517,24 +517,24 @@ c       This is used to scale r_ee in J_een for solids.
           dd2=-scalek(iwf)*dd1
           dd3=-scalek(iwf)*dd2
 c     write(ounit,'(''r,rr='',9d12.4)') r,rr,dd1,dd2,scalek(iwf)
-	 elseif(isc.eq.3) then
-	  rsc=scalek(iwf)*r
+        elseif(isc.eq.3) then
+         rsc=scalek(iwf)*r
           rsc2=rsc*rsc
           rsc3=rsc*rsc2
-	  exprij=dexp(-rsc-half*rsc2-third*rsc3)
-	  rr=(one-exprij)/scalek(iwf)
-	  dd1=(one+rsc+rsc2)*exprij
-	  dd2=-scalek(iwf)*rsc2*(3+2*rsc+rsc2)*exprij
-	 elseif(isc.eq.4 .or. (isc.eq.14.and.iflag.eq.1)) then
-	  deni=one/(one+scalek(iwf)*r)
-	  rr=r*deni
-	  dd1=deni*deni
-	  dd2=-two*scalek(iwf)*deni*dd1
- 	 elseif(isc.eq.5) then
-	  deni=one/(one+(scalek(iwf)*r)**3)**third
-	  rr=r*deni
-	  dd1=deni**4
-	  dd2=-4*(scalek(iwf)*r)**2*scalek(iwf)*dd1*dd1/deni
+         exprij=dexp(-rsc-half*rsc2-third*rsc3)
+         rr=(one-exprij)/scalek(iwf)
+         dd1=(one+rsc+rsc2)*exprij
+         dd2=-scalek(iwf)*rsc2*(3+2*rsc+rsc2)*exprij
+        elseif(isc.eq.4 .or. (isc.eq.14.and.iflag.eq.1)) then
+         deni=one/(one+scalek(iwf)*r)
+         rr=r*deni
+         dd1=deni*deni
+         dd2=-two*scalek(iwf)*deni*dd1
+         elseif(isc.eq.5) then
+         deni=one/(one+(scalek(iwf)*r)**3)**third
+         rr=r*deni
+         dd1=deni**4
+         dd2=-4*(scalek(iwf)*r)**2*scalek(iwf)*dd1*dd1/deni
          elseif(isc.eq.6 .or. (isc.eq.16.and.iflag.eq.1)) then
           if(r.gt.cutjas) then
             if(ijas.eq.4.or.ijas.eq.5) then
@@ -585,8 +585,8 @@ c             dd2=-scalek(iwf)*(dd1*term2+rr_plus_c2*2*cutjasi*(r_by_cut-1))
 c             rr_plus_c2=rr+c2_jas6
 c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
 c             dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1))
-	    endif
-	  endif
+           endif
+         endif
          elseif(isc.eq.16 .and. iflag.eq.2) then
           if(r.gt.cutjas) then
             if(ijas.eq.4.or.ijas.eq.5) then
@@ -651,8 +651,8 @@ c             dd2=-2*deni**2*(scalek(iwf)*deni*term2**2-cutjasi*(r_by_cut-1))
 c             rr_plus_c2=rr+c2_jas6
 c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
 c             dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1))
-	    endif
-	  endif
+           endif
+         endif
          elseif((isc.eq.14 .and. iflag.ge.2) .or. (isc.eq.17 .and. iflag.eq.3)) then
           deni=1/(1+scalek(iwf)*r**2)
           if(ijas.eq.4.or.ijas.eq.5) then
@@ -664,8 +664,8 @@ c             dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1)
 c           rr_plus_c2=rr+c2_jas6
 c           dd1=-scalek(iwf)*rr_plus_c2*deni*term2
 c           dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1))
-	  endif
-	endif
+         endif
+       endif
        else
         rr=r
         dd1=one

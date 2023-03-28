@@ -83,7 +83,7 @@
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: small = 1.e-6
 
-      character*13 filename
+      character(len=13) filename
 
       write(ounit,'(1x,''attempting restart from unit 10'')')
       rewind 10
