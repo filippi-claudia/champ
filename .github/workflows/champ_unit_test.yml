@@ -28,7 +28,7 @@ jobs:
     - name: Install GNU compilers and libraries
       if: matrix.toolchain == 'gnu'
       run: |
-        #sudo apt-get update
+        sudo apt-get update
         sudo apt install -y gfortran
         sudo apt install -y valgrind
         sudo apt install -y openmpi-bin
