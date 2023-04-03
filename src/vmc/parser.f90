@@ -156,6 +156,11 @@ subroutine parser
       use system,  only: atomtyp,cent,iwctype,ncent,ncent_tot,nctype
       use system,  only: nctype_tot,ndn,nelec,newghostype,nghostcent,nup
       use system,  only: symbol,znuc
+      use verify_orbitals_mod, only: verify_orbitals
+      use vmc_mod, only: mterms,norb_tot
+      use write_orb_loc_mod, only: write_orb_loc
+      use zmatrix, only: izmatrix
+#if defined(TREXIO_FOUND)
       use trexio_read_data, only: read_trexio_basis_file
       use trexio_read_data, only: read_trexio_determinant_file
       use trexio_read_data, only: read_trexio_ecp_file
@@ -170,9 +175,8 @@ subroutine parser
       use vmc_mod, only: nbjx,stobjx,bjxtoj,bjxtoo,nstoj_tot,nstoo_tot
       use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
-#if defined(TREXIO_FOUND)
-  use contrl_file, only: backend
-  use trexio            ! trexio library for reading and writing hdf5 files
+      use contrl_file, only: backend
+      use trexio            ! trexio library for reading and writing hdf5 files
 #endif
 #if defined(QMCKL_FOUND)
       use qmckl_data
@@ -679,10 +683,12 @@ subroutine parser
     ! nquad :: number of quadrature points
     write(ounit,*)
     write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
+#ifdef TREXIO_FOUND
   elseif ( fdf_load_defined('trexio') ) then
     call read_trexio_ecp_file(file_trexio)
     write(ounit,*)
     write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
+#endif
   elseif (nloc .eq. 0) then
     write(ounit,'(a)') "Warning:: Is this an all electron calculation?"
   else
@@ -1016,9 +1022,11 @@ subroutine parser
   elseif ( fdf_block('determinants', bfdf)) then
     if (ioptci .ne. 0) mxciterm = ndet
   ! call fdf_read_determinants_block(bfdf)
+#ifdef TREXIO_FOUND
   elseif ( fdf_load_defined('trexio') ) then
     call read_trexio_determinant_file(file_trexio)
     if (ioptci .ne. 0) mxciterm = ndet
+#endif 
   elseif(nwftype.gt.1) then
       if(ideterminants.ne.nwftype) then
         write(ounit,*) "Warning INPUT: block determinants missing for one wave function"
@@ -1307,6 +1315,7 @@ subroutine parser
       endif
     ! elseif (fdf_block('basis', bfdf)) then
     !   call fdf_read_basis_block(bfdf)
+#ifdef TREXIO_FOUND
     elseif ( fdf_load_defined('trexio') ) then
       call read_trexio_basis_file(file_trexio)
       ! See if this is really allocated at this point
@@ -1318,6 +1327,7 @@ subroutine parser
          ibas0(ic)=ibas1(ic-1)+1
          ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
        enddo
+#endif
     else
       write(errunit,'(a)') "Error:: No information about basis provided in the block."
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
