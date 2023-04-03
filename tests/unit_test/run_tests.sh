@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-../../bin/vmc_Tests
+valgrind ../../bin/vmc_Tests
