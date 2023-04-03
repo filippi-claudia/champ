@@ -168,7 +168,7 @@ c All quantities saved (old) avaliable
 
             detratio=detiab(kref,1,stoo(istate))*detiab(kref,2,stoo(istate))/psid(istate)
 
-            call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmi(1,iab,stoo(istate)),
+            call multideterminante_grad(iel,dorb_tmp(1,1,stoo(istate)),norb,detratio,slmi(1,iab,stoo(istate)),
      &         aa(1,1,iab,stoo(istate)),ymat(1,1,iab,istate),vd_s(:,stoo(istate)))
 
             do kk=1,3 !STU added vj to velocity term, divide by something? or add these terms later?, now doesn't match old
@@ -271,9 +271,9 @@ c iel has same spin as electron moved
          
           do istate=1,nstates !STU added, use mapping because ymatn has istate label
             if(iab.eq.1) then
-              detratio=detn(kref,stoo(istate))*detiab(kref,2,stoo(istate))/psid(1)
+              detratio=detn(kref,stoo(istate))*detiab(kref,2,stoo(istate))/psid(istate)
             else
-              detratio=detiab(kref,1,stoo(istate))*detn(kref,stoo(istate))/psid(1)
+              detratio=detiab(kref,1,stoo(istate))*detn(kref,stoo(istate))/psid(istate)
             endif
 
             call determinante_ref_grad(iel,slmin(1,stoo(istate)),dorb_tmp(1,1,stoo(istate)),norb,vref(1,stoo(istate)))
@@ -286,9 +286,9 @@ c iel has different spin than the electron moved
          else
            do istate=1,nstates !STU added check, 
              if(iab.eq.1) then
-               detratio=detiab(kref,1,stoo(istate))*detn(kref,stoo(istate))/psid(1)
+               detratio=detiab(kref,1,stoo(istate))*detn(kref,stoo(istate))/psid(istate)
              else
-               detratio=detn(kref,stoo(istate))*detiab(kref,2,stoo(istate))/psid(1)
+               detratio=detn(kref,stoo(istate))*detiab(kref,2,stoo(istate))/psid(istate)
              endif
 
              call determinante_ref_grad(iel,slmi(1,iab,stoo(istate)),dorb_tmp(1,1,stoo(istate)),norb,vref(1,stoo(istate)))
