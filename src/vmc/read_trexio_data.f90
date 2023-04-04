@@ -1027,12 +1027,10 @@ module trexio_read_data
 
         ! Check if the file exists
         if (wid) then
-#if defined(TREXIO_FOUND)
             trex_symmetry_file = trexio_open(file_trexio_path, 'r', backend, rc)
             rc = trexio_read_mo_num(trex_symmetry_file, mo_num)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num failed', __FILE__, __LINE__)
             if (trexio_has_mo_symmetry(trex_symmetry_file) == 0) trexio_has_group_symmetry = .true.
-#endif
         endif
         call bcast(mo_num)
         call bcast(trexio_has_group_symmetry)
@@ -1062,7 +1060,7 @@ module trexio_read_data
         write(ounit,fmt=int_format) " Number of irreducible representations       ::  ", num_irrep
         write(ounit,*)
         write(ounit,'(a)')          " Irreducible representations correspondence  ::  "
-        write(ounit,'(1x,10(a2,a,i2,a,x))') (unique_irrep(i), "=", i ,";", i=1, num_irrep)
+        write(ounit,'(1x,10(a2,a,i2,a,1x))') (unique_irrep(i), "=", i ,";", i=1, num_irrep)
         write(ounit,*)
 
         ! get the correspondence for each atom according to the rule defined for atomtypes

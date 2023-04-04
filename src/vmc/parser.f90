@@ -683,7 +683,7 @@ subroutine parser
     ! nquad :: number of quadrature points
     write(ounit,*)
     write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
-#ifdef TREXIO_FOUND
+#if defined(TREXIO_FOUND)
   elseif ( fdf_load_defined('trexio') ) then
     call read_trexio_ecp_file(file_trexio)
     write(ounit,*)
@@ -1022,7 +1022,7 @@ subroutine parser
   elseif ( fdf_block('determinants', bfdf)) then
     if (ioptci .ne. 0) mxciterm = ndet
   ! call fdf_read_determinants_block(bfdf)
-#ifdef TREXIO_FOUND
+#if defined(TREXIO_FOUND)
   elseif ( fdf_load_defined('trexio') ) then
     call read_trexio_determinant_file(file_trexio)
     if (ioptci .ne. 0) mxciterm = ndet
@@ -1315,7 +1315,7 @@ subroutine parser
       endif
     ! elseif (fdf_block('basis', bfdf)) then
     !   call fdf_read_basis_block(bfdf)
-#ifdef TREXIO_FOUND
+#if defined(TREXIO_FOUND)
     elseif ( fdf_load_defined('trexio') ) then
       call read_trexio_basis_file(file_trexio)
       ! See if this is really allocated at this point
