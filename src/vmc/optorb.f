@@ -24,7 +24,7 @@
       implicit none
 
       integer :: i, iab, io, irep, ish, istate
-      integer :: iterm, jo, nel
+      integer :: iterm, jo, nel, o, x
       real(dp) :: denergy, detratio, dorb_energy, dorb_energy_ref, dorb_psi
       real(dp) :: dorb_psi_ref, psid
       real(dp), dimension(norb_tot, nelec, 2) :: zmat
@@ -42,13 +42,15 @@ c     ns_current=ns_current+1
 c     if(ns_current.ne.iorbsample) return
 c ns_current reset in optorb_sum
       !STU add state to orb mapping here.
-      detratio=detiab(kref,1,stoo(istate))*detiab(kref,2,stoo(istate))/psid
+      o=stoo(istate)
+      x=stobjx(istate)
+      detratio=detiab(kref,1,o)*detiab(kref,2,o)/psid
       do iterm=1,norbterm
 
         io=ideriv(1,iterm)
         jo=ideriv(2,iterm)
 
-        dorb_psi_ref=0
+        dorb_psi_ref=0.0d0
         dorb_energy_ref=0.d0
 
         dorb_psi=0.d0
@@ -65,19 +67,20 @@ c ns_current reset in optorb_sum
 
           if(io.ge.ivirt(iab)) then
             do i=1,nel
-              dorb_psi=dorb_psi+zmat(io,i,iab)*orb(i+ish,jo,stoo(istate))
-              dorb_energy=dorb_energy+dzmat(io,i,iab)*orb(i+ish,jo,stoo(istate))+zmat(io,i,iab)*b(jo,i+ish,stobjx(istate))
+              dorb_psi=dorb_psi+zmat(io,i,iab)*orb(i+ish,jo,o)
+              dorb_energy=dorb_energy+dzmat(io,i,iab)*orb(i+ish,jo,o)+zmat(io,i,iab)*b(jo,i+ish,x)
             enddo
           endif
           if(ideriv_ref(iterm,iab).gt.0) then
             irep=irepcol_ref(iterm,iab)
 
-            dorb_psi_ref=dorb_psi_ref+aa(irep,jo,iab,stoo(istate))
-            dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,iab,stoo(istate))
+            dorb_psi_ref=dorb_psi_ref+aa(irep,jo,iab,o)
+            !STU tildem had an stoo(istate), istead of stobjx(istate)
+            dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,iab,x)
 
             do i=1,nel
-              dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo,stoo(istate))
-              dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo,stoo(istate))-aaz(irep,i,iab)*b(jo,i+ish,stobjx(istate))
+              dorb_psi=dorb_psi-aaz(irep,i,iab)*orb(i+ish,jo,o)
+              dorb_energy=dorb_energy-emz(irep,i,iab)*orb(i+ish,jo,o)-aaz(irep,i,iab)*b(jo,i+ish,x)
             enddo
           endif
 
