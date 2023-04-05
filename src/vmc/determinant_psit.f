@@ -15,6 +15,7 @@
       !STU use state orb mapping here
       determ=0.0d0
       iwf_save=iwf
+      !STU doing incase iwf >1 from somwhere else
       if(nwftypeorb.gt.1) iwf=1
       do k=1,ndet
         determ=determ+detiab(k,1,stoo(istate))*detiab(k,2,stoo(istate))*cdet(k,istate,iwf)

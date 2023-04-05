@@ -281,6 +281,7 @@ c compute derivative of kinetic contribution of B+Btilde wrt jastrow parameters
       endif
 
 c compute derivative of kinetic contribution of B+Btilde wrt nuclear coordinates
+c !STU I left this for now.
       if(iforce_analy.eq.1) then
         do ic=1,ncent
           do iorb=1,norb

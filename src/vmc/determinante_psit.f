@@ -17,8 +17,9 @@ c-----------------------------------------------------------------------
 
       !STU add istate to orbital mapping here, detn, detiab
       iwf_save=iwf
+      !STU this is to make sure iwf was not left >1 at some point
       if(nwftypeorb.gt.1) iwf=1
-      determ=0
+      determ=0.d0
       if(iel.le.nup) then
        do k=1,ndet
           determ=determ+detn(k,stoo(istate))*detiab(k,2,stoo(istate))*cdet(k,istate,iwf)

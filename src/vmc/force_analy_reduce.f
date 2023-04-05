@@ -16,7 +16,7 @@
       real(dp), dimension(3*ncent_tot) :: collect
 
 
-
+c     !STU I did not add multistate indices
       if(iforce_analy.eq.0) return
 
       call mpi_reduce(da_energy_cum,collect,3*ncent

@@ -44,7 +44,7 @@ c periodic systems.
 
 
 
-      psi=0
+      psi=0.0d0
 
       u=rij
       s=ri+rj

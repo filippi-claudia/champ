@@ -25,23 +25,27 @@
 
       implicit none
 
-      integer :: i, j, k
+      integer :: i, j, k, js
       real(dp) :: enew, eold, p, q
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
-      !STU in principle shouldn't the denergy (which have a nparmj index), (found in de_o_ci) use a stoj(k), and not just a '1' as shown. Then these will all be nbjx (mixed) sized quantities.
-      do k=1,nstates !STU add jastrow/orb mapping here 
+      !STU denergy is an istate quantity look at optjas.f, why fixed to 1 in Ramon's?
+      !STU ci_o/ci_o_old/ci_de/ci_de_old are istate quantities
+      !STU denergy is an istsate quantity because it includes cdet
+      !STU so all 4 below are istate quantities
+      do k=1,nstates !STU add jastrow/orb mapping here
+        js=stoj(k) 
         do j=1,nciterm !STU ci variables need an index added eventually
           do i=1,nparmj !STU i think you should use your stobjx mapping IF ci_o is indeed a istate object (because psidi(istate)) then all of  these are istate objects!!!
-            dj_o_ci(i,j,k)=dj_o_ci(i,j,k)+p*gvalue(i,stoj(k))*ci_o(j,k)
-     &              +q*gvalue_old(i,stoj(k))*ci_o_old(j,k)
-            dj_oe_ci(i,j,k)=dj_oe_ci(i,j,k)+p*gvalue(i,stoj(k))*ci_o(j,k)*enew
-     &              +q*gvalue_old(i,stoj(k))*ci_o_old(j,k)*eold
+            dj_o_ci(i,j,k)=dj_o_ci(i,j,k)+p*gvalue(i,js)*ci_o(j,k)
+     &              +q*gvalue_old(i,js)*ci_o_old(j,k)
+            dj_oe_ci(i,j,k)=dj_oe_ci(i,j,k)+p*gvalue(i,js)*ci_o(j,k)*enew
+     &              +q*gvalue_old(i,js)*ci_o_old(j,k)*eold
             de_o_ci(i,j,k)=de_o_ci(i,j,k)+p*denergy(i,k)*ci_o(j,k)
      &              +q*denergy_old(i,k)*ci_o_old(j,k)
-            dj_de_ci(i,j,k)=dj_de_ci(i,j,k)+p*gvalue(i,stoj(k))*ci_de(j,k)
-     &              +q*gvalue_old(i,stoj(k))*ci_de_old(j,k)
+            dj_de_ci(i,j,k)=dj_de_ci(i,j,k)+p*gvalue(i,js)*ci_de(j,k)
+     &              +q*gvalue_old(i,js)*ci_de_old(j,k)
 
 c            dj_o_ci(i,j,stobjx(k))=dj_o_ci(i,j,stobjx(k))+p*gvalue(i,stoj(k))*ci_o(j,stoo(k))
 c     &              +q*gvalue_old(i,stoj(k))*ci_o_old(j,stoo(k))
@@ -84,10 +88,10 @@ c-----------------------------------------------------------------------
       do k=1,nstates
         do i=1,nparmj
           do j=1,nciterm
-            dj_o_ci(i,j,k)=0
-            dj_oe_ci(i,j,k)=0
-            de_o_ci(i,j,k)=0 !STU change to stobjx if we use jastrow dependent denergy, was stoo
-            dj_de_ci(i,j,k)=0
+            dj_o_ci(i,j,k)=0.0d0
+            dj_oe_ci(i,j,k)=0.0d0
+            de_o_ci(i,j,k)=0.0d0
+            dj_de_ci(i,j,k)=0.0d0
           enddo
         enddo
       enddo
@@ -109,7 +113,7 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
-      k=1 !STU need to set up for nwftypemax, nbjx.
+      k=1 !STU set for 1 state
 
       write(iu) ((dj_o_ci(i,j,k),dj_oe_ci(i,j,k),dj_de_ci(i,j,k),de_o_ci(i,j,k),i=1,nparmj),j=1,nciterm)
 
@@ -129,7 +133,7 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0) return
 
-      k=1 !STU need to set up for nwftypemax, nbjx
+      k=1 !STU set for 1 state 
 
       read(iu) ((dj_o_ci(i,j,k),dj_oe_ci(i,j,k),dj_de_ci(i,j,k),de_o_ci(i,j,k),i=1,nparmj),j=1,nciterm)
 
@@ -165,7 +169,7 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      k=1 !STU need to set up with nbjx, stobjx etc, not needed for sr_n
+      k=1 !STU set up for 1 state 
 
       if(method.eq.'hessian') then
 

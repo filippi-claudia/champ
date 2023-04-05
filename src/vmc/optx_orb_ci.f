@@ -55,10 +55,10 @@ c-----------------------------------------------------------------------
 
       do j=1,nreduced
         do i=1,nciterm
-          ci_o_o(i,j)=0
-          ci_o_oe(i,j)=0
-          ci_o_ho(i,j)=0
-          ci_de_o(i,j)=0
+          ci_o_o(i,j)=0.0d0
+          ci_o_oe(i,j)=0.0d0
+          ci_o_ho(i,j)=0.0d0
+          ci_de_o(i,j)=0.0d0
         enddo
       enddo
 

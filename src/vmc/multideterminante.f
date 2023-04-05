@@ -49,6 +49,7 @@
 
 c temporarely copy orbn to orb
         do iorb=1,norb
+c         !STU orbsav doesn't need o index
           orb_sav(iorb)=orb(iel,iorb,o)
           orb(iel,iorb,o)=orbn(iorb,o)
         enddo
@@ -58,6 +59,7 @@ c temporarely copy orbn to orb
 
             dum1=0.d0
             do i=1,nel
+             !STU dum1 doesn't need o index
              dum1=dum1+slmin(irep+(i-1)*nel,o)*orb(i+ish,jrep,o)
             enddo
             aan(irep,jrep,o)=dum1
@@ -248,7 +250,7 @@ c-----------------------------------------------------------------------
       do kk=1,3
 
         do jrep=ivirt(iab),norb
-          dum=0
+          dum=0.0d0
           do j=1,nel
              dum=dum+b(iworbd(j+ish,kref),kk)*aa(j,jrep)
           enddo

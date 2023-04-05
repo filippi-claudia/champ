@@ -45,8 +45,8 @@ c----------------------------------------------------------------------
 
 
       do j=1,nstates_psig
-        effcum(j)=0
-        effcm2(j)=0
+        effcum(j)=0.0d0
+        effcm2(j)=0.0d0
       enddo
 
       end

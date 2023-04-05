@@ -259,7 +259,7 @@ c-------------------------------------------------------------------------------
       real(dp), dimension(3*nelec,nbasis) :: tphin
       real(dp), dimension(3*3*nelec,nbasis) :: t2phin_all
       real(dp), dimension(3*nelec,nbasis) :: t3phin
-
+c     !STU da_orb have not been given an exrta index
       do ibasis=1,nbasis
        i=0
        j=0
@@ -334,10 +334,10 @@ c spline interplolation
          if(i3dsplorb.ge.1) then
             do k=1,nwftypeorb
               do iorb=1,norb
-                 ddorbn(iorb,k)=0   ! Don't compute the laplacian
-                 dorbn(iorb,1,k)=1  ! compute the gradients
-                 dorbn(iorb,2,k)=1  ! compute the gradients
-                 dorbn(iorb,3,k)=1  ! compute the gradients
+                 ddorbn(iorb,k)=0.0d0   ! Don't compute the laplacian
+                 dorbn(iorb,1,k)=1.0d0  ! compute the gradients
+                 dorbn(iorb,2,k)=1.0d0  ! compute the gradients
+                 dorbn(iorb,3,k)=1.0d0  ! compute the gradients
                  call spline_mo(x(1,iel),iorb,orbn(iorb,k),dorbn(iorb,:,k),ddorbn(iorb,k),ier)
               enddo
             enddo

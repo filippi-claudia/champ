@@ -41,7 +41,7 @@
 
       ikel=nel*(iel-ish-1)
       do k=1,nwftypeorb !STU check mapping, use nwftypemax? slmi/n, orbn, detiab
-        ratio_kref=0
+        ratio_kref=0.0d0
         do j=1,nel
           ratio_kref=ratio_kref+slmi(j+ikel,iab,k)*orbn(iworbd(j+ish,kref),k)
         enddo
@@ -336,9 +336,9 @@ c-----------------------------------------------------------------------
 
 
       
-      ddx_ref(1)=0
-      ddx_ref(2)=0
-      ddx_ref(3)=0
+      ddx_ref(1)=0.0d0
+      ddx_ref(2)=0.0d0
+      ddx_ref(3)=0.0d0
 
       if(iel.le.nup) then
         ish=0

@@ -305,7 +305,7 @@ c endif omega.eq.1.or.2
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine atimes_n_ortho(n,z,r) ! REMOVE ONCE ATIMES_N WORKS
-
+c     !STU can remove subroutine
       use mpi
       use sr_mod, only: mconf,mparm !STU checl MOBS
       use csfs, only: nstates

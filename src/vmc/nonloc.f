@@ -194,6 +194,7 @@ c endif iskip
       if(nxquad.eq.0) return
 
       do iwforb=1,nwftypeorb !STU mapping etc
+c       !STU I left da_orbn w/o state index because not relevant.
         call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,iwforb),
      &                   dorbn(1,1,1,iwforb),da_orbn,iwforb)
         call nonlocd_quad(nxquad,iequad,orbn(1,1,iwforb),det_ratio(1,iwforb),iwforb)
@@ -260,10 +261,12 @@ c dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
         endif
 
 c transition probabilities for Casula's moves in DMC
-        do istate=1,nstates !STU check eventually what loop to do here
+        do istate=1,nstates !STU check eventually what loop to do here,
+c       !STU swap order of this loop and if statement        
           if(index(mode,'dmc').ne.0) then
             t_vpsp(ic,iqq,iel)=det_ratio(iq,1)*term_radial_jas(iq,1)
             do iorb=1,norb
+c             !STU I left b_t without an index              
               b_t(iorb,iqq,ic,iel)=orbn(iorb,iq,istate)*term_radial_jas(iq,1)
             enddo
           endif
@@ -274,7 +277,8 @@ c transition probabilities for Casula's moves in DMC
 
       if(iforce_analy.gt.0) call compute_da_bnl(nxquad,iequad,icquad,iqquad,r_en,rvec_en,costh,term_radial_jas(1,1)
      &,orbn(1,1,1),dorbn(1,1,1,1),da_orbn,psij_ratio(1,1),vjn,da_psij_ratio)
-      !STU just used jsa and orb type=1 in psij_ratio and dorbn, term_radial probably need to add for da_psij_ratio
+      !STU just used jsa and orb type=1 in psij_ratio and dorbn,
+      !term_radial probably need to add for da_psij_ratioi, da_orbn
 
       if(ipr.ge.4) write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
      & (vpsp_det(iab,1),detiab(1,iab,1),iab=1,2),r_en(1,1)

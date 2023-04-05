@@ -106,7 +106,7 @@ c         do jrep=ivirt(iab),norb+nadorb
               dum3=0.d0
               dum4=0.d0 
               dum5=0.d0
-              do i=1,nel  !STU check these and b, and tildem
+              do i=1,nel  !STU check these and b, and tildem, dum don't need state indices
                 dum1=dum1+slmi(irep+(i-1)*nel,iab,o)*orb(i+iel,jrep,o)
                 dum2=dum2+slmi(irep+(i-1)*nel,iab,o)*b(jrep,i+iel,x)
                 dum3=dum3+xmat(i+(irep-1)*nel,iab,x)*orb(i+iel,jrep,o)
@@ -149,7 +149,7 @@ c       endif
         call allocate_denergy_det_m() !STU check this, added nwftypeorb
         denergy_det(kref,1,x)=0 !STU is an index really needed here?
         denergy_det(kref,2,x)=0
-        ddenergy_det=0
+        ddenergy_det=0.0d0
       
         if(ndet.eq.1) return
         do iab=1,2
@@ -273,7 +273,7 @@ c               enddo
 ! unrolling determinants different to kref
           detiab(:,iab,o)=detiab(kref,iab,o)
           eloc_det(:,iab,x)=eloc_det(kref,iab,x)
-          denergy_det(:,iab,o)=0.d0
+          !denergy_det(:,iab,x)=0.d0 !STU done above
           do kk=1,ndetiab2(iab)
             k=k_det2(kk,iab)
             kw=k_aux(kk,iab)
@@ -354,8 +354,8 @@ c-----------------------------------------------------------------------
      
       !STU check mapping orbital/jastrow, denergy_det, wfmat is passed in with istate index, we are using local wfmat
       !STU looks right
-      cdet_equiv=0
-      dcdet_equiv=0
+      cdet_equiv=0.0d0
+      dcdet_equiv=0.0d0
       iwf_save=iwf
       if(nwftypeorb.gt.1) iwf=1
 ! Unroling determinants different to kref
@@ -488,7 +488,7 @@ c-----------------------------------------------------------------------
 
       !STU check mapping orbitals/jastrows, wfmat, tildem
 
-      dymat=0
+      dymat=0.0d0
       o=stoo(istate)
       x=stobjx(istate)
 ! loop over single exitations      

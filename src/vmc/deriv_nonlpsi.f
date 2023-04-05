@@ -134,7 +134,7 @@ c-----------------------------------------------------------------------
       real(dp), dimension(*) :: gn
       real(dp), parameter :: one = 1.d0
 
-      deriv_psianl = 0.0
+      deriv_psianl = 0.0d0
 
 
 
@@ -145,7 +145,7 @@ c Note: This routine is only called with iwf=1, but parts of it are
 c written for general iwf, whereas others (asymp_r) assume iwf=1.
 
       if(rri.eq.asymp_r) then
-        deriv_psianl=0
+        deriv_psianl=0.0d0
         return
       endif
 

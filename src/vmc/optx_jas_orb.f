@@ -90,10 +90,10 @@ c-----------------------------------------------------------------------
 
       do i=1,nparmj
         do j=1,nreduced
-          dj_o(i,j,istate)=0
-          dj_oe(i,j,istate)=0
-          dj_ho(i,j,istate)=0
-          de_o(i,j,istate)=0
+          dj_o(i,j,istate)=0.0d0
+          dj_oe(i,j,istate)=0.0d0
+          dj_ho(i,j,istate)=0.0d0
+          de_o(i,j,istate)=0.0d0
         enddo
       enddo
 
@@ -189,9 +189,9 @@ c-----------------------------------------------------------------------
 
       do i=1,nparmj
         do j=1,nreduced
-          s_mix_jas_orb(i,j)=0
-          h_mix_jas_orb(i,j)=0
-          h_mix_jas_orb(i+nparmj,j)=0
+          s_mix_jas_orb(i,j)=0.0d0
+          h_mix_jas_orb(i,j)=0.0d0
+          h_mix_jas_orb(i+nparmj,j)=0.0d0
         enddo
       enddo
 

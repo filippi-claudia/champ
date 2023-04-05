@@ -70,8 +70,8 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
           enddo
         else
           do icsf=1,ncsf
-            ci_o_csf=0
-            ci_e_csf=0
+            ci_o_csf=0.0d0
+            ci_e_csf=0.0d0
             do ix=iadet(icsf),ibdet(icsf)
               idet=icxdet(ix)
               ci_o_csf=ci_o_csf+ciprim(idet,istate)*cxdet(ix)

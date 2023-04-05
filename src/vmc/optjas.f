@@ -27,7 +27,7 @@
       implicit none
 
       integer :: i, iab, iel, index_det, iorb, j
-      integer :: iparm, irep, ish, istate
+      integer :: iparm, irep, ish, istate, ibjx, xj, x
       integer :: jorb, jrep, k, ndim, kun, kw, kk
       integer :: nel
       real(dp) :: deloc_dj_k, dum2, dum3
@@ -45,27 +45,32 @@
       
       do iparm=1,nparmj
         
-        do j=1,nbjx
-          deloc_dj_kref(j)=dvpsp_dj(iparm,j)
+        do ibjx=1,nbjx !STU there are nbjx relevant jastrow/orbital mixed quantities
+          xj=bjxtoj(ibjx) !STU gets appropriate jastrow index for each ibjx combo
+          deloc_dj_kref(ibjx)=dvpsp_dj(iparm,ibjx)
           do i=1,nelec
-            deloc_dj_kref(j)=deloc_dj_kref(j)
-     &      -2.d0*hb*(g(1,i,iparm,bjxtoj(j))*ddx(1,i,bjxtoj(j))
-     &      +g(2,i,iparm,bjxtoj(j))*ddx(2,i,bjxtoj(j))
-     &      +g(3,i,iparm,bjxtoj(j))*ddx(3,i,bjxtoj(j)))
+            deloc_dj_kref(ibjx)=deloc_dj_kref(ibjx)
+     &      -2.d0*hb*(g(1,i,iparm,xj)*ddx(1,i,xj)
+     &      +g(2,i,iparm,xj)*ddx(2,i,xj)
+     &      +g(3,i,iparm,xj)*ddx(3,i,xj))
           enddo
         enddo
 
         if(ndet.eq.1) then
 c         !STU done add jastrow state mapping here
           do istate=1,nstates
-            denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref(stobjx(istate))
-     &              *detiab(kref,1,stoo(istate))*detiab(kref,2,stoo(istate))
+            x=stobjx(istate) !STU getting the appropriate ibjx index which applies to each state
+            o=stoo(istate) !STU getting the appropriate orbital index for each state
+            denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref(x)
+     &              *detiab(kref,1,o)*detiab(kref,2,o)
           enddo
 
         else
-          do j=1,nstates !STU check b_dj, and j, need mapping?
+          do istate=1,nstates !STU check b_dj, and j, need mapping?
+            x=stobjx(istate) !STU see def above
+            o=stoo(istate)
 
-            call bxmatrix(kref,xmat(1,1,stobjx(j)),xmat(1,2,stobjx(j)),b_dj(1,1,iparm,stobjx(j)),stobjx(j))
+            call bxmatrix(kref,xmat(1,1,x),xmat(1,2,x),b_dj(1,1,iparm,x),x)
 
             do iab=1,2
               if(iab.eq.1) then
@@ -81,8 +86,8 @@ c         !STU done add jastrow state mapping here
                   dum2=0.d0
                   dum3=0.d0
                   do i=1,nel
-                    dum2=dum2+slmi(irep+(i-1)*nel,iab,stoo(j))*b_dj(jrep,i+ish,iparm,stobjx(j))
-                    dum3=dum3+xmat(i+(irep-1)*nel,iab,stobjx(j))*orb(i+ish,jrep,stoo(j))
+                    dum2=dum2+slmi(irep+(i-1)*nel,iab,o)*b_dj(jrep,i+ish,iparm,x)
+                    dum3=dum3+xmat(i+(irep-1)*nel,iab,x)*orb(i+ish,jrep,o)
                   enddo
                   dtildem(irep,jrep,iab)=dum2-dum3
 
@@ -100,7 +105,7 @@ c             ddenergy_det(:,iab)=0
 
                 iorb=irepcol_det(1,k,iab)
                 jorb=ireporb_det(1,k,iab)
-                ddenergy_det(k,iab)=wfmat(k,1,iab,stoo(j))*dtildem(iorb,jorb,iab)
+                ddenergy_det(k,iab)=wfmat(k,1,iab,o)*dtildem(iorb,jorb,iab)
              
               enddo          
 
@@ -113,7 +118,7 @@ c             do k=1,ndetiab(iab)
                    iorb=irepcol_det(irep,k,iab)
                    do jrep=1,ndim
                       jorb=ireporb_det(jrep,k,iab)
-                      ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab,stoo(j))*dtildem(iorb,jorb,iab)
+                      ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab,o)*dtildem(iorb,jorb,iab)
                    enddo
                 enddo
               enddo          
@@ -123,7 +128,7 @@ c     Unrolling determinants different to kref
               do kk=1,ndetiab2(iab)
                 k=k_det2(kk,iab)
                 kw=k_aux(kk,iab)
-                denergy_det(k,iab,stobjx(j))=ddenergy_det(kw,iab)
+                denergy_det(k,iab,x)=ddenergy_det(kw,iab)
               enddo
 c             k_det2(1:ndetiab2(iab),iab)
 c             k_aux(1:ndetiab2(iab),iab)
@@ -145,11 +150,13 @@ c enddo for nstates, can we combine these into the same loop?
 c         !STU add jastrow state mapping here: denergy_det,deloc_dj_kref
 c         !STU add orb state mapping: detiab
           do istate=1,nstates
+            x=stobjx(istate)
+            o=stoo(istate)
             cum_deloc_k_state=0.0d0
             do k=1,ndet
               cum_deloc_k_state=cum_deloc_k_state+cdet(k,istate,1)
-     &        *(denergy_det(k,1,stobjx(istate))+denergy_det(k,2,stobjx(istate))
-     &        +deloc_dj_kref(stobjx(istate)))*detiab(k,1,stoo(istate))*detiab(k,2,stoo(istate))
+     &        *(denergy_det(k,1,x)+denergy_det(k,2,x)
+     &        +deloc_dj_kref(x))*detiab(k,1,o)*detiab(k,2,o)
             enddo
             denergy(iparm,istate)=cum_deloc_k_state
           enddo
@@ -165,9 +172,9 @@ c d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
           enddo
           term_jas(j)=-hb*term_jas(j)
         enddo
-c        !STU add jas state mapping (termjas)
         do istate=1,nstates
-          denergy(iparm,istate)=term_jas(stoj(istate))+denergy(iparm,istate)/psid(istate)
+          j=stoj(istate)
+          denergy(iparm,istate)=term_jas(j)+denergy(iparm,istate)/psid(istate)
         enddo
       enddo
 c     iparm loop
@@ -412,13 +419,13 @@ c     !STU also check if mapping is needed here
 
         if(nbj_current.eq.ngrad_jas_blocks)then
           eb=e_bsum(istate)/dble(ngrad_jas_blocks)
-          e_bsum(istate)=0
+          e_bsum(istate)=0.0d0
           do i=1,nparmj
             gnow=2*(dj_e_bsum(i,istate)-dj_bsum(i,istate)*eb)/dble(ngrad_jas_blocks)
             grad_jas_bcum(i,istate)=grad_jas_bcum(i,istate)+gnow
             grad_jas_bcm2(i,istate)=grad_jas_bcm2(i,istate)+gnow**2
-            dj_e_bsum(i,istate)=0
-            dj_bsum(i,istate)=0
+            dj_e_bsum(i,istate)=0.0d0
+            dj_bsum(i,istate)=0.0d0
           enddo
         endif
 
@@ -449,14 +456,16 @@ c Written by Claudia Filippi
       
       implicit none
 
-      integer :: i, isb, istate, it
+      integer :: i, j, isb, istate, it
 
       if(ioptjas.eq.0) return
         
       do istate=1,nstates
+        
 c     !STU check if mapping is needed here for jas, yes I think
         do i=1,nparmj
-          gvalue_old(i,stoj(istate))=gvalue(i,stoj(istate))
+          j=stoj(istate)
+          gvalue_old(i,j)=gvalue(i,j)
           denergy_old(i,istate)=denergy(i,istate)
         enddo
 
