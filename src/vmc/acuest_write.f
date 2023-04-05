@@ -112,8 +112,9 @@ c different meaning of last argument: 0 acuest, 1 finwrt
             endif
 
           else
-            fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))
-            ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)
+           fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))
+     &    !/abs(deltot(ifr)) this is in ramons !STU
+            ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)!/abs(deltot(ifr)) this is in ramon's
             iferr=nint(1.0d9*ferr)
             write(ounit,'(f10.5,f10.5,''('',i5,'')'',51x,f14.9,''('',i9,'')'')
      &      ') enow(istate,ifr),eave,ieerr,fave,iferr

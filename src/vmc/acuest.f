@@ -259,7 +259,9 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,ekino,eold(1,ifr),0,ifr)
         do istate=1,nstates
-          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(1))+dlog(ajacob)
+         !STU, nforce>1 only for geo? Assuming inly ever 1 jastrow type?
+         !adding stoj anyway
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))+dlog(ajacob)
         enddo
       enddo
 
@@ -283,8 +285,8 @@ c        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo(1))
       endif
 
       if(node_cutoff.gt.0) then
-        do jel=1,nelec !STU check if putting psijo is right here
-          call compute_determinante_grad(jel,psido(1),psido,psijo,vold(1,jel),1)
+        do jel=1,nelec !STU check if putting psijo is right here, im removing (1) from the first psido
+          call compute_determinante_grad(jel,psido,psido,psijo,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node

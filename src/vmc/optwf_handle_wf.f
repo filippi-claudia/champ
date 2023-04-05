@@ -588,6 +588,7 @@ c-----------------------------------------------------------------------
 
       scalek(iadiag)=scalek(1)
 
+c     !STU copying with first case below doesnt make sense
       if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
         do k=1,nwftypejas
           do ict=1,nctype
@@ -642,7 +643,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, iadiag, j, k
-
+c     !STU copying with first case below doesnt make sense
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         do k=1,nwftypeorb
           do i=1,norb+nadorb
@@ -725,6 +726,7 @@ c-----------------------------------------------------------------------
       ! dimension c_best(83,nctype_tot,MWF)
       ! save a4_best,b_best,c_best
 
+c     !STU did not change this subroutine.
       save mparmja,mparmjb,mparmjc
 
       if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
@@ -974,7 +976,7 @@ c Set up cusp conditions
 c Add change to old parameters
       if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
         j=stoj(sr_state)
-        !do k=1,nwftypejas
+c        !do k=1,nwftypejas
           iparm=0
           do ict=1,nctype
             do i=1,nparma(ict)
@@ -994,7 +996,7 @@ c Add change to old parameters
               c(iwjasc(i,ict),ict,j)=c(iwjasc(i,ict),ict,j)-dparm(iparm)
             enddo
           enddo
-        !enddo
+c        !enddo
 
       else
 
@@ -1063,7 +1065,7 @@ c-----------------------------------------------------------------------
         !enddo
 
 c Update the orbitals
-        !do k=1,nwftypeorb
+c        !do k=1,nwftypeorb
           do i=1,norbterm
             io=ideriv(1,i)
             jo=ideriv(2,i)
@@ -1071,15 +1073,15 @@ c Update the orbitals
               acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,o)
             enddo
           enddo
-        !enddo
+c        !enddo
 
-        !do k=1,nwftypeorb
+c        !do k=1,nwftypeorb
           do i=1,norb
             do j=1,nbasis
               coef(j,i,o)=acoef(j,i)
             enddo
           enddo
-        !enddo
+c        !enddo
 
       else
 
@@ -1126,6 +1128,7 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0) return
 
+c     STU confirm dparm is indexed properly for all cases.
 c Update the ci coef
       if((method.eq.'linear'.or.method.eq.'lin_d').and.ioptjas+ioptorb.eq.0) then
         do k=1,nstates
@@ -1136,7 +1139,7 @@ c Update the ci coef
             enddo
            else
             do j=1,ndet
-              cdet(j,k,1)=0
+              cdet(j,k,1)=0.0d0
             enddo
             do icsf=1,ncsf
               do j=iadet(icsf),ibdet(icsf)
@@ -1263,7 +1266,7 @@ c-----------------------------------------------------------------------
       if(add_diag.le.0.d0) return
 
 c Calculate rms change in parameters
-      dparm_norm=0
+      dparm_norm=0.0d0
       do i=1,nparm
         dparm_norm=dparm_norm+dparm(i)**2
       enddo
@@ -1353,7 +1356,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
         ! in optwf_store. I will add a factor of nstates to where mparm
         ! is calculated.
 
-
+c     !STU mix_n is here but also below, did I add this?
       elseif(method.eq.'linear'.or.method.eq.'lin_d' .or. method.eq.'mix_n') then
 
        i0=0
