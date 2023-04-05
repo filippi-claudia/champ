@@ -14,7 +14,7 @@ c Written by Claudia Filippi
       use optwf_control, only: ioptci,ioptjas,method
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
-      use vmc_mod, only: nbjx, nwftypeorb
+      use csfs, only: nstates
 
       implicit none
 
@@ -25,7 +25,7 @@ c Written by Claudia Filippi
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do k=1,nbjx
+      do k=1,nstates
         call mpi_reduce(dj_o_ci(1,1,k),collect(1,1),nparmj*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
@@ -62,10 +62,6 @@ c Written by Claudia Filippi
           enddo
         enddo
      
-      enddo
-
-
-      do k=1,nwftypeorb  !STU should be mixed right?
         call mpi_reduce(de_o_ci(1,1,k),collect(1,1),nparmj*nciterm
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
