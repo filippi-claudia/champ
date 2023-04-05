@@ -157,7 +157,12 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
         endif
 
         if(iguiding.eq.0) then
-          psig=psido(1)
+          !psig=psido(1)
+          !STU not our issue now, but how was this not for 1 state
+          !ramon has: psig=psido(1)*exp(psijo(1)) in addition to the
+          !line above, I'm changing for now, later is correct,
+          psidg=psido(1)
+          psig=psido(1)*exp(psijo(1))
         else
           call determinant_psig(psido,psijo,psig)
         endif
@@ -680,7 +685,9 @@ c loop over secondary configurations
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido(1),psijo,ekino,eold(1,ifr),ipass,ifr)
         do istate=1,nstates
-          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(1))+dlog(ajacob)
+          !STU again, I think only 1 jastrow will ever be use here, but
+          !chainging stoj
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))+dlog(ajacob)
         enddo
       enddo
 
@@ -741,6 +748,7 @@ c efield dovuto agli elettroni sui siti dei dipoli
       if(ich_mmpol.eq.1) call mmpol_efield(nelec,xold)
 
 c use 'new' not 'old' value
+      !STU these 4 subs have not been changed for multistate
       call pcm_sum(wtg(1),0.d0)
       call mmpol_sum(wtg(1),0.d0)
       call prop_sum(wtg(1),0.d0)
