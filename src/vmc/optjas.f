@@ -27,7 +27,7 @@
       implicit none
 
       integer :: i, iab, iel, index_det, iorb, j
-      integer :: iparm, irep, ish, istate, ibjx, xj, x
+      integer :: iparm, irep, ish, istate, ibjx, xj, x, o
       integer :: jorb, jrep, k, ndim, kun, kw, kk
       integer :: nel
       real(dp) :: deloc_dj_k, dum2, dum3
