@@ -296,7 +296,7 @@ c iel has different spin than the electron moved
              if(iel.eq.1) call compute_ymat(1,detiab(1,1,stoo(istate)),detn(1,stoo(istate)),
      &                                      wfmat(1,1,1,stoo(istate)),ymat_tmp(1,1,istate),1)
 
-             if(iel.eq.nup+1) call compute_ymat(2,detn,detiab(1,2,stoo(istate)),
+             if(iel.eq.nup+1) call compute_ymat(2,detn(1,stoo(istate)),detiab(1,2,stoo(istate)),
      &                                          wfmat(1,1,2,stoo(istate)),
      &                                          ymat_tmp(1,1,istate),1)
 
