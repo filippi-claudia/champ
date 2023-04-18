@@ -21,12 +21,6 @@
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
 
-
-
-
-
-
-
       call orbitalse(iel,x,rvec_en,r_en,iflag)
 
       if(iel.le.nup) then
@@ -40,7 +34,9 @@
       endif
 
       ikel=nel*(iel-ish-1)
-      do k=1,nwftypeorb !STU check mapping, use nwftypemax? slmi/n, orbn, detiab
+
+      do k=1,nwftypeorb
+
         ratio_kref=0.0d0
         do j=1,nel
           ratio_kref=ratio_kref+slmi(j+ikel,iab,k)*orbn(iworbd(j+ish,kref),k)
@@ -107,7 +103,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, iab, iel, iflag_move, iorb
-      integer :: istate, kk, k
+      integer :: istate, kk, k, isorb, isjas
       real(dp) :: detratio, psi2g, psi2gi, psig
       real(dp), dimension(*) :: psid
       real(dp), dimension(*) :: psij
@@ -136,19 +132,19 @@ c-----------------------------------------------------------------------
 
       psi2g=psig*psig
       psi2gi=1.d0/psi2g
-c      print*,"norb",norb,"norb_tot",norb_tot
       
 c All quantities saved (old) avaliable
       if(iflag_move.eq.1) then
-        do istate=1,nstates !STU added, use mapping
-          k=stoo(istate)
+
+        do istate=1,nstates
+          isorb=stoo(istate)
           do kk=1,3
             do iorb=1,norb
-              dorb_tmp(iorb,kk,k)=dorb(iorb,iel,kk,k)
+              dorb_tmp(iorb,kk,isorb)=dorb(iorb,iel,kk,isorb)
             enddo
           enddo
         
-          call determinante_ref_grad(iel,slmi(1,iab,k),dorb_tmp(1,1,k),norb,vref(1,k))
+          call determinante_ref_grad(iel,slmi(1,iab,isorb),dorb_tmp(1,1,isorb),norb,vref(1,isorb))
         enddo
 
         if(iguiding.eq.0) then
@@ -163,42 +159,34 @@ c All quantities saved (old) avaliable
           do kk=1,3
             vd(kk)=0.d0
           enddo
-          do i=1,nstates !STU was already a loop here, check mapping for detiab, slmi, aa, vref
-            istate=iweight_g(i) ! what is this doing?
+          do i=1,nstates 
 
-            detratio=detiab(kref,1,stoo(istate))*detiab(kref,2,stoo(istate))/psid(istate)
+            istate=iweight_g(i)
+            isorb=stoo(istate)
+            isjas=stoj(istate)
 
-            call multideterminante_grad(iel,dorb_tmp(1,1,stoo(istate)),norb,detratio,slmi(1,iab,stoo(istate)),
-     &         aa(1,1,iab,stoo(istate)),ymat(1,1,iab,istate),vd_s(:,stoo(istate)))
+            detratio=detiab(kref,1,isorb)*detiab(kref,2,isorb)/psid(istate)
 
-            do kk=1,3 !STU added vj to velocity term, divide by something? or add these terms later?, now doesn't match old
-              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(stoj(istate)))
-     &       *(vd_s(kk,stoo(istate))+vref(kk,stoo(istate))+vj(kk,iel,stoj(istate)))/anormo(istate)
-c missing a vj(kk,iel,istate) term, also no istate dim on vd_s and vref,
-c also missing exp(2*psij(istate))
+            call multideterminante_grad(iel,dorb_tmp(1,1,isorb),norb,detratio,slmi(1,iab,isorb),
+     &         aa(1,1,iab,isorb),ymat(1,1,iab,istate),vd_s(1,istate))
+
+            do kk=1,3 
+              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(isjas))
+     &       *(vd_s(kk,istate)+vref(kk,isorb)+vj(kk,iel,isjas))/anormo(istate)
             enddo
           enddo
           vd(1)=vd(1)*psi2gi
           vd(2)=vd(2)*psi2gi
           vd(3)=vd(3)*psi2gi
         endif
-c       write(ounit,*) 'VJ',(vj(kk,iel),kk=1,3)
-c       write(ounit,*) 'V0',(vref(kk),kk=1,3)
-c       write(ounit,*) 'VD',(vd(kk),kk=1,3)
-c!STU these may need to be changed, im removing since theyre added earlier
-c        vd(1)=vj(1,iel,1)+vd(1)
-c       vd(2)=vj(2,iel,1)+vd(2)
-c       vd(3)=vj(3,iel,1)+vd(3)
 
 c Within single-electron move - quantities of electron iel not saved
       elseif(iflag_move.eq.0) then
 
-c        do istate=1,nstates !STU added istate loop check
-c          call determinante_ref_grad(iel,slmin(1,istate),dorbn(1,1,istate),norb_tot,vref(1,istate))
-c        enddo
-        do k=1,nwftypeorb !STU added just do orbital loop
-          call determinante_ref_grad(iel,slmin(1,k),dorbn(1,1,k),norb_tot,vref(1,k))
+        do isorb=1,nwftypeorb
+          call determinante_ref_grad(iel,slmin(1,isorb),dorbn(1,1,isorb),norb_tot,vref(1,isorb))
         enddo
+
         if(iguiding.eq.0) then
 
           if(iab.eq.1) then
@@ -208,8 +196,6 @@ c        enddo
           endif
 
           call multideterminante_grad(iel,dorbn(1,1,1),norb_tot,detratio,slmin(1,1),aan(1,1,1),ymatn(1,1,1),vd)
-
-
           do kk=1,3
             vd(kk)=vd(kk)+vref(kk,1)+vjn(kk,iel,1)
           enddo
@@ -219,98 +205,76 @@ c        enddo
           do kk=1,3
             vd(kk)=0.d0
           enddo
-          do i=1,nstates !STU was already here, check detn, dorbn, slmin, aan ,vd_s, vjn
+
+          do i=1,nstates
             istate=iweight_g(i)
+            isorb=stoo(istate)
+            isjas=stoj(istate)
 
             if(iab.eq.1) then
-              detratio=detn(kref,stoo(istate))*detiab(kref,2,stoo(istate))/psid(istate)
+              detratio=detn(kref,isorb)*detiab(kref,2,isorb)/psid(istate)
              else
-              detratio=detiab(kref,1,stoo(istate))*detn(kref,stoo(istate))/psid(istate)
+              detratio=detiab(kref,1,isorb)*detn(kref,isorb)/psid(istate)
             endif
 
-            call multideterminante_grad(iel,dorbn(1,1,stoo(istate)),norb_tot,
-     &                  detratio,slmin(1,stoo(istate)),aan(1,1,stoo(istate)),
-     &                  ymatn(1,1,istate),vd_s(1,stoo(istate)))
+            call multideterminante_grad(iel,dorbn(1,1,isorb),norb_tot,detratio,slmin(1,isorb),
+     &                  aan(1,1,isorb),ymatn(1,1,istate),vd_s(1,istate))
 
             do kk=1,3
-              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(stoj(istate)))
-     &      *(vd_s(kk,stoo(istate))+vref(kk,stoo(istate))+vjn(kk,iel,stoj(istate)))/anormo(istate)
-c  added the vj(kk,iel,istate) term, also istate dim on vd_s and vref,
-c also exp(2*psij(istate)) term
+              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(isjas))
+     &      *(vd_s(kk,istate)+vref(kk,isorb)+vjn(kk,iel,isjas))/anormo(istate)
             enddo
           enddo
           vd(1)=vd(1)*psi2gi
           vd(2)=vd(2)*psi2gi
           vd(3)=vd(3)*psi2gi
+
         endif
-
-c       write(ounit,*) 'VJ',(vjn(kk,iel),kk=1,3)
-c       write(ounit,*) 'V0',(vref(kk),kk=1,3)
-c       write(ounit,*) 'VD',(vd(kk),kk=1,3)
-
-!STU this may need to be changed, already added these in. but before
-!multiplies by psi2gi
-c        vd(1)=vjn(1,iel)+vd(1)
-c        vd(2)=vjn(2,iel)+vd(2)
-c        vd(3)=vjn(3,iel)+vd(3)
 
       else
 
 c Within single-electron move - iel not equal to electron moved - quantities of electron iel not saved
-        do k=1,nwftypeorb !STU added so no mapping needed
-          do kk=1,3
-            do iorb=1,norb
-              dorb_tmp(iorb,kk,k)=dorb(iorb,iel,kk,k)
-            enddo
+        do kk=1,3
+          do iorb=1,norb
+            dorb_tmp(iorb,kk,1)=dorb(iorb,iel,kk,1)
           enddo
         enddo
 
-
 c iel has same spin as electron moved
         if(iflag_move.eq.2) then
-         
-          do istate=1,nstates !STU added, use mapping because ymatn has istate label
-            if(iab.eq.1) then
-              detratio=detn(kref,stoo(istate))*detiab(kref,2,stoo(istate))/psid(istate)
-            else
-              detratio=detiab(kref,1,stoo(istate))*detn(kref,stoo(istate))/psid(istate)
-            endif
+       
+          if(iab.eq.1) then
+            detratio=detn(kref,1)*detiab(kref,2,1)/psid(1)
+           else
+            detratio=detiab(kref,1,1)*detn(kref,1)/psid(1)
+          endif
 
-            call determinante_ref_grad(iel,slmin(1,stoo(istate)),dorb_tmp(1,1,stoo(istate)),norb,vref(1,stoo(istate)))
+          call determinante_ref_grad(iel,slmin,dorb_tmp,norb,vref)
 
-            call multideterminante_grad(iel,dorb_tmp(1,1,stoo(istate)),norb,detratio,
-     &             slmin(1,stoo(istate)),aan(1,1,stoo(istate)),ymatn(1,1,istate),vd)
-          enddo
+          call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmin,aan,ymatn,vd)
 
 c iel has different spin than the electron moved
          else
-           do istate=1,nstates !STU added check, 
-             if(iab.eq.1) then
-               detratio=detiab(kref,1,stoo(istate))*detn(kref,stoo(istate))/psid(istate)
-             else
-               detratio=detn(kref,stoo(istate))*detiab(kref,2,stoo(istate))/psid(istate)
-             endif
-
-             call determinante_ref_grad(iel,slmi(1,iab,stoo(istate)),dorb_tmp(1,1,stoo(istate)),norb,vref(1,stoo(istate)))
-
-             if(iel.eq.1) call compute_ymat(1,detiab(1,1,stoo(istate)),detn(1,stoo(istate)),
-     &                                      wfmat(1,1,1,stoo(istate)),ymat_tmp(1,1,istate),1)
-
-             if(iel.eq.nup+1) call compute_ymat(2,detn(1,stoo(istate)),detiab(1,2,stoo(istate)),
-     &                                          wfmat(1,1,2,stoo(istate)),
-     &                                          ymat_tmp(1,1,istate),1)
-
-             call multideterminante_grad(iel,dorb_tmp(1,1,stoo(istate)),norb,
-     &               detratio,slmi(1,iab,stoo(istate)),aa(1,1,iab,stoo(istate)),
-     &                                   ymat_tmp(1,1,istate),vd)
-            enddo
+          if(iab.eq.1) then
+            detratio=detiab(kref,1,1)*detn(kref,1)/psid(1)
+           else
+            detratio=detn(kref,1)*detiab(kref,2,1)/psid(1)
           endif
+
+          call determinante_ref_grad(iel,slmi(1,iab,1),dorb_tmp,norb,vref)
+
+          if(iel.eq.1) call compute_ymat(1,detiab(1,1,1),detn,wfmat(1,1,1,1),ymat_tmp,1)
+
+          if(iel.eq.nup+1) call compute_ymat(2,detn,detiab(1,2,1),wfmat(1,1,2,1),ymat_tmp,1)
+
+          call multideterminante_grad(iel,dorb_tmp,norb,
+     &              detratio,slmi(1,iab,1),aa(1,1,iab,1),ymat_tmp,vd)
+        endif
 
         vd(1)=vjn(1,iel,1)+vd(1)+vref(1,1)
         vd(2)=vjn(2,iel,1)+vd(2)+vref(2,1)
         vd(3)=vjn(3,iel,1)+vd(3)+vref(3,1)
       endif
-
 
       return
       end

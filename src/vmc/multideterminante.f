@@ -174,20 +174,11 @@ c      k_det2(1:ndetiab2(iab),iab)
 c      k_aux(1:ndetiab2(iab),iab)  
 c      detn(k_det2(1:ndetiab2(iab),iab))=detn(k_det2(1:ndetiab2(iab),iab))*ddetn(k_aux(1:ndetiab2(iab),iab))
       
-c     do istate=1,nstates
-c        if(iab.eq.1) call compute_ymat(iab,detn,detiab(1,2),wfmatn,ymatn(1,1,istate),istate)
-c     if(iab.eq.2) call compute_ymat(iab,detiab(1,1),detn,wfmatn,ymatn(1,1,istate),istate)
-c     enddo
         if (iab.eq.1) then
-c         do istate=1,nstates
-          call compute_ymat(iab,detn(1,o),detiab(1,2,o),wfmatn,ymatn(1,1,istate),istate)
-c         enddo
+          call compute_ymat(iab,detn(1,o),detiab(1,2,o),wfmatn(1,1,o),ymatn(1,1,istate),istate)
         else
-c         do istate=1,nstates
-          call compute_ymat(iab,detiab(1,1,o),detn(1,o),wfmatn,ymatn(1,1,istate),istate)
-c         enddo
+          call compute_ymat(iab,detiab(1,1,o),detn(1,o),wfmatn(1,1,o),ymatn(1,1,istate),istate)
         endif
-      !STU mapping orb state
         do iorb=1,norb
           orb(iel,iorb,o)=orb_sav(iorb)
         enddo
