@@ -28,8 +28,10 @@
       integer :: i, j, k, js
       real(dp) :: enew, eold, p, q
 
-      if(ioptjas.eq.0.or.ioptci.eq.0) return
+      !if(ioptjas.eq.0.or.ioptci.eq.0) return
+      if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
+      !STU revert, sr should not call these subroutines.
       !STU denergy is an istate quantity look at optjas.f, why fixed to 1 in Ramon's?
       !STU ci_o/ci_o_old/ci_de/ci_de_old are istate quantities
       !STU denergy is an istsate quantity because it includes cdet
@@ -83,7 +85,8 @@ c-----------------------------------------------------------------------
 
       integer :: i, j, k
 
-      if(ioptjas.eq.0.or.ioptci.eq.0) return
+      !if(ioptjas.eq.0.or.ioptci.eq.0) return
+      if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       do k=1,nstates
         do i=1,nparmj
@@ -111,7 +114,8 @@ c-----------------------------------------------------------------------
       integer :: i, iu, j, k
 
 
-      if(ioptjas.eq.0.or.ioptci.eq.0) return
+      !if(ioptjas.eq.0.or.ioptci.eq.0) return
+      if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       k=1 !STU set for 1 state
 
@@ -131,7 +135,8 @@ c-----------------------------------------------------------------------
 
       integer :: i, iu, j, k
 
-      if(ioptjas.eq.0.or.ioptci.eq.0) return
+      !if(ioptjas.eq.0.or.ioptci.eq.0) return
+      if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       k=1 !STU set for 1 state 
 
