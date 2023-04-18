@@ -16,7 +16,7 @@
       use derivjas, only: gvalue
       use gradhessjo, only: denergy_old,gvalue_old
       use mix_jas_ci, only: de_o_ci,dj_de_ci,dj_o_ci,dj_oe_ci
-      use optwf_control, only: ioptci,ioptjas
+      use optwf_control, only: ioptci,ioptjas, method
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use csfs, only: nstates
@@ -28,8 +28,9 @@
       integer :: i, j, k, js
       real(dp) :: enew, eold, p, q
 
-      if(ioptjas.eq.0.or.ioptci.eq.0) return
+      if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
+      !STU revert, sub not called by sr
       !STU denergy is an istate quantity look at optjas.f, why fixed to 1 in Ramon's?
       !STU ci_o/ci_o_old/ci_de/ci_de_old are istate quantities
       !STU denergy is an istsate quantity because it includes cdet
@@ -73,7 +74,7 @@ c-----------------------------------------------------------------------
       subroutine optx_jas_ci_init
 
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_control, only: ioptci, ioptjas
+      use optwf_control, only: ioptci, ioptjas, method
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
       use vmc_mod, only: nwftypemax, stoo, stobjx
@@ -83,7 +84,7 @@ c-----------------------------------------------------------------------
 
       integer :: i, j, k
 
-      if(ioptjas.eq.0.or.ioptci.eq.0) return
+      if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       do k=1,nstates
         do i=1,nparmj
@@ -103,7 +104,7 @@ c-----------------------------------------------------------------------
 
       use ci000,   only: nciterm
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_control, only: ioptci, ioptjas
+      use optwf_control, only: ioptci, ioptjas, method
       use optwf_parms, only: nparmj
 
       implicit none
@@ -111,7 +112,7 @@ c-----------------------------------------------------------------------
       integer :: i, iu, j, k
 
 
-      if(ioptjas.eq.0.or.ioptci.eq.0) return
+      if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       k=1 !STU set for 1 state
 
@@ -124,14 +125,14 @@ c-----------------------------------------------------------------------
 
       use ci000,   only: nciterm
       use mix_jas_ci, only: de_o_ci, dj_de_ci, dj_o_ci, dj_oe_ci
-      use optwf_control, only: ioptci, ioptjas
+      use optwf_control, only: ioptci, ioptjas, method
       use optwf_parms, only: nparmj
 
       implicit none
 
       integer :: i, iu, j, k
 
-      if(ioptjas.eq.0.or.ioptci.eq.0) return
+      if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       k=1 !STU set for 1 state 
 
