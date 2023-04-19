@@ -177,66 +177,75 @@ c endif iskip
         enddo
       enddo
 
-      call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn,dorbn,da_orbn)
+      if(nxquad.gt.0) then
+         
+         call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn,dorbn,da_orbn)
 
-      call nonlocd_quad(nxquad,iequad,orbn,det_ratio)
-      if(ioptjas.eq.0) then 
-        call nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,rvec_en_quad,r_en_quad,psij_ratio,vjn,da_psij_ratio)
-       else
-        call deriv_nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,rvec_en_quad,r_en_quad,psij_ratio,dpsij_ratio,vjn,da_psij_ratio)
-      endif
+         call nonlocd_quad(nxquad,iequad,orbn,det_ratio)
+         if(ioptjas.eq.0) then 
+            call nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
+     &           rvec_en_quad,r_en_quad,psij_ratio,vjn,da_psij_ratio)
+         else
+            call deriv_nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
+     &           rvec_en_quad,r_en_quad,psij_ratio,dpsij_ratio,vjn,da_psij_ratio)
+         endif
+         
+         do iq=1,nxquad
 
-      do iq=1,nxquad
+            iel=iequad(iq)
+            ic=icquad(iq)
+            iqq=iqquad(iq)
+            
+            ict=iwctype(ic)
+            
+            iab=1
+            if(iel.gt.nup) iab=2
 
-        iel=iequad(iq)
-        ic=icquad(iq)
-        iqq=iqquad(iq)
-
-        ict=iwctype(ic)
- 
-        iab=1
-        if(iel.gt.nup) iab=2
-
-        term_radial(iq)=0.d0
-        do l=1,lpot(ict)-1
-          term_radial(iq)=term_radial(iq)+yl0(l,costh(iq))*vps(iel,ic,l)
-        enddo
-        term_radial(iq)=term_radial(iq)*wq(iqq)*exp(psij_ratio(iq))
-
-c       write(ounit,*) 'term1',term_radial(iq),det_ratio(iq),psij_ratio(iq)
-c vpsp_det  = vnl(D_kref J)/(D_kref J)
-        vpsp_det(iab)=vpsp_det(iab)+term_radial(iq)*det_ratio(iq)
-
-c pseudopotential contribution to B_eloc matrix
-        do iorb=1,norb+nadorb
-          b(iorb,iel)=b(iorb,iel)+term_radial(iq)*orbn(iorb,iq)
-        enddo
-
-c dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
-        if(ioptjas.gt.0) then
-          term2=term_radial(iq)*det_ratio(iq)
-          do iparm=1,nparmj
-            dvpsp_dj(iparm)=dvpsp_dj(iparm)+term2*dpsij_ratio(iparm,iq)
-
-            do iorb=1,norb
-              b_dj(iorb,iel,iparm)=b_dj(iorb,iel,iparm)+orbn(iorb,iq)*term_radial(iq)*dpsij_ratio(iparm,iq)
+            term_radial(iq)=0.d0
+            do l=1,lpot(ict)-1
+               term_radial(iq)=term_radial(iq)+yl0(l,costh(iq))*vps(iel,ic,l)
             enddo
-          enddo
-        endif
+            term_radial(iq)=term_radial(iq)*wq(iqq)*exp(psij_ratio(iq))
+            
+c     write(ounit,*) 'term1',term_radial(iq),det_ratio(iq),psij_ratio(iq)
+c     vpsp_det  = vnl(D_kref J)/(D_kref J)
+            vpsp_det(iab)=vpsp_det(iab)+term_radial(iq)*det_ratio(iq)
 
-c transition probabilities for Casula's moves in DMC
-        if(index(mode,'dmc').ne.0) then
-          t_vpsp(ic,iqq,iel)=det_ratio(iq)*term_radial(iq)
-          do iorb=1,norb
-            b_t(iorb,iqq,ic,iel)=orbn(iorb,iq)*term_radial(iq)
-          enddo
-        endif
+c     pseudopotential contribution to B_eloc matrix
+            do iorb=1,norb+nadorb
+               b(iorb,iel)=b(iorb,iel)+term_radial(iq)*orbn(iorb,iq)
+            enddo
+            
+c     dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
+            if(ioptjas.gt.0) then
+               term2=term_radial(iq)*det_ratio(iq)
+               do iparm=1,nparmj
+                  dvpsp_dj(iparm)=dvpsp_dj(iparm)+term2*dpsij_ratio(iparm,iq)
 
-      enddo
-
-      if(iforce_analy.gt.0) call compute_da_bnl(nxquad,iequad,icquad,iqquad,r_en,rvec_en,costh,term_radial
-     &,orbn,dorbn,da_orbn,psij_ratio,vjn,da_psij_ratio)
-
+                  do iorb=1,norb
+                     b_dj(iorb,iel,iparm)=b_dj(iorb,iel,iparm)+orbn(iorb,iq)*term_radial(iq)*dpsij_ratio(iparm,iq)
+                  enddo
+               enddo
+            endif
+            
+c     transition probabilities for Casula's moves in DMC
+            if(index(mode,'dmc').ne.0) then
+               t_vpsp(ic,iqq,iel)=det_ratio(iq)*term_radial(iq)
+               do iorb=1,norb
+                  b_t(iorb,iqq,ic,iel)=orbn(iorb,iq)*term_radial(iq)
+               enddo
+            endif
+            
+         enddo
+         
+         if(iforce_analy.gt.0) call compute_da_bnl(nxquad,iequad,icquad,iqquad,r_en,rvec_en,costh,term_radial
+     &        ,orbn,dorbn,da_orbn,psij_ratio,vjn,da_psij_ratio)
+         
+      else
+         print*, "Warning nxquad is zero", nxquad
+      endif
+      
+      
       if(ipr.ge.4) write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
      &,(vpsp_det(iab),detiab(1,iab),iab=1,2),r_en(1,1)
 
