@@ -5,7 +5,7 @@ module test_random_mod
   contains
 subroutine test_random
   use random_mod, only: setrn, random_dp
-  use rnyucm, only: switch_rng
+  use random, only: switch_rng
   implicit none
 
   integer :: n                     

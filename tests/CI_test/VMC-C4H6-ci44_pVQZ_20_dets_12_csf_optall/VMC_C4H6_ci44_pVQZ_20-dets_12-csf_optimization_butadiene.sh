@@ -5,7 +5,7 @@ output="vmc_optall_ci44"
 
 # unicore test
 N=1
-ReferenceEnergy=-26.1816998
+ReferenceEnergy=-26.0763534
 ReferenceError=0.0144316
 mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
 echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
@@ -14,7 +14,7 @@ echo "Comparing energy with reference Core=$N           (total E = $ReferenceEne
 
 # Multicore test
 N=2
-ReferenceEnergy=-26.2175213
+ReferenceEnergy=-26.1864259
 ReferenceError=0.0109200
 mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
 echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "

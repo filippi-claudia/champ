@@ -8,110 +8,101 @@ See <http://creativecommons.org/publicdomain/zero/1.0/>. */
 
 #include <stdint.h>
 
-/* This is xoshiro256** 1.0, one of our all-purpose, rock-solid
-   generators. It has excellent (sub-ns) speed, a state (256 bits) that is
-   large enough for any parallel application, and it passes all tests we
-   are aware of.
+/* This is xoroshiro128** 1.0, one of our all-purpose, rock-solid,
+   small-state generators. It is extremely (sub-ns) fast and it passes all
+   tests we are aware of, but its state space is large enough only for
+   mild parallelism.
 
-   For generating just floating-point numbers, xoshiro256+ is even faster.
+   For generating just floating-point numbers, xoroshiro128+ is even
+   faster (but it has a very mild bias, see notes in the comments).
 
    The state must be seeded so that it is not everywhere zero. If you have
    a 64-bit seed, we suggest to seed a splitmix64 generator and use its
    output to fill s. */
+
 
 static inline uint64_t rotl(const uint64_t x, int k) {
 	return (x << k) | (x >> (64 - k));
 }
 
 
-static uint64_t s[4];
+static uint64_t s[2];
 
 uint64_t next(void) {
-	const uint64_t result = rotl(s[1] * 5, 7) * 9;
+	const uint64_t s0 = s[0];
+	uint64_t s1 = s[1];
+	const uint64_t result = rotl(s0 * 5, 7) * 9;
 
-	const uint64_t t = s[1] << 17;
-
-	s[2] ^= s[0];
-	s[3] ^= s[1];
-	s[1] ^= s[2];
-	s[0] ^= s[3];
-
-	s[2] ^= t;
-
-	s[3] = rotl(s[3], 45);
+	s1 ^= s0;
+	s[0] = rotl(s0, 24) ^ s1 ^ (s1 << 16); // a, b
+	s[1] = rotl(s1, 37); // c
 
 	return result;
 }
 
-double next_uniform_double(void) {
-  const uint64_t x = next();
-  return (x >> 11) * 0x1.0p-53;
-}
 
 /* This is the jump function for the generator. It is equivalent
-   to 2^128 calls to next(); it can be used to generate 2^128
+   to 2^64 calls to next(); it can be used to generate 2^64
    non-overlapping subsequences for parallel computations. */
 
 void jump(void) {
-	static const uint64_t JUMP[] = { 0x180ec6d33cfd0aba, 0xd5a61266f0c9392c, 0xa9582618e03fc9aa, 0x39abdc4529b1661c };
+	static const uint64_t JUMP[] = { 0xdf900294d8f554a5, 0x170865df4b3201fc };
 
 	uint64_t s0 = 0;
 	uint64_t s1 = 0;
-	uint64_t s2 = 0;
-	uint64_t s3 = 0;
 	for(int i = 0; i < sizeof JUMP / sizeof *JUMP; i++)
 		for(int b = 0; b < 64; b++) {
 			if (JUMP[i] & UINT64_C(1) << b) {
 				s0 ^= s[0];
 				s1 ^= s[1];
-				s2 ^= s[2];
-				s3 ^= s[3];
 			}
-			next();	
+			next();
 		}
-		
+
 	s[0] = s0;
 	s[1] = s1;
-	s[2] = s2;
-	s[3] = s3;
 }
 
 
-
 /* This is the long-jump function for the generator. It is equivalent to
-   2^192 calls to next(); it can be used to generate 2^64 starting points,
-   from each of which jump() will generate 2^64 non-overlapping
+   2^96 calls to next(); it can be used to generate 2^32 starting points,
+   from each of which jump() will generate 2^32 non-overlapping
    subsequences for parallel distributed computations. */
 
 void long_jump(void) {
-	static const uint64_t LONG_JUMP[] = { 0x76e15d3efefdcbbf, 0xc5004e441c522fb3, 0x77710069854ee241, 0x39109bb02acbe635 };
+	static const uint64_t LONG_JUMP[] = { 0xd2a98b26625eee7b, 0xdddf9b1090aa7ac1 };
 
 	uint64_t s0 = 0;
 	uint64_t s1 = 0;
-	uint64_t s2 = 0;
-	uint64_t s3 = 0;
 	for(int i = 0; i < sizeof LONG_JUMP / sizeof *LONG_JUMP; i++)
 		for(int b = 0; b < 64; b++) {
 			if (LONG_JUMP[i] & UINT64_C(1) << b) {
 				s0 ^= s[0];
 				s1 ^= s[1];
-				s2 ^= s[2];
-				s3 ^= s[3];
 			}
-			next();	
+			next();
 		}
-		
+
 	s[0] = s0;
 	s[1] = s1;
-	s[2] = s2;
-	s[3] = s3;
 }
 
 /* Addition by Victor Azizi (2022) to be able to seed the generator
    from Fortran with a function call */
-void xoshiro_seed(uint64_t * seed) {
-  s[0] = seed[0];
-  s[1] = seed[1];
-  s[2] = seed[2];
-  s[3] = seed[3];
+void xoroshiro_set_state(uint32_t * seed) {
+  uint64_t * seed64 = (uint64_t *) seed;
+  s[0] = seed64[0];
+  s[1] = seed64[1];
+}
+
+void xoroshiro_get_state(uint32_t * seed) {
+  uint64_t * seed64 = (uint64_t *) seed;
+  seed64[0] = s[0];
+  seed64[1] = s[1];
+}
+
+/* Addition by Victor Azizi (2022) to get a uniform double */
+double next_uniform_double(void) {
+  const uint64_t x = next();
+  return (x >> 11) * 0x1.0p-53;
 }
