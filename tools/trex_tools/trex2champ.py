@@ -43,8 +43,6 @@ import os
 import numpy as np
 from collections import Counter
 import argparse
-import pytest
-import copy
 
 # Before we do anything else, we need to check if trexio and resultsFile are installed
 try:
@@ -1505,7 +1503,6 @@ def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets,
     """
 
     def read_coefficients (state: int, offset_file: int, det_num: int) -> list:
-        filename.set_state(state)
         coefficients = trexio.read_determinant_coefficient(
             filename, offset_file, det_num
         )
@@ -1514,7 +1511,6 @@ def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets,
 
     offset_file = 0
     coefficients_read_all = []
-
     for i in range(num_states):
         coefficients_read = read_coefficients(i, offset_file, num_dets)
         coefficients_read_all.append(coefficients_read)
