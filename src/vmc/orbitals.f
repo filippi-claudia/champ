@@ -36,6 +36,12 @@ c Modified by A. Scemama
       use slater,  only: coef,norb
       use system,  only: ncent_tot,nelec
 
+#ifdef QMCKL_FOUND
+      use const
+      use qmckl_data                                               
+#endif 
+
+      
       implicit none
 
       integer :: i, ier, ider, iorb, k, m
@@ -48,6 +54,14 @@ c     real(dp), dimension(nelec,nbasis) :: bhin
 c     real(dp), dimension(3*nelec,nbasis) :: dbhin
 c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
+
+#ifdef QMCKL_FOUND
+      real(dp), allocatable :: mo_vgl_qmckl(:,:,:)            
+      integer :: rc                                           
+      integer*8 :: n8                                         
+#endif 
+
+      
       ier=1
       if(iperiodic.eq.0) then
 
@@ -118,70 +132,133 @@ c spline interpolation
          enddo
 
 c no 3d interpolation
-        else
-
-c get basis functions for all electrons
+      else
+         
+c     get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
 
+         
+#ifdef QMCKL_FOUND
+
+
+! get number MO's
+         rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+         if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error getting mo_num from QMCkl'
+            stop
+         end if
+         
+
+         allocate(mo_vgl_qmckl(n8, 5, nelec))
+         
+
+!     Send electron coordinates to QMCkl to compute the MOs at these positions
+         rc = qmckl_set_point(qmckl_ctx, 'N', nelec*1_8, x, nelec*3_8)
+         
+         if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error setting electron coordinates in QMCkl'
+            stop
+         end if
+
+         
+!     Compute the MOs
+         rc = qmckl_get_mo_basis_mo_vgl_inplace(
+     &        qmckl_ctx,
+     &        mo_vgl_qmckl,
+     &        n8*nelec*5_8)
+         
+         if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error getting MOs from QMCkl'
+            stop
+         end if
+         
+
+!            print*, "inside qmckl"
+         
+! pass computed qmckl orbitals back to champ
+         do i=1,nelec
+            do iorb=1,norb+nadorb
+               orb  (  i,iorb) = mo_vgl_qmckl(iorb,1,i)
+               dorb (iorb,i,1) = mo_vgl_qmckl(iorb,2,i)
+               dorb (iorb,i,2) = mo_vgl_qmckl(iorb,3,i)
+               dorb (iorb,i,3) = mo_vgl_qmckl(iorb,4,i)
+               ddorb(  iorb,i) = mo_vgl_qmckl(iorb,5,i)
+            end do
+         end do
+
+         deallocate(mo_vgl_qmckl)
+         
+         
+
+#else
+
+         
+         
          call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
-
+         
 c in alternativa al loop 26
-c        do jbasis=1,nbasis
-c         i=0
-c         do ielec=1,nelec
-c          bhin(ielec,jbasis)=phin(jbasis,ielec)
-c          do l=1,3
-c           i=i+1
-c           dbhin(i,jbasis)=dphin(jbasis,ielec,l)
-c          enddo
-c          d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
-c         enddo
-c        enddo
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
-c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
-
-!        Vectorization dependent code selection
+c     do jbasis=1,nbasis
+c     i=0
+c     do ielec=1,nelec
+c     bhin(ielec,jbasis)=phin(jbasis,ielec)
+c     do l=1,3
+c     i=i+1
+c     dbhin(i,jbasis)=dphin(jbasis,ielec,l)
+c     enddo
+c     d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
+c     enddo
+c     enddo
+c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
+c     call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
+c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
+         
+!     Vectorization dependent code selection
 #ifdef VECTORIZATION
 !     Following loop changed for better vectorization AVX512/AVX2
-          do i=1,nelec
-             do iorb=1,norb+nadorb
-                orb(i,iorb)=0.d0
-                dorb(iorb,i,1)=0.d0
-                dorb(iorb,i,2)=0.d0
-                dorb(iorb,i,3)=0.d0
-                ddorb(iorb,i)=0.d0
-                do m=1,nbasis
-                   orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
-                   dorb (iorb,i,1)=dorb (iorb,i,1)+coef(m,iorb,iwf)*dphin (m,i,1)
-                   dorb (iorb,i,2)=dorb (iorb,i,2)+coef(m,iorb,iwf)*dphin (m,i,2)
-                   dorb (iorb,i,3)=dorb (iorb,i,3)+coef(m,iorb,iwf)*dphin (m,i,3)
-                   ddorb(  iorb,i)=ddorb(iorb,i)+coef(m,iorb,iwf)*d2phin( m,i)
-                enddo
-             enddo
-          enddo
+         do i=1,nelec
+            do iorb=1,norb+nadorb
+               orb(i,iorb)=0.d0
+               dorb(iorb,i,1)=0.d0
+               dorb(iorb,i,2)=0.d0
+               dorb(iorb,i,3)=0.d0
+               ddorb(iorb,i)=0.d0
+               do m=1,nbasis
+                  orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
+                  dorb (iorb,i,1)=dorb (iorb,i,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+                  dorb (iorb,i,2)=dorb (iorb,i,2)+coef(m,iorb,iwf)*dphin (m,i,2)
+                  dorb (iorb,i,3)=dorb (iorb,i,3)+coef(m,iorb,iwf)*dphin (m,i,3)
+                  ddorb(  iorb,i)=ddorb(iorb,i)+coef(m,iorb,iwf)*d2phin( m,i)
+               enddo
+            enddo
+         enddo
 #else
 !     keep the old localization code if no vectorization instructions available
-          do i=1,nelec
-             do iorb=1,norb+nadorb
-                orb(i,iorb)=0.d0
-                dorb(iorb,i,1)=0.d0
-                dorb(iorb,i,2)=0.d0
-                dorb(iorb,i,3)=0.d0
-                ddorb(iorb,i)=0.d0
-                do m0=1,n0_nbasis(i)
-                   m=n0_ibasis(m0,i)
-                   orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
-                   dorb (iorb,i,1)=dorb (iorb,i,1)+coef(m,iorb,iwf)*dphin (m,i,1)
-                   dorb (iorb,i,2)=dorb (iorb,i,2)+coef(m,iorb,iwf)*dphin (m,i,2)
-                   dorb (iorb,i,3)=dorb (iorb,i,3)+coef(m,iorb,iwf)*dphin (m,i,3)
-                   ddorb(iorb,i)=ddorb(iorb,i)+coef(m,iorb,iwf)*d2phin( m,i)
-                enddo
-             enddo
-          enddo
+         do i=1,nelec
+            do iorb=1,norb+nadorb
+               orb(i,iorb)=0.d0
+               dorb(iorb,i,1)=0.d0
+               dorb(iorb,i,2)=0.d0
+               dorb(iorb,i,3)=0.d0
+               ddorb(iorb,i)=0.d0
+               do m0=1,n0_nbasis(i)
+                  m=n0_ibasis(m0,i)
+                  orb  (  i,iorb)=orb  (  i,iorb)+coef(m,iorb,iwf)*phin  ( m,i)
+                  dorb (iorb,i,1)=dorb (iorb,i,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+                  dorb (iorb,i,2)=dorb (iorb,i,2)+coef(m,iorb,iwf)*dphin (m,i,2)
+                  dorb (iorb,i,3)=dorb (iorb,i,3)+coef(m,iorb,iwf)*dphin (m,i,3)
+                  ddorb(iorb,i)=ddorb(iorb,i)+coef(m,iorb,iwf)*d2phin( m,i)
+               enddo
+            enddo
+         enddo
 #endif
-       endif
+
+
+         
+#endif
+!endif qmckl usage or not
+         
+      endif
 
        if(iforce_analy.eq.1) call da_orbitals
 
@@ -271,6 +348,11 @@ c-------------------------------------------------------------------------------
       use slater,  only: coef,norb
       use system,  only: ncent_tot,nelec
 
+#ifdef QMCKL_FOUND
+      use qmckl_data
+#endif
+
+      
       implicit none
 
       integer :: iel, ier, ider, iflag, iorb, m
@@ -280,17 +362,28 @@ c-------------------------------------------------------------------------------
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
+
+#ifdef QMCKL_FOUND
+c     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+      real(dp), allocatable :: mo_vgl_qmckl(:,:)
+      integer :: rc
+      integer*8 :: n8
+      character*(1024) :: err_message = ''
+#endif
+
+
+      
       if(iperiodic.eq.0) then
 
 c get the value and gradients from the 3d-interpolated orbitals
          ier=0
-c spline interplolation
+c     spline interplolation
          if(i3dsplorb.ge.1) then
             do iorb=1,norb
-               ddorbn(iorb)=0   ! Don't compute the laplacian
-               dorbn(iorb,1)=1  ! compute the gradients
-               dorbn(iorb,2)=1  ! compute the gradients
-               dorbn(iorb,3)=1  ! compute the gradients
+               ddorbn(iorb)=0.d0   ! Don't compute the laplacian
+               dorbn(iorb,1)=1.d0  ! compute the gradients
+               dorbn(iorb,2)=1.d0  ! compute the gradients
+               dorbn(iorb,3)=1.d0  ! compute the gradients
                call spline_mo (x(1,iel),iorb,orbn(iorb),dorbn(iorb,:),ddorbn(iorb),ier)
             enddo
 
@@ -309,14 +402,79 @@ c get basis functions for electron iel
 
             ider=1
             if(iflag.gt.0) ider=2
+            
+#ifdef QMCKL_FOUND
 
+            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error getting mo_num from QMCkl'
+               stop
+            end if
+
+
+
+!     Send electron coordinates to QMCkl to compute the MOs at these positions
+!     rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, x(:,iel), 3_8)
+!! set one electron coordinates
+            rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, x(1:3,iel), 3_8)
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error setting electron coords orbitalse'
+               call qmckl_last_error(qmckl_ctx,err_message)
+               print *, trim(err_message)
+               call abort()
+            end if
+
+!!allocate mo_vlg array
+c     allocate(mo_vgl_qmckl(n8, 5, 1))
+            allocate(mo_vgl_qmckl(n8, 5))
+              
+!     Compute the MOs
+            rc = qmckl_get_mo_basis_mo_vgl_inplace(
+     &           qmckl_ctx,
+     &           mo_vgl_qmckl,
+     &           n8*5_8)
+            if(iflag.gt.0) then
+               do iorb=1,norb
+c     orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
+c     dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
+c     dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
+c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
+c     ddorbn(iorb)=mo_vgl_qmckl(iorb,5,1)
+                  orbn(iorb)=mo_vgl_qmckl(iorb,1)
+                  dorbn(iorb,1)=mo_vgl_qmckl(iorb,2)
+                  dorbn(iorb,2)=mo_vgl_qmckl(iorb,3)
+                  dorbn(iorb,3)=mo_vgl_qmckl(iorb,4)
+                  ddorbn(iorb)=mo_vgl_qmckl(iorb,5)
+               enddo
+            else
+               do iorb=1,norb
+c     orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
+c     dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
+c     dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
+c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
+                  orbn(iorb)=mo_vgl_qmckl(iorb,1)
+                  dorbn(iorb,1)=mo_vgl_qmckl(iorb,2)
+                  dorbn(iorb,2)=mo_vgl_qmckl(iorb,3)
+                  dorbn(iorb,3)=mo_vgl_qmckl(iorb,4)
+               enddo
+            endif
+           
+            deallocate(mo_vgl_qmckl)
+            
+            
+
+            
+
+#else
+            
+            
             call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
 
 !     Vectorization dependent code. useful for AVX512 and AVX2
 #ifdef VECTORIZATION
 
             if(iflag.gt.0) then
-
+               
                do iorb=1,norb
                   orbn(iorb)=0.d0
                   dorbn(iorb,1)=0.d0
@@ -331,11 +489,11 @@ c get basis functions for electron iel
                      ddorbn(iorb)=ddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
                   enddo
                enddo
-
-
+               
+               
             else
-
-
+               
+               
                do iorb=1,norb
                   orbn(iorb)=0.d0
                   dorbn(iorb,1)=0.d0
@@ -393,8 +551,11 @@ c get basis functions for electron iel
                   enddo
                enddo
 
-
+               
             endif
+
+
+#endif
 
 
 #endif

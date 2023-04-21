@@ -62,21 +62,12 @@ target_compile_options(dmc.mov1
   "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
   )
 
-if (TREXIO_FOUND)
-  target_link_libraries(dmc.mov1
-    PRIVATE
-    pspline
-    parser
-    ${LINEAR_ALGEBRA}
-    ${TREXIO_LIBRARY}
-    MPI::MPI_Fortran)
-else()
-  target_link_libraries(dmc.mov1
+
+target_link_libraries(dmc.mov1
     PRIVATE
     pspline
     parser
     ${LINEAR_ALGEBRA}
     MPI::MPI_Fortran)
-endif()
 
 set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")

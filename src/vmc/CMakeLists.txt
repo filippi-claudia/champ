@@ -24,7 +24,7 @@ if (MPI_Fortran_FOUND)
     distances.f
     dumper.f
     dumper_more.f
-	  efield.f
+    efield.f
     fetch_parameters.f
     fin_reduce.f
     finwrt.f
@@ -140,7 +140,7 @@ if (MPI_Fortran_FOUND)
     set_input_data.f90
     slm.f90
     write_orb_loc.f90
-	  )
+    )
 
   set_property(
   SOURCE new_parser_read_data.f90
@@ -398,21 +398,12 @@ ENDIF()
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
     )
 
-  if (TREXIO_FOUND)
-    target_link_libraries(vmc.mov1
-      PRIVATE
-      pspline
-      parser
-      ${LINEAR_ALGEBRA}
-      ${TREXIO_LIBRARY}
-      MPI::MPI_Fortran)
-  else()
-    target_link_libraries(vmc.mov1
-      PRIVATE
-      pspline
-      parser
-      ${LINEAR_ALGEBRA}
-      MPI::MPI_Fortran)
-  endif()
+  target_link_libraries(vmc.mov1
+    PRIVATE
+    pspline
+    parser
+    ${LINEAR_ALGEBRA}
+    MPI::MPI_Fortran)
+  
 
 endif()

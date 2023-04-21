@@ -175,6 +175,13 @@ contains
         character(len=10), dimension(12)        :: extensions
         character(len=100)                      :: string_format  = '(A, T40, A)'
 
+        ! Initialize file names to empty variables to avoid garbage in the output
+        file_error = ''
+        file_input = ''
+        file_output = ''
+
+
+        
         ! Make sure ounit default is stdout, and errunit is stderr
         ounit = output_unit
         errunit = error_unit
