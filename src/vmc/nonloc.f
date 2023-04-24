@@ -6,7 +6,7 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use Bloc,    only: b,bkin,b_dj
       use b_tmove, only: b_t,iskip
-      use contrl_file, only: ounit
+      use contrl_file, only: ounit, errunit
       use control, only: ipr,mode
       use deriv_nonloc, only: deriv_nonlocj_quad
       use jastrow_update, only: fso
@@ -40,7 +40,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
 
       ! local variables
-      integer :: i, i1, i2, iab, istate, jstate, check
+      integer :: i, i1, i2, iab, istate, jstate, check, auxy
       integer :: ic, ict, iel, index
       integer :: iorb, iparm, iq, iqq
       integer :: jc, k, l, nxquad, j, ndim, iwforb, iwfjas, imax, ibjx, xo, xj
@@ -280,8 +280,11 @@ c             !STU I left b_t without an index
       !STU just used jsa and orb type=1 in psij_ratio and dorbn,
       !term_radial probably need to add for da_psij_ratioi, da_orbn
 
-      if(ipr.ge.4) write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
+      if(ipr.ge.4) then 
+        write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
      & (vpsp_det(iab,1),detiab(1,iab,1),iab=1,2),r_en(1,1)
+        if(nxquad.eq.0) write(errunit,*) "warning nxquad zero", nxquad
+      endif
 
       return
       end
@@ -407,6 +410,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use qua,     only: nquad
       use precision_kinds, only: dp
 
+#ifdef QMCKL_FOUND
+      use qmckl_data
+#endif
+
+      
       implicit none
 
       integer :: ic, iel, ider, ier, ii, iq
@@ -422,6 +430,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(3) :: dtmp
       real(dp) :: ddtmp
 
+
+#ifdef QMCKL_FOUND
+      real(dp), allocatable :: mo_qmckl(:,:)
+      integer :: rc
+      integer*8 :: n8
+#endif  
+      
+      
       nadorb_sav=nadorb
 
       if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
@@ -455,6 +471,74 @@ c get the value from the 3d-interpolated orbitals
 c get basis functions for electron iel
           ider=0
           if(iforce_analy.gt.0) ider=1
+
+#ifdef QMCKL_FOUND
+
+!     Send electron coordinates to QMCkl to compute the MOs at these positions
+            rc = qmckl_set_point(qmckl_ctx, 'N', nxquad*1_8, xquad, nxquad*3_8)
+            if (rc /= QMCKL_SUCCESS) then
+                print *, 'orbitals quad Error setting electron coordinates in QMCkl'
+                print *, "nxquad", nxquad
+                stop
+             end if
+             
+             rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+             if (rc /= QMCKL_SUCCESS) then
+                print *, 'orbitals quad Error getting mo_num from QMCkl'
+                print *, "n8", n8 
+                stop
+             end if
+
+
+             allocate(mo_qmckl(n8, nxquad))
+
+!     Compute the MOs
+             rc = qmckl_get_mo_basis_mo_value_inplace(
+     &            qmckl_ctx,
+     &            mo_qmckl,
+     &            nxquad*n8)
+             
+             if (rc /= QMCKL_SUCCESS) then
+                print *, 'Error orbitals quad getting MOs from QMCkl'
+                stop
+             end if
+             
+             orbn(1:norb+nadorb,1:nxquad) = mo_qmckl(1:norb+nadorb,1:nxquad)
+                
+             deallocate(mo_qmckl)
+             
+             if(iforce_analy.gt.0) then
+                do iq=1,nxquad
+
+                   do iorb=1,norb
+                      do ic=1,ncent
+                        do k=1,3
+                           da_orbn(k,ic,iorb,iq)=0.d0
+                        enddo
+                     enddo
+                     do m0=1,n0_nbasis(iq)
+                        m=n0_ibasis(m0,iq)
+                        ic=n0_ic(m0,iq)
+                        ii=iwctype(ic)
+                        do k=1,3
+                           da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                        enddo
+                     enddo
+                     do k=1,3
+                        dorbn(iorb,iq,k)=0.d0
+                     enddo
+                     do ic=1,ncent
+                        do k=1,3
+                           dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
+                        enddo
+                     enddo
+                  enddo
+                   
+                  
+                enddo
+             endif
+
+#else
 
           if(nwftypeorb.gt.1) iwf=1 !STU sort out later
           call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
@@ -510,6 +594,8 @@ c         write(ounit,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
 c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
 
         enddo
+
+#endif
 
         endif
 

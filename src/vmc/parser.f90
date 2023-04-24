@@ -174,6 +174,9 @@ subroutine parser
   use contrl_file, only: backend
   use trexio            ! trexio library for reading and writing hdf5 files
 #endif
+#if defined(QMCKL_FOUND)
+      use qmckl_data
+#endif
 use, intrinsic :: iso_fortran_env, only : iostat_end
 
 !
@@ -247,6 +250,13 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
   real(dp), parameter        :: one  = 1.d0
   real(dp), parameter        :: two  = 2.d0
 
+#if defined(QMCKL_FOUND)
+  integer, allocatable :: keep(:)
+  integer :: rc
+  integer*8 :: n8
+  character*(1024) :: err_message = ''
+  integer*8 :: norb_qmckl
+#endif 
 
 ! Initialize # get the filenames from the commandline arguments
   call fdf_init(file_input, 'parser.log')
@@ -1843,7 +1853,93 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
   ! The following portion can be shifted to another subroutine.
   ! It does the processing of the input read so far and initializes some
   ! arrays if something is missing.
+
+
+  !qmckl initialization
+
+#ifdef QMCKL_FOUND
+  if (use_qmckl) then
+     !!create qmckl context
+     qmckl_ctx = qmckl_context_create()
+     
+     iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
+     if (iostat /= QMCKL_SUCCESS) then
+        write(ounit,*) 'Error: Unable to read TREXIO file '//trim(file_trexio)
+        call abort()
+     end if
+     
+
+     !! to check change in mo's number to be computed by qmckl inside champ
+     norb_qmckl=norb+nadorb
+
+     
+     write(ounit,*) "inside parser after reading trexio file"
+     write(ounit,*) "norb_tot",norb_tot
+     write(ounit,*) "norb",norb
+     write(ounit,*) "nadorb",nadorb
+     write(ounit,*) "norb_qmckl", norb_qmckl
+
+     !!get mo's number should correspond to norb_tot
+     rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+     if (rc /= QMCKL_SUCCESS) then
+        write(ounit,*) '00 Error getting mo_num from verify orbitals'
+        stop
+     end if
+     
+     
+     write(ounit,*) "n8", n8
+
+     if (n8 > norb_qmckl) then
+        
+
+        write(ounit,*) "inside if mo's to compute change in parser"
+        write(ounit,*) "norb_qmckl",norb_qmckl
+        write(ounit,*) "n8 mo's before selection", n8
+        !! allocate orbital selection array for qmckl
+        allocate(keep(n8))
+        
+
+        !! selecting range of orbitals to compute qith QMCkl
+        keep(1:norb_qmckl) = 1
+        keep((norb_qmckl+1):n8) = 0
+
+        
+        rc = qmckl_mo_basis_select_mo(qmckl_ctx, keep, n8)
+        if (rc /= QMCKL_SUCCESS) then
+           write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
+           stop
+        end if
+        
+        !!deallocate keep
+        deallocate(keep)
+
+        !!getting new number of orbitals to be computed
+        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+        if (rc /= QMCKL_SUCCESS) then
+           write(ounit,*), 'Error 02  mo_num from verify orbitals'
+           stop
+        end if
+        write(ounit,*) "n8 after mo's selec", n8
+        write(ounit,*) "norb_qmckl after mo's selec", norb_qmckl
+        
+        
+        !! checking if the current number of orbitals in qmckl is consistent
+        
+        if (n8 /= norb_qmckl) then
+           write(ounit,*) 'Bug in MO selection in QMCkl verify orb'
+           stop
+        end if
+
+     endif
+     
+  endif
+#endif
+
+
+  
 !----------------------------------------------------------------------------END
+
+
   contains
 
   !! Here all the subroutines that handle the block data are written

@@ -101,6 +101,8 @@ if (HDF5_FOUND)
 endif(HDF5_FOUND)
 
 # Find TREXIO
+message(" ")
+message("Looking for TREXIO library:")
 find_package(TREXIO QUIET)
 
 if (TREXIO_FOUND)
@@ -109,8 +111,32 @@ if (TREXIO_FOUND)
   message(STATUS "TREXIO Library lib dirs          :: " ${TREXIO_LIBRARY})
   message(STATUS "                                    ")
   add_definitions(-DTREXIO_FOUND=\"${TREXIO_FOUND}\")
+# Taken from TurboRVB
+# list( APPEND PPDIRECTIVES _TREXIO )
+  link_libraries(${TREXIO_LIBRARIES})
+  include_directories( ${TREXIO_INCLUDE_DIRS} )
 endif(TREXIO_FOUND)
 endif(ENABLE_TREXIO)
+
+
+# Find QMCkl
+if (TREXIO_FOUND)
+  find_package(QMCKL QUIET)
+endif(TREXIO_FOUND)
+if (QMCKL_FOUND)
+  message(STATUS "Is QMCkl library found           :: " ${QMCKL_FOUND})
+  message(STATUS "QMCKL Library include dirs       :: " ${QMCKL_INCLUDE_DIR})
+  message(STATUS "QMCKL Library lib dirs           :: " ${QMCKL_LIBRARY})
+  message("                                    ")
+  add_definitions(-DQMCKL_FOUND=\"${QMCKL_FOUND}\")
+# Taken from TurboRVB
+#   list( APPEND PPDIRECTIVES _QMCKL )
+   link_libraries(${QMCKL_LIBRARIES})
+  include_directories( ${QMCKL_INCLUDE_DIRS} )
+endif(QMCKL_FOUND)
+
+
+
 
 #  documentation requirements
 if (BUILD_DOC)
@@ -148,9 +174,9 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
         # "-ffpe-trap=invalid,zero,overflow" 
         )
   endif()
-  if (TREXIO_FOUND)
-    list(APPEND Fortran_FLAGS "-ltrexio")
-  endif()
+#  if (TREXIO_FOUND)
+#    list(APPEND Fortran_FLAGS "-ltrexio")
+#  endif()
 
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
 
@@ -170,6 +196,7 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
+    #list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "bounds" )
   else()
   endif()
   if (TREXIO_FOUND)
@@ -182,7 +209,7 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   #endif()
 
   # debug
-  list(APPEND Fortran_FLAGS "-g" "-debug" "all" "-traceback")
+  # list(APPEND Fortran_FLAGS "-g" "-debug" "all" "-traceback")
 
 
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
@@ -219,16 +246,3 @@ set(CPACK_PACKAGE_VERSION_MAJOR "2")
 set(CPACK_PACKAGE_VERSION_MINOR "1")
 set(CPACK_PACKAGE_VERSION_PATCH "3")
 include(CPack)
-
-
-#set(CPACK_ARCHIVE_COMPONENT_INSTALL 1)
-#set(CPACK_ARCHIVE_GENERATOR "TBZ2")
-#set(CPACK_SOURCE_GENERATOR "ZIP")
-#set(CPACK_PACKAGE_VERSION "2.0.7")
-#set(CPACK_PACKAGE_NAME "CHAMP")
-#set(CPACK_ARCHIVE_FILE_NAME "CHAMP-v2.0.7.zip")
-#set(CPACK_PACKAGE_VERSION "v2.0.7")
-#set(CPACK_PACKAGE_VERSION_MAJOR "2")
-#set(CPACK_PACKAGE_VERSION_MINOR "0")
-#set(CPACK_PACKAGE_VERSION_PATCH "7")
-#include(CPack)

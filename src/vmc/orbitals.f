@@ -48,6 +48,13 @@ c Modified by A. Scemama
       use precision_kinds, only: dp
       use pw_orbitals, only: orbitals_pw
       use vmc_mod, only: nwftypeorb
+
+#ifdef QMCKL_FOUND
+      use const
+      use qmckl_data                                               
+#endif 
+
+      
       implicit none
 
       integer :: i, ier, ider, iorb, k, m
@@ -60,6 +67,14 @@ c     real(dp), dimension(nelec,nbasis) :: bhin
 c     real(dp), dimension(3*nelec,nbasis) :: dbhin
 c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
+
+#ifdef QMCKL_FOUND
+      real(dp), allocatable :: mo_vgl_qmckl(:,:,:)            
+      integer :: rc                                           
+      integer*8 :: n8                                         
+#endif 
+
+      
       ier=1
       if(iperiodic.eq.0) then
 
@@ -68,7 +83,7 @@ c spline interpolation
           do k=1,nwftypeorb
 c            if(nwftypeorb.gt.1) iwf=k !STU sort this out later.
             do i=1,nelec
-            ier = 0.d0 ! should this be double prec?
+            ier = 0.d0
               do iorb=1,norb+nadorb
                 ddorb(iorb,i,k)=1.d0    ! compute the laplacian
                 dorb(iorb,i,1,k)=1.d0   ! compute the gradients
@@ -145,6 +160,62 @@ c get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
 
+
+#ifdef QMCKL_FOUND
+
+
+! get number MO's
+         rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+         if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error getting mo_num from QMCkl'
+            stop
+         end if
+         
+
+         allocate(mo_vgl_qmckl(n8, 5, nelec))
+         
+
+!     Send electron coordinates to QMCkl to compute the MOs at these positions
+         rc = qmckl_set_point(qmckl_ctx, 'N', nelec*1_8, x, nelec*3_8)
+         
+         if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error setting electron coordinates in QMCkl'
+            stop
+         end if
+
+         
+!     Compute the MOs
+         rc = qmckl_get_mo_basis_mo_vgl_inplace(
+     &        qmckl_ctx,
+     &        mo_vgl_qmckl,
+     &        n8*nelec*5_8)
+         
+         if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error getting MOs from QMCkl'
+            stop
+         end if
+         
+
+!            print*, "inside qmckl"
+         
+! pass computed qmckl orbitals back to champ
+         k=1 !STU until state specific orbitals can be used 
+         do i=1,nelec
+            do iorb=1,norb+nadorb
+               orb  (  i,iorb,k) = mo_vgl_qmckl(iorb,1,i)
+               dorb (iorb,i,1,k) = mo_vgl_qmckl(iorb,2,i)
+               dorb (iorb,i,2,k) = mo_vgl_qmckl(iorb,3,i)
+               dorb (iorb,i,3,k) = mo_vgl_qmckl(iorb,4,i)
+               ddorb(  iorb,i,k) = mo_vgl_qmckl(iorb,5,i)
+            end do
+         end do
+
+         deallocate(mo_vgl_qmckl)
+         
+         
+
+#else
+
 c         if(nwftypeorb.gt.1) iwf=1 !STU, doing this for now
          call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 
@@ -210,6 +281,12 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
             enddo
           enddo
 #endif
+
+
+
+#endif
+!endif qmckl usage or not
+
        endif
 
        if(iforce_analy.eq.1) call da_orbitals
@@ -317,6 +394,11 @@ c-------------------------------------------------------------------------------
       use control, only: ipr
       use contrl_file, only: ounit
 
+#ifdef QMCKL_FOUND
+      use qmckl_data
+#endif
+
+      
       implicit none
 
       integer :: iel, ier, ider, iflag, iorb, m
@@ -326,6 +408,17 @@ c-------------------------------------------------------------------------------
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
+
+#ifdef QMCKL_FOUND
+c     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+      real(dp), allocatable :: mo_vgl_qmckl(:,:)
+      integer :: rc
+      integer*8 :: n8
+      character*(1024) :: err_message = ''
+#endif
+
+
+      
       if(iperiodic.eq.0) then
 
 c get the value and gradients from the 3d-interpolated orbitals
@@ -359,10 +452,74 @@ c get basis functions for electron iel
 
             ider=1
             if(iflag.gt.0) ider=2
+            
+#ifdef QMCKL_FOUND
 
+            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error getting mo_num from QMCkl'
+               stop
+            end if
+
+
+
+!     Send electron coordinates to QMCkl to compute the MOs at these positions
+!     rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, x(:,iel), 3_8)
+!! set one electron coordinates
+            rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, x(1:3,iel), 3_8)
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error setting electron coords orbitalse'
+               call qmckl_last_error(qmckl_ctx,err_message)
+               print *, trim(err_message)
+               call abort()
+            end if
+
+!!allocate mo_vlg array
+c     allocate(mo_vgl_qmckl(n8, 5, 1))
+            allocate(mo_vgl_qmckl(n8, 5))
+              
+!     Compute the MOs
+            rc = qmckl_get_mo_basis_mo_vgl_inplace(
+     &           qmckl_ctx,
+     &           mo_vgl_qmckl,
+     &           n8*5_8)
+            k=1 !STU until state-specific orbitals can use QMCKL
+            if(iflag.gt.0) then
+               do iorb=1,norb
+c     orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
+c     dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
+c     dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
+c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
+c     ddorbn(iorb)=mo_vgl_qmckl(iorb,5,1)
+                  orbn(iorb,k)=mo_vgl_qmckl(iorb,1)
+                  dorbn(iorb,1,k)=mo_vgl_qmckl(iorb,2)
+                  dorbn(iorb,2,k)=mo_vgl_qmckl(iorb,3)
+                  dorbn(iorb,3,k)=mo_vgl_qmckl(iorb,4)
+                  ddorbn(iorb,k)=mo_vgl_qmckl(iorb,5)
+               enddo
+            else
+               do iorb=1,norb
+c     orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
+c     dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
+c     dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
+c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
+                  orbn(iorb,k)=mo_vgl_qmckl(iorb,1)
+                  dorbn(iorb,1,k)=mo_vgl_qmckl(iorb,2)
+                  dorbn(iorb,2,k)=mo_vgl_qmckl(iorb,3)
+                  dorbn(iorb,3,k)=mo_vgl_qmckl(iorb,4)
+               enddo
+            endif
+           
+            deallocate(mo_vgl_qmckl)
+            
+            
+
+            
+
+#else
+            
             if(nwftypeorb.gt.1) iwf=1 !STU doing this for now
             call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
-c#endif
 
 !     Vectorization dependent code. useful for AVX512 and AVX2
 #ifdef VECTORIZATION
@@ -458,6 +615,9 @@ c#endif
 
 
 #endif
+
+
+#endif
          endif
 c endif for ier
       else
@@ -465,23 +625,6 @@ c endif for ier
            call orbitals_pw_grade(iel,x(1,iel),orbn(:,k),dorbn(:,:,k),ddorbn(:,k))
          enddo
       endif
-c endif for periodic
-c      if(ipr.ge.0) then
-c        write(ounit,*) 'orbitalse, one electron changed'
-c        do j=1,nwftypeorb
-c          do iorb=1,norb
-c            write(ounit,'(''orb set,iorb,orbn='',2i4,1f15.11)') j,iorb,orbn(iorb,j)
-c          enddo
-c          do iorb=1,norb
-c            write(ounit,'(''orb set,iorb,d2orbn='',2i4,1f15.11)') j,iorb,ddorbn(iorb,j)
-c          enddo
-c          do k=1,3
-c            do iorb=1,norb
-c              write(ounit,'(''orb set,dir,iorb,dorbn='',3i4,1f12.8)') j,k,iorb,dorbn(iorb,k,j)
-c            enddo
-c          enddo
-c        enddo
-c      endif
 
       return
       end

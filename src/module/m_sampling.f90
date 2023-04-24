@@ -135,14 +135,14 @@ contains
     end subroutine deallocate_config_dmc
 end module config
 
-module rnyucm
+module random
     !> I guess the random number generator
     !> used to move in the MC sampling
     !> Arguments: ll, lm
 
     integer  :: ll(4)
     integer  :: mm(4)
-    integer  :: switch_rng = 1 
+    integer  :: switch_rng = 1
 
     data mm/502, 1521, 4071, 2107/
     data ll/0, 0, 0, 1/
@@ -151,7 +151,7 @@ module rnyucm
     public :: ll, mm, switch_rng
     save
 
-end module rnyucm
+end module random
 
 module stats
     !> Arguments: rejmax, acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc,
