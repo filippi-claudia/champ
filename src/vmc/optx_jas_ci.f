@@ -56,7 +56,7 @@ c-----------------------------------------------------------------------
       use optwf_control, only: ioptci, ioptjas, method
       use optwf_parms, only: nparmj
       use ci000, only: nciterm
-      use vmc_mod, only: nwftypemax, stoo, stobjx
+      use vmc_mod, only: stoo, stobjx
       use csfs, only: nstates
 
       implicit none

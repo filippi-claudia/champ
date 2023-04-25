@@ -524,7 +524,7 @@ subroutine read_jastrow_file(file_jastrow)
       use mpiconf, only: wid
       use multiple_geo, only: MWF,nwftype
       use optwf_control, only: method, ioptwf
-      use vmc_mod, only: nwftypeorb, nwftypejas, nwftypemax, nstoj, jtos, stoj, nstojmax, extraj, nstoj_tot
+      use vmc_mod, only: nwftypeorb, nwftypejas, nstoj, jtos, stoj, nstojmax, extraj, nstoj_tot
       use precision_kinds, only: dp
       use system,  only: ncent,nctype,ndn
       use, intrinsic :: iso_fortran_env, only: iostat_eor !, iostat_eof
@@ -644,9 +644,6 @@ subroutine read_jastrow_file(file_jastrow)
     enddo
 
     if(mode(1:3) == 'vmc') write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypejas, " jastrow types to be assigned to ", nstoj_tot, " states. If only sampling, ignore."
-
-    nwftypemax=max(nwftypejas,nwftypeorb)
-    call bcast(nwftypemax)
 
     ! read the first word of the file
     if (wid) then

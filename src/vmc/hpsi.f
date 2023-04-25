@@ -32,7 +32,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use multiple_geo, only: iwf,iwftype, nforce
       use multislater, only: detiab
       use nonloc_pot_mod, only: nonloc_pot
-      use vmc_mod,        only: nwftypejas, nwftypeorb, nwftypemax, nbjx, stoo, stoj, stobjx
+      use vmc_mod,        only: nwftypejas, nwftypeorb, nbjx, stoo, stoj, stobjx
       use optci_mod, only: optci_deloc
       use optjas_mod, only: optjas_deloc
       use optorb_f_mod, only: optorb_compute

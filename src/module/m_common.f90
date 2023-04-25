@@ -383,8 +383,8 @@ module multimat
 
     implicit none
 
-    real(dp), dimension(:, :, :, :), allocatable :: aa !(MELEC,norb_tot,2,nwftypemax)
-    real(dp), dimension(:, :, :, :), allocatable :: wfmat !(MDET,MEXCIT**2,2,nwftypemax)
+    real(dp), dimension(:, :, :, :), allocatable :: aa !(MELEC,norb_tot,2,nwftypeorb)
+    real(dp), dimension(:, :, :, :), allocatable :: wfmat !(MDET,MEXCIT**2,2,nwftypeorb)
 
     private
     public :: aa, wfmat
@@ -414,8 +414,8 @@ module multimatn
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: aan !(MELEC, norb_tot, nwftypemax)
-    real(dp), dimension(:, :, :), allocatable :: wfmatn !(MDET, MEXCIT**2,nwftypemax)
+    real(dp), dimension(:, :, :), allocatable :: aan !(MELEC, norb_tot, nwftypeorb)
+    real(dp), dimension(:, :, :), allocatable :: wfmatn !(MDET, MEXCIT**2,nwftypeorb)
 
     private
     public :: aan, wfmatn

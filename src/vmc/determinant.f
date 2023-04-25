@@ -239,7 +239,7 @@ c-----------------------------------------------------------------------
       use slater,  only: norb
       use sr_more, only: daxpy
       use csfs, only: nstates
-      use vmc_mod, only: nwftypemax, stoo, stoj, stobjx, nbjx, nwftypeorb, nwftypejas, bjxtoo, bjxtoj
+      use vmc_mod, only: stoo, stoj, stobjx, nbjx, nwftypeorb, nwftypejas, bjxtoo, bjxtoj
       use contrl_file, only: ounit
       implicit none
 

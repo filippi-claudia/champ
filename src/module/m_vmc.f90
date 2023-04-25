@@ -43,7 +43,6 @@ module vmc_mod
     integer :: nmat_dim, nmat_dim2
     integer :: nwftypeorb
     integer :: nwftypejas
-    integer :: nwftypemax
     integer :: nstojmax
     integer :: nstoomax
     integer :: nbjx
@@ -63,7 +62,7 @@ module vmc_mod
     public :: nrad, nmat_dim, nmat_dim2
     public :: radmax, delri
 
-    public :: mterms, nwftypejas, nwftypeorb, nwftypemax, nstojmax, nstoomax, nbjx, nstoj_tot, nstoo_tot
+    public :: mterms, nwftypejas, nwftypeorb, nstojmax, nstoomax, nbjx, nstoj_tot, nstoo_tot
     public :: nstoo, nstoj, jtos, otos, stoj, stoo, stobjx, extrao, extraj, bjxtoo, bjxtoj
 
     public :: ncent3, NCOEF, MEXCIT
