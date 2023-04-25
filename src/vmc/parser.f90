@@ -1206,6 +1206,12 @@ subroutine parser
     mparm = nparm + (nstates-1)*(norbterm) + 1
   endif
 
+  if(vmc_nblk.gt.vmc_nblk_max) then
+    write(ounit,*) "Warning, vmc_nblk gt vmc_nblk_max. Setting vmc_nblk_max = vmc_nblk"
+    vmc_nblk_max=vmc_nblk
+    ! or we force a fatal error.
+  endif
+
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
