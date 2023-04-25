@@ -144,50 +144,50 @@ c vps was calculated by calling getvps_tm from nonloc_pot
 c skip if non-local components are zero
           if(iskip(i,ic).eq.0) then
 
-             ri=one/r_en(i,ic)
+            ri=one/r_en(i,ic)
 
 c loop quadrature points
-             do iq=1,nquad
-                
-                nxquad=nxquad+1
-                iequad(nxquad)=i
-                icquad(nxquad)=ic
-                iqquad(nxquad)=iq
-                
-                costh(nxquad)=rvec_en(1,i,ic)*xq(iq)+rvec_en(2,i,ic)*yq(iq)+rvec_en(3,i,ic)*zq(iq)
-                costh(nxquad)=costh(nxquad)*ri
-                
-                if(iperiodic.eq.0) then
-                   xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)
-                   xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)
-                   xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)
-                else
-                   xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)+rshift(1,i,ic)
-                   xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)+rshift(2,i,ic)
-                   xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
-                endif
-                
-                r_en_quad(nxquad,ic)=r_en(i,ic)
-                call distance_quad(nxquad,ic,xquad(1,nxquad),r_en_quad,rvec_en_quad,rshift)
-                
-             enddo
-          elseif(i_vpsp.ne.0)then
-             if(index(mode,'dmc').ne.0) then
-                do iq=1,nquad
-                   t_vpsp(ic,iq,i)=0.d0
-                   do iorb=1,norb
-                      b_t(iorb,iq,ic,i)=0.d0
-                   enddo
+            do iq=1,nquad
+
+              nxquad=nxquad+1
+              iequad(nxquad)=i
+              icquad(nxquad)=ic
+              iqquad(nxquad)=iq
+
+              costh(nxquad)=rvec_en(1,i,ic)*xq(iq)+rvec_en(2,i,ic)*yq(iq)+rvec_en(3,i,ic)*zq(iq)
+              costh(nxquad)=costh(nxquad)*ri
+
+              if(iperiodic.eq.0) then
+                xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)
+                xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)
+                xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)
+               else
+                xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)+rshift(1,i,ic)
+                xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)+rshift(2,i,ic)
+                xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
+              endif
+
+              r_en_quad(nxquad,ic)=r_en(i,ic)
+              call distance_quad(nxquad,ic,xquad(1,nxquad),r_en_quad,rvec_en_quad,rshift)
+
+            enddo
+           elseif(i_vpsp.ne.0)then
+            if(index(mode,'dmc').ne.0) then
+              do iq=1,nquad
+                t_vpsp(ic,iq,i)=0.d0
+                do iorb=1,norb
+                  b_t(iorb,iq,ic,i)=0.d0
                 enddo
-             else
-                do iq=1,nquad
-                   t_vpsp(ic,iq,i)=0.d0
-                enddo
-             endif
-c     endif iskip
+              enddo
+            else
+              do iq=1,nquad
+                t_vpsp(ic,iq,i)=0.d0
+              enddo
+            endif
+c endif iskip
           endif
-          
-       enddo
+
+        enddo
       enddo
 
       if(nxquad.eq.0) return
@@ -440,30 +440,30 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       if(iperiodic.eq.0) then
 
-c     get the value from the 3d-interpolated orbitals
-         ier=0
-         if(i3dsplorb.ge.1) then
-            do iq=1,nxquad
-               do iorb=1,norb+nadorb
-                  ddtmp=0       ! Don't compute the laplacian
-                  dtmp(1)=0     ! Don't compute the gradients
-                  dtmp(2)=0     ! Don't compute the gradients
-                  dtmp(3)=0     ! Don't compute the gradients
-                  call spline_mo(xquad(1,iq),iorb,orbn(iorb,iq),dtmp,ddtmp,ier)
-               enddo
+c get the value from the 3d-interpolated orbitals
+        ier=0
+        if(i3dsplorb.ge.1) then
+          do iq=1,nxquad
+            do iorb=1,norb+nadorb
+              ddtmp=0     ! Don't compute the laplacian
+              dtmp(1)=0   ! Don't compute the gradients
+              dtmp(2)=0   ! Don't compute the gradients
+              dtmp(3)=0   ! Don't compute the gradients
+              call spline_mo(xquad(1,iq),iorb,orbn(iorb,iq),dtmp,ddtmp,ier)
             enddo
+          enddo
          elseif(i3dlagorb.ge.1) then
-            do iq=1,nxquad
-               call lagrange_mose(1,xquad(1,iq),orbn(iorb,iq),ier)
-            enddo
+          do iq=1,nxquad
+            call lagrange_mose(1,xquad(1,iq),orbn(iorb,iq),ier)
+          enddo
          else
-            ier=1
-         endif
+          ier=1
+        endif
 
-         if(ier.eq.1) then
-c     get basis functions for electron iel
-            ider=0
-            if(iforce_analy.gt.0) ider=1
+        if(ier.eq.1) then
+c get basis functions for electron iel
+          ider=0
+          if(iforce_analy.gt.0) ider=1
 
 #ifdef QMCKL_FOUND
 
@@ -537,25 +537,25 @@ c     get basis functions for electron iel
           call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
           if(nwftypeorb.gt.1) iwf=iwforb
 
-            do iq=1,nxquad
+          do iq=1,nxquad
 
-!     Vectorization dependent code selection
+! Vectorization dependent code selection
 #ifdef VECTORIZATION
-! The following loop changed for better vectorization AVX512/AVX2
-               do iorb=1,norb+nadorb
-                  orbn(iorb,iq)=0.d0
-                  do m=1,nbasis
-                     orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
-                  enddo
-               enddo
+          ! The following loop changed for better vectorization AVX512/AVX2
+          do iorb=1,norb+nadorb
+             orbn(iorb,iq)=0.d0
+             do m=1,nbasis
+                orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
+             enddo
+          enddo
 #else
-               do iorb=1,norb+nadorb
-                  orbn(iorb,iq)=0.d0
-                  do m0=1,n0_nbasis(iq)
-                     m=n0_ibasis(m0,iq)
-                     orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
-                  enddo
-               enddo
+          do iorb=1,norb+nadorb
+             orbn(iorb,iq)=0.d0
+             do m0=1,n0_nbasis(iq)
+                m=n0_ibasis(m0,iq)
+                orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
+             enddo
+          enddo
 #endif
 
           if(iforce_analy.gt.0) then
@@ -592,16 +592,10 @@ c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
 
         endif
 
-            enddo
+       else
 
-#endif
-            
-         endif
+        call orbitals_pwe(iel,xquad,orbn)
 
-      else
-         
-         call orbitals_pwe(iel,xquad,orbn)
-         
       endif
 
       nadorb = nadorb_sav
