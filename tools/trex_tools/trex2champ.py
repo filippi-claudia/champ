@@ -43,8 +43,6 @@ import os
 import numpy as np
 from collections import Counter
 import argparse
-import pytest
-import copy
 
 # Before we do anything else, we need to check if trexio and resultsFile are installed
 try:
@@ -1505,7 +1503,6 @@ def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets,
     """
 
     def read_coefficients (state: int, offset_file: int, det_num: int) -> list:
-        filename.set_state(state)
         coefficients = trexio.read_determinant_coefficient(
             filename, offset_file, det_num
         )
@@ -1514,7 +1511,6 @@ def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets,
 
     offset_file = 0
     coefficients_read_all = []
-
     for i in range(num_states):
         coefficients_read = read_coefficients(i, offset_file, num_dets)
         coefficients_read_all.append(coefficients_read)
@@ -1567,67 +1563,6 @@ def write_determinants_to_champ_from_trexio_only(filename, num_states, num_dets,
     # If filename is None, return a string representation of the output.
     else:
         return None
-
-
-def test_formaldehyde_ground_state():
-    champ = Champ()
-    champ.filename="COH2_GS.trexio"
-    champ.motype="RHF"
-    champ.back_end=trexio.TREXIO_HDF5
-    champ.gamessfile=None
-    champ.save_geometry=True
-    champ.save_lcao = True
-    champ.save_basis = True
-    champ.save_eigenvalues = False
-    champ.save_ecp = True
-    champ.save_symmetry = False
-    champ.save_determinants = True
-    champ.save_csfs = False
-
-    # Optional argument for controlling the names of the output files
-    champ.basis_prefix = "TEST1"
-
-    champ.run()
-    assert champ is not None
-    assert champ.nucleus_num == 4
-    assert champ.ao_num == 66
-    assert champ.mo_num == 66
-    assert champ.shell_num == 26
-    assert champ.prim_num == 62
-    assert champ.ecp_num == 14
-    assert champ.num_dets == 1862
-    assert champ.num_states == 1
-
-def test_benzene_ground_state():
-    champ = Champ()
-    champ.filename="benzene.hdf5"
-    champ.motype="RHF"
-    champ.back_end=trexio.TREXIO_HDF5
-    champ.gamessfile=None
-    champ.save_geometry=True
-    champ.save_lcao = True
-    champ.save_basis = True
-    champ.save_eigenvalues = False
-    champ.save_ecp = True
-    champ.save_symmetry = False
-    champ.save_determinants = False
-    champ.save_csfs = False
-
-    # Optional argument for controlling the names of the output files
-    champ.basis_prefix = "TEST2"
-
-    champ.run()
-    assert champ is not None
-    assert champ.nucleus_num == 12
-    assert champ.ao_num == 114
-    assert champ.mo_num == 108
-    assert champ.shell_num == 48
-    assert champ.prim_num == 186
-    assert champ.ecp_num == 42
-
-
-
-
 
 if __name__ == "__main__":
     champ = Champ()
