@@ -170,7 +170,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
         "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
         "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
         "-Wno-c-binding-type" "-Wno-function-elimination"
-        "-fno-check-array-temporaries"
+	"-fno-check-array-temporaries"
         # "-ffpe-trap=invalid,zero,overflow" 
         )
   endif()

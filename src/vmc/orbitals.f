@@ -53,7 +53,6 @@ c Modified by A. Scemama
       use const
       use qmckl_data                                               
 #endif 
-
       
       implicit none
 
@@ -150,12 +149,11 @@ c spline interpolation
          enddo
 
 c no 3d interpolation
-        else
-
-c get basis functions for all electrons
+      else
+         
+c     get basis functions for all electrons
          ider=2
          if(iforce_analy.eq.1) ider=3
-
 
 #ifdef QMCKL_FOUND
 
@@ -195,6 +193,7 @@ c get basis functions for all electrons
 !            print*, "inside qmckl"
          
 ! pass computed qmckl orbitals back to champ
+
          k=1 ! until state specific orbitals can be used 
          do i=1,nelec
             do iorb=1,norb+nadorb
@@ -209,31 +208,32 @@ c get basis functions for all electrons
          deallocate(mo_vgl_qmckl)
          
          
-
 #else
 
          call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 
 
-c in alternativa al loop 26
-c        do jbasis=1,nbasis
-c         i=0
-c         do ielec=1,nelec
-c          bhin(ielec,jbasis)=phin(jbasis,ielec)
-c          do l=1,3
-c           i=i+1
-c           dbhin(i,jbasis)=dphin(jbasis,ielec,l)
-c          enddo
-c          d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
-c         enddo
-c        enddo
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
-c        call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
-c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
 
-!        Vectorization dependent code selection
+c in alternativa al loop 26
+c     do jbasis=1,nbasis
+c     i=0
+c     do ielec=1,nelec
+c     bhin(ielec,jbasis)=phin(jbasis,ielec)
+c     do l=1,3
+c     i=i+1
+c     dbhin(i,jbasis)=dphin(jbasis,ielec,l)
+c     enddo
+c     d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
+c     enddo
+c     enddo
+c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
+c     call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
+c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
+         
+!     Vectorization dependent code selection
 #ifdef VECTORIZATION
 !     Following loop changed for better vectorization AVX512/AVX2
+
           do k=1,nwftypeorb
             if(nwftypeorb.gt.1) iwf=k
             do i=1,nelec
@@ -283,6 +283,7 @@ c        call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iw
 !endif qmckl usage or not
 
        endif
+
 
        if(iforce_analy.eq.1) call da_orbitals
 
@@ -418,7 +419,7 @@ c     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
 
 c get the value and gradients from the 3d-interpolated orbitals
          ier=0
-c spline interplolation
+c     spline interplolation
          if(i3dsplorb.ge.1) then
             do k=1,nwftypeorb
               do iorb=1,norb
@@ -478,7 +479,9 @@ c     allocate(mo_vgl_qmckl(n8, 5, 1))
      &           qmckl_ctx,
      &           mo_vgl_qmckl,
      &           n8*5_8)
+
             k=1 ! until state-specific orbitals can use QMCKL
+
             if(iflag.gt.0) then
                do iorb=1,norb
 c     orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
@@ -486,6 +489,7 @@ c     dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
 c     dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
 c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
 c     ddorbn(iorb)=mo_vgl_qmckl(iorb,5,1)
+
                   orbn(iorb,k)=mo_vgl_qmckl(iorb,1)
                   dorbn(iorb,1,k)=mo_vgl_qmckl(iorb,2)
                   dorbn(iorb,2,k)=mo_vgl_qmckl(iorb,3)
@@ -498,22 +502,23 @@ c     orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
 c     dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
 c     dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
 c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
+
                   orbn(iorb,k)=mo_vgl_qmckl(iorb,1)
                   dorbn(iorb,1,k)=mo_vgl_qmckl(iorb,2)
                   dorbn(iorb,2,k)=mo_vgl_qmckl(iorb,3)
                   dorbn(iorb,3,k)=mo_vgl_qmckl(iorb,4)
+
                enddo
             endif
            
             deallocate(mo_vgl_qmckl)
             
-            
-
-            
+                      
 
 #else
             
             if(nwftypeorb.gt.1) iwf=1
+
             call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
 
 !     Vectorization dependent code. useful for AVX512 and AVX2
@@ -537,8 +542,8 @@ c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
                     enddo
                  enddo
                enddo
-
-
+               
+               
             else
 
                do k=1,nwftypeorb
@@ -605,7 +610,7 @@ c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
                  enddo
                enddo
 
-
+               
             endif
 
 

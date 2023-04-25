@@ -177,7 +177,27 @@ subroutine parser
 #if defined(QMCKL_FOUND)
       use qmckl_data
 #endif
-use, intrinsic :: iso_fortran_env, only : iostat_end
+
+      
+  use, intrinsic :: iso_fortran_env, only : iostat_end
+
+! CHAMP modules
+
+! in the replacement of preprocess input
+
+! variables from process input
+
+! Note the additions: Ravindra
+! Note the additions: Ravindra
+
+
+
+
+
+
+
+! Note the following modules are new additions
+
 
 !
   implicit none
@@ -1927,8 +1947,10 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
 
 
   
-!----------------------------------------------------------------------------END
 
+  !----------------------------------------------------------------------------END
+
+  
 
   contains
 
