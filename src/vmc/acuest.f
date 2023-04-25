@@ -150,7 +150,7 @@ c statistical fluctuations without blocking
         apsi(istate)=apsi(istate)+dabs(psido(istate))
       enddo
       do k=1,nwftypeorb
-c !STU state mapping below aref, detiab, detref, can also loop over orb or nwftypemax
+
         aref(k)=aref(k)+dabs(detiab(kref,1,k)*detiab(kref,2,k))
 
         detref(1,k)=detref(1,k)+dlog10(dabs(detiab(kref,1,k)))
@@ -200,7 +200,6 @@ c zero out estimators
         apsi(istate)=0
       enddo
       do k=1,nwftypeorb
-c      !STU mapping to avoid errors
         detref(1,k)=0
         detref(2,k)=0
 
@@ -259,8 +258,6 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,ekino,eold(1,ifr),0,ifr)
         do istate=1,nstates
-         !STU, nforce>1 only for geo? Assuming inly ever 1 jastrow type?
-         !adding stoj anyway
           psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))+dlog(ajacob)
         enddo
       enddo
@@ -285,9 +282,7 @@ c        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo(1))
       endif
 
       if(node_cutoff.gt.0) then
-        do jel=1,nelec !STU check if putting psijo is right here, kept (1) from the first psido
-          !STU ramon's compute_determinante_grad got away without
-          !defining psig locally, I get an error when removing this (1)
+        do jel=1,nelec
           call compute_determinante_grad(jel,psido(1),psido,psijo,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)

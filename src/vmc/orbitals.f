@@ -81,7 +81,6 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
 c spline interpolation
         if(i3dsplorb.eq.2) then
           do k=1,nwftypeorb
-c            if(nwftypeorb.gt.1) iwf=k !STU sort this out later.
             do i=1,nelec
             ier = 0.d0
               do iorb=1,norb+nadorb
@@ -93,9 +92,7 @@ c            if(nwftypeorb.gt.1) iwf=k !STU sort this out later.
               enddo
               if(ier.eq.1) then
 
-c                if(nwftypeorb.gt.1) iwf=1 !STU sort this out later     
                 call basis_fns(i,i,nelec,rvec_en,r_en,2)
-c                if(nwftypeorb.gt.1) iwf=k !STU sort this out later
 
                 do iorb=1,norb+nadorb
                   orb(i,iorb,k)=0.d0
@@ -119,7 +116,6 @@ c                if(nwftypeorb.gt.1) iwf=k !STU sort this out later
 ! Lagrange interpolation, did not inclue multiorb here yet
         elseif(i3dlagorb.eq.2) then
          do k=1,nwftypeorb
-c           if(nwftypeorb.gt.1) iwf=k !STU sort this out later
            do i=1,nelec
              ier=0
              call lagrange_mos(1,x(1,i),orb(1,1,k),i,ier)
@@ -130,9 +126,9 @@ c           if(nwftypeorb.gt.1) iwf=k !STU sort this out later
 
              if(ier.eq.1) then
 
-              if(nwftypeorb.gt.1) iwf=1 !STU sort this out later
+              if(nwftypeorb.gt.1) iwf=1
               call basis_fns(i,i,nelec,rvec_en,r_en,2)
-              if(nwftypeorb.gt.1) iwf=k !STU sort this out later
+              if(nwftypeorb.gt.1) iwf=k
 
                do iorb=1,norb+nadorb
                  orb(i,iorb,k)=0.d0
@@ -199,7 +195,7 @@ c get basis functions for all electrons
 !            print*, "inside qmckl"
          
 ! pass computed qmckl orbitals back to champ
-         k=1 !STU until state specific orbitals can be used 
+         k=1 ! until state specific orbitals can be used 
          do i=1,nelec
             do iorb=1,norb+nadorb
                orb  (  i,iorb,k) = mo_vgl_qmckl(iorb,1,i)
@@ -216,7 +212,6 @@ c get basis functions for all electrons
 
 #else
 
-c         if(nwftypeorb.gt.1) iwf=1 !STU, doing this for now
          call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 
 
@@ -336,7 +331,7 @@ c-------------------------------------------------------------------------------
       real(dp), dimension(3*nelec,nbasis) :: tphin
       real(dp), dimension(3*3*nelec,nbasis) :: t2phin_all
       real(dp), dimension(3*nelec,nbasis) :: t3phin
-c     !STU da_orb have not been given an exrta index
+
       do ibasis=1,nbasis
        i=0
        j=0
@@ -483,7 +478,7 @@ c     allocate(mo_vgl_qmckl(n8, 5, 1))
      &           qmckl_ctx,
      &           mo_vgl_qmckl,
      &           n8*5_8)
-            k=1 !STU until state-specific orbitals can use QMCKL
+            k=1 ! until state-specific orbitals can use QMCKL
             if(iflag.gt.0) then
                do iorb=1,norb
 c     orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
@@ -518,7 +513,7 @@ c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
 
 #else
             
-            if(nwftypeorb.gt.1) iwf=1 !STU doing this for now
+            if(nwftypeorb.gt.1) iwf=1
             call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
 
 !     Vectorization dependent code. useful for AVX512 and AVX2

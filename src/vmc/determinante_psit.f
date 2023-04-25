@@ -12,21 +12,21 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: stoo, nwftypeorb
       implicit none
 
-      integer :: iel, istate, k, iwf_save
+      integer :: iel, istate, k, iwf_save, o
       real(dp) :: det, determ
 
-      !STU add istate to orbital mapping here, detn, detiab
+      o=stoo(istate)
       iwf_save=iwf
-      !STU this is to make sure iwf was not left >1 at some point
+      
       if(nwftypeorb.gt.1) iwf=1
       determ=0.d0
       if(iel.le.nup) then
        do k=1,ndet
-          determ=determ+detn(k,stoo(istate))*detiab(k,2,stoo(istate))*cdet(k,istate,iwf)
+          determ=determ+detn(k,o)*detiab(k,2,o)*cdet(k,istate,iwf)
        enddo
       else
          do k=1,ndet
-            determ=determ+detn(k,stoo(istate))*detiab(k,1,stoo(istate))*cdet(k,istate,iwf)
+            determ=determ+detn(k,o)*detiab(k,1,o)*cdet(k,istate,iwf)
          enddo
       endif
       iwf=iwf_save

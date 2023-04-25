@@ -40,10 +40,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
 
       ! local variables
-      integer :: i, i1, i2, iab, istate, jstate, check, auxy
+      integer :: i, i1, i2, iab, istate, auxy
       integer :: ic, ict, iel, index
       integer :: iorb, iparm, iq, iqq
-      integer :: jc, k, l, nxquad, j, ndim, iwforb, iwfjas, imax, ibjx, xo, xj
+      integer :: jc, k, l, nxquad, ndim, iwforb, iwfjas, ibjx, xo, xj
       real(dp) :: ri, term1, term2
       real(dp), parameter :: one = 1.d0
       
@@ -107,12 +107,12 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       if(allocated(vjn)) deallocate(vjn)
       allocate(vjn(3,ndim))
 
-      !STU mapping? or specify full dimensions and do (:,:)=0
-      do j=1,nbjx
-        vpsp_det(1,j)=0.d0
-        vpsp_det(2,j)=0.d0
+      
+      do k=1,nbjx
+        vpsp_det(1,k)=0.d0
+        vpsp_det(2,k)=0.d0
         do iparm=1,nparmj
-          dvpsp_dj(iparm,j)=0.d0
+          dvpsp_dj(iparm,k)=0.d0
         enddo
       enddo
 
@@ -127,9 +127,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       nxquad=0
       do i=i1,i2
 
-        do j=1,nbjx
+        do k=1,nbjx
           do iorb=1,norb+nadorb
-            b(iorb,i,j)=bkin(iorb,i,j)
+            b(iorb,i,k)=bkin(iorb,i,k)
           enddo
         enddo
 
@@ -193,8 +193,7 @@ c endif iskip
 
       if(nxquad.eq.0) return
 
-      do iwforb=1,nwftypeorb !STU mapping etc
-c       !STU I left da_orbn w/o state index because not relevant.
+      do iwforb=1,nwftypeorb
         call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,iwforb),
      &                   dorbn(1,1,1,iwforb),da_orbn,iwforb)
         call nonlocd_quad(nxquad,iequad,orbn(1,1,iwforb),det_ratio(1,iwforb),iwforb)
@@ -261,12 +260,11 @@ c dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
         endif
 
 c transition probabilities for Casula's moves in DMC
-        do istate=1,nstates !STU check eventually what loop to do here,
-c       !STU swap order of this loop and if statement        
+        do istate=1,nstates
+c         swap order of this loop and if statement        
           if(index(mode,'dmc').ne.0) then
             t_vpsp(ic,iqq,iel)=det_ratio(iq,1)*term_radial_jas(iq,1)
             do iorb=1,norb
-c             !STU I left b_t without an index              
               b_t(iorb,iqq,ic,iel)=orbn(iorb,iq,istate)*term_radial_jas(iq,1)
             enddo
           endif
@@ -277,8 +275,6 @@ c             !STU I left b_t without an index
 
       if(iforce_analy.gt.0) call compute_da_bnl(nxquad,iequad,icquad,iqquad,r_en,rvec_en,costh,term_radial_jas(1,1)
      &,orbn(1,1,1),dorbn(1,1,1,1),da_orbn,psij_ratio(1,1),vjn,da_psij_ratio)
-      !STU just used jsa and orb type=1 in psij_ratio and dorbn,
-      !term_radial probably need to add for da_psij_ratioi, da_orbn
 
       if(ipr.ge.4) then 
         write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
@@ -443,8 +439,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
 
 
-c      if(nwftypeorb.gt.1) iwf=iwforb !STU moved below
-
       if(iperiodic.eq.0) then
 
 c get the value from the 3d-interpolated orbitals
@@ -540,9 +534,9 @@ c get basis functions for electron iel
 
 #else
 
-          if(nwftypeorb.gt.1) iwf=1 !STU sort out later
+          if(nwftypeorb.gt.1) iwf=1
           call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
-          if(nwftypeorb.gt.1) iwf=iwforb !STU sort out later
+          if(nwftypeorb.gt.1) iwf=iwforb
 
           do iq=1,nxquad
 
@@ -625,7 +619,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       implicit none
 
-      integer :: nxquad, iq, iel, ikel, j, iwforb !STU maybe call iwfmax
+      integer :: nxquad, iq, iel, ikel, j, iwforb
       integer, dimension(*) :: iequad
       real(dp), dimension(*) :: ratio
       real(dp), dimension(norb_tot,*) :: orb

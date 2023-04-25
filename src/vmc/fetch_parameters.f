@@ -2,8 +2,6 @@
       contains
 c-----------------------------------------------------------------------
       subroutine fetch_parameters(p)
-      !STU I did not update these subroutines for more states since we
-      !don't touch with multi jast/lcao, as far as I know
       ! this was not in master but I think it's needed
       ! this is so confusng ...
       use optwf_control, only: nparm

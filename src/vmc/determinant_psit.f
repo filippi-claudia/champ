@@ -9,16 +9,15 @@
       use vmc_mod, only: stoo, nwftypeorb
       implicit none
 
-      integer :: istate, k, iwf_save
+      integer :: istate, k, iwf_save, o
       real(dp) :: determ
 
-      !STU use state orb mapping here
       determ=0.0d0
       iwf_save=iwf
-      !STU doing incase iwf >1 from somwhere else
+      o=stoo(istate)
       if(nwftypeorb.gt.1) iwf=1
       do k=1,ndet
-        determ=determ+detiab(k,1,stoo(istate))*detiab(k,2,stoo(istate))*cdet(k,istate,iwf)
+        determ=determ+detiab(k,1,o)*detiab(k,2,o)*cdet(k,istate,iwf)
       enddo
       iwf=iwf_save
 

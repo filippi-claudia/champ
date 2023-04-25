@@ -233,7 +233,7 @@ c loop over secondary config
 c set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,ekino,eold(1,ifr),0,ifr)
-        do istate=1,nforce !STU check mapping and just if this is right
+        do istate=1,nforce
           psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))+dlog(ajacob)
         enddo
       enddo
@@ -242,7 +242,7 @@ c primary config
 c set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-      do istate=1,nforce !STU also here
+      do istate=1,nforce
         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
       enddo
 
@@ -252,7 +252,7 @@ c rewrite psi2o if you are sampling guiding
         psi2o(1,1)=2*(dlog(dabs(psidg)))
       endif
 
-      if(node_cutoff.gt.0) then !STU need to check what to input to compute_deter... this file was removed from CMakelist in ramons
+      if(node_cutoff.gt.0) then
         do jel=1,nelec
           call compute_determinante_grad(jel,psido(1),psido,psijo,vold(1,jel),1)
         enddo

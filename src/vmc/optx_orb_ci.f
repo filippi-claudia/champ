@@ -24,7 +24,7 @@
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      k=1 !STU setting to 1 for now.
+      k=1 ! setting to 1 for now.
 
       do j=1,nreduced
        do i=1,nciterm
@@ -140,7 +140,7 @@ c     common /gradhess_orb/ grad_orb(norbterm),h_orb(MXMATDIM),s_orb(MXMATDIM)
 
       if(ioptorb.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      k=1 !STU setting to 1 for now
+      k=1 ! setting to 1 for now
 
       if(method.eq.'hessian') then
 

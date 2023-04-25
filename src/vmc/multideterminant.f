@@ -55,9 +55,9 @@ c dimensioned at least max(nup**2,ndn**2)
       ! call resize_tensor(aa, norb+nadorb, 2)
 
       do istate=1,nstates 
-        j=stoj(istate)    !STU jastrow dependent quantities: vj, 
-        o=stoo(istate)    !STU orbital dependent quantities: d2dx2, ddx, slmi, orb, aa, wfmat, detiab
-        x=stobjx(istate)  !STU mixed: b, xmat, tildem, b_j, eloc_det, denergy_det, vpsp_det
+        j=stoj(istate) 
+        o=stoo(istate)
+        x=stobjx(istate)
         nel=nup
         ish=0
         do iab=1,2
@@ -73,9 +73,6 @@ c dimensioned at least max(nup**2,ndn**2)
           eloc_det(kref,iab,x)=ekin_det(iab,x) + vpsp_det(iab,x)
         enddo
 
-c     write(ounit,*) 'eloc_ref',eloc_det(kref,1),eloc_det(kref,2)
-        !STU check the bjx mapping here
-        !STU looks right
         if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) then
           call bxmatrix(kref,xmat(1,1,x),xmat(1,2,x),b(1,1,x),x)
           call bxmatrix(kref,xmatkin(1,1,x),xmatkin(1,2,x),bkin(1,1,x),x)
@@ -106,7 +103,7 @@ c         do jrep=ivirt(iab),norb+nadorb
               dum3=0.d0
               dum4=0.d0 
               dum5=0.d0
-              do i=1,nel  !STU check these and b, and tildem, dum don't need state indices
+              do i=1,nel
                 dum1=dum1+slmi(irep+(i-1)*nel,iab,o)*orb(i+iel,jrep,o)
                 dum2=dum2+slmi(irep+(i-1)*nel,iab,o)*b(jrep,i+iel,x)
                 dum3=dum3+xmat(i+(irep-1)*nel,iab,x)*orb(i+iel,jrep,o)
@@ -114,9 +111,7 @@ c         do jrep=ivirt(iab),norb+nadorb
                 dum4=dum4+slmi(irep+(i-1)*nel,iab,o)*bkin(jrep,i+iel,x)
                 dum5=dum5+xmatkin(i+(irep-1)*nel,iab,x)*orb(i+iel,jrep,o)
               enddo
-              !write(ounit,*) "dum1,dum2,dum3", dum1, dum2, dum3
               aa(irep,jrep,iab,o)=dum1
-              !STU recent change to tildem, o -> x
               tildem(irep,jrep,iab,x)=dum2-dum3
               tildemkin(irep,jrep,iab,x)=dum4-dum5
             enddo
@@ -146,8 +141,8 @@ c           write(ounit,'(''AA-2 '',15f7.2)') (aa(irep,jrep,2),jrep=1,15)
 c         enddo
 c       endif
 
-        call allocate_denergy_det_m() !STU check this, added nwftypeorb
-        denergy_det(kref,1,x)=0 !STU is an index really needed here?
+        call allocate_denergy_det_m()
+        denergy_det(kref,1,x)=0
         denergy_det(kref,2,x)=0
         ddenergy_det=0.0d0
       
@@ -273,7 +268,6 @@ c               enddo
 ! unrolling determinants different to kref
           detiab(:,iab,o)=detiab(kref,iab,o)
           eloc_det(:,iab,x)=eloc_det(kref,iab,x)
-          !denergy_det(:,iab,x)=0.d0 !STU done above
           do kk=1,ndetiab2(iab)
             k=k_det2(kk,iab)
             kw=k_aux(kk,iab)
@@ -293,8 +287,6 @@ c     &       denergy_det(k_det2(1:ndetiab2(iab),iab),iab)
       
          
 c compute Ymat for future use
-         !STU some mapping to be done here: wfmat, detiab only gained istate index
-         !STU looks right
 
         call compute_ymat(1,detiab(1,1,o),detiab(1,2,o),wfmat(1,1,1,o),ymat(1,1,1,istate),istate)
 !        if(iforce_analy.gt.0.or.(ioptorb.gt.0.and.(method(1:3) == 'lin'))) call compute_dymat(1,dymat(1,1,1,istate))
@@ -310,7 +302,7 @@ c compute Ymat for future use
         if(iforce_analy.gt.0.or.ioptorb.gt.0) call compute_zmat(ymat(1,1,1,istate),dymat(1,1,1,istate)
      &             ,zmat(1,1,1,istate),dzmat(1,1,1,istate),emz(1,1,1,istate),aaz(1,1,1,istate),istate)
       
-      enddo !STU end of istate loop from start of routine
+      enddo ! end of istate loop from start of routine
 
       return
       end
@@ -349,11 +341,8 @@ c-----------------------------------------------------------------------
       
 
       detrefi=1.d0/(detu(kref)*detd(kref))
-      !write(ounit, *) 'STATE,detrefi,detu,detd',istate,detrefi,detu(kref),detd(kref) 
       ymat=0
      
-      !STU check mapping orbital/jastrow, denergy_det, wfmat is passed in with istate index, we are using local wfmat
-      !STU looks right
       cdet_equiv=0.0d0
       dcdet_equiv=0.0d0
       iwf_save=iwf
@@ -452,12 +441,6 @@ c            enddo
          
       endif
 
-c      do irep=1,norb_tot*nelec
-c         write(ounit, *) 'ymatn'
-c         write(ounit, *) 'istate,iab,ymat', istate,iab,ymat(irep)
-c      enddo
-
-      
 
       return
       end
@@ -486,8 +469,6 @@ c-----------------------------------------------------------------------
       real(dp), dimension(MEXCIT*MEXCIT) :: dmat1
       real(dp), dimension(MEXCIT*MEXCIT) :: dmat2
 
-      !STU check mapping orbitals/jastrows, wfmat, tildem
-
       dymat=0.0d0
       o=stoo(istate)
       x=stobjx(istate)
@@ -505,28 +486,11 @@ c-----------------------------------------------------------------------
       endif
 
 
-!     dobule excitations
+!     double excitations
       kcum=ndetsingle(iab)+ndetdouble(iab)
 
-!     do kk=1,ndetiab(iab)
       if(ndetdouble(iab).ge.1) then
-!         ndim=2
-         do kk=ndetsingle(iab)+1,kcum !ndetiab(iab)
-
-!            ndim=numrep_det(kk,iab)
-
-            
-!            do irep=1,ndim
-!           iorb=ireporb_det(irep,kk,iab)
-!               do jrep=1,ndim
-!                  jj=jrep+(irep-1)*ndim
-!                  dmat1(jj)=0.d0
-!                  do lrep=1,ndim
-!                     lorb=irepcol_det(lrep,kk,iab)
-!                     dmat1(jj)=dmat1(jj)+wfmat(kk,jrep+(lrep-1)*ndim,iab,istate)*tildem(lorb,iorb,iab,istate)
-!                  enddo
-!               enddo
-!            enddo
+         do kk=ndetsingle(iab)+1,kcum
 
             dmat1(1:4)=0.d0
             
@@ -538,7 +502,6 @@ c-----------------------------------------------------------------------
             dmat1(1)=dmat1(1)+wfmat(kk,3,iab,o)*tildem(lorb,iorb,iab,x)
             dmat1(2)=dmat1(2)+wfmat(kk,4,iab,o)*tildem(lorb,iorb,iab,x)
 
-
             iorb=ireporb_det(2,kk,iab)
             lorb=irepcol_det(1,kk,iab)
             dmat1(3)=dmat1(3)+wfmat(kk,1,iab,o)*tildem(lorb,iorb,iab,x)
@@ -547,38 +510,12 @@ c-----------------------------------------------------------------------
             dmat1(3)=dmat1(3)+wfmat(kk,3,iab,o)*tildem(lorb,iorb,iab,x)
             dmat1(4)=dmat1(4)+wfmat(kk,4,iab,o)*tildem(lorb,iorb,iab,x)
 
-
-!            do irep=1,ndim
-!               do jrep=1,ndim
-!                  jj=jrep+(irep-1)*ndim
-!                  dmat2(jj)=0.d0
-!                  do lrep=1,ndim
-!                     ll=jrep+(lrep-1)*ndim
-!                     dmat2(jj)=dmat2(jj)+dmat1(ll)*wfmat(kk,lrep+(irep-1)*ndim,iab)
-!                  enddo
-!               enddo
-!            enddo
-
-
            dmat2(1:4)=0.d0
            dmat2(1)=dmat1(1)*wfmat(kk,1,iab,o)+dmat1(3)*wfmat(kk,2,iab,o)
            dmat2(2)=dmat1(2)*wfmat(kk,1,iab,o)+dmat1(4)*wfmat(kk,2,iab,o)
            dmat2(3)=dmat1(1)*wfmat(kk,3,iab,o)+dmat1(3)*wfmat(kk,4,iab,o)
            dmat2(4)=dmat1(2)*wfmat(kk,3,iab,o)+dmat1(4)*wfmat(kk,4,iab,o)
            
-
-            
-!            do irep=1,ndim
-!               iorb=irepcol_det(irep,kk,iab)
-!               do jrep=1,ndim
-!                  jorb=ireporb_det(jrep,kk,iab)                 
-!                  jj=jrep+(irep-1)*ndim
-!                  dymat(jorb,iorb)=dymat(jorb,iorb)+wfmat(kk,jj,iab)*dcdet_equiv(kk)-cdet_equiv(kk)*dmat2(jj)
-!               enddo
-!            enddo
-
-
-
             iorb=irepcol_det(1,kk,iab)
             jorb=ireporb_det(1,kk,iab)
             dymat(jorb,iorb)=dymat(jorb,iorb)+wfmat(kk,1,iab,o)*dcdet_equiv(kk)-cdet_equiv(kk)*dmat2(1)
@@ -666,10 +603,10 @@ c-----------------------------------------------------------------------
       real(dp), dimension(nelec, nelec, 2) :: emz
       real(dp), dimension(nelec, nelec, 2) :: aaz
 
-      !STU check orbital/jastrow mapping, tildem, slmi, xmat, aa
 
       o=stoo(istate)
       x=stobjx(istate)
+
       do iab=1,2
         if(iab.eq.2.and.ndn.eq.0) goto 100
 
@@ -682,7 +619,6 @@ c-----------------------------------------------------------------------
         endif
 
         do irep=1,nel
-c         do jrep=ivirt(iab),norb+nadorb
           do jrep=ivirt(iab),norb
             zmat(jrep,irep,iab)=0
             dzmat(jrep,irep,iab)=0
@@ -698,7 +634,6 @@ c         do jrep=ivirt(iab),norb+nadorb
           do jrep=1,nel
             emz(jrep,irep,iab)=0
             aaz(jrep,irep,iab)=0
-c           do krep=ivirt(iab),norb+nadorb
             do krep=ivirt(iab),norb
               emz(jrep,irep,iab)=emz(jrep,irep,iab)+tildem(jrep,krep,iab,x)*zmat(krep,irep,iab)
      &                           +aa(jrep,krep,iab,o)*dzmat(krep,irep,iab)
@@ -741,20 +676,11 @@ c-----------------------------------------------------------------------
         iab=1
       endif
 
-      do istate=1,nstates !STU mapping for orbitals here, detiab, wfmat.
+      do istate=1,nstates
  100    call compute_ymat(iab,detiab(1,1,stoo(istate)),detiab(1,2,stoo(istate)),
      &            wfmat(:,:,iab,stoo(istate)),ymat(1,1,iab,istate),istate)
       enddo
 
-c     write(ounit,*) 'DU',(detiab(k,1),k=1,56)
-c     write(ounit,*) 'DD',(detiab(k,2),k=1,56)
-c     write(ounit,*) 'WF',((wfmat(k,i,iab),i=1,9),k=1,56)
-c     do j=1,13
-c     if(iab.eq.2) write(ounit,*) j,'YMAT 1',(ymat(i,j,iab,1),i=1,96)
-c     enddo
-c     do j=1,13
-c     if(iab.eq.2) write(ounit,*) j,'YMAT 2',(ymat(i,j,iab,2),i=1,96)
-c     enddo
 
       return
       end

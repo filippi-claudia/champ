@@ -50,7 +50,6 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
        call daxpy(n,-1.d0,b,1,r,1)       ! r=r-b
        call dscal(n,-1.d0,r,1)           ! r=b-r
        call asolve(n,r,d)                ! d=M^{-1}r preconditioner
-       !write(ounit,*) "d", d
        delta_new=ddot(n,d,1,r,1)           ! \delta_new=r^T d
        write(ounit,'(a12,f24.16)') 'delta0 = ',delta_new
       endif
@@ -111,7 +110,6 @@ c x(i)=b(i)/s(i,i) (preconditioning with diag(S))
       real(dp), dimension(*) :: b
 
       do i=1,n
-       !write(ounit,*) "i,b(i)", i,b(i)
        x(i)=b(i)*s_ii_inv(i, sr_state)
       enddo
 
@@ -269,31 +267,23 @@ c endif idtask.eq.0
         endif
 c endif omega.eq.1.or.2
 
-      else ! (ortho.ne.0) Ramon's
+      else ! (ortho.ne.0)
 
         do iconf=1,nconf_n
           aux(iconf)=ddot(n,z,1,sr_o(1,iconf,sr_state),1)*wtg(iconf,sr_state)
-          !write(ounit,*) "iconf,aux,sr_o(1,iconf,sr_state),sr_state", iconf, aux(iconf), sr_o(1,iconf,sr_state), sr_state
-          !write(ounit,*) "iconf,wtf", iconf, wtg(iconf,sr_state)
-          !write(ounit,*) "z", z(1)
         enddo
 
         do i=1,n
           rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1,sr_state),mparm)
-          !write(ounit,*) "i,rloc", i, rloc(i)
         enddo
 
         call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
         if(idtask.eq.0)then
           aux0=ddot(n,z,1,obs_tot(jfj,sr_state),1)
-          !write(ounit,*)  "jfj", jfj
-          !write(ounit,*) "aux0", aux0
           do i=1,n
             r(i)=r(i)/obs_tot(1,sr_state)
      &         -obs_tot(jfj+i-1,sr_state)*aux0+s_diag(i,sr_state)*z(i)
-            !write(ounit,*) "iparm,r", i, r(i)
-            !write(ounit,*) "obs_tot", obs_tot(1,sr_state)
           enddo
         endif
       
@@ -302,56 +292,4 @@ c endif omega.eq.1.or.2
       return
       end
 
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-      subroutine atimes_n_ortho(n,z,r) ! REMOVE ONCE ATIMES_N WORKS
-c     !STU can remove subroutine
-      use mpi
-      use sr_mod, only: mconf,mparm !STU checl MOBS
-      use csfs, only: nstates
-      use mpiconf, only: idtask
-      use sr_index, only: jelo, jelo2
-      use sr_mat_n, only: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag
-      use sr_mat_n, only: sr_o, wtg, obs_tot, sr_state
-      use precision_kinds, only: dp
-      use contrl_file, only: ounit
-
-      implicit none
-
-      integer :: i, iconf, n, aux0
-      real(dp), dimension(*) :: z
-      real(dp), dimension(*) :: r
-      real(dp), dimension(0:mconf) :: aux
-      real(dp), dimension(mparm) :: rloc
-
-      call MPI_BCAST(z,n,MPI_REAL8,0,MPI_COMM_WORLD,i)
-
-      do iconf=1,nconf_n
-        aux(iconf)=ddot(n,z,1,sr_o(1,iconf,sr_state),1)*wtg(iconf,sr_state)
-        write(ounit,*) "iconf,aux,sr_o(1,iconf,sr_state),sr_state", iconf, aux(iconf), sr_o(1,iconf,sr_state), sr_state
-        write(ounit,*) "iconf,wtf", iconf, wtg(iconf,sr_state)
-        write(ounit,*) "z", z(1)
-      enddo
-
-      do i=1,n
-        rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1,sr_state),mparm)
-        write(ounit,*) "i,rloc", i, rloc(i)
-      enddo
-
-      call MPI_REDUCE(rloc,r,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
-
-      if(idtask.eq.0)then
-        aux0=ddot(n,z,1,obs_tot(jfj,sr_state),1)
-        write(ounit,*)  "jfj", jfj
-        write(ounit,*) "aux0", aux0
-        do i=1,n
-          r(i)=r(i)/obs_tot(1,sr_state)
-     &         -obs_tot(jfj+i-1,sr_state)*aux0+s_diag(i,sr_state)*z(i)
-          write(ounit,*) "iparm,r", i, r(i)
-          write(ounit,*) "obs_tot", obs_tot(1,sr_state)
-        enddo
-      endif
-
-      return
-      end 
       end module

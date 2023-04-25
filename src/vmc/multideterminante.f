@@ -36,7 +36,7 @@
 
       if(ndet.eq.1) return
 
-      do istate=1,nstates !STU check if should use nstate and mapping or nwftypemax
+      do istate=1,nstates
         o=stoo(istate)
         iab=1
         nel=nup
@@ -49,7 +49,6 @@
 
 c temporarely copy orbn to orb
         do iorb=1,norb
-c         !STU orbsav doesn't need o index
           orb_sav(iorb)=orb(iel,iorb,o)
           orb(iel,iorb,o)=orbn(iorb,o)
         enddo
@@ -59,7 +58,6 @@ c         !STU orbsav doesn't need o index
 
             dum1=0.d0
             do i=1,nel
-             !STU dum1 doesn't need o index
              dum1=dum1+slmin(irep+(i-1)*nel,o)*orb(i+ish,jrep,o)
             enddo
             aan(irep,jrep,o)=dum1
@@ -162,13 +160,12 @@ c     loop over multiple exitations
           enddo
         endif 
       
-c     Unrolling determinats different to kref, !STU what is being done here?
+c     Unrolling determinats different to kref
         detn(:,o)=detn(kref,o)
         do kk=1,ndetiab2(iab)
           k=k_det2(kk,iab)
           kw=k_aux(kk,iab)  
           detn(k,o)=detn(k,o)*ddetn(kw)
-c     print *, "k ",k,"detn(k) ",detn(k)
         enddo
 c      k_det2(1:ndetiab2(iab),iab)
 c      k_aux(1:ndetiab2(iab),iab)  

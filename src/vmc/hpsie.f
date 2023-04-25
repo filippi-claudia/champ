@@ -52,15 +52,7 @@ c compute all determinants
 
       call determinante(iel,coord,rvec_en,r_en,iflag)
 
-c      if(detn(kref).eq.0.d0) then
-c        do istate=1,nstates
-c          psid(istate)=0.d0
-c        enddo
-c        return
-c      endif
-
       icheck=0
-      !STU check state mapping / orb in detn
       do istate=1,nstates
         if(detn(kref,stoo(istate)).eq.0.d0) then
           psid(istate)=0.d0
@@ -78,7 +70,6 @@ c combine determinantal quantities to obtain trial wave function
         call determinante_psit(iel,psid(istate),istate)
       enddo
 
-c !STU check state mapping in aref, detn
       if(ipass.gt.2) then
 
         do istate=1,nstates
@@ -88,8 +79,6 @@ c !STU check state mapping in aref, detn
           check_apsi_min=min(check_apsi,check_apsi_min)
           aref_now=aref(stoo(istate))/(ipass-1)
           check_dref=abs(detn(kref,stoo(istate)))/aref_now
-c          write(ounit,*) 'apsi,apsi_now,psid,check_apsi,aref,aref_now',
-c     &    apsi(istate),apsi_now,psid(istate),check_apsi,aref(stoo(istate)),aref_now 
         enddo
 
       endif

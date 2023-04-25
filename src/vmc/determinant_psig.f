@@ -15,7 +15,7 @@
       real(dp), dimension(*) :: psij
     
       psig=0
-      do i=1,nstates !STU state map psij
+      do i=1,nstates
         istate=iweight_g(i)
         psig=psig+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(stoj(istate)))/anormo(istate)
       enddo

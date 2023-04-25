@@ -30,37 +30,31 @@
       if(ioptjas.eq.0.or.ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
       do istate=1,nstates
-      !STU must add jastrow state mapping here for gvalue and gvalue_old
-      ! although this is not called during sr_n apparently. maybe
-      ! istate=1 in gvalue.
-      js=stoj(istate)
-      p=wtg_new(istate)
-      do i=1,nparmj
-        do j=1,nreduced
-        dj_o(i,j,istate)=dj_o(i,j,istate)  +p*gvalue(i,js)*orb_o(j,istate)
-        dj_oe(i,j,istate)=dj_oe(i,j,istate)+p*gvalue(i,js)*orb_oe(j,istate)
-        dj_ho(i,j,istate)=dj_ho(i,j,istate)+p*gvalue(i,js)*orb_ho(j,istate)
-        de_o(i,j,istate)=de_o(i,j,istate)  +p*denergy(i,istate)*orb_o(j,istate)
+        js=stoj(istate)
+        p=wtg_new(istate)
+        do i=1,nparmj
+          do j=1,nreduced
+            dj_o(i,j,istate)=dj_o(i,j,istate)  +p*gvalue(i,js)*orb_o(j,istate)
+            dj_oe(i,j,istate)=dj_oe(i,j,istate)+p*gvalue(i,js)*orb_oe(j,istate)
+            dj_ho(i,j,istate)=dj_ho(i,j,istate)+p*gvalue(i,js)*orb_ho(j,istate)
+            de_o(i,j,istate)=de_o(i,j,istate)  +p*denergy(i,istate)*orb_o(j,istate)
+          enddo
         enddo
-      enddo
-
       enddo
 
       if(iflag.eq.0) return
 
       do istate=1,nstates
-      js=stoj(istate)
-
-      q=wtg_old(istate)
-      do i=1,nparmj
-        do j=1,nreduced
-        dj_o(i,j,istate)=dj_o(i,j,istate)  +q*gvalue_old(i,js)*orb_o_old(j,istate)
-        dj_oe(i,j,istate)=dj_oe(i,j,istate)+q*gvalue_old(i,js)*orb_oe_old(j,istate)
-        dj_ho(i,j,istate)=dj_ho(i,j,istate)+q*gvalue_old(i,js)*orb_ho_old(j,istate)
-        de_o(i,j,istate)=de_o(i,j,istate)  +q*denergy_old(i,istate)*orb_o_old(j,istate)
+        js=stoj(istate)
+        q=wtg_old(istate)
+        do i=1,nparmj
+          do j=1,nreduced
+            dj_o(i,j,istate)=dj_o(i,j,istate)  +q*gvalue_old(i,js)*orb_o_old(j,istate)
+            dj_oe(i,j,istate)=dj_oe(i,j,istate)+q*gvalue_old(i,js)*orb_oe_old(j,istate)
+            dj_ho(i,j,istate)=dj_ho(i,j,istate)+q*gvalue_old(i,js)*orb_ho_old(j,istate)
+            de_o(i,j,istate)=de_o(i,j,istate)  +q*denergy_old(i,istate)*orb_o_old(j,istate)
+          enddo
         enddo
-      enddo
-
       enddo
 
       return

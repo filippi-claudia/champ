@@ -16,19 +16,15 @@ c written by Claudia Filippi
       use vmc_mod, only: nwftypeorb, stoo
       implicit none
 
-      integer :: iab, ierr, istate
+      integer :: iab, ierr, istate, o
       real(dp) :: passes
 
-      !STU use mapping for orbs in aref, detref
-      ! in first write statement, apsi differs, but aref only differs if
-      ! the orbitals differ
-      ! istate and detref in second write statement only differ if orbs
-      ! are different
       passes=dfloat(iblk*vmc_nstep)
       
       do istate=1, nstates
-        write(ounit,'(''average psid, det_ref '',2d12.5)') apsi(istate)*nproc/passes, aref(stoo(istate))*nproc/passes
-        write(ounit,'(''orb set,log detref '',i4,2d13.5)') istate, (detref(iab,stoo(istate))*nproc/passes,iab=1,2)
+        o=stoo(istate)
+        write(ounit,'(''average psid, det_ref '',2d12.5)') apsi(istate)*nproc/passes, aref(o)*nproc/passes
+        write(ounit,'(''orb set,log detref '',i4,2d13.5)') istate, (detref(iab,o)*nproc/passes,iab=1,2)
       enddo
 
       call mpi_bcast(energy,size(energy),mpi_double_precision,0,MPI_COMM_WORLD,ierr)

@@ -30,15 +30,10 @@
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      !STU revert, sub not called by sr
-      !STU denergy is an istate quantity look at optjas.f, why fixed to 1 in Ramon's?
-      !STU ci_o/ci_o_old/ci_de/ci_de_old are istate quantities
-      !STU denergy is an istsate quantity because it includes cdet
-      !STU so all 4 below are istate quantities
-      do k=1,nstates !STU add jastrow/orb mapping here
+      do k=1,nstates
         js=stoj(k) 
-        do j=1,nciterm !STU ci variables need an index added eventually
-          do i=1,nparmj !STU i think you should use your stobjx mapping IF ci_o is indeed a istate object (because psidi(istate)) then all of  these are istate objects!!!
+        do j=1,nciterm
+          do i=1,nparmj
             dj_o_ci(i,j,k)=dj_o_ci(i,j,k)+p*gvalue(i,js)*ci_o(j,k)
      &              +q*gvalue_old(i,js)*ci_o_old(j,k)
             dj_oe_ci(i,j,k)=dj_oe_ci(i,j,k)+p*gvalue(i,js)*ci_o(j,k)*enew
@@ -47,22 +42,6 @@
      &              +q*denergy_old(i,k)*ci_o_old(j,k)
             dj_de_ci(i,j,k)=dj_de_ci(i,j,k)+p*gvalue(i,js)*ci_de(j,k)
      &              +q*gvalue_old(i,js)*ci_de_old(j,k)
-
-c            dj_o_ci(i,j,stobjx(k))=dj_o_ci(i,j,stobjx(k))+p*gvalue(i,stoj(k))*ci_o(j,stoo(k))
-c     &              +q*gvalue_old(i,stoj(k))*ci_o_old(j,stoo(k))
-c            dj_oe_ci(i,j,stobjx(k))=dj_oe_ci(i,j,stobjx(k))+p*gvalue(i,stoj(k))*ci_o(j,stoo(k))*enew
-c     &              +q*gvalue_old(i,stoj(k))*ci_o_old(j,stoo(k))*eold
-c            de_o_ci(i,j,stoo(k))=de_o_ci(i,j,stoo(k))+p*denergy(i,1)*ci_o(j,stoo(k))
-c     &              +q*denergy_old(i,1)*ci_o_old(j,stoo(k))
-c            dj_de_ci(i,j,stobjx(k))=dj_de_ci(i,j,stobjx(k))+p*gvalue(i,stoj(k))*ci_de(j,stoo(k))
-c     &              +q*gvalue_old(i,stoj(k))*ci_de_old(j,stoo(k))
-
-c            write(ounit,*) "state,stobjx(k),stoj(k),stoo(k),ci,jas,gn,cn,go,co",
-c     &                      k, stobjx(k), stoj(k),stoo(k), j, i, gvalue(i,stoj(k)), ci_o(j,stoo(k)),
-c     &                      gvalue_old(i,stoj(k)), ci_o_old(j,stoo(k))
-c            write(ounit,*) "dj_o_ci(jas,ci,stobjx(state)), dj_oe_ci, de_o_ci(i,j,stoo(k)), dj_de_ci",
-c     &                      dj_o_ci(i,j,stobjx(k)), dj_oe_ci(i,j,stobjx(k)),
-c     &                      de_o_ci(i,j,stoo(k)), dj_de_ci(i,j,stobjx(k))
 
           enddo
         enddo
@@ -114,7 +93,7 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      k=1 !STU set for 1 state
+      k=1
 
       write(iu) ((dj_o_ci(i,j,k),dj_oe_ci(i,j,k),dj_de_ci(i,j,k),de_o_ci(i,j,k),i=1,nparmj),j=1,nciterm)
 
@@ -134,7 +113,7 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      k=1 !STU set for 1 state 
+      k=1 
 
       read(iu) ((dj_o_ci(i,j,k),dj_oe_ci(i,j,k),dj_de_ci(i,j,k),de_o_ci(i,j,k),i=1,nparmj),j=1,nciterm)
 
@@ -170,7 +149,7 @@ c-----------------------------------------------------------------------
 
       if(ioptjas.eq.0.or.ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      k=1 !STU set up for 1 state 
+      k=1 
 
       if(method.eq.'hessian') then
 

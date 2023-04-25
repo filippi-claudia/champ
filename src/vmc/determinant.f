@@ -58,11 +58,10 @@ c compute orbitals
             ish=nup
             nel=ndn
          endif
-         ! have to check if this call should go inside or outside 
-         ! if we can move this outside the iab loop, I will move the
-         ! loop over k outside the iab loop
+
          call allocate_multislater() ! properly accessing array elements
-         do k=1,nwftypeorb  !STU should loop over states and use orbital/jsatrow mapping?
+
+         do k=1,nwftypeorb
            detiab(kref,iab,k)=1.d0
 
            jk=-nel
@@ -255,19 +254,18 @@ c-----------------------------------------------------------------------
       ! call resize_matrix(b, norb+nadorb, 1)
       ! call resize_tensor(dorb, norb+nadorb, 3)
 
-      do k=1,nbjx !STU only storing nbjx of these, us the mapping later
+      do k=1,nbjx
 c compute kinetic contribution of B+Btilde to compute Eloc
         do i=1,nelec
           do iorb=1,norb+nadorb
             bkin(iorb,i,k)=-hb*(ddorb(iorb,i,bjxtoo(k))+2*(vj(1,i,bjxtoj(k))*dorb(iorb,i,1,bjxtoo(k))
      &      +vj(2,i,bjxtoj(k))*dorb(iorb,i,2,bjxtoo(k))+vj(3,i,bjxtoj(k))*dorb(iorb,i,3,bjxtoo(k))))
-c            write(ounit,*) "config,elec,orb,bkin", k,i,iorb,bkin(iorb,i,k)
           enddo
         enddo
       enddo
 c compute derivative of kinetic contribution of B+Btilde wrt jastrow parameters
       if(ioptjas.gt.0) then
-        do k=1,nbjx !STU use jastrow and orbital mappingi, similar to above
+        do k=1,nbjx
           do iparm=1,nparmj
             do i=1,nelec
               do iorb=1,norb
@@ -281,7 +279,6 @@ c compute derivative of kinetic contribution of B+Btilde wrt jastrow parameters
       endif
 
 c compute derivative of kinetic contribution of B+Btilde wrt nuclear coordinates
-c !STU I left this for now.
       if(iforce_analy.eq.1) then
         do ic=1,ncent
           do iorb=1,norb

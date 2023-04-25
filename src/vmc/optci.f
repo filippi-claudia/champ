@@ -47,15 +47,13 @@
         nstates_eff = nstates
       endif
 
-      do istate=1,nstates_eff !STU check state mapping, there may be a better way
+      do istate=1,nstates_eff
         psidi=1.d0/psid(istate)
         o=stoo(istate)
         x=stobjx(istate)
 
-        do k=1,nciprim   ! keep ciprim and cieprim indecies because second part below.
+        do k=1,nciprim
           ciprim(k,istate)=detiab(k,1,o)*detiab(k,2,o)*psidi
-c          write(ounit,*) "ciprim(nciprim,stoo(istate),detiab up/dn, psidi",
-c     &                    ciprim(k,j), detiab(k,1,j), detiab(k,2,j), psidi
           cieprim(k,istate)=(eloc_det(k,1,x)+eloc_det(k,2,x)+e_other)*ciprim(k,istate)
         enddo
 
@@ -80,15 +78,14 @@ c Correlation matrix <Oi*Oj> is computed in ci_sum
             ci_o(icsf,istate)=ci_o_csf
             ci_e(icsf,istate)=ci_e_csf
             ci_de(icsf,istate)=ci_e_csf-ci_o_csf*energy(istate)
-c            write(ounit,*) "ci_o(icsf,j)", ci_o(icsf,j)
           enddo
 
         endif
       enddo
 
-      if(method.eq.'sr_n'.or.method.eq.'lin_d') return !STU this line requires 2 local variables and 2 global to be given an extra index.
+      if(method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do istate=1,nstates_eff !STU also here, there may be a better way.
+      do istate=1,nstates_eff
         if(ncsf.eq.0) then
           do i=1,nciprim
             do j=1,nciprim
@@ -278,7 +275,7 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      do k=1,nstates !STU orb or max? check other subroutines in here
+      do k=1,nstates
         do j=1,nciterm
           ci_o_sum(j,k) =ci_o_sum(j,k)+p*ci_o(j,k)+q*ci_o_old(j,k)
           ci_de_sum(j,k) =ci_de_sum(j,k)+p*ci_de(j,k)+q*ci_de_old(j,k)
@@ -375,7 +372,7 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
       
-      k=1 !STU decode how to print multiple state info later
+      k=1
 
       matdim=nciterm*(nciterm+1)/2
       write(iu) nciprim,nciterm
@@ -410,7 +407,7 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      k=1 !STU decide how to setup restart file with multiple state
+      k=1
 
       read(iu) mciprim,mciterm
       if(mciprim.ne.nciprim) then
@@ -526,7 +523,7 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
-      k=1 !STU not sure what type of calculation calls this
+      k=1
 
       iciprt_sav=iciprt
       iciprt=-1
@@ -666,7 +663,7 @@ c compute averages and print then out
 
       if(iciprt.eq.0) return
 
-      istate=1 !STU when is this called? will change
+      istate=1
 
 c iciprt 0 no printout
 c         1 each iteration full printout

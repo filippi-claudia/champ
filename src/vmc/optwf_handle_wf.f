@@ -588,7 +588,6 @@ c-----------------------------------------------------------------------
 
       scalek(iadiag)=scalek(1)
 
-c     !STU copying with first case below doesnt make sense
       if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
         do k=1,nwftypejas
           do ict=1,nctype
@@ -643,7 +642,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, iadiag, j, k
-c     !STU copying with first case below doesnt make sense
+
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         do k=1,nwftypeorb
           do i=1,norb+nadorb
@@ -726,7 +725,6 @@ c-----------------------------------------------------------------------
       ! dimension c_best(83,nctype_tot,MWF)
       ! save a4_best,b_best,c_best
 
-c     !STU did not change this subroutine.
       save mparmja,mparmjb,mparmjc
 
       if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
@@ -802,9 +800,7 @@ c-----------------------------------------------------------------------
       ! dimension coef_best(nbasis,norb,MWF)
       ! save coef_best
 
-      !STU is this only used for geometry optimization?? Restore to
-      !before, allocate nwftype, remove loops over nwftypeorb, replace
-      !3rd index with 1.
+      !remove multistate, allocate nwftype, remove loops over nwftypeorb, replace, 3rd index with 1.
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftypeorb))
         do k=1,nwftypeorb
@@ -975,8 +971,7 @@ c Set up cusp conditions
 
 c Add change to old parameters
       if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
-        j=stoj(sr_state)
-c        !do k=1,nwftypejas
+          j=stoj(sr_state)
           iparm=0
           do ict=1,nctype
             do i=1,nparma(ict)
@@ -996,7 +991,6 @@ c        !do k=1,nwftypejas
               c(iwjasc(i,ict),ict,j)=c(iwjasc(i,ict),ict,j)-dparm(iparm)
             enddo
           enddo
-c        !enddo
 
       else
 
@@ -1052,20 +1046,15 @@ c-----------------------------------------------------------------------
 
       if(ioptorb.eq.0) return
 
-      !STU iadaig is only passed in as 1, except for one call (2,3)
-
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         o=stoo(sr_state)
-        !do k=1,nwftypeorb
           do i=1,norb
             do j=1,nbasis
-              acoef(j,i)=coef(j,i,o) !STU what is the iadiag?
+              acoef(j,i)=coef(j,i,o)
             enddo
           enddo
-        !enddo
 
 c Update the orbitals
-c        !do k=1,nwftypeorb
           do i=1,norbterm
             io=ideriv(1,i)
             jo=ideriv(2,i)
@@ -1073,15 +1062,12 @@ c        !do k=1,nwftypeorb
               acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,o)
             enddo
           enddo
-c        !enddo
 
-c        !do k=1,nwftypeorb
           do i=1,norb
             do j=1,nbasis
               coef(j,i,o)=acoef(j,i)
             enddo
           enddo
-c        !enddo
 
       else
 
@@ -1128,7 +1114,6 @@ c-----------------------------------------------------------------------
 
       if(ioptci.eq.0) return
 
-c     STU confirm dparm is indexed properly for all cases.
 c Update the ci coef
       if((method.eq.'linear'.or.method.eq.'lin_d').and.ioptjas+ioptorb.eq.0) then
         do k=1,nstates
@@ -1151,7 +1136,7 @@ c Update the ci coef
           endif
 
         enddo
-      else ! does this only leave sr_n? 
+      else
         if(ncsf.eq.0) then
           do idet=2,ndet
             cdet(idet,sr_state,iadiag)=cdet(idet,sr_state,iadiag)-dparm(idet-1+nparmj)
@@ -1349,14 +1334,7 @@ c Note: we do not vary the first (i0) CI coefficient unless a run where we only 
 
         nparmd=max(nciterm-1,0)
         nparm=nparmj+nparmd+norbterm
-        !STU the way above means later that, mparm = iparm + 1 - nstates
-        ! this works before, well because MPARM was always set by hand
-        ! anyway
-        ! If nstates .gt. 1, then iparm.gt.mparm, causing a fatal arror
-        ! in optwf_store. I will add a factor of nstates to where mparm
-        ! is calculated.
 
-c     !STU mix_n is here but also below, did I add this?
       elseif(method.eq.'linear'.or.method.eq.'lin_d' .or. method.eq.'mix_n') then
 
        i0=0
@@ -1423,25 +1401,6 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       if(l.gt.mconf) call fatal_error('SR_STORE: l gt mconf')
 
-
-c     Unfortunately, even if using the same jas and orb for all states,
-c     need to do pcg together with the different set of ci. The way they
-c     are stored in sr_o, makes the mapping difficult in the ortho gradients.
-c     I am just saving all copies of the same jas/orb.
-
-c      do k=1,nwftypejas
-c        if(nparmj /= 0) call dcopy(nparmj,gvalue(1,k),1,sr_o(1,l,k),1)
-c      enddo
-
-c      ntmp=max(nciterm-i0,0)
-c      do k=1,nwftypeorb
-c        if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0,k),1,sr_o(nparmj+1,l,k),1)
-c      enddo
-      
-c      ijasci=nparmj+ntmp
-c      if(ijasci+nstates*norbterm+nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')
-
-      !STU do mapping here if necessary, lin_d called below
       if (method.eq.'sr_n'.and.ortho.eq.1.or.nstates.eq.1) then ! for sr_n w/ ortho, or sr_n 1-state
         do istate=1,nstates
           if(nparmj /= 0) call dcopy(nparmj,gvalue(1,stoj(istate)),1,sr_o(1,l,istate),1)
@@ -1456,9 +1415,9 @@ c      if(ijasci+nstates*norbterm+nstates.gt.mparm) call fatal_error('SR_STORE: 
           
           ii=ijasci+norbterm
           sr_o(ii+1,l,istate)=psid(istate)
-          sr_o(ii+2,l,istate)=wt_sqrt(istate) !STU yes we need 
+          sr_o(ii+2,l,istate)=wt_sqrt(istate) 
         enddo
-      else !for lin_d or sr_n in mix_n
+      else !for lin_d or sr_n (in mix_n)
         if(nparmj /= 0) call dcopy(nparmj,gvalue(1,1),1,sr_o(1,l,1),1)
         ntmp=max(nciterm-i0,0)
         if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0,1),1,sr_o(nparmj+1,l,1),1)
@@ -1484,7 +1443,7 @@ c TO FIX: we are assuming optjas.ne.0 or optorb.ne.0 -> Otherwise, standard secu
       enddo
 
       if(nparmj /= 0) call dcopy(nparmj,tmp_ho,1,sr_ho(1,l),1)
-      !STU could add loop ovre states if ever called with multiple ci_e
+
       if(ntmp /= 0) call dcopy(ntmp,ci_e(1+i0,1),1,sr_ho(nparmj+1,l),1)
 
       if(norbterm /= 0) call dcopy(norbterm,orb_ho(1,1),1,sr_ho(nparmj+ntmp+1,l),1)

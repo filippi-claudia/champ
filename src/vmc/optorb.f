@@ -41,7 +41,7 @@
 c     ns_current=ns_current+1
 c     if(ns_current.ne.iorbsample) return
 c ns_current reset in optorb_sum
-      !STU add state to orb mapping here.
+
       o=stoo(istate)
       x=stobjx(istate)
       detratio=detiab(kref,1,o)*detiab(kref,2,o)/psid
@@ -75,7 +75,6 @@ c ns_current reset in optorb_sum
             irep=irepcol_ref(iterm,iab)
 
             dorb_psi_ref=dorb_psi_ref+aa(irep,jo,iab,o)
-            !STU tildem had an stoo(istate), istead of stobjx(istate)
             dorb_energy_ref=dorb_energy_ref+tildem(irep,jo,iab,x)
 
             do i=1,nel
@@ -125,11 +124,6 @@ c-----------------------------------------------------------------------
             orb_ho(i,istate)=orb_ho(i,istate)+eloc(istate)*orb_o(i,istate)
         enddo
       enddo
-
-c     do iterm=1,norbterm
-c        write(ounit,*) 'HELLO 1',iterm,orb_o(iterm,1),orb_ho(iterm,1),orb_oe(iterm,1)
-c        write(ounit,*) 'HELLO 2',iterm,orb_o(iterm,2),orb_ho(iterm,2),orb_oe(iterm,2)
-c     enddo
 
       return
       end

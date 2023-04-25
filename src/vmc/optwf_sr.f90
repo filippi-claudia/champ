@@ -163,22 +163,18 @@ contains
 
 6               continue
 
-                !call sr(nparm, deltap, sr_adiag, sr_eps, i)
-                !call dscal(nparm, -sr_tau, deltap, 1)
-
-                !new sr part
                 if (nstates .eq. 1) then
                     call sr_hs(nparm, sr_adiag)
-                elseif (nstates .gt. 1) then !STU note the current sub is not called by anything except a full sr run
-                    !ortho=1 ! should be removable
+                elseif (nstates .gt. 1) then
                     call compute_gradients_sr_ortho(nparm, sr_adiag)
                 endif
                 
-                ! maybe distribute pcg over nodes at some point, reduce by MSTATE
+                ! distribute pcg over nodes at some point, reduce by MSTATE
                 adiag = sr_adiag
                 iflagin=0
                 do istate = 1, nstates
-                    sr_state = istate ! for use in asolve, where state index is needed for s_ii_inv. and in atimes_n_ortho
+                    ! sr_state used in asolve, state index is needed for s_ii_inv and atimes_n
+                    sr_state = istate
                     call sr(nparm, h_sr(1:nparm, istate), deltap(:, istate), sr_adiag, sr_eps, i)
                     call dscal(nparm, -sr_tau, deltap(:, istate), 1)
                     call test_solution_parm(nparm, deltap(:, istate), dparm_norm, dparm_norm_min, adiag, iflag)
@@ -188,8 +184,6 @@ contains
 
                 !call print_gradients(nparm, deltap)
 
-                !call test_solution_parm(nparm, deltap, dparm_norm, dparm_norm_min, adiag, iflag)
-                !write (ounit, '(''Norm of parm variation '',d12.5)') dparm_norm
                 if (iflag .ne. 0) then
                     write (ounit, '(''Warning: dparm_norm>1'')')
                     adiag = 10*adiag
@@ -201,9 +195,8 @@ contains
                     sr_adiag = sr_adiag_sav
                 endif
                 
-                ! if statement? do we only use compute norm lin in multistate?
                 if(nstates.gt.1) call compute_norm_lin(nparm,-deltap)
-                do istate=1,nstates ! this is done so the allocation of detlap doesn't have to change in other methods
+                do istate=1,nstates
                   sr_state = istate
                   call compute_parameters(deltap(:,sr_state), iflag, 1)
                 enddo
@@ -260,7 +253,7 @@ contains
         return
     end
 
-    subroutine compute_norm_lin(nparm,deltap)  ! check these modules and rest of subroutine
+    subroutine compute_norm_lin(nparm,deltap)
         use mpi
         use mpiconf, only: idtask
         use sr_mod, only: mobs, mparm
@@ -275,25 +268,14 @@ contains
 
         implicit none
 
-        !integer, intent(in) :: nparm
-        !real(dp), dimension(mparm,MSTATES), intent(in) :: deltap
-        !real(dp) :: passes, tmp, tmp1
-        !real(dp), dimension(mobs,MSTATES) :: obs_norm
-        !real(dp), dimension(mobs,MSTATES) :: obs_norm_tot
-        
-        ! Variables in subroutine call
         integer :: nparm
         real(dp), dimension(mparm,MSTATES) :: deltap
 
-        ! local variables
         integer :: jwtg, jwfj, jsqfj, n_obs, istate, iconf, i, ier
         real(dp) :: passes, tmp, tmp1
         
-        ! local arrays
         real(dp), allocatable :: obs_norm(:,:)
         real(dp), allocatable :: obs_norm_tot(:,:)
-        !real(dp), dimension(mobs,MSTATES) :: obs_norm
-        !real(dp), dimension(mobs,MSTATES) :: obs_norm_tot
 
         ! allocating local arrays
         allocate(obs_norm(mobs,MSTATES))
@@ -313,11 +295,9 @@ contains
               tmp = 0.0d0
               do i = 1, nparm
                  tmp = tmp + deltap(i, istate)*sr_o(i, iconf, istate)
-                 !write(ounit,*) "istate,i,tmp,deltap,sr_o", istate,i,tmp,deltap(i, istate),sr_o(i, iconf, istate)
               enddo
               obs_norm(jwfj, istate) = obs_norm(jwfj, istate) + tmp*wtg(iconf, istate)
               obs_norm(jsqfj,istate) = obs_norm(jsqfj, istate) + tmp*tmp*wtg(iconf, istate)
-              !write(ounit,*) "istate,wtg", istate, wtg(iconf, istate)
            enddo
            obs_norm(jwfj, istate) = 2.0d0*obs_norm(jwfj, istate)
            call MPI_REDUCE(obs_norm(1, istate), obs_norm_tot(1, istate),&
@@ -333,18 +313,12 @@ contains
               write(ounit, '(''NORMS'',i3,10f25.20)') istate, obs_tot(jwtg,istate)/passes, anormo(istate)/passes,&
                                  obs_tot(jwtg, istate)/obs_tot(jwtg, 1), anormo(istate)/anormo(1),tmp/tmp1
            enddo
-           ! Ramon was using the anormo
-           !anormo=anormo/passes
-           ! Claudia tries this
            do istate = 2, nstates
              anormo(istate) = anormo(istate)/anormo(1)
            enddo
            anormo(1) = 1.d0
         endif
-        ! TMP
-        ! anormo=1.d0
         call MPI_BCAST(anormo(1), nstates, MPI_REAL8, 0, MPI_COMM_WORLD, i)
-        !call bcast(anormo(1)) ! check this bcast, we set this to 1 already, do we need to bcast now?
 
     end subroutine
 
@@ -359,10 +333,8 @@ contains
     end subroutine save_params
 
     subroutine sr(nparm, h_sr, deltap, sr_adiag, sr_eps, i)
-        !STU don't need sr_adiag as input anymore.
-        ! solve S*deltap=h_sr (call in optwf)
+
         use sr_more, only: pcg
-        !use sr_mat_n, only: h_sr
         use contrl_file,    only: ounit
         implicit none
 
@@ -375,8 +347,6 @@ contains
 
         integer :: imax, imod
 
-        !call sr_hs(nparm, sr_adiag) ! moved outside
-        
         imax = nparm          ! max n. iterations conjugate gradients
         imod = 50             ! inv. freq. of calc. r=b-Ax vs. r=r-alpha q (see pcg)
         do i = 1, nparm
@@ -384,7 +354,6 @@ contains
         enddo
 
         call pcg(nparm, h_sr(1:nparm), deltap(1:nparm), i, imax, imod, sr_eps)
-        !write (ounit, *) 'CG iter ', i
         
         call sr_rescale_deltap(nparm, deltap(1:nparm))
         
@@ -449,7 +418,7 @@ contains
         integer :: nstates_eff, jwtg
         integer :: jfifj, jfhfj, n_obs, nparm_jasci, ier, nreduce
         real(dp) :: sr_adiag, var, wts, aux, den, dum1, dum2, smax
-        real(dp), parameter :: eps_eigval = 0.d0 ! in the original implementation, it is not used
+        real(dp), parameter :: eps_eigval = 0.d0
 
         allocate (obs_wtg(MSTATES))
         allocate (obs_wtg_tot(MSTATES))
@@ -510,12 +479,10 @@ contains
             ish = (istate-1)*norbterm
             do iconf = 1, nconf_n
                 obs(jelo, istate) = obs(jelo, istate) + elocal(iconf, istate)*wtg(iconf, istate)
-                !write(ounit,*) 'state,iconf,elocal', istate, iconf, elocal(iconf, istate)
                 do i = 1, nparm_jasci
                     obs(jfj + i - 1, istate) = obs(jfj + i - 1, istate) + sr_o(i, iconf, 1)*wtg(iconf, istate)
                     obs(jefj + i - 1, istate) = obs(jefj + i - 1, istate) + elocal(iconf, istate)*sr_o(i, iconf, 1)*wtg(iconf, istate)
                     obs(jfifj + i - 1, istate) = obs(jfifj + i - 1, istate) + sr_o(i, iconf, 1)*sr_o(i, iconf, 1)*wtg(iconf, istate)
-                    !write(ounit,*) 'iconf,jasparm,sr_o', iconf, sr_o(i, iconf, 1)
                 enddo
                 do i = nparm_jasci + 1, nparm
                     obs(jfj + i - 1, istate) = obs(jfj + i - 1, istate) + sr_o(ish + i, iconf, 1)*wtg(iconf, istate)
@@ -523,7 +490,6 @@ contains
                                     elocal(iconf, istate)*sr_o(ish + i, iconf, 1)*wtg(iconf, istate)
                     obs(jfifj + i - 1, istate) = obs(jfifj + i - 1, istate) + &
                                     sr_o(ish + i, iconf, 1)*sr_o(ish + i, iconf, 1)*wtg(iconf, istate)
-                    !write(ounit,*) 'iconf,orbparm,sr_o', iconf, sr_o(ish + i, iconf, 1)
                 enddo
             enddo
 
@@ -642,7 +608,7 @@ contains
         return
     end
 
-    subroutine compute_gradients_sr_ortho(nparm,sr_adiag) ! check subroutine
+    subroutine compute_gradients_sr_ortho(nparm,sr_adiag)
         use mpi
         use sr_mod, only: mobs
         use csfs, only: nstates
@@ -772,14 +738,10 @@ contains
                     enddo
                  enddo
               enddo
-              !call cpu_time(dend_time)
-              !print *, "Old loop time (s): ", dend_time-dstart_time
 
               call MPI_REDUCE(obs(jfjsi,istate),obs_tot(jfjsi,istate),&
                       nparm,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
 
-       ! added to check with new loop
-       !if(idtask.eq.0) print *, "state, first part of pen parm 1 tot: ", istate, obs_tot(jfjsi,istate)
            enddo
         endif
 
@@ -840,7 +802,6 @@ contains
                 enddo
                 h_sr(1:nparm,istate)=h_sr(1:nparm,istate)+h_sr_penalty(1:nparm,istate)
                 write(ounit,*) "State", istate
-                !print *, "lambda SR ortho", sr_lambda
                 write(ounit,*) "penalty ortho  ", penalty
               endif
            enddo
@@ -891,7 +852,6 @@ contains
 
         if (idtask .eq. 0) then
         do i = 1, nparm
-            !STU rescale implemented by Marco
 !            de=obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1)-obs_tot(jelo, 1)
 !           write(ounit, *) 'CIAO', obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1), obs_tot(jelo, 1), &
 !               obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1)
@@ -910,7 +870,6 @@ contains
 !            else
 !                deltap(i) = deltap(i)/de
 !            endif
-          !STU the old rescale use for comparison to Ramon's code.
           deltap(i) = deltap(i)/(obs_tot(jfhfj + i - 1, 1)/obs_tot(jfifj + i - 1, 1) - obs_tot(jelo, 1))
         enddo
 

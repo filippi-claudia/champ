@@ -37,7 +37,7 @@ c Written by Claudia Filippi
       implicit none
 
       integer :: i, iab, ierr, ifr, istate
-      integer :: jo, jo_tot
+      integer :: jo, jo_tot, o
       real(dp) :: acollect
       real(dp), dimension(MSTATES, MFORCE) :: enow
 
@@ -64,6 +64,9 @@ c Written by Claudia Filippi
 
       jo=0
       do istate=1,nstates
+
+        o=stoo(istate)
+
         jo=jo+1
         local_obs(jo)=enow(istate,1)
 
@@ -71,17 +74,18 @@ c Written by Claudia Filippi
         local_obs(jo)=apsi(istate)
 c      enddo
 
-        jo=jo+1 !STU mapping here, although will be save multple times regardless
-        local_obs(jo)=aref(stoo(istate))
+        jo=jo+1
+        local_obs(jo)=aref(o)
 
         do iab=1,2
           jo=jo+1
-          local_obs(jo)=detref(iab,stoo(istate))
+          local_obs(jo)=detref(iab,o)
         enddo
       enddo
 
       do ifr=1,nforce
         do istate=1,nstates
+
           jo=jo+1
           local_obs(jo)=ecum(istate,ifr)
 
@@ -128,19 +132,21 @@ c      enddo
 
       jo=0
       do istate=1,nstates
+
+        o=stoo(istate)
+
         jo=jo+1
         enow(istate,1)=collect(jo)/nproc
 
         jo=jo+1
         apsi(istate)=collect(jo)/nproc
-c      enddo
-c       !STU mapping here?, aref, detref
+
         jo=jo+1
-        aref(stoo(istate))=collect(jo)/nproc
+        aref(o)=collect(jo)/nproc
 
         do iab=1,2
           jo=jo+1
-          detref(iab,stoo(istate))=collect(jo)/nproc
+          detref(iab,o)=collect(jo)/nproc
         enddo
       enddo
 

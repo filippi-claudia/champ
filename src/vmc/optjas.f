@@ -45,8 +45,8 @@
       
       do iparm=1,nparmj
         
-        do ibjx=1,nbjx !STU there are nbjx relevant jastrow/orbital mixed quantities
-          xj=bjxtoj(ibjx) !STU gets appropriate jastrow index for each ibjx combo
+        do ibjx=1,nbjx
+          xj=bjxtoj(ibjx)
           deloc_dj_kref(ibjx)=dvpsp_dj(iparm,ibjx)
           do i=1,nelec
             deloc_dj_kref(ibjx)=deloc_dj_kref(ibjx)
@@ -57,17 +57,16 @@
         enddo
 
         if(ndet.eq.1) then
-c         !STU done add jastrow state mapping here
           do istate=1,nstates
-            x=stobjx(istate) !STU getting the appropriate ibjx index which applies to each state
-            o=stoo(istate) !STU getting the appropriate orbital index for each state
+            x=stobjx(istate)
+            o=stoo(istate)
             denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref(x)
      &              *detiab(kref,1,o)*detiab(kref,2,o)
           enddo
 
         else
-          do istate=1,nstates !STU check b_dj, and j, need mapping?
-            x=stobjx(istate) !STU see def above
+          do istate=1,nstates
+            x=stobjx(istate)
             o=stoo(istate)
 
             call bxmatrix(kref,xmat(1,1,x),xmat(1,2,x),b_dj(1,1,iparm,x),x)
@@ -145,10 +144,8 @@ c               denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*del
 c             enddo
 c           enddo
 
-          enddo 
-c enddo for nstates, can we combine these into the same loop?
-c         !STU add jastrow state mapping here: denergy_det,deloc_dj_kref
-c         !STU add orb state mapping: detiab
+          enddo
+
           do istate=1,nstates
             x=stobjx(istate)
             o=stoo(istate)
@@ -223,7 +220,7 @@ c Written by Claudia Filippi
 
       if(ioptjas.eq.0) return
 
-      do istate=1,nstates !STU was already here, only added state to gvalue, gvalue_old
+      do istate=1,nstates
         p=wtg_new(istate)
         js=stoj(istate)
         do i=1,nparmj
@@ -295,7 +292,7 @@ c Written by Claudia Filippi
       enddo
 c     istate loop
       if(iflag.eq.0) return
-c     !STU check mapping
+
       do istate=1,nstates
 
         q=wtg_old(istate)
@@ -370,7 +367,6 @@ c     !STU check mapping
 
       enddo
 c     istate loop
-c     write(ounit,*) 'HELLO',enew,p,eold,q,(dj_dj_e(nparmj,i),i=1,nparmj)
 
       return
       end
@@ -398,7 +394,7 @@ c Written by Claudia Filippi
       if(ioptjas.eq.0.or.ngrad_jas_blocks.eq.0) return
 
       nbj_current=nbj_current+1
-c     !STU also check if mapping is needed here
+
       do istate=1,nstates
 
         do i=1,nparmj
@@ -460,9 +456,8 @@ c Written by Claudia Filippi
 
       if(ioptjas.eq.0) return
         
-      do istate=1,nstates
-        
-c     !STU check if mapping is needed here for jas, yes I think
+      do istate=1,nstates 
+
         do i=1,nparmj
           j=stoj(istate)
           gvalue_old(i,j)=gvalue(i,j)
@@ -638,7 +633,7 @@ c Written by Claudia Filippi
       errn(x,x2,n)=dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
 
       if(ioptjas.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
-c     !STU check what is happening here
+
       do i=1,nparmj+1
         grad_jas(i)=0
         do j=1,nparmj+1

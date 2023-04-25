@@ -654,7 +654,7 @@ subroutine read_jastrow_file(file_jastrow)
         if (iostat == 0) then
             if (trim(temp2) == "jastrow_parameter") &
             write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
-            if((method .eq. 'sr_n')) then !STU this will have to change with new input
+            if((method .eq. 'sr_n')) then 
                 !if (nwftypejas .ne. nwftypeorb) then
                     !call fatal_error ( " Number of states specified in jastrow file do not match lcao file ")
                 !else
@@ -671,7 +671,7 @@ subroutine read_jastrow_file(file_jastrow)
     if((method(1:3) == 'lin')) then
         allocate (scalek(3))
     else
-        allocate (scalek(nwftype)) ! will we ever use different scalek for different jastrow?
+        allocate (scalek(nwftype)) 
     endif
           
 
@@ -691,7 +691,7 @@ subroutine read_jastrow_file(file_jastrow)
             if (wid) read (iunit, *) scalek(iwft) ! we set iwft = 1 for 'sr_n' so only the (1) will have the saclek value
         endif
 
-        if (method.eq.'sr_n') then !STU necessary the way scale_dist is written
+        if (method.eq.'sr_n') then 
           do i=1,nwftype
             scalek(i)=scalek(1)
           enddo
@@ -719,7 +719,7 @@ subroutine read_jastrow_file(file_jastrow)
         if(mode(1:3) == 'vmc') write(ounit,*) "Ignore if only sampling."
         allocate(jtos(nwftypejas,nstojmax))
 
-        if (wid) then !STU moved if outside
+        if (wid) then 
         do iwft = 1, nwftype
             write(ounit, '(A)') "Jastrow parameters :: "
             if( (method .eq. 'sr_n')) write(ounit, '(A,i0)') "Jastrow type :: ", iwft

@@ -64,7 +64,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       real(dp), dimension(nstates) :: denergy
       real(dp), dimension(ndet, 2, nbjx) :: eloc_det
       real(dp), dimension(2, nbjx) :: vpsp_det, ekin_det
-      real(dp), dimension(nparmj,nbjx) :: dvpsp_dj !STU questionable
+      real(dp), dimension(nparmj,nbjx) :: dvpsp_dj
       real(dp), dimension(*) :: ekin
       real(dp), dimension(MSTATES) :: dekin
 
@@ -158,7 +158,7 @@ c nonloc_pot must be called after determinant because slater matrices are needed
 
       call multideterminant_hpsi(vj,ekin_det,vpsp_det,eloc_det)
 
-      do istate=1,nstates !STU need mapping here in d2j, vj, tildem, detiab, eloc_det
+      do istate=1,nstates
         j=stoj(istate)
         o=stoo(istate)
         x=stobjx(istate)
@@ -168,7 +168,6 @@ c nonloc_pot must be called after determinant because slater matrices are needed
           ekin_other=ekin_other-hb*(vj(1,i,j)**2+vj(2,i,j)**2+vj(3,i,j)**2)
         enddo
         e_other=ekin_other+pe_local
-        !write(ounit,*) "e_other", e_other
 c combine determinantal quantities to obtain trial wave function
         call determinant_psit(psid(istate),istate)
 c compute energy using Ymat
@@ -182,11 +181,8 @@ c compute energy using Ymat
               denergy(istate)=denergy(istate)+ymat(jrep,irep,iab,istate)*tildem(irep,jrep,iab,x)
               dekin(istate)=dekin(istate)+ymat(jrep,irep,iab,istate)*tildemkin(irep,jrep,iab,x)
             enddo
-            !write(ounit,*) jrep,'Y',(ymat(jrep,irep,iab,istate),irep=iactv(iab),nel)
-            !write(ounit,*) jrep,'M',(tildem(irep,jrep,iab,x),irep=iactv(iab),nel)
           enddo
         enddo
-        !write(ounit,*) "state,denergy", istate, denergy(istate)
         denergy(istate)=denergy(istate)*detiab(kref,1,o)*detiab(kref,2,o)/psid(istate)
         dekin(istate)=dekin(istate)*detiab(kref,1,o)*detiab(kref,2,o)/psid(istate)
 

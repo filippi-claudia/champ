@@ -12,7 +12,7 @@ c Written by Claudia Filippi
       real(dp) :: distance_node
       real(dp), dimension(3, *) :: v
       real(dp), dimension(3, nelec) :: vdonly
-c     !STU did not change. Don't think its relevant. Ramon's is inconsistent
+
       if(iflag.eq.0) then
         do k=1,3
           do i=1,nelec

@@ -12,7 +12,8 @@
       integer :: i, ic, k
       real(dp) :: denergy, psid
       real(dp), dimension(3, ncent_tot) :: da_psi_ref
-c     !STU I did not add multistate indcies
+
+c     ! multistate indcies were not added
       call compute_da_psi(psid,da_psi_ref)
       call compute_da_energy(psid,denergy)
 

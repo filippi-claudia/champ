@@ -1046,9 +1046,6 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
 
   call elapsed_time ("Reading CSF and CSFMAP file : ")
 
-!STU added before calling allocate_vmc()
-!Algo to rearrange otos and jtos
-! add checks that each state has an orbital set and jastrow set assigned, and others etc.
   
   if (mode(1:3) == 'vmc') write(ounit, *) "nstoj_tot, nstoo_tot, nstates", nstoj_tot, nstoo_tot, nstates
   if (extraj.eq.1.and.nstoj_tot.ne.nstates) &
@@ -1118,7 +1115,7 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
       enddo
     enddo
   endif
-  call bcast(stoo) ! dont need to bcast if done on all
+  call bcast(stoo)
   call bcast(stoj)
 
   do istate=1,nstates
@@ -1129,9 +1126,8 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
   enddo
 
   allocate(stobjx(nstates))
-  ! allocate b, b_dj, and xmat here? using MSTATES in initial allocation
   if (nwftypejas.eq.1.and.nwftypeorb.eq.1) then
-    nbjx = 1 ! maybe useful
+    nbjx = 1 
     allocate(bjxtoo(1))
     allocate(bjxtoj(1))
     bjxtoo(1)=1
@@ -1140,7 +1136,7 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
       stobjx(istate) = 1
     enddo
   else
-    nbjx = 1 !first one will be unique
+    nbjx = 1 
     stobjx(1)=1
     do istate=2,nstates
       do k=1,istate
@@ -1167,17 +1163,12 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
         imax=max(imax,stobjx(istate))
       endif
     enddo
-    !allocate (b(norb_tot, nelec, nbjx))
-    !allocate (tildem(nelec, norb_tot, 2, nbjx))
-    !allocate (xmat(nelec**2, 2, nbjx))
-    !allocate (b_dj(norb_tot, nelec, nparmj, nbjx))
   endif
  
   do istate=1,nstates
     if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Mixed Quantity #  <--  Jastrow #, Orbital set"
     if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4,A,2i4)') istate, '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
   enddo
-!STU added before calling allocate_vmc()
 
   ! Know the number of orbitals for optimization.
   if (ioptorb .ne. 0) call get_norbterm()
@@ -1539,7 +1530,6 @@ use, intrinsic :: iso_fortran_env, only : iostat_end
     iguiding=0
     nstates=1
   endif ! if loop of condition of either vmc/dmc ends here
-!STU move the two below within if statement above???
 ! Read in anormo if multi-state sr_n
   if(iguiding.gt.0) then
     write(ounit, *) "ANORMO: Determining normalization constants for guiding wave function."

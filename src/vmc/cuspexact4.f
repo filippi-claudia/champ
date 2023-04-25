@@ -44,7 +44,6 @@ c e-n cusp) depend only on independent variables.  On the other hand
 c the one from the 2nd order e-n cusp depends only on other dependent
 c variables.
 
-c !STU leaving out c terms for now.
       do it=1,nctype
 
 c Set dep. variables from e-e cusp

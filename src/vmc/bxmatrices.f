@@ -41,8 +41,6 @@
           enddo
         enddo
       enddo
-      !STU mapping needed here? xmatu,xmatd,b,k all passed in with
-      !stobjx(istate), or stobjx(j), both loop over states. 
       call multiply_slmi_mderiv_simple(nup,btemp(1,1),work,slmi(1,1,k),xmatu)
       call multiply_slmi_mderiv_simple(ndn,btemp(1,2),work,slmi(1,2,k),xmatd)
 
