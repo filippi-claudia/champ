@@ -43,11 +43,8 @@ file(GLOB_RECURSE tests_script LIST_DIRECTORIES false "*.sh")
       list(APPEND tags "${dir_tag}")
 
       # print the tags
-      message("${BoldBlue} Adding test ${dir} ${ColourReset}")
-
-      foreach(tag ${tags})
-          message("   ${Blue}${tag}${ColourReset}")
-      endforeach()
+      message("${BoldBlue} Adding test ${test_src} ${ColourReset}")
+      message("   ${Blue}${tags}${ColourReset}")
 
 
       add_test(NAME ${test_src}
