@@ -65,7 +65,6 @@
       ! regterg
       if(lin_jdav.eq.0) then
        write(ounit,*) "USING OLD REGTERG"
-
         call regterg( nparm_p1, mparm, nvec, nvecx, evc, ethr,
      &                e, itype, notcnv, idav_iter, ipr, idtask )
 
@@ -177,17 +176,22 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       use jd_scratch, only: qr,rr
       use mpi
       use optwf_lin_dav_extra, only: h_psi_lin_d
+      use precision_kinds, only: dp
+      use sr_mod,  only: mparm
 
       implicit none
 
       integer :: i, ier, n
       complex*16 q(n),r(n)
+      real(dp), pointer, dimension(:,:) :: qrp, rrp
 
       do i=1,n
         qr(i)=real(q(i))
       enddo
 
-      call h_psi_lin_d(n,1,qr,rr)
+      qrp(1:mparm,1:1) => qr
+      rrp(1:mparm,1:1) => rr
+      call h_psi_lin_d(n,1,qrp,rrp)
 
       call MPI_BCAST(rr,n,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 

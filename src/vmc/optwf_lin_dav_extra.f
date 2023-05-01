@@ -19,12 +19,12 @@
 
       integer :: i, i0, iconf, ier, ivec
       integer :: jelo, jfifj, jwtg, n_obs
-      integer :: ndim, nvec
+      integer :: ndim, nvec, n
       real(dp) :: aux0, aux1, aux2
-      real(dp), dimension(mparm,*) :: psi
-      real(dp), dimension(mparm,*) :: hpsi
+      real(dp), dimension(:,:) :: psi
+      real(dp), dimension(:,:) :: hpsi
       real(dp), dimension(mconf) :: aux
-      real(dp), dimension(mparm,nvecx) :: hpsiloc
+      real(dp), dimension(mparm,2*nvecx) :: hpsiloc
 
       i0=1
       if(ioptorb.eq.0.and.ioptjas.eq.0) i0=0
@@ -47,17 +47,17 @@ c     write(ounit,*) 'HPSI_LIN',ndim,nvec
 c loop vec
       do ivec=1,nvec
 
-      call MPI_BCAST(psi(1,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
+      call MPI_BCAST(psi(:,ivec),ndim,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
       do iconf=1,nconf_n
-       aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
+       aux(iconf)=ddot(nparm,psi(i0+1:,ivec),1,sr_ho(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
        hpsiloc(i+i0,ivec)=0.5d0*ddot(nconf_n,aux(1),1,sr_o(i,1),mparm)
       enddo
 
       do iconf=1,nconf_n
-       aux(iconf)=ddot(nparm,psi(i0+1,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
+       aux(iconf)=ddot(nparm,psi(i0+1:,ivec),1,sr_o(1,iconf),1)*wtg(iconf,1)
       enddo
       do i=1,nparm
        hpsiloc(i+i0,ivec)=hpsiloc(i+i0,ivec)+0.5d0*ddot(nconf_n,aux(1),1,sr_ho(i,1),mparm)
@@ -73,16 +73,16 @@ c loop vec
 
         if(i0.eq.1)then
 
-          aux0=ddot(nparm,psi(i0+1,ivec),1,obs_tot(jfj,1),1)
-          aux1=ddot(nparm,psi(i0+1,ivec),1,obs_tot(jefj,1),1)
-          aux2=ddot(nparm,psi(i0+1,ivec),1,obs_tot(jhfj,1),1)
+          aux0=ddot(nparm,psi(i0+1:,ivec),1,obs_tot(jfj,1),1)
+          aux1=ddot(nparm,psi(i0+1:,ivec),1,obs_tot(jefj,1),1)
+          aux2=ddot(nparm,psi(i0+1:,ivec),1,obs_tot(jhfj,1),1)
           do i=1,nparm
            hpsi(i+i0,ivec)=hpsi(i+i0,ivec)+aux0*obs_tot(jelo,1)*obs_tot(jfj+i-1,1)
      &                            -0.5d0*(aux0*(obs_tot(jefj+i-1,1)+obs_tot(jhfj+i-1,1))
      &                                   +obs_tot(jfj+i-1,1)*(aux1+aux2))
           enddo
 
-          hpsi(1,ivec)=obs_tot(jelo,1)*psi(1,ivec)+ddot(nparm,h_sr,1,psi(2,ivec),1)
+          hpsi(1,ivec)=obs_tot(jelo,1)*psi(1,ivec)+ddot(nparm,h_sr,1,psi(2:,ivec),1)
           do i=1,nparm
            hpsi(i+i0,ivec)=hpsi(i+i0,ivec)+h_sr(i)*psi(1,ivec)+s_diag(1,1)*psi(i+i0,ivec) !!!
           enddo
@@ -124,7 +124,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real(dp) :: aux0
       real(dp), dimension(mparm,*) :: psi
       real(dp), dimension(mparm,*) :: spsi
-      real(dp), dimension(mparm,nvecx) :: spsiloc
+      real(dp), dimension(mparm,2*  nvecx) :: spsiloc
       real(dp), dimension(mconf) :: aux
 
       i0=1
@@ -731,8 +731,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
 
       integer :: ndim, nvec
-      real(dp), dimension(mparm,*) :: psi
-      real(dp), dimension(mparm,*) :: hpsi
+      real(dp), dimension(:,:) :: psi
+      real(dp), dimension(:,:) :: hpsi
 
       if(ifunc_omega.eq.0) then
         call h_psi_energymin(ndim,nvec,psi,hpsi)

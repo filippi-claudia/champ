@@ -273,8 +273,8 @@ module jd_scratch
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: qr !(mparm)
-    real(dp), dimension(:), allocatable :: rr !(mparm)
+    real(dp), dimension(:), allocatable, target :: qr !(mparm)
+    real(dp), dimension(:), allocatable, target :: rr !(mparm)
 
     private
     public :: qr, rr
