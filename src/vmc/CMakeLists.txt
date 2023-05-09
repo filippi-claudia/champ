@@ -398,11 +398,22 @@ ENDIF()
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
     )
 
-  target_link_libraries(vmc.mov1
-    PRIVATE
-    pspline
-    parser
-    ${LINEAR_ALGEBRA}
-    MPI::MPI_Fortran)
+  if (TREXIO_FOUND)
+    target_link_libraries(vmc.mov1
+      PRIVATE
+      pspline
+      parser
+      ${LINEAR_ALGEBRA}
+      ${TREXIO_LIBRARY}
+      MPI::MPI_Fortran)
+  else()
+    target_link_libraries(vmc.mov1
+      PRIVATE
+      pspline
+      parser
+      ${LINEAR_ALGEBRA}
+      MPI::MPI_Fortran)
+  endif()
+  
 
 endif()
