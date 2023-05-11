@@ -3,8 +3,13 @@
       subroutine optx_jas_orb_reduce
 c Written by Claudia Filippi
 
-      use csfs,    only: nstates
-      use mix_jas_orb, only: de_o,dj_ho,dj_o,dj_oe
+      use optorb_mod, only: mxreduced
+      use optwf_parms, only: nparmj
+      use csfs, only: nstates
+      use optwf_control, only: ioptjas, ioptorb
+      use optwf_parms, only: nparmj
+      use mix_jas_orb, only: de_o, dj_ho, dj_o, dj_oe
+      use optwf_control, only: method
       use mpi
       use optorb_mod, only: mxreduced
       use optwf_control, only: ioptjas,ioptorb,method

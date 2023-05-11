@@ -213,14 +213,14 @@ contains
         select case (dl_alg)
         case ('mom')
             do i = 1, nparm
-                dl_momentum(i) = dl_mom*dl_momentum(i) + sr_tau*h_sr(i)
+                dl_momentum(i) = dl_mom*dl_momentum(i) + sr_tau*h_sr(i,1)
                 deltap(i) = dl_momentum(i)
                 parameters(i) = parameters(i) + deltap(i)
             enddo
         case ('nag')
             do i = 1, nparm
                 dl_momentum_prev = dl_momentum(i)
-                dl_momentum(i) = dl_mom*dl_momentum(i) - sr_tau*h_sr(i)
+                dl_momentum(i) = dl_mom*dl_momentum(i) - sr_tau*h_sr(i,1)
                 deltap(i) = -(dl_mom*dl_momentum_prev + (1 + dl_mom)*dl_momentum(i))
                 parameters(i) = parameters(i) + deltap(i)
             enddo
@@ -228,11 +228,11 @@ contains
             ! Actually an altered version of rmsprop that uses nesterov momentum as well
             ! magic numbers: gamma = 0.9
             do i = 1, nparm
-                dl_EG_sq(i) = 0.9*dl_EG_sq(i) + 0.1*(-h_sr(i))**2
+                dl_EG_sq(i) = 0.9*dl_EG_sq(i) + 0.1*(-h_sr(i,1))**2
                 parameters(i) = parameters(i) + deltap(i)
                 parm_old = parameters(i)
                 dl_momentum_prev = dl_momentum(i)
-                dl_momentum(i) = parameters(i) + sr_tau*h_sr(i)/sqrt(dl_EG_sq(i) + 10.d0**(-8.d0))
+                dl_momentum(i) = parameters(i) + sr_tau*h_sr(i,1)/sqrt(dl_EG_sq(i) + 10.d0**(-8.d0))
 
                 ! To avoid declaring more arrays, use dl_EG for \lambda, dl_EG_sq = gamma
                 ! Better solution needed (custom types for each iterator a la Fortran 2003 or C++ classes?)
@@ -246,8 +246,8 @@ contains
         case ('adam')
             ! Magic numbers: beta1 = 0.9, beta2 = 0.999
             do i = 1, nparm
-                dl_EG(i) = 0.9*dl_EG(i) + 0.1*(-h_sr(i))
-                dl_EG_sq(i) = 0.999*dl_EG_sq(i) + 0.001*(-h_sr(i))**2
+                dl_EG(i) = 0.9*dl_EG(i) + 0.1*(-h_sr(i,1))
+                dl_EG_sq(i) = 0.999*dl_EG_sq(i) + 0.001*(-h_sr(i,1))**2
                 dl_EG_corr = dl_EG(i)/(1 - 0.9**iter)
                 dl_EG_sq_corr = dl_EG_sq(i)/(1 - 0.999**iter)
                 deltap(i) = -sr_tau*dl_EG_corr/(sqrt(dl_EG_sq_corr) + 10.d0**(-8.d0))
@@ -257,7 +257,7 @@ contains
             do i = 1, nparm
                 parm_old = parameters(i)
                 dl_momentum_prev = dl_momentum(i)
-                dl_momentum(i) = parameters(i) + sr_tau*h_sr(i)
+                dl_momentum(i) = parameters(i) + sr_tau*h_sr(i,1)
                 ! To avoid declaring more arrays, use dl_EG for \lambda, dl_EG_sq = gamma
                 dl_EG_old = dl_EG(i)
                 dl_EG(i) = 0.5 + 0.5*sqrt(1 + 4*dl_EG(i)**2)

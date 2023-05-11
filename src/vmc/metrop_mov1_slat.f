@@ -61,7 +61,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,nup,znuc
       use tmpnode, only: distance_node_sum
-      use vmc_mod, only: delri,nrad
+      use vmc_mod, only: delri,nrad, nwftypejas, stoj
 
 
       implicit none
@@ -81,7 +81,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp) :: g32dif, g32dif1, g32dif2, g52bot
       real(dp) :: g52dif, g52dif1, g52dif2, g52top
       real(dp) :: g52zer, p, phitry, phizer
-      real(dp) :: psidg, psig, psijn, q
+      real(dp) :: psidg, psig, q
       real(dp) :: r, ratio, raver, ravern
       real(dp) :: rbot, rmax1, rmax2 = 0d0, rnew
       real(dp) :: rnorm, rnorm_nodes, rold, root
@@ -99,7 +99,9 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp), dimension(3) :: ddx_ref
       real(dp), dimension(MSTATES) :: ekino
       real(dp), dimension(MSTATES) :: psidn
+      real(dp), dimension(nwftypejas) :: psijn
       real(dp), dimension(MSTATES) :: wtg
+      real(dp), dimension(MSTATES) :: wtg_sqrt 
       real(dp), parameter :: zero = 0.d0
       real(dp), dimension(MSTATES) :: zero_array = 0.0_dp
       real(dp), parameter :: one = 1.d0
@@ -155,17 +157,17 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
         endif
 
         if(iguiding.eq.0) then
-          psig=psido(1)
-         else
-          call determinant_psig(psido,psig)
+          psidg=psido(1)
+          psig=psido(1)*exp(psijo(1))
+        else
+          call determinant_psig(psido,psijo,psig)
         endif
-        call compute_determinante_grad(i,psig,psido,vold(1,i),1)
-
+        call compute_determinante_grad(i,psig,psido,psijo,vold(1,i),1)
         fxop=one
         nearo=nearesto(i)
         if(nloc.eq.0) then
           zcusp=znuc(iwctype(nearo))
-         else
+        else
           zcusp=zero
         endif
 c Although rmino is saved, recalculate it, otherwise there may be a
@@ -402,11 +404,12 @@ c calculate psi at new configuration
       iel=i
 
       call psie(iel,xnew,psidn,psijn,ipass,0)
-      if(iguiding.eq.0) then
 
-        psig=psidn(1)
-       else
-        call determinant_psig(psidn,psig)
+      if(iguiding.eq.0) then
+        psidg=psidn(1)
+        psig=psidn(1)*exp(psijn(1))
+      else
+        call determinant_psig(psidn,psijn,psig)
       endif
 
       if(psig.eq.0.d0) then
@@ -415,21 +418,21 @@ c calculate psi at new configuration
         goto 208
       endif
 
-      call compute_determinante_grad(iel,psig,psidn,vnew(1,iel),0)
+      call compute_determinante_grad(iel,psig,psidn,psijn,vnew(1,iel),0)
 
       if(ipr.gt.1) then
         write(ounit,'(''psidn,psig ='',2d12.4)') psidn(1),psig
       endif
 
-      psi2n(1)=2*(dlog(dabs(psig))+psijn)
+      psi2n(1)=2*(dlog(dabs(psig)))
 
       if(node_cutoff.ne.0) then
         do jel=1,nup
-          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,vnew(1,jel),iflag_up)
+          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,psijn,vnew(1,jel),iflag_up)
         enddo
 
         do jel=nup+1,nelec
-          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,vnew(1,jel),iflag_dn)
+          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,psijn,vnew(1,jel),iflag_dn)
         enddo
 
         call nodes_distance(vnew,distance_node,0)
@@ -610,6 +613,8 @@ c The K.E. is not quite correct, since we should use p times new
 c and q times old, and keep track of which bin the old was in
       rold=dsqrt(xold(1,i)**2+xold(2,i)**2+xold(3,i)**2)
       rnew=dsqrt(xnew(1,i)**2+xnew(2,i)**2+xnew(3,i)**2)
+      !write(ounit,*) 'rold,min(int(delri*rold),itryo', rold, int(delri*rold)+1,nrad 
+      !write(ounit,*) 'rnew,min(int(delri*rnew),itryn', rnew, int(delri*rnew)+1,nrad 
       itryo=min(int(delri*rold)+1,nrad)
       itryn=min(int(delri*rnew)+1,nrad)
       try(itryo)=try(itryo)+1
@@ -648,8 +653,8 @@ c Note when one electron moves the velocity on all electrons change.
         endif
         do istate=1,nstates
           psido(istate)=psidn(istate)
+          psijo(stoj(istate))=psijn(stoj(istate))
         enddo
-        psijo=psijn
         acc=acc+one
         call jassav(i,0)
         call detsav(i,0)
@@ -673,7 +678,8 @@ c loop over secondary configurations
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido(1),psijo,ekino,eold(1,ifr),ipass,ifr)
         do istate=1,nstates
-          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+          j=stoj(istate)
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(j))+dlog(ajacob)
         enddo
       enddo
 
@@ -683,28 +689,30 @@ c primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido(1),psijo,ekino,eold(1,1),ipass,1)
       do istate=1,nstates
-         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+         j=stoj(istate)
+         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(j))
       enddo
 
       if(iguiding.eq.0) then
         psidg=psido(1)
+        psig=psido(1)*exp(psijo(1))
        else
-        call determinant_psig(psido,psidg)
+        call determinant_psig(psido,psijo,psig)
       endif
 
       if(ipr.gt.1) then
-        write(ounit,'(''psid,psig ='',2d12.4)') psido(1),psidg
+        write(ounit,'(''psid,psig ='',2d12.4)') psido(1),psig
       endif
 
 
       rnorm_nodes=1.d0
       if(node_cutoff.gt.0) then
         do jel=1,nelec
-          call compute_determinante_grad(jel,psidg,psido(1),vold(1,jel),1)
+          call compute_determinante_grad(jel,psig,psido(1),psijo,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
-        psidg=psido(1)*rnorm_nodes
+        psig=psig*rnorm_nodes
         if(ipr.gt.1) then
           write(ounit,'(''distance_node='',d12.4)') distance_node
           write(ounit,'(''rnorm_nodes='',d12.4)') rnorm_nodes
@@ -714,8 +722,9 @@ c primary configuration
       endif
 
       do istate=1,nstates
-        wtg(istate)=psido(istate)/psidg
-        wtg(istate)=wtg(istate)*wtg(istate)
+        j=stoj(istate)
+        wtg_sqrt(istate)=psido(istate)*exp(psijo(j))/psig
+        wtg(istate)=wtg_sqrt(istate)*wtg_sqrt(istate)
 
 c form expected values of e, pe, etc.
         esum1(istate)=eold(istate,1)
@@ -746,9 +755,9 @@ c use 'new' not 'old' value
       call optx_jas_ci_sum(wtg(1),0.d0,eold(1,1),eold(1,1))
       call optx_orb_ci_sum(wtg(1),0.d0)
 
-      if(irun.eq.1) call optwf_store(ipass,wtg,psido,eold(1,1))
+      if(irun.eq.1) call optwf_store(ipass,wtg,wtg_sqrt,psido,eold(1,1))
 
-      call efficiency_sample(ipass,psido,psidg)
+      call efficiency_sample(ipass,psido,psijo,psig)
 
       call acues1(wtg)
 
@@ -771,7 +780,7 @@ c use 'new' not 'old' value
       enddo
 
 c rewrite psi2o for next metropolis step if you are sampling guiding
-      if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
+      if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psig)))
 
       if(node_cutoff.gt.0) then
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)

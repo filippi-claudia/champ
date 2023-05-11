@@ -19,7 +19,7 @@ module config
     real(dp), dimension(:), allocatable :: psi2n !(MFORCE)
     real(dp), dimension(:, :), allocatable :: psi2o !(MSTATES, MFORCE)
     real(dp), dimension(:), allocatable :: psido !(MSTATES)
-    real(dp) :: psijo
+    real(dp), dimension(:), allocatable :: psijo !(nwftypejas)
     real(dp), dimension(:), allocatable :: rminn !(MELEC)
     real(dp), dimension(:), allocatable :: rminno !(MELEC)
     real(dp), dimension(:), allocatable :: rmino !(MELEC)
@@ -55,8 +55,9 @@ module config
 contains
     subroutine allocate_config()
       use mstates_mod, only: MSTATES
+      use system, only: nelec
       use multiple_geo, only: MFORCE
-      use system,  only: nelec
+      use vmc_mod, only: nwftypejas
         implicit none
         if (.not. allocated(delttn)) allocate (delttn(nelec))
         if (.not. allocated(enew)) allocate (enew(MFORCE))
@@ -68,6 +69,7 @@ contains
         if (.not. allocated(psi2n)) allocate (psi2n(MFORCE))
         if (.not. allocated(psi2o)) allocate (psi2o(MSTATES, MFORCE))
         if (.not. allocated(psido)) allocate (psido(MSTATES))
+        if (.not. allocated(psijo)) allocate (psijo(nwftypejas))
         if (.not. allocated(rminn)) allocate (rminn(nelec))
         if (.not. allocated(rminno)) allocate (rminno(nelec))
         if (.not. allocated(rmino)) allocate (rmino(nelec))
@@ -111,7 +113,7 @@ contains
     subroutine allocate_config_dmc()
       use dmc_mod, only: mwalk
       use multiple_geo, only: MFORCE
-      use system,  only: nelec
+      use system, only: nelec
 
       implicit none
 
@@ -230,7 +232,6 @@ module kinet
     !> only used in metropolis
     !> Arguments: dtdx2n, dtdx2o
       use precision_kinds, only: dp
-      use system,  only: nelec
 
     real(dp), dimension(:), allocatable :: dtdx2n !(MELEC)
     real(dp), dimension(:), allocatable :: dtdx2o !(MELEC)
@@ -241,6 +242,7 @@ module kinet
     save
 contains
     subroutine allocate_kinet()
+        use system, only: nelec
         if (.not. allocated(dtdx2n)) allocate (dtdx2n(nelec))
         if (.not. allocated(dtdx2o)) allocate (dtdx2o(nelec))
     end subroutine allocate_kinet
@@ -255,10 +257,10 @@ end module kinet
 module m_sampling
 contains
 subroutine allocate_m_sampling()
-      use config,  only: allocate_config
-      use kinet,   only: allocate_kinet
-      use step,    only: allocate_step
-      use system,  only: nelec
+      use config, only: allocate_config
+      use kinet, only: allocate_kinet
+      use step, only: allocate_step
+      use system, only: nelec
 
     call allocate_config()
     call allocate_step()
@@ -266,9 +268,9 @@ subroutine allocate_m_sampling()
 end subroutine allocate_m_sampling
 
 subroutine deallocate_m_sampling()
-      use config,  only: deallocate_config
-      use kinet,   only: deallocate_kinet
-      use step,    only: deallocate_step
+      use config, only: deallocate_config
+      use kinet, only: deallocate_kinet
+      use step, only: deallocate_step
 
     call deallocate_config()
     call deallocate_step()

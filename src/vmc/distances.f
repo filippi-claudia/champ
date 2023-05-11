@@ -3,14 +3,13 @@
       subroutine distances(iel,x)
 c Written by Cyrus Umrigar
 c calculate interparticle distances
-      use contrl_file, only: ounit
+      use contrl_file,    only: ounit
       use contrl_per, only: iperiodic
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
-      use distances_sav, only: r_ee_sav,r_en_sav,rshift_sav,rvec_ee_sav
-      use distances_sav, only: rvec_en_sav
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
       use precision_kinds, only: dp
-      use pw_find_image, only: find_image3,find_image4
-      use system,  only: cent,ncent,nelec,nghostcent
+      use pw_find_image, only: find_image4, find_image3
+      use system, only: cent, ncent, nghostcent, nelec
       implicit none
 
       integer :: i, i1, i2, ic, iel
@@ -113,10 +112,10 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c restore interparticle distances (called if move rejected)
 
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
-      use distances_sav, only: r_ee_sav,r_en_sav,rshift_sav,rvec_ee_sav
-      use distances_sav, only: rvec_en_sav
-      use system,  only: ncent,nelec,nghostcent
+      use system, only: ncent, nghostcent, nelec
+      use distance_mod, only: rshift, r_en, rvec_en
+      use distances_sav, only: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       implicit none
 
       integer :: i, ic, iel, ij, j

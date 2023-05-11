@@ -2,16 +2,18 @@
       use error,   only: fatal_error
       contains
 c----------------------------------------------------------------------
-      subroutine efficiency_sample(ipass,determ_s,determ_psig)
+      subroutine efficiency_sample(ipass,determ_s,psij,determ_psig)
 
       use mstates2, only: effcm2,effcum
       use mstates_ctrl, only: iefficiency,nstates_psig
       use precision_kinds, only: dp
+      use vmc_mod, only: stoj
       implicit none
 
       integer :: ipass, j
       real(dp) :: determ_psig, determ_psigi, ratio, wi
       real(dp), dimension(*) :: determ_s
+      real(dp), dimension(*) :: psij
 
 
 
@@ -22,7 +24,7 @@ c----------------------------------------------------------------------
 c     write(ounit,*) ((determ_s(j)*determ_psigi)**2,j=1,nstates_psig)
 
       do j=1,nstates_psig
-        ratio=determ_s(j)*determ_psigi
+        ratio=determ_s(j)*exp(psij(stoj(j)))*determ_psigi
         wi=ratio*ratio
         effcum(j)=effcum(j)+wi
         effcm2(j)=effcm2(j)+wi*wi
@@ -43,17 +45,19 @@ c----------------------------------------------------------------------
 
 
       do j=1,nstates_psig
-        effcum(j)=0
-        effcm2(j)=0
+        effcum(j)=0.0d0
+        effcm2(j)=0.0d0
       enddo
 
       end
 c----------------------------------------------------------------------
       subroutine efficiency_prt(passes)
-      use contrl_file, only: errunit,ounit
-      use mstates2, only: effcm2,effcum
-      use mstates_ctrl, only: iefficiency,nstates_psig
+      use mstates_ctrl, only: iefficiency, nstates_psig
+      use mstates2, only: effcm2, effcum
+      use contrl_file,    only: ounit, errunit
+      use csfs,           only: anormo
       use precision_kinds, only: dp
+      
       implicit none
 
       integer :: j
@@ -70,6 +74,7 @@ c----------------------------------------------------------------------
         efficiency=effcum(j)*effcum(j)/effcm2(j)/passes
 c       write(ounit,*) effcum(j)*effcum(j)/passes,effcm2(j)
         write(ounit,'(''efficiency state '',i4,f8.3)') j,efficiency
+c        write(ounit,'(''anorm correction '',i4, E15.8)') j,anormo(j)
       enddo
 
       end

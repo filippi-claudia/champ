@@ -270,7 +270,6 @@ subroutine readps_gauss
   integer         :: iunit, iostat, counter = 0
   logical         :: exist, skip = .true.
   real(dp) ::  necp_power_tmp
-
   character*80 label
 
 

@@ -1,11 +1,10 @@
       module deriv_jastrow4_mod
       contains
-      subroutine deriv_jastrow4(x,v,d2,value)
+      subroutine deriv_jastrow4(x,fjo,d2o,fsumo,fso,fijo,d2ijo,g,go,d2g,gvalue)
 c Written by Cyrus Umrigar and Claudia Filippi
       use bparm,   only: nocuspb,nspin2b
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4
-      use derivjas, only: d2g,g,go,gvalue
       use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
       use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
       use jastrow, only: norda,nordb,nordc
@@ -14,7 +13,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj
       use jastrow, only: sspinn
       use jastrow4_mod, only: da_jastrow4
-      use jastrow_update, only: d2ijo,d2o,fijo,fjo,fso,fsumo
       use m_force_analytic, only: iforce_analy
       use multiple_geo, only: iwf
       use optwf_control, only: ioptjas
@@ -34,12 +32,12 @@ c Written by Cyrus Umrigar and Claudia Filippi
       integer :: l, l_hi, ll, m
       integer :: n
       real(dp) :: bot, bot0, bot2, boti, botii
-      real(dp) :: botu, botuu, cd, d2
+      real(dp) :: botu, botuu, cd, d2o
       real(dp) :: dd1, dd10, dd2, dd7
       real(dp) :: dd8, dd9, fc, fee
       real(dp) :: feeu, feeuu, fen, feni
       real(dp) :: feni_save, fenii, fenii_save, fi
-      real(dp) :: fii, fj, fjj, fsum
+      real(dp) :: fii, fj, fjj
       real(dp) :: fu, fui, fuj, fuu
       real(dp) :: gee, geeu, geeuu, gen
       real(dp) :: geni, genii, gi, gii
@@ -52,7 +50,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       real(dp) :: topu, topuu, u2mst, u2pst
       real(dp) :: value
       real(dp), dimension(3, *) :: x
-      real(dp), dimension(3, *) :: v
       real(dp), dimension(-2:nordj) :: uu
       real(dp), dimension(-2:nordj) :: ss
       real(dp), dimension(-2:nordj) :: tt
@@ -63,6 +60,15 @@ c Written by Cyrus Umrigar and Claudia Filippi
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: eps = 1.d-12
+      real(dp) :: fsumo
+      real(dp), dimension(3, *) :: fjo
+      real(dp), dimension(nelec, *) :: fso
+      real(dp), dimension(3, nelec, *) :: fijo
+      real(dp), dimension(nelec, *) :: d2ijo
+      real(dp), dimension(*) :: gvalue
+      real(dp), dimension(*) :: d2g
+      real(dp), dimension(3, nelec, *) :: g
+      real(dp), dimension(nelec, nelec, *) :: go
 
 
 
@@ -71,13 +77,13 @@ c Written by Cyrus Umrigar and Claudia Filippi
        iparma=iparma+nparma(it)
       enddo
 
-      fsum=0
+      fsumo=0
       do i=1,nelec
-        v(1,i)=0
-        v(2,i)=0
-        v(3,i)=0
+        fjo(1,i)=0
+        fjo(2,i)=0
+        fjo(3,i)=0
       enddo
-      d2=0
+      d2o=0
 
       do i=-2,-1
         uu(i)=0
@@ -157,7 +163,7 @@ c Check rij after scaling because uu(1) used in e-e-n terms too
       botuu=0
       bot2=bot*bot
 
-      fee=top/bot-asymp_jasb(ipar+1)
+      fee=top/bot-asymp_jasb(ipar+1,iwf)
       feeu=topu/bot-botu*top/bot2
       feeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
       feeuu=feeuu/bot
@@ -471,16 +477,16 @@ c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
    57 continue
       enddo
 
-   58 fsum=fsum+fso(i,j)
-      v(1,i)=v(1,i)+fijo(1,i,j)
-      v(2,i)=v(2,i)+fijo(2,i,j)
-      v(3,i)=v(3,i)+fijo(3,i,j)
-      v(1,j)=v(1,j)+fijo(1,j,i)
-      v(2,j)=v(2,j)+fijo(2,j,i)
-      v(3,j)=v(3,j)+fijo(3,j,i)
+   58 fsumo=fsumo+fso(i,j)
+      fjo(1,i)=fjo(1,i)+fijo(1,i,j)
+      fjo(2,i)=fjo(2,i)+fijo(2,i,j)
+      fjo(3,i)=fjo(3,i)+fijo(3,i,j)
+      fjo(1,j)=fjo(1,j)+fijo(1,j,i)
+      fjo(2,j)=fjo(2,j)+fijo(2,j,i)
+      fjo(3,j)=fjo(3,j)+fijo(3,j,i)
 c     div_vj(i)=div_vj(i)+d2ijo(i,j)/2
 c     div_vj(j)=div_vj(j)+d2ijo(i,j)/2
-      d2=d2+d2ijo(i,j)
+      d2o=d2o+d2ijo(i,j)
       enddo
       enddo
 
@@ -514,7 +520,7 @@ c e-n terms
           botii=0
           bot2=bot*bot
 
-          fen=top/bot-asymp_jasa(it)
+          fen=top/bot-asymp_jasa(it,iwf)
           feni=topi/bot-boti*top/bot2
           fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
           fenii=fenii/bot
@@ -605,28 +611,19 @@ c           write(ounit,*) 'CIAO',iord,rri(iord),genii,d77,geni,dd9
    80     continue
         enddo
 
-        fsum=fsum+fso(i,i)
-        v(1,i)=v(1,i)+fijo(1,i,i)
-        v(2,i)=v(2,i)+fijo(2,i,i)
-        v(3,i)=v(3,i)+fijo(3,i,i)
+        fsumo=fsumo+fso(i,i)
+        fjo(1,i)=fjo(1,i)+fijo(1,i,i)
+        fjo(2,i)=fjo(2,i)+fijo(2,i,i)
+        fjo(3,i)=fjo(3,i)+fijo(3,i,i)
 c       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
 c       div_vj(i)=div_vj(i)+d2ijo(i,i)
-        d2=d2+d2ijo(i,i)
+        d2o=d2o+d2ijo(i,i)
       enddo
 
-      fsumo=fsum
-      d2o=d2
-      do i=1,nelec
-        fjo(1,i)=v(1,i)
-        fjo(2,i)=v(2,i)
-        fjo(3,i)=v(3,i)
-      enddo
-
-      value=fsum
 c     write(ounit,*) (d2g(iparm),iparm=1,nparmj)
 
 c     write(ounit,*) 'd2d2',nspin2b,d2d2b(1),d2d2b(2),asymp_r
-c     write(ounit,*) 'asym',asymp_r,asymp_jasa(1),asymp_jasb(1)
+c     write(ounit,*) 'asym',asymp_r,asymp_jasa(1,1),asymp_jasb(1,1)
 
       return
       end

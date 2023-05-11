@@ -6,11 +6,11 @@ module slater
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: d2dx2 !(MELEC)
-    real(dp), dimension(:, :), allocatable :: ddx !(3,MELEC)
-    real(dp), dimension(:, :, :), allocatable :: fp !(3,nmat_dim,2)
-    real(dp), dimension(:, :), allocatable :: fpp !(nmat_dim,2)
-    real(dp), dimension(:, :), allocatable :: slmi !(nmat_dim,2)
+    real(dp), dimension(:, :), allocatable :: d2dx2 !(MELEC, nwftypeorb)
+    real(dp), dimension(:, :, :), allocatable :: ddx !(3,MELEC, nwftypeorb)
+    real(dp), dimension(:, :, :, :), allocatable :: fp !(3,nmat_dim,2, nwftypeorb)
+    real(dp), dimension(:, :, :), allocatable :: fpp !(nmat_dim,2, nwftypeorb)
+    real(dp), dimension(:, :, :), allocatable :: slmi !(nmat_dim,2, nwftypeorb)
     !> DMC extra variables:
     real(dp), dimension(:,:), allocatable :: fpd !(3,nmat_dim)
     real(dp), dimension(:), allocatable :: fppd !(nmat_dim)
@@ -31,15 +31,15 @@ module slater
 contains
     subroutine allocate_slater()
       use system,  only: nelec
-      use vmc_mod, only: nmat_dim
+      use vmc_mod, only: nmat_dim, nwftypeorb
         !use force_mod, only: MWF
         !use mstates_mod, only: MSTATES
 
-        if (.not. allocated(d2dx2)) allocate(d2dx2(nelec))
-        if (.not. allocated(ddx)) allocate(ddx(3, nelec))
-        if (.not. allocated(fp)) allocate(fp(3, nmat_dim, 2))
-        if (.not. allocated(fpp)) allocate(fpp(nmat_dim, 2))
-        if (.not. allocated(slmi)) allocate(slmi(nmat_dim, 2))
+        if (.not. allocated(d2dx2)) allocate(d2dx2(nelec, nwftypeorb))
+        if (.not. allocated(ddx)) allocate(ddx(3, nelec, nwftypeorb))
+        if (.not. allocated(fp)) allocate(fp(3, nmat_dim, 2, nwftypeorb))
+        if (.not. allocated(fpp)) allocate(fpp(nmat_dim, 2, nwftypeorb))
+        if (.not. allocated(slmi)) allocate(slmi(nmat_dim, 2, nwftypeorb))
         if (.not. allocated(fpd))  allocate(fpd(3,nmat_dim))
         if (.not. allocated(fppd)) allocate(fppd(nmat_dim))
         if (.not. allocated(fppu)) allocate(fppu(nmat_dim))

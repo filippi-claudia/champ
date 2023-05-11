@@ -13,6 +13,7 @@
       real(dp) :: denergy, psid
       real(dp), dimension(3, ncent_tot) :: da_psi_ref
 
+c     ! multistate indcies were not added
       call compute_da_psi(psid,da_psi_ref)
       call compute_da_energy(psid,denergy)
 
@@ -88,7 +89,7 @@ c-----------------------------------------------------------------------
 c compute force for reference determinant
             do i=1,nel
               do j=1,nel
-                da_psi_ref(k,ic)=da_psi_ref(k,ic)+slmi(i+(j-1)*nel,iab)*b_kref(i+(j-1)*nel)
+                da_psi_ref(k,ic)=da_psi_ref(k,ic)+slmi(i+(j-1)*nel,iab,1)*b_kref(i+(j-1)*nel)
               enddo
             enddo
 
@@ -108,7 +109,7 @@ c compute force for reference determinant
 c enddo iab
           enddo
 
-          da_psi(k,ic)=trace*detiab(kref,1)*detiab(kref,2)/psid
+          da_psi(k,ic)=trace*detiab(kref,1,1)*detiab(kref,2,1)/psid
 
         enddo
       enddo
@@ -170,8 +171,8 @@ c compute force for reference determinant
             do i=1,nel
               do j=1,nel
                 jorb=iworbd(j+ish,kref)
-                da_energy_ref(k,ic)=da_energy_ref(k,ic)+slmi(j+(i-1)*nel,iab)*b_da(k,i+ish,jorb,ic)
-     &                                                 -da_orb(k,i+ish,jorb,ic)*xmat(i+(j-1)*nel,iab)
+                da_energy_ref(k,ic)=da_energy_ref(k,ic)+slmi(j+(i-1)*nel,iab,1)*b_da(k,i+ish,jorb,ic)
+     &          -da_orb(k,i+ish,jorb,ic)*xmat(i+(j-1)*nel,iab,1)
               enddo
             enddo
             do jrep=ivirt(iab),norb
@@ -191,7 +192,7 @@ c compute force for reference determinant
 c enddo iab
           enddo
 
-          da_energy(k,ic)=trace*detiab(kref,1)*detiab(kref,2)/psid
+          da_energy(k,ic)=trace*detiab(kref,1,1)*detiab(kref,2,1)/psid
         enddo
       enddo
 
@@ -204,7 +205,7 @@ c enddo iab
           da_other_pot=da_pecent(k,ic)
           do i=1,nelec
             da_other_kin=da_other_kin+da_d2j(k,i,ic)
-     &               +2*(vj(1,i)*da_vj(k,1,i,ic)+vj(2,i)*da_vj(k,2,i,ic)+vj(3,i)*da_vj(k,3,i,ic))
+     &      +2*(vj(1,i,1)*da_vj(k,1,i,ic)+vj(2,i,1)*da_vj(k,2,i,ic)+vj(3,i,1)*da_vj(k,3,i,ic))
             da_other_pot=da_other_pot+da_vps(k,i,ic,lpot(ict))
           enddo
 

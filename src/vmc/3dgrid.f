@@ -17,12 +17,12 @@ c----------------------------------------------------------------------
 
       subroutine setup_grid()
 
+      use grid_mod, only: MXNSTEP
+      use grid_mod, only: IUNDEFINED, UNDEFINED, SHIFT
+      use grid_mod, only: grid3d, cart_from_int
+      use system, only: cent, ncent
       use control_vmc, only: vmc_irstar
       use grid3d_param, only: endpt,nstep3d,origin,step3d
-      use grid_mod, only: IUNDEFINED,MXNSTEP,SHIFT,UNDEFINED
-      use grid_mod, only: cart_from_int,grid3d
-      use system,  only: cent,ncent
-!      use contrl, only: irstar
 
       implicit none
 
@@ -161,7 +161,8 @@ c----------------------------------------------------------------------
 
       use grid3d_param, only: nstep3d,origin,step3d
       use grid_mod, only: grid3d
-      use system,  only: cent,iwctype,ncent,nghostcent,znuc
+      use system, only: znuc, cent, iwctype, ncent
+      use system, only: nghostcent
 
       implicit none
 

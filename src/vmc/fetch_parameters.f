@@ -2,7 +2,6 @@
       contains
 c-----------------------------------------------------------------------
       subroutine fetch_parameters(p)
-
       ! this was not in master but I think it's needed
       ! this is so confusng ...
       use optwf_control, only: nparm

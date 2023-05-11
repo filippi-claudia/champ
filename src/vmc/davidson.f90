@@ -16,7 +16,7 @@
 !>
 !> \param[in] mtx: Matrix to diagonalize
 !> \param[inout] stx: Optional matrix for the general eigenvalue problem:
-!> $ mtx \lambda = V stx \lambda $
+!> $ mtx \lambda = V stx \lambda $
 !> \param[out] eigenvalues Computed eigenvalues
 !> \param[out] ritz_vectors Approximation to the eigenvectors
 !> \param[in] lowest Number of lowest eigenvalues/ritz_vectors to compute

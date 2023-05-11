@@ -2,7 +2,8 @@
       contains
       subroutine deriv(wtg,eold,pwt,ajac,psid,psij,idrifdifgfunc,iw,mwalk)
 
-      use c_averages, only: prop,wprop
+      use multiple_geo, only: nforce
+      use c_averages, only: prop, wprop
       use c_averages_index, only: jderiv
       use multiple_geo, only: nforce
       use precision_kinds, only: dp
@@ -37,9 +38,9 @@
 
       subroutine init_averages_index
 
-      use c_averages_index, only: jderiv,jeloc
       use multiple_geo, only: nforce
-      use prp000,  only: nprop
+      use c_averages_index, only: jeloc, jderiv
+      use prp000, only: nprop
 
       implicit none
 
@@ -103,7 +104,7 @@ c deriv
 
       subroutine average_write
 
-      use c_averages, only: cum_av,cum_w
+      use c_averages, only: cum_av, cum_w
       use c_averages_index, only: jderiv
       use multiple_geo, only: nforce
       use precision_kinds, only: dp

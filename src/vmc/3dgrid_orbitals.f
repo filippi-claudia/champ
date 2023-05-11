@@ -476,8 +476,8 @@ c     Evaluate the memory needed for the calculation
       memory=memory*dfloat(nstep3d(1)*nstep3d(2)*nstep3d(3))
       memory=memory*4.d-6
 
-      write (45,*) 'Allocated memory for the 3D Lagrange fits of the LCAO:',
-     & memory, 'Mb'
+      write (45,*) 'Allocated memory for the 3D Lagrange fits of the LCAO:
+     & ', memory, 'Mb'
 
       if ( vmc_irstar.ne.1 ) then
 

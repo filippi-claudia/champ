@@ -27,23 +27,28 @@ module sr_mat_n
     !> Arguments: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
       use mstates_mod, only: MSTATES
       use precision_kinds, only: dp
-      use sr_mod,  only: mconf,mobs,mparm
+      use sr_mod, only: mparm, mobs, mconf
 
     real(dp), dimension(:, :), allocatable :: elocal !(mconf,MSTATES)
-    real(dp), dimension(:), allocatable :: h_sr !(mparm)
+    real(dp), dimension(:, :), allocatable :: h_sr !(mparm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: h_sr_penalty !(mparm,MSTATES)
+    real(dp), dimension(:), allocatable :: isr_lambda !(MSTATES*(MSTATES-1)/2)
+    real(dp), dimension(:, :), allocatable :: sr_lambda !(MSTATES,MSTATES)
+    integer :: sr_state
+    integer :: ortho=0
     integer :: jefj
     integer :: jfj
     integer :: jhfj
     integer :: nconf_n
     real(dp), dimension(:, :), allocatable :: s_diag !(mparm,MSTATES)
-    real(dp), dimension(:), allocatable :: s_ii_inv !(mparm)
+    real(dp), dimension(:, :), allocatable :: s_ii_inv !(mparm,MSTATES)
     real(dp), dimension(:, :), allocatable :: sr_ho !(mparm,mconf)
-    real(dp), dimension(:, :), allocatable :: sr_o !(mparm,mconf)
+    real(dp), dimension(:, :, :), allocatable :: sr_o !(mparm,mconf,MSTATES)
     real(dp), dimension(:, :), allocatable :: wtg !(mconf,MSTATES)
     real(dp), dimension(:, :), allocatable :: obs_tot !(mobs,MSTATES)
 
     private
-    public :: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
+    public :: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot, isr_lambda, sr_lambda, sr_state, h_sr_penalty, ortho
     ! public :: obs
     public :: allocate_sr_mat_n, deallocate_sr_mat_n
     save
@@ -51,13 +56,16 @@ contains
     subroutine allocate_sr_mat_n()
       use mstates_mod, only: MSTATES
       use optwf_func, only: ifunc_omega
-      use sr_mod,  only: i_sr_rescale,izvzb,mconf,mobs,mparm
+      use sr_mod, only: mparm, mobs, mconf, izvzb, i_sr_rescale
         if (.not. allocated(elocal)) allocate (elocal(mconf, MSTATES))
-        if (.not. allocated(h_sr)) allocate (h_sr(mparm))
+        if (.not. allocated(h_sr)) allocate (h_sr(mparm, MSTATES))
+        if (.not. allocated(h_sr_penalty)) allocate (h_sr_penalty(mparm,MSTATES))
+        if (.not. allocated(isr_lambda)) allocate (isr_lambda(MSTATES*(MSTATES-1)/2))
+        if (.not. allocated(sr_lambda)) allocate (sr_lambda(MSTATES,MSTATES))
         if (.not. allocated(s_diag)) allocate (s_diag(mparm, MSTATES))
-        if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(mparm))
+        if (.not. allocated(s_ii_inv)) allocate (s_ii_inv(mparm, MSTATES))
         if (.not. allocated(sr_ho)) allocate (sr_ho(mparm, mconf))
-        if (.not. allocated(sr_o)) allocate (sr_o(mparm, mconf))
+        if (.not. allocated(sr_o)) allocate (sr_o(mparm, mconf, MSTATES))
         if (.not. allocated(wtg)) allocate (wtg(mconf, MSTATES))
         if (.not. allocated(obs_tot)) allocate (obs_tot(mobs, MSTATES))
     end subroutine allocate_sr_mat_n
@@ -70,6 +78,9 @@ contains
         if (allocated(s_ii_inv)) deallocate (s_ii_inv)
         if (allocated(s_diag)) deallocate (s_diag)
         if (allocated(h_sr)) deallocate (h_sr)
+        if (allocated(h_sr_penalty)) deallocate (h_sr_penalty)
+        if (allocated(isr_lambda)) deallocate (isr_lambda)
+        if (allocated(sr_lambda)) deallocate (sr_lambda)
         if (allocated(elocal)) deallocate (elocal)
     end subroutine deallocate_sr_mat_n
 

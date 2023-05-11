@@ -33,10 +33,11 @@
 c-----------------------------------------------------------------------
       subroutine efield_compute_extint
 
-      use contrl_file, only: ounit
-      use efield,  only: iscreen,ncharges
-      use efield_blk, only: ascreen,bscreen,qcharge,xcharge,ycharge
-      use efield_blk, only: zcharge
+      use system, only: znuc, cent, iwctype, ncent
+      use efield_blk, only: ascreen, bscreen, qcharge, xcharge, ycharge, zcharge
+
+      use efield, only: iscreen, ncharges
+      use contrl_file,    only: ounit
       use precision_kinds, only: dp
       use system,  only: cent,iwctype,ncent,znuc
 

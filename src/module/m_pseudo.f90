@@ -29,7 +29,7 @@ contains
     subroutine allocate_pseudo()
       use multiple_geo, only: MFORCE
       use pseudo_mod, only: MPS_L
-      use system,  only: ncent_tot,nctype_tot,nelec
+      use system, only: nelec, nctype_tot, ncent_tot
 
         if (.not. allocated(lpot)) allocate (lpot(nctype_tot), source=0)
         if (.not. allocated(vps)) allocate (vps(nelec, ncent_tot, MPS_L))
@@ -65,8 +65,8 @@ module pseudo_tm
     save
 contains
     subroutine allocate_pseudo_tm()
-      use pseudo_mod, only: MPS_GRID,MPS_L
-      use system,  only: nctype_tot
+      use pseudo_mod, only: MPS_L, MPS_GRID
+      use system, only: nctype_tot
 
         if (.not. allocated(arg)) allocate (arg(nctype_tot))
         if (.not. allocated(arg_ps)) allocate (arg_ps(nctype_tot))
@@ -92,7 +92,7 @@ end module pseudo_tm
 module m_pseudo
 contains
 subroutine allocate_m_pseudo()
-      use pseudo,  only: allocate_pseudo
+      use pseudo, only: allocate_pseudo
       use pseudo_tm, only: allocate_pseudo_tm
 
     call allocate_pseudo()
@@ -100,7 +100,7 @@ subroutine allocate_m_pseudo()
 end subroutine allocate_m_pseudo
 
 subroutine deallocate_m_pseudo()
-      use pseudo,  only: deallocate_pseudo
+      use pseudo, only: deallocate_pseudo
       use pseudo_tm, only: deallocate_pseudo_tm
 
     call deallocate_pseudo()

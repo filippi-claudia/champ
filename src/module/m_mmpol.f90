@@ -106,9 +106,9 @@ end module mmpol_parms
 
 module mmpolo
     !> Arguments: cmmpolo, dmmpolo, eeko
-      use dmc_mod, only: mwalk
-      use mmpol_mod, only: MCHMM
-      use precision_kinds, only: dp
+    use dmc_mod, only: mwalk
+    use mmpol_mod, only: MCHMM
+    use precision_kinds, only: dp
 
     real(dp) :: cmmpolo
     real(dp) :: dmmpolo
@@ -320,15 +320,15 @@ end module mmpol_pot
 module m_mmpol
 contains
 subroutine allocate_m_mmpol()
-      use mmpol_ahpol, only: allocate_mmpol_ahpol
-      use mmpol_averages, only: allocate_mmpol_averages
-      use mmpol_dipol, only: allocate_mmpol_dipol
-      use mmpol_fdc, only: allocate_mmpol_fdc
-      use mmpol_field, only: allocate_mmpol_field
-      use mmpol_hpsi, only: allocate_mmpol_hpsi
-      use mmpol_inds, only: allocate_mmpol_inds
-      use mmpol_parms, only: allocate_mmpol_parms
-      use mmpolo,  only: allocate_mmpolo
+    use mmpol_ahpol, only: allocate_mmpol_ahpol
+    use mmpol_averages, only: allocate_mmpol_averages
+    use mmpol_dipol, only: allocate_mmpol_dipol
+    use mmpol_fdc, only: allocate_mmpol_fdc
+    use mmpol_field, only: allocate_mmpol_field
+    use mmpol_hpsi, only: allocate_mmpol_hpsi
+    use mmpol_inds, only: allocate_mmpol_inds
+    use mmpol_parms, only: allocate_mmpol_parms
+    use mmpolo, only: allocate_mmpolo
 
     call allocate_mmpol_dipol()
     call allocate_mmpol_hpsi()
@@ -342,15 +342,15 @@ subroutine allocate_m_mmpol()
 end subroutine allocate_m_mmpol
 
 subroutine deallocate_m_mmpol()
-      use mmpol_ahpol, only: deallocate_mmpol_ahpol
-      use mmpol_averages, only: deallocate_mmpol_averages
-      use mmpol_dipol, only: deallocate_mmpol_dipol
-      use mmpol_fdc, only: deallocate_mmpol_fdc
-      use mmpol_field, only: deallocate_mmpol_field
-      use mmpol_hpsi, only: deallocate_mmpol_hpsi
-      use mmpol_inds, only: deallocate_mmpol_inds
-      use mmpol_parms, only: deallocate_mmpol_parms
-      use mmpolo,  only: deallocate_mmpolo
+    use mmpol_ahpol, only: deallocate_mmpol_ahpol
+    use mmpol_averages, only: deallocate_mmpol_averages
+    use mmpol_dipol, only: deallocate_mmpol_dipol
+    use mmpol_fdc, only: deallocate_mmpol_fdc
+    use mmpol_field, only: deallocate_mmpol_field
+    use mmpol_hpsi, only: deallocate_mmpol_hpsi
+    use mmpol_inds, only: deallocate_mmpol_inds
+    use mmpol_parms, only: deallocate_mmpol_parms
+    use mmpolo, only: deallocate_mmpolo
 
     call deallocate_mmpol_dipol()
     call deallocate_mmpol_hpsi()

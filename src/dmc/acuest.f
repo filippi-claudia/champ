@@ -4,6 +4,28 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
+      use multiple_geo, only: fgcm2, fgcum, nforce, MFORCE
+      use age, only: ioldest
+      use estcum, only: iblk
+      use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
+      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, wdsum
+      use estsum, only: wfsum, wgdsum, wgsum, wsum_dmc
+      use estcum, only: ecum_dmc, efcum, egcum, ei1cum, ei2cum
+      use estcum, only: pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
+      use estcum, only: wcum_dmc, wdcum, wfcum, wgcum
+      use estcum, only: wgdcum
+      use est2cm, only: ecm2_dmc, efcm2, egcm2, ei1cm2, ei2cm2
+      use est2cm, only: pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2
+      use est2cm, only: wfcm2, wgcm2
+      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
+      use mpiconf, only: nproc, wid
+      use control, only: mode
+      use mpiblk, only: iblk_proc
+      use control_dmc, only: dmc_nstep
+      use mpi
+      use contrl_file,    only: ounit
+      use precision_kinds, only: dp
+
       use acuest_gpop_mod, only: acuest_gpop
       use age,     only: ioldest
       use contrl_file, only: ounit

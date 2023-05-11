@@ -2,6 +2,19 @@
       contains
       subroutine acues1_reduce
 
+      use precision_kinds, only: dp
+      use vmc_mod, only: nrad
+      use multiple_geo, only: nforce, MFORCE
+      use estcum, only: iblk
+      use stats, only: acc, nacc, nodecr, trymove
+      use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
+      use estcum, only: wcum1, wfcum1, wgcum, wgcum1
+      use est2cm, only: ecm21_dmc, efcm21, egcm21
+      use est2cm, only: wcm21
+      use est2cm, only: wfcm21, wgcm21
+      use step, only: rprob
+      use mpiconf, only: nproc, wid
+      use control, only: mode
       use contrl_per, only: iperiodic
       use control, only: mode
       use est2cm,  only: ecm21_dmc,efcm21,egcm21,wcm21,wfcm21,wgcm21

@@ -1,23 +1,21 @@
       module jastrow4_mod
       contains
-      subroutine jastrow4(x,v,d2,div_vj,value)
+      subroutine jastrow4(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
 c Written by Cyrus Umrigar, modified by C. Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
-      use bparm,   only: nocuspb,nspin2b
-      use contrl_file, only: ounit
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
-      use jastrow, only: norda,nordb,nordc
-      use jaspar6, only: c1_jas6,cutjas
-      use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj
-      use jastrow, only: scalek,sspinn
-      use jastrow_update, only: d2ijo,d2o,fijo,fjo,fso,fsumo
-      use m_force_analytic, only: iforce_analy
+      use system, only: iwctype, ncent, nelec, nup
+      use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, ijas ,isc, nordj
+      use jaspar6, only: c1_jas6, cutjas
       use multiple_geo, only: iwf
+      use bparm, only: nocuspb, nspin2b
+      use scale_dist_mod, only: scale_dist2, switch_scale2
+      use m_force_analytic, only: iforce_analy
+      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
-      use scale_dist_mod, only: scale_dist2,switch_scale2
-      use system,  only: iwctype,ncent,nelec,nup
+      use contrl_file,    only: ounit
+      use vmc_mod, only: nwftypejas
       implicit none
 
       integer :: i, ic, ij, im1, iord
@@ -25,19 +23,17 @@ c Jastrow 6   must be used with one of isc=6,7
       integer :: k, l, l_hi, ll
       integer :: m, n
       real(dp) :: bot, bot2, boti, botii, botu
-      real(dp) :: botuu, d2, dd1, dd10
+      real(dp) :: botuu, dd1, dd10
       real(dp) :: dd2, dd7, dd8, dd9
       real(dp) :: fc, fee, feeu, feeuu
       real(dp) :: fen, feni, feni_save, fenii
       real(dp) :: fenii_save, fi, fii, fj
-      real(dp) :: fjj, fsum, fu, fui
+      real(dp) :: fjj, fu, fui
       real(dp) :: fuj, fuu, ri, rij
       real(dp) :: rj, s, t, term
       real(dp) :: top, topi, topii, topu
-      real(dp) :: topuu, u2mst, u2pst, value
+      real(dp) :: topuu, u2mst, u2pst 
       real(dp), dimension(3, *) :: x
-      real(dp), dimension(3, *) :: v
-      real(dp), dimension(*) :: div_vj
       real(dp), dimension(-2:nordj) :: uu
       real(dp), dimension(-2:nordj) :: ss
       real(dp), dimension(-2:nordj) :: tt
@@ -45,8 +41,22 @@ c Jastrow 6   must be used with one of isc=6,7
       real(dp), dimension(-2:nordj) :: rrj
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: eps = 1.d-12
+c replace global variables of fsumo, fjo, fso, fijo, and d2ijo
+c with locals of the same name, with one less dimension
+      real(dp) :: fsumo, d2o
+      real(dp), dimension(3, *) :: fjo
+      real(dp), dimension(nelec, *) :: fso
+      real(dp), dimension(3, nelec, *) :: fijo
+      real(dp), dimension(nelec, *) :: d2ijo
+      
 
-      fsum=0
+      fsumo=0.d0
+      d2o=0.d0
+      do j=1,nelec
+        do k=1,3
+          fjo(k,j)=0
+        enddo
+      enddo
       do i=-2,-1
         uu(i)=0
         ss(i)=0
@@ -91,10 +101,9 @@ c e-e and e-e-n terms
       rij=r_ee(ij)
 
       call scale_dist2(rij,uu(1),dd1,dd2,1)
-c     write(ounit,'(''rij,u in ee'',2f9.5)') rij,uu(1)
+c      write(ounit,'(''rij,u in ee'',2f9.5)') rij,uu(1)
 
-c Check rij after scaling because uu(1) used in e-e-n terms too
-      if(rij.gt.cutjas) goto 22
+c Check rij after scaling because uu(1) used in e-e-n terms too      if(rij.gt.cutjas) goto 22
 
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
@@ -110,7 +119,7 @@ c Check rij after scaling because uu(1) used in e-e-n terms too
       botuu=0
       bot2=bot*bot
 
-      fee=top/bot-asymp_jasb(ipar+1)
+      fee=top/bot-asymp_jasb(ipar+1,iwf)
       feeu=topu/bot-botu*top/bot2
       feeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
       feeuu=feeuu/bot
@@ -148,7 +157,7 @@ c There are no C terms to order 1.
           uu(iord)=uu(1)*uu(iord-1)
         enddo
       endif
-c     write(ounit,'(''rij,u in een'',2f12.9)') rij,uu(1)
+c      write(ounit,'(''rij,u in een'',2f12.9)') rij,uu(1)
 
       do ic=1,ncent
         it=iwctype(ic)
@@ -168,7 +177,7 @@ c     write(ounit,'(''rij,u in een'',2f12.9)') rij,uu(1)
           call switch_scale2(rri(1),dd7,dd9)
           call switch_scale2(rrj(1),dd8,dd10)
         endif
-c     write(ounit,'(''ri,rri in een'',2f12.9)') ri,rri(1)
+c        write(ounit,'(''ri,rri in een'',2f12.9)') ri,rri(1)
 
         s=ri+rj
         t=ri-rj
@@ -224,7 +233,7 @@ c       s2mt2=s*s-t*t
                 fuj=fuj+c(ll,it,iwf)*k*uu(k-1)
      &          *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
               endif
-c     write(ounit,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
+c        write(ounit,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
             enddo
           enddo
         enddo
@@ -248,7 +257,7 @@ c     write(ounit,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
         fijo(1,j,i)=fijo(1,j,i) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
         fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
         fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
-c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
+c        write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
 
         d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
      &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
@@ -256,16 +265,14 @@ c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
   50  continue
       enddo
 
-  55  fsum=fsum+fso(i,j)
-      v(1,i)=v(1,i)+fijo(1,i,j)
-      v(2,i)=v(2,i)+fijo(2,i,j)
-      v(3,i)=v(3,i)+fijo(3,i,j)
-      v(1,j)=v(1,j)+fijo(1,j,i)
-      v(2,j)=v(2,j)+fijo(2,j,i)
-      v(3,j)=v(3,j)+fijo(3,j,i)
-      div_vj(i)=div_vj(i)+d2ijo(i,j)/2
-      div_vj(j)=div_vj(j)+d2ijo(i,j)/2
-      d2=d2+d2ijo(i,j)
+  55  fsumo=fsumo+fso(i,j)
+      fjo(1,i)=fjo(1,i)+fijo(1,i,j)
+      fjo(2,i)=fjo(2,i)+fijo(2,i,j)
+      fjo(3,i)=fjo(3,i)+fijo(3,i,j)
+      fjo(1,j)=fjo(1,j)+fijo(1,j,i)
+      fjo(2,j)=fjo(2,j)+fijo(2,j,i)
+      fjo(3,j)=fjo(3,j)+fijo(3,j,i)
+      d2o=d2o+d2ijo(i,j)
       enddo
       enddo
 
@@ -285,7 +292,7 @@ c e-n terms
           if(ri.gt.cutjas) goto 80
 
           call scale_dist2(ri,rri(1),dd7,dd9,1)
-c     write(ounit,'(''ri,rri in en'',2f9.5)') ri,rri(1)
+c          write(ounit,'(''ri,rri in en'',2f9.5)') ri,rri(1)
 
           top=a4(1,it,iwf)*rri(1)
           topi=a4(1,it,iwf)
@@ -301,7 +308,7 @@ c     write(ounit,'(''ri,rri in en'',2f9.5)') ri,rri(1)
           botii=0
           bot2=bot*bot
 
-          fen=top/bot-asymp_jasa(it)
+          fen=top/bot-asymp_jasa(it,iwf)
           feni=topi/bot-boti*top/bot2
           fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
           fenii=fenii/bot
@@ -323,7 +330,7 @@ c     write(ounit,'(''ri,rri in en'',2f9.5)') ri,rri(1)
           fijo(1,i,i)=fijo(1,i,i) + feni*rvec_en(1,i,ic)
           fijo(2,i,i)=fijo(2,i,i) + feni*rvec_en(2,i,ic)
           fijo(3,i,i)=fijo(3,i,i) + feni*rvec_en(3,i,ic)
-c         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
+c          write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
 
@@ -331,23 +338,21 @@ c         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i
    80   continue
         enddo
 
-        fsum=fsum+fso(i,i)
-        v(1,i)=v(1,i)+fijo(1,i,i)
-        v(2,i)=v(2,i)+fijo(2,i,i)
-        v(3,i)=v(3,i)+fijo(3,i,i)
-c       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
-        div_vj(i)=div_vj(i)+d2ijo(i,i)
-        d2=d2+d2ijo(i,i)
+        fsumo=fsumo+fso(i,i)
+        fjo(1,i)=fjo(1,i)+fijo(1,i,i)
+        fjo(2,i)=fjo(2,i)+fijo(2,i,i)
+        fjo(3,i)=fjo(3,i)+fijo(3,i,i)
+c        write(ounit,'(''v='',9d12.4)') (fjo(k,i),k=1,3)
+        d2o=d2o+d2ijo(i,i)
       enddo
 
       if(ijas.eq.6) then
         term=1/(c1_jas6*scalek(iwf))
-        fsum=term*fsum
-        d2=term*d2
+        fsumo=term*fsumo
+        d2o=term*d2o
         do i=1,nelec
-          div_vj(i)=term*div_vj(i)
           do k=1,3
-            v(k,i)=term*v(k,i)
+            fjo(k,i)=term*fjo(k,i)
           enddo
           do j=1,nelec
             d2ijo(i,j)=term*d2ijo(i,j)
@@ -357,16 +362,6 @@ c       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
           enddo
         enddo
       endif
-
-      fsumo=fsum
-      d2o=d2
-      do i=1,nelec
-        fjo(1,i)=v(1,i)
-        fjo(2,i)=v(2,i)
-        fjo(3,i)=v(3,i)
-      enddo
-
-      value=fsum
 
       return
       end
@@ -403,9 +398,9 @@ c     write(ounit,'(''nterms4='',i5)') nterms4
 c-----------------------------------------------------------------------
       subroutine da_jastrow4(iwf,i,ic,it,rvec_en,r,rr,feni,fenii,dd1,dd2)
 
-      use da_jastrow4val, only: da_d2j,da_j,da_vj
-      use jastrow, only: norda
-      use jastrow, only: a4,nordj
+      use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use jastrow, only: a4, norda, nordj
+      use scale_more, only: dd3
       use precision_kinds, only: dp
       use scale_more, only: dd3
 
@@ -425,6 +420,10 @@ c-----------------------------------------------------------------------
 
       ri=1.d0/r
       ri2=ri*ri
+
+      ! can use iwf and loop over nwftypejas, since iwf is passed, this
+      ! will only be called with 1 jas I believe, using iwf's original
+      ! purpose
 
       do k=1,3
         da_j(k,i,ic)=-rvec_en(k)*ri*feni*dd1

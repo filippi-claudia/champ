@@ -90,7 +90,6 @@ c cubic spline interpolation
           wfv(4)=(-d2rwf(jx,irb,ic,iwf)+d2rwf(jx+1,irb,ic,iwf))*delhi
         endif
       endif
-
       return
       end
       end module

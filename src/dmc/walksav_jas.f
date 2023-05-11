@@ -40,36 +40,36 @@ c Written by Claudia Filippi
       ! save fsow,fijow,fsumow,fjow
       ! save vjw
 
-      fsumow(iw)=fsumo
+      fsumow(iw)=fsumo(1)
 
       do i=1,nelec
-        fjow(1,i,iw)=fjo(1,i)
-        fjow(2,i,iw)=fjo(2,i)
-        fjow(3,i,iw)=fjo(3,i)
+        fjow(1,i,iw)=fjo(1,i,1)
+        fjow(2,i,iw)=fjo(2,i,1)
+        fjow(3,i,iw)=fjo(3,i,1)
       enddo
 
       do i=2,nelec
         do j=1,i-1
-        fsow(i,j,iw)=fso(i,j)
-        fijow(1,i,j,iw)=fijo(1,i,j)
-        fijow(2,i,j,iw)=fijo(2,i,j)
-        fijow(3,i,j,iw)=fijo(3,i,j)
-        fijow(1,j,i,iw)=fijo(1,j,i)
-        fijow(2,j,i,iw)=fijo(2,j,i)
-        fijow(3,j,i,iw)=fijo(3,j,i)
+        fsow(i,j,iw)=fso(i,j,1)
+        fijow(1,i,j,iw)=fijo(1,i,j,1)
+        fijow(2,i,j,iw)=fijo(2,i,j,1)
+        fijow(3,i,j,iw)=fijo(3,i,j,1)
+        fijow(1,j,i,iw)=fijo(1,j,i,1)
+        fijow(2,j,i,iw)=fijo(2,j,i,1)
+        fijow(3,j,i,iw)=fijo(3,j,i,1)
         enddo
       enddo
 
       do i=1,nelec
-        fsow(i,i,iw)=fso(i,i)
-        fijow(1,i,i,iw)=fijo(1,i,i)
-        fijow(2,i,i,iw)=fijo(2,i,i)
-        fijow(3,i,i,iw)=fijo(3,i,i)
+        fsow(i,i,iw)=fso(i,i,1)
+        fijow(1,i,i,iw)=fijo(1,i,i,1)
+        fijow(2,i,i,iw)=fijo(2,i,i,1)
+        fijow(3,i,i,iw)=fijo(3,i,i,1)
       enddo
 
       do i=1,nelec
         do kk=1,3
-          vjw(kk,i,iw)=vj(kk,i)
+          vjw(kk,i,iw)=vj(kk,i,1)
         enddo
       enddo
 
@@ -77,36 +77,36 @@ c Written by Claudia Filippi
 
       entry walkstrjas(iw)
 
-      fsumo=fsumow(iw)
+      fsumo(1)=fsumow(iw)
 
       do i=1,nelec
-        fjo(1,i)=fjow(1,i,iw)
-        fjo(2,i)=fjow(2,i,iw)
-        fjo(3,i)=fjow(3,i,iw)
+        fjo(1,i,1)=fjow(1,i,iw)
+        fjo(2,i,1)=fjow(2,i,iw)
+        fjo(3,i,1)=fjow(3,i,iw)
       enddo
 
       do i=2,nelec
         do j=1,i-1
-        fso(i,j)=fsow(i,j,iw)
-        fijo(1,i,j)=fijow(1,i,j,iw)
-        fijo(2,i,j)=fijow(2,i,j,iw)
-        fijo(3,i,j)=fijow(3,i,j,iw)
-        fijo(1,j,i)=fijow(1,j,i,iw)
-        fijo(2,j,i)=fijow(2,j,i,iw)
-        fijo(3,j,i)=fijow(3,j,i,iw)
+        fso(i,j,1)=fsow(i,j,iw)
+        fijo(1,i,j,1)=fijow(1,i,j,iw)
+        fijo(2,i,j,1)=fijow(2,i,j,iw)
+        fijo(3,i,j,1)=fijow(3,i,j,iw)
+        fijo(1,j,i,1)=fijow(1,j,i,iw)
+        fijo(2,j,i,1)=fijow(2,j,i,iw)
+        fijo(3,j,i,1)=fijow(3,j,i,iw)
         enddo
       enddo
 
       do i=1,nelec
-        fso(i,i)=fsow(i,i,iw)
-        fijo(1,i,i)=fijow(1,i,i,iw)
-        fijo(2,i,i)=fijow(2,i,i,iw)
-        fijo(3,i,i)=fijow(3,i,i,iw)
+        fso(i,i,1)=fsow(i,i,iw)
+        fijo(1,i,i,1)=fijow(1,i,i,iw)
+        fijo(2,i,i,1)=fijow(2,i,i,iw)
+        fijo(3,i,i,1)=fijow(3,i,i,iw)
       enddo
 
       do i=1,nelec
         do kk=1,3
-          vj(kk,i)=vjw(kk,i,iw)
+          vj(kk,i,1)=vjw(kk,i,iw)
         enddo
       enddo
 

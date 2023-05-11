@@ -25,8 +25,8 @@ module ewald_mod
 
  module ewald
      !> Arguments: b_coul, b_coul_sim, y_coul, y_coul_sim
-      use ewald_mod, only: NCOEFX,NGNORMX,NGNORM_SIMX
-      use precision_kinds, only: dp
+     use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX
+     use precision_kinds, only: dp
 
      implicit none
 
@@ -41,7 +41,7 @@ module ewald_mod
      save
  contains
      subroutine allocate_ewald()
-      use ewald_mod, only: NCOEFX,NGNORMX,NGNORM_SIMX
+      use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX
          if (.not. allocated(b_coul)) allocate (b_coul(NCOEFX))
          if (.not. allocated(b_coul_sim)) allocate (b_coul_sim(NCOEFX))
          if (.not. allocated(y_coul)) allocate (y_coul(NGNORMX))
@@ -59,8 +59,8 @@ module ewald_mod
 
  module ewald_basis
      !> Arguments: vps_basis_fourier
-      use ewald_mod, only: NGNORM_BIGX
-      use precision_kinds, only: dp
+     use ewald_mod, only: NGNORM_BIGX
+     use precision_kinds, only: dp
 
      implicit none
 
@@ -157,8 +157,9 @@ module ewald_mod
      save
  contains
      subroutine allocate_periodic()
-      use ewald_mod, only: IVOL_RATIO,NGNORM_BIGX,NGNORM_SIM_BIGX
-      use ewald_mod, only: NGVEC_BIGX,NGVEC_SIM_BIGX
+      use ewald_mod, only: IVOL_RATIO
+      use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
+      use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
       use vmc_mod, only: norb_tot
          if (.not. allocated(glatt)) allocate (glatt(3, 3))
          if (.not. allocated(glatt_inv)) allocate (glatt_inv(3, 3))
@@ -238,7 +239,8 @@ module ewald_mod
      save
  contains
      subroutine allocate_pworbital()
-      use ewald_mod, only: IVOL_RATIO,NGVECX
+      use ewald_mod, only: IVOL_RATIO
+      use ewald_mod, only: NGVECX
       use vmc_mod, only: norb_tot
          if (.not. allocated(c_im)) allocate (c_im(NGVECX, norb_tot))
          if (.not. allocated(c_ip)) allocate (c_ip(NGVECX, norb_tot))
@@ -279,7 +281,8 @@ module ewald_mod
      save
  contains
      subroutine allocate_test()
-      use ewald_mod, only: NGNORM_BIGX,NGNORM_SIM_BIGX
+      use ewald_mod, only: NGNORM_BIGX
+      use ewald_mod, only: NGNORM_SIM_BIGX
          if (.not. allocated(vbare_coul)) allocate (vbare_coul(NGNORM_SIM_BIGX))
          if (.not. allocated(vbare_jas)) allocate (vbare_jas(NGNORM_SIM_BIGX))
          if (.not. allocated(vbare_psp)) allocate (vbare_psp(NGNORM_BIGX))
@@ -328,7 +331,8 @@ module ewald_mod
      save
  contains
      subroutine allocate_tempor_test()
-      use ewald_mod, only: IVOL_RATIO,NGVEC_BIGX
+      use ewald_mod, only: IVOL_RATIO
+      use ewald_mod, only: NGVEC_BIGX
          if (.not. allocated(c_imag)) allocate (c_imag(NGVEC_BIGX))
          if (.not. allocated(c_real)) allocate (c_real(NGVEC_BIGX))
          if (.not. allocated(igvec_dft)) allocate (igvec_dft(3, NGVEC_BIGX), source=0)
@@ -353,12 +357,12 @@ module ewald_mod
 module m_ewald
 contains
  subroutine allocate_m_ewald()
-      use ewald,   only: allocate_ewald
-      use ewald_basis, only: allocate_ewald_basis
-      use periodic, only: allocate_periodic
-      use pworbital, only: allocate_pworbital
-      use tempor_test, only: allocate_tempor_test
-      use test,    only: allocate_test
+     use ewald, only: allocate_ewald
+     use ewald_basis, only: allocate_ewald_basis
+     use periodic, only: allocate_periodic
+     use pworbital, only: allocate_pworbital
+     use tempor_test, only: allocate_tempor_test
+     use test, only: allocate_test
 
      implicit none
 
@@ -371,12 +375,12 @@ contains
  end subroutine allocate_m_ewald
 
  subroutine deallocate_m_ewald()
-      use ewald,   only: deallocate_ewald
-      use ewald_basis, only: deallocate_ewald_basis
-      use periodic, only: deallocate_periodic
-      use pworbital, only: deallocate_pworbital
-      use tempor_test, only: deallocate_tempor_test
-      use test,    only: deallocate_test
+     use ewald, only: deallocate_ewald
+     use ewald_basis, only: deallocate_ewald_basis
+     use periodic, only: deallocate_periodic
+     use pworbital, only: deallocate_pworbital
+     use tempor_test, only: deallocate_tempor_test
+     use test, only: deallocate_test
 
      implicit none
 

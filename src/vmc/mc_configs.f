@@ -2,13 +2,19 @@
       contains
       subroutine mc_configs_start
 
-      use config,  only: xnew,xold
-      use contrl_file, only: errunit,ounit
-      use control_vmc, only: vmc_icharged_atom,vmc_irstar,vmc_isite
-      use control_vmc, only: vmc_nconf_new
-      use error,   only: fatal_error
-      use fin_reduce_mod, only: fin_reduce
       use mpi
+      use system, only: znuc, iwctype, ncent, ncent_tot, nelec
+      use config, only: xnew, xold
+      use mpiconf, only: idtask, nproc
+      !use contrl, only: irstar, isite, nconf_new, icharged_atom
+      use control_vmc, only: vmc_irstar, vmc_isite, vmc_nconf_new, vmc_icharged_atom
+      use contrl_file,    only: ounit, errunit
+      use precision_kinds, only: dp
+      use random_mod, only: savern, setrn, random_dp
+      use sites_mod, only: sites
+      use error, only: fatal_error
+      use pcm_mod, only: pcm_qvol
+      use fin_reduce_mod, only: fin_reduce
       use mpiconf, only: idtask,nproc
       use pcm_mod, only: pcm_qvol
       use precision_kinds, only: dp

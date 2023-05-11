@@ -13,6 +13,7 @@ c routine to print out final results
       use contrldmc, only: idmc,nfprod,tau
       use control, only: ipr,mode
       use control_dmc, only: dmc_nblkeq,dmc_nconf,dmc_nstep
+      use custom_broadcast, only: bcast
       use denupdn, only: rprobdn,rprobup
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
       use est2cm,  only: pecm2_dmc,tpbcm2_dmc,wcm2,wcm21,wfcm2
@@ -196,6 +197,23 @@ c    & f10.5)') dr2ac/trymove
         eerr1=errc1(ecum1_dmc,ecm21_dmc)
         eferr1=errf1(efcum1,efcm21)
       endif
+
+
+      call bcast(accav)
+      call bcast(accavn)
+      call bcast(wave)
+      call bcast(wfave)
+      call bcast(eave)
+      call bcast(efave)
+      call bcast(werr)
+      call bcast(wferr)
+      call bcast(werr1)
+      call bcast(wferr1)
+      call bcast(eerr)
+      call bcast(eferr)
+      call bcast(eerr1)
+      call bcast(eferr1)
+
 
       if(mode.eq.'dmc_one_mpi1') then
         write(ounit,'(''dmc_mov1_mpi '',2a10)') title

@@ -22,86 +22,97 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use scale_dist_mod, only: scale_dist,scale_dist1
       use slater,  only: norb,slmi
       use system,  only: cent,iwctype,ncent,ncent_tot,nelec,nup
-      use vmc_mod, only: norb_tot
+      use vmc_mod, only: norb_tot, nwftypeorb, nwftypejas
       use contrl_per, only: iperiodic
+      use csfs,    only: nstates
+      use vmc_mod, only: stoj, stoo, nbjx, bjxtoo, bjxtoj
 
       implicit none
 
-      !variables in subroutine call
+      ! variables in subroutine call
       integer :: i_vpsp
       real(dp), dimension(3,*) :: x
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(3,nelec,ncent_tot) :: rshift
-      real(dp), dimension(*) :: vpsp_det
-      real(dp), dimension(*) :: dvpsp_dj
+      real(dp), dimension(2,nbjx) :: vpsp_det
+      real(dp), dimension(nparmj,nbjx) :: dvpsp_dj
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
 
       ! local variables
-      integer :: i, i1, i2, iab, auxy
+      integer :: i, i1, i2, iab, istate, auxy
       integer :: ic, ict, iel, index
       integer :: iorb, iparm, iq, iqq
-      integer :: jc, k, l, nxquad
+      integer :: jc, k, l, nxquad, ndim, iwforb, iwfjas, ibjx, xo, xj
       real(dp) :: ri, term1, term2
       real(dp), parameter :: one = 1.d0
-
-      ! local allocatable arrays
+      
+      ! local, allocatable arrays
       integer, allocatable :: iequad(:)
       integer, allocatable :: icquad(:)
       integer, allocatable :: iqquad(:)
+
       real(dp), allocatable :: costh(:)
       real(dp), allocatable :: term_radial(:)
+      real(dp), allocatable :: term_radial_jas(:,:)
       real(dp), allocatable :: xquad(:,:)
-      real(dp), allocatable :: det_ratio(:)
-      real(dp), allocatable :: psij_ratio(:)
-      real(dp), allocatable :: dpsij_ratio(:,:)
+      real(dp), allocatable :: det_ratio(:,:)
+      real(dp), allocatable :: psij_ratio(:,:)
+      real(dp), allocatable :: dpsij_ratio(:,:,:)
       real(dp), allocatable :: da_psij_ratio(:,:,:)
       real(dp), allocatable :: r_en_quad(:,:)
       real(dp), allocatable :: rvec_en_quad(:,:,:)
-      real(dp), allocatable :: orbn(:,:)
-      real(dp), allocatable :: dorbn(:,:,:)
+      real(dp), allocatable :: orbn(:,:,:)
+      real(dp), allocatable :: dorbn(:,:,:,:)
       real(dp), allocatable :: da_orbn(:,:,:,:)
       real(dp), allocatable :: vjn(:,:)
 
-! allocating local arrays
-      if(allocated(iequad)) deallocate(iequad)
-      allocate(iequad(nquad*nelec*2))
-      if(allocated(icquad)) deallocate(icquad)
-      allocate(icquad(nquad*nelec*2))
-      if(allocated(iqquad)) deallocate(iqquad)
-      allocate(iqquad(nquad*nelec*2))
-      if(allocated(costh)) deallocate(costh)
-      allocate(costh(nquad*nelec*2))
-      if(allocated(term_radial)) deallocate(term_radial)
-      allocate(term_radial(nquad*nelec*2))
-      if(allocated(xquad)) deallocate(xquad)
-      allocate(xquad(3,nquad*nelec*2))
-      if(allocated(det_ratio)) deallocate(det_ratio)
-      allocate(det_ratio(nquad*nelec*2))
-      if(allocated(psij_ratio)) deallocate(psij_ratio)
-      allocate(psij_ratio(nquad*nelec*2))
-      if(allocated(dpsij_ratio)) deallocate(dpsij_ratio)
-      allocate(dpsij_ratio(nparmj,nquad*nelec*2))
-      if(allocated(da_psij_ratio)) deallocate(da_psij_ratio)
-      allocate(da_psij_ratio(3,ncent_tot,nquad*nelec*2))
-      if(allocated(r_en_quad)) deallocate(r_en_quad)
-      allocate(r_en_quad(nquad*nelec*2,ncent_tot))
-      if(allocated(rvec_en_quad)) deallocate(rvec_en_quad)
-      allocate(rvec_en_quad(3,nquad*nelec*2,ncent_tot))
-      if(allocated(orbn)) deallocate(orbn)
-      allocate(orbn(norb_tot,nquad*nelec*2))
-      if(allocated(dorbn)) deallocate(dorbn)
-      allocate(dorbn(norb_tot,nquad*nelec*2,3))
-      if(allocated(da_orbn)) deallocate(da_orbn)
-      allocate(da_orbn(3,ncent_tot,norb_tot,nquad*nelec*2))
-      if(allocated(vjn)) deallocate(vjn)
-      allocate(vjn(3,nquad*nelec*2))
+      ndim = nquad*nelec*2
 
-      
-      vpsp_det(1)=0.d0
-      vpsp_det(2)=0.d0
-      do iparm=1,nparmj
-        dvpsp_dj(iparm)=0.d0
+      ! allocating local arrays
+        ! integer arrays
+      if(allocated(iequad)) deallocate(iequad)
+      allocate(iequad(ndim))
+      if(allocated(icquad)) deallocate(icquad)
+      allocate(icquad(ndim))
+      if(allocated(iqquad)) deallocate(iqquad)
+      allocate(iqquad(ndim))
+      if(allocated(costh)) deallocate(costh)
+      allocate(costh(ndim))
+        ! dp real arrays
+      if(allocated(term_radial)) deallocate(term_radial)
+      allocate(term_radial(ndim))
+      if(allocated(term_radial_jas)) deallocate(term_radial_jas)
+      allocate(term_radial_jas(ndim,nwftypejas))
+      if(allocated(xquad)) deallocate(xquad)
+      allocate(xquad(3,ndim))
+      if(allocated(det_ratio)) deallocate(det_ratio)
+      allocate(det_ratio(ndim,nwftypeorb))
+      if(allocated(psij_ratio)) deallocate(psij_ratio)
+      allocate(psij_ratio(ndim,nwftypejas))
+      if(allocated(dpsij_ratio)) deallocate(dpsij_ratio)
+      allocate(dpsij_ratio(nparmj,ndim,nwftypejas))
+      if(allocated(da_psij_ratio)) deallocate(da_psij_ratio)
+      allocate(da_psij_ratio(3,ncent_tot,ndim))
+      if(allocated(r_en_quad)) deallocate(r_en_quad)
+      allocate(r_en_quad(ndim,ncent_tot))
+      if(allocated(rvec_en_quad)) deallocate(rvec_en_quad)
+      allocate(rvec_en_quad(3,ndim,ncent_tot))
+      if(allocated(orbn)) deallocate(orbn)
+      allocate(orbn(norb_tot,ndim,nwftypeorb))
+      if(allocated(dorbn)) deallocate(dorbn)
+      allocate(dorbn(norb_tot,ndim,3,nwftypeorb))
+      if(allocated(da_orbn)) deallocate(da_orbn)
+      allocate(da_orbn(3,ncent_tot,norb_tot,ndim))
+      if(allocated(vjn)) deallocate(vjn)
+      allocate(vjn(3,ndim))
+
+      do k=1,nbjx
+        vpsp_det(1,k)=0.d0
+        vpsp_det(2,k)=0.d0
+        do iparm=1,nparmj
+          dvpsp_dj(iparm,k)=0.d0
+        enddo
       enddo
 
       if(i_vpsp.gt.0)then
@@ -115,8 +126,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       nxquad=0
       do i=i1,i2
 
-        do iorb=1,norb+nadorb
-          b(iorb,i)=bkin(iorb,i)
+        do k=1,nbjx
+          do iorb=1,norb+nadorb
+            b(iorb,i,k)=bkin(iorb,i,k)
+          enddo
         enddo
 
         do ic=1,ncent
@@ -131,122 +144,142 @@ c vps was calculated by calling getvps_tm from nonloc_pot
 c skip if non-local components are zero
           if(iskip(i,ic).eq.0) then
 
-             ri=one/r_en(i,ic)
+            ri=one/r_en(i,ic)
 
 c loop quadrature points
-             do iq=1,nquad
-                
-                nxquad=nxquad+1
-                iequad(nxquad)=i
-                icquad(nxquad)=ic
-                iqquad(nxquad)=iq
-                
-                costh(nxquad)=rvec_en(1,i,ic)*xq(iq)+rvec_en(2,i,ic)*yq(iq)+rvec_en(3,i,ic)*zq(iq)
-                costh(nxquad)=costh(nxquad)*ri
-                
-                if(iperiodic.eq.0) then
-                   xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)
-                   xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)
-                   xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)
-                else
-                   xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)+rshift(1,i,ic)
-                   xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)+rshift(2,i,ic)
-                   xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
-                endif
-                
-                r_en_quad(nxquad,ic)=r_en(i,ic)
-                call distance_quad(nxquad,ic,xquad(1,nxquad),r_en_quad,rvec_en_quad,rshift)
-                
-             enddo
-          elseif(i_vpsp.ne.0)then
-             if(index(mode,'dmc').ne.0) then
-                do iq=1,nquad
-                   t_vpsp(ic,iq,i)=0.d0
-                   do iorb=1,norb
-                      b_t(iorb,iq,ic,i)=0.d0
-                   enddo
-                enddo
-             else
-                do iq=1,nquad
-                   t_vpsp(ic,iq,i)=0.d0
-                enddo
-             endif
-c     endif iskip
-          endif
-          
-       enddo
-      enddo
-      
-      
-      if(nxquad.gt.0) then
-         call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn,dorbn,da_orbn)
-         
-         call nonlocd_quad(nxquad,iequad,orbn,det_ratio)
-         if(ioptjas.eq.0) then 
-            call nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
-     &           rvec_en_quad,r_en_quad,psij_ratio,vjn,da_psij_ratio)
-         else
-            call deriv_nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
-     &           rvec_en_quad,r_en_quad,psij_ratio,dpsij_ratio,vjn,da_psij_ratio)
-         endif
-         
-         do iq=1,nxquad
-            
-            iel=iequad(iq)
-            ic=icquad(iq)
-            iqq=iqquad(iq)
-            
-            ict=iwctype(ic)
-            
-            iab=1
-            if(iel.gt.nup) iab=2
-            
-            term_radial(iq)=0.d0
-            do l=1,lpot(ict)-1
-               term_radial(iq)=term_radial(iq)+yl0(l,costh(iq))*vps(iel,ic,l)
-            enddo
-            term_radial(iq)=term_radial(iq)*wq(iqq)*exp(psij_ratio(iq))
-            
-c     write(ounit,*) 'term1',term_radial(iq),det_ratio(iq),psij_ratio(iq)
-c     vpsp_det  = vnl(D_kref J)/(D_kref J)
-            vpsp_det(iab)=vpsp_det(iab)+term_radial(iq)*det_ratio(iq)
-            
-c     pseudopotential contribution to B_eloc matrix
-            do iorb=1,norb+nadorb
-               b(iorb,iel)=b(iorb,iel)+term_radial(iq)*orbn(iorb,iq)
-            enddo
-            
-c     dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
-            if(ioptjas.gt.0) then
-               term2=term_radial(iq)*det_ratio(iq)
-               do iparm=1,nparmj
-                  dvpsp_dj(iparm)=dvpsp_dj(iparm)+term2*dpsij_ratio(iparm,iq)
-                  
-                  do iorb=1,norb
-                     b_dj(iorb,iel,iparm)=b_dj(iorb,iel,iparm)+orbn(iorb,iq)*term_radial(iq)*dpsij_ratio(iparm,iq)
-                  enddo
-               enddo
-            endif
+            do iq=1,nquad
 
-c     transition probabilities for Casula's moves in DMC
+              nxquad=nxquad+1
+              iequad(nxquad)=i
+              icquad(nxquad)=ic
+              iqquad(nxquad)=iq
+
+              costh(nxquad)=rvec_en(1,i,ic)*xq(iq)+rvec_en(2,i,ic)*yq(iq)+rvec_en(3,i,ic)*zq(iq)
+              costh(nxquad)=costh(nxquad)*ri
+
+              if(iperiodic.eq.0) then
+                xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)
+                xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)
+                xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)
+               else
+                xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)+rshift(1,i,ic)
+                xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)+rshift(2,i,ic)
+                xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
+              endif
+
+              r_en_quad(nxquad,ic)=r_en(i,ic)
+              call distance_quad(nxquad,ic,xquad(1,nxquad),r_en_quad,rvec_en_quad,rshift)
+
+            enddo
+           elseif(i_vpsp.ne.0)then
             if(index(mode,'dmc').ne.0) then
-               t_vpsp(ic,iqq,iel)=det_ratio(iq)*term_radial(iq)
-               do iorb=1,norb
-                  b_t(iorb,iqq,ic,iel)=orbn(iorb,iq)*term_radial(iq)
-               enddo
+              do iq=1,nquad
+                t_vpsp(ic,iq,i)=0.d0
+                do iorb=1,norb
+                  b_t(iorb,iq,ic,i)=0.d0
+                enddo
+              enddo
+            else
+              do iq=1,nquad
+                t_vpsp(ic,iq,i)=0.d0
+              enddo
             endif
-            
-         enddo
+c endif iskip
+          endif
 
-         if(iforce_analy.gt.0) call compute_da_bnl(nxquad,iequad,icquad,iqquad,r_en,rvec_en,costh,term_radial
-     &        ,orbn,dorbn,da_orbn,psij_ratio,vjn,da_psij_ratio)
-      else if(ipr.ge.4) then
-         write(errunit,*) "warning nxquad zero", nxquad
+        enddo
+      enddo
+
+      if(nxquad.eq.0) return
+
+      do iwforb=1,nwftypeorb
+        call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,iwforb),
+     &                   dorbn(1,1,1,iwforb),da_orbn,iwforb)
+        call nonlocd_quad(nxquad,iequad,orbn(1,1,iwforb),det_ratio(1,iwforb),iwforb)
+      enddo
+      if(ioptjas.eq.0) then
+        do iwfjas=1,nwftypejas 
+            call nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
+     &         rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio,
+     &         fso(1,1,iwfjas),iwfjas)
+        enddo
+      else
+        do iwfjas=1,nwftypejas
+            call deriv_nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
+     &         rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),dpsij_ratio(1,1,iwfjas),vjn,
+     &         da_psij_ratio,iwfjas)
+        enddo
       endif
-c     endif for loop in nxquad >0 
-      
-      if(ipr.ge.4) write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
-     &     ,(vpsp_det(iab),detiab(1,iab),iab=1,2),r_en(1,1)
+
+      do iq=1,nxquad
+
+        iel=iequad(iq)
+        ic=icquad(iq)
+        iqq=iqquad(iq)
+
+        ict=iwctype(ic)
+
+        iab=1
+        if(iel.gt.nup) iab=2
+        
+        term_radial(iq)=0.d0
+        do l=1,lpot(ict)-1
+          term_radial(iq)=term_radial(iq)+yl0(l,costh(iq))*vps(iel,ic,l)
+        enddo
+        do iwfjas=1,nwftypejas
+          term_radial_jas(iq,iwfjas)=term_radial(iq)*wq(iqq)*exp(psij_ratio(iq,iwfjas))
+        enddo
+c vpsp_det  = vnl(D_kref J)/(D_kref J)
+        do ibjx=1,nbjx
+          xj=bjxtoj(ibjx)
+          xo=bjxtoo(ibjx)
+          vpsp_det(iab,ibjx)=vpsp_det(iab,ibjx)+term_radial_jas(iq,xj)*det_ratio(iq,xo)
+c pseudopotential contribution to B_eloc matrix
+          do iorb=1,norb+nadorb
+            b(iorb,iel,ibjx)=b(iorb,iel,ibjx)+term_radial_jas(iq,xj)*orbn(iorb,iq,xo)
+          enddo
+        enddo
+
+c dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
+        if(ioptjas.gt.0) then
+          do ibjx=1,nbjx
+            xj=bjxtoj(ibjx)
+            xo=bjxtoo(ibjx)
+            term2=term_radial_jas(iq,xj)*det_ratio(iq,xo)
+            do iparm=1,nparmj
+              dvpsp_dj(iparm,ibjx)=dvpsp_dj(iparm,ibjx)+term2*dpsij_ratio(iparm,iq,xj)
+            enddo
+            do iparm=1,nparmj
+              do iorb=1,norb
+                b_dj(iorb,iel,iparm,ibjx)=b_dj(iorb,iel,iparm,ibjx)
+     &          +orbn(iorb,iq,xo)*term_radial_jas(iq,xj)*dpsij_ratio(iparm,iq,xj)
+              enddo
+            enddo
+          enddo
+        endif
+
+c transition probabilities for Casula's moves in DMC
+        do istate=1,nstates
+c         swap order of this loop and if statement        
+          if(index(mode,'dmc').ne.0) then
+            t_vpsp(ic,iqq,iel)=det_ratio(iq,1)*term_radial_jas(iq,1)
+            do iorb=1,norb
+              b_t(iorb,iqq,ic,iel)=orbn(iorb,iq,istate)*term_radial_jas(iq,1)
+            enddo
+          endif
+        enddo
+
+
+      enddo !loop over nquad
+
+      if(iforce_analy.gt.0) call compute_da_bnl(nxquad,iequad,icquad,iqquad,r_en,rvec_en,costh,term_radial_jas(1,1)
+     &,orbn(1,1,1),dorbn(1,1,1,1),da_orbn,psij_ratio(1,1),vjn,da_psij_ratio)
+
+      if(ipr.ge.4) then 
+        write(ounit,'(''vpsp_det,det,r_en(1)='',100d12.4)')
+     & (vpsp_det(iab,1),detiab(1,iab,1),iab=1,2),r_en(1,1)
+        if(nxquad.eq.0) write(errunit,*) "warning nxquad zero", nxquad
+      endif
 
       return
       end
@@ -347,7 +380,7 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine orbitals_quad(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn)
+      subroutine orbitals_quad(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use m_force_analytic, only: iforce_analy
@@ -357,14 +390,15 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use grid3d_orbitals, only: lagrange_mose,spline_mo
       use grid3dflag, only: i3dlagorb,i3dsplorb
       use multiple_geo, only: iwf
-      use optwf_control, only: ioptorb,method
+      use optwf_control, only: ioptorb
+      use optwf_control, only: method
       use orbval,  only: ddorb,nadorb
       use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
       use pw_orbitals_e, only: orbitals_pwe
       use slater,  only: coef,norb
       use sr_mod,  only: i_sr_rescale
       use system,  only: iwctype,ncent,ncent_tot,nelec
-      use vmc_mod, only: norb_tot
+      use vmc_mod, only: norb_tot, nwftypeorb
       use qua,     only: nquad
       use precision_kinds, only: dp
 
@@ -379,7 +413,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       implicit none
 
       integer :: ic, iel, ider, ier, ii, iq
-      integer :: iorb, k, m, m0, nxquad
+      integer :: iorb, k, m, m0, nxquad, iwforb
       integer :: nadorb_sav
 
       real(dp), dimension(3,*) :: xquad
@@ -403,32 +437,33 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
 
+
       if(iperiodic.eq.0) then
 
-c     get the value from the 3d-interpolated orbitals
-         ier=0
-         if(i3dsplorb.ge.1) then
-            do iq=1,nxquad
-               do iorb=1,norb+nadorb
-                  ddtmp=0       ! Don't compute the laplacian
-                  dtmp(1)=0     ! Don't compute the gradients
-                  dtmp(2)=0     ! Don't compute the gradients
-                  dtmp(3)=0     ! Don't compute the gradients
-                  call spline_mo(xquad(1,iq),iorb,orbn(iorb,iq),dtmp,ddtmp,ier)
-               enddo
+c get the value from the 3d-interpolated orbitals
+        ier=0
+        if(i3dsplorb.ge.1) then
+          do iq=1,nxquad
+            do iorb=1,norb+nadorb
+              ddtmp=0     ! Don't compute the laplacian
+              dtmp(1)=0   ! Don't compute the gradients
+              dtmp(2)=0   ! Don't compute the gradients
+              dtmp(3)=0   ! Don't compute the gradients
+              call spline_mo(xquad(1,iq),iorb,orbn(iorb,iq),dtmp,ddtmp,ier)
             enddo
+          enddo
          elseif(i3dlagorb.ge.1) then
-            do iq=1,nxquad
-               call lagrange_mose(1,xquad(1,iq),orbn(iorb,iq),ier)
-            enddo
+          do iq=1,nxquad
+            call lagrange_mose(1,xquad(1,iq),orbn(iorb,iq),ier)
+          enddo
          else
-            ier=1
-         endif
+          ier=1
+        endif
 
-         if(ier.eq.1) then
-c     get basis functions for electron iel
-            ider=0
-            if(iforce_analy.gt.0) ider=1
+        if(ier.eq.1) then
+c get basis functions for electron iel
+          ider=0
+          if(iforce_analy.gt.0) ider=1
 
 #ifdef QMCKL_FOUND
 
@@ -498,68 +533,69 @@ c     get basis functions for electron iel
 
 #else
 
-            
-            call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
+          if(nwftypeorb.gt.1) iwf=1
+          call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
+          if(nwftypeorb.gt.1) iwf=iwforb
 
-            do iq=1,nxquad
+          do iq=1,nxquad
 
-!     Vectorization dependent code selection
+! Vectorization dependent code selection
 #ifdef VECTORIZATION
-! The following loop changed for better vectorization AVX512/AVX2
-               do iorb=1,norb+nadorb
-                  orbn(iorb,iq)=0.d0
-                  do m=1,nbasis
-                     orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
-                  enddo
-               enddo
+          ! The following loop changed for better vectorization AVX512/AVX2
+          do iorb=1,norb+nadorb
+             orbn(iorb,iq)=0.d0
+             do m=1,nbasis
+                orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
+             enddo
+          enddo
 #else
-               do iorb=1,norb+nadorb
-                  orbn(iorb,iq)=0.d0
-                  do m0=1,n0_nbasis(iq)
-                     m=n0_ibasis(m0,iq)
-                     orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
-                  enddo
-               enddo
+          do iorb=1,norb+nadorb
+             orbn(iorb,iq)=0.d0
+             do m0=1,n0_nbasis(iq)
+                m=n0_ibasis(m0,iq)
+                orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
+             enddo
+          enddo
 #endif
 
-               if(iforce_analy.gt.0) then
-                  do iorb=1,norb
-                     do ic=1,ncent
-                        do k=1,3
-                           da_orbn(k,ic,iorb,iq)=0.d0
-                        enddo
-                     enddo
-                     do m0=1,n0_nbasis(iq)
-                        m=n0_ibasis(m0,iq)
-                        ic=n0_ic(m0,iq)
-                        ii=iwctype(ic)
-                        do k=1,3
-                           da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
-                        enddo
-                     enddo
-                     do k=1,3
-                        dorbn(iorb,iq,k)=0.d0
-                     enddo
-                     do ic=1,ncent
-                        do k=1,3
-                           dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
-                        enddo
-                     enddo
-                  enddo
-               endif
-c     write(ounit,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
-c     write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
-
+          if(iforce_analy.gt.0) then
+            do iorb=1,norb
+              do ic=1,ncent
+                do k=1,3
+                  da_orbn(k,ic,iorb,iq)=0.d0
+                enddo
+              enddo
+              do m0=1,n0_nbasis(iq)
+                m=n0_ibasis(m0,iq)
+                ic=n0_ic(m0,iq)
+                ii=iwctype(ic)
+                do k=1,3
+                  da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                enddo
+              enddo
+              do k=1,3
+                dorbn(iorb,iq,k)=0.d0
+              enddo
+              do ic=1,ncent
+                do k=1,3
+                   dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
+                enddo
+              enddo
             enddo
+          endif
+c         write(ounit,*)'orb_quad iel,ren',iel,rvec_en(1,iel,1),rvec_en(1,iel,2)
+c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
+
+        enddo
 
 #endif
-            
-         endif
 
-      else
-         
-         call orbitals_pwe(iel,xquad,orbn)
-         
+        endif
+
+       else
+
+        call orbitals_pwe(iel,xquad,orbn)
+
       endif
 
       nadorb = nadorb_sav
@@ -568,7 +604,7 @@ c     write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
       end
 
 c-----------------------------------------------------------------------
-      subroutine nonlocd_quad(nxquad,iequad,orb,ratio)
+      subroutine nonlocd_quad(nxquad,iequad,orb,ratio,iwforb)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use dorb_m,  only: iworbd
@@ -582,7 +618,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       implicit none
 
-      integer :: nxquad, iq, iel, ikel, j
+      integer :: nxquad, iq, iel, ikel, j, iwforb
       integer, dimension(*) :: iequad
       real(dp), dimension(*) :: ratio
       real(dp), dimension(norb_tot,*) :: orb
@@ -597,7 +633,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
         ratio(iq)=0.d0
         do j=1,nup
-          ratio(iq)=ratio(iq)+slmi(j+ikel,1)*orb(iworbd(j,kref),iq)
+          ratio(iq)=ratio(iq)+slmi(j+ikel,1,iwforb)*orb(iworbd(j,kref),iq)
         enddo
 
        else
@@ -606,7 +642,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
         ratio(iq)=0.d0
         do j=1,ndn
-          ratio(iq)=ratio(iq)+slmi(j+ikel,2)*orb(iworbd(j+nup,kref),iq)
+          ratio(iq)=ratio(iq)+slmi(j+ikel,2,iwforb)*orb(iworbd(j+nup,kref),iq)
         enddo
 
       endif
@@ -616,7 +652,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       return
       end
 c-----------------------------------------------------------------------
-      subroutine nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio)
+      subroutine nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio,fso,iwfjas)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
@@ -631,17 +667,17 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
       use optwf_control, only: ioptjas
-      use jastrow_update, only: fso
       use qua,     only: nquad
 
       implicit none
 
-      integer :: i, ic, iel, ipar, isb
+      integer :: i, ic, iel, ipar, isb, iwfjas
       integer :: iq, it, j, jj, k, nxquad
       integer, dimension(*) :: iequad
 
       real(dp) :: dd1u, dum, dumk, fsumn
       real(dp) :: rij, u
+      real(dp), dimension(nelec,*) :: fso
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,*) :: xquad
       real(dp), dimension(3,nelec,ncent_tot) :: rshift
@@ -747,14 +783,14 @@ c e-e terms
           call scale_dist(rij,u,1)
          else
           call scale_dist1(rij,u,dd1u,1)
-          dum=dpsibnl(u,isb,ipar)*dd1u/rij
+          dum=dpsibnl(u,isb,ipar,iwfjas)*dd1u/rij
           do k=1,3
             dumk=-dum*dx(k)
             vjn(k,iq)=vjn(k,iq)+dumk
           enddo
         endif
 
-        fsn(i,j)=psibnl(u,isb,ipar)
+        fsn(i,j)=psibnl(u,isb,ipar,iwfjas)
 
 c e-e-n terms
 c The scaling is switched in psinl, so do not do it here.
@@ -763,7 +799,7 @@ c The scaling is switched in psinl, so do not do it here.
         do ic=1,ncent
           it=iwctype(ic)
           fsn(i,j)=fsn(i,j) +
-     &    psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2_quad(ic),rr_en2(jj,ic),it)
+     &    psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2_quad(ic),rr_en2(jj,ic),it,iwfjas)
         enddo
 
         fsumn=fsumn+fsn(i,j)-fso(i,j)
@@ -775,7 +811,7 @@ c e-n terms
 
       do ic=1,ncent
         it=iwctype(ic)
-        fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en_quad(ic),it)
+        fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en_quad(ic),it,iwfjas)
       enddo
 
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
@@ -785,7 +821,7 @@ c e-n terms
 
        do ic=1,ncent
         it=iwctype(ic)
-        dum=dpsianl(rr_en_quad(ic),it)*dd1_quad(ic)/r_en_quad(iq,ic)
+        dum=dpsianl(rr_en_quad(ic),it,iwfjas)*dd1_quad(ic)/r_en_quad(iq,ic)
         do k=1,3
           dumk=dum*rvec_en_quad(k,iq,ic)
           vjn(k,iq)=vjn(k,iq)+dumk

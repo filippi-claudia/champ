@@ -9,7 +9,7 @@ subroutine parser
   !> @email  r.l.shinde@utwente.nl
   !> @date   11-08-2021
   !> @version 1.2
-
+  
       use fdf               ! modified libfdf
       use allocation_mod, only: allocate_dmc,allocate_vmc
       use array_resize_utils, only: resize_tensor
@@ -33,7 +33,7 @@ subroutine parser
       use control_vmc, only: vmc_isite,vmc_nblk,vmc_nblk_ci,vmc_nblk_max
       use control_vmc, only: vmc_nblkeq,vmc_nconf,vmc_nconf_new
       use control_vmc, only: vmc_nstep
-      use csfs,    only: cxdet,ncsf,nstates
+      use csfs,    only: anormo,cxdet,ncsf,nstates
       use cuspinit4_mod, only: cuspinit4
       use custom_broadcast, only: bcast
       use dmc_mod, only: mwalk,set_mwalk
@@ -151,6 +151,7 @@ subroutine parser
       use set_input_data, only: modify_zmat_define
       use set_input_data, only: multideterminants_define
       use slater,  only: cdet,coef,ndet,norb
+      use sr_mat_n, only: isr_lambda,ortho,sr_lambda
       use sr_mod,  only: i_sr_rescale,izvzb,mconf,mparm
       use system,  only: atomtyp,cent,iwctype,ncent,ncent_tot,nctype
       use system,  only: nctype_tot,ndn,nelec,newghostype,nghostcent,nup
@@ -164,15 +165,19 @@ subroutine parser
       use trexio_read_data, only: write_trexio_basis_num_info_file
       use verify_orbitals_mod, only: verify_orbitals
       use vmc_mod, only: mterms,norb_tot
+      use vmc_mod, only: nwftypejas,stoj,jtos,nstoj_tot,nstojmax,extraj
+      use vmc_mod, only: nwftypeorb,stoo,otos,nstoo_tot,nstoomax,extrao
+      use vmc_mod, only: nbjx,stobjx,bjxtoj,bjxtoo,nstoj_tot,nstoo_tot
       use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
 #if defined(TREXIO_FOUND)
-      use contrl_file, only: backend
-      use trexio            ! trexio library for reading and writing hdf5 files
+  use contrl_file, only: backend
+  use trexio            ! trexio library for reading and writing hdf5 files
 #endif
 #if defined(QMCKL_FOUND)
       use qmckl_data
 #endif
+
       
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
@@ -192,6 +197,7 @@ subroutine parser
 
 
 ! Note the following modules are new additions
+
 
 !
   implicit none
@@ -256,7 +262,7 @@ subroutine parser
 
 ! local counter variables
   integer                    :: i,j,k, iostat
-  integer                    :: ic, iwft
+  integer                    :: ic, iwft, istate, imax
   type(atom_t)               :: atoms
   character(len=2), allocatable   :: unique(:)
 
@@ -288,6 +294,8 @@ subroutine parser
   nforce      = fdf_get('nforce', 1)
   MFORCE      = nforce
   nwftype     = fdf_get('nwftype', 1)
+  nwftypejas  = fdf_get('nwftypejas', 1)
+  nwftypeorb  = fdf_get('nwftypeorb', 1)
   iperiodic   = fdf_get('iperiodic', 0)
   ibasis      = fdf_get('ibasis', 1)
   cseed       = fdf_string('seed', "1837465927472523")
@@ -979,11 +987,13 @@ subroutine parser
     c2_jas6=0
     asymp_r=0
     call allocate_jaspar6()  ! Needed for the following two arrays
-    do i=1,nctype
-        asymp_jasa(i)=0
-    enddo
-    do i=1,2
-        asymp_jasb(i)=0
+    do j=1,nwftypejas
+        do i=1,nctype
+            asymp_jasa(i,j)=0
+        enddo
+        do i=1,2
+            asymp_jasb(i,j)=0
+        enddo
     enddo
   endif
   call set_scale_dist(ipr)
@@ -1056,18 +1066,152 @@ subroutine parser
 
   call elapsed_time ("Reading CSF and CSFMAP file : ")
 
+  
+  if (mode(1:3) == 'vmc') write(ounit, *) "nstoj_tot, nstoo_tot, nstates", nstoj_tot, nstoo_tot, nstates
+  if (extraj.eq.1.and.nstoj_tot.ne.nstates) &
+          call fatal_error('Some states have not been assigned a jastrow type')
+  if (extrao.eq.1.and.nstoo_tot.ne.nstates) &
+          call fatal_error('Some states have not been assigned an orbital set')
+  if (method.eq.'sr_n'.and.extraj.eq.0.and.ioptwf.ge.1.and.nstates.gt.1) &
+          call fatal_error('For multistate sr_n optimization must use jastrows_to_states in jastrow input')
+  if (method.eq.'sr_n'.and.extrao.eq.0.and.ioptwf.ge.1.and.nstates.gt.1) &
+          call fatal_error('For multistate sr_n optimization must use orbitals_to_states in lcao input')
+
+  write(ounit,'(A)') 'Mapping of jastrow, orbital, and mixed quantities to each state.'
+  allocate(stoj(nstates))
+  allocate(stoo(nstates))
+  do istate=1,nstates
+    stoj(istate) = 0
+    stoo(istate) = 0
+  enddo
+
+! Jastrow mapping
+  if (extraj.eq.0) then
+    do istate=1,nstates
+      stoj(istate)=1
+      if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Jastrow #"
+      if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4)') istate, '   -->', stoj(istate)
+    enddo
+  else
+    do i=1,nwftypejas
+      do j=1,nstojmax
+        !write(ounit,*) "nstojmax", nstojmax
+        !write(ounit,*) "i,j,jtos(i,j)", i, j, jtos(i,j)
+        istate=jtos(i,j)
+        if (istate.ne.0) stoj(istate)=i
+        if (istate.ne.0) then
+          if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Jastrow #"
+          if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4)') istate, '   -->', stoj(istate)
+        endif
+      enddo
+    enddo
+  endif
+
+  do istate=1,nstates
+    if (stoj(istate) .eq. 0) then 
+      if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " State ", istate, " has not been assigned a jastrow type. "
+      call fatal_error('JASTROW INPUT: a state has not been assigned a jastrow type.')
+    endif
+  enddo
+
+! Orbital mapping
+  if (extrao.eq.0) then
+    do istate=1,nstates
+      stoo(istate)=1
+      if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Orbital set"
+      if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4)') istate, '   -->', stoo(istate)
+    enddo
+  else
+    do i=1,nwftypeorb
+      do j=1,nstoomax
+        !write(ounit,*) "nstoomax", nstoomax
+        !write(ounit,*) "i,j,otos(i,j)", i, j, otos(i,j)
+        istate=otos(i,j)
+        if (istate.ne.0) stoo(istate)=i
+        if (istate.ne.0) then
+          if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Orbital set "
+          if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4)') istate, '   -->', stoo(istate)
+       endif
+      enddo
+    enddo
+  endif
+  call bcast(stoo)
+  call bcast(stoj)
+
+  do istate=1,nstates
+    if (stoo(istate) .eq. 0) then 
+      if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " State ", istate, " has not been assigned an orbital set . "
+      call fatal_error('LCAO INPUT: a state has not been assigned an orbital set.')
+    endif
+  enddo
+
+  allocate(stobjx(nstates))
+  if (nwftypejas.eq.1.and.nwftypeorb.eq.1) then
+    nbjx = 1 
+    allocate(bjxtoo(1))
+    allocate(bjxtoj(1))
+    bjxtoo(1)=1
+    bjxtoj(1)=1
+    do istate=1,nstates
+      stobjx(istate) = 1
+    enddo
+  else
+    nbjx = 1 
+    stobjx(1)=1
+    do istate=2,nstates
+      do k=1,istate
+        if (stoo(istate).ne.stoo(k).and.stoj(istate).ne.stoj(k)) then
+          stobjx(istate)=istate
+          nbjx = nbjx + 1
+        else
+          stobjx(istate)=k
+        endif
+      enddo
+    enddo
+    allocate(bjxtoo(nbjx))
+    allocate(bjxtoj(nbjx))
+    do istate=1,nstates
+      if (istate.eq.1) then
+        imax=stobjx(istate)
+        bjxtoo(1)=stoo(1)
+        bjxtoj(1)=stoj(1)
+      else 
+        if (stobjx(istate).gt.imax) then
+          bjxtoo(stobjx(istate))=stoo(istate)
+          bjxtoj(stobjx(istate))=stoj(istate)
+        endif
+        imax=max(imax,stobjx(istate))
+      endif
+    enddo
+  endif
+ 
+  do istate=1,nstates
+    if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Mixed Quantity #  <--  Jastrow #, Orbital set"
+    if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4,A,2i4)') istate, '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
+  enddo
+
   ! Know the number of orbitals for optimization.
   if (ioptorb .ne. 0) call get_norbterm()
 
   ! Jastrow mterms needed for allocations
   mterms = nterms4(nordc)
-
   ! Add up all the parameters. It will be used to allocate arrays.
   nciterm = mxciterm
   call set_nparms_tot()
   ! Set maximum number of parameters. For multistate orbital optimization
   ! the following additional terms will be present. The last +1 is failsafe mechanism.
-  mparm = nparm + (nstates-1)*(norbterm) + 1
+  if (method.eq.'sr_n') then
+    mparm = nparm*nstates + 2 !necessary because storing 2 quantities in sr_o, and atimesn increments ddot by mparm. 
+  else
+    mparm = nparm + (nstates-1)*(norbterm) + 1
+  endif
+
+  if(vmc_nblk.gt.vmc_nblk_max) then
+    write(ounit,*) "Warning, vmc_nblk gt vmc_nblk_max. Setting vmc_nblk_max = vmc_nblk"
+    vmc_nblk_max=vmc_nblk
+    ! or we force a fatal error.
+  endif
+
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
@@ -1186,6 +1330,10 @@ subroutine parser
 
 ! check if the orbitals coefficients are to be multiplied by a constant parameter
   if(scalecoef.ne.1.0d0) then
+    if((method.eq.'sr_n'.and.nwftypeorb.gt.1)) then
+      k = nwftype
+      nwftype = nstates
+    endif
     do  iwft=1,nwftype
       do  i=1,norb+nadorb
         do  j=1,nbasis
@@ -1195,6 +1343,9 @@ subroutine parser
     enddo
     write(ounit, real_format) " Orbital coefficients scaled by a constant parameter = ",  scalecoef
     write(ounit,*)
+    if((method.eq.'sr_n'.and.nwftypeorb.gt.1)) then
+      nwftype = k
+    endif
   endif
 
 ! verify number of orbitals and setup optorb
@@ -1266,8 +1417,11 @@ subroutine parser
     if(ioptwf.gt.0) then
       write(ounit,'(a)' ) " Perform wave function optimization in vmc/dmc"
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
-      if(nstates.gt.1 .and. ioptwf.gt.0 .and. method.eq.'sr_n') &
-          call fatal_error('READ_INPUT: nstates>1 and sr_n')
+      if(nstates.gt.1 .and. ioptwf.gt.0 .and. method.eq.'sr_n') then 
+      !    call fatal_error('READ_INPUT: nstates>1 and sr_n')
+           write(ounit,'(a)' ) " Performing multi-state sr_n, setting ortho=1"
+           ortho=1
+      endif
     elseif((ioptjas.eq.1) .or. (ioptorb.eq.1) .or. (ioptci.eq.1) ) then
       write(ounit,'(a)' ) " Only sample derivatives of wave function for external use"
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
@@ -1275,7 +1429,7 @@ subroutine parser
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
       if(method.eq.'lin_d' .or. method.eq.'mix_n') then
-        if(lin_jdav.eq.0) then
+        if(lin_jdav.eq.0) then 
                 write(ounit,'(a)' ) " Use old Regterg"
         elseif(lin_jdav.eq.1) then
                 write(ounit,'(a)' ) " Use new Davidson"
@@ -1345,6 +1499,7 @@ subroutine parser
     if((ncsf.eq.0) .and. (nciprim.gt.mxciterm) ) call fatal_error('INPUT: nciprim gt mxciterm')
     if(nciterm.gt.mxciterm) call fatal_error('INPUT: nciterm gt mxciterm')
 
+
 ! Multiple states/efficiency/guiding flags
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
@@ -1401,7 +1556,64 @@ subroutine parser
     iguiding=0
     nstates=1
   endif ! if loop of condition of either vmc/dmc ends here
+! Read in anormo if multi-state sr_n
+  if(iguiding.gt.0) then
+    write(ounit, *) "ANORMO: Determining normalization constants for guiding wave function."
 
+    if (.not. allocated(anormo)) allocate (anormo(MSTATES))
+      
+    if ( fdf_islreal('anorm') .and. fdf_islist('anorm') &
+        .and. (.not. fdf_islinteger('anorm')) ) then
+      i = -1
+      call fdf_list('anorm',i,anormo)
+      write(ounit,'(a)' )
+      write(ounit,'(tr1,a,i0,a)') ' anorm has ',i,' entries'
+      if(i.ne.nstates) call fatal_error('READ_INPUT: anorm array must contain nstate entries.')
+      call fdf_list('anorm',i,anormo)
+      write(temp5, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
+      !write(ounit, '(a,<MSTATES>(f12.6))') ' anormo : ', anormo(1:i) ! Intel version
+      write(ounit, temp5) ' anorm : ', anormo(1:i)                   ! GNU version
+    else
+      anormo = 1.0d0
+      write(ounit,'(a,t40, 10f12.6)') 'Using default anorm correction ', anormo(1:nstates)
+    endif
+  endif
+
+! Read in sr_lambda if multi-state sr_n
+  if(nstates.gt.1.and.method.eq.'sr_n'.and.ioptwf.eq.1) then
+    write(ounit, *) "SR lambda: imposing overlap penalties"
+
+    ! Part which handles the overlap penalty factors
+    if (.not. allocated(isr_lambda)) allocate (isr_lambda(MSTATES*(MSTATES-1)/2))
+    if (.not. allocated(sr_lambda)) allocate (sr_lambda(MSTATES,MSTATES))
+      
+    if ( fdf_islreal('sr_lambda') .and. fdf_islist('sr_lambda') &
+        .and. (.not. fdf_islinteger('sr_lambda')) ) then
+      i = -1
+      call fdf_list('sr_lambda',i,isr_lambda)
+      write(ounit,'(a)' )
+      write(ounit,'(tr1,a,i0,a)') ' SR lambda has ',i,' entries'
+      if(i.ne.nstates*(nstates-1)/2) call fatal_error('READ_INPUT: sr_lambda array, & 
+          &must contain nstates*(nstates-1)/2 entries, [ 1-2, 1-3, ..., 1-nstates, & 
+          &2-3, 2-4, ..., 2-nstates, ..., (nstates-1)-nstates ]')
+      call fdf_list('sr_lambda',i,isr_lambda)
+      write(temp5, '(a,i0,a)') '(a,', MSTATES*(MSTATES-1)/2, '(f12.6))'
+      !write(ounit, '(a,<MSTATES*(MSTATES-1)/2>(f12.6))') ' SR lambda : ', sr_lambda(1:i) ! Intel version
+      write(ounit, temp5) ' SR lambda : ', isr_lambda(1:i)                   ! GNU version
+    else
+      isr_lambda = 0.0d0
+      write(ounit,'(a,t40, 10f12.6)') 'Default SR lambda ', isr_lambda(1:nstates)
+    endif
+    ! reshaping into symmetric matrix, its less messy to reference
+    do i = 1, nstates
+      do j = 1, nstates
+        if(j.gt.i) then
+          sr_lambda(i,j) = isr_lambda((i-1)*nstates-i*(i-1)/2+j-i)
+          sr_lambda(j,i) = sr_lambda(i,j)
+        endif
+      enddo
+    enddo
+  endif
 
 ! QMMM classical potential
   ! if(iqmmm.gt.0) then
@@ -1741,9 +1953,11 @@ subroutine parser
 
 
   
+
   !----------------------------------------------------------------------------END
 
   
+
   contains
 
   !! Here all the subroutines that handle the block data are written

@@ -81,7 +81,7 @@ module da_orbval
     save
 contains
     subroutine allocate_da_orbval()
-      use system,  only: ncent,ncent_tot,nelec
+      use system, only: ncent, ncent_tot, nelec
       use vmc_mod, only: norb_tot
         if (.not. allocated(da_d2orb)) allocate (da_d2orb(3, nelec, norb_tot, ncent_tot))
         if (.not. allocated(da_dorb)) allocate (da_dorb(3, 3, nelec, norb_tot, ncent_tot))
@@ -99,8 +99,7 @@ end module da_orbval
 module da_pseudo
     !> Arguments: da_pecent, da_vps, da_nonloc
 
-      use precision_kinds, only: dp
-      use pseudo_mod, only: MPS_L
+    use precision_kinds, only: dp
 
     implicit none
 
@@ -115,7 +114,7 @@ module da_pseudo
 contains
     subroutine allocate_da_pseudo()
       use pseudo_mod, only: MPS_L
-      use system,  only: ncent_tot,nelec
+      use system, only: ncent_tot, nelec
         if (.not. allocated(da_pecent)) allocate (da_pecent(3, ncent_tot))
         if (.not. allocated(da_vps)) allocate (da_vps(3, nelec, ncent_tot, MPS_L))
         if (.not. allocated(da_nonloc)) allocate (da_nonloc(3, ncent_tot))
@@ -147,7 +146,7 @@ module da_energy_now
     save
 contains
     subroutine allocate_da_energy_now()
-      use system,  only: ncent_tot
+      use system, only: ncent_tot
         if (.not. allocated(da_energy)) allocate (da_energy(3, ncent_tot))
         if (.not. allocated(da_psi)) allocate (da_psi(3, ncent_tot))
     end subroutine allocate_da_energy_now
@@ -161,9 +160,9 @@ end module da_energy_now
 
 module deloc_dj_m
     !> Arguments: denergy
-      use mstates_mod, only: MSTATES
-      use optwf_parms, only: nparmj
-      use precision_kinds, only: dp
+    use mstates_mod, only: MSTATES
+    use optwf_parms, only: nparmj
+    use precision_kinds, only: dp
 
     implicit none
 
@@ -192,7 +191,7 @@ module denergy_det_m
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: denergy_det !(MDET, 2)
+    real(dp), dimension(:, :, :), allocatable :: denergy_det !(MDET, 2, nbjx)
 
     private
     public :: denergy_det
@@ -200,8 +199,9 @@ module denergy_det_m
     save
 contains
     subroutine allocate_denergy_det_m()
-      use slater,  only: ndet
-        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2))
+      use slater, only: ndet
+      use vmc_mod, only: nbjx
+        if (.not. allocated(denergy_det)) allocate (denergy_det(ndet, 2, nbjx))
     end subroutine allocate_denergy_det_m
 
     subroutine deallocate_denergy_det_m()
@@ -212,8 +212,7 @@ end module denergy_det_m
 
 module denupdn
     !> Arguments: rprobdn, rprobup
-      use precision_kinds, only: dp
-      use vmc_mod, only: nrad
+    use precision_kinds, only: dp
 
     implicit none
 
@@ -240,15 +239,14 @@ end module denupdn
 
 module derivjas
     !> Arguments: d2g, g, go, gvalue
-      use optwf_parms, only: nparmj
-      use precision_kinds, only: dp
+    use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:), allocatable :: d2g !(nparmj)
-    real(dp), dimension(:, :, :), allocatable :: g !(3, MELEC, nparmj)
-    real(dp), dimension(:, :, :), allocatable :: go !(MELEC, MELEC, nparmj)
-    real(dp), dimension(:), allocatable :: gvalue !(nparmj)
+    real(dp), dimension(:, :), allocatable :: d2g !(nparmj, nwftypejas)
+    real(dp), dimension(:, :, :, :), allocatable :: g !(3, nelec, nparmj, nwftypejas)
+    real(dp), dimension(:, :, :, :), allocatable :: go !(nelec, nelec, nparmj, nwftypejas)
+    real(dp), dimension(:, :), allocatable :: gvalue !(nparmj, nwftypejas)
 
     private
     public   :: d2g, g, go, gvalue
@@ -257,11 +255,12 @@ module derivjas
 contains
     subroutine allocate_derivjas()
       use optwf_parms, only: nparmj
-      use system,  only: nelec
-        if (.not. allocated(d2g)) allocate (d2g(nparmj))
-        if (.not. allocated(g)) allocate (g(3, nelec, nparmj))
-        if (.not. allocated(go)) allocate (go(nelec, nelec, nparmj))
-        if (.not. allocated(gvalue)) allocate (gvalue(nparmj))
+      use system, only: nelec
+      use vmc_mod, only: nwftypejas
+        if (.not. allocated(d2g)) allocate (d2g(nparmj, nwftypejas))
+        if (.not. allocated(g)) allocate (g(3, nelec, nparmj, nwftypejas))
+        if (.not. allocated(go)) allocate (go(nelec, nelec, nparmj, nwftypejas))
+        if (.not. allocated(gvalue)) allocate (gvalue(nparmj,nwftypejas))
     end subroutine allocate_derivjas
 
     subroutine deallocate_derivjas()
@@ -275,7 +274,6 @@ end module derivjas
 
 module dorb_m
     !> Arguments: iworbd
-      use system,  only: nelec
 
     implicit none
 
@@ -289,8 +287,8 @@ module dorb_m
 contains
 
     subroutine allocate_dorb_m()
-      use slater,  only: ndet
-      use system,  only: nelec
+      use slater, only: ndet
+      use system, only: nelec
         if (.not. allocated(iworbd)) allocate (iworbd(nelec, ndet), source=0)
     end subroutine allocate_dorb_m
 
@@ -317,7 +315,7 @@ module ijasnonlin
     save
 contains
     subroutine allocate_ijasnonlin()
-      use system,  only: nctype_tot
+      use system, only: nctype_tot
         if (.not. allocated(d1d2a)) allocate (d1d2a(nctype_tot))
         if (.not. allocated(d1d2b)) allocate (d1d2b(2))
         if (.not. allocated(d2d2a)) allocate (d2d2a(nctype_tot))
@@ -337,8 +335,8 @@ module derivest
    !> DMC derivatives
    !> Arguments: derivcm2, derivcum, derivsum, derivtotave_num_old
 
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+   use multiple_geo, only: MFORCE
+   use precision_kinds, only: dp
 
    implicit none
 
@@ -372,17 +370,17 @@ contains
 module m_deriv
 contains
 subroutine allocate_m_deriv()
-      use da_energy_now, only: allocate_da_energy_now
-      use da_energy_sumcum, only: allocate_da_energy_sumcum
-      use da_jastrow4val, only: allocate_da_jastrow4val
-      use da_orbval, only: allocate_da_orbval
-      use da_pseudo, only: allocate_da_pseudo
-      use deloc_dj_m, only: allocate_deloc_dj_m
-      use denergy_det_m, only: allocate_denergy_det_m
-      use denupdn, only: allocate_denupdn
-      use derivjas, only: allocate_derivjas
-      use dorb_m,  only: allocate_dorb_m
-      use ijasnonlin, only: allocate_ijasnonlin
+    use da_energy_now, only: allocate_da_energy_now
+    use da_energy_sumcum, only: allocate_da_energy_sumcum
+    use da_jastrow4val, only: allocate_da_jastrow4val
+    use da_orbval, only: allocate_da_orbval
+    use da_pseudo, only: allocate_da_pseudo
+    use deloc_dj_m, only: allocate_deloc_dj_m
+    use denergy_det_m, only: allocate_denergy_det_m
+    use denupdn, only: allocate_denupdn
+    use derivjas, only: allocate_derivjas
+    use dorb_m, only: allocate_dorb_m
+    use ijasnonlin, only: allocate_ijasnonlin
 
     implicit none
 
@@ -400,17 +398,17 @@ subroutine allocate_m_deriv()
 end subroutine allocate_m_deriv
 
 subroutine deallocate_m_deriv()
-      use da_energy_now, only: deallocate_da_energy_now
-      use da_energy_sumcum, only: deallocate_da_energy_sumcum
-      use da_jastrow4val, only: deallocate_da_jastrow4val
-      use da_orbval, only: deallocate_da_orbval
-      use da_pseudo, only: deallocate_da_pseudo
-      use deloc_dj_m, only: deallocate_deloc_dj_m
-      use denergy_det_m, only: deallocate_denergy_det_m
-      use denupdn, only: deallocate_denupdn
-      use derivjas, only: deallocate_derivjas
-      use dorb_m,  only: deallocate_dorb_m
-      use ijasnonlin, only: deallocate_ijasnonlin
+    use da_energy_now, only: deallocate_da_energy_now
+    use da_energy_sumcum, only: deallocate_da_energy_sumcum
+    use da_jastrow4val, only: deallocate_da_jastrow4val
+    use da_orbval, only: deallocate_da_orbval
+    use da_pseudo, only: deallocate_da_pseudo
+    use deloc_dj_m, only: deallocate_deloc_dj_m
+    use denergy_det_m, only: deallocate_denergy_det_m
+    use denupdn, only: deallocate_denupdn
+    use derivjas, only: deallocate_derivjas
+    use dorb_m, only: deallocate_dorb_m
+    use ijasnonlin, only: deallocate_ijasnonlin
 
     implicit none
 

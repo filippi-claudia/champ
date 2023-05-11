@@ -3,13 +3,16 @@
       subroutine acuest_reduce(enow)
 c Written by Claudia Filippi
 
-      use acuest_write_mod, only: acuest_write
-      use csfs,    only: nstates
-      use error,   only: fatal_error
-      use est2cm,  only: ecm2,pecm2,tpbcm2
-      use estcum,  only: ecum,iblk,pecum,tpbcum
-      use estpsi,  only: apsi,aref,detref
-      use estsum,  only: acc
+      use mpi
+      use precision_kinds, only: dp
+      use multiple_geo, only: MFORCE, nforce, fcm2, fcum
+      use csfs, only: nstates
+      use mstates_mod, only: MSTATES
+      use error, only: fatal_error
+      use estcum, only: ecum, pecum, tpbcum, tjfcum, iblk
+      use est2cm, only: ecm2, pecm2, tpbcm2, tjfcm2
+      use estpsi, only: apsi, aref, detref
+      use estsum, only: acc
       use forcewt, only: wcum
       use mpi
       use mpiconf, only: nproc,wid
@@ -25,11 +28,16 @@ c Written by Claudia Filippi
       ! this in not even in the master as the line
       ! is commented in optorb.h !
 
+      use prop_reduce_mod, only: prop_reduce
+      use acuest_write_mod, only: acuest_write
+      use pcm_mod, only: qpcm_update_vol, pcm_compute_penupv
+      use pcm_reduce_mod, only: pcm_reduce_chvol
+      use vmc_mod, only: stoo
 
       implicit none
 
       integer :: i, iab, ierr, ifr, istate
-      integer :: jo, jo_tot
+      integer :: jo, jo_tot, o
       real(dp) :: acollect
       real(dp), dimension(MSTATES, MFORCE) :: enow
 
@@ -56,23 +64,28 @@ c Written by Claudia Filippi
 
       jo=0
       do istate=1,nstates
+
+        o=stoo(istate)
+
         jo=jo+1
         local_obs(jo)=enow(istate,1)
 
         jo=jo+1
         local_obs(jo)=apsi(istate)
-      enddo
+c      enddo
 
-      jo=jo+1
-      local_obs(jo)=aref
-
-      do iab=1,2
         jo=jo+1
-        local_obs(jo)=detref(iab)
+        local_obs(jo)=aref(o)
+
+        do iab=1,2
+          jo=jo+1
+          local_obs(jo)=detref(iab,o)
+        enddo
       enddo
 
       do ifr=1,nforce
         do istate=1,nstates
+
           jo=jo+1
           local_obs(jo)=ecum(istate,ifr)
 
@@ -119,19 +132,22 @@ c Written by Claudia Filippi
 
       jo=0
       do istate=1,nstates
+
+        o=stoo(istate)
+
         jo=jo+1
         enow(istate,1)=collect(jo)/nproc
 
         jo=jo+1
         apsi(istate)=collect(jo)/nproc
-      enddo
 
-      jo=jo+1
-      aref=collect(jo)/nproc
-
-      do iab=1,2
         jo=jo+1
-        detref(iab)=collect(jo)/nproc
+        aref(o)=collect(jo)/nproc
+
+        do iab=1,2
+          jo=jo+1
+          detref(iab,o)=collect(jo)/nproc
+        enddo
       enddo
 
       do ifr=1,nforce

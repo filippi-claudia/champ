@@ -54,7 +54,7 @@ c routine to accumulate estimators for energy etc.
       use step,    only: ekin,ekin2,rprob,suc,trunfb,try
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,znuc
-      use vmc_mod, only: nrad
+      use vmc_mod, only: nrad, nwftypeorb, stoj
 
       implicit none
 
@@ -149,11 +149,13 @@ c statistical fluctuations without blocking
 
         apsi(istate)=apsi(istate)+dabs(psido(istate))
       enddo
+      do k=1,nwftypeorb
 
-      aref=aref+dabs(detiab(kref,1)*detiab(kref,2))
+        aref(k)=aref(k)+dabs(detiab(kref,1,k)*detiab(kref,2,k))
 
-      detref(1)=detref(1)+dlog10(dabs(detiab(kref,1)))
-      detref(2)=detref(2)+dlog10(dabs(detiab(kref,2)))
+        detref(1,k)=detref(1,k)+dlog10(dabs(detiab(kref,1,k)))
+        detref(2,k)=detref(2,k)+dlog10(dabs(detiab(kref,2,k)))
+      enddo
 
       call acues1_reduce
 
@@ -197,11 +199,12 @@ c zero out estimators
 
         apsi(istate)=0
       enddo
+      do k=1,nwftypeorb
+        detref(1,k)=0
+        detref(2,k)=0
 
-      detref(1)=0
-      detref(2)=0
-
-      aref=0
+        aref(k)=0
+      enddo
 
       r2cm2=0
       r2cum=0
@@ -255,7 +258,7 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,ekino,eold(1,ifr),0,ifr)
         do istate=1,nstates
-          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))+dlog(ajacob)
         enddo
       enddo
 
@@ -265,26 +268,22 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
 
       do istate=1,nstates
-        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
+        if(ipr.gt.1) write(ounit,'(''zerest STATE,psido,psijo,psi2o='',i4,3d12.4)') 
+     &                istate,psido(istate),psijo(stoj(istate)),psi2o(istate,1)
       enddo
 
       if(iguiding.gt.0) then
-        call determinant_psig(psido,psidg)
+        call determinant_psig(psido,psijo,psidg)
 c rewrite psi2o if you are sampling guiding
-        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
-      endif
-      
-      
-      if(ipr.gt.1) then
-         if(iguiding.gt.0) then
-            write(ounit,'(''psid, psidg='',2d12.4)') psido(1),psidg
-         endif
-        write(ounit,'(''psid2o='',f9.4)') psi2o(1,1)
+        psi2o(1,1)=2*(dlog(dabs(psidg)))
+c        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo(1))
+        if(ipr.gt.1) write(ounit,'(''zerest after guiding: psig,psi2o='',2d12.4)') psidg/exp(psijo(1)),psi2o(1,1)
       endif
 
       if(node_cutoff.gt.0) then
         do jel=1,nelec
-          call compute_determinante_grad(jel,psido(1),psido,vold(1,jel),1)
+          call compute_determinante_grad(jel,psido(1),psido,psijo,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node

@@ -5,11 +5,32 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
       use basis,   only: zex
-      use coefs,   only: nbasis
-      use config,  only: eold,nearesto,psi2o,psido,psijo,rmino,rvmino
-      use config,  only: vold,xnew,xold
+      use vmc_mod, only: norb_tot
+      use vmc_mod, only: nrad, stoj
+      use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot
+      use mstates_mod, only: MSTATES
+      use system, only: newghostype, nghostcent, nelec, ndn, nup
       use constants, only: hb
-      use contrl_file, only: errunit,ounit
+      use metropolis, only: delta, deltar, deltat
+      use config, only: eold, nearesto, psi2o
+      use config, only: psido, psijo, rmino, rvmino
+      use config, only: vold, xnew, xold
+      use csfs, only: nstates
+      use denupdn, only: rprobdn, rprobup
+      use slater, only: ndet, cdet
+      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tpbcum
+      use estsig, only: ecm21s, ecum1s
+      use estsum, only: acc, esum, pesum, r2sum, tpbsum
+      use multiple_geo, only: nforce, iwftype, nwftype, pecent
+      use multiple_geo, only: fcm2, fcum
+      use forcewt, only: wcum, wsum
+      use optwf_control, only: ioptorb
+      use stats, only: rejmax
+      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use coefs, only: nbasis
+      use slater, only: norb, coef
+!      use contrl, only: nstep
       use control_vmc, only: vmc_nstep
       use csfs,    only: nstates
       use denupdn, only: rprobdn,rprobup
@@ -49,6 +70,7 @@ c job where it left off
       use system,  only: cent,iwctype,ncent,ncent_tot,nctype,nctype_tot
       use system,  only: ndn,nelec,newghostype,nghostcent,nup,znuc
       use vmc_mod, only: norb_tot,nrad
+      use contrl_file, only: errunit,ounit      
 !      use contrl, only: nstep
       ! I'm 50% sure it's needed
       ! it was in master as part of the include optorb.h
@@ -212,7 +234,7 @@ c set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,ekino,eold(1,ifr),0,ifr)
         do istate=1,nforce
-          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo)+dlog(ajacob)
+          psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))+dlog(ajacob)
         enddo
       enddo
 
@@ -221,18 +243,18 @@ c set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
       do istate=1,nforce
-        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo)
+        psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
       enddo
 
       if(iguiding.gt.0) then
-        call determinant_psig(psido,psidg)
+        call determinant_psig(psido,psijo,psidg)
 c rewrite psi2o if you are sampling guiding
-        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo)
+        psi2o(1,1)=2*(dlog(dabs(psidg)))
       endif
 
       if(node_cutoff.gt.0) then
         do jel=1,nelec
-          call compute_determinante_grad(jel,psido(1),psido,vold(1,jel),1)
+          call compute_determinante_grad(jel,psido(1),psido,psijo,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node

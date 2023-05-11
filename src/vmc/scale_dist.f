@@ -9,11 +9,12 @@ c Written by Cyrus Umrigar
       use jastrow, only: scalek,sspinn
       use precision_kinds, only: dp
       use system,  only: nctype
+      use vmc_mod, only: nwftypejas
 
 
       implicit none
 
-      integer :: i, iord, ipr, isp, it
+      integer :: i, j, iord, ipr, isp, it
       real(dp) :: val_cutjas
       real(dp), parameter :: third = 1.d0/3.d0
 
@@ -64,56 +65,59 @@ c used for J_en and J_ee when isc=16,17.
 
 c Calculate asymptotic value of A and B terms
       asymp_r=c1_jas6i/scalek(1)
-      do it=1,nctype
-        asymp_jasa(it)=a4(1,it,1)*asymp_r/(1+a4(2,it,1)*asymp_r)
-        do iord=2,norda
-          asymp_jasa(it)=asymp_jasa(it)+a4(iord+1,it,1)*asymp_r**iord
+      do j=1,nwftypejas
+        do it=1,nctype
+          asymp_jasa(it,j)=a4(1,it,j)*asymp_r/(1+a4(2,it,j)*asymp_r)
+          do iord=2,norda
+            asymp_jasa(it,j)=asymp_jasa(it,j)+a4(iord+1,it,j)*asymp_r**iord
+          enddo
         enddo
-      enddo
 
-      if(ijas.eq.4) then
-        do i=1,2
-          if(i.eq.1) then
-            sspinn=1
-            isp=1
-           else
-            if(nspin2b.eq.1.and.nocuspb.eq.0) then
-              sspinn=0.5d0
-             else
+        if(ijas.eq.4) then
+          do i=1,2
+            if(i.eq.1) then
               sspinn=1
+              isp=1
+            else
+              if(nspin2b.eq.1.and.nocuspb.eq.0) then
+                sspinn=0.5d0
+              else
+                sspinn=1
+              endif
+              isp=nspin2b
             endif
-            isp=nspin2b
-          endif
-          asymp_jasb(i)=sspinn*b(1,isp,1)*asymp_r/(1+b(2,isp,1)*asymp_r)
-          do iord=2,nordb
-            asymp_jasb(i)=asymp_jasb(i)+b(iord+1,isp,1)*asymp_r**iord
+            asymp_jasb(i,j)=sspinn*b(1,isp,j)*asymp_r/(1+b(2,isp,j)*asymp_r)
+            do iord=2,nordb
+              asymp_jasb(i,j)=asymp_jasb(i,j)+b(iord+1,isp,j)*asymp_r**iord
+            enddo
           enddo
-        enddo
-       elseif(ijas.eq.5) then
-        do i=1,2
-          if(i.eq.1) then
-            sspinn=1
-            isp=1
-           else
-            if(nspin2b.eq.1.and.nocuspb.eq.0) then
-              sspinn=0.5d0
-             else
+        elseif(ijas.eq.5) then
+          do i=1,2
+            if(i.eq.1) then
               sspinn=1
+              isp=1
+            else
+              if(nspin2b.eq.1.and.nocuspb.eq.0) then
+                sspinn=0.5d0
+              else
+                sspinn=1
+              endif
+              isp=nspin2b
             endif
-            isp=nspin2b
-          endif
-          asymp_jasb(i)=b(1,isp,1)*asymp_r/(1+b(2,isp,1)*asymp_r)
-          do iord=2,nordb
-            asymp_jasb(i)=asymp_jasb(i)+b(iord+1,isp,1)*asymp_r**iord
+            asymp_jasb(i,j)=b(1,isp,j)*asymp_r/(1+b(2,isp,j)*asymp_r)
+            do iord=2,nordb
+              asymp_jasb(i,j)=asymp_jasb(i,j)+b(iord+1,isp,j)*asymp_r**iord
+            enddo
+            asymp_jasb(i,j)=sspinn*asymp_jasb(i,j)
           enddo
-          asymp_jasb(i)=sspinn*asymp_jasb(i)
-        enddo
-      endif
-      if((ijas.eq.4.or.ijas.eq.5).and.ipr.gt.1) then
-        write(ounit,'(''asymp_r='',f10.6)') asymp_r
-        write(ounit,'(''asympa='',10f10.6)') (asymp_jasa(it),it=1,nctype)
-        write(ounit,'(''asympb='',10f10.6)') (asymp_jasb(i),i=1,2)
-      endif
+        endif
+        if((ijas.eq.4.or.ijas.eq.5).and.ipr.gt.1) then
+          write(ounit,'(''Jastrow type='',i4)') j
+          write(ounit,'(''asymp_r='',f10.6)') asymp_r
+          write(ounit,'(''asympa='',10f10.6)') (asymp_jasa(it,1),it=1,nctype)
+          write(ounit,'(''asympb='',10f10.6)') (asymp_jasb(i,1),i=1,2)
+        endif
+      enddo
 
       return
       end

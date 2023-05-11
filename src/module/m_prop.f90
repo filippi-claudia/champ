@@ -103,9 +103,9 @@ end module prp003
 module m_prop
 contains
 subroutine allocate_m_prop()
-      use prp001,  only: allocate_prp001
-      use prp002,  only: allocate_prp002
-      use prp003,  only: allocate_prp003
+      use prp001, only: allocate_prp001
+      use prp002, only: allocate_prp002
+      use prp003, only: allocate_prp003
 
     call allocate_prp001()
     call allocate_prp002()
@@ -113,9 +113,9 @@ subroutine allocate_m_prop()
 end subroutine allocate_m_prop
 
 subroutine deallocate_m_prop()
-      use prp001,  only: deallocate_prp001
-      use prp002,  only: deallocate_prp002
-      use prp003,  only: deallocate_prp003
+      use prp001, only: deallocate_prp001
+      use prp002, only: deallocate_prp002
+      use prp003, only: deallocate_prp003
 
     call deallocate_prp001()
     call deallocate_prp002()

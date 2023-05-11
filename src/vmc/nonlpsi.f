@@ -1,9 +1,9 @@
       module nonlpsi
       use error,   only: fatal_error
       contains
-      function psinl(u,rshifti,rshiftj,rri,rrj,it)
+      function psinl(u,rshifti,rshiftj,rri,rrj,it,iwfjas)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-
+      use vmc_mod, only: nwftypejas
       use jastrow, only: nordc
       use jaspar6, only: asymp_r
       use jastrow, only: c,ijas,nordj
@@ -14,7 +14,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       implicit none
 
       integer :: it, jp, k, l, l_hi
-      integer :: ll, m, n
+      integer :: ll, m, n, iwfjas
       real(dp) :: rri, rrj, rrri, rrrj, u
       real(dp) :: uuu
       real(dp) :: psinl
@@ -35,10 +35,13 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       psinl=0.d0
       if(nordc.le.1) return
 
+
       if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
       do k=1,3
         if(abs(rshifti(k)-rshiftj(k)).gt.eps) return
       enddo
+
+      if(nwftypejas.gt.1) iwf=iwfjas
 
       uuu=u
       rrri=rri
@@ -77,7 +80,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       return
       end
 c-----------------------------------------------------------------------
-      function psianl(rri,it)
+      function psianl(rri,it,iwfjas)
 
 
 
@@ -86,9 +89,11 @@ c-----------------------------------------------------------------------
       use jastrow, only: a4,asymp_jasa,ijas
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
+      use vmc_mod, only: nwftypejas
+
       implicit none
 
-      integer :: i, it
+      integer :: i, it, iwfjas
       real(dp) :: rri
       real(dp) :: psianl
 
@@ -100,7 +105,9 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       psianl=0.d0
       if(rri.eq.asymp_r) return
 
-      psianl=a4(1,it,iwf)*rri/(1.d0+a4(2,it,iwf)*rri)-asymp_jasa(it)
+      if(nwftypejas.gt.1) iwf=iwfjas
+
+      psianl=a4(1,it,iwf)*rri/(1.d0+a4(2,it,iwf)*rri)-asymp_jasa(it,iwf)
       do i=2,norda
         psianl=psianl+a4(i+1,it,iwf)*rri**i
       enddo
@@ -109,17 +116,18 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       end
 c-----------------------------------------------------------------------
 
-      function psibnl(u,isb,ipar)
+      function psibnl(u,isb,ipar,iwfjas)
 
       use jastrow, only: nordb
       use jaspar6, only: asymp_r
       use jastrow, only: asymp_jasb,b,ijas,sspinn
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
+      use vmc_mod, only: nwftypejas
 
       implicit none
 
-      integer :: i, ipar, isb
+      integer :: i, ipar, isb, iwfjas
       real(dp) :: fee, psibnl, u
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
@@ -130,10 +138,12 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       if(ijas.le.2) return
       if(u.eq.asymp_r) return
 
+      if(nwftypejas.gt.1) iwf=iwfjas
+
       fee=b(1,isb,iwf)*u/(1+b(2,isb,iwf)*u)
       psibnl=sspinn*fee
 
-      psibnl=psibnl-asymp_jasb(ipar+1)
+      psibnl=psibnl-asymp_jasb(ipar+1,iwf)
       do i=2,nordb
         psibnl=psibnl+b(i+1,isb,iwf)*u**i
       enddo
@@ -141,17 +151,18 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       return
       end
 c-----------------------------------------------------------------------
-      function dpsianl(rri,it)
+      function dpsianl(rri,it,iwfjas)
 
       use jastrow, only: norda
       use jaspar6, only: asymp_r
       use jastrow, only: a4,ijas
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
+      use vmc_mod, only: nwftypejas
 
       implicit none
 
-      integer :: i, it
+      integer :: i, it, iwfjas
       real(dp) :: rri
       real(dp) :: dpsianl
 
@@ -162,6 +173,8 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       dpsianl=0.d0
       if(rri.eq.asymp_r) return
 
+      if(nwftypejas.gt.1) iwf=iwfjas
+
       do i=2,norda
         dpsianl=dpsianl+i*a4(i+1,it,iwf)*rri**(i-1)
       enddo
@@ -170,17 +183,18 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       end
 
 c-----------------------------------------------------------------------
-      function dpsibnl(u,isb,ipar)
+      function dpsibnl(u,isb,ipar,iwfjas)
 
       use jastrow, only: nordb
       use jaspar6, only: asymp_r
       use jastrow, only: b,ijas,sspinn
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
+      use vmc_mod, only: nwftypejas
 
       implicit none
 
-      integer :: i, isb, ipar
+      integer :: i, isb, ipar, iwfjas
       real(dp) :: bot, boti, dbot, dfee, dtop
       real(dp) :: top, u
       real(dp) :: dpsibnl
@@ -191,6 +205,8 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 
       dpsibnl=0.d0
       if(u.eq.asymp_r) return
+
+      if(nwftypejas.gt.1) iwf=iwfjas
 
       top=b(1,isb,iwf)*u
       dtop=b(1,isb,iwf)

@@ -22,142 +22,159 @@
       use scratch, only: denergy_det,dtildem
       use slater,  only: cdet,ddx,iwundet,kref,ndet,norb,slmi
       use system,  only: ndn,nelec,nup
+      use vmc_mod, only: nwftypejas, stoj, stoo, stobjx, bjxtoj, nbjx
 
       implicit none
 
-      integer :: i, iab, iel, index_det, iorb
-      integer :: iparm, irep, ish, istate
+      integer :: i, iab, iel, index_det, iorb, j
+      integer :: iparm, irep, ish, istate, ibjx, xj, x, o
       integer :: jorb, jrep, k, ndim, kun, kw, kk
       integer :: nel
-      real(dp) :: deloc_dj_k, deloc_dj_kref, dum2, dum3, term_jas
+      real(dp) :: deloc_dj_k, dum2, dum3
       real(dp), dimension(*) :: psid
-      real(dp), dimension(*) :: dvpsp_dj
+      real(dp), dimension(nwftypejas) :: term_jas
+      real(dp), dimension(nparmj, *) :: dvpsp_dj
       real(dp), dimension(*) :: energy
-      real(dp), dimension(3, *) :: vj
-      real(dp), dimension(nparmj) :: deloc_dj
+      real(dp), dimension(3, nelec, *) :: vj
+      real(dp), dimension(nbjx) :: deloc_dj_kref
       real(dp), dimension(ndet_req,2) :: ddenergy_det
 
       real(dp) :: cum_deloc_k_state
 
       if(ioptjas.eq.0) return
-
+      
       do iparm=1,nparmj
-
-        deloc_dj(iparm)=dvpsp_dj(iparm)
-        do i=1,nelec
-          deloc_dj(iparm)=deloc_dj(iparm)
-     &     -2.d0*hb*(g(1,i,iparm)*ddx(1,i)+g(2,i,iparm)*ddx(2,i)+g(3,i,iparm)*ddx(3,i))
-        enddo
-
-        deloc_dj_kref=deloc_dj(iparm)
-
-        if(ndet.eq.1) then
-
-        do istate=1,nstates
-          denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref*detiab(kref,1)*detiab(kref,2)
-        enddo
-
-        else
-
-        call bxmatrix(kref,xmat(1,1),xmat(1,2),b_dj(1,1,iparm))
-
-        do iab=1,2
-          if(iab.eq.1) then
-            ish=0
-            nel=nup
-           else
-            ish=nup
-            nel=ndn
-          endif
-          do jrep=ivirt(iab),norb
-              do irep=1,nel
-
-                dum2=0.d0
-                dum3=0.d0
-                do i=1,nel
-                 dum2=dum2+slmi(irep+(i-1)*nel,iab)*b_dj(jrep,i+ish,iparm)
-                 dum3=dum3+xmat(i+(irep-1)*nel,iab)*orb(i+ish,jrep)
-                enddo
-                dtildem(irep,jrep,iab)=dum2-dum3
-
-              enddo
+        
+        do ibjx=1,nbjx
+          xj=bjxtoj(ibjx)
+          deloc_dj_kref(ibjx)=dvpsp_dj(iparm,ibjx)
+          do i=1,nelec
+            deloc_dj_kref(ibjx)=deloc_dj_kref(ibjx)
+     &      -2.d0*hb*(g(1,i,iparm,xj)*ddx(1,i,xj)
+     &      +g(2,i,iparm,xj)*ddx(2,i,xj)
+     &      +g(3,i,iparm,xj)*ddx(3,i,xj))
           enddo
         enddo
 
-        ddenergy_det=0.d0
-        denergy_det=0.d0
-        
-        do iab=1,2
+        if(ndet.eq.1) then
+          do istate=1,nstates
+            x=stobjx(istate)
+            o=stoo(istate)
+            denergy(iparm,istate)=cdet(kref,istate,1)*deloc_dj_kref(x)
+     &              *detiab(kref,1,o)*detiab(kref,2,o)
+          enddo
 
-c           ddenergy_det(:,iab)=0
-           do k=1,ndetsingle(iab)
+        else
+          do istate=1,nstates
+            x=stobjx(istate)
+            o=stoo(istate)
 
-              iorb=irepcol_det(1,k,iab)
-              jorb=ireporb_det(1,k,iab)
-              ddenergy_det(k,iab)=wfmat(k,1,iab)*dtildem(iorb,jorb,iab)
-             
-           enddo          
+            call bxmatrix(kref,xmat(1,1,x),xmat(1,2,x),b_dj(1,1,iparm,x),x)
 
-c           do k=1,ndetiab(iab)
-           do k=ndetsingle(iab)+1,ndetiab(iab)
-                    
-              ndim=numrep_det(k,iab) 
-             
-              do irep=1,ndim
-                 iorb=irepcol_det(irep,k,iab)
-                 do jrep=1,ndim
-                    jorb=ireporb_det(jrep,k,iab)
-                    ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab)*dtildem(iorb,jorb,iab)
-                 enddo
+            do iab=1,2
+              if(iab.eq.1) then
+                ish=0
+                nel=nup
+               else
+                ish=nup
+                nel=ndn
+              endif
+              do jrep=ivirt(iab),norb
+                do irep=1,nel
+
+                  dum2=0.d0
+                  dum3=0.d0
+                  do i=1,nel
+                    dum2=dum2+slmi(irep+(i-1)*nel,iab,o)*b_dj(jrep,i+ish,iparm,x)
+                    dum3=dum3+xmat(i+(irep-1)*nel,iab,x)*orb(i+ish,jrep,o)
+                  enddo
+                  dtildem(irep,jrep,iab)=dum2-dum3
+
+                enddo
               enddo
-           enddo          
+            enddo
+
+            ddenergy_det=0.d0
+            denergy_det=0.d0
+        
+            do iab=1,2
+
+c             ddenergy_det(:,iab)=0
+              do k=1,ndetsingle(iab)
+
+                iorb=irepcol_det(1,k,iab)
+                jorb=ireporb_det(1,k,iab)
+                ddenergy_det(k,iab)=wfmat(k,1,iab,o)*dtildem(iorb,jorb,iab)
+             
+              enddo          
+
+c             do k=1,ndetiab(iab)
+              do k=ndetsingle(iab)+1,ndetiab(iab)
+                    
+                ndim=numrep_det(k,iab) 
+             
+                do irep=1,ndim
+                   iorb=irepcol_det(irep,k,iab)
+                   do jrep=1,ndim
+                      jorb=ireporb_det(jrep,k,iab)
+                      ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab,o)*dtildem(iorb,jorb,iab)
+                   enddo
+                enddo
+              enddo          
            
            
 c     Unrolling determinants different to kref
-           do kk=1,ndetiab2(iab)
-              k=k_det2(kk,iab)
-              kw=k_aux(kk,iab)
-              denergy_det(k,iab)=ddenergy_det(kw,iab)
-           enddo
-c           k_det2(1:ndetiab2(iab),iab)
-c           k_aux(1:ndetiab2(iab),iab)
-c           denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
+              do kk=1,ndetiab2(iab)
+                k=k_det2(kk,iab)
+                kw=k_aux(kk,iab)
+                denergy_det(k,iab,x)=ddenergy_det(kw,iab)
+              enddo
+c             k_det2(1:ndetiab2(iab),iab)
+c             k_aux(1:ndetiab2(iab),iab)
+c             denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
            
            
-        enddo
+            enddo
+c           iab loop
         
-        
-c        do k=1,ndet
-c           deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref             
-c           do istate=1,nstates
-c              denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detiab(k,1)*detiab(k,2)
+c           do k=1,ndet
+c             deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref             
+c             do istate=1,nstates
+c               denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detiab(k,1)*detiab(k,2)
+c             enddo
 c           enddo
-c        enddo
 
-        do istate=1,nstates
-           cum_deloc_k_state=0.0d0
-           do k=1,ndet
-              cum_deloc_k_state=cum_deloc_k_state+cdet(k,istate,1)*(denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref)
-     &             *detiab(k,1)*detiab(k,2)
-           enddo
-           denergy(iparm,istate)=cum_deloc_k_state
-        enddo
+          enddo
+
+          do istate=1,nstates
+            x=stobjx(istate)
+            o=stoo(istate)
+            cum_deloc_k_state=0.0d0
+            do k=1,ndet
+              cum_deloc_k_state=cum_deloc_k_state+cdet(k,istate,1)
+     &        *(denergy_det(k,1,x)+denergy_det(k,2,x)
+     &        +deloc_dj_kref(x))*detiab(k,1,o)*detiab(k,2,o)
+            enddo
+            denergy(iparm,istate)=cum_deloc_k_state
+          enddo
         
-        
-      endif
+        endif
 c endif ndet.gt.1
 
 c d2j = d_j lapl(ln J) = d_j (lapl(J)/J) - 2 d_j (grad(J)/J) * grad(J)/J
-        term_jas=d2g(iparm)
-        do i=1,nelec
-          term_jas=term_jas+2.d0*(g(1,i,iparm)*vj(1,i)+g(2,i,iparm)*vj(2,i)+g(3,i,iparm)*vj(3,i))
+        do j=1,nwftypejas
+          term_jas(j)=d2g(iparm,j)
+          do i=1,nelec
+            term_jas(j)=term_jas(j)+2.d0*(g(1,i,iparm,j)*vj(1,i,j)+g(2,i,iparm,j)*vj(2,i,j)+g(3,i,iparm,j)*vj(3,i,j))
+          enddo
+          term_jas(j)=-hb*term_jas(j)
         enddo
-        term_jas=-hb*term_jas
-
         do istate=1,nstates
-          denergy(iparm,istate)=term_jas+denergy(iparm,istate)/psid(istate)
+          j=stoj(istate)
+          denergy(iparm,istate)=term_jas(j)+denergy(iparm,istate)/psid(istate)
         enddo
       enddo
+c     iparm loop
 
       if(ipr.gt.3) then
         do istate=1,nstates
@@ -187,11 +204,12 @@ c Written by Claudia Filippi
       use optwf_wjas, only: iwjasa,iwjasb
       use precision_kinds, only: dp
       use system,  only: nctype
+      use vmc_mod, only: stoj
 
       implicit none
 
       integer :: i, iflag, iparm, iparm0, isb
-      integer :: istate, it, j, jparm
+      integer :: istate, it, j, jparm, js
       integer :: kparm, lparm
       real(dp) :: p, q, sav1, sav2
       real(dp), dimension(*) :: enew
@@ -203,151 +221,152 @@ c Written by Claudia Filippi
       if(ioptjas.eq.0) return
 
       do istate=1,nstates
-      p=wtg_new(istate)
-
-      do i=1,nparmj
-        dj(i,istate)=dj(i,istate)      +p*gvalue(i)
-        de(i,istate)=de(i,istate)      +p*denergy(i,istate)
-        dj_e(i,istate)=dj_e(i,istate)  +p*gvalue(i)*enew(istate)
-        de_e(i,istate)=de_e(i,istate)  +p*denergy(i,istate)*enew(istate)
-        dj_e2(i,istate)=dj_e2(i,istate)+p*gvalue(i)*enew(istate)**2
-        e2(i,istate)=e2(i,istate)      +p*enew(istate)**2
-        do j=1,i
-          dj_dj(i,j,istate)=dj_dj(i,j,istate)           +p*gvalue(i)*gvalue(j)
-          dj_de(i,j,istate)=dj_de(i,j,istate)           +p*gvalue(i)*denergy(j,istate)
-          if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+p*gvalue(j)*denergy(i,istate)
-          dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)       +p*gvalue(i)*gvalue(j)*enew(istate)
-          de_de(i,j,istate)=de_de(i,j,istate)           +p*denergy(i,istate)*denergy(j,istate)
+        p=wtg_new(istate)
+        js=stoj(istate)
+        do i=1,nparmj
+          dj(i,istate)=dj(i,istate)      +p*gvalue(i,js)
+          de(i,istate)=de(i,istate)      +p*denergy(i,istate)
+          dj_e(i,istate)=dj_e(i,istate)  +p*gvalue(i,js)*enew(istate)
+          de_e(i,istate)=de_e(i,istate)  +p*denergy(i,istate)*enew(istate)
+          dj_e2(i,istate)=dj_e2(i,istate)+p*gvalue(i,js)*enew(istate)**2
+          e2(i,istate)=e2(i,istate)      +p*enew(istate)**2
+          do j=1,i
+            dj_dj(i,j,istate)=dj_dj(i,j,istate)+p*gvalue(i,js)*gvalue(j,js)
+            dj_de(i,j,istate)=dj_de(i,j,istate)+p*gvalue(i,js)*denergy(j,istate)
+            if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+p*gvalue(j,js)*denergy(i,istate)
+            dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)+p*gvalue(i,js)*gvalue(j,js)*enew(istate)
+            de_de(i,j,istate)=de_de(i,j,istate)           +p*denergy(i,istate)*denergy(j,istate)
+          enddo
         enddo
-      enddo
 
-      do it=1,nctype
-        do jparm=1,nparma(it)
-          iparm=npointa(it)+jparm
-          if(iwjasa(jparm,it).eq.2) then
-            d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+p*d2d2a(it)
-            d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+p*d2d2a(it)*enew(istate)
-            do kparm=1,nparma(it)
-              if(iwjasa(kparm,it).eq.1) then
-                lparm=npointa(it)+kparm
-                sav1=p*d1d2a(it)
-                sav2=p*d1d2a(it)*enew(istate)
-                if(lparm.gt.iparm) then
-                  d2j(lparm,iparm,istate)=d2j(lparm,iparm,istate)+sav1
-                  d2j_e(lparm,iparm,istate)=d2j_e(lparm,iparm,istate)+sav2
-                 else
-                  d2j(iparm,lparm,istate)=d2j(iparm,lparm,istate)+sav1
-                  d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
+        do it=1,nctype
+          do jparm=1,nparma(it)
+            iparm=npointa(it)+jparm
+            if(iwjasa(jparm,it).eq.2) then
+              d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+p*d2d2a(it)
+              d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+p*d2d2a(it)*enew(istate)
+              do kparm=1,nparma(it)
+                if(iwjasa(kparm,it).eq.1) then
+                  lparm=npointa(it)+kparm
+                  sav1=p*d1d2a(it)
+                  sav2=p*d1d2a(it)*enew(istate)
+                  if(lparm.gt.iparm) then
+                    d2j(lparm,iparm,istate)=d2j(lparm,iparm,istate)+sav1
+                    d2j_e(lparm,iparm,istate)=d2j_e(lparm,iparm,istate)+sav2
+                  else
+                    d2j(iparm,lparm,istate)=d2j(iparm,lparm,istate)+sav1
+                    d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
+                  endif
                 endif
-              endif
-            enddo
-          endif
+              enddo
+            endif
+          enddo
         enddo
-      enddo
 
-      iparm0=npointa(nctype)+nparma(nctype)
-      do isb=1,nspin2b
-        if(isb.eq.2) iparm0=iparm0+nparmb(1)
-        do jparm=1,nparmb(isb)
-          iparm=iparm0+jparm
-          if(iwjasb(jparm,isb).eq.2) then
-            d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+p*d2d2b(isb)
-            d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+p*d2d2b(isb)*enew(istate)
-            do kparm=1,nparmb(isb)
-              if(iwjasb(kparm,isb).eq.1) then
-                lparm=iparm0+kparm
-                sav1=p*d1d2b(isb)
-                sav2=p*d1d2b(isb)*enew(istate)
-                if(lparm.gt.iparm) then
-                  d2j(lparm,iparm,istate)=d2j(lparm,iparm,istate)+sav1
-                  d2j_e(lparm,iparm,istate)=d2j_e(lparm,iparm,istate)+sav2
-                 else
-                  d2j(iparm,lparm,istate)=d2j(iparm,lparm,istate)+sav1
-                  d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
+        iparm0=npointa(nctype)+nparma(nctype)
+        do isb=1,nspin2b
+          if(isb.eq.2) iparm0=iparm0+nparmb(1)
+          do jparm=1,nparmb(isb)
+            iparm=iparm0+jparm
+            if(iwjasb(jparm,isb).eq.2) then
+              d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+p*d2d2b(isb)
+              d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+p*d2d2b(isb)*enew(istate)
+              do kparm=1,nparmb(isb)
+                if(iwjasb(kparm,isb).eq.1) then
+                  lparm=iparm0+kparm
+                  sav1=p*d1d2b(isb)
+                  sav2=p*d1d2b(isb)*enew(istate)
+                  if(lparm.gt.iparm) then
+                    d2j(lparm,iparm,istate)=d2j(lparm,iparm,istate)+sav1
+                    d2j_e(lparm,iparm,istate)=d2j_e(lparm,iparm,istate)+sav2
+                  else
+                    d2j(iparm,lparm,istate)=d2j(iparm,lparm,istate)+sav1
+                    d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
+                  endif
                 endif
-              endif
-            enddo
-          endif
+              enddo
+            endif
+          enddo
         enddo
-      enddo
 
       enddo
-
+c     istate loop
       if(iflag.eq.0) return
 
       do istate=1,nstates
 
-      q=wtg_old(istate)
+        q=wtg_old(istate)
+        js=stoj(istate)
 
-      do i=1,nparmj
-        dj(i,istate)=dj(i,istate)      +q*gvalue_old(i)
-        de(i,istate)=de(i,istate)      +q*denergy_old(i,istate)
-        dj_e(i,istate)=dj_e(i,istate)  +q*gvalue_old(i)*eold(istate)
-        de_e(i,istate)=de_e(i,istate)  +q*denergy_old(i,istate)*eold(istate)
-        dj_e2(i,istate)=dj_e2(i,istate)+q*gvalue_old(i)*eold(istate)**2
-        e2(i,istate)=e2(i,istate)      +q*eold(istate)**2
-        do j=1,i
-          dj_dj(i,j,istate)=dj_dj(i,j,istate)           +q*gvalue_old(i)*gvalue_old(j)
-          dj_de(i,j,istate)=dj_de(i,j,istate)           +q*gvalue_old(i)*denergy_old(j,istate)
-          if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+q*gvalue_old(j)*denergy_old(i,istate)
-          dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)       +q*gvalue_old(i)*gvalue_old(j)*eold(istate)
-          de_de(i,j,istate)=de_de(i,j,istate)           +q*denergy_old(i,istate)*denergy_old(j,istate)
+        do i=1,nparmj
+          dj(i,istate)=dj(i,istate)      +q*gvalue_old(i,js)
+          de(i,istate)=de(i,istate)      +q*denergy_old(i,istate)
+          dj_e(i,istate)=dj_e(i,istate)  +q*gvalue_old(i,js)*eold(istate)
+          de_e(i,istate)=de_e(i,istate)  +q*denergy_old(i,istate)*eold(istate)
+          dj_e2(i,istate)=dj_e2(i,istate)+q*gvalue_old(i,stoj(istate))*eold(istate)**2
+          e2(i,istate)=e2(i,istate)      +q*eold(istate)**2
+          do j=1,i
+            dj_dj(i,j,istate)=dj_dj(i,j,istate)+q*gvalue_old(i,js)*gvalue_old(j,js)
+            dj_de(i,j,istate)=dj_de(i,j,istate)+q*gvalue_old(i,js)*denergy_old(j,istate)
+            if(j.lt.i) dj_de(j,i,istate)=dj_de(j,i,istate)+q*gvalue_old(j,js)*denergy_old(i,istate)
+            dj_dj_e(i,j,istate)=dj_dj_e(i,j,istate)+q*gvalue_old(i,js)
+     &                               *gvalue_old(j,js)*eold(istate)
+            de_de(i,j,istate)=de_de(i,j,istate)+q*denergy_old(i,istate)*denergy_old(j,istate)
+          enddo
         enddo
-      enddo
 
-      do it=1,nctype
-        do jparm=1,nparma(it)
-          iparm=npointa(it)+jparm
-          if(iwjasa(jparm,it).eq.2) then
-            d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+q*d2d2a_old(it)
-            d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+q*d2d2a_old(it)*eold(istate)
-            do kparm=1,nparma(it)
-              if(iwjasa(kparm,it).eq.1) then
-                lparm=npointa(it)+kparm
-                sav1=q*d1d2a_old(it)
-                sav2=q*d1d2a_old(it)*eold(istate)
-                if(lparm.gt.iparm) then
-                  d2j(lparm,iparm,istate)=d2j(lparm,iparm,istate)+sav1
-                  d2j_e(lparm,iparm,istate)=d2j_e(lparm,iparm,istate)+sav2
-                 else
-                  d2j(iparm,lparm,istate)=d2j(iparm,lparm,istate)+sav1
-                  d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
+        do it=1,nctype
+          do jparm=1,nparma(it)
+            iparm=npointa(it)+jparm
+            if(iwjasa(jparm,it).eq.2) then
+              d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+q*d2d2a_old(it)
+              d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+q*d2d2a_old(it)*eold(istate)
+              do kparm=1,nparma(it)
+                if(iwjasa(kparm,it).eq.1) then
+                  lparm=npointa(it)+kparm
+                  sav1=q*d1d2a_old(it)
+                  sav2=q*d1d2a_old(it)*eold(istate)
+                  if(lparm.gt.iparm) then
+                    d2j(lparm,iparm,istate)=d2j(lparm,iparm,istate)+sav1
+                    d2j_e(lparm,iparm,istate)=d2j_e(lparm,iparm,istate)+sav2
+                  else
+                    d2j(iparm,lparm,istate)=d2j(iparm,lparm,istate)+sav1
+                    d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
+                  endif
                 endif
-              endif
-            enddo
-          endif
+              enddo
+            endif
+          enddo
         enddo
-      enddo
 
-      iparm0=npointa(nctype)+nparma(nctype)
-      do isb=1,nspin2b
-        if(isb.eq.2) iparm0=iparm0+nparmb(1)
-        do jparm=1,nparmb(isb)
-          iparm=iparm0+jparm
-          if(iwjasb(jparm,isb).eq.2) then
-            d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+q*d2d2b_old(isb)
-            d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+q*d2d2b_old(isb)*eold(istate)
-            do kparm=1,nparmb(isb)
-              if(iwjasb(kparm,isb).eq.1) then
-                lparm=iparm0+kparm
-                sav1=q*d1d2b_old(isb)
-                sav2=q*d1d2b_old(isb)*eold(istate)
-                if(lparm.gt.iparm) then
-                  d2j(lparm,iparm,istate)=d2j(lparm,iparm,istate)+sav1
-                  d2j_e(lparm,iparm,istate)=d2j_e(lparm,iparm,istate)+sav2
-                 else
-                  d2j(iparm,lparm,istate)=d2j(iparm,lparm,istate)+sav1
-                  d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
+        iparm0=npointa(nctype)+nparma(nctype)
+        do isb=1,nspin2b
+          if(isb.eq.2) iparm0=iparm0+nparmb(1)
+          do jparm=1,nparmb(isb)
+            iparm=iparm0+jparm
+            if(iwjasb(jparm,isb).eq.2) then
+              d2j(iparm,iparm,istate)=d2j(iparm,iparm,istate)+q*d2d2b_old(isb)
+              d2j_e(iparm,iparm,istate)=d2j_e(iparm,iparm,istate)+q*d2d2b_old(isb)*eold(istate)
+              do kparm=1,nparmb(isb)
+                if(iwjasb(kparm,isb).eq.1) then
+                  lparm=iparm0+kparm
+                  sav1=q*d1d2b_old(isb)
+                  sav2=q*d1d2b_old(isb)*eold(istate)
+                  if(lparm.gt.iparm) then
+                    d2j(lparm,iparm,istate)=d2j(lparm,iparm,istate)+sav1
+                    d2j_e(lparm,iparm,istate)=d2j_e(lparm,iparm,istate)+sav2
+                  else
+                    d2j(iparm,lparm,istate)=d2j(iparm,lparm,istate)+sav1
+                    d2j_e(iparm,lparm,istate)=d2j_e(iparm,lparm,istate)+sav2
+                  endif
                 endif
-              endif
-            enddo
-          endif
+              enddo
+            endif
+          enddo
         enddo
-      enddo
 
       enddo
-
-c     write(ounit,*) 'HELLO',enew,p,eold,q,(dj_dj_e(nparmj,i),i=1,nparmj)
+c     istate loop
 
       return
       end
@@ -378,36 +397,36 @@ c Written by Claudia Filippi
 
       do istate=1,nstates
 
-      do i=1,nparmj
-        dj_e_b(i)=dj_e(i,istate)-dj_e_save(i,istate)
-        dj_b(i)=dj(i,istate)-dj_save(i,istate)
-      enddo
-
-      e_bsum(istate)=e_bsum(istate)+enow
-      do i=1,nparmj
-        dj_e_bsum(i,istate)=dj_e_bsum(i,istate)+dj_e_b(i)/wsum
-        dj_bsum(i,istate)=dj_bsum(i,istate)+dj_b(i)/wsum
-      enddo
-
-      do i=1,nparmj
-         dj_e_save(i,istate)=dj_e(i,istate)
-         dj_save(i,istate)=dj(i,istate)
-      enddo
-
-      if(nbj_current.eq.ngrad_jas_blocks)then
-        eb=e_bsum(istate)/dble(ngrad_jas_blocks)
-        e_bsum(istate)=0
         do i=1,nparmj
-          gnow=2*(dj_e_bsum(i,istate)-dj_bsum(i,istate)*eb)/dble(ngrad_jas_blocks)
-          grad_jas_bcum(i,istate)=grad_jas_bcum(i,istate)+gnow
-          grad_jas_bcm2(i,istate)=grad_jas_bcm2(i,istate)+gnow**2
-          dj_e_bsum(i,istate)=0
-          dj_bsum(i,istate)=0
+          dj_e_b(i)=dj_e(i,istate)-dj_e_save(i,istate)
+          dj_b(i)=dj(i,istate)-dj_save(i,istate)
         enddo
-      endif
+
+        e_bsum(istate)=e_bsum(istate)+enow
+        do i=1,nparmj
+          dj_e_bsum(i,istate)=dj_e_bsum(i,istate)+dj_e_b(i)/wsum
+          dj_bsum(i,istate)=dj_bsum(i,istate)+dj_b(i)/wsum
+        enddo
+
+        do i=1,nparmj
+          dj_e_save(i,istate)=dj_e(i,istate)
+          dj_save(i,istate)=dj(i,istate)
+        enddo
+
+        if(nbj_current.eq.ngrad_jas_blocks)then
+          eb=e_bsum(istate)/dble(ngrad_jas_blocks)
+          e_bsum(istate)=0.0d0
+          do i=1,nparmj
+            gnow=2*(dj_e_bsum(i,istate)-dj_bsum(i,istate)*eb)/dble(ngrad_jas_blocks)
+            grad_jas_bcum(i,istate)=grad_jas_bcum(i,istate)+gnow
+            grad_jas_bcm2(i,istate)=grad_jas_bcm2(i,istate)+gnow**2
+            dj_e_bsum(i,istate)=0.0d0
+            dj_bsum(i,istate)=0.0d0
+          enddo
+        endif
 
       enddo
-
+c     istate loop
       if(nbj_current.eq.ngrad_jas_blocks) then
         nbj_current=0
         ngrad_jas_bcum=ngrad_jas_bcum+1
@@ -429,18 +448,22 @@ c Written by Claudia Filippi
       use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
       use system,  only: nctype
-
+      use vmc_mod, only: stoj
+      
       implicit none
 
-      integer :: i, isb, istate, it
+      integer :: i, j, isb, istate, it
 
       if(ioptjas.eq.0) return
+        
+      do istate=1,nstates 
 
-      do i=1,nparmj
-        gvalue_old(i)=gvalue(i)
-        do istate=1,nstates
+        do i=1,nparmj
+          j=stoj(istate)
+          gvalue_old(i,j)=gvalue(i,j)
           denergy_old(i,istate)=denergy(i,istate)
         enddo
+
       enddo
 
       do it=1,nctype
@@ -531,13 +554,13 @@ c to do: write out which parameters are being varied -> check for restart
 c Warning: Except for dj_de the rest are sym. so we do not really need to write entire matrix
       write(iu) nparmj
       do istate=1,nstates
-      write(iu) (dj(i,istate),de(i,istate),dj_e(i,istate),de_e(i,istate),dj_e2(i,istate),e2(i,istate),i=1,nparmj)
-      write(iu) ((dj_de(i,j,istate),j=1,nparmj),i=1,nparmj)
-      write(iu) ((dj_dj(i,j,istate),dj_dj_e(i,j,istate),j=1,nparmj),i=1,nparmj)
-      write(iu) ((d2j(i,j,istate),d2j_e(i,j,istate),j=1,nparmj),i=1,nparmj)
-      write(iu) ((de_de(i,j,istate),j=1,nparmj),i=1,nparmj)
-      if(ngrad_jas_blocks.gt.0)
-     & write(iu) (grad_jas_bcum(i,istate),grad_jas_bcm2(i,istate),i=1,nparmj),ngrad_jas_bcum
+        write(iu) (dj(i,istate),de(i,istate),dj_e(i,istate),de_e(i,istate),dj_e2(i,istate),e2(i,istate),i=1,nparmj)
+        write(iu) ((dj_de(i,j,istate),j=1,nparmj),i=1,nparmj)
+        write(iu) ((dj_dj(i,j,istate),dj_dj_e(i,j,istate),j=1,nparmj),i=1,nparmj)
+        write(iu) ((d2j(i,j,istate),d2j_e(i,j,istate),j=1,nparmj),i=1,nparmj)
+        write(iu) ((de_de(i,j,istate),j=1,nparmj),i=1,nparmj)
+        if(ngrad_jas_blocks.gt.0)
+     &  write(iu) (grad_jas_bcum(i,istate),grad_jas_bcm2(i,istate),i=1,nparmj),ngrad_jas_bcum
       enddo
 
       return
@@ -562,18 +585,18 @@ c Written by Claudia Filippi
 
       read(iu) nparmj
       do istate=1,nstates
-      read(iu) (dj(i,istate),de(i,istate),dj_e(i,istate),de_e(i,istate),dj_e2(i,istate),e2(i,istate),i=1,nparmj)
-      read(iu) ((dj_de(i,j,istate),j=1,nparmj),i=1,nparmj)
-      read(iu) ((dj_dj(i,j,istate),dj_dj_e(i,j,istate),j=1,nparmj),i=1,nparmj)
-      read(iu) ((d2j(i,j,istate),d2j_e(i,j,istate),j=1,nparmj),i=1,nparmj)
-      read(iu) ((de_de(i,j,istate),j=1,nparmj),i=1,nparmj)
-      if(ngrad_jas_blocks.gt.0)
-     & read(iu) (grad_jas_bcum(i,istate),grad_jas_bcm2(i,istate),i=1,nparmj),ngrad_jas_bcum
+        read(iu) (dj(i,istate),de(i,istate),dj_e(i,istate),de_e(i,istate),dj_e2(i,istate),e2(i,istate),i=1,nparmj)
+        read(iu) ((dj_de(i,j,istate),j=1,nparmj),i=1,nparmj)
+        read(iu) ((dj_dj(i,j,istate),dj_dj_e(i,j,istate),j=1,nparmj),i=1,nparmj)
+        read(iu) ((d2j(i,j,istate),d2j_e(i,j,istate),j=1,nparmj),i=1,nparmj)
+        read(iu) ((de_de(i,j,istate),j=1,nparmj),i=1,nparmj)
+        if(ngrad_jas_blocks.gt.0)
+     &  read(iu) (grad_jas_bcum(i,istate),grad_jas_bcm2(i,istate),i=1,nparmj),ngrad_jas_bcum
 
-      do i=1,nparmj
-        dj_e_save(i,istate)=dj_e(i,istate)
-        dj_save(i,istate)=dj(i,istate)
-      enddo
+        do i=1,nparmj
+          dj_e_save(i,istate)=dj_e(i,istate)
+          dj_save(i,istate)=dj(i,istate)
+        enddo
 
       enddo
       return

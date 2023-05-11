@@ -40,11 +40,11 @@ end module ci000
 
 module ci001_blk
     !> Arguments: ci_oe, ci_o
-      use optci,   only: mxcireduced,mxciterm
+      use optci, only: mxciterm, mxcireduced
       use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: ci_o !(mxciterm)
-    real(dp), dimension(:, :), allocatable :: ci_oe !(mxciterm,mxcireduced)
+    real(dp), dimension(:, :), allocatable :: ci_o !(mxciterm,MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: ci_oe !(mxciterm,mxcireduced,MSTATES)
 
     private
     public :: ci_oe, ci_o
@@ -52,9 +52,10 @@ module ci001_blk
     save
 contains
     subroutine allocate_ci001_blk()
-      use optci,   only: mxcireduced,mxciterm
-        if (.not. allocated(ci_o)) allocate (ci_o(mxciterm))
-        if (.not. allocated(ci_oe)) allocate (ci_oe(mxciterm, mxcireduced))
+      use optci, only: mxciterm, mxcireduced
+      use mstates_mod, only: MSTATES
+        if (.not. allocated(ci_o)) allocate (ci_o(mxciterm, MSTATES))
+        if (.not. allocated(ci_oe)) allocate (ci_oe(mxciterm, mxcireduced, MSTATES))
     end subroutine allocate_ci001_blk
 
     subroutine deallocate_ci001_blk()
@@ -66,11 +67,11 @@ end module ci001_blk
 
 module ci002_blk
     !> Arguments: ci_o_old, ci_oe_old
-      use optci,   only: mxcireduced,mxciterm
+      use optci, only: mxciterm, mxcireduced
       use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: ci_o_old !(mxciterm)
-    real(dp), dimension(:, :), allocatable :: ci_oe_old !(mxciterm,mxcireduced)
+    real(dp), dimension(:, :), allocatable :: ci_o_old !(mxciterm, MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: ci_oe_old !(mxciterm,mxcireduced,MSTATES)
 
     private
     public :: ci_o_old, ci_oe_old
@@ -78,9 +79,10 @@ module ci002_blk
     save
 contains
     subroutine allocate_ci002_blk()
-      use optci,   only: mxcireduced,mxciterm
-        if (.not. allocated(ci_o_old)) allocate (ci_o_old(mxciterm))
-        if (.not. allocated(ci_oe_old)) allocate (ci_oe_old(mxciterm, mxcireduced))
+      use optci, only: mxciterm, mxcireduced
+      use mstates_mod, only: MSTATES
+        if (.not. allocated(ci_o_old)) allocate (ci_o_old(mxciterm, MSTATES))
+        if (.not. allocated(ci_oe_old)) allocate (ci_oe_old(mxciterm, mxcireduced, MSTATES))
     end subroutine allocate_ci002_blk
 
     subroutine deallocate_ci002_blk()
@@ -92,11 +94,11 @@ end module ci002_blk
 
 module ci003_blk
     !> Arguments: ci_e_old, ci_e
-      use optci,   only: mxciterm
+      use optci, only: mxciterm
       use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: ci_e !(mxciterm)
-    real(dp), dimension(:), allocatable :: ci_e_old !(mxciterm)
+    real(dp), dimension(:, :), allocatable :: ci_e !(mxciterm,MSTATES)
+    real(dp), dimension(:, :), allocatable :: ci_e_old !(mxciterm,MSTATES)
 
     private
     public :: ci_e_old, ci_e
@@ -104,9 +106,10 @@ module ci003_blk
     save
 contains
     subroutine allocate_ci003_blk()
-      use optci,   only: mxciterm
-        if (.not. allocated(ci_e)) allocate (ci_e(mxciterm))
-        if (.not. allocated(ci_e_old)) allocate (ci_e_old(mxciterm))
+      use optci, only: mxciterm
+      use mstates_mod, only: MSTATES
+        if (.not. allocated(ci_e)) allocate (ci_e(mxciterm, MSTATES))
+        if (.not. allocated(ci_e_old)) allocate (ci_e_old(mxciterm, MSTATES))
     end subroutine allocate_ci003_blk
 
     subroutine deallocate_ci003_blk()
@@ -118,11 +121,11 @@ end module ci003_blk
 
 module ci004_blk
     !> Arguments: ci_de, ci_de_old
-      use optci,   only: mxciterm
+      use optci, only: mxciterm
       use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: ci_de !(mxciterm)
-    real(dp), dimension(:), allocatable :: ci_de_old !(mxciterm)
+    real(dp), dimension(:, :), allocatable :: ci_de !(mxciterm, MSTATES)
+    real(dp), dimension(:, :), allocatable :: ci_de_old !(mxciterm, MSTATES)
 
     private
     public :: ci_de, ci_de_old
@@ -130,9 +133,10 @@ module ci004_blk
     save
 contains
     subroutine allocate_ci004_blk()
-      use optci,   only: mxciterm
-        if (.not. allocated(ci_de)) allocate (ci_de(mxciterm))
-        if (.not. allocated(ci_de_old)) allocate (ci_de_old(mxciterm))
+      use optci, only: mxciterm
+      use mstates_mod, only: MSTATES
+        if (.not. allocated(ci_de)) allocate (ci_de(mxciterm, MSTATES))
+        if (.not. allocated(ci_de_old)) allocate (ci_de_old(mxciterm, MSTATES))
     end subroutine allocate_ci004_blk
 
     subroutine deallocate_ci004_blk()
@@ -144,11 +148,11 @@ end module ci004_blk
 
 module ci005_blk
     !> Arguments: ci_o_cum, ci_o_sum
-      use optci,   only: mxciterm
+      use optci, only: mxciterm
       use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: ci_o_cum !(mxciterm)
-    real(dp), dimension(:), allocatable :: ci_o_sum !(mxciterm)
+    real(dp), dimension(:, :), allocatable :: ci_o_cum !(mxciterm, MSTATES)
+    real(dp), dimension(:, :), allocatable :: ci_o_sum !(mxciterm, MSTATES)
 
     private
     public :: ci_o_cum, ci_o_sum
@@ -156,9 +160,10 @@ module ci005_blk
     save
 contains
     subroutine allocate_ci005_blk()
-      use optci,   only: mxciterm
-        if (.not. allocated(ci_o_cum)) allocate (ci_o_cum(mxciterm))
-        if (.not. allocated(ci_o_sum)) allocate (ci_o_sum(mxciterm))
+      use optci, only: mxciterm
+      use mstates_mod, only: MSTATES
+        if (.not. allocated(ci_o_cum)) allocate (ci_o_cum(mxciterm, MSTATES))
+        if (.not. allocated(ci_o_sum)) allocate (ci_o_sum(mxciterm, MSTATES))
     end subroutine allocate_ci005_blk
 
     subroutine deallocate_ci005_blk()
@@ -170,11 +175,11 @@ end module ci005_blk
 
 module ci006_blk
     !> Arguments: ci_de_cum, ci_de_sum
-      use optci,   only: mxciterm
+      use optci, only: mxciterm
       use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: ci_de_cum !(mxciterm)
-    real(dp), dimension(:), allocatable :: ci_de_sum !(mxciterm)
+    real(dp), dimension(:, :), allocatable :: ci_de_cum !(mxciterm, MSTATES)
+    real(dp), dimension(:, :), allocatable :: ci_de_sum !(mxciterm, MSTATES)
 
     private
     public :: ci_de_cum, ci_de_sum
@@ -182,9 +187,10 @@ module ci006_blk
     save
 contains
     subroutine allocate_ci006_blk()
-      use optci,   only: mxciterm
-        if (.not. allocated(ci_de_cum)) allocate (ci_de_cum(mxciterm))
-        if (.not. allocated(ci_de_sum)) allocate (ci_de_sum(mxciterm))
+      use optci, only: mxciterm
+      use mstates_mod, only: MSTATES
+        if (.not. allocated(ci_de_cum)) allocate (ci_de_cum(mxciterm, MSTATES))
+        if (.not. allocated(ci_de_sum)) allocate (ci_de_sum(mxciterm, MSTATES))
     end subroutine allocate_ci006_blk
 
     subroutine deallocate_ci006_blk()
@@ -196,12 +202,12 @@ end module ci006_blk
 
 module ci008_blk
     !> Arguments: ci_oe_cm2, ci_oe_sum, ci_oe_cum
-      use optci,   only: mxcireduced,mxciterm
+      use optci, only: mxciterm, mxcireduced
       use precision_kinds, only: dp
 
-    real(dp), dimension(:, :), allocatable :: ci_oe_cm2 !(mxciterm,mxcireduced)
-    real(dp), dimension(:, :), allocatable :: ci_oe_cum !(mxciterm,mxcireduced)
-    real(dp), dimension(:, :), allocatable :: ci_oe_sum !(mxciterm,mxcireduced)
+    real(dp), dimension(:, :, :), allocatable :: ci_oe_cm2 !(mxciterm,mxcireduced, MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: ci_oe_cum !(mxciterm,mxcireduced, MSTATES)
+    real(dp), dimension(:, :, :), allocatable :: ci_oe_sum !(mxciterm,mxcireduced, MSTATES)
 
     private
     public :: ci_oe_cm2, ci_oe_sum, ci_oe_cum
@@ -209,10 +215,11 @@ module ci008_blk
     save
 contains
     subroutine allocate_ci008_blk()
-      use optci,   only: mxcireduced,mxciterm
-        if (.not. allocated(ci_oe_cm2)) allocate (ci_oe_cm2(mxciterm, mxcireduced))
-        if (.not. allocated(ci_oe_cum)) allocate (ci_oe_cum(mxciterm, mxcireduced))
-        if (.not. allocated(ci_oe_sum)) allocate (ci_oe_sum(mxciterm, mxcireduced))
+      use optci, only: mxciterm, mxcireduced
+      use mstates_mod, only: MSTATES
+        if (.not. allocated(ci_oe_cm2)) allocate (ci_oe_cm2(mxciterm, mxcireduced, MSTATES))
+        if (.not. allocated(ci_oe_cum)) allocate (ci_oe_cum(mxciterm, mxcireduced, MSTATES))
+        if (.not. allocated(ci_oe_sum)) allocate (ci_oe_sum(mxciterm, mxcireduced, MSTATES))
     end subroutine allocate_ci008_blk
 
     subroutine deallocate_ci008_blk()
@@ -225,12 +232,12 @@ end module ci008_blk
 
 module ci009_blk
     !> Arguments: ci_oo_sum, ci_oo_cm2, ci_oo_cum
-      use optci,   only: ncimatdim
+      use optci, only: ncimatdim
       use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: ci_oo_cm2 !(ncimatdim)
-    real(dp), dimension(:), allocatable :: ci_oo_cum !(ncimatdim)
-    real(dp), dimension(:), allocatable :: ci_oo_sum !(ncimatdim)
+    real(dp), dimension(:, :), allocatable :: ci_oo_cm2 !(ncimatdim, MSTATES)
+    real(dp), dimension(:, :), allocatable :: ci_oo_cum !(ncimatdim, MSTATES)
+    real(dp), dimension(:, :), allocatable :: ci_oo_sum !(ncimatdim, MSTATES)
 
     private
     public :: ci_oo_sum, ci_oo_cm2, ci_oo_cum
@@ -238,10 +245,11 @@ module ci009_blk
     save
 contains
     subroutine allocate_ci009_blk()
-      use optci,   only: ncimatdim
-        if (.not. allocated(ci_oo_cm2)) allocate (ci_oo_cm2(ncimatdim))
-        if (.not. allocated(ci_oo_cum)) allocate (ci_oo_cum(ncimatdim))
-        if (.not. allocated(ci_oo_sum)) allocate (ci_oo_sum(ncimatdim))
+      use optci, only: ncimatdim
+      use mstates_mod, only: MSTATES
+        if (.not. allocated(ci_oo_cm2)) allocate (ci_oo_cm2(ncimatdim, MSTATES))
+        if (.not. allocated(ci_oo_cum)) allocate (ci_oo_cum(ncimatdim, MSTATES))
+        if (.not. allocated(ci_oo_sum)) allocate (ci_oo_sum(ncimatdim, MSTATES))
     end subroutine allocate_ci009_blk
 
     subroutine deallocate_ci009_blk()
@@ -254,11 +262,11 @@ end module ci009_blk
 
 module ci010_blk
     !> Arguments: ci_ooe_cum, ci_ooe_sum
-      use optci,   only: ncimatdim
+      use optci, only: ncimatdim
       use precision_kinds, only: dp
 
-    real(dp), dimension(:), allocatable :: ci_ooe_cum !(ncimatdim)
-    real(dp), dimension(:), allocatable :: ci_ooe_sum !(ncimatdim)
+    real(dp), dimension(:, :), allocatable :: ci_ooe_cum !(ncimatdim, MSTATES)
+    real(dp), dimension(:, :), allocatable :: ci_ooe_sum !(ncimatdim, MSTATES)
     private
 
     public :: ci_ooe_cum, ci_ooe_sum
@@ -266,9 +274,10 @@ module ci010_blk
     save
 contains
     subroutine allocate_ci010_blk()
-      use optci,   only: ncimatdim
-        if (.not. allocated(ci_ooe_cum)) allocate (ci_ooe_cum(ncimatdim))
-        if (.not. allocated(ci_ooe_sum)) allocate (ci_ooe_sum(ncimatdim))
+      use optci, only: ncimatdim
+      use mstates_mod, only: MSTATES
+        if (.not. allocated(ci_ooe_cum)) allocate (ci_ooe_cum(ncimatdim, MSTATES))
+        if (.not. allocated(ci_ooe_sum)) allocate (ci_ooe_sum(ncimatdim, MSTATES))
     end subroutine allocate_ci010_blk
 
     subroutine deallocate_ci010_blk()

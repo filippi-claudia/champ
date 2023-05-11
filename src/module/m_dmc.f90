@@ -46,9 +46,9 @@ end module age
 module branch
   !> Arguments: eest, eigv, eold, ff, fprod, nwalk, pwt, wdsumo, wgdsumo, wt, wtgen,
   !> wthist
-      use dmc_mod, only: MFPRD1,mwalk
-      use multiple_geo, only: MFORCE,MFORCE_WT_PRD
-      use precision_kinds, only: dp
+   use dmc_mod, only: mwalk, MFPRD1
+   use multiple_geo, only: MFORCE, MFORCE_WT_PRD
+   use precision_kinds, only: dp
 
   implicit none
 
@@ -133,7 +133,7 @@ end module c_averages
 
 module c_averages_index
    !> Arguments: jeloc, jderiv
-      use multiple_geo, only: MFORCE
+   use multiple_geo, only: MFORCE
 
    implicit none
 
@@ -157,9 +157,9 @@ end module c_averages_index
 
 module jacobsave
    !> Arguments: ajacob, ajacold
-      use dmc_mod, only: mwalk
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+   use dmc_mod, only: mwalk
+   use multiple_geo, only: MFORCE
+   use precision_kinds, only: dp
 
    implicit none
 
@@ -184,9 +184,9 @@ end module jacobsave
 
 module velratio
    !> Arguments: fratio, xdrifted
-      use dmc_mod, only: mwalk
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+   use dmc_mod, only: mwalk
+   use multiple_geo, only: MFORCE
+   use precision_kinds, only: dp
 
    implicit none
 
@@ -202,7 +202,7 @@ contains
    subroutine allocate_velratio()
       use dmc_mod, only: mwalk
       use multiple_geo, only: MFORCE
-      use system,  only: nelec
+      use system, only: nelec
       if (.not. allocated(fratio)) allocate(fratio(mwalk, MFORCE))
       if (.not. allocated(xdrifted)) allocate(xdrifted(3, nelec, mwalk, MFORCE))
    end subroutine allocate_velratio

@@ -1,6 +1,6 @@
       module bxmatrices
       contains
-      subroutine bxmatrix(kref,xmatu,xmatd,b)
+      subroutine bxmatrix(kref,xmatu,xmatd,b,k)
 
       use dorb_m,  only: iworbd
       use multiply_slmi_mderiv, only: multiply_slmi_mderiv_simple
@@ -12,7 +12,7 @@
 
       implicit none
 
-      integer :: i, iab, iel, ish, j
+      integer :: i, iab, iel, ish, j, k
       integer :: kref, nel
 
       real(dp), dimension(norb_tot, nelec) :: b
@@ -41,9 +41,8 @@
           enddo
         enddo
       enddo
-
-      call multiply_slmi_mderiv_simple(nup,btemp(1,1),work,slmi(1,1),xmatu)
-      call multiply_slmi_mderiv_simple(ndn,btemp(1,2),work,slmi(1,2),xmatd)
+      call multiply_slmi_mderiv_simple(nup,btemp(1,1),work,slmi(1,1,k),xmatu)
+      call multiply_slmi_mderiv_simple(ndn,btemp(1,2),work,slmi(1,2,k),xmatd)
 
       return
       end

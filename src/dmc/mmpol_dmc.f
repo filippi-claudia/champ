@@ -65,8 +65,9 @@ c Statement functions for error calculation, it might be reaplaced in the near f
 c-----------------------------------------------------------------------
       subroutine mmpol_fin(iblk,wgcum,wgcm2)
 
-      use mmpol_cntrl, only: immpol,immpolprt
+      use mmpol_cntrl, only: immpol, immpolprt
       use multiple_geo, only: MFORCE
+
       use precision_kinds, only: dp
 
       implicit none

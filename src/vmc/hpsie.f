@@ -4,31 +4,33 @@
 c Written by Claudia Filippi by modifying hpsi
 
       use contrl_file, only: ounit
-      use csfs,    only: nstates
+      use csfs, only: nstates
       use determinante_mod, only: determinante
       use determinante_psit_mod, only: determinante_psit
-      use distance_mod, only: r_en,rvec_en
+      use distance_mod, only: r_en, rvec_en
       use distances_mod, only: distances
-      use error,   only: fatal_error
-      use estpsi,  only: apsi,aref
+      use error, only: fatal_error
+      use estpsi, only: apsi, aref
       use jastrow, only: ianalyt_lap
       use jastrowe_mod, only: jastrowe
       use mstates_mod, only: MSTATES
       use multideterminante_mod, only: multideterminante
-      use multiple_geo, only: iwf,iwftype
+      use multiple_geo, only: iwf, iwftype
       use multislatern, only: detn
       use precision_kinds, only: dp
-      use slater,  only: kref
-      use system,  only: nelec
+      use slater, only: kref
+      use system, only: nelec
       use velocity_jastrow, only: vjn
+      use vmc_mod, only: nwftypejas, stoo
 
       implicit none
 
-      integer :: iel, iflag, ipass, istate
+      integer :: iel, iflag, ipass, istate, icheck
       real(dp) :: apsi_now, aref_now, check_apsi, check_apsi_min, check_dref
-      real(dp) :: d2j, psij
       real(dp), dimension(3, nelec) :: coord
       real(dp), dimension(MSTATES) :: psid
+      real(dp), dimension(nwftypejas) :: psij
+      real(dp), dimension(nwftypejas) :: d2j
 
 c Calculates wave function
 
@@ -50,12 +52,14 @@ c compute all determinants
 
       call determinante(iel,coord,rvec_en,r_en,iflag)
 
-      if(detn(kref).eq.0.d0) then
-        do istate=1,nstates
+      icheck=0
+      do istate=1,nstates
+        if(detn(kref,stoo(istate)).eq.0.d0) then
           psid(istate)=0.d0
-        enddo
-        return
-      endif
+          icheck=1
+        endif
+      enddo
+      if(icheck.eq.1) return
 
 
       call multideterminante(iel)
@@ -66,19 +70,16 @@ c combine determinantal quantities to obtain trial wave function
         call determinante_psit(iel,psid(istate),istate)
       enddo
 
-
       if(ipass.gt.2) then
 
-        check_apsi_min=1.d+99
         do istate=1,nstates
+          check_apsi_min=1.d+99
           apsi_now=apsi(istate)/(ipass-1)
           check_apsi=abs(psid(istate))/apsi_now
-
-         check_apsi_min=min(check_apsi,check_apsi_min)
+          check_apsi_min=min(check_apsi,check_apsi_min)
+          aref_now=aref(stoo(istate))/(ipass-1)
+          check_dref=abs(detn(kref,stoo(istate)))/aref_now
         enddo
-
-        aref_now=aref/(ipass-1)
-        check_dref=abs(detn(kref))/aref_now
 
       endif
 

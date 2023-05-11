@@ -3,8 +3,13 @@
       subroutine optx_orb_ci_reduce
 c Written by Claudia Filippi
 
-      use ci000,   only: nciterm
-      use mix_orb_ci, only: ci_de_o,ci_o_ho,ci_o_o,ci_o_oe
+      use optorb_mod, only: mxreduced
+      use optci, only: mxciterm
+      use optwf_control, only: ioptci, ioptorb
+      use mix_orb_ci, only: ci_de_o, ci_o_ho, ci_o_o, ci_o_oe
+      use ci000, only: nciterm
+      use optwf_control, only: method
+      use optorb_cblock, only: nreduced
       use mpi
       use optci,   only: mxciterm
       use optorb_cblock, only: nreduced

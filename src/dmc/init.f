@@ -88,8 +88,8 @@ c get nuclear potential energy
           if(icasula.lt.0) i_vpsp=icasula
           call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),ekino,eold(iw,ifr),0,ifr)
           i_vpsp=0
-          do i=1,nelec
-            call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
+          do i=1,nelec !STU check psijo_dmc, should be one state so should be ok?
+            call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)
           enddo
 
           if(ifr.eq.1) then

@@ -28,7 +28,7 @@ end module pcm_3dgrid
 
 module pcm_ah
     !> Arguments: ahca, bh
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
       use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: ahca !(MCHS,MCHS)
@@ -40,7 +40,7 @@ module pcm_ah
     save
 contains
     subroutine allocate_pcm_ah()
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
         if (.not. allocated(ahca)) allocate (ahca(MCHS, MCHS))
         if (.not. allocated(bh)) allocate (bh(MCHS))
     end subroutine allocate_pcm_ah
@@ -54,7 +54,7 @@ end module pcm_ah
 
 module pcm_ameta
     !> Arguments: amdlg, eta
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
       use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: amdlg !(MCHS)
@@ -66,7 +66,7 @@ module pcm_ameta
     save
 contains
     subroutine allocate_pcm_ameta()
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
         if (.not. allocated(amdlg)) allocate (amdlg(MCHS))
         if (.not. allocated(eta)) allocate (eta(3, MCHS))
     end subroutine allocate_pcm_ameta
@@ -82,7 +82,7 @@ module pcm_averages
     !> Arguments: spcmsum, spcmcum, spcmcm2, vpcmsum, vpcmcum, vpcmcm2
     ! qopcm_sum, qopcm_cum, qopcm_cm2,
     ! enfpcm_sum(MCHS), enfpcm_cum(MCHS), enfpcm_cm2(MCHS)
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
       use precision_kinds, only: dp
 
     real(dp) :: spcmsum
@@ -106,7 +106,7 @@ module pcm_averages
     save
 contains
     subroutine allocate_pcm_averages()
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
         if (.not. allocated(enfpcm_sum)) allocate (enfpcm_sum(MCHS))
         if (.not. allocated(enfpcm_cum)) allocate (enfpcm_cum(MCHS))
         if (.not. allocated(enfpcm_cm2)) allocate (enfpcm_cm2(MCHS))
@@ -154,7 +154,7 @@ end module pcm_fdc
 module pcm_force
     !> Arguments: sch_s
       use multiple_geo, only: MFORCE
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
       use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: sch_s !(MCHS,MFORCE)
@@ -165,8 +165,8 @@ module pcm_force
     save
 contains
     subroutine allocate_pcm_force()
+      use pcm, only: MCHS
       use multiple_geo, only: MFORCE
-      use pcm,     only: MCHS
         if (.not. allocated(sch_s)) allocate (sch_s(MCHS, MFORCE))
     end subroutine allocate_pcm_force
 
@@ -242,7 +242,7 @@ end module pcm_grid3d_param
 
 module pcm_hpsi
     !> Arguments: enfpcm, pepcms, pepcmv, qopcm
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
       use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: enfpcm !(MCHS)
@@ -258,7 +258,7 @@ module pcm_hpsi
     save
 contains
     subroutine allocate_pcm_hpsi()
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
         if (.not. allocated(enfpcm)) allocate (enfpcm(MCHS))
     end subroutine allocate_pcm_hpsi
 
@@ -269,7 +269,7 @@ contains
 end module pcm_hpsi
 
 module pcm_inda
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
     !> Arguments: inda
 
     integer, dimension(:), allocatable :: inda !(MCHS)
@@ -280,7 +280,7 @@ module pcm_inda
     save
 contains
     subroutine allocate_pcm_inda()
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
         if (.not. allocated(inda)) allocate (inda(MCHS), source=0)
     end subroutine allocate_pcm_inda
 
@@ -328,7 +328,7 @@ end module pcm_num_spl2
 module pcm_parms
     !> Arguments: re, nchv, nesph, ze, iscov, eps_solv, xpol,
     !             retk, ch, xe, nvopcm, nch, re2, ncopcm, surk, nscv, nchs, ye, nchs2, nchs1
-      use pcm,     only: MCHV,MSPHERE
+      use pcm, only: MCHV, MSPHERE
       use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: ch !(MCHV)
@@ -362,7 +362,7 @@ module pcm_parms
     save
 contains
     subroutine allocate_pcm_parms()
-      use pcm,     only: MCHV,MSPHERE
+      use pcm, only: MCHV, MSPHERE
         if (.not. allocated(ch)) allocate (ch(MCHV))
         if (.not. allocated(re)) allocate (re(MSPHERE))
         if (.not. allocated(re2)) allocate (re2(MSPHERE))
@@ -399,7 +399,7 @@ end module pcm_pot
 
 module pcm_xv_new
     !> Arguments: xv_new
-      use pcm,     only: MCHV
+      use pcm, only: MCHV
       use precision_kinds, only: dp
 
     real(dp), dimension(:, :), allocatable :: xv_new !(3,MCHV)
@@ -410,7 +410,7 @@ module pcm_xv_new
     save
 contains
     subroutine allocate_pcm_xv_new()
-      use pcm,     only: MCHV
+      use pcm, only: MCHV
         if (.not. allocated(xv_new)) allocate (xv_new(3, MCHV))
     end subroutine allocate_pcm_xv_new
 
@@ -435,7 +435,7 @@ end module pcm_unit
 module pcmo
     !> Arguments: enfpcmo, qopcmo, spcmo, vpcmo,
     !> spcmo_dmc, vpcmo_dmc, qopcmo_dmc, enfpcmo_dmc
-      use pcm,     only: MCHS
+      use pcm, only: MCHS
       use precision_kinds, only: dp
 
     real(dp), dimension(:), allocatable :: enfpcmo !(MCHS)
@@ -456,8 +456,8 @@ module pcmo
     save
 contains
     subroutine allocate_pcmo()
+      use pcm, only: MCHS
       use dmc_mod, only: mwalk
-      use pcm,     only: MCHS
         if (.not. allocated(enfpcmo)) allocate(enfpcmo(MCHS))
         if (.not. allocated(enfpcmo_dmc)) allocate(enfpcmo_dmc(mwalk, MCHS))
         if (.not. allocated(qopcmo_dmc)) allocate(qopcmo_dmc(mwalk))
@@ -552,7 +552,7 @@ module m_pcm
 contains
 subroutine allocate_m_pcm()
       use m_pcm_num_spl, only: allocate_m_pcm_num_spl
-      use pcm_ah,  only: allocate_pcm_ah
+      use pcm_ah, only: allocate_pcm_ah
       use pcm_ameta, only: allocate_pcm_ameta
       use pcm_averages, only: allocate_pcm_averages
       use pcm_force, only: allocate_pcm_force
@@ -562,10 +562,10 @@ subroutine allocate_m_pcm()
       use pcm_inda, only: allocate_pcm_inda
       use pcm_parms, only: allocate_pcm_parms
       use pcm_xv_new, only: allocate_pcm_xv_new
-      use pcmo,    only: allocate_pcmo
-      use spc,     only: allocate_spc
-      use spc1,    only: allocate_spc1
-      use spc2,    only: allocate_spc2
+      use pcmo, only: allocate_pcmo
+      use spc, only: allocate_spc
+      use spc1, only: allocate_spc1
+      use spc2, only: allocate_spc2
 
     call allocate_pcm_ah()
     call allocate_pcm_ameta()
@@ -586,7 +586,7 @@ end subroutine allocate_m_pcm
 
 subroutine deallocate_m_pcm()
       use m_pcm_num_spl, only: deallocate_m_pcm_num_spl
-      use pcm_ah,  only: deallocate_pcm_ah
+      use pcm_ah, only: deallocate_pcm_ah
       use pcm_ameta, only: deallocate_pcm_ameta
       use pcm_averages, only: deallocate_pcm_averages
       use pcm_force, only: deallocate_pcm_force
@@ -596,10 +596,10 @@ subroutine deallocate_m_pcm()
       use pcm_inda, only: deallocate_pcm_inda
       use pcm_parms, only: deallocate_pcm_parms
       use pcm_xv_new, only: deallocate_pcm_xv_new
-      use pcmo,    only: deallocate_pcmo
-      use spc,     only: deallocate_spc
-      use spc1,    only: deallocate_spc1
-      use spc2,    only: deallocate_spc2
+      use pcmo, only: deallocate_pcmo
+      use spc, only: deallocate_spc
+      use spc1, only: deallocate_spc1
+      use spc2, only: deallocate_spc2
 
     call deallocate_pcm_ah()
     call deallocate_pcm_ameta()

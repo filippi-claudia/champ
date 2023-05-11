@@ -97,7 +97,7 @@ subroutine multideterminants_define(iflag, icheck)
 
     endif
 !    write (ounit, *) 'I am in multi_def',kref,kref_old
-       
+
     if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
     if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
     if (.not. allocated(irepcol_det)) allocate (irepcol_det(nelec, ndet, 2))
@@ -223,29 +223,29 @@ subroutine multideterminants_define(iflag, icheck)
         enddo
     else
         do iab = 1, 2
-            do i = 1, ndet
-                iwundet(i, iab) = i
-                if (i .ne. kref) then
-                if (idiff(kref, i, iab) .eq. 0) then
-                   iwundet(i, iab) = kref
-                 else
-                    j=1
-                    do while (idiff(j, i, iab) .ne. 0  .and. j.ne.i)
-                       j= j+1
-                    enddo
-                    iwundet(i, iab) = j
-                 endif
+          do i = 1, ndet
+            iwundet(i, iab) = i
+            if (i .ne. kref) then
+              if (idiff(kref, i, iab) .eq. 0) then
+                iwundet(i, iab) = kref
+              else
+                j=1
+                do while (j.ne.i .and. idiff(j, i, iab) .ne. 0)
+                  j= j+1
+                enddo
+                iwundet(i, iab) = j
               endif
-            enddo
-         enddo
+            endif
+          enddo
+        enddo
         do iab = 1, 2
-            ndet_dist = 0
-            do i = 1, ndet
-                if (iwundet(i, iab) .eq. i) then
-                    ndet_dist = ndet_dist + 1
-                endif
-            enddo
-            write (ounit, *) iab, ndet_dist, ' distinct out of ', ndet
+           ndet_dist = 0
+           do i = 1, ndet
+             if (iwundet(i, iab) .eq. i) then
+               ndet_dist = ndet_dist + 1
+             endif
+           enddo
+           write (ounit, *) iab, ndet_dist, ' distinct out of ', ndet
         enddo
     endif
 
@@ -414,6 +414,11 @@ subroutine multideterminants_define(iflag, icheck)
        ndetiab2(iab)=kk
     enddo
     
+    !do iab = 1, 2
+    !   do k = 1, ndetiab2(iab)
+          !write(ounit,*) 'LAST',iab,k,k_aux(k,iab),k_det2(k,iab)
+    !   enddo
+    !enddo
     
     return
 end subroutine multideterminants_define

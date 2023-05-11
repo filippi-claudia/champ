@@ -51,7 +51,7 @@
         ish=nup
       endif
 
-      detratio=detiab(kref,1)*detiab(kref,2)/psid
+      detratio=detiab(kref,1,1)*detiab(kref,2,1)/psid
 
       jel=iel-ish
 
@@ -60,12 +60,12 @@
         do jrep=ivirt(iab),norb
           dum=0
           do j=1,nel
-            dum=dum+b_t(iworbd(j+ish,kref),iq,ic,iel)*aa(j,jrep,iab)
+            dum=dum+b_t(iworbd(j+ish,kref),iq,ic,iel)*aa(j,jrep,iab,1)
           enddo
           dum=b_t(jrep,iq,ic,iel)-dum
 
           do irep=iactv(iab),nel
-            gmat(irep,jrep)=dum*slmi(irep+(jel-1)*nel,iab)
+            gmat(irep,jrep)=dum*slmi(irep+(jel-1)*nel,iab,1)
           enddo
         enddo
 

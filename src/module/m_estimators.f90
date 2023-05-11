@@ -1,8 +1,8 @@
 module estcum
      !> Arguments: ecum, ecum1, iblk, pecum, r2cum, tjfcum, tpbcum, avcum
-      use mstates_mod, only: MSTATES
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+     use mstates_mod, only: MSTATES
+     use multiple_geo, only: MFORCE
+     use precision_kinds, only: dp
 
      implicit none
 
@@ -106,8 +106,8 @@ module estcum
 
  module estsig
      !> Arguments: ecm21s, ecum1s
-      use mstates_mod, only: MSTATES
-      use precision_kinds, only: dp
+     use mstates_mod, only: MSTATES
+     use precision_kinds, only: dp
 
      implicit none
 
@@ -138,9 +138,9 @@ module estcum
      !> pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum, w_acc_sum1, wdsum,
      !> wdsum1, wfsum, wfsum1, wg_acc_sum, wg_acc_sum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
 
-      use mstates_mod, only: MSTATES
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+     use mstates_mod, only: MSTATES
+     use multiple_geo, only: MFORCE
+     use precision_kinds, only: dp
 
      implicit none
 
@@ -241,14 +241,14 @@ module estcum
 
  module estpsi
      !> Arguments: apsi, aref, detref
-      use mstates_mod, only: MSTATES
-      use precision_kinds, only: dp
+     use mstates_mod, only: MSTATES
+     use precision_kinds, only: dp
 
      implicit none
 
      real(dp), dimension(:), allocatable :: apsi !(MSTATES)
-     real(dp) :: aref
-     real(dp), dimension(:), allocatable :: detref !(2)
+     real(dp), dimension(:), allocatable :: aref !(nwftypeorb)
+     real(dp), dimension(:, :), allocatable :: detref !(2,nwftypeorb)
 
      private
      public   ::  apsi, aref, detref
@@ -257,12 +257,15 @@ module estcum
  contains
      subroutine allocate_estpsi()
       use mstates_mod, only: MSTATES
+         use vmc_mod, only: nwftypeorb
          if (.not. allocated(apsi)) allocate (apsi(MSTATES))
-         if (.not. allocated(detref)) allocate (detref(2))
+         if (.not. allocated(aref)) allocate (aref(nwftypeorb))
+         if (.not. allocated(detref)) allocate (detref(2,nwftypeorb))
      end subroutine allocate_estpsi
 
      subroutine deallocate_estpsi()
          if (allocated(detref)) deallocate (detref)
+         if (allocated(aref)) deallocate (aref)
          if (allocated(apsi)) deallocate (apsi)
      end subroutine deallocate_estpsi
 
@@ -274,9 +277,9 @@ module estcum
      !> ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21,
      !> wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
 
-      use mstates_mod, only: MSTATES
-      use multiple_geo, only: MFORCE
-      use precision_kinds, only: dp
+     use mstates_mod, only: MSTATES
+     use multiple_geo, only: MFORCE
+     use precision_kinds, only: dp
 
      implicit none
 
@@ -368,11 +371,11 @@ module estcum
 module m_estimators
 contains
  subroutine allocate_m_estimators()
-      use est2cm,  only: allocate_est2cm
-      use estcum,  only: allocate_estcum
-      use estpsi,  only: allocate_estpsi
-      use estsig,  only: allocate_estsig
-      use estsum,  only: allocate_estsum
+     use est2cm, only: allocate_est2cm
+     use estcum, only: allocate_estcum
+     use estpsi, only: allocate_estpsi
+     use estsig, only: allocate_estsig
+     use estsum, only: allocate_estsum
 
      implicit none
 
@@ -384,11 +387,11 @@ contains
  end subroutine allocate_m_estimators
 
  subroutine deallocate_m_estimators()
-      use est2cm,  only: deallocate_est2cm
-      use estcum,  only: deallocate_estcum
-      use estpsi,  only: deallocate_estpsi
-      use estsig,  only: deallocate_estsig
-      use estsum,  only: deallocate_estsum
+     use est2cm, only: deallocate_est2cm
+     use estcum, only: deallocate_estcum
+     use estpsi, only: deallocate_estpsi
+     use estsig, only: deallocate_estsig
+     use estsum, only: deallocate_estsum
 
      implicit none
 

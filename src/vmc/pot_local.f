@@ -22,7 +22,7 @@ c  pe from nucleus-nucleus repulsion
       if(iperiodic.eq.0) then
         do i=1,nelec
           do ic=1,ncent+nghostcent
-            if(nloc.eq.0.and.ic.le.ncent) pe=pe-znuc(iwctype(ic))/r_en(i,ic)
+            if(nloc.eq.0.and.ic.le.ncent)  pe=pe-znuc(iwctype(ic))/r_en(i,ic)
           enddo
         enddo
         ij=0

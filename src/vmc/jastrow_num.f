@@ -7,11 +7,13 @@ c **Warning** This routine needs to be upgraded to calculate distances
 c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
 
-      use bparm,   only: nocuspb,nspin2b
-      use distance_mod, only: r_ee,r_en
+      use vmc_mod, only: nmat_dim2
+      use system, only: cent, iwctype, ncent, ncent_tot, nelec, nup
+      use jastrow, only: nspin2, sspin, sspinn, is, scalek, ijas
       use jaspar6, only: c1_jas6
-      use jastrow, only: ijas,is,nspin2,scalek,sspin,sspinn
       use multiple_geo, only: iwf
+      use bparm, only: nocuspb, nspin2b
+      use distance_mod, only: r_en, r_ee
       use precision_kinds, only: dp
       use psi_mod, only: psi,psia,psib
       use system,  only: cent,iwctype,ncent,ncent_tot,nelec,nup

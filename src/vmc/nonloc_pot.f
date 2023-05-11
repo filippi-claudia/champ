@@ -13,6 +13,8 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use readps_gauss, only: getvps_gauss
       use system,  only: iwctype,ncent,ncent_tot,nelec
       use error,   only: fatal_error
+      use vmc_mod, only: nbjx
+      use optwf_parms, only: nparmj
 
       implicit none
 
@@ -23,8 +25,8 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       real(dp), dimension(3, nelec, ncent_tot) :: rshift
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
-      real(dp), dimension(*) :: vpsp_det
-      real(dp), dimension(*) :: dvpsp_dj
+      real(dp), dimension(2, nbjx) :: vpsp_det
+      real(dp), dimension(nparmj, nbjx) :: dvpsp_dj
       real(dp), dimension(ncent_tot, MPS_QUAD, *) :: t_vpsp
 
       if(i_vpsp.gt.0)then
@@ -51,7 +53,6 @@ c local component (highest angular momentum)
           enddo
         enddo
       endif
-      
 c non-local component (division by the Jastrow already in nonloc)
       call nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
       

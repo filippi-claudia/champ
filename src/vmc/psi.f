@@ -44,7 +44,7 @@ c periodic systems.
 
 
 
-      psi=0
+      psi=0.0d0
 
       u=rij
       s=ri+rj
@@ -128,7 +128,7 @@ c-----------------------------------------------------------------------
       call scale_dist(ri,rri,1)
 
       if(ijas.eq.4.or.ijas.eq.5) then
-        psia=a4(1,it,iwf)*rri/(one+a4(2,it,iwf)*rri)-asymp_jasa(it)
+        psia=a4(1,it,iwf)*rri/(one+a4(2,it,iwf)*rri)-asymp_jasa(it,iwf)
         do i=2,norda
           psia=psia+a4(i+1,it,iwf)*rri**i
         enddo
@@ -176,12 +176,12 @@ c-----------------------------------------------------------------------
       call scale_dist(rij,u,1)
 
       if(ijas.eq.4) then
-        psib=sspinn*b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1)
+        psib=sspinn*b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1,iwf)
         do i=2,nordb
           psib=psib+b(i+1,isb,iwf)*u**i
         enddo
        elseif(ijas.eq.5) then
-        psib=b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1)
+        psib=b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1,iwf)
         do i=2,nordb
           psib=psib+b(i+1,isb,iwf)*u**i
         enddo

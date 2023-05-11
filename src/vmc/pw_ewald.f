@@ -30,13 +30,7 @@ c Written by Cyrus Umrigar
       use system,  only: iwctype,ncent,nctype,nctype_tot,znuc
       use tempor,  only: dist_nn
       use test,    only: f,vbare_coul,vbare_jas,vbare_psp
-<<<<<<< HEAD
-=======
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
 
-<<<<<<< HEAD
-=======
->>>>>>> 527a3297fe667268d5926ef83a90a4dceae95564
       implicit none
 
       integer :: i, ict, ifcon, ig, in
