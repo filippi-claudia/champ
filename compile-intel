@@ -1,2 +1,2 @@
-cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_BUILD_TYPE=DEBUG
-cmake --build build -j 4 
+cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+cmake --build build 

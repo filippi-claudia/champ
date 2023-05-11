@@ -208,8 +208,6 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		Install the required packages:
 		```
 		sudo apt install gfortran openmpi-bin libopenmpi-dev gawk libblacs-mpi-dev liblapack-dev
-
-		ulimit -s unlimited
 		```
 		Set-up the build:
 		```
