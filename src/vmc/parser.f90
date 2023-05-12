@@ -1875,6 +1875,7 @@ subroutine parser
 
 #ifdef QMCKL_FOUND
   if (use_qmckl) then
+     if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
      !!create qmckl context
      qmckl_ctx = qmckl_context_create()
      
