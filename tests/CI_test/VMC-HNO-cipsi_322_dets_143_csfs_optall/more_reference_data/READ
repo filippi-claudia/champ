@@ -1,0 +1,5 @@
+You may get unlucky with your test when comparing final energies
+after optimization. Extra data is provided here so you can assess
+whether there is really a concern or not.
+
+A gnuplot script is provided to plot all the data.

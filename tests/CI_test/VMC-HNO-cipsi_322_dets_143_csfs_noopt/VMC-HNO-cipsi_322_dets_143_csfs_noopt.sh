@@ -1,0 +1,45 @@
+echo "VMC nitroxyl cipsi 322 dets energy only"
+
+input="vmc.inp"
+output="vmc"
+
+# unicore test
+N=1
+ReferenceEnergy_1=-26.4910069
+ReferenceError_1=0.0057945
+ReferenceEnergy_2=-26.3410484
+ReferenceError_2=0.0055949
+
+mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
+
+grep "total E" ${output}_core_${N}.out | head -1 > temp_state1_E_err
+grep "total E" ${output}_core_${N}.out | head -2 | tail -1 > temp_state2_E_err
+echo " "
+echo "Core=$N"
+echo "Comparing state 1 energy with reference        (total E = $ReferenceEnergy_1 +-  $ReferenceError_1 ) "
+../../../tools/compare_value.py temp_state1_E_err     "total E"  $ReferenceEnergy_1     $ReferenceError_1
+echo " "
+echo "Comparing state 2 energy with reference        (total E = $ReferenceEnergy_2 +-  $ReferenceError_2 ) "
+../../../tools/compare_value.py temp_state2_E_err     "total E"  $ReferenceEnergy_2     $ReferenceError_2    
+rm -f temp_state1_E_err temp_state2_E_err
+
+
+# Multicore test
+N=2
+ReferenceEnergy_1=-26.4897887
+ReferenceError_1=0.0040837
+ReferenceEnergy_2=-26.3286343
+ReferenceError_2=0.0040254
+
+mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
+
+grep "total E" ${output}_core_${N}.out | head -1 > temp_state1_E_err
+grep "total E" ${output}_core_${N}.out | head -2 | tail -1 > temp_state2_E_err
+echo " "
+echo "Core=$N"
+echo "Comparing state 1 energy with reference        (total E = $ReferenceEnergy_1 +-  $ReferenceError_1 ) "
+../../../tools/compare_value.py temp_state1_E_err     "total E"  $ReferenceEnergy_1     $ReferenceError_1
+echo " "
+echo "Comparing state 2 energy with reference        (total E = $ReferenceEnergy_2 +-  $ReferenceError_2 ) "
+../../../tools/compare_value.py temp_state2_E_err     "total E"  $ReferenceEnergy_2     $ReferenceError_2
+rm -f temp_state1_E_err temp_state2_E_err

@@ -1,0 +1,59 @@
+%module general
+    title           'hno-cas129-cipsi322'
+    pool            './pool/'
+    pseudopot       BFD
+    basis           BFD
+    weights         [ 1.0d0,  1.0d0 ]
+    weights_guiding [ 1.0d0,  1.0d0 ]
+    mode            'vmc_one_mpi1'
+    sr_lambda       [ 1.0d0 ]
+    anorm           [ 1.0d0, 0.32154638 ]
+%endmodule
+
+%module mstates
+    iguiding        2
+    iefficiency     1
+%endmodule
+
+load molecule        $pool/champ_v2_cas129_geom.xyz
+load basis_num_info  $pool/champ_v3_cas129_basis_pointers.bfinfo
+
+load determinants    start.det
+load orbitals        start.orb
+load jastrow         start.jas
+
+load jastrow_der     jastrow.der
+load symmetry        champ_v2_cas129_symmetry.sym
+
+
+%module electrons
+    nup           6
+    nelec         12
+%endmodule
+
+%module optwf
+    ioptwf        1 
+    ioptci        1
+    ioptjas       1
+    ioptorb       1
+    method        'sr_n'
+    multiple_adiag 0
+    ncore         0
+    nextorb       600
+    nblk_max      250
+    no_active     0
+    nopt_iter     5
+    isample_cmat  0
+    energy_tol    0.0
+    sr_tau      0.025
+    sr_eps      0.0005
+    sr_adiag    0.01
+%endmodule
+
+%module blocking_vmc
+    vmc_nstep     20
+    vmc_nblk      250
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+%endmodule
+

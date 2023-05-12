@@ -1,0 +1,15 @@
+# Format of the new basis information file champ_v3 
+# num_ao_per_center, n(s), n(p), n(d), n(f), n(g) 
+# Index of Slm (Range 1 to 35) 
+# Index of column from numerical basis file  
+qmc_bf_info 1 
+24 3 3 2 0 0 
+1 1 1 2 3 4 2 3 4 2 3 4 5 6 7 8 9 10 5 6 7 8 9 10 
+1 2 3 4 4 4 5 5 5 6 6 6 7 7 7 7 7 7 8 8 8 8 8 8 
+24 3 3 2 0 0 
+1 1 1 2 3 4 2 3 4 2 3 4 5 6 7 8 9 10 5 6 7 8 9 10 
+1 2 3 4 4 4 5 5 5 6 6 6 7 7 7 7 7 7 8 8 8 8 8 8 
+9 3 2 0 0 0 
+1 1 1 2 3 4 2 3 4 
+1 2 3 4 4 4 5 5 5 
+end
