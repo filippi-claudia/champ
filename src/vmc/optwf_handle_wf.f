@@ -83,10 +83,10 @@ c-----------------------------------------------------------------------
 c tmp
       write(2,'(f13.8,a15)') scalek(1),' scalek'
       do k=1,nwftypejas
-        if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)') 
-     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             ! Intel version
-c        if (extraj.eq.1) write(temp, '(a,i0,a)') '( jastrows_to_states', nstoj(k), '(i4))'        
-c        if (extraj.eq.1) write(2,temp) (jtos(k,i),i=1,nstoj(k))               ! GNU version
+c        if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)')
+c     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             ! Intel version
+        if (extraj.eq.1) write(temp, '(a,i0,a)') '( jastrows_to_states', nstoj(k), '(i4))'
+        if (extraj.eq.1) write(2,temp) (jtos(k,i),i=1,nstoj(k))               ! GNU version
 
 
         mparmja=2+max(0,norda-1)
@@ -151,10 +151,10 @@ c-----------------------------------------------------------------------
       write(2,'(''lcao '',3i4)') norb+nadorb,nbasis,iwf_fit
 
       do k=1,nwftypeorb
-        if (extrao.eq.1) write(2,'(''orbitals_to_states'',i6,<nstoo(k)>i4)')
-     &                         nstoo(k), (otos(k,i),i=1,nstoo(k))           ! Intel version
-c        if (extrao.eq.1) write(temp, '(a,i0,a)') '( orbitals_to_states', nstoo(k), '(i4))'        
-c        if (extrao.eq.1) write(2,temp) (otos(k,i),i=1,nstoo(k))               ! GNU version
+c        if (extrao.eq.1) write(2,'(''orbitals_to_states'',i6,<nstoo(k)>i4)')
+c     &                         nstoo(k), (otos(k,i),i=1,nstoo(k))           ! Intel version
+        if (extrao.eq.1) write(temp, '(a,i0,a)') '( orbitals_to_states', nstoo(k), '(i4))'
+        if (extrao.eq.1) write(2,temp) (otos(k,i),i=1,nstoo(k))               ! GNU version
 
         do i=1,norb+nadorb
           write(2,'(1000e20.8)') (coef(j,i,k)/scalecoef,j=1,nbasis)
@@ -828,7 +828,7 @@ c-----------------------------------------------------------------------
 
 c     if(ioptorb.eq.0) return
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
-         
+
         if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftypeorb))
         do k=1, nwftypeorb
           do i=1,norb
@@ -1182,7 +1182,7 @@ c-----------------------------------------------------------------------
       scalem=-scalek(1)
 
       if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
-              
+
         do k=1,nwftypejas
           do ict=1,nctype
             do i=1,nparma(ict)
@@ -1208,7 +1208,7 @@ c-----------------------------------------------------------------------
         enddo
 
       else
-              
+
         do ict=1,nctype
           do i=1,nparma(ict)
             if(iwjasa(i,ict).eq.2.and.a4(2,ict,1).le.scalem) iflaga=1
@@ -1412,10 +1412,10 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
           if (norbterm /= 0) call dcopy(norbterm,orb_o(1,istate),1,sr_o(ii+1,l,istate),1)
           elocal(l,istate)=energy(istate)
           wtg(l,istate)=wt(istate)
-          
+
           ii=ijasci+norbterm
           sr_o(ii+1,l,istate)=psid(istate)
-          sr_o(ii+2,l,istate)=wt_sqrt(istate) 
+          sr_o(ii+2,l,istate)=wt_sqrt(istate)
         enddo
       else !for lin_d or sr_n (in mix_n)
         if(nparmj /= 0) call dcopy(nparmj,gvalue(1,1),1,sr_o(1,l,1),1)
