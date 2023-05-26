@@ -416,8 +416,8 @@ module trexio_read_data
         if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot))
         if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot), source=0)
         if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctype_tot))
-        if (.not. allocated(ao_frequency)) allocate (ao_frequency(35), source=0)    ! ao upto g orbitals
-        if (.not. allocated(unique_index)) allocate (unique_index(35), source=0)    ! ao upto g orbitals
+        if (.not. allocated(ao_frequency)) allocate (ao_frequency(nbasis), source=0)    ! ao upto g orbitals
+        if (.not. allocated(unique_index)) allocate (unique_index(nbasis), source=0)    ! ao upto g orbitals
         if (.not. allocated(res)) allocate (res(basis_num_shell), source=0)                       ! shells upto g orbitals
 
         do i = 1, ncent_tot
@@ -716,11 +716,8 @@ module trexio_read_data
         ! Get the number of shells per atom (information needed to reshuffle AOs)
 
         allocate(atom_index(basis_num_shell))
-        allocate(nshells_per_atom(basis_num_shell))
+        allocate(nshells_per_atom(basis_num_shell), source=0)
         allocate(shell_index_atom(basis_num_shell))
-
-
-
 
         call unique_elements(basis_num_shell, basis_nucleus_index, atom_index, count, nshells_per_atom, shell_index_atom)
 
@@ -734,8 +731,8 @@ module trexio_read_data
 
         ! Now get the number of primitives per atom and their indices
         ! also obtain the number of primitives per shell for all the atoms
-        allocate(nprims_per_atom(basis_num_prim))
-        allocate(prim_index_atom(basis_num_prim))
+        allocate(nprims_per_atom(ncent_tot), source=0)
+        allocate(prim_index_atom(ncent_tot))
         allocate(shell_prim_correspondence(basis_num_shell))
 
         prim_index_atom(1) = 1

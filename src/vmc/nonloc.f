@@ -390,6 +390,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use grid3d_orbitals, only: lagrange_mose,spline_mo
       use grid3dflag, only: i3dlagorb,i3dsplorb
       use multiple_geo, only: iwf
+      use numbas2, only: ibas0,ibas1
       use optwf_control, only: ioptorb
       use optwf_control, only: method
       use orbval,  only: ddorb,nadorb
@@ -408,7 +409,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 #ifdef QMCKL_FOUND
       use qmckl_data
 #endif
-
       
       implicit none
 
@@ -425,13 +425,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(3) :: dtmp
       real(dp) :: ddtmp
 
-
 #ifdef QMCKL_FOUND
       real(dp), allocatable :: mo_qmckl(:,:)
       integer :: rc
       integer*8 :: n8
 #endif  
-      
       
       nadorb_sav=nadorb
 
@@ -500,6 +498,7 @@ c get basis functions for electron iel
                 
              deallocate(mo_qmckl)
              
+! To fix - QMCkl does not give da_orbitals
              if(iforce_analy.gt.0) then
                 do iq=1,nxquad
 
@@ -565,14 +564,23 @@ c get basis functions for electron iel
                   da_orbn(k,ic,iorb,iq)=0.d0
                 enddo
               enddo
+#ifdef VECTORIZATION
+              do ic=1,ncent
+                do k=1,3
+                  do m=ibas0(ic),ibas1(ic)
+                    da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                  enddo
+                enddo
+              enddo
+#else
               do m0=1,n0_nbasis(iq)
                 m=n0_ibasis(m0,iq)
                 ic=n0_ic(m0,iq)
-                ii=iwctype(ic)
                 do k=1,3
                   da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
                 enddo
               enddo
+#endif
               do k=1,3
                 dorbn(iorb,iq,k)=0.d0
               enddo
