@@ -85,9 +85,8 @@ c tmp
       do k=1,nwftypejas
 c        if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)')
 c     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             ! Intel version
-        if (extraj.eq.1) write(temp, '(a,i0,a)') '( jastrows_to_states', nstoj(k), '(i4))'
-        if (extraj.eq.1) write(2,temp) (jtos(k,i),i=1,nstoj(k))               ! GNU version
-
+        if (extraj.eq.1) write(temp,'(a,i0,a,a)') '(a,1x,i0,1x,',nstoj(k),'(1x,i0,1x)',')'
+        if (extraj.eq.1) write(2,temp) "jastrows_to_states",nstoj(k),(jtos(k,i),i=1,nstoj(k)) ! GNU version
 
         mparmja=2+max(0,norda-1)
         mparmjb=2+max(0,nordb-1)
@@ -153,8 +152,9 @@ c-----------------------------------------------------------------------
       do k=1,nwftypeorb
 c        if (extrao.eq.1) write(2,'(''orbitals_to_states'',i6,<nstoo(k)>i4)')
 c     &                         nstoo(k), (otos(k,i),i=1,nstoo(k))           ! Intel version
-        if (extrao.eq.1) write(temp, '(a,i0,a)') '( orbitals_to_states', nstoo(k), '(i4))'
-        if (extrao.eq.1) write(2,temp) (otos(k,i),i=1,nstoo(k))               ! GNU version
+
+        if (extrao.eq.1) write(temp,'(a,i0,a,a)') '(a,1x,i0,1x,',nstoo(k),'(1x,i0,1x)',')'
+        if (extrao.eq.1) write(2,temp) "orbitals_to_states",nstoo(k),(otos(k,i),i=1,nstoo(k)) ! GNU version
 
         do i=1,norb+nadorb
           write(2,'(1000e20.8)') (coef(j,i,k)/scalecoef,j=1,nbasis)
