@@ -73,7 +73,7 @@ subroutine parser
       use mmpol_fdc, only: a_cutoff,rcolm
       use mmpol_mod, only: mmpolfile_chmm,mmpolfile_sites
       use mmpol_parms, only: chmm
-      use mpiconf, only: wid
+      use mpiconf, only: wid, idtask
       use mpitimer, only: elapsed_time
       use mstates3, only: iweight_g,weights_g
       use mstates_ctrl, only: iefficiency,iguiding,nstates_psig
@@ -142,7 +142,7 @@ subroutine parser
       use pseudo_mod, only: MPS_QUAD
       use pw_read, only: read_orb_pw_tm
       use qua,     only: nquad,wq,xq,yq,zq
-      use random_mod, only: setrn
+      use random_mod, only: setrn, jumprn
       use read_bas_num_mod, only: read_bas_num,readps_gauss
       use sa_weights, only: iweight,nweight,weights
       use scale_dist_mod, only: set_scale_dist
@@ -255,13 +255,13 @@ subroutine parser
   character(len=20)          :: fmt
   character(len=32)          :: keyname
   character(len=10)          :: eunit
-  character(len=16)          :: cseed
-  integer                    :: irn(4), cent_tmp(3), nefpterm, nstates_g
+  character(len=32)          :: cseed
+  integer                    :: irn(8), cent_tmp(3), nefpterm, nstates_g
 !  integer, allocatable       :: anorm(:) ! dimensions = nbasis
   real(dp), allocatable       :: anorm(:) ! dimensions = nbasis
 
 ! local counter variables
-  integer                    :: i,j,k, iostat
+  integer                    :: i,j,k, n, iostat
   integer                    :: ic, iwft, istate, imax
   type(atom_t)               :: atoms
   character(len=2), allocatable   :: unique(:)
@@ -272,7 +272,7 @@ subroutine parser
 
 #if defined(QMCKL_FOUND)
   integer, allocatable :: keep(:)
-  integer :: rc
+  integer :: rc 
   integer*8 :: n8
   character*(1024) :: err_message = ''
   integer*8 :: norb_qmckl
@@ -298,7 +298,7 @@ subroutine parser
   nwftypeorb  = fdf_get('nwftypeorb', 1)
   iperiodic   = fdf_get('iperiodic', 0)
   ibasis      = fdf_get('ibasis', 1)
-  cseed       = fdf_string('seed', "1837465927472523")
+  cseed       = fdf_string('seed', "18123437465549275475255231234865")
   ipr         = fdf_get('ipr', -1)
   eunit       = fdf_get('unit', 'Hartrees')
   !hb          = fdf_get('mass', 0.5d0) ! Always 0.5
@@ -595,11 +595,14 @@ subroutine parser
     call fatal_error('INPUT: VMC for periodic system -> run dmc/dmc.mov1 with idmc < 0')
 
   write(ounit,*)
-  if (wid) read(cseed,'(4i4)') irn
+  if (wid) read(cseed,'(8i4)') irn
   call bcast(irn)
 
-  write(ounit,'(a20,t40,4i4)') " Random number seeds", irn
+  write(ounit,'(a25,t40,8i5)') " Random number seed root", irn
   call setrn(irn)
+  do n=1,idtask ! unique 2^128 non-overlapping sequences for each process
+    call jumprn() 
+  end do
 
   write(ounit,*)
   write(ounit, string_format) " All energies are in units of ", eunit

@@ -353,7 +353,7 @@ if (MPI_Fortran_FOUND)
   # Compile and link executable:
   # --------------------------------------------------------------------
   add_library(rng OBJECT
-    xoroshiro128starstar.c)
+    xoroshiro256starstar.c)
   
   target_compile_options(rng
     PUBLIC
