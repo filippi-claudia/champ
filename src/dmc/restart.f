@@ -71,7 +71,7 @@
       integer :: ndetx, ndnx, nelecx, newghostypex
       integer :: nghostcentx, nprock, nq_id, num
       integer :: nupx, nwalk_id
-      integer, dimension(4, 0:nproc) :: irn
+      integer, dimension(8, 0:nproc) :: irn
       integer, dimension(nctype)      :: nsx,npx,ndx,nfx,ngx
       real(dp) :: different, eest_id
       real(dp) :: eigv_id, ff_id, fmt, fprod_id
@@ -137,7 +137,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i),
      &wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),taucum(i),
      &i=1,nforce)
-      read(10) ((irn(i,j),i=1,4),j=0,nproc-1)
+      read(10) ((irn(i,j),i=1,8),j=0,nproc-1)
       call setrn(irn(1,idtask))
       read(10) hbx
       read(10) taux,rttau,idmc

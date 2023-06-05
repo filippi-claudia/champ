@@ -58,9 +58,9 @@ c job where it left off
       integer :: i, ib, ic, id, ierr
       integer :: ifr, irequest, iw, j
       integer :: k, nscounts
-      integer, dimension(4, 0:nproc) :: irn
+      integer, dimension(8, 0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(4, 0:nproc) :: irn_tmp
+      integer, dimension(8, 0:nproc) :: irn_tmp
 
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
@@ -78,7 +78,7 @@ c job where it left off
 
       call savern(irn(1,idtask))
 
-      nscounts=4
+      nscounts=8
       call mpi_gather(irn(1,idtask),nscounts,mpi_integer
      &,irn_tmp,nscounts,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
@@ -178,7 +178,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i)
      &,wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),taucum(i)
      &,i=1,nforce)
-      write(10) ((irn_tmp(i,j),i=1,4),j=0,nproc-1)
+      write(10) ((irn_tmp(i,j),i=1,8),j=0,nproc-1)
       write(10) hb
       write(10) tau,rttau,idmc
       write(10) nelec,dmc_nconf,nforce
