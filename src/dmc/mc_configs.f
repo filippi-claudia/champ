@@ -115,7 +115,7 @@ c-----------------------------------------------------------------------
       integer :: i, iblk, ic, id, ii
       integer :: index, ipass, iwalk, j
       integer :: jj
-      integer, dimension(4) :: irn
+      integer, dimension(8) :: irn
       real(dp) :: rnd
 
       character(len=25) fmt

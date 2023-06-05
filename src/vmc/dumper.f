@@ -133,9 +133,9 @@ c-----------------------------------------------------------------------
       integer :: ifr, istate, j, k
       integer :: nelecx, nforcex, nlocx, nproco
       integer :: nq_id, nqd_id, nqx, nscounts
-      integer, dimension(4,0:nproc) :: irn
+      integer, dimension(8,0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(4,0:nproc) :: irn_tmp
+      integer, dimension(8,0:nproc) :: irn_tmp
       integer, dimension(0:nproc) :: ircounts
       integer, dimension(0:nproc) :: idispls
       real(dp) :: rnd, wq_id, x_id, xq_id, yq_id
