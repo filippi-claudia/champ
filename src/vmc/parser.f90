@@ -158,6 +158,9 @@ subroutine parser
       use system,  only: symbol,znuc
       use verify_orbitals_mod, only: verify_orbitals
       use vmc_mod, only: mterms,norb_tot
+      use vmc_mod, only: nwftypejas,stoj,jtos,nstoj_tot,nstojmax,extraj
+      use vmc_mod, only: nwftypeorb,stoo,otos,nstoo_tot,nstoomax,extrao
+      use vmc_mod, only: nbjx,stobjx,bjxtoj,bjxtoo,nstoj_tot,nstoo_tot
       use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
 #if defined(TREXIO_FOUND)
@@ -169,10 +172,6 @@ subroutine parser
       use trexio_read_data, only: read_trexio_symmetry_file
       use trexio_read_data, only: write_trexio_basis_num_info_file
       use verify_orbitals_mod, only: verify_orbitals
-      use vmc_mod, only: mterms,norb_tot
-      use vmc_mod, only: nwftypejas,stoj,jtos,nstoj_tot,nstojmax,extraj
-      use vmc_mod, only: nwftypeorb,stoo,otos,nstoo_tot,nstoomax,extrao
-      use vmc_mod, only: nbjx,stobjx,bjxtoj,bjxtoo,nstoj_tot,nstoo_tot
       use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
       use contrl_file, only: backend

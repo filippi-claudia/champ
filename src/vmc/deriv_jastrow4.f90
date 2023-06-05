@@ -477,7 +477,6 @@
    57 continue
       enddo
 
-<<<<<<< HEAD:src/vmc/deriv_jastrow4.f
    58 fsumo=fsumo+fso(i,j)
       fjo(1,i)=fjo(1,i)+fijo(1,i,j)
       fjo(2,i)=fjo(2,i)+fijo(2,i,j)

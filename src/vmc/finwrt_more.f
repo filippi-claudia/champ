@@ -19,7 +19,7 @@ c written by Claudia Filippi
       integer :: iab, ierr, istate, o
       real(dp) :: passes
 
-      passes=dfloat(iblk*vmc_nstep)
+      passes=dble(iblk*vmc_nstep)
       
       do istate=1, nstates
         o=stoo(istate)

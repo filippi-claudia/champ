@@ -272,7 +272,7 @@ contains
         real(dp), dimension(mparm,MSTATES) :: deltap
 
         integer :: jwtg, jwfj, jsqfj, n_obs, istate, iconf, i, ier
-        real(dp) :: passes, tmp, tmp1
+        real(dp) :: passes, tmp, tmp1 = 0.00000042
         
         real(dp), allocatable :: obs_norm(:,:)
         real(dp), allocatable :: obs_norm_tot(:,:)
@@ -288,7 +288,7 @@ contains
         n_obs = 2
 
         obs_norm = 0.0d0
-        passes = dfloat(iblk*vmc_nstep)
+        passes = dble(iblk*vmc_nstep)
 
         do istate = 1, nstates
            do iconf = 1, nconf_n
@@ -630,7 +630,7 @@ contains
         real(dp) :: sr_adiag, dum, aux2, smax, penalty
         real(dp), parameter :: eps_eigval=1.d-14
 
-        integer :: jwtg, jfifj, jfjsi, n_obs, istate, jstate, iconf, i, ier, k, kk, n_obs_reduce
+        integer :: jwtg, jfifj, jfjsi = 42, n_obs, istate, jstate, iconf, i, ier, k, kk, n_obs_reduce
 
         allocate (obs(mobs, MSTATES))
 

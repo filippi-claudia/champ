@@ -146,7 +146,7 @@ c-----------------------------------------------------------------------
       subroutine acues1(wtg)
       implicit none
       real(dp), dimension(MSTATES) :: wtg
-      integer :: istate
+      integer :: istate, k
 c statistical fluctuations without blocking
       do istate=1,nstates
         ecum1(istate)=ecum1(istate)+esum1(istate)*wtg(istate)

@@ -20,7 +20,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: index, iter, iwf_fit
-      character*40 filetype,wf,itn
+      character(len=40) filetype,wf,itn
 
       if(idtask.ne.0) return
 
@@ -71,8 +71,8 @@ c-----------------------------------------------------------------------
 
       integer :: i, isp, ict, index, iwf_fit, mparmja, k
       integer :: mparmjb, mparmjc
-      character*50 fmt, temp
-      character*40 filename,filetype
+      character(len=50) fmt, temp
+      character(len=40) filename,filetype
 
       if(ioptjas.eq.0) return
 
@@ -92,7 +92,7 @@ c     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             
         mparmjb=2+max(0,nordb-1)
         mparmjc=nterms4(nordc)
         if(mparmja.gt.0) then
-          write(fmt,'(''(''i2,''f13.8,a28)'')') mparmja
+          write(fmt,'(''('',i2,''f13.8,a28)'')') mparmja
         else
           write(fmt,'(''(a28)'')')
         endif
@@ -101,7 +101,7 @@ c     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             
         enddo
 
         if(mparmjb.gt.0) then
-          write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjb
+          write(fmt,'(''('',i2,''f13.8,a28)'')') mparmjb
         else
           write(fmt,'(''(a28)'')')
         endif
@@ -110,7 +110,7 @@ c     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             
         enddo
 
         if(mparmjc.gt.0) then
-          write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjc
+          write(fmt,'(''('',i2,''f13.8,a28)'')') mparmjc
         else
           write(fmt,'(''(a28)'')')
         endif
@@ -139,7 +139,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, index, iwf_fit, j, k
-      character*40 filename,filetype, temp
+      character(len=40) filename,filetype, temp
 
       ! call resize_tensor(coef, norb+nadorb, 2)
 
@@ -179,7 +179,7 @@ c-----------------------------------------------------------------------
 
       integer :: i, index, istate, iwf_fit, j
       integer :: k, nmap, nptr, nterm
-      character*40 filename,filetype
+      character(len=40) filename,filetype
 
       if(ioptci.eq.0) return
 
@@ -290,6 +290,8 @@ c-----------------------------------------------------------------------
       use bparm,   only: nspin2b
       use jastrow, only: norda,nordb,nordc
       use jastrow, only: a4,b,c,nordj1
+      use save_mod,only: mparmja, mparmjb, mparmjc
+      use save_mod,only: a4_save, b_save, c_save
       use multiple_geo, only: nwftype
       use precision_kinds, only: dp
       use system, only: nctype, nctype_tot
@@ -301,17 +303,12 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      integer :: i, isp, iadiag, ict, mparmja, mparmjb
-      integer :: mparmjc, k
-      real(dp), allocatable, save :: a4_save(:,:,:)
-      real(dp), allocatable, save :: b_save(:,:,:)
-      real(dp), allocatable, save :: c_save(:,:,:)
+      integer :: i, isp, iadiag, ict, k
 
       ! dimension a4_save(nordj1,nctype_tot,MWF),b_save(nordj1,2,MWF),
       ! dimension c_save(83,nctype_tot,MWF)
       ! save a4_save,b_save,c_save
 
-      save mparmja,mparmjb,mparmjc
 
       !if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftype))
       !if(.not.allocated(b_save)) allocate(b_save(nordj1,2,nwftype))
@@ -367,10 +364,19 @@ c Save parameters corresponding to run generating hessian
         enddo
 
       endif
+      end subroutine
 
-      return
-
-      entry restore_jastrow(iadiag)
+      subroutine restore_jastrow(iadiag)
+      use bparm, only: nspin2b
+      use jastrow, only: b, c, a4, norda, nordb, nordc, nordj1
+      use save_mod,only: mparmja, mparmjb, mparmjc
+      use save_mod,only: a4_save, b_save, c_save
+      use system, only: nctype, nctype_tot
+      use multiple_geo, only: nwftype
+      use optwf_control, only: method
+      use vmc_mod, only: nwftypejas
+      implicit none
+      integer :: i, isp, iadiag, ict, k
 
       if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
         if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftypejas))
@@ -432,13 +438,13 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: norb_tot, nwftypeorb
       use coefs, only: nbasis
       use slater, only: norb, coef
+      use save_mod, only: coef_save
       use multiple_geo, only: nwftype
       use optwf_control, only: method
 
       implicit none
 
       integer :: i, iadiag, j, k
-      real(dp), allocatable, save :: coef_save(:,:,:)
 
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb_tot, nwftypeorb))
@@ -467,9 +473,17 @@ c-----------------------------------------------------------------------
 
       endif
 
-      return
+      end subroutine
 
-      entry restore_lcao(iadiag)
+      subroutine restore_lcao(iadiag)
+      use coefs, only: nbasis
+      use optwf_control, only: method
+      use multiple_geo, only: nwftype
+      use save_mod, only: coef_save
+      use slater, only: norb, coef
+      use vmc_mod, only: norb_tot, nwftypeorb
+      implicit none
+      integer :: i, iadiag, j, k
 
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb_tot, nwftypeorb))
@@ -502,6 +516,7 @@ c-----------------------------------------------------------------------
       use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
       use mstates_mod, only: MSTATES
       use precision_kinds, only: dp
+      use save_mod, only: cdet_save, ccsf_save
       use set_input_data, only: multideterminants_define
       use slater,  only: cdet,ndet
 
@@ -509,8 +524,6 @@ c-----------------------------------------------------------------------
 
       integer :: i, iadiag, icsf, j, k
       integer :: kx
-      real(dp), ALLOCATABLE, save :: cdet_save(:,:)
-      real(dp), ALLOCATABLE, save :: ccsf_save(:,:)
 
       if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
       if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
@@ -530,9 +543,18 @@ c-----------------------------------------------------------------------
        enddo
       enddo
 
-      return
+      end subroutine
 
-      entry restore_ci(iadiag)
+      subroutine restore_ci(iadiag)
+      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
+      use mstates_mod, only: MSTATES
+      use save_mod, only: cdet_save, ccsf_save
+      use set_input_data, only: multideterminants_define
+      use slater,  only: cdet,ndet
+      implicit none 
+      integer :: i, iadiag, icsf, j, k
+      integer :: kx
+
       if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
       if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
 
@@ -712,20 +734,18 @@ c-----------------------------------------------------------------------
       use jastrow, only: a4,b,c,nordj1
       use multiple_geo, only: nwftype
       use precision_kinds, only: dp
+      use save_mod, only: a4_best, b_best, c_best
+      use save_mod, only:  mparmja_best, mparmjb_best, mparmjc_best
       use system,  only: nctype,nctype_tot
 
       implicit none
 
-      integer :: i, isp, ict, mparmja, mparmjb, mparmjc
-      real(dp), allocatable, save :: a4_best(:,:,:)
-      real(dp), allocatable, save :: b_best(:,:,:)
-      real(dp), allocatable, save :: c_best(:,:,:)
+      integer :: i, isp, ict
 
       ! dimension a4_best(nordj1,nctype_tot,MWF),b_best(nordj1,2,MWF),
       ! dimension c_best(83,nctype_tot,MWF)
       ! save a4_best,b_best,c_best
 
-      save mparmja,mparmjb,mparmjc
 
       if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
       if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftype))
@@ -733,46 +753,56 @@ c-----------------------------------------------------------------------
 
 c Save parameters corresponding to run generating hessian
 
-      mparmja=2+max(0,norda-1)
-      mparmjb=2+max(0,nordb-1)
-      mparmjc=nterms4(nordc)
+      mparmja_best=2+max(0,norda-1)
+      mparmjb_best=2+max(0,nordb-1)
+      mparmjc_best=nterms4(nordc)
 
       do ict=1,nctype
-        do i=1,mparmja
+        do i=1,mparmja_best
           a4_best(i,ict,1)=a4(i,ict,1)
         enddo
       enddo
       do isp=1,nspin2b
-        do i=1,mparmjb
+        do i=1,mparmjb_best
           b_best(i,isp,1)=b(i,isp,1)
         enddo
       enddo
       do ict=1,nctype
-        do i=1,mparmjc
+        do i=1,mparmjc_best
           c_best(i,ict,1)=c(i,ict,1)
         enddo
       enddo
+      
+      end subroutine
 
-      return
+      subroutine restore_jastrow_best
+      use bparm,   only: nspin2b
+      use jastrow, only: a4,b,c,nordj1
+      use multiple_geo, only: nwftype
+      use save_mod, only: a4_best, b_best, c_best
+      use save_mod, only:  mparmja_best, mparmjb_best, mparmjc_best
+      use system,  only: nctype,nctype_tot
+      implicit none
 
-      entry restore_jastrow_best
+      integer :: i, isp, ict
+
       if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
       if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftype))
       if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
 
 c Restore parameters corresponding to run generating hessian
       do ict=1,nctype
-        do i=1,mparmja
+        do i=1,mparmja_best
           a4(i,ict,1)=a4_best(i,ict,1)
         enddo
       enddo
       do isp=1,nspin2b
-        do i=1,mparmjb
+        do i=1,mparmjb_best
           b(i,isp,1)=b_best(i,isp,1)
         enddo
       enddo
       do ict=1,nctype
-        do i=1,mparmjc
+        do i=1,mparmjc_best
           c(i,ict,1)=c_best(i,ict,1)
         enddo
       enddo
@@ -788,13 +818,13 @@ c-----------------------------------------------------------------------
       use vmc_mod, only: norb_tot, nwftypeorb
       use optwf_control, only: method
       use coefs, only: nbasis
+      use save_mod, only: coef_best
       use slater, only: norb, coef
       use multiple_geo, only: nwftype
 
       implicit none
 
       integer :: i, j, k
-      real(dp), allocatable, save :: coef_best(:,:,:)
 
       !if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftype))
       ! dimension coef_best(nbasis,norb,MWF)
@@ -822,9 +852,18 @@ c-----------------------------------------------------------------------
 
       endif
 
-      return
+      end subroutine
 
-      entry restore_lcao_best
+      subroutine restore_lcao_best
+      use coefs, only: nbasis
+      use multiple_geo, only: nwftype
+      use optwf_control, only: method
+      use save_mod, only: coef_best
+      use slater, only: norb, coef
+      use vmc_mod, only: norb_tot, nwftypeorb
+      implicit none
+
+      integer :: i, j, k
 
 c     if(ioptorb.eq.0) return
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
@@ -857,14 +896,13 @@ c-----------------------------------------------------------------------
       use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
       use mstates_mod, only: MSTATES
       use precision_kinds, only: dp
+      use save_mod, only: cdet_best, ccsf_best
       use set_input_data, only: multideterminants_define
       use slater,  only: cdet,ndet
 
       implicit none
 
       integer :: i, icsf, j, k, kx
-      real(dp), ALLOCATABLE, save :: cdet_best(:,:)
-      real(dp), ALLOCATABLE, save :: ccsf_best(:,:)
 
       if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
       if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
@@ -884,9 +922,18 @@ c-----------------------------------------------------------------------
        enddo
       enddo
 
-      return
+      end subroutine
 
-      entry restore_ci_best
+      subroutine restore_ci_best
+      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
+      use mstates_mod, only: MSTATES
+      use save_mod, only: cdet_best, ccsf_best
+      use set_input_data, only: multideterminants_define
+      use slater,  only: cdet,ndet
+      implicit none
+
+      integer :: i, icsf, j, k, kx
+
       if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
       if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
 
@@ -1273,11 +1320,9 @@ c-----------------------------------------------------------------------
       use ci000, only: nciterm
       use contrl_file,    only: ounit
       use orbval, only: nadorb
+      use save_mod, only: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav, nadorb_sav
       implicit none
 
-      integer :: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav, nadorb_sav
-
-      save nparmj_sav,norbterm_sav,nciterm_sav,nparmd_sav,nreduced_sav, nadorb_sav
 
       nparmj_sav=nparmj
       norbterm_sav=norbterm
@@ -1288,9 +1333,17 @@ c-----------------------------------------------------------------------
       nadorb_sav=nadorb
 
       write(ounit,'(''Saved max number of parameters, nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
-      return
+      end subroutine
 
-      entry set_nparms
+      subroutine set_nparms
+      use ci000, only: nciterm
+      use contrl_file,    only: ounit
+      use optorb_cblock, only: norbterm, nreduced
+      use optwf_control, only: ioptci, ioptjas, ioptorb
+      use optwf_parms, only: nparmd, nparmj
+      use orbval, only: nadorb
+      use save_mod, only: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav, nadorb_sav
+      implicit none
 
       nparmj=nparmj_sav
       nparmd=nparmd_sav
