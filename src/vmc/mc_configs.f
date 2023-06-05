@@ -27,30 +27,37 @@
 
       integer :: i, ic, icharge_system, id, ierr
       integer :: index, k, l, ntotal_sites
-      integer, dimension(8) :: irn
+      integer, dimension(4) :: irn
       integer, dimension(ncent_tot) :: nsite
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(8) :: irn_temp
+      integer, dimension(4) :: irn_temp
       real(dp) :: err, rnd
       character*20 filename
 
 c set the random number seed differently on each processor
 c call to setrn must be in read_input since irn local there
-c 
-c Victor: 2023 In the parser the seed is now set differently on each processor
-c         thus doing it here again should not be necessary
       if(vmc_irstar.ne.1) then
 
-c       if(nproc.gt.1) then
-c         do id=1,(3*nelec)*idtask
-c           rnd=random_dp()
-c         enddo
-c         call savern(irn)
-c         do i=1,8
-c           irn(i)=mod(irn(i)+int(random_dp()*idtask*9999),9999)
-c         enddo
-c         call setrn(irn)
-c       endif
+c         if(idtask.ne.0) then
+c          call mpi_isend(irn,4,mpi_integer,0,1,MPI_COMM_WORLD,irequest,ierr)
+c         else
+c          write(ounit,*) 0, irn
+c          do 1 id=1,nproc-1
+c            call mpi_recv(irn_temp,4,mpi_integer,id,1,MPI_COMM_WORLD,istatus,ierr)
+c            write(ounit,*) id, irn_temp
+c   1      continue
+c         endif
+
+        if(nproc.gt.1) then
+          do id=1,(3*nelec)*idtask
+            rnd=random_dp()
+          enddo
+          call savern(irn)
+          do i=1,4
+            irn(i)=mod(irn(i)+int(random_dp()*idtask*9999),9999)
+          enddo
+          call setrn(irn)
+        endif
 
 c check sites flag if one gets initial configuration from sites routine
         if (vmc_isite.eq.1) goto 20

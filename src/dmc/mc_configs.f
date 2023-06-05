@@ -23,7 +23,7 @@
       integer :: i, iblk, ic, id, ii
       integer :: index, ipass, iwalk, j
       integer :: jj, ngfmc
-      integer, dimension(8) :: irn
+      integer, dimension(4) :: irn
       real(dp) :: rnd
 
       character*25 fmt
@@ -44,22 +44,18 @@
       endif
 
 c set the random number seed, setrn already called in read_input
-
-c Victor: 2023 In the parser the seed is now set differently on each processor
-c         thus doing it here again should not be necessary
-
-c     if(dmc_irstar.ne.1) then
-c       if(nproc.gt.1) then
-c         do id=1,(3*nelec)*idtask
-c           rnd=random_dp()
-c         enddo
-c         call savern(irn)
-c         do i=1,8
-c           irn(i)=mod(irn(i)+int(random_dp()*idtask*9999),9999)
-c         enddo
-c         call setrn(irn)
-c       endif
-c     endif
+      if(dmc_irstar.ne.1) then
+        if(nproc.gt.1) then
+          do id=1,(3*nelec)*idtask
+            rnd=random_dp()
+          enddo
+          call savern(irn)
+          do i=1,4
+            irn(i)=mod(irn(i)+int(random_dp()*idtask*9999),9999)
+          enddo
+          call setrn(irn)
+        endif
+      endif
 
       if (dmc_irstar.eq.1) then
         open(unit=10,status='old',form='unformatted',file='restart_dmc')

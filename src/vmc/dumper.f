@@ -62,9 +62,9 @@ c job where it left off
       integer :: ifr, istate, j, k
       integer :: nelecx, nforcex, nlocx, nproco
       integer :: nq_id, nqd_id, nqx, nscounts
-      integer, dimension(8,0:nproc) :: irn
+      integer, dimension(4,0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(8,0:nproc) :: irn_tmp
+      integer, dimension(4,0:nproc) :: irn_tmp
       integer, dimension(0:nproc) :: ircounts
       integer, dimension(0:nproc) :: idispls
       real(dp) :: rnd, wq_id, x_id, xq_id, yq_id
@@ -75,10 +75,10 @@ c job where it left off
       rewind 10
 
       do i=0,nproc-1
-        ircounts(i)=8
-        idispls(i)=i*8
+        ircounts(i)=4
+        idispls(i)=i*4
       enddo
-      idispls(nproc)=8*nproc
+      idispls(nproc)=4*nproc
       nscounts=ircounts(idtask)
 
       call savern(irn(1,idtask))
@@ -101,7 +101,7 @@ c    &  ,3,MPI_COMM_WORLD,irequest,ierr)
 c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
        else
         write(10) nproc
-        write(10) ((irn_tmp(i,j),i=1,8),j=0,nproc-1)
+        write(10) ((irn_tmp(i,j),i=1,4),j=0,nproc-1)
         write(10) nelec,nforce,nloc
         write(10) ((xold(k,i),k=1,3),i=1,nelec)
         if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
@@ -137,7 +137,7 @@ c-----------------------------------------------------------------------
       if(nproco.ne.nproc) write(ounit,'(''Warning: different number of processors'',/
      & ,9x,''old number of processors'',i3,/,9x,''continuing with'',i3,'' processors'')')
      & nproco,nproc
-      read(10) ((irn(i,j),i=1,8),j=0,nproco-1)
+      read(10) ((irn(i,j),i=1,4),j=0,nproco-1)
       if(idtask.le.nproco-1) call setrn(irn(1,idtask))
       read(10) nelecx,nforcex,nlocx
       if (nelecx.ne.nelec) call fatal_error('STARTR: nelec')
