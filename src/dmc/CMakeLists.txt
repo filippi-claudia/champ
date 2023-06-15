@@ -40,6 +40,37 @@ formatFortran("${DMC_SOURCE}") # Set Fixed format property
 
 # --------------------------------------------------------------------
 
+if (HDF5_FOUND)
+  list(APPEND DMC_SOURCE
+    ${CMAKE_CURRENT_SOURCE_DIR}/dmc_store_hdf5.f90)
+endif()
+
+set_property(
+  SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/dmc_store_hdf5.f90
+  APPEND
+  PROPERTY COMPILE_DEFINITIONS
+  COMPILER=\"${CMAKE_Fortran_COMPILER}\"
+  COMPILER_VERSION=\"${CMAKE_Fortran_COMPILER_VERSION}\"
+  GIT_HEAD_BRANCH=\"${GIT_HEAD_BRANCH}\"
+  GIT_REVISION_HASH=\"${GIT_REVISION_HASH}\"
+  HDF5_VERSION=\"${HDF5_VERSION}\"
+)
+
+set_property(
+  SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/dmc.f
+  APPEND
+  PROPERTY COMPILE_DEFINITIONS
+  HDF5_FOUND=\"${HDF5_FOUND}\"
+  )
+
+# Compile these two files with hdf5 flags if HDF5 is found
+set_source_files_properties(
+  ${CMAKE_CURRENT_SOURCE_DIR}/dmc_store_hdf5.f90
+  APPEND
+  PROPERTY
+  COMPILE_FLAGS "-lhdf5_fortran -lhdf5")
+
+
 # executable dependencies
 add_executable(dmc.mov1
   $<TARGET_OBJECTS:shared_modules>
@@ -53,6 +84,7 @@ target_include_directories(dmc.mov1
   PUBLIC
   ${CMAKE_BINARY_DIR}/src/vmc
   ${CMAKE_BINARY_DIR}/src/module
+  ${HDF5_INCLUDE_DIRS}
   )
 
 # compilation

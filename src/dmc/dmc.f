@@ -29,7 +29,9 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use rotqua_mod, only: rotqua
       use strech_mod, only: setup_force
       use zerest_mod, only: zerest
-!      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
+#if defined(HDF5_FOUND)
+      use dmc_store_hdf5_mod, only: dmc_store_hdf5
+#endif
 
 
       implicit none
@@ -37,6 +39,9 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       integer :: i, j
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: four = 4.d0
+      character(len=8)  :: date
+      character(len=10) :: time
+
 
 
 c variables:
@@ -195,7 +200,13 @@ c             call dmc_good
       call finwrt
       call elapsed_time("DMC : all CP : ")
 
-      if (dmc_idump.eq.1) call dumper
+      if (dmc_idump.eq.1) then
+            call dumper
+#if defined(HDF5_FOUND)
+            call dumper
+            call dmc_store_hdf5("restart_dmc_"//date(1:4)//'-'//date(5:6)//'-'//date(7:8)//"-"//time(1:6)//".hdf5")
+#endif
+      endif
       close (unit=9)
       if (dmc_nconf.ne.0) close (unit=7)
       call elapsed_time("dumping restart files : ")
