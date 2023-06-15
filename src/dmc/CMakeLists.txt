@@ -69,7 +69,8 @@ if (TREXIO_FOUND)
     parser
     ${LINEAR_ALGEBRA}
     ${TREXIO_LIBRARY}
-    MPI::MPI_Fortran)
+    MPI::MPI_Fortran
+    HDF5::HDF5)
 else()
   target_link_libraries(dmc.mov1
     PRIVATE
