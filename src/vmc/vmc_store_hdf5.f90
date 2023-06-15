@@ -212,6 +212,7 @@ module vmc_store_hdf5_mod
         call hdf5_write(file_id, group_id, "Number of Center Types", nctype)
         call hdf5_write(file_id, group_id, "Number of Centers", ncent)
         call hdf5_write(file_id, group_id, "Center Coordinates", cent)
+        call hdf5_write(file_id, group_id, "Nuclear Charge Znuc", znuc)
         call hdf5_write(file_id, group_id, "Number of Ghost Center Types", newghostype)
         call hdf5_write(file_id, group_id, "Number of Ghost Centers", nghostcent)
         call hdf5_write(file_id, group_id, "Index of Which Center Type", iwctype)
@@ -228,7 +229,7 @@ module vmc_store_hdf5_mod
 
         call hdf5_group_create(file_id, "Basis", group_id)
         call hdf5_group_open(file_id, "Basis", group_id)
-        call hdf5_write(file_id, group_id, "Zex", zex)
+        call hdf5_write(file_id, group_id, "Zex", zex(1:nbasis,1))
         if (nloc .gt. 0) then
             call hdf5_write(file_id, group_id, "nquad", nquad)
             call hdf5_write(file_id, group_id, "xq", xq(1:nquad))
@@ -304,6 +305,7 @@ module vmc_store_hdf5_mod
         call hdf5_write(file_id, group_id, "Number of VMC Steps per Block", vmc_nstep)
         call hdf5_write(file_id, group_id, "Number of VMC Configurations", vmc_nconf)
         call hdf5_write(file_id, group_id, "Number of New VMC Configurations", vmc_nconf_new)
+        call hdf5_write(file_id, group_id, "iblk", iblk)
         call hdf5_write(file_id, group_id, "xold", xold)
         call hdf5_write(file_id, group_id, "Delta", delta)
         call hdf5_write(file_id, group_id, "Deltar", deltar)
@@ -314,14 +316,12 @@ module vmc_store_hdf5_mod
         call hdf5_write(file_id, group_id, "ecum", ecum(1:nstates,1:nforce))
         call hdf5_write(file_id, group_id, "pecum", pecum(1:nstates))
         call hdf5_write(file_id, group_id, "tpbcum", tpbcum(1:nstates))
-        call hdf5_write(file_id, group_id, "tjfcum", tjfcum(1:nstates))
         call hdf5_write(file_id, group_id, "r2cum", r2cum)
         call hdf5_write(file_id, group_id, "acc", acc)
         call hdf5_write(file_id, group_id, "ecm21", ecm21(1:nstates))
         call hdf5_write(file_id, group_id, "ecm2", ecm2(1:nstates,1:nforce))
         call hdf5_write(file_id, group_id, "pecm2", pecm2(1:nstates))
         call hdf5_write(file_id, group_id, "tpbcm2", tpbcm2(1:nstates))
-        call hdf5_write(file_id, group_id, "tjfcm2", tjfcm2(1:nstates))
         call hdf5_write(file_id, group_id, "r2cm2", r2cm2)
 
         if (nforce .gt. 1) then
