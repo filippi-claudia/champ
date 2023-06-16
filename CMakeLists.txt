@@ -85,11 +85,11 @@ link_libraries(${LINEAR_ALGEBRA})
 # LibFDF is built-in in the src/parser folder
 
 # Find HDF5 library
-find_package(HDF5 REQUIRED COMPONENTS Fortran HL Fortran_HL QUIET)
+if (ENABLE_TREXIO)
+find_package(HDF5 QUIET)
 if (HDF5_FOUND)
-  message(STATUS "Is HDF5 library found            :: " ${HDF5_FOUND})
+  message(STATUS "Is HDF5 library found            :: " ${HDF5_VERSION})
   message(STATUS "Is HDF5 library parallel         :: " ${HDF5_IS_PARALLEL})
-  message(STATUS "HDF5 version                     :: " ${HDF5_VERSION})
   message(STATUS "HDF5 Library C Compiler exec     :: " ${HDF5_C_COMPILER_EXECUTABLE})
   message(STATUS "HDF5 include dirs                :: " ${HDF5_INCLUDE_DIRS})
   message(STATUS "HDF5 library directories         :  " )
@@ -100,12 +100,7 @@ if (HDF5_FOUND)
 #  add_definitions(-DHDF5_VERSION=\"${HDF5_VERSION}\")
 endif(HDF5_FOUND)
 
-if (ENABLE_TREXIO AND NOT HDF5_FOUND)
-  message(FATAL_ERROR "TREXIO requires HDF5 library. Please install HDF5 library first!")
-endif()
-
 # Find TREXIO
-if (ENABLE_TREXIO AND HDF5_FOUND)
 message(" ")
 message("Looking for TREXIO library:")
 find_package(TREXIO QUIET)
@@ -121,7 +116,7 @@ if (TREXIO_FOUND)
   link_libraries(${TREXIO_LIBRARIES})
   include_directories( ${TREXIO_INCLUDE_DIRS} )
 endif(TREXIO_FOUND)
-endif()
+endif(ENABLE_TREXIO)
 
 
 # Find QMCkl
@@ -176,7 +171,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
         "-Wno-character-truncation" "-Wno-compare-reals" "-Wno-tabs"
         "-Wno-c-binding-type" "-Wno-function-elimination"
 	"-fno-check-array-temporaries"
-        # "-ffpe-trap=invalid,zero,overflow"
+        # "-ffpe-trap=invalid,zero,overflow" 
         )
   endif()
 #  if (TREXIO_FOUND)

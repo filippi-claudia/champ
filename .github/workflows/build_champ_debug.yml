@@ -38,10 +38,10 @@ jobs:
         sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
         sudo apt-get update
 
-    - name: Install Cmake
+    - name: Install Cmake and HDF5
       run: |
         sudo apt-get install -y cmake
-
+        sudo apt-get install -y libhdf5-serial-dev
 
     - name: Install GNU compilers and libraries
       if: matrix.toolchain == 'gnu'
@@ -61,24 +61,15 @@ jobs:
       run: |
         sudo apt-get install -y intel-oneapi-common-vars
         sudo apt-get install -y intel-oneapi-compiler-fortran-2021.3.0
-        sudo apt-get install -y intel-oneapi-compiler-dpcpp-cpp
         sudo apt-get install -y intel-oneapi-mkl-2021.3.0
         sudo apt-get install -y intel-oneapi-mkl-devel-2021.3.0
         sudo apt-get install -y intel-oneapi-mpi-2021.3.0
         sudo apt-get install -y intel-oneapi-mpi-devel-2021.3.0
 
-    - name: Install HDF5
-      run: |
-        wget https://hdf-wordpress-1.s3.amazonaws.com/wp-content/uploads/manual/HDF5/HDF5_1_14_1/src/hdf5-1.14.1-2.tar.gz
-        tar -xzf hdf5-1.14.1-2.tar.gz
-        cd hdf5-1.14.1-2
-        ./configure FC=mpiifort FCFLAGS=-O2 CC=mpiicc FCFLAGS=-O2 CFLAGS=-O2 --enable-static --enable-shared --enable-fortran --enable-parallel
-        make -j 2
-        make install
-
     - name: Install Trexio
       run: |
         sudo apt-get install -y cmake
+        sudo apt-get install -y libhdf5-serial-dev
         sudo apt-get install -y gfortran
         sudo apt-get install -y gcc
         wget https://github.com/TREX-CoE/trexio/releases/download/v1.0/trexio-1.0.0.tar.gz

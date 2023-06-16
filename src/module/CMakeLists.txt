@@ -56,12 +56,8 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_PARSER_DIR}/prec.F90
     ${CMAKE_PARSER_DIR}/utils.F90)
 
-    if (HDF5_FOUND)
-        list(APPEND SHARED_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/utils_hdf5.f90)
-    endif()
-
     if (TREXIO_FOUND)
-      list(APPEND SHARED_MODULES ${TREXIO_INCLUDE_DIR}/trexio_f.f90)
+      list(APPEND SHARED_MODULES m_trexio.F90)
     endif()
 
     if (QMCKL_FOUND)
@@ -69,12 +65,6 @@ if (MPI_Fortran_FOUND)
     endif()
 
     add_library(shared_modules OBJECT ${SHARED_MODULES})
-
-    if (HDF5_FOUND)
-	    target_include_directories(shared_modules PRIVATE ${HDF5_INCLUDE_DIRS})
-      target_link_libraries(shared_modules ${HDF5_LIBRARIES})
-    endif(HDF5_FOUND)
-
     target_compile_options(shared_modules
       PRIVATE
       ${Fortran_FLAGS}
