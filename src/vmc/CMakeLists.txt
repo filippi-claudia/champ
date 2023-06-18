@@ -320,7 +320,7 @@ if (MPI_Fortran_FOUND)
     list(APPEND SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/vmc_store_hdf5.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/vmc_restore_hdf5.f90)
-  endif()
+
 
   set_property(
   SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/vmc_store_hdf5.f90
@@ -346,8 +346,8 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/vmc_restore_hdf5.f90
     APPEND
     PROPERTY
-    COMPILE_FLAGS "-lhdf5_fortran -lhdf5")  
-
+    COMPILE_FLAGS "-lhdf5_fortran -lhdf5")
+endif(HDF5_FOUND)
 
   add_library(shared_objects OBJECT ${SHARED_OBJECTS})
 
@@ -355,7 +355,6 @@ if (MPI_Fortran_FOUND)
   target_include_directories(shared_objects
   PUBLIC
   ${CMAKE_BINARY_DIR}/src/module
-  ${HDF5_INCLUDE_DIRS}
   )
 
   target_compile_options(shared_objects
@@ -388,7 +387,7 @@ if (MPI_Fortran_FOUND)
   # --------------------------------------------------------------------
   add_library(rng OBJECT
     xoroshiro128starstar.c)
-  
+
   target_compile_options(rng
     PUBLIC
     "-O3")
@@ -427,12 +426,18 @@ IF(UNIT_TESTS)
 ENDIF()
 
   #  Add headers
+if (HDF5_FOUND)
   target_include_directories(vmc.mov1
   PUBLIC
   ${CMAKE_BINARY_DIR}/src/module
   ${CMAKE_BINARY_DIR}/src/vmc
-  ${HDF5_INCLUDE_DIRS}  
-  )
+  ${HDF5_INCLUDE_DIRS})
+else()
+  target_include_directories(vmc.mov1
+  PUBLIC
+  ${CMAKE_BINARY_DIR}/src/module
+  ${CMAKE_BINARY_DIR}/src/vmc)
+endif()
 
   # compilation
   target_compile_options(vmc.mov1
@@ -458,6 +463,6 @@ ENDIF()
       ${LINEAR_ALGEBRA}
       MPI::MPI_Fortran)
   endif()
-  
+
 
 endif()

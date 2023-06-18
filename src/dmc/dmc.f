@@ -200,11 +200,13 @@ c             call dmc_good
       call finwrt
       call elapsed_time("DMC : all CP : ")
 
+c     Get the date-time stamp
+      call date_and_time(date=date, time=time)
+
       if (dmc_idump.eq.1) then
+            call dumper
 #if defined(HDF5_FOUND)
             call dmc_store_hdf5("restart_dmc_"//date(1:4)//'-'//date(5:6)//'-'//date(7:8)//"-"//time(1:6)//".hdf5")
-#else
-            call dumper
 #endif
       endif
       close (unit=9)

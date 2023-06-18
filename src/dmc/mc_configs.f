@@ -15,7 +15,9 @@
       use random_mod, only: random_dp,savern,setrn
       use restart, only: startr
       use system,  only: nelec
-!      use contrl, only: irstar, nblk, nblkeq, nconf, nconf_new, nstep
+#if defined(HDF5_FOUND)
+      use dmc_restore_hdf5_mod, only: dmc_restore_hdf5
+#endif
 
 
       implicit none
@@ -58,10 +60,14 @@ c set the random number seed, setrn already called in read_input
       endif
 
       if (dmc_irstar.eq.1) then
+#if defined(HDF5_FOUND)
+        call dmc_restore_hdf5("restart_dmc.hdf5")
+#else
         open(unit=10,status='old',form='unformatted',file='restart_dmc')
         rewind 10
         call startr
         close (unit=10)
+#endif
        else
         open(unit=1,status='old',form='formatted',file='mc_configs')
         rewind 1

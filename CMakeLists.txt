@@ -85,6 +85,7 @@ link_libraries(${LINEAR_ALGEBRA})
 # LibFDF is built-in in the src/parser folder
 
 # Find HDF5 library
+if (ENABLE_TREXIO)
 find_package(HDF5 REQUIRED COMPONENTS Fortran HL Fortran_HL QUIET)
 if (HDF5_FOUND)
   message(STATUS "Is HDF5 library found            :: " ${HDF5_FOUND})
@@ -99,6 +100,7 @@ if (HDF5_FOUND)
   message(STATUS "                                    ")
 #  add_definitions(-DHDF5_VERSION=\"${HDF5_VERSION}\")
 endif(HDF5_FOUND)
+endif()
 
 if (ENABLE_TREXIO AND NOT HDF5_FOUND)
   message(FATAL_ERROR "TREXIO requires HDF5 library. Please install HDF5 library first!")

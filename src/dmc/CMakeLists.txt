@@ -43,7 +43,7 @@ formatFortran("${DMC_SOURCE}") # Set Fixed format property
 if (HDF5_FOUND)
   list(APPEND DMC_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/dmc_store_hdf5.f90)
-endif()
+
 
 set_property(
   SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/dmc_store_hdf5.f90
@@ -69,7 +69,7 @@ set_source_files_properties(
   APPEND
   PROPERTY
   COMPILE_FLAGS "-lhdf5_fortran -lhdf5")
-
+endif(HDF5_FOUND)
 
 # executable dependencies
 add_executable(dmc.mov1
@@ -80,12 +80,19 @@ add_executable(dmc.mov1
   ${DMC_SOURCE})
 
 #  Add headers
+if (HDF5_FOUND)
 target_include_directories(dmc.mov1
   PUBLIC
   ${CMAKE_BINARY_DIR}/src/vmc
   ${CMAKE_BINARY_DIR}/src/module
   ${HDF5_INCLUDE_DIRS}
   )
+else()
+  target_include_directories(dmc.mov1
+  PUBLIC
+  ${CMAKE_BINARY_DIR}/src/vmc
+  ${CMAKE_BINARY_DIR}/src/module)
+endif(HDF5_FOUND)
 
 # compilation
 target_compile_options(dmc.mov1
