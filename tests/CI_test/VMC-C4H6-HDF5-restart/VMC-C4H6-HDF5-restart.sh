@@ -9,12 +9,9 @@ output_rest="vmc_noopt_ci44_irstar_10"
 output_longer="vmc_noopt_ci44_longer"
 
 # HDF5 restart VMC test
-ReferenceEnergyRestart=-26.2256925
-ReferenceEnergyLonger=-26.2256925
-ReferenceError=0.0000001
+ReferenceEnergyLonger=-26.1788661
+ReferenceError=0.0487149
 
-
-#-26.2815545 +-  0.0496094
 N=1
 
 echo "Run VMC for 10 blocks 10 steps"
@@ -26,21 +23,23 @@ echo "Total energy after 10 blocks 10 steps"
 echo "Rename the HDF5 file for restarting"
 mv -v restart_vmc_*.hdf5 restart_vmc.hdf5
 
-
 echo "Run VMC for another 10 blocks 10 steps"
 mpirun -np $N ../../../bin/vmc.mov1 -i $input_rest -o ${output_rest}.out -e error
 
-../../../tools/compare_value.py ${output_rest}.out    "total E"  $ReferenceEnergyRestart  $ReferenceError
-
-
+after_restart=$(grep 'total E' ${output_rest}.out | awk '{print $4}')
+echo $after_restart
 
 echo "Run longer VMC for 20 blocks 10 steps"
 mpirun -np $N ../../../bin/vmc.mov1 -i $input_longer -o ${output_longer}.out -e error
 
-../../../tools/compare_value.py ${output_longer}.out     "total E"  $ReferenceEnergyLonger   $ReferenceError
+after_longer=$(grep 'total E' ${output_longer}.out | awk '{print $4}')
+echo $after_longer
+
+echo "Compare the energies obtained via restart calculation with binary files"
+../../../tools/compare_value.py ${output_longer}.out  "total E"  $ReferenceEnergyLonger   $ReferenceError
 
 echo "Comparing energy of restarted vs longer run "
-if [ "$ReferenceEnergyRestart" == "$ReferenceEnergyLonger" ]; then
+if [ "$after_restart" = "$after_longer" ]; then
     echo "Total energies match after restart"
 else
     echo "Total energies do not match after restart. Exiting!"

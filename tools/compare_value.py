@@ -23,7 +23,7 @@ def compare_values(data, keyword, ref_values, tolerance=0.0, kw_col=0, val_col=N
             print('The results should be within +- standard deviation (or two times the tolerance)')
             return ( abs(float(l[val_col]) - float(ref_values)) <= 2.0*float(tolerance) )
     print('Warning : keyword not found')
-    return False
+    return False 
 
 
 if __name__ == "__main__":
