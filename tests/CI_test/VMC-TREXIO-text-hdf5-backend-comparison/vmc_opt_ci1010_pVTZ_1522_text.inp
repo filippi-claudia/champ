@@ -4,7 +4,6 @@
     mode            'vmc'
     backend         'text'
     pseudopot	    BFD
-    ipr 	    4
 %endmodule
 
 load trexio          'gamess_butadiene_ci1010_pVTZ'
@@ -17,8 +16,8 @@ load jastrow_der     jastrow.der
 %endmodule 
 
 %module blocking_vmc
-    vmc_nstep     1
-    vmc_nblk      1
+    vmc_nstep     10
+    vmc_nblk      10
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule

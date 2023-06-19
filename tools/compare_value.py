@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import itertools
 import argparse
-
+import math
 
 def read_file(filename):
     f = open(filename)
@@ -19,9 +19,11 @@ def compare_values(data, keyword, ref_values, tolerance=0.0, kw_col=0, val_col=N
     for l in data[::-1]:
         l = l.split()
         if l[kw_col:kw_col+len(keyword)] == keyword:
-            print('Comparing ', float(l[val_col]), ' with ',  float(ref_values),  '+-' ,float(tolerance))
-            print('The results should be within +- standard deviation (or two times the tolerance)')
-            return ( abs(float(l[val_col]) - float(ref_values)) <= 2.0*float(tolerance) )
+            standard_deviation = float(l[val_col+2])
+            print(' Obtained value   :: ', float(l[val_col]), '+-' , float(l[val_col+2]) )
+            print(' Reference value  :: ', float(ref_values), '+-' , float(tolerance))
+            print('The results should be within +- 2*sqrt(sd**2 + sd**2_ref)')
+            return ( abs(float(l[val_col]) - float(ref_values)) <= (2.0*math.sqrt( float(tolerance)*float(tolerance) + standard_deviation*standard_deviation ) ))
     print('Warning : keyword not found')
     return False
 
@@ -46,4 +48,5 @@ if __name__ == "__main__":
     else:
         # Strict comparison :: use assert
         assert(compare_values(data, args.keyword, args.values, args.tolerance))
+        print ("-------------------------------------------------------------")
         #compare_values(data, args.keyword, args.values, args.tolerance) # delete after testing. Ravindra

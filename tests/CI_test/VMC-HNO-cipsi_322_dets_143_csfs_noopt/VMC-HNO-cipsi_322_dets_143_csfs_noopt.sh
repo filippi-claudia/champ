@@ -18,11 +18,22 @@ echo " "
 echo "Core=$N"
 echo "Comparing state 1 energy with reference        (total E = $ReferenceEnergy_1 +-  $ReferenceError_1 ) "
 ../../../tools/compare_value.py temp_state1_E_err     "total E"  $ReferenceEnergy_1     $ReferenceError_1
+if [ $? -ne 0 ]; then
+    echo "Assertion Error"
+    exit -1
+fi
+
+
 echo " "
 echo "Comparing state 2 energy with reference        (total E = $ReferenceEnergy_2 +-  $ReferenceError_2 ) "
 ../../../tools/compare_value.py temp_state2_E_err     "total E"  $ReferenceEnergy_2     $ReferenceError_2    
-rm -f temp_state1_E_err temp_state2_E_err
 
+if [ $? -ne 0 ]; then
+    echo "Assertion Error"
+    exit -1
+fi
+
+rm -f temp_state1_E_err temp_state2_E_err
 
 # Multicore test
 N=2
@@ -39,7 +50,22 @@ echo " "
 echo "Core=$N"
 echo "Comparing state 1 energy with reference        (total E = $ReferenceEnergy_1 +-  $ReferenceError_1 ) "
 ../../../tools/compare_value.py temp_state1_E_err     "total E"  $ReferenceEnergy_1     $ReferenceError_1
+
+if [ $? -ne 0 ]; then
+    echo "Assertion Error"
+    exit -1
+fi
+
+
+
 echo " "
 echo "Comparing state 2 energy with reference        (total E = $ReferenceEnergy_2 +-  $ReferenceError_2 ) "
 ../../../tools/compare_value.py temp_state2_E_err     "total E"  $ReferenceEnergy_2     $ReferenceError_2
+if [ $? -ne 0 ]; then
+    echo "Assertion Error"
+    exit -1
+fi
+
+
+
 rm -f temp_state1_E_err temp_state2_E_err
