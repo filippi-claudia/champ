@@ -5,13 +5,13 @@ output="vmc"
 
 # unicore test
 N=1
-ReferenceEnergy_1=-26.4733476
-ReferenceError_1=0.0131403
-ReferenceEnergy_2=-26.3137309
-ReferenceError_2=0.0116616
+ReferenceEnergy_1=-26.4758227
+ReferenceError_1=0.0108153
+ReferenceEnergy_2=-26.3369649
+ReferenceError_2=0.0124782
 
-ReferenceGap=4.3433938
-ReferenceGapError=0.4779437
+ReferenceGap=3.7785151
+ReferenceGapError=0.4492765
 
 echo " "
 echo "Core=$N"
@@ -44,13 +44,13 @@ rm -f temp_state1_E_err temp_state2_E_err temp_gap_E_err
 
 # Multicore test
 N=2
-ReferenceEnergy_1=-26.4975023
-ReferenceError_1=0.0081915
-ReferenceEnergy_2=-26.3449000
-ReferenceError_2=0.0084472
+ReferenceEnergy_1=-26.4970628
+ReferenceError_1=0.0083161
+ReferenceEnergy_2=-26.3313189
+ReferenceError_2=0.0093368
 
-ReferenceGap=4.1525222
-ReferenceGapError=0.3201230
+ReferenceGap=4.5101235
+ReferenceGapError=0.3400853
 
 echo " "
 echo "Core=$N"

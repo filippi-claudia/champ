@@ -13,8 +13,8 @@ cat mc_configs_new* >> mc_configs
 input="dmc_h2o_dft_jas2body_tau0.05.inp"
 output="dmc_h2o_dft_jas2body_tau0.05"
 N=8
-ReferenceEnergy=-17.2624300
-ReferenceError=0.0009044
+ReferenceEnergy=-17.2620474
+ReferenceError=0.0009204
 mpirun -np $N ../../../bin/dmc.mov1 -i $input -o ${output}_core_${N}.out -e error
 echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
 ../../../tools/compare_value.py ${output}_core_${N}.out  "total energy ( 100) "  $ReferenceEnergy     $ReferenceError

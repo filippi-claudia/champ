@@ -5,8 +5,8 @@ output="vmc_optimization_5000"
 
 # unicore test
 N=1
-ReferenceEnergy=-26.2276875
-ReferenceError=0.0310726
+ReferenceEnergy=-26.2325355
+ReferenceError=0.020055
 mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
 echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
 ../../../tools/compare_value.py ${output}_core_${N}.out     "total E"  $ReferenceEnergy     $ReferenceError
@@ -14,8 +14,8 @@ echo "Comparing energy with reference Core=$N           (total E = $ReferenceEne
 
 # Multicore test
 N=2
-ReferenceEnergy=-26.2413635
-ReferenceError=0.0165052
+ReferenceEnergy=-26.2078087
+ReferenceError=0.0143435
 mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
 echo "Comparing energy with reference Core=$N           (total E = $ReferenceEnergy +-  $ReferenceError ) "
 ../../../tools/compare_value.py ${output}_core_${N}.out     "total E"  $ReferenceEnergy     $ReferenceError

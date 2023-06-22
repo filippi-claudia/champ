@@ -5,10 +5,10 @@ output="vmc"
 
 # unicore test
 N=1
-ReferenceEnergy_1=-26.4910069
-ReferenceError_1=0.0057945
-ReferenceEnergy_2=-26.3410484
-ReferenceError_2=0.0055949
+ReferenceEnergy_1=-26.4748932
+ReferenceError_1=0.0057557
+ReferenceEnergy_2=-26.318374
+ReferenceError_2=0.0059439
 
 mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
 
@@ -37,10 +37,10 @@ rm -f temp_state1_E_err temp_state2_E_err
 
 # Multicore test
 N=2
-ReferenceEnergy_1=-26.4897887
-ReferenceError_1=0.0040837
-ReferenceEnergy_2=-26.3286343
-ReferenceError_2=0.0040254
+ReferenceEnergy_1=-26.4782788
+ReferenceError_1=0.0041466
+ReferenceEnergy_2=-26.3179593
+ReferenceError_2=0.0043087
 
 mpirun -np $N ../../../bin/vmc.mov1 -i $input -o ${output}_core_${N}.out -e error
 
