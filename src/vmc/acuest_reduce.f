@@ -44,7 +44,7 @@ c Written by Claudia Filippi
 
       integer mobs
       integer iupdate
-      character*20 filename
+      character(len=20) filename
 
       !real, dimension(MSTATES, MFORCE), INTENT(INOUT) :: enow
 
@@ -228,9 +228,13 @@ c optorb reduced at the end of the run: set printout to 0
       if (allocated(local_obs)) deallocate(local_obs)
       if (allocated(collect)) deallocate(collect)
 
-      return
+      end subroutine
 
-      entry acues1_reduce
+      subroutine acues1_reduce
+      use pcm_mod, only: pcm_compute_penupv,qpcm_update_vol
+      use pcm_reduce_mod, only: pcm_reduce_chvol
+      implicit none
+      integer iupdate
 
       call qpcm_update_vol(iupdate)
       if(iupdate.eq.1) then

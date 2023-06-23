@@ -4,6 +4,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use basis_fns_mod, only: basis_fns
       use error,   only: fatal_error
       use grid3d,  only: int_from_cart
+      use precision_kinds, only: dp
       interface ! pspline interface
       subroutine fvtricub(ict,ivec,ivecd,
      >   fval,ii,jj,kk,xparam,yparam,zparam,
@@ -14,12 +15,12 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
         integer ivec  
         integer ivecd  
         integer ii,jj,kk
-        real*8 xparam,yparam,zparam
-        real*8 hx,hy,hz 
-        real*8 hxi,hyi,hzi 
+        real(8) xparam,yparam,zparam
+        real(8) hx,hy,hz 
+        real(8) hxi,hyi,hzi 
         integer inf2,inf3,nz
         real fin(0:7,inf2,inf3,nz)  
-        real*8 fval(10)     
+        real(8) fval(10)     
       end subroutine
       subroutine mktricubw(x,nx,y,ny,z,nz,f,nf2,nf3,
      >                    ibcxmin,bcxmin,ibcxmax,bcxmax,inb1x,
@@ -62,7 +63,6 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       use grid_spline_mod, only: orb_num_spl
       use multiple_geo, only: iwf
       use phifun,  only: d2phin,dphin,phin
-      use precision_kinds, only: dp
       use slater,  only: coef,norb
       use system,  only: cent,ncent,nelec,nghostcent
 !      use contrl, only: idump, irstar, isite, nconf, nblk, nblkeq, nconf_new, nstep
@@ -78,7 +78,7 @@ c Written by A. Scemama, adapted from C. Umrigar's 2D routines
       real(dp), dimension(3) :: r
       real(dp), dimension(3) :: df
 
-      real*4  bc(MXNSTEP,MXNSTEP,3:8,nelec/2+1), wk(80*MXNSTEP3)
+      real(4)  bc(MXNSTEP,MXNSTEP,3:8,nelec/2+1), wk(80*MXNSTEP3)
 
 c     Note:
 c     The boundary condition array ranges from 3 to 8. This way, if we code
@@ -109,8 +109,8 @@ c     of the fit
       ibczmax=0
 
 c     Evaluate the energy needed for the calculation
-      memory=dfloat((norb+10)*4)
-      memory=memory*dfloat(nstep3d(1)*nstep3d(2)*nstep3d(3))
+      memory=dble((norb+10)*4)
+      memory=memory*dble(nstep3d(1)*nstep3d(2)*nstep3d(3))
       memory=memory*8.d-6
 
       write (45,*) 'Allocated memory for the 3D spline fits of the LCAO:',
@@ -349,19 +349,19 @@ c----------------------------------------------------------------------
 
 c     Input:
       integer   iorb    ! Index of the MO to spline
-      real*8    r(3)    ! Cartesian coordinates
+      real(8)    r(3)    ! Cartesian coordinates
 
 c     Output:
       integer   ier     ! error status
-      real*8    f, ddf  ! Value, Laplacian
-      real*8    df(3)   ! Gradients
+      real(8)    f, ddf  ! Value, Laplacian
+      real(8)    df(3)   ! Gradients
 
 c     Work:
       integer   ict(10)   ! Control of the spline subroutine
       integer   ix(3)     ! Integer coordinates
-      real*8    fval(10)  ! values returned by the spline routine
-      real*8    rscaled(3)! normalized displacement
-      real*8    inv_step3d(3) ! Inverse of step sizes
+      real(8)    fval(10)  ! values returned by the spline routine
+      real(8)    rscaled(3)! normalized displacement
+      real(8)    inv_step3d(3) ! Inverse of step sizes
 
 
       inout   = inout  +1.d0
@@ -472,8 +472,8 @@ c     >  call fatal_error ('MORB_OCC too small. Recompile.')
 
 
 c     Evaluate the memory needed for the calculation
-      memory=dfloat(norb)*5.d0
-      memory=memory*dfloat(nstep3d(1)*nstep3d(2)*nstep3d(3))
+      memory=dble(norb)*5.d0
+      memory=memory*dble(nstep3d(1)*nstep3d(2)*nstep3d(3))
       memory=memory*4.d-6
 
       write (45,*) 'Allocated memory for the 3D Lagrange fits of the LCAO:
@@ -578,7 +578,7 @@ c DEBUG
           if (i.ne.j)
      >     idenom = idenom*(i-j)
          enddo
-         denom(i,ix) = 1.d0/dfloat(idenom)
+         denom(i,ix) = 1.d0/dble(idenom)
         enddo
        enddo
 
@@ -661,7 +661,7 @@ c
 
 
 
-      real*8    num(LAGSTART:LAGEND,3)
+      real(8)    num(LAGSTART:LAGEND,3)
 
       inout   = inout  +1.d0
       if (ier.eq.1) then
@@ -691,7 +691,7 @@ c Compute displacements
            num(i2,i1)=denom(i2,i1)
            do j=LAGSTART, LAGEND
              if (j.ne.i2)
-     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dfloat(j))
+     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dble(j))
            enddo
          enddo
        enddo
@@ -749,7 +749,7 @@ c
       
       
 
-      real*8    num(LAGSTART:LAGEND,3)
+      real(8)    num(LAGSTART:LAGEND,3)
 
       inout   = inout  +1.d0
       if (ier.eq.1) then
@@ -779,7 +779,7 @@ c Compute displacements
            num(i2,i1)=denom(i2,i1)
            do j=LAGSTART, LAGEND
              if (j.ne.i2)
-     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dfloat(j))
+     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dble(j))
            enddo
          enddo
        enddo
@@ -837,7 +837,7 @@ c
       real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
-      real*8    num(LAGSTART:LAGEND,3)
+      real(8)    num(LAGSTART:LAGEND,3)
 
       inout   = inout  +1.d0
 
@@ -868,7 +868,7 @@ c Compute displacements
            num(i2,i1)=denom(i2,i1)
            do j=LAGSTART, LAGEND
              if (j.ne.i2)
-     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dfloat(j))
+     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dble(j))
            enddo
          enddo
        enddo
@@ -926,7 +926,7 @@ c
 
 
 
-      real*8    num(LAGSTART:LAGEND,3)
+      real(8)    num(LAGSTART:LAGEND,3)
 
       inout   = inout  +1.d0
       if (ier.eq.1) then
@@ -956,7 +956,7 @@ c Compute displacements
            num(i2,i1)=denom(i2,i1)
            do j=LAGSTART, LAGEND
              if (j.ne.i2)
-     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dfloat(j))
+     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dble(j))
            enddo
          enddo
        enddo
@@ -1012,7 +1012,7 @@ c
       real(dp), dimension(LAGSTART:LAGEND) :: xi
 
 
-      real*8    num(LAGSTART:LAGEND,3)
+      real(8)    num(LAGSTART:LAGEND,3)
 
       inout   = inout  +1.d0
       if (ier.eq.1) then
@@ -1043,7 +1043,7 @@ c Compute displacements
            num(i2,i1)=denom(i2,i1)
            do j=LAGSTART, LAGEND
              if (j.ne.i2)
-     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dfloat(j))
+     >         num(i2,i1) = num(i2,i1)*(dr(i1) - dble(j))
            enddo
          enddo
        enddo

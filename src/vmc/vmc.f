@@ -42,7 +42,7 @@ c and sa, pa, da asymptotic functions
 
 
 
-      character*25 fmt
+      character(len=25) fmt
 
 c common block variables:
 

@@ -48,12 +48,10 @@ c routine to print out final results
       real(dp) :: acc_collect, accav, accavn, delr, eave
       real(dp) :: eerr, eerr1, efave, eferr
       real(dp) :: eferr1, egave, egerr, egerr1
-      real(dp) :: errc, errc1, errf, errf1
-      real(dp) :: errg, errg1, error, errorn
-      real(dp) :: errw, errw1, eval, eval_eff
+      real(dp) :: eval, eval_eff
       real(dp) :: eval_proc, evalf_eff, evalg_eff, fgave
       real(dp) :: fgerr, pass_proc, passes, peave
-      real(dp) :: peerr, rn, rn_eff, rteval_eff1
+      real(dp) :: peerr, rn, rteval_eff1
       real(dp) :: rtevalf_eff1, rtevalg_eff1, rtpass1, term
       real(dp) :: tpbave, tpberr
       real(dp) :: trymove_collect, w, w2, wave
@@ -67,19 +65,6 @@ c routine to print out final results
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
 
-c Statement functions for error calculation, it might be reaplaced in the near future:
-      rn_eff(w,w2)=w**2/w2
-      error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
-      errorn(x,x2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn-1),0.d0))
-      errc(x,x2)=error(x,x2,wcum_dmc,wcm2)
-      errf(x,x2)=error(x,x2,wfcum,wfcm2)
-      errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
-      errc1(x,x2)=error(x,x2,wcum1,wcm21)
-      errf1(x,x2)=error(x,x2,wfcum1,wfcm21)
-      errg1(x,x2,i)=error(x,x2,wgcum1(i),wgcm21(i))
-      errw(x,x2)=errorn(x,x2,dfloat(iblk_proc))/dmc_nstep
-      errw1(x,x2)=errorn(x,x2,pass_proc)
-
       do ifr=1,nforce
         energy(ifr)=0
         energy_err(ifr)=0
@@ -89,10 +74,10 @@ c Statement functions for error calculation, it might be reaplaced in the near f
         force_err(ifr)=0
       enddo
 
-      passes=dfloat(iblk*dmc_nstep)
+      passes=dble(iblk*dmc_nstep)
       eval=dmc_nconf*passes
       if(mode.eq.'dmc_one_mpi1') then
-        pass_proc=dfloat(iblk_proc*dmc_nstep)
+        pass_proc=dble(iblk_proc*dmc_nstep)
         eval_proc=dmc_nconf*pass_proc
        else
         iblk_proc=iblk
@@ -182,7 +167,7 @@ c    & f10.5)') dr2ac/trymove
 
       if (wid) then
         accav=acc/trymove
-        accavn=dfloat(nacc)/trymove
+        accavn=dble(nacc)/trymove
         wave=wcum_dmc/pass_proc
         wfave=wfcum/pass_proc
         eave=ecum_dmc/wcum_dmc
@@ -221,7 +206,7 @@ c    & f10.5)') dr2ac/trymove
         write(ounit,'(''dmc_mov1_mpi_globalpop '',2a10)') title
       endif
       write(ounit,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)')
-     &nodecr,dfloat(nodecr)/trymove,accav,accavn
+     &nodecr,dble(nodecr)/trymove,accav,accavn
       if(idmc.ge.0) then
         write(ounit,'(''No. of walkers at end of run='',i5)') nwalk
 
@@ -305,5 +290,74 @@ c Done by Omar Valsson 2008-12-01
       if(ngradnts.gt.0 .and. igrdtype.eq.2) call finwrt_diaghess_zmat(ffin_grdnts,ferr_grdnts)
 
       return
+      contains
+        elemental pure function rn_eff(w,w2)
+          implicit none
+          real(dp), intent(in) :: w, w2
+          real(dp)             :: rn_eff
+          rn_eff=w**2/w2
+        end function
+        elemental pure function error(x,x2,w,w2)
+          implicit none
+          real(dp), intent(in) :: x, x2,w,w2
+          real(dp)             :: error
+          error=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
+        end function
+        elemental pure function errorn(x,x2,rn)
+          implicit none
+          real(dp), intent(in) :: x, x2, rn
+          real(dp)             :: errorn
+          errorn=dsqrt(max((x2/rn-(x/rn)**2)/(rn-1),0.d0))
+        end function
+        elemental pure function errc(x,x2)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          real(dp)             :: errc
+          errc=error(x,x2,wcum_dmc,wcm2)
+        end function
+        elemental pure function errf(x,x2)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          real(dp)             :: errf
+          errf=error(x,x2,wfcum,wfcm2)
+        end function
+        elemental pure function errg(x,x2,i)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          integer, intent(in)  :: i
+          real(dp)             :: errg
+          errg=error(x,x2,wgcum(i),wgcm2(i))
+        end function
+        elemental pure function errc1(x,x2)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          real(dp)             :: errc1
+          errc1=error(x,x2,wcum1,wcm21)
+        end function
+        elemental pure function errf1(x,x2)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          real(dp)             :: errf1
+          errf1=error(x,x2,wfcum1,wfcm21)
+        end function
+        elemental pure function errg1(x,x2,i)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          integer, intent(in)  :: i
+          real(dp)             :: errg1
+          errg1=error(x,x2,wgcum1(i),wgcm21(i))
+        end function
+        elemental pure function errw(x,x2)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          real(dp)             :: errw
+          errw=errorn(x,x2,dble(iblk_proc))/dmc_nstep
+        end function
+        elemental pure function errw1(x,x2)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          real(dp)             :: errw1
+          errw1=errorn(x,x2,pass_proc)
+        end function
       end
       end module

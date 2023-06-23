@@ -618,7 +618,7 @@ c Written by Claudia Filippi
       implicit none
 
       integer :: i, istate, j, n
-      real(dp) :: botsum_j, dble, eave, errn
+      real(dp) :: botsum_j, eave
       real(dp) :: passes, ratio, topsum_j, x
       real(dp) :: x2
       real(dp), dimension(nparmj, nparmj) :: hess1
@@ -630,7 +630,6 @@ c Written by Claudia Filippi
       real(dp), dimension(*) :: wcum
 
 
-      errn(x,x2,n)=dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
 
       if(ioptjas.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -736,7 +735,14 @@ c Overlap s = <dj dj>/<psi|psi>
       endif
 
       enddo
-
-      return
+      
+      contains
+        elemental pure function errn(x,x2, n)
+        implicit none
+        real(dp) errn
+        real(dp), intent(in) :: x, x2
+        integer, intent(in) :: n
+        errn=dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
+        end function
       end
       end module

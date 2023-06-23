@@ -10,9 +10,7 @@ if (MPI_Fortran_FOUND)
     basis_fns.f
     bxmatrices.f
     cuspexact4.f
-    cuspinit4.f
     deriv_jastrow.f
-    deriv_jastrow4.f
     deriv_nonloc.f
     deriv_nonlpsi.f
     determinant.f
@@ -40,7 +38,6 @@ if (MPI_Fortran_FOUND)
     jastrow4e.f
     jastrow_num.f
     jastrowe.f
-    matinv.f
     mc_configs.f
     metrop_mov1_slat.f
     misc_grdnts.f
@@ -115,11 +112,14 @@ if (MPI_Fortran_FOUND)
   file(GLOB VMC90_SOURCE
     array_resize_utils.f90
     array_utils.f90
+    cuspinit4.f90
     davidson.f90
     davidson_wrap.f90
+    deriv_jastrow4.f90
     get_norbterm.f90
     lapack_wrapper.f90
     main.f90
+    matinv.f90
     new_parser_read_data.f90
     read_trexio_data.f90
     fitting.f90
@@ -219,7 +219,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/fitting.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f    # This file should be refactored and eliminated.
     ${CMAKE_CURRENT_SOURCE_DIR}/efield.f
     ${CMAKE_CURRENT_SOURCE_DIR}/nodes_distance.f
@@ -235,14 +235,14 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_matrix_corsamp.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_matrix.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lib.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f
     ${CMAKE_CURRENT_SOURCE_DIR}/orbitals.f
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_gauss.f
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_tm.f
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante_psit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pot.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/mmpol.f
     ${CMAKE_CURRENT_SOURCE_DIR}/basis_fns.f
     ${CMAKE_CURRENT_SOURCE_DIR}/determinant_psit.f
@@ -322,6 +322,7 @@ if (MPI_Fortran_FOUND)
   target_include_directories(shared_objects
   PUBLIC
   ${CMAKE_BINARY_DIR}/src/module
+  ${CMAKE_BINARY_DIR}/src/parser
   )
 
   target_compile_options(shared_objects
@@ -331,6 +332,7 @@ if (MPI_Fortran_FOUND)
 
   # add_dependencies(shared_objects parser)
   add_dependencies(shared_objects shared_modules)
+  add_dependencies(shared_objects parser)
 
   # --------------------------------------------------------------------
   # Remove code that has been already compiled:

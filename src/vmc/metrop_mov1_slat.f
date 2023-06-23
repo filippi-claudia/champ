@@ -87,7 +87,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       real(dp) :: rnorm, rnorm_nodes, rold, root
       real(dp) :: rratio, rtest, rtest2, rtop
       real(dp) :: rtry, rzero, sintht, term
-      real(dp) :: term2, thetamx, top, vnewp
+      real(dp) :: term2, top, vnewp
       real(dp) :: vnewr, voldp, voldr, wstro
       real(dp) :: xprime, yprime, z, zcusp
       real(dp) :: zebot, zeta, zetop, zezer
@@ -136,8 +136,6 @@ c TMP
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
 c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
-
-      thetamx(r,z)=deltat+(two-deltat)/(one+(z*r)**2)
 
       mode='vmc_mov1    '
 
@@ -786,5 +784,11 @@ c rewrite psi2o for next metropolis step if you are sampling guiding
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)
       endif
       return
+      contains
+        elemental pure function thetamx(r,z)
+          real(dp), intent(in) :: r, z
+          real(dp)             :: thetamx
+          thetamx=deltat+(two-deltat)/(one+(z*r)**2)
+        end function
       end
       end module

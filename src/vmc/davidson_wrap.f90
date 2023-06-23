@@ -36,11 +36,11 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
     !> \param notcnv number of unconverged roots
     !> \param notcnv number of unconverged roots
 
+    INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, mvec, ipr
     REAL(dp), dimension(nparmx, nvec), INTENT(INOUT) :: eigenvectors
     REAL(dp), dimension(nvec), INTENT(OUT) :: eigenvalues
     REAL(dp), INTENT(IN) :: ethr
 
-    INTEGER, INTENT(IN) :: nparm, nparmx, nvec, nvecx, mvec, ipr
     INTEGER, dimension(nvec), INTENT(IN) :: btype
     INTEGER, INTENT(OUT) :: dav_iter, notcnv
     character(len=*), intent(in) :: method

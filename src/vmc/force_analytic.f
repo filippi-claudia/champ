@@ -318,11 +318,9 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: iblk, ic, k
-      real(dp) :: eave, err, rtpass, wcum, x
+      real(dp) :: eave, rtpass, wcum, x
       real(dp) :: x2
       real(dp), dimension(3) :: da_energy_err
-
-      err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
       if(iforce_analy.eq.0) return
 
@@ -332,7 +330,9 @@ c-----------------------------------------------------------------------
       do ic=1,ncent
         do k=1,3
           da_energy_ave(k,ic)=(da_energy_cum(k,ic)-2*eave*da_psi_cum(k,ic))/wcum
-          da_energy_err(k)=err(da_energy_ave(k,ic),da_energy_cm2(k,ic))
+          x = da_energy_ave(k,ic)
+          x2 = da_energy_cm2(k,ic)
+          da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
         enddo
         write(80,'(i5,1p6e14.5)') ic,(da_energy_ave(k,ic),k=1,3),(da_energy_err(k),k=1,3)
       enddo

@@ -16,7 +16,7 @@ c Written by Claudia Filippi
       implicit none
 
       integer :: ierr, ibranch_elec
-      character*40 :: filename
+      character(len=40) :: filename
 
       call mpi_init(ierr)
       call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)

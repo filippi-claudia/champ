@@ -1,17 +1,5 @@
       module strech_mod
-      contains
-      subroutine strech(x,xstrech,ajacob,ifr,istrech_el)
-c Written by Cyrus Umrigar and Claudia Filippi
-c Modified by A. Amovilli for forces in PCM
-c Uses the coordinate transform described in:
-c 1) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions and
-c    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
-c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
-c 2) Correlated sampling in quantum Monte Carlo: A route to forces,
-c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
-
-c stretch space so that electrons close to a nucleus move almost
-c rigidly with that nucleus
+      use precision_kinds, only: dp
       use contrl_file, only: ounit
       use control, only: mode
       use error,   only: fatal_error
@@ -28,8 +16,25 @@ c rigidly with that nucleus
       use pcm_parms, only: ch,nch,nchs,nesph,xpol
       use pcm_pot, only: penups,penupv
       use pot,     only: pot_nn
-      use precision_kinds, only: dp
       use system,  only: cent,iwctype,ncent,ncent_tot,nelec,znuc
+
+      real(dp), ALLOCATABLE, save :: centsav(:,:)
+      real(dp), ALLOCATABLE, save :: pecentn(:)
+      real(dp), ALLOCATABLE, save :: xpolsav(:,:)
+
+      contains
+      subroutine strech(x,xstrech,ajacob,ifr,istrech_el)
+c Written by Cyrus Umrigar and Claudia Filippi
+c Modified by A. Amovilli for forces in PCM
+c Uses the coordinate transform described in:
+c 1) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions and
+c    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
+c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
+c 2) Correlated sampling in quantum Monte Carlo: A route to forces,
+c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
+
+c stretch space so that electrons close to a nucleus move almost
+c rigidly with that nucleus
 
       implicit none
 
@@ -57,10 +62,6 @@ c rigidly with that nucleus
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
-
-      real(dp), ALLOCATABLE, save :: centsav(:,:)
-      real(dp), ALLOCATABLE, save :: pecentn(:)
-      real(dp), ALLOCATABLE, save :: xpolsav(:,:)
 
 
       if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
@@ -186,9 +187,35 @@ c end loop over electrons
       enddo
 
       return
+      end subroutine
 
 c Set up n-n potential energy (and PCM related quantities) at displaced positions
-      entry setup_force
+      subroutine setup_force
+      implicit none
+
+      integer :: i, ic, icent, ifl, ifr
+      integer :: index, is, istrech_el, j
+      integer :: jc, js, k, l
+      real(dp) :: ajacob, cc, cc1, cc2
+      real(dp) :: cc3, delta_gpol_fc, delta_qs
+      real(dp) :: det, dist, dist2, enk
+      real(dp) :: env, penups_fc, penupv_fc, rcm
+      real(dp) :: rnp, rnp2, rr2, rr3
+      real(dp) :: rsq, rsq1, wtsm, wtsmi
+      real(dp) :: xi, xx, yi, yy
+      real(dp) :: zi, zz
+      real(dp), dimension(3,nelec) :: x
+      real(dp), dimension(3,nelec) :: xstrech
+      real(dp), dimension(ncent_tot) :: wt
+      real(dp), dimension(3,3) :: dvol
+      real(dp), dimension(3,ncent_tot) :: dwt
+      real(dp), dimension(3) :: dwtsm
+      real(dp), dimension(3,ncent_tot) :: cent_str
+      real(dp), dimension(MCHS) :: q_strech
+      real(dp), dimension(MCHS) :: efsol
+      real(dp), dimension(ncent_tot) :: wt_pcm
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
 
       if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
       if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))

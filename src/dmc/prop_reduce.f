@@ -81,9 +81,19 @@
      &     ,itag_s,MPI_COMM_WORLD,irequest,ierr)
 c     itag_s=itag_s+1
 
-      return
+      end subroutine
 
-      entry prop_recv(isend,itag_r)
+      subroutine prop_recv(isend,itag_r)
+      use branch,  only: nwalk
+      use mpi
+      use prp000,  only: iprop,nprop
+      use prp002,  only: vprop_old
+
+      implicit none
+
+      integer :: ierr, irecv, irequest, isend, itag_r
+      integer :: itag_s
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
       if(iprop.eq.0) return
 

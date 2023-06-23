@@ -39,9 +39,9 @@ c one-shot preconditioned conjugate gradients; convergence thr is residual.lt.in
 
       integer, parameter :: m_parm_opt = 59000
       integer :: n, imax, imod, i, j
-      real*8 b(*),x(*),eps
-      real*8 r(m_parm_opt),d(m_parm_opt),q(m_parm_opt),s(m_parm_opt)
-      real*8 delta_0,delta_new,delta_old,alpha,beta
+      real(8) b(*),x(*),eps
+      real(8) r(m_parm_opt),d(m_parm_opt),q(m_parm_opt),s(m_parm_opt)
+      real(8) delta_0,delta_new,delta_old,alpha,beta
 
       if(n.gt.m_parm_opt) stop 'nparm > m_parm_opt'
 

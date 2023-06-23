@@ -10,8 +10,10 @@ file(GLOB PARSER_SOURCE
 
 add_library(parser SHARED ${PARSER_SOURCE})
 
+set(N_Fortran_FLAGS "${Fortran_Flags}")
+list(REMOVE_ITEM N_Fortran_FLAGS "-Werror")
 target_compile_options(parser
   PRIVATE
-  ${Fortran_FLAGS})
+  ${N_Fortran_FLAGS})
 
 link_libraries(parser)

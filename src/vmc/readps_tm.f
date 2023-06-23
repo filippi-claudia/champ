@@ -44,10 +44,10 @@ c Modified by F. Schautz to use fancy file names
       real(dp), dimension(NCOEF*NCOEF) :: dmatr
       real(dp), dimension(MPS_GRID) :: work
 
-      character*2 icorr,nameat
-      character*3 irel
-      character*4 nicore
-      character*10 ititle(7),iray(6)
+      character(len=2) icorr,nameat
+      character(len=3) irel
+      character(len=4) nicore
+      character(len=10) ititle(7),iray(6)
 
 
       do ic=1,nctype
@@ -68,7 +68,7 @@ c
         read(1) nameat,icorr,irel,nicore,(iray(i),i=1,6),
      &  (ititle(i),i=1,7),npotd,npotu,nrm,r0(ic),arg(ic),zion
        elseif(nloc.eq.3) then
-        read(1,'(a2,x,a2,x,a3,x,a4,x,13(a10,x))') nameat,icorr,irel,nicore
+        read(1,'(a2,1x,a2,1x,a3,1x,a4,1x,13(a10,1x))') nameat,icorr,irel,nicore
      &  ,(iray(i),i=1,6),(ititle(i),i=1,7)
         read(1,*) npotd,npotu,nrm,r0(ic),arg(ic),zion
       endif

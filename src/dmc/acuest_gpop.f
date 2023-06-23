@@ -56,23 +56,18 @@ c routine to accumulate estimators for energy etc.
       integer :: itpber, k, npass
       real(dp) :: derivtotave, dum, efnow, egave, egave1
       real(dp) :: egerr, egnow, ei1now, ei2now
-      real(dp) :: enow, errg, error, fgave
+      real(dp) :: enow, fgave
       real(dp) :: fgerr, peave, peerr, penow
-      real(dp) :: r2now, rinow, rn_eff
+      real(dp) :: r2now, rinow
       real(dp) :: tpbave, tpberr
-      real(dp) :: tpbnow, w, w2, wfnow
-      real(dp) :: wgnow, wnow, x, x2
+      real(dp) :: tpbnow, wfnow
+      real(dp) :: wgnow, wnow
       real(dp), dimension(MFORCE) :: pecollect
       real(dp), dimension(MFORCE) :: tpbcollect
       real(dp), dimension(MFORCE) :: taucollect
       real(dp), dimension(10, MFORCE) :: derivcollect
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
-
-c Statement functions for error calculation, it might be reaplaced in the near future:
-      rn_eff(w,w2)=w**2/w2
-      error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
-      errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
 
 c wt   = weight of configurations
 c xsum = sum of values of x from dmc
@@ -209,7 +204,7 @@ c write out header first time
         if (iblk.eq.1.and.ifr.eq.1)
      &  write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
      &  ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
-     &  ''fgave'',t74,''(fgerr)'',t85,''npass'',t95,''wgsum'',t101,''ioldest'')')
+     &  ,''fgave'',t74,''(fgerr)'',t85,''npass'',t95,''wgsum'',t101,''ioldest'')')
 
 c write out current values of averages etc.
 
@@ -265,5 +260,25 @@ c zero out xsum variables for metrop
       call mmpol_init(1)
 
       return
+      contains
+        elemental pure function rn_eff(w,w2)
+          implicit none
+          real(dp), intent(in) :: w, w2
+          real(dp)             :: rn_eff
+          rn_eff=w**2/w2
+        end function
+        elemental pure function error(x,x2,w,w2)
+          implicit none
+          real(dp), intent(in) :: x, x2,w,w2
+          real(dp)             :: error
+          error=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
+        end function
+        elemental pure function errg(x,x2,i)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          integer, intent(in)  :: i
+          real(dp)             :: errg
+          errg=error(x,x2,wgcum(i),wgcm2(i))
+        end function
       end
       end module

@@ -1,8 +1,4 @@
       module move_walker
-      contains
-      subroutine send_walker(irecv)
-c Written by Claudia Filippi
-
       use age,     only: iage
       use branch,  only: eold,nwalk,pwt,wt,wthist
       use config,  only: d2o,peo_dmc,psido_dmc,psijo_dmc,vold_dmc
@@ -15,6 +11,9 @@ c Written by Claudia Filippi
       use prop_reduce_mod, only: prop_recv,prop_send
       use system,  only: nelec
       use velratio, only: fratio
+      contains
+      subroutine send_walker(irecv)
+c Written by Claudia Filippi
 
       implicit none
 
@@ -69,9 +68,14 @@ c     nwalk=nwalk-1
       call pcm_send(irecv,itag)
       call mmpol_send(irecv,itag)
 
-      return
+      end subroutine
 
-      entry recv_walker(isend)
+      subroutine recv_walker(isend)
+      implicit none
+
+      integer :: ierr, ifr, ip, irecv, irequest
+      integer :: isend, itag
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
 c     nwalk=nwalk+1
 

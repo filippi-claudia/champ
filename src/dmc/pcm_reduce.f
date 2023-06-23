@@ -107,9 +107,19 @@
       call mpi_isend(qopcmo_dmc(nwalk),1,mpi_double_precision,irecv
      &     ,itag_s,MPI_COMM_WORLD,irequest,ierr)
 
-      return
+      end subroutine
 
-      entry pcm_recv(isend,itag_r)
+      subroutine pcm_recv(isend,itag_r)
+      use branch,  only: nwalk
+      use mpi
+      use pcm_cntrl, only: ipcm
+      use pcmo,    only: qopcmo_dmc,spcmo_dmc,vpcmo_dmc
+
+      implicit none
+
+      integer :: ierr, irecv, irequest, isend, itag_r
+      integer :: itag_s
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
       if(ipcm.eq.0) return
 

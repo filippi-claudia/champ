@@ -11,12 +11,12 @@
         integer ivec                      ! vector length
         integer ivecd                     ! vector dimension (1st dim of fval)
         integer ii,jj,kk ! target cells (i,j,k)
-        REAL*8 xparam,yparam,zparam ! normalized displacements from (i,j,k) corners
-        REAL*8 hx,hy,hz   ! grid spacing, and
-        REAL*8 hxi,hyi,hzi ! inverse grid spacing
+        real(8) xparam,yparam,zparam ! normalized displacements from (i,j,k) corners
+        real(8) hx,hy,hz   ! grid spacing, and
+        real(8) hxi,hyi,hzi ! inverse grid spacing
                            ! 1/(x(i+1)-x(i)) & 1/(y(j+1)-y(j)) & 1/(z(k+1)-z(i))
-        REAL*8 fin(0:7,inf2,inf3,nz)        ! interpolant data (cf "evtricub")
-        REAL*8 fval(10)               ! output returned
+        real(8) fin(0:7,inf2,inf3,nz)        ! interpolant data (cf "evtricub")
+        real(8) fval(10)               ! output returned
       end subroutine
 
       subroutine r8mktricubw(x,nx,y,ny,z,nz,f,nf2,nf3,
@@ -29,23 +29,23 @@
       integer nx                        ! length of x vector
       integer ny                        ! length of y vector
       integer nz                        ! length of z vector
-      REAL*8 x(nx)                        ! x vector, strict ascending
-      REAL*8 y(ny)                        ! y vector, strict ascending
-      REAL*8 z(nz)                        ! z vector, strict ascending
+      real(8) x(nx)                        ! x vector, strict ascending
+      real(8) y(ny)                        ! y vector, strict ascending
+      real(8) z(nz)                        ! z vector, strict ascending
       integer nf2                       ! 2nd dim. of f array, nf2.ge.nx
       integer nf3                       ! 3rd dim. of f array, nf3.ge.ny
-      REAL*8 f(8,nf2,nf3,nz)              ! data and spline coefficients
+      real(8) f(8,nf2,nf3,nz)              ! data and spline coefficients
       integer inb1x                     ! 1st dim of xmin & xmax bc arrays
       integer inb1y                     ! 1st dim of ymin & ymax bc arrays
       integer inb1z                     ! 1st dim of zmin & zmax bc arrays
       integer ibcxmin,ibcxmax           ! BC type flag @xmin, xmax
       integer ibcymin,ibcymax           ! BC type flag @ymin, ymax
       integer ibczmin,ibczmax           ! BC type flag @zmin, zmax
-      REAL*8 bcxmin(inb1x,nz),bcxmax(inb1x,nz) ! xmin & xmax BC data, ny x nz
-      REAL*8 bcymin(inb1y,nz),bcymax(inb1y,nz) ! ymin & ymax BC data, nx x nz
-      REAL*8 bczmin(inb1z,ny),bczmax(inb1z,ny) ! zmin & zmax BC data, nx x ny
+      real(8) bcxmin(inb1x,nz),bcxmax(inb1x,nz) ! xmin & xmax BC data, ny x nz
+      real(8) bcymin(inb1y,nz),bcymax(inb1y,nz) ! ymin & ymax BC data, nx x nz
+      real(8) bczmin(inb1z,ny),bczmax(inb1z,ny) ! zmin & zmax BC data, nx x ny
       integer nwk                       ! size of workspace
-      REAL*8 wk(nwk)                      ! workspace array
+      real(8) wk(nwk)                      ! workspace array
       integer ilinx                     ! x vector equal spacing flag
       integer iliny                     ! y vector equal spacing flag
       integer ilinz                     ! z vector equal spacing flag
@@ -222,7 +222,7 @@ c     yz_min = 2+3 = 5
 c     xy_max = 1+2+3 = 6
 c     xz_max = 1+3+3 = 7
 c     yz_max = 2+3+3 = 8
-      real*8  bc(MGRID_PCM,MGRID_PCM,3:8), wk(80*MGRID_PCM3)
+      real(8)  bc(MGRID_PCM,MGRID_PCM,3:8), wk(80*MGRID_PCM3)
 
 
       iok=1
@@ -235,8 +235,8 @@ c We have no info on the derivatives, so use "not a knot" in the creation of the
       ibczmax=0
 
 c Evaluate the energy needed for the calculation
-      memory=dfloat(8)
-      memory=memory*dfloat(ipcm_nstep3d(1)*ipcm_nstep3d(2)*ipcm_nstep3d(3))
+      memory=dble(8)
+      memory=memory*dble(ipcm_nstep3d(1)*ipcm_nstep3d(2)*ipcm_nstep3d(3))
       memory=memory*8.d-6
       write(45,*) 'Allocated memory for the 3D spline fit of PCM:', memory, 'Mb'
 
@@ -303,17 +303,17 @@ c----------------------------------------------------------------------
       integer :: k, l
 
 c     Input:
-      real*8    r(3)    ! Cartesian coordinates
+      real(8)    r(3)    ! Cartesian coordinates
 c     Output:
       integer   ier     ! error status
-      real*8    f       ! Value
+      real(8)    f       ! Value
 
 c     Work:
       integer   ict(10)   ! Control of the spline subroutine
       integer   ix(3)     ! Integer coordinates
-      real*8    fval(10)  ! values returned by the spline routine
-      real*8    rscaled(3)! normalized displacement
-      real*8    inv_step3d(3) ! Inverse of step sizes
+      real(8)    fval(10)  ! values returned by the spline routine
+      real(8)    rscaled(3)! normalized displacement
+      real(8)    inv_step3d(3) ! Inverse of step sizes
 
 
       inout=inout+1.d0

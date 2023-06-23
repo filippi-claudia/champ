@@ -35,9 +35,9 @@
       real(dp), dimension(2) :: det
       real(dp), parameter :: eps = 10.d0**(-40)
       integer :: ii,jj
-c routine to calculate inverse and determinant of matrix a
-c assumed to be dimensioned a(nsub,nsub).
-c the matrix a is replaced by its inverse.
+! routine to calculate inverse and determinant of matrix a
+! assumed to be dimensioned a(nsub,nsub).
+! the matrix a is replaced by its inverse.
 
       if(nsub.eq.0) return
 
@@ -68,20 +68,18 @@ c the matrix a is replaced by its inverse.
         do i = 1, nsub
           if (ipvt(i) .ne. i) det(1) = -det(1)
           det(1) = a(i,i)*det(1)
-c        ...exit
-          if (det(1) .eq. 0.0d0) go to 60
-   10     if (dabs(det(1)) .ge. 1.0d0) go to 20
-          det(1) = ten*det(1)
-          det(2) = det(2) - 1.0d0
-          go to 10
-   20     continue
-   30     if (dabs(det(1)) .lt. ten) go to 40
+          if (det(1) .eq. 0.0d0) exit
+          do
+            if (dabs(det(1)) .ge. 1.0d0) exit
+            det(1) = ten*det(1)
+            det(2) = det(2) - 1.0d0
+          end do
+          do
+            if (dabs(det(1)) .lt. ten) exit
             det(1) = det(1)/ten
             det(2) = det(2) + 1.0d0
-          go to 30
-   40     continue
+          end do
         enddo
-   60   continue
 
         determinant = det(1)*10.0**det(2)
 

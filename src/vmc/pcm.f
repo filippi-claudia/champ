@@ -426,13 +426,13 @@ c     samples volume charges
 c............................................................
       if(iscv.eq.0)then
         do i=1,nelec
-	  if(fac(i).ne.1.0d0)then
-	    nvopcm=nvopcm+1
-	    xv_new(1,nvopcm)=coord(1,i)
-	    xv_new(2,nvopcm)=coord(2,i)
-	    xv_new(3,nvopcm)=coord(3,i)
-	  endif
-	enddo
+          if(fac(i).ne.1.0d0)then
+            nvopcm=nvopcm+1
+            xv_new(1,nvopcm)=coord(1,i)
+            xv_new(2,nvopcm)=coord(2,i)
+            xv_new(3,nvopcm)=coord(3,i)
+          endif
+        enddo
       endif
       return
       end
@@ -461,15 +461,15 @@ c............................................................
 c     write(ounit,*) 'HELLO',nsco,ncopcm
       if(nsco.eq.nscv)then
          iupdate=1
-	 nchv=nvopcm
-	 nch=nchs+nchv
-	 do ko=1,nchv
-	   kn=nchs+ko
-  	   xpol(1,kn)=xv_new(1,ko)
-	   xpol(2,kn)=xv_new(2,ko)
-	   xpol(3,kn)=xv_new(3,ko)
+         nchv=nvopcm
+         nch=nchs+nchv
+         do ko=1,nchv
+           kn=nchs+ko
+             xpol(1,kn)=xv_new(1,ko)
+           xpol(2,kn)=xv_new(2,ko)
+           xpol(3,kn)=xv_new(3,ko)
            ch(kn)=qvol
-	 enddo
+         enddo
 
 c        write(ounit,*)
 c        write(ounit,*)'update of volume charges: nchv =',nchv,'nscv =',nscv
@@ -757,7 +757,7 @@ c...................................................................
       do i=1,nchs
       ch_new(i)=0.0d0
       sch2(i)=0.0d0
-	   do j=1,nchs
+           do j=1,nchs
            ch_new(i)=ch_new(i)+ahca(i,j)*bh(j)
            sch2(i)=sch2(i)+(ahca(i,j)*feps*surk*enfpcm_err(i))**2.0d0
            enddo
@@ -867,7 +867,7 @@ c...................................................................
       qpol=0.0d0
       do i=1,nchs
       ch_new(i)=0.0d0
-	   do j=1,nchs
+           do j=1,nchs
            ch_new(i)=ch_new(i)+ahca(i,j)*bh(j)
            enddo
       qpol=qpol+ch_new(i)
@@ -936,7 +936,7 @@ c....................................................................
 c....................................................................
 c
 c............................TRIAL VERSION-------------------
-      character*80 row1,row2
+      character(len=80) row1,row2
       open (70,file='surf_info',form='formatted',status='unknown')
       rewind 70
       nxyz=0

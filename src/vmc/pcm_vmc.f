@@ -9,12 +9,9 @@
       implicit none
 
       integer :: iblk, ispcmerr, ivpcmerr
-      real(dp) :: err, rtpass, spcmave, spcmerr, svpcmave
+      real(dp) :: rtpass, spcmave, spcmerr, svpcmave
       real(dp) :: svpcmerr, vpcmave, vpcmerr, wcum
-      real(dp) :: x, x2
 
-
-      err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
       if(ipcm.eq.0.or.ipcmprt.eq.0) return
 
@@ -45,6 +42,13 @@
       endif
 
       return
+      contains
+        elemental pure function err(x,x2)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          real(dp)             :: err
+          err=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
+        end function
       end
 
 c-----------------------------------------------------------------------
@@ -64,14 +68,13 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, iblk, iqopcm_err, ispcmerr, ivpcmerr
-      real(dp) :: dble, dqpol, err, gpcmkcal, hatokc
+      real(dp) :: dble, dqpol, gpcmkcal, hatokc
       real(dp) :: qopcm_ave, qopcm_err, qpol, qtheo
       real(dp) :: qtheov, qv, rtpass, sdqpol
       real(dp) :: sepcmkcal, spcmave, spcmerr, spcmkcal
       real(dp) :: sqpol, sqpol2, sqtheo, sqtheo2
       real(dp) :: sqv, svpcmave, svpcmerr, vepcmkcal
       real(dp) :: vpcmave, vpcmerr, vpcmkcal, wcum
-      real(dp) :: x, x2
       real(dp), dimension(MCHS) :: enfpcm_ave
       real(dp), dimension(MCHS) :: enfpcm_err
 
@@ -79,8 +82,6 @@ c-----------------------------------------------------------------------
 
       data hatokc/627.509541d0/
 
-
-      err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
       if(ipcm.eq.0) return
 
@@ -115,7 +116,7 @@ c-----------------------------------------------------------------------
           enfpcm_ave(i)=enfpcm_cum(i)/wcum
           enfpcm_err(i)=err(enfpcm_cum(i),enfpcm_cm2(i))
         enddo
- 	call qpcm_charges(enfpcm_ave,enfpcm_err,qpol,sqpol2)
+         call qpcm_charges(enfpcm_ave,enfpcm_err,qpol,sqpol2)
 
         qtheo=(fs-1.0d0)*(qfree+qopcm_ave)
         sqtheo2=((fs-1.0d0)*qopcm_err)**2.0d0
@@ -124,21 +125,21 @@ c-----------------------------------------------------------------------
         dqpol=qpol-qtheo
         sdqpol=dsqrt(sqpol2+sqtheo2)
         qtheov=-(fs-1.0d0)*qopcm_ave
-	qv=(nch-nchs)*qvol
+        qv=(nch-nchs)*qvol
         sqv=sqtheo*dsqrt(0.5d0+vmc_nblk*vmc_nstep/dble(nscv*iscov))
         write(ounit,'(''pcm        qout ='',f12.7,'' +-'',f11.7,f9.5)') qopcm_ave,qopcm_err,qopcm_err*rtpass
-        write(ounit,'(''pcm        qpol ='',f12.7'' +-'',f11.7)') qpol,sqpol
-        write(ounit,'(''pcm      qtheos ='',f12.7'' +-'',f11.7)') qtheo,sqtheo
-        write(ounit,'(''pcm qpol-qtheos ='',f12.7'' +-'',f11.7)') dqpol,sdqpol
-        write(ounit,'(''pcm       qpolv ='',f12.7'' +-'',f11.7)') qv,sqv
-        write(ounit,'(''pcm      qtheov ='',f12.7'' +-'',f11.7)') qtheov,sqtheo
-	spcmkcal=spcmave*hatokc
-	vpcmkcal=vpcmave*hatokc
-	sepcmkcal=spcmerr*hatokc
-	vepcmkcal=vpcmerr*hatokc
-	gpcmkcal=spcmkcal+vpcmkcal
-	write(ounit,*)'    qout       qpol        qtheo      DG_surf/vol/tot +- err (kcal/mol) '
-	write(ounit,1000)qopcm_ave,qpol,qtheo,spcmkcal,sepcmkcal,vpcmkcal,vepcmkcal,gpcmkcal
+        write(ounit,'(''pcm        qpol ='',f12.7,'' +-'',f11.7)') qpol,sqpol
+        write(ounit,'(''pcm      qtheos ='',f12.7,'' +-'',f11.7)') qtheo,sqtheo
+        write(ounit,'(''pcm qpol-qtheos ='',f12.7,'' +-'',f11.7)') dqpol,sdqpol
+        write(ounit,'(''pcm       qpolv ='',f12.7,'' +-'',f11.7)') qv,sqv
+        write(ounit,'(''pcm      qtheov ='',f12.7,'' +-'',f11.7)') qtheov,sqtheo
+        spcmkcal=spcmave*hatokc
+        vpcmkcal=vpcmave*hatokc
+        sepcmkcal=spcmerr*hatokc
+        vepcmkcal=vpcmerr*hatokc
+        gpcmkcal=spcmkcal+vpcmkcal
+        write(ounit,*)'    qout       qpol        qtheo      DG_surf/vol/tot +- err (kcal/mol) '
+        write(ounit,1000)qopcm_ave,qpol,qtheo,spcmkcal,sepcmkcal,vpcmkcal,vepcmkcal,gpcmkcal
         write(ounit,*)
        else
         write(ounit,'(''pcm        qout ='',f12.7,'' +-'',f11.7,f9.5)') qopcm_ave,qopcm_err,qopcm_err*rtpass
@@ -149,6 +150,13 @@ c-----------------------------------------------------------------------
  1000 format(9F12.5)
 
       return
+      contains
+        elemental pure function err(x,x2)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          real(dp)             :: err
+          err=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
+        end function
       end
 c-----------------------------------------------------------------------
       subroutine pcm_save

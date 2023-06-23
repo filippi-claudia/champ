@@ -3,8 +3,8 @@ module header
 
     implicit none
 
-    character*20 title
-    character*24 date
+    character(len=20) title
+    character(len=24) date
 
     private
     public :: date, title
@@ -72,10 +72,10 @@ module general
     character(:), allocatable :: pp_id
     character(:), allocatable :: bas_id
     character(:), allocatable :: filename
-    character*256, allocatable, dimension(:) :: filenames_bas_num
-    character*256, allocatable, dimension(:) :: filenames_ps_gauss
-    character*256, allocatable, dimension(:) :: filenames_ps_champ
-    character*256, allocatable, dimension(:) :: filenames_ps_tm
+    character(len=256), allocatable, dimension(:) :: filenames_bas_num
+    character(len=256), allocatable, dimension(:) :: filenames_ps_gauss
+    character(len=256), allocatable, dimension(:) :: filenames_ps_champ
+    character(len=256), allocatable, dimension(:) :: filenames_ps_tm
     character(:), allocatable :: atomsymbol
     logical :: write_walkalize = .false.
 

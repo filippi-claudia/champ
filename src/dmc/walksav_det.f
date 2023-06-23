@@ -1,8 +1,4 @@
       module walksav_det_mod
-      contains
-      subroutine walksav_det(iw)
-c Written by Claudia Filippi
-
       use branch,  only: nwalk
       use csfs,    only: nstates
       use dmc_mod, only: mwalk
@@ -17,14 +13,7 @@ c Written by Claudia Filippi
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
       use ycompact, only: ymat
-
       implicit none
-
-      integer :: i, iab, ierr, iorb, irecv
-      integer :: irequest, irequest_array, isend, istate
-      integer :: istatus, itag, iw, iw2
-      integer :: j, k, kk
-      integer :: ndim, nel, ndim2
 
       integer, allocatable, save :: krefw(:)
       real(dp), allocatable, save :: slmuiw(:, :)
@@ -42,6 +31,17 @@ c Written by Claudia Filippi
       real(dp), allocatable, save :: ymatw(:,:,:,:,:)
       real(dp), allocatable, save :: orbw(:,:,:)
       real(dp), allocatable, save :: dorbw(:,:,:,:)
+
+      contains
+      subroutine walksav_det(iw)
+c Written by Claudia Filippi
+      implicit none
+
+      integer :: i, iab, ierr, iorb, irecv
+      integer :: irequest, irequest_array, isend, istate
+      integer :: istatus, itag, iw, iw2
+      integer :: j, k, kk
+      integer :: ndim, nel, ndim2
 
       dimension istatus(MPI_STATUS_SIZE)
       dimension irequest_array(MPI_STATUS_SIZE)
@@ -122,9 +122,19 @@ c Written by Claudia Filippi
          enddo
        enddo
 
-      return
+      end subroutine
 
-      entry walkstrdet(iw)
+      subroutine walkstrdet(iw)
+      implicit none
+
+      integer :: i, iab, ierr, iorb, irecv
+      integer :: irequest, irequest_array, isend, istate
+      integer :: istatus, itag, iw, iw2
+      integer :: j, k, kk
+      integer :: ndim, nel, ndim2
+
+      dimension istatus(MPI_STATUS_SIZE)
+      dimension irequest_array(MPI_STATUS_SIZE)
 
       do k=1,ndet
         detiab(k,1,1)=detuw(k,iw)
@@ -182,9 +192,19 @@ c Written by Claudia Filippi
          enddo
        enddo
 
-      return
+      end subroutine
 
-      entry splitjdet(iw,iw2)
+      subroutine splitjdet(iw,iw2)
+      implicit none
+
+      integer :: i, iab, ierr, iorb, irecv
+      integer :: irequest, irequest_array, isend, istate
+      integer :: istatus, itag, iw, iw2
+      integer :: j, k, kk
+      integer :: ndim, nel, ndim2
+
+      dimension istatus(MPI_STATUS_SIZE)
+      dimension irequest_array(MPI_STATUS_SIZE)
 
       do k=1,ndet
         detuw(k,iw2)=detuw(k,iw)
@@ -242,9 +262,19 @@ c Written by Claudia Filippi
          enddo
        enddo
 
-      return
+      end subroutine
 
-      entry send_det(irecv)
+      subroutine send_det(irecv)
+      implicit none
+
+      integer :: i, iab, ierr, iorb, irecv
+      integer :: irequest, irequest_array, isend, istate
+      integer :: istatus, itag, iw, iw2
+      integer :: j, k, kk
+      integer :: ndim, nel, ndim2
+
+      dimension istatus(MPI_STATUS_SIZE)
+      dimension irequest_array(MPI_STATUS_SIZE)
 
       itag=0
       call mpi_isend(detuw(1,nwalk),ndet,mpi_double_precision,irecv
@@ -298,9 +328,19 @@ c Written by Claudia Filippi
      &  ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
 
-      return
+      end subroutine
 
-      entry recv_det(isend)
+      subroutine recv_det(isend)
+      implicit none
+
+      integer :: i, iab, ierr, iorb, irecv
+      integer :: irequest, irequest_array, isend, istate
+      integer :: istatus, itag, iw, iw2
+      integer :: j, k, kk
+      integer :: ndim, nel, ndim2
+
+      dimension istatus(MPI_STATUS_SIZE)
+      dimension irequest_array(MPI_STATUS_SIZE)
 
       itag=0
       call mpi_recv(detuw(1,nwalk),ndet,mpi_double_precision,isend

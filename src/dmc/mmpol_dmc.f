@@ -15,18 +15,14 @@
       integer :: i, iblk, icmmpol_err, idmmpol_err
       real(dp) :: cekcal, cmmpol_ave, cmmpol_err, cmmpol_kcal, dckcal
       real(dp) :: dekcal, dmmpol_ave, dmmpol_err, dmmpol_kcal
-      real(dp) :: errg, error, evalg_eff, hatokc
-      real(dp) :: rn_eff, rtevalg_eff1, w, w2
+      real(dp) :: evalg_eff, hatokc
+      real(dp) :: rtevalg_eff1, w, w2
       real(dp) :: x, x2
       real(dp), dimension(MFORCE) :: wgcum
       real(dp), dimension(MFORCE) :: wgcm2
 
       data hatokc/627.509541d0/
 
-c Statement functions for error calculation, it might be reaplaced in the near future:
-      rn_eff(w,w2)=w**2/w2
-      error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
-      errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
 
       if(immpol.eq.0.or.immpolprt.eq.0) return
 
@@ -60,7 +56,26 @@ c Statement functions for error calculation, it might be reaplaced in the near f
       write(ounit,*)
  1000 format (f15.7,' +- ',2f15.7,' +- ',f15.7,' --> ',f15.7)
 
-      return
+      contains
+        elemental pure function rn_eff(w,w2)
+          implicit none
+          real(dp), intent(in) :: w, w2
+          real(dp)             :: rn_eff
+          rn_eff=w**2/w2
+        end function
+        elemental pure function error(x,x2,w,w2)
+          implicit none
+          real(dp), intent(in) :: x, x2,w,w2
+          real(dp)             :: error
+          error=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
+        end function
+        elemental pure function errg(x,x2,i)
+          implicit none
+          real(dp), intent(in) :: x, x2
+          integer, intent(in)  :: i
+          real(dp)             :: errg
+          errg=error(x,x2,wgcum(i),wgcm2(i))
+        end function
       end
 c-----------------------------------------------------------------------
       subroutine mmpol_fin(iblk,wgcum,wgcm2)

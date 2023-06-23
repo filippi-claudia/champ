@@ -50,10 +50,13 @@ module optorb_mod
     integer :: nmatdim
     integer :: nmatdim2
 
+    ! imported from check_orbitals_(reset), so it can be saved here
+    integer :: nadorb_save
+
     integer, parameter :: MXREP = 10
     private
     public :: mxreduced, nmatdim, nmatdim2, MXREP
-    public :: set_optorb_size
+    public :: set_optorb_size, nadorb_save
     save
 
 contains

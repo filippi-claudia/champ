@@ -94,19 +94,22 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: i, iblk
-      real(dp) :: err, wcum, x, x2
+      real(dp) :: wcum, x, x2
       real(dp), dimension(MAXPROP) :: pav
       real(dp), dimension(MAXPROP) :: perr
-
-
-
-      err(x,x2)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
 
       if(iprop.eq.0) return
       do i=1,nprop
        perr(i)=err(vprop_cum(i),vprop_cm2(i))
        pav(i)=vprop_cum(i)/wcum
       enddo
+      contains
+        elemental pure function err(x,x2)
+        implicit none
+        real(dp) err
+        real(dp), intent(in) :: x, x2
+        err = dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
+        end function
       end
 c-----------------------------------------------------------------------
       subroutine prop_dump(iu)
@@ -244,8 +247,8 @@ c....dipole
 
         integer  mctype,mcent,ncent
         integer  iwctype(mcent)
-        real*8 znuc(mctype),cent(3,mcent)
-        real*8 cc_nuc(3), tmp
+        real(8) znuc(mctype),cent(3,mcent)
+        real(8) cc_nuc(3), tmp
         integer i,id
 
         cc_nuc(1)=0.d0

@@ -181,7 +181,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
 
       integer :: i, ier, n
-      complex*16 q(n),r(n)
+      complex(8) q(n),r(n)
 
       do i=1,n
         qr(i)=real(q(i))
@@ -208,7 +208,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
 
       integer :: i, ier, n
-      complex*16 q(n),r(n)
+      complex(8) q(n),r(n)
 
       do i=1,n
         qr(i)=real(q(i))
@@ -232,7 +232,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
 
       integer :: n
-      complex*16 q(n)
+      complex(8) q(n)
 
       return
       end

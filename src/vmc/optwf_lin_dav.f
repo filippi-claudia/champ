@@ -38,7 +38,7 @@
       real(dp) :: sigma_sav
       real(dp), dimension(mparm*MSTATES) :: grad
       real(dp), dimension(mparm*MSTATES,5) :: grad_more
-      character*20 method_sav
+      character(len=20) method_sav
 
       if(method .ne.'lin_d')return
 
@@ -88,7 +88,7 @@ c do iteration
 
         if(ifunc_omega.gt.0) then
           if(iter.gt.n_omegaf) then
-            alpha_omega=dfloat(n_omegaf+n_omegat-iter)/n_omegat
+            alpha_omega=dble(n_omegaf+n_omegat-iter)/n_omegat
             omega=alpha_omega*omega0+(1.d0-alpha_omega)*(energy_sav-sigma_sav)
             if(ifunc_omega.eq.2) omega=alpha_omega*omega0+(1.d0-alpha_omega)*energy_sav
           endif

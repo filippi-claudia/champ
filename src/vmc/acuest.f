@@ -1,6 +1,4 @@
       module acuest_mod
-      contains
-      subroutine acuest
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
@@ -55,6 +53,11 @@ c routine to accumulate estimators for energy etc.
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,znuc
       use vmc_mod, only: nrad, nwftypeorb, stoj
+
+      implicit none
+
+      contains
+      subroutine acuest
 
       implicit none
 
@@ -138,9 +141,12 @@ c zero out xsum variables for metrop
       call acuest_reduce(enow)
       if(allocated(enow)) deallocate(enow)
 
-      return
+      end subroutine
 c-----------------------------------------------------------------------
-      entry acues1(wtg)
+      subroutine acues1(wtg)
+      implicit none
+      real(dp), dimension(MSTATES) :: wtg
+      integer :: istate, k
 c statistical fluctuations without blocking
       do istate=1,nstates
         ecum1(istate)=ecum1(istate)+esum1(istate)*wtg(istate)
@@ -159,18 +165,27 @@ c statistical fluctuations without blocking
 
       call acues1_reduce
 
-      return
+      end subroutine
 c-----------------------------------------------------------------------
-      entry acusig(wtg)
+      subroutine acusig(wtg)
+      implicit none
+      real(dp), dimension(MSTATES) :: wtg
+      integer :: istate
 c sigma evaluation
       do istate=1,nstates
         ecum1s(istate)=ecum1s(istate)+esum1(istate)*wtg(istate)
         ecm21s(istate)=ecm21s(istate)+esum1(istate)**2*wtg(istate)
         esum1(istate)=0
       enddo
-      return
+      end subroutine
 c-----------------------------------------------------------------------
-      entry zerest
+      subroutine zerest
+      implicit none
+      integer :: i, ic, ifr, istate, jel, k
+      real(dp) :: psidg, r2now, rnorm_nodes
+      real(dp) :: ajacob, distance_node
+      real(dp), dimension(3,nelec) :: xstrech
+      real(dp), dimension(MSTATES) :: ekino
 
 c entry point to zero out all averages etc.
 c the initial values of energy psi etc. is also calculated here

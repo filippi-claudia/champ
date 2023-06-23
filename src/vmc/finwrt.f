@@ -44,7 +44,7 @@ c routine to print out final results
       integer :: j
       real(dp) :: accept, delr, eerr, eerr1
       real(dp) :: eerr1s, eerr_p, efin, efin_p
-      real(dp) :: err, err1, ferr, ffin
+      real(dp) :: ferr, ffin
       real(dp) :: passes, peerr, pefin, r2err
       real(dp) :: r2fin, rtpass, sucsum
       real(dp) :: tcsq, term
@@ -55,14 +55,7 @@ c routine to print out final results
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = .5d0
 
-
-
-
-
-      err(x,x2,j,i)=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
-      err1(x,x2,j)=dsqrt(dabs(x2/wcum(j,1)-(x/wcum(j,1))**2)/passes)
-
-      passes=dfloat(iblk*vmc_nstep)
+      passes=dble(iblk*vmc_nstep)
       rtpass=dsqrt(passes)
 
 c quantities not computed in acuest_write
@@ -219,5 +212,20 @@ c 250   force_err(ifr)=sqrt(force_err(ifr))
       if(ngradnts.gt.0 .and. igrdtype.eq.2) call finwrt_diaghess_zmat(ffin_grdnts,ferr_grdnts)
 
       return
+      contains
+      elemental pure function err(x,x2,j,i)
+        implicit none
+        real(dp), intent(in) :: x, x2
+        integer,  intent(in) :: j, i
+        real(dp)             :: err
+        err=dsqrt(abs(x2/wcum(j,i)-(x/wcum(j,i))**2)/iblk)
+      end function
+      elemental pure function err1(x,x2,j)
+        implicit none
+        real(dp), intent(in) :: x, x2
+        integer,  intent(in) :: j
+        real(dp)             :: err1
+        err1=dsqrt(dabs(x2/wcum(j,1)-(x/wcum(j,1))**2)/passes)
+      end function
       end
       end module
