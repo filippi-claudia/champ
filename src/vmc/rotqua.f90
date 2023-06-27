@@ -10,7 +10,7 @@ contains
       integer :: icase, icasem, icosa, ii
       integer :: iocta, ip, iq, itetr
       integer :: j, jj, jmax, k
-      integer :: k0, kk, kk1, kk2
+      integer :: k0 = 0, kk, kk1, kk2
       integer :: kk3, kk4, l, lp
       integer :: lq, m, mindif, ncase
       integer :: newmin, npoint, nq, ntypa

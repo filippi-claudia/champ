@@ -152,8 +152,7 @@ contains
       if(ipr.ge.3) then
         write(ounit,'(''pe_loc after nonloc_pot'',9f12.5)') pe_local
         do i=1,nstates
-          write(ounit,'(''pe_ref after nonloc_pot, state ,up/down: &
-                   '',i4,9f12.5)') i,(vpsp_det(ii,stobjx(i)),ii=1,2)
+          write(ounit,'(''pe_ref after nonloc_pot, state ,up/down: '',i4,9f12.5)') i,(vpsp_det(ii,stobjx(i)),ii=1,2)
         enddo
       endif
 

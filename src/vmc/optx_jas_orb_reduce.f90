@@ -18,7 +18,7 @@ contains
 
       implicit none
 
-      integer :: i, ierr, istate, j, nreduced
+      integer :: i, ierr, istate, j, nreduced = 0
       real(dp), dimension(nparmj,mxreduced) :: collect
 
 

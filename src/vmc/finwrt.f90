@@ -46,9 +46,9 @@ contains
       real(dp) :: eerr1s, eerr_p, efin, efin_p
       real(dp) :: ferr, ffin
       real(dp) :: passes, peerr, pefin, r2err
-      real(dp) :: r2fin, rtpass, sucsum
+      real(dp) :: r2fin, rtpass, sucsum = 0
       real(dp) :: tcsq, term
-      real(dp) :: tpberr, tpbfin, trysum, x
+      real(dp) :: tpberr, tpbfin, trysum = 0, x
       real(dp) :: x2
       real(dp), dimension(MFORCE) :: ffin_grdnts
       real(dp), dimension(MFORCE) :: ferr_grdnts
@@ -137,8 +137,7 @@ contains
         passes, vmc_nstep,iblk
       endif
       if(nstates.gt.1) write(ounit,'(/,''State '',i4)') istate
-      write(ounit,'(''physical variable'',t20,''average'',t34,''rms error'' &
-      ,t47,''rms er*rt(pass)'',t65,''sigma'',t74,''Tcor'')')
+      write(ounit,'(''physical variable'',t20,''average'',t34,''rms error'',t47,''rms er*rt(pass)'',t65,''sigma'',t74,''Tcor'')')
 
       write(ounit,'(''total E ='',t17,f12.7,'' +-'',f11.7,3f9.5,f8.2)') &
        efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,tcsq*tcsq

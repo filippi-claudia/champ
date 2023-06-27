@@ -619,7 +619,7 @@ contains
 
       integer :: i, istate, j, n
       real(dp) :: botsum_j, eave
-      real(dp) :: passes, ratio, topsum_j, x
+      real(dp) :: passes, ratio = 0, topsum_j, x
       real(dp) :: x2
       real(dp), dimension(nparmj, nparmj) :: hess1
       real(dp), dimension(nparmj, nparmj) :: hess2

@@ -37,7 +37,7 @@ contains
 
       integer :: i, i0, i1, i_ovr, idx
       integer :: ii, imag, ireal, is
-      integer :: isort_ovr, iter, j, k
+      integer :: isort_ovr = 0, iter, j, k
       integer :: lwork, mparmx, nparm
       integer, dimension(nparmall) :: isort
       integer  :: MWORK

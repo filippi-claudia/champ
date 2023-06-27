@@ -13,10 +13,10 @@ contains
       implicit none
 
       integer :: ic, ider, ii, irb, iwf
-      integer :: jx
-      real(dp) :: aa, bb, cc, dd, delh
+      integer :: jx = 0
+      real(dp) :: aa, bb, cc, dd, delh = 0._dp
       real(dp) :: delhi, dlogag, dlrad0, r
-      real(dp) :: ref0, ref1, xr
+      real(dp) :: ref0 = 0, ref1 = 0, xr
       real(dp), dimension(4) :: wfv
       real(dp), parameter :: sixth = 1.d0/6.d0
 

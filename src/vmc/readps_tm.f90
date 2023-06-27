@@ -32,7 +32,7 @@ contains
       implicit none
 
       integer :: i, ic, icoef, ii, index
-      integer :: info, ipot_io, ir, j
+      integer :: info, ipot_io = 0, ir, j
       integer :: jj, jmax, ll, npotd
       integer :: npotu, nr, nrm
       integer, dimension(NCOEF) :: ipiv

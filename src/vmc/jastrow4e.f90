@@ -26,13 +26,13 @@ contains
       real(dp) :: bot, bot2, boti, botii, botu
       real(dp) :: botuu, dd1, dd10
       real(dp) :: dd2, dd7, dd8, dd9
-      real(dp) :: fc, fee, feeu, feeuu
-      real(dp) :: fen, feni, fenii, fi
+      real(dp) :: fc, fee, feeu, feeuu = 0
+      real(dp) :: fen, feni, fenii = 0, fi
       real(dp) :: fii, fj, fjj, fu
       real(dp) :: fui, fuj, fuu, ri
       real(dp) :: rij, rj, s, t
       real(dp) :: top, topi, topii, topu
-      real(dp) :: topuu, u2mst, u2pst
+      real(dp) :: topuu, u2mst = 0, u2pst = 0
       real(dp), dimension(3, *) :: x
       real(dp), dimension(-2:nordj) :: uu
       real(dp), dimension(-2:nordj) :: ss

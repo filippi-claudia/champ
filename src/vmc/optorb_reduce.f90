@@ -18,8 +18,8 @@ contains
 
       implicit none
 
-      integer :: i, iefpsample, ierr, isample_cmat, istate
-      integer :: matdim, norb_f_bcum, norb_f_collect, nreduced
+      integer :: i, iefpsample = 0, ierr, isample_cmat = 0, istate
+      integer :: matdim, norb_f_bcum, norb_f_collect, nreduced = 0
       real(dp), dimension(norbterm+nmatdim) :: collect
 
       if(ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return

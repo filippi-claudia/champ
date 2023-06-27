@@ -34,8 +34,8 @@ contains
       integer :: ioptorb_sav, iter, miter, nstates_sav,nadorb_sav
       integer, dimension(5,MSTATES) :: index_more
       real(dp) :: adiag, alin_adiag_sav, alpha_omega, denergy, denergy_err
-      real(dp) :: dparm_norm, energy_err_sav, energy_sav
-      real(dp) :: sigma_sav
+      real(dp) :: dparm_norm, energy_err_sav, energy_sav = 0
+      real(dp) :: sigma_sav = 0
       real(dp), dimension(mparm*MSTATES) :: grad
       real(dp), dimension(mparm*MSTATES,5) :: grad_more
       character(len=20) method_sav

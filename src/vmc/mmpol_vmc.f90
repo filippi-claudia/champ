@@ -10,7 +10,7 @@ contains
       implicit none
 
       integer :: iblk, icmmpol_err, idmmpol_err
-      real(dp) :: cmmpol_ave, cmmpol_err, cmmpol_merr, dmmpol_ave, dmmpol_err
+      real(dp) :: cmmpol_ave, cmmpol_err, cmmpol_merr = 0, dmmpol_ave, dmmpol_err
       real(dp) :: qmmpol_ave, qmmpol_err, rtpass
       real(dp) :: wcum
 
@@ -69,7 +69,7 @@ contains
       implicit none
 
       integer :: i, iblk, icmmpol_err, idmmpol_err
-      real(dp) :: cekcal, cmmpol_ave, cmmpol_err, cmmpol_kcal, cmmpol_merr
+      real(dp) :: cekcal, cmmpol_ave, cmmpol_err, cmmpol_kcal, cmmpol_merr = 0
       real(dp) :: dckcal, dekcal, dmmpol_ave, dmmpol_err
       real(dp) :: dmmpol_kcal, hatokc, qmmpol_ave
       real(dp) :: qmmpol_err, rtpass, wcum
@@ -164,7 +164,7 @@ contains
       implicit none
 
       integer :: i
-      real(dp) :: QMdp, QMq
+      real(dp) :: QMdp = 0, QMq = 0
 
 
 
@@ -196,7 +196,7 @@ contains
       implicit none
 
       integer :: i
-      real(dp) :: QMdp, QMq, p, q
+      real(dp) :: QMdp = 0, QMq = 0, p, q
 
 
       if(immpol.eq.0) return

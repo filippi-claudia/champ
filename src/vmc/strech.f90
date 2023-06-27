@@ -226,8 +226,7 @@ contains
       do i=1,nforce
         write(ounit,*) '--------------'
         do ic=1,ncent
-          write(ounit,'(''center '',i2,'' conf '',i2,'' displace '', &
-          3f15.7)') ic,i,(delc(k,ic,i),k=1,3)
+          write(ounit,'(''center '',i2,'' conf '',i2,'' displace '',3f15.7)') ic,i,(delc(k,ic,i),k=1,3)
         enddo
       enddo
       write(ounit,'(''iwftypes'',20i2)') (iwftype(i),i=1,nforce)

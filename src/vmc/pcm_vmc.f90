@@ -170,7 +170,7 @@ contains
       implicit none
 
       integer :: i
-      real(dp) :: pcms, pcmv
+      real(dp) :: pcms = 0, pcmv = 0
 
 
       if(ipcm.eq.0) return
@@ -196,7 +196,7 @@ contains
       implicit none
 
       integer :: i
-      real(dp) :: p, pcms, pcmv, q
+      real(dp) :: p, pcms = 0, pcmv = 0, q
 
 
       if(ipcm.eq.0) return

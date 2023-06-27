@@ -47,7 +47,7 @@ contains
       integer :: i, iflag, iforce_analy_sav, iguiding_sav, inc_nblk
       integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iqmc_again
       integer :: iqmc_check, istate, istate0, iter
-      integer :: miter, nblk_sav, nparmci, nstates_sav, nadorb_sav
+      integer :: miter, nblk_sav, nparmci = 0, nstates_sav, nadorb_sav
       integer, dimension(MSTATES) :: i_deltap
       integer, dimension(5) :: index_min_energy
       integer, dimension(5,MSTATES) :: index_more

@@ -205,7 +205,7 @@ contains
       real(dp) :: zz2, det
       real(dp), dimension(MCHS*MCHS) :: ah_vec
       real(dp), dimension(MCHS) :: bhn
-      real(dp), dimension(MCHS,MCHS) :: ah
+      real(dp), dimension(MCHS,MCHS) :: ah = 0
 
       DATA PI/3.1415927D0/
 !............................................................
@@ -914,7 +914,7 @@ contains
       integer :: icount2, ii, ij, imax
       integer :: iold, ipair, ird, ith
       integer :: j, k, kode, npmax
-      integer, dimension(2000000,2) :: ijpair
+      integer, save, dimension(2000000,2) :: ijpair
       integer, dimension(5000) :: inda1
       integer, dimension(5000) :: indat
       integer, dimension(5000) :: itoro
@@ -924,10 +924,10 @@ contains
       real(dp) :: uu, ux, uy, uz
       real(dp) :: w, x, xx, y
       real(dp) :: yy, z, zz
-      real(dp), dimension(2000000) :: dist
-      real(dp), dimension(3,5000) :: xpolt
-      real(dp), dimension(5000) :: amdlgt
-      real(dp), dimension(3,5000) :: etat
+      real(dp), save, dimension(2000000) :: dist
+      real(dp), save, dimension(3,5000) :: xpolt
+      real(dp), save, dimension(5000) :: amdlgt
+      real(dp), save, dimension(3,5000) :: etat
 
 
 
@@ -1340,7 +1340,7 @@ contains
       real(dp) :: f2, ff1, pi2, pi25
       real(dp) :: pigreco, pol, qf, r0
       real(dp) :: rij, ro, s1, s2
-      real(dp) :: sumz, ww, xi, xx
+      real(dp) :: sumz = 0, ww, xi, xx
       real(dp) :: yi, yy, z1, z2
       real(dp) :: zi, zz, e0
       real(dp), dimension(1000) :: x
@@ -1568,7 +1568,7 @@ contains
       real(dp) :: ss, xx, xx2, yy
       real(dp) :: yy2, zz, zz2
       real(dp), dimension(MCHS*MCHS) :: ah_vec
-      real(dp), dimension(MCHS,MCHS) :: ah
+      real(dp), dimension(MCHS,MCHS) :: ah = 0
       real(dp), dimension(MCHS) :: q_strech
       real(dp), dimension(MCHS) :: efield
 

@@ -41,12 +41,12 @@ contains
       if (iblk.eq.nproc) then
         if(nforce.gt.1) then
           write(ounit,'(t5,''enow'',t15,''eave'',t21,''(eerr )'' &
-          ,t32,''peave'',t38,''(peerr)'',t48,''tpbave'',t54,''(tpberr)'' &
-          ,t66,''fave'',t80,''(ferr)'',t93,''accept'',t101,''iter'')')
+          &,t32,''peave'',t38,''(peerr)'',t48,''tpbave'',t54,''(tpberr)'' &
+          &,t66,''fave'',t80,''(ferr)'',t93,''accept'',t101,''iter'')')
          else
           write(ounit,'(t5,''enow'',t15,''eave'',t21,''(eerr )'' &
-          ,t32,''peave'',t38,''(peerr)'',t48,''tpbave'',t54,''(tpberr)'' &
-          ,t67,''accept'',t79,''iter'')')
+          &,t32,''peave'',t38,''(peerr)'',t48,''tpbave'',t54,''(tpberr)'' &
+          &,t67,''accept'',t79,''iter'')')
         endif
       endif
 
@@ -110,12 +110,10 @@ contains
             endif
 
           else
-           fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr)) &
-          !/abs(deltot(ifr))
+           fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))!/abs(deltot(ifr))
             ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)!/abs(deltot(ifr))
             iferr=nint(1.0d9*ferr)
-            write(ounit,'(f10.5,f10.5,''('',i5,'')'',51x,f14.9,''('',i9,'')'') &
-            ') enow(istate,ifr),eave,ieerr,fave,iferr
+            write(ounit,'(f10.5,f10.5,''('',i5,'')'',51x,f14.9,''('',i9,'')'')') enow(istate,ifr),eave,ieerr,fave,iferr
           endif
 ! endif for ifr.eq.1
         enddo

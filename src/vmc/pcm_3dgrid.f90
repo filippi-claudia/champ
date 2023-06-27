@@ -204,7 +204,7 @@ contains
       integer :: i, ibcxmax, ibcxmin, ibcymax, ibcymin
       integer :: ibczmax, ibczmin, ilinx, iliny
       integer :: ilinz, iok, ipcm_grid, ipcm_int_from_cart
-      integer :: irstar, iu, iy, iz
+      integer :: irstar = 0, iu, iy, iz
       integer :: j, k, l, memory
       integer :: nwk, ier, ix
       real(dp) :: pepol_s, pepol_v
@@ -364,7 +364,7 @@ contains
 
       implicit none
 
-      integer :: iu, i, j, ipcm_grid
+      integer :: iu, i, j, ipcm_grid = 0
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return
 
@@ -387,7 +387,7 @@ contains
 
       implicit none
 
-      integer :: iu, i, j, ipcm_grid
+      integer :: iu, i, j, ipcm_grid = 0
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return
 

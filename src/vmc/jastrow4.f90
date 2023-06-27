@@ -22,7 +22,7 @@ contains
       integer :: ipar, isb, it, j
       integer :: k, l, l_hi, ll
       integer :: m, n
-      real(dp) :: bot, bot2, boti, botii, botu
+      real(dp) :: bot = 0, bot2, boti = 0, botii, botu = 0
       real(dp) :: botuu, dd1, dd10
       real(dp) :: dd2, dd7, dd8, dd9
       real(dp) :: fc, fee, feeu, feeuu

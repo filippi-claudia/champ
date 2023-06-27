@@ -234,8 +234,7 @@ contains
       call optx_orb_ci_rstrt(10)
 
       write(ounit,'(1x,''succesful read from unit 10'')')
-      write(ounit,'(t5,''enow'',t15,''eave'',t25,''eerr'',t35,''peave'', &
-      t45,''peerr'',t55,''tpbave'',t65,''tpberr'',t75,''accept'',t85,''iter'')')
+      write(ounit,'(t5,''enow'',t15,''eave'',t25,''eerr'',t35,''peave'',t45,''peerr'',t55,''tpbave'',t65,''tpberr'',t75,''accept'',t85,''iter'')')
 
       if(nforce.gt.1) then
         call setup_force
