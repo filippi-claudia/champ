@@ -116,7 +116,7 @@ contains
       implicit none
 
       integer :: i, iw
-      real(dp) :: QMdp, QMq
+      real(dp) :: QMdp = 0, QMq = 0
 
       if(immpol.eq.0) return
 
@@ -144,7 +144,7 @@ contains
       implicit none
 
       integer :: i, iw
-      real(dp) :: QMdp, QMq, p, q
+      real(dp) :: QMdp = 0, QMq = 0, p, q
 
       if(immpol.eq.0) return
 

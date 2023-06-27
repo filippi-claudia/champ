@@ -60,8 +60,7 @@ contains
          else
           evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
           rtevalg_eff1=dsqrt(evalg_eff-1)
-          write(ounit,'(''property '',a3,t17,f12.7,'' +-'' &
-             ,f11.7,f9.5)') pnames(i),pav(i),perr(i),perr(i)*rtevalg_eff1
+          write(ounit,'(''property '',a3,t17,f12.7,'' +-'',f11.7,f9.5)') pnames(i),pav(i),perr(i),perr(i)*rtevalg_eff1
         endif
       enddo
 !....dipole

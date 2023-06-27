@@ -15,7 +15,7 @@
 
       implicit none
 
-      integer :: ierr, ibranch_elec
+      integer :: ierr, ibranch_elec = 1
       character(len=40) :: filename
 
       call mpi_init(ierr)

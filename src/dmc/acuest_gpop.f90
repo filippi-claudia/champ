@@ -202,9 +202,9 @@ contains
 ! write out header first time
 
         if (iblk.eq.1.and.ifr.eq.1) &
-        write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32 &
-        ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66 &
-        ,''fgave'',t74,''(fgerr)'',t85,''npass'',t95,''wgsum'',t101,''ioldest'')')
+        write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32&
+        &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66&
+        &,''fgave'',t74,''(fgerr)'',t85,''npass'',t95,''wgsum'',t101,''ioldest'')')
 
 ! write out current values of averages etc.
 

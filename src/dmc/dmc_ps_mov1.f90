@@ -116,7 +116,7 @@ contains
       real(dp) :: dx, e_cutoff, dwt_cutoff, ekino(1), enew(1)
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, ginv
-      real(dp) :: p, pen, pp, psi2savo
+      real(dp) :: p, pen, pp, psi2savo = 0
       real(dp) :: psidn(1), psijn(1), q, r2n
       real(dp) :: r2o, r2sume, risume
       real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new

@@ -293,14 +293,14 @@ contains
 
         if (iblk.eq.1.and.ifr.eq.1) then
           if(nforce.gt.1) then
-            write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32 &
-            ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66 &
-            ,''fgave'',t79,''(fgerr)'',t93,''fgave_n'',t106,''(fgerr_n)'',t123 &
-            ,''npass'',t132,''wgsum'',t142,''ioldest'')')
+            write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32&
+            &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66&
+            &,''fgave'',t79,''(fgerr)'',t93,''fgave_n'',t106,''(fgerr_n)'',t123&
+            &,''npass'',t132,''wgsum'',t142,''ioldest'')')
           else
-            write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32 &
-            ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t67 &
-            ,''npass'',t77,''wgsum'',t85,''ioldest'')')
+            write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32&
+            &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t67&
+            &,''npass'',t77,''wgsum'',t85,''ioldest'')')
           endif
         endif
 
@@ -323,8 +323,7 @@ contains
             nint(wgcollect(ifr)/nproc),ioldest
           endif
          else
-          write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),f17.12, &
-          ''('',i12,'')'',f17.12,''('',i12,'')'',10x,i10)') &
+          write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),f17.12,''('',i12,'')'',f17.12,''('',i12,'')'',10x,i10)') &
           egcollect(ifr)/wgcollect(ifr), &
           egave,iegerr,peave,ipeerr,tpbave,itpber, &
           fgave,ifgerr,derivtotave,iderivgerr,nint(wgcollect(ifr)/nproc)

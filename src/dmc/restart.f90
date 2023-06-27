@@ -212,10 +212,10 @@ contains
       if (nupx.ne.nup) call fatal_error('STARTR: nup')
       if (ndnx.ne.ndn) call fatal_error('STARTR: ndn')
       write(ounit,'(1x,''succesful read from unit 10'')')
-      write(ounit,'(t5,''egnow'',t15,''egave'',t21 &
-      ,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55 &
-      ,''(tpberr)'' ,t66,''npass'',t77 &
-      ,''wgsum'',t88 ,''ioldest'')')
+      write(ounit,'(t5,''egnow'',t15,''egave'',t21&
+      &,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55&
+      &,''(tpberr)'' ,t66,''npass'',t77&
+      &,''wgsum'',t88 ,''ioldest'')')
 
       do iw=1,nwalk
         if(istrech.eq.0) then

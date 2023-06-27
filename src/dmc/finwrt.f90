@@ -98,8 +98,7 @@ contains
       rtevalf_eff1=dsqrt(evalf_eff-1)
       rtevalg_eff1=dsqrt(evalg_eff-1)
 
-      write(ounit,'(''passes,eval,pass_proc,eval_proc,eval_eff, &
-      evalf_eff,evalg_eff'',19f9.0)') &
+      write(ounit,'(''passes,eval,pass_proc,eval_proc,eval_eff,evalf_eff,evalg_eff'',19f9.0)') &
        passes,eval,pass_proc,eval_proc,eval_eff,evalf_eff, &
        evalg_eff
 
@@ -130,8 +129,7 @@ contains
       endif
 
       if (write_walkalize) &
-        write(11,'(3i5,f11.5,f7.4,f10.7, &
-        '' nstep,nblk,nconf,etrial,tau,taueff'')') &
+        write(11,'(3i5,f11.5,f7.4,f10.7,''nstep,nblk,nconf,etrial,tau,taueff'')') &
         dmc_nstep,iblk,dmc_nconf,etrial,tau,taucum(1)/wgcum(1)
 
       if(.not.wid.and.mode.eq.'dmc_one_mpi2') return
@@ -155,8 +153,7 @@ contains
           endif
         enddo
 
-        write(ounit,'(''age of oldest walker (this generation, any gen)='', &
-         3i9)') ioldest,ioldestmx
+        write(ounit,'(''age of oldest walker (this generation, any gen)='',3i9)') ioldest,ioldestmx
       endif
 
 !     write(ounit,'(''average of the squares of the accepted step-size='',
@@ -219,8 +216,7 @@ contains
          wgcm2(1))/iblk_proc
       endif
 
-      write(ounit,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq  nproc  tau    taueff'', &
-      /,2f12.0,5i6,2f9.5)') &
+      write(ounit,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq  nproc  tau    taueff'',/,2f12.0,5i6,2f9.5)') &
       eval,passes,dmc_nconf,dmc_nstep,iblk,dmc_nblkeq,nproc,tau,taucum(1)/wgcum(1)
       write(ounit,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
       if(idmc.ge.0) then
@@ -259,10 +255,8 @@ contains
 
         peerr=errg(pecum_dmc(ifr),pecm2_dmc(ifr),ifr)
         tpberr=errg(tpbcum_dmc(ifr),tpbcm2_dmc(ifr),ifr)
-        write(ounit,'(''potential energy ='',t24,f12.7,'' +-'' &
-        ,f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
-        write(ounit,'(''pb kinetic energy ='',t24,f12.7,'' +-'' &
-        ,f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
+        write(ounit,'(''potential energy ='',t24,f12.7,'' +-'',f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
+        write(ounit,'(''pb kinetic energy ='',t24,f12.7,'' +-'',f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
       enddo
       do ifr=2,nforce
         fgave=egcum(1)/wgcum(1)-egcum(ifr)/wgcum(ifr)
@@ -273,8 +267,7 @@ contains
           ffin_grdnts(ifr-1)=fgave
           ferr_grdnts(ifr-1)=fgerr
         endif
-        write(ounit,'(''force config'',i2,t24,e19.10 &
-        ,'' +-'',e16.8,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
+        write(ounit,'(''force config'',i2,t24,e19.10,'' +-'',e16.8,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
         force(ifr)=fgave
         force_err(ifr)=fgerr
       enddo
