@@ -20,7 +20,8 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use force_analytic, only: compute_force
       use inputflags, only: iqmmm
       use jastrow, only: ianalyt_lap
-      use jastrow_mod, only: jastrow_f => jastrow
+c     use jastrow_mod, only: jastrow_f => jastrow
+      use jastrow_mod, only: jastrow_factor
       use jastrow_num_mod, only: jastrow_num
       use m_force_analytic, only: iforce_analy
       use mmpol,   only: mmpol_extpot_ene
@@ -121,7 +122,7 @@ c get contribution from jastrow (also compute derivatives wrt parameters and nuc
       if(nforce.gt.1) iwf=iwftype(ifr)
      
       if(ianalyt_lap.eq.1) then
-        call jastrow_f(coord,vj,d2j,psij,ifr)
+        call jastrow_factor(coord,vj,d2j,psij,ifr)
       else
         if(nforce.gt.1) then
           call jastrow_num(coord,vj(:,:,1),d2j(1),psij(1))

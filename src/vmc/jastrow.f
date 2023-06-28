@@ -1,6 +1,6 @@
       module jastrow_mod
       contains
-      subroutine jastrow(x,v,d2j,psij,ifr)
+      subroutine jastrow_factor(x,v,d2j,psij,ifr)
 c Written by Cyrus Umrigar
 
       use system, only: nelec
@@ -13,7 +13,7 @@ c Written by Cyrus Umrigar
       use vmc_mod, only: nwftypejas
       use derivjas, only: d2g, g, go, gvalue
       use contrl_file, only: ounit
-
+      use jastrow, only: ijas
       implicit none
 
       integer :: i, j, ifr
