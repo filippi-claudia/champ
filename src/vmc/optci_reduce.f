@@ -15,10 +15,6 @@
       use ci010_blk, only: ci_ooe_cum
       use optwf_control, only: method
       use mpi
-      use mstates2, only: effcm2,effcum
-      use mstates_ctrl, only: iefficiency,nstates_psig
-      use optci,   only: mxcireduced,mxciterm,ncimatdim
-      use optorb_cblock, only: norbterm
       use vmc_mod, only: nwftypeorb
       use csfs, only: nstates
 
@@ -39,7 +35,8 @@ c     max does not work with g77
       ! defined like that in reference branch
       ! https://github.com/filippi-claudia/champ/blob/847f0e5e94d77035d957158406aac47c3e27af54/src/vmc/optci_reduce.f#L16
       ! MXTMP = mxciterm + ncimatdim
-      MXTMP=max(norbterm,ncimatdim)
+      MXTMP=max(mxciterm,ncimatdim)
+      if(ioptci.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') MXTMP=max(MXTMP,nstates_psig)
 
       allocate(optci_reduce_collect(MXTMP))
       allocate(optci_reduce_collect2(mxciterm,mxcireduced))
