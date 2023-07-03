@@ -740,24 +740,23 @@ c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
                   enddo
                   
                else
-
+                  
                   do iorb=1,norb
-                        orbn(iorb,1)=0.d0
-                        dorbn(iorb,1,1)=0.d0
-                        dorbn(iorb,2,1)=0.d0
-                        dorbn(iorb,3,1)=0.d0
-                        ddorbn(iorb,1)=0.d0
-                        do m0=1,n0_nbasis(iel)
-                           m=n0_ibasis(m0,iel)
-                           orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-                           dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                           dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                           dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
-                           ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
-                        enddo
+                     orbn(iorb,1)=0.d0
+                     dorbn(iorb,1,1)=0.d0
+                     dorbn(iorb,2,1)=0.d0
+                     dorbn(iorb,3,1)=0.d0
+                     ddorbn(iorb,1)=0.d0
+                     do m0=1,n0_nbasis(iel)
+                        m=n0_ibasis(m0,iel)
+                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                        ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
                      enddo
                   enddo
-
+               
                endif
 
                
