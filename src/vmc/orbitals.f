@@ -268,9 +268,9 @@ c                      ddorb(  iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,iwf)*d2phin
                       auxddorb(iorb)=auxddorb(iorb)+coef(m,iorb,iwf)*d2phin( m,i)
                    enddo
                 enddo
-                orb(i,1:norb+nadorb,k)=auxorb
-                dorb(1:norb+nadorb,i,:,k)=auxdorb
-                ddorb(1:norb+nadorb,i,k)=auxddorb
+                orb(i,1:(norb+nadorb),k)=auxorb(1:(norb+nadorb))
+                dorb(1:(norb+nadorb),i,1:3,k)=auxdorb(1:(norb+nadorb),1:3)
+                ddorb(1:(norb+nadorb),i,k)=auxddorb(1:(norb+nadorb))
              enddo
           enddo
 #else
@@ -301,9 +301,9 @@ c     ddorb(iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,iwf)*d2phin( m,i)
                       auxddorb(iorb)=auxddorb(iorb)+coef(m,iorb,iwf)*d2phin( m,i)
                    enddo
                 enddo
-                orb(i,1:norb+nadorb,k)=auxorb
-                dorb(1:norb+nadorb,i,:,k)=auxdorb
-                ddorb(1:norb+nadorb,i,k)=auxddorb
+                orb(i,1:(norb+nadorb),k)=auxorb(1:(norb+nadorb))
+                dorb(1:(norb+nadorb),i,1:3,k)=auxdorb(1:(norb+nadorb),1:3)
+                ddorb(1:(norb+nadorb),i,k)=auxddorb(1:(norb+nadorb))
              enddo
           enddo
 #endif
@@ -588,9 +588,9 @@ c     ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,iwf)*d2phin(m,iel)
                         auxddorbn(iorb)=auxddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
                      enddo
                   enddo
-                    orbn(1:norb,k)=auxorbn
-                    dorbn(1:norb,:,k)=auxdorbn
-                    ddorbn(1:norb,k)=auxddorbn
+                    orbn(1:norb,k)=auxorbn(1:norb)
+                    dorbn(1:norb,1:3,k)=auxdorbn(1:norb,1:3)
+                    ddorbn(1:norb,k)=auxddorbn(1:norb)
                enddo
                
                
@@ -616,8 +616,8 @@ c     dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,iwf)*dphin(m,iel,3)
                         auxdorbn(iorb,3)=auxdorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
                      enddo
                   enddo
-                  orbn(1:norb,k)=auxorbn
-                  dorbn(1:norb,:,k)=auxdorbn
+                  orbn(1:norb,k)=auxorbn(1:norb)
+                  dorbn(1:norb,1:3,k)=auxdorbn(1:norb,1:3)
                 enddo
                
 
@@ -654,9 +654,10 @@ c     ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,iwf)*d2phin(m,iel)
                         auxddorbn(iorb)=auxddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
                     enddo
                  enddo
-                 orbn(1:norb,k)=auxorbn
-                 dorbn(1:norb,:,k)=auxdorbn
-                 ddorbn(1:norb,k)=auxddorbn                 
+                 orbn(1:norb,k)=auxorbn(1:norb)
+                 dorbn(1:norb,1:3,k)=auxdorbn(1:norb,1:3)
+                 ddorbn(1:norb,k)=auxddorbn(1:norb)
+
                enddo
 
 
@@ -683,8 +684,8 @@ c     dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,iwf)*dphin(m,iel,3)
                         auxdorbn(iorb,3)=auxdorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
                      enddo
                   enddo
-                  orbn(1:norb,k)=auxorbn
-                  dorbn(1:norb,:,k)=auxdorbn
+                  orbn(1:norb,k)=auxorbn(1:norb)
+                  dorbn(1:norb,1:3,k)=auxdorbn(1:norb,1:3)
                enddo
 
                
