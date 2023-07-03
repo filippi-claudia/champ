@@ -1,4 +1,4 @@
-iwf      module orbitals_mod
+      module orbitals_mod
       interface !LAPACK interface
         SUBROUTINE dgemm(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
 ! *  -- Reference BLAS level3 routine --
