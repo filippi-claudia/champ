@@ -122,7 +122,7 @@ module vmc_store_hdf5_mod
         character(len=*), intent(in)  ::  restart_filename
         integer(hid_t)                 ::  file_id
         integer(hid_t)                 ::  group_id
-        character(len=20)              ::  author = "CHAMP"
+        character(len=20)              ::  author = "CHAMP", s
 
         integer :: i, ib, ic, id, idfrom, idget, ierr
         integer :: ifr, istate, j, k
@@ -141,8 +141,8 @@ module vmc_store_hdf5_mod
 
 
         do i=0,nproc-1
-            ircounts(i)=4
-            idispls(i)=i*4
+           ircounts(i)=4
+           idispls(i)=i*4
         enddo
 
         idispls(nproc)=4*nproc
@@ -152,12 +152,54 @@ module vmc_store_hdf5_mod
 
         call mpi_gatherv(irn(1,idtask),nscounts,mpi_integer,irn_tmp,ircounts,idispls,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
-        ! Bradcast the data which is spread across the processors
-        call bcast(irn)
-        call bcast(xold)
-        call bcast(xq)
-        call bcast(yq)
-        call bcast(zq)
+         ! Bradcast the data which is spread across the processors
+        if(idtask.ne.0) then
+            call mpi_send(xold,3*nelec,mpi_double_precision,0,1,MPI_COMM_WORLD,ierr)
+            call mpi_send(xq,nquad,mpi_double_precision,0,2,MPI_COMM_WORLD,ierr)
+            call mpi_send(yq,nquad,mpi_double_precision,0,3,MPI_COMM_WORLD,ierr)
+            call mpi_send(zq,nquad,mpi_double_precision,0,4,MPI_COMM_WORLD,ierr)
+        else
+            call hdf5_group_create(file_id, "MPIGroup", group_id)
+            call hdf5_group_open(file_id, "MPIGroup", group_id)
+            call hdf5_write(file_id, group_id, "nproc", nproc)
+            call hdf5_write(file_id, group_id, "Random Numbers Each Processor", irn_tmp(1:4,0:nproc-1))
+            call hdf5_write(file_id, group_id, "nelec", nelec)
+            call hdf5_write(file_id, group_id, "nforce", nforce)
+            call hdf5_write(file_id, group_id, "nloc", nloc)
+            call hdf5_write(file_id, group_id, "xold_proc_0", xold)
+            if (nloc .gt. 0) then
+               call hdf5_write(file_id, group_id, "nquad_proc_0", nquad)
+               call hdf5_write(file_id, group_id, "xq_proc_0", xq(1:nquad))
+               call hdf5_write(file_id, group_id, "yq_proc_0", yq(1:nquad))
+               call hdf5_write(file_id, group_id, "zq_proc_0", zq(1:nquad))
+               call hdf5_write(file_id, group_id, "wq_proc_0", wq(1:nquad))
+            endif
+            call hdf5_group_close(group_id)
+            write(ounit, *) " HDF5 Group saved :: MPIGroup "
+
+            do id=1,nproc-1
+               call mpi_recv(xold,3*nelec,mpi_double_precision,id,1,MPI_COMM_WORLD,istatus,ierr)
+               call mpi_recv(xq,nquad,mpi_double_precision,id,2,MPI_COMM_WORLD,istatus,ierr)
+               call mpi_recv(yq,nquad,mpi_double_precision,id,3,MPI_COMM_WORLD,istatus,ierr)
+               call mpi_recv(zq,nquad,mpi_double_precision,id,4,MPI_COMM_WORLD,istatus,ierr)
+
+               call hdf5_group_open(file_id, "MPIGroup", group_id)
+               write (unit=s,fmt=*) id
+               call hdf5_write(file_id, group_id, "xold_proc_"//s, xold)
+               if (nloc .gt. 0) then
+                   call hdf5_write(file_id, group_id, "nquad_proc_"//s, nquad)
+                   call hdf5_write(file_id, group_id, "xq_proc_"//s, xq(1:nquad))
+                   call hdf5_write(file_id, group_id, "yq_proc_"//s, yq(1:nquad))
+                   call hdf5_write(file_id, group_id, "zq_proc_"//s, zq(1:nquad))
+                   call hdf5_write(file_id, group_id, "wq_proc_"//s, wq(1:nquad))
+               endif
+               call hdf5_group_close(group_id)
+           enddo
+        endif
+
+
+        call mpi_barrier(MPI_COMM_WORLD,ierr)
+
 
         ! Only the master process will write the data to the HDF5 file
         if (wid) then
@@ -232,10 +274,6 @@ module vmc_store_hdf5_mod
         call hdf5_write(file_id, group_id, "Zex", zex(1:nbasis,1))
         if (nloc .gt. 0) then
             call hdf5_write(file_id, group_id, "nquad", nquad)
-            call hdf5_write(file_id, group_id, "xq", xq(1:nquad))
-            call hdf5_write(file_id, group_id, "yq", yq(1:nquad))
-            call hdf5_write(file_id, group_id, "zq", zq(1:nquad))
-            call hdf5_write(file_id, group_id, "wq", wq(1:nquad))
         endif
         call hdf5_group_close(group_id)
         write(ounit, *) " HDF5 Group saved :: Basis "
@@ -293,7 +331,6 @@ module vmc_store_hdf5_mod
         call hdf5_group_open(file_id, "QMC", group_id)
         call hdf5_write(file_id, group_id, "Mode", mode)
         call hdf5_write(file_id, group_id, "Number of Processors", nproc)
-        call hdf5_write(file_id, group_id, "Random Numbers Each Processor", irn_tmp(1:4,0:nproc-1))
         call hdf5_group_close(group_id)
         write(ounit, *) " HDF5 Group saved :: QMC "
 
@@ -306,7 +343,6 @@ module vmc_store_hdf5_mod
         call hdf5_write(file_id, group_id, "Number of VMC Configurations", vmc_nconf)
         call hdf5_write(file_id, group_id, "Number of New VMC Configurations", vmc_nconf_new)
         call hdf5_write(file_id, group_id, "iblk", iblk)
-        call hdf5_write(file_id, group_id, "xold", xold)
         call hdf5_write(file_id, group_id, "Delta", delta)
         call hdf5_write(file_id, group_id, "Deltar", deltar)
         call hdf5_write(file_id, group_id, "Deltat", deltat)

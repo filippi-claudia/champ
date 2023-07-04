@@ -50,6 +50,7 @@ module vmc_restore_hdf5_mod
         use properties_mod, only: prop_dump,prop_rstrt
         use pseudo,  only: nloc
         use qua,     only: nquad,wq,xq,yq,zq
+        use random_mod, only: setrn
         use slater,  only: cdet,coef,ndet,norb
         use stats,   only: rejmax
         use step,    only: ekin,ekin2,rprob,suc,trunfb,try
@@ -118,6 +119,7 @@ module vmc_restore_hdf5_mod
 
         ! HDF5 related variables
         character(len=*), intent(in)    ::  restart_filename
+        character(len=20)               ::  s
         ! character(len=*)       ::  date, time, read_author
         ! character(len=*)       ::  git_branch, git_commit
         ! character(len=*)       ::  compiler, compiler_version
@@ -136,7 +138,8 @@ module vmc_restore_hdf5_mod
         integer, dimension(0:nproc) :: ircounts
         integer, dimension(0:nproc) :: idispls
         integer :: irequest, iw
-        real(dp) :: rnd, wq_id, x_id, xq_id, yq_id, zq_id
+        real(dp) :: rnd
+        real(dp), dimension(nquad) :: wq_id, x_id, xq_id, yq_id, zq_id
 
         integer :: jel, nbasx
         integer :: ncentx, nctypex, ndetx, ndnx
@@ -188,6 +191,96 @@ module vmc_restore_hdf5_mod
         ! write(ounit, *) " HDF5 Version:: ", hdf5_version
         ! call hdf5_group_close(group_id)
         ! write(ounit, *) " HDF5 Group read :: Metadata "
+
+        call hdf5_group_open(file_id, "MPIGroup", group_id)
+        call hdf5_read(file_id, group_id, "nproc", nproco)
+        if(nproco.ne.nproc) then
+          write(ounit, '(a)' )          "Warning: different number of processors in the restart file"
+          write(ounit, '(a,i4,a,i4,a)') "Number of processors from restart file = ", nproco, ", Current number of processors = ", nproc
+        endif
+
+        call hdf5_read(file_id, group_id, "Random Numbers Each Processor", irn(1:4,0:nproc-1))
+        if(idtask.le.nproco-1) call setrn(irn(1,idtask))
+
+        call hdf5_read(file_id, group_id, "nelec", nelecx)
+        if (nelecx.ne.nelec) call fatal_error('HDF5 Restart error : current nelec does not match with the restart file')
+
+        call hdf5_read(file_id, group_id, "nforce", nforcex)
+        if (nforcex.ne.nforce) call fatal_error('HDF5 Restart error : current nforce does not match with the restart file')
+
+        call hdf5_read(file_id, group_id, "nloc", nlocx)
+        if (nlocx.ne.nloc) call fatal_error('HDF5 Restart error : current nloc does not match with the restart file')
+
+
+        if(idtask.le.nproco-1) then
+          ! split it into main thread and other threads
+          ! Only master thread
+          if (id .eq. 0) then
+            call hdf5_read(file_id, group_id, "xold_proc_0", xold)
+            if (nloc .gt. 0) then
+               call hdf5_read(file_id, group_id, "nquad_proc_0", nqx)
+               call hdf5_read(file_id, group_id, "xq_proc_0", xq(1:nqx))
+               call hdf5_read(file_id, group_id, "yq_proc_0", yq(1:nqx))
+               call hdf5_read(file_id, group_id, "zq_proc_0", zq(1:nqx))
+               call hdf5_read(file_id, group_id, "wq_proc_0", wq(1:nqx))
+            endif
+          endif
+          ! Other threads but upto nproc-1
+          do id=1,idtask
+            write (unit=s,fmt=*) id
+            call hdf5_read(file_id, group_id, "xold_proc_"//s, xold)
+            if (nloc .gt. 0) then
+                call hdf5_read(file_id, group_id, "nquad_proc_"//s, nqx)
+                call hdf5_read(file_id, group_id, "xq_proc_"//s, xq(1:nqx))
+                call hdf5_read(file_id, group_id, "yq_proc_"//s, yq(1:nqx))
+                call hdf5_read(file_id, group_id, "zq_proc_"//s, zq(1:nqx))
+                call hdf5_read(file_id, group_id, "wq_proc_"//s, wq(1:nqx))
+            endif
+          enddo
+          if(nqx.ne.nquad) call fatal_error('HDF5 Restart : nquad does not match with the restart file')
+
+          ! Other threads from idtask+1 upto nproc_old -1
+          do id=idtask+1,nproco-1
+            write (unit=s,fmt=*) id
+            call hdf5_read(file_id, group_id, "xold_proc_"//s, x_id)
+            if (nloc .gt. 0) then
+                call hdf5_read(file_id, group_id, "nquad_proc_"//s, nq_id)
+                call hdf5_read(file_id, group_id, "xq_proc_"//s, xq_id(1:nqd_id))
+                call hdf5_read(file_id, group_id, "yq_proc_"//s, yq_id(1:nqd_id))
+                call hdf5_read(file_id, group_id, "zq_proc_"//s, zq_id(1:nqd_id))
+                call hdf5_read(file_id, group_id, "wq_proc_"//s, wq_id(1:nqd_id))
+            endif
+          enddo
+         else
+          ! split it into main thread and other threads
+          ! Only master thread
+          if (id .eq. 0) then
+            call hdf5_read(file_id, group_id, "xold_proc_0", x_id)
+            if (nloc .gt. 0) then
+               call hdf5_read(file_id, group_id, "nquad_proc_0", nq_id)
+               call hdf5_read(file_id, group_id, "xq_proc_0", xq_id(1:nqd_id))
+               call hdf5_read(file_id, group_id, "yq_proc_0", yq_id(1:nqd_id))
+               call hdf5_read(file_id, group_id, "zq_proc_0", zq_id(1:nqd_id))
+               call hdf5_read(file_id, group_id, "wq_proc_0", wq_id(1:nqd_id))
+            endif
+          endif
+          ! Other threads but upto nproco-1
+          do id=1,nproco-1
+            write (unit=s,fmt=*) id
+            call hdf5_read(file_id, group_id, "xold_proc_"//s, x_id)
+            if (nloc .gt. 0) then
+                call hdf5_read(file_id, group_id, "nquad_proc_"//s, nq_id)
+                call hdf5_read(file_id, group_id, "xq_proc_"//s, xq_id(1:nqd_id))
+                call hdf5_read(file_id, group_id, "yq_proc_"//s, yq_id(1:nqd_id))
+                call hdf5_read(file_id, group_id, "zq_proc_"//s, zq_id(1:nqd_id))
+                call hdf5_read(file_id, group_id, "wq_proc_"//s, wq_id(1:nqd_id))
+            endif
+          enddo
+        endif
+
+        call hdf5_group_close(group_id)
+        write(ounit, *) " HDF5 Group read :: MPIGroup "
+
 
         call hdf5_group_open(file_id, "Electrons", group_id)
         call hdf5_read(file_id, group_id, "Number of Up-Spin Electrons", nup)
@@ -271,7 +364,6 @@ module vmc_restore_hdf5_mod
         call hdf5_group_open(file_id, "QMC", group_id)
         call hdf5_read(file_id, group_id, "Mode", mode)
         call hdf5_read(file_id, group_id, "Number of Processors", nproc)
-        call hdf5_read(file_id, group_id, "Random Numbers Each Processor", irn_tmp(1:4,0:nproc-1))
         call hdf5_group_close(group_id)
         write(ounit, *) " HDF5 Group read :: QMC "
 
@@ -282,7 +374,6 @@ module vmc_restore_hdf5_mod
         call hdf5_read(file_id, group_id, "Number of VMC Steps per Block", vmc_nstep)
         call hdf5_read(file_id, group_id, "Number of VMC Configurations", vmc_nconf)
         call hdf5_read(file_id, group_id, "Number of New VMC Configurations", vmc_nconf_new)
-        call hdf5_read(file_id, group_id, "xold", xold)
         call hdf5_read(file_id, group_id, "iblk", iblk)
         call hdf5_read(file_id, group_id, "Delta", delta)
         call hdf5_read(file_id, group_id, "Deltar", deltar)
