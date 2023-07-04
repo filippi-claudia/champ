@@ -44,14 +44,6 @@
       return
       end
 
-      subroutine find_image4(rs,r,rnorm)
-      use precision_kinds, only: dp
-      implicit none
-
-
-      real(dp) :: r, rnorm, rs
-      return
-      end
       end module 
 
       module pw_orbitals

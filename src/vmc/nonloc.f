@@ -2,7 +2,7 @@
       use error,   only: fatal_error
       contains
 
-      subroutine nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
+      subroutine nonloc(x,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use Bloc,    only: b,bkin,b_dj
       use b_tmove, only: b_t,iskip
@@ -34,7 +34,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), dimension(3,*) :: x
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
-      real(dp), dimension(3,nelec,ncent_tot) :: rshift
       real(dp), dimension(2,nbjx) :: vpsp_det
       real(dp), dimension(nparmj,nbjx) :: dvpsp_dj
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
@@ -157,18 +156,13 @@ c loop quadrature points
               costh(nxquad)=rvec_en(1,i,ic)*xq(iq)+rvec_en(2,i,ic)*yq(iq)+rvec_en(3,i,ic)*zq(iq)
               costh(nxquad)=costh(nxquad)*ri
 
-              if(iperiodic.eq.0) then
-                xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)
-                xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)
-                xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)
-               else
-                xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)+rshift(1,i,ic)
-                xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)+rshift(2,i,ic)
-                xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
-              endif
+              xquad(1,nxquad)=r_en(i,ic)*xq(iq)+cent(1,ic)
+              xquad(2,nxquad)=r_en(i,ic)*yq(iq)+cent(2,ic)
+              xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)
+              
 
               r_en_quad(nxquad,ic)=r_en(i,ic)
-              call distance_quad(nxquad,ic,xquad(1,nxquad),r_en_quad,rvec_en_quad,rshift)
+              call distance_quad(nxquad,ic,xquad(1,nxquad),r_en_quad,rvec_en_quad)
 
             enddo
            elseif(i_vpsp.ne.0)then
@@ -199,13 +193,13 @@ c endif iskip
       enddo
       if(ioptjas.eq.0) then
         do iwfjas=1,nwftypejas 
-            call nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
+            call nonlocj_quad(nxquad,xquad,iequad,x,r_en,
      &         rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio,
      &         fso(1,1,iwfjas),iwfjas)
         enddo
       else
         do iwfjas=1,nwftypejas
-            call deriv_nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,
+            call deriv_nonlocj_quad(nxquad,xquad,iequad,x,r_en,
      &         rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),dpsij_ratio(1,1,iwfjas),vjn,
      &         da_psij_ratio,iwfjas)
         enddo
@@ -336,12 +330,12 @@ c-----------------------------------------------------------------------
       end
 
 c-----------------------------------------------------------------------
-      subroutine distance_quad(iq,ic,x,r_en_quad,rvec_en_quad,rshift)
+      subroutine distance_quad(iq,ic,x,r_en_quad,rvec_en_quad)
 
       use contrl_per, only: iperiodic
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
-      use pw_find_image, only: find_image4
+      use pw_find_image, only: find_image3
       use qua,     only: xq,yq,zq
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: cent,ncent,ncent_tot,nelec
@@ -352,7 +346,6 @@ c-----------------------------------------------------------------------
       integer :: iq, ic, jc, k
 
       real(dp), dimension(3) :: x
-      real(dp), dimension(3,nelec,ncent_tot) :: rshift
       real(dp), dimension(3,nquad*nelec*2,ncent_tot) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
       real(dp), parameter :: one = 1.d0
@@ -370,7 +363,7 @@ c-----------------------------------------------------------------------
             enddo
             r_en_quad(iq,jc)=dsqrt(r_en_quad(iq,jc))
            else
-            call find_image4(rshift(1,iq,jc),rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
+            call find_image3(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
           endif
 
         endif
@@ -660,7 +653,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       return
       end
 c-----------------------------------------------------------------------
-      subroutine nonlocj_quad(nxquad,xquad,iequad,x,rshift,r_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio,fso,iwfjas)
+      subroutine nonlocj_quad(nxquad,xquad,iequad,x,r_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio,fso,iwfjas)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
@@ -688,7 +681,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       real(dp), dimension(nelec,*) :: fso
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,*) :: xquad
-      real(dp), dimension(3,nelec,ncent_tot) :: rshift
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nquad*nelec*2,*) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
@@ -807,7 +799,7 @@ c The scaling is switched in psinl, so do not do it here.
         do ic=1,ncent
           it=iwctype(ic)
           fsn(i,j)=fsn(i,j) +
-     &    psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2_quad(ic),rr_en2(jj,ic),it,iwfjas)
+     &    psinl(u,rr_en2_quad(ic),rr_en2(jj,ic),it,iwfjas)
         enddo
 
         fsumn=fsumn+fsn(i,j)-fso(i,j)

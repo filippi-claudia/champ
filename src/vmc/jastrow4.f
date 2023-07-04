@@ -12,7 +12,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use bparm, only: nocuspb, nspin2b
       use scale_dist_mod, only: scale_dist2, switch_scale2
       use m_force_analytic, only: iforce_analy
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
       use vmc_mod, only: nwftypejas
@@ -166,10 +166,7 @@ c      write(ounit,'(''rij,u in een'',2f12.9)') rij,uu(1)
         rj=r_en(j,ic)
 
         if(ri.gt.cutjas .or. rj.gt.cutjas) goto 50
-        do k=1,3
-          if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 50
-        enddo
-
+        
         call scale_dist2(ri,rri(1),dd7,dd9,2)
         call scale_dist2(rj,rrj(1),dd8,dd10,2)
 

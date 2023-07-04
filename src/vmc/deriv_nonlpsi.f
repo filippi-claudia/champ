@@ -1,6 +1,6 @@
       module deriv_nonlpsi
       contains
-      function deriv_psinl(u,rshifti,rshiftj,rri,rrj,gn,it,iwfjas)
+      function deriv_psinl(u,rri,rrj,gn,it,iwfjas)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use vmc_mod, only: nwftypejas
@@ -21,8 +21,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       integer :: l_hi, ll, m, n
       real(dp) :: deriv_psinl, p, rri, rrj, rrri
       real(dp) :: rrrj, u
-      real(dp), dimension(3) :: rshifti
-      real(dp), dimension(3) :: rshiftj
       real(dp), dimension(*) :: gn
       real(dp), dimension(0:nordj) :: uu
       real(dp), dimension(0:nordj) :: ss
@@ -44,10 +42,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
         if(nordc.eq.0) return
 
         if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
-        do k=1,3
-          if(abs(rshifti(k)-rshiftj(k)).gt.eps) return
-        enddo
-
+        
         if(nwftypejas.gt.1) iwf=iwfjas
 
         uu(1)=u

@@ -101,14 +101,12 @@ module distance_mod
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: rshift !(3, MELEC, MCENT)
     real(dp), dimension(:, :), allocatable :: r_en !(MELEC, MCENT)
     real(dp), dimension(:, :, :), allocatable :: rvec_en !(3, MELEC, MCENT)
     real(dp), dimension(:), allocatable :: r_ee !(nmat_dim2)
     real(dp), dimension(:, :), allocatable :: rvec_ee !(3, nmat_dim2)
 
     private
-    public :: rshift
     public :: r_en
     public :: rvec_en
     public :: r_ee
@@ -123,34 +121,30 @@ contains
         if (.not. allocated(rvec_en)) allocate (rvec_en(3, nelec, ncent_tot))
         if (.not. allocated(r_ee)) allocate (r_ee(nmat_dim2))
         if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, nmat_dim2))
-        if (.not. allocated(rshift)) allocate (rshift(3, nelec, ncent_tot))
-        rshift=0.d0
     end subroutine allocate_distance_mod
 
     subroutine deallocate_distance_mod()
         if (allocated(rvec_en)) deallocate (rvec_en)
         if (allocated(r_en)) deallocate (r_en)
         if (allocated(rvec_en)) deallocate (rvec_ee)
-        if (allocated(r_ee)) deallocate (r_ee)
-        if (allocated(rshift)) deallocate (rshift)
+        if (allocated(r_ee)) deallocate (r_ee)    
     end subroutine deallocate_distance_mod
 
 end module distance_mod
 
 module distances_sav
-    !> Arguments: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
+    !> Arguments: r_ee_sav, r_en_sav, rvec_ee_sav, rvec_en_sav
       use precision_kinds, only: dp
 
     implicit none
 
     real(dp), dimension(:), allocatable :: r_ee_sav !(MELEC)
     real(dp), dimension(:), allocatable :: r_en_sav !(MCENT)
-    real(dp), dimension(:, :), allocatable :: rshift_sav !(3,MCENT)
     real(dp), dimension(:, :), allocatable :: rvec_ee_sav !(3,MELEC)
     real(dp), dimension(:, :), allocatable :: rvec_en_sav !(3,MCENT)
 
     private
-    public   :: r_ee_sav, r_en_sav, rshift_sav, rvec_ee_sav, rvec_en_sav
+    public   :: r_ee_sav, r_en_sav, rvec_ee_sav, rvec_en_sav
     public :: allocate_distances_sav, deallocate_distances_sav
     save
 contains
@@ -158,7 +152,6 @@ contains
       use system, only: ncent_tot, nelec
         if (.not. allocated(r_ee_sav)) allocate (r_ee_sav(nelec))
         if (.not. allocated(r_en_sav)) allocate (r_en_sav(ncent_tot))
-        if (.not. allocated(rshift_sav)) allocate (rshift_sav(3, ncent_tot))
         if (.not. allocated(rvec_ee_sav)) allocate (rvec_ee_sav(3, nelec))
         if (.not. allocated(rvec_en_sav)) allocate (rvec_en_sav(3, ncent_tot))
     end subroutine allocate_distances_sav
@@ -166,7 +159,6 @@ contains
     subroutine deallocate_distances_sav()
         if (allocated(rvec_en_sav)) deallocate (rvec_en_sav)
         if (allocated(rvec_ee_sav)) deallocate (rvec_ee_sav)
-        if (allocated(rshift_sav)) deallocate (rshift_sav)
         if (allocated(r_en_sav)) deallocate (r_en_sav)
         if (allocated(r_ee_sav)) deallocate (r_ee_sav)
     end subroutine deallocate_distances_sav

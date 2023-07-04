@@ -3,9 +3,6 @@
       contains
       function psi(rij,ri,rj,it)
 c Written by Cyrus Umrigar, modified by Claudia Filippi
-c **Warning** This routine needs to be upgraded to check rshifts
-c if we add in the capability to use numerical Laplacian for
-c periodic systems.
 
 
       use jastrow, only: nordc
