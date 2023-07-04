@@ -8,6 +8,7 @@
     mode            'vmc_one_mpi1'
     sr_lambda       [ 1.0d0 ]
     anorm           [ 1.0d0, 0.32154638 ]
+    nstates         2
 %endmodule
 
 %module mstates

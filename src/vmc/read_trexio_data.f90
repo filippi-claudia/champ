@@ -198,6 +198,7 @@ module trexio_read_data
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
         use coefs, only: nbasis
+        use csfs,               only: nstates
         use inputflags,         only: ilcao
         use numbas,             only: nrbas
         use numbas1,            only: iwlbas, nbastyp
@@ -286,10 +287,12 @@ module trexio_read_data
         ! Do the array allocations
         if( (method(1:3) == 'lin')) then
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
+        elseif( (method(1:3) == 'sr_n') .and. (nstates .gt. 1)) then
+            if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nstates))
         else
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
         endif
-
+        
         ! Do the allocations based on the number of shells and primitives
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
@@ -309,6 +312,12 @@ module trexio_read_data
         call bcast(coef(:,:,1))
         endif
 
+        ! Make a copy of orbital coeffs for multiple states
+        if( (method(1:3) == 'sr_n') .and. (nstates .gt. 1)) then
+            do i=2,nstates
+              coef(:,:,i)=coef(:,:,1)
+            enddo
+        endif
 
 !   Generate the basis information (which radial to be read for which Slm)
         if (wid) then
