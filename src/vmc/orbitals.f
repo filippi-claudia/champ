@@ -509,13 +509,7 @@ c-------------------------------------------------------------------------------
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
-      real(dp), dimension(:), allocatable :: auxorbn !(norb)
-      real(dp), dimension(:, :), allocatable :: auxdorbn !(norb)
-      real(dp), dimension(:), allocatable :: auxddorbn !(norb)
-      if (.not. allocated(auxorbn)) allocate (auxorbn(norb))
-      if (.not. allocated(auxdorbn)) allocate (auxdorbn(norb,3))
-      if (.not. allocated(auxddorbn)) allocate (auxddorbn(norb))
-      
+
 
 #ifdef QMCKL_FOUND
 c     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
@@ -641,9 +635,6 @@ c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
                if(nwftypeorb.gt.1) then
                   
                   do k=1,nwftypeorb
-                     auxorbn=0.d0
-                     auxdorbn=0.d0
-                     auxddorbn=0.d0
                      do iorb=1,norb
                         orbn(iorb,k)=0.d0
                         dorbn(iorb,1,k)=0.d0
@@ -651,28 +642,17 @@ c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
                         dorbn(iorb,3,k)=0.d0
                         ddorbn(iorb,k)=0.d0
                         do m=1,nbasis
-c                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
-c                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
-c                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
-c                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
-c                           ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
-                           auxorbn(iorb)=auxorbn(iorb)+coef(m,iorb,k)*phin(m,iel)
-                           auxdorbn(iorb,1)=auxdorbn(iorb,1)+coef(m,iorb,k)*dphin(m,iel,1)
-                           auxdorbn(iorb,2)=auxdorbn(iorb,2)+coef(m,iorb,k)*dphin(m,iel,2)
-                           auxdorbn(iorb,3)=auxdorbn(iorb,3)+coef(m,iorb,k)*dphin(m,iel,3)
-                           auxddorbn(iorb)=auxddorbn(iorb)+coef(m,iorb,k)*d2phin(m,iel)
+                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
+                           ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
                         enddo
                      enddo
-                     orbn(1:norb,k)=auxorbn
-                     dorbn(1:norb,1:3,k)=auxdorbn
-                     ddorbn(1:norb,k)=auxddorbn
                   enddo
                   
                else
-
-                  auxorbn=0.d0
-                  auxdorbn=0.d0
-                  auxddorbn=0.d0
+                  
                   do iorb=1,norb
                      orbn(iorb,1)=0.d0
                      dorbn(iorb,1,1)=0.d0
@@ -680,21 +660,14 @@ c                           ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(
                      dorbn(iorb,3,1)=0.d0
                      ddorbn(iorb,1)=0.d0
                      do m=1,nbasis
-c                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-c                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-c                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-c                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
-c                        ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
-                        auxorbn(iorb)=auxorbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-                        auxdorbn(iorb,1)=auxdorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                        auxdorbn(iorb,2)=auxdorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                        auxdorbn(iorb,3)=auxdorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
-                        auxddorbn(iorb)=auxddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
+                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                        ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
                      enddo
                   enddo
-                  orbn(1:norb,1)=auxorbn
-                  dorbn(1:norb,1:3,1)=auxdorbn
-                  ddorbn(1:norb,1)=auxddorbn
+                  
                   
                endif
 
@@ -704,50 +677,34 @@ c                        ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m
                if(nwftypeorb.gt.1) then
                   
                   do k=1,nwftypeorb
-                     auxorbn=0.d0
-                     auxdorbn=0.d0
                      do iorb=1,norb
                         orbn(iorb,k)=0.d0
                         dorbn(iorb,1,k)=0.d0
                         dorbn(iorb,2,k)=0.d0
                         dorbn(iorb,3,k)=0.d0
                         do m=1,nbasis
-c                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
-c                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
-c                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
-c                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
-                           auxorbn(iorb)=auxorbn(iorb)+coef(m,iorb,k)*phin(m,iel)
-                           auxdorbn(iorb,1)=auxdorbn(iorb,1)+coef(m,iorb,k)*dphin(m,iel,1)
-                           auxdorbn(iorb,2)=auxdorbn(iorb,2)+coef(m,iorb,k)*dphin(m,iel,2)
-                           auxdorbn(iorb,3)=auxdorbn(iorb,3)+coef(m,iorb,k)*dphin(m,iel,3)
+                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
                         enddo
                      enddo
-                     orbn(1:norb,k)=auxorbn
-                     dorbn(1:norb,1:3,k)=auxdorbn
                   enddo
                   
                else
-
-                  auxorbn=0.d0
-                  auxdorbn=0.d0
+                  
                   do iorb=1,norb
                      orbn(iorb,1)=0.d0
                      dorbn(iorb,1,1)=0.d0
                      dorbn(iorb,2,1)=0.d0
                      dorbn(iorb,3,1)=0.d0
                      do m=1,nbasis
-c                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-c                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-c                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-c                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
-                        auxorbn(iorb)=auxorbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-                        auxdorbn(iorb,1)=auxdorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                        auxdorbn(iorb,2)=auxdorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                        auxdorbn(iorb,3)=auxdorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
                      enddo
                   enddo
-                  orbn(1:norb,1)=auxorbn
-                  dorbn(1:norb,1:3,1)=auxdorbn
                   
                endif
                
@@ -765,9 +722,6 @@ c                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(
                if(nwftypeorb.gt.1) then
 
                   do k=1,nwftypeorb
-                     auxorbn=0.d0
-                     auxdorbn=0.d0
-                     auxddorbn=0.d0
                      do iorb=1,norb
                         orbn(iorb,k)=0.d0
                         dorbn(iorb,1,k)=0.d0
@@ -776,28 +730,17 @@ c                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(
                         ddorbn(iorb,k)=0.d0
                         do m0=1,n0_nbasis(iel)
                            m=n0_ibasis(m0,iel)
-c                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
-c                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
-c                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
-c                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
-c                           ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
-                           auxorbn(iorb)=auxorbn(iorb)+coef(m,iorb,k)*phin(m,iel)
-                           auxdorbn(iorb,1)=auxdorbn(iorb,1)+coef(m,iorb,k)*dphin(m,iel,1)
-                           auxdorbn(iorb,2)=auxdorbn(iorb,2)+coef(m,iorb,k)*dphin(m,iel,2)
-                           auxdorbn(iorb,3)=auxdorbn(iorb,3)+coef(m,iorb,k)*dphin(m,iel,3)
-                           auxddorbn(iorb)=auxddorbn(iorb)+coef(m,iorb,k)*d2phin(m,iel)
+                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
+                           ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
                         enddo
                      enddo
-                     orbn(1:norb,k)=auxorbn
-                     dorbn(1:norb,1:3,k)=auxdorbn
-                     ddorbn(1:norb,k)=auxddorbn
                   enddo
                   
                else
-
-                  auxorbn=0.d0
-                  auxdorbn=0.d0
-                  auxddorbn=0.d0
+                  
                   do iorb=1,norb
                      orbn(iorb,1)=0.d0
                      dorbn(iorb,1,1)=0.d0
@@ -806,25 +749,19 @@ c                           ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(
                      ddorbn(iorb,1)=0.d0
                      do m0=1,n0_nbasis(iel)
                         m=n0_ibasis(m0,iel)
-c                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-c                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-c                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-c                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
-c                        ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
-                        auxorbn(iorb)=auxorbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-                        auxdorbn(iorb,1)=auxdorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                        auxdorbn(iorb,2)=auxdorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                        auxdorbn(iorb,3)=auxdorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
-                        auxddorbn(iorb)=auxddorbn(iorb)+coef(m,iorb,iwf)*d2phin(m,iel)
+                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                        ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
                      enddo
                   enddo
-                  orbn(1:norb,1)=auxorbn
-                  dorbn(1:norb,1:3,1)=auxdorbn
-                  ddorbn(1:norb,1)=auxddorbn
-                  
+               
                endif
 
                
+              
+
 
             else
 
@@ -833,8 +770,6 @@ c                        ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m
 
 
                   do k=1,nwftypeorb
-                     auxorbn=0.d0
-                     auxdorbn=0.d0
                      do iorb=1,norb
                         orbn(iorb,k)=0.d0
                         dorbn(iorb,1,k)=0.d0
@@ -842,24 +777,16 @@ c                        ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m
                         dorbn(iorb,3,k)=0.d0
                         do m0=1,n0_nbasis(iel)
                            m=n0_ibasis(m0,iel)
-c                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
-c                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
-c                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
-c                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
-                           auxorbn(iorb)=auxorbn(iorb)+coef(m,iorb,k)*phin(m,iel)
-                           auxdorbn(iorb,1)=auxdorbn(iorb,1)+coef(m,iorb,k)*dphin(m,iel,1)
-                           auxdorbn(iorb,2)=auxdorbn(iorb,2)+coef(m,iorb,k)*dphin(m,iel,2)
-                           auxdorbn(iorb,3)=auxdorbn(iorb,3)+coef(m,iorb,k)*dphin(m,iel,3)
+                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
                         enddo
                      enddo
-                     orbn(1:norb,k)=auxorbn
-                     dorbn(1:norb,1:3,k)=auxdorbn
                   enddo
                   
                else
 
-                  auxorbn=0.d0
-                  auxdorbn=0.d0
                   do iorb=1,norb
                      orbn(iorb,1)=0.d0
                      dorbn(iorb,1,1)=0.d0
@@ -867,19 +794,13 @@ c                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin
                      dorbn(iorb,3,1)=0.d0
                      do m0=1,n0_nbasis(iel)
                         m=n0_ibasis(m0,iel)
-c                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-c                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-c                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-c                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
-                        auxorbn(iorb)=auxorbn(iorb)+coef(m,iorb,iwf)*phin(m,iel)
-                        auxdorbn(iorb,1)=auxdorbn(iorb,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                        auxdorbn(iorb,2)=auxdorbn(iorb,2)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                        auxdorbn(iorb,3)=auxdorbn(iorb,3)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
                      enddo
                   enddo
-                  orbn(1:norb,1)=auxorbn
-                  dorbn(1:norb,1:3,1)=auxdorbn
-                                       
+                                    
                endif
 
                
