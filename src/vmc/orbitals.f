@@ -46,7 +46,6 @@ c Modified by A. Scemama
       use orbval,  only: ddorb,dorb,nadorb,orb
       use phifun,  only: d2phin,dphin,n0_ibasis,n0_nbasis,phin
       use precision_kinds, only: dp
-      use pw_orbitals, only: orbitals_pw
       use vmc_mod, only: nwftypeorb
 
 #ifdef QMCKL_FOUND
@@ -83,7 +82,6 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
       
       ier=1
-      if(iperiodic.eq.0) then
 
 c spline interpolation
         if(i3dsplorb.eq.2) then
@@ -393,9 +391,6 @@ c                     ddorb(iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin( m
 
        if(iforce_analy.eq.1) call da_orbitals
 
-       else
-        call orbitals_pw(x,orb,dorb,ddorb)
-      endif
 
       if(ipr.ge.0) then
         do j=1,nwftypeorb
@@ -491,7 +486,6 @@ c-------------------------------------------------------------------------------
       use multislatern, only: ddorbn,dorbn,orbn
       use phifun,  only: d2phin,dphin,n0_ibasis,n0_nbasis,phin
       use precision_kinds, only: dp
-      use pw_orbitals, only: orbitals_pw_grade
       use vmc_mod, only: nwftypeorb
       use control, only: ipr
       use contrl_file, only: ounit
@@ -520,8 +514,7 @@ c     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
 #endif
 
 
-      
-      if(iperiodic.eq.0) then
+
 
 c get the value and gradients from the 3d-interpolated orbitals
          ier=0
@@ -814,11 +807,7 @@ c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
 #endif
          endif
 c endif for ier
-      else
-         do k=1,nwftypeorb
-           call orbitals_pw_grade(iel,x(1,iel),orbn(:,k),dorbn(:,:,k),ddorbn(:,k))
-         enddo
-      endif
+      
 
       return
       end

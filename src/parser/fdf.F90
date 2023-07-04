@@ -124,14 +124,14 @@ module keywords
   !> @date October 15, 2022
   implicit none
   integer                     :: num_modules  = 11   ! change this number after every adition/deletion
-  integer                     :: num_keywords = 163 ! change this number after every adition/deletion
+  integer                     :: num_keywords = 173 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
   type(string_t) allowed_modules(11)
-  type(string_t) allowed_keywords(163)
+  type(string_t) allowed_keywords(173)
 
   private
   public  :: num_keywords, num_modules
@@ -225,7 +225,13 @@ module keywords
     allowed_keywords(157)%keys = 'nquad';           allowed_keywords(158)%keys = 'hessian_zmatrix'
     allowed_keywords(159)%keys = 'esigmatrial';     allowed_keywords(160)%keys = 'limit_wt_dmc'
     allowed_keywords(161)%keys = 'write_walkalize'; allowed_keywords(162)%keys = 'sr_lambda'
-    allowed_keywords(163)%keys = 'anorm'
+    allowed_keywords(163)%keys = 'anorm';           allowed_keywords(164)%keys = 'lattice'
+    allowed_keywords(165)%keys = 'np';              allowed_keywords(166)%keys = 'n_images'
+    allowed_keywords(167)%keys = 'npoly';           allowed_keywords(168)%keys = 'cutg'
+    allowed_keywords(169)%keys = 'cutg_sim';        allowed_keywords(170)%keys = 'cutg_big'
+    allowed_keywords(171)%keys = 'cutg_sim_big';    allowed_keywords(172)%keys = 'alattice'
+    allowed_keywords(173)%keys = 'cutjas'
+    
   end subroutine allocate_keywords
 
   subroutine allocate_modulenames()

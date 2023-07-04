@@ -388,7 +388,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use optwf_control, only: method
       use orbval,  only: ddorb,nadorb
       use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
-      use pw_orbitals_e, only: orbitals_pwe
       use slater,  only: coef,norb
       use sr_mod,  only: i_sr_rescale
       use system,  only: iwctype,ncent,ncent_tot,nelec
@@ -429,7 +428,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
 
 
-      if(iperiodic.eq.0) then
+
 
 c get the value from the 3d-interpolated orbitals
         ier=0
@@ -593,11 +592,6 @@ c         write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
 
         endif
 
-       else
-
-        call orbitals_pwe(iel,xquad,orbn)
-
-      endif
 
       nadorb = nadorb_sav
 
