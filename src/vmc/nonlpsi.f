@@ -1,7 +1,7 @@
       module nonlpsi
       use error,   only: fatal_error
       contains
-      function psinl(u,rshifti,rshiftj,rri,rrj,it,iwfjas)
+      function psinl(u,rri,rrj,it,iwfjas)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
       use vmc_mod, only: nwftypejas
       use jastrow, only: nordc
@@ -21,8 +21,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       real(dp), dimension(0:nordj) :: uu
       real(dp), dimension(0:nordj) :: ss
       real(dp), dimension(0:nordj) :: tt
-      real(dp), dimension(3) :: rshifti
-      real(dp), dimension(3) :: rshiftj
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = 0.5d0
@@ -37,10 +35,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 
 
       if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
-      do k=1,3
-        if(abs(rshifti(k)-rshiftj(k)).gt.eps) return
-      enddo
-
+      
       if(nwftypejas.gt.1) iwf=iwfjas
 
       uuu=u

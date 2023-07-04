@@ -2142,7 +2142,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use control, only: ipr
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use ewald,   only: b_coul,y_coul
       use periodic, only: cutr,glatt,igmult,igvec,isrange,ncoef_per,ng1d
       use periodic, only: ngnorm,ngvec,np,znuc_sum
@@ -2179,8 +2179,7 @@ c Warning: I need to call the appropriate vsrange
           do k=1,3
             rvec_en(k,j,i)=x(k,j)-cent(k,i)
           enddo
-c         call find_image3(rvec_en(1,j,i),r_en(j,i))
-          call find_image4(rshift(1,j,i),rvec_en(1,j,i),r_en(j,i))
+          call find_image3(rvec_en(1,j,i),r_en(j,i))
           if(nloc.eq.0) then
             lowest_pow=-1
             vs=vs-znuc(iwctype(i))*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
@@ -2224,7 +2223,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use control, only: ipr
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use ewald,   only: b_coul_sim,y_coul_sim
       use periodic, only: cutr_sim,glatt_sim,igmult_sim,igvec_sim
       use periodic, only: ncoef_per,ng1d_sim,ngnorm_sim,ngvec_sim,np

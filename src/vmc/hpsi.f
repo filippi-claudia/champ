@@ -13,14 +13,13 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use csfs,    only: nstates
       use determinant_mod, only: compute_bmatrices_kin,determinant
       use determinant_psit_mod, only: determinant_psit
-      use distance_mod, only: r_en,rshift,rvec_en
+      use distance_mod, only: r_en,rvec_en
       use distances_mod, only: distances
       use efield,  only: iefield
       use efield_f_mod, only: efield_extpot_ene
       use force_analytic, only: compute_force
       use inputflags, only: iqmmm
       use jastrow, only: ianalyt_lap
-c     use jastrow_mod, only: jastrow_f => jastrow
       use jastrow_mod, only: jastrow_factor
       use jastrow_num_mod, only: jastrow_num
       use m_force_analytic, only: iforce_analy
@@ -148,7 +147,7 @@ c compute pseudo-potential contribution
 c nonloc_pot must be called after determinant because slater matrices are needed
 
       if(nloc.gt.0)
-     &  call nonloc_pot(coord,rshift,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
+     &  call nonloc_pot(coord,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
       if(ipr.ge.3) then
         write(ounit,'(''pe_loc after nonloc_pot'',9f12.5)') pe_local
         do i=1,nstates

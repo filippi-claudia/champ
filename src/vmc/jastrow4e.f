@@ -10,7 +10,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use jaspar6, only: cutjas
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
       use scale_dist_mod, only: scale_dist1,scale_dist2,switch_scale1
       use scale_dist_mod, only: switch_scale2
@@ -180,10 +180,7 @@ c There are no C terms to order 1.
         rj=r_en(j,ic)
 
         if(ri.gt.cutjas .or. rj.gt.cutjas) goto 50
-        do k=1,3
-          if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 50
-        enddo
-
+        
         if(iflag.eq.0) then
           call scale_dist1(ri,rri(1),dd7,2)
           call scale_dist1(rj,rrj(1),dd8,2)

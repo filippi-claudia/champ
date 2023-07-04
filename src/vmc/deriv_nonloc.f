@@ -1,6 +1,6 @@
       module deriv_nonloc
       contains
-      subroutine deriv_nonlocj_quad(nxquad,xquad,ielquad,x,rshift,r_en,rvec_en_quad,r_en_quad,
+      subroutine deriv_nonlocj_quad(nxquad,xquad,ielquad,x,r_en,rvec_en_quad,r_en_quad,
      &                              psij_ratio,dpsij_ratio,vjn,da_psij_ratio,iwfjas)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
@@ -36,7 +36,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       real(dp) :: dumk, fsumn, rij, u
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,*) :: xquad
-      real(dp), dimension(3,nelec,ncent_tot) :: rshift
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nquad*nelec*2,*) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
@@ -193,7 +192,7 @@ c The scaling is switched in deriv_psinl, so do not do it here.
           if(nparmc(it).gt.0) then
             iparm0=npoint(it)
             fsn(i,j)=fsn(i,j) +
-     &      deriv_psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2_quad(ic),rr_en2(jj,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
+     &      deriv_psinl(u,rr_en2_quad(ic),rr_en2(jj,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
           endif
         enddo
 
