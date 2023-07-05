@@ -335,7 +335,7 @@ c-----------------------------------------------------------------------
       use contrl_per, only: iperiodic
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       use qua,     only: xq,yq,zq
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: cent,ncent,ncent_tot,nelec
@@ -658,7 +658,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
       use precision_kinds, only: dp
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
       use optwf_control, only: ioptjas

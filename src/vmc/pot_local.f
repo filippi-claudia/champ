@@ -8,7 +8,7 @@
       use multiple_geo, only: pecent
       use precision_kinds, only: dp
       use pseudo,  only: nloc
-      use pw_ewald, only: pot_ee_ewald,pot_en_ewald
+      use ewald_bk, only: pot_ee_ewald,pot_en_ewald
       use system,  only: iwctype,ncent,nelec,nghostcent,znuc
       implicit none
 

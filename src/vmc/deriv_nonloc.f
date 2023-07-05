@@ -18,7 +18,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use optwf_nparmj, only: nparma,nparmb,nparmc
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       use qua, only: nquad
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nctype,nelec,nup

@@ -187,7 +187,7 @@ subroutine parser
   !! Allocate_periodic
   use periodic,         only: npoly,np,cutg,cutg_big,cutg_sim,cutg_sim_big, alattice
   use periodic,         only: rlatt, rlatt_inv, rlatt_sim, rkvec_shift, n_images, ell
-  use pw_ewald, only: pot_en_ewald, pot_ee_ewald, set_ewald
+  use ewald_bk, only: pot_en_ewald, pot_ee_ewald, set_ewald
   use  m_ewald, only : allocate_m_ewald
   use  m_pseudo, only : allocate_m_pseudo
   

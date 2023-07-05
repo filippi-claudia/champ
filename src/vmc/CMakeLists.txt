@@ -88,8 +88,8 @@ if (MPI_Fortran_FOUND)
     prop_vmc.f
     properties.f
     psi.f
-    pw_ewald.f
-    pw_find_image.f
+    ewald.f
+    find_image.f
     qmmm_placeholder.f
     random.f
     readps_gauss.f
@@ -243,8 +243,8 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/store_diag_hs.f
     ${CMAKE_CURRENT_SOURCE_DIR}/random.f
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid_orbitals.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/find_image.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/ewald.f
     ${CMAKE_CURRENT_SOURCE_DIR}/distances.f
     ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f
     ${CMAKE_CURRENT_SOURCE_DIR}/parser.f90
