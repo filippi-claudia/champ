@@ -55,7 +55,8 @@
       implicit none
 
 
-      real(dp) :: ddorb(norb_tot,nelec), dorb(norb_tot,nelec,3), orb(*), x(3,*)
+      real(dp) :: ddorb(norb_tot,nelec), dorb(norb_tot,nelec,3), orb(*)
+      real(dp) :: x(3,*)
       return
       end
 
