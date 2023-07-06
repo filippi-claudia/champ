@@ -1125,8 +1125,10 @@ subroutine parser
     endif
   enddo
 
+
+
 ! Orbital mapping
-  if (extrao.eq.0) then
+  if (extrao.eq.0 .and. .not. fdf_defined("trexio") ) then
     do istate=1,nstates
       stoo(istate)=1
       if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Orbital set"
