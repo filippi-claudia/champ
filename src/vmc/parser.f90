@@ -9,7 +9,7 @@ subroutine parser
   !> @email  r.l.shinde@utwente.nl
   !> @date   11-08-2021
   !> @version 1.2
-  
+
       use fdf               ! modified libfdf
       use allocation_mod, only: allocate_dmc,allocate_vmc
       use array_resize_utils, only: resize_tensor
@@ -181,7 +181,7 @@ subroutine parser
       use qmckl_data
 #endif
 
-      
+
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
 ! CHAMP modules
@@ -275,11 +275,11 @@ subroutine parser
 
 #if defined(QMCKL_FOUND)
   integer, allocatable :: keep(:)
-  integer :: rc 
+  integer :: rc
   integer*8 :: n8
   character*(1024) :: err_message = ''
   integer*8 :: norb_qmckl
-#endif 
+#endif
 
 ! Initialize # get the filenames from the commandline arguments
   call fdf_init(file_input, 'parser.log')
@@ -300,6 +300,7 @@ subroutine parser
   nwftypejas  = fdf_get('nwftypejas', 1)
   nwftypeorb  = fdf_get('nwftypeorb', 1)
   iperiodic   = fdf_get('iperiodic', 0)
+  nstates     = fdf_get('nstates', 1)
   ibasis      = fdf_get('ibasis', 1)
   cseed       = fdf_string('seed', "18123437465549275475255231234865")
   ipr         = fdf_get('ipr', -1)
@@ -604,7 +605,7 @@ subroutine parser
   write(ounit,'(a25,t40,8i5)') " Random number seed root", irn
   call setrn(irn)
   do n=1,idtask ! unique 2^128 non-overlapping sequences for each process
-    call jumprn() 
+    call jumprn()
   end do
 
   write(ounit,*)
@@ -1025,7 +1026,7 @@ subroutine parser
   elseif ( fdf_load_defined('trexio') ) then
     call read_trexio_determinant_file(file_trexio)
     if (ioptci .ne. 0) mxciterm = ndet
-#endif 
+#endif
   elseif(nwftype.gt.1) then
       if(ideterminants.ne.nwftype) then
         write(ounit,*) "Warning INPUT: block determinants missing for one wave function"
@@ -1076,7 +1077,7 @@ subroutine parser
 
   call elapsed_time ("Reading CSF and CSFMAP file : ")
 
-  
+
   if (mode(1:3) == 'vmc') write(ounit, *) "nstoj_tot, nstoo_tot, nstates", nstoj_tot, nstoo_tot, nstates
   if (extraj.eq.1.and.nstoj_tot.ne.nstates) &
           call fatal_error('Some states have not been assigned a jastrow type')
@@ -1118,14 +1119,16 @@ subroutine parser
   endif
 
   do istate=1,nstates
-    if (stoj(istate) .eq. 0) then 
+    if (stoj(istate) .eq. 0) then
       if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " State ", istate, " has not been assigned a jastrow type. "
       call fatal_error('JASTROW INPUT: a state has not been assigned a jastrow type.')
     endif
   enddo
 
+
+
 ! Orbital mapping
-  if (extrao.eq.0) then
+  if (extrao.eq.0 .and. .not. fdf_defined("trexio") ) then
     do istate=1,nstates
       stoo(istate)=1
       if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Orbital set"
@@ -1149,7 +1152,7 @@ subroutine parser
   call bcast(stoj)
 
   do istate=1,nstates
-    if (stoo(istate) .eq. 0) then 
+    if (stoo(istate) .eq. 0) then
       if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " State ", istate, " has not been assigned an orbital set . "
       call fatal_error('LCAO INPUT: a state has not been assigned an orbital set.')
     endif
@@ -1157,7 +1160,7 @@ subroutine parser
 
   allocate(stobjx(nstates))
   if (nwftypejas.eq.1.and.nwftypeorb.eq.1) then
-    nbjx = 1 
+    nbjx = 1
     allocate(bjxtoo(1))
     allocate(bjxtoj(1))
     bjxtoo(1)=1
@@ -1166,7 +1169,7 @@ subroutine parser
       stobjx(istate) = 1
     enddo
   else
-    nbjx = 1 
+    nbjx = 1
     stobjx(1)=1
     do istate=2,nstates
       do k=1,istate
@@ -1185,7 +1188,7 @@ subroutine parser
         imax=stobjx(istate)
         bjxtoo(1)=stoo(1)
         bjxtoj(1)=stoj(1)
-      else 
+      else
         if (stobjx(istate).gt.imax) then
           bjxtoo(stobjx(istate))=stoo(istate)
           bjxtoj(stobjx(istate))=stoj(istate)
@@ -1194,7 +1197,7 @@ subroutine parser
       endif
     enddo
   endif
- 
+
   do istate=1,nstates
     if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Mixed Quantity #  <--  Jastrow #, Orbital set"
     if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4,A,2i4)') istate, '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
@@ -1211,7 +1214,7 @@ subroutine parser
   ! Set maximum number of parameters. For multistate orbital optimization
   ! the following additional terms will be present. The last +1 is failsafe mechanism.
   if (method.eq.'sr_n') then
-    mparm = nparm*nstates + 2 !necessary because storing 2 quantities in sr_o, and atimesn increments ddot by mparm. 
+    mparm = nparm*nstates + 2 !necessary because storing 2 quantities in sr_o, and atimesn increments ddot by mparm.
   else
     mparm = nparm + (nstates-1)*(norbterm) + 1
   endif
@@ -1429,7 +1432,7 @@ subroutine parser
     if(ioptwf.gt.0) then
       write(ounit,'(a)' ) " Perform wave function optimization in vmc/dmc"
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
-      if(nstates.gt.1 .and. ioptwf.gt.0 .and. method.eq.'sr_n') then 
+      if(nstates.gt.1 .and. ioptwf.gt.0 .and. method.eq.'sr_n') then
       !    call fatal_error('READ_INPUT: nstates>1 and sr_n')
            write(ounit,'(a)' ) " Performing multi-state sr_n, setting ortho=1"
            ortho=1
@@ -1441,7 +1444,7 @@ subroutine parser
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
       if(method.eq.'lin_d' .or. method.eq.'mix_n') then
-        if(lin_jdav.eq.0) then 
+        if(lin_jdav.eq.0) then
                 write(ounit,'(a)' ) " Use old Regterg"
         elseif(lin_jdav.eq.1) then
                 write(ounit,'(a)' ) " Use new Davidson"
@@ -1573,7 +1576,7 @@ subroutine parser
     write(ounit, *) "ANORMO: Determining normalization constants for guiding wave function."
 
     if (.not. allocated(anormo)) allocate (anormo(MSTATES))
-      
+
     if ( fdf_islreal('anorm') .and. fdf_islist('anorm') &
         .and. (.not. fdf_islinteger('anorm')) ) then
       i = -1
@@ -1598,15 +1601,15 @@ subroutine parser
     ! Part which handles the overlap penalty factors
     if (.not. allocated(isr_lambda)) allocate (isr_lambda(MSTATES*(MSTATES-1)/2))
     if (.not. allocated(sr_lambda)) allocate (sr_lambda(MSTATES,MSTATES))
-      
+
     if ( fdf_islreal('sr_lambda') .and. fdf_islist('sr_lambda') &
         .and. (.not. fdf_islinteger('sr_lambda')) ) then
       i = -1
       call fdf_list('sr_lambda',i,isr_lambda)
       write(ounit,'(a)' )
       write(ounit,'(tr1,a,i0,a)') ' SR lambda has ',i,' entries'
-      if(i.ne.nstates*(nstates-1)/2) call fatal_error('READ_INPUT: sr_lambda array, & 
-          &must contain nstates*(nstates-1)/2 entries, [ 1-2, 1-3, ..., 1-nstates, & 
+      if(i.ne.nstates*(nstates-1)/2) call fatal_error('READ_INPUT: sr_lambda array, &
+          &must contain nstates*(nstates-1)/2 entries, [ 1-2, 1-3, ..., 1-nstates, &
           &2-3, 2-4, ..., 2-nstates, ..., (nstates-1)-nstates ]')
       call fdf_list('sr_lambda',i,isr_lambda)
       write(temp5, '(a,i0,a)') '(a,', MSTATES*(MSTATES-1)/2, '(f12.6))'
@@ -1890,18 +1893,18 @@ subroutine parser
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
      !!create qmckl context
      qmckl_ctx = qmckl_context_create()
-     
+
      iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
      if (iostat /= QMCKL_SUCCESS) then
         write(ounit,*) 'Error: Unable to read TREXIO file '//trim(file_trexio)
         call abort()
      end if
-     
+
 
      !! to check change in mo's number to be computed by qmckl inside champ
      norb_qmckl=norb+nadorb
 
-     
+
      write(ounit,*) "inside parser after reading trexio file"
      write(ounit,*) "norb_tot",norb_tot
      write(ounit,*) "norb",norb
@@ -1914,31 +1917,31 @@ subroutine parser
         write(ounit,*) '00 Error getting mo_num from verify orbitals'
         stop
      end if
-     
-     
+
+
      write(ounit,*) "n8", n8
 
      if (n8 > norb_qmckl) then
-        
+
 
         write(ounit,*) "inside if mo's to compute change in parser"
         write(ounit,*) "norb_qmckl",norb_qmckl
         write(ounit,*) "n8 mo's before selection", n8
         !! allocate orbital selection array for qmckl
         allocate(keep(n8))
-        
+
 
         !! selecting range of orbitals to compute qith QMCkl
         keep(1:norb_qmckl) = 1
         keep((norb_qmckl+1):n8) = 0
 
-        
+
         rc = qmckl_mo_basis_select_mo(qmckl_ctx, keep, n8)
         if (rc /= QMCKL_SUCCESS) then
            write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
            stop
         end if
-        
+
         !!deallocate keep
         deallocate(keep)
 
@@ -1950,26 +1953,26 @@ subroutine parser
         end if
         write(ounit,*) "n8 after mo's selec", n8
         write(ounit,*) "norb_qmckl after mo's selec", norb_qmckl
-        
-        
+
+
         !! checking if the current number of orbitals in qmckl is consistent
-        
+
         if (n8 /= norb_qmckl) then
            write(ounit,*) 'Bug in MO selection in QMCkl verify orb'
            stop
         end if
 
      endif
-     
+
   endif
 #endif
 
 
-  
+
 
   !----------------------------------------------------------------------------END
 
-  
+
 
   contains
 
