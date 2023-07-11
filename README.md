@@ -15,7 +15,7 @@ and Claudia Filippi of which it retains the accelerated Metropolis method and th
 diffusion Monte Carlo algorithms.
 
 The European branch of the code is currently developed by Claudia Filippi and Saverio Moroni,
-with significant contributions by Claudio Amovilli and other collaborators.
+with significant contributions by Ravindra Shinde, Nicolas Renaud, Victor Azizi, Edgar Landinez, and Stuart Shepard.
 
 CHAMP has three basic capabilities:
 
@@ -25,20 +25,14 @@ CHAMP has three basic capabilities:
 
 Noteworthy features of CHAMP are:
 
-* Efficient wave function optimization also in a state-average fashion for multiple states of the same symmetry (VMC)
+* Efficient wave function optimization also in a state-average and a state-specific fashion for multiple states of the same symmetry (VMC)
 * Efficient computation of analytical interatomic forces (VMC)
 * Compact formulation for a fast evaluation of multi-determinant expansions and their derivatives (VMC and DMC)
 * Multiscale VMC and DMC calculations in classical point charges (MM), polarizable continuum model (PCM), and polarizable force fields (MMpol)
 
-**NOTE**
+**Note**
 
-You should neither obtain this program from any other source nor should you distribute it
-or any portion thereof to any person, including people in the same research group.
-
-It is expected that users of the programs will do so in collaboration
-with one of the principal authors.  This serves to ensure both that the
-programs are used correctly and that the principal authors get adequate
-scientific credit for the time invested in developing the programs.
+The code is avilable for free under the GPL-3.0 license.
 
 **Usual disclaimer**
 
