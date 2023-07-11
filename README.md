@@ -7,20 +7,24 @@
 ![Github Issues](https://img.shields.io/github/issues/filippi-claudia/champ) ![Github Pull Requests](https://img.shields.io/github/issues-pr/filippi-claudia/champ) ![Github Last Commit](https://img.shields.io/github/last-commit/filippi-claudia/champ) [![Commit Activity](https://img.shields.io/github/commit-activity/w/filippi-claudia/champ)](https://img.shields.io/github/commit-activity/t/filippi-claudia/champ
 )
 
-![Last release tag](https://img.shields.io/github/v/tag/filippi-claudia/champ) ![Github forks](https://img.shields.io/github/forks/filippi-claudia/champ) ![Github stars](https://img.shields.io/github/stars/filippi-claudia/champ)  ![Main Language](https://img.shields.io/github/languages/top/filippi-claudia/champ)  ![Repo Size](https://img.shields.io/github/repo-size/filippi-claudia/champ) ![Code Size](https://img.shields.io/github/languages/code-size/filippi-claudia/champ) 
+![Last release tag](https://img.shields.io/github/v/tag/filippi-claudia/champ) ![Github forks](https://img.shields.io/github/forks/filippi-claudia/champ) ![Github stars](https://img.shields.io/github/stars/filippi-claudia/champ) ![Repo Size](https://img.shields.io/github/repo-size/filippi-claudia/champ) ![Code Size](https://img.shields.io/github/languages/code-size/filippi-claudia/champ)
 
-![Github license](https://img.shields.io/github/license/filippi-claudia/champ) 
-
-
+![Github license](https://img.shields.io/github/license/filippi-claudia/champ)
 
 
-<!-- [![CI using Doxygen generated doc](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml) -->
 
 
 The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo suite of programs for electronic structure calculations of atomic and molecular systems. The code is a sister code of the homonymous program originally developed by Cyrus Umrigar and Claudia Filippi of which it retains the accelerated Metropolis method and the efficient diffusion Monte Carlo algorithms.
 
 The European branch of the code is currently developed by Claudia Filippi and Saverio Moroni,
 with significant contributions by Ravindra Shinde, Nicolas Renaud, Victor Azizi, Edgar Landinez, and Stuart Shepard.
+
+
+<!-- <a href = "https://github.com/filippi-claudia/champ/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo=filippi-claudia/champ"/>
+</a> -->
+
+
 
 CHAMP has three basic capabilities:
 
@@ -50,17 +54,22 @@ CHAMP relies on various other program packages:
 1. [Parser](https://github.com/neelravi/mpi-libfdf-parser):
    An easy-to-use and easy-to-extend keyword-value pair based input file parser written in Fortran 2008.  This parser uses a heavily modified libFDF library and is written by [Ravindra Shinde](https://github.com/neelravi). It can parse keyword-value pairs, blocks of data, and general variables with different physical units in an order-independent manner. Our implementation can handle multiple data types and file formats. The parser is kept as a library in the code, however, it can be easily adapted by any other Fortran-based code.
 
-2. GAMESS:
-   For finite systems the starting wavefunction is obtained from the
-   quantum chemistry program GAMESS, written by Mike Schmidt and
-   collaborators at Iowa State University.
+2. [TREXIO](https://github.com/TREX-CoE/trexio):
+   TREXIO is an open-source file format and library developed for the storage and manipulation of data produced by quantum chemistry calculations. CHAMP can read the starting wavefunction from a trexio file. The library has interfaces to a lot of quantum chemical programs.
+   CHAMP can directly read the contents of this file with a single load statement in the input file.
 
-3. GAMESS_Interface:
-   The wavefunction produced by GAMESS has to be cast in a form
-   suitable for input to CHAMP.  This is a lot more work than first meets
-   the eye. We provide a python package inside the CHAMP's tool directory to extract all the necessary information needed from a GAMESS calculation. The tool can also extract information from a TREXIO file in the hdf5 file format. This utility is written by [Ravindra Shinde](https://github.com/neelravi).
+  <p align="center">
+    <img src="docs/trexio.png" alt="trexio interface" width="150"/>
+  </p>
 
-4. MOLCAS_Interface: A python package qc2champ can be used to convert a MOLCAS or an openMOLCAS calculation into the input files needed by CHAMP. This package is written by [Ravindra Shinde](https://github.com/neelravi). An independent version of the convertor script was added thanks to Csaba Daday and Monika Dash.
+
+3. [TREXIO Tools](https://github.com/TREX-CoE/trexio_tools):
+   We provide a python package inside the CHAMP's tool directory to extract all the necessary information from a TREXIO file in the hdf5 file format to a human-readable text format.
+
+4. [QMCKL](https://github.com/TREX-CoE/qmckl):
+  This library provides a high-performance implementation of the main kernels of Quantum Monte Carlo methods. This library is currently optional.
+
+
 
 ------------------------------------------------------------------------
 
@@ -179,12 +188,12 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	- To enable TREXIO library:
 		```
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON
-		```		
+		```
 	- To disable vectorization of the code:
 		```
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DVECTORIZED=no
-		```				
-		
+		```
+
 	- To run the code with Intel Compilers and MPI:
 	    ```bash
         mpirun -np 24  champ/bin/vmc.mov1 -i input.inp -o output.out -e error
@@ -226,7 +235,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 ------------------------------------------------------------------------
 
 ## User's manual and documentation
-The user's manual and documentation is hosted at [https://trex-coe.github.io/champ-user-manual/](https://trex-coe.github.io/champ-user-manual) 
+The user's manual and documentation is hosted at [https://trex-coe.github.io/champ-user-manual/](https://trex-coe.github.io/champ-user-manual)
 
 
 # Preparing the input files
