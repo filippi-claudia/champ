@@ -1,4 +1,4 @@
-name: Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01
+name: Self-hosted Intel OneAPI build
 
 on:
   push:
@@ -86,7 +86,7 @@ jobs:
       run: |
         echo "Compressing the test results from workflow"
         cd tests/
-        tar -czvf workflow_artifacts.tar.gz CI_test/*/*_core_?.out 
+        tar -czvf workflow_artifacts.tar.gz CI_test/*/*_core_?.out
 
     - name: "Upload calculation result artifacts"
       uses: actions/upload-artifact@v2
