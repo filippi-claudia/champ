@@ -1,6 +1,6 @@
       module jastrow4_mod
       contains
-      subroutine jastrow4(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
+      subroutine jastrow_factor4(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
 c Written by Cyrus Umrigar, modified by C. Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7

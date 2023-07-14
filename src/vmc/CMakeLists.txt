@@ -10,7 +10,6 @@ if (MPI_Fortran_FOUND)
     basis_fns.f
     bxmatrices.f
     cuspexact4.f
-    deriv_jastrow.f
     deriv_nonloc.f
     deriv_nonlpsi.f
     determinant.f
@@ -34,8 +33,10 @@ if (MPI_Fortran_FOUND)
     hpsie.f
     jassav.f
     jastrow.f
+    jastrow1.f
     jastrow4.f
     jastrow4e.f
+    jastrow1e.f
     jastrow_num.f
     jastrowe.f
     mc_configs.f
@@ -110,6 +111,7 @@ if (MPI_Fortran_FOUND)
     cuspinit4.f90
     davidson.f90
     davidson_wrap.f90
+    deriv_jastrow1.f90
     deriv_jastrow4.f90
     get_norbterm.f90
     lapack_wrapper.f90
@@ -201,6 +203,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/fitting.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow1.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f    # This file should be refactored and eliminated.
     ${CMAKE_CURRENT_SOURCE_DIR}/efield.f
@@ -216,6 +219,8 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspexact4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_matrix_corsamp.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_matrix.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lib.f
     ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f
@@ -248,9 +253,11 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/distances.f
     ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f
     ${CMAKE_CURRENT_SOURCE_DIR}/parser.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow1.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow1e.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4e.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid.f
     ${CMAKE_CURRENT_SOURCE_DIR}/detsav.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_lib.f

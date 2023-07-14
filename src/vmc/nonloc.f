@@ -8,7 +8,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use b_tmove, only: b_t,iskip
       use contrl_file, only: ounit, errunit
       use control, only: ipr,mode
-      use deriv_nonloc, only: deriv_nonlocj_quad
       use jastrow_update, only: fso
       use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
       use multislater, only: detiab
@@ -26,7 +25,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use contrl_per, only: iperiodic
       use csfs,    only: nstates
       use vmc_mod, only: stoj, stoo, nbjx, bjxtoo, bjxtoj
-
+      use jastrow, only: ijas
+      use deriv_nonloc, only: deriv_nonlocj_quad1, deriv_nonlocj_quad4
       implicit none
 
       ! variables in subroutine call
@@ -57,7 +57,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       real(dp), allocatable :: xquad(:,:)
       real(dp), allocatable :: det_ratio(:,:)
       real(dp), allocatable :: psij_ratio(:,:)
-      real(dp), allocatable :: dpsij_ratio(:,:,:)
+      real(dp), allocatable :: dj_psij_ratio(:,:,:)
       real(dp), allocatable :: da_psij_ratio(:,:,:)
       real(dp), allocatable :: r_en_quad(:,:)
       real(dp), allocatable :: rvec_en_quad(:,:,:)
@@ -89,8 +89,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       allocate(det_ratio(ndim,nwftypeorb))
       if(allocated(psij_ratio)) deallocate(psij_ratio)
       allocate(psij_ratio(ndim,nwftypejas))
-      if(allocated(dpsij_ratio)) deallocate(dpsij_ratio)
-      allocate(dpsij_ratio(nparmj,ndim,nwftypejas))
+      if(allocated(dj_psij_ratio)) deallocate(dj_psij_ratio)
+      allocate(dj_psij_ratio(nparmj,ndim,nwftypejas))
       if(allocated(da_psij_ratio)) deallocate(da_psij_ratio)
       allocate(da_psij_ratio(3,ncent_tot,ndim))
       if(allocated(r_en_quad)) deallocate(r_en_quad)
@@ -191,19 +191,45 @@ c endif iskip
      &                   dorbn(1,1,1,iwforb),da_orbn,iwforb)
         call nonlocd_quad(nxquad,iequad,orbn(1,1,iwforb),det_ratio(1,iwforb),iwforb)
       enddo
-      if(ioptjas.eq.0) then
-        do iwfjas=1,nwftypejas 
-            call nonlocj_quad(nxquad,xquad,iequad,x,r_en,
-     &         rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio,
-     &         fso(1,1,iwfjas),iwfjas)
-        enddo
+
+      if(ijas.eq.1) then
+
+         if(ioptjas.eq.0) then
+            do iwfjas=1,nwftypejas 
+               call nonlocj_quad1(nxquad,xquad,iequad,x,r_en,
+     &              rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio,
+     &              fso(1,1,iwfjas),iwfjas)
+            enddo
+         else
+            do iwfjas=1,nwftypejas
+               call deriv_nonlocj_quad1(nxquad,xquad,iequad,x,r_en,
+     &              rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),dj_psij_ratio(1,1,iwfjas),vjn,
+     &              da_psij_ratio,iwfjas)
+            enddo
+         endif
+
+         
       else
-        do iwfjas=1,nwftypejas
-            call deriv_nonlocj_quad(nxquad,xquad,iequad,x,r_en,
-     &         rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),dpsij_ratio(1,1,iwfjas),vjn,
-     &         da_psij_ratio,iwfjas)
-        enddo
+
+         if(ioptjas.eq.0) then
+            do iwfjas=1,nwftypejas 
+               call nonlocj_quad4(nxquad,xquad,iequad,x,r_en,
+     &              rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio,
+     &              fso(1,1,iwfjas),iwfjas)
+            enddo
+         else
+            do iwfjas=1,nwftypejas
+               call deriv_nonlocj_quad4(nxquad,xquad,iequad,x,r_en,
+     &              rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),dj_psij_ratio(1,1,iwfjas),vjn,
+     &              da_psij_ratio,iwfjas)
+            enddo
+         endif
+
+         
+         
       endif
+      
+    
 
       do iq=1,nxquad
 
@@ -241,12 +267,12 @@ c dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
             xo=bjxtoo(ibjx)
             term2=term_radial_jas(iq,xj)*det_ratio(iq,xo)
             do iparm=1,nparmj
-              dvpsp_dj(iparm,ibjx)=dvpsp_dj(iparm,ibjx)+term2*dpsij_ratio(iparm,iq,xj)
+              dvpsp_dj(iparm,ibjx)=dvpsp_dj(iparm,ibjx)+term2*dj_psij_ratio(iparm,iq,xj)
             enddo
             do iparm=1,nparmj
               do iorb=1,norb
                 b_dj(iorb,iel,iparm,ibjx)=b_dj(iorb,iel,iparm,ibjx)
-     &          +orbn(iorb,iq,xo)*term_radial_jas(iq,xj)*dpsij_ratio(iparm,iq,xj)
+     &          +orbn(iorb,iq,xo)*term_radial_jas(iq,xj)*dj_psij_ratio(iparm,iq,xj)
               enddo
             enddo
           enddo
@@ -647,7 +673,146 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       return
       end
 c-----------------------------------------------------------------------
-      subroutine nonlocj_quad(nxquad,xquad,iequad,x,r_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio,fso,iwfjas)
+      subroutine nonlocj_quad1(nxquad,xquad,iequad,x,r_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio,fso,iwfjas)
+
+c Written by Claudia Filippi, modified by Cyrus Umrigar
+
+      use bparm,   only: nocuspb,nspin2b
+      use contrl_per, only: iperiodic
+      use da_jastrow4val, only: da_j
+      use jastrow, only: isc,sspinn
+      use m_force_analytic, only: iforce_analy
+      use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
+      use precision_kinds, only: dp
+      use find_pimage, only: find_image3
+      use system,  only: iwctype,ncent,ncent_tot,nelec,nup
+      use optwf_control, only: ioptjas
+      use qua,     only: nquad
+
+      implicit none
+
+      integer :: i, ic, iel, ipar, isb, iwfjas
+      integer :: iq, it, j, jj, k, nxquad
+      integer, dimension(*) :: iequad
+
+      real(dp) :: dd1u, dum, dumk, fsumn
+      real(dp) :: rij
+      real(dp), dimension(nelec,*) :: fso
+      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,*) :: xquad
+      real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(3,nquad*nelec*2,*) :: rvec_en_quad
+      real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
+      real(dp), dimension(nelec,nelec) :: fsn
+      real(dp), dimension(3) :: dx
+      real(dp), dimension(3,*) :: vjn
+      real(dp), dimension(*) :: ratio_jn
+      real(dp), dimension(3,ncent_tot,*) :: da_psij_ratio
+      real(dp), parameter :: half = .5d0
+
+
+      do iq=1,nxquad
+
+      iel=iequad(iq)
+
+      fsumn=0
+      do k=1,3
+         vjn(k,iq)=0.d0
+      enddo
+
+      if (nelec.lt.2) goto 47
+
+      do jj=1,nelec
+
+        if(jj.eq.iel) goto 45
+        if(jj.lt.iel) then
+          i=iel
+          j=jj
+         else
+          i=jj
+          j=iel
+        endif
+
+        sspinn=1
+        ipar=0
+        isb=1
+        if(i.le.nup .or. j.gt.nup) then
+           sspinn=half
+           if(nspin2b.eq.2) then
+              isb=2
+           elseif(nocuspb.gt.0) then
+              sspinn=1
+           endif
+           ipar=1
+        endif
+
+        do k=1,3
+          dx(k)=x(k,jj)-xquad(k,iq)
+        enddo
+
+        if(iperiodic.eq.0) then
+          rij=0
+          do k=1,3
+            rij=rij+dx(k)**2
+          enddo
+          rij=dsqrt(rij)
+         else
+          call find_image3(dx,rij)
+        endif
+
+c e-e terms
+        if(iforce_analy.eq.0) then
+          dum=dpsibnl(rij,isb,ipar,iwfjas)/rij
+          do k=1,3
+            dumk=-dum*dx(k)
+            vjn(k,iq)=vjn(k,iq)+dumk
+          enddo
+        endif
+
+        fsn(i,j)=psibnl(rij,isb,ipar,iwfjas)
+
+c e-e-n terms
+        do ic=1,ncent
+          it=iwctype(ic)
+          fsn(i,j)=fsn(i,j) +
+     &    psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),it,iwfjas)
+        enddo
+
+        fsumn=fsumn+fsn(i,j)-fso(i,j)
+   45 continue
+      enddo
+
+c e-n terms
+   47 fsn(iel,iel)=0
+
+      do ic=1,ncent
+        it=iwctype(ic)
+        fsn(iel,iel)=fsn(iel,iel)+psianl(r_en_quad(iq,ic),it,iwfjas)
+      enddo
+
+      fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
+      ratio_jn(iq)=fsumn
+
+      if(iforce_analy.gt.0) then
+
+       do ic=1,ncent
+        it=iwctype(ic)
+        dum=dpsianl(r_en_quad(iq,ic),it,iwfjas)/r_en_quad(iq,ic)
+        do k=1,3
+          dumk=dum*rvec_en_quad(k,iq,ic)
+          vjn(k,iq)=vjn(k,iq)+dumk
+          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,ic)
+        enddo
+       enddo
+
+      endif
+
+      enddo
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine nonlocj_quad4(nxquad,xquad,iequad,x,r_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio,fso,iwfjas)
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
