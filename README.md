@@ -1,23 +1,18 @@
 ![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.jpg?raw=true)
 
 
-[![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml) [![DEBUG build and testing](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml) [![Unit Tests](https://github.com/filippi-claudia/champ/actions/workflows/champ_unit_test.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/champ_unit_test.yml) [![TREXIO python interface](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml)
+[![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml)
 
-
-![Github Issues](https://img.shields.io/github/issues/filippi-claudia/champ) ![Github Pull Requests](https://img.shields.io/github/issues-pr/filippi-claudia/champ) ![Github Last Commit](https://img.shields.io/github/last-commit/filippi-claudia/champ) [![Commit Activity](https://img.shields.io/github/commit-activity/w/filippi-claudia/champ)](https://img.shields.io/github/commit-activity/t/filippi-claudia/champ
-)
-
-![Last release tag](https://img.shields.io/github/v/tag/filippi-claudia/champ) ![Github forks](https://img.shields.io/github/forks/filippi-claudia/champ) ![Github stars](https://img.shields.io/github/stars/filippi-claudia/champ)  ![Main Language](https://img.shields.io/github/languages/top/filippi-claudia/champ)  ![Repo Size](https://img.shields.io/github/repo-size/filippi-claudia/champ) ![Code Size](https://img.shields.io/github/languages/code-size/filippi-claudia/champ) 
-
-![Github license](https://img.shields.io/github/license/filippi-claudia/champ) 
-
-
-
+[![DEBUG build and testing](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml)
 
 <!-- [![CI using Doxygen generated doc](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml) -->
 
 
-The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo suite of programs for electronic structure calculations of atomic and molecular systems. The code is a sister code of the homonymous program originally developed by Cyrus Umrigar and Claudia Filippi of which it retains the accelerated Metropolis method and the efficient diffusion Monte Carlo algorithms.
+The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo
+suite of programs for electronic structure calculations of atomic and molecular systems.
+The code is a sister code of the homonymous program originally developed by Cyrus Umrigar
+and Claudia Filippi of which it retains the accelerated Metropolis method and the efficient
+diffusion Monte Carlo algorithms.
 
 The European branch of the code is currently developed by Claudia Filippi and Saverio Moroni,
 with significant contributions by Ravindra Shinde, Nicolas Renaud, Victor Azizi, Edgar Landinez, and Stuart Shepard.
@@ -37,11 +32,12 @@ Noteworthy features of CHAMP are:
 
 **Note**
 
-The code is available for free under the GPL-3.0 license. Developers and contributors are welcome to use and contribute back to the code. If you have used the code for your publications, please cite this source.
+The code is avilable for free under the GPL-3.0 license.
 
 **Usual disclaimer**
 
-The authors make no claims about the correctness of the program suite and people who use it do so at their own risk.
+The authors make no claims about the correctness of
+the program suite and people who use it do so at their own risk.
 
 ------------------------------------------------------------------------
 
@@ -225,8 +221,14 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	The code also compiles on WSL.
 ------------------------------------------------------------------------
 
-## User's manual and documentation
-The user's manual and documentation is hosted at [https://trex-coe.github.io/champ-user-manual/](https://trex-coe.github.io/champ-user-manual) 
+### Developer's Documentation
+CHAMP developer documentation can be generated using [Doxygen](http://www.doxygen.nl/) tool. To install the package, we advise to follow the instructions at the Doxygen web page: <http://www.doxygen.nl/download.html>.
+
+The Doxyfile file provided in CHAMP docs directory contains all the settings needed to generate the documentation. Once Doxygen is installed, at the docs folder of CHAMP simply run:
+```
+doxygen Doxyfile
+```
+Then two folders will be created, /docs/developers/html and ./docs/developers/latex, containing the documentation about modules, subroutines and functions in both html and latex formats.
 
 
 # Preparing the input files
