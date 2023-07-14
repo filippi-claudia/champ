@@ -130,6 +130,12 @@ module jastrow
     real(dp) :: sspin
     real(dp) :: sspinn
 
+    ! jastrow1
+    real(dp), dimension(:,:)    , allocatable :: cutjas_en !(MCTYPE,MWF)
+    real(dp), dimension(:,:)    , allocatable :: cutjas_eni!(MCTYPE,MWF)
+    real(dp), dimension(:,:)    , allocatable :: cutjas_ee !(2,MWF)
+    real(dp), dimension(:,:)    , allocatable :: cutjas_eei!(2,MWF)
+
     ! From jaspar3
     real(dp), dimension(:, :, :), allocatable :: b !(nordj1,2,MWF)
     real(dp), dimension(:, :, :), allocatable :: c !(83,MCTYPE,MWF)
@@ -141,7 +147,7 @@ module jastrow
     integer :: nordb
     integer :: nordc
 
-    ! From jaspar6
+    ! From jaspar6 
     real(dp), dimension(:,:), allocatable :: asymp_jasa !(MCTYPE,nwftypejas)
     real(dp), dimension(:,:), allocatable :: asymp_jasb !(2,nwftypejas)
 
@@ -166,12 +172,18 @@ subroutine allocate_m_jastrow()
     if (.not. allocated(c)) allocate (c(83, nctype_tot, MWF))
     if (.not. allocated(scalek)) allocate (scalek(MWF))
 
+    if (.not. allocated(cutjas_en))  allocate (cutjas_en(nctype_tot, MWF))
+    if (.not. allocated(cutjas_eni)) allocate (cutjas_eni(nctype_tot, MWF))
+    if (.not. allocated(cutjas_ee))  allocate (cutjas_ee(2, MWF))
+    if (.not. allocated(cutjas_eei)) allocate (cutjas_eei(2, MWF))
+
+    
     call allocate_jasn()
     call allocate_jaso()
     call allocate_jaspointer()
 end subroutine allocate_m_jastrow
 
-subroutine allocate_jaspar6()
+subroutine allocate_jasasymp()
       use system,  only: nctype_tot
       use vmc_mod, only: nwftypejas
 
@@ -180,7 +192,7 @@ subroutine allocate_jaspar6()
       if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot,nwftypejas))
       if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2,nwftypejas))
 
-end subroutine allocate_jaspar6
+end subroutine allocate_jasasymp
 
 subroutine deallocate_m_jastrow()
       use jaspointer, only: deallocate_jaspointer
@@ -195,6 +207,12 @@ subroutine deallocate_m_jastrow()
     if (allocated(c))          deallocate (c)
     if (allocated(scalek))     deallocate (scalek)
 
+    if (allocated(cutjas_en))  deallocate (cutjas_en)
+    if (allocated(cutjas_eni)) deallocate (cutjas_eni)
+    if (allocated(cutjas_ee))  deallocate (cutjas_ee)
+    if (allocated(cutjas_eei)) deallocate (cutjas_eei)
+
+    
     call deallocate_jasn()
     call deallocate_jaso()
     call deallocate_jaspointer()

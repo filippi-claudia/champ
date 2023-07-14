@@ -8,7 +8,7 @@ c calculate interparticle distances
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       use distances_sav, only: r_ee_sav, r_en_sav, rvec_ee_sav, rvec_en_sav
       use precision_kinds, only: dp
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       use system, only: cent, ncent, nghostcent, nelec
       implicit none
 

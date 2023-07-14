@@ -15,8 +15,8 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use error,   only: fatal_error
       use vmc_mod, only: nbjx
       use optwf_parms, only: nparmj
-      use pw_ewald, only: pot_en_ewald, pot_en_ewald_single
-      use pw_ewald, only: pot_en_ewald_local, pot_en_ewald_lambda
+      use ewald_bk, only: pot_en_ewald, pot_en_ewald_single
+      use ewald_bk, only: pot_en_ewald_local, pot_en_ewald_lambda
 
       
       implicit none

@@ -34,7 +34,7 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
 
       implicit none
 
-      integer :: i, j
+      integer :: i, j, irun, lpass
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: four = 4.d0
 
@@ -158,6 +158,8 @@ c forces implemented only for certain dmc control options
 
 c     call flush(6)
 c loops for dmc calculation
+      lpass=0
+      irun=0
       do i=1,dmc_nblk+2*dmc_nblkeq
         if((i.eq.dmc_nblkeq+1.or.i.eq.2*dmc_nblkeq+1).and.dmc_irstar.ne.1) then
 
@@ -168,13 +170,17 @@ c loops for dmc calculation
           call elapsed_time("DMC : zero out estimators and averages : ")
         endif
         do j=1,dmc_nstep
-          ipass=ipass+1
+           if(i.gt.2*dmc_nblkeq.or.dmc_irstar.eq.1) then
+              lpass=lpass+1
+              irun=1
+           endif
+           ipass=ipass+1
           if (nloc.gt.0) call rotqua
           if(iabs(idmc).eq.1) then
 c           call dmc_brock
            elseif(iabs(idmc).eq.2) then
             if (nloc.gt.0) then
-              call dmc_ps
+              call dmc_ps(lpass,irun)
              else
 c             call dmc_good
             endif
