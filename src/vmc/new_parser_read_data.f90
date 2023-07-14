@@ -342,7 +342,7 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,*)
 
     nwftype = 0
-!   nstates = 1  ! read from the input file
+    nstates = 1
     if (wid) then
         do while (.not. found)
             read(iunit,*, iostat=iostat) temp1
@@ -1149,7 +1149,6 @@ subroutine read_csf_file(file_determinants)
     character(len=72), intent(in)   :: file_determinants
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iostat, i, j, iunit
-    integer                         :: nstates_local
     logical                         :: exist, printed
     logical                         :: found = .false.
 
@@ -1188,11 +1187,7 @@ subroutine read_csf_file(file_determinants)
     ! if there is no mention of "csf" in the file
     if (.not. found) then
         ! No csf information present. One to one mapping cdet == ccsf
-        
-        if (nstates .gt. 1) then
-            call fatal_error (" Provide CSF information for multiple states. Exiting!")
-        endif
-
+        nstates = 1
         ncsf = ndet
         if((method.eq.'sr_n'.and.ioptci.eq.1)) then
             if (nstates.ne.nstoj_tot.or.nstates.ne.nstoo_tot) then
@@ -1223,13 +1218,9 @@ subroutine read_csf_file(file_determinants)
 
     else
         ! read the same line again to get the ncsf and nstates
-        if (wid) read(iunit, *, iostat=iostat)  temp2, ncsf, nstates_local
+        if (wid) read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
         call bcast(ncsf)
-        call bcast(nstates_local)
-
-        if (nstates_local .ne. nstates) then
-           call fatal_error ("Number of states read from the determinant file does not match with the input file. Exiting!")
-        endif
+        call bcast(nstates)
 
         if((method.eq.'sr_n'.and.ioptci.eq.1)) then
             if (nstates.ne.nstoj_tot.or.nstates.ne.nstoo_tot) then
@@ -2018,7 +2009,6 @@ subroutine read_basis_num_info_file(file_basis_num_info)
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
-      use fdf, only: fdf_defined
       use inputflags, only: ibasis_num
       use mpiconf, only: wid
       use numbas,  only: iwrwf,numr,nrbas
@@ -2087,21 +2077,12 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
 
-    if (fdf_defined("trexio")) then 
     allocate (nbastyp(nctot))
     allocate (ns(nctot))
     allocate (np(nctot))
     allocate (nd(nctot))
     allocate (nf(nctot))
     allocate (ng(nctot))
-    else
-    if (.not. allocated(nbastyp)) allocate (nbastyp(nctot))
-    if (.not. allocated(ns)) allocate (ns(nctot))
-    if (.not. allocated(np)) allocate (np(nctot))
-    if (.not. allocated(nd)) allocate (nd(nctot))
-    if (.not. allocated(nf)) allocate (nf(nctot))
-    if (.not. allocated(ng)) allocate (ng(nctot))
-    endif
 
     if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctot))
     if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctot))

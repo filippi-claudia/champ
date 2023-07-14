@@ -124,15 +124,14 @@ module keywords
   !> @date October 15, 2022
   implicit none
   integer                     :: num_modules  = 11   ! change this number after every adition/deletion
-
-  integer                     :: num_keywords = 174 ! change this number after every adition/deletion
+  integer                     :: num_keywords = 173 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
   type(string_t) allowed_modules(11)
-  type(string_t) allowed_keywords(174)
+  type(string_t) allowed_keywords(173)
 
   private
   public  :: num_keywords, num_modules
@@ -231,7 +230,7 @@ module keywords
     allowed_keywords(167)%keys = 'npoly';           allowed_keywords(168)%keys = 'cutg'
     allowed_keywords(169)%keys = 'cutg_sim';        allowed_keywords(170)%keys = 'cutg_big'
     allowed_keywords(171)%keys = 'cutg_sim_big';    allowed_keywords(172)%keys = 'alattice'
-    allowed_keywords(173)%keys = 'cutjas';          allowed_keywords(174)%keys = 'nstates';
+    allowed_keywords(173)%keys = 'cutjas'
     
   end subroutine allocate_keywords
 

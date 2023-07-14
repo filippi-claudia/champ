@@ -198,19 +198,18 @@ module trexio_read_data
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
         use coefs, only: nbasis
-        use csfs,               only: nstates
         use inputflags,         only: ilcao
         use numbas,             only: nrbas
         use numbas1,            only: iwlbas, nbastyp
         use orbval,             only: nadorb
         use pcm_fdc,            only: fs
-        use vmc_mod,            only: norb_tot, nwftypeorb
+        use vmc_mod,            only: norb_tot
         use multiple_geo,       only: nwftype
         use general,            only: pooldir
         use optwf_control,      only: method
         use precision_kinds, only: dp
         use slater,             only: coef
-        use vmc_mod, only: nwftypeorb, nstoo, nstoomax, otos, extrao, nstoo_tot
+
 
         use error, only: trexio_error
         use trexio
@@ -284,26 +283,13 @@ module trexio_read_data
 
         norb = norb_tot        ! norb will get updated later. norb_tot is fixed
 
-
         ! Do the array allocations
         if( (method(1:3) == 'lin')) then
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
-        elseif( (method == 'sr_n') .and. (nstates .gt. 1)) then
-            if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nstates))
-            nwftypeorb=nstates
-            nstoo_tot=nstates
-            nstoomax=1
-            extrao=1
-            if (.not. allocated(nstoo)) allocate (nstoo(nwftypeorb))
-            if (.not. allocated(otos)) allocate (otos(nwftypeorb,1))
-            do i=1,nstates
-               nstoo(i)=1
-               otos(i,1)=i
-            enddo
         else
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
         endif
-        
+
         ! Do the allocations based on the number of shells and primitives
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
@@ -323,12 +309,6 @@ module trexio_read_data
         call bcast(coef(:,:,1))
         endif
 
-        ! Make a copy of orbital coeffs for multiple states
-        if( (method == 'sr_n') .and. (nstates .gt. 1)) then
-            do i=2,nstates
-              coef(:,:,i)=coef(:,:,1)
-            enddo
-        endif
 
 !   Generate the basis information (which radial to be read for which Slm)
         if (wid) then
@@ -466,9 +446,6 @@ module trexio_read_data
         write(ounit,int_format) " Number of lcao orbitals ", norb
         write(ounit,int_format) " Type of wave functions ", iwft
         write(ounit,*) "Orbital coefficients are written to the output.log file"
-
-
-
 
         write(ounit,*)
         ilcao = ilcao + 1
