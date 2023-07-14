@@ -49,14 +49,14 @@ The authors make no claims about the correctness of the program suite and people
 
 ------------------------------------------------------------------------
 
-CHAMP utilizes various other program packages:
+CHAMP relies on various other program packages:
 
 1. [Parser](https://github.com/neelravi/mpi-libfdf-parser):
    An easy-to-use and easy-to-extend keyword-value pair based input file parser written in Fortran 2008.  This parser uses a heavily modified libFDF library and is written by [Ravindra Shinde](https://github.com/neelravi). It can parse keyword-value pairs, blocks of data, and general variables with different physical units in an order-independent manner. Our implementation can handle multiple data types and file formats. The parser is kept as a library in the code, however, it can be easily adapted by any other Fortran-based code.
 
 2. [TREXIO](https://github.com/TREX-CoE/trexio):
    TREXIO is an open-source file format and library developed for the storage and manipulation of data produced by quantum chemistry calculations. CHAMP can read the starting wavefunction from a trexio file. The library has interfaces to a lot of quantum chemical programs.
-   CHAMP can directly read the contents of this file with a single load statement in the input file. This library is currently optional.
+   CHAMP can directly read the contents of this file with a single load statement in the input file.
 
   <p align="center">
     <img src="docs/trexio.png" alt="trexio interface" width="150"/>
@@ -64,7 +64,7 @@ CHAMP utilizes various other program packages:
 
 
 3. [TREXIO Tools](https://github.com/TREX-CoE/trexio_tools):
-   We provide a python package inside the CHAMP's tool directory to extract all the necessary information from a TREXIO file in the hdf5 file format to a human-readable text format. This allows one to bypass the use of the TREXIO library within CHAMP and input the necessary data via the Parser (see Option 2 in Section "Preparing the Input File" below).
+   We provide a python package inside the CHAMP's tool directory to extract all the necessary information from a TREXIO file in the hdf5 file format to a human-readable text format.
 
 4. [QMCKL](https://github.com/TREX-CoE/qmckl):
   This library provides a high-performance implementation of the main kernels of Quantum Monte Carlo methods. This library is currently optional.
