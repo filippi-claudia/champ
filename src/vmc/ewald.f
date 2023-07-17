@@ -1,4 +1,4 @@
-      module pw_ewald
+      module ewald_bk
       use error, only: fatal_error
       interface                 !LAPACK interface      
       SUBROUTINE DPOSV( UPLO, N, NRHS, A, LDA, B, LDB, INFO )
@@ -43,7 +43,7 @@ c      use constants, only: pi
       use contrl_file,    only: ounit
       use grid3d_param, only: origin
       use error, only: fatal_error
-      use pw_find_image, only: check_lattice
+      use find_pimage, only: check_lattice
       use matinv_mod, only: matinv
       use spline2_mod, only: spline2
 c      use pseudo_tm, only: arg, r0, rmax
@@ -2560,7 +2560,7 @@ c Written by Cyrus Umrigar
       use periodic, only: ncoef_per, ngnorm
       use periodic, only: np, vcell
       use periodic, only: vcell_sim, znuc2_sum
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       use precision_kinds, only: dp
       implicit none
 
@@ -2621,7 +2621,7 @@ c Written by Cyrus Umrigar
       use periodic, only: vcell_sim, znuc2_sum, znuc_sum
       use precision_kinds, only: dp
       use ewald_mod, only: NGVECX
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       implicit none
 
       integer :: i, j, k, lowest_pow
@@ -2693,7 +2693,7 @@ c Written by Cyrus Umrigar
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
 
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       
       use precision_kinds, only: dp
       implicit none
@@ -2812,7 +2812,7 @@ c Written by Cyrus Umrigar
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
 
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       
       use precision_kinds, only: dp
       implicit none
@@ -2918,7 +2918,7 @@ c Written by Cyrus Umrigar
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       
       use precision_kinds, only: dp
       implicit none
@@ -3034,7 +3034,7 @@ c Written by Cyrus Umrigar
       use distance_mod, only:  r_en, rvec_en, r_ee, rvec_ee
 
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       
       use precision_kinds, only: dp
       implicit none
@@ -3140,7 +3140,7 @@ c Written by Cyrus Umrigar
       use periodic, only: np
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use pw_find_image, only: find_image3
+      use find_pimage, only: find_image3
       use pseudo, only: lpot, nloc
       
       use precision_kinds, only: dp

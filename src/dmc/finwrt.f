@@ -90,12 +90,19 @@ c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-b
 c     eval_eff=nconf*rn_eff(wcum1,wcm21)
 c     evalf_eff=nconf*rn_eff(wfcum1,wfcm21)
 c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
-      eval_eff=dmc_nconf*dmc_nstep*rn_eff(wcum_dmc,wcm2)
-      evalf_eff=dmc_nconf*dmc_nstep*rn_eff(wfcum,wfcm2)
+
+      eval_eff=1.0
+      evalf_eff=1.0
+
+      if(idmc.gt.0) then
+         eval_eff=dmc_nconf*dmc_nstep*rn_eff(wcum_dmc,wcm2)
+         evalf_eff=dmc_nconf*dmc_nstep*rn_eff(wfcum,wfcm2)
+         rteval_eff1=dsqrt(eval_eff-1)
+         rtevalf_eff1=dsqrt(evalf_eff-1)
+      endif
+            
       evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
       rtpass1=dsqrt(pass_proc-1)
-      rteval_eff1=dsqrt(eval_eff-1)
-      rtevalf_eff1=dsqrt(evalf_eff-1)
       rtevalg_eff1=dsqrt(evalg_eff-1)
 
       write(ounit,'(''passes,eval,pass_proc,eval_proc,eval_eff,
@@ -168,19 +175,22 @@ c    & f10.5)') dr2ac/trymove
       if (wid) then
         accav=acc/trymove
         accavn=dble(nacc)/trymove
-        wave=wcum_dmc/pass_proc
-        wfave=wfcum/pass_proc
-        eave=ecum_dmc/wcum_dmc
-        efave=efcum/wfcum
-
-        werr=errw(wcum_dmc,wcm2)
-        wferr=errw(wfcum,wfcm2)
-        werr1=errw1(wcum1,wcm21)
-        wferr1=errw1(wfcum1,wfcm21)
-        eerr=errc(ecum_dmc,ecm2_dmc)
-        eferr=errf(efcum,efcm2)
-        eerr1=errc1(ecum1_dmc,ecm21_dmc)
-        eferr1=errf1(efcum1,efcm21)
+        
+        if(idmc.gt.0) then
+           wave=wcum_dmc/pass_proc
+           wfave=wfcum/pass_proc
+           eave=ecum_dmc/wcum_dmc
+           efave=efcum/wfcum
+           werr=errw(wcum_dmc,wcm2)
+           wferr=errw(wfcum,wfcm2)
+           werr1=errw1(wcum1,wcm21)
+           wferr1=errw1(wfcum1,wfcm21)
+           eerr=errc(ecum_dmc,ecm2_dmc)
+           eferr=errf(efcum,efcm2)
+           eerr1=errc1(ecum1_dmc,ecm21_dmc)
+           eferr1=errf1(efcum1,efcm21)
+        endif
+        
       endif
 
 

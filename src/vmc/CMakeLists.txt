@@ -10,7 +10,6 @@ if (MPI_Fortran_FOUND)
     basis_fns.f
     bxmatrices.f
     cuspexact4.f
-    deriv_jastrow.f
     deriv_nonloc.f
     deriv_nonlpsi.f
     determinant.f
@@ -34,8 +33,10 @@ if (MPI_Fortran_FOUND)
     hpsie.f
     jassav.f
     jastrow.f
+    jastrow1.f
     jastrow4.f
     jastrow4e.f
+    jastrow1e.f
     jastrow_num.f
     jastrowe.f
     mc_configs.f
@@ -88,16 +89,11 @@ if (MPI_Fortran_FOUND)
     prop_vmc.f
     properties.f
     psi.f
-    pw_ewald.f
-    pw_find_image.f
-    pw_orbitals.f
-    pw_orbitals_e.f
-    pw_placeholder.f
-    pw_read.f
+    ewald.f
+    find_image.f
     qmmm_placeholder.f
     random.f
     readps_gauss.f
-    readps_tm.f
     rotqua.f
     scale_dist.f
     sites.f
@@ -115,6 +111,7 @@ if (MPI_Fortran_FOUND)
     cuspinit4.f90
     davidson.f90
     davidson_wrap.f90
+    deriv_jastrow1.f90
     deriv_jastrow4.f90
     get_norbterm.f90
     lapack_wrapper.f90
@@ -172,20 +169,7 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f)
   endif()
 
-  if (NOT ENABLE_PERIODIC)
-    message(STATUS "PERIODIC is NOT enabled!")
-    list(REMOVE_ITEM VMC_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f)
-  else()
-    message(STATUS "PERIODIC is enabled!")
-    list(REMOVE_ITEM VMC_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f)
-  endif()
-
+  
   find_package(FortranFormat)
   formatFortran("${VMC_SOURCE}") # Set Fixed format property
 
@@ -219,6 +203,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/fitting.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow1.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f    # This file should be refactored and eliminated.
     ${CMAKE_CURRENT_SOURCE_DIR}/efield.f
@@ -234,12 +219,13 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspexact4.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_matrix_corsamp.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_matrix.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lib.f
     ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f
     ${CMAKE_CURRENT_SOURCE_DIR}/orbitals.f
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_gauss.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/readps_tm.f
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante_psit.f
     ${CMAKE_CURRENT_SOURCE_DIR}/pot.f
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f90
@@ -249,7 +235,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/determinant.f
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante.f
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc_pot.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f    # This file should be refactored and eliminated.
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_num.f
     ${CMAKE_CURRENT_SOURCE_DIR}/bxmatrices.f
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonlpsi.f
@@ -263,12 +248,16 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/store_diag_hs.f
     ${CMAKE_CURRENT_SOURCE_DIR}/random.f
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid_orbitals.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/find_image.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/ewald.f
     ${CMAKE_CURRENT_SOURCE_DIR}/distances.f
     ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f
     ${CMAKE_CURRENT_SOURCE_DIR}/parser.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow1.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow1e.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4e.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid.f
     ${CMAKE_CURRENT_SOURCE_DIR}/detsav.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_lib.f
@@ -302,18 +291,6 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_density.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_writecube.f90)
   endif()
-
-  if (ENABLE_PERIODIC)
-    list(REMOVE_ITEM SHARED_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f)
-    list(APPEND SHARED_OBJECTS
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f)
-  endif()
-
 
 
   add_library(shared_objects OBJECT ${SHARED_OBJECTS})

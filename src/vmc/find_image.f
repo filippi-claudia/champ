@@ -1,4 +1,4 @@
-      module pw_find_image
+      module find_pimage
       contains
       subroutine check_lattice(rlatt,cutr,isim_cell)
 c Written by Cyrus Umrigar

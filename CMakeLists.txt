@@ -48,9 +48,6 @@ option(ENABLE_MPI "enable_mpi" on)
 # QMMM option
 option(ENABLE_QMMM "enable_qmmm" off)
 
-# Periodic option
-option(ENABLE_PERIODIC "enable_periodic" off)
-
 ## External packages
 option(ENABLE_TREXIO "enable_trexio" off)
 option(ENABLE_QMCKL  "enable_qmckl" off)

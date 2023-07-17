@@ -61,7 +61,7 @@ subroutine parser
       use inputflags, only: node_cutoff,scalecoef
       use jastrow, only: norda,nordb,nordc
       use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
-      use jastrow, only: a4,allocate_jaspar6,asymp_jasa,asymp_jasb,b,c
+      use jastrow, only: a4,allocate_jasasymp,asymp_jasa,asymp_jasb,b,c
       use jastrow, only: ianalyt_lap,ijas,is,isc,neqsx,nordj,nordj1
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
@@ -140,7 +140,6 @@ subroutine parser
       use prp003,  only: cc_nuc
       use pseudo,  only: nloc
       use pseudo_mod, only: MPS_QUAD
-      use pw_read, only: read_orb_pw_tm
       use qua,     only: nquad,wq,xq,yq,zq
       use random_mod, only: setrn, jumprn
       use read_bas_num_mod, only: read_bas_num,readps_gauss
@@ -184,6 +183,14 @@ subroutine parser
 
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
+
+  !! Allocate_periodic
+  use periodic,         only: npoly,np,cutg,cutg_big,cutg_sim,cutg_sim_big, alattice
+  use periodic,         only: rlatt, rlatt_inv, rlatt_sim, rkvec_shift, n_images, ell
+  use ewald_bk, only: pot_en_ewald, pot_ee_ewald, set_ewald
+  use  m_ewald, only : allocate_m_ewald
+  use  m_pseudo, only : allocate_m_pseudo
+  
 ! CHAMP modules
 
 ! in the replacement of preprocess input
@@ -251,7 +258,7 @@ subroutine parser
   character(:), allocatable  :: file_trexio
   character(:), allocatable  :: file_trexio_path
   character(:), allocatable  :: trex_backend
-
+  character(:), allocatable  :: file_lattice
 
 ! from process input subroutine
 
@@ -320,6 +327,21 @@ subroutine parser
   if (trex_backend == "text") backend = TREXIO_TEXT
 #endif
 
+! Ewald module for periodic
+  npoly  = fdf_get('npoly', 1)
+  np     = fdf_get('np', 3)
+  cutg   = fdf_get('cutg', 1.0d0)
+  cutg_sim   = fdf_get('cutg_sim', 1.0d0)
+  cutg_big   = fdf_get('cutg_big', 1.d0)
+  cutg_sim_big   = fdf_get('cutg_sim_big', 1.0d0)
+  n_images  = fdf_get('n_images', 1)
+  !alattice = fdf_get('alattice', 1.0d0)
+  write(ounit,*) "Ewald split npoly",npoly
+  write(ounit,*) "Ewald split cutg", cutg
+  !write(ounit,*) "alattice", alattice
+
+  
+  
 ! %module electrons (complete)
   nelec       = fdf_get('nelec', 1)
   nup         = fdf_get('nup', 1)
@@ -557,7 +579,8 @@ subroutine parser
   file_hessian_zmatrix      = fdf_load_filename('hessian_zmatrix',  'default.hzmat')
   file_zmatrix_connection   = fdf_load_filename('zmatrix_connection',   'default.zmcon')
   file_efield             = fdf_load_filename('efield',   'default.efield')
-
+  file_lattice              = fdf_load_filename('lattice',              'lattice.txt')
+  
   call header_printing()
 
 ! to be moved in a separate subroutine
@@ -955,8 +978,14 @@ subroutine parser
   write(ounit, int_format ) " nspin1 = ", nspin1
   write(ounit, int_format ) " nspin2 = ", nspin2
 
-  if(ijas.ne.4 .and. iperiodic.gt.0) &
-    call fatal_error('Only ijas=4 implemented for periodic systems')
+  if(ijas.ne.1..and.iperiodic.gt.0) then
+     if(ijas.ne.4..and.iperiodic.gt.0) then
+        write(ounit,*) 'Only ijas4 for HF with periodic systems'
+        write(ounit,*) 'Only ijas1 for WF optimization with periodic systems'
+        call fatal_error('Only ijas=1 and ijas=4 implemented for periodic systems')
+     endif
+  endif
+  
 
   if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
   if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
@@ -967,44 +996,23 @@ subroutine parser
   if(isc.eq.4) write(ounit,'(a)') " dist scaled r=r/(1+scalek*r)"
   if(isc.eq.5) write(ounit,'(a)') " dist scaled r=r/(1+(scalek*r)**2)**.5"
 
-  ! Call set_scale_dist to evaluate constants that need to be reset if
-  ! scalek is being varied. If cutjas=0, then reset cutjas to infinity
-  ! Warning: At present we are assuming that the same scalek is used for
-  ! primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
-  ! should be dimensioned to MWF
-  if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
-    if(iperiodic.ne.0 .and. cutjas_tmp.gt.cutjas) then
-        write(ounit, '(a,f9.5,a,f9.5)')  "**Warning: input cutjas > half shortest sim. cell lattice vector; &
-                                          &cutjas reset from ", cutjas_tmp, " to ", cutjas
-        else
-        cutjas=cutjas_tmp
-        write(ounit,'(a, d12.5)' ) " input cutjas = ", cutjas_tmp
-    endif
-    if(cutjas.gt.0.d0) then
-        cutjasi=1/cutjas
-        else
-        write(ounit, *) "cutjas reset to infinity"
-        cutjas=1.d99
-        cutjasi=0
-    endif
-    call set_scale_dist(ipr)
-  else
-    cutjas=1.d99
-    cutjasi=0
-    c1_jas6i=1
-    c1_jas6=1
-    c2_jas6=0
-    asymp_r=0
-    call allocate_jaspar6()  ! Needed for the following two arrays
-    do j=1,nwftypejas
-        do i=1,nctype
-            asymp_jasa(i,j)=0
-        enddo
-        do i=1,2
-            asymp_jasb(i,j)=0
-        enddo
-    enddo
-  endif
+
+  cutjas=1.d99
+  cutjasi=0
+  c1_jas6i=1
+  c1_jas6=1
+  c2_jas6=0
+  asymp_r=0
+  call allocate_jasasymp()  ! Needed for the following two arrays
+  do j=1,nwftypejas
+     do i=1,nctype
+        asymp_jasa(i,j)=0
+     enddo
+     do i=1,2
+        asymp_jasb(i,j)=0
+     enddo
+  enddo
+  
   call set_scale_dist(ipr)
 
   call elapsed_time ("Setting Jastrow parameters : ")
@@ -1229,6 +1237,19 @@ subroutine parser
   call allocate_vmc()
   call allocate_dmc()
 
+  ! for periodic calculations
+  if ( fdf_load_defined('lattice') ) then
+     call read_lattice_file(file_lattice)      
+  endif
+
+  ! allocate ewald module and initialize the module 
+  if (iperiodic.gt.0) then
+     call allocate_m_ewald()
+     call set_ewald
+  endif
+  
+  
+  
 ! (17) multideterminants information (either block or from a file)
 
   if ( fdf_load_defined('multideterminants') ) then
@@ -1292,7 +1313,7 @@ subroutine parser
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
 
-  if(ibasis.eq.2) write(ounit,'(a)') " PW orbitals "
+
   if(numr.gt.0)   write(ounit,'(a)') " Numerical basis used"
 
   if(ibasis.eq.1) then
@@ -1335,9 +1356,7 @@ subroutine parser
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     endif
-  elseif (ibasis.eq.2) then
-    call read_orb_pw_tm
-  endif
+ endif
 
   call elapsed_time ("Reading basis file : ")
 
@@ -1461,10 +1480,10 @@ subroutine parser
     if(ioptjas.gt.0) then
       write(ounit,'(a)' ) " Jastrow derivatives are sampled "
       write(ounit,int_format) " Number of Jastrow derivatives ",  nparmj
-      if(ijas.eq.4) then
+      if(ijas.eq.1.or.ijas.eq.4) then
         call cuspinit4(1)
       else
-        call fatal_error('READ_INPUT: jasderiv only for ijas=4')
+         call fatal_error('READ_INPUT: jasderiv only for ijas=1 or 4')
       endif
     else
       nparmj=0
@@ -1885,6 +1904,7 @@ subroutine parser
   ! It does the processing of the input read so far and initializes some
   ! arrays if something is missing.
 
+    
 
   !qmckl initialization
 
@@ -1972,8 +1992,7 @@ subroutine parser
 
   !----------------------------------------------------------------------------END
 
-
-
+  
   contains
 
   !! Here all the subroutines that handle the block data are written
@@ -1987,6 +2006,63 @@ subroutine parser
   !!   'e' is matched by a list with integers or reals
   !!   'd' is reserved for future dictionaries...
 
+!! for periodic assuming square cell still 
+    subroutine read_lattice_file(file_lattice)
+      use periodic, only: rkvec_shift, rlatt_sim, alattice
+      use contrl_file,        only: ounit, errunit
+      use jaspar6, only: cutjas, cutjasi
+      use periodic, only: rlatt, rlatt_inv
+      
+      implicit none
+      
+      character(len=72), intent(in)   :: file_lattice
+      real(dp) :: latt
+      !!integer :: iunit
+      
+      write(ounit,*) 'Readding lattice file'
+      
+      write(ounit,*) '-----------------------------------------------------------------------'
+      write(ounit,string_format)  " Reading Lattice Parameters from the file :: ",  file_lattice
+      write(ounit,*)
+      
+      open (666, file =file_lattice, action='read')
+      read(666,*) alattice
+      close(666)
+
+      write(ounit,*) 'lattice constant', alattice
+
+      
+      !Asuming a rectangular cell 
+      
+      rlatt_sim =0.0d0
+      rlatt = 0.0d0
+      rlatt_inv = 0.0d0
+      
+      rlatt_sim(1,1) = alattice
+      rlatt_sim(2,2) = alattice
+      rlatt_sim(3,3) = alattice
+
+
+      rlatt(1,1) = alattice
+      rlatt(2,2) = alattice
+      rlatt(3,3) = alattice
+
+      rlatt_inv(1,1) = 1.d0/rlatt(1,1)
+      rlatt_inv(2,2) = 1.d0/rlatt(1,1)
+      rlatt_inv(3,3) = 1.d0/rlatt(1,1) 
+
+      !! set twist k-shift vector
+      rkvec_shift =0.0d0
+
+!!! override kastrow cutoff to half of the lattice parameter
+      cutjas = 0.5*alattice
+      cutjasi=1/cutjas
+      
+end subroutine read_lattice_file
+
+
+
+    
   subroutine fdf_read_molecule_block(bfdf)
     implicit none
 
@@ -2316,8 +2392,9 @@ subroutine compute_mat_size_new()
   ! use system, only: nctype_tot, ncent_tot
 
   use sr_mod, only: mparm, mobs, mconf
+  use control, only: mode
   use control_vmc, only: vmc_nstep, vmc_nblk_max
-
+  use control_dmc, only: dmc_nstep
   use vmc_mod, only: set_vmc_size
   use optci, only: set_optci_size
   use optorb_mod, only: set_optorb_size
@@ -2328,8 +2405,13 @@ subroutine compute_mat_size_new()
 
   ! leads to circular dependecy of put in sr_mod ..
   mobs = 10 + 6*mparm
-  mconf = vmc_nstep * vmc_nblk_max
-
+  
+  if( mode(1:3) == 'vmc' ) then
+     mconf = vmc_nstep * vmc_nblk_max
+  else
+     mconf = dmc_nstep * vmc_nblk_max
+  endif
+  
   call set_vmc_size
   call set_optci_size
   call set_optorb_size
