@@ -64,7 +64,7 @@ subroutine parser
       use inputflags, only: node_cutoff,scalecoef
       use jastrow, only: norda,nordb,nordc
       use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
-      use jastrow, only: a4,allocate_jaspar6,asymp_jasa,asymp_jasb,b,c
+      use jastrow, only: a4,allocate_jasasymp,asymp_jasa,asymp_jasb,b,c
       use jastrow, only: ianalyt_lap,ijas,is,isc,neqsx,nordj,nordj1
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
@@ -957,9 +957,14 @@ subroutine parser
   write(ounit, int_format ) " nspin1 = ", nspin1
   write(ounit, int_format ) " nspin2 = ", nspin2
 
-  if(ijas.ne.4 .and. iperiodic.gt.0) &
-    call fatal_error('Only ijas=4 implemented for periodic systems')
-
+  if(ijas.ne.1..and.iperiodic.gt.0) then
+     if(ijas.ne.4..and.iperiodic.gt.0) then
+        write(ounit,*) 'Only ijas4 for HF with periodic systems'
+        write(ounit,*) 'Only ijas1 for WF optimization with periodic systems'
+        call fatal_error('Only ijas=1 and ijas=4 implemented for periodic systems')
+        endif
+  endif
+  
   if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
   if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
   if(ijas.eq.6) write(ounit,'(a)') " new transferable standard form 6"
@@ -969,42 +974,20 @@ subroutine parser
   if(isc.eq.4) write(ounit,'(a)') " dist scaled r=r/(1+scalek*r)"
   if(isc.eq.5) write(ounit,'(a)') " dist scaled r=r/(1+(scalek*r)**2)**.5"
 
-  ! Call set_scale_dist to evaluate constants that need to be reset if
-  ! scalek is being varied. If cutjas=0, then reset cutjas to infinity
-  ! Warning: At present we are assuming that the same scalek is used for
-  ! primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
-  ! should be dimensioned to MWF
-  if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
-    if(iperiodic.ne.0 .and. cutjas_tmp.gt.cutjas) then
-        write(ounit, '(a,f9.5,a,f9.5)')  "**Warning: input cutjas > half shortest sim. cell lattice vector; &
-                                          &cutjas reset from ", cutjas_tmp, " to ", cutjas
-        else
-        cutjas=cutjas_tmp
-        write(ounit,'(a, d12.5)' ) " input cutjas = ", cutjas_tmp
-    endif
-    if(cutjas.gt.0.d0) then
-        cutjasi=1/cutjas
-        else
-        write(ounit, *) "cutjas reset to infinity"
-        cutjas=1.d99
-        cutjasi=0
-    endif
-    call set_scale_dist(ipr)
-  else
-    cutjas=1.d99
-    cutjasi=0
-    c1_jas6i=1
-    c1_jas6=1
-    c2_jas6=0
-    asymp_r=0
-    call allocate_jaspar6()  ! Needed for the following two arrays
-    do i=1,nctype
-        asymp_jasa(i)=0
-    enddo
-    do i=1,2
-        asymp_jasb(i)=0
-    enddo
-  endif
+  cutjas=1.d99
+  cutjasi=0
+  c1_jas6i=1
+  c1_jas6=1
+  c2_jas6=0
+  asymp_r=0
+  call allocate_jasasymp()  ! Needed for the following two arrays
+  do i=1,nctype
+     asymp_jasa(i)=0
+  enddo
+  do i=1,2
+     asymp_jasb(i)=0
+  enddo
+  
   call set_scale_dist(ipr)
 
   call elapsed_time ("Setting Jastrow parameters : ")
@@ -1324,10 +1307,10 @@ subroutine parser
     if(ioptjas.gt.0) then
       write(ounit,'(a)' ) " Jastrow derivatives are sampled "
       write(ounit,int_format) " Number of Jastrow derivatives ",  nparmj
-      if(ijas.eq.4) then
+      if(ijas.eq.1.or.ijas.eq.4) then
         call cuspinit4(1)
       else
-        call fatal_error('READ_INPUT: jasderiv only for ijas=4')
+        call fatal_error('READ_INPUT: jasderiv only for ijas=1 or 4')
       endif
     else
       nparmj=0
@@ -2091,8 +2074,9 @@ subroutine compute_mat_size_new()
   ! use system, only: nctype_tot, ncent_tot
 
   use sr_mod, only: mparm, mobs, mconf
+  use control, only: mode
   use control_vmc, only: vmc_nstep, vmc_nblk_max
-
+  use control_dmc, only: dmc_nstep
   use vmc_mod, only: set_vmc_size
   use optci, only: set_optci_size
   use optorb_mod, only: set_optorb_size
@@ -2103,7 +2087,11 @@ subroutine compute_mat_size_new()
 
   ! leads to circular dependecy of put in sr_mod ..
   mobs = 10 + 6*mparm
-  mconf = vmc_nstep * vmc_nblk_max
+  if( mode(1:3) == 'vmc' ) then
+    mconf = vmc_nstep * vmc_nblk_max
+   else
+    mconf = dmc_nstep * vmc_nblk_max
+  endif
 
   call set_vmc_size
   call set_optci_size

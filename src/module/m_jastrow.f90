@@ -75,18 +75,6 @@ module jaspar6
     private
     public :: asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
     save
-! contains
-!     subroutine allocate_jaspar6()
-!         use system, only: nctype_tot
-!         if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot))
-!         if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2))
-!     end subroutine allocate_jaspar6
-
-!     subroutine deallocate_jaspar6()
-!         if (allocated(asymp_jasb)) deallocate (asymp_jasb)
-!         if (allocated(asymp_jasa)) deallocate (asymp_jasa)
-!     end subroutine deallocate_jaspar6
-
 end module jaspar6
 
 module jaspointer
@@ -115,8 +103,6 @@ contains
 
 end module jaspointer
 
-
-
 module jastrow
       use precision_kinds, only: dp
     implicit none
@@ -132,6 +118,12 @@ module jastrow
     integer :: nspin2
     real(dp) :: sspin
     real(dp) :: sspinn
+
+    ! jastrow1
+    real(dp), dimension(:,:)    , allocatable :: cutjas_en !(MCTYPE,MWF)
+    real(dp), dimension(:,:)    , allocatable :: cutjas_eni!(MCTYPE,MWF)
+    real(dp), dimension(:,:)    , allocatable :: cutjas_ee !(2,MWF)
+    real(dp), dimension(:,:)    , allocatable :: cutjas_eei!(2,MWF)
 
     ! From jaspar3
     real(dp), dimension(:, :, :), allocatable :: b !(nordj1,2,MWF)
@@ -170,18 +162,23 @@ subroutine allocate_m_jastrow()
     if (.not. allocated(c))          allocate (c(83, nctype_tot, MWF))
     if (.not. allocated(scalek))     allocate (scalek(MWF))
 
+    if (.not. allocated(cutjas_en))  allocate (cutjas_en(nctype_tot, MWF))
+    if (.not. allocated(cutjas_eni)) allocate (cutjas_eni(nctype_tot, MWF))
+    if (.not. allocated(cutjas_ee))  allocate (cutjas_ee(2, MWF))
+    if (.not. allocated(cutjas_eei)) allocate (cutjas_eei(2, MWF))
+
     call allocate_jasn()
     call allocate_jaso()
     call allocate_jaspointer()
 end subroutine allocate_m_jastrow
 
-subroutine allocate_jaspar6()
+subroutine allocate_jasasymp()
       use system,  only: nctype_tot
     implicit none
 
     if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot))
     if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2))
-end subroutine allocate_jaspar6
+end subroutine allocate_jasasymp
 
 subroutine deallocate_m_jastrow()
       use jaspointer, only: deallocate_jaspointer
@@ -195,6 +192,11 @@ subroutine deallocate_m_jastrow()
     if (allocated(b))          deallocate (b)
     if (allocated(c))          deallocate (c)
     if (allocated(scalek))     deallocate (scalek)
+
+    if (allocated(cutjas_en))  deallocate (cutjas_en)
+    if (allocated(cutjas_eni)) deallocate (cutjas_eni)
+    if (allocated(cutjas_ee))  deallocate (cutjas_ee)
+    if (allocated(cutjas_eei)) deallocate (cutjas_eei)
 
     call deallocate_jasn()
     call deallocate_jaso()
@@ -231,44 +233,3 @@ contains
     end subroutine deallocate_cuspmat4
 
 end module cuspmat4
-
-! module m_jastrow
-! contains
-
-! subroutine allocate_m_jastrow()
-!     use jastrow_update, only: allocate_jasn
-!     use jastrow_update, only: allocate_jaso
-!     use jaspar3, only: allocate_jaspar3
-! !    use jaspar4, only: allocate_jaspar4
-!     use jaspar6, only: allocate_jaspar6
-!     use jaspointer, only: allocate_jaspointer
-
-!     implicit none
-
-!     call allocate_jasn()
-!     call allocate_jaso()
-!     call allocate_jaspar3()
-!     ! call allocate_jaspar4()
-!     call allocate_jaspar6()
-!     call allocate_jaspointer()
-! end subroutine allocate_m_jastrow
-
-
-! subroutine deallocate_m_jastrow()
-!     use jastrow_update, only: deallocate_jasn
-!     use jastrow_update, only: deallocate_jaso
-!     use jaspar3, only: deallocate_jaspar3
-!     use jaspar4, only: deallocate_jaspar4
-!     use jaspar6, only: deallocate_jaspar6
-!     use jaspointer, only: deallocate_jaspointer
-
-!     implicit none
-
-!     call deallocate_jasn()
-!     call deallocate_jaso()
-!     call deallocate_jaspar3()
-!     call deallocate_jaspar4()
-!     call deallocate_jaspar6()
-!     call deallocate_jaspointer()
-! end subroutine deallocate_m_jastrow
-! end module

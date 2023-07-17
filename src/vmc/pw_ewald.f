@@ -97,6 +97,12 @@ c     real(dp), dimension(MPS_GRID) :: work
 c this array is just for testing purposes
       real(dp), dimension(101) :: w_gauss
 
+C for images evaluation
+      integer :: ix,iy,iz
+      integer :: nix,niy,niz
+      integer :: imcount
+      integer :: nisum
+      
       pi=4.d0*datan(1.d0)
       twopi=2*pi
 
@@ -865,43 +871,78 @@ c     c_madelung=pecent*dist_nn/(znuc(1)*znuc(2)*ncent/2)
 c     write(ounit,'(''c_madelung='',f10.6)') c_madelung
 
 c images for periodic basis functions
-      if(n_images.ne.1)then
-       n_images=26
-       deallocate (ell)
-       allocate (ell(3, n_images))
-       ell=0.d0
+      if(n_images.ge.1)then
+c     n_images=26
 
-       ell(1,1)=rlatt_sim(1,1)
-       ell(2,2)=rlatt_sim(2,2)
-       ell(3,3)=rlatt_sim(3,3)
+         print*, "itialization n_image input value", n_images
+c     assuming same number of images in each direction 
+         nix=n_images
+         niy=n_images
+         niz=n_images
+  
 
-       ell(1,4)=-rlatt_sim(1,1)
-       ell(2,5)=-rlatt_sim(2,2)
-       ell(3,6)=-rlatt_sim(3,3)
+         n_images=(2*nix+1)
+         n_images=n_images*n_images*n_images
+c decreasing number of images by 1 temprally while improve the implementation in basis_fns
+         n_images=n_images-1
+         print*,"n_images",n_images
 
-       ell(1, 7)= rlatt_sim(1,1); ell(2, 7)= rlatt_sim(2,2)
-       ell(1, 8)= rlatt_sim(1,1); ell(2, 8)=-rlatt_sim(2,2)
-       ell(1, 9)=-rlatt_sim(1,1); ell(2, 9)= rlatt_sim(2,2)
-       ell(1,10)=-rlatt_sim(1,1); ell(2,10)=-rlatt_sim(2,2)
+         deallocate (ell)
+         allocate (ell(3, n_images))
+         ell=0.d0
+      
+c assuming cubic boxes
+c set images counter to zero
+         imcount=0
+         do iz=-niz,niz,1
+            do iy=-niy,niy,1
+               do ix=-nix,nix,1
+                  nisum=abs(ix)+abs(iy)+abs(iz)
+                  if (nisum.gt.0) then
+                     print*,ix,iy,iz
+                     imcount=imcount+1 
+                     if(ix.ne.0) ell(1,imcount)=1.d0*ix*rlatt_sim(1,1)
+                     if(iy.ne.0) ell(2,imcount)=1.d0*iy*rlatt_sim(2,2)
+                     if(iz.ne.0) ell(3,imcount)=1.d0*iz*rlatt_sim(3,3)
+                  endif
+               enddo
+            enddo
+         enddo
+         write(ounit,*) "Total number of peridic images: ",imcount
+c     print*,"Real imcount",imcount-1
+         
+         
+!       ell(1,1)=rlatt_sim(1,1)
+!       ell(2,2)=rlatt_sim(2,2)
+!       ell(3,3)=rlatt_sim(3,3)
 
-       ell(1,11)= rlatt_sim(1,1); ell(3,11)= rlatt_sim(3,3)
-       ell(1,12)= rlatt_sim(1,1); ell(3,12)=-rlatt_sim(3,3)
-       ell(1,13)=-rlatt_sim(1,1); ell(3,13)= rlatt_sim(3,3)
-       ell(1,14)=-rlatt_sim(1,1); ell(3,14)=-rlatt_sim(3,3)
+!       ell(1,4)=-rlatt_sim(1,1)
+!       ell(2,5)=-rlatt_sim(2,2)
+!       ell(3,6)=-rlatt_sim(3,3)
 
-       ell(2,15)= rlatt_sim(2,2); ell(3,15)= rlatt_sim(3,3)
-       ell(2,16)= rlatt_sim(2,2); ell(3,16)=-rlatt_sim(3,3)
-       ell(2,17)=-rlatt_sim(2,2); ell(3,17)= rlatt_sim(3,3)
-       ell(2,18)=-rlatt_sim(2,2); ell(3,18)=-rlatt_sim(3,3)
+!       ell(1, 7)= rlatt_sim(1,1); ell(2, 7)= rlatt_sim(2,2)
+!       ell(1, 8)= rlatt_sim(1,1); ell(2, 8)=-rlatt_sim(2,2)
+!       ell(1, 9)=-rlatt_sim(1,1); ell(2, 9)= rlatt_sim(2,2)
+!       ell(1,10)=-rlatt_sim(1,1); ell(2,10)=-rlatt_sim(2,2)
 
-       ell(1,19)= rlatt_sim(1,1); ell(2,19)= rlatt_sim(2,2); ell(3,19)= rlatt_sim(3,3)
-       ell(1,20)=-rlatt_sim(1,1); ell(2,20)= rlatt_sim(2,2); ell(3,20)= rlatt_sim(3,3)
-       ell(1,21)= rlatt_sim(1,1); ell(2,21)=-rlatt_sim(2,2); ell(3,21)= rlatt_sim(3,3)
-       ell(1,22)= rlatt_sim(1,1); ell(2,22)= rlatt_sim(2,2); ell(3,22)=-rlatt_sim(3,3)
-       ell(1,23)= rlatt_sim(1,1); ell(2,23)=-rlatt_sim(2,2); ell(3,23)=-rlatt_sim(3,3)
-       ell(1,24)=-rlatt_sim(1,1); ell(2,24)= rlatt_sim(2,2); ell(3,24)=-rlatt_sim(3,3)
-       ell(1,25)=-rlatt_sim(1,1); ell(2,25)=-rlatt_sim(2,2); ell(3,25)= rlatt_sim(3,3)
-       ell(1,26)=-rlatt_sim(1,1); ell(2,26)=-rlatt_sim(2,2); ell(3,26)=-rlatt_sim(3,3)
+!       ell(1,11)= rlatt_sim(1,1); ell(3,11)= rlatt_sim(3,3)
+!       ell(1,12)= rlatt_sim(1,1); ell(3,12)=-rlatt_sim(3,3)
+!       ell(1,13)=-rlatt_sim(1,1); ell(3,13)= rlatt_sim(3,3)
+!       ell(1,14)=-rlatt_sim(1,1); ell(3,14)=-rlatt_sim(3,3)
+
+!       ell(2,15)= rlatt_sim(2,2); ell(3,15)= rlatt_sim(3,3)
+!       ell(2,16)= rlatt_sim(2,2); ell(3,16)=-rlatt_sim(3,3)
+!       ell(2,17)=-rlatt_sim(2,2); ell(3,17)= rlatt_sim(3,3)
+!       ell(2,18)=-rlatt_sim(2,2); ell(3,18)=-rlatt_sim(3,3)
+
+!       ell(1,19)= rlatt_sim(1,1); ell(2,19)= rlatt_sim(2,2); ell(3,19)= rlatt_sim(3,3)
+!       ell(1,20)=-rlatt_sim(1,1); ell(2,20)= rlatt_sim(2,2); ell(3,20)= rlatt_sim(3,3)
+!       ell(1,21)= rlatt_sim(1,1); ell(2,21)=-rlatt_sim(2,2); ell(3,21)= rlatt_sim(3,3)
+!       ell(1,22)= rlatt_sim(1,1); ell(2,22)= rlatt_sim(2,2); ell(3,22)=-rlatt_sim(3,3)
+!       ell(1,23)= rlatt_sim(1,1); ell(2,23)=-rlatt_sim(2,2); ell(3,23)=-rlatt_sim(3,3)
+!       ell(1,24)=-rlatt_sim(1,1); ell(2,24)= rlatt_sim(2,2); ell(3,24)=-rlatt_sim(3,3)
+!       ell(1,25)=-rlatt_sim(1,1); ell(2,25)=-rlatt_sim(2,2); ell(3,25)= rlatt_sim(3,3)
+!       ell(1,26)=-rlatt_sim(1,1); ell(2,26)=-rlatt_sim(2,2); ell(3,26)=-rlatt_sim(3,3)
 
 !      write(*,*)'rlatt_sim'
 !      do i=1,3
@@ -2649,10 +2690,10 @@ c Written by Cyrus Umrigar
       use periodic, only: np
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
 
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use pw_find_image, only: find_image4
+      use pw_find_image, only: find_image3
       
       use precision_kinds, only: dp
       implicit none
@@ -2681,8 +2722,7 @@ c Warning: I need to call the appropriate vsrange
 c             write(ounit,'(''x, cent '',3d12.4)') x(k,j),cent(k,i)
          enddo
 c         write(ounit,'(''rvec_en '',3d12.4)') rvec_en(:,j,i)
-c         call find_image3(rvec_en(1,j,i),r_en(j,i))
-          call find_image4(rshift(1,j,i),rvec_en(1,j,i),r_en(j,i))
+         call find_image3(rvec_en(1,j,i),r_en(j,i))
 c          if(nloc.eq.0) then
             lowest_pow=-1
             vs=vs-znuc(iwctype(i))*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
@@ -2769,10 +2809,10 @@ c Written by Cyrus Umrigar
       use periodic, only: np
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
 
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use pw_find_image, only: find_image4
+      use pw_find_image, only: find_image3
       
       use precision_kinds, only: dp
       implicit none
@@ -2803,7 +2843,7 @@ c Warning: I need to call the appropriate vsrange
          enddo
 c         write(ounit,'(''rvec_en '',3d12.4)') rvec_en(:,iel,i)
 
-          call find_image4(rshift(1,iel,i),rvec_en(1,iel,i),r_en(iel,i))
+         call find_image3(rvec_en(1,iel,i),r_en(iel,i))
 
             lowest_pow=-1
             vs=vs-znuc(iwctype(i))*vsrange(r_en(iel,i),cutr,lowest_pow,ncoef_per,np,b_coul)
@@ -2875,10 +2915,10 @@ c Written by Cyrus Umrigar
       use periodic, only: np
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use pw_find_image, only: find_image4
+      use pw_find_image, only: find_image3
       
       use precision_kinds, only: dp
       implicit none
@@ -2916,13 +2956,12 @@ c Warning: I need to call the appropriate vsrange
 c             write(ounit,'(''x, cent '',3d12.4)') x(k,j),cent(k,i)
          enddo
 c         write(ounit,'(''rvec_en '',3d12.4)') rvec_en(:,j,i)
-c         call find_image3(rvec_en(1,j,i),r_en(j,i))
-          call find_image4(rshift(1,j,i),rvec_en(1,j,i),r_en(j,i))
-c          if(nloc.eq.0) then
-            lowest_pow=-1
-            vs=vs-znuc(ict)*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
-            call cossin_1e(glatt,igvec,ngvec,x(1:3,j),ng1d,cos_1e_sum,sin_1e_sum)
-            vl=-vl-2*vlrange(ngnorm,igmult,cos_1n_sum,cos_1e_sum,sin_1n_sum,sin_1e_sum,y_coul)
+         call find_image3(rvec_en(1,j,i),r_en(j,i))
+c     if(nloc.eq.0) then
+         lowest_pow=-1
+         vs=vs-znuc(ict)*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
+         call cossin_1e(glatt,igvec,ngvec,x(1:3,j),ng1d,cos_1e_sum,sin_1e_sum)
+         vl=-vl-2*vlrange(ngnorm,igmult,cos_1n_sum,cos_1e_sum,sin_1n_sum,sin_1e_sum,y_coul)
 
         enddo
       enddo
@@ -2992,10 +3031,10 @@ c Written by Cyrus Umrigar
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc, vps
       use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only:  r_en, rvec_en, r_ee, rvec_ee
 
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use pw_find_image, only: find_image4
+      use pw_find_image, only: find_image3
       
       use precision_kinds, only: dp
       implicit none
@@ -3026,7 +3065,7 @@ c Warning: I need to call the appropriate vsrange
               rvec_en(k,j,i)=x(k,j)-cent(k,i)
 c     write(ounit,'(''x, cent '',3d12.4)') x(k,j),cent(k,i)
            enddo
-           call find_image4(rshift(1,j,i),rvec_en(1,j,i),r_en(j,i))
+           call find_image3(rvec_en(1,j,i),r_en(j,i))
            rsq=max(1.0d-10,r_en(j,i))
            rsq=1.d0/rsq
            rsq=rsq*rsq
@@ -3099,7 +3138,7 @@ c Written by Cyrus Umrigar
       use periodic, only: ncoef_per, ng1d_sim
       use periodic, only: ngnorm_sim, ngvec_sim
       use periodic, only: np
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
       use pw_find_image, only: find_image3
       use pseudo, only: lpot, nloc

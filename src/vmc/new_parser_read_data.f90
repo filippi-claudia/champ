@@ -514,6 +514,7 @@ subroutine read_jastrow_file(file_jastrow)
       use custom_broadcast, only: bcast
       use general, only: pooldir
       use inputflags, only: ijastrow_parameter
+      use jastrow, only: cutjas_ee, cutjas_en, cutjas_eei, cutjas_eni
       use jastrow, only: norda,nordb,nordc
       use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,neqsx
@@ -557,7 +558,7 @@ subroutine read_jastrow_file(file_jastrow)
     endif
 
 
-    if (ijas .lt. 4 .or. ijas .gt. 6) call fatal_error('JASTROW: only ijas=4,5,6 implemented')
+!    if (ijas .lt. 4 .or. ijas .gt. 6) call fatal_error('JASTROW: only ijas=4,5,6 implemented')
     if (ndn .eq. 1 .and. nspin2 .eq. 3) call fatal_error('JASTROW: 1 spin down and nspin2=3')
 
     if ((ijas .eq. 4 .or. ijas .eq. 5) .and. &
@@ -594,6 +595,80 @@ subroutine read_jastrow_file(file_jastrow)
     endif
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
+       if (wid) read (iunit, *) norda, nordb, nordc
+       call bcast(norda)
+       call bcast(nordb)
+       call bcast(nordc)
+       
+       nordj = max(norda, nordb, nordc)
+       nordj1 = nordj + 1
+       neqsx = 6*nordj
+
+       write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc
+
+       if (isc .ge. 2) then
+          if (wid) read (iunit, *) scalek(iwft)
+       endif
+       call bcast(scalek)
+       write(ounit, '(A,f12.6)') " scalek = ", scalek(iwft)
+
+       mparmja = 2 + max(0, norda - 1)
+       mparmjb = 2 + max(0, nordb - 1)
+       mparmjc = nterms4(nordc)
+
+       if( (method(1:3) == 'lin')) then
+          allocate (a4(mparmja, nctype, 3))
+       else
+          allocate (a4(mparmja, nctype, nwftype))
+       endif
+
+       write(ounit, '(A)') "Jastrow parameters :: "
+       write(ounit, '(A)') "mparmja : "
+       write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
+       do it = 1, nctype
+          if (wid) then
+             read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
+             !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)  !Intel Version
+             if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
+          endif ! wid
+       enddo
+       call bcast(a4)
+
+       if( (method(1:3) == 'lin')) then
+          allocate (b(mparmjb, 2, 3))
+       else
+          allocate (b(mparmjb, 2, nwftype))
+       endif
+
+       write(ounit, '(A)') "mparmjb : "
+       write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
+       do isp = nspin1, nspin2b
+          if (wid) then 
+             read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
+             !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)  !Intel Version
+             if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
+          endif ! wid
+       enddo
+       call bcast(b)
+
+       if( (method(1:3) == 'lin')) then
+          allocate (c(mparmjc, nctype, 3))
+       else
+          allocate (c(mparmjc, nctype, nwftype))
+       endif
+
+       write(ounit, '(A)') "mparmjc : "
+       write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
+       do it = 1, nctype
+            if (wid) read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+            !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
+            if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
+
+       enddo
+       call bcast(c)
+       
+    elseif(ijas.eq.1) then
+
         if (wid) read (iunit, *) norda, nordb, nordc
         call bcast(norda)
         call bcast(nordb)
@@ -605,50 +680,62 @@ subroutine read_jastrow_file(file_jastrow)
 
         write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc
 
-        if (isc .ge. 2) then
-            if (wid) read (iunit, *) scalek(iwft)
-        endif
-        call bcast(scalek)
-        write(ounit, '(A,f12.6)') " scalek = ", scalek(iwft)
-
-        mparmja = 2 + max(0, norda - 1)
-        mparmjb = 2 + max(0, nordb - 1)
+        mparmja = norda
+        mparmjb = nordb
         mparmjc = nterms4(nordc)
 
         if( (method(1:3) == 'lin')) then
-            allocate (a4(mparmja, nctype, 3))
+            allocate (a4(mparmja+1, nctype, 3))
+            allocate (cutjas_en(nctype,3))
+            allocate (cutjas_eni(nctype,3))
         else
-            allocate (a4(mparmja, nctype, nwftype))
+            allocate (a4(mparmja+1, nctype, nwftype))
+            allocate (cutjas_en(nctype,nwftype))
+            allocate (cutjas_eni(nctype,nwftype))
         endif
 
         write(ounit, '(A)') "Jastrow parameters :: "
         write(ounit, '(A)') "mparmja : "
         write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
         do it = 1, nctype
-            if (wid) then
-              read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
-            !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)  !Intel Version
-              if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
-            endif ! wid
+            if (wid) read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja+1)
+            !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja+1)  !Intel Version
+            if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja+1)                     !GNU version
+
+            if(wid) then
+              cutjas_en(it,iwft)=a4(mparmja+1, it, iwft)
+              cutjas_eni(it,iwft)=1.d0/cutjas_en(it,iwft)
+            endif
         enddo
         call bcast(a4)
+        call bcast(cutjas_en)
+        call bcast(cutjas_eni)
 
         if( (method(1:3) == 'lin')) then
-            allocate (b(mparmjb, 2, 3))
+            allocate (b(mparmjb+1, 2, 3))
+            allocate (cutjas_ee(2, 3))
+            allocate (cutjas_eei(2, 3))
         else
-            allocate (b(mparmjb, 2, nwftype))
+            allocate (b(mparmjb+1, 2, nwftype))
+            allocate (cutjas_ee(2, nwftype))
+            allocate (cutjas_eei(2, nwftype))
         endif
 
         write(ounit, '(A)') "mparmjb : "
         write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
         do isp = nspin1, nspin2b
-            if (wid) then 
-              read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
-            !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)  !Intel Version
-              if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
-            endif ! wid
+            if (wid) read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb+1)
+            !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb+1)  !Intel Version
+            if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb+1)                     !GNU version
+
+            if(wid) then
+              cutjas_ee(isp,iwft)=b(mparmjb+1, isp, iwft)
+              cutjas_eei(isp,iwft)=1.d0/cutjas_ee(isp,iwft)
+            endif
         enddo
         call bcast(b)
+        call bcast(cutjas_ee)
+        call bcast(cutjas_eei)
 
         if( (method(1:3) == 'lin')) then
             allocate (c(mparmjc, nctype, 3))
@@ -659,22 +746,19 @@ subroutine read_jastrow_file(file_jastrow)
         write(ounit, '(A)') "mparmjc : "
         write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
         do it = 1, nctype
-            if (wid) then
-              read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
-            !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
-              if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
-            endif ! wid
-        enddo
-        call bcast(c)
-
+            if (wid) read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+             !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
+            if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
+         enddo
+         call bcast(c)
+       
+       
     endif
 
     !Read cutoff for Jastrow4, 5, 6
     if (isc .eq. 6 .or. isc .eq. 7) then
-        if (wid) then
-          read (iunit, *) cutjas
-          write(iunit, '(A,2X,f12.8)') " cutjas = ", cutjas
-        endif
+       if (wid) read (iunit, *) cutjas
+       write(iunit, '(A,2X,f12.8)') " cutjas = ", cutjas
     endif
     call bcast(cutjas)
 

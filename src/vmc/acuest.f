@@ -13,7 +13,7 @@ c routine to accumulate estimators for energy etc.
       use denupdn, only: rprobdn,rprobup
       use determinant_psig_mod, only: determinant_psig
       use determinante_mod, only: compute_determinante_grad
-      use distance_mod, only: r_en,rshift,rvec_en
+      use distance_mod, only: r_en,rvec_en
       use distances_mod, only: distances
       use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
       use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum

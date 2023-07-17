@@ -6,7 +6,7 @@ c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
       use contrl_file, only: ounit
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use bparm,   only: nocuspb,nspin2b
       use jastrow, only: cutjas_ee, cutjas_en, cutjas_eei, cutjas_eni
       use jastrow, only: norda,nordb,nordc

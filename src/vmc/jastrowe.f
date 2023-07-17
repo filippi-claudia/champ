@@ -3,6 +3,8 @@
       subroutine jastrowe(iel,x,v,d2,value,iflag)
 c Written by Claudia Filippi by modifying jastrow
 
+      use jastrow, only: ijas
+      use jastrow1e_mod, only: jastrow1e
       use jastrow4e_mod, only: jastrow4e
       use precision_kinds, only: dp
       use system,  only: nelec
@@ -15,14 +17,17 @@ c Written by Claudia Filippi by modifying jastrow
       real(dp), dimension(3, *) :: v
       real(dp), parameter :: zero = 0.d0
 
-
       do i=1,nelec
         v(1,i)=zero
         v(2,i)=zero
         v(3,i)=zero
       enddo
 
-      call jastrow4e(iel,x,v,d2,value,iflag)
+      if(ijas.eq.1) then
+        call jastrow1e(iel,x,v,d2,value,iflag)
+       else
+        call jastrow4e(iel,x,v,d2,value,iflag)
+      endif
 
       return
       end

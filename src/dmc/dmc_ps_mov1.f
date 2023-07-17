@@ -1,6 +1,6 @@
       module dmc_ps_mov1
       contains
-      subroutine dmc_ps
+      subroutine dmc_ps(lpass,irun)
 c Written by Cyrus Umrigar and Claudia Filippi
 c Uses the diffusion Monte Carlo algorithm described in:
 c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
@@ -81,6 +81,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use optci_mod, only: optci_sum
       use optjas_mod, only: optjas_sum
       use optorb_f_mod, only: optorb_sum
+      use optwf_handle_wf, only: optwf_store
       use optx_jas_ci, only: optx_jas_ci_sum
       use optx_jas_orb, only: optx_jas_orb_sum
       use optx_orb_ci, only: optx_orb_ci_sum
@@ -104,8 +105,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       integer :: i, iaccept, iel
       integer :: iflag_dn, iflag_up, ifr, ii
-      integer :: imove, ipmod, ipmod2, iw
-      integer :: iwmod, j, jel, k
+      integer :: imove, ipmod, ipmod2, irun, iw
+      integer :: iwmod, j, jel, k, lpass
       integer :: ncall, ncount_casula, nmove_casula
       integer, dimension(nelec) :: itryo
       integer, dimension(nelec) :: itryn
@@ -293,6 +294,8 @@ c Tau primary -> tratio=one
             write(ounit,'(''vold_dmc'',2i4,9f8.5)') iw,i,(vold_dmc(k,i,iw,1),k=1,3)
             write(ounit,'(''psido_dmc'',2i4,9f8.5)') iw,i,psido_dmc(iw,1)
             write(ounit,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,3)
+c     write(ounit,'(''dx'',2i4,9f8.5)') iw,i,vavvt, drift,dfus
+c     write(ounit,'(''0 dfus2o'',2i4,9f8.5)') iw,i,dfus2o, rttau, dx 
           endif
 
 c calculate psi and velocity at new configuration
@@ -355,6 +358,9 @@ c Calculate Green function for the reverse move
      &    exp((dfus2o-dfus2n)/(two*tau)),psidn,psido_dmc(iw,1),
      &    psijn,psijo_dmc(iw,1),dfus2o,dfus2n
 
+
+c     if(ipr.ge.1) write(ounit,'(''parts p'',11f10.6)')                                                                                                                               c     &         psidn(1), psijn, psido_dmc(iw,1), dfus2o, dfus2n, distance_node_ratio2  
+          
 c The following is one reasonable way to cure persistent configurations
 c Not needed if itau_eff <=0 and in practice we have never needed it even
 c otherwise
@@ -437,6 +443,9 @@ c Primary configuration
             if(nforce.gt.1)
      &      call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
             call hpsi(xold_dmc(1,1,iw,1),psidn(1),psijn,ekino,enew,ipass,1)
+
+            if(irun.eq.1) call optwf_store(lpass,wtg(1),psidn(1),enew(1))
+
             call walksav_det(iw)
             call walksav_jas(iw)
             if(icasula.lt.0) call multideterminant_tmove(psidn(1),0)

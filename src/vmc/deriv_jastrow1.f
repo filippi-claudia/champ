@@ -6,7 +6,7 @@
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4
       use derivjas, only: d2g,g,go,gvalue
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use jastrow, only: cutjas_ee, cutjas_eei, cutjas_en, cutjas_eni
       use jastrow, only: norda,nordb,nordc
       use jastrow, only: a4,b,c,ijas,isc,nordj
@@ -457,9 +457,9 @@ c e-n terms
 
             if(iwjasa(jparm,it).eq.1) then
               da1_cusp=3.d0*cutjas_eni(it,iwf)
-              fen=a1_cusp*ri(1)+1.d0
-              feni=a1_cusp
-              fenii=0
+              gen=da1_cusp*ri(1)+1.d0
+              geni=da1_cusp
+              genii=0
              else
 
               iord=iwjasa(jparm,it)

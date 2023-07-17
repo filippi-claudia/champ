@@ -59,7 +59,7 @@ c-----------------------------------------------------------------------
       subroutine write_jastrow(iwf_fit,filetype)
 
       use bparm,   only: nspin2b
-      use jastrow, only: norda,nordb,nordc
+      use jastrow, only: ijas,norda,nordb,nordc
       use jastrow, only: a4,b,c,ianalyt_lap,ijas,isc,nspin1,nspin2
       use jastrow, only: scalek
       use optwf_control, only: ioptjas
@@ -69,8 +69,8 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      integer :: i, isp, ict, index, iwf_fit, mparmja
-      integer :: mparmjb, mparmjc
+      integer :: i, isp, ict, index, iwf_fit
+      integer :: mparmja, mparmjb, mparmjc
       character*50 fmt
       character*40 filename,filetype
 
@@ -82,7 +82,9 @@ c-----------------------------------------------------------------------
 
       write(2,'(''jastrow_parameter'',i4)') iwf_fit
       write(2,'(3i3,a28)') norda,nordb,nordc,' norda,nordb,nordc'
-c tmp
+     
+      if(ijas.eq.4) then
+
       write(2,'(f13.8,a15)') scalek(1),' scalek'
       mparmja=2+max(0,norda-1)
       mparmjb=2+max(0,nordb-1)
@@ -104,6 +106,37 @@ c tmp
       do isp=1,nspin2b
         write(2,fmt) (b(i,isp,1),i=1,mparmjb),' (b(iparmj),iparmj=1,nparmb)'
       enddo
+
+      else
+
+      mparmja=norda
+      mparmjb=nordb
+      mparmjc=nterms4(nordc)
+      if(mparmja.gt.0) then
+        write(fmt,'(''(''i2,''f13.8,a28)'')') mparmja+1
+        do ict=1,nctype
+          write(2,fmt) (a4(i,ict,1),i=1,mparmja+1),' (a(iparmj),iparmj=1,nparma)'
+        enddo
+       else
+        write(fmt,'(''(a28)'')')
+        do ict=1,nctype
+          write(2,fmt) ' (a(iparmj),iparmj=1,nparma)'
+        enddo
+      endif
+
+      if(mparmjb.gt.0) then
+        write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjb+1
+        do isp=1,nspin2b
+          write(2,fmt) (b(i,isp,1),i=1,mparmjb+1),' (b(iparmj),iparmj=1,nparmb)'
+        enddo
+       else
+        write(fmt,'(''(a28)'')')
+        do isp=1,nspin2b
+          write(2,fmt) ' (b(iparmj),iparmj=1,nparmb)'
+        enddo
+      endif
+
+      endif
 
       if(mparmjc.gt.0) then
         write(fmt,'(''(''i2,''f13.8,a28)'')') mparmjc
@@ -273,7 +306,7 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow
 
       use bparm,   only: nspin2b
-      use jastrow, only: norda,nordb,nordc
+      use jastrow, only: ijas,norda,nordb,nordc
       use jastrow, only: a4,b,c,nordj1
       use multiple_geo, only: nwftype
       use precision_kinds, only: dp
@@ -300,8 +333,14 @@ c-----------------------------------------------------------------------
 
 c Save parameters corresponding to run generating hessian
 
-      mparmja=2+max(0,norda-1)
-      mparmjb=2+max(0,nordb-1)
+      if(ijas.eq.1) then
+        mparmja=norda
+        mparmjb=nordb
+       else 
+        mparmja=2+max(0,norda-1)
+        mparmjb=2+max(0,nordb-1)
+      endif
+
       mparmjc=nterms4(nordc)
 
       do ict=1,nctype
@@ -461,7 +500,7 @@ c-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
 
       use bparm,   only: nspin2b
-      use jastrow, only: norda,nordb,nordc
+      use jastrow, only: ijas,norda,nordb,nordc
       use jastrow, only: a4,b,c,scalek
       use system,  only: nctype
 
@@ -470,11 +509,24 @@ c-----------------------------------------------------------------------
       integer :: i, isp, iadiag, ict, mparmja, mparmjb
       integer :: mparmjc
 
-      mparmja=2+max(0,norda-1)
-      mparmjb=2+max(0,nordb-1)
+      if(ijas.eq.1) then
+        mparmja=norda
+        mparmjb=nordb
+        do ict=1,nctype
+          a4(mparmja+1,ict,iadiag)=a4(mparmja+1,ict,1)
+        enddo
+        do isp=1,nspin2b
+          b(mparmjb+1,isp,iadiag)=b(mparmjb+1,isp,1)
+        enddo
+      else
+        mparmja=2+max(0,norda-1)
+        mparmjb=2+max(0,nordb-1)
+
+        scalek(iadiag)=scalek(1)
+      endif
+
       mparmjc=nterms4(nordc)
 
-      scalek(iadiag)=scalek(1)
       do ict=1,nctype
         do i=1,mparmja
           a4(i,ict,iadiag)=a4(i,ict,1)
@@ -557,7 +609,7 @@ c-----------------------------------------------------------------------
       subroutine save_jastrow_best
 
       use bparm,   only: nspin2b
-      use jastrow, only: norda,nordb,nordc
+      use jastrow, only: ijas,norda,nordb,nordc
       use jastrow, only: a4,b,c,nordj1
       use multiple_geo, only: nwftype
       use precision_kinds, only: dp
@@ -582,8 +634,13 @@ c-----------------------------------------------------------------------
 
 c Save parameters corresponding to run generating hessian
 
-      mparmja=2+max(0,norda-1)
-      mparmjb=2+max(0,nordb-1)
+      if(ijas.eq.1) then
+        mparmja=norda
+        mparmjb=nordb
+       else
+        mparmja=2+max(0,norda-1)
+        mparmjb=2+max(0,nordb-1)
+      endif
       mparmjc=nterms4(nordc)
 
       do ict=1,nctype
@@ -918,7 +975,7 @@ c-----------------------------------------------------------------------
 
       use bparm,   only: nspin2b
       use contrl_file, only: ounit
-      use jastrow, only: a4,b,scalek
+      use jastrow, only: ijas, a4,b,scalek
       use optwf_nparmj, only: nparma,nparmb
       use optwf_wjas, only: iwjasa,iwjasb
       use precision_kinds, only: dp
@@ -930,6 +987,8 @@ c-----------------------------------------------------------------------
       real(dp) :: scalem
 
       iflag=0
+      if(ijas.eq.1) return
+
       iflaga=0
       iflagb=0
 
@@ -1097,7 +1156,8 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       use sr_mat_n, only: elocal,nconf_n,sr_ho,sr_o,wtg
       use sr_mod,  only: mconf,mparm
       !use optwf_sr_mod, only: izvzb, i_sr_rescale
-
+      use control_vmc, only: vmc_nstep, vmc_nblk_max
+      
       implicit none
 
       integer :: i0, ii, ijasci, istate, j
@@ -1114,8 +1174,12 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       i0=1
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0
 
-      if(l.gt.mconf) call fatal_error('SR_STORE: l gt mconf')
-
+      if(l.gt.mconf) then
+         print*, "l",l, "mconf", mconf
+         print*, "vmc_nstep", vmc_nstep, "vmc_nblk_max", vmc_nblk_max
+         call fatal_error('SR_STORE: l gt mconf')
+       endif
+         
       if(nparmj /= 0) call dcopy(nparmj,gvalue,1,sr_o(1,l),1)
 
       ntmp=max(nciterm-i0,0)

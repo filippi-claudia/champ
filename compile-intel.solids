@@ -1,4 +1,4 @@
-#cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_PERIODIC=ON 
-cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_PERIODIC=ON -DVECTORIZATION=NO -DVECTORIZED=NO
-##cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_PERIODIC=ON -DVECTORIZATION=NO -DVECTORIZED=NO -DCMAKE_BUILD_TYPE="DEBUG"
-cmake --build build  
+##cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_PERIODIC=ON 
+cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_PERIODIC=ON -DVECTORIZED=NO
+##cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_PERIODIC=ON -DVECTORIZED=NO -DCMAKE_BUILD_TYPE="DEBUG"
+cmake --build build -j 8   

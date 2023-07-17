@@ -1,13 +1,13 @@
       module jastrow4_mod
       contains
-      subroutine jastrow4(x,v,d2,div_vj,value)
+      subroutine jastrow_factor4(x,v,d2,value)
 c Written by Cyrus Umrigar, modified by C. Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
       use bparm,   only: nocuspb,nspin2b
       use contrl_file, only: ounit
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use jastrow, only: norda,nordb,nordc
       use jaspar6, only: c1_jas6,cutjas
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj
@@ -37,7 +37,6 @@ c Jastrow 6   must be used with one of isc=6,7
       real(dp) :: topuu, u2mst, u2pst, value
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, *) :: v
-      real(dp), dimension(*) :: div_vj
       real(dp), dimension(-2:nordj) :: uu
       real(dp), dimension(-2:nordj) :: ss
       real(dp), dimension(-2:nordj) :: tt
@@ -157,10 +156,7 @@ c     write(ounit,'(''rij,u in een'',2f12.9)') rij,uu(1)
         rj=r_en(j,ic)
 
         if(ri.gt.cutjas .or. rj.gt.cutjas) goto 50
-        do k=1,3
-          if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 50
-        enddo
-
+        
         call scale_dist2(ri,rri(1),dd7,dd9,2)
         call scale_dist2(rj,rrj(1),dd8,dd10,2)
 
@@ -263,8 +259,6 @@ c       write(ounit,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,3)
       v(1,j)=v(1,j)+fijo(1,j,i)
       v(2,j)=v(2,j)+fijo(2,j,i)
       v(3,j)=v(3,j)+fijo(3,j,i)
-      div_vj(i)=div_vj(i)+d2ijo(i,j)/2
-      div_vj(j)=div_vj(j)+d2ijo(i,j)/2
       d2=d2+d2ijo(i,j)
       enddo
       enddo
@@ -336,7 +330,6 @@ c         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i
         v(2,i)=v(2,i)+fijo(2,i,i)
         v(3,i)=v(3,i)+fijo(3,i,i)
 c       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
-        div_vj(i)=div_vj(i)+d2ijo(i,i)
         d2=d2+d2ijo(i,i)
       enddo
 
@@ -345,7 +338,6 @@ c       write(ounit,'(''v='',9d12.4)') (v(k,i),k=1,3)
         fsum=term*fsum
         d2=term*d2
         do i=1,nelec
-          div_vj(i)=term*div_vj(i)
           do k=1,3
             v(k,i)=term*v(k,i)
           enddo

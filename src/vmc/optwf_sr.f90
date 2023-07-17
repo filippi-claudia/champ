@@ -70,6 +70,8 @@ contains
 
     subroutine optwf_sr
 
+      use control, only: mode
+      use control_dmc, only: dmc_nblk
       use contrl_file, only: ounit
       use control_vmc, only: vmc_nblk
       use m_force_analytic, only: alfgeo
@@ -192,11 +194,17 @@ contains
                 denergy = energy(1) - energy_sav
                 denergy_err = sqrt(energy_err(1)**2 + energy_err_sav**2)
 
-                vmc_nblk = vmc_nblk*1.2
-                vmc_nblk = min(vmc_nblk, vmc_nblk_max)
+                if( mode(1:3) == 'vmc' ) then
+                  vmc_nblk = vmc_nblk*1.2
+                  vmc_nblk = min(vmc_nblk, vmc_nblk_max)
+                  write (ounit, '(''nblk = '',i6)') vmc_nblk
+                 else
+                  dmc_nblk = dmc_nblk*1.2
+                  dmc_nblk = min(dmc_nblk, vmc_nblk_max)
+                  write (ounit, '(''nblk = '',i6)') dmc_nblk
+                endif
 
             endif
-            write (ounit, '(''nblk = '',i6)') vmc_nblk
             write (ounit, '(''alfgeo = '',f10.4)') alfgeo
 
             energy_sav = energy(1)
@@ -422,6 +430,7 @@ contains
             do k = 1, nparm
                 if (s_ii_inv(k) .gt. smax) smax = s_ii_inv(k)
             enddo
+            write (ounit, '(''S diagonal element '',t41,50e16.8)') (s_ii_inv(k),k=1,nparm)
             write (ounit, '(''max S diagonal element '',t41,f16.8)') smax
 
             kk = 0

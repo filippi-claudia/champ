@@ -3,7 +3,7 @@
       subroutine jastrow1e(iel,x,v,d2,value,iflag)
 
       use bparm,   only: nocuspb,nspin2b
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use jastrow, only: cutjas_ee, cutjas_en, cutjas_eei, cutjas_eni
       use jastrow, only: norda,nordb,nordc
       use jaspar6, only: cutjas
@@ -153,10 +153,7 @@ c There are no C terms to order 1.
         rj(1)=r_en(j,ic)
 
         if(ri(1).gt.cutjas_en(it,iwf) .or. rj(1).gt.cutjas_en(it,iwf)) goto 50
-        do k=1,3
-          if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 50
-        enddo
-
+        
         do iord=1,nordc
           ri(iord)=ri(1)*ri(iord-1)
           rj(iord)=rj(1)*rj(iord-1)

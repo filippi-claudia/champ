@@ -6,7 +6,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4
       use derivjas, only: d2g,g,go,gvalue
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
       use jastrow, only: norda,nordb,nordc
       use jaspar6, only: asymp_r,cutjas
@@ -269,10 +269,7 @@ c There are no C terms to order 1.
         rj=r_en(j,ic)
 
         if(ri.gt.cutjas .or. rj.gt.cutjas) goto 57
-        do k=1,3
-          if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 57
-        enddo
-
+        
         call scale_dist2(ri,rri(1),dd7,dd9,2)
         call scale_dist2(rj,rrj(1),dd8,dd10,2)
 

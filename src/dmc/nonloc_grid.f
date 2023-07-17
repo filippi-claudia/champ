@@ -7,7 +7,7 @@
       use contrl_file, only: ounit
       use contrl_per, only: iperiodic
       use contrldmc, only: tau
-      use distance_mod, only: r_en,rshift,rvec_en
+      use distance_mod, only: r_en,rvec_en
       use distances_mod, only: distances
       use multideterminant_tmove_mod, only: multideterminant_tmove
       use multiple_geo, only: iwf,iwftype
@@ -47,7 +47,7 @@ c here vpsp_det and dvpsp_det are dummy
         ioptorb=0
         ioptci=0
 
-        call nonloc_pot(xold_dmc(1,1,iw,1),rshift,rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
+        call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
 
         call multideterminant_tmove(psid,iel)
 
@@ -122,15 +122,10 @@ c     enddo
      &       +rvec_en(3,iel,ic)*zq(iq)
         costh=costh*ri
 
-        if(iperiodic.eq.0) then
           x(1)=r_en(iel,ic)*xq(iq)+cent(1,ic)
           x(2)=r_en(iel,ic)*yq(iq)+cent(2,ic)
           x(3)=r_en(iel,ic)*zq(iq)+cent(3,ic)
-         else
-          x(1)=r_en(iel,ic)*xq(iq)+cent(1,ic)+rshift(1,iel,ic)
-          x(2)=r_en(iel,ic)*yq(iq)+cent(2,ic)+rshift(2,iel,ic)
-          x(3)=r_en(iel,ic)*zq(iq)+cent(3,ic)+rshift(3,iel,ic)
-        endif
+
 c       write(ounit,*) 'moved B',iw,iel,(xold_dmc(kk,iel,iw,1),kk=1,3)
 c       write(ounit,*) 'moved A',iw,iel,(x(kk),kk=1,3)
       endif

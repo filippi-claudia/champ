@@ -9,8 +9,9 @@ c Written by Claudia Filippi
       use mpiconf, only: idtask,mpiconf_init,nproc,wid
       use mpitimer, only: elapsed_time,time,time_check1,time_final
       use mpitimer, only: time_start
-      use optwf_control, only: ioptwf
+      use optwf_control, only: ioptwf,method
       use optwf_matrix_corsamp_mod, only: optwf_matrix_corsamp
+      use optwf_sr_mod, only: optwf_sr
       use parser_mod, only: parser
 
       implicit none
@@ -58,10 +59,14 @@ c Open the standard output and the log file only on the master
         if(ibranch_elec.gt.0) call fatal_error('MAIN: no DMC single-branch with global population')
       endif
 
-      if(ioptwf.gt.0) then
-       call optwf_matrix_corsamp
-      else
-       call dmc
+        if (ioptwf .gt. 0) then
+            if (method .eq. 'sr_n') then
+                call optwf_sr
+            else
+                call fatal_error('MAIN: Only SR optimization')
+            endif
+       else
+            call dmc
       endif
 
       close(5)

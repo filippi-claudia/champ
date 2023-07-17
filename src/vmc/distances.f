@@ -5,11 +5,11 @@ c Written by Cyrus Umrigar
 c calculate interparticle distances
       use contrl_file, only: ounit
       use contrl_per, only: iperiodic
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
-      use distances_sav, only: r_ee_sav,r_en_sav,rshift_sav,rvec_ee_sav
+      use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
+      use distances_sav, only: r_ee_sav,r_en_sav,rvec_ee_sav
       use distances_sav, only: rvec_en_sav
       use precision_kinds, only: dp
-      use pw_find_image, only: find_image3,find_image4
+      use pw_find_image, only: find_image3
       use system,  only: cent,ncent,nelec,nghostcent
       implicit none
 
@@ -30,7 +30,6 @@ c calculate interparticle distances
         do ic=1,ncent+nghostcent
           r_en_sav(ic)=r_en(iel,ic)
           do m=1,3
-            rshift_sav(m,ic)=rshift(m,iel,ic)
             rvec_en_sav(m,ic)=rvec_en(m,iel,ic)
           enddo
         enddo
@@ -67,7 +66,7 @@ c Calculate e-N inter-particle distances
             enddo
             r_en(i,ic)=dsqrt(r_en(i,ic))
            else
-            call find_image4(rshift(1,i,ic),rvec_en(1,i,ic),r_en(i,ic))
+              call find_image3(rvec_en(1,i,ic),r_en(i,ic))
           endif
         enddo
       enddo
@@ -113,8 +112,8 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c restore interparticle distances (called if move rejected)
 
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
-      use distances_sav, only: r_ee_sav,r_en_sav,rshift_sav,rvec_ee_sav
+      use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
+      use distances_sav, only: r_ee_sav,r_en_sav,rvec_ee_sav
       use distances_sav, only: rvec_en_sav
       use system,  only: ncent,nelec,nghostcent
       implicit none
@@ -127,7 +126,6 @@ c Calculate e-N inter-particle distances
       do ic=1,ncent+nghostcent
         r_en(iel,ic)=r_en_sav(ic)
         do m=1,3
-          rshift(m,iel,ic)=rshift_sav(m,ic)
           rvec_en(m,iel,ic)=rvec_en_sav(m,ic)
         enddo
       enddo

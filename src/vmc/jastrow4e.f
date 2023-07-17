@@ -7,7 +7,7 @@ c Jastrow 6   must be used with one of isc=6,7
 
 
       use bparm,   only: nocuspb,nspin2b
-      use distance_mod, only: r_ee,r_en,rshift,rvec_ee,rvec_en
+      use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use jastrow, only: norda,nordb,nordc
       use jaspar6, only: cutjas
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj
@@ -175,10 +175,7 @@ c There are no C terms to order 1.
         rj=r_en(j,ic)
 
         if(ri.gt.cutjas .or. rj.gt.cutjas) goto 50
-        do k=1,3
-          if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 50
-        enddo
-
+        
         if(iflag.eq.0) then
           call scale_dist1(ri,rri(1),dd7,2)
           call scale_dist1(rj,rrj(1),dd8,2)

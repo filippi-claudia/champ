@@ -1,6 +1,6 @@
       module nonloc_pot_mod
       contains
-      subroutine nonloc_pot(x,rshift,rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
+      subroutine nonloc_pot(x,rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
 c Written by Claudia Filippi; modified by Cyrus Umrigar
 c Calculates the local and nonlocal components of the pseudopotential
 c Calculates non-local potential derivatives
@@ -24,7 +24,6 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       integer :: ifr, ict
       real(dp) :: pe, pe_en, r, ri, ri2,vcoule,dvpot
       real(dp), dimension(3, *) :: x
-      real(dp), dimension(3, nelec, ncent_tot) :: rshift
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
       real(dp), dimension(*) :: vpsp_det
@@ -103,7 +102,7 @@ c implies recompute gauss pot need to be a better way
       endif
       
 c non-local component (division by the Jastrow already in nonloc)
-      call nonloc(x,rshift,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
+      call nonloc(x,rvec_en,r_en,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp)
       
       return
       end
