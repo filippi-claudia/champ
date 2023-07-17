@@ -20,6 +20,7 @@ module trexio_read_data
     public :: trexio_has_group_determinant
     public :: trexio_has_group_ecp
 
+#if defined(TREXIO_FOUND)
     public :: read_trexio_molecule_file
     public :: read_trexio_symmetry_file
     public :: read_trexio_orbitals_file
@@ -27,6 +28,7 @@ module trexio_read_data
     public :: read_trexio_determinant_file
     public :: read_trexio_ecp_file
     public :: write_trexio_basis_num_info_file
+#endif
     contains
 
 #if defined(TREXIO_FOUND)
@@ -303,7 +305,7 @@ module trexio_read_data
         else
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
         endif
-        
+
         ! Do the allocations based on the number of shells and primitives
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
