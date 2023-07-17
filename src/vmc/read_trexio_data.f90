@@ -288,7 +288,7 @@ module trexio_read_data
         ! Do the array allocations
         if( (method(1:3) == 'lin')) then
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
-        elseif( (method == 'sr_n') .and. (nstates .gt. 1)) then
+        elseif(method == 'sr_n') then
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nstates))
             nwftypeorb=nstates
             nstoo_tot=nstates
