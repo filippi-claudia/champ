@@ -1,3 +1,4 @@
+c Modified by Edgar Josue Landinez Borda
       module find_pimage
       contains
       subroutine check_lattice(rlatt,cutr,isim_cell)
@@ -331,6 +332,54 @@ c Replace r by its shortest image
           r(k)=r(k)-rlatt(k,i)*i_sav(i)
         enddo
       enddo
+
+      return
+      end
+
+c-----------------------------------------------------------------------
+
+      subroutine find_image_pbc(r,rnorm)
+c Written by Edgar Landinez
+c Simple algorithm for PBC minimum image convention
+c to get the minimum distnace between two particles and it's norm 
+
+      
+      use periodic, only: rlatt, rlatt_inv
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, k
+      real(dp) :: rnorm
+      real(dp), dimension(3) :: s
+      real(dp), dimension(3) :: r
+
+c     minimum image in relative coordiantes space (a cube of length 1)
+c     rlatt or rlatt is assumend to be rlatt=(a,b,c)
+c     (a,b,c) the box vectors (the input should be always consistent with this ) 
+      
+      do k=1,3
+        s(k)=0.d0
+        do i=1,3
+          s(k)=s(k)+rlatt_inv(k,i)*r(i)
+        enddo
+        s(k)=s(k)-nint(s(k))
+      enddo
+
+c resotring coordinates in real space       
+      do k=1,3
+        r(k)=0.d0
+        do i=1,3
+          r(k)=r(k)+rlatt(k,i)*s(i)
+       enddo
+      enddo
+
+c compute norm of the distance       
+      rnorm=0.d0
+      do k=1,3
+         rnorm=rnorm+(r(k)*r(k))
+      enddo
+      rnorm=dsqrt(rnorm)
+
 
       return
       end

@@ -8,7 +8,7 @@ c calculate interparticle distances
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       use distances_sav, only: r_ee_sav, r_en_sav, rvec_ee_sav, rvec_en_sav
       use precision_kinds, only: dp
-      use find_pimage, only: find_image3
+      use find_pimage, only: find_image3, find_image_pbc
       use system, only: cent, ncent, nghostcent, nelec
       implicit none
 
@@ -65,7 +65,8 @@ c Calculate e-N inter-particle distances
             enddo
             r_en(i,ic)=dsqrt(r_en(i,ic))
            else
-            call find_image3(rvec_en(1,i,ic),r_en(i,ic))
+c     call find_image3(rvec_en(1,i,ic),r_en(i,ic))
+              call find_image_pbc(rvec_en(1,i,ic),r_en(i,ic))
           endif
         enddo
       enddo
@@ -93,7 +94,8 @@ c Calculate e-e inter-particle distances
             enddo
             r_ee(ij)=dsqrt(r_ee(ij))
            else
-            call find_image3(rvec_ee(1,ij),r_ee(ij))
+c     call find_image3(rvec_ee(1,ij),r_ee(ij))
+              call find_image_pbc(rvec_ee(1,ij),r_ee(ij))
           endif
    30   continue
         enddo

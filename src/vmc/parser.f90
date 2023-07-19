@@ -336,8 +336,8 @@ subroutine parser
   cutg_sim_big   = fdf_get('cutg_sim_big', 1.0d0)
   n_images  = fdf_get('n_images', 1)
   !alattice = fdf_get('alattice', 1.0d0)
-  write(ounit,*) "Ewald split npoly",npoly
-  write(ounit,*) "Ewald split cutg", cutg
+  !write(ounit,*) "Ewald split npoly",npoly
+  !write(ounit,*) "Ewald split cutg", cutg
   !write(ounit,*) "alattice", alattice
 
   
@@ -2008,55 +2008,144 @@ subroutine parser
 
 !! for periodic assuming square cell still 
     subroutine read_lattice_file(file_lattice)
-      use periodic, only: rkvec_shift, rlatt_sim, alattice
-      use contrl_file,        only: ounit, errunit
-      use jaspar6, only: cutjas, cutjasi
+      
+      use contrl_file, only: errunit,ounit
+      use m_string_operations, only: wordcount
+      use custom_broadcast, only: bcast
+      use mpiconf, only: wid
+      use periodic, only: rkvec_shift, alattice
+      use periodic, only: rlatt_sim, rlatt_sim_inv
       use periodic, only: rlatt, rlatt_inv
+      use jaspar6, only: cutjas, cutjasi
+      use precision_kinds, only: dp
+
       
       implicit none
       
       character(len=72), intent(in)   :: file_lattice
+      character(len=90)               :: file_lattice_path, line
       real(dp) :: latt
-      !!integer :: iunit
+      integer                         :: iunit, iostat, count
+      logical                         :: exist
+      integer :: i,k
       
-      write(ounit,*) 'Readding lattice file'
+      !   External file reading
       
+      if((file_lattice(1:6) == '$pool/') .or. (file_lattice(1:6) == '$POOL/')) then
+         file_lattice_path = pooldir // file_lattice(7:)
+      else
+         file_lattice_path = file_lattice
+      endif
+
+
       write(ounit,*) '-----------------------------------------------------------------------'
-      write(ounit,string_format)  " Reading Lattice Parameters from the file :: ",  file_lattice
+      write(ounit,string_format)  " Reading Lattice Parameters from the file :: ",  trim(file_lattice_path) 
       write(ounit,*)
+
+      if (wid) then
+         inquire(file=file_lattice_path, exist=exist)
+         if (exist) then
+            open (newunit=iunit,file=file_lattice_path, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error("Problem opening the Super-cell file")
+         else
+            call fatal_error (" Super-cell file "// trim(file_lattice) // " does not exist.")
+         endif
+      endif
+
+!      if (wid) then
+!         read(iunit,'(A)')  line
+!         backspace(iunit)
+!      endif
+!      call bcast(line)
+!      count = wordcount(line)
+!      write(ounit,*) "line", line
+!      write(ounit,*) "count", count
+
+
+      !Initialization to avoid garbage 
       
-      open (666, file =file_lattice, action='read')
-      read(666,*) alattice
-      close(666)
+      rlatt_sim =0.d0
+      rlatt = 0.d0
+      rlatt_sim_inv = 0.d0
+      rlatt_inv = 0.d0
+      count=0
+      
 
-      write(ounit,*) 'lattice constant', alattice
+
+      if (wid) then
+         do i = 1, 3
+            !! Reading each row as a vector of the box
+            read(iunit,*, iostat=iostat) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
+            if(iostat.ne.0.and.count.eq.0) then
+               if(rlatt_sim(1,1).gt.0.d0) then
+                  alattice=rlatt_sim(1,1)
+                  count=count+1   
+                  exit
+               else
+                  write(ounit, *) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
+                  call fatal_error("Error in reading lattice parameters file")
+               endif
+            endif
+            count=count+1   
+            if(iostat.ne.0.and.count.ne.1) then
+               write(ounit, *) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
+               call fatal_error("Error in reading lattice parameters file")
+            endif
+         enddo
+
+         
+         if(count.eq.1) then
+            
+            
+            write(ounit,*) 'This is a cubic cell'
+            write(ounit,*) 'The lattice constant is', alattice
+            
+            rlatt_sim(1,1) = alattice
+            rlatt_sim(2,2) = alattice
+            rlatt_sim(3,3) = alattice
+
+
+            
+         else if(count.eq.3) then
+            
+            write(ounit,*) "The simulation cell is:"
+         
+            write(ounit,*) "a", rlatt_sim(1,1), rlatt_sim(1,2), rlatt_sim(1,3)
+            write(ounit,*) "b", rlatt_sim(2,1), rlatt_sim(2,2), rlatt_sim(2,3)
+            write(ounit,*) "c", rlatt_sim(3,1), rlatt_sim(3,2), rlatt_sim(3,3) 
+
+            !! assuming still rectangular box
+            alattice=rlatt_sim(1,1)
+            do i = 2, 3
+               if(rlatt_sim(i,i).lt.alattice) alattice=rlatt_sim(i,i)
+            enddo
+            
+            if(alattice.le.0.d0) call fatal_error("Wrong lattice parameter")
+            
+         else
+
+            call fatal_error("Error reading lattice file")
+            
+         endif
+
+
+      endif
+         
+      call bcast(rlatt_sim)
+      if (wid) close(iunit)
 
       
-      !Asuming a rectangular cell 
+      !! set primitive and super-cell to be the same
+      rlatt =rlatt_sim 
       
-      rlatt_sim =0.0d0
-      rlatt = 0.0d0
-      rlatt_inv = 0.0d0
-      
-      rlatt_sim(1,1) = alattice
-      rlatt_sim(2,2) = alattice
-      rlatt_sim(3,3) = alattice
-
-
-      rlatt(1,1) = alattice
-      rlatt(2,2) = alattice
-      rlatt(3,3) = alattice
-
-      rlatt_inv(1,1) = 1.d0/rlatt(1,1)
-      rlatt_inv(2,2) = 1.d0/rlatt(1,1)
-      rlatt_inv(3,3) = 1.d0/rlatt(1,1) 
-
       !! set twist k-shift vector
       rkvec_shift =0.0d0
 
-!!! override kastrow cutoff to half of the lattice parameter
+!!! override jastrow cutoff to half of the lattice parameter
+!!! need to be adapted to half of the wigner-seitz cell (orthorombic boxes)       
       cutjas = 0.5*alattice
       cutjasi=1/cutjas
+      
       
 end subroutine read_lattice_file
 

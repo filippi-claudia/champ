@@ -361,7 +361,7 @@ c-----------------------------------------------------------------------
       use contrl_per, only: iperiodic
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
-      use find_pimage, only: find_image3
+      use find_pimage, only: find_image3, find_image_pbc
       use qua,     only: xq,yq,zq
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: cent,ncent,ncent_tot,nelec
@@ -389,7 +389,8 @@ c-----------------------------------------------------------------------
             enddo
             r_en_quad(iq,jc)=dsqrt(r_en_quad(iq,jc))
            else
-            call find_image3(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
+c     call find_image3(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
+              call find_image_pbc(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
           endif
 
         endif
@@ -684,7 +685,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
       use precision_kinds, only: dp
-      use find_pimage, only: find_image3
+      use find_pimage, only: find_image3, find_image_pbc
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
       use optwf_control, only: ioptjas
       use qua,     only: nquad
@@ -757,7 +758,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
           enddo
           rij=dsqrt(rij)
          else
-          call find_image3(dx,rij)
+c          call find_image3(dx,rij)
+            call find_image_pbc(dx,rij)
         endif
 
 c e-e terms
@@ -823,7 +825,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
       use precision_kinds, only: dp
-      use find_pimage, only: find_image3
+      use find_pimage, only: find_image3, find_image_pbc
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
       use optwf_control, only: ioptjas
@@ -934,7 +936,8 @@ c         call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
           enddo
           rij=dsqrt(rij)
          else
-          call find_image3(dx,rij)
+c          call find_image3(dx,rij)
+            call find_image_pbc(dx,rij)
         endif
 
 c e-e terms
