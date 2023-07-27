@@ -1,4 +1,4 @@
-      module ewald_bk
+      module ewald_breakup
       use error, only: fatal_error
       interface                 !LAPACK interface      
       SUBROUTINE DPOSV( UPLO, N, NRHS, A, LDA, B, LDB, INFO )
@@ -18,7 +18,7 @@
       contains
       subroutine set_ewald
 c Written by Cyrus Umrigar
-c Modified to do periodic GTO's by Edgar Josue Landinez Borda
+c Modified to use periodic GTO's by Edgar Josue Landinez Borda
       
       use pseudo_mod, only: MPS_L, MPS_GRID
       use ewald_mod, only: NGNORMX, NGVECX, NG1DX
@@ -35,10 +35,8 @@ c Modified to do periodic GTO's by Edgar Josue Landinez Borda
       use periodic, only: np, npoly, rkvec_shift, rlatt_sim, rlatt_sim_inv, vcell
       use periodic, only: rlatt, rlatt_inv
       use periodic, only: vcell_sim, znuc2_sum, znuc_sum
-c      use pseudo_tm, only: d2pot, nr_ps, vpseudo
       use tempor, only: dist_nn
       use test, only: f, vbare_coul, vbare_jas, vbare_psp
-c      use constants, only: pi
       use contrl_per, only: iperiodic
       use pseudo, only: lpot, nloc, vps
       use contrl_file,    only: ounit
@@ -47,10 +45,6 @@ c      use constants, only: pi
       use find_pimage, only: check_lattice
       use matinv_mod, only: matinv
       use spline2_mod, only: spline2
-c      use pseudo_tm, only: arg, r0, rmax
-c      use pseudo_tm, only: rmax
-c      use numbas, only: arg, r0 !!, rmax
-c      use readps_tm_mod, only: splfit_tm
       use readps_gauss, only: gauss_pot 
       use periodic, only : n_images, ell
 
@@ -107,38 +101,22 @@ C for images evaluation
       pi=4.d0*datan(1.d0)
       twopi=2*pi
 
+c     These are parameters defined by default in Champ's converter to get the grid
+c     these parameters are the same for any element to get the basis grid file
+c     the only different parameter is nrbas which define the number of angular shells     
 c     temporal parameters grid short range potential fft log-shifted grid 
       r0=20.d0
-c      r0=10.d0
-c     arg=1.0003
-c      arg=1.0003
-c      define number of grid points for fft integration shor range potential 
       nr_ps=2000
-
+      
 c      r0=cutr/(arg**(nr_ps-1)-1)
-      
-      
 c      arg(1)=cutr/((nr_ps(1)-1)*r0(1)))     
-
       
-
-      
-c     allocate grid and vps_short / a.k.a fft  compontents 
+c     allocate grid and vps_short / a.k.a fft  compontents
+c asuming nr      
       allocate(r(nr_ps(1)))
-      allocate(vps_short(nr_ps(1)))
-      
+      allocate(vps_short(nr_ps(1)))      
 
-      
-c      print*,"r0", r0(1)
-c      print*,"arg", arg(1)
-
-
-
-c     Temporary
-
-
-
-
+c     Number of coefficients polynomial expansion the breakup 
       ncoef_per=npoly+1
 
 c Check that the lattice vectors are the smallest possible ones and return the smallest
@@ -148,9 +126,11 @@ c of a nucleus or an electron is present within cutr and cutr_sim respectively.
       call check_lattice(rlatt_sim,cutr_sim,1)
 
       write(ounit, *)  "================================================================================="
-      write(ounit, *)  "==                                                                             =="
-      write(ounit, *)  "==  Setting Ewald-Breakup                                                      =="
-      write(ounit, *)  "==                                                                             =="
+      write(ounit, *)  "=^..^=                                                                             =^..>="
+      write(ounit, *)  "==                                                                                =="
+      write(ounit, *)  "==  Setting-up Ewald-Breakup                                                      =="
+      write(ounit, *)  "==                                                                                =="
+      write(ounit, *)  "=^..^=                                                                             =<..^="
       write(ounit, *)  "================================================================================="
       
       write(ounit, *)  " "
@@ -158,6 +138,7 @@ c of a nucleus or an electron is present within cutr and cutr_sim respectively.
       write(ounit,'(''cutr,cutr_sim ='',9f9.5)') cutr,cutr_sim
 
 c this parameters setiing are necessary for FFT on the pseudopotential integral exponential grid       
+c same for any element since depends on r0,cutr and nr_ps=nr
 c     computing arg depending on how to compute r (upper limit) it should be cutr in principle for vps(short)
 c      print*,"cutr,deltar",cutr,deltar
       deltar=1.0*cutr/(r0(1)*(nr_ps(1)-1))
@@ -267,6 +248,18 @@ c simulation cell
 c      write(ounit,'(/,''Shortest distance to sim. recip. cell boundary'',f14.8)') gdistmin_sim
 
 
+c Estimate maximum shells number before build it 
+     
+      ngvec=1
+      do k=1,3
+         ng1d(k)=int(cutg/gdist(k))
+         ngvec=ngvec*(2*ng1d(k)+1)
+         write(ounit,*)"Estimated ng1d given cutg",cutg, k, 2*ng1d(k)+1
+      enddo
+      write(ounit,*) "Estimated max ngvec", ngvec
+
+
+
 c generate shells of primitive cell g-vectors
       call shells(cutg_big,glatt,gdist,igvec,gvec,gnorm,igmult,ngvec_big,
      &ngnorm_big,ng1d,0)
@@ -280,6 +273,7 @@ c generate shells of primitive cell g-vectors
         endif
         ngvec=ngvec+igmult(k)
       enddo
+      write(ounit,*) "Recomputed after shells generation ngvec", ngvec
 
    20 if(ipr.ge.4) write(ounit,'(/,''Shells within cutg_big,cutg'',2i8)') ngnorm_big,ngnorm
       if(ipr.ge.4) write(ounit,'(/,''Vects. within cutg_big,cutg'',2i8)') ngvec_big,ngvec
@@ -308,6 +302,7 @@ c generate shells of simulation cell g-vectors
       call shells(cutg_sim_big,glatt_sim,gdist_sim,igvec_sim,gvec_sim,gnorm_sim,igmult_sim,ngvec_sim_big,
      & ngnorm_sim_big,ng1d_sim,1)
 
+      write(ounit,*) "Number of gvectors simulation cell: ", gvec_sim, ngvec_sim_big
       ngnorm_sim=ngnorm_sim_big
       ngvec_sim=0
       do k=1,ngnorm_sim_big
@@ -656,8 +651,6 @@ c     radius can be rmax(ict), but if we are to use it also for one of the basis
 c     functions for the optimal separation, then the cutoff has to be cutr.
 c     alpha=5/rmax(ict)
          alpha=5/cutr
-c     r0=rmax/(arg**(nr-1)-1)
-
          r(1)=1.d-10
          vpot=0.d0
          dvpot=0.d0
@@ -668,7 +661,7 @@ c     r0=rmax/(arg**(nr-1)-1)
             write(ounit,'(''alpha'',20d12.4)') alpha
             write(ounit,'(''arg'',20d12.4)') arg(ict)
          endif
-c     write(ounit,'(''lalalla CHECK rg, vpot, vps_short'',3d12.4)') r(ir), vpot, vps_short(1)
+c     write(ounit,'(''lalala CHECK rg, vpot, vps_short'',3d12.4)') r(ir), vpot, vps_short(1)
       
          do ir=2,nr_ps(ict)
 c     write(ounit,*) 'ir',ir
@@ -832,7 +825,6 @@ c bare long-range parts.  The psp does not have a singularity so we can test it 
 c         write(ounit,'(''      r       "true"      ewald       test        test-true   d_true  d_test   vsrange  vlrange  w(r)'')')
         npts=101
         dx=cutr/(npts-1)
-c        dx=1.35cutr/(npts-1)
         rms=0.d0
         write(ounit,*)'when computing short range separate range is ',isrange
 
@@ -848,12 +840,10 @@ c          print*,'r_tmp',r_tmp
 c          print*,'rr',rr
           
 c     write(ounit,'(''i'',i20)') i
-          if(isrange.ge.4) then 
-             vs=vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
-             vs=vsrange1(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
-             vs=vsrange2(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
-             vs=vsrange3(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
-          endif
+          if(isrange.eq.0) vs=vsrange(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict))
+          if(isrange.eq.1) vs=vsrange1(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
+          if(isrange.eq.2) vs=vsrange2(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
+          if(isrange.eq.3) vs=vsrange3(rr,cutr,lowest_pow,ncoef_per,np,b_psp(1,ict),ict,lpot(ict))
 c     write(ounit,'(''getting close'')')
           vl=vlrange_old(r_tmp,gvec,ngnorm,igmult,y_psp(1,ict))
           testv=vs+vl
@@ -977,6 +967,7 @@ c part has zero or one terms.
       real(dp), dimension(3) :: v3
       real(dp), dimension(3) :: distcell
 
+      
       v1(1)=vector(1,2)
       v1(2)=vector(2,2)
       v1(3)=vector(3,2)
@@ -1030,9 +1021,6 @@ c evaluates the cross-product of v1 and v2 and puts it in v3
       real(dp), dimension(3) :: v2
       real(dp), dimension(3) :: v3
 
-      
-
-
 
       v3(1) = v1(2) * v2(3) - v1(3) * v2(2)
       v3(2) = v1(3) * v2(1) - v1(1) * v2(3)
@@ -1070,9 +1058,10 @@ c         1  simulation cell
 
 
       do k=1,3
-        ng1d(k)=int(cutg/gdist(k))
+         ng1d(k)=int(cutg/gdist(k))
       enddo
 
+      
       cutg2=cutg**2
       ngvec_big=0
 c     do 10 i1=-ng1d(1),ng1d(1)
@@ -2227,8 +2216,9 @@ c      use constants, only: pi
 
       integer :: im, ivec, k, ngnorm
       integer, dimension(*) :: igmult
-      real(dp) :: cos, cutr, derfc, expon, pi
-      real(dp) :: gaus_exp, product, rr, vcell
+c     real(dp) :: cos, cutr, derfc, expon, pi
+      real(dp) :: cutr, expon, pi, g2expinv
+      real(dp) :: gauss_exp, product, rr, vcell
       real(dp), dimension(3) :: rvec
       real(dp), dimension(3,*) :: gvec
       real(dp), dimension(*) :: gnorm
@@ -2238,13 +2228,19 @@ c      use constants, only: pi
       pi=4.d0*datan(1.d0)
       
 
-      gaus_exp=5/cutr
+      gauss_exp=5.0/cutr
+c      gauss_exp=7.d0/cutr
+
+      g2expinv=1.d0/(4.0*gauss_exp**2)
+      
       ivec=1
 c The factor of 2 in the next line is just to compensate for the 2 in the
 c last line, which is there because we keep only half the vectors in the star.
-      ewald_pot=-pi/(2*vcell*gaus_exp**2)
+c     ewald_pot=-pi/(2*vcell*gaus_exp**2)
+      ewald_pot=-(2.d0*pi/vcell)*g2expinv
       do k=2,ngnorm
-        expon=exp(-(gnorm(k)/(2*gaus_exp))**2)
+c     expon=exp(-(gnorm(k)/(2*gauss_exp))**2)
+        expon=exp(-g2expinv*gnorm(k))
         do im=1,igmult(k)
           ivec=ivec+1
           product=rvec(1)*gvec(1,ivec)+
@@ -2253,7 +2249,7 @@ c last line, which is there because we keep only half the vectors in the star.
           ewald_pot=ewald_pot+cos(product)*y(k)*expon
         enddo
       enddo
-      ewald_pot=2*ewald_pot+y(1)+derfc(gaus_exp*rr)/rr
+      ewald_pot=2*ewald_pot+y(1)+derfc(gauss_exp*rr)/rr
 
       return
       end
@@ -2684,6 +2680,97 @@ c     vl=vl+0.5d0*y_coul(1)*znuc_sum**2
 
 c-----------------------------------------------------------------------
 
+      subroutine pot_en_coul_ewald(x,pe_en)
+c Written by Cyrus Umrigar
+
+      use contrl_file,    only: ounit
+      use vmc_mod, only: nmat_dim2
+      use system, only: znuc, cent, iwctype, ncent, ncent_tot
+      use control, only: ipr
+      use system, only: nelec
+      use ewald, only: b_coul, y_coul, y_psp, b_psp, y_jas, b_jas
+      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_e_sum_sim, sin_e_sum_sim, cos_p_sum, sin_p_sum
+      use periodic, only: cutr, glatt
+      use periodic, only: igmult, igvec
+      use periodic, only: isrange, ncoef_per, ng1d, ngnorm
+      use periodic, only: ngvec
+      use periodic, only: np
+      use periodic, only: znuc_sum
+      use pseudo, only: lpot, nloc
+      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
+
+      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
+      use find_pimage, only: find_image3, find_image_pbc
+      
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, ict, j, k, lowest_pow
+      real(dp) :: pe_en, vl
+      real(dp) :: vs, vs_aux
+c      real(dp) :: vsrange, vsrange1, vsrange2, vsrange3
+      real(dp), dimension(3,*) :: x
+     
+
+c      write(ounit,*) "inside pot_en_ewald isrange", isrange
+c      write(ounit,*) "inside pot_en_ewald nloc", nloc
+
+
+
+
+c short-range sum
+c Warning: I need to call the appropriate vsrange
+      vs=0.d0
+      do i=1,ncent
+        ict=iwctype(i)
+        do j=1,nelec
+           do k=1,3
+              rvec_en(k,j,i)=x(k,j)-cent(k,i)
+c     write(ounit,'(''x, cent '',3d12.4)') x(k,j),cent(k,i)
+           enddo
+           call find_image_pbc(rvec_en(1,j,i),r_en(j,i))
+           lowest_pow=-1
+           vs=vs-znuc(ict)*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
+        enddo
+      enddo
+
+      
+c long-range sum
+
+      call cossin_e(glatt,igvec,ngvec,x,nelec,ng1d,cos_e_sum,sin_e_sum)
+
+      vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
+      vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
+
+
+
+c      write(ounit,'(''before print vl'')')
+
+      pe_en=vs+vl
+c      write(ounit,'(''pe_en='',20d12.4)') pe_en
+      
+c      write(ounit,'(''vs1='',20f12.4)') vs
+c      write(ounit,'(''vl='',20f12.4)') vl
+c      write(ounit,'(''vl1='',20f12.4)') -y_coul(1)*znuc_sum
+
+      
+      vs=vs/nelec
+      vl=vl/nelec
+      if(ipr.ge.2) then
+        if(nloc.eq.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,-y_coul(1)*znuc_sum
+        if(nloc.ne.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,y_psp(1,1)*znuc_sum
+      endif
+
+
+c      write(ounit,'(''after print vl'')')
+
+      
+      return
+      end
+      
+
+c-----------------------------------------------------------------------
+
       subroutine pot_en_ewald(x,pe_en)
 c Written by Cyrus Umrigar
 
@@ -2737,7 +2824,7 @@ c     call find_image3(rvec_en(1,j,i),r_en(j,i))
          call find_image_pbc(rvec_en(1,j,i),r_en(j,i))
 c          if(nloc.eq.0) then
             lowest_pow=-1
-            vs=vs-znuc(iwctype(i))*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
+            vs=vs-znuc(ict)*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
 c            write(ounit,'(''vs if nloc==0'',1d12.4)') vs
 c           else
 c            lowest_pow=0
@@ -2801,339 +2888,6 @@ c      write(ounit,'(''after print vl'')')
       
       return
       end
-
-c-----------------------------------------------------------------------
-
-      subroutine pot_en_ewald_single(x,pe_en,iel)
-c Written by Cyrus Umrigar
-
-      use contrl_file,    only: ounit
-      use vmc_mod, only: nmat_dim2
-      use system, only: znuc, cent, iwctype, ncent, ncent_tot
-      use control, only: ipr
-      use system, only: nelec
-      use ewald, only: b_coul, y_coul, y_psp, b_psp, y_jas, b_jas
-      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_e_sum_sim, sin_e_sum_sim, cos_p_sum, sin_p_sum
-      use periodic, only: cutr, glatt
-      use periodic, only: igmult, igvec
-      use periodic, only: isrange, ncoef_per, ng1d, ngnorm
-      use periodic, only: ngvec
-      use periodic, only: np
-      use periodic, only: znuc_sum
-      use pseudo, only: lpot, nloc
-      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
-
-      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use find_pimage, only: find_image3, find_image_pbc
-      
-      use precision_kinds, only: dp
-      implicit none
-
-      integer :: i, ict, iel, k, lowest_pow, nelec_l
-      integer :: i1,i2
-      real(dp) :: pe_en, vl
-      real(dp) :: vs, vs_aux
-c      real(dp) :: vsrange, vsrange1, vsrange2, vsrange3
-      real(dp), dimension(3,*) :: x
-     
-
-c      write(ounit,*) "inside pot_en_ewald isrange", isrange
-c      write(ounit,*) "inside pot_en_ewald nloc", nloc
-
-
-
-
-c short-range sum
-c Warning: I need to call the appropriate vsrange
-      vs=0.d0
-      do i=1,ncent
-        ict=iwctype(i)
-        
-          do k=1,3
-             rvec_en(k,iel,i)=x(k,iel)-cent(k,i)
-
-         enddo
-c         write(ounit,'(''rvec_en '',3d12.4)') rvec_en(:,iel,i)
-
-c     call find_image3(rvec_en(1,iel,i),r_en(iel,i))
-         call find_image_pbc(rvec_en(1,iel,i),r_en(iel,i))
-
-            lowest_pow=-1
-            vs=vs-znuc(iwctype(i))*vsrange(r_en(iel,i),cutr,lowest_pow,ncoef_per,np,b_coul)
-c            write(ounit,'(''vs if nloc==0'',1d12.4)') vs
-        
-      enddo
-
-      
-      
-c long-range sum
-c     call cossin_e(glatt,igvec,ngvec,xold,nelec,ng1d,cos_e_sum,sin_e_sum)
-      call cossin_e(glatt,igvec,ngvec,x(1:3,iel:iel),1,ng1d,cos_e_sum,sin_e_sum)
-
-
-
-      if(nloc.eq.0) then
-        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
-c       vl=vl-y_coul(1)*znuc_sum*nelec
-       else
-c        call cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,cent,ncent,ng1d,cos_p_sum,sin_p_sum)
-c        vl=+2*vlrange_p(ngnorm,igmult,cos_p_sum,cos_e_sum,sin_p_sum,sin_e_sum)
-c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
-        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
-c        write(ounit,*) "tralalata here we are vl vl vl"
-      endif
-
-
-c      write(ounit,'(''before print vl'')')
-
-      pe_en=vs+vl
-c      write(ounit,'(''pe_en='',20d12.4)') pe_en
-      
-c      write(ounit,'(''vs1='',20f12.4)') vs
-c      write(ounit,'(''vl='',20f12.4)') vl
-c      write(ounit,'(''vl1='',20f12.4)') -y_coul(1)*znuc_sum
-
-      
-      vs=vs
-      vl=vl
-      if(ipr.ge.2) then
-        if(nloc.eq.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en,vs,vl,-y_coul(1)*znuc_sum
-        if(nloc.ne.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en,vs,vl,y_psp(1,1)*znuc_sum
-      endif
-
-
-c      write(ounit,'(''after print vl'')')
-
-      
-      return
-      end
-
-
-c-----------------------------------------------------------------------
-
-      subroutine pot_en_ewald_local(x,pe_en,i1,i2)
-c Written by Cyrus Umrigar
-
-      use contrl_file,    only: ounit
-      use vmc_mod, only: nmat_dim2
-      use system, only: znuc, cent, iwctype, ncent, ncent_tot
-      use control, only: ipr
-      use system, only: nelec
-      use ewald, only: b_coul, y_coul, y_psp, b_psp, y_jas, b_jas
-      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_e_sum_sim, sin_e_sum_sim, cos_p_sum, sin_p_sum
-      use periodic, only: cutr, glatt
-      use periodic, only: igmult, igvec
-      use periodic, only: isrange, ncoef_per, ng1d, ngnorm
-      use periodic, only: ngvec
-      use periodic, only: np
-      use periodic, only: znuc_sum
-      use pseudo, only: lpot, nloc
-      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
-      
-      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use find_pimage, only: find_image3, find_image_pbc
-      
-      use precision_kinds, only: dp
-      implicit none
-      
-      integer :: i, ict, j, k, lowest_pow
-      integer :: i1,i2, nelec_l
-      real(dp) :: pe_en, vl
-      real(dp) :: vs, vs_aux
-      real(dp), dimension(ngvec) :: cos_1n_sum
-      real(dp), dimension(ngvec) :: sin_1n_sum
-      real(dp), dimension(ngvec) :: cos_1e_sum
-      real(dp), dimension(ngvec) :: sin_1e_sum
-      real(dp) :: pe_1en
-c      real(dp) :: vsrange, vsrange1, vsrange2, vsrange3
-      real(dp), dimension(3,*) :: x
-     
-
-c      write(ounit,*) "inside pot_en_ewald isrange", isrange
-c      write(ounit,*) "inside pot_en_ewald nloc", nloc
-
-
-c     local number of electrons       
-      nelec_l=i2-i1+1
-
-c short-range sum
-c Warning: I need to call the appropriate vsrange
-      vs=0.d0
-      vl=0.d0
-      do i=1,ncent
-        ict=iwctype(i)
-        call cossin_cent(znuc(ict),glatt,igvec,ngvec,cent(1:3,i),ng1d,cos_1n_sum,sin_1n_sum)
-        do j=i1,i2
-          do k=1,3
-             rvec_en(k,j,i)=x(k,j)-cent(k,i)
-c             write(ounit,'(''x, cent '',3d12.4)') x(k,j),cent(k,i)
-         enddo
-c         write(ounit,'(''rvec_en '',3d12.4)') rvec_en(:,j,i)
-c     call find_image3(rvec_en(1,j,i),r_en(j,i))
-         call find_image_pbc(rvec_en(1,j,i),r_en(j,i))
-c     if(nloc.eq.0) then
-         lowest_pow=-1
-         vs=vs-znuc(ict)*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
-         call cossin_1e(glatt,igvec,ngvec,x(1:3,j),ng1d,cos_1e_sum,sin_1e_sum)
-         vl=-vl-2*vlrange(ngnorm,igmult,cos_1n_sum,cos_1e_sum,sin_1n_sum,sin_1e_sum,y_coul)
-
-        enddo
-      enddo
-
-      
-      
-c long-range sum
-c     call cossin_e(glatt,igvec,ngvec,xold,nelec,ng1d,cos_e_sum,sin_e_sum)
-c      call cossin_e(glatt,igvec,ngvec,x(1:3,i1:i2),nelec_l,ng1d,cos_e_sum,sin_e_sum)
-
-
-
-c      if(nloc.eq.0) then
-c        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
-c       vl=vl-y_coul(1)*znuc_sum*nelec
-c       else
-c        call cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,cent,ncent,ng1d,cos_p_sum,sin_p_sum)
-c        vl=+2*vlrange_p(ngnorm,igmult,cos_p_sum,cos_e_sum,sin_p_sum,sin_e_sum)
-c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
-c        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
-c        write(ounit,*) "tralalata here we are vl vl vl"
-c      endif
-
-
-c      write(ounit,'(''before print vl'')')
-
-      pe_en=vs+vl
-c      write(ounit,'(''pe_en='',20d12.4)') pe_en
-      
-c      write(ounit,'(''vs1='',20f12.4)') vs
-c      write(ounit,'(''vl='',20f12.4)') vl
-c      write(ounit,'(''vl1='',20f12.4)') -y_coul(1)*znuc_sum
-
-      
-c      vs=vs/nelec
-c      vl=vl/nelec
-      if(ipr.ge.2) then
-        if(nloc.eq.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,-y_coul(1)*znuc_sum
-        if(nloc.ne.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,y_psp(1,1)*znuc_sum
-      endif
-
-
-c      write(ounit,'(''after print vl'')')
-
-      
-      return
-      end
-
-
-c-----------------------------------------------------------------------
-
-      subroutine pot_en_ewald_lambda(x,pe_en,i1,i2)
-c Written by Cyrus Umrigar
-
-      use contrl_file,    only: ounit
-      use vmc_mod, only: nmat_dim2
-      use system, only: znuc, cent, iwctype, ncent, ncent_tot
-      use control, only: ipr
-      use system, only: nelec
-      use ewald, only: b_coul, y_coul, y_psp, b_psp, y_jas, b_jas
-      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_e_sum_sim, sin_e_sum_sim, cos_p_sum, sin_p_sum
-      use periodic, only: cutr, glatt
-      use periodic, only: igmult, igvec
-      use periodic, only: isrange, ncoef_per, ng1d, ngnorm
-      use periodic, only: ngvec
-      use periodic, only: np
-      use periodic, only: znuc_sum
-      use pseudo, only: lpot, nloc, vps
-      use gauss_ecp, only: ecp_coef, ecp_exponent, necp_power, necp_term
-      use distance_mod, only:  r_en, rvec_en, r_ee, rvec_ee
-
-      use ewald_mod, only: NGNORM_SIMX, NGVEC_SIMX, NCOEFX,NGNORMX, NGVECX
-      use find_pimage, only: find_image3, find_image_pbc
-      
-      use precision_kinds, only: dp
-      implicit none
-
-      integer :: i, ict, j, k, lowest_pow,i1,i2, nelec_l
-      real(dp) :: pe_en, vl
-      real(dp) :: vs, vs_aux, rsq
-c      real(dp) :: vsrange, vsrange1, vsrange2, vsrange3
-      real(dp), dimension(3,*) :: x
-     
-
-c      write(ounit,*) "inside pot_en_ewald isrange", isrange
-c      write(ounit,*) "inside pot_en_ewald nloc", nloc
-
-
-      nelec_l=i2-i1+1
-
-
-
-c short-range sum
-c Warning: I need to call the appropriate vsrange
-      vs=0.d0
-      lowest_pow=-1
-      do i=1,ncent
-        ict=iwctype(i)
-        do j=i1,i2
-           do k=1,3
-              rvec_en(k,j,i)=x(k,j)-cent(k,i)
-c     write(ounit,'(''x, cent '',3d12.4)') x(k,j),cent(k,i)
-           enddo
-c     call find_image3(rvec_en(1,j,i),r_en(j,i))
-           call find_image_pbc(rvec_en(1,j,i),r_en(j,i))
-           rsq=max(1.0d-10,r_en(j,i))
-           rsq=1.d0/rsq
-           rsq=rsq*rsq
-           vs=vs-znuc(ict)*(1.0-exp(-ecp_exponent(i,lpot(ict),ict)*rsq))*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
-        enddo
-      enddo
-
-      
-      
-c long-range sum
-c     call cossin_e(glatt,igvec,ngvec,xold,nelec,ng1d,cos_e_sum,sin_e_sum)
-c     call cossin_e(glatt,igvec,ngvec,x,nelec,ng1d,cos_e_sum,sin_e_sum)
-      call cossin_e(glatt,igvec,ngvec,x(1:3,i1:i2),nelec_l,ng1d,cos_e_sum,sin_e_sum)
-
-
-
-
-      if(nloc.eq.0) then
-        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
-c       vl=vl-y_coul(1)*znuc_sum*nelec
-       else
-c        call cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,cent,ncent,ng1d,cos_p_sum,sin_p_sum)
-c        vl=+2*vlrange_p(ngnorm,igmult,cos_p_sum,cos_e_sum,sin_p_sum,sin_e_sum)
-c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
-        vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
-c        write(ounit,*) "tralalata here we are vl vl vl"
-      endif
-
-
-c      write(ounit,'(''before print vl'')')
-
-      pe_en=vs+vl
-c      write(ounit,'(''pe_en='',20d12.4)') pe_en
-      
-c      write(ounit,'(''vs1='',20f12.4)') vs
-c      write(ounit,'(''vl='',20f12.4)') vl
-c      write(ounit,'(''vl1='',20f12.4)') -y_coul(1)*znuc_sum
-
-      
-      vs=vs/nelec
-      vl=vl/nelec
-      if(ipr.ge.2) then
-        if(nloc.eq.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,-y_coul(1)*znuc_sum
-        if(nloc.ne.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,y_psp(1,1)*znuc_sum
-      endif
-
-
-c      write(ounit,'(''after print vl'')')
-
-      
-      return
-      end
-
 
 
 c-----------------------------------------------------------------------

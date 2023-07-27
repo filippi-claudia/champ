@@ -15,8 +15,7 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use error,   only: fatal_error
       use vmc_mod, only: nbjx
       use optwf_parms, only: nparmj
-      use ewald_bk, only: pot_en_ewald, pot_en_ewald_single
-      use ewald_bk, only: pot_en_ewald_local, pot_en_ewald_lambda
+      use ewald_breakup, only: pot_en_coul_ewald 
 
       
       implicit none
@@ -58,7 +57,7 @@ c local component (highest angular momentum)
       else
 
 c this add coulumb pe_en contribution from PBC/Ewald split Natoli-Ceperley algorithm
-         call pot_en_ewald(x,pe_en)
+         call pot_en_coul_ewald(x,pe_en)
          pe=pe+pe_en
          
 c     Add and fix remaining local component from gaussian (BFD) pseudo

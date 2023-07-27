@@ -7,7 +7,7 @@ c get nuclear potential energy
       use da_pseudo, only: da_pecent,da_vps
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
-      use ewald_bk, only: pot_nn_ewald
+      use ewald_breakup, only: pot_nn_ewald
       use system,  only: ncent_tot,nctype_tot
 
       implicit none

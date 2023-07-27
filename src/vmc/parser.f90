@@ -187,7 +187,7 @@ subroutine parser
   !! Allocate_periodic
   use periodic,         only: npoly,np,cutg,cutg_big,cutg_sim,cutg_sim_big, alattice
   use periodic,         only: rlatt, rlatt_inv, rlatt_sim, rkvec_shift, n_images, ell
-  use ewald_bk, only: pot_en_ewald, pot_ee_ewald, set_ewald
+  use ewald_breakup, only: pot_en_coul_ewald, pot_ee_ewald, set_ewald
   use  m_ewald, only : allocate_m_ewald
   use  m_pseudo, only : allocate_m_pseudo
   
@@ -327,18 +327,19 @@ subroutine parser
   if (trex_backend == "text") backend = TREXIO_TEXT
 #endif
 
-! Ewald module for periodic
-  npoly  = fdf_get('npoly', 1)
-  np     = fdf_get('np', 3)
+  ! Ewald module for periodic
+  !npoly, order polynimial split ewald-breakup
+  npoly  = fdf_get('npoly', 8)
+  ! polynomial order of the cuttoff better even value
+  np     = fdf_get('np', 6)
+  !cutoffs in recirpotal space 
   cutg   = fdf_get('cutg', 1.0d0)
   cutg_sim   = fdf_get('cutg_sim', 1.0d0)
   cutg_big   = fdf_get('cutg_big', 1.d0)
   cutg_sim_big   = fdf_get('cutg_sim_big', 1.0d0)
+  ! number of images for ao's evaluation in PBC
   n_images  = fdf_get('n_images', 1)
   !alattice = fdf_get('alattice', 1.0d0)
-  !write(ounit,*) "Ewald split npoly",npoly
-  !write(ounit,*) "Ewald split cutg", cutg
-  !write(ounit,*) "alattice", alattice
 
   
   
@@ -2052,15 +2053,6 @@ subroutine parser
          endif
       endif
 
-!      if (wid) then
-!         read(iunit,'(A)')  line
-!         backspace(iunit)
-!      endif
-!      call bcast(line)
-!      count = wordcount(line)
-!      write(ounit,*) "line", line
-!      write(ounit,*) "count", count
-
 
       !Initialization to avoid garbage 
       
@@ -2103,16 +2095,18 @@ subroutine parser
             rlatt_sim(1,1) = alattice
             rlatt_sim(2,2) = alattice
             rlatt_sim(3,3) = alattice
-
+            
 
             
          else if(count.eq.3) then
+
             
             write(ounit,*) "The simulation cell is:"
          
             write(ounit,*) "a", rlatt_sim(1,1), rlatt_sim(1,2), rlatt_sim(1,3)
             write(ounit,*) "b", rlatt_sim(2,1), rlatt_sim(2,2), rlatt_sim(2,3)
-            write(ounit,*) "c", rlatt_sim(3,1), rlatt_sim(3,2), rlatt_sim(3,3) 
+            write(ounit,*) "c", rlatt_sim(3,1), rlatt_sim(3,2), rlatt_sim(3,3)
+            
 
             !! assuming still rectangular box
             alattice=rlatt_sim(1,1)
@@ -2127,20 +2121,27 @@ subroutine parser
             call fatal_error("Error reading lattice file")
             
          endif
-
-
-      endif
          
+         
+         !   regarding Ewald Breakup assume column not row vectors for the lattice     
+         rlatt_sim=TRANSPOSE(rlatt_sim)
+         
+
+         
+      endif
+
+      
+      
       call bcast(rlatt_sim)
       if (wid) close(iunit)
-
+      
       
       !! set primitive and super-cell to be the same
       rlatt =rlatt_sim 
       
       !! set twist k-shift vector
       rkvec_shift =0.0d0
-
+      
 !!! override jastrow cutoff to half of the lattice parameter
 !!! need to be adapted to half of the wigner-seitz cell (orthorombic boxes)       
       cutjas = 0.5*alattice

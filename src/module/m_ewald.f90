@@ -8,8 +8,11 @@ module ewald_mod
 
      implicit none
 
+!  Original parameters     
+!     integer, parameter :: NCOEFX = 10, NPX = 4, IVOL_RATIO = 10, IBIG_RATIO = 15, NSYM = 8
+!     integer, parameter :: NGNORMX = 1000, NGVECX = NGNORMX*NSYM, NG1DX = 60
      integer, parameter :: NCOEFX = 10, NPX = 4, IVOL_RATIO = 10, IBIG_RATIO = 15, NSYM = 8
-     integer, parameter :: NGNORMX = 1000, NGVECX = NGNORMX*NSYM, NG1DX = 60
+     integer, parameter :: NGNORMX = 10000, NGVECX = NGNORMX*NSYM, NG1DX = 60
      integer, parameter :: NGNORM_SIMX = NGNORMX*IVOL_RATIO, NGVEC_SIMX = NGVECX*IVOL_RATIO
      integer, parameter :: NGNORM_BIGX = IBIG_RATIO*NGNORMX, NGVEC_BIGX = IBIG_RATIO*NGVECX
      integer, parameter :: NGNORM_SIM_BIGX = IBIG_RATIO*NGNORM_SIMX, NGVEC_SIM_BIGX = IBIG_RATIO*NGVEC_SIMX
