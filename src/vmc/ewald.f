@@ -91,12 +91,13 @@ c     real(dp), dimension(MPS_GRID) :: work
       integer, dimension(nctype_tot) :: nr_ps
 c this array is just for testing purposes
       real(dp), dimension(101) :: w_gauss
-
+      real(dp), dimension(3) :: cutgv
+      
 C for images evaluation
       integer :: ix,iy,iz
       integer :: nix,niy,niz
       integer :: imcount
-      integer :: nisum
+      integer :: nisum, ngmx
       
       pi=4.d0*datan(1.d0)
       twopi=2*pi
@@ -126,11 +127,11 @@ c of a nucleus or an electron is present within cutr and cutr_sim respectively.
       call check_lattice(rlatt_sim,cutr_sim,1)
 
       write(ounit, *)  "================================================================================="
-      write(ounit, *)  "=^..^=                                                                             =^..>="
-      write(ounit, *)  "==                                                                                =="
-      write(ounit, *)  "==  Setting-up Ewald-Breakup                                                      =="
-      write(ounit, *)  "==                                                                                =="
-      write(ounit, *)  "=^..^=                                                                             =<..^="
+      write(ounit, *)  "=^..^=                                                                     =^..>="
+      write(ounit, *)  "==                                                                             =="
+      write(ounit, *)  "==  Setting-up Ewald-Breakup                                                   =="
+      write(ounit, *)  "==                                                                             =="
+      write(ounit, *)  "=^..^=                                                                     =<..^="
       write(ounit, *)  "================================================================================="
       
       write(ounit, *)  " "
@@ -257,7 +258,15 @@ c Estimate maximum shells number before build it
          write(ounit,*)"Estimated ng1d given cutg",cutg, k, 2*ng1d(k)+1
       enddo
       write(ounit,*) "Estimated max ngvec", ngvec
+      
+      if(ngvec.gt.NGVECX) then 
+         write(ounit,*) "Compute a new cutg to lower  number og g-vectors"
+         ngmx=7
+         cutgv=gdistmin*ngmx
+         cutg=MAXVAL(cutgv)
+         write(ounit,*) "New cutg value", cutg
 
+      endif
 
 
 c generate shells of primitive cell g-vectors
