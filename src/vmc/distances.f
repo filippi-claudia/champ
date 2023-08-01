@@ -20,38 +20,46 @@ c calculate interparticle distances
 
 
       if(iel.eq.0) then
-        i1=1
-        i2=nelec
-       else
-        i1=iel
-        i2=iel
+         i1=1
+         i2=nelec
+      else
+         i1=iel
+         i2=iel
 
-        do ic=1,ncent+nghostcent
-          r_en_sav(ic)=r_en(iel,ic)
-          do m=1,3
-             rvec_en_sav(m,ic)=rvec_en(m,iel,ic)
-          enddo
-        enddo
-        ij=0
-        do jj=1,nelec
-          if(jj.eq.iel) goto 20
-          if(jj.lt.iel) then
-            i=iel
-            j=jj
-           else
-            i=jj
-            j=iel
-          endif
-          ij=((i-1)*(i-2))/2+j
+         do ic=1,ncent+nghostcent
+            r_en_sav(ic)=r_en(iel,ic)
+            do m=1,3
+               rvec_en_sav(m,ic)=rvec_en(m,iel,ic)
+            enddo
+         enddo
+         
+         ij=0
+         
+         do jj=1,iel-1
 
-          r_ee_sav(jj)=r_ee(ij)
-          do m=1,3
-            rvec_ee_sav(m,jj)=rvec_ee(m,ij)
-          enddo
-   20 continue
-        enddo
+            ij=((iel-1)*(iel-2))/2+jj
+            
+            r_ee_sav(jj)=r_ee(ij)
+            do m=1,3
+               rvec_ee_sav(m,jj)=rvec_ee(m,ij)
+            enddo
+            
+         enddo
+
+         do jj=iel+1,nelec
+
+            ij=((jj-1)*(jj-2))/2+iel
+
+            r_ee_sav(jj)=r_ee(ij)
+            do m=1,3
+               rvec_ee_sav(m,jj)=rvec_ee(m,ij)
+            enddo
+
+         enddo
+         
       endif
 
+      
 c Calculate e-N inter-particle distances
       do i=i1,i2
         do ic=1,ncent+nghostcent
