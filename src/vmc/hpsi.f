@@ -5,7 +5,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
-      use Bloc,    only: tildem,tildemkin
+      use Bloc,    only: tildem,tildemkin,b,bkin
       use casula,  only: i_vpsp,t_vpsp
       use constants, only: hb
       use contrl_file, only: ounit
@@ -36,6 +36,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use optci_mod, only: optci_deloc
       use optjas_mod, only: optjas_deloc
       use optorb_f_mod, only: optorb_compute
+      use orbval, only: nadorb
       use optwf_parms, only: nparmj
       use pcm_cntrl, only: ipcm
       use pcm_hpsi, only: pcms,pcmv
@@ -45,7 +46,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       use properties_mod, only: prop_compute
       use pseudo,  only: nloc
       use qmmm_pot, only: qmmm_extpot_ene
-      use slater,  only: kref,ndet, norb
+      use slater,  only: kref,ndet,norb
       use system,  only: ndn,nelec,nup
       use velocity_jastrow, only: vj
       use ycompact, only: ymat
@@ -53,7 +54,7 @@ c modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
       implicit none
 
       integer :: i, iab, ifr, ii, ipass, j, o, x
-      integer :: irep, istate, jrep, nel
+      integer :: irep, istate, jrep, nel, iorb, i1, i2, iparm
       real(dp) :: e_other, ekin_other, ext_pot, peQM, pe_local
       real(dp) :: pepcm
       real(dp), dimension(3, *) :: coord
@@ -146,8 +147,25 @@ c compute reference determinant, its derivatives, and kinetic contribution to B_
 c compute pseudo-potential contribution
 c nonloc_pot must be called after determinant because slater matrices are needed
 
-      if(nloc.gt.0)
-     &  call nonloc_pot(coord,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
+      if(nloc.gt.0) then
+        call nonloc_pot(coord,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
+      else
+        do x=1,nbjx
+          vpsp_det(1,x)=0.d0
+          vpsp_det(2,x)=0.d0
+          do iparm=1,nparmj
+            dvpsp_dj(iparm,x)=0.d0
+          enddo
+        enddo
+        do i=1,nelec
+          do x=1,nbjx
+            do iorb=1,norb+nadorb
+              b(iorb,i,x)=bkin(iorb,i,x)
+            enddo
+          enddo
+        enddo
+      endif
+
       if(ipr.ge.3) then
         write(ounit,'(''pe_loc after nonloc_pot'',9f12.5)') pe_local
         do i=1,nstates
