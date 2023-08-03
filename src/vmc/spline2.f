@@ -12,7 +12,7 @@ C that boundary.
 C The cubic spline fit to the function is then given by
 C
 C  y = A y  + B y    + C y'' + D y''
-C	  j	 j+1	  j	  j+1
+C       j    j+1	 j	  j+1
 C
 C with A=(x(j+1)-x)/(x(j+1)-x(j)), B=1-A=(x-x(j))/(x(j+1)-x(j)),
 C C=(A^3-A)(x(j+1)-x(j))^2/6, and D=(B^3-B)(x(j+1)-x(j))^2/6.

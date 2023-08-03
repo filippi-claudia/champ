@@ -23,7 +23,7 @@
       use precision_kinds, only: dp
       use system,  only: iwctype,ncent,nctype,nelec,nup
       use vardep,  only: cdep,iwdepend,nvdepend
-      
+      use error, only: fatal_error
       implicit none
 
       integer :: i, ic, id, ideriv, ij
@@ -219,6 +219,8 @@
 ! There are no C terms to order 1.
    30 if(nordc.le.1) goto 58
 
+      call fatal_error ("Cant't use c-terms for now since the cusp conditions are not correct yet!!!")      
+      
       do ic=1,ncent
         it=iwctype(ic)
 
@@ -259,6 +261,8 @@
         fui=0
         fuj=0
         ll=0
+        jj=1
+        jparm=1
         do n=2,nordc
           do k=n-1,0,-1
             if(k.eq.0) then
