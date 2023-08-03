@@ -1517,6 +1517,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
       use optwf_nparmj, only: nparma,nparmb,nparmc,nparmf
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa,iwjasb,iwjasc,iwjasf
+      use pseudo, only: nloc
       use system,  only: nctype,nctype_tot
       use vmc_mod, only: nctyp3x
 
@@ -1602,9 +1603,9 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
         if (ijas .ge. 4 .and. ijas .le. 6) then
             do it = 1, nctype
-                if (numr .eq. 0) then
-                    ! All-electron with analytic slater basis
-                    if ((nparma(it) .gt. 0 .and. norda .eq. 0) .or. (nparma(it) .gt. norda + 1)) then
+                if (nloc .eq. 0) then
+                    ! All-electron with numerical basis: a(1)=-Z, a(2) can vary
+                    if ((nparma(it) .gt. 0 .and. norda .eq. 0) .or. (nparma(it) .gt. norda)) then
                         write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
                         call fatal_error( 'nparma too large for norda')
                     endif
