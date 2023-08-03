@@ -311,7 +311,7 @@ c generate shells of simulation cell g-vectors
       call shells(cutg_sim_big,glatt_sim,gdist_sim,igvec_sim,gvec_sim,gnorm_sim,igmult_sim,ngvec_sim_big,
      & ngnorm_sim_big,ng1d_sim,1)
 
-      write(ounit,*) "Number of gvectors simulation cell: ", gvec_sim, ngvec_sim_big
+      write(ounit,*) "Number of gvectors simulation cell: ", ngvec_sim, ngvec_sim_big
       ngnorm_sim=ngnorm_sim_big
       ngvec_sim=0
       do k=1,ngnorm_sim_big
@@ -699,12 +699,13 @@ c      write(ounit,'(''CHECK vps_short'',d12.4)') vps_short(1:nr_ps(ict))
       call fourier_transform(r,arg(ict),r0(ict),nr_ps(ict),vps_short,vcell,gnorm,ngnorm_big,
      & vps_basis_fourier)
 
-      if(ipr.ge.4) write(ounit,'(''Start check vps_basis_fourier from vps_short'')')
-      do ig=1,ngnorm_big,10
-        write(ounit,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vps_basis_fourier(ig)
-      enddo
-      if(ipr.ge.4) write(ounit,'(''Finnish check vps_basis_fourier from vps_short'')')
-
+      if(ipr.ge.4) then 
+         write(ounit,'(''Start check vps_basis_fourier from vps_short'')')
+         do ig=1,ngnorm_big,10
+            write(ounit,'(''CHECK FT'',i5,g12.5,d12.4)') ig,gnorm(ig),vps_basis_fourier(ig)
+         enddo
+         write(ounit,'(''Finnish check vps_basis_fourier from vps_short'')')
+      endif
 
       if(ipr.ge.4) then
          write(ounit,'(''Compare vps_short(ir) vs vps_shortf reconstructed'')')
@@ -2730,16 +2731,17 @@ c      write(ounit,*) "inside pot_en_ewald nloc", nloc
 c short-range sum
 c Warning: I need to call the appropriate vsrange
       vs=0.d0
+      lowest_pow=-1
       do i=1,ncent
-        ict=iwctype(i)
+c        ict=iwctype(i)
         do j=1,nelec
            do k=1,3
               rvec_en(k,j,i)=x(k,j)-cent(k,i)
 c     write(ounit,'(''x, cent '',3d12.4)') x(k,j),cent(k,i)
            enddo
            call find_image_pbc(rvec_en(1,j,i),r_en(j,i))
-           lowest_pow=-1
-           vs=vs-znuc(ict)*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
+c           vs=vs-znuc(ict)*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
+           vs=vs-znuc(iwctype(i))*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np,b_coul)
         enddo
       enddo
 
@@ -2748,7 +2750,6 @@ c long-range sum
 
       call cossin_e(glatt,igvec,ngvec,x,nelec,ng1d,cos_e_sum,sin_e_sum)
 
-      vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
       vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
 
 
