@@ -59,55 +59,186 @@ c calculate interparticle distances
          
       endif
 
-      
-c Calculate e-N inter-particle distances
-      do i=i1,i2
-        do ic=1,ncent+nghostcent
-          do m=1,3
-            rvec_en(m,i,ic)=x(m,i)-cent(m,ic)
-          enddo
-          if(iperiodic.eq.0) then
-            r_en(i,ic)=0
-            do m=1,3
-              r_en(i,ic)=r_en(i,ic)+rvec_en(m,i,ic)**2
-            enddo
-            r_en(i,ic)=dsqrt(r_en(i,ic))
-           else
-c     call find_image3(rvec_en(1,i,ic),r_en(i,ic))
-              call find_image_pbc(rvec_en(1,i,ic),r_en(i,ic))
-          endif
-        enddo
-      enddo
 
-c Calculate e-e inter-particle distances
-      do i=1,nelec
-        if(iel.eq.0) i2=i-1
-        do j=i1,i2
-          if(i.eq.j) goto 30
-          if(i.lt.j) then
-            ii=j
-            jj=i
-           else
-            ii=i
-            jj=j
-          endif
-          ij=((ii-1)*(ii-2))/2+jj
-          do m=1,3
-            rvec_ee(m,ij)=x(m,ii)-x(m,jj)
-          enddo
-          if(iperiodic.eq.0) then
-            r_ee(ij)=0
-            do m=1,3
-              r_ee(ij)=r_ee(ij)+rvec_ee(m,ij)**2
+
+      if(iperiodic.eq.0) then
+
+
+c     Calculate e-N inter-particle distances
+         do i=i1,i2
+            do ic=1,ncent+nghostcent
+            
+               do m=1,3
+                  rvec_en(m,i,ic)=x(m,i)-cent(m,ic)
+               enddo
+         
+               r_en(i,ic)=0
+               do m=1,3
+                  r_en(i,ic)=r_en(i,ic)+rvec_en(m,i,ic)**2
+               enddo
+               r_en(i,ic)=dsqrt(r_en(i,ic))
+
             enddo
-            r_ee(ij)=dsqrt(r_ee(ij))
-           else
-c     call find_image3(rvec_ee(1,ij),r_ee(ij))
-              call find_image_pbc(rvec_ee(1,ij),r_ee(ij))
-          endif
-   30   continue
-        enddo
-      enddo
+         enddo
+
+
+
+
+c     Calculate e-e inter-particle distances      
+         if(iel.eq.0) then
+
+            do i=2,nelec
+               do j=1,i-1
+                  
+                  ij=((i-1)*(i-2))/2+j
+               
+                  do m=1,3
+                     rvec_ee(m,ij)=x(m,i)-x(m,j)
+                  enddo
+                  
+                  r_ee(ij)=0
+                  do m=1,3
+                     r_ee(ij)=r_ee(ij)+rvec_ee(m,ij)**2
+                  enddo
+                  r_ee(ij)=dsqrt(r_ee(ij))
+
+               enddo
+            enddo
+         
+            
+         else
+
+c     iel!=0         
+         
+            do i=1,iel-1
+            
+               ij=((iel-1)*(iel-2))/2+i
+               
+               do m=1,3
+                  rvec_ee(m,ij)=x(m,iel)-x(m,i)
+               enddo
+               
+               r_ee(ij)=0
+               do m=1,3
+                  r_ee(ij)=r_ee(ij)+rvec_ee(m,ij)**2
+               enddo
+               r_ee(ij)=dsqrt(r_ee(ij))
+            
+         
+            enddo
+         
+
+            do i=iel+1,nelec
+                        
+               ij=((i-1)*(i-2))/2+iel
+            
+               do m=1,3
+                  rvec_ee(m,ij)=x(m,i)-x(m,iel)
+               enddo
+               
+               
+               r_ee(ij)=0
+               do m=1,3
+                  r_ee(ij)=r_ee(ij)+rvec_ee(m,ij)**2
+               enddo
+               r_ee(ij)=dsqrt(r_ee(ij))
+               
+         enddo
+         
+         
+
+         
+      endif
+
+
+
+                  
+         
+      else
+
+
+!     periodic systems
+
+         
+c     Calculate e-N inter-particle distances
+         do i=i1,i2
+            do ic=1,ncent+nghostcent
+               
+               do m=1,3
+                  rvec_en(m,i,ic)=x(m,i)-cent(m,ic)
+               enddo
+               
+               call find_image_pbc(rvec_en(1,i,ic),r_en(i,ic))
+               
+            enddo
+         enddo
+         
+
+
+
+c     Calculate e-e inter-particle distances      
+         if(iel.eq.0) then
+
+            do i=2,nelec
+               do j=1,i-1
+
+                  ij=((i-1)*(i-2))/2+j
+               
+                  do m=1,3
+                     rvec_ee(m,ij)=x(m,i)-x(m,j)
+                  enddo
+                  
+                  call find_image_pbc(rvec_ee(1,ij),r_ee(ij))
+                 
+               enddo
+            enddo
+         
+            
+         else
+
+c     iel!=0         
+            
+            do i=1,iel-1
+               
+               ij=((iel-1)*(iel-2))/2+i
+               
+               do m=1,3
+                  rvec_ee(m,ij)=x(m,iel)-x(m,i)
+               enddo
+               
+               call find_image_pbc(rvec_ee(1,ij),r_ee(ij))
+               
+            enddo
+         
+
+            do i=iel+1,nelec
+                        
+               ij=((i-1)*(i-2))/2+iel
+            
+               do m=1,3
+                  rvec_ee(m,ij)=x(m,i)-x(m,iel)
+               enddo
+            
+               call find_image_pbc(rvec_ee(1,ij),r_ee(ij))
+                        
+            enddo
+
+         
+
+         
+         endif
+         !!iel enif
+
+
+         
+         
+      endif
+      !! periodic endif
+
+
+
+
+      
 
 c     write(ounit,*) 'in distances'
 c     write(ounit,'(''r_en(i,j)'',9f9.5)') ((r_en(i,j),i=1,nelec),j=1,2)
