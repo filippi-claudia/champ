@@ -29,8 +29,6 @@ c ider = 3 -> value, gradient, laplacian, forces
       integer :: ie1, ie2, l, ilm, num_slms, maxlval
 
       integer :: i_image
-      integer :: upper_range, lower_range
-      integer :: upper_rad_range, lower_rad_range
 
       real(dp) :: r, r2, ri, ri2
       real(dp), dimension(3, ncoord, *) :: rvec_en
@@ -41,7 +39,8 @@ c ider = 3 -> value, gradient, laplacian, forces
       real(dp), dimension(3)    :: temp_dphin, temp_d3phin
       real(dp), dimension(3, 3) :: temp_d2phin_all
       real(dp), parameter :: one = 1.d0
-
+      integer :: uilm, lilm
+      
       ! Temporary arrays for basis function values and derivatives
       real(dp), allocatable :: y(:)
       real(dp), allocatable :: ddy_lap(:)
@@ -55,18 +54,19 @@ c ider = 3 -> value, gradient, laplacian, forces
       enddo
 #endif
 
-      lower_range = 1
-      lower_rad_range = 1
 
+      uilm=0
+      lilm=0
+      
 c loop through centers
       do ic=1,ncent+nghostcent
          it=iwctype(ic)
          nrbasit   = nrbas(it)
          nbastypit = nbastyp(it)
 
-         upper_range = lower_range + nbastypit -1
-         upper_rad_range = lower_rad_range + nrbasit -1
-
+         uilm=uilm+nbastypit
+         
+         
 ! num_slms will give number of slms needed to evaluate per atom
          num_slms = maxval(iwlbas(1:nbastypit,it))
 
@@ -103,33 +103,30 @@ c     get distance to center
             enddo
 
 
-            l = 1
-            iwlbas0=0
+
 ! Run a loop over all the AOs in this center
-            do i=1, nbastypit
-               iwlbas0 = iwlbas(i,it)
-               irb = iwrwf(i,it)
-               ilm = lower_range + i - 1
+            do i=lilm+1, uilm
+               iwlbas0 = iwlbas(i-lilm,it)
 !     compute sml and combine to generate molecular orbitals
-               call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),
+               call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,iwrwf(i-lilm,it)),
      &              y(iwlbas0),
      &              dy(:,iwlbas0),
      &              ddy(:,:,iwlbas0),
      &              ddy_lap(iwlbas0),
      &              dlapy(:,iwlbas0),
-     &              phin(ilm,k),
+     &              phin(i,k),
      &              temp_dphin,
-     &              d2phin(ilm,k),
-     &              d2phin_all(1,1,ilm,k),
-     &              d3phin(1,ilm,k),
+     &              d2phin(i,k),
+     &              d2phin_all(1,1,i,k),
+     &              d3phin(1,i,k),
      &              ider)
-               dphin(ilm,k,:)=temp_dphin(:)
+               dphin(i,k,:)=temp_dphin(:)
                
 #ifndef VECTORIZATION
 ! localization
-               call n0_inc(ilm,k,ic)
+               call n0_inc(i,k,ic)
 #endif
-               l = l + 1
+
             enddo
          enddo                  ! loop over electrons
          
@@ -173,12 +170,10 @@ c     get distance to center images
                  
                   iwlbas0=0
 !     Run a loop over all the AOs in this center
-                  do i=1, nbastypit
-                     iwlbas0 = iwlbas(i,it)
-                     irb = iwrwf(i,it)
-                     ilm = lower_range + i - 1
+                  do i=lilm+1, uilm
+                     iwlbas0 = iwlbas(i-lilm,it)
 !                     compute sml and combine to generate molecular orbitals
-                     call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,irb),
+                     call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,iwrwf(i-lilm,it)),
      &                    y(iwlbas0),
      &                    dy(:,iwlbas0),
      &                    ddy(:,:,iwlbas0),
@@ -191,11 +186,11 @@ c     get distance to center images
      &                    temp_d3phin,
      &                    ider)
 ! adding contributions from the images to the original cell
-                     phin(ilm,k)=phin(ilm,k)+temp_phin
-                     dphin(ilm,k,:)=dphin(ilm,k,:)+temp_dphin(:)
-                     d2phin(ilm,k)=d2phin(ilm,k)+temp_d2phin
-                     d2phin_all(1:3,1:3,ilm,k)=d2phin_all(1:3,1:3,ilm,k)+temp_d2phin_all
-                     d3phin(1:3,ilm,k)=d3phin(1:3,ilm,k)+temp_d3phin
+                     phin(i,k)=phin(i,k)+temp_phin
+                     dphin(i,k,:)=dphin(i,k,:)+temp_dphin(:)
+                     d2phin(i,k)=d2phin(i,k)+temp_d2phin
+                     d2phin_all(1:3,1:3,i,k)=d2phin_all(1:3,1:3,ilm,k)+temp_d2phin_all
+                     d3phin(1:3,i,k)=d3phin(1:3,i,k)+temp_d3phin
 
 c                     if(ider.ge.1) dphin(ilm,k,:)=dphin(ilm,k,:)+temp_dphin(:)
 c                     if(ider.ge.2) d2phin(ilm,k)=d2phin(ilm,k)+temp_d2phin
@@ -220,11 +215,8 @@ c#endif
          endif
 ! if over periodic images
 
-
-
-       
-        lower_range = upper_range + 1
-        lower_rad_range = upper_rad_range + 1
+!increase lower bound ilm (i) for next type of atomic basis
+         lilm=uilm       
 
 !     deallocate temporary arrays
         deallocate (y)
