@@ -376,112 +376,26 @@ c-----------------------------------------------------------------------
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
       real(dp), parameter :: one = 1.d0
 
+      do jc=1,ncent
+        do k=1,3
+          rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
+        enddo
 
-c rvec_en_quad should be computed for all the points including ic     
-      do k=1,3
-         rvec_en_quad(k,iq,ic)=x(k)-cent(k,ic)
+        if(jc.ne.ic) then
+          if(iperiodic.eq.0) then
+            r_en_quad(iq,jc)=0
+            do k=1,3
+              r_en_quad(iq,jc)=r_en_quad(iq,jc)+rvec_en_quad(k,iq,jc)**2
+            enddo
+            r_en_quad(iq,jc)=dsqrt(r_en_quad(iq,jc))
+           else
+c     call find_image3(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
+              call find_image_pbc(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
+          endif
+
+        endif
+
       enddo
-
-
-      if(iperiodic.eq.0) then
-         
-         if(ic.eq.1) then
-            
-            do jc=2,ncent
-               
-               do k=1,3
-                  rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
-               enddo
-              
-               r_en_quad(iq,jc)=0
-               do k=1,3
-                  r_en_quad(iq,jc)=r_en_quad(iq,jc)+rvec_en_quad(k,iq,jc)**2
-               enddo
-               r_en_quad(iq,jc)=dsqrt(r_en_quad(iq,jc))
-                          
-            enddo
-
-         
-         else
-         
-
-            do jc=1,ic-1
-            
-               do k=1,3
-                  rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
-               enddo
-               
-               r_en_quad(iq,jc)=0
-               do k=1,3
-                  r_en_quad(iq,jc)=r_en_quad(iq,jc)+rvec_en_quad(k,iq,jc)**2
-               enddo
-               r_en_quad(iq,jc)=dsqrt(r_en_quad(iq,jc))
-                              
-            enddo
-         
-            do jc=ic+1,ncent
-            
-               do k=1,3
-                  rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
-               enddo
-         
-               r_en_quad(iq,jc)=0
-               do k=1,3
-                  r_en_quad(iq,jc)=r_en_quad(iq,jc)+rvec_en_quad(k,iq,jc)**2
-               enddo
-               r_en_quad(iq,jc)=dsqrt(r_en_quad(iq,jc))
-                                    
-            enddo
-
-         endif
-
-                  
-      else
-         
-         if(ic.eq.1) then
-            
-            do jc=2,ncent
-               
-               do k=1,3
-                  rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
-               enddo
-               
-               call find_image_pbc(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
-               
-            enddo
-            
-            
-         else
-            
-
-            do jc=1,ic-1
-               
-               do k=1,3
-                  rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
-               enddo
-               
-               call find_image_pbc(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
-               
-            enddo
-
-            do jc=ic+1,ncent
-               
-               do k=1,3
-                  rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
-               enddo
-               
-               call find_image_pbc(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
-                                    
-            enddo
-            
-         endif
-         
-         
-         
-      endif
-      
-      
-            
 
       return
       end
@@ -861,10 +775,9 @@ c e-e terms
 
 c e-e-n terms
         do ic=1,ncent
-c          it=iwctype(ic)
+          it=iwctype(ic)
           fsn(i,j)=fsn(i,j) +
-c     &    psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),it,iwfjas)
-     &    psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),iwctype(ic),iwfjas)
+     &    psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),it,iwfjas)
         enddo
 
         fsumn=fsumn+fsn(i,j)-fso(i,j)
@@ -875,9 +788,8 @@ c e-n terms
    47 fsn(iel,iel)=0
 
       do ic=1,ncent
-c        it=iwctype(ic)
-c        fsn(iel,iel)=fsn(iel,iel)+psianl(r_en_quad(iq,ic),it,iwfjas)
-         fsn(iel,iel)=fsn(iel,iel)+psianl(r_en_quad(iq,ic),iwctype(ic),iwfjas)
+        it=iwctype(ic)
+        fsn(iel,iel)=fsn(iel,iel)+psianl(r_en_quad(iq,ic),it,iwfjas)
       enddo
 
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
@@ -886,9 +798,8 @@ c        fsn(iel,iel)=fsn(iel,iel)+psianl(r_en_quad(iq,ic),it,iwfjas)
       if(iforce_analy.gt.0) then
 
        do ic=1,ncent
-c        it=iwctype(ic)
-c        dum=dpsianl(r_en_quad(iq,ic),it,iwfjas)/r_en_quad(iq,ic)
-         dum=dpsianl(r_en_quad(iq,ic),iwctype(ic),iwfjas)/r_en_quad(iq,ic)
+        it=iwctype(ic)
+        dum=dpsianl(r_en_quad(iq,ic),it,iwfjas)/r_en_quad(iq,ic)
         do k=1,3
           dumk=dum*rvec_en_quad(k,iq,ic)
           vjn(k,iq)=vjn(k,iq)+dumk
@@ -1048,10 +959,9 @@ c The scaling is switched in psinl, so do not do it here.
       if(isc.ge.12) call scale_dist(rij,u,3)
 
         do ic=1,ncent
-c          it=iwctype(ic)
+          it=iwctype(ic)
           fsn(i,j)=fsn(i,j) +
-c     &    psinl(u,rr_en2_quad(ic),rr_en2(jj,ic),it,iwfjas)
-     &    psinl(u,rr_en2_quad(ic),rr_en2(jj,ic),iwctype(ic),iwfjas)
+     &    psinl(u,rr_en2_quad(ic),rr_en2(jj,ic),it,iwfjas)
         enddo
 
         fsumn=fsumn+fsn(i,j)-fso(i,j)
@@ -1062,9 +972,8 @@ c e-n terms
    47 fsn(iel,iel)=0
 
       do ic=1,ncent
-c        it=iwctype(ic)
-c        fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en_quad(ic),it,iwfjas)
-         fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en_quad(ic),iwctype(ic),iwfjas)
+        it=iwctype(ic)
+        fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en_quad(ic),it,iwfjas)
       enddo
 
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
@@ -1073,9 +982,8 @@ c        fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en_quad(ic),it,iwfjas)
       if(iforce_analy.gt.0) then
 
        do ic=1,ncent
-c        it=iwctype(ic)
-c        dum=dpsianl(rr_en_quad(ic),it,iwfjas)*dd1_quad(ic)/r_en_quad(iq,ic)
-          dum=dpsianl(rr_en_quad(ic),iwctype(ic),iwfjas)*dd1_quad(ic)/r_en_quad(iq,ic)
+        it=iwctype(ic)
+        dum=dpsianl(rr_en_quad(ic),it,iwfjas)*dd1_quad(ic)/r_en_quad(iq,ic)
         do k=1,3
           dumk=dum*rvec_en_quad(k,iq,ic)
           vjn(k,iq)=vjn(k,iq)+dumk
