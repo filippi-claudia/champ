@@ -55,6 +55,13 @@ c Modified by A. Scemama
       
       implicit none
 
+#ifdef QMCKL_FOUND
+      real(dp), allocatable :: mo_vgl_qmckl(:,:,:)            
+      integer :: rc                                           
+      integer*8 :: n8                                         
+#endif 
+
+      
       integer :: i, ier, ider, iorb, k, m
       integer :: m0, j
 
@@ -74,11 +81,7 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
 
       
 
-#ifdef QMCKL_FOUND
-      real(dp), allocatable :: mo_vgl_qmckl(:,:,:)            
-      integer :: rc                                           
-      integer*8 :: n8                                         
-#endif 
+
 
       
       ier=1
