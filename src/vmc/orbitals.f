@@ -65,7 +65,7 @@ c Modified by A. Scemama
       integer :: i, ier, ider, iorb, k, m
       integer :: m0, j
 
-      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nelec) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
 c     real(dp), dimension(nelec,nbasis) :: bhin
@@ -503,7 +503,7 @@ c-------------------------------------------------------------------------------
       integer :: iel, ier, ider, iflag, iorb, m
       integer :: m0, k, j
 
-      real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nelec) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
 

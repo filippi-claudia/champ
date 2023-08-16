@@ -144,9 +144,9 @@ c     numerical atomic orbitals
                do k=ie1,ie2
 c     get distance to center images
                   
-                  xc(1)=rvec_en(1,k,ic)+ell(1,i_image)
-                  xc(2)=rvec_en(2,k,ic)+ell(2,i_image)
-                  xc(3)=rvec_en(3,k,ic)+ell(3,i_image)
+                  xc(1)=rvec_en(1,k,ic)-ell(1,i_image)
+                  xc(2)=rvec_en(2,k,ic)-ell(2,i_image)
+                  xc(3)=rvec_en(3,k,ic)-ell(3,i_image)
                   
                   r2=xc(1)**2+xc(2)**2+xc(3)**2
                   ri2=one/r2

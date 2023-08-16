@@ -161,9 +161,9 @@ c loop quadrature points
               xquad(3,nxquad)=r_en(i,ic)*zq(iq)+cent(3,ic)
               
 
-              r_en_quad(nxquad,ic)=r_en(i,ic)
               call distance_quad(nxquad,ic,xquad(1,nxquad),r_en_quad,rvec_en_quad)
-
+              r_en_quad(nxquad,ic)=r_en(i,ic)
+              
             enddo
            elseif(i_vpsp.ne.0)then
             if(index(mode,'dmc').ne.0) then
@@ -376,26 +376,42 @@ c-----------------------------------------------------------------------
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
       real(dp), parameter :: one = 1.d0
 
-      do jc=1,ncent
-        do k=1,3
-          rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
-        enddo
+      
+      if(iperiodic.eq.0) then
 
-        if(jc.ne.ic) then
-          if(iperiodic.eq.0) then
+         
+         do jc=1,ncent
+            
+            do k=1,3
+               rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
+            enddo
             r_en_quad(iq,jc)=0
             do k=1,3
-              r_en_quad(iq,jc)=r_en_quad(iq,jc)+rvec_en_quad(k,iq,jc)**2
+               r_en_quad(iq,jc)=r_en_quad(iq,jc)+rvec_en_quad(k,iq,jc)**2
             enddo
             r_en_quad(iq,jc)=dsqrt(r_en_quad(iq,jc))
-           else
-c     call find_image3(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
-              call find_image_pbc(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
-          endif
 
-        endif
+         enddo
+          
+         
+      else
 
-      enddo
+         
+         do jc=1,ncent
+            
+            do k=1,3
+               rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
+            enddo
+            call find_image_pbc(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
+            
+         enddo
+         
+         
+         
+         
+      endif
+      
+      
 
       return
       end
