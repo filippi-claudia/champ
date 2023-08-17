@@ -86,78 +86,78 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
       
       ier=1
 
-c spline interpolation
-        if(i3dsplorb.eq.2) then
-          do k=1,nwftypeorb
-            do i=1,nelec
-            ier = 0.d0
-              do iorb=1,norb+nadorb
-                ddorb(iorb,i,k)=1.d0    ! compute the laplacian
-                dorb(iorb,i,1,k)=1.d0   ! compute the gradients
-                dorb(iorb,i,2,k)=1.d0   ! compute the gradients
-                dorb(iorb,i,3,k)=1.d0   ! compute the gradients
-                call spline_mo(x(1,i),iorb,orb(i,iorb,k),dorb(iorb,i,:,k),ddorb(iorb,i,k),ier)
-              enddo
-              if(ier.eq.1) then
-
-                call basis_fns(i,i,nelec,rvec_en,r_en,2)
-
-                do iorb=1,norb+nadorb
-                  orb(i,iorb,k)=0.d0
-                  dorb(iorb,i,1,k)=0.d0
-                  dorb(iorb,i,2,k)=0.d0
-                  dorb(iorb,i,3,k)=0.d0
-                  ddorb(iorb,i,k)=0.d0
-                  do m0=1,n0_nbasis(i)
-                    m=n0_ibasis(m0,i)
-                    orb(i,iorb,k)=orb(i,iorb,k)+coef(m,iorb,iwf)*phin(m,i)
-                    dorb(iorb,i,1,k)=dorb(iorb,i,1,k)+coef(m,iorb,iwf)*dphin(m,i,1)
-                    dorb(iorb,i,2,k)=dorb(iorb,i,2,k)+coef(m,iorb,iwf)*dphin(m,i,2)
-                    dorb(iorb,i,3,k)=dorb(iorb,i,3,k)+coef(m,iorb,iwf)*dphin(m,i,3)
-                    ddorb(iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,iwf)*d2phin(m,i)
-                  enddo
-                enddo
-              endif
-            enddo
-          enddo
-!         
-! Lagrange interpolation, did not inclue multiorb here yet
-        elseif(i3dlagorb.eq.2) then
+c     spline interpolation
+      if(i3dsplorb.eq.2) then
          do k=1,nwftypeorb
-           do i=1,nelec
-             ier=0
-             call lagrange_mos(1,x(1,i),orb(1,1,k),i,ier)
-             call lagrange_mos_grad(2,x(1,i),dorb(1,1,1,k),i,ier)
-             call lagrange_mos_grad(3,x(1,i),dorb(1,1,1,k),i,ier)
-             call lagrange_mos_grad(4,x(1,i),dorb(1,1,1,k),i,ier)
-             call lagrange_mos_2(5,x(1,i),ddorb(1,1,k),i,ier)
-
-             if(ier.eq.1) then
-
-              if(nwftypeorb.gt.1) iwf=1
-              call basis_fns(i,i,nelec,rvec_en,r_en,2)
-              if(nwftypeorb.gt.1) iwf=k
-
+            do i=1,nelec
+               ier = 0.d0
                do iorb=1,norb+nadorb
-                 orb(i,iorb,k)=0.d0
-                 dorb(iorb,i,1,k)=0.d0
-                 dorb(iorb,i,2,k)=0.d0
-                 dorb(iorb,i,3,k)=0.d0
-                 ddorb(iorb,i,k)=0.d0
-                 do m0=1,n0_nbasis(i)
-                   m=n0_ibasis(m0,i)
-                   orb(i,iorb,k)=orb(i,iorb,k)+coef(m,iorb,iwf)*phin(m,i)
-                   dorb(iorb,i,1,k)=dorb(iorb,i,1,k)+coef(m,iorb,iwf)*dphin(m,i,1)
-                   dorb(iorb,i,2,k)=dorb(iorb,i,2,k)+coef(m,iorb,iwf)*dphin(m,i,2)
-                   dorb(iorb,i,3,k)=dorb(iorb,i,3,k)+coef(m,iorb,iwf)*dphin(m,i,3)
-                   ddorb(iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,iwf)*d2phin(m,i)
-                 enddo
+                  ddorb(iorb,i,k)=1.d0 ! compute the laplacian
+                  dorb(iorb,i,1,k)=1.d0 ! compute the gradients
+                  dorb(iorb,i,2,k)=1.d0 ! compute the gradients
+                  dorb(iorb,i,3,k)=1.d0 ! compute the gradients
+                  call spline_mo(x(1,i),iorb,orb(i,iorb,k),dorb(iorb,i,:,k),ddorb(iorb,i,k),ier)
                enddo
-             endif
-           enddo
+               if(ier.eq.1) then
+
+                  call basis_fns(i,i,nelec,rvec_en,r_en,2)
+
+                  do iorb=1,norb+nadorb
+                     orb(i,iorb,k)=0.d0
+                     dorb(iorb,i,1,k)=0.d0
+                     dorb(iorb,i,2,k)=0.d0
+                     dorb(iorb,i,3,k)=0.d0
+                     ddorb(iorb,i,k)=0.d0
+                     do m0=1,n0_nbasis(i)
+                        m=n0_ibasis(m0,i)
+                        orb(i,iorb,k)=orb(i,iorb,k)+coef(m,iorb,iwf)*phin(m,i)
+                        dorb(iorb,i,1,k)=dorb(iorb,i,1,k)+coef(m,iorb,iwf)*dphin(m,i,1)
+                        dorb(iorb,i,2,k)=dorb(iorb,i,2,k)+coef(m,iorb,iwf)*dphin(m,i,2)
+                        dorb(iorb,i,3,k)=dorb(iorb,i,3,k)+coef(m,iorb,iwf)*dphin(m,i,3)
+                        ddorb(iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,iwf)*d2phin(m,i)
+                     enddo
+                  enddo
+               endif
+            enddo
+         enddo
+!         
+!     Lagrange interpolation, did not inclue multiorb here yet
+      elseif(i3dlagorb.eq.2) then
+         do k=1,nwftypeorb
+            do i=1,nelec
+               ier=0
+               call lagrange_mos(1,x(1,i),orb(1,1,k),i,ier)
+               call lagrange_mos_grad(2,x(1,i),dorb(1,1,1,k),i,ier)
+               call lagrange_mos_grad(3,x(1,i),dorb(1,1,1,k),i,ier)
+               call lagrange_mos_grad(4,x(1,i),dorb(1,1,1,k),i,ier)
+               call lagrange_mos_2(5,x(1,i),ddorb(1,1,k),i,ier)
+
+               if(ier.eq.1) then
+
+                  if(nwftypeorb.gt.1) iwf=1
+                  call basis_fns(i,i,nelec,rvec_en,r_en,2)
+                  if(nwftypeorb.gt.1) iwf=k
+                  
+                  do iorb=1,norb+nadorb
+                     orb(i,iorb,k)=0.d0
+                     dorb(iorb,i,1,k)=0.d0
+                     dorb(iorb,i,2,k)=0.d0
+                     dorb(iorb,i,3,k)=0.d0
+                     ddorb(iorb,i,k)=0.d0
+                     do m0=1,n0_nbasis(i)
+                        m=n0_ibasis(m0,i)
+                        orb(i,iorb,k)=orb(i,iorb,k)+coef(m,iorb,iwf)*phin(m,i)
+                        dorb(iorb,i,1,k)=dorb(iorb,i,1,k)+coef(m,iorb,iwf)*dphin(m,i,1)
+                        dorb(iorb,i,2,k)=dorb(iorb,i,2,k)+coef(m,iorb,iwf)*dphin(m,i,2)
+                        dorb(iorb,i,3,k)=dorb(iorb,i,3,k)+coef(m,iorb,iwf)*dphin(m,i,3)
+                        ddorb(iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,iwf)*d2phin(m,i)
+                     enddo
+                  enddo
+               endif
+            enddo
          enddo
 
-c no 3d interpolation
+c     no 3d interpolation
       else
          
 c     get basis functions for all electrons
@@ -167,7 +167,9 @@ c     get basis functions for all electrons
 #ifdef QMCKL_FOUND
 
 
-! get number MO's
+         if(iperiodic.eq.0) then 
+         
+!     get number MO's
          rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
          if (rc /= QMCKL_SUCCESS) then
             print *, 'Error getting mo_num from QMCkl'
@@ -198,12 +200,12 @@ c     get basis functions for all electrons
             stop
          end if
          
-
-!            print*, "inside qmckl"
          
-! pass computed qmckl orbitals back to champ
-
-         k=1 ! until state specific orbitals can be used 
+!     print*, "inside qmckl"
+         
+!     pass computed qmckl orbitals back to champ
+         
+         k=1                    ! until state specific orbitals can be used 
          do i=1,nelec
             do iorb=1,norb+nadorb
                orb  (  i,iorb,k) = mo_vgl_qmckl(iorb,1,i)
@@ -213,31 +215,18 @@ c     get basis functions for all electrons
                ddorb(  iorb,i,k) = mo_vgl_qmckl(iorb,5,i)
             end do
          end do
-
+         
          deallocate(mo_vgl_qmckl)
-         
-         
-#else
+
+
+      else
+! else iperiodic
+
 
          call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 
-
-
-c in alternativa al loop 26
-c     do jbasis=1,nbasis
-c     i=0
-c     do ielec=1,nelec
-c     bhin(ielec,jbasis)=phin(jbasis,ielec)
-c     do l=1,3
-c     i=i+1
-c     dbhin(i,jbasis)=dphin(jbasis,ielec,l)
-c     enddo
-c     d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
-c     enddo
-c     enddo
-c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
-c     call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
-c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
+         
+         
          
 !     Vectorization dependent code selection
 #ifdef VECTORIZATION
@@ -256,11 +245,11 @@ c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),
                      dorb(iorb,i,3,k)=0.d0
                      ddorb(iorb,i,k)=0.d0
                      do m=1,nbasis
-c                        orb  (  i,iorb,k)=orb  (  i,iorb,k)+coef(m,iorb,k)*phin  ( m,i)
-c                        dorb (iorb,i,1,k)=dorb (iorb,i,1,k)+coef(m,iorb,k)*dphin (m,i,1)
-c                        dorb (iorb,i,2,k)=dorb (iorb,i,2,k)+coef(m,iorb,k)*dphin (m,i,2)
-c                        dorb (iorb,i,3,k)=dorb (iorb,i,3,k)+coef(m,iorb,k)*dphin (m,i,3)
-c                        ddorb(  iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,k)*d2phin( m,i)
+c     orb  (  i,iorb,k)=orb  (  i,iorb,k)+coef(m,iorb,k)*phin  ( m,i)
+c     dorb (iorb,i,1,k)=dorb (iorb,i,1,k)+coef(m,iorb,k)*dphin (m,i,1)
+c     dorb (iorb,i,2,k)=dorb (iorb,i,2,k)+coef(m,iorb,k)*dphin (m,i,2)
+c     dorb (iorb,i,3,k)=dorb (iorb,i,3,k)+coef(m,iorb,k)*dphin (m,i,3)
+c     ddorb(  iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,k)*d2phin( m,i)
                         auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,k)*phin  ( m,i)
                         auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,k)*dphin (m,i,1)
                         auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,k)*dphin (m,i,2)
@@ -277,9 +266,9 @@ c                        ddorb(  iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,k)*d2phin
          else
             
             do i=1,nelec
-                  auxorb=0.d0
-                  auxdorb=0.d0
-                  auxddorb=0.d0
+               auxorb=0.d0
+               auxdorb=0.d0
+               auxddorb=0.d0
                do iorb=1,norb+nadorb
                   orb(i,iorb,1)=0.d0
                   dorb(iorb,i,1,1)=0.d0
@@ -287,11 +276,11 @@ c                        ddorb(  iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,k)*d2phin
                   dorb(iorb,i,3,1)=0.d0
                   ddorb(iorb,i,1)=0.d0
                   do m=1,nbasis
-c                     orb  (  i,iorb,1)=orb  (  i,iorb,1)+coef(m,iorb,iwf)*phin  ( m,i)
-c                     dorb (iorb,i,1,1)=dorb (iorb,i,1,1)+coef(m,iorb,iwf)*dphin (m,i,1)
-c                     dorb (iorb,i,2,1)=dorb (iorb,i,2,1)+coef(m,iorb,iwf)*dphin (m,i,2)
-c                     dorb (iorb,i,3,1)=dorb (iorb,i,3,1)+coef(m,iorb,iwf)*dphin (m,i,3)
-c                     ddorb(  iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin( m,i)
+c     orb  (  i,iorb,1)=orb  (  i,iorb,1)+coef(m,iorb,iwf)*phin  ( m,i)
+c     dorb (iorb,i,1,1)=dorb (iorb,i,1,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+c     dorb (iorb,i,2,1)=dorb (iorb,i,2,1)+coef(m,iorb,iwf)*dphin (m,i,2)
+c     dorb (iorb,i,3,1)=dorb (iorb,i,3,1)+coef(m,iorb,iwf)*dphin (m,i,3)
+c     ddorb(  iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin( m,i)
                      auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,iwf)*phin  ( m,i)
                      auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,iwf)*dphin (m,i,1)
                      auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,iwf)*dphin (m,i,2)
@@ -306,16 +295,14 @@ c                     ddorb(  iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin(
             
             
          endif
-            
+!     nwftype endif         
          
-         
-
          
 #else
 !     keep the old localization code if no vectorization instructions available
-
+         
          if(nwftypeorb.gt.1) then
-
+            
             do k=1,nwftypeorb
                do i=1,nelec
                   auxorb=0.d0
@@ -361,11 +348,11 @@ c     ddorb(iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,k)*d2phin( m,i)
                   ddorb(iorb,i,1)=0.d0
                   do m0=1,n0_nbasis(i)
                      m=n0_ibasis(m0,i)
-c                     orb  (  i,iorb,1)=orb  (  i,iorb,1)+coef(m,iorb,iwf)*phin  ( m,i)
-c                     dorb (iorb,i,1,1)=dorb (iorb,i,1,1)+coef(m,iorb,iwf)*dphin (m,i,1)
-c                     dorb (iorb,i,2,1)=dorb (iorb,i,2,1)+coef(m,iorb,iwf)*dphin (m,i,2)
-c                     dorb (iorb,i,3,1)=dorb (iorb,i,3,1)+coef(m,iorb,iwf)*dphin (m,i,3)
-c                     ddorb(iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin( m,i)
+c     orb  (  i,iorb,1)=orb  (  i,iorb,1)+coef(m,iorb,iwf)*phin  ( m,i)
+c     dorb (iorb,i,1,1)=dorb (iorb,i,1,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+c     dorb (iorb,i,2,1)=dorb (iorb,i,2,1)+coef(m,iorb,iwf)*dphin (m,i,2)
+c     dorb (iorb,i,3,1)=dorb (iorb,i,3,1)+coef(m,iorb,iwf)*dphin (m,i,3)
+c     ddorb(iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin( m,i)
                      auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,iwf)*phin  ( m,i)
                      auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,iwf)*dphin (m,i,1)
                      auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,iwf)*dphin (m,i,2)
@@ -379,36 +366,210 @@ c                     ddorb(iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin( m
             enddo
             
          endif
+!     nwftype endif         
+         
+         
+#endif
+!     vectorization endif
+         
 
          
-          
-#endif
 
-
-
-#endif
-!endif qmckl usage or not
-
-       endif
-
-
-       if(iforce_analy.eq.1) call da_orbitals
-
-
-      if(ipr.ge.0) then
-        do j=1,nwftypeorb
-          do iorb=1,norb+nadorb
-            write(ounit,'(''orb set,iorb,orb='',2i4,1000f15.11)') j,iorb,(orb(i,iorb,j),i=1,nelec)
-          enddo
-          do iorb=1,norb+nadorb
-            write(ounit,'(''orb set,iorb,d2orb='',2i4,1000f15.11)') j,iorb,(ddorb(iorb,i,j),i=1,nelec)
-          enddo
-          do k=1,3
-            do iorb=1,norb+nadorb
-              write(ounit,'(''orb set,dir,iorb,dorb='',3i4,1000f12.8)') j,k,iorb,(dorb(iorb,i,k,j),i=1,nelec)
+      endif
+!nedif iperiodic
+      
+      
+#else
+!     else qmckl
+      
+         call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
+         
+         
+         
+c     in alternativa al loop 26
+c     do jbasis=1,nbasis
+c     i=0
+c     do ielec=1,nelec
+c     bhin(ielec,jbasis)=phin(jbasis,ielec)
+c     do l=1,3
+c     i=i+1
+c     dbhin(i,jbasis)=dphin(jbasis,ielec,l)
+c     enddo
+c     d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
+c     enddo
+c     enddo
+c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
+c     call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
+c     call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
+         
+!     Vectorization dependent code selection
+#ifdef VECTORIZATION
+!     Following loop changed for better vectorization AVX512/AVX2
+         if(nwftypeorb.gt.1) then
+            
+            do k=1,nwftypeorb
+               do i=1,nelec
+                  auxorb=0.d0
+                  auxdorb=0.d0
+                  auxddorb=0.d0
+                  do iorb=1,norb+nadorb
+                     orb(i,iorb,k)=0.d0
+                     dorb(iorb,i,1,k)=0.d0
+                     dorb(iorb,i,2,k)=0.d0
+                     dorb(iorb,i,3,k)=0.d0
+                     ddorb(iorb,i,k)=0.d0
+                     do m=1,nbasis
+c     orb  (  i,iorb,k)=orb  (  i,iorb,k)+coef(m,iorb,k)*phin  ( m,i)
+c     dorb (iorb,i,1,k)=dorb (iorb,i,1,k)+coef(m,iorb,k)*dphin (m,i,1)
+c     dorb (iorb,i,2,k)=dorb (iorb,i,2,k)+coef(m,iorb,k)*dphin (m,i,2)
+c     dorb (iorb,i,3,k)=dorb (iorb,i,3,k)+coef(m,iorb,k)*dphin (m,i,3)
+c     ddorb(  iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,k)*d2phin( m,i)
+                        auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,k)*phin  ( m,i)
+                        auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,k)*dphin (m,i,1)
+                        auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,k)*dphin (m,i,2)
+                        auxdorb (iorb,3)=auxdorb (iorb,3)+coef(m,iorb,k)*dphin (m,i,3)
+                        auxddorb(  iorb)=auxddorb(iorb)+coef(m,iorb,k)*d2phin( m,i)
+                     enddo
+                  enddo
+                  orb(i,1:(norb+nadorb),k)=auxorb(1:(norb+nadorb))
+                  dorb(1:(norb+nadorb),i,1:3,k)=auxdorb(1:(norb+nadorb),1:3)
+                  ddorb(1:(norb+nadorb),i,k)=auxddorb(1:(norb+nadorb))
+               enddo
             enddo
-          enddo
-        enddo
+                        
+         else
+            
+            do i=1,nelec
+               auxorb=0.d0
+               auxdorb=0.d0
+               auxddorb=0.d0
+               do iorb=1,norb+nadorb
+                  orb(i,iorb,1)=0.d0
+                  dorb(iorb,i,1,1)=0.d0
+                  dorb(iorb,i,2,1)=0.d0
+                  dorb(iorb,i,3,1)=0.d0
+                  ddorb(iorb,i,1)=0.d0
+                  do m=1,nbasis
+c     orb  (  i,iorb,1)=orb  (  i,iorb,1)+coef(m,iorb,iwf)*phin  ( m,i)
+c     dorb (iorb,i,1,1)=dorb (iorb,i,1,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+c     dorb (iorb,i,2,1)=dorb (iorb,i,2,1)+coef(m,iorb,iwf)*dphin (m,i,2)
+c     dorb (iorb,i,3,1)=dorb (iorb,i,3,1)+coef(m,iorb,iwf)*dphin (m,i,3)
+c     ddorb(  iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin( m,i)
+                     auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,iwf)*phin  ( m,i)
+                     auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+                     auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,iwf)*dphin (m,i,2)
+                     auxdorb (iorb,3)=auxdorb (iorb,3)+coef(m,iorb,iwf)*dphin (m,i,3)
+                     auxddorb(  iorb)=auxddorb(iorb)+coef(m,iorb,iwf)*d2phin( m,i)
+                  enddo
+               enddo
+               orb(i,1:(norb+nadorb),1)=auxorb(1:(norb+nadorb))
+               dorb(1:(norb+nadorb),i,1:3,1)=auxdorb(1:(norb+nadorb),1:3)
+               ddorb(1:(norb+nadorb),i,1)=auxddorb(1:(norb+nadorb))
+            enddo
+            
+            
+         endif
+!     nwftype endif         
+         
+         
+#else
+!     keep the old localization code if no vectorization instructions available
+         
+         if(nwftypeorb.gt.1) then
+            
+            do k=1,nwftypeorb
+               do i=1,nelec
+                  auxorb=0.d0
+                  auxdorb=0.d0
+                  auxddorb=0.d0
+                  do iorb=1,norb+nadorb
+                     orb(i,iorb,k)=0.d0
+                     dorb(iorb,i,1,k)=0.d0
+                     dorb(iorb,i,2,k)=0.d0
+                     dorb(iorb,i,3,k)=0.d0
+                     ddorb(iorb,i,k)=0.d0
+                     do m0=1,n0_nbasis(i)
+                        m=n0_ibasis(m0,i)
+c     orb  (  i,iorb,k)=orb  (  i,iorb,k)+coef(m,iorb,k)*phin  ( m,i)
+c     dorb (iorb,i,1,k)=dorb (iorb,i,1,k)+coef(m,iorb,k)*dphin (m,i,1)
+c     dorb (iorb,i,2,k)=dorb (iorb,i,2,k)+coef(m,iorb,k)*dphin (m,i,2)
+c     dorb (iorb,i,3,k)=dorb (iorb,i,3,k)+coef(m,iorb,k)*dphin (m,i,3)
+c     ddorb(iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,k)*d2phin( m,i)
+                        auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,k)*phin  ( m,i)
+                        auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,k)*dphin (m,i,1)
+                        auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,k)*dphin (m,i,2)
+                        auxdorb (iorb,3)=auxdorb (iorb,3)+coef(m,iorb,k)*dphin (m,i,3)
+                        auxddorb(  iorb)=auxddorb(iorb)+coef(m,iorb,k)*d2phin( m,i)                        
+                     enddo
+                  enddo
+                  orb(i,1:(norb+nadorb),k)=auxorb(1:(norb+nadorb))
+                  dorb(1:(norb+nadorb),i,1:3,k)=auxdorb(1:(norb+nadorb),1:3)
+                  ddorb(1:(norb+nadorb),i,k)=auxddorb(1:(norb+nadorb))
+               enddo
+            enddo
+            
+         else
+            
+            do i=1,nelec
+               auxorb=0.d0
+               auxdorb=0.d0
+               auxddorb=0.d0
+               do iorb=1,norb+nadorb
+                  orb(i,iorb,1)=0.d0
+                  dorb(iorb,i,1,1)=0.d0
+                  dorb(iorb,i,2,1)=0.d0
+                  dorb(iorb,i,3,1)=0.d0
+                  ddorb(iorb,i,1)=0.d0
+                  do m0=1,n0_nbasis(i)
+                     m=n0_ibasis(m0,i)
+c     orb  (  i,iorb,1)=orb  (  i,iorb,1)+coef(m,iorb,iwf)*phin  ( m,i)
+c     dorb (iorb,i,1,1)=dorb (iorb,i,1,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+c     dorb (iorb,i,2,1)=dorb (iorb,i,2,1)+coef(m,iorb,iwf)*dphin (m,i,2)
+c     dorb (iorb,i,3,1)=dorb (iorb,i,3,1)+coef(m,iorb,iwf)*dphin (m,i,3)
+c     ddorb(iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin( m,i)
+                     auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,iwf)*phin  ( m,i)
+                     auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,iwf)*dphin (m,i,1)
+                     auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,iwf)*dphin (m,i,2)
+                     auxdorb (iorb,3)=auxdorb (iorb,3)+coef(m,iorb,iwf)*dphin (m,i,3)
+                     auxddorb(  iorb)=auxddorb(iorb)+coef(m,iorb,iwf)*d2phin( m,i)
+                  enddo
+               enddo
+               orb(i,1:(norb+nadorb),1)=auxorb(1:(norb+nadorb))
+               dorb(1:(norb+nadorb),i,1:3,1)=auxdorb(1:(norb+nadorb),1:3)
+               ddorb(1:(norb+nadorb),i,1)=auxddorb(1:(norb+nadorb))
+            enddo
+            
+         endif
+!     nwftype endif         
+         
+         
+#endif
+!     vectorization endif
+         
+
+#endif
+!     endif qmckl usage or not
+
+      endif
+      
+
+      if(iforce_analy.eq.1) call da_orbitals
+
+      
+      if(ipr.ge.0) then
+         do j=1,nwftypeorb
+            do iorb=1,norb+nadorb
+               write(ounit,'(''orb set,iorb,orb='',2i4,1000f15.11)') j,iorb,(orb(i,iorb,j),i=1,nelec)
+            enddo
+            do iorb=1,norb+nadorb
+               write(ounit,'(''orb set,iorb,d2orb='',2i4,1000f15.11)') j,iorb,(ddorb(iorb,i,j),i=1,nelec)
+            enddo
+            do k=1,3
+               do iorb=1,norb+nadorb
+                  write(ounit,'(''orb set,dir,iorb,dorb='',3i4,1000f12.8)') j,k,iorb,(dorb(iorb,i,k,j),i=1,nelec)
+               enddo
+            enddo
+         enddo
       endif
 
       return
@@ -492,7 +653,7 @@ c-------------------------------------------------------------------------------
       use vmc_mod, only: nwftypeorb
       use control, only: ipr
       use contrl_file, only: ounit
-
+      
 #ifdef QMCKL_FOUND
       use qmckl_data
 #endif
@@ -502,11 +663,11 @@ c-------------------------------------------------------------------------------
 
       integer :: iel, ier, ider, iflag, iorb, m
       integer :: m0, k, j
-
+      
       real(dp), dimension(3,nelec) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
-
+      
 
 #ifdef QMCKL_FOUND
 c     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
@@ -516,43 +677,45 @@ c     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
       character*(1024) :: err_message = ''
 #endif
 
+      
+      
 
-
-
-c get the value and gradients from the 3d-interpolated orbitals
-         ier=0
+c     get the value and gradients from the 3d-interpolated orbitals
+      ier=0
 c     spline interplolation
-         if(i3dsplorb.ge.1) then
-            do k=1,nwftypeorb
-              do iorb=1,norb
-                 ddorbn(iorb,k)=0.0d0   ! Don't compute the laplacian
-                 dorbn(iorb,1,k)=1.0d0  ! compute the gradients
-                 dorbn(iorb,2,k)=1.0d0  ! compute the gradients
-                 dorbn(iorb,3,k)=1.0d0  ! compute the gradients
-                 call spline_mo(x(1,iel),iorb,orbn(iorb,k),dorbn(iorb,:,k),ddorbn(iorb,k),ier)
-              enddo
+      if(i3dsplorb.ge.1) then
+         do k=1,nwftypeorb
+            do iorb=1,norb
+               ddorbn(iorb,k)=0.0d0 ! Don't compute the laplacian
+               dorbn(iorb,1,k)=1.0d0 ! compute the gradients
+               dorbn(iorb,2,k)=1.0d0 ! compute the gradients
+               dorbn(iorb,3,k)=1.0d0 ! compute the gradients
+               call spline_mo(x(1,iel),iorb,orbn(iorb,k),dorbn(iorb,:,k),ddorbn(iorb,k),ier)
             enddo
+         enddo
 
 c     Lagrange interpolation
-         elseif(i3dlagorb.ge.1) then
-            do k=1,nwftypeorb
-              call lagrange_mose(1,x(1,iel),orbn(:,k),ier)
-              call lagrange_mos_grade(2,x(1,iel),dorbn(:,:,k),ier)
-              call lagrange_mos_grade(3,x(1,iel),dorbn(:,:,k),ier)
-              call lagrange_mos_grade(4,x(1,iel),dorbn(:,:,k),ier)
-            enddo
-         else
-            ier=1
-         endif
+      elseif(i3dlagorb.ge.1) then
+         do k=1,nwftypeorb
+            call lagrange_mose(1,x(1,iel),orbn(:,k),ier)
+            call lagrange_mos_grade(2,x(1,iel),dorbn(:,:,k),ier)
+            call lagrange_mos_grade(3,x(1,iel),dorbn(:,:,k),ier)
+            call lagrange_mos_grade(4,x(1,iel),dorbn(:,:,k),ier)
+         enddo
+      else
+         ier=1
+      endif
 
-         if(ier.eq.1) then
+      if(ier.eq.1) then
 c get basis functions for electron iel
-
-            ider=1
-            if(iflag.gt.0) ider=2
+         
+         ider=1
+         if(iflag.gt.0) ider=2
             
 #ifdef QMCKL_FOUND
-
+         
+         if(iperiodic.eq.0) then
+         
             rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
             if (rc /= QMCKL_SUCCESS) then
                print *, 'Error getting mo_num from QMCkl'
@@ -571,8 +734,8 @@ c get basis functions for electron iel
                print *, trim(err_message)
                call abort()
             end if
-
-!!allocate mo_vlg array
+         
+!     !allocate mo_vlg array
 c     allocate(mo_vgl_qmckl(n8, 5, 1))
             allocate(mo_vgl_qmckl(n8, 5))
               
@@ -582,8 +745,8 @@ c     allocate(mo_vgl_qmckl(n8, 5, 1))
      &           mo_vgl_qmckl,
      &           n8*5_8)
 
-            k=1 ! until state-specific orbitals can use QMCKL
-
+            k=1                 ! until state-specific orbitals can use QMCKL
+         
             if(iflag.gt.0) then
                do iorb=1,norb
 c     orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
@@ -608,206 +771,412 @@ c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
                   orbn(iorb,k)=mo_vgl_qmckl(iorb,1)
                   dorbn(iorb,1,k)=mo_vgl_qmckl(iorb,2)
                   dorbn(iorb,2,k)=mo_vgl_qmckl(iorb,3)
-                  dorbn(iorb,3,k)=mo_vgl_qmckl(iorb,4)
-
-               enddo
-            endif
+               dorbn(iorb,3,k)=mo_vgl_qmckl(iorb,4)
+               
+            enddo
+         endif
            
-            deallocate(mo_vgl_qmckl)
+         deallocate(mo_vgl_qmckl)
             
-                      
+
+      else
+!     iperiodic else
+         
+         
+         call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
+         
+         
+         
+!     Vectorization dependent code. useful for AVX512 and AVX2
+#ifdef VECTORIZATION
+         
+         if(iflag.gt.0) then
+
+            
+            if(nwftypeorb.gt.1) then
+               
+               do k=1,nwftypeorb
+                  do iorb=1,norb
+                     orbn(iorb,k)=0.d0
+                     dorbn(iorb,1,k)=0.d0
+                     dorbn(iorb,2,k)=0.d0
+                     dorbn(iorb,3,k)=0.d0
+                     ddorbn(iorb,k)=0.d0
+                     do m=1,nbasis
+                        orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                        dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                        dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                        dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
+                        ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
+                     enddo
+                  enddo
+               enddo
+               
+            else
+               
+               do iorb=1,norb
+                  orbn(iorb,1)=0.d0
+                  dorbn(iorb,1,1)=0.d0
+                  dorbn(iorb,2,1)=0.d0
+                  dorbn(iorb,3,1)=0.d0
+                  ddorbn(iorb,1)=0.d0
+                  do m=1,nbasis
+                     orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                     dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                     dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                     dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                     ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
+                  enddo
+               enddo
+               
+                  
+            endif
+!     endif nwftype
+            
+            
+         else
+!else iflag            
+            
+            if(nwftypeorb.gt.1) then
+               
+               do k=1,nwftypeorb
+                  do iorb=1,norb
+                     orbn(iorb,k)=0.d0
+                     dorbn(iorb,1,k)=0.d0
+                     dorbn(iorb,2,k)=0.d0
+                     dorbn(iorb,3,k)=0.d0
+                     do m=1,nbasis
+                        orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                        dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                        dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                        dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
+                     enddo
+                  enddo
+               enddo
+               
+            else
+               
+               do iorb=1,norb
+                  orbn(iorb,1)=0.d0
+                  dorbn(iorb,1,1)=0.d0
+                  dorbn(iorb,2,1)=0.d0
+                  dorbn(iorb,3,1)=0.d0
+                  do m=1,nbasis
+                     orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                     dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                     dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                     dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                  enddo
+               enddo
+               
+            endif
+!     endif nwftype    
+            
+         endif
+!     endif iflag
+         
+         
+#else
+!     Keep the localization for the non-vectorized code
+   
+         if(iflag.gt.0) then
+            
+            
+            if(nwftypeorb.gt.1) then
+               
+               do k=1,nwftypeorb
+                  do iorb=1,norb
+                     orbn(iorb,k)=0.d0
+                     dorbn(iorb,1,k)=0.d0
+                     dorbn(iorb,2,k)=0.d0
+                     dorbn(iorb,3,k)=0.d0
+                     ddorbn(iorb,k)=0.d0
+                     do m0=1,n0_nbasis(iel)
+                        m=n0_ibasis(m0,iel)
+                        orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                        dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                        dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                        dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
+                        ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
+                     enddo
+                  enddo
+               enddo
+               
+            else
+               
+               do iorb=1,norb
+                  orbn(iorb,1)=0.d0
+                  dorbn(iorb,1,1)=0.d0
+                  dorbn(iorb,2,1)=0.d0
+                  dorbn(iorb,3,1)=0.d0
+                  ddorbn(iorb,1)=0.d0
+                  do m0=1,n0_nbasis(iel)
+                     m=n0_ibasis(m0,iel)
+                     orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                     dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                     dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                     dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                     ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
+                  enddo
+               enddo
+               
+            endif
+!     endif nfwtype
+               
+            
+
+            
+         else
+!else iflag            
+            
+            if(nwftypeorb.gt.1) then
+               
+               
+               do k=1,nwftypeorb
+                  do iorb=1,norb
+                     orbn(iorb,k)=0.d0
+                     dorbn(iorb,1,k)=0.d0
+                     dorbn(iorb,2,k)=0.d0
+                     dorbn(iorb,3,k)=0.d0
+                     do m0=1,n0_nbasis(iel)
+                        m=n0_ibasis(m0,iel)
+                        orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                        dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                        dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                        dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
+                     enddo
+                  enddo
+               enddo
+               
+               
+            else
+               
+               do iorb=1,norb
+                  orbn(iorb,1)=0.d0
+                  dorbn(iorb,1,1)=0.d0
+                  dorbn(iorb,2,1)=0.d0
+                  dorbn(iorb,3,1)=0.d0
+                  do m0=1,n0_nbasis(iel)
+                     m=n0_ibasis(m0,iel)
+                     orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                     dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                     dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                     dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                  enddo
+               enddo
+               
+            endif
+!     endif nwftype
+            
+            
+         endif
+!endif iflag
+         
+
+#endif
+!!end if vectorization
+         
+         
+         
+         
+      endif
+!     iperiodic endif
 
 #else
-            
+!!eslse qmckl            
 
-            call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
+         call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
 
 !     Vectorization dependent code. useful for AVX512 and AVX2
 #ifdef VECTORIZATION
+         
+         if(iflag.gt.0) then
 
-            if(iflag.gt.0) then
 
-
-               if(nwftypeorb.gt.1) then
-                  
-                  do k=1,nwftypeorb
-                     do iorb=1,norb
-                        orbn(iorb,k)=0.d0
-                        dorbn(iorb,1,k)=0.d0
-                        dorbn(iorb,2,k)=0.d0
-                        dorbn(iorb,3,k)=0.d0
-                        ddorbn(iorb,k)=0.d0
-                        do m=1,nbasis
-                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
-                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
-                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
-                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
-                           ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
-                        enddo
-                     enddo
-                  enddo
-                  
-               else
-                  
-                  do iorb=1,norb
-                     orbn(iorb,1)=0.d0
-                     dorbn(iorb,1,1)=0.d0
-                     dorbn(iorb,2,1)=0.d0
-                     dorbn(iorb,3,1)=0.d0
-                     ddorbn(iorb,1)=0.d0
-                     do m=1,nbasis
-                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
-                        ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
-                     enddo
-                  enddo
-                  
-                  
-               endif
-
+            if(nwftypeorb.gt.1) then
                
+               do k=1,nwftypeorb
+                  do iorb=1,norb
+                     orbn(iorb,k)=0.d0
+                     dorbn(iorb,1,k)=0.d0
+                     dorbn(iorb,2,k)=0.d0
+                     dorbn(iorb,3,k)=0.d0
+                     ddorbn(iorb,k)=0.d0
+                     do m=1,nbasis
+                        orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                        dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                        dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                        dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
+                        ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
+                     enddo
+                  enddo
+               enddo
+                  
             else
-
-               if(nwftypeorb.gt.1) then
-                  
-                  do k=1,nwftypeorb
-                     do iorb=1,norb
-                        orbn(iorb,k)=0.d0
-                        dorbn(iorb,1,k)=0.d0
-                        dorbn(iorb,2,k)=0.d0
-                        dorbn(iorb,3,k)=0.d0
-                        do m=1,nbasis
-                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
-                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
-                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
-                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
-                        enddo
-                     enddo
-                  enddo
-                  
-               else
-                  
-                  do iorb=1,norb
-                     orbn(iorb,1)=0.d0
-                     dorbn(iorb,1,1)=0.d0
-                     dorbn(iorb,2,1)=0.d0
-                     dorbn(iorb,3,1)=0.d0
-                     do m=1,nbasis
-                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
-                     enddo
-                  enddo
-                  
-               endif
                
+               do iorb=1,norb
+                  orbn(iorb,1)=0.d0
+                  dorbn(iorb,1,1)=0.d0
+                  dorbn(iorb,2,1)=0.d0
+                  dorbn(iorb,3,1)=0.d0
+                  ddorbn(iorb,1)=0.d0
+                  do m=1,nbasis
+                     orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                     dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                     dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                     dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                     ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
+                  enddo
+               enddo
+               
+                  
+            endif
+!endif nwftype            
+               
+         else
+!     else iflag
+            
+            if(nwftypeorb.gt.1) then
+                  
+               do k=1,nwftypeorb
+                  do iorb=1,norb
+                     orbn(iorb,k)=0.d0
+                     dorbn(iorb,1,k)=0.d0
+                     dorbn(iorb,2,k)=0.d0
+                     dorbn(iorb,3,k)=0.d0
+                     do m=1,nbasis
+                        orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                        dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                        dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                        dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
+                     enddo
+                  enddo
+               enddo
+                  
+            else
+                  
+               do iorb=1,norb
+                  orbn(iorb,1)=0.d0
+                  dorbn(iorb,1,1)=0.d0
+                  dorbn(iorb,2,1)=0.d0
+                  dorbn(iorb,3,1)=0.d0
+                  do m=1,nbasis
+                     orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                     dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                     dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                     dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                  enddo
+               enddo
                
             endif
-
-
+               
+               
+         endif
+!endif nwtype
+         
 #else
 !     Keep the localization for the non-vectorized code
 
-
-            if(iflag.gt.0) then
-
+         
+         if(iflag.gt.0) then
+            
+            
+            if(nwftypeorb.gt.1) then
                
-               if(nwftypeorb.gt.1) then
-
-                  do k=1,nwftypeorb
-                     do iorb=1,norb
-                        orbn(iorb,k)=0.d0
-                        dorbn(iorb,1,k)=0.d0
-                        dorbn(iorb,2,k)=0.d0
-                        dorbn(iorb,3,k)=0.d0
-                        ddorbn(iorb,k)=0.d0
-                        do m0=1,n0_nbasis(iel)
-                           m=n0_ibasis(m0,iel)
-                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
-                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
-                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
-                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
-                           ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
-                        enddo
-                     enddo
-                  enddo
-                  
-               else
-                  
+               do k=1,nwftypeorb
                   do iorb=1,norb
-                     orbn(iorb,1)=0.d0
-                     dorbn(iorb,1,1)=0.d0
-                     dorbn(iorb,2,1)=0.d0
-                     dorbn(iorb,3,1)=0.d0
-                     ddorbn(iorb,1)=0.d0
+                     orbn(iorb,k)=0.d0
+                     dorbn(iorb,1,k)=0.d0
+                     dorbn(iorb,2,k)=0.d0
+                     dorbn(iorb,3,k)=0.d0
+                     ddorbn(iorb,k)=0.d0
                      do m0=1,n0_nbasis(iel)
                         m=n0_ibasis(m0,iel)
-                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
-                        ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
+                        orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                        dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                        dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                        dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
+                        ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
                      enddo
                   enddo
+               enddo
+                  
+            else
+                  
+               do iorb=1,norb
+                  orbn(iorb,1)=0.d0
+                  dorbn(iorb,1,1)=0.d0
+                  dorbn(iorb,2,1)=0.d0
+                  dorbn(iorb,3,1)=0.d0
+                  ddorbn(iorb,1)=0.d0
+                  do m0=1,n0_nbasis(iel)
+                     m=n0_ibasis(m0,iel)
+                     orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                     dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                     dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                     dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                     ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
+                  enddo
+               enddo
                
-               endif
-
+            endif
+!endif nwftype
                
               
 
 
-            else
+         else
+!else iflag
+
+            
+            if(nwftypeorb.gt.1) then
 
 
-               if(nwftypeorb.gt.1) then
-
-
-                  do k=1,nwftypeorb
-                     do iorb=1,norb
-                        orbn(iorb,k)=0.d0
-                        dorbn(iorb,1,k)=0.d0
-                        dorbn(iorb,2,k)=0.d0
-                        dorbn(iorb,3,k)=0.d0
-                        do m0=1,n0_nbasis(iel)
-                           m=n0_ibasis(m0,iel)
-                           orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
-                           dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
-                           dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
-                           dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
-                        enddo
-                     enddo
-                  enddo
-                  
-               else
-
+               do k=1,nwftypeorb
                   do iorb=1,norb
-                     orbn(iorb,1)=0.d0
-                     dorbn(iorb,1,1)=0.d0
-                     dorbn(iorb,2,1)=0.d0
-                     dorbn(iorb,3,1)=0.d0
+                     orbn(iorb,k)=0.d0
+                     dorbn(iorb,1,k)=0.d0
+                     dorbn(iorb,2,k)=0.d0
+                     dorbn(iorb,3,k)=0.d0
                      do m0=1,n0_nbasis(iel)
                         m=n0_ibasis(m0,iel)
-                        orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-                        dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                        dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                        dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                        orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
+                        dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
+                        dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
+                        dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
                      enddo
                   enddo
+               enddo
+                  
+            else
+
+               do iorb=1,norb
+                  orbn(iorb,1)=0.d0
+                  dorbn(iorb,1,1)=0.d0
+                  dorbn(iorb,2,1)=0.d0
+                  dorbn(iorb,3,1)=0.d0
+                  do m0=1,n0_nbasis(iel)
+                     m=n0_ibasis(m0,iel)
+                     orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
+                     dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
+                     dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
+                     dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
+                  enddo
+               enddo
                                     
-               endif
-
-               
-               
             endif
-
+!endif nwftype
+               
+               
+         endif
+!endif iflag
 
 #endif
-
-
+!     endif vectorization
+         
 #endif
+!     endif qmckl
+         
          endif
 c endif for ier
       
