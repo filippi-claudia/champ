@@ -1197,50 +1197,30 @@ c-----------------------------------------------------------------------
 
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         o=stoo(sr_state)
-          do i=1,norb
-            do j=1,nbasis
-              acoef(j,i)=coef(j,i,o)
-            enddo
-          enddo
-
-c Update the orbitals
-          do i=1,norbterm
-            io=ideriv(1,i)
-            jo=ideriv(2,i)
-            do j=1,nbasis
-              acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,o)
-            enddo
-          enddo
-
-          do i=1,norb
-            do j=1,nbasis
-              coef(j,i,o)=acoef(j,i)
-            enddo
-          enddo
-
-      else
-
-        do i=1,norb
-          do j=1,nbasis
-            acoef(j,i)=coef(j,i,iadiag)
-          enddo
-        enddo
-
-c Update the orbitals
-        do i=1,norbterm
-          io=ideriv(1,i)
-          jo=ideriv(2,i)
-          do j=1,nbasis
-            acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,iadiag)
-          enddo
-        enddo
-
-        do i=1,norb
-          do j=1,nbasis
-            coef(j,i,iadiag)=acoef(j,i)
-          enddo
-        enddo
+       else
+        o=iadiag
       endif
+
+      do i=1,norb
+        do j=1,nbasis
+          acoef(j,i)=coef(j,i,o)
+        enddo
+      enddo
+
+c Update the orbitals
+      do i=1,norbterm
+        io=ideriv(1,i)
+        jo=ideriv(2,i)
+        do j=1,nbasis
+          acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,o)
+        enddo
+      enddo
+
+      do i=1,norb
+        do j=1,nbasis
+          coef(j,i,o)=acoef(j,i)
+        enddo
+      enddo
 
       return
       end

@@ -408,6 +408,7 @@ contains
 
         use mpi
         use sr_mod, only: mobs
+        use control, only: ipr
         use csfs, only: nstates
         use mstates_mod, only: MSTATES
         use mpiconf, only: idtask
@@ -527,7 +528,10 @@ contains
             do k = 1, nparm
                 if (s_ii_inv(k,1) .gt. smax) smax = s_ii_inv(k,1)
             enddo
+
+            if(ipr.ge.4) &
             write (ounit, '(''S diagonal element '',t41,50e16.8)') (s_ii_inv(k,1),k=1,nparm)
+            
             write (ounit, '(''max S diagonal element '',t41,f16.8)') smax
 
             kk = 0

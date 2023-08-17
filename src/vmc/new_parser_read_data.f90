@@ -1210,7 +1210,7 @@ subroutine read_csf_file(file_determinants)
 
 
         do j = 1, ndet
-            ccsf(j,1,nwftype) = cdet(j,1,nwftype)
+            ccsf(j,1,1) = cdet(j,1,1)
         enddo
         ! printing
         write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf

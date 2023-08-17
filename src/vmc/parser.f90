@@ -441,10 +441,18 @@ subroutine parser
 
 
 !optimization flags vmc/dmc
+! %module optwf 
+
   ioptwf        = fdf_get('ioptwf', 0)
   method        = fdf_get('method', 'sr_n')
+  ioptjas       = fdf_get('ioptjas', 0)
+  ioptorb       = fdf_get('ioptorb', 0)
+  ioptci        = fdf_get('ioptci', 0)
+  nopt_iter     = fdf_get('nopt_iter',6)
+  micro_iter_sr = fdf_get('micro_iter_sr', 1)
+  isample_cmat  = fdf_get('isample_cmat', 1)
+  energy_tol    = fdf_get('energy_tol', 1.d-3)
 
-! %module optwf (can be moved somewhere else)
   if (fdf_defined("optwf")) then
     if ( method .eq. 'linear' ) then
       MFORCE = 3  ! Only set MFORCE here. nwftype=3 is set just before the allocation
@@ -455,27 +463,29 @@ subroutine parser
     endif
   endif
 
+  dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
+  ilastvmc      = fdf_get('ilastvmc',1)
+
   idl_flag      = fdf_get('idl_flag', 0)
+  dl_mom        = fdf_get('dl_mom', 0.0d0)
+  dl_alg        = fdf_get('dl_alg','nag')
+
   ilbfgs_flag   = fdf_get('ilbfgs_flag', 0)
   ilbfgs_m      = fdf_get('ilbfgs_m', 5)
-  i_sr_rescale  = fdf_get('sr_rescale', 0)
+
   ibeta         = fdf_get('ibeta', -1)
   ratio         = fdf_get('ratio', ratio_j)
   iapprox       = fdf_get('iapprox', 0)
-  ncore         = fdf_get('ncore', 0)
   iuse_orbeigv  = fdf_get('iuse_orbeigv', 0)
-  ioptjas       = fdf_get('ioptjas', 0)
-  ioptorb       = fdf_get('ioptorb', 0)
-  ioptci        = fdf_get('ioptci', 0)
+
   no_active     = fdf_get('no_active', 0)
-  energy_tol    = fdf_get('energy_tol', 1.d-3)
-  dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
+  ncore         = fdf_get('ncore', 0)
+
+  multiple_adiag = fdf_get('multiple_adiag',0)
 ! attention needed here.
   if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
   add_diag(1)   = fdf_get('add_diag',1.d-6)
 
-  nopt_iter     = fdf_get('nopt_iter',6)
-  micro_iter_sr = fdf_get('micro_iter_sr', 1)
   ifunc_omega   = fdf_get('func_omega', 0)
   if (ifunc_omega .gt. 0) then
     omega0        = fdf_get('omega', 0.d0)
@@ -487,15 +497,13 @@ subroutine parser
   alin_adiag    = fdf_get('lin_adiag', 1.0d-2)
   alin_eps      = fdf_get('lin_eps', 1.0d-3)
   lin_jdav      = fdf_get('lin_jdav',0)
-  multiple_adiag = fdf_get('multiple_adiag',0)
+
   sr_tau        = fdf_get('sr_tau', 2.0d-2)
   sr_adiag      = fdf_get('sr_adiag', 1.0d-2)
   sr_eps        = fdf_get('sr_eps', 1.0d-3)
-  ilastvmc      = fdf_get('ilastvmc',1)
-  dl_mom        = fdf_get('dl_mom', 0.0d0)
-  dl_alg        = fdf_get('dl_alg','nag')
+  i_sr_rescale  = fdf_get('sr_rescale', 0)
+
   ngrad_jas_blocks = fdf_get('ngrad_jas_blocks',0)
-  isample_cmat  = fdf_get('isample_cmat', 1)
   isavebl       = fdf_get('save_blocks', 0)
   nefp_blocks   = fdf_get('force_blocks',1)
   iorbsample    = fdf_get('iorbsample',1)
