@@ -1176,8 +1176,9 @@ c-----------------------------------------------------------------------
       subroutine compute_lcao(dparm,iadiag)
 
       use vmc_mod, only: norb_tot, nwftypeorb, stoo
-      use optwf_control, only: ioptorb, method
+      use optwf_control, only: ioptorb, method, orbitals_ortho
       use optwf_parms, only: nparmd, nparmj
+      use orbval, only: nadorb
       use coefs, only: nbasis
       use slater, only: norb, coef
       use optorb_cblock, only: norbterm
@@ -1189,9 +1190,10 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      integer :: i, iadiag, io, j, jo, o!, k
+      integer :: i, iadiag, io, j, jo, k, o
       real(dp), dimension(nbasis, norb_tot) :: acoef
       real(dp), dimension(*) :: dparm
+      real(dp), dimension(norb+nadorb,norb+nadorb) :: xmat, umat
 
       if(ioptorb.eq.0) return
 
@@ -1201,26 +1203,69 @@ c-----------------------------------------------------------------------
         o=iadiag
       endif
 
-      do i=1,norb
-        do j=1,nbasis
-          acoef(j,i)=coef(j,i,o)
+      if(.not.orbitals_ortho) then
+
+        do i=1,norb
+          do j=1,nbasis
+            acoef(j,i)=coef(j,i,o)
+          enddo
         enddo
-      enddo
 
 c Update the orbitals
-      do i=1,norbterm
-        io=ideriv(1,i)
-        jo=ideriv(2,i)
-        do j=1,nbasis
-          acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,o)
+        do i=1,norbterm
+          io=ideriv(1,i)
+          jo=ideriv(2,i)
+          do j=1,nbasis
+            acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,o)
+          enddo
         enddo
-      enddo
 
-      do i=1,norb
-        do j=1,nbasis
-          coef(j,i,o)=acoef(j,i)
+        do i=1,norb
+          do j=1,nbasis
+            coef(j,i,o)=acoef(j,i)
+          enddo
         enddo
-      enddo
+
+      else
+
+        xmat(:,:)=0.d0
+        do i=1,norbterm
+          io=ideriv(1,i)
+          jo=ideriv(2,i)
+          xmat(io,jo)=-dparm(i+nparmj+nparmd)
+        enddo
+
+        do i=1,norb+nadorb
+          do j=1,i-1
+            if(xmat(i,j).ne.0.d0.and.xmat(j,i).ne.0.d0) then
+              xmat(i,j)=0.5*(xmat(i,j)-xmat(j,i))
+              xmat(j,i)=-xmat(i,j)
+             elseif(xmat(i,j).ne.0.d0) then
+              xmat(j,i)=-xmat(i,j)
+             else
+              xmat(i,j)=-xmat(j,i)
+            endif
+          enddo
+        enddo
+
+        call ortho_orbitals(norb+nadorb,xmat,umat)
+
+        acoef(:,:)=0.d0
+        do i=1,norb+nadorb
+          do j=1,norb+nadorb
+            do k=1,nbasis
+              acoef(k,i)=acoef(k,i)+umat(i,j)*coef(k,j,o)
+            enddo
+          enddo
+        enddo
+
+        do i=1,norb+nadorb
+          do j=1,nbasis
+            coef(j,i,o)=acoef(j,i)
+          enddo
+        enddo
+
+      endif
 
       return
       end

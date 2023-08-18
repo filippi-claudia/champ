@@ -99,7 +99,7 @@ subroutine parser
       use optwf_control, only: iuse_orbeigv,lin_jdav,method
       use optwf_control, only: micro_iter_sr,multiple_adiag,ncore
       use optwf_control, only: no_active,nopt_iter,nparm,nvec,nvecx
-      use optwf_control, only: ratio_j,sr_adiag,sr_eps,sr_tau
+      use optwf_control, only: orbitals_ortho,ratio_j,sr_adiag,sr_eps,sr_tau
       use optwf_corsam, only: add_diag
       use optwf_func, only: ifunc_omega,n_omegaf,n_omegat,omega0
       use optwf_handle_wf, only: set_nparms_tot
@@ -480,6 +480,7 @@ subroutine parser
 
   no_active     = fdf_get('no_active', 0)
   ncore         = fdf_get('ncore', 0)
+  orbitals_ortho = fdf_get('orbitals_ortho', .false.)
 
   multiple_adiag = fdf_get('multiple_adiag',0)
 ! attention needed here.

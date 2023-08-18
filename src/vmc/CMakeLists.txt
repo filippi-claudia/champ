@@ -126,6 +126,7 @@ if (MPI_Fortran_FOUND)
     optgeo_hessian.f90
     optwf.f90 optwf_dl.f90
     optwf_sr.f90
+    ortho_orbitals.f90
     parser.f90
     qmmm_bspline.f90
     qmmm_density.f90
@@ -222,6 +223,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lib.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/ortho_orbitals.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f
     ${CMAKE_CURRENT_SOURCE_DIR}/orbitals.f

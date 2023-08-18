@@ -3,7 +3,7 @@ module optwf_control
     !>            nopt_iter, micro_iter_sr, energy_tol,
     !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j,
     !>            iapprox, ncore, iuse_orbeigv, no_active, multiple_adiag, iroot_geo,
-    !>            ilastvmc, sr_tau, sr_adig, sr_adiag, sr_eps
+    !>            ilastvmc, sr_tau, sr_adig, sr_adiag, sr_eps, orbitals_ortho
 
       use precision_kinds, only: dp
 
@@ -39,7 +39,7 @@ module optwf_control
     real(dp) :: sr_eps
     character(20) :: dl_alg
     real(dp) :: dl_mom
-
+    logical :: orbitals_ortho
 
     private
     public :: ioptwf
@@ -54,7 +54,7 @@ module optwf_control
     public :: ilastvmc
     public :: sr_tau, sr_adiag, sr_eps
     public :: dl_alg, dl_mom
-    public :: method
+    public :: method, orbitals_ortho
     save
 
 end module optwf_control
