@@ -649,11 +649,14 @@ c-------------------------------------------------------------------------------
       use multiple_geo, only: iwf
       use multislatern, only: ddorbn,dorbn,orbn
       use phifun,  only: d2phin,dphin,n0_ibasis,n0_nbasis,phin
-      use precision_kinds, only: dp
       use vmc_mod, only: nwftypeorb
       use control, only: ipr
       use contrl_file, only: ounit
-      
+      use periodic, only : n_images, ell
+      use find_pimage, only: find_image_pbc
+      use precision_kinds, only: dp
+
+
 #ifdef QMCKL_FOUND
       use qmckl_data
 #endif
@@ -673,8 +676,13 @@ c-------------------------------------------------------------------------------
 c     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
       real(dp), allocatable :: mo_vgl_qmckl(:,:)
       integer :: rc
-      integer*8 :: n8
       character*(1024) :: err_message = ''
+      integer*8 :: n8, na8, i_image, ivgl, i_basis
+      real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
+      real(dp), allocatable :: ao_qmckl(:,:)
+      real(dp), dimension(3) :: xiel
+      real(dp), dimension(3,n_images) :: xqmckl
+      real(dp) :: rnorm
 #endif
 
       
@@ -782,8 +790,118 @@ c     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
       else
 !     iperiodic else
          
+
+!! call to be replaced with QMCkl          
+!!         call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
+
+!     Here starts QMCkl implementation
          
-         call basis_fns(iel,iel,nelec,rvec_en,r_en,ider)
+!     ! setting test to verify qmckl-ao calculation
+         
+!! get number of atomic orbitals         
+         rc = qmckl_get_ao_basis_ao_num(qmckl_ctx, na8)
+         if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error getting mo_num from QMCkl'
+            stop
+         end if
+
+
+         if (nbasis.ne.na8) then
+            print *, 'Error getting ao_num from QMCkl'
+            stop
+         end if
+
+!     allocate ao_vlg array
+         allocate(ao_qmckl(nbasis, 5))
+         ao_qmckl=0.d0
+         
+!     first for image zero
+         xiel=x(1:3,iel)
+! applying pbc (wrapping inside the box)
+         call find_image_pbc(xiel,rnorm)
+            
+! set one electron coordinates in QMCkl
+         rc = qmckl_set_point(qmckl_ctx, 'N', 1_8, xiel, 3_8)
+         if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error setting electron coords orbitalse'
+            call qmckl_last_error(qmckl_ctx,err_message)
+            print *, trim(err_message)
+            call abort()
+         end if
+                        
+!     computing aos zero image            
+         rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
+     &        ao_qmckl, nbasis*5_8)
+         if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error getting AOs from QMCkl zero image'
+         endif
+            
+            
+!     intialize before computation just in case garbage appears            
+!         xqmckl=0.d0
+            
+!     computing ao's images for iel 
+         if(n_images.gt.0) then
+               
+!     allocate ao_vgl array for all images
+            allocate(ao_vgl_qmckl(nbasis, 5, n_images))
+            ao_vgl_qmckl=0.d0
+
+! compute images distance electron iel                
+            do i_image=1, n_images
+               xqmckl(1:3,i_image)=xiel(1:3)-ell(1:3,i_image)
+            enddo
+
+!     send coordinates
+            rc = qmckl_set_point(qmckl_ctx, 'N', 1_8*n_images, xqmckl, 3_8*n_images)
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error setting electron coords orbitalse'
+               call qmckl_last_error(qmckl_ctx,err_message)
+               print *, trim(err_message)
+               call abort()
+            end if
+               
+               
+            rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
+     &           ao_vgl_qmckl, nbasis*n_images*5_8)
+            if (rc /= QMCKL_SUCCESS) then
+               print *, 'Error getting AOs from QMCkl'
+            endif
+               
+               
+!     sum it all over the image zero            
+            do i_image=1, n_images
+               do ivgl=1, 5
+                  do i_basis=1, nbasis
+                     ao_qmckl(i_basis,ivgl)=ao_qmckl(i_basis,ivgl)+ao_vgl_qmckl(i_basis,ivgl,i_image)
+                  enddo
+               enddo
+            enddo
+            
+
+               
+
+         endif
+! endif images
+
+            
+! copying QMCkl ao's back to champ
+         do i_basis=1, nbasis
+            phin(i_basis,iel)=ao_qmckl(i_basis,1)
+            dphin(i_basis,iel,1)=ao_qmckl(i_basis,2)
+            dphin(i_basis,iel,2)=ao_qmckl(i_basis,3)
+            dphin(i_basis,iel,3)=ao_qmckl(i_basis,4)
+            d2phin(i_basis,iel)=ao_qmckl(i_basis,5)
+         enddo            
+
+            
+            
+         if(allocated(ao_qmckl)) deallocate(ao_qmckl)
+         if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl)
+
+            
+         
+!     Here ends QMCkl implementation
          
          
          
