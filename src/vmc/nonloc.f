@@ -439,7 +439,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
       use qua,     only: nquad
       use precision_kinds, only: dp
 
-
 #ifdef QMCKL_FOUND
       use qmckl_data
 #endif
@@ -579,7 +578,154 @@ c     get basis functions for electron iel
 !     else iperiodic
 
            if(nwftypeorb.gt.1) iwf=1
-           call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
+
+!     call to be replaced with qmckl 
+!     call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
+           
+!     ! here starts QMCkl implementatation
+           
+!     ! setting test to verify qmckl-ao calculation
+           
+!     ! get number of atomic orbitals         
+           rc = qmckl_get_ao_basis_ao_num(qmckl_ctx, na8)
+           if (rc /= QMCKL_SUCCESS) then
+              print *, 'Error getting mo_num from QMCkl'
+              stop
+           end if
+           
+!     print*,"na8",na8
+!     print*,"nbasis",nbasis
+           
+           
+           if (nbasis.ne.na8) then
+              print *, 'Error getting ao_num from QMCkl'
+              stop
+           end if
+           
+!     Image zero calculation            
+!     !allocate ao_vlg array
+           allocate(ao_qmckl(nbasis, 5, nxquad))
+           ao_qmckl=0.d0
+           
+           allocate(xqmckl(3,nxquad))
+           xqmckl=xquad(1:3,1:nxquad)
+!     !apply pbc (wraping inside the box) 
+           do iq=1,nxquad
+              call find_image_pbc(xqmckl(1:3,iq),rnorm)
+           enddo
+           
+!     Send electron coordinates to QMCkl to compute the MOs at these positions
+           rc = qmckl_set_point(qmckl_ctx, 'N', nxquad*1_8, xqmckl, nxquad*3_8)
+           if (rc /= QMCKL_SUCCESS) then
+              print *, 'Error setting electron coordinates QMCkl orbitals_quad'
+              stop
+           end if
+           
+!     computing ao's zero image
+           rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
+     &          ao_qmckl, nxquad*5_8*nbasis)
+           if (rc /= QMCKL_SUCCESS) then
+              print *, 'Error getting AOs from QMCkl zero image'
+           endif
+           
+           
+           
+!     computing images distance for nxquad points 
+           if(n_images.gt.0) then
+              
+!     allocate ao_vgl array for all images
+              allocate(ao_vgl_qmckl(nbasis, 5, nxquad))
+              allocate(xqmckl_i(3,nxquad))
+               
+               
+              do i_image=1, n_images
+                  
+!     initilialize xqmckl_i
+                 ao_vgl_qmckl=0.d0
+                 xqmckl_i=0.d0
+                 
+                 r_image=ell(1:3,i_image)
+                 do iq=1, nxquad
+                    xqmckl_i(1:3,iq)=xqmckl(1:3,iq)-r_image(1:3)
+                 enddo
+                 
+!     send coordinates of xquad image
+                 rc = qmckl_set_point(qmckl_ctx, 'N', 1_8*nxquad, xqmckl_i, 3_8*nxquad)
+                 if (rc /= QMCKL_SUCCESS) then
+                    print *, 'Error electron coords orbitals quad'
+                    call qmckl_last_error(qmckl_ctx,err_message)
+                    print *, trim(err_message)
+                    call abort()
+                 end if
+                 
+!     computing aos for the given image            
+                 rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
+     &                ao_vgl_qmckl, nxquad*5_8*nbasis)
+                 if (rc /= QMCKL_SUCCESS) then
+                    print *, 'Error getting AOs from QMCkl zero image'
+                 endif
+
+                                                      
+!     add contribution of the given image
+                 do iq=1, nxquad
+                    do ivgl=1, 5
+                       do i_basis=1, nbasis
+                          ao_qmckl(i_basis,ivgl, iq)=ao_qmckl(i_basis,ivgl,iq)+ao_vgl_qmckl(i_basis,ivgl,iq)
+                       enddo
+                    enddo
+                 enddo
+                 
+                 
+              enddo
+!enddo images
+              
+              
+              
+           endif
+!     !endif periodic images
+           
+!     ! for comparison purposes
+
+!     call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
+           
+           
+!     ! print for verification
+!     print*, "***************INSIDE ORBITALS QUAD**************"
+!     do iq=1, nxquad
+!     print*, "iq", iq
+!     do i_basis=1, nbasis  
+!     print*, "phin ", i_basis, phin(i_basis,iq), ao_qmckl(i_basis,1,iq)
+!     print*, "dphin 0 ", i_basis,dphin(i_basis,iq,1), ao_qmckl(i_basis,2,iq)
+!     print*, "dphin 1 ", i_basis,dphin(i_basis,iq,2), ao_qmckl(i_basis,3,iq)
+!     print*, "dphin 2 ", i_basis,dphin(i_basis,iq,3), ao_qmckl(i_basis,4,iq)
+!     print*, "d2phin ", i_basis,d2phin(i_basis,iq), ao_qmckl(i_basis,5,iq)
+!     enddo
+!     enddo
+
+
+!     !passing the qmckl ao's back to champ
+!! pass the qmckl valies to champ            
+           do iq=1, nxquad
+              do i_basis=1, nbasis
+                 phin(i_basis,iq)=ao_qmckl(i_basis,1,iq)
+                 dphin(i_basis,iq,1)=ao_qmckl(i_basis,2,iq)
+                 dphin(i_basis,iq,2)=ao_qmckl(i_basis,3,iq)
+                 dphin(i_basis,iq,3)=ao_qmckl(i_basis,4,iq)
+!     d2phin(i_basis,iq)=ao_qmckl(i_basis,5,iq)
+              enddo
+           enddo
+            
+            
+            
+           if(allocated(ao_qmckl)) deallocate(ao_qmckl)
+           if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl)
+           if(allocated(xqmckl)) deallocate(xqmckl)
+           if(allocated(xqmckl_i)) deallocate(xqmckl_i)
+           
+           
+!! here ends QMCklimplementeation 
+           
+
            if(nwftypeorb.gt.1) iwf=iwforb
            
            do iq=1,nxquad
@@ -655,131 +801,7 @@ c     write(ounit,*)'orb_quad da_orb', da_orbn(1,1,1),dphin(1,iel,1)
 #else
         
         if(nwftypeorb.gt.1) iwf=1
-
-!Call to be replaced with QMCkl
-!        call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
-
-
-! Here starts QMCkl implementation
-
-!     get number of atomic orbitals         
-        rc = qmckl_get_ao_basis_ao_num(qmckl_ctx, na8)
-        if (rc /= QMCKL_SUCCESS) then
-           print *, 'Error getting mo_num from QMCkl'
-           stop
-        end if
-           
-!     print*,"na8",na8
-!     print*,"nbasis",nbasis
-        
-           
-        if (nbasis.ne.na8) then
-           print *, 'Error getting ao_num from QMCkl'
-           stop
-        end if
-           
-!     Image zero calculation            
-!     !allocate ao_vlg array
-        allocate(ao_qmckl(nbasis, 5, nxquad))
-        ao_qmckl=0.d0
-           
-        allocate(xqmckl(3,nxquad))
-        xqmckl=xquad(1:3,1:nxquad)
-!     !apply pbc (wraping inside the box) 
-        do iq=1,nxquad
-           call find_image_pbc(xqmckl(1:3,iq),rnorm)
-        enddo
-           
-!     Send electron coordinates to QMCkl to compute the MOs at these positions
-        rc = qmckl_set_point(qmckl_ctx, 'N', nxquad*1_8, xqmckl, nxquad*3_8)
-        if (rc /= QMCKL_SUCCESS) then
-           print *, 'Error setting electron coordinates QMCkl orbitals_quad'
-           stop
-        end if
-           
-!     computing ao's zero image
-        rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
-     &       ao_qmckl, nxquad*5_8*nbasis)
-        if (rc /= QMCKL_SUCCESS) then
-           print *, 'Error getting AOs from QMCkl zero image'
-        endif
-        
-!     computing images distance for nxquad points 
-        if(n_images.gt.0) then
-           
-!     allocate ao_vgl array for all images
-           allocate(ao_vgl_qmckl(nbasis, 5, nxquad))
-           allocate(xqmckl_i(3,nxquad))
-               
-               
-           do i_image=1, n_images
-                  
-!     initilialize xqmckl_i
-              ao_vgl_qmckl=0.d0
-              xqmckl_i=0.d0
-                 
-              r_image=ell(1:3,i_image)
-              do iq=1, nxquad
-                 xqmckl_i(1:3,iq)=xqmckl(1:3,iq)-r_image(1:3)
-              enddo
-                 
-!     send coordinates of xquad image
-              rc = qmckl_set_point(qmckl_ctx, 'N', 1_8*nxquad, xqmckl_i, 3_8*nxquad)
-              if (rc /= QMCKL_SUCCESS) then
-                 print *, 'Error electron coords orbitals quad'
-                 call qmckl_last_error(qmckl_ctx,err_message)
-                 print *, trim(err_message)
-                 call abort()
-              end if
-                 
-!     computing aos for the given image            
-              rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
-     &             ao_vgl_qmckl, nxquad*5_8*nbasis)
-              if (rc /= QMCKL_SUCCESS) then
-                 print *, 'Error getting AOs from QMCkl zero image'
-              endif
-              
-              
-!     add contribution of the given image
-              do iq=1, nxquad
-                 do ivgl=1, 5
-                    do i_basis=1, nbasis
-                       ao_qmckl(i_basis,ivgl, iq)=ao_qmckl(i_basis,ivgl,iq)+ao_vgl_qmckl(i_basis,ivgl,iq)
-                    enddo
-                 enddo
-              enddo
-                 
-              
-           enddo
-!     enddo images
-           
-           
-        endif
-!     endif periodic images
-        
-!     passing the qmckl ao's back to champ
-        do iq=1, nxquad
-           do i_basis=1, nbasis
-              phin(i_basis,iq)=ao_qmckl(i_basis,1,iq)
-              dphin(i_basis,iq,1)=ao_qmckl(i_basis,2,iq)
-              dphin(i_basis,iq,2)=ao_qmckl(i_basis,3,iq)
-              dphin(i_basis,iq,3)=ao_qmckl(i_basis,4,iq)
-!     d2phin(i_basis,iq)=ao_qmckl(i_basis,5,iq)
-           enddo
-        enddo
-            
-            
-            
-        if(allocated(ao_qmckl)) deallocate(ao_qmckl)
-        if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl)
-        if(allocated(xqmckl)) deallocate(xqmckl)
-        if(allocated(xqmckl_i)) deallocate(xqmckl_i)
-        
-
-        
-!     Here ends QMCkl implementation
-
-
+        call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
         if(nwftypeorb.gt.1) iwf=iwforb
 
         do iq=1,nxquad
