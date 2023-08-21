@@ -511,6 +511,7 @@ subroutine read_jastrow_file(file_jastrow)
     ! Ravindra
 
       use bparm,   only: nocuspb,nspin2b
+      use csfs,    only: nstates
       use contrl_file, only: errunit,ounit
       use contrl_per, only: iperiodic
       use control, only: mode
@@ -525,7 +526,7 @@ subroutine read_jastrow_file(file_jastrow)
       use jastrow, only: cutjas_ee, cutjas_en, cutjas_eei, cutjas_eni
       use mpiconf, only: wid
       use multiple_geo, only: MWF,nwftype
-      use optwf_control, only: method, ioptwf
+      use optwf_control, only: method, ioptwf, ioptjas
       use vmc_mod, only: nwftypeorb, nwftypejas, nstoj, jtos, stoj, nstojmax, extraj, nstoj_tot
       use precision_kinds, only: dp
       use system,  only: ncent,nctype,ndn
@@ -593,7 +594,8 @@ subroutine read_jastrow_file(file_jastrow)
              read(iunit,*, iostat=iostat) temp2
              if (is_iostat_end(iostat)) exit
              temp1 = trim(temp2)
-             if (temp2 == "jastrows_to_states") then
+             ! if (temp2 == "jastrows_to_states") then
+             if (temp1 == "jastrows_to_states") then
                 nwftypejas = nwftypejas + 1
              endif
           enddo
@@ -648,6 +650,9 @@ subroutine read_jastrow_file(file_jastrow)
     do i=1,nwftypejas
       nstoj_tot=nstoj_tot+nstoj(i)
     enddo
+
+    if(method.eq.'sr_n'.and.ioptjas.ne.0.and.nwftypejas.ne.nstates) &
+    call fatal_error ( " Number jastrow sets must match number of states for Jastrow optimization")
 
     if(mode(1:3) == 'vmc') write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypejas, " jastrow types to be assigned to ", nstoj_tot, " states. If only sampling, ignore."
 

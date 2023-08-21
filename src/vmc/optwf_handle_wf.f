@@ -1187,6 +1187,7 @@ c-----------------------------------------------------------------------
       use orb_mat_022, only: ideriv
       use precision_kinds, only: dp
       use sr_mat_n, only: sr_state
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -1260,6 +1261,10 @@ c Update the orbitals
         enddo
 
         do i=1,norb+nadorb
+          if(acoef(1,i)*coef(1,i,o).lt.0.d0) call fatal_error('COMPUTE_LCAO: orbitals have changed sign through ortho')
+        enddo
+
+        do i=1,norb+nadorb
           do j=1,nbasis
             coef(j,i,o)=acoef(j,i)
           enddo
@@ -1272,7 +1277,7 @@ c Update the orbitals
 c-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
 
-      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
+      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,maxcsf,ncsf,nstates
       use optwf_control, only: ioptci,ioptjas,ioptorb,method
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
@@ -1281,7 +1286,7 @@ c-----------------------------------------------------------------------
 
       implicit none
 
-      integer :: i, iadiag, icsf, idet, j
+      integer :: i, iadiag, icsf, idet, ish, j
       integer :: jx, k
       real(dp) :: c90
       real(dp), dimension(*) :: dparm
@@ -1316,13 +1321,23 @@ c Update the ci coef
             cdet(idet,sr_state,iadiag)=cdet(idet,sr_state,iadiag)-dparm(idet-1+nparmj)
           enddo
         else
-          do icsf=2,ncsf
+          do icsf=1,maxcsf(sr_state)-1
             do j=iadet(icsf),ibdet(icsf)
               jx=icxdet(j)
-              cdet(jx,sr_state,iadiag)=cdet(jx,sr_state,iadiag)-dparm(icsf-1+nparmj)*cxdet(j)
+              cdet(jx,sr_state,iadiag)=cdet(jx,sr_state,iadiag)-dparm(icsf+nparmj)*cxdet(j)
             enddo
-            ccsf(icsf,sr_state,iadiag)=ccsf(icsf,sr_state,iadiag)-dparm(icsf-1+nparmj)
-          enddo
+            ccsf(icsf,sr_state,iadiag)=ccsf(icsf,sr_state,iadiag)-dparm(icsf+nparmj)
+          enddo 
+
+          ish=1
+          do icsf=maxcsf(sr_state)+1,ncsf
+            do j=iadet(icsf),ibdet(icsf)
+              jx=icxdet(j)
+              cdet(jx,sr_state,iadiag)=cdet(jx,sr_state,iadiag)-dparm(icsf-ish+nparmj)*cxdet(j)
+            enddo
+            ccsf(icsf,sr_state,iadiag)=ccsf(icsf,sr_state,iadiag)-dparm(icsf-ish+nparmj)
+          enddo 
+
         endif
       endif
 
@@ -1542,7 +1557,7 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
 
       use sr_mod, only: mparm, mconf
       use optwf_parms, only: nparmj
-      use csfs, only: nstates
+      use csfs, only: maxcsf,nstates
       use derivjas, only: gvalue
       use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_func, only: ifunc_omega
@@ -1581,17 +1596,22 @@ c store elocal and derivatives of psi for each configuration (call in vmc)
       i0=1
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0
 
-       if(l.gt.mconf) then
-         print*, "l",l, "mconf", mconf
-         print*, "vmc_nstep", vmc_nstep, "vmc_nblk_max", vmc_nblk_max
-         call fatal_error('SR_STORE: l gt mconf')
-       endif
+      if(l.gt.mconf) then
+        print*, "l",l, "mconf", mconf
+        print*, "vmc_nstep", vmc_nstep, "vmc_nblk_max", vmc_nblk_max
+        call fatal_error('SR_STORE: l gt mconf')
+      endif
 
-      if (method.eq.'sr_n'.and.ortho.eq.1.or.nstates.eq.1) then ! for sr_n w/ ortho, or sr_n 1-state
+      if (method.eq.'sr_n'.and.(ortho.eq.1.or.nstates.eq.1)) then ! for sr_n w/ ortho, or sr_n 1-state
         do istate=1,nstates
           if(nparmj /= 0) call dcopy(nparmj,gvalue(1,stoj(istate)),1,sr_o(1,l,istate),1)
           ntmp=max(nciterm-i0,0)
-          if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0,istate),1,sr_o(nparmj+1,l,istate),1)
+c         if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0,istate),1,sr_o(nparmj+1,l,istate),1)
+          if (ntmp /= 0) then
+            if(maxcsf(istate).gt.1) call dcopy(maxcsf(istate)-1,ci_o(1,istate),1,sr_o(nparmj+1,l,istate),1)
+            if(maxcsf(istate).lt.nciterm) 
+     &      call dcopy(nciterm-maxcsf(istate),ci_o(maxcsf(istate)+1,istate),1,sr_o(nparmj+maxcsf(istate),l,istate),1)
+          endif
           ijasci=nparmj+ntmp
           if((ijasci+norbterm)*nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')
           ii=ijasci

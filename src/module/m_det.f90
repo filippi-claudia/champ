@@ -16,11 +16,13 @@ module csfs
     integer, dimension(:), allocatable :: iadet !(MDET)
     integer, dimension(:), allocatable :: ibdet !(MDET)
     integer, dimension(:), allocatable :: icxdet !(nmap)
+    integer, dimension(:), allocatable :: maxcsf !(nmap)
+
     integer :: ncsf
     integer :: nstates
 
     private
-    public   :: ccsf, cxdet, iadet, ibdet, icxdet, ncsf, nstates, anormo
+    public   :: ccsf, cxdet, iadet, ibdet, icxdet, maxcsf, ncsf, nstates, anormo
     public :: allocate_csfs, deallocate_csfs
     save
 contains
@@ -35,10 +37,12 @@ contains
         if (.not. allocated(iadet)) allocate (iadet(ndet))
         if (.not. allocated(ibdet)) allocate (ibdet(ndet))
         if (.not. allocated(icxdet)) allocate (icxdet(nmap))
+        if (.not. allocated(maxcsf)) allocate (maxcsf(MSTATES))
     end subroutine allocate_csfs
 
     subroutine deallocate_csfs()
         if (allocated(icxdet)) deallocate (icxdet)
+        if (allocated(maxcsf)) deallocate (maxcsf)
         if (allocated(anormo)) deallocate (anormo)
         if (allocated(ibdet)) deallocate (ibdet)
         if (allocated(iadet)) deallocate (iadet)

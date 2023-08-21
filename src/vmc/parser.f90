@@ -33,7 +33,7 @@ subroutine parser
       use control_vmc, only: vmc_isite,vmc_nblk,vmc_nblk_ci,vmc_nblk_max
       use control_vmc, only: vmc_nblkeq,vmc_nconf,vmc_nconf_new
       use control_vmc, only: vmc_nstep
-      use csfs,    only: anormo,cxdet,ncsf,nstates
+      use csfs,    only: anormo,ccsf,cxdet,maxcsf,ncsf,nstates
       use cuspinit4_mod, only: cuspinit4
       use custom_broadcast, only: bcast
       use dmc_mod, only: mwalk,set_mwalk
@@ -274,6 +274,7 @@ subroutine parser
   integer                    :: i,j,k, n, iostat
   integer                    :: ic, iwft, istate, imax
   type(atom_t)               :: atoms
+  real(dp)                   :: acsfmax,acsfnow
   character(len=2), allocatable   :: unique(:)
 
   real(dp), parameter        :: zero = 0.d0
@@ -745,7 +746,10 @@ subroutine parser
     write(ounit,*)
 
     write(ounit,int_format)  " Version of Metropolis = ", imetro
-    write(ounit,real_format) " VMC eps node cutoff   = ", eps_node_cutoff
+    if(node_cutoff.gt.0) then
+      write(ounit,real_format) " Sampling finite guiding wave function at nodes "
+      write(ounit,real_format) " VMC eps node cutoff   = ", eps_node_cutoff
+    endif
 
     if (imetro.eq.1) then
       deltai= one/delta
@@ -786,7 +790,10 @@ subroutine parser
     rttau=dsqrt(tau)
 
     write(ounit,int_format) " Version of DMC ",  idmc
-    write(ounit,real_format)" DMC eps node cutoff   = ", dmc_eps_node_cutoff
+    if( dmc_node_cutoff.gt.0 ) then
+      write(ounit,real_format) " Sampling finite guiding wave function at nodes "
+      write(ounit,real_format) " DMC eps node cutoff   = ", dmc_eps_node_cutoff
+    endif
     write(ounit,int_format) " nfprod ",  nfprod
     write(ounit,real_format) " tau ", tau
 
@@ -1080,7 +1087,36 @@ subroutine parser
     nstates = 1
     ncsf = 0
     if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
+
+    if( (method(1:3) == 'lin')) then
+      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, 3))
+    else
+      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
+    endif
+    do j = 1, ndet
+      ccsf(j,1,1) = cdet(j,1,1)
+    enddo
   endif
+
+  if(.not. allocated(maxcsf)) allocate(maxcsf(MSTATES))
+ 
+  if(ncsf.gt.0 .and. method(1:3) .ne. 'lin') then
+      do istate=1,nstates
+        acsfmax=dabs(ccsf(1,istate,1))
+        maxcsf(istate)=1
+        do j=2,ncsf
+          acsfnow=dabs(ccsf(j,istate,1))
+          if(acsfnow.gt.acsfmax) then
+            acsfmax=acsfnow
+            maxcsf(istate)=j
+          endif
+        enddo
+        write(ounit,'(''Saving max scf:state,csf,value'',2i5,f20.15)') &
+                          istate,maxcsf(istate),acsfmax
+      enddo
+    else
+      maxcsf(1:nstates)=1
+   endif
 
 ! (4) CSFMAP [#####]
 
@@ -1547,6 +1583,8 @@ subroutine parser
 ! Multiple states/efficiency/guiding flags
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
+      if(node_cutoff.gt.0)  call fatal_error('INPUT: guiding wave function AND node_cutoff > 0')
+
       write(ounit, *) "Guiding function: square root of sum of squares"
 
       ! Part which handles the guiding weights
