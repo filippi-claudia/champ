@@ -27,7 +27,6 @@ load symmetry        ras1022_SDT_pVQZ_symmetry.sym
     ioptjas       1
     ioptorb       1
     method        'sr_n'
-    multiple_adiag 0
     ncore         0
     nextorb       500
     no_active     0
@@ -36,8 +35,6 @@ load symmetry        ras1022_SDT_pVQZ_symmetry.sym
     sr_tau        0.03d0
     sr_eps        0.001d0
     sr_adiag      0.01d0
-    isample_cmat  0
-    energy_tol    0.0d0
 %endmodule
 
 %module optgeo

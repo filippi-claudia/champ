@@ -28,7 +28,6 @@ load symmetry        champ_v2_gamess_ci1010_SDT_pVTZ_symmetry.sym
     ioptjas       1
     ioptorb       1
     method        'sr_n'
-    multiple_adiag 0
     ncore         0
     nextorb       280
     no_active     0
@@ -37,8 +36,6 @@ load symmetry        champ_v2_gamess_ci1010_SDT_pVTZ_symmetry.sym
     sr_tau        0.025
     sr_eps        0.001
     sr_adiag      0.01
-    isample_cmat  0
-    energy_tol    0.0
 %endmodule
 
 %module blocking_vmc

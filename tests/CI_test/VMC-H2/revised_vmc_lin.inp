@@ -28,7 +28,6 @@ load jastrow_der     jastrow.der
     ioptjas       1
     ioptorb       0
     method        'lin_d'
-    multiple_adiag 0
     ncore         0
     nextorb       280
     nblk_max      400
@@ -39,8 +38,6 @@ load jastrow_der     jastrow.der
     lin_jdav    1
     lin_nvec    2
     lin_nvecx   10
-    isample_cmat  0
-    energy_tol    0.0d0
 %endmodule
 
 %module blocking_vmc

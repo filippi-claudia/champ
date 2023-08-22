@@ -34,7 +34,6 @@ load jastrow_der     jastrow.der
     ioptjas       1
     ioptorb       1
     method        'sr_n'
-    multiple_adiag 0
     ncore         0
     nextorb       280
     nblk_max      200
@@ -43,8 +42,6 @@ load jastrow_der     jastrow.der
     sr_tau        0.05
     sr_eps        0.001
     sr_adiag      0.01
-    isample_cmat  0
-    energy_tol    0.0
 %endmodule
 
 %module vmc
