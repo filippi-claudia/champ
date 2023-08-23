@@ -1087,15 +1087,6 @@ subroutine parser
     nstates = 1
     ncsf = 0
     if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
-
-    if( (method(1:3) == 'lin')) then
-      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, 3))
-    else
-      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
-    endif
-    do j = 1, ndet
-      ccsf(j,1,1) = cdet(j,1,1)
-    enddo
   endif
 
   if(.not. allocated(maxcsf)) allocate(maxcsf(MSTATES))
