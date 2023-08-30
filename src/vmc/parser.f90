@@ -1078,7 +1078,7 @@ subroutine parser
 
   if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
     call read_csf_file(file_determinants)
-    if (ioptci .ne. 0) mxciterm = ncsf
+    if (ioptci .ne. 0 .and. ncsf .gt. 0 ) mxciterm = ncsf
   elseif (fdf_block('csf', bfdf)) then
     call fdf_read_csf_block(bfdf)
     if (ioptci .ne. 0) mxciterm = ncsf
@@ -1089,9 +1089,9 @@ subroutine parser
     if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
 
     if( (method(1:3) == 'lin')) then
-      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, 3))
+      if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3))
     else
-      if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
+      if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
     endif
     do j = 1, ndet
       ccsf(j,1,1) = cdet(j,1,1)

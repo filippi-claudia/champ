@@ -249,12 +249,24 @@ subroutine multideterminants_define(iflag, icheck)
         enddo
     endif
 
-    do icsf = 1, ncsf
-        do j = iadet(icsf), ibdet(icsf)
-            k = icxdet(j)
-            cxdet(j) = cxdet(j)*(-1)**itotphase(k)
-        enddo
-    enddo
+    if(ncsf.gt.0) then
+      do icsf = 1, ncsf
+          do j = iadet(icsf), ibdet(icsf)
+              k = icxdet(j)
+              cxdet(j) = cxdet(j)*(-1)**itotphase(k)
+          enddo
+      enddo
+
+     else
+
+    ! Not sure that is needed
+      do icsf = 1, ndet
+          do j = iadet(icsf), ibdet(icsf)
+              k = icxdet(j)
+              cxdet(j) = cxdet(j)*(-1)**itotphase(k)
+          enddo
+      enddo
+    endif
 
     
     !reshufling arrays to avoid redundancy of unequivalent determinats

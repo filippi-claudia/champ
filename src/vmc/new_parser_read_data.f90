@@ -1198,7 +1198,7 @@ subroutine read_csf_file(file_determinants)
             call fatal_error (" Provide CSF information for multiple states. Exiting!")
         endif
 
-        ncsf = ndet
+        ncsf = 0
         if((method.eq.'sr_n'.and.ioptci.eq.1)) then
             if (nstates.ne.nstoj_tot.or.nstates.ne.nstoo_tot) then
                 call fatal_error (" determinant file: number of states found do not match those in jastrow and lcao. ")
@@ -1212,11 +1212,10 @@ subroutine read_csf_file(file_determinants)
         else
             if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
         endif
-
-
         do j = 1, ndet
             ccsf(j,1,1) = cdet(j,1,1)
         enddo
+
         ! printing
         write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
         write(ounit,int_format) " Number of states (nstates) ", nstates
@@ -1345,7 +1344,7 @@ subroutine read_csfmap_file(file_determinants)
         if (.not. allocated(ibdet)) allocate (ibdet(ndet))
         if (.not. allocated(icxdet)) allocate (icxdet(nmap))
 
-        do i = 1, ncsf
+        do i = 1, ndet
             iadet(i) = i
             ibdet(i) = i
             icxdet(i) = i
