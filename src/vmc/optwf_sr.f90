@@ -645,7 +645,7 @@ contains
         real(dp) :: sr_adiag, dum, aux2, smax, penalty
         real(dp), parameter :: eps_eigval=1.d-14
 
-        integer :: jwtg, jfifj, jfjsi = 42, n_obs, istate, jstate, iconf, i, ier, k, kk, n_obs_reduce
+        integer :: jwtg, jfifj, jfjsi, n_obs, istate, jstate, iconf, i, ier, k, kk, n_obs_reduce
 
         allocate (obs(mobs, MSTATES))
 
