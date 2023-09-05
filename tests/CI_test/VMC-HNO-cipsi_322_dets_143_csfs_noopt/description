@@ -13,13 +13,19 @@ nitroxyl (HNO) molecule. The output file is provided:
 
 The MCSCF orbitals were used in a 2-state CIPSI 
 calculation in QUANTUM PACKAGE. The output file is
-provided in the tgz:
+provided:
 
 './conversion/cas129_b3lyp_BFD-dan-normf0-525475-2to300.ezfio.tar.gz'
+
+use:
+
+'tar -xzvf cas129_b3lyp_BFD-dan-normf0-525475-2to300.ezfio.tar.gz'
+
+to extract
 
 The CI(322)/CSF(143) expansions from QUANTUM PACKAGE,
 MCSCF orbitals from GAMESS, and a jastrow were then
 optimized extensively using the VMC state-specific 
 sr_n method. These optimized parameters are used as
-the input wave functions here.
+the input wave functions for this test.
 

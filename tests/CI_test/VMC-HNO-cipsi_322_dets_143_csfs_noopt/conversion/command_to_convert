@@ -8,5 +8,10 @@ trexio convert-from -t gamess -i cas129_b3lyp_BFD-dan-normf0.out -b hdf5 -x MCSC
 # The GAMESS lcao were previously optimized using VMC 
 # and are the ones provided in start.orb
 
+qp run save_for_champ cas129_b3lyp_BFD-dan-normf0-525475-2to300.ezfio
+
+# This provides the det/csf input for the initial cipsi wave functions
+# These are not the starting det/csf used in this test.
+
 # See '../description' for more information on the calculation.
 
