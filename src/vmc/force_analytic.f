@@ -362,7 +362,7 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine force_analy_fin(wcum,iblk,eave)
+      subroutine force_analy_fin(wcum,iblk_eff,eave)
 
       use da_energy_sumcum, only: da_energy_cm2,da_energy_cum,da_psi_cum
       use force_pth, only: PTH
@@ -374,6 +374,7 @@ c-----------------------------------------------------------------------
 
       implicit none
 
+      real(dp) :: iblk_eff
       integer :: iblk, ic, k, iph
       real(dp) :: eave, rtpass, wcum, x
       real(dp) :: x2
@@ -383,6 +384,8 @@ c-----------------------------------------------------------------------
 
       rtpass=dsqrt(wcum)
 
+      ! write(ounit, *) 'iblk_eff in force_analy_fin is ', iblk_eff
+
       open(80,file='force_analytic',form='formatted',status='unknown')
       do iph=1,PTH
         do ic=1,ncent
@@ -391,12 +394,12 @@ c-----------------------------------------------------------------------
               da_energy_ave(k,ic,iph)=(da_energy_cum(k,ic,iph)-2*eave*da_psi_cum(k,ic,iph)-eave*da_branch_cum(k,ic,iph))/wcum
               x = da_energy_ave(k,ic,iph)
               x2 = da_energy_cm2(k,ic,iph)
-              da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
+              da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk_eff)
             else
               da_energy_ave(k,ic,iph)=(da_energy_cum(k,ic,iph)-2*eave*da_psi_cum(k,ic,iph))/wcum
               x = da_energy_ave(k,ic,iph)
               x2 = da_energy_cm2(k,ic,iph)
-              da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
+              da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk_eff)
             endif
               !write(*,*) 'da_energy_ave', da_energy_ave(k,ic)
           enddo

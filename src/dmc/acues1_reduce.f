@@ -159,7 +159,7 @@ c     efin=egcum1(1)/wgcum1(1)
       call optx_jas_ci_fin(wgcum1(1),efin)
       call optx_jas_orb_fin(wgcum1(1),egcum1(1))
       call optx_orb_ci_fin(wgcum1(1),efin)
-      if(wid) call force_analy_fin(wgcum(1),iblk,efin)
+      if(wid) call force_analy_fin(wgcum(1),rn_eff,efin)
 
       return
       end
