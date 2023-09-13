@@ -9,23 +9,27 @@ c Written by Cyrus Umrigar
       use config,  only: xold_dmc
       use dmc_mod, only: MWALK
       use error,   only: fatal_error
+      use force_pth, only: PTH
       use jacobsave, only: ajacold
       use mmpol_dmc, only: mmpol_splitj
       use multiple_geo, only: nforce,nwprod
+      use m_force_analytic, only: iforce_analy
       use pcm_dmc, only: pcm_splitj
       use precision_kinds, only: dp
       use prop_dmc, only: prop_splitj
       use random_mod, only: random_dp
       use stats,   only: nbrnch
-      use system,  only: nelec
+      use system,  only: nelec, ncent
+      use vd_mod, only: esnake, ehist, deriv_eold, dmc_ivd
       use velratio, only: fratio,xdrifted
       use walksav_det_mod, only: splitjdet
       use walksav_jas_mod, only: splitjjas
+      use pathak_mod, only: pold
 
 
       implicit none
 
-      integer :: i, ifr, ip, ipair, iunder
+      integer :: i, ifr, ip, ipair, iunder, ic, iph
       integer :: iw, iw2, j, k
       integer :: nwalk2
       integer, dimension(MWALK) :: iwundr
@@ -88,6 +92,30 @@ c         call t_vpsp_splitj(iw,iw2)
           call prop_splitj(iw,iw2)
           call pcm_splitj(iw,iw2)
           call mmpol_splitj(iw,iw2)
+          if(iforce_analy.eq.1) then
+            if(dmc_ivd.gt.0) then
+              do iph=1,PTH
+                pold(iw2,iph)=pold(iw,iph)
+                do ic=1,ncent
+                  do k=1,3
+                    esnake(k,ic,iw2,iph)=esnake(k,ic,iw,iph)
+                    do ip=0,nwprod-1
+                      ehist(k,ic,iw2,ip,iph)=ehist(k,ic,iw,ip,iph)
+                    enddo
+                  enddo
+                enddo
+              enddo
+              do ic=1,ncent
+                do k=1,3
+                  deriv_eold(k,ic,iw2)=deriv_eold(k,ic,iw)
+                enddo
+              enddo
+            else                
+              do iph=1,PTH
+                pold(iw2,iph)=pold(iw,iph)
+              enddo
+            endif
+          endif
           do ifr=1,nforce
             ajacold(iw2,ifr)=ajacold(iw,ifr)
             eold(iw2,ifr)=eold(iw,ifr)
@@ -123,6 +151,30 @@ c       call t_vpsp_splitj(iw,iw2)
         call prop_splitj(iw,iw2)
         call pcm_splitj(iw,iw2)
         call mmpol_splitj(iw,iw2)
+
+        if(iforce_analy.eq.1) then
+          if(dmc_ivd.gt.0) then
+            do iph=1,PTH
+              do ic=1,ncent
+                do k=1,3
+                  esnake(k,ic,iw2,iph)=esnake(k,ic,iw,iph)
+                  do ip=0,nwprod-1
+                    ehist(k,ic,iw2,ip,iph)=ehist(k,ic,iw,ip,iph)
+                  enddo
+                enddo
+             enddo
+            enddo
+            do ic=1,ncent
+              do k=1,3
+                deriv_eold(k,ic,iw2)=deriv_eold(k,ic,iw)
+              enddo
+            enddo
+          else
+            do iph=1,PTH
+              pold(iw2,iph)=pold(iw,iph)
+            enddo
+          endif
+        endif
         do ifr=1,nforce
           ajacold(iw2,ifr)=ajacold(iw,ifr)
           eold(iw2,ifr)=eold(iw,ifr)

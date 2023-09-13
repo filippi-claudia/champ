@@ -95,6 +95,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use estsum,  only: tausum,tpbsum_dmc,wfsum1,wgsum1
       use estsum,  only: wsum1
       use force_analytic, only: force_analy_sum, force_analy_save
+      use force_pth, only: PTH
       use gauss_mod, only: gauss
       use general, only: write_walkalize
       use hpsi_mod, only: hpsi
@@ -132,11 +133,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use walksav_jas_mod, only: walksav_jas,walkstrjas
       use optwf_handle_wf, only: optwf_store
       use vd_mod,         only: dmc_ivd, da_branch, deriv_eold, esnake, ehist
-      use mpitimer, only: elapsed_time
+      use pathak_mod, only: ipathak, eps_pathak, pold, pnew, pathak
       
       implicit none
 
-      integer :: i, iaccept, iel, ic
+      integer :: i, iaccept, iel, ic, iph
       integer :: iflag_dn, iflag_up, ifr, ii
       integer :: imove, ipmod, ipmod2, iw, irun
       integer :: iwmod, j, jel, k, lpass
@@ -697,34 +698,60 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
               derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*(pwt(iw,ifr)+psi2savo)
             endif
 
-            !
-            ! if (iforce_analy .eq. 1) then
-            !   if(ecutn.eq.e_cutoff) deriv_energy_new = zero
-            !   if(ecuto.eq.e_cutoff) then
-            !     do ic=1,ncent
-            !       do k=1,3
-            !         deriv_eold(k,ic,iw)=zero
-            !       enddo
-            !     enddo
-            !   endif
-            !   ! Loop over the atom
-            !   do ic = 1, ncent
-            !     ! Loop over cartesian coordinates
-            !     do k = 1, 3
-            !       ! write(ounit,*) 'one.. ',deriv_energy_new(k,ic)
-            !       write(ounit,*) 'two.. ',deriv_eold(k,ic,iw)
-            !       ! write(ounit,*) 'three.. ',ehist(k,ic,iw,iwmod)
-            !       call elapsed_time ('before forces1')
-            !       esnake(k,ic,iw) = esnake(k,ic,iw) + deriv_energy_new(k,ic) + deriv_eold(k,ic,iw) - ehist(k,ic,iw,iwmod)
-            !       call elapsed_time ('before forces2')
-            !       ehist(k,ic,iw,iwmod) = deriv_eold(k,ic,iw) + deriv_energy_new(k,ic)
-            !       call elapsed_time ('before forces3')
-            !       da_branch(k,ic)=-half*tau*esnake(k,ic,iw)
-            !       call elapsed_time ('before forces4')
-            !       deriv_eold(k,ic,iw) = deriv_energy_new(k,ic)
-            !     enddo
-            !   enddo
-            ! endif
+            if(iforce_analy.eq.1) then
+              if (ipathak.gt.0) then
+                call nodes_distance(vold_dmc(1,1,iw,ifr),distance_node,1)
+                do iph=1,PTH
+                  call pathak(distance_node,pnew(iph),eps_pathak(iph))
+                enddo
+              endif
+              if (dmc_ivd.gt.0) then  
+                if(ecutn.eq.e_cutoff) deriv_energy_new=zero
+                if(ecuto.eq.e_cutoff) then
+                  do ic=1,ncent
+                    do k=1,3
+                      deriv_eold(k,ic,iw)=zero
+                    enddo
+                  enddo
+                endif
+
+                do iph=1,PTH
+                  if (ipathak.gt.0) then 
+                    do ic=1,ncent
+                      do k=1,3                           
+                        esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
+     &+deriv_eold(k,ic,iw)*pold(iw,iph)-ehist(k,ic,iw,iwmod,iph)
+                        ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)*pold(iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
+
+                        da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
+                      enddo
+                    enddo                   
+                  else                        
+                    do ic=1,ncent
+                      do k=1,3                           
+                        esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)
+     &+deriv_eold(k,ic,iw)-ehist(k,ic,iw,iwmod,iph)
+
+                        ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)+deriv_energy_new(k,ic)
+
+                        da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
+                      enddo
+                    enddo
+                  endif
+                enddo
+
+                do ic=1,ncent
+                  do k=1,3
+                    deriv_eold(k,ic,iw)=deriv_energy_new(k,ic)
+                  enddo
+                enddo
+              endif
+              if (ipathak.gt.0) then
+                do iph=1,PTH
+                  pold(iw,iph)=pnew(iph)
+                enddo
+              endif
+            endif
 
             call prop_sum_dmc(0.d0,wtg(1),iw)
             call pcm_sum(0.d0,wtg(1),iw)

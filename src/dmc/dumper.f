@@ -29,6 +29,7 @@ c job where it left off
       use estcum,  only: r2cum_dmc,ricum,taucum,tpbcum_dmc
       use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
       use estcum,  only: wgcum1,wgdcum
+      use force_analytic, only: force_analy_dump
       use jacobsave, only: ajacob
       use mmpol,   only: mmpol_dump
       use mpi
@@ -201,6 +202,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       call prop_dump(10)
       call pcm_dump(10)
       call mmpol_dump(10)
+      call force_analy_dump(10)
       write(10) ((coef(ib,i,1),ib=1,nbasis),i=1,norb)
       write(10) nbasis
       write(10) (zex(ib,1),ib=1,nbasis)

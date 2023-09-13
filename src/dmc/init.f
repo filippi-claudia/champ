@@ -16,6 +16,8 @@ c routine to accumulate estimators for energy etc.
       use determinante_mod, only: compute_determinante_grad
       use dmc_mod, only: MFPRD1
       use estcum,  only: ipass
+      use force_pth, only: PTH
+      use force_analytic, only: force_analy_save
       use hpsi_mod, only: hpsi
       use jacobsave, only: ajacob,ajacold
       use mmpol_dmc, only: mmpol_save
@@ -24,6 +26,7 @@ c routine to accumulate estimators for energy etc.
       use mpitimer, only: elapsed_time
       use multiple_geo, only: istrech,nforce,nwprod,pecent
       use m_force_analytic, only: iforce_analy
+      use nodes_distance_mod,   only: nodes_distance
       use nonloc_grid_mod, only: t_vpsp_sav
       use pcm_dmc, only: pcm_save
       use pot,     only: pot_nn
@@ -38,17 +41,20 @@ c routine to accumulate estimators for energy etc.
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
       use zerest_mod, only: zerest
+      use pathak_mod, only: init_eps_pathak, pathak
+      use pathak_mod, only: ipathak, eps_pathak, pold
 !      use contrl, only: nconf
 
 
       implicit none
 
       integer :: i, ie, ifr, ip, iw, ic
-      integer :: k
+      integer :: k, iph
 
       real(dp) :: ekino(1)
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
+      real(dp) :: distance_node
 
 
 c Initialize various quantities at beginning of run
@@ -105,6 +111,33 @@ c           call t_vpsp_sav(iw)
             call prop_save_dmc(iw)
             call pcm_save(iw)
             call mmpol_save(iw)
+            if(iforce_analy.eq.1) then
+              call force_analy_save
+              if(ipathak.gt.0) then
+                call init_eps_pathak()
+                call nodes_distance(vold_dmc(1,1,iw,ifr), distance_node, 1)
+              endif
+              if(dmc_ivd.gt.0) then
+                do iph=1,PTH
+                  do ic=1,ncent
+                    do k=1,3
+                      esnake(k,ic,iw,iph)=zero
+                      do ip=0,nwprod-1
+                        ehist(k,ic,iw,ip,iph)=zero
+                      enddo
+                    enddo
+                  enddo       
+                enddo
+                do ic=1,ncent
+                  do k=1,3
+                    deriv_eold(k,ic,iw)=da_energy(k,ic)
+                  enddo
+                enddo           
+              endif
+              do iph=1,PTH
+                if(ipathak.gt.0) call pathak(distance_node,pold(iw,iph),eps_pathak(iph))
+              enddo
+            endif
           endif
           pwt(iw,ifr)=0
           do ip=0,nwprod-1
@@ -113,23 +146,6 @@ c           call t_vpsp_sav(iw)
         enddo
       enddo
 
-      if(iforce_analy.eq.1) then
-        if(dmc_ivd.gt.0) then
-          do ic=1,ncent
-             do k=1,3
-                esnake(k,ic,iw)=0.d0
-                do ip=0,nwprod-1
-                   ehist(k,ic,iw,ip)=0.d0
-                enddo
-             enddo
-          enddo       
-          do ic=1,ncent
-            do k=1,3
-              deriv_eold(k,ic,iw)=da_energy(k,ic)
-            enddo
-          enddo           
-        endif
-      endif
 
       if(mode.eq.'dmc_one_mpi2') dmc_nconf=dmc_nconf*nproc
       wdsumo=dmc_nconf

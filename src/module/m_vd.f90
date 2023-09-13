@@ -3,16 +3,17 @@ module vd_mod
     use system, only: ncent_tot
     use dmc_mod, only: mwalk
     use multiple_geo, only: MFORCE_WT_PRD
+    use force_pth, only: PTH
   
     implicit none
   
     integer :: dmc_ivd
-    real(dp), dimension(:, :), allocatable :: da_branch !(3, MCENT, PTH)
-    real(dp), dimension(:, :), allocatable :: da_branch_sum !(3, MCENT, PTH)
-    real(dp), dimension(:, :), allocatable :: da_branch_cum !(3, MCENT, PTH)
-    real(dp), dimension(:, :, :), allocatable :: esnake !(3, MCENT, MWALK, PTH)
+    real(dp), dimension(:, :, :), allocatable :: da_branch !(3, MCENT, PTH)
+    real(dp), dimension(:, :, :), allocatable :: da_branch_sum !(3, MCENT, PTH)
+    real(dp), dimension(:, :, :), allocatable :: da_branch_cum !(3, MCENT, PTH)
+    real(dp), dimension(:, :, :, :), allocatable :: esnake !(3, MCENT, MWALK, PTH)
     real(dp), dimension(:, :, :), allocatable :: deriv_eold !(3, MCENT, MWALK)
-    real(dp), dimension(:, :, :, :), allocatable :: ehist !(3, MCENT, MWALK, 0:MFORCE_WT_PRD, PTH)
+    real(dp), dimension(:, :, :, :, :), allocatable :: ehist !(3, MCENT, MWALK, 0:MFORCE_WT_PRD, PTH)
     
     private
     public :: dmc_ivd
@@ -22,12 +23,12 @@ module vd_mod
 contains
     subroutine allocate_da_branch()
       if (dmc_ivd.gt.0) then
-         if (.not. allocated(da_branch_cum)) allocate (da_branch_cum(3, ncent_tot))
-         if (.not. allocated(da_branch_sum)) allocate (da_branch_sum(3, ncent_tot))
-         if (.not. allocated(da_branch)) allocate (da_branch(3, ncent_tot))
-         if (.not. allocated(esnake)) allocate (esnake(3, ncent_tot, mwalk))
+         if (.not. allocated(da_branch_cum)) allocate (da_branch_cum(3, ncent_tot, PTH))
+         if (.not. allocated(da_branch_sum)) allocate (da_branch_sum(3, ncent_tot, PTH))
+         if (.not. allocated(da_branch)) allocate (da_branch(3, ncent_tot, PTH))
+         if (.not. allocated(esnake)) allocate (esnake(3, ncent_tot, mwalk, PTH))
          if (.not. allocated(deriv_eold)) allocate (deriv_eold(3, ncent_tot, mwalk))
-         if (.not. allocated(ehist)) allocate (ehist(3, ncent_tot, mwalk, 0:MFORCE_WT_PRD))
+         if (.not. allocated(ehist)) allocate (ehist(3, ncent_tot, mwalk, 0:MFORCE_WT_PRD, PTH))
       endif
     end subroutine allocate_da_branch
   

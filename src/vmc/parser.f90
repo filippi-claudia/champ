@@ -105,6 +105,8 @@ subroutine parser
       use optwf_handle_wf, only: set_nparms_tot
       use optwf_parms, only: nparmj
       use orbval,  only: ddorb,dorb,nadorb,ndetorb,orb
+      use pathak_mod, only: ipathak, eps_max, deps
+      use pathak_mod, only: init_pathak
       use parser_read_data, only: header_printing
       use parser_read_data, only: read_basis_num_info_file,read_csf_file
       use parser_read_data, only: read_csfmap_file
@@ -155,6 +157,7 @@ subroutine parser
       use system,  only: atomtyp,cent,iwctype,ncent,ncent_tot,nctype
       use system,  only: nctype_tot,ndn,nelec,newghostype,nghostcent,nup
       use system,  only: symbol,znuc
+      use vd_mod, only: dmc_ivd
       use verify_orbitals_mod, only: verify_orbitals
       use vmc_mod, only: mterms,norb_tot
       use vmc_mod, only: nwftypejas,stoj,jtos,nstoj_tot,nstojmax,extraj
@@ -429,6 +432,11 @@ subroutine parser
   nfprod      = fdf_get('nfprod', 100)
   itausec     = fdf_get('itausec', 1)
   icasula     = fdf_get('icasula', 0)
+  dmc_ivd     = fdf_get('dmc_ivd', 0)
+  ipathak     = fdf_get('ipathak', 0)
+  call init_pathak()
+  eps_max     = fdf_get('eps_max', 0.d0)
+  deps        = fdf_get('deps', 0.d0) 
 
 ! %module dmc / blocking_dmc (complete)
   dmc_nstep     = fdf_get('dmc_nstep', 1)
