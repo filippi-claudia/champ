@@ -4,6 +4,7 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
+      use system, only: ncent
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wtgen,wthist
       use casula,  only: i_vpsp,icasula
@@ -11,6 +12,7 @@ c routine to accumulate estimators for energy etc.
       use const,   only: etrial,esigmatrial
       use control, only: mode
       use control_dmc, only: dmc_nconf
+      use da_energy_now, only: da_energy
       use determinante_mod, only: compute_determinante_grad
       use dmc_mod, only: MFPRD1
       use estcum,  only: ipass
@@ -19,7 +21,9 @@ c routine to accumulate estimators for energy etc.
       use mmpol_dmc, only: mmpol_save
       use mpi
       use mpiconf, only: nproc
+      use mpitimer, only: elapsed_time
       use multiple_geo, only: istrech,nforce,nwprod,pecent
+      use m_force_analytic, only: iforce_analy
       use nonloc_grid_mod, only: t_vpsp_sav
       use pcm_dmc, only: pcm_save
       use pot,     only: pot_nn
@@ -30,6 +34,7 @@ c routine to accumulate estimators for energy etc.
       use rotqua_mod, only: gesqua
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,znuc
+      use vd_mod, only: deriv_eold, esnake, ehist, dmc_ivd
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
       use zerest_mod, only: zerest
@@ -38,7 +43,7 @@ c routine to accumulate estimators for energy etc.
 
       implicit none
 
-      integer :: i, ie, ifr, ip, iw
+      integer :: i, ie, ifr, ip, iw, ic
       integer :: k
 
       real(dp) :: ekino(1)
@@ -107,6 +112,24 @@ c           call t_vpsp_sav(iw)
           enddo
         enddo
       enddo
+
+      if(iforce_analy.eq.1) then
+        if(dmc_ivd.gt.0) then
+          do ic=1,ncent
+             do k=1,3
+                esnake(k,ic,iw)=0.d0
+                do ip=0,nwprod-1
+                   ehist(k,ic,iw,ip)=0.d0
+                enddo
+             enddo
+          enddo       
+          do ic=1,ncent
+            do k=1,3
+              deriv_eold(k,ic,iw)=da_energy(k,ic)
+            enddo
+          enddo           
+        endif
+      endif
 
       if(mode.eq.'dmc_one_mpi2') dmc_nconf=dmc_nconf*nproc
       wdsumo=dmc_nconf

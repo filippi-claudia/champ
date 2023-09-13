@@ -1,8 +1,10 @@
       module move_walker
       use age,     only: iage
+      use system,    only: ncent
       use branch,  only: eold,nwalk,pwt,wt,wthist
       use config,  only: d2o,peo_dmc,psido_dmc,psijo_dmc,vold_dmc
       use config,  only: xold_dmc
+      use m_force_analytic, only: iforce_analy
       use jacobsave, only: ajacold
       use mmpol_reduce_mod, only: mmpol_recv,mmpol_send
       use mpi
@@ -10,6 +12,7 @@
       use pcm_reduce_mod, only: pcm_recv,pcm_send
       use prop_reduce_mod, only: prop_recv,prop_send
       use system,  only: nelec
+      use vd_mod, only: ehist, esnake, deriv_eold, dmc_ivd
       use velratio, only: fratio
       contains
       subroutine send_walker(irecv)
@@ -64,6 +67,19 @@ c     call send_jas(itag,irecv)
 
 c     nwalk=nwalk-1
 
+      ! if(iforce_analy.eq.1) then
+      !   if(dmc_ivd.gt.0) then
+      !     itag=itag+1
+      !     call mpi_isend(deriv_eold(1,1,nwalk),3*ncent,mpi_double_precision,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
+      !     itag=itag+1
+      !     call mpi_isend(esnake(1,1,nwalk,1),3*ncent,mpi_double_precision,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
+      !     do  ip=0,nwprod-1
+      !       itag=itag+1
+      !       call mpi_isend(ehist(1,1,nwalk,ip,1),3*ncent,mpi_double_precision,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
+      !     enddo
+      !   endif
+      ! endif
+
       call prop_send(irecv,itag)
       call pcm_send(irecv,itag)
       call mmpol_send(irecv,itag)
@@ -116,6 +132,19 @@ c     nwalk=nwalk+1
 
 c     call recv_det(itag,isend)
 c     call recv_jas(itag,isend)
+
+      ! if(iforce_analy.eq.1) then
+      !   if(dmc_ivd.gt.0) then            
+      !     itag=itag+1
+      !     call mpi_recv(deriv_eold(1,1,nwalk),3*ncent,mpi_double_precision,isend,itag,MPI_COMM_WORLD,istatus,ierr)
+      !     itag=itag+1
+      !     call mpi_recv(esnake(1,1,nwalk,1),3*ncent,mpi_double_precision,isend,itag,MPI_COMM_WORLD,istatus,ierr)
+      !     do ip=0,nwprod-1
+      !      itag=itag+1
+      !      call mpi_recv(ehist(1,1,nwalk,ip,1),3*ncent,mpi_double_precision,isend,itag,MPI_COMM_WORLD,istatus,ierr)
+      !     enddo
+      !   endif
+      ! endif
 
       call prop_recv(isend,itag)
       call pcm_recv(isend,itag)

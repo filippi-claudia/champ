@@ -107,6 +107,7 @@ contains
       use estsum,  only: allocate_estsum_dmc
       use jacobsave, only: allocate_jacobsave
       use velratio, only: allocate_velratio
+      use vd_mod, only: allocate_da_branch
 
     implicit none
   
@@ -124,6 +125,7 @@ contains
     call allocate_c_averages_index()
     call allocate_jacobsave()
     call allocate_velratio()
+    call allocate_da_branch()
   
   end subroutine allocate_dmc
   
@@ -140,6 +142,7 @@ contains
       use estsum,  only: deallocate_estsum_dmc
       use jacobsave, only: deallocate_jacobsave
       use velratio, only: deallocate_velratio
+      use vd_mod, only: deallocate_da_branch
 
     !> Deallocate dmc-related arrays:
   
@@ -155,6 +158,7 @@ contains
     call deallocate_c_averages_index()
     call deallocate_jacobsave()
     call deallocate_velratio()
+    call deallocate_da_branch()
   
   end subroutine deallocate_dmc
 end module allocation_mod

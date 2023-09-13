@@ -11,7 +11,7 @@
       use estcum, only: wcum1, wfcum1, wgcum, wgcum1
       use est2cm, only: ecm21_dmc, efcm21, egcm21
       use est2cm, only: wcm21
-      use est2cm, only: wfcm21, wgcm21
+      use est2cm, only: wfcm21, wgcm21, wgcm2
       use step, only: rprob
       use mpiconf, only: nproc, wid
       use control, only: mode
@@ -39,6 +39,8 @@
       use stats,   only: acc,nacc,nodecr,trymove
       use step,    only: rprob
       use vmc_mod, only: nrad
+      use force_analytic, only: force_analy_fin
+      use force_analy_reduce_mod, only: force_analy_reduce
 
 
       implicit none
@@ -48,6 +50,7 @@
       real(dp) :: e1collect, e21collect, w1collect, w21collect, ef1collect
       real(dp) :: ef21collect, wf1collect, wf21collect, trymove_collect
       real(dp) :: acc_collect, efin
+      real(dp) :: rn_eff
 
       real(dp), dimension(MFORCE) :: eg1collect
       real(dp), dimension(MFORCE) :: eg21collect
@@ -130,6 +133,7 @@ c Collect radial charge density for atoms
       call optx_jas_orb_reduce
       call optx_jas_ci_reduce
       call optx_orb_ci_reduce
+      call force_analy_reduce
 
       if(wid) then
         do id=1,nproc-1
@@ -147,6 +151,7 @@ c Collect radial charge density for atoms
 
 c     efin=egcum1(1)/wgcum1(1)
       efin=egcum(1)/wgcum(1)
+      rn_eff=(wgcum(1)**2/wgcm2(1))-1.d0
 
       call optjas_fin(wgcum1(1),egcum1(1))
       call optci_fin(iblk,wgcum1(1),efin)
@@ -154,6 +159,7 @@ c     efin=egcum1(1)/wgcum1(1)
       call optx_jas_ci_fin(wgcum1(1),efin)
       call optx_jas_orb_fin(wgcum1(1),egcum1(1))
       call optx_orb_ci_fin(wgcum1(1),efin)
+      if(wid) call force_analy_fin(wgcum(1),iblk,efin)
 
       return
       end

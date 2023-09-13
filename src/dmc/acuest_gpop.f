@@ -18,6 +18,7 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: ecm2_dmc, efcm2, egcm2, ei1cm2, ei2cm2
       use est2cm, only: pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2
       use est2cm, only: wfcm2, wgcm2
+      use force_analytic, only: force_analy_init
       use derivest, only: derivcum, derivsum
       use mpiconf, only: wid
 !      use contrl, only: nstep
@@ -258,6 +259,7 @@ c zero out xsum variables for metrop
       call prop_init(1)
       call pcm_init(1)
       call mmpol_init(1)
+      call force_analy_init(1)
 
       return
       contains

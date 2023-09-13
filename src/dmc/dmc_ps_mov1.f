@@ -1,5 +1,33 @@
       module dmc_ps_mov1
       contains
+
+      ! subroutine dmc_velocity(iw, ifr, adrif, tratio, vav2sum, v2sum)
+
+      !   use config,  only: vold_dmc
+      !   use contrldmc, only: tau
+      !   use system,  only: nelec
+
+      !   implicit none
+
+      !   real(dp) :: v2old, vavvt, vavvn
+
+      !   vav2sum = 0.d0
+      !   v2sum = 0.d0
+      !   do i=1,nelec
+      !     v2old = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2
+      !     & + vold_dmc(3,i,iw,ifr)**2
+      !     vavvt = (dsqrt(1.d0+2.d0*adrift*v2old*tau*tratio)-1.d0)/
+      !     & (adrift*v2old)
+      !     vavvn = vavvt/(tau*tratio)
+
+      !     vav2sum = vav2sumn + vavvn**2 * v2old
+      !     v2sum = v2sum + v2old
+
+      !   enddo
+      ! endsubroutine
+
+
+
       subroutine dmc_ps(lpass,irun)
 c Written by Cyrus Umrigar and Claudia Filippi
 c Uses the diffusion Monte Carlo algorithm described in:
@@ -43,6 +71,7 @@ c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use age,     only: iage,ioldest,ioldestmx
+      use system,    only: ncent
       use averages, only: average
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
@@ -56,6 +85,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use contrldmc, only: nfprod,rttau,tau
       use control, only: ipr
       use control_dmc, only: dmc_irstar,dmc_nconf
+      use da_energy_now, only: da_energy
       use derivest, only: derivsum
       use determinante_mod, only: compute_determinante_grad
       use detsav_mod, only: detsav
@@ -64,6 +94,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use estsum,  only: efsum1,egsum1,esum1_dmc,pesum_dmc,r2sum,risum
       use estsum,  only: tausum,tpbsum_dmc,wfsum1,wgsum1
       use estsum,  only: wsum1
+      use force_analytic, only: force_analy_sum, force_analy_save
       use gauss_mod, only: gauss
       use general, only: write_walkalize
       use hpsi_mod, only: hpsi
@@ -76,6 +107,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use multideterminant_mod, only: update_ymat
       use multideterminant_tmove_mod, only: multideterminant_tmove
       use multiple_geo, only: istrech,itausec,nforce,nwprod
+      use m_force_analytic, only: iforce_analy
       use nodes_distance_mod, only: nodes_distance,rnorm_nodes_num
       use nonloc_grid_mod, only: nonloc_grid,t_vpsp_get,t_vpsp_sav
       use optci_mod, only: optci_sum
@@ -99,10 +131,12 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use walksav_det_mod, only: walksav_det,walkstrdet
       use walksav_jas_mod, only: walksav_jas,walkstrjas
       use optwf_handle_wf, only: optwf_store
+      use vd_mod,         only: dmc_ivd, da_branch, deriv_eold, esnake, ehist
+      use mpitimer, only: elapsed_time
       
       implicit none
 
-      integer :: i, iaccept, iel
+      integer :: i, iaccept, iel, ic
       integer :: iflag_dn, iflag_up, ifr, ii
       integer :: imove, ipmod, ipmod2, iw, irun
       integer :: iwmod, j, jel, k, lpass
@@ -114,6 +148,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
       real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
       real(dp) :: drifdifr, drifdifs, drift, dwt
+      real(dp) :: ecuto, ecutn
       real(dp) :: dx, e_cutoff, dwt_cutoff, ekino(1), enew(1)
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, ginv
@@ -133,6 +168,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp), dimension(3) :: xbac
       real(dp), dimension(3, nelec) :: xdriftedn
       real(dp), dimension(nelec) :: unacp
+      real(dp), dimension(10, 3, ncent) :: deriv_esum
+      real(dp), dimension(3, ncent) :: deriv_energy_new
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
@@ -273,7 +310,7 @@ c     to initilialize pp
           call compute_determinante_grad(i,psido_dmc(iw,1),psido_dmc(iw,1),psijo_dmc(iw,1),vold_dmc(1,i,iw,1),1)
 
 c Use more accurate formula for the drift
-          v2old=vold_dmc(1,i,iw,1)**2+vold_dmc(2,i,iw,1)**2+vold_dmc(3,i,iw,1)**2
+          v2old=vold_dmc(1,i,iw,1)**2+vold_dmc(2,i,iw,1)**2+vold_dmc( 3,i,iw,1)**2
 c Tau primary -> tratio=one
           vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/(adrift*v2old)
 
@@ -442,13 +479,14 @@ c Primary configuration
             drifdifr=one
             if(nforce.gt.1)
      &      call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
-            call hpsi(xold_dmc(1,1,iw,1),psidn(1),psijn,ekino,enew,ipass,1)
+            call hpsi( xold_dmc(1,1,iw,1),psidn(1),psijn,ekino,enew,ipass,1)
             
             if(irun.eq.1) then
                wtg_sqrt(1)=dsqrt(wtg(1))
                call optwf_store(lpass,wtg(1),wtg_sqrt(1),psidn(1),enew(1))
             endif
 
+            deriv_energy_new=da_energy
             
             call walksav_det(iw)
             call walksav_jas(iw)
@@ -532,6 +570,8 @@ c Use more accurate formula for the drift and tau secondary in drift
            else
             deo=eest-eold(iw,ifr)
             den=eest-enew(1)
+            ecuto=min(e_cutoff,dabs(deo))
+            ecutn=min(e_cutoff,dabs(den))
             ewto=eest-sign(1.d0,deo)*min(e_cutoff,dabs(deo))
             ewtn=eest-sign(1.d0,den)*min(e_cutoff,dabs(den))
           endif
@@ -631,6 +671,7 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
           call prop_save_dmc(iw)
           call pcm_save(iw)
           call mmpol_save(iw)
+          call force_analy_save
 
           if(ifr.eq.1) then
             if(iaccept.eq.0) then
@@ -649,16 +690,46 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
             derivsum(1,ifr)=derivsum(1,ifr)+wtg(1)*eold(iw,ifr)
 
             if(idrifdifgfunc.gt.0) then
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,ifr)*pwt(iw,ifr)
+              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,ifr)*pwt( iw,ifr)
               derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*pwt(iw,ifr)
              else
               derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,ifr)*(pwt(iw,ifr)+psi2savo)
               derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*(pwt(iw,ifr)+psi2savo)
             endif
 
+            !
+            ! if (iforce_analy .eq. 1) then
+            !   if(ecutn.eq.e_cutoff) deriv_energy_new = zero
+            !   if(ecuto.eq.e_cutoff) then
+            !     do ic=1,ncent
+            !       do k=1,3
+            !         deriv_eold(k,ic,iw)=zero
+            !       enddo
+            !     enddo
+            !   endif
+            !   ! Loop over the atom
+            !   do ic = 1, ncent
+            !     ! Loop over cartesian coordinates
+            !     do k = 1, 3
+            !       ! write(ounit,*) 'one.. ',deriv_energy_new(k,ic)
+            !       write(ounit,*) 'two.. ',deriv_eold(k,ic,iw)
+            !       ! write(ounit,*) 'three.. ',ehist(k,ic,iw,iwmod)
+            !       call elapsed_time ('before forces1')
+            !       esnake(k,ic,iw) = esnake(k,ic,iw) + deriv_energy_new(k,ic) + deriv_eold(k,ic,iw) - ehist(k,ic,iw,iwmod)
+            !       call elapsed_time ('before forces2')
+            !       ehist(k,ic,iw,iwmod) = deriv_eold(k,ic,iw) + deriv_energy_new(k,ic)
+            !       call elapsed_time ('before forces3')
+            !       da_branch(k,ic)=-half*tau*esnake(k,ic,iw)
+            !       call elapsed_time ('before forces4')
+            !       deriv_eold(k,ic,iw) = deriv_energy_new(k,ic)
+            !     enddo
+            !   enddo
+            ! endif
+
             call prop_sum_dmc(0.d0,wtg(1),iw)
             call pcm_sum(0.d0,wtg(1),iw)
             call mmpol_sum(0.d0,wtg(1),iw)
+            call force_analy_sum(wtg(1),0.d0,eold(iw,1),0.0d0)
 
             call optjas_sum(wtg,zero_1d,eold(iw,1),eold(iw,1),0)
             call optorb_sum(wtg,zero_1d,eold(iw,1),eold(iw,1),0)

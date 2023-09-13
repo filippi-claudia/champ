@@ -183,7 +183,6 @@ c             call dmc_good
             call fatal_error('DMC: iabs(idmc) must be 1 or 2')
           endif
           call mc_configs_write(i,ipass)
-
           call acues1
         enddo
         call average(2)

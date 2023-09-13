@@ -33,6 +33,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use stats,   only: acc,nacc,nbrnch,nodecr,trymove
       use step,    only: rprob
       use vmc_mod, only: nrad
+      use force_analytic, only: force_analy_init
 
 
       implicit none
@@ -156,6 +157,8 @@ c Zero out estimators for charge density of atom.
       call prop_init(0)
       call pcm_init(0)
       call mmpol_init(0)
+
+      call force_analy_init(0)
 
       return
       end

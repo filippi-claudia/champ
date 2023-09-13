@@ -59,6 +59,7 @@ c routine to accumulate estimators for energy etc.
       use prop_reduce_mod, only: prop_reduce
       use properties_mod, only: prop_init
       use contrldmc, only: idmc
+      use force_analytic,   only: force_analy_init, force_analy_cum 
 
       implicit none
 
@@ -217,6 +218,7 @@ c xerr = current error of x
       call optjas_cum(wgsum(1),egnow)
       call optorb_cum(wgsum(1),egsum(1))
       call optci_cum(wgsum(1))
+      call force_analy_cum(wgsum(1),egcum(1)/wgcum(1),wgcum(1))
 
       call prop_reduce(wgsum(1))
       call pcm_reduce(wgsum(1))
@@ -366,6 +368,7 @@ c zero out xsum variables for metrop
       call prop_init(1)
       call pcm_init(1)
       call mmpol_init(1)
+      call force_analy_init(1)
 
       return
       contains
