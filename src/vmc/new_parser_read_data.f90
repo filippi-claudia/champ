@@ -768,13 +768,11 @@ subroutine read_jastrow_file(file_jastrow)
              enddo
              write(ounit, '(A)') "mparmjc : "
              write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
-             if (mparmjc .ne. 0) then 
-                 do it = 1, nctype
-                     read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
-                     !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
-                     write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
-                 enddo
-             endif
+             do it = 1, nctype
+                 read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+                 !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
+                 if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
+             enddo
           enddo
        endif
        call bcast(a4)
