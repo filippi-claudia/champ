@@ -83,10 +83,12 @@ contains
         call bcast(r0)
         call bcast(icusp)
 
+        if (wid) then 
         write(45,*) "Reading the content ", nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic),icusp(ic)
         write(45,*) "(Reading basis grid file = [ ",  trim(filename), " ] )"
         write(45,'(''center type '',i4,'' nrbas,igrid,nr,arg,r0 ='',2i4,i5,2f10.5)') &
         ic,nrbas(ic),igrid(ic),nr(ic),arg(ic),r0(ic)
+        endif 
 
         if(nrbas(ic).gt.MRWF) call fatal_error('READ_BAS_NUM: nrbas gt MRWF')
         if(nr(ic).gt.MRWF_PTS) call fatal_error('READ_BAS_NUM: nr gt MRWF_PTS')
@@ -171,18 +173,21 @@ contains
         endif
 
 ! c       if(ipr.gt.1) then
+          if (wid) then
           write(45,'(''basis = '',i4)') irb
           write(45,'(''check the small radius expansion'')')
           write(45,'(''coefficients'',1p10e22.10)') &
                     (ce(iff,irb,ic,iwf),iff=1,NCOEF)
           write(45,'(''check the small radius expansion'')')
           write(45,'(''irad, rad, extrapolated value, correct value'')')
+          endif 
           do ir=1,10
             val=ce(1,irb,ic,iwf)
             do icoef=2,NCOEF
             val=val+ce(icoef,irb,ic,iwf)*x(ir)**(icoef-1)
             enddo
-            write(45,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
+
+            if (wid) write(45,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
           enddo
 ! c       endif
 
@@ -200,7 +205,7 @@ contains
           endif
         enddo rloop
 
-        write(45,'(a,i0,a,i0,a,g0)') "Initial rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
+        if (wid) write(45,'(a,i0,a,i0,a,g0)') "Initial rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
 
 ! Nonzero basis at the boundary : Do exponential fitting.
         if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
@@ -209,6 +214,7 @@ contains
 
           rmaxwf(irb,ic)=-dlog(cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
 
+          if (wid) then 
           write(45,'(a)') 'check the large radius expansion'
           write(45,'(a,g0,2x,g0)') 'Exponential fitting parameters : ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
 
@@ -218,13 +224,13 @@ contains
             temp = ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
             write(45,'(i3,2x,1p4e22.14)') ir,x(nr(ic)-ir),rwf(nr(ic)-ir,irb,ic,iwf), temp
           enddo
-
+          endif
           dwfn=-ae(2,irb,ic,iwf)*ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)))
 
         else
           dwfn=0.d0
         endif
-        write(45,*) 'dwf1,dwfn',dwf1,dwfn
+        if (wid) write(45,*) 'dwf1,dwfn',dwf1,dwfn
 
         call spline2(x(:),rwf(:,irb,ic,iwf),nr(ic),dwf1,dwfn,d2rwf(:,irb,ic,iwf),work)
 

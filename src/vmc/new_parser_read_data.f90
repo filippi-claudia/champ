@@ -768,17 +768,18 @@ subroutine read_jastrow_file(file_jastrow)
              enddo
              write(ounit, '(A)') "mparmjc : "
              write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
-             do it = 1, nctype
-                read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
-                !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
-                if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
-             enddo
+             if (mparmjc .ne. 0) then 
+                 do it = 1, nctype
+                     read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+                     !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
+                     write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
+                 enddo
+             endif
           enddo
        endif
        call bcast(a4)
        call bcast(b)
-       call bcast(c)
-       !call bcast(extraj)
+       if(mparmjc.gt.0) call bcast(c)
        if (extraj.gt.0) then
           call bcast(jtos)
           call bcast(nstoj)
@@ -884,7 +885,7 @@ subroutine read_jastrow_file(file_jastrow)
        
        call bcast(a4)
        call bcast(b)
-       call bcast(c)
+       if(mparmjc.gt.0) call bcast(c)
        call bcast(cutjas_en)
        call bcast(cutjas_eni)
        call bcast(cutjas_ee)
@@ -908,7 +909,6 @@ subroutine read_jastrow_file(file_jastrow)
     call bcast(cutjas)
 
     ijastrow_parameter = ijastrow_parameter + 1
-    call bcast(ijastrow_parameter)
 
     if (wid) close(iunit)
 
@@ -2032,7 +2032,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
       use precision_kinds, only: dp
       use system,  only: nctype,newghostype
       use write_orb_loc_mod, only: write_orb_loc
-
+      use mpitimer, only: elapsed_time
 
     implicit none
 
@@ -2049,6 +2049,8 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
+
+    call elapsed_time ( "Reading bas num: begins")
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,'(a)')  " Reading Basis function types and pointers to radial parts tables from the file :: ", &
@@ -2088,7 +2090,10 @@ subroutine read_basis_num_info_file(file_basis_num_info)
             call fatal_error( "Error in reading basis num info file :: expecting 'qmc_bf_info / basis'")
         endif
     endif
+
+
     call bcast(numr)
+    
 
     nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
 
@@ -2141,7 +2146,6 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     endif
 
-    call bcast(numr)
     call bcast(iwlbas)
     call bcast(iwrwf)
     call bcast(nbastyp)
@@ -2152,11 +2156,12 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     call bcast(ng)
 
     ibasis_num = 1
-    call bcast(ibasis_num)
+    
     if (wid) close(iunit)
 
     write(ounit,*) "Orbital coefficients are written to the output.log file"
-    call write_orb_loc()
+    
+    if (wid) call write_orb_loc()
 
 end subroutine read_basis_num_info_file
 
