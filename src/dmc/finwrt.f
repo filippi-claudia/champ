@@ -143,15 +143,6 @@ c Collect radial charge density for atoms
 
       if(.not.wid.and.mode.eq.'dmc_one_mpi2') return
 
-      if(iperiodic.eq.0 .and. ncent.eq.1) then
-        write(45,'(''  r   rprob'')')
-        delr=one/delri
-        term=one/(wgcum(1)*delr)
-        do i=1,nrad
-          write(45,'(f5.3,3f9.5)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
-        enddo
-      endif
-
       if(idmc.ge.0) then
         write(ounit,'(10i6)') (iage(i),i=1,nwalk)
         do i=1,nwalk

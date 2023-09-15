@@ -61,7 +61,6 @@ c routine to print out final results
 c quantities not computed in acuest_write
 
       if(iperiodic.eq.0 .and. ncent.eq.1) then
-        write(45,*)'  r   rprob'
         delr=one/delri
         term=one/(passes*delr)
         trysum=0
@@ -69,7 +68,6 @@ c quantities not computed in acuest_write
         do i=1,nrad
           trysum=trysum+try(i)
           sucsum=sucsum+suc(i)
-          write(45,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
         enddo
       endif
 

@@ -637,6 +637,7 @@ c-----------------------------------------------------------------------
       use optwf_control, only: ioptci
       use ci000, only: iciprt, nciterm
       use m_icount, only: icount_ci
+      use mpiconf, only: wid
       use optwf_control, only: method
 
       use precision_kinds, only: dp
@@ -681,55 +682,57 @@ c        -1 force printout
 
       call optci_avrg(w,iblk,oav,deav,oeav,oeerr,ooav,ooerr,ooeav,istate)
 
+      if (wid) then
 c     print the Ok
-      write (45,*)
-      write (45,'(''CI Operators'')')
-      write (45,'(''------------'')')
-      write (45,*)
+        write (45,*)
+        write (45,'(''CI Operators'')')
+        write (45,'(''------------'')')
+        write (45,*)
 
-c     print the OkOl
-      write (45,'(''Overlap'')')
-      write (45,*)
-      idx=0
-      do k=1,nciterm
-       write (45,*)
-       write (45,*) '< Ok O',k,' >'
-       i=1
-       do while (i.lt.min(k+1,nciterm))
-        jmax=5
-        if (i+jmax.gt.k) then
-         jmax=mod(k-1,5)+1
-        endif
-        do j=1,jmax
-          idx=idx+1
-          temp_print(j) = ooav(idx)
-          itemp_print(j) = int(1000000*ooerr(idx))
+c      print the OkOl
+        write (45,'(''Overlap'')')
+        write (45,*)
+        idx=0
+        do k=1,nciterm
+        write (45,*)
+        write (45,*) '< Ok O',k,' >'
+        i=1
+        do while (i.lt.min(k+1,nciterm))
+          jmax=5
+          if (i+jmax.gt.k) then
+          jmax=mod(k-1,5)+1
+          endif
+          do j=1,jmax
+            idx=idx+1
+            temp_print(j) = ooav(idx)
+            itemp_print(j) = int(1000000*ooerr(idx))
+          enddo
+          write (45,22) i, i+jmax-1, (temp_print(j), itemp_print(j), j=1,jmax)
+          i=i+jmax
         enddo
-        write (45,22) i, i+jmax-1, (temp_print(j), itemp_print(j), j=1,jmax)
-        i=i+jmax
-       enddo
-      enddo
+        enddo
 
-c     print the OkEL
-      write (45,*)
-      write (45,'(''Hamiltonian'')')
-      do k=1,nciterm
-       write (45,*)
-       write (45,*) '< Ok E',k,' >'
-       i=1
-       do while (i.lt.nciterm)
-        jmax=5
-        if (i+jmax.gt.nciterm) then
-         jmax=nciterm-i+1
-        endif
-        do j=1,jmax
-          temp_print(j) = oeav(i+j-1,k)
-          itemp_print(j) = int(1000000*oeerr(i+j-1,k))
+c       print the OkEL
+        write (45,*)
+        write (45,'(''Hamiltonian'')')
+        do k=1,nciterm
+        write (45,*)
+        write (45,*) '< Ok E',k,' >'
+        i=1
+        do while (i.lt.nciterm)
+          jmax=5
+          if (i+jmax.gt.nciterm) then
+          jmax=nciterm-i+1
+          endif
+          do j=1,jmax
+            temp_print(j) = oeav(i+j-1,k)
+            itemp_print(j) = int(1000000*oeerr(i+j-1,k))
+          enddo
+          write (45,22) i, i+jmax-1, (temp_print(j), itemp_print(j), j=1,jmax)
+          i=i+jmax
         enddo
-        write (45,22) i, i+jmax-1, (temp_print(j), itemp_print(j), j=1,jmax)
-        i=i+jmax
-       enddo
-      enddo
+        enddo
+      endif
 
       write(iu,'(''Operators correspond to primitive set'')')
 
