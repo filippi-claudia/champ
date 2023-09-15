@@ -142,9 +142,10 @@ contains
 !    end subroutine init_files
 
     subroutine close_files()
+      use mpiconf, only: wid
         close (5)
         close (6)
-        close (45)
+        if (wid) close (45)
     end subroutine close_files
 
     subroutine init_logfile()

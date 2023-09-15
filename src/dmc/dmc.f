@@ -124,11 +124,6 @@ c                         Parallel-spin b's = antipar-spin b's
 c                    (12) a's and b's for par and antipar are indep.
 c                 The above applies to good psi.
 
-      open(unit=8,form='formatted',file='tape8')
-      rewind 8
-
-c     call flush(6)
-
       if(nforce.gt.1) then
         call setup_force
        else

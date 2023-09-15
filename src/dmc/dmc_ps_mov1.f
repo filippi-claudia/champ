@@ -611,12 +611,12 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
           endif
           tausum(ifr)=tausum(ifr)+wtg(1)*taunow
 
-          if(dabs((enew(1)-etrial)/etrial).gt.0.2d+0) then
+          if(ipr.gt.5.and.dabs((enew(1)-etrial)/etrial).gt.0.2d+0) then
            write(18,'(i6,f8.2,2d10.2,(8f8.4))') ipass,
      &     enew(1)-etrial,psidn,psijn(1),(xnew(ii),ii=1,3)
           endif
 
-          if(wt(iw).gt.3) write(18,'(i6,i4,3f8.2,30f8.4)') ipass,iw,
+          if(ipr.gt.5.and.wt(iw).gt.3) write(18,'(i6,i4,3f8.2,30f8.4)') ipass,iw,
      &    wt(iw),enew(1)-etrial,eold(iw,ifr)-etrial,(xnew(ii),ii=1,3)
 
           eold(iw,ifr)=enew(1)
@@ -762,7 +762,7 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
       call average(1)
       enddo
 
-      if(wsum1(1).gt.1.1d0*dmc_nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
+      if(ipr.gt.5.and.wsum1(1).gt.1.1d0*dmc_nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
      &fprod/ff(ipmod2),wsum1(1),wgdsumo
 
       if(idmc.gt.0.or.iacc_rej.eq.0) then
