@@ -25,6 +25,8 @@ c routine to accumulate estimators for energy etc.
       use inputflags, only: eps_node_cutoff,node_cutoff
       use mmpol,   only: mmpol_init
       use mmpol_vmc, only: mmpol_cum,mmpol_save
+      use mpi
+      use mpiconf, only: nproc,wid
       use mstates_ctrl, only: iguiding
       use mstates_mod, only: MSTATES
       use multiple_geo, only: MFORCE,fcm2,fcum,nforce,pecent
@@ -61,8 +63,8 @@ c routine to accumulate estimators for energy etc.
 
       implicit none
 
-      integer :: i, ic, ifr, istate, jel, k
-      real(dp) :: ajacob, distance_node
+      integer :: i, ic, ierr, ifr, istate, jel, k
+      real(dp) :: ajacob, distance_node, eave
       real(dp) :: psidg, r2now, rnorm_nodes
       real(dp) :: penow, tpbnow
       real(dp), dimension(3,nelec) :: xstrech
@@ -116,7 +118,11 @@ c only called for ifr=1
       call prop_cum(wsum(1,1))
       call pcm_cum(wsum(1,1))
       call mmpol_cum(wsum(1,1))
-      call force_analy_cum(wsum(1,1),ecum(1,1)/wcum(1,1),wcum(1,1))
+
+      if(wid) eave=ecum(1,1)/wcum(1,1)
+      call MPI_BCAST(eave,1,MPI_REAL8,0,MPI_COMM_WORLD,ierr)
+
+      call force_analy_cum(wsum(1,1),eave)
 
 c zero out xsum variables for metrop
 
