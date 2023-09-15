@@ -78,7 +78,7 @@ CHAMP utilizes various other program packages:
 2. gfortran/gcc >= 9.3.0 or Intel Fortran 2020 onwards
 3. BLAS/LAPACK or Intel MKL
 4. openMPI >= 3.0 or Intel MPI
-5. [Optional] TREXIO library >= 2.0.0
+5. [Optional] TREXIO library >= 2.3.0
 6. [Optional] QMCkl library >= 0.2.1
 7. [Optional] doxygen (for documentation)
 
@@ -126,17 +126,18 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 * **Snellius** (snellius.surfa.nl):
 	- To compile the code, first load the required modules:
 		```bash
-        module purge
-		module load 2021
-		module load git
-        module load CMake/3.20.1-GCCcore-10.3.0
-        module load intel-compilers/2021.2.0
-        module load imkl/2021.2.0-iimpi-2021a
-        module load impi/2021.2.0-intel-compilers-2021.2.0
+		module purge
+		module load 2022
+		module load intel/2022a               
+		module load HDF5/1.12.2-iimpi-2022a
 		```
 		then set-up the build:
 		```bash
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+		```
+		Optionally, you may link the trexio library using the following command:
+		```bash
+		cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=$HOME/include/
 		```
 		and finally build:
 		```bash
@@ -146,25 +147,23 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```bash
 		sbatch job.cmd
 		```
-		where `job.cmd` is a SLURM script that looks like this:
+		where `job.cmd` is a SLURM script for `genoa` partition that looks like this:
 
 		```bash
 		#!/bin/bash
-        #!/bin/bash
         #SBATCH -t 0-12:00:00            # time in (day-hours:min:sec)
-        #SBATCH -N 1                     # number of nodes
-        #SBATCH -n 128                   # number of cores
-        #SBATCH --ntasks-per-node 128    # tasks per node
-        #SBATCH -J 1-128-AMD             # name of the job
+        #SBATCH -N 1                     # number of nodes (change this number to use more nodes)
+        #SBATCH --ntasks-per-node 192    # tasks per node (Use 192 for genoa and 128 for rome partition)
+        #SBATCH -J vmc                   # name of the job
         #SBATCH -o vmc.%j.out            # std output file name for slurm
         #SBATCH -e vmc.%j.err            # std error file name for slurm
         #SBATCH --exclusive              # specific requirements about node
-        #SBATCH --partition thin         # partition (queue)
+        #SBATCH --partition genoa        # partition (queue)
         #
         module purge
-        module load 2021
-        module load imkl/2021.2.0-iimpi-2021a
-        module load CMake/3.20.1-GCCcore-10.3.0
+        module load 2022
+        module load intel/2022a
+        module load HDF5/1.12.2-iimpi-2022a
         #
         export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
         cd $PWD
