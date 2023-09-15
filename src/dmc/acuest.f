@@ -271,13 +271,16 @@ c xerr = current error of x
             fgerr=errg(fgcum(ifr),fgcm2(ifr),1)
             ifgerr=nint(1e12* fgerr)
           endif
+
           egave1=egcum(1)/wgcum(1)
           if(iblk.eq.1) derivtotave_num_old(ifr)=0.d0
           derivtotave_num=-(derivcum(1,ifr)-derivcum(1,1)+derivcum(2,ifr)-derivcum(2,1)-egave1*(derivcum(3,ifr)-derivcum(3,1)))
           derivtotave=derivtotave_num/wgcum(1)
+
           delta_derivtotave_num=derivtotave_num-derivtotave_num_old(ifr)
           derivtotave_num_old(ifr)=derivtotave_num
-          derivcm2(ifr)=derivcm2(ifr)+delta_derivtotave_num**2/wgsum(1)
+c         derivcm2(ifr)=derivcm2(ifr)+delta_derivtotave_num**2/wsum(1)
+          derivcm2(ifr)=derivcm2(ifr)+delta_derivtotave_num**2/wgcollect(1)
           if(iblk.eq.1) then
             derivgerr=0
             iderivgerr=0

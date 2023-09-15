@@ -281,7 +281,7 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine force_analy_cum(wsum,eave,wcum)
+      subroutine force_analy_cum(wsum,eave)
 
       use da_energy_sumcum, only: da_energy_cm2,da_energy_cum
       use da_energy_sumcum, only: da_energy_sum,da_psi_cum,da_psi_sum
@@ -292,7 +292,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: ic, k
-      real(dp) :: da_energy_now, eave, wcum, wsum
+      real(dp) :: da_energy_now, eave, wsum
 
       if(iforce_analy.eq.0) return
 
