@@ -19,11 +19,9 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2
       use est2cm, only: wfcm2, wgcm2
       use force_analytic, only: force_analy_init
-      use derivest, only: derivcum, derivsum
       use mpiconf, only: wid
 !      use contrl, only: nstep
       use control_dmc, only: dmc_nstep
-      use derivest, only: derivcum,derivsum
       use est2cm,  only: ecm2_dmc,efcm2,egcm2,ei1cm2,ei2cm2,pecm2_dmc
       use est2cm,  only: r2cm2_dmc,ricm2,tpbcm2_dmc,wcm2,wfcm2
       use est2cm,  only: wgcm2
@@ -55,7 +53,7 @@ c routine to accumulate estimators for energy etc.
       integer :: i, iegerr, ierr, ifgerr, ifr
       integer :: ioldest_collect, ioldestmx_collect, ipeerr
       integer :: itpber, k, npass
-      real(dp) :: derivtotave, dum, efnow, egave, egave1
+      real(dp) :: dum, efnow, egave, egave1
       real(dp) :: egerr, egnow, ei1now, ei2now
       real(dp) :: enow, fgave
       real(dp) :: fgerr, peave, peerr, penow
@@ -66,7 +64,6 @@ c routine to accumulate estimators for energy etc.
       real(dp), dimension(MFORCE) :: pecollect
       real(dp), dimension(MFORCE) :: tpbcollect
       real(dp), dimension(MFORCE) :: taucollect
-      real(dp), dimension(10, MFORCE) :: derivcollect
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
@@ -87,8 +84,6 @@ c xerr = current error of x
       call mpi_reduce(tpbsum_dmc,tpbcollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(tausum,taucollect,MFORCE
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(derivsum,derivcollect,10*MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       call mpi_allreduce(ioldest,ioldest_collect,1
@@ -143,9 +138,6 @@ c xerr = current error of x
         pesum_dmc(ifr)=pecollect(ifr)
         tpbsum_dmc(ifr)=tpbcollect(ifr)
         tausum(ifr)=taucollect(ifr)
-        do k=1,3
-          derivsum(k,ifr)=derivcollect(k,ifr)
-        enddo
 
         wgnow=wgsum(ifr)/dmc_nstep
         egnow=egsum(ifr)/wgsum(ifr)
@@ -162,9 +154,6 @@ c xerr = current error of x
         pecum_dmc(ifr)=pecum_dmc(ifr)+pesum_dmc(ifr)
         tpbcum_dmc(ifr)=tpbcum_dmc(ifr)+tpbsum_dmc(ifr)
         taucum(ifr)=taucum(ifr)+tausum(ifr)
-        do k=1,3
-          derivcum(k,ifr)=derivcum(k,ifr)+derivsum(k,ifr)
-        enddo
 
         if(iblk.eq.1) then
           egerr=0
@@ -192,8 +181,6 @@ c xerr = current error of x
             ifgerr=nint(100000* fgerr)
           endif
           egave1=egcum(1)/wgcum(1)
-          derivtotave=-(derivcum(1,ifr)-derivcum(1,1)+
-     &                 derivcum(2,ifr)-derivcum(2,1)-egave1*(derivcum(3,ifr)-derivcum(3,1)))/wgcum(1)
          else
           call prop_cum(wgsum(ifr))
           call pcm_cum(wgsum(ifr))
@@ -223,10 +210,10 @@ c write out current values of averages etc.
           call pcm_prt(iblk,wgcum,wgcm2)
           call mmpol_prt(iblk,wgcum,wgcm2)
          else
-          write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),f10.5,10x,i10)')
+          write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),f10.5,9x,i10)')
      &    egsum(ifr)/wgsum(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,
-     &    fgave,ifgerr,derivtotave,nint(wgsum(ifr))
+     &    fgave,ifgerr,nint(wgsum(ifr))
         endif
       enddo
 
@@ -251,9 +238,6 @@ c zero out xsum variables for metrop
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
         tausum(ifr)=zero
-        do k=1,10
-          derivsum(k,ifr)=zero
-        enddo
       enddo
 
       call prop_init(1)

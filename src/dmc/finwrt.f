@@ -40,6 +40,7 @@ c routine to print out final results
       use step,    only: rprob
       use system,  only: ncent,nelec
       use vmc_mod, only: delri,nrad
+      use force_analytic, only: force_analy_fin
 !      use contrl, only: nblkeq, nconf, nstep
       implicit none
 

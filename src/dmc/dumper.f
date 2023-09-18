@@ -17,7 +17,6 @@ c job where it left off
       use control, only: mode
       use control_dmc, only: dmc_nconf
       use denupdn, only: rprobdn,rprobup
-      use derivest, only: derivcm2,derivcum,derivtotave_num_old
       use dmc_mod, only: MWALK
       use dumper_gpop_mod, only: dumper_gpop
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
@@ -194,8 +193,6 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
      &,ecm21_dmc/nproc,efcm21/nproc,(egcm21(i)/nproc,i=1,nforce)
      &,ei1cm2,ei2cm2,ei3cm2,r2cm2_dmc,ricm2
       write(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
-     &,((derivcum(k,i),k=1,3),i=1,nforce),(derivcm2(i),i=1,nforce)
-     &,(derivtotave_num_old(i),i=1,nforce)
       write(10) (rprob(i)/nproc,rprobup(i),rprobdn(i),i=1,nrad)
       write(10) dfus2ac,dfus2un,dr2ac,dr2un,acc
      &,trymove,nacc,nbrnch,nodecr

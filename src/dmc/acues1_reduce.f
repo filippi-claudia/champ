@@ -12,7 +12,6 @@
       use est2cm, only: ecm21_dmc, efcm21, egcm21
       use est2cm, only: wcm21
       use est2cm, only: wfcm21, wgcm21, wgcm2
-      use step, only: rprob
       use mpiconf, only: nproc, wid
       use control, only: mode
       use contrl_per, only: iperiodic
@@ -37,10 +36,9 @@
       use optx_orb_ci_reduce_mod, only: optx_orb_ci_reduce
       use precision_kinds, only: dp
       use stats,   only: acc,nacc,nodecr,trymove
-      use step,    only: rprob
       use vmc_mod, only: nrad
       use force_analytic, only: force_analy_fin
-      use force_analy_reduce_mod, only: force_analy_reduce
+      ! use force_analy_reduce_mod, only: force_analy_reduce
 
 
       implicit none
@@ -56,7 +54,6 @@
       real(dp), dimension(MFORCE) :: eg21collect
       real(dp), dimension(MFORCE) :: wg1collect
       real(dp), dimension(MFORCE) :: wg21collect
-      real(dp), dimension(nrad) :: rprobcollect
 
 
       if(mode.eq.'dmc_one_mpi2') return
@@ -105,15 +102,6 @@
         wgcm21(ifr)=wg21collect(ifr)
       enddo
 
-c Collect radial charge density for atoms
-      if(iperiodic.eq.0) then
-        call mpi_reduce(rprob,rprobcollect,nrad,mpi_double_precision
-     &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
-        do i=1,nrad
-          rprob(i)=rprobcollect(i)
-        enddo
-      endif
-
       call mpi_reduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,0,
      &MPI_COMM_WORLD,ierr)
       call mpi_reduce(trymove,trymove_collect,1,mpi_double_precision,mpi_sum,0,
@@ -133,7 +121,7 @@ c Collect radial charge density for atoms
       call optx_jas_orb_reduce
       call optx_jas_ci_reduce
       call optx_orb_ci_reduce
-      call force_analy_reduce
+      ! call force_analy_reduce
 
       if(wid) then
         do id=1,nproc-1
@@ -149,7 +137,6 @@ c Collect radial charge density for atoms
      &  ,2,MPI_COMM_WORLD,istatus,ierr)
       endif
 
-c     efin=egcum1(1)/wgcum1(1)
       efin=egcum(1)/wgcum(1)
       rn_eff=(wgcum(1)**2/wgcm2(1))-1.d0
 

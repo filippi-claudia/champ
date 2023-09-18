@@ -24,7 +24,6 @@ c job where it left off
       use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2
       use est2cm, only: ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21
       use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
-      use derivest, only: derivcum
       use step, only: rprob
       use mpiconf, only: idtask, nproc, wid
       use denupdn, only: rprobdn, rprobup
@@ -39,7 +38,6 @@ c job where it left off
 !      use contrl, only: nconf
       use control_dmc, only: dmc_nconf
       use denupdn, only: rprobdn,rprobup
-      use derivest, only: derivcum
       use dmc_mod, only: MWALK
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
       use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
@@ -175,7 +173,6 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
      &,ecm21_dmc,efcm21,(egcm21(i),i=1,nforce)
      &,ei1cm2,ei2cm2,ei3cm2,r2cm2_dmc,ricm2
       write(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
-     &,((derivcum(k,i),k=1,3),i=1,nforce)
       write(10) (rprob(i)/nproc,rprobup(i),rprobdn(i),i=1,nrad)
       write(10) dfus2ac,dfus2un,dr2ac,dr2un,acc
      &,trymove,nacc,nbrnch,nodecr

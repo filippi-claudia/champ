@@ -100,7 +100,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use general, only: write_walkalize
       use hpsi_mod, only: hpsi
       use hpsiedmc, only: psiedmc
-      use inputflags, only: eps_node_cutoff,icircular,idrifdifgfunc
+      use inputflags, only: eps_node_cutoff,icircular
       use inputflags, only: node_cutoff
       use jacobsave, only: ajacob,ajacold
       use jassav_mod, only: jassav
@@ -134,7 +134,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use optwf_handle_wf, only: optwf_store
       use vd_mod,         only: dmc_ivd, da_branch, deriv_eold, esnake, ehist
       use pathak_mod, only: ipathak, eps_pathak, pold, pnew, pathak
-      
+      use da_energy_now, only: da_energy,da_psi
+
       implicit none
 
       integer :: i, iaccept, iel, ic, iph
@@ -307,7 +308,6 @@ c     to initilialize pp
             iflag_up=3
             iflag_dn=2
           endif
-          !STU check here and all other compute_determin...
           call compute_determinante_grad(i,psido_dmc(iw,1),psido_dmc(iw,1),psijo_dmc(iw,1),vold_dmc(1,i,iw,1),1)
 
 c Use more accurate formula for the drift
@@ -331,8 +331,6 @@ c Tau primary -> tratio=one
             write(ounit,'(''vold_dmc'',2i4,9f8.5)') iw,i,(vold_dmc(k,i,iw,1),k=1,3)
             write(ounit,'(''psido_dmc'',2i4,9f8.5)') iw,i,psido_dmc(iw,1)
             write(ounit,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,3)
-c     write(ounit,'(''dx'',2i4,9f8.5)') iw,i,vavvt,drift,dfus
-c     write(ounit,'(''0 dfus2o'',2i4,9f8.5)') iw,i,dfus2o, rttau, dx
           endif
 
 c calculate psi and velocity at new configuration
@@ -399,9 +397,7 @@ c Calculate Green function for the reverse move
 c          if(ipr.ge.1) write(ounit,'(''parts p'',11f10.6)')
 c     &         psidn(1), psijn, psido_dmc(iw,1), dfus2o, dfus2n, distance_node_ratio2            
 
-c The following is one reasonable way to cure persistent configurations
-c Not needed if itau_eff <=0 and in practice we have never needed it even
-c otherwise
+c Way to cure persistent configurations; not needed if itau_eff <=0; in practice never needed
           if(iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
 
           pp=pp*p
@@ -428,8 +424,6 @@ c Calculate density and moments of r for primary walk
           enddo
           rmino=sqrt(rmino)
           rminn=sqrt(rminn)
-          itryo(i)=min(int(delri*rmino)+1,nrad)
-          itryn(i)=min(int(delri*rminn)+1,nrad)
 
 c If we are using weights rather than accept/reject
           if(iacc_rej.le.0) then
@@ -598,40 +592,24 @@ c If we are using weights rather than accept/reject
 c Exercise population control if dmc or vmc with weights
           if(idmc.gt.0.or.iacc_rej.eq.0) dwt=dwt*ffi
 
-          drifdifgfunc=1.d0
-          if(nforce.gt.1.and.idrifdifgfunc.gt.0) then
-            dfus=0
-            do i=1,nelec
-              if(iacc_elec(i).gt.0) then
-                do k=1,3
-                  dfus=dfus+(xold_dmc(k,i,iw,ifr)-xdrifted(k,i,iw,ifr))**2
-                enddo
-              endif
-            enddo
-            dfus=0.5d0*dfus/tau
-            drifdifgfunc=-dfus
-c           drifdifgfunc=drifdifgfunc-2*log(rnorm_nodes)
-          endif
 c Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
             wt(iw)=wt(iw)*dwt
             wtnow=wt(iw)
-            pwt(iw,ifr)=pwt(iw,ifr)+log(dwt)+drifdifgfunc-wthist(iw,iwmod,ifr)
-            wthist(iw,iwmod,ifr)=dlog(dwt)+drifdifgfunc
+            pwt(iw,ifr)=pwt(iw,ifr)+log(dwt)-wthist(iw,iwmod,ifr)
+            wthist(iw,iwmod,ifr)=dlog(dwt)
 
            elseif(ifr.gt.1) then
 
             ro=log(ajacold(iw,ifr))
-            if(idrifdifgfunc.eq.0) ro=0.d0
-            pwt(iw,ifr)=pwt(iw,ifr)+dlog(dwt)+drifdifgfunc+ro-wthist(iw,iwmod,ifr)
-            wthist(iw,iwmod,ifr)=dlog(dwt)+drifdifgfunc+ro
+            pwt(iw,ifr)=pwt(iw,ifr)+dlog(dwt)+ro-wthist(iw,iwmod,ifr)
+            wthist(iw,iwmod,ifr)=dlog(dwt)+ro
             wtnow=wt(iw)*dexp(pwt(iw,ifr)-pwt(iw,1))
 
           endif
 
           wtnow=wtnow/rnorm_nodes**2
-c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
 
           if(ipr.ge.1)write(ounit,'(''eold,enew,wt'',9f10.5)')
      &    eold(iw,ifr),enew,wtnow
@@ -645,10 +623,6 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
           if(ifr.eq.1) then
             r2sum=r2sum+wtg(1)*r2sume
             risum=risum+wtg(1)*risume
-            do i=1,nelec
-              rprob(itryo(i))=rprob(itryo(i))+wtg(1)*unacp(i)
-              rprob(itryn(i))=rprob(itryn(i))+wtg(1)*(one-unacp(i))
-            enddo
           endif
           tausum(ifr)=tausum(ifr)+wtg(1)*taunow
 
@@ -688,16 +662,6 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
             pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))
             tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)
 
-            derivsum(1,ifr)=derivsum(1,ifr)+wtg(1)*eold(iw,ifr)
-
-            if(idrifdifgfunc.gt.0) then
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,ifr)*pwt( iw,ifr)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*pwt(iw,ifr)
-             else
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,ifr)*(pwt(iw,ifr)+psi2savo)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*(pwt(iw,ifr)+psi2savo)
-            endif
-
             if(iforce_analy.eq.1) then
               if (ipathak.gt.0) then
                 call nodes_distance(vold_dmc(1,1,iw,ifr),distance_node,1)
@@ -716,28 +680,24 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
                 endif
 
                 do iph=1,PTH
-                  if (ipathak.gt.0) then 
-                    do ic=1,ncent
-                      do k=1,3                           
+                  do ic=1,ncent
+                    do k=1,3  
+                      if (ipathak.gt.0) then                          
                         esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
      &+deriv_eold(k,ic,iw)*pold(iw,iph)-ehist(k,ic,iw,iwmod,iph)
                         ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)*pold(iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
 
                         da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
-                      enddo
-                    enddo                   
-                  else                        
-                    do ic=1,ncent
-                      do k=1,3                           
+                      else
                         esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)
      &+deriv_eold(k,ic,iw)-ehist(k,ic,iw,iwmod,iph)
-
+                   
                         ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)+deriv_energy_new(k,ic)
-
+                   
                         da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
-                      enddo
+                      endif
                     enddo
-                  endif
+                  enddo                                    
                 enddo
 
                 do ic=1,ncent
@@ -751,6 +711,23 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
                   pold(iw,iph)=pnew(iph)
                 enddo
               endif
+
+              do iph=1,PTH
+                do ic=1,ncent
+                  do k=1,3  
+                    if (ipathak.gt.0) then                          
+                      derivsum(1,k,ic,iph)=derivsum(1,k,ic,iph)+wtg(1)*da_energy(k,ic)*pnew(iph)
+                      derivsum(2,k,ic,iph)=derivsum(2,k,ic,iph)+2.d0*wtg(1)*eold(iw,1)*da_psi(k,ic)*pnew(iph)
+                      derivsum(3,k,ic,iph)=derivsum(3,k,ic,iph)+wtg(1)*da_psi(k,ic)*pnew(iph)
+                    else
+                      derivsum(1,k,ic,iph)=derivsum(1,k,ic,iph)+wtg(1)*da_energy(k,ic)
+                      derivsum(2,k,ic,iph)=derivsum(2,k,ic,iph)+2.d0*wtg(1)*eold(iw,1)*da_psi(k,ic)
+                      derivsum(3,k,ic,iph)=derivsum(3,k,ic,iph)+wtg(1)*da_psi(k,ic)
+                    endif
+                  enddo
+                enddo                                    
+              enddo
+
             endif
 
             call prop_sum_dmc(0.d0,wtg(1),iw)
@@ -766,45 +743,17 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
             call optx_jas_ci_sum(wtg(1),0.d0,eold(iw,1),eold(iw,1))
             call optx_orb_ci_sum(wtg(1),0.d0)
 
-           else
-c           write(ounit,*) 'IN DMC',ajacold(iw,ifr)
-            ro=1.d0
-            if(idrifdifgfunc.eq.0) ro=ajacold(iw,ifr)*psido_dmc(iw,ifr)**2*exp(2*psijo_dmc(iw,ifr)-psi2savo)
+          else
 
-            wsum1(ifr)=wsum1(ifr)+wtnow*ro
-            esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)*ro
-            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))*ro
-            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)*ro
+            wsum1(ifr)=wsum1(ifr)+wtnow
+            esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)
+            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))
+            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)
 
             wtg=wt(iw)*fprod/rnorm_nodes**2
             wtg_derivsum1=wtg(1)
-c           if(idrifdifgfunc.eq.0)then
-c             wtg=wt(iw)*fprod/rnorm_nodes**2
-c             wtg_derivsum1=wtg
-c            else
-c             wtg=wt(iw)*fprod
-c             wtg_derivsum1=wtg/rnorm_nodes**2
-c           endif
-
-            derivsum(1,ifr)=derivsum(1,ifr)+wtg_derivsum1*eold(iw,ifr)
-
-            if(idrifdifgfunc.gt.0) then
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,1)*pwt(iw,ifr)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*pwt(iw,ifr)
-            else
-              ro=log(ajacold(iw,ifr))+2*(log(abs(psido_dmc(iw,ifr)))+psijo_dmc(iw,ifr))
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,1)*(pwt(iw,ifr)+ro)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*(pwt(iw,ifr)+ro)
-            endif
           endif
-
         enddo
-c       write(ounit,*) 'IN DMC',ajacold(iw,2)
-
-c       wtg=wt(iw)*fprod/rnorm_nodes**2
-c       write(*,*)'prima ',wtg,eold(iw,2),pwt(iw,2),ajacold(iw,2),psido_dmc(iw,2),psijo_dmc(iw,2),idrifdifgfunc
-c       call deriv(wtg,eold(iw,1),pwt(iw,1),ajacold(iw,1),psido_dmc(iw,1),psijo_dmc(iw,1),idrifdifgfunc)
-c       call deriv(wtg,eold,pwt,ajacold,psido_dmc,psijo_dmc,idrifdifgfunc,iw,mwalk)
 
         if(icasula.eq.-1) then
 

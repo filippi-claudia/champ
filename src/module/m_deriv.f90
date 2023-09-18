@@ -334,37 +334,38 @@ end module ijasnonlin
 
 module derivest
    !> DMC derivatives
-   !> Arguments: derivcm2, derivcum, derivsum, derivtotave_num_old
+   !> Arguments: derivcm2, derivcum, derivsum, derivtotave
 
-   use multiple_geo, only: MFORCE
    use precision_kinds, only: dp
+   use system,  only: ncent_tot
+   use force_pth, only: PTH
 
    implicit none
 
 
-    real(dp), dimension(:), allocatable :: derivcm2 !(MFORCE)
-    real(dp), dimension(:,:), allocatable :: derivcum !(10,MFORCE)
-    real(dp), dimension(:,:), allocatable :: derivsum !(10,MFORCE)
-    real(dp), dimension(:), allocatable :: derivtotave_num_old !(MFORCE)
+    real(dp), dimension(:,:,:), allocatable :: derivcm2 ! (3,NCENT,IPTH)
+    real(dp), dimension(:,:,:,:), allocatable :: derivcum !(3,3,NCENT,IPTH)
+    real(dp), dimension(:,:,:,:), allocatable :: derivsum !(3,3,NCENT,IPTH)
+    real(dp), dimension(:,:,:), allocatable :: derivtotave ! (3,NCENT,IPTH)
 
     private
-    public :: derivcm2, derivcum, derivsum, derivtotave_num_old
+    public :: derivcm2, derivcum, derivsum, derivtotave
     public :: allocate_derivest, deallocate_derivest
     save
 
 contains
     subroutine allocate_derivest()
-        if (.not. allocated(derivcm2)) allocate(derivcm2(MFORCE))
-        if (.not. allocated(derivcum)) allocate(derivcum(10,MFORCE))
-        if (.not. allocated(derivsum)) allocate(derivsum(10,MFORCE))
-        if (.not. allocated(derivtotave_num_old)) allocate(derivtotave_num_old(MFORCE))
+        if (.not. allocated(derivcm2)) allocate(derivcm2(3,ncent_tot,PTH))
+        if (.not. allocated(derivcum)) allocate(derivcum(3,3,ncent_tot, PTH))
+        if (.not. allocated(derivsum)) allocate(derivsum(3,3,ncent_tot, PTH))
+        if (.not. allocated(derivtotave)) allocate(derivtotave(3,ncent_tot, PTH))
     end subroutine allocate_derivest
 
     subroutine deallocate_derivest
         if (allocated(derivcm2)) deallocate(derivcm2)
         if (allocated(derivcum)) deallocate(derivcum)
         if (allocated(derivsum)) deallocate(derivsum)
-        if (allocated(derivtotave_num_old)) deallocate(derivtotave_num_old)
+        if (allocated(derivtotave)) deallocate(derivtotave)
     end subroutine deallocate_derivest
  end module derivest
 

@@ -319,7 +319,7 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine force_analy_cum(wsum,eave)
+      subroutine force_analy_cum(wcollect,eave,wcum)
 
       use da_energy_sumcum, only: da_energy_cm2,da_energy_cum
       use da_energy_sumcum, only: da_energy_sum,da_psi_cum,da_psi_sum
@@ -333,7 +333,7 @@ c-----------------------------------------------------------------------
       implicit none
 
       integer :: ic, k, iph
-      real(dp) :: eave, wcum, wsum
+      real(dp) :: eave, wcum, wcollect
       real(dp), dimension(3, ncent, PTH) :: da_energy_now !(3,ncent,PTH)
 
       if(iforce_analy.eq.0) return
@@ -342,15 +342,15 @@ c-----------------------------------------------------------------------
         do ic=1,ncent
            do k=1,3
               if (dmc_ivd.gt.0) then 
-                da_energy_now(k,ic,iph)=(da_energy_sum(k,ic,iph)-2*eave*da_psi_sum(k,ic,iph)-eave*da_branch_sum(k,ic,iph))/wsum
-                da_energy_cm2(k,ic,iph)=da_energy_cm2(k,ic,iph)+wsum*da_energy_now(k,ic,iph)**2
+                da_energy_now(k,ic,iph)=(da_energy_sum(k,ic,iph)-2*eave*da_psi_sum(k,ic,iph)-eave*da_branch_sum(k,ic,iph))/wcollect
+                da_energy_cm2(k,ic,iph)=da_energy_cm2(k,ic,iph)+wcollect*da_energy_now(k,ic,iph)**2
                  
                 da_branch_cum(k,ic,iph)=da_branch_cum(k,ic,iph)+da_branch_sum(k,ic,iph)
                 da_psi_cum(k,ic,iph)=da_psi_cum(k,ic,iph)+da_psi_sum(k,ic,iph)
                 da_energy_cum(k,ic,iph)=da_energy_cum(k,ic,iph)+da_energy_sum(k,ic,iph)
               else
-                da_energy_now(k,ic,iph)=(da_energy_sum(k,ic,iph)-2*eave*da_psi_sum(k,ic,iph))/wsum
-                da_energy_cm2(k,ic,iph)=da_energy_cm2(k,ic,iph)+wsum*da_energy_now(k,ic,iph)**2
+                da_energy_now(k,ic,iph)=(da_energy_sum(k,ic,iph)-2*eave*da_psi_sum(k,ic,iph))/wcollect
+                da_energy_cm2(k,ic,iph)=da_energy_cm2(k,ic,iph)+wcollect*da_energy_now(k,ic,iph)**2
                 
                 da_psi_cum(k,ic,iph)=da_psi_cum(k,ic,iph)+da_psi_sum(k,ic,iph)
                 da_energy_cum(k,ic,iph)=da_energy_cum(k,ic,iph)+da_energy_sum(k,ic,iph)
@@ -392,16 +392,13 @@ c-----------------------------------------------------------------------
           do k=1,3
             if (dmc_ivd.gt.0) then 
               da_energy_ave(k,ic,iph)=(da_energy_cum(k,ic,iph)-2*eave*da_psi_cum(k,ic,iph)-eave*da_branch_cum(k,ic,iph))/wcum
-              x = da_energy_ave(k,ic,iph)
-              x2 = da_energy_cm2(k,ic,iph)
-              da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk_eff)
             else
               da_energy_ave(k,ic,iph)=(da_energy_cum(k,ic,iph)-2*eave*da_psi_cum(k,ic,iph))/wcum
-              x = da_energy_ave(k,ic,iph)
-              x2 = da_energy_cm2(k,ic,iph)
-              da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk_eff)
             endif
-              !write(*,*) 'da_energy_ave', da_energy_ave(k,ic)
+            x = da_energy_ave(k,ic,iph)
+            x2 = da_energy_cm2(k,ic,iph)
+            da_energy_err(k)=dsqrt(abs(x2-(x)**2)/iblk_eff)
+            ! da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk_eff)
           enddo
           
           if (ipathak.gt.0) then        

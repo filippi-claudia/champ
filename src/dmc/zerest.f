@@ -34,11 +34,13 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use step,    only: rprob
       use vmc_mod, only: nrad
       use force_analytic, only: force_analy_init
+      use system,    only: ncent
+      use force_pth, only: PTH
 
 
       implicit none
 
-      integer :: i, ifr, k
+      integer :: i, ifr, k, ic, iph
 
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
@@ -127,10 +129,17 @@ c zero out estimators
         tpbsum_dmc(ifr)=zero
         fgcum(ifr)=zero
         fgcm2(ifr)=zero
-        derivcm2(ifr)=zero
-        do k=1,10
-          derivsum(k,ifr)=zero
-          derivcum(k,ifr)=zero
+      enddo
+
+      do iph=1,PTH
+        do k=1,3
+          do ic=1,ncent
+            do ifr=1,3
+              derivsum(ifr,k,ic,iph)=zero
+              derivcum(ifr,k,ic,iph)=zero
+            enddo
+            derivcm2(k,ic,iph)=zero
+          enddo
         enddo
       enddo
 

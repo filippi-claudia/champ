@@ -17,7 +17,7 @@ c routine to accumulate estimators for energy etc.
       use est2cm, only: ecm2_dmc, efcm2, egcm2, ei1cm2, ei2cm2
       use est2cm, only: pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2
       use est2cm, only: wfcm2, wgcm2
-      use derivest, only: derivcm2, derivcum, derivsum, derivtotave_num_old
+      use derivest, only: derivcm2, derivcum, derivsum, derivtotave
       use mpiconf, only: nproc, wid
       use control, only: mode
       use mpiblk, only: iblk_proc
@@ -31,7 +31,6 @@ c routine to accumulate estimators for energy etc.
       use contrl_file, only: ounit
       use control, only: mode
       use control_dmc, only: dmc_nstep
-      use derivest, only: derivcm2,derivcum,derivsum,derivtotave_num_old
       use est2cm,  only: ecm2_dmc,efcm2,egcm2,ei1cm2,ei2cm2,pecm2_dmc
       use est2cm,  only: r2cm2_dmc,ricm2,tpbcm2_dmc,wcm2,wfcm2
       use est2cm,  only: wgcm2
@@ -60,13 +59,18 @@ c routine to accumulate estimators for energy etc.
       use properties_mod, only: prop_init
       use contrldmc, only: idmc
       use force_analytic,   only: force_analy_init, force_analy_cum 
+      use force_analy_reduce_mod, only: force_analy_reduce
+      use system,    only: ncent
+      use force_pth, only: PTH
+      use m_force_analytic, only: iforce_analy
+      use pathak_mod, only: ipathak
 
       implicit none
 
-      integer :: i, iderivgerr, iegerr, ierr, ifgerr
-      integer :: ifr, ipeerr, itpber
+      integer :: i, iegerr, ierr, ifgerr
+      integer :: ifr, ipeerr, itpber, ic, iph
       integer :: k, npass
-      real(dp) :: delta_derivtotave_num, derivgerr, derivtotave, derivtotave_num, e2collect
+      real(dp) :: e2collect
       real(dp) :: e2sum, ecollect, ef2collect, ef2sum
       real(dp) :: efcollect, efnow, egave, egave1
       real(dp) :: egerr, egnow, ei1now, ei2now
@@ -78,6 +82,8 @@ c routine to accumulate estimators for energy etc.
       real(dp) :: w2sum, wcollect, wf2collect, wf2sum
       real(dp) :: wfcollect, wfnow, wgnow, wnow
       real(dp) :: x, x2
+      real(dp), dimension(3,ncent,PTH) :: derivgerr
+      integer, dimension(3,ncent,PTH) :: iderivgerr
       real(dp), dimension(MFORCE) :: egcollect
       real(dp), dimension(MFORCE) :: wgcollect
       real(dp), dimension(MFORCE) :: pecollect
@@ -95,7 +101,7 @@ c routine to accumulate estimators for energy etc.
       real(dp), dimension(MFORCE) :: taucollect
       real(dp), dimension(MFORCE) :: fcollect
       real(dp), dimension(MFORCE) :: f2collect
-      real(dp), dimension(10, MFORCE) :: derivcollect
+      real(dp), dimension(3,3,ncent,PTH) :: derivcollect
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
@@ -193,7 +199,7 @@ c xerr = current error of x
       call mpi_reduce(f2sum,f2collect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_reduce(derivsum,derivcollect,10*MFORCE
+      call mpi_reduce(derivsum,derivcollect,3*3*ncent*PTH
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       call mpi_reduce(esum_dmc,ecollect,1
@@ -218,13 +224,15 @@ c xerr = current error of x
       call optjas_cum(wgsum(1),egnow)
       call optorb_cum(wgsum(1),egsum(1))
       call optci_cum(wgsum(1))
-      call force_analy_cum(wgsum(1),egcum(1)/wgcum(1),wgcum(1))
 
+      call force_analy_reduce
       call prop_reduce(wgsum(1))
       call pcm_reduce(wgsum(1))
       call mmpol_reduce(wgsum(1))
 
       if(.not.wid) goto 17
+
+      call force_analy_cum(wgcollect(1),egcum(1)/wgcum(1),wgcum(1))
 
       wcm2=wcm2+w2collect
       wfcm2=wfcm2+wf2collect
@@ -244,9 +252,6 @@ c xerr = current error of x
 
         pecum_dmc(ifr)=pecum_dmc(ifr)+pecollect(ifr)
         tpbcum_dmc(ifr)=tpbcum_dmc(ifr)+tpbcollect(ifr)
-        do k=1,3
-          derivcum(k,ifr)=derivcum(k,ifr)+derivcollect(k,ifr)
-        enddo
 
         if(iblk.eq.1) then
           egerr=0
@@ -274,26 +279,37 @@ c xerr = current error of x
             ifgerr=nint(1e12* fgerr)
           endif
 
-          egave1=egcum(1)/wgcum(1)
-          if(iblk.eq.1) derivtotave_num_old(ifr)=0.d0
-          derivtotave_num=-(derivcum(1,ifr)-derivcum(1,1)+derivcum(2,ifr)-derivcum(2,1)-egave1*(derivcum(3,ifr)-derivcum(3,1)))
-          derivtotave=derivtotave_num/wgcum(1)
+        else
 
-          delta_derivtotave_num=derivtotave_num-derivtotave_num_old(ifr)
-          derivtotave_num_old(ifr)=derivtotave_num
-c         derivcm2(ifr)=derivcm2(ifr)+delta_derivtotave_num**2/wsum(1)
-          derivcm2(ifr)=derivcm2(ifr)+delta_derivtotave_num**2/wgcollect(1)
-          if(iblk.eq.1) then
-            derivgerr=0
-            iderivgerr=0
-           else
-            derivgerr=errg(derivtotave,derivcm2(ifr),1)
-            iderivgerr=nint(1e12* derivgerr)
+          egave=egcum(1)/wgcum(1)
+          if (iforce_analy.gt.0.and.iblk.gt.1) then
+            do iph=1,PTH
+              do ic=1,ncent
+                do k=1,3          
+                  derivcum(1,k,ic,iph)=derivcum(1,k,ic,iph)+derivcollect(1,k,ic,iph)
+                  derivcum(2,k,ic,iph)=derivcum(2,k,ic,iph)+derivcollect(2,k,ic,iph)
+                  derivcum(3,k,ic,iph)=derivcum(3,k,ic,iph)+derivcollect(3,k,ic,iph)
+                  derivtotave(k,ic,iph)=-(derivcum(1,k,ic,iph)+derivcum(2,k,ic,iph)-egave*derivcum(3,k,ic,iph))/wgcum(1)
+                  derivcm2(k,ic,iph)=derivcm2(k,ic,iph)+(derivcollect(1,k,ic,iph)+derivcollect(2,k,ic,iph)
+     &-egave*derivcollect(3,k,ic,iph))**2/wgcollect(1)
+                  derivgerr(k,ic,iph)=errg(derivtotave(k,ic,iph),derivcm2(k,ic,iph),1)
+                  iderivgerr(k,ic,iph)=nint(1e12* derivgerr(k,ic,iph))
+                enddo
+              enddo
+            enddo
+            call prop_prt_dmc(iblk,0,wgcum,wgcm2)
+            call pcm_prt(iblk,wgcum,wgcm2)
+            call mmpol_prt(iblk,wgcum,wgcm2)
+            do iph=1,PTH
+              do ic=1,ncent
+                if (ipathak.gt.0) then        
+                  write(ounit,'(i5,i5,1p6e14.5)')iph,ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
+                else    
+                  write(ounit,'(i5,1p6e14.5)') ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
+                endif  
+              enddo
+            enddo
           endif
-         else
-          call prop_prt_dmc(iblk,0,wgcum,wgcm2)
-          call pcm_prt(iblk,wgcum,wgcm2)
-          call mmpol_prt(iblk,wgcum,wgcm2)
         endif
 
 c write out header first time
@@ -302,8 +318,8 @@ c write out header first time
           if(nforce.gt.1) then
             write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
      &      ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
-     &      ,''fgave'',t79,''(fgerr)'',t93,''fgave_n'',t106,''(fgerr_n)'',t123
-     &      ,''npass'',t132,''wgsum'',t142,''ioldest'')')
+     &      ,''fgave'',t79,''(fgerr)'',t93,''npass'',t102,''wgsum'',t112
+     &      ,''ioldest'')')
           else
             write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
      &      ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t67
@@ -331,10 +347,10 @@ c write out current values of averages etc.
           endif
          else
           write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),f17.12,
-     &    ''('',i12,'')'',f17.12,''('',i12,'')'',10x,i10)')
+     &    ''('',i12,'')'',10x,i10)')
      &    egcollect(ifr)/wgcollect(ifr),
      &    egave,iegerr,peave,ipeerr,tpbave,itpber,
-     &    fgave,ifgerr,derivtotave,iderivgerr,nint(wgcollect(ifr)/nproc)
+     &    fgave,ifgerr,nint(wgcollect(ifr)/nproc)
         endif
       enddo
 
@@ -357,8 +373,14 @@ c zero out xsum variables for metrop
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
         tausum(ifr)=zero
-        do k=1,10
-          derivsum(k,ifr)=zero
+      enddo
+      do iph=1,PTH
+        do k=1,3
+          do ic=1,ncent
+            derivsum(1,k,ic,iph)=zero
+            derivsum(2,k,ic,iph)=zero
+            derivsum(3,k,ic,iph)=zero
+          enddo
         enddo
       enddo
 

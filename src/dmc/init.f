@@ -114,7 +114,7 @@ c           call t_vpsp_sav(iw)
             if(iforce_analy.eq.1) then
               call force_analy_save
               if(ipathak.gt.0) then
-                call init_eps_pathak()
+                if (iw.eq.1) call init_eps_pathak()
                 call nodes_distance(vold_dmc(1,1,iw,ifr), distance_node, 1)
               endif
               if(dmc_ivd.gt.0) then

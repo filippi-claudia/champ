@@ -29,6 +29,7 @@ module pathak_mod
   
       subroutine init_eps_pathak()
         use contrl_file, only: ounit
+        use mpiconf, only: wid
   
         integer :: iph
   
@@ -37,7 +38,7 @@ module pathak_mod
               eps_pathak(iph) = eps_max - deps * (iph - 1)
            enddo ![iph=1,PTH]
   !         eps_pathak(PTH) = 0.d0
-           write(ounit,*) 'eps ', eps_pathak
+           if (wid) write(ounit,*) 'eps ', eps_pathak
         endif      
       end subroutine init_eps_pathak
   
