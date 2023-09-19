@@ -717,11 +717,11 @@ c Set weights and product of weights over last nwprod steps
                   do k=1,3  
                     if (ipathak.gt.0) then                          
                       derivsum(1,k,ic,iph)=derivsum(1,k,ic,iph)+wtg(1)*da_energy(k,ic)*pnew(iph)
-                      derivsum(2,k,ic,iph)=derivsum(2,k,ic,iph)+2.d0*wtg(1)*eold(iw,1)*da_psi(k,ic)*pnew(iph)
+                      derivsum(2,k,ic,iph)=derivsum(2,k,ic,iph)+wtg(1)*eold(iw,1)*da_psi(k,ic)*pnew(iph)
                       derivsum(3,k,ic,iph)=derivsum(3,k,ic,iph)+wtg(1)*da_psi(k,ic)*pnew(iph)
                     else
                       derivsum(1,k,ic,iph)=derivsum(1,k,ic,iph)+wtg(1)*da_energy(k,ic)
-                      derivsum(2,k,ic,iph)=derivsum(2,k,ic,iph)+2.d0*wtg(1)*eold(iw,1)*da_psi(k,ic)
+                      derivsum(2,k,ic,iph)=derivsum(2,k,ic,iph)+wtg(1)*eold(iw,1)*da_psi(k,ic)
                       derivsum(3,k,ic,iph)=derivsum(3,k,ic,iph)+wtg(1)*da_psi(k,ic)
                     endif
                   enddo

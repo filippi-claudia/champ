@@ -143,7 +143,7 @@ c zero out xsum variables for metrop
 
       call acuest_reduce(enow)
 
-      call force_analy_cum(wcum(1,1)-wold,ecum(1,1)/wcum(1,1),wcum(1,1))
+      call force_analy_cum(wcum(1,1)-wold,ecum(1,1)/wcum(1,1))
       call force_analy_init(1)
 
       if(allocated(enow)) deallocate(enow)

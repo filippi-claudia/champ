@@ -232,8 +232,6 @@ c xerr = current error of x
 
       if(.not.wid) goto 17
 
-      call force_analy_cum(wgcollect(1),egcum(1)/wgcum(1),wgcum(1))
-
       wcm2=wcm2+w2collect
       wfcm2=wfcm2+wf2collect
       ecm2_dmc=ecm2_dmc+e2collect
@@ -267,6 +265,8 @@ c xerr = current error of x
         peave=pecum_dmc(ifr)/wgcum(ifr)
         tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
 
+        call force_analy_cum(wgcollect(1),egcum(1)/wgcum(1))
+
         if(ifr.gt.1) then
           fgcum(ifr)=fgcum(ifr)+fcollect(ifr)
           fgcm2(ifr)=fgcm2(ifr)+f2collect(ifr)
@@ -282,16 +282,16 @@ c xerr = current error of x
         else
 
           egave=egcum(1)/wgcum(1)
-          if (iforce_analy.gt.0.and.iblk.gt.1) then
+          if (iforce_analy.gt.0) then
             do iph=1,PTH
               do ic=1,ncent
                 do k=1,3          
                   derivcum(1,k,ic,iph)=derivcum(1,k,ic,iph)+derivcollect(1,k,ic,iph)
                   derivcum(2,k,ic,iph)=derivcum(2,k,ic,iph)+derivcollect(2,k,ic,iph)
                   derivcum(3,k,ic,iph)=derivcum(3,k,ic,iph)+derivcollect(3,k,ic,iph)
-                  derivtotave(k,ic,iph)=-(derivcum(1,k,ic,iph)+derivcum(2,k,ic,iph)-egave*derivcum(3,k,ic,iph))/wgcum(1)
-                  derivcm2(k,ic,iph)=derivcm2(k,ic,iph)+(derivcollect(1,k,ic,iph)+derivcollect(2,k,ic,iph)
-     &-egave*derivcollect(3,k,ic,iph))**2/wgcollect(1)
+                  derivtotave(k,ic,iph)=(derivcum(1,k,ic,iph)+2.d0*derivcum(2,k,ic,iph)-2.d0*egave*derivcum(3,k,ic,iph))/wgcum(1)
+                  derivcm2(k,ic,iph)=derivcm2(k,ic,iph)+(derivcollect(1,k,ic,iph)+2.d0*derivcollect(2,k,ic,iph)
+     &-2.d0*egave*derivcollect(3,k,ic,iph))**2/wgcollect(1)
                   derivgerr(k,ic,iph)=errg(derivtotave(k,ic,iph),derivcm2(k,ic,iph),1)
                   iderivgerr(k,ic,iph)=nint(1e12* derivgerr(k,ic,iph))
                 enddo
@@ -300,15 +300,17 @@ c xerr = current error of x
             call prop_prt_dmc(iblk,0,wgcum,wgcm2)
             call pcm_prt(iblk,wgcum,wgcm2)
             call mmpol_prt(iblk,wgcum,wgcm2)
-            do iph=1,PTH
-              do ic=1,ncent
-                if (ipathak.gt.0) then        
-                  write(ounit,'(i5,i5,1p6e14.5)')iph,ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
-                else    
-                  write(ounit,'(i5,1p6e14.5)') ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
-                endif  
+            if(iblk.gt.1) then
+              do iph=1,PTH
+                do ic=1,ncent
+                  if (ipathak.gt.0) then        
+                    write(ounit,'(i5,i5,1p6e14.5)')iph,ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
+                  else    
+                    write(ounit,'(i5,1p6e14.5)') ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
+                  endif  
+                enddo
               enddo
-            enddo
+            endif
           endif
         endif
 

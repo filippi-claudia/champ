@@ -319,7 +319,7 @@ c-----------------------------------------------------------------------
       return
       end
 c-----------------------------------------------------------------------
-      subroutine force_analy_cum(wcollect,eave,wcum)
+      subroutine force_analy_cum(wcollect,eave)
 
       use da_energy_sumcum, only: da_energy_cm2,da_energy_cum
       use da_energy_sumcum, only: da_energy_sum,da_psi_cum,da_psi_sum
@@ -397,8 +397,7 @@ c-----------------------------------------------------------------------
             endif
             x = da_energy_ave(k,ic,iph)
             x2 = da_energy_cm2(k,ic,iph)
-            da_energy_err(k)=dsqrt(abs(x2-(x)**2)/iblk_eff)
-            ! da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk_eff)
+            da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk_eff)
           enddo
           
           if (ipathak.gt.0) then        
