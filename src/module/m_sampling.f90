@@ -154,7 +154,7 @@ module random
 end module random
 
 module stats
-    !> Arguments: rejmax, acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc,
+    !> Arguments: rejmax, acc, dfus2ac, dfus2un, nacc,
     !> nbrnch, nodecr, trymove
       use precision_kinds, only: dp
 
@@ -163,8 +163,6 @@ module stats
     real(dp) :: acc
     real(dp) :: dfus2ac
     real(dp) :: dfus2un
-    real(dp) :: dr2ac
-    real(dp) :: dr2un
     integer  :: nacc
     integer  :: nbrnch
     integer  :: nodecr
@@ -172,7 +170,7 @@ module stats
 
     private
     public :: rejmax
-    public :: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
+    public :: acc, dfus2ac, dfus2un, nacc, nbrnch, nodecr, trymove
     save
 end module stats
 

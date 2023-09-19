@@ -11,8 +11,8 @@ c routine to print out final results
       use control_vmc, only: vmc_nblk,vmc_nstep
       use csfs,    only: nstates
       use denupdn, only: rprobdn,rprobup
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum
+      use est2cm,  only: ecm2,ecm21,pecm2,tpbcm2
+      use estcum,  only: ecum,ecum1,iblk,pecum,tpbcum
       use estsig,  only: ecm21s,ecum1s
       use estsum,  only: acc
       use finwrt_more_mod, only: finwrt_more
@@ -46,7 +46,7 @@ c routine to print out final results
       real(dp) :: eerr1s, eerr_p, efin, efin_p
       real(dp) :: ferr, ffin
       real(dp) :: passes, peerr, pefin, r2err
-      real(dp) :: r2fin, rtpass, sucsum
+      real(dp) :: rtpass, sucsum
       real(dp) :: tcsq, term
       real(dp) :: tpberr, tpbfin, trysum, x
       real(dp) :: x2
@@ -96,12 +96,10 @@ c quantities also computed in acuest_write
       efin=ecum(istate,1)/wcum(istate,1)
       pefin=pecum(istate)/wcum(istate,1)
       tpbfin=tpbcum(istate)/wcum(istate,1)
-      r2fin=r2cum/wcum(istate,1)
 
       eerr=err(ecum(istate,1),ecm2(istate,1),istate,1)
       peerr=err(pecum(istate),pecm2(istate),istate,1)
       tpberr=err(tpbcum(istate),tpbcm2(istate),istate,1)
-      r2err=err(r2cum,r2cm2,1,1)
 
       energy(1)=energy(1)+weights(istate)*efin
 
@@ -181,8 +179,6 @@ c     do 250 ifr=1,nforce
 c       energy_err(ifr)=sqrt(energy_err(ifr))
 c 250   force_err(ifr)=sqrt(force_err(ifr))
 
-      if(iperiodic.eq.0.and.ncent.eq.1)
-     & write(ounit,'(''<r2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') r2fin,r2err,r2err*rtpass
 
       if(index(mode,'mov1').ne.0.and.iperiodic.eq.0.and.ncent.eq.1) then
         write(ounit,'(''acceptance ='',t17,2f12.7)') accept,sucsum/trysum

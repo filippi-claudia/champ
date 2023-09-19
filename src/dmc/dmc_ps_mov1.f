@@ -1,74 +1,7 @@
       module dmc_ps_mov1
       contains
 
-      ! subroutine dmc_velocity(iw, ifr, adrif, tratio, vav2sum, v2sum)
-
-      !   use config,  only: vold_dmc
-      !   use contrldmc, only: tau
-      !   use system,  only: nelec
-
-      !   implicit none
-
-      !   real(dp) :: v2old, vavvt, vavvn
-
-      !   vav2sum = 0.d0
-      !   v2sum = 0.d0
-      !   do i=1,nelec
-      !     v2old = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2
-      !     & + vold_dmc(3,i,iw,ifr)**2
-      !     vavvt = (dsqrt(1.d0+2.d0*adrift*v2old*tau*tratio)-1.d0)/
-      !     & (adrift*v2old)
-      !     vavvn = vavvt/(tau*tratio)
-
-      !     vav2sum = vav2sumn + vavvn**2 * v2old
-      !     v2sum = v2sum + v2old
-
-      !   enddo
-      ! endsubroutine
-
-
-
       subroutine dmc_ps(lpass,irun)
-c Written by Cyrus Umrigar and Claudia Filippi
-c Uses the diffusion Monte Carlo algorithm described in:
-c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
-c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993)
-c modified to do accept/reject after single-electron moves and to
-c remove portions related to nuclear cusps.
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-c Control variables are:
-c idmc         < 0     VMC
-c              > 0     DMC
-c abs(idmc)    = 1 **  simple kernel using dmc.brock.f
-c              = 2     good kernel using dmc_good or dmc_good_inhom
-c ipq         <= 0 *   do not use expected averages
-c             >= 1     use expected averages (mostly in all-electron move algorithm)
-c itau_eff    <=-1 *   always use tau in branching (not implemented)
-c              = 0     use 0 / tau for acc /nacc moves in branching
-c             >= 1     use tau_eff (calcul in equilibration runs) for all moves
-c iacc_rej    <=-1 **  accept all moves (except possibly node crossings)
-c              = 0 **  use weights rather than accept/reject
-c             >= 1     use accept/reject
-c icross      <=-1 **  kill walkers that cross nodes (not implemented)
-c              = 0     reject walkers that cross nodes
-c             >= 1     allow walkers to cross nodes
-c                      (OK since crossing prob. goes as tau^(3/2))
-c icuspg      <= 0     approximate cusp in Green function
-c             >= 1     impose correct cusp condition on Green function
-c icut_br     <= 0     do not limit branching
-c             >= 1 *   use smooth formulae to limit branching to (1/2,2)
-c                      (bad because it makes energies depend on E_trial)
-c icut_e      <= 0     do not limit energy
-c             >= 1 *   use smooth formulae to limit energy (not implemented)
-
-c *  => bad option, modest deterioration in efficiency or time-step error
-c ** => very bad option, big deterioration in efficiency or time-step error
-c So, idmc=6,66 correspond to the foll. two:
-c 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c Another reasonable choice is:
-c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use age,     only: iage,ioldest,ioldestmx
       use system,    only: ncent
@@ -91,7 +24,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use detsav_mod, only: detsav
       use distances_mod, only: distances,distancese_restore
       use estcum,  only: ipass
-      use estsum,  only: efsum1,egsum1,esum1_dmc,pesum_dmc,r2sum,risum
+      use estsum,  only: efsum1,egsum1,esum1_dmc,pesum_dmc
       use estsum,  only: tausum,tpbsum_dmc,wfsum1,wgsum1
       use estsum,  only: wsum1
       use force_analytic, only: force_analy_sum, force_analy_save
@@ -122,7 +55,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use prop_dmc, only: prop_save_dmc,prop_sum_dmc
       use random_mod, only: random_dp
       use splitj_mod, only: splitj
-      use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nodecr
+      use stats,   only: acc,dfus2ac,dfus2un,nacc,nodecr
       use stats,   only: trymove
       use step,    only: rprob
       use strech_mod, only: strech
@@ -155,8 +88,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, ginv
       real(dp) :: p, pen, pp, psi2savo
-      real(dp) :: psidn(1), psijn(1), q, r2n
-      real(dp) :: r2o, r2sume, risume
+      real(dp) :: psidn(1), psijn(1), q, r2n, r2o
       real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new
       real(dp) :: rnorm_nodes_old, ro, taunow
       real(dp) :: tauprim, tratio, v2new, v2old
@@ -250,8 +182,6 @@ c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         call walkstrjas(iw)
 
 c Sample Green function for forward move
-        r2sume=zero
-        risume=zero
         dfus2ac=zero
         dfus2un=zero
         drifdif=zero
@@ -408,8 +338,6 @@ c Way to cure persistent configurations; not needed if itau_eff <=0; in practice
           trymove=trymove+1
           dfus2ac=dfus2ac+p*dfus2o
           dfus2un=dfus2un+dfus2o
-          dr2ac=dr2ac+p*dr2
-          dr2un=dr2un+dr2
 
 c Calculate density and moments of r for primary walk
           r2o=zero
@@ -455,8 +383,6 @@ c If we are using weights rather than accept/reject
           q=one-p
 
 c Calculate moments of r and save rejection probability for primary walk
-          r2sume=r2sume+(q*r2o+p*r2n)
-          risume=risume+(q/dsqrt(r2o)+p/dsqrt(r2n))
           unacp(i)=q
 
           call update_ymat(i)
@@ -474,7 +400,7 @@ c Primary configuration
             drifdifr=one
             if(nforce.gt.1)
      &      call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
-            call hpsi( xold_dmc(1,1,iw,1),psidn(1),psijn,ekino,enew,ipass,1)
+            call hpsi(xold_dmc(1,1,iw,1),psidn(1),psijn,ekino,enew,ipass,1)
             
             if(irun.eq.1) then
                wtg_sqrt(1)=dsqrt(wtg(1))
@@ -567,8 +493,8 @@ c Use more accurate formula for the drift and tau secondary in drift
             den=eest-enew(1)
             ecuto=min(e_cutoff,dabs(deo))
             ecutn=min(e_cutoff,dabs(den))
-            ewto=eest-sign(1.d0,deo)*min(e_cutoff,dabs(deo))
-            ewtn=eest-sign(1.d0,den)*min(e_cutoff,dabs(den))
+            ewto=eest-sign(1.d0,deo)*ecuto
+            ewtn=eest-sign(1.d0,den)*ecutn
           endif
 
           if(idmc.gt.0) then
@@ -602,9 +528,8 @@ c Set weights and product of weights over last nwprod steps
 
            elseif(ifr.gt.1) then
 
-            ro=log(ajacold(iw,ifr))
-            pwt(iw,ifr)=pwt(iw,ifr)+dlog(dwt)+ro-wthist(iw,iwmod,ifr)
-            wthist(iw,iwmod,ifr)=dlog(dwt)+ro
+            pwt(iw,ifr)=pwt(iw,ifr)+dlog(dwt)-wthist(iw,iwmod,ifr)
+            wthist(iw,iwmod,ifr)=dlog(dwt)
             wtnow=wt(iw)*dexp(pwt(iw,ifr)-pwt(iw,1))
 
           endif
@@ -618,11 +543,6 @@ c Set weights and product of weights over last nwprod steps
             wtg=wtnow*fprod
            else
             wtg=wtnow
-          endif
-
-          if(ifr.eq.1) then
-            r2sum=r2sum+wtg(1)*r2sume
-            risum=risum+wtg(1)*risume
           endif
           tausum(ifr)=tausum(ifr)+wtg(1)*taunow
 
@@ -745,10 +665,12 @@ c Set weights and product of weights over last nwprod steps
 
           else
 
-            wsum1(ifr)=wsum1(ifr)+wtnow
-            esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)
-            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))
-            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)
+            ro=ajacold(iw,ifr)*psido_dmc(iw,ifr)**2*exp(2*psijo_dmc(iw,ifr)-psi2savo)
+
+            wsum1(ifr)=wsum1(ifr)+wtnow*ro
+            esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)*ro
+            pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))*ro
+            tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)*ro
 
             wtg=wt(iw)*fprod/rnorm_nodes**2
             wtg_derivsum1=wtg(1)
@@ -834,4 +756,30 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
 
       return
       end
+
+      ! subroutine dmc_velocity(iw, ifr, adrif, tratio, vav2sum, v2sum)
+
+      !   use config,  only: vold_dmc
+      !   use contrldmc, only: tau
+      !   use system,  only: nelec
+
+      !   implicit none
+
+      !   real(dp) :: v2old, vavvt, vavvn
+
+      !   vav2sum = 0.d0
+      !   v2sum = 0.d0
+      !   do i=1,nelec
+      !     v2old = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2
+      !     & + vold_dmc(3,i,iw,ifr)**2
+      !     vavvt = (dsqrt(1.d0+2.d0*adrift*v2old*tau*tratio)-1.d0)/
+      !     & (adrift*v2old)
+      !     vavvn = vavvt/(tau*tratio)
+
+      !     vav2sum = vav2sumn + vavvn**2 * v2old
+      !     v2sum = v2sum + v2old
+
+      !   enddo
+      ! endsubroutine
+
       end module

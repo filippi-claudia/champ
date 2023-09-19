@@ -8,8 +8,8 @@ c job where it left off
       use config, only: xold
       use csfs, only: nstates
 
-      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
-      use estcum, only: ecum, ecum1, pecum, r2cum, tjfcum, tpbcum
+      use est2cm, only: ecm2, ecm21, pecm2, tjfcm2, tpbcm2
+      use estcum, only: ecum, ecum1, pecum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
       use multiple_geo, only: nforce, fcm2, fcum
@@ -197,8 +197,6 @@ c xold from idfrom to idtask
 
       acc=0
 
-      r2cum=0
-      r2cm2=0
       do istate=1,nstates
 
       pecum(istate)=0

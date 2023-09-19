@@ -16,10 +16,10 @@ c job where it left off
       use csfs, only: nstates
       use denupdn, only: rprobdn, rprobup
       use slater, only: ndet, cdet
-      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tpbcm2
-      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tpbcum
+      use est2cm, only: ecm2, ecm21, pecm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, tpbcum
       use estsig, only: ecm21s, ecum1s
-      use estsum, only: acc, esum, pesum, r2sum, tpbsum
+      use estsum, only: acc, esum, pesum, tpbsum
       use multiple_geo, only: nforce, iwftype, nwftype, pecent
       use multiple_geo, only: fcm2, fcum
       use forcewt, only: wcum, wsum
@@ -35,10 +35,10 @@ c job where it left off
       use determinant_psig_mod, only: determinant_psig
       use determinante_mod, only: compute_determinante_grad
       use error,   only: fatal_error
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum
+      use est2cm,  only: ecm2,ecm21,pecm2,tpbcm2
+      use estcum,  only: ecum,ecum1,iblk,pecum,tpbcum
       use estsig,  only: ecm21s,ecum1s
-      use estsum,  only: acc,esum,pesum,r2sum,tpbsum
+      use estsum,  only: acc,esum,pesum,tpbsum
       use force_analytic, only: force_analy_dump,force_analy_rstrt
       use forcewt, only: wcum,wsum
       use hpsi_mod, only: hpsi
@@ -101,8 +101,8 @@ c job where it left off
 
       write(10) vmc_nstep,iblk
       do istate=1,nstates
-        write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),r2cum,acc
-        write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),r2cm2
+        write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),acc
+        write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate)
         if(nforce.gt.1) then
           write(10) (wcum(istate,i),fcum(istate,i),fcm2(istate,i),i=1,nforce)
          else
@@ -171,8 +171,8 @@ c-----------------------------------------------------------------------
       read(10) nstepx,iblk
       if (nstepx.ne.vmc_nstep) call fatal_error('STARTR: nstep')
       do istate=1,nstates
-        read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),r2cum,acc
-        read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),r2cm2
+        read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),acc
+        read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate)
         if(nforce.gt.1) then
           read(10) (wcum(istate,i),fcum(istate,i),fcm2(istate,i),i=1,nforce)
          else
@@ -317,7 +317,6 @@ c rewrite psi2o if you are sampling guiding
         pesum(istate)=0
         tpbsum(istate)=0
       enddo
-      r2sum=0
 
       return
       end

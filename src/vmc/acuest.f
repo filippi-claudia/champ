@@ -13,11 +13,11 @@ c routine to accumulate estimators for energy etc.
       use determinante_mod, only: compute_determinante_grad
       use distance_mod, only: r_en,rvec_en
       use distances_mod, only: distances
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum
+      use est2cm,  only: ecm2,ecm21,pecm2,tpbcm2
+      use estcum,  only: ecum,ecum1,iblk,pecum,tpbcum
       use estpsi,  only: apsi,aref,detref
       use estsig,  only: ecm21s,ecum1s
-      use estsum,  only: acc,esum,esum1,pesum,r2sum,tpbsum
+      use estsum,  only: acc,esum,esum1,pesum,tpbsum
       use force_analytic, only: force_analy_cum,force_analy_init
       use force_analytic, only: force_analy_save
       use force_analy_reduce_mod, only: force_analy_reduce
@@ -66,7 +66,7 @@ c routine to accumulate estimators for energy etc.
 
       integer :: i, ic, ierr, ifr, istate, jel, k
       real(dp) :: ajacob, distance_node, eave
-      real(dp) :: psidg, r2now, rnorm_nodes
+      real(dp) :: psidg, rnorm_nodes
       real(dp) :: penow, tpbnow
       real(dp) :: wold
       real(dp), dimension(3,nelec) :: xstrech
@@ -96,15 +96,12 @@ c collect cumulative averages
         if(ifr.eq.1) then
           penow=pesum(istate)/wsum(istate,ifr)
           tpbnow=tpbsum(istate)/wsum(istate,ifr)
-          r2now=r2sum/(wsum(istate,ifr)*nelec)
 
           pecm2(istate)=pecm2(istate)+pesum(istate)*penow
           tpbcm2(istate)=tpbcm2(istate)+tpbsum(istate)*tpbnow
-          r2cm2=r2cm2+r2sum*r2now/nelec
 
           pecum(istate)=pecum(istate)+pesum(istate)
           tpbcum(istate)=tpbcum(istate)+tpbsum(istate)
-          r2cum=r2cum+r2sum/nelec
 
          else
           fcum(istate,ifr)=fcum(istate,ifr)+wsum(istate,1)*(enow(istate,ifr)-esum(istate,1)/wsum(istate,1))
@@ -132,7 +129,6 @@ c zero out xsum variables for metrop
         pesum(istate)=0
         tpbsum(istate)=0
       enddo
-      r2sum=0
 
       call prop_init(1)
       call optorb_init(1)
@@ -189,7 +185,7 @@ c-----------------------------------------------------------------------
       subroutine zerest
       implicit none
       integer :: i, ic, ifr, istate, jel, k
-      real(dp) :: psidg, r2now, rnorm_nodes
+      real(dp) :: psidg, rnorm_nodes
       real(dp) :: ajacob, distance_node
       real(dp), dimension(3,nelec) :: xstrech
       real(dp), dimension(MSTATES) :: ekino
@@ -227,10 +223,6 @@ c zero out estimators
 
         aref(k)=0
       enddo
-
-      r2cm2=0
-      r2cum=0
-      r2sum=0
 
       call optjas_init
       call optci_init(0)

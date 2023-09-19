@@ -158,11 +158,7 @@ c Collect radial charge density for atoms
      &   3i9)') ioldest,ioldestmx
       endif
 
-c     write(ounit,'(''average of the squares of the accepted step-size='',
-c    & f10.5)') dr2ac/trymove
-
-      write(ounit,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),
-     & ifr=1,nforce)
+      write(ounit,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),ifr=1,nforce)
 
       if (wid) then
         accav=acc/trymove

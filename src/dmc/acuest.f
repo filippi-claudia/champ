@@ -7,15 +7,15 @@ c routine to accumulate estimators for energy etc.
       use multiple_geo, only: fgcm2, fgcum, nforce, MFORCE
       use age, only: ioldest
       use estcum, only: iblk
-      use estsum, only: efsum, egsum, ei1sum, ei2sum, esum_dmc
-      use estsum, only: pesum_dmc, r2sum, risum, tausum, tjfsum_dmc, tpbsum_dmc, wdsum
+      use estsum, only: efsum, egsum, ei1sum, esum_dmc
+      use estsum, only: pesum_dmc, tausum, tjfsum_dmc, tpbsum_dmc, wdsum
       use estsum, only: wfsum, wgdsum, wgsum, wsum_dmc
-      use estcum, only: ecum_dmc, efcum, egcum, ei1cum, ei2cum
-      use estcum, only: pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
+      use estcum, only: ecum_dmc, efcum, egcum, ei1cum
+      use estcum, only: pecum_dmc,taucum, tjfcum_dmc, tpbcum_dmc
       use estcum, only: wcum_dmc, wdcum, wfcum, wgcum
       use estcum, only: wgdcum
-      use est2cm, only: ecm2_dmc, efcm2, egcm2, ei1cm2, ei2cm2
-      use est2cm, only: pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2
+      use est2cm, only: ecm2_dmc, efcm2, egcm2, ei1cm2
+      use est2cm, only: pecm2_dmc, tjfcm_dmc, tpbcm2_dmc, wcm2
       use est2cm, only: wfcm2, wgcm2
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave
       use mpiconf, only: nproc, wid
@@ -31,14 +31,14 @@ c routine to accumulate estimators for energy etc.
       use contrl_file, only: ounit
       use control, only: mode
       use control_dmc, only: dmc_nstep
-      use est2cm,  only: ecm2_dmc,efcm2,egcm2,ei1cm2,ei2cm2,pecm2_dmc
-      use est2cm,  only: r2cm2_dmc,ricm2,tpbcm2_dmc,wcm2,wfcm2
+      use est2cm,  only: ecm2_dmc,efcm2,egcm2,ei1cm2,pecm2_dmc
+      use est2cm,  only: tpbcm2_dmc,wcm2,wfcm2
       use est2cm,  only: wgcm2
-      use estcum,  only: ecum_dmc,efcum,egcum,ei1cum,ei2cum,iblk
-      use estcum,  only: pecum_dmc,r2cum_dmc,ricum,taucum
+      use estcum,  only: ecum_dmc,efcum,egcum,ei1cum,iblk
+      use estcum,  only: pecum_dmc,taucum
       use estcum,  only: tpbcum_dmc,wcum_dmc,wdcum,wfcum,wgcum,wgdcum
-      use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
-      use estsum,  only: r2sum,risum,tausum,tpbsum_dmc,wdsum
+      use estsum,  only: efsum,egsum,ei1sum,esum_dmc,pesum_dmc
+      use estsum,  only: tausum,tpbsum_dmc,wdsum
       use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
       use mmpol,   only: mmpol_init
       use mmpol_dmc, only: mmpol_prt
@@ -73,10 +73,9 @@ c routine to accumulate estimators for energy etc.
       real(dp) :: e2collect
       real(dp) :: e2sum, ecollect, ef2collect, ef2sum
       real(dp) :: efcollect, efnow, egave, egave1
-      real(dp) :: egerr, egnow, ei1now, ei2now
+      real(dp) :: egerr, egnow, ei1now
       real(dp) :: enow, fgave
       real(dp) :: fgerr, peave, peerr, penow
-      real(dp) :: r2now, rinow
       real(dp) :: tpbave, tpberr
       real(dp) :: tpbnow, w, w2, w2collect
       real(dp) :: w2sum, wcollect, wf2collect, wf2sum
@@ -129,21 +128,12 @@ c xerr = current error of x
          enow=esum_dmc/wsum_dmc
          efnow=efsum/wfsum
          ei1now=wfsum/wdsum
-         ei2now=wgsum(1)/wgdsum
-         rinow=risum/wgsum(1)
-         r2now=r2sum/wgsum(1)
 
          ei1cm2=ei1cm2+ei1now**2
-         ei2cm2=ei2cm2+ei2now**2
-         r2cm2_dmc=r2cm2_dmc+r2sum*r2now
-         ricm2=ricm2+risum*rinow
 
          wdcum=wdcum+wdsum
          wgdcum=wgdcum+wgdsum
          ei1cum=ei1cum+ei1now
-         ei2cum=ei2cum+ei2now
-         r2cum_dmc=r2cum_dmc+r2sum
-         ricum=ricum+risum
          
          w2sum=wsum_dmc**2
          wf2sum=wfsum**2
@@ -365,9 +355,6 @@ c zero out xsum variables for metrop
       esum_dmc=zero
       efsum=zero
       ei1sum=zero
-      ei2sum=zero
-      r2sum=zero
-      risum=zero
 
       do ifr=1,nforce
         egsum(ifr)=zero

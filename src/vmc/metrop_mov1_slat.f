@@ -22,7 +22,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use determinante_mod, only: compute_determinante_grad
       use detsav_mod, only: detsav
       use distances_mod, only: distancese_restore
-      use estsum,  only: acc,esum,esum1,pesum,r2sum,tpbsum
+      use estsum,  only: acc,esum,esum1,pesum,tpbsum
       use force_analytic, only: force_analy_sum
       use forcewt, only: wsum
       use gammai_mod, only: gammai
@@ -627,9 +627,6 @@ c and q times old, and keep track of which bin the old was in
 
       rprob(itryo)=rprob(itryo)+q
       rprob(itryn)=rprob(itryn)+p
-      do ic=1,3
-        r2sum=r2sum+p*xnew(ic,i)**2+q*xold(ic,i)**2
-      enddo
 
 c accept new move with probability p
 c Note when one electron moves the velocity on all electrons change.

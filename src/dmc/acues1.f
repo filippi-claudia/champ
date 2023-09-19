@@ -15,10 +15,9 @@ c routine to accumulate estimators for energy etc.
       use estsum, only: tausum, wdsum
       use estsum, only: wdsum1, wfsum, wfsum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
       use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
-      use estcum, only: ei3cum, taucum
+      use estcum, only: taucum
       use estcum, only: wcum1, wfcum1, wgcum, wgcum1
-      use est2cm, only: ecm21_dmc, efcm21, egcm21
-      use est2cm, only: ei3cm2, wcm21
+      use est2cm, only: ecm21_dmc, efcm21, egcm21, wcm21
       use est2cm, only: wfcm21, wgcm21
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
       use contrl_file,    only: ounit
@@ -29,9 +28,9 @@ c routine to accumulate estimators for energy etc.
       use contrl_file, only: ounit
       use contrldmc, only: idmc,nfprod
       use control, only: ipr,mode
-      use est2cm,  only: ecm21_dmc,efcm21,egcm21,ei3cm2,wcm21,wfcm21
+      use est2cm,  only: ecm21_dmc,efcm21,egcm21,wcm21,wfcm21
       use est2cm,  only: wgcm21
-      use estcum,  only: ecum1_dmc,efcum1,egcum,egcum1,ei3cum,ipass
+      use estcum,  only: ecum1_dmc,efcum1,egcum,egcum1,ipass
       use estcum,  only: taucum,wcum1,wfcum1,wgcum,wgcum1
       use estsum,  only: efsum,efsum1,egsum,egsum1,esum1_dmc,esum_dmc
       use estsum,  only: tausum,wdsum,wdsum1,wfsum,wfsum1,wgdsum,wgsum
@@ -59,13 +58,11 @@ c     statistical fluctuations without blocking
          wfcum1=wfcum1+wfsum1
          ecum1_dmc=ecum1_dmc+esum1_dmc(1)
          efcum1=efcum1+efsum1
-         ei3cum=ei3cum+wfsum1/wdsum1
          
          wcm21=wcm21+wsum1(1)**2
          wfcm21=wfcm21+wfsum1**2
          ecm21_dmc=ecm21_dmc+esum1_dmc(1)**2/wsum1(1)
          efcm21=efcm21+efsum1**2/wfsum1
-         ei3cm2=ei3cm2+(wfsum1/wdsum1)**2
       endif
       
       wgdsum1=wgdsumo
