@@ -329,9 +329,9 @@ c-----------------------------------------------------------------------
       open(80,file='force_analytic',form='formatted',status='unknown')
       do ic=1,ncent
         do k=1,3
-          da_energy_ave(k,ic)=(da_energy_cum(k,ic)-2*eave*da_psi_cum(k,ic))/wcum
-          x = da_energy_ave(k,ic)
+          x =  da_energy_cum(k,ic)-2*eave*da_psi_cum(k,ic)
           x2 = da_energy_cm2(k,ic)
+          da_energy_ave(k,ic)=x/wcum
           da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
         enddo
         write(80,'(i5,1p6e14.5)') ic,(da_energy_ave(k,ic),k=1,3),(da_energy_err(k),k=1,3)
