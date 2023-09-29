@@ -9,6 +9,7 @@ c MPI version written by Claudia Filippi
       use est2cm,  only: ecm21
       use estcum,  only: ecum1,iblk
       use estsig,  only: ecm21s,ecum1s
+      use force_analy_reduce_mod, only: force_analy_reduce
       use force_analytic, only: force_analy_fin
       use forcewt, only: wcum
       use mmpol_reduce_mod, only: mmpol_reduce
@@ -146,9 +147,10 @@ c reduce mmpol properties
       call mmpol_reduce
 
       if(wid) call mmpol_fin(wcum(1,1),iblk)
-
+      
+      call force_analy_reduce
       ! if(wid) call force_analy_fin(wcum(1,1),iblk,efin)
-      if(wid) call force_analy_fin(wcum(1,1),dble(iblk/nproc),efin)
+      if(wid) call force_analy_fin(wcum(1,1),dble(iblk),efin)
 
       return
       end

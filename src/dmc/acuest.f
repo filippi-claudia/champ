@@ -101,6 +101,8 @@ c routine to accumulate estimators for energy etc.
       real(dp), dimension(MFORCE) :: fcollect
       real(dp), dimension(MFORCE) :: f2collect
       real(dp), dimension(3,3,ncent,PTH) :: derivcollect
+      real(dp), dimension(3,ncent,PTH) :: derivsum2
+      real(dp), dimension(3,ncent,PTH) :: derivcollect2
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
@@ -170,6 +172,17 @@ c xerr = current error of x
         taucum(ifr)=taucum(ifr)+taucollect(ifr)
       enddo
 
+      egave=egcum(1)/wgcum(1)
+      if (iforce_analy.gt.0) then
+        do iph=1,PTH
+          do ic=1,ncent
+            do k=1,3  
+              derivsum2(k,ic,iph) = (derivsum(1,k,ic,iph)+2.d0*derivsum(2,k,ic,iph)-2.d0*egave*derivsum(3,k,ic,iph))**2/wgsum(1)
+            enddo
+          enddo
+        enddo
+      endif
+
       call mpi_reduce(pesum_dmc,pecollect,MFORCE
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(tpbsum_dmc,tpbcollect,MFORCE
@@ -190,6 +203,9 @@ c xerr = current error of x
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       call mpi_reduce(derivsum,derivcollect,3*3*ncent*PTH
+     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+      call mpi_reduce(derivsum2,derivcollect2,3*ncent*PTH
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       call mpi_reduce(esum_dmc,ecollect,1
@@ -214,8 +230,8 @@ c xerr = current error of x
       call optjas_cum(wgsum(1),egnow)
       call optorb_cum(wgsum(1),egsum(1))
       call optci_cum(wgsum(1))
+      call force_analy_cum(wgsum(1),egcum(1)/wgcum(1))
 
-      call force_analy_reduce
       call prop_reduce(wgsum(1))
       call pcm_reduce(wgsum(1))
       call mmpol_reduce(wgsum(1))
@@ -255,8 +271,6 @@ c xerr = current error of x
         peave=pecum_dmc(ifr)/wgcum(ifr)
         tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
 
-        call force_analy_cum(wgcollect(1),egcum(1)/wgcum(1))
-
         if(ifr.gt.1) then
           fgcum(ifr)=fgcum(ifr)+fcollect(ifr)
           fgcm2(ifr)=fgcm2(ifr)+f2collect(ifr)
@@ -280,16 +294,12 @@ c xerr = current error of x
                   derivcum(2,k,ic,iph)=derivcum(2,k,ic,iph)+derivcollect(2,k,ic,iph)
                   derivcum(3,k,ic,iph)=derivcum(3,k,ic,iph)+derivcollect(3,k,ic,iph)
                   derivtotave(k,ic,iph)=(derivcum(1,k,ic,iph)+2.d0*derivcum(2,k,ic,iph)-2.d0*egave*derivcum(3,k,ic,iph))/wgcum(1)
-                  derivcm2(k,ic,iph)=derivcm2(k,ic,iph)+(derivcollect(1,k,ic,iph)+2.d0*derivcollect(2,k,ic,iph)
-     &-2.d0*egave*derivcollect(3,k,ic,iph))**2/wgcollect(1)
-                  derivgerr(k,ic,iph)=errg(derivtotave(k,ic,iph),derivcm2(k,ic,iph),1)
+                  derivcm2(k,ic,iph)=derivcm2(k,ic,iph)+derivcollect2(k,ic,iph)
+                  derivgerr(k,ic,iph)=errg(derivtotave(k,ic,iph)*wgcum(1),derivcm2(k,ic,iph),1)
                   iderivgerr(k,ic,iph)=nint(1e12* derivgerr(k,ic,iph))
                 enddo
               enddo
             enddo
-            call prop_prt_dmc(iblk,0,wgcum,wgcm2)
-            call pcm_prt(iblk,wgcum,wgcm2)
-            call mmpol_prt(iblk,wgcum,wgcm2)
             if(iblk.gt.1) then
               do iph=1,PTH
                 do ic=1,ncent
@@ -302,6 +312,10 @@ c xerr = current error of x
               enddo
             endif
           endif
+          
+          call prop_prt_dmc(iblk,0,wgcum,wgcm2)
+          call pcm_prt(iblk,wgcum,wgcm2)
+          call mmpol_prt(iblk,wgcum,wgcm2)
         endif
 
 c write out header first time

@@ -38,7 +38,7 @@
       use stats,   only: acc,nacc,nodecr,trymove
       use vmc_mod, only: nrad
       use force_analytic, only: force_analy_fin
-      ! use force_analy_reduce_mod, only: force_analy_reduce
+      use force_analy_reduce_mod, only: force_analy_reduce
 
 
       implicit none
@@ -121,7 +121,7 @@
       call optx_jas_orb_reduce
       call optx_jas_ci_reduce
       call optx_orb_ci_reduce
-      ! call force_analy_reduce
+      call force_analy_reduce
 
       if(wid) then
         do id=1,nproc-1

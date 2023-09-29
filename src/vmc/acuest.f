@@ -20,7 +20,6 @@ c routine to accumulate estimators for energy etc.
       use estsum,  only: acc,esum,esum1,pesum,tpbsum
       use force_analytic, only: force_analy_cum,force_analy_init
       use force_analytic, only: force_analy_save
-      use force_analy_reduce_mod, only: force_analy_reduce
       use forcewt, only: wcum,wsum
       use hpsi_mod, only: hpsi
       use inputflags, only: eps_node_cutoff,node_cutoff
@@ -68,7 +67,6 @@ c routine to accumulate estimators for energy etc.
       real(dp) :: ajacob, distance_node, eave
       real(dp) :: psidg, rnorm_nodes
       real(dp) :: penow, tpbnow
-      real(dp) :: wold
       real(dp), dimension(3,nelec) :: xstrech
       real(dp), dimension(MSTATES) :: ekino
       real(dp), dimension(MSTATES) :: wtg
@@ -84,7 +82,6 @@ c xcm2 = accumulated sums of xnow**2
 
 
 c collect cumulative averages
-      wold = wcum(1,1)
       do ifr=1,nforce
         do istate=1,nstates
 
@@ -117,7 +114,11 @@ c only called for ifr=1
       call prop_cum(wsum(1,1))
       call pcm_cum(wsum(1,1))
       call mmpol_cum(wsum(1,1))
-      call force_analy_reduce
+
+      if(wid) eave=ecum(1,1)/wcum(1,1)
+      call MPI_BCAST(eave,1,MPI_REAL8,0,MPI_COMM_WORLD,ierr)
+
+      call force_analy_cum(wsum(1,1),eave)
 
 c zero out xsum variables for metrop
 
@@ -135,12 +136,9 @@ c zero out xsum variables for metrop
       call optci_init(1)
       call pcm_init(1)
       call mmpol_init(1)
-
+      call force_analy_init(1)
 
       call acuest_reduce(enow)
-
-      call force_analy_cum(wcum(1,1)-wold,ecum(1,1)/wcum(1,1))
-      call force_analy_init(1)
 
       if(allocated(enow)) deallocate(enow)
 
