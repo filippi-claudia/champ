@@ -4,32 +4,20 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
-      use multiple_geo, only: fgcm2, fgcum, nforce, MFORCE
       use age, only: ioldest, ioldestmx
       use contrl_file, only: ounit
+      use control_dmc, only: dmc_nstep
       use estcum, only: iblk
-      use estsum, only: efsum, egsum, ei1sum, esum_dmc
-      use estsum, only: pesum_dmc, tausum, tjfsum_dmc, tpbsum_dmc, wdsum
-      use estsum, only: wfsum, wgdsum, wgsum, wsum_dmc
-      use estcum, only: ecum_dmc, efcum, egcum, ei1cum
-      use estcum, only: pecum_dmc, taucum, tjfcum_dmc, tpbcum_dmc
-      use estcum, only: wcum_dmc, wdcum, wfcum, wgcum
-      use estcum, only: wgdcum
-      use est2cm, only: ecm2_dmc, efcm2, egcm2, ei1cm2
-      use est2cm, only: pecm2_dmc, tjfcm_dmc, tpbcm2_dmc, wcm2
+      use estsum, only: efsum, egsum, esum_dmc
+      use estsum, only: pesum_dmc, tausum, tpbsum_dmc
+      use estsum, only: wfsum, wgsum, wsum_dmc
+      use estcum, only: ecum_dmc, efcum, egcum
+      use estcum, only: pecum_dmc, taucum, tpbcum_dmc
+      use estcum, only: wcum_dmc, wfcum, wgcum
+      use est2cm, only: ecm2_dmc, efcm2, egcm2
+      use est2cm, only: pecm2_dmc, tpbcm2_dmc, wcm2
       use est2cm, only: wfcm2, wgcm2
       use force_analytic, only: force_analy_init
-      use mpiconf, only: wid
-!      use contrl, only: nstep
-      use control_dmc, only: dmc_nstep
-      use est2cm,  only: ecm2_dmc,efcm2,egcm2,ei1cm2,pecm2_dmc
-      use est2cm,  only: tpbcm2_dmc,wcm2,wfcm2, wgcm2
-      use estcum,  only: ecum_dmc,efcum,egcum,ei1cum,iblk
-      use estcum,  only: pecum_dmc,taucum
-      use estcum,  only: tpbcum_dmc,wcum_dmc,wdcum,wfcum,wgcum,wgdcum
-      use estsum,  only: efsum,egsum,ei1sum,esum_dmc,pesum_dmc
-      use estsum,  only: tausum,tpbsum_dmc,wdsum
-      use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
       use mmpol,   only: mmpol_init
       use mmpol_dmc, only: mmpol_cum,mmpol_prt
       use mmpol_reduce_mod, only: mmpol_reduce
@@ -43,9 +31,6 @@ c routine to accumulate estimators for energy etc.
       use prop_dmc, only: prop_prt_dmc
       use prop_reduce_mod, only: prop_reduce
       use properties_mod, only: prop_cum,prop_init
-!      use contrl, only: nstep
-
-
 
       implicit none
 
@@ -53,7 +38,7 @@ c routine to accumulate estimators for energy etc.
       integer :: ioldest_collect, ioldestmx_collect, ipeerr
       integer :: itpber, k, npass
       real(dp) :: dum, efnow, egave, egave1
-      real(dp) :: egerr, egnow, ei1now
+      real(dp) :: egerr, egnow
       real(dp) :: enow, fgave
       real(dp) :: fgerr, peave, peerr, penow
       real(dp) :: tpbave, tpberr
@@ -104,13 +89,6 @@ c xerr = current error of x
       wfnow=wfsum/dmc_nstep
       enow=esum_dmc/wsum_dmc
       efnow=efsum/wfsum
-      ei1now=wfsum/wdsum
-
-      ei1cm2=ei1cm2+ei1now**2
-
-      wdcum=wdcum+wdsum
-      wgdcum=wgdcum+wgdsum
-      ei1cum=ei1cum+ei1now
 
       wcm2=wcm2+wsum_dmc**2
       wfcm2=wfcm2+wfsum**2
@@ -212,11 +190,8 @@ c zero out xsum variables for metrop
 
    17 wsum_dmc=zero
       wfsum=zero
-      wdsum=zero
-      wgdsum=zero
       esum_dmc=zero
       efsum=zero
-      ei1sum=zero
 
       do ifr=1,nforce
         egsum(ifr)=zero

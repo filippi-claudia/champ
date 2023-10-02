@@ -34,22 +34,17 @@ c MPI version written by Claudia Filippi
       use pcm_reduce_mod, only: pcm_reduce
       use pcm_vmc, only: pcm_fin
       use precision_kinds, only: dp
-      use step,    only: rprob,suc,try
+      use step,    only: suc,try
       use vmc_mod, only: nrad
-      !use contrl, only: nstep
 
       implicit none
 
       integer :: i, id, ierr, istate
       integer, dimension(MPI_STATUS_SIZE) :: istatus
       real(dp) :: dble, efin, passes
-      real(dp), dimension(nrad) :: rprobt
       real(dp), dimension(nrad) :: tryt
       real(dp), dimension(nrad) :: suct
       real(dp), dimension(MSTATES) :: collect
-
-
-
 
       call mpi_reduce(ecum1,collect,nstates,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -75,15 +70,12 @@ c MPI version written by Claudia Filippi
         ecm21s(istate)=collect(istate)
       enddo
 
-      call mpi_reduce(rprob,rprobt,nrad,mpi_double_precision
-     &,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(suc,suct,nrad,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(try,tryt,nrad,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       do i=1,nrad
-        rprob(i)=rprobt(i)
         suc(i)=suct(i)
         try(i)=tryt(i)
       enddo

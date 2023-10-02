@@ -16,18 +16,16 @@ c job where it left off
       use contrldmc, only: idmc,nfprod,rttau,tau
       use control, only: mode
       use control_dmc, only: dmc_nconf
-      use denupdn, only: rprobdn,rprobup
       use dmc_mod, only: MWALK
       use dumper_gpop_mod, only: dumper_gpop
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
-      use est2cm,  only: ei1cm2,pecm2_dmc
-      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21,wdcm2,wdcm21
-      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21,wgdcm2
+      use est2cm,  only: pecm2_dmc
+      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21
+      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21
       use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
-      use estcum,  only: ei1cum,iblk,ipass,pecum_dmc
+      use estcum,  only: iblk,ipass,pecum_dmc
       use estcum,  only: taucum,tpbcum_dmc
-      use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
-      use estcum,  only: wgcum1,wgdcum
+      use estcum,  only: wcum1,wcum_dmc,wfcum,wfcum1,wgcum,wgcum1
       use force_analytic, only: force_analy_dump
       use jacobsave, only: ajacob
       use mmpol,   only: mmpol_dump
@@ -44,14 +42,11 @@ c job where it left off
       use slater,  only: cdet,coef,ndet,norb
       use stats,   only: acc,dfus2ac,dfus2un,nacc,nbrnch
       use stats,   only: nodecr,trymove
-      use step,    only: rprob
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nctype,ndn,nelec,newghostype
       use system,  only: nghostcent,nup,znuc
       use velratio, only: fratio
       use vmc_mod, only: nrad
-!      use contrl, only: nconf
-
 
       implicit none
 
@@ -65,8 +60,6 @@ c job where it left off
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: small = 1.e-6
-
-
 
       if(mode.eq.'dmc_one_mpi2') then
         call dumper_gpop
@@ -183,17 +176,14 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) tau,rttau,idmc
       write(10) nelec,dmc_nconf,nforce
       write(10) (wtgen(i),i=0,nfprod),wgdsumo
-      write(10) wcum_dmc,wfcum,wdcum,wgdcum
-     &,wcum1/nproc,wfcum1/nproc,(wgcum1(i)/nproc,i=1,nforce),wdcum1
+      write(10) wcum_dmc,wfcum
+     &,wcum1/nproc,wfcum1/nproc,(wgcum1(i)/nproc,i=1,nforce)
      &,ecum_dmc,efcum,ecum1_dmc/nproc,efcum1/nproc,(egcum1(i)/nproc,i=1,nforce)
-     &,ei1cum
       write(10) ipass,iblk,iblk_proc
-      write(10) wcm2,wfcm2,wdcm2,wgdcm2,wcm21/nproc
-     &,wfcm21/nproc,(wgcm21(i)/nproc,i=1,nforce),wdcm21, ecm2_dmc,efcm2
+      write(10) wcm2,wfcm2,wcm21/nproc
+     &,wfcm21/nproc,(wgcm21(i)/nproc,i=1,nforce),ecm2_dmc,efcm2
      &,ecm21_dmc/nproc,efcm21/nproc,(egcm21(i)/nproc,i=1,nforce)
-     &,ei1cm2
       write(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
-      write(10) (rprob(i)/nproc,rprobup(i),rprobdn(i),i=1,nrad)
       write(10) dfus2ac,dfus2un,acc
      &,trymove,nacc,nbrnch,nodecr
       call prop_dump(10)

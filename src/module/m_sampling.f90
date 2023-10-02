@@ -176,19 +176,18 @@ end module stats
 
 module step
     !> I guess has to do with the sampling
-    !> Arguments: ekin, ekin2, rprob, suc, trunfb, try
+    !> Arguments: ekin, ekin2, suc, trunfb, try
       use precision_kinds, only: dp
       use vmc_mod, only: nrad
 
     real(dp), dimension(:), allocatable :: ekin !(nrad)
     real(dp), dimension(:), allocatable :: ekin2 !(nrad)
-    real(dp), dimension(:), allocatable :: rprob !(nrad)
     real(dp), dimension(:), allocatable :: suc !(nrad)
     real(dp), dimension(:), allocatable :: trunfb !(nrad)
     real(dp), dimension(:), allocatable :: try !(nrad)
 
     private
-    public :: ekin, ekin2, rprob, suc, trunfb, try
+    public :: ekin, ekin2, suc, trunfb, try
     public :: allocate_step, deallocate_step
     save
 contains
@@ -196,7 +195,6 @@ contains
       use vmc_mod, only: nrad
         if (.not. allocated(ekin)) allocate (ekin(nrad))
         if (.not. allocated(ekin2)) allocate (ekin2(nrad))
-        if (.not. allocated(rprob)) allocate (rprob(nrad))
         if (.not. allocated(suc)) allocate (suc(nrad))
         if (.not. allocated(trunfb)) allocate (trunfb(nrad))
         if (.not. allocated(try)) allocate (try(nrad))
@@ -206,7 +204,6 @@ contains
         if (allocated(try)) deallocate (try)
         if (allocated(trunfb)) deallocate (trunfb)
         if (allocated(suc)) deallocate (suc)
-        if (allocated(rprob)) deallocate (rprob)
         if (allocated(ekin2)) deallocate (ekin2)
         if (allocated(ekin)) deallocate (ekin)
     end subroutine deallocate_step

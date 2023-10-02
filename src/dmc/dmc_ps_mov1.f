@@ -9,8 +9,7 @@
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
       use casula,  only: i_vpsp,icasula
-      use config,  only: psido_dmc,psijo_dmc,vold_dmc
-      use config,  only: xold_dmc
+      use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
       use const,   only: etrial,esigmatrial
       use constants, only: hb
       use contrl_file, only: ounit
@@ -18,7 +17,7 @@
       use contrldmc, only: nfprod,rttau,tau
       use control, only: ipr
       use control_dmc, only: dmc_irstar,dmc_nconf
-      use da_energy_now, only: da_energy
+      use da_energy_now, only: da_energy,da_psi
       use derivest, only: derivsum
       use determinante_mod, only: compute_determinante_grad
       use detsav_mod, only: detsav
@@ -47,27 +46,25 @@
       use optci_mod, only: optci_sum
       use optjas_mod, only: optjas_sum
       use optorb_f_mod, only: optorb_sum
+      use optwf_handle_wf, only: optwf_store
       use optx_jas_ci, only: optx_jas_ci_sum
       use optx_jas_orb, only: optx_jas_orb_sum
       use optx_orb_ci, only: optx_orb_ci_sum
+      use pathak_mod, only: ipathak, eps_pathak, pold, pnew, pathak
       use pcm_dmc, only: pcm_save,pcm_sum
       use precision_kinds, only: dp
       use prop_dmc, only: prop_save_dmc,prop_sum_dmc
       use random_mod, only: random_dp
       use splitj_mod, only: splitj
-      use stats,   only: acc,dfus2ac,dfus2un,nacc,nodecr
-      use stats,   only: trymove
-      use step,    only: rprob
+      use stats, only: acc,dfus2ac,dfus2un,nacc,nodecr
+      use stats, only: trymove
       use strech_mod, only: strech
       use system,  only: cent,nelec,nup
-      use velratio, only: fratio,xdrifted
+      use velratio, only: fratio
+      use vd_mod, only: dmc_ivd, da_branch, deriv_eold, esnake, ehist
       use vmc_mod, only: delri,nrad
       use walksav_det_mod, only: walksav_det,walkstrdet
       use walksav_jas_mod, only: walksav_jas,walkstrjas
-      use optwf_handle_wf, only: optwf_store
-      use vd_mod,         only: dmc_ivd, da_branch, deriv_eold, esnake, ehist
-      use pathak_mod, only: ipathak, eps_pathak, pold, pnew, pathak
-      use da_energy_now, only: da_energy,da_psi
 
       implicit none
 
@@ -100,7 +97,6 @@
       real(dp), dimension(3) :: xnew
       real(dp), dimension(3, nelec) :: vnew
       real(dp), dimension(3) :: xbac
-      real(dp), dimension(3, nelec) :: xdriftedn
       real(dp), dimension(nelec) :: unacp
       real(dp), dimension(10, 3, ncent) :: deriv_esum
       real(dp), dimension(3, ncent) :: deriv_energy_new
@@ -112,10 +108,7 @@
       real(dp), parameter :: adrift = 0.5d0
       real(dp), parameter :: zero_1d(1) = (/0.d0/)
 
-
       data ncall /0/
-
-c     term=(sqrt(two*pi*tau))**3/pi
 
       eps_node_cutoff=eps_node_cutoff*sqrt(tau)
       e_cutoff=0.2d0*sqrt(nelec/tau)
@@ -138,8 +131,8 @@ c Undo weights
 
 c Store (well behaved velocity/velocity)
       if(ncall.eq.0.and.dmc_irstar.eq.0) then
-        do iw=1,nwalk
-          do ifr=1,nforce
+        do ifr=1,nforce
+          do iw=1,nwalk
 
             vav2sumo=zero
             v2sumo=zero
@@ -156,9 +149,6 @@ c Tau secondary in drift is one (first time around)
               vav2sumo=vav2sumo+vavvo*vavvo*v2old
               v2sumo=v2sumo+v2old
 
-              do k=1,3
-                xdrifted(k,i,iw,ifr)=xold_dmc(k,i,iw,ifr)+vold_dmc(k,i,iw,ifr)*vavvt
-              enddo
             enddo
             fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
           enddo
@@ -475,9 +465,6 @@ c Use more accurate formula for the drift and tau secondary in drift
             vav2sumn=vav2sumn+vavvn**2*v2old
             v2sumn=v2sumn+v2old
 
-            do k=1,3
-              xdriftedn(k,i)=xold_dmc(k,i,iw,ifr)+vold_dmc(k,i,iw,ifr)*vavvt
-            enddo
           enddo
           fration=dsqrt(vav2sumn/v2sumn)
 
@@ -558,11 +545,6 @@ c Set weights and product of weights over last nwprod steps
           psido_dmc(iw,ifr)=psidn(1)
           psijo_dmc(iw,ifr)=psijn(1)
           fratio(iw,ifr)=fration
-          do i=1,nelec
-            do k=1,3
-              xdrifted(k,i,iw,ifr)=xdriftedn(k,i)
-            enddo
-          enddo
           call prop_save_dmc(iw)
           call pcm_save(iw)
           call mmpol_save(iw)
@@ -728,7 +710,7 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
           endif
         endif
 
-      call average(1)
+      ! call average(1)
       enddo
 
       if(ipr.gt.5.and.wsum1(1).gt.1.1d0*dmc_nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,

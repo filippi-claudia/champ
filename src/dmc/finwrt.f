@@ -4,44 +4,42 @@
 c MPI version created by Claudia Filippi starting from serial version
 c routine to print out final results
 
-      use age,     only: iage,ioldest,ioldestmx
-      use branch,  only: eold,nwalk
-      use config,  only: vold_dmc,xold_dmc
+      use age,     only: iage, ioldest, ioldestmx
+      use branch,  only: eold, nwalk
+      use config,  only: vold_dmc, xold_dmc
       use const,   only: etrial
       use contrl_file, only: ounit
       use contrl_per, only: iperiodic
-      use contrldmc, only: idmc,nfprod,tau
-      use control, only: ipr,mode
-      use control_dmc, only: dmc_nblkeq,dmc_nconf,dmc_nstep
+      use contrldmc, only: idmc, nfprod, tau
+      use control, only: ipr, mode
+      use control_dmc, only: dmc_nblkeq, dmc_nconf, dmc_nstep
       use custom_broadcast, only: bcast
-      use denupdn, only: rprobdn,rprobup
-      use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
-      use est2cm,  only: pecm2_dmc,tpbcm2_dmc,wcm2,wcm21,wfcm2
-      use est2cm,  only: wfcm21,wgcm2,wgcm21
-      use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
-      use estcum,  only: iblk,pecum_dmc,taucum,tpbcum_dmc
-      use estcum,  only: wcum1,wcum_dmc,wfcum,wfcum1,wgcum,wgcum1
+      use est2cm,  only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21
+      use est2cm,  only: pecm2_dmc, tpbcm2_dmc, wcm2, wcm21, wfcm2
+      use est2cm,  only: wfcm21, wgcm2, wgcm21
+      use estcum,  only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1
+      use estcum,  only: iblk, pecum_dmc, taucum, tpbcum_dmc
+      use estcum,  only: wcum1, wcum_dmc, wfcum, wfcum1, wgcum, wgcum1
       use finwrt_more_mod, only: finwrt_more
-      use grdntspar, only: igrdtype,ngradnts
+      use force_analytic, only: force_analy_fin
+      use grdntspar, only: igrdtype, ngradnts
       use general, only: write_walkalize
       use header,  only: title
-      use misc_grdnts, only: finwrt_diaghess_zmat,finwrt_grdnts_cart
+      use misc_grdnts, only: finwrt_diaghess_zmat, finwrt_grdnts_cart
       use misc_grdnts, only: finwrt_grdnts_zmat
       use mmpol_dmc, only: mmpol_fin
       use mpi
       use mpiblk,  only: iblk_proc
-      use mpiconf, only: nproc,wid
-      use multiple_geo, only: MFORCE,fgcm2,fgcum,nforce
-      use optwf_corsam, only: energy,energy_err,force,force_err
+      use mpiconf, only: nproc, wid
+      use multiple_geo, only: MFORCE, fgcm2, fgcum, nforce
+      use optwf_corsam, only: energy, energy_err, force, force_err
       use pcm_dmc, only: pcm_fin
       use precision_kinds, only: dp
       use prop_dmc, only: prop_prt_dmc
-      use stats,   only: acc,nacc,nodecr,trymove
-      use step,    only: rprob
-      use system,  only: ncent,nelec
-      use vmc_mod, only: delri,nrad
-      use force_analytic, only: force_analy_fin
-!      use contrl, only: nblkeq, nconf, nstep
+      use stats,   only: acc, nacc, nodecr, trymove
+      use system,  only: ncent, nelec
+      use vmc_mod, only: delri, nrad
+
       implicit none
 
       integer :: i, ierr, ifr, j, k
@@ -61,7 +59,6 @@ c routine to print out final results
       real(dp) :: x, x2
       real(dp), dimension(MFORCE) :: ffin_grdnts
       real(dp), dimension(MFORCE) :: ferr_grdnts
-      real(dp), dimension(nrad) :: rprobcollect
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
@@ -112,15 +109,6 @@ c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
      & evalg_eff
 
       if(mode.eq.'mpi_one_mpi2') then
-
-c Collect radial charge density for atoms
-      if(iperiodic.eq.0) then
-        call mpi_reduce(rprob,rprobcollect,nrad,mpi_double_precision
-     &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
-        do i=1,nrad
-          rprob(i)=rprobcollect(i)
-        enddo
-      endif
 
       call mpi_reduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,0,
      &MPI_COMM_WORLD,ierr)
