@@ -147,7 +147,7 @@ c-----------------------------------------------------------------------
         enddo
       enddo
 
-C$ iflg = 0: init *cum, *cm2 as well
+c     C$ iflg = 0: init *cum, *cm2 as well
       if(iflg.gt.0) return
       
       do k=1,nstates

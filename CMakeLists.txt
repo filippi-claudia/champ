@@ -133,6 +133,23 @@ if (QMCKL_FOUND)
 endif(QMCKL_FOUND)
 
 
+find_package(CUDA OPTIONAL_COMPONENTS CUDA QUIET)
+
+if (CUDA_FOUND)
+  message(" ")
+  message(STATUS "Is CUDA found                   :: " ${CUDA_FOUND})
+  message(STATUS "CUDA version                    :: " ${CUDA_VERSION})
+  message(STATUS "CUDA toolkit directory          :: " ${CUDA_TOOLKIT_ROOT_DIR})
+  # Printing individual libraries in the list
+  message(STATUS "CUDA LIBRARIES          : ")
+  foreach(lib ${CUDA_LIBRARIES})
+    message("                                    :: " ${lib})
+  endforeach(lib)
+  foreach(lib ${CUDA_CUBLAS_LIBRARIES})
+    message("                                    :: " ${lib})
+  endforeach(lib)
+  message(" ")
+endif()
 
 
 #  documentation requirements
@@ -143,7 +160,15 @@ endif(BUILD_DOC)
 
 # Find MPI
 if (ENABLE_MPI)
-  find_package(MPI COMPONENTS Fortran REQUIRED)
+	find_package(MPI REQUIRED COMPONENTS Fortran)
+
+  if (MPI_FOUND)
+    message(" ")
+    message(STATUS "Is MPI  found                   :: " ${MPI_FOUND})
+    message(STATUS "MPI  Fortran Compiler           :: " ${MPI_Fortran_COMPILER})
+    message(STATUS "MPI  Fortran Compiler version   :: " ${MPI_Fortran_VERSION})
+    message(" ")
+  endif()
 endif(ENABLE_MPI)
 
 # SIMD instructions
@@ -155,6 +180,33 @@ find_package(SystemInfo)
 # Git information
 find_package(GitInfo)
 gitinfo(${CMAKE_SOURCE_DIR})
+
+## Compiler FLAGS
+if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=medium")
+  list(APPEND Fortran_FLAGS "-D_MPI_")
+  list(APPEND Fortran_FLAGS "-DCLUSTER")
+  list(APPEND Fortran_FLAGS "-DPGI")
+  list(APPEND Fortran_FLAGS "-DOPENACC")
+  list(APPEND Fortran_FLAGS "-Mfree")
+  list(APPEND Fortran_FLAGS "-mp=multicore,gpu")
+  list(APPEND Fortran_FLAGS "-acc")
+  list(APPEND Fortran_FLAGS "-gpu=cc80")
+  list(APPEND Fortran_FLAGS "-Mcudalib=cublas")
+  list(APPEND Fortran_FLAGS "-Mcuda=lineinfo")
+  list(APPEND Fortran_FLAGS "-Minfo=mp,acc")
+  list(APPEND Fortran_FLAGS "-gopt")
+  list(APPEND Fortran_FLAGS "-traceback")
+  list(APPEND Fortran_FLAGS "-Mextend")
+  list(APPEND Fortran_FLAGS "-Mnoframe")
+  #  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
+
+  #CUDALIB= -L$(CUDA_LIB) -lcufft -lcublasLt -lcublas -lcudart
+  if (MKL_FOUND)
+    list(APPEND Fortran_FLAGS "-m64")
+  endif()
+endif()
+
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")

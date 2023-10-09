@@ -378,6 +378,12 @@ ENDIF()
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
     )
+  
+  target_link_options(vmc.mov1
+    PRIVATE
+    ${Fortran_FLAGS}
+    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+    )
 
   if (TREXIO_FOUND)
     target_link_libraries(vmc.mov1
@@ -393,6 +399,7 @@ ENDIF()
       pspline
       parser
       ${LINEAR_ALGEBRA}
+      ${CUDA_LIBRARIES}
       MPI::MPI_Fortran)
   endif()
   

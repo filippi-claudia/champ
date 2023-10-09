@@ -363,7 +363,7 @@ c-----------------------------------------------------------------------
       orb_w_bsum(istate)=0.d0
 
       enddo
-C$ iflg = 0: init *cum, *cm2 as well
+c     $ iflg = 0: init *cum, *cm2 as well
       if(iflg.gt.0) return
 
       ns_current=0
