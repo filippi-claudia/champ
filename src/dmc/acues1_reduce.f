@@ -2,9 +2,9 @@
       contains
       subroutine acues1_reduce
 
-      use precision_kinds, only: dp
-      use vmc_mod, only: nrad
-      use multiple_geo, only: nforce, MFORCE
+      use control, only: mode
+      use contrl_per, only: iperiodic
+      use control, only: mode
       use estcum, only: iblk
       use stats, only: acc, nacc, nodecr, trymove
       use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
@@ -13,12 +13,6 @@
       use est2cm, only: wcm21
       use est2cm, only: wfcm21, wgcm21, wgcm2
       use mpiconf, only: nproc, wid
-      use control, only: mode
-      use contrl_per, only: iperiodic
-      use control, only: mode
-      use est2cm,  only: ecm21_dmc,efcm21,egcm21,wcm21,wfcm21,wgcm21
-      use estcum,  only: ecum1_dmc,efcum1,egcum,egcum1,iblk,wcum1,wfcum1
-      use estcum,  only: wgcum,wgcum1
       use mpi
       use mpiconf, only: nproc,wid
       use multiple_geo, only: MFORCE,nforce
@@ -36,10 +30,8 @@
       use optx_orb_ci_reduce_mod, only: optx_orb_ci_reduce
       use precision_kinds, only: dp
       use stats,   only: acc,nacc,nodecr,trymove
-      use vmc_mod, only: nrad
       use force_analytic, only: force_analy_fin
       use force_analy_reduce_mod, only: force_analy_reduce
-
 
       implicit none
 
@@ -54,7 +46,6 @@
       real(dp), dimension(MFORCE) :: eg21collect
       real(dp), dimension(MFORCE) :: wg1collect
       real(dp), dimension(MFORCE) :: wg21collect
-
 
       if(mode.eq.'dmc_one_mpi2') return
 

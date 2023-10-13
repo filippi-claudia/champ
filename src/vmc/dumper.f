@@ -15,7 +15,7 @@ c job where it left off
       use multiple_geo, only: nforce, fcm2, fcum
       use forcewt, only: wcum
       use mpiconf, only: idtask, nproc, wid
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use step, only: ekin, ekin2, suc, trunfb, try
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
       use mpi
@@ -49,7 +49,7 @@ c job where it left off
       use pseudo,  only: nloc
       use qua,     only: nquad,wq,xq,yq,zq
       use random_mod, only: random_dp,savern,setrn
-      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use step,    only: ekin,ekin2,suc,trunfb,try
       use system,  only: nelec
       use vmc_mod, only: nrad
 
@@ -223,7 +223,6 @@ c xold from idfrom to idtask
         trunfb(i)=0
         ekin(i)=0
         ekin2(i)=0
-        rprob(i)=0
       enddo
 
       call optjas_init

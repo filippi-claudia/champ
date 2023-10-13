@@ -8,7 +8,6 @@ c routine to accumulate estimators for energy etc.
       use contrl_file, only: ounit
       use control, only: ipr
       use csfs,    only: nstates
-      use denupdn, only: rprobdn,rprobup
       use determinant_psig_mod, only: determinant_psig
       use determinante_mod, only: compute_determinante_grad
       use distance_mod, only: r_en,rvec_en
@@ -51,7 +50,7 @@ c routine to accumulate estimators for energy etc.
       use qua,     only: nquad,wq,xq,yq,zq
       use rotqua_mod, only: gesqua
       use slater,  only: kref
-      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use step,    only: ekin,ekin2,suc,trunfb,try
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,znuc
       use vmc_mod, only: nrad, nwftypeorb, stoj
@@ -254,9 +253,6 @@ c Zero out estimators for acceptance, force-bias trun., kin. en. and density
         trunfb(i)=0
         ekin(i)=0
         ekin2(i)=0
-        rprobup(i)=0
-        rprobdn(i)=0
-        rprob(i)=0
       enddo
 
 c get nuclear potential energy

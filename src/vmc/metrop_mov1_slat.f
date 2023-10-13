@@ -57,7 +57,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use pseudo,  only: nloc
       use random_mod, only: random_dp
       use stats,   only: rejmax
-      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use step,    only: ekin,ekin2,suc,trunfb,try
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,nup,znuc
       use tmpnode, only: distance_node_sum
@@ -624,9 +624,6 @@ c and q times old, and keep track of which bin the old was in
       if(voldp*raver*sintht.gt.one) trunfb(itryo)=trunfb(itryo)+1
 
       ! write(ounit, *) 'xnew', xnew(1,i), xnew(2, i), xnew(3,i)
-
-      rprob(itryo)=rprob(itryo)+q
-      rprob(itryn)=rprob(itryn)+p
 
 c accept new move with probability p
 c Note when one electron moves the velocity on all electrons change.

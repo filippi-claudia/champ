@@ -10,7 +10,6 @@ c routine to print out final results
       use control, only: mode
       use control_vmc, only: vmc_nblk,vmc_nstep
       use csfs,    only: nstates
-      use denupdn, only: rprobdn,rprobup
       use est2cm,  only: ecm2,ecm21,pecm2,tpbcm2
       use estcum,  only: ecum,ecum1,iblk,pecum,tpbcum
       use estsig,  only: ecm21s,ecum1s
@@ -31,7 +30,7 @@ c routine to print out final results
       use qmmm_pot, only: qmmm_extpot_final
       use sa_check, only: energy_all,energy_err_all
       use sa_weights, only: weights
-      use step,    only: rprob,suc,try
+      use step,    only: suc,try
       use system,  only: ncent,nelec
       use tmpnode, only: distance_node_sum
       use vmc_mod, only: delri,nrad

@@ -211,33 +211,6 @@ contains
 
 end module denergy_det_m
 
-module denupdn
-    !> Arguments: rprobdn, rprobup
-    use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp), dimension(:), allocatable :: rprobdn !(nrad)
-    real(dp), dimension(:), allocatable :: rprobup !(nrad)
-
-    private
-    public   ::  rprobdn, rprobup
-    public :: allocate_denupdn, deallocate_denupdn
-    save
-contains
-    subroutine allocate_denupdn()
-      use vmc_mod, only: nrad
-        if (.not. allocated(rprobdn)) allocate (rprobdn(nrad))
-        if (.not. allocated(rprobup)) allocate (rprobup(nrad))
-    end subroutine allocate_denupdn
-
-    subroutine deallocate_denupdn()
-        if (allocated(rprobup)) deallocate(rprobup)
-        if (allocated(rprobdn)) deallocate(rprobdn)
-    end subroutine deallocate_denupdn
-
-end module denupdn
-
 module derivjas
     !> Arguments: d2g, g, go, gvalue
     use precision_kinds, only: dp
@@ -379,7 +352,6 @@ subroutine allocate_m_deriv()
     use da_pseudo, only: allocate_da_pseudo
     use deloc_dj_m, only: allocate_deloc_dj_m
     use denergy_det_m, only: allocate_denergy_det_m
-    use denupdn, only: allocate_denupdn
     use derivjas, only: allocate_derivjas
     use dorb_m, only: allocate_dorb_m
     use ijasnonlin, only: allocate_ijasnonlin
@@ -393,7 +365,6 @@ subroutine allocate_m_deriv()
     call allocate_da_energy_now()
     call allocate_deloc_dj_m()
     call allocate_denergy_det_m()
-    call allocate_denupdn()
     call allocate_derivjas()
     call allocate_dorb_m()
     call allocate_ijasnonlin()
@@ -407,7 +378,6 @@ subroutine deallocate_m_deriv()
     use da_pseudo, only: deallocate_da_pseudo
     use deloc_dj_m, only: deallocate_deloc_dj_m
     use denergy_det_m, only: deallocate_denergy_det_m
-    use denupdn, only: deallocate_denupdn
     use derivjas, only: deallocate_derivjas
     use dorb_m, only: deallocate_dorb_m
     use ijasnonlin, only: deallocate_ijasnonlin
@@ -421,7 +391,6 @@ subroutine deallocate_m_deriv()
     call deallocate_da_energy_now()
     call deallocate_deloc_dj_m()
     call deallocate_denergy_det_m()
-    call deallocate_denupdn()
     call deallocate_derivjas()
     call deallocate_dorb_m()
     call deallocate_ijasnonlin()

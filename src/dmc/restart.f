@@ -14,21 +14,20 @@
       use contrldmc, only: idmc,nfprod,rttau,tau
       use control, only: ipr,mode
       use control_dmc, only: dmc_nconf
-      use denupdn, only: rprobdn,rprobup
       use determinante_mod, only: compute_determinante_grad
       use error,   only: fatal_error
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
-      use est2cm,  only: ei1cm2,pecm2_dmc
-      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21,wdcm2,wdcm21
-      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21,wgdcm2
+      use est2cm,  only: pecm2_dmc
+      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21
+      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21
       use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
-      use estcum,  only: ei1cum,iblk,ipass,pecum_dmc
+      use estcum,  only: iblk,ipass,pecum_dmc
       use estcum,  only: taucum,tpbcum_dmc
-      use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
-      use estcum,  only: wgcum1,wgdcum
-      use estsum,  only: efsum,egsum,ei1sum,esum_dmc,pesum_dmc
-      use estsum,  only: tausum,tpbsum_dmc,wdsum
-      use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
+      use estcum,  only: wcum1,wcum_dmc,wfcum,wfcum1,wgcum
+      use estcum,  only: wgcum1
+      use estsum,  only: efsum,egsum,esum_dmc,pesum_dmc
+      use estsum,  only: tausum,tpbsum_dmc
+      use estsum,  only: wfsum,wgsum,wsum_dmc
       use force_analytic, only: force_analy_rstrt
       use general, only: write_walkalize
       use hpsi_mod, only: hpsi
@@ -52,7 +51,6 @@
       use slater,  only: cdet,coef,ndet,norb
       use stats,   only: acc,dfus2ac,dfus2un,nacc,nbrnch
       use stats,   only: nodecr,trymove
-      use step,    only: rprob
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,ncent_tot,nctype,ndn,nelec
       use system,  only: nghostcent,nup,znuc
@@ -141,17 +139,14 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       if (dabs(taux-tau).gt.small) call fatal_error('STARTR: tau')
       if (nelecx.ne.nelec) call fatal_error('STARTR: nelec')
       read(10) (wtgen(i),i=0,nfprod),wgdsumo
-      read(10) wcum_dmc,wfcum,wdcum,wgdcum,wcum1
-     &,wfcum1,(wgcum1(i),i=1,nforce),wdcum1, ecum_dmc,efcum
+      read(10) wcum_dmc,wfcum,wcum1
+     &,wfcum1,(wgcum1(i),i=1,nforce),ecum_dmc,efcum
      &,ecum1_dmc,efcum1,(egcum1(i),i=1,nforce)
-     &,ei1cum
       read(10) ipass,iblk,iblk_proc
-      read(10) wcm2,wfcm2,wdcm2,wgdcm2,wcm21
-     &,wfcm21,(wgcm21(i),i=1,nforce),wdcm21, ecm2_dmc,efcm2
+      read(10) wcm2,wfcm2,wcm21
+     &,wfcm21,(wgcm21(i),i=1,nforce),ecm2_dmc,efcm2
      &,ecm21_dmc,efcm21,(egcm21(i),i=1,nforce)
-     &,ei1cm2
       read(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
-      read(10) (rprob(i),rprobup(i),rprobdn(i),i=1,nrad)
       read(10) dfus2ac,dfus2un,acc
      &,trymove,nacc,nbrnch,nodecr
       if(.not.wid) then
@@ -260,11 +255,8 @@ c zero out xsum variables for metrop
 
       wsum_dmc=zero
       wfsum=zero
-      wdsum=zero
-      wgdsum=zero
       esum_dmc=zero
       efsum=zero
-      ei1sum=zero
 
       do ifr=1,nforce
         egsum(ifr)=zero
