@@ -430,6 +430,7 @@ subroutine parser
   etrial      = fdf_get('etrial', 1.0d0)
   esigmatrial = fdf_get('esigmatrial', 1.0d0)
   nfprod      = fdf_get('nfprod', 100)
+  nwprod      = fdf_get('nwprod', 1)
   itausec     = fdf_get('itausec', 1)
   icasula     = fdf_get('icasula', 0)
   dmc_ivd     = fdf_get('dmc_ivd', 0)
@@ -824,6 +825,7 @@ subroutine parser
 
     if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
 
+    if ((iforce_analy.gt.0.and.dmc_ivd.gt.0).or.nforce.gt.1) write(ounit,int_format) " nwprod", nwprod
     if (.not. fdf_defined('etrial')) call fatal_error("etrial required for DMC calculations")
 
   else

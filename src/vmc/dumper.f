@@ -62,30 +62,28 @@ c job where it left off
       integer :: i, id, idfrom, idget, ierr
       integer :: ifr, istate, j, k
       integer :: nelecx, nforcex, nlocx, nproco
-      integer :: nq_id, nqd_id, nqx, nscounts
+      integer :: nq_id, nqd_id, nqx
       integer, dimension(8,0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(8,0:nproc) :: irn_tmp
-      integer, dimension(0:nproc) :: ircounts
-      integer, dimension(0:nproc) :: idispls
       real(dp) :: rnd, wq_id, x_id, xq_id, yq_id
       real(dp) :: zq_id
 
       rewind 10
 
-      do i=0,nproc-1
-        ircounts(i)=8
-        idispls(i)=i*8
-      enddo
-      idispls(nproc)=8*nproc
-      nscounts=ircounts(idtask)
 
       call savern(irn(1,idtask))
 
-      call mpi_gatherv(irn(1,idtask),nscounts,mpi_integer
-     &,irn_tmp,ircounts,idispls,mpi_integer,0,MPI_COMM_WORLD,ierr)
+      ! if (idtask.ne.0) then
+      !   call mpi_send(irn(:,idtask), 8, mpi_integer, 0, 1, MPI_COMM_WORLD, ierr)
+      ! else
+      !   do id=1, nproc-1
+      !     call mpi_recv(irn_tmp(:, id), 8, mpi_integer, id,1,MPI_COMM_WORLD,istatus,ierr)
+      !   enddo
+      ! endif
+      ! irn_tmp(:, 0) = irn(:, 0)
 
       if(idtask.ne.0) then
+        call mpi_send(irn(:,idtask), 8, mpi_integer, 0, 1, MPI_COMM_WORLD, ierr)
         call mpi_send(xold,3*nelec,mpi_double_precision,0
      &  ,1,MPI_COMM_WORLD,ierr)
 c    &  ,1,MPI_COMM_WORLD,irequest,ierr)
@@ -99,8 +97,11 @@ c    &  ,3,MPI_COMM_WORLD,irequest,ierr)
      &  ,4,MPI_COMM_WORLD,ierr)
 c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
        else
+        do id=1, nproc-1
+          call mpi_recv(irn(:, id), 8, mpi_integer, id,1,MPI_COMM_WORLD,istatus,ierr)
+        enddo
         write(10) nproc
-        write(10) ((irn_tmp(i,j),i=1,8),j=0,nproc-1)
+        write(10) ((irn(i,j),i=1,8),j=0,nproc-1)
         write(10) nelec,nforce,nloc
         write(10) ((xold(k,i),k=1,3),i=1,nelec)
         if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
@@ -118,7 +119,7 @@ c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
         enddo
       endif
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
+
 
       if(.not.wid) return
 
@@ -135,9 +136,6 @@ c-----------------------------------------------------------------------
       integer :: nq_id, nqd_id, nqx, nscounts
       integer, dimension(8,0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(8,0:nproc) :: irn_tmp
-      integer, dimension(0:nproc) :: ircounts
-      integer, dimension(0:nproc) :: idispls
       real(dp) :: rnd, wq_id, x_id, xq_id, yq_id
       real(dp) :: zq_id
 

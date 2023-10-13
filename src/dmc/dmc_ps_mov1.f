@@ -104,12 +104,13 @@
       real(dp), dimension(nelec) :: unacp
       real(dp), dimension(10, 3, ncent) :: deriv_esum
       real(dp), dimension(3, ncent) :: deriv_energy_new
+
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
-
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: adrift = 0.5d0
+      real(dp), parameter :: small = 1.d-10
       real(dp), parameter :: zero_1d(1) = (/0.d0/)
 
 
@@ -590,8 +591,8 @@ c Set weights and product of weights over last nwprod steps
                 enddo
               endif
               if (dmc_ivd.gt.0) then  
-                if(ecutn.eq.e_cutoff) deriv_energy_new=zero
-                if(ecuto.eq.e_cutoff) then
+                if(dabs(ecutn-e_cutoff).lt.small) deriv_energy_new=zero
+                if(dabs(ecuto-e_cutoff).lt.small) then
                   do ic=1,ncent
                     do k=1,3
                       deriv_eold(k,ic,iw)=zero

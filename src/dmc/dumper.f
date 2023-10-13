@@ -57,10 +57,9 @@ c job where it left off
 
       integer :: i, ib, ic, id, ierr
       integer :: ifr, irequest, iw, j
-      integer :: k, nscounts
+      integer :: k
       integer, dimension(8, 0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(8, 0:nproc) :: irn_tmp
 
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
@@ -70,7 +69,7 @@ c job where it left off
 
       if(mode.eq.'dmc_one_mpi2') then
         call dumper_gpop
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
+c       call mpi_barrier(MPI_COMM_WORLD,ierr)
         return
       endif
 
@@ -78,41 +77,38 @@ c job where it left off
 
       call savern(irn(1,idtask))
 
-      nscounts=8
-      call mpi_gather(irn(1,idtask),nscounts,mpi_integer
-     &,irn_tmp,nscounts,mpi_integer,0,MPI_COMM_WORLD,ierr)
-
       if(.not.wid) then
-        call mpi_isend(nwalk,1,mpi_integer,0
+        call mpi_send(nwalk,1,mpi_integer,0
      &  ,1,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(xold_dmc,3*nelec*nwalk,mpi_double_precision,0
+        call mpi_send(xold_dmc,3*nelec*nwalk,mpi_double_precision,0
      &  ,2,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(wt,nwalk,mpi_double_precision,0
+        call mpi_send(wt,nwalk,mpi_double_precision,0
      &  ,3,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(ff(0),nfprod,mpi_double_precision,0
+        call mpi_send(ff(0),nfprod,mpi_double_precision,0
      &  ,4,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(fprod,1,mpi_double_precision,0
+        call mpi_send(fprod,1,mpi_double_precision,0
      &  ,5,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(fratio,MWALK*nforce,mpi_double_precision,0
+        call mpi_send(fratio,MWALK*nforce,mpi_double_precision,0
      &  ,6,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(eigv,1,mpi_double_precision,0
+        call mpi_send(eigv,1,mpi_double_precision,0
      &  ,7,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(eest,1,mpi_double_precision,0
+        call mpi_send(eest,1,mpi_double_precision,0
      &  ,8,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(wdsumo,1,mpi_double_precision,0
+        call mpi_send(wdsumo,1,mpi_double_precision,0
      &  ,9,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(iage,nwalk,mpi_integer,0
+        call mpi_send(iage,nwalk,mpi_integer,0
      &  ,10,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(ioldest,1,mpi_integer,0
+        call mpi_send(ioldest,1,mpi_integer,0
      &  ,11,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(ioldestmx,1,mpi_integer,0
+        call mpi_send(ioldestmx,1,mpi_integer,0
      &  ,12,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(xq,nquad,mpi_double_precision,0
+        call mpi_send(xq,nquad,mpi_double_precision,0
      &  ,13,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(yq,nquad,mpi_double_precision,0
+        call mpi_send(yq,nquad,mpi_double_precision,0
      &  ,14,MPI_COMM_WORLD,irequest,ierr)
-        call mpi_isend(zq,nquad,mpi_double_precision,0
+        call mpi_send(zq,nquad,mpi_double_precision,0
      &  ,15,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_send(irn(:,idtask), 8, mpi_integer, 0, 16, MPI_COMM_WORLD, ierr)
        else
         open(unit=10,status='unknown',form='unformatted',file='restart_dmc')
         write(10) nproc
@@ -158,6 +154,7 @@ c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
      &    ,14,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(zq,nquad,mpi_double_precision,id
      &    ,15,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(irn(:, id), 8, mpi_integer, id,16,MPI_COMM_WORLD,istatus,ierr)
           write(10) nwalk
           write(10) (((xold_dmc(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk)
           write(10) nfprod,(ff(i),i=0,nfprod),(wt(i),i=1,nwalk),fprod
@@ -171,14 +168,14 @@ c    &    ,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         enddo
       endif
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
+c       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(.not.wid) return
 
       write(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i)
      &,wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),taucum(i)
      &,i=1,nforce)
-      write(10) ((irn_tmp(i,j),i=1,8),j=0,nproc-1)
+      write(10) ((irn(i,j),i=1,8),j=0,nproc-1)
       write(10) hb
       write(10) tau,rttau,idmc
       write(10) nelec,dmc_nconf,nforce

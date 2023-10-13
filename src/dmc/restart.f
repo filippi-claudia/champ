@@ -29,6 +29,7 @@
       use estsum,  only: efsum,egsum,ei1sum,esum_dmc,pesum_dmc
       use estsum,  only: tausum,tpbsum_dmc,wdsum
       use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
+      use force_analytic, only: force_analy_rstrt
       use general, only: write_walkalize
       use hpsi_mod, only: hpsi
       use jacobsave, only: ajacob,ajacold
@@ -59,6 +60,7 @@
       use vmc_mod, only: norb_tot,nrad
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
+      use mpitimer, only: elapsed_time
 !      use contrl, only: nconf
 
       implicit none
@@ -161,6 +163,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       call prop_rstrt(10)
       call pcm_rstrt(10)
       call mmpol_rstrt(10)
+      call force_analy_rstrt(10)
       read(10) ((coefx(ib,i),ib=1,nbasis),i=1,norb)
       read(10) nbasx
       do j=1,norb
@@ -176,12 +179,12 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) (znucx(i),i=1,nctypex)
 
       ! read the number of basis per shell type
-      read(10) (nsx(i),i=1,nctype)
-      read(10) (npx(i),i=1,nctype)
-      read(10) (ndx(i),i=1,nctype)
-      read(10) (nfx(i),i=1,nctype)
-      read(10) (ngx(i),i=1,nctype)
-      do i = 1, nctype
+      read(10) (nsx(i),i=1,nctypex)
+      read(10) (npx(i),i=1,nctypex)
+      read(10) (ndx(i),i=1,nctypex)
+      read(10) (nfx(i),i=1,nctypex)
+      read(10) (ngx(i),i=1,nctypex)
+      do i = 1, nctypex
         if (nsx(i) .ne. ns(i)) call fatal_error('STARTR: ns')
         if (npx(i) .ne. np(i)) call fatal_error('STARTR: np')
         if (ndx(i) .ne. nd(i)) call fatal_error('STARTR: nd')

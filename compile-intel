@@ -1,2 +1,2 @@
 cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON -DCMAKE_C_COMPILER=mpiicc
-cmake --build build -j 8
+cmake --build build -j 16

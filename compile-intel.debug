@@ -1,0 +1,2 @@
+cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON -DCMAKE_C_COMPILER=mpiicc -DCMAKE_BUILD_TYPE=DEBUG
+cmake --build build -j 16

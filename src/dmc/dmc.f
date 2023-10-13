@@ -24,10 +24,12 @@ c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (19
       use mc_configs_mod, only: mc_configs,mc_configs_write
       use mpitimer, only: elapsed_time
       use multiple_geo, only: iwftype,nforce,nwftype,nwprod
+      use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
       use pseudo,  only: nloc
       use rotqua_mod, only: rotqua
       use strech_mod, only: setup_force
+      use vd_mod,         only: dmc_ivd
       use zerest_mod, only: zerest
 !      use contrl, only: idump, irstar, nblk, nblkeq, nconf, nstep
 
@@ -129,7 +131,7 @@ c                 The above applies to good psi.
        else
         ! debug line. ravindra
         if (.not. allocated(iwftype)) allocate (iwftype(nforce), source=0)
-        nwprod=1
+        if(iforce_analy.eq.1.and.dmc_ivd.eq.0) nwprod=1
         nwftype=1
         iwftype(1)=1
       endif
