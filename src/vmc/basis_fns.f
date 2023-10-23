@@ -189,7 +189,7 @@ c     get distance to center images
                      phin(i,k)=phin(i,k)+temp_phin
                      dphin(i,k,:)=dphin(i,k,:)+temp_dphin(:)
                      d2phin(i,k)=d2phin(i,k)+temp_d2phin
-                     d2phin_all(1:3,1:3,i,k)=d2phin_all(1:3,1:3,ilm,k)+temp_d2phin_all
+                     d2phin_all(1:3,1:3,i,k)=d2phin_all(1:3,1:3,i,k)+temp_d2phin_all
                      d3phin(1:3,i,k)=d3phin(1:3,i,k)+temp_d3phin
 
 c                     if(ider.ge.1) dphin(ilm,k,:)=dphin(ilm,k,:)+temp_dphin(:)

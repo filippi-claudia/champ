@@ -33,9 +33,10 @@ subroutine parser
       use control_vmc, only: vmc_isite,vmc_nblk,vmc_nblk_ci,vmc_nblk_max
       use control_vmc, only: vmc_nblkeq,vmc_nconf,vmc_nconf_new
       use control_vmc, only: vmc_nstep
-      use csfs,    only: anormo,ccsf,cxdet,maxcsf,ncsf,nstates
+      use csfs,    only: anormo,ccsf,cxdet,iadet,ibdet,icxdet,maxcsf,ncsf,nstates
       use cuspinit4_mod, only: cuspinit4
       use custom_broadcast, only: bcast
+      use dets,    only: nmap
       use dmc_mod, only: mwalk,set_mwalk
       use dorb_m,  only: iworbd
       use efield,  only: iefield,ncharges
@@ -1110,7 +1111,7 @@ subroutine parser
     enddo
   endif
 
-  if(.not. allocated(maxcsf)) allocate(maxcsf(MSTATES))
+  if(.not. allocated(maxcsf)) allocate(maxcsf(nstates))
  
   if(ncsf.gt.0 .and. method(1:3) .ne. 'lin') then
       do istate=1,nstates
@@ -1139,6 +1140,21 @@ subroutine parser
     write(errunit,'(a)') "Error:: No information about csfmaps provided."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
+  else
+   nmap = ndet
+   if (.not. allocated(cxdet)) allocate (cxdet(nmap))
+   if (.not. allocated(iadet)) allocate (iadet(ndet))
+   if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+   if (.not. allocated(icxdet)) allocate (icxdet(nmap))
+
+   do i = 1, ndet
+     iadet(i) = i
+     ibdet(i) = i
+     icxdet(i) = i
+     cxdet(i) = 1.0d0
+   enddo
+
+   write(ounit,*) " Determinant - CSF has one-to-one mapping  "
   endif
 
   call elapsed_time ("Reading CSF and CSFMAP file : ")
@@ -1572,11 +1588,11 @@ subroutine parser
         method='linear'
         write(ounit,'(a)' ) " Reset optimization method to linear"
       endif
-  ! TMP due to changing kref -> also for ncsf=0, we need to have cxdet(i) carrying the phase
-  !         if(ncsf.eq.0) call fatal_error('ncsf.eq.0 - further changes needed due to kref')
       if(ncsf.gt.0) then
         nciterm=ncsf
       else
+  ! TMP due to changing kref -> also for ncsf=0, we need to have cxdet(i) carrying the phase
+  !     if(kref_fix.eq.0) call fatal_error('ncsf.eq.0 - further changes needed due to kref')
         nciterm=nciprim
       endif
     else

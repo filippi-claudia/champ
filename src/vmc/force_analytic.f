@@ -398,7 +398,6 @@ c-----------------------------------------------------------------------
             x = da_energy_ave(k,ic,iph)
             x2 = da_energy_cm2(k,ic,iph)
             da_energy_err(k)=dsqrt(abs(x2/wcum-x**2)/iblk_eff)
-            !da_energy_err(k)=dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk_eff)
           enddo
           
           if (ipathak.gt.0) then        

@@ -635,7 +635,7 @@ c-----------------------------------------------------------------------
        enddo
       enddo
 
-c if kref (iwdetorb, cxdet) has changed
+c if kref (iwdorb, cxdet) has changed
       if(ncsf.gt.0) then
         do j=1,nstates
           do k=1,ndet
@@ -649,9 +649,10 @@ c if kref (iwdetorb, cxdet) has changed
           enddo
         enddo
 
+      endif
+
 c reset kref=1
       call multideterminants_define(0,0)
-      endif
 
       return
       end
