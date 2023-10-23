@@ -821,6 +821,8 @@ subroutine parser
 
     if (dmc_node_cutoff.gt.0) write(ounit,real_format) " enode cutoff = ", dmc_eps_node_cutoff
 
+    if (icasula.eq.-1.and.dmc_irstar.eq.1) write(ounit,*) 'Restart is not consistent with icasula = -1'
+
     if (iabs(idmc).ne.2) call fatal_error('INPUT: only idmc=2 supported')
 
     if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')

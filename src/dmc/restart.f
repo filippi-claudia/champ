@@ -59,6 +59,7 @@
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
       use mpitimer, only: elapsed_time
+      use estsum, only: wsum1
 !      use contrl, only: nconf
 
       implicit none
@@ -264,6 +265,7 @@ c zero out xsum variables for metrop
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
         tausum(ifr)=zero
+        wsum1(ifr)=zero
       enddo
 
       call prop_init(1)
