@@ -73,29 +73,17 @@ c job where it left off
 
       call savern(irn(1,idtask))
 
-      ! if (idtask.ne.0) then
-      !   call mpi_send(irn(:,idtask), 8, mpi_integer, 0, 1, MPI_COMM_WORLD, ierr)
-      ! else
-      !   do id=1, nproc-1
-      !     call mpi_recv(irn_tmp(:, id), 8, mpi_integer, id,1,MPI_COMM_WORLD,istatus,ierr)
-      !   enddo
-      ! endif
-      ! irn_tmp(:, 0) = irn(:, 0)
 
       if(idtask.ne.0) then
         call mpi_send(irn(:,idtask), 8, mpi_integer, 0, 1, MPI_COMM_WORLD, ierr)
         call mpi_send(xold,3*nelec,mpi_double_precision,0
      &  ,1,MPI_COMM_WORLD,ierr)
-c    &  ,1,MPI_COMM_WORLD,irequest,ierr)
         call mpi_send(xq,nquad,mpi_double_precision,0
      &  ,2,MPI_COMM_WORLD,ierr)
-c    &  ,2,MPI_COMM_WORLD,irequest,ierr)
         call mpi_send(yq,nquad,mpi_double_precision,0
      &  ,3,MPI_COMM_WORLD,ierr)
-c    &  ,3,MPI_COMM_WORLD,irequest,ierr)
         call mpi_send(zq,nquad,mpi_double_precision,0
      &  ,4,MPI_COMM_WORLD,ierr)
-c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
        else
         do id=1, nproc-1
           call mpi_recv(irn(:, id), 8, mpi_integer, id,1,MPI_COMM_WORLD,istatus,ierr)

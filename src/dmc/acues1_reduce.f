@@ -12,6 +12,8 @@
       use est2cm, only: ecm21_dmc, efcm21, egcm21
       use est2cm, only: wcm21
       use est2cm, only: wfcm21, wgcm21, wgcm2
+      use force_analytic, only: force_analy_fin
+      use force_analy_reduce_mod, only: force_analy_reduce
       use mpiconf, only: nproc, wid
       use mpi
       use mpiconf, only: nproc,wid
@@ -30,8 +32,7 @@
       use optx_orb_ci_reduce_mod, only: optx_orb_ci_reduce
       use precision_kinds, only: dp
       use stats,   only: acc,nacc,nodecr,trymove
-      use force_analytic, only: force_analy_fin
-      use force_analy_reduce_mod, only: force_analy_reduce
+
 
       implicit none
 

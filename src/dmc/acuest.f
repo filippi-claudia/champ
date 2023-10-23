@@ -273,17 +273,17 @@ c xerr = current error of x
                 enddo
               enddo
             enddo
-            if(iblk.gt.1) then
-              do iph=1,PTH
-                do ic=1,ncent
-                  if (ipathak.gt.0) then        
-                    write(ounit,'(i5,i5,1p6e14.5)')iph,ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
-                  else    
-                    write(ounit,'(i5,1p6e14.5)') ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
-                  endif  
-                enddo
-              enddo
-            endif
+            ! if(iblk.gt.1) then
+            !   do iph=1,PTH
+            !     do ic=1,ncent
+            !       if (ipathak.gt.0) then        
+            !         write(ounit,'(i5,i5,1p6e14.5)')iph,ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
+            !       else    
+            !         write(ounit,'(i5,1p6e14.5)') ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
+            !       endif  
+            !     enddo
+            !   enddo
+            ! endif
           endif
           
           call prop_prt_dmc(iblk,0,wgcum,wgcm2)

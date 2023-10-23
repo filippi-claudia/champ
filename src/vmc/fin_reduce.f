@@ -141,7 +141,6 @@ c reduce mmpol properties
       if(wid) call mmpol_fin(wcum(1,1),iblk)
       
       call force_analy_reduce
-      ! if(wid) call force_analy_fin(wcum(1,1),iblk,efin)
       if(wid) call force_analy_fin(wcum(1,1),dble(iblk),efin)
 
       return
