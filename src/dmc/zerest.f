@@ -4,19 +4,18 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 
       use age,     only: iage,ioldest,ioldestmx
-      use denupdn, only: rprobdn,rprobup
       use derivest, only: derivcm2,derivcum,derivsum
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
-      use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
-      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21,wdcm2,wfcm2
-      use est2cm,  only: wfcm21,wgcm2,wgcm21,wgdcm2
+      use est2cm,  only: pecm2_dmc
+      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21,wfcm2
+      use est2cm,  only: wfcm21,wgcm2,wgcm21
       use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
-      use estcum,  only: ei1cum,ei2cum,ei3cum,iblk,pecum_dmc,r2cum_dmc
-      use estcum,  only: ricum,taucum,tpbcum_dmc,wcum1
-      use estcum,  only: wcum_dmc,wdcum,wfcum,wfcum1,wgcum,wgcum1,wgdcum
-      use estsum,  only: efsum,efsum1,egsum,egsum1,ei1sum,ei2sum,ei3sum
-      use estsum,  only: esum1_dmc,esum_dmc,pesum_dmc,r2sum,risum,tausum
-      use estsum,  only: tpbsum_dmc,wdsum,wfsum,wfsum1,wgdsum
+      use estcum,  only: iblk,pecum_dmc
+      use estcum,  only: taucum,tpbcum_dmc,wcum1
+      use estcum,  only: wcum_dmc,wfcum,wfcum1,wgcum,wgcum1
+      use estsum,  only: efsum,efsum1,egsum,egsum1
+      use estsum,  only: esum1_dmc,esum_dmc,pesum_dmc,tausum
+      use estsum,  only: tpbsum_dmc,wfsum,wfsum1
       use estsum,  only: wgsum,wgsum1,wsum1,wsum_dmc
       use mmpol,   only: mmpol_init
       use mpiblk,  only: iblk_proc
@@ -31,13 +30,15 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
       use precision_kinds, only: dp
       use properties_mod, only: prop_init
       use stats,   only: acc,nacc,nbrnch,nodecr,trymove
-      use step,    only: rprob
       use vmc_mod, only: nrad
+      use force_analytic, only: force_analy_init
+      use system,    only: ncent
+      use force_pth, only: PTH
 
 
       implicit none
 
-      integer :: i, ifr, k
+      integer :: i, ifr, k, ic, iph
 
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
@@ -54,47 +55,26 @@ c zero out estimators
       wfcum1=zero
       wcum_dmc=zero
       wfcum=zero
-      wdcum=zero
-      wgdcum=zero
       ecum1_dmc=zero
       efcum1=zero
       ecum_dmc=zero
       efcum=zero
-      ei1cum=zero
-      ei2cum=zero
-      ei3cum=zero
-      r2cum_dmc=zero
-      ricum=zero
 
       wcm21=zero
       wfcm21=zero
       wcm2=zero
       wfcm2=zero
-      wdcm2=zero
-      wgdcm2=zero
       ecm21_dmc=zero
       efcm21=zero
       ecm2_dmc=zero
       efcm2=zero
-      ei1cm2=zero
-      ei2cm2=zero
-      ei3cm2=zero
-      r2cm2_dmc=zero
-      ricm2=zero
 
       wfsum1=zero
       wsum_dmc=zero
       wfsum=zero
-      wdsum=zero
-      wgdsum=zero
       efsum1=zero
       esum_dmc=zero
       efsum=zero
-      ei1sum=zero
-      ei2sum=zero
-      ei3sum=zero
-      r2sum=zero
-      risum=zero
 
       ! debug
       iage=0
@@ -126,10 +106,17 @@ c zero out estimators
         tpbsum_dmc(ifr)=zero
         fgcum(ifr)=zero
         fgcm2(ifr)=zero
-        derivcm2(ifr)=zero
-        do k=1,10
-          derivsum(k,ifr)=zero
-          derivcum(k,ifr)=zero
+      enddo
+
+      do iph=1,PTH
+        do k=1,3
+          do ic=1,ncent
+            do ifr=1,3
+              derivsum(ifr,k,ic,iph)=zero
+              derivcum(ifr,k,ic,iph)=zero
+            enddo
+            derivcm2(k,ic,iph)=zero
+          enddo
         enddo
       enddo
 
@@ -138,13 +125,6 @@ c zero out estimators
       acc=0
       nacc=0
       nodecr=0
-
-c Zero out estimators for charge density of atom.
-      do i=1,nrad
-        rprobup(i)=zero
-        rprobdn(i)=zero
-        rprob(i)=zero
-      enddo
 
       call optjas_init
       call optci_init(0)
@@ -156,6 +136,8 @@ c Zero out estimators for charge density of atom.
       call prop_init(0)
       call pcm_init(0)
       call mmpol_init(0)
+
+      call force_analy_init(0)
 
       return
       end

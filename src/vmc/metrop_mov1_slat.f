@@ -22,7 +22,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use determinante_mod, only: compute_determinante_grad
       use detsav_mod, only: detsav
       use distances_mod, only: distancese_restore
-      use estsum,  only: acc,esum,esum1,pesum,r2sum,tpbsum
+      use estsum,  only: acc,esum,esum1,pesum,tpbsum
       use force_analytic, only: force_analy_sum
       use forcewt, only: wsum
       use gammai_mod, only: gammai
@@ -57,7 +57,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use pseudo,  only: nloc
       use random_mod, only: random_dp
       use stats,   only: rejmax
-      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use step,    only: ekin,ekin2,suc,trunfb,try
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,nup,znuc
       use tmpnode, only: distance_node_sum
@@ -624,12 +624,6 @@ c and q times old, and keep track of which bin the old was in
       if(voldp*raver*sintht.gt.one) trunfb(itryo)=trunfb(itryo)+1
 
       ! write(ounit, *) 'xnew', xnew(1,i), xnew(2, i), xnew(3,i)
-
-      rprob(itryo)=rprob(itryo)+q
-      rprob(itryn)=rprob(itryn)+p
-      do ic=1,3
-        r2sum=r2sum+p*xnew(ic,i)**2+q*xold(ic,i)**2
-      enddo
 
 c accept new move with probability p
 c Note when one electron moves the velocity on all electrons change.

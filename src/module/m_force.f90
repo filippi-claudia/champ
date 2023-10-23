@@ -75,6 +75,16 @@ contains
 
 end module multiple_geo
 
+module force_pth
+
+    implicit none
+ 
+    integer :: PTH
+ 
+    public :: PTH
+ 
+  end module force_pth
+
 
  module m_force_analytic
      !> Arguments: iforce_analy, iuse_zmat, alfgeo
@@ -87,7 +97,7 @@ end module multiple_geo
      real(dp) :: alfgeo
 
     ! from force_fin
-     real(dp), dimension(:, :), allocatable :: da_energy_ave !(3,MCENT)
+     real(dp), dimension(:, :, :), allocatable :: da_energy_ave !(3,MCENT,PTH)
      real(dp), dimension(:), allocatable :: da_energy_err !(3)
 
      ! from force_mat_n
@@ -104,7 +114,8 @@ end module multiple_geo
  contains
      subroutine allocate_force_fin()
       use system,  only: ncent_tot
-         if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot))
+      use force_pth, only: PTH
+         if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot, PTH))
          if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))
      end subroutine allocate_force_fin
 

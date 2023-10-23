@@ -1,54 +1,15 @@
       module dmc_ps_mov1
       contains
-      subroutine dmc_ps(lpass,irun)
-c Written by Cyrus Umrigar and Claudia Filippi
-c Uses the diffusion Monte Carlo algorithm described in:
-c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
-c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993)
-c modified to do accept/reject after single-electron moves and to
-c remove portions related to nuclear cusps.
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-c Control variables are:
-c idmc         < 0     VMC
-c              > 0     DMC
-c abs(idmc)    = 1 **  simple kernel using dmc.brock.f
-c              = 2     good kernel using dmc_good or dmc_good_inhom
-c ipq         <= 0 *   do not use expected averages
-c             >= 1     use expected averages (mostly in all-electron move algorithm)
-c itau_eff    <=-1 *   always use tau in branching (not implemented)
-c              = 0     use 0 / tau for acc /nacc moves in branching
-c             >= 1     use tau_eff (calcul in equilibration runs) for all moves
-c iacc_rej    <=-1 **  accept all moves (except possibly node crossings)
-c              = 0 **  use weights rather than accept/reject
-c             >= 1     use accept/reject
-c icross      <=-1 **  kill walkers that cross nodes (not implemented)
-c              = 0     reject walkers that cross nodes
-c             >= 1     allow walkers to cross nodes
-c                      (OK since crossing prob. goes as tau^(3/2))
-c icuspg      <= 0     approximate cusp in Green function
-c             >= 1     impose correct cusp condition on Green function
-c icut_br     <= 0     do not limit branching
-c             >= 1 *   use smooth formulae to limit branching to (1/2,2)
-c                      (bad because it makes energies depend on E_trial)
-c icut_e      <= 0     do not limit energy
-c             >= 1 *   use smooth formulae to limit energy (not implemented)
 
-c *  => bad option, modest deterioration in efficiency or time-step error
-c ** => very bad option, big deterioration in efficiency or time-step error
-c So, idmc=6,66 correspond to the foll. two:
-c 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c Another reasonable choice is:
-c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      subroutine dmc_ps(lpass,irun)
 
       use age,     only: iage,ioldest,ioldestmx
+      use system,    only: ncent
       use averages, only: average
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
       use casula,  only: i_vpsp,icasula
-      use config,  only: psido_dmc,psijo_dmc,vold_dmc
-      use config,  only: xold_dmc
+      use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
       use const,   only: etrial,esigmatrial
       use constants, only: hb
       use contrl_file, only: ounit
@@ -56,19 +17,22 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use contrldmc, only: nfprod,rttau,tau
       use control, only: ipr
       use control_dmc, only: dmc_irstar,dmc_nconf
+      use da_energy_now, only: da_energy,da_psi
       use derivest, only: derivsum
       use determinante_mod, only: compute_determinante_grad
       use detsav_mod, only: detsav
       use distances_mod, only: distances,distancese_restore
       use estcum,  only: ipass
-      use estsum,  only: efsum1,egsum1,esum1_dmc,pesum_dmc,r2sum,risum
+      use estsum,  only: efsum1,egsum1,esum1_dmc,pesum_dmc
       use estsum,  only: tausum,tpbsum_dmc,wfsum1,wgsum1
       use estsum,  only: wsum1
+      use force_analytic, only: force_analy_sum, force_analy_save
+      use force_pth, only: PTH
       use gauss_mod, only: gauss
       use general, only: write_walkalize
       use hpsi_mod, only: hpsi
       use hpsiedmc, only: psiedmc
-      use inputflags, only: eps_node_cutoff,icircular,idrifdifgfunc
+      use inputflags, only: eps_node_cutoff,icircular
       use inputflags, only: node_cutoff
       use jacobsave, only: ajacob,ajacold
       use jassav_mod, only: jassav
@@ -76,33 +40,35 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use multideterminant_mod, only: update_ymat
       use multideterminant_tmove_mod, only: multideterminant_tmove
       use multiple_geo, only: istrech,itausec,nforce,nwprod
+      use m_force_analytic, only: iforce_analy
       use nodes_distance_mod, only: nodes_distance,rnorm_nodes_num
       use nonloc_grid_mod, only: nonloc_grid,t_vpsp_get,t_vpsp_sav
       use optci_mod, only: optci_sum
       use optjas_mod, only: optjas_sum
       use optorb_f_mod, only: optorb_sum
+      use optwf_handle_wf, only: optwf_store
       use optx_jas_ci, only: optx_jas_ci_sum
       use optx_jas_orb, only: optx_jas_orb_sum
       use optx_orb_ci, only: optx_orb_ci_sum
+      use pathak_mod, only: ipathak, eps_pathak, pold, pnew, pathak
       use pcm_dmc, only: pcm_save,pcm_sum
       use precision_kinds, only: dp
       use prop_dmc, only: prop_save_dmc,prop_sum_dmc
       use random_mod, only: random_dp
       use splitj_mod, only: splitj
-      use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nodecr
-      use stats,   only: trymove
-      use step,    only: rprob
+      use stats, only: acc,dfus2ac,dfus2un,nacc,nodecr
+      use stats, only: trymove
       use strech_mod, only: strech
       use system,  only: cent,nelec,nup
-      use velratio, only: fratio,xdrifted
+      use velratio, only: fratio
+      use vd_mod, only: dmc_ivd, da_branch, deriv_eold, esnake, ehist
       use vmc_mod, only: delri,nrad
       use walksav_det_mod, only: walksav_det,walkstrdet
       use walksav_jas_mod, only: walksav_jas,walkstrjas
-      use optwf_handle_wf, only: optwf_store
-      
+
       implicit none
 
-      integer :: i, iaccept, iel
+      integer :: i, iaccept, iel, ic, iph
       integer :: iflag_dn, iflag_up, ifr, ii
       integer :: imove, ipmod, ipmod2, iw, irun
       integer :: iwmod, j, jel, k, lpass
@@ -114,12 +80,12 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
       real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
       real(dp) :: drifdifr, drifdifs, drift, dwt
+      real(dp) :: ecuto, ecutn
       real(dp) :: dx, e_cutoff, dwt_cutoff, ekino(1), enew(1)
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, ginv
       real(dp) :: p, pen, pp, psi2savo
-      real(dp) :: psidn(1), psijn(1), q, r2n
-      real(dp) :: r2o, r2sume, risume
+      real(dp) :: psidn(1), psijn(1), q, r2n, r2o
       real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new
       real(dp) :: rnorm_nodes_old, ro, taunow
       real(dp) :: tauprim, tratio, v2new, v2old
@@ -131,20 +97,19 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       real(dp), dimension(3) :: xnew
       real(dp), dimension(3, nelec) :: vnew
       real(dp), dimension(3) :: xbac
-      real(dp), dimension(3, nelec) :: xdriftedn
       real(dp), dimension(nelec) :: unacp
+      real(dp), dimension(10, 3, ncent) :: deriv_esum
+      real(dp), dimension(3, ncent) :: deriv_energy_new
+
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
-
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: adrift = 0.5d0
+      real(dp), parameter :: small = 1.d-10
       real(dp), parameter :: zero_1d(1) = (/0.d0/)
 
-
       data ncall /0/
-
-c     term=(sqrt(two*pi*tau))**3/pi
 
       eps_node_cutoff=eps_node_cutoff*sqrt(tau)
       e_cutoff=0.2d0*sqrt(nelec/tau)
@@ -167,8 +132,8 @@ c Undo weights
 
 c Store (well behaved velocity/velocity)
       if(ncall.eq.0.and.dmc_irstar.eq.0) then
-        do iw=1,nwalk
-          do ifr=1,nforce
+        do ifr=1,nforce
+          do iw=1,nwalk
 
             vav2sumo=zero
             v2sumo=zero
@@ -185,9 +150,6 @@ c Tau secondary in drift is one (first time around)
               vav2sumo=vav2sumo+vavvo*vavvo*v2old
               v2sumo=v2sumo+v2old
 
-              do k=1,3
-                xdrifted(k,i,iw,ifr)=xold_dmc(k,i,iw,ifr)+vold_dmc(k,i,iw,ifr)*vavvt
-              enddo
             enddo
             fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
           enddo
@@ -211,8 +173,6 @@ c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         call walkstrjas(iw)
 
 c Sample Green function for forward move
-        r2sume=zero
-        risume=zero
         dfus2ac=zero
         dfus2un=zero
         drifdif=zero
@@ -269,11 +229,10 @@ c     to initilialize pp
             iflag_up=3
             iflag_dn=2
           endif
-          !STU check here and all other compute_determin...
           call compute_determinante_grad(i,psido_dmc(iw,1),psido_dmc(iw,1),psijo_dmc(iw,1),vold_dmc(1,i,iw,1),1)
 
 c Use more accurate formula for the drift
-          v2old=vold_dmc(1,i,iw,1)**2+vold_dmc(2,i,iw,1)**2+vold_dmc(3,i,iw,1)**2
+          v2old=vold_dmc(1,i,iw,1)**2+vold_dmc(2,i,iw,1)**2+vold_dmc( 3,i,iw,1)**2
 c Tau primary -> tratio=one
           vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/(adrift*v2old)
 
@@ -293,8 +252,6 @@ c Tau primary -> tratio=one
             write(ounit,'(''vold_dmc'',2i4,9f8.5)') iw,i,(vold_dmc(k,i,iw,1),k=1,3)
             write(ounit,'(''psido_dmc'',2i4,9f8.5)') iw,i,psido_dmc(iw,1)
             write(ounit,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,3)
-c     write(ounit,'(''dx'',2i4,9f8.5)') iw,i,vavvt,drift,dfus
-c     write(ounit,'(''0 dfus2o'',2i4,9f8.5)') iw,i,dfus2o, rttau, dx
           endif
 
 c calculate psi and velocity at new configuration
@@ -361,9 +318,7 @@ c Calculate Green function for the reverse move
 c          if(ipr.ge.1) write(ounit,'(''parts p'',11f10.6)')
 c     &         psidn(1), psijn, psido_dmc(iw,1), dfus2o, dfus2n, distance_node_ratio2            
 
-c The following is one reasonable way to cure persistent configurations
-c Not needed if itau_eff <=0 and in practice we have never needed it even
-c otherwise
+c Way to cure persistent configurations; not needed if itau_eff <=0; in practice never needed
           if(iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
 
           pp=pp*p
@@ -374,8 +329,6 @@ c otherwise
           trymove=trymove+1
           dfus2ac=dfus2ac+p*dfus2o
           dfus2un=dfus2un+dfus2o
-          dr2ac=dr2ac+p*dr2
-          dr2un=dr2un+dr2
 
 c Calculate density and moments of r for primary walk
           r2o=zero
@@ -390,8 +343,6 @@ c Calculate density and moments of r for primary walk
           enddo
           rmino=sqrt(rmino)
           rminn=sqrt(rminn)
-          itryo(i)=min(int(delri*rmino)+1,nrad)
-          itryn(i)=min(int(delri*rminn)+1,nrad)
 
 c If we are using weights rather than accept/reject
           if(iacc_rej.le.0) then
@@ -423,8 +374,6 @@ c If we are using weights rather than accept/reject
           q=one-p
 
 c Calculate moments of r and save rejection probability for primary walk
-          r2sume=r2sume+(q*r2o+p*r2n)
-          risume=risume+(q/dsqrt(r2o)+p/dsqrt(r2n))
           unacp(i)=q
 
           call update_ymat(i)
@@ -449,6 +398,7 @@ c Primary configuration
                call optwf_store(lpass,wtg(1),wtg_sqrt(1),psidn(1),enew(1))
             endif
 
+            deriv_energy_new=da_energy
             
             call walksav_det(iw)
             call walksav_jas(iw)
@@ -516,9 +466,6 @@ c Use more accurate formula for the drift and tau secondary in drift
             vav2sumn=vav2sumn+vavvn**2*v2old
             v2sumn=v2sumn+v2old
 
-            do k=1,3
-              xdriftedn(k,i)=xold_dmc(k,i,iw,ifr)+vold_dmc(k,i,iw,ifr)*vavvt
-            enddo
           enddo
           fration=dsqrt(vav2sumn/v2sumn)
 
@@ -532,8 +479,10 @@ c Use more accurate formula for the drift and tau secondary in drift
            else
             deo=eest-eold(iw,ifr)
             den=eest-enew(1)
-            ewto=eest-sign(1.d0,deo)*min(e_cutoff,dabs(deo))
-            ewtn=eest-sign(1.d0,den)*min(e_cutoff,dabs(den))
+            ecuto=min(e_cutoff,dabs(deo))
+            ecutn=min(e_cutoff,dabs(den))
+            ewto=eest-sign(1.d0,deo)*ecuto
+            ewtn=eest-sign(1.d0,den)*ecutn
           endif
 
           if(idmc.gt.0) then
@@ -557,40 +506,23 @@ c If we are using weights rather than accept/reject
 c Exercise population control if dmc or vmc with weights
           if(idmc.gt.0.or.iacc_rej.eq.0) dwt=dwt*ffi
 
-          drifdifgfunc=1.d0
-          if(nforce.gt.1.and.idrifdifgfunc.gt.0) then
-            dfus=0
-            do i=1,nelec
-              if(iacc_elec(i).gt.0) then
-                do k=1,3
-                  dfus=dfus+(xold_dmc(k,i,iw,ifr)-xdrifted(k,i,iw,ifr))**2
-                enddo
-              endif
-            enddo
-            dfus=0.5d0*dfus/tau
-            drifdifgfunc=-dfus
-c           drifdifgfunc=drifdifgfunc-2*log(rnorm_nodes)
-          endif
 c Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
             wt(iw)=wt(iw)*dwt
             wtnow=wt(iw)
-            pwt(iw,ifr)=pwt(iw,ifr)+log(dwt)+drifdifgfunc-wthist(iw,iwmod,ifr)
-            wthist(iw,iwmod,ifr)=dlog(dwt)+drifdifgfunc
+            pwt(iw,ifr)=pwt(iw,ifr)+log(dwt)-wthist(iw,iwmod,ifr)
+            wthist(iw,iwmod,ifr)=dlog(dwt)
 
            elseif(ifr.gt.1) then
 
-            ro=log(ajacold(iw,ifr))
-            if(idrifdifgfunc.eq.0) ro=0.d0
-            pwt(iw,ifr)=pwt(iw,ifr)+dlog(dwt)+drifdifgfunc+ro-wthist(iw,iwmod,ifr)
-            wthist(iw,iwmod,ifr)=dlog(dwt)+drifdifgfunc+ro
+            pwt(iw,ifr)=pwt(iw,ifr)+dlog(dwt)-wthist(iw,iwmod,ifr)
+            wthist(iw,iwmod,ifr)=dlog(dwt)
             wtnow=wt(iw)*dexp(pwt(iw,ifr)-pwt(iw,1))
 
           endif
 
           wtnow=wtnow/rnorm_nodes**2
-c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
 
           if(ipr.ge.1)write(ounit,'(''eold,enew,wt'',9f10.5)')
      &    eold(iw,ifr),enew,wtnow
@@ -599,15 +531,6 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
             wtg=wtnow*fprod
            else
             wtg=wtnow
-          endif
-
-          if(ifr.eq.1) then
-            r2sum=r2sum+wtg(1)*r2sume
-            risum=risum+wtg(1)*risume
-            do i=1,nelec
-              rprob(itryo(i))=rprob(itryo(i))+wtg(1)*unacp(i)
-              rprob(itryn(i))=rprob(itryn(i))+wtg(1)*(one-unacp(i))
-            enddo
           endif
           tausum(ifr)=tausum(ifr)+wtg(1)*taunow
 
@@ -623,14 +546,10 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
           psido_dmc(iw,ifr)=psidn(1)
           psijo_dmc(iw,ifr)=psijn(1)
           fratio(iw,ifr)=fration
-          do i=1,nelec
-            do k=1,3
-              xdrifted(k,i,iw,ifr)=xdriftedn(k,i)
-            enddo
-          enddo
           call prop_save_dmc(iw)
           call pcm_save(iw)
           call mmpol_save(iw)
+          call force_analy_save
 
           if(ifr.eq.1) then
             if(iaccept.eq.0) then
@@ -646,19 +565,78 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
             pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))
             tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)
 
-            derivsum(1,ifr)=derivsum(1,ifr)+wtg(1)*eold(iw,ifr)
+            if(iforce_analy.eq.1) then
+              if (ipathak.gt.0) then
+                call nodes_distance(vold_dmc(1,1,iw,ifr),distance_node,1)
+                do iph=1,PTH
+                  call pathak(distance_node,pnew(iph),eps_pathak(iph))
+                enddo
+              endif
+              if (dmc_ivd.gt.0) then  
+                if(dabs(ecutn-e_cutoff).lt.small) deriv_energy_new=zero
+                if(dabs(ecuto-e_cutoff).lt.small) then
+                  do ic=1,ncent
+                    do k=1,3
+                      deriv_eold(k,ic,iw)=zero
+                    enddo
+                  enddo
+                endif
 
-            if(idrifdifgfunc.gt.0) then
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,ifr)*pwt(iw,ifr)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*pwt(iw,ifr)
-             else
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,ifr)*(pwt(iw,ifr)+psi2savo)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*(pwt(iw,ifr)+psi2savo)
+                do iph=1,PTH
+                  do ic=1,ncent
+                    do k=1,3  
+                      if (ipathak.gt.0) then                          
+                        esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
+     &+deriv_eold(k,ic,iw)*pold(iw,iph)-ehist(k,ic,iw,iwmod,iph)
+                        ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)*pold(iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
+
+                        da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
+                      else
+                        esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)
+     &+deriv_eold(k,ic,iw)-ehist(k,ic,iw,iwmod,iph)
+                   
+                        ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)+deriv_energy_new(k,ic)
+                   
+                        da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
+                      endif
+                    enddo
+                  enddo                                    
+                enddo
+
+                do ic=1,ncent
+                  do k=1,3
+                    deriv_eold(k,ic,iw)=deriv_energy_new(k,ic)
+                  enddo
+                enddo
+              endif
+              if (ipathak.gt.0) then
+                do iph=1,PTH
+                  pold(iw,iph)=pnew(iph)
+                enddo
+              endif
+
+              do iph=1,PTH
+                do ic=1,ncent
+                  do k=1,3  
+                    if (ipathak.gt.0) then                          
+                      derivsum(1,k,ic,iph)=derivsum(1,k,ic,iph)+wtg(1)*da_energy(k,ic)*pnew(iph)
+                      derivsum(2,k,ic,iph)=derivsum(2,k,ic,iph)+wtg(1)*eold(iw,1)*da_psi(k,ic)*pnew(iph)
+                      derivsum(3,k,ic,iph)=derivsum(3,k,ic,iph)+wtg(1)*da_psi(k,ic)*pnew(iph)
+                    else
+                      derivsum(1,k,ic,iph)=derivsum(1,k,ic,iph)+wtg(1)*da_energy(k,ic)
+                      derivsum(2,k,ic,iph)=derivsum(2,k,ic,iph)+wtg(1)*eold(iw,1)*da_psi(k,ic)
+                      derivsum(3,k,ic,iph)=derivsum(3,k,ic,iph)+wtg(1)*da_psi(k,ic)
+                    endif
+                  enddo
+                enddo                                    
+              enddo
+
             endif
 
             call prop_sum_dmc(0.d0,wtg(1),iw)
             call pcm_sum(0.d0,wtg(1),iw)
             call mmpol_sum(0.d0,wtg(1),iw)
+            call force_analy_sum(wtg(1),0.d0,eold(iw,1),0.0d0)
 
             call optjas_sum(wtg,zero_1d,eold(iw,1),eold(iw,1),0)
             call optorb_sum(wtg,zero_1d,eold(iw,1),eold(iw,1),0)
@@ -668,10 +646,9 @@ c         if(idrifdifgfunc.eq.0)wtnow=wtnow/rnorm_nodes**2
             call optx_jas_ci_sum(wtg(1),0.d0,eold(iw,1),eold(iw,1))
             call optx_orb_ci_sum(wtg(1),0.d0)
 
-           else
-c           write(ounit,*) 'IN DMC',ajacold(iw,ifr)
-            ro=1.d0
-            if(idrifdifgfunc.eq.0) ro=ajacold(iw,ifr)*psido_dmc(iw,ifr)**2*exp(2*psijo_dmc(iw,ifr)-psi2savo)
+          else
+
+            ro=ajacold(iw,ifr)*psido_dmc(iw,ifr)**2*exp(2*psijo_dmc(iw,ifr)-psi2savo)
 
             wsum1(ifr)=wsum1(ifr)+wtnow*ro
             esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)*ro
@@ -680,33 +657,8 @@ c           write(ounit,*) 'IN DMC',ajacold(iw,ifr)
 
             wtg=wt(iw)*fprod/rnorm_nodes**2
             wtg_derivsum1=wtg(1)
-c           if(idrifdifgfunc.eq.0)then
-c             wtg=wt(iw)*fprod/rnorm_nodes**2
-c             wtg_derivsum1=wtg
-c            else
-c             wtg=wt(iw)*fprod
-c             wtg_derivsum1=wtg/rnorm_nodes**2
-c           endif
-
-            derivsum(1,ifr)=derivsum(1,ifr)+wtg_derivsum1*eold(iw,ifr)
-
-            if(idrifdifgfunc.gt.0) then
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,1)*pwt(iw,ifr)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*pwt(iw,ifr)
-            else
-              ro=log(ajacold(iw,ifr))+2*(log(abs(psido_dmc(iw,ifr)))+psijo_dmc(iw,ifr))
-              derivsum(2,ifr)=derivsum(2,ifr)+wtg(1)*eold(iw,1)*(pwt(iw,ifr)+ro)
-              derivsum(3,ifr)=derivsum(3,ifr)+wtg(1)*(pwt(iw,ifr)+ro)
-            endif
           endif
-
         enddo
-c       write(ounit,*) 'IN DMC',ajacold(iw,2)
-
-c       wtg=wt(iw)*fprod/rnorm_nodes**2
-c       write(*,*)'prima ',wtg,eold(iw,2),pwt(iw,2),ajacold(iw,2),psido_dmc(iw,2),psijo_dmc(iw,2),idrifdifgfunc
-c       call deriv(wtg,eold(iw,1),pwt(iw,1),ajacold(iw,1),psido_dmc(iw,1),psijo_dmc(iw,1),idrifdifgfunc)
-c       call deriv(wtg,eold,pwt,ajacold,psido_dmc,psijo_dmc,idrifdifgfunc,iw,mwalk)
 
         if(icasula.eq.-1) then
 
@@ -759,7 +711,7 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
           endif
         endif
 
-      call average(1)
+      ! call average(1)
       enddo
 
       if(ipr.gt.5.and.wsum1(1).gt.1.1d0*dmc_nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
@@ -787,4 +739,30 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
 
       return
       end
+
+      ! subroutine dmc_velocity(iw, ifr, adrif, tratio, vav2sum, v2sum)
+
+      !   use config,  only: vold_dmc
+      !   use contrldmc, only: tau
+      !   use system,  only: nelec
+
+      !   implicit none
+
+      !   real(dp) :: v2old, vavvt, vavvn
+
+      !   vav2sum = 0.d0
+      !   v2sum = 0.d0
+      !   do i=1,nelec
+      !     v2old = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2
+      !     & + vold_dmc(3,i,iw,ifr)**2
+      !     vavvt = (dsqrt(1.d0+2.d0*adrift*v2old*tau*tratio)-1.d0)/
+      !     & (adrift*v2old)
+      !     vavvn = vavvt/(tau*tratio)
+
+      !     vav2sum = vav2sumn + vavvn**2 * v2old
+      !     v2sum = v2sum + v2old
+
+      !   enddo
+      ! endsubroutine
+
       end module

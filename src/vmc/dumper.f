@@ -8,14 +8,14 @@ c job where it left off
       use config, only: xold
       use csfs, only: nstates
 
-      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tjfcm2, tpbcm2
-      use estcum, only: ecum, ecum1, pecum, r2cum, tjfcum, tpbcum
+      use est2cm, only: ecm2, ecm21, pecm2, tjfcm2, tpbcm2
+      use estcum, only: ecum, ecum1, pecum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
       use multiple_geo, only: nforce, fcm2, fcum
       use forcewt, only: wcum
       use mpiconf, only: idtask, nproc, wid
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
+      use step, only: ekin, ekin2, suc, trunfb, try
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
       use mpi
@@ -49,7 +49,7 @@ c job where it left off
       use pseudo,  only: nloc
       use qua,     only: nquad,wq,xq,yq,zq
       use random_mod, only: random_dp,savern,setrn
-      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use step,    only: ekin,ekin2,suc,trunfb,try
       use system,  only: nelec
       use vmc_mod, only: nrad
 
@@ -62,45 +62,34 @@ c job where it left off
       integer :: i, id, idfrom, idget, ierr
       integer :: ifr, istate, j, k
       integer :: nelecx, nforcex, nlocx, nproco
-      integer :: nq_id, nqd_id, nqx, nscounts
+      integer :: nq_id, nqd_id, nqx
       integer, dimension(8,0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(8,0:nproc) :: irn_tmp
-      integer, dimension(0:nproc) :: ircounts
-      integer, dimension(0:nproc) :: idispls
       real(dp) :: rnd, wq_id, x_id, xq_id, yq_id
       real(dp) :: zq_id
 
       rewind 10
 
-      do i=0,nproc-1
-        ircounts(i)=8
-        idispls(i)=i*8
-      enddo
-      idispls(nproc)=8*nproc
-      nscounts=ircounts(idtask)
 
       call savern(irn(1,idtask))
 
-      call mpi_gatherv(irn(1,idtask),nscounts,mpi_integer
-     &,irn_tmp,ircounts,idispls,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
       if(idtask.ne.0) then
+        call mpi_send(irn(:,idtask), 8, mpi_integer, 0, 1, MPI_COMM_WORLD, ierr)
         call mpi_send(xold,3*nelec,mpi_double_precision,0
      &  ,1,MPI_COMM_WORLD,ierr)
-c    &  ,1,MPI_COMM_WORLD,irequest,ierr)
         call mpi_send(xq,nquad,mpi_double_precision,0
      &  ,2,MPI_COMM_WORLD,ierr)
-c    &  ,2,MPI_COMM_WORLD,irequest,ierr)
         call mpi_send(yq,nquad,mpi_double_precision,0
      &  ,3,MPI_COMM_WORLD,ierr)
-c    &  ,3,MPI_COMM_WORLD,irequest,ierr)
         call mpi_send(zq,nquad,mpi_double_precision,0
      &  ,4,MPI_COMM_WORLD,ierr)
-c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
        else
+        do id=1, nproc-1
+          call mpi_recv(irn(:, id), 8, mpi_integer, id,1,MPI_COMM_WORLD,istatus,ierr)
+        enddo
         write(10) nproc
-        write(10) ((irn_tmp(i,j),i=1,8),j=0,nproc-1)
+        write(10) ((irn(i,j),i=1,8),j=0,nproc-1)
         write(10) nelec,nforce,nloc
         write(10) ((xold(k,i),k=1,3),i=1,nelec)
         if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
@@ -118,7 +107,7 @@ c    &  ,4,MPI_COMM_WORLD,irequest,ierr)
         enddo
       endif
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
+
 
       if(.not.wid) return
 
@@ -135,9 +124,6 @@ c-----------------------------------------------------------------------
       integer :: nq_id, nqd_id, nqx, nscounts
       integer, dimension(8,0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
-      integer, dimension(8,0:nproc) :: irn_tmp
-      integer, dimension(0:nproc) :: ircounts
-      integer, dimension(0:nproc) :: idispls
       real(dp) :: rnd, wq_id, x_id, xq_id, yq_id
       real(dp) :: zq_id
 
@@ -197,8 +183,6 @@ c xold from idfrom to idtask
 
       acc=0
 
-      r2cum=0
-      r2cm2=0
       do istate=1,nstates
 
       pecum(istate)=0
@@ -227,7 +211,6 @@ c xold from idfrom to idtask
         trunfb(i)=0
         ekin(i)=0
         ekin2(i)=0
-        rprob(i)=0
       enddo
 
       call optjas_init
