@@ -208,7 +208,6 @@ c endif iskip
      &              da_psij_ratio,iwfjas)
             enddo
          endif
-
          
       else
 
@@ -226,11 +225,7 @@ c endif iskip
             enddo
          endif
 
-         
-         
       endif
-      
-    
 
       do iq=1,nxquad
 
@@ -250,6 +245,9 @@ c endif iskip
         do iwfjas=1,nwftypejas
           term_radial_jas(iq,iwfjas)=term_radial(iq)*wq(iqq)*exp(psij_ratio(iq,iwfjas))
         enddo
+
+        if(i_vpsp.le.0) then
+
 c vpsp_det  = vnl(D_kref J)/(D_kref J)
         do ibjx=1,nbjx
           xj=bjxtoj(ibjx)
@@ -279,17 +277,14 @@ c dvpsp_dj  = vnl(D_kref dJ)/(D_kref J)
           enddo
         endif
 
+        endif
 c transition probabilities for Casula's moves in DMC
-        do istate=1,nstates
-c         swap order of this loop and if statement        
-          if(index(mode,'dmc').ne.0) then
-            t_vpsp(ic,iqq,iel)=det_ratio(iq,1)*term_radial_jas(iq,1)
-            do iorb=1,norb
-              b_t(iorb,iqq,ic,iel)=orbn(iorb,iq,istate)*term_radial_jas(iq,1)
-            enddo
-          endif
-        enddo
-
+        if(index(mode,'dmc').ne.0) then
+          t_vpsp(ic,iqq,iel)=det_ratio(iq,1)*term_radial_jas(iq,1)
+          do iorb=1,norb
+            b_t(iorb,iqq,ic,iel)=orbn(iorb,iq,1)*term_radial_jas(iq,1)
+          enddo
+        endif
 
       enddo !loop over nquad
 
@@ -379,9 +374,7 @@ c-----------------------------------------------------------------------
 
       if(iperiodic.eq.0) then
 
-         
          do jc=1,ncent
-            
             do k=1,3
                rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
             enddo
@@ -390,27 +383,18 @@ c-----------------------------------------------------------------------
                r_en_quad(iq,jc)=r_en_quad(iq,jc)+rvec_en_quad(k,iq,jc)**2
             enddo
             r_en_quad(iq,jc)=dsqrt(r_en_quad(iq,jc))
-            
          enddo
-         
          
       else
          
-         
          do jc=1,ncent
-            
             do k=1,3
                rvec_en_quad(k,iq,jc)=x(k)-cent(k,jc)
             enddo
             call find_image_pbc(rvec_en_quad(1,iq,jc),r_en_quad(iq,jc))
-            
          enddo
-         
-         
-         
-         
+
       endif
-      
       
       return
       end

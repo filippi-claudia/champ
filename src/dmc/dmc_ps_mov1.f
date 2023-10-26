@@ -70,7 +70,7 @@
 
       integer :: i, iaccept, iel, ic, iph
       integer :: iflag_dn, iflag_up, ifr, ii
-      integer :: imove, ipmod, ipmod2, iw, irun
+      integer :: imove, imove_dn, imove_up, ipmod, ipmod2, iw, irun
       integer :: iwmod, j, jel, k, lpass
       integer :: ncall, ncount_casula, nmove_casula
       integer, dimension(nelec) :: itryo
@@ -179,30 +179,37 @@ c Sample Green function for forward move
         iaccept=0
 
         if(icasula.eq.3) then
+          imove_up=0
+          imove_dn=0
           do i=1,nelec
             imove=0
             call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove)
             ncount_casula=ncount_casula+1
+
             if(imove.gt.0) then
+              write(ounit,*) 'icasula3', imove
+              if(i.le.nup) then
+                imove_up=1
+               else
+                imove_dn=1
+              endif
               call psiedmc(i,iw,xnew,psidn,psijn,0)
               nmove_casula=nmove_casula+1
 
-              call compute_determinante_grad(i,psidn(1),psidn,psijn,vnew(1,i),0)
               iaccept=1
               iage(iw)=0
               do k=1,3
                 xold_dmc(k,i,iw,1)=xnew(k)
-                vold_dmc(k,i,iw,1)=vnew(k,i)
               enddo
               psido_dmc(iw,1)=psidn(1)
               psijo_dmc(iw,1)=psijn(1)
               call jassav(i,0)
               call detsav(i,0)
-
-              call update_ymat(i)
              else
               call distancese_restore(i)
             endif
+            if(imove_up.eq.1.and.i.eq.nup) call update_ymat(i)
+            if(imove_dn.eq.1.and.i.eq.nelec) call update_ymat(i)
           enddo
           if(nforce.gt.1.and.istrech.gt.0) then
             do ifr=1,nforce
