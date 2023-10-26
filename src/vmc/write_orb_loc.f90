@@ -135,7 +135,7 @@
           enddo
 
           do k=1,ng(iwctype(ic))
-            do m = 1, 10          ! loop over gxxxx, gxxxy ...
+            do m = 1, 15          ! loop over gxxxx, gxxxy ...
               write (iu, 213) j, iwctype(ic), ic, ao_label_g(m), (coef(j,l,1), l=i, imax)
               j=j+1
             enddo
