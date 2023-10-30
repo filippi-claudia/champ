@@ -4,7 +4,6 @@
       subroutine dmc_ps(lpass,irun)
 
       use age,     only: iage,ioldest,ioldestmx
-      use system,    only: ncent
       use averages, only: average
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
@@ -27,6 +26,7 @@
       use estsum,  only: tausum,tpbsum_dmc,wfsum1,wgsum1
       use estsum,  only: wsum1
       use force_analytic, only: force_analy_sum, force_analy_save
+      use force_analytic, only: force_analy_vd
       use force_pth, only: PTH
       use gauss_mod, only: gauss
       use general, only: write_walkalize
@@ -59,9 +59,9 @@
       use stats, only: acc,dfus2ac,dfus2un,nacc,nodecr
       use stats, only: trymove
       use strech_mod, only: strech
-      use system,  only: cent,nelec,nup
+      use system,  only: cent,nelec,nup, ncent
       use velratio, only: fratio
-      use vd_mod, only: dmc_ivd, da_branch, deriv_eold, esnake, ehist
+      use vd_mod, only: dmc_ivd
       use vmc_mod, only: delri,nrad
       use walksav_det_mod, only: walksav_det,walkstrdet
       use walksav_jas_mod, only: walksav_jas,walkstrjas
@@ -134,23 +134,8 @@ c Store (well behaved velocity/velocity)
       if(ncall.eq.0.and.dmc_irstar.eq.0) then
         do ifr=1,nforce
           do iw=1,nwalk
-
-            vav2sumo=zero
-            v2sumo=zero
-            do i=1,nelec
-
-c Tau secondary in drift is one (first time around)
-              tratio=one
-
-              v2old=vold_dmc(1,i,iw,ifr)**2+vold_dmc(2,i,iw,ifr)**2
-     &        +vold_dmc(3,i,iw,ifr)**2
-              vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/
-     &              (adrift*v2old)
-              vavvo=vavvt/(tau*tratio)
-              vav2sumo=vav2sumo+vavvo*vavvo*v2old
-              v2sumo=v2sumo+v2old
-
-            enddo
+            tratio = one
+            call dmc_velocity(iw, ifr, adrift, tratio, vav2sumo, v2sumo)
             fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
           enddo
         enddo
@@ -449,38 +434,24 @@ c Compute streched electronic positions for all nucleus displacement
               call compute_determinante_grad(i,psidn(1),psidn,psijn,vold_dmc(1,i,iw,ifr),1)
           enddo
 
-          vav2sumn=zero
-          v2sumn=zero
-          do i=1,nelec
+          tratio=one
+          if(ifr.gt.1.and.itausec.eq.1) tratio=drifdifr
+          call dmc_velocity(iw, ifr, adrift, tratio, vav2sumn, v2sumn)
 
-c Use more accurate formula for the drift and tau secondary in drift
-            tratio=one
-            if(ifr.gt.1.and.itausec.eq.1) tratio=drifdifr
-
-            v2old=vold_dmc(1,i,iw,ifr)**2+vold_dmc(2,i,iw,ifr)**2
-     &      +vold_dmc(3,i,iw,ifr)**2
-            vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/
-     &          (adrift*v2old)
-            vavvn=vavvt/(tau*tratio)
-
-            vav2sumn=vav2sumn+vavvn**2*v2old
-            v2sumn=v2sumn+v2old
-
-          enddo
           fration=dsqrt(vav2sumn/v2sumn)
 
           taunow=tauprim*drifdifr
 
           if(ipr.ge.1)write(ounit,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
+          deo=eest-eold(iw,ifr)
+          den=eest-enew(1)
+          ecuto=min(e_cutoff,dabs(deo))
+          ecutn=min(e_cutoff,dabs(den))
           if(icut_e.eq.0) then
             ewto=eest-(eest-eold(iw,ifr))*fratio(iw,ifr)
             ewtn=eest-(eest-enew(1))*fration
            else
-            deo=eest-eold(iw,ifr)
-            den=eest-enew(1)
-            ecuto=min(e_cutoff,dabs(deo))
-            ecutn=min(e_cutoff,dabs(den))
             ewto=eest-sign(1.d0,deo)*ecuto
             ewtn=eest-sign(1.d0,den)*ecutn
           endif
@@ -573,46 +544,7 @@ c Set weights and product of weights over last nwprod steps
                 enddo
               endif
               if (dmc_ivd.gt.0) then  
-                if(dabs(ecutn-e_cutoff).lt.small) deriv_energy_new=zero
-                if(dabs(ecuto-e_cutoff).lt.small) then
-                  do ic=1,ncent
-                    do k=1,3
-                      deriv_eold(k,ic,iw)=zero
-                    enddo
-                  enddo
-                endif
-
-                do iph=1,PTH
-                  do ic=1,ncent
-                    do k=1,3  
-                      if (ipathak.gt.0) then                          
-                        esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
-     &+deriv_eold(k,ic,iw)*pold(iw,iph)-ehist(k,ic,iw,iwmod,iph)
-                        ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)*pold(iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
-
-                        da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
-                      else
-                        esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)
-     &+deriv_eold(k,ic,iw)-ehist(k,ic,iw,iwmod,iph)
-                   
-                        ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)+deriv_energy_new(k,ic)
-                   
-                        da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
-                      endif
-                    enddo
-                  enddo                                    
-                enddo
-
-                do ic=1,ncent
-                  do k=1,3
-                    deriv_eold(k,ic,iw)=deriv_energy_new(k,ic)
-                  enddo
-                enddo
-              endif
-              if (ipathak.gt.0) then
-                do iph=1,PTH
-                  pold(iw,iph)=pnew(iph)
-                enddo
+                call force_analy_vd(ecutn, ecuto, e_cutoff, iw, iwmod)
               endif
 
               do iph=1,PTH
@@ -740,29 +672,35 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
       return
       end
 
-      ! subroutine dmc_velocity(iw, ifr, adrif, tratio, vav2sum, v2sum)
+      subroutine dmc_velocity(iw, ifr, adrift, tratio, vav2sum, v2sum)
 
-      !   use config,  only: vold_dmc
-      !   use contrldmc, only: tau
-      !   use system,  only: nelec
+      use config,  only: vold_dmc
+      use contrldmc, only: tau
+      use precision_kinds, only: dp
+      use system,  only: nelec
 
-      !   implicit none
+      implicit none
 
-      !   real(dp) :: v2old, vavvt, vavvn
+      integer :: iw, ifr, i
+      real(dp) :: adrift, tratio
+      real(dp) :: v2old, vavvt, vavvn
+      real(dp) :: vav2sum, v2sum
 
-      !   vav2sum = 0.d0
-      !   v2sum = 0.d0
-      !   do i=1,nelec
-      !     v2old = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2
-      !     & + vold_dmc(3,i,iw,ifr)**2
-      !     vavvt = (dsqrt(1.d0+2.d0*adrift*v2old*tau*tratio)-1.d0)/
-      !     & (adrift*v2old)
-      !     vavvn = vavvt/(tau*tratio)
+      vav2sum = 0.d0
+      v2sum = 0.d0
+      do i=1,nelec
+        v2old = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2
+     & + vold_dmc(3,i,iw,ifr)**2
+        vavvt = (dsqrt(1.d0+2.d0*adrift*v2old*tau*tratio)-1.d0)/
+     & (adrift*v2old)
+        vavvn = vavvt/(tau*tratio)
 
-      !     vav2sum = vav2sumn + vavvn**2 * v2old
-      !     v2sum = v2sum + v2old
+        vav2sum = vav2sum + vavvn**2 * v2old
+        v2sum = v2sum + v2old
 
-      !   enddo
-      ! endsubroutine
+      enddo
+
+      return
+      endsubroutine
 
       end module
