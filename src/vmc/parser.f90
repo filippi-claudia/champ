@@ -1254,14 +1254,18 @@ subroutine parser
     nbjx = 1
     stobjx(1)=1
     do istate=2,nstates
-      do k=1,istate
-        if (stoo(istate).ne.stoo(k).and.stoj(istate).ne.stoj(k)) then
-          stobjx(istate)=istate
-          nbjx = nbjx + 1
-        else
+      j=0
+      do k=1,istate-1
+        if (stoo(istate).eq.stoo(k).and.stoj(istate).eq.stoj(k)) then
           stobjx(istate)=k
+          j=1
+          exit
         endif
       enddo
+      if (j.eq.0) then
+        stobjx(istate)=istate
+        nbjx = nbjx + 1
+      endif
     enddo
     allocate(bjxtoo(nbjx))
     allocate(bjxtoj(nbjx))
