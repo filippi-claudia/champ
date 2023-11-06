@@ -821,14 +821,13 @@ module trexio_read_data
             write(ounit,'(A, T60, I0)')     " Icusp                 ::  ", icusp(ic)
             write(ounit,*)
 
-            ! DEBUG following loop; Special case when nloc equals zero.
-            ! Make sure that the trexio file stores this information.
-!            if(nloc.eq.0) then
-!                do irb = 1, nrbas(ic)
-!                    l(irb) = 0
-!                enddo
-!            endif
-
+            ! All electron case when nloc equals zero.
+            ! Make sure that the input file has nloc=0.
+            if(nloc.eq.0) then
+                do irb = 1, nrbas(ic)
+                    l(irb) = 0
+                enddo
+            endif
 
 
             ! loop over all the primitives for the unique atom

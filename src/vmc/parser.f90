@@ -194,7 +194,7 @@ subroutine parser
   use ewald_breakup, only: pot_en_coul_ewald, pot_ee_ewald, set_ewald
   use  m_ewald, only : allocate_m_ewald
   use  m_pseudo, only : allocate_m_pseudo
-  
+
 ! CHAMP modules
 
 ! in the replacement of preprocess input
@@ -337,7 +337,7 @@ subroutine parser
   npoly  = fdf_get('npoly', 8)
   ! polynomial order of the cuttoff better even value
   np     = fdf_get('np', 6)
-  !cutoffs in recirpotal space 
+  !cutoffs in recirpotal space
   cutg   = fdf_get('cutg', 1.0d0)
   cutg_sim   = fdf_get('cutg_sim', 1.0d0)
   cutg_big   = fdf_get('cutg_big', 1.d0)
@@ -346,8 +346,8 @@ subroutine parser
   n_images  = fdf_get('n_images', 1)
   !alattice = fdf_get('alattice', 1.0d0)
 
-  
-  
+
+
 ! %module electrons (complete)
   nelec       = fdf_get('nelec', 1)
   nup         = fdf_get('nup', 1)
@@ -438,7 +438,7 @@ subroutine parser
   ipathak     = fdf_get('ipathak', 0)
   call init_pathak()
   eps_max     = fdf_get('eps_max', 0.d0)
-  deps        = fdf_get('deps', 0.d0) 
+  deps        = fdf_get('deps', 0.d0)
 
 ! %module dmc / blocking_dmc (complete)
   dmc_nstep     = fdf_get('dmc_nstep', 1)
@@ -452,7 +452,7 @@ subroutine parser
 
 
 !optimization flags vmc/dmc
-! %module optwf 
+! %module optwf
 
   ioptwf        = fdf_get('ioptwf', 0)
   method        = fdf_get('method', 'sr_n')
@@ -601,7 +601,7 @@ subroutine parser
   file_zmatrix_connection   = fdf_load_filename('zmatrix_connection',   'default.zmcon')
   file_efield             = fdf_load_filename('efield',   'default.efield')
   file_lattice              = fdf_load_filename('lattice',              'lattice.txt')
-  
+
   call header_printing()
 
 ! to be moved in a separate subroutine
@@ -728,7 +728,7 @@ subroutine parser
     write(ounit,*)
     write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
 #if defined(TREXIO_FOUND)
-  elseif ( fdf_load_defined('trexio') ) then
+  elseif ( fdf_load_defined('trexio') .and. nloc .ne. 0) then
     call read_trexio_ecp_file(file_trexio)
     write(ounit,*)
     write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
@@ -741,7 +741,7 @@ subroutine parser
   endif
   write(ounit,*)
 
-  call elapsed_time ( "Reading ECP files : " )
+  if (nloc .ne. 0) call elapsed_time ( "Reading ECP files : " )
 
   ! Pseudopotential section ends here
 
@@ -1015,7 +1015,7 @@ subroutine parser
         call fatal_error('Only ijas=1 and ijas=4 implemented for periodic systems')
      endif
   endif
-  
+
 
   if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
   if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
@@ -1042,7 +1042,7 @@ subroutine parser
         asymp_jasb(i,j)=0
      enddo
   enddo
-  
+
   call set_scale_dist(ipr)
 
   call elapsed_time ("Setting Jastrow parameters : ")
@@ -1112,7 +1112,7 @@ subroutine parser
   endif
 
   if(.not. allocated(maxcsf)) allocate(maxcsf(nstates))
- 
+
   if(ncsf.gt.0 .and. method(1:3) .ne. 'lin') then
       do istate=1,nstates
         acsfmax=dabs(ccsf(1,istate,1))
@@ -1317,17 +1317,17 @@ subroutine parser
 
   ! for periodic calculations
   if ( fdf_load_defined('lattice') ) then
-     call read_lattice_file(file_lattice)      
+     call read_lattice_file(file_lattice)
   endif
 
-  ! allocate ewald module and initialize the module 
+  ! allocate ewald module and initialize the module
   if (iperiodic.gt.0) then
      call allocate_m_ewald()
      call set_ewald
   endif
-  
-  
-  
+
+
+
 ! (17) multideterminants information (either block or from a file)
 
   if ( fdf_load_defined('multideterminants') ) then
@@ -1984,7 +1984,7 @@ subroutine parser
   ! It does the processing of the input read so far and initializes some
   ! arrays if something is missing.
 
-    
+
 
   !qmckl initialization
 
@@ -2072,7 +2072,7 @@ subroutine parser
 
   !----------------------------------------------------------------------------END
 
-  
+
   contains
 
   !! Here all the subroutines that handle the block data are written
@@ -2086,9 +2086,9 @@ subroutine parser
   !!   'e' is matched by a list with integers or reals
   !!   'd' is reserved for future dictionaries...
 
-!! for periodic assuming square cell still 
+!! for periodic assuming square cell still
     subroutine read_lattice_file(file_lattice)
-      
+
       use contrl_file, only: errunit,ounit
       use m_string_operations, only: wordcount
       use custom_broadcast, only: bcast
@@ -2099,18 +2099,18 @@ subroutine parser
       use jaspar6, only: cutjas, cutjasi
       use precision_kinds, only: dp
 
-      
+
       implicit none
-      
+
       character(len=72), intent(in)   :: file_lattice
       character(len=90)               :: file_lattice_path, line
       real(dp) :: latt
       integer                         :: iunit, iostat, count
       logical                         :: exist
       integer :: i,k
-      
+
       !   External file reading
-      
+
       if((file_lattice(1:6) == '$pool/') .or. (file_lattice(1:6) == '$POOL/')) then
          file_lattice_path = pooldir // file_lattice(7:)
       else
@@ -2119,7 +2119,7 @@ subroutine parser
 
 
       write(ounit,*) '-----------------------------------------------------------------------'
-      write(ounit,string_format)  " Reading Lattice Parameters from the file :: ",  trim(file_lattice_path) 
+      write(ounit,string_format)  " Reading Lattice Parameters from the file :: ",  trim(file_lattice_path)
       write(ounit,*)
 
       if (wid) then
@@ -2133,14 +2133,14 @@ subroutine parser
       endif
 
 
-      !Initialization to avoid garbage 
-      
+      !Initialization to avoid garbage
+
       rlatt_sim =0.d0
       rlatt = 0.d0
       rlatt_sim_inv = 0.d0
       rlatt_inv = 0.d0
       count=0
-      
+
 
 
       if (wid) then
@@ -2150,88 +2150,88 @@ subroutine parser
             if(iostat.ne.0.and.count.eq.0) then
                if(rlatt_sim(1,1).gt.0.d0) then
                   alattice=rlatt_sim(1,1)
-                  count=count+1   
+                  count=count+1
                   exit
                else
                   write(ounit, *) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
                   call fatal_error("Error in reading lattice parameters file")
                endif
             endif
-            count=count+1   
+            count=count+1
             if(iostat.ne.0.and.count.ne.1) then
                write(ounit, *) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
                call fatal_error("Error in reading lattice parameters file")
             endif
          enddo
 
-         
+
          if(count.eq.1) then
-            
-            
+
+
             write(ounit,*) 'This is a cubic cell'
             write(ounit,*) 'The lattice constant is', alattice
-            
+
             rlatt_sim(1,1) = alattice
             rlatt_sim(2,2) = alattice
             rlatt_sim(3,3) = alattice
-            
 
-            
+
+
          else if(count.eq.3) then
 
-            
+
             write(ounit,*) "The simulation cell is:"
-         
+
             write(ounit,*) "a", rlatt_sim(1,1), rlatt_sim(1,2), rlatt_sim(1,3)
             write(ounit,*) "b", rlatt_sim(2,1), rlatt_sim(2,2), rlatt_sim(2,3)
             write(ounit,*) "c", rlatt_sim(3,1), rlatt_sim(3,2), rlatt_sim(3,3)
-            
+
 
             !! assuming still rectangular box
             alattice=rlatt_sim(1,1)
             do i = 2, 3
                if(rlatt_sim(i,i).lt.alattice) alattice=rlatt_sim(i,i)
             enddo
-            
+
             if(alattice.le.0.d0) call fatal_error("Wrong lattice parameter")
-            
+
          else
 
             call fatal_error("Error reading lattice file")
-            
-         endif
-         
-         
-         !   regarding Ewald Breakup assume column not row vectors for the lattice     
-         rlatt_sim=TRANSPOSE(rlatt_sim)
-         
 
-         
+         endif
+
+
+         !   regarding Ewald Breakup assume column not row vectors for the lattice
+         rlatt_sim=TRANSPOSE(rlatt_sim)
+
+
+
       endif
 
-      
-      
+
+
       call bcast(rlatt_sim)
       if (wid) close(iunit)
-      
-      
+
+
       !! set primitive and super-cell to be the same
-      rlatt =rlatt_sim 
-      
+      rlatt =rlatt_sim
+
       !! set twist k-shift vector
       rkvec_shift =0.0d0
-      
+
 !!! override jastrow cutoff to half of the lattice parameter
-!!! need to be adapted to half of the wigner-seitz cell (orthorombic boxes)       
+!!! need to be adapted to half of the wigner-seitz cell (orthorombic boxes)
       cutjas = 0.5*alattice
       cutjasi=1/cutjas
-      
-      
+
+
 end subroutine read_lattice_file
 
 
 
-    
+
   subroutine fdf_read_molecule_block(bfdf)
     implicit none
 
@@ -2574,13 +2574,13 @@ subroutine compute_mat_size_new()
 
   ! leads to circular dependecy of put in sr_mod ..
   mobs = 10 + 6*mparm
-  
+
   if( mode(1:3) == 'vmc' ) then
      mconf = vmc_nstep * vmc_nblk_max
   else
      mconf = dmc_nstep * vmc_nblk_max
   endif
-  
+
   call set_vmc_size
   call set_optci_size
   call set_optorb_size
