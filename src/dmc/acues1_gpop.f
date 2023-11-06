@@ -55,7 +55,6 @@ c statistical fluctuations without blocking
       call mpi_reduce(tausum(1),taublock,1
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(.not.wid) goto 23
 
@@ -118,11 +117,9 @@ c Estimate eigenvalue of G from the energy
       call mpi_bcast(wdsumo,1,mpi_double_precision,0,MPI_COMM_WORLD
      &,ierr)
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       call redistribute
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
 c zero out step averages
       wfsum1=zero

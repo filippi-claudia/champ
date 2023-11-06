@@ -118,7 +118,6 @@ c    &    ,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         enddo
       endif
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(.not.wid) return
 

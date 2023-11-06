@@ -62,7 +62,6 @@ c job where it left off
 
       if(mode.eq.'dmc_one_mpi2') then
         call dumper_gpop
-c       call mpi_barrier(MPI_COMM_WORLD,ierr)
         return
       endif
 
@@ -161,7 +160,6 @@ c    &    ,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         enddo
       endif
-c       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(.not.wid) return
 

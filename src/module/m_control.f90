@@ -237,6 +237,9 @@ contains
 
                 case ('-e', '-er', '-err', '-error', '--error')
                     file_error = arg(i+1)
+                    if (.not. wid ) then
+                        file_error = '/dev/null'
+                    endif
                     open (newunit=errunit,file=file_error, iostat=iostat, action='write' )
 
                 case ('-h', '--help')
