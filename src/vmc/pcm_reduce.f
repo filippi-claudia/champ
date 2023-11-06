@@ -65,7 +65,6 @@
         enddo
       endif
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(wid) then
         spcmcum=spcmcollect

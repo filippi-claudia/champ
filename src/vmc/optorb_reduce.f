@@ -139,7 +139,6 @@ c these averages should be set to zero on the slaves but optorb_reduce
 c is only called at the end of run (differently than prop_reduce) and
 c only the master writes to output and dumper
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       return
       end

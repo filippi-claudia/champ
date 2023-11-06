@@ -151,7 +151,6 @@ c     max does not work with g77
       deallocate(optci_reduce_collect)
       deallocate(optci_reduce_collect2)
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       return
       end

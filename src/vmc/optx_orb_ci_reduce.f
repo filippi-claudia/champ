@@ -74,7 +74,6 @@ c Written by Claudia Filippi
         enddo
       enddo
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       return
       end

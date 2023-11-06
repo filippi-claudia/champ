@@ -56,7 +56,6 @@ subroutine initialize_main
     !> Initiaize log check.XXX files. It needs ipr flag value.
     call init_procfile()
 
-    call MPI_BARRIER(MPI_Comm_World, ierr)
     call elapsed_time("MPI Barrier before optwf : ")
 
 end subroutine

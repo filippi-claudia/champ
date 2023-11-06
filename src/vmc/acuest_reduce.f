@@ -191,7 +191,6 @@ c reduce properties
 c optimization reduced at the end of the run: large vectors to pass
 c pcm averages reduced at the end of the run
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(wid) then
 
