@@ -3,11 +3,14 @@
       subroutine write_geometry(iter)
 
       use system, only: cent, iwctype, nctype, ncent
+      use mpiconf, only: wid
 
       implicit none
 
       integer :: i, index, iter, k
       character(len=40) filename,itn
+
+      if (.not.wid) return
 
       if(iter.lt.0) then
         filename='geo_optimal_final'

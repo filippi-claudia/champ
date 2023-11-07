@@ -1105,11 +1105,6 @@ endif ! (rank==0)
                         ' file ', filein, ' in step', (i/BLOCKSIZE)+1
       endif
 
-      call MPI_Barrier(MPI_COMM_WORLD, ierr)
-      if (ierr .ne. MPI_SUCCESS) then
-        call die('FDF module: fdf_readblocking', 'Error in MPI_Barrier (fdf_read).' //    &
-                'Terminating.', THIS_FILE, __LINE__, fdf_err, rc=ierr)
-      endif
     enddo
 
     RETURN

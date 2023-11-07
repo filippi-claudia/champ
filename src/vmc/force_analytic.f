@@ -318,6 +318,76 @@ c-----------------------------------------------------------------------
 
       return
       end
+
+c-----------------------------------------------------------------------
+
+      subroutine force_analy_vd(ecutn, ecuto, e_cutoff, iw, iwmod)
+
+      use contrldmc, only: tau
+      use da_energy_now, only: da_energy
+      use force_pth, only: PTH
+      use pathak_mod, only: ipathak, eps_pathak, pold, pnew, pathak
+      use precision_kinds, only: dp
+      use system,  only: ncent, nelec
+      use vd_mod, only: da_branch, deriv_eold, esnake, ehist
+
+      implicit none
+
+      integer :: ic, k, iph
+      integer :: iw, iwmod
+      real(dp) :: ecuto, ecutn, e_cutoff
+
+      real(dp), dimension(3, ncent) :: deriv_energy_new
+
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: small = 1.d-10
+
+      deriv_energy_new=da_energy
+
+      if(dabs(ecutn-e_cutoff).lt.small) deriv_energy_new=zero
+      if(dabs(ecuto-e_cutoff).lt.small) then
+        do ic=1,ncent
+          do k=1,3
+            deriv_eold(k,ic,iw)=zero
+          enddo
+        enddo
+      endif
+
+      do iph=1,PTH
+        do ic=1,ncent
+          do k=1,3  
+            if (ipathak.gt.0) then                          
+              esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
+     &+deriv_eold(k,ic,iw)*pold(iw,iph)-ehist(k,ic,iw,iwmod,iph)
+              ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)*pold(iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
+
+              da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
+            else
+              esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)
+     &+deriv_eold(k,ic,iw)-ehist(k,ic,iw,iwmod,iph)
+                  
+              ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)+deriv_energy_new(k,ic)
+                  
+              da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
+            endif
+          enddo
+        enddo                                    
+      enddo
+
+      do ic=1,ncent
+        do k=1,3
+          deriv_eold(k,ic,iw)=deriv_energy_new(k,ic)
+        enddo
+      enddo
+      if (ipathak.gt.0) then
+        do iph=1,PTH
+          pold(iw,iph)=pnew(iph)
+        enddo
+      endif
+      
+      return
+      end
 c-----------------------------------------------------------------------
       subroutine force_analy_cum(wsum,eave)
 

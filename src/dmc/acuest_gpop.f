@@ -81,7 +81,6 @@ c xerr = current error of x
       call pcm_reduce(dum)
       call mmpol_reduce(dum)
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(.not.wid) goto 17
 

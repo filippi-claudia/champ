@@ -112,7 +112,6 @@ c     no multistate indices
          enddo
        endif
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       return
       end

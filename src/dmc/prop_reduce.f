@@ -44,7 +44,6 @@
       call mpi_reduce(vp2sum,vp2collect,nprop
      &     ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(.not.wid) return
 

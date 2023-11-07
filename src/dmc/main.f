@@ -34,8 +34,6 @@ c Written by Claudia Filippi
       call elapsed_time("MPI initializations : ")
       call parser()
       call elapsed_time("Parsing all the files : ")
-      !call MPI_BARRIER(MPI_Comm_World, ierr)
-      !call elapsed_time("MPI Barrier before main DMC : ")
 
       if(ipr.gt.5) then
             write(filename, '(''problem.'',i0)') idtask
