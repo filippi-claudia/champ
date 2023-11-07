@@ -135,7 +135,7 @@ c Store (well behaved velocity/velocity)
         do ifr=1,nforce
           do iw=1,nwalk
             tratio = one
-            call dmc_velocity(iw, ifr, adrift, tratio, vav2sumo, v2sumo)
+            call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumo, v2sumo)
             fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
           enddo
         enddo
@@ -436,7 +436,7 @@ c Compute streched electronic positions for all nucleus displacement
 
           tratio=one
           if(ifr.gt.1.and.itausec.eq.1) tratio=drifdifr
-          call dmc_velocity(iw, ifr, adrift, tratio, vav2sumn, v2sumn)
+          call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumn, v2sumn)
 
           fration=dsqrt(vav2sumn/v2sumn)
 
@@ -672,31 +672,29 @@ c 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
       return
       end
 
-      subroutine dmc_velocity(iw, ifr, adrift, tratio, vav2sum, v2sum)
+      subroutine dmc_eloc_cutoff(v, adrift, tratio, vav2sum, v2sum)
 
-      use config,  only: vold_dmc
       use contrldmc, only: tau
       use precision_kinds, only: dp
       use system,  only: nelec
 
       implicit none
 
-      integer :: iw, ifr, i
+      integer  :: i
       real(dp) :: adrift, tratio
-      real(dp) :: v2old, vavvt, vavvn
+      real(dp) :: v2, vavvt, vavvn
       real(dp) :: vav2sum, v2sum
+      real(dp), dimension(3, nelec) :: v
 
       vav2sum = 0.d0
       v2sum = 0.d0
       do i=1,nelec
-        v2old = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2
-     & + vold_dmc(3,i,iw,ifr)**2
-        vavvt = (dsqrt(1.d0+2.d0*adrift*v2old*tau*tratio)-1.d0)/
-     & (adrift*v2old)
+        v2    = v(1,i)**2 + v(2,i)**2 + v(3,i)**2
+        vavvt = (dsqrt(1.d0+2.d0*adrift*v2*tau*tratio)-1.d0)/(adrift*v2)
         vavvn = vavvt/(tau*tratio)
 
-        vav2sum = vav2sum + vavvn**2 * v2old
-        v2sum = v2sum + v2old
+        vav2sum = vav2sum + vavvn**2 * v2
+        v2sum = v2sum + v2
 
       enddo
 
