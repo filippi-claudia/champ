@@ -25,6 +25,7 @@ module trexio_read_data
     public :: read_trexio_symmetry_file
     public :: read_trexio_orbitals_file
     public :: read_trexio_basis_file
+    public :: update_trexio_orbitals
     public :: read_trexio_determinant_file
     public :: read_trexio_ecp_file
     public :: write_trexio_basis_num_info_file
@@ -526,6 +527,78 @@ module trexio_read_data
 
     end subroutine write_trexio_basis_num_info_file
 
+
+    subroutine update_trexio_orbitals(file_trexio, coefficients)
+        !> This subroutine updates the .hdf5 trexio generated file/folder. It then reads the
+        !! number of molecular and atomic orbitals and their corresponding coefficients.
+        !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+        !! @date 08 November 2023
+        use mpiconf,            only: wid
+        use contrl_file,        only: ounit, errunit
+        use mpiconf,            only: wid
+        use contrl_file,        only: ounit, errunit
+        use coefs,              only: nbasis
+        use csfs,               only: nstates
+        use vmc_mod,            only: norb_tot, nwftypeorb
+        use multiple_geo,       only: nwftype
+        use general,            only: pooldir
+        use precision_kinds,    only: dp
+        use error,              only: trexio_error
+        use trexio
+        use contrl_file,        only: backend
+        use slater,             only: norb
+
+        implicit none
+
+    !   local use
+        character(len=72), intent(in)   :: file_trexio
+        double precision, intent(in)    :: coefficients(nbasis, norb_tot, 3)
+        character(len=120)              :: file_trexio_path
+        integer                         :: iunit, iwft
+
+
+        logical                         :: exist
+        logical                         :: skip = .true.
+
+    ! trexio
+        integer(8)                      :: trex_orbitals_file
+        integer                         :: rc = 1
+
+        iwft = 1
+        trex_orbitals_file = 0
+        !   External file reading
+
+        if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
+            file_trexio_path = pooldir // file_trexio(7:)
+        else
+            file_trexio_path = file_trexio
+        endif
+
+        write(ounit,*) '---------------------------------------------------------------------------'
+        write(ounit,*) " Updating LCAO orbitals from the file :: ",  trim(file_trexio_path)
+        write(ounit,*) '---------------------------------------------------------------------------'
+
+        ! Check if the file exists
+        if (wid) then
+            trex_orbitals_file = trexio_open(file_trexio_path, 'u', backend, rc)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
+        endif
+
+        ! Update the orbitals
+        if (wid) then
+            rc = trexio_write_mo_coefficient(trex_orbitals_file, coefficients(:,:,1))
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_write_mo_coeffs', __FILE__, __LINE__)
+        endif
+
+        ! Close the file
+        if (wid) then
+            rc = trexio_close(trex_orbitals_file)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
+        endif
+
+        write(ounit,*) "----------------------------------------------------------"
+
+    end subroutine update_trexio_orbitals
 
 
     subroutine read_trexio_basis_file(file_trexio)
