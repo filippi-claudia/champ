@@ -142,9 +142,10 @@ contains
 !    end subroutine init_files
 
     subroutine close_files()
+      use mpiconf, only: wid
         close (5)
         close (6)
-        close (45)
+        if (wid) close (45)
     end subroutine close_files
 
     subroutine init_logfile()
@@ -236,6 +237,9 @@ contains
 
                 case ('-e', '-er', '-err', '-error', '--error')
                     file_error = arg(i+1)
+                    if (.not. wid ) then
+                        file_error = '/dev/null'
+                    endif
                     open (newunit=errunit,file=file_error, iostat=iostat, action='write' )
 
                 case ('-h', '--help')

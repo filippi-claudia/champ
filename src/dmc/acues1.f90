@@ -8,42 +8,28 @@ contains
       use const, only: etrial
       use control, only: ipr, mode
       use multiple_geo, only: nforce
-      use contrldmc, only: idmc
-      use contrldmc, only: nfprod
+      use const,   only: etrial
+      use contrl_file, only: ounit
+      use contrldmc, only: idmc,nfprod
+      use control, only: ipr,mode
       use estcum, only: ipass
       use estsum, only: efsum, efsum1, egsum, egsum1, esum1_dmc, esum_dmc
-      use estsum, only: tausum, wdsum
-      use estsum, only: wdsum1, wfsum, wfsum1, wgdsum, wgsum, wgsum1, wsum1, wsum_dmc
+      use estsum, only: tausum, wfsum, wfsum1, wgsum, wgsum1, wsum1, wsum_dmc
       use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
-      use estcum, only: ei3cum, taucum
-      use estcum, only: wcum1, wfcum1, wgcum, wgcum1
-      use est2cm, only: ecm21_dmc, efcm21, egcm21
-      use est2cm, only: ei3cm2, wcm21
+      use estcum, only: taucum, wcum1, wfcum1, wgcum, wgcum1
+      use est2cm, only: ecm21_dmc, efcm21, egcm21, wcm21
       use est2cm, only: wfcm21, wgcm21
       use branch, only: eest, eigv, ff, fprod, wdsumo, wgdsumo, wtgen
       use contrl_file,    only: ounit
 
       use acues1_gpop_mod, only: acues1_gpop
       use branch,  only: eest,eigv,ff,fprod,wdsumo,wgdsumo,wtgen
-      use const,   only: etrial
-      use contrl_file, only: ounit
-      use contrldmc, only: idmc,nfprod
-      use control, only: ipr,mode
-      use est2cm,  only: ecm21_dmc,efcm21,egcm21,ei3cm2,wcm21,wfcm21
-      use est2cm,  only: wgcm21
-      use estcum,  only: ecum1_dmc,efcum1,egcum,egcum1,ei3cum,ipass
-      use estcum,  only: taucum,wcum1,wfcum1,wgcum,wgcum1
-      use estsum,  only: efsum,efsum1,egsum,egsum1,esum1_dmc,esum_dmc
-      use estsum,  only: tausum,wdsum,wdsum1,wfsum,wfsum1,wgdsum,wgsum
-      use estsum,  only: wgsum1,wsum1,wsum_dmc
       use multiple_geo, only: nforce
       use precision_kinds, only: dp
 
       implicit none
 
       integer :: ifr, ipmod, nfpro
-      real(dp) :: wgdsum1
-
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
 
@@ -51,21 +37,19 @@ contains
         call acues1_gpop
         return
       endif
-! statistical fluctuations without blocking
-      wdsum1=wdsumo
-      wgdsum1=wgdsumo
+!     statistical fluctuations without blocking
+      if(idmc.gt.0) then
+         wcum1=wcum1+wsum1(1)
+         wfcum1=wfcum1+wfsum1
+         ecum1_dmc=ecum1_dmc+esum1_dmc(1)
+         efcum1=efcum1+efsum1
 
-      wcum1=wcum1+wsum1(1)
-      wfcum1=wfcum1+wfsum1
-      ecum1_dmc=ecum1_dmc+esum1_dmc(1)
-      efcum1=efcum1+efsum1
-      ei3cum=ei3cum+wfsum1/wdsum1
+         wcm21=wcm21+wsum1(1)**2
+         wfcm21=wfcm21+wfsum1**2
+         ecm21_dmc=ecm21_dmc+esum1_dmc(1)**2/wsum1(1)
+         efcm21=efcm21+efsum1**2/wfsum1
+      endif
 
-      wcm21=wcm21+wsum1(1)**2
-      wfcm21=wfcm21+wfsum1**2
-      ecm21_dmc=ecm21_dmc+esum1_dmc(1)**2/wsum1(1)
-      efcm21=efcm21+efsum1**2/wfsum1
-      ei3cm2=ei3cm2+(wfsum1/wdsum1)**2
       do ifr=1,nforce
         wgcum1(ifr)=wgcum1(ifr)+wgsum1(ifr)
         egcum1(ifr)=egcum1(ifr)+egsum1(ifr)
@@ -76,8 +60,6 @@ contains
 ! collect block averages
       wsum_dmc=wsum_dmc+wsum1(1)
       wfsum=wfsum+wfsum1
-      wdsum=wdsum+wdsumo
-      wgdsum=wgdsum+wgdsum1
       esum_dmc=esum_dmc+esum1_dmc(1)
       efsum=efsum+efsum1
 
@@ -105,7 +87,6 @@ contains
 
 ! zero out step averages
       wfsum1=zero
-      wdsum1=zero
       efsum1=zero
       do ifr=1,nforce
         wsum1(ifr)=zero

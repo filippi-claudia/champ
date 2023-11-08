@@ -112,6 +112,7 @@ if (MPI_Fortran_FOUND)
     cuspinit4.f90
     davidson.f90
     davidson_wrap.f90
+    deriv_jastrow1.f90
     deriv_jastrow4.f90
     get_norbterm.f90
     lapack_wrapper.f90
@@ -126,6 +127,7 @@ if (MPI_Fortran_FOUND)
     optgeo_hessian.f90
     optwf.f90 optwf_dl.f90
     optwf_sr.f90
+    ortho_orbitals.f90
     parser.f90
     qmmm_bspline.f90
     qmmm_density.f90
@@ -169,19 +171,9 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90)
   endif()
 
-  if (NOT ENABLE_PERIODIC)
-    message(STATUS "PERIODIC is NOT enabled!")
-    list(REMOVE_ITEM VMC90_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f90)
-  else()
-    message(STATUS "PERIODIC is enabled!")
-    list(REMOVE_ITEM VMC90_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f90)
-  endif()
+
+  find_package(FortranFormat)
+  formatFortran("${VMC_SOURCE}") # Set Fixed format property
 
   # --------------------------------------------------------------------
   # Create two libraries to share objects between the two binaries,
@@ -213,6 +205,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/fitting.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow1.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90   # This file should be refactored and eliminated.
     ${CMAKE_CURRENT_SOURCE_DIR}/efield.f90
@@ -297,18 +290,6 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_writecube.f90)
   endif()
 
-  if (ENABLE_PERIODIC)
-    list(REMOVE_ITEM SHARED_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f90)
-    list(APPEND SHARED_OBJECTS
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_ewald.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals_e.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_find_image.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_orbitals.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/pw_read.f90)
-  endif()
-
-
 
   add_library(shared_objects OBJECT ${SHARED_OBJECTS})
 
@@ -344,7 +325,7 @@ if (MPI_Fortran_FOUND)
   # --------------------------------------------------------------------
   add_library(rng OBJECT
     xoroshiro256starstar.c)
-  
+
   target_compile_options(rng
     PUBLIC
     "-O3")
@@ -403,6 +384,6 @@ ENDIF()
       ${LINEAR_ALGEBRA}
       MPI::MPI_Fortran)
   endif()
-  
+
 
 endif()

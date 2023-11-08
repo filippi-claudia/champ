@@ -20,13 +20,16 @@ module trexio_read_data
     public :: trexio_has_group_determinant
     public :: trexio_has_group_ecp
 
+#if defined(TREXIO_FOUND)
     public :: read_trexio_molecule_file
     public :: read_trexio_symmetry_file
     public :: read_trexio_orbitals_file
     public :: read_trexio_basis_file
+    public :: update_trexio_orbitals
     public :: read_trexio_determinant_file
     public :: read_trexio_ecp_file
     public :: write_trexio_basis_num_info_file
+#endif
     contains
 
 #if defined(TREXIO_FOUND)
@@ -198,18 +201,19 @@ module trexio_read_data
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
         use coefs, only: nbasis
+        use csfs,               only: nstates
         use inputflags,         only: ilcao
         use numbas,             only: nrbas
         use numbas1,            only: iwlbas, nbastyp
         use orbval,             only: nadorb
         use pcm_fdc,            only: fs
-        use vmc_mod,            only: norb_tot
+        use vmc_mod,            only: norb_tot, nwftypeorb
         use multiple_geo,       only: nwftype
         use general,            only: pooldir
         use optwf_control,      only: method
         use precision_kinds, only: dp
         use slater,             only: coef
-
+        use vmc_mod, only: nwftypeorb, nstoo, nstoomax, otos, extrao, nstoo_tot
 
         use error, only: trexio_error
         use trexio
@@ -283,9 +287,22 @@ module trexio_read_data
 
         norb = norb_tot        ! norb will get updated later. norb_tot is fixed
 
+
         ! Do the array allocations
         if( (method(1:3) == 'lin')) then
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, 3))
+        elseif(method == 'sr_n') then
+            if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nstates))
+            nwftypeorb=nstates
+            nstoo_tot=nstates
+            nstoomax=1
+            extrao=1
+            if (.not. allocated(nstoo)) allocate (nstoo(nwftypeorb))
+            if (.not. allocated(otos)) allocate (otos(nwftypeorb,1))
+            do i=1,nstates
+               nstoo(i)=1
+               otos(i,1)=i
+            enddo
         else
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
         endif
@@ -309,6 +326,12 @@ module trexio_read_data
         call bcast(coef(:,:,1))
         endif
 
+        ! Make a copy of orbital coeffs for multiple states
+        if( (method == 'sr_n') .and. (nstates .gt. 1)) then
+            do i=2,nstates
+              coef(:,:,i)=coef(:,:,1)
+            enddo
+        endif
 
 !   Generate the basis information (which radial to be read for which Slm)
         if (wid) then
@@ -447,6 +470,9 @@ module trexio_read_data
         write(ounit,int_format) " Type of wave functions ", iwft
         write(ounit,*) "Orbital coefficients are written to the output.log file"
 
+
+
+
         write(ounit,*)
         ilcao = ilcao + 1
         write(ounit,*) "----------------------------------------------------------"
@@ -501,6 +527,78 @@ module trexio_read_data
 
     end subroutine write_trexio_basis_num_info_file
 
+
+    subroutine update_trexio_orbitals(file_trexio, coefficients)
+        !> This subroutine updates the .hdf5 trexio generated file/folder. It then reads the
+        !! number of molecular and atomic orbitals and their corresponding coefficients.
+        !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+        !! @date 08 November 2023
+        use mpiconf,            only: wid
+        use contrl_file,        only: ounit, errunit
+        use mpiconf,            only: wid
+        use contrl_file,        only: ounit, errunit
+        use coefs,              only: nbasis
+        use csfs,               only: nstates
+        use vmc_mod,            only: norb_tot, nwftypeorb
+        use multiple_geo,       only: nwftype
+        use general,            only: pooldir
+        use precision_kinds,    only: dp
+        use error,              only: trexio_error
+        use trexio
+        use contrl_file,        only: backend
+        use slater,             only: norb
+
+        implicit none
+
+    !   local use
+        character(len=72), intent(in)   :: file_trexio
+        double precision, intent(in)    :: coefficients(nbasis, norb_tot, 3)
+        character(len=120)              :: file_trexio_path
+        integer                         :: iunit, iwft
+
+
+        logical                         :: exist
+        logical                         :: skip = .true.
+
+    ! trexio
+        integer(8)                      :: trex_orbitals_file
+        integer                         :: rc = 1
+
+        iwft = 1
+        trex_orbitals_file = 0
+        !   External file reading
+
+        if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
+            file_trexio_path = pooldir // file_trexio(7:)
+        else
+            file_trexio_path = file_trexio
+        endif
+
+        write(ounit,*) '---------------------------------------------------------------------------'
+        write(ounit,*) " Updating LCAO orbitals from the file :: ",  trim(file_trexio_path)
+        write(ounit,*) '---------------------------------------------------------------------------'
+
+        ! Check if the file exists
+        if (wid) then
+            trex_orbitals_file = trexio_open(file_trexio_path, 'u', backend, rc)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
+        endif
+
+        ! Update the orbitals
+        if (wid) then
+            rc = trexio_write_mo_coefficient(trex_orbitals_file, coefficients(:,:,1))
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_write_mo_coeffs', __FILE__, __LINE__)
+        endif
+
+        ! Close the file
+        if (wid) then
+            rc = trexio_close(trex_orbitals_file)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
+        endif
+
+        write(ounit,*) "----------------------------------------------------------"
+
+    end subroutine update_trexio_orbitals
 
 
     subroutine read_trexio_basis_file(file_trexio)
@@ -796,14 +894,13 @@ module trexio_read_data
             write(ounit,'(A, T60, I0)')     " Icusp                 ::  ", icusp(ic)
             write(ounit,*)
 
-            ! DEBUG following loop; Special case when nloc equals zero.
-            ! Make sure that the trexio file stores this information.
-!            if(nloc.eq.0) then
-!                do irb = 1, nrbas(ic)
-!                    l(irb) = 0
-!                enddo
-!            endif
-
+            ! All electron case when nloc equals zero.
+            ! Make sure that the input file has nloc=0.
+            if(nloc.eq.0) then
+                do irb = 1, nrbas(ic)
+                    l(irb) = 0
+                enddo
+            endif
 
 
             ! loop over all the primitives for the unique atom
@@ -882,19 +979,21 @@ module trexio_read_data
 
 
         ! c       if(ipr.gt.1) then
-                write(45,'(''basis = '',i4)') irb
-                write(45,'(''check the small radius expansion'')')
-                write(45,'(''coefficients'',1p10e22.10)') &
-                            (ce(iff,irb,ic,iwf),iff=1,NCOEF)
-                write(45,'(''check the small radius expansion'')')
-                write(45,'(''irad, rad, extrapolated value, correct value'')')
-                do ir=1,10
-                    val=ce(1,irb,ic,iwf)
-                    do icoef=2,NCOEF
-                    val=val+ce(icoef,irb,ic,iwf)*x(ir)**(icoef-1)
+                if (wid) then
+                    write(45,'(''basis = '',i4)') irb
+                    write(45,'(''check the small radius expansion'')')
+                    write(45,'(''coefficients'',1p10e22.10)') &
+                                (ce(iff,irb,ic,iwf),iff=1,NCOEF)
+                    write(45,'(''check the small radius expansion'')')
+                    write(45,'(''irad, rad, extrapolated value, correct value'')')
+                    do ir=1,10
+                        val=ce(1,irb,ic,iwf)
+                        do icoef=2,NCOEF
+                        val=val+ce(icoef,irb,ic,iwf)*x(ir)**(icoef-1)
+                        enddo
+                        write(45,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
                     enddo
-                    write(45,'(i2,1p3e22.14)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
-                enddo
+                endif
         ! c       endif
 
                 dwf1=0.d0
@@ -911,7 +1010,7 @@ module trexio_read_data
                   endif
                 enddo rloop
 
-                write(45,'(a,i0,a,i0,a,g0)') "Initial rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
+                if (wid) write(45,'(a,i0,a,i0,a,g0)') "Initial rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
 
 ! Nonzero basis at the boundary : Do exponential fitting.
                 if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
@@ -920,22 +1019,24 @@ module trexio_read_data
 
                     rmaxwf(irb,ic)=-dlog(cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
 
-                    write(45,'(a)') 'check the large radius expansion'
-                    write(45,'(a,g0,2x,g0)') 'Exponential fitting parameters : ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
+                    if (wid) then
+                        write(45,'(a)') 'check the large radius expansion'
+                        write(45,'(a,g0,2x,g0)') 'Exponential fitting parameters : ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
 
-                    write(45,'(a,i0,a,i0,a,g0)') "Final rmax (fit) for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
-                    write(45, '(a)') 'irad,         rad                  rwf value            expo fit'
-                    do ir=1,10
-                      temp = ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
-                      write(45,'(i3,2x,1p4e22.14)') ir,x(nr(ic)-ir),rwf(nr(ic)-ir,irb,ic,iwf), temp
-                    enddo
+                        write(45,'(a,i0,a,i0,a,g0)') "Final rmax (fit) for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
+                        write(45, '(a)') 'irad,         rad                  rwf value            expo fit'
+                        do ir=1,10
+                        temp = ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
+                        write(45,'(i3,2x,1p4e22.14)') ir,x(nr(ic)-ir),rwf(nr(ic)-ir,irb,ic,iwf), temp
+                        enddo
+                    endif
 
                     dwfn=-ae(2,irb,ic,iwf)*ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)))
 
                 else
                     dwfn=0.d0
                 endif
-                write(45,*) 'dwf1,dwfn',dwf1,dwfn
+                if (wid) write(45,*) 'dwf1,dwfn',dwf1,dwfn
 
                 call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
 

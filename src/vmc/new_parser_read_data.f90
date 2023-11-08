@@ -342,7 +342,7 @@ subroutine read_determinants_file(file_determinants)
     write(ounit,*)
 
     nwftype = 0
-    nstates = 1
+!   nstates = 1  ! read from the input file
     if (wid) then
         do while (.not. found)
             read(iunit,*, iostat=iostat) temp1
@@ -365,7 +365,7 @@ subroutine read_determinants_file(file_determinants)
             endif
         enddo
     endif
-    
+
 !   Read the first main line
     if (wid) then
         read(iunit, *, iostat=iostat)  temp2, ndet, itmp
@@ -511,6 +511,7 @@ subroutine read_jastrow_file(file_jastrow)
     ! Ravindra
 
       use bparm,   only: nocuspb,nspin2b
+      use csfs,    only: nstates
       use contrl_file, only: errunit,ounit
       use contrl_per, only: iperiodic
       use control, only: mode
@@ -522,9 +523,10 @@ subroutine read_jastrow_file(file_jastrow)
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,neqsx
       use jastrow, only: nordj,nordj1,nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
+      use jastrow, only: cutjas_ee, cutjas_en, cutjas_eei, cutjas_eni
       use mpiconf, only: wid
       use multiple_geo, only: MWF,nwftype
-      use optwf_control, only: method, ioptwf
+      use optwf_control, only: method, ioptwf, ioptjas
       use vmc_mod, only: nwftypeorb, nwftypejas, nstoj, jtos, stoj, nstojmax, extraj, nstoj_tot
       use precision_kinds, only: dp
       use system,  only: ncent,nctype,ndn
@@ -560,7 +562,11 @@ subroutine read_jastrow_file(file_jastrow)
     endif
 
 
-    if (ijas .lt. 4 .or. ijas .gt. 6) call fatal_error('JASTROW: only ijas=4,5,6 implemented')
+    !    if (ijas .lt. 4 .or. ijas .gt. 6) call fatal_error('JASTROW: only ijas=4,5,6 implemented')
+    if(ijas.ne.1)then
+       if (ijas .lt. 4 .or. ijas .gt. 6) call fatal_error('JASTROW: only ijas=4,5,6 implemented')
+    endif
+
     if (ndn .eq. 1 .and. nspin2 .eq. 3) call fatal_error('JASTROW: 1 spin down and nspin2=3')
 
     if ((ijas .eq. 4 .or. ijas .eq. 5) .and. &
@@ -581,22 +587,23 @@ subroutine read_jastrow_file(file_jastrow)
     !check how many sets of jastrows are listed. make only for sr_n, multistate?
     extraj = 0
     if ((method .eq. 'sr_n')) then
-        nwftypejas = 0
-        extraj = 1
-        if (wid) then
-            do while (.not. found)
-                read(iunit,*, iostat=iostat) temp2
-                if (is_iostat_end(iostat)) exit
-                temp1 = trim(temp2)
-                if (temp2 == "jastrows_to_states") then
-                    nwftypejas = nwftypejas + 1
-                endif
-            enddo
-            rewind(iunit)
-            if ((nwftypejas .eq. 0)) then
-                nwftypejas = 1
-                extraj = 0
-            endif
+       nwftypejas = 0
+       extraj = 1
+       if (wid) then
+          do while (.not. found)
+             read(iunit,*, iostat=iostat) temp2
+             if (is_iostat_end(iostat)) exit
+             temp1 = trim(temp2)
+             ! if (temp2 == "jastrows_to_states") then
+             if (temp1 == "jastrows_to_states") then
+                nwftypejas = nwftypejas + 1
+             endif
+          enddo
+          rewind(iunit)
+          if ((nwftypejas .eq. 0)) then
+             nwftypejas = 1
+             extraj = 0
+          endif
             if(mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " Found ", nwftypejas, " types of jastrows in the input file. "
             if (extraj .eq. 0) then
                if(mode(1:3) == 'vmc') write(ounit,int_format) " For a multistate sr_n optimization , a 'jastrows_to_states' line is required before each jastrow's parameters are specified "
@@ -644,6 +651,9 @@ subroutine read_jastrow_file(file_jastrow)
       nstoj_tot=nstoj_tot+nstoj(i)
     enddo
 
+    if(method.eq.'sr_n'.and.ioptjas.ne.0.and.nwftypejas.ne.nstates) &
+    call fatal_error ( " Number jastrow sets must match number of states for Jastrow optimization")
+
     if(mode(1:3) == 'vmc') write(ounit,'(A,i4,A,i4,A)') " Found ", nwftypejas, " jastrow types to be assigned to ", nstoj_tot, " states. If only sampling, ignore."
 
     ! read the first word of the file
@@ -652,7 +662,7 @@ subroutine read_jastrow_file(file_jastrow)
         if (iostat == 0) then
             if (trim(temp2) == "jastrow_parameter") &
             write(ounit,int_format) " Jastrow parameters being read : type of wavefunctions :: ", iwft
-            if((method .eq. 'sr_n')) then 
+            if((method .eq. 'sr_n')) then
                 !if (nwftypejas .ne. nwftypeorb) then
                     !call fatal_error ( " Number of states specified in jastrow file do not match lcao file ")
                 !else
@@ -669,111 +679,223 @@ subroutine read_jastrow_file(file_jastrow)
     if((method(1:3) == 'lin')) then
         allocate (scalek(3))
     else
-        allocate (scalek(nwftype)) 
+        allocate (scalek(nwftype))
     endif
-          
+
 
     if (ijas .ge. 4 .and. ijas .le. 6) then
-        if (wid) read (iunit, *) norda, nordb, nordc
-        call bcast(norda)
-        call bcast(nordb)
-        call bcast(nordc)
+       if (wid) read (iunit, *) norda, nordb, nordc
+       call bcast(norda)
+       call bcast(nordb)
+       call bcast(nordc)
 
-        nordj = max(norda, nordb, nordc)
-        nordj1 = nordj + 1
-        neqsx = 6*nordj
-        
-        write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc
+       nordj = max(norda, nordb, nordc)
+       nordj1 = nordj + 1
+       neqsx = 6*nordj
 
-        if (isc .ge. 2) then
-            if (wid) read (iunit, *) scalek(iwft) ! we set iwft = 1 for 'sr_n' so only the (1) will have the saclek value
-        endif
+       write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc
 
-        if (method.eq.'sr_n') then 
+       if (isc .ge. 2) then
+          if (wid) read (iunit, *) scalek(iwft) ! we set iwft = 1 for 'sr_n' so only the (1) will have the saclek value
+       endif
+
+       if (method.eq.'sr_n') then
           do i=1,nwftype
-            scalek(i)=scalek(1)
+             scalek(i)=scalek(1)
           enddo
-        endif
+       endif
 
-        call bcast(scalek)
-        write(ounit, '(A,f12.6)') " scalek = ", scalek(iwft)
+       call bcast(scalek)
+       write(ounit, '(A,f12.6)') " scalek = ", scalek(iwft)
 
-        mparmja = 2 + max(0, norda - 1)
-        mparmjb = 2 + max(0, nordb - 1)
-        mparmjc = nterms4(nordc)
+       mparmja = 2 + max(0, norda - 1)
+       mparmjb = 2 + max(0, nordb - 1)
+       mparmjc = nterms4(nordc)
 
-        if( (method(1:3) == 'lin')) then
-            allocate (a4(mparmja, nctype, 3))
-            allocate (b(mparmjb, 2, 3))
-            allocate (c(mparmjc, nctype, 3))
-        else
-            allocate (a4(mparmja, nctype, nwftype))
-            allocate (b(mparmjb, 2, nwftype))
-            allocate (c(mparmjc, nctype, nwftype))
-        endif
-       
-        nstojmax=maxval(nstoj)
-        if(mode(1:3) == 'vmc') write(ounit,*) "nstoj,nstojmax", nstoj(1), nstojmax
-        if(mode(1:3) == 'vmc') write(ounit,*) "Ignore if only sampling."
-        allocate(jtos(nwftypejas,nstojmax))
+       if( (method(1:3) == 'lin')) then
+          allocate (a4(mparmja, nctype, 3))
+          allocate (b(mparmjb, 2, 3))
+          allocate (c(mparmjc, nctype, 3))
+       else
+          allocate (a4(mparmja, nctype, nwftype))
+          allocate (b(mparmjb, 2, nwftype))
+          allocate (c(mparmjc, nctype, nwftype))
+       endif
 
-        if (wid) then 
-        do iwft = 1, nwftype
-            write(ounit, '(A)') "Jastrow parameters :: "
-            if( (method .eq. 'sr_n')) write(ounit, '(A,i0)') "Jastrow type :: ", iwft
-            write(ounit, '(A)') "mparmja : "
-            write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
-            if (method .eq. 'sr_n') then
+       nstojmax=maxval(nstoj)
+       if(mode(1:3) == 'vmc') write(ounit,*) "nstoj,nstojmax", nstoj(1), nstojmax
+       if(mode(1:3) == 'vmc') write(ounit,*) "Ignore if only sampling."
+       allocate(jtos(nwftypejas,nstojmax))
+
+       if (wid) then
+          do iwft = 1, nwftype
+             write(ounit, '(A)') "Jastrow parameters :: "
+             if( (method .eq. 'sr_n')) write(ounit, '(A,i0)') "Jastrow type :: ", iwft
+             write(ounit, '(A)') "mparmja : "
+             write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
+             if (method .eq. 'sr_n') then
                 if (extraj .eq. 1) then
-                    read (iunit, *, iostat=iostat) temp1, int1, (jtos(iwft,i),i=1,nstoj(iwft))
-                    write(ounit,*) 'jastrows_to_states'
-                    write(ounit,*) '# of states assigned: ', int1 
-                    write(ounit,*) 'states assigned: ', (jtos(iwft,i),i=1,nstoj(iwft))
-                    int2=int1+1
-                    do i=int2,nstojmax ! setting unused spaces to zero.
-                       jtos(iwft,i) = 0
-                    enddo
-                    if (trim(temp1) .ne. "jastrows_to_states") then
-                        write(ounit, *) " Expected 'jastrows_to_states' on this line ", temp1
-                        call fatal_error ("Error in reading jastrow parameters")
-                    endif
-                    if (iostat .ne. 0) call fatal_error ("Error in reading jastrows_to_states")
+                   read (iunit, *, iostat=iostat) temp1, int1, (jtos(iwft,i),i=1,nstoj(iwft))
+                   write(ounit,*) 'jastrows_to_states'
+                   write(ounit,*) '# of states assigned: ', int1
+                   write(ounit,*) 'states assigned: ', (jtos(iwft,i),i=1,nstoj(iwft))
+                   int2=int1+1
+                   do i=int2,nstojmax ! setting unused spaces to zero.
+                      jtos(iwft,i) = 0
+                   enddo
+                   if (trim(temp1) .ne. "jastrows_to_states") then
+                      write(ounit, *) " Expected 'jastrows_to_states' on this line ", temp1
+                      call fatal_error ("Error in reading jastrow parameters")
+                   endif
+                   if (iostat .ne. 0) call fatal_error ("Error in reading jastrows_to_states")
                 else
-                  jtos(1,1)=1
+                   jtos(1,1)=1
                 endif
-            else
+             else
                 jtos(1,1)=1
-            endif
-            do it = 1, nctype
+             endif
+             do it = 1, nctype
                 read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja)
                 !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja)  !Intel Version
                 if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja)                     !GNU version
-            enddo
-            write(ounit, '(A)') "mparmjb : "
-            write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
-            do isp = nspin1, nspin2b
+             enddo
+             write(ounit, '(A)') "mparmjb : "
+             write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
+             do isp = nspin1, nspin2b
                 read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb)
                 !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb)  !Intel Version
                 if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb)                     !GNU version
-            enddo
-            write(ounit, '(A)') "mparmjc : "
-            write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
-            do it = 1, nctype
+             enddo
+             write(ounit, '(A)') "mparmjc : "
+             write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
+             do it = 1, nctype
+                 read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
+                 !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
+                 if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
+             enddo
+          enddo
+       endif
+       call bcast(a4)
+       call bcast(b)
+       if(mparmjc.gt.0) call bcast(c)
+       if (extraj.gt.0) then
+          call bcast(jtos)
+          call bcast(nstoj)
+       endif
+
+    elseif(ijas.eq.1) then
+
+       if (wid) read (iunit, *) norda, nordb, nordc
+       call bcast(norda)
+       call bcast(nordb)
+       call bcast(nordc)
+
+       nordj = max(norda, nordb, nordc)
+       nordj1 = nordj + 1
+       neqsx = 6*nordj
+
+       write(ounit, '(3(A,i4))') " norda = ", norda, "; nordb = ", nordb, "; nordc = ", nordc
+
+       mparmja = norda
+       mparmjb = nordb
+       mparmjc = nterms4(nordc)
+
+       if( (method(1:3) == 'lin')) then
+          allocate (a4(mparmja+1, nctype, 3))
+          allocate (b(mparmjb+1, 2, 3))
+          allocate (c(mparmjc, nctype, 3))
+          allocate (cutjas_en(nctype,3))
+          allocate (cutjas_eni(nctype,3))
+          allocate (cutjas_ee(2, 3))
+          allocate (cutjas_eei(2, 3))
+       else
+          allocate (a4(mparmja+1, nctype, nwftype))
+          allocate (b(mparmjb+1, 2, nwftype))
+          allocate (c(mparmjc, nctype, nwftype))
+          allocate (cutjas_en(nctype,nwftype))
+          allocate (cutjas_eni(nctype,nwftype))
+          allocate (cutjas_ee(2, nwftype))
+          allocate (cutjas_eei(2, nwftype))
+       endif
+
+       nstojmax=maxval(nstoj)
+       if(mode(1:3) == 'vmc') write(ounit,*) "nstoj,nstojmax", nstoj(1), nstojmax
+       if(mode(1:3) == 'vmc') write(ounit,*) "Ignore if only sampling."
+       allocate(jtos(nwftypejas,nstojmax))
+
+       if (wid) then
+          do iwft = 1, nwftype
+             write(ounit, '(A)') "Jastrow parameters :: "
+             if( (method .eq. 'sr_n')) write(ounit, '(A,i0)') "Jastrow type :: ", iwft
+             write(ounit, '(A)') "mparmja : "
+             write(temp3, '(a,i0,a)') '(', mparmja, '(2X, f12.8))'
+             if (method .eq. 'sr_n') then
+                if (extraj .eq. 1) then
+                   read (iunit, *, iostat=iostat) temp1, int1, (jtos(iwft,i),i=1,nstoj(iwft))
+                   write(ounit,*) 'jastrows_to_states'
+                   write(ounit,*) '# of states assigned: ', int1
+                   write(ounit,*) 'states assigned: ', (jtos(iwft,i),i=1,nstoj(iwft))
+                   int2=int1+1
+                   do i=int2,nstojmax ! setting unused spaces to zero.
+                      jtos(iwft,i) = 0
+                   enddo
+                   if (trim(temp1) .ne. "jastrows_to_states") then
+                      write(ounit, *) " Expected 'jastrows_to_states' on this line ", temp1
+                      call fatal_error ("Error in reading jastrow parameters")
+                   endif
+                   if (iostat .ne. 0) call fatal_error ("Error in reading jastrows_to_states")
+                else
+                   jtos(1,1)=1
+                endif
+             else
+                jtos(1,1)=1
+             endif
+             do it = 1, nctype
+                read (iunit, *) (a4(iparm, it, iwft), iparm=1, mparmja+1)
+                !write(ounit, '(<mparmja>(2X,f12.8))') (a4(iparm, it, iwft), iparm=1, mparmja+1)  !Intel Version
+                if (mparmja .ne. 0) write(ounit, temp3) (a4(iparm, it, iwft), iparm=1, mparmja+1)                     !GNU version
+                if(wid) then
+                   cutjas_en(it,iwft)=a4(mparmja+1, it, iwft)
+                   cutjas_eni(it,iwft)=1.d0/cutjas_en(it,iwft)
+                endif
+             enddo
+             write(ounit, '(A)') "mparmjb : "
+             write(temp3, '(a,i0,a)') '(', mparmjb, '(2X, f12.8))'
+             do isp = nspin1, nspin2b
+                read (iunit, *) (b(iparm, isp, iwft), iparm=1, mparmjb+1)
+                !write(ounit, '(<mparmjb>(2X,f12.8))') (b(iparm, isp, iwft), iparm=1, mparmjb+1)  !Intel Version
+                if (mparmjb .ne. 0) write(ounit, temp3) (b(iparm, isp, iwft), iparm=1, mparmjb+1) !GNU version
+                 if(wid) then
+                    cutjas_ee(isp,iwft)=b(mparmjb+1, isp, iwft)
+                    cutjas_eei(isp,iwft)=1.d0/cutjas_ee(isp,iwft)
+                 endif
+
+             enddo
+             write(ounit, '(A)') "mparmjc : "
+             write(temp3, '(a,i0,a)') '(', mparmjc, '(2X, f12.8))'
+             do it = 1, nctype
                 read (iunit, *) (c(iparm, it, iwft), iparm=1, mparmjc)
                 !write(ounit, '(<mparmjc>(2X,f12.8))') (c(iparm, it, iwft), iparm=1, mparmjc)   !Intel Version
                 if (mparmjc .ne. 0) write(ounit, temp3) (c(iparm, it, iwft), iparm=1, mparmjc)                      !GNU version
-            enddo
-        enddo
-        endif
-        call bcast(a4)
-        call bcast(b)
-        call bcast(c)
-        !call bcast(extraj)
-        if (extraj.gt.0) then
-           call bcast(jtos)
-           call bcast(nstoj)
-        endif
-    endif
+             enddo
+          enddo
+       endif
+
+       call bcast(a4)
+       call bcast(b)
+       if(mparmjc.gt.0) call bcast(c)
+       call bcast(cutjas_en)
+       call bcast(cutjas_eni)
+       call bcast(cutjas_ee)
+       call bcast(cutjas_eei)
+
+       !call bcast(extraj)
+       if (extraj.gt.0) then
+          call bcast(jtos)
+          call bcast(nstoj)
+       endif
+
+     endif
 
     !Read cutoff for Jastrow4, 5, 6
     if (isc .eq. 6 .or. isc .eq. 7) then
@@ -785,7 +907,6 @@ subroutine read_jastrow_file(file_jastrow)
     call bcast(cutjas)
 
     ijastrow_parameter = ijastrow_parameter + 1
-    call bcast(ijastrow_parameter)
 
     if (wid) close(iunit)
 
@@ -811,7 +932,7 @@ subroutine read_orbitals_file(file_orbitals)
       use pcm_fdc, only: fs
       use precision_kinds, only: dp
       use slater,  only: coef,norb
-      use vmc_mod, only: norb_tot, nwftypeorb, nstoo, nstoomax, otos, extrao, nstoo_tot      
+      use vmc_mod, only: norb_tot, nwftypeorb, nstoo, nstoomax, otos, extrao, nstoo_tot
       use write_orb_loc_mod, only: write_orb_loc
 
     ! was not in master but is needed
@@ -1022,7 +1143,7 @@ subroutine read_csf_file(file_determinants)
       use optwf_control, only: ioptci,method
       use precision_kinds, only: dp
       use slater,  only: cdet,ndet
-      use vmc_mod, only: nwftypeorb, nstoj_tot, nstoo_tot      
+      use vmc_mod, only: nwftypeorb, nstoj_tot, nstoo_tot
       use, intrinsic :: iso_fortran_env!, only: is_iostat_end
 !   Not sure about the following two lines
     implicit none
@@ -1031,6 +1152,7 @@ subroutine read_csf_file(file_determinants)
     character(len=72), intent(in)   :: file_determinants
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iostat, i, j, iunit
+    integer                         :: nstates_local
     logical                         :: exist, printed
     logical                         :: found = .false.
 
@@ -1069,8 +1191,12 @@ subroutine read_csf_file(file_determinants)
     ! if there is no mention of "csf" in the file
     if (.not. found) then
         ! No csf information present. One to one mapping cdet == ccsf
-        nstates = 1
-        ncsf = ndet
+
+        if (nstates .gt. 1) then
+            call fatal_error (" Provide CSF information for multiple states. Exiting!")
+        endif
+
+        ncsf = 0
         if((method.eq.'sr_n'.and.ioptci.eq.1)) then
             if (nstates.ne.nstoj_tot.or.nstates.ne.nstoo_tot) then
                 call fatal_error (" determinant file: number of states found do not match those in jastrow and lcao. ")
@@ -1084,11 +1210,10 @@ subroutine read_csf_file(file_determinants)
         else
             if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
         endif
-
-
         do j = 1, ndet
-            ccsf(j,1,nwftype) = cdet(j,1,nwftype)
+            ccsf(j,1,1) = cdet(j,1,1)
         enddo
+
         ! printing
         write(ounit,int_format) " Number of configuration state functions (csf) ", ncsf
         write(ounit,int_format) " Number of states (nstates) ", nstates
@@ -1100,9 +1225,13 @@ subroutine read_csf_file(file_determinants)
 
     else
         ! read the same line again to get the ncsf and nstates
-        if (wid) read(iunit, *, iostat=iostat)  temp2, ncsf, nstates
+        if (wid) read(iunit, *, iostat=iostat)  temp2, ncsf, nstates_local
         call bcast(ncsf)
-        call bcast(nstates)
+        call bcast(nstates_local)
+
+        if (nstates_local .ne. nstates) then
+           call fatal_error ("Number of states read from the determinant file does not match with the input file. Exiting!")
+        endif
 
         if((method.eq.'sr_n'.and.ioptci.eq.1)) then
             if (nstates.ne.nstoj_tot.or.nstates.ne.nstoo_tot) then
@@ -1112,7 +1241,7 @@ subroutine read_csf_file(file_determinants)
         endif
 
         if( (method(1:3) == 'lin')) then
-            if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, 3)) 
+            if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, 3))
         else
             if (.not. allocated(ccsf)) allocate(ccsf(ncsf, nstates, nwftype))
         endif
@@ -1213,7 +1342,7 @@ subroutine read_csfmap_file(file_determinants)
         if (.not. allocated(ibdet)) allocate (ibdet(ndet))
         if (.not. allocated(icxdet)) allocate (icxdet(nmap))
 
-        do i = 1, ncsf
+        do i = 1, ndet
             iadet(i) = i
             ibdet(i) = i
             icxdet(i) = i
@@ -1262,7 +1391,7 @@ subroutine read_csfmap_file(file_determinants)
         if (nmap_check .ne. nptr - 1) call fatal_error ('Error in CSFMAP:: not enough nmaps / file is corrupt')
         nmap = nptr - 1
 !        if (allocated(cdet)) deallocate (cdet)
-!        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype)) 
+!        if (.not. allocated(cdet)) allocate (cdet(ndet, nstates, nwftype))
         write(ounit, *) "ndet, nstates, nwftype", ndet, nstates, nwftype
         write(ounit, *) "ncsf", ncsf
         write(ounit, '(''Warning: det coef overwritten with csf'')')
@@ -1390,6 +1519,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
       use optwf_nparmj, only: nparma,nparmb,nparmc,nparmf
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa,iwjasb,iwjasc,iwjasf
+      use pseudo, only: nloc
       use system,  only: nctype,nctype_tot
       use vmc_mod, only: nctyp3x
 
@@ -1475,9 +1605,9 @@ subroutine read_jasderiv_file(file_jastrow_der)
 
         if (ijas .ge. 4 .and. ijas .le. 6) then
             do it = 1, nctype
-                if (numr .eq. 0) then
-                    ! All-electron with analytic slater basis
-                    if ((nparma(it) .gt. 0 .and. norda .eq. 0) .or. (nparma(it) .gt. norda + 1)) then
+                if (nloc .eq. 0) then
+                    ! All-electron with numerical basis: a(1)=-Z, a(2) can vary
+                    if ((nparma(it) .gt. 0 .and. norda .eq. 0) .or. (nparma(it) .gt. norda)) then
                         write(ounit, '(''it,norda,nparma(it)'',3i5)') it, norda, nparma(it)
                         call fatal_error( 'nparma too large for norda')
                     endif
@@ -1891,6 +2021,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
+      use fdf, only: fdf_defined
       use inputflags, only: ibasis_num
       use mpiconf, only: wid
       use numbas,  only: iwrwf,numr,nrbas
@@ -1899,7 +2030,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
       use precision_kinds, only: dp
       use system,  only: nctype,newghostype
       use write_orb_loc_mod, only: write_orb_loc
-
+      use mpitimer, only: elapsed_time
 
     implicit none
 
@@ -1916,6 +2047,8 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     character(len=100)               :: int_format     = '(A, T60, I0)'
     character(len=100)               :: string_format  = '(A, T60, A)'
 
+
+    call elapsed_time ( "Reading bas num: begins")
     !   External file reading
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,'(a)')  " Reading Basis function types and pointers to radial parts tables from the file :: ", &
@@ -1955,16 +2088,28 @@ subroutine read_basis_num_info_file(file_basis_num_info)
             call fatal_error( "Error in reading basis num info file :: expecting 'qmc_bf_info / basis'")
         endif
     endif
+
+
     call bcast(numr)
+
 
     nctot = nctype + newghostype    ! DEBUG:: this statement might go. ghosttypes built-in
 
+    if (fdf_defined("trexio")) then
     allocate (nbastyp(nctot))
     allocate (ns(nctot))
     allocate (np(nctot))
     allocate (nd(nctot))
     allocate (nf(nctot))
     allocate (ng(nctot))
+    else
+    if (.not. allocated(nbastyp)) allocate (nbastyp(nctot))
+    if (.not. allocated(ns)) allocate (ns(nctot))
+    if (.not. allocated(np)) allocate (np(nctot))
+    if (.not. allocated(nd)) allocate (nd(nctot))
+    if (.not. allocated(nf)) allocate (nf(nctot))
+    if (.not. allocated(ng)) allocate (ng(nctot))
+    endif
 
     if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctot))
     if (.not. allocated(iwrwf))  allocate (iwrwf(nbasis, nctot))
@@ -1999,7 +2144,6 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     endif
 
-    call bcast(numr)
     call bcast(iwlbas)
     call bcast(iwrwf)
     call bcast(nbastyp)
@@ -2010,11 +2154,12 @@ subroutine read_basis_num_info_file(file_basis_num_info)
     call bcast(ng)
 
     ibasis_num = 1
-    call bcast(ibasis_num)
+
     if (wid) close(iunit)
 
     write(ounit,*) "Orbital coefficients are written to the output.log file"
-    call write_orb_loc()
+
+    if (wid) call write_orb_loc()
 
 end subroutine read_basis_num_info_file
 

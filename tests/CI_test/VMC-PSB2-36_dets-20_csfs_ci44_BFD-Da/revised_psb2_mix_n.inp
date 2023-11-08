@@ -34,14 +34,11 @@ load symmetry        champ_v2_gamess_PSB2_casci44.sym
     ioptjas       1
     ioptorb       1
     method        'mix_n'
-    multiple_adiag 0
     ncore         0
     nextorb       86
     no_active     0
     nblk_max      200
     nopt_iter     1
-    isample_cmat  0
-    energy_tol    0.0
     sr_tau      0.025
     sr_eps      0.001
     sr_adiag    0.05

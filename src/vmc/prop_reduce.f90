@@ -25,7 +25,6 @@ contains
       call mpi_reduce(vprop_cm2,vp2collect,nprop &
       ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(wid) then
         do i=1,nprop

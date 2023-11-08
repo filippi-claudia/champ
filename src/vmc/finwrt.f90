@@ -10,9 +10,8 @@ contains
       use control, only: mode
       use control_vmc, only: vmc_nblk,vmc_nstep
       use csfs,    only: nstates
-      use denupdn, only: rprobdn,rprobup
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum
+      use est2cm,  only: ecm2,ecm21,pecm2,tpbcm2
+      use estcum,  only: ecum,ecum1,iblk,pecum,tpbcum
       use estsig,  only: ecm21s,ecum1s
       use estsum,  only: acc
       use finwrt_more_mod, only: finwrt_more
@@ -31,7 +30,7 @@ contains
       use qmmm_pot, only: qmmm_extpot_final
       use sa_check, only: energy_all,energy_err_all
       use sa_weights, only: weights
-      use step,    only: rprob,suc,try
+      use step,    only: suc,try
       use system,  only: ncent,nelec
       use tmpnode, only: distance_node_sum
       use vmc_mod, only: delri,nrad
@@ -46,7 +45,7 @@ contains
       real(dp) :: eerr1s, eerr_p, efin, efin_p
       real(dp) :: ferr, ffin
       real(dp) :: passes, peerr, pefin, r2err
-      real(dp) :: r2fin, rtpass, sucsum = 0
+      real(dp) :: rtpass, sucsum
       real(dp) :: tcsq, term
       real(dp) :: tpberr, tpbfin, trysum = 0, x
       real(dp) :: x2
@@ -61,7 +60,6 @@ contains
 ! quantities not computed in acuest_write
 
       if(iperiodic.eq.0 .and. ncent.eq.1) then
-        write(45,*)'  r   rprob'
         delr=one/delri
         term=one/(passes*delr)
         trysum=0
@@ -69,7 +67,6 @@ contains
         do i=1,nrad
           trysum=trysum+try(i)
           sucsum=sucsum+suc(i)
-          write(45,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
         enddo
       endif
 
@@ -98,12 +95,10 @@ contains
       efin=ecum(istate,1)/wcum(istate,1)
       pefin=pecum(istate)/wcum(istate,1)
       tpbfin=tpbcum(istate)/wcum(istate,1)
-      r2fin=r2cum/wcum(istate,1)
 
       eerr=err(ecum(istate,1),ecm2(istate,1),istate,1)
       peerr=err(pecum(istate),pecm2(istate),istate,1)
       tpberr=err(tpbcum(istate),tpbcm2(istate),istate,1)
-      r2err=err(r2cum,r2cm2,1,1)
 
       energy(1)=energy(1)+weights(istate)*efin
 
@@ -182,8 +177,6 @@ contains
 !       energy_err(ifr)=sqrt(energy_err(ifr))
 ! 250   force_err(ifr)=sqrt(force_err(ifr))
 
-      if(iperiodic.eq.0.and.ncent.eq.1) &
-       write(ounit,'(''<r2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') r2fin,r2err,r2err*rtpass
 
       if(index(mode,'mov1').ne.0.and.iperiodic.eq.0.and.ncent.eq.1) then
         write(ounit,'(''acceptance ='',t17,2f12.7)') accept,sucsum/trysum

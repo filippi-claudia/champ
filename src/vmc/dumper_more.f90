@@ -1,55 +1,36 @@
-module dumper_more_mod
-! Written by Cyrus Umrigar, modified by Claudia Filippi
-! routine to pick up and dump everything needed to restart
-! job where it left off
+      module dumper_more_mod
+
       use basis,   only: zex
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: nrad, stoj
-      use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot
-      use mstates_mod, only: MSTATES
-      use system, only: newghostype, nghostcent, nelec, ndn, nup
       use constants, only: hb
-      use metropolis, only: delta, deltar, deltat
+      use control_vmc, only: vmc_nstep
+      use contrl_file, only: errunit,ounit
+      use csfs,    only: nstates
+      use determinant_psig_mod, only: determinant_psig
+      use determinante_mod, only: compute_determinante_grad
+      use coefs, only: nbasis
       use config, only: eold, nearesto, psi2o
       use config, only: psido, psijo, rmino, rvmino
       use config, only: vold, xnew, xold
       use csfs, only: nstates
-      use denupdn, only: rprobdn, rprobup
-      use slater, only: ndet, cdet
-      use est2cm, only: ecm2, ecm21, pecm2, r2cm2, tpbcm2
-      use estcum, only: ecum, ecum1, iblk, pecum, r2cum, tpbcum
-      use estsig, only: ecm21s, ecum1s
-      use estsum, only: acc, esum, pesum, r2sum, tpbsum
-      use multiple_geo, only: nforce, iwftype, nwftype, pecent
-      use multiple_geo, only: fcm2, fcum
-      use forcewt, only: wcum, wsum
-      use optwf_control, only: ioptorb
-      use stats, only: rejmax
-      use step, only: ekin, ekin2, rprob, suc, trunfb, try
-      use coefs, only: nbasis
-      use slater, only: norb, coef
-!      use contrl, only: nstep
-      use control_vmc, only: vmc_nstep
-      use csfs,    only: nstates
-      use denupdn, only: rprobdn,rprobup
-      use determinant_psig_mod, only: determinant_psig
-      use determinante_mod, only: compute_determinante_grad
       use error,   only: fatal_error
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum
-      use estsig,  only: ecm21s,ecum1s
-      use estsum,  only: acc,esum,pesum,r2sum,tpbsum
+      use est2cm, only: ecm2, ecm21, pecm2, tpbcm2
+      use estcum, only: ecum, ecum1, iblk, pecum, tpbcum
+      use estsig, only: ecm21s, ecum1s
+      use estsum, only: acc, esum, pesum, tpbsum
+      use forcewt, only: wcum, wsum
       use force_analytic, only: force_analy_dump,force_analy_rstrt
-      use forcewt, only: wcum,wsum
       use hpsi_mod, only: hpsi
       use inputflags, only: eps_node_cutoff,node_cutoff
-      use metropolis, only: delta,deltar,deltat
+      use metropolis, only: delta, deltar, deltat
       use mstates_ctrl, only: iguiding
       use mstates_mod, only: MSTATES
+      use multiple_geo, only: nforce, iwftype, nwftype, pecent
+      use multiple_geo, only: fcm2, fcum
       use multiple_geo, only: fcm2,fcum,iwftype,nforce,nwftype,pecent
       use multiple_states, only: efficiency_dump,efficiency_rstrt
       use nodes_distance_mod, only: nodes_distance,rnorm_nodes_num
       use optci_mod, only: optci_dump,optci_rstrt,optci_save
+      use optwf_control, only: ioptorb
       use optjas_mod, only: optjas_dump,optjas_rstrt,optjas_save
       use optorb_cblock, only: ns_current
       use optorb_f_mod, only: optorb_dump,optorb_rstrt,optorb_save
@@ -62,16 +43,16 @@ module dumper_more_mod
       use prop_vmc, only: prop_save
       use properties_mod, only: prop_dump,prop_rstrt
       use slater,  only: cdet,coef,ndet,norb
-      use stats,   only: rejmax
-      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use stats, only: rejmax
+      use step, only: ekin, ekin2, suc, trunfb, try
       use strech_mod, only: setup_force,strech
+      use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot
+      use system, only: newghostype, nghostcent, nelec, ndn, nup
+      use vmc_mod, only: norb_tot
+      use vmc_mod, only: nrad, stoj
       use system,  only: cent,iwctype,ncent,ncent_tot,nctype,nctype_tot
       use system,  only: ndn,nelec,newghostype,nghostcent,nup,znuc
       use vmc_mod, only: norb_tot,nrad
-      use contrl_file, only: errunit,ounit      
-!      use contrl, only: nstep
-! I'm 50% sure it's needed
-! it was in master as part of the include optorb.h
 
       implicit none
 
@@ -101,8 +82,8 @@ contains
 
       write(10) vmc_nstep,iblk
       do istate=1,nstates
-        write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),r2cum,acc
-        write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),r2cm2
+        write(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),acc
+        write(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate)
         if(nforce.gt.1) then
           write(10) (wcum(istate,i),fcum(istate,i),fcm2(istate,i),i=1,nforce)
          else
@@ -110,8 +91,7 @@ contains
         endif
         write(10) ecum1s(istate),ecm21s(istate)
       enddo
-      write(10) (try(i),suc(i),trunfb(i),rprob(i), &
-      rprobup(i),rprobdn(i),ekin(i),ekin2(i),i=1,nrad)
+      write(10) (try(i),suc(i),trunfb(i),ekin(i),ekin2(i),i=1,nrad)
       call optorb_dump(10)
       call optci_dump(10)
       call prop_dump(10)
@@ -171,8 +151,8 @@ contains
       read(10) nstepx,iblk
       if (nstepx.ne.vmc_nstep) call fatal_error('STARTR: nstep')
       do istate=1,nstates
-        read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),r2cum,acc
-        read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate),r2cm2
+        read(10) ecum1(istate),(ecum(istate,i),i=1,nforce),pecum(istate),tpbcum(istate),acc
+        read(10) ecm21(istate),(ecm2(istate,i),i=1,nforce),pecm2(istate),tpbcm2(istate)
         if(nforce.gt.1) then
           read(10) (wcum(istate,i),fcum(istate,i),fcm2(istate,i),i=1,nforce)
          else
@@ -180,8 +160,7 @@ contains
         endif
         read(10) ecum1s(istate),ecm21s(istate)
       enddo
-      read(10) (try(i),suc(i),trunfb(i),rprob(i), &
-      rprobup(i),rprobdn(i),ekin(i),ekin2(i),i=1,nrad)
+      read(10) (try(i),suc(i),trunfb(i),ekin(i),ekin2(i),i=1,nrad)
 
       call prop_rstrt(10)
       call optorb_rstrt(10)
@@ -316,7 +295,6 @@ contains
         pesum(istate)=0
         tpbsum(istate)=0
       enddo
-      r2sum=0
 
       return
       end

@@ -5,7 +5,7 @@ contains
 ! Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 ! modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
-      use Bloc,    only: tildem,tildemkin
+      use Bloc,    only: tildem,tildemkin,b,bkin
       use casula,  only: i_vpsp,t_vpsp
       use constants, only: hb
       use contrl_file, only: ounit
@@ -13,14 +13,13 @@ contains
       use csfs,    only: nstates
       use determinant_mod, only: compute_bmatrices_kin,determinant
       use determinant_psit_mod, only: determinant_psit
-      use distance_mod, only: r_en,rshift,rvec_en
+      use distance_mod, only: r_en,rvec_en
       use distances_mod, only: distances
       use efield,  only: iefield
       use efield_f_mod, only: efield_extpot_ene
       use force_analytic, only: compute_force
       use inputflags, only: iqmmm
       use jastrow, only: ianalyt_lap
-!     use jastrow_mod, only: jastrow_f => jastrow
       use jastrow_mod, only: jastrow_factor
       use jastrow_num_mod, only: jastrow_num
       use m_force_analytic, only: iforce_analy
@@ -37,6 +36,7 @@ contains
       use optci_mod, only: optci_deloc
       use optjas_mod, only: optjas_deloc
       use optorb_f_mod, only: optorb_compute
+      use orbval, only: nadorb
       use optwf_parms, only: nparmj
       use pcm_cntrl, only: ipcm
       use pcm_hpsi, only: pcms,pcmv
@@ -46,7 +46,7 @@ contains
       use properties_mod, only: prop_compute
       use pseudo,  only: nloc
       use qmmm_pot, only: qmmm_extpot_ene
-      use slater,  only: kref,ndet, norb
+      use slater,  only: kref,ndet,norb
       use system,  only: ndn,nelec,nup
       use velocity_jastrow, only: vj
       use ycompact, only: ymat
@@ -54,7 +54,7 @@ contains
       implicit none
 
       integer :: i, iab, ifr, ii, ipass, j, o, x
-      integer :: irep, istate, jrep, nel
+      integer :: irep, istate, jrep, nel, iorb, i1, i2, iparm
       real(dp) :: e_other, ekin_other, ext_pot, peQM, pe_local
       real(dp) :: pepcm
       real(dp), dimension(3, *) :: coord
@@ -82,7 +82,7 @@ contains
 ! distances needed for Jastrow, determinants, and potential energy
       call distances(0,coord)
 ! local potential contributions
-      call pot_local(pe_local)
+      call pot_local(coord,pe_local)
 
 ! external potential on a grid (e.g. MM from CPMD)
       if(iqmmm.eq.1) then
@@ -147,8 +147,25 @@ contains
 ! compute pseudo-potential contribution
 ! nonloc_pot must be called after determinant because slater matrices are needed
 
-      if(nloc.gt.0) &
-        call nonloc_pot(coord,rshift,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
+      if(nloc.gt.0) then
+        call nonloc_pot(coord,rvec_en,r_en,pe_local,vpsp_det,dvpsp_dj,t_vpsp,i_vpsp,ifr)
+      else
+        do x=1,nbjx
+          vpsp_det(1,x)=0.d0
+          vpsp_det(2,x)=0.d0
+          do iparm=1,nparmj
+            dvpsp_dj(iparm,x)=0.d0
+          enddo
+        enddo
+        do i=1,nelec
+          do x=1,nbjx
+            do iorb=1,norb+nadorb
+              b(iorb,i,x)=bkin(iorb,i,x)
+            enddo
+          enddo
+        enddo
+      endif
+
       if(ipr.ge.3) then
         write(ounit,'(''pe_loc after nonloc_pot'',9f12.5)') pe_local
         do i=1,nstates
@@ -206,7 +223,7 @@ contains
       enddo
       if(ifr.eq.1) then
         if(iforce_analy.eq.1) call compute_force(psid(1),denergy(1))
-        
+
         call optorb_compute(psid,energy,denergy)
         call optjas_deloc(psid,energy,dvpsp_dj,vj)
         call optci_deloc(eloc_det,e_other,psid,energy)

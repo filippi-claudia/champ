@@ -82,6 +82,8 @@ contains
         use optwf_control, only: nparm
         use optwf_control, only: method
         use orbval, only: nadorb
+        use control, only: mode
+        use control_dmc, only: dmc_nblk
         use contrl_file,    only: ounit
 
         use csfs, only: nstates
@@ -219,11 +221,19 @@ contains
                 denergy = energy(1) - energy_sav
                 denergy_err = sqrt(energy_err(1)**2 + energy_err_sav**2)
 
-                vmc_nblk = vmc_nblk*1.2
-                vmc_nblk = min(vmc_nblk, vmc_nblk_max)
+                if( mode(1:3) == 'vmc' ) then
+                   vmc_nblk = vmc_nblk*1.2
+                   vmc_nblk = min(vmc_nblk, vmc_nblk_max)
+                   write (ounit, '(''nblk = '',i6)') vmc_nblk
+                else
+                   dmc_nblk = dmc_nblk*1.2
+                   dmc_nblk = min(dmc_nblk, vmc_nblk_max)
+                   write (ounit, '(''nblk = '',i6)') dmc_nblk
+                endif
 
+                   
             endif
-            write (ounit, '(''nblk = '',i6)') vmc_nblk
+            
             write (ounit, '(''alfgeo = '',f10.4)') alfgeo
 
             energy_sav = energy(1)
@@ -398,6 +408,7 @@ contains
 
         use mpi
         use sr_mod, only: mobs
+        use control, only: ipr
         use csfs, only: nstates
         use mstates_mod, only: MSTATES
         use mpiconf, only: idtask
@@ -517,6 +528,10 @@ contains
             do k = 1, nparm
                 if (s_ii_inv(k,1) .gt. smax) smax = s_ii_inv(k,1)
             enddo
+
+            if(ipr.ge.4) &
+            write (ounit, '(''S diagonal element '',t41,50e16.8)') (s_ii_inv(k,1),k=1,nparm)
+            
             write (ounit, '(''max S diagonal element '',t41,f16.8)') smax
 
             kk = 0
@@ -630,7 +645,7 @@ contains
         real(dp) :: sr_adiag, dum, aux2, smax, penalty
         real(dp), parameter :: eps_eigval=1.d-14
 
-        integer :: jwtg, jfifj, jfjsi = 42, n_obs, istate, jstate, iconf, i, ier, k, kk, n_obs_reduce
+        integer :: jwtg, jfifj, jfjsi, n_obs, istate, jstate, iconf, i, ier, k, kk, n_obs_reduce
 
         allocate (obs(mobs, MSTATES))
 
@@ -988,7 +1003,7 @@ contains
         ia = 0
         ish = 3*ncent
         do icent = 1, ncent
-            write(ounit, '(''FORCE before'',i4,3e15.7)') icent, (da_energy_ave(k, icent), k=1, 3)
+            write(ounit, '(''FORCE before'',i4,3e15.7)') icent, (da_energy_ave(k, icent, 1), k=1, 3)
             do k = 1, 3
                 ia = ia + 1
 
@@ -1005,7 +1020,7 @@ contains
                 if (idtask .eq. 0) then
 
                     do i = 1, nparm
-                        o(i) = o(i)*wtoti - (obs_tot(jhfj + i - 1, 1) - obs_tot(jefj + i - 1, 1))*da_energy_ave(k, icent)
+                        o(i) = o(i)*wtoti - (obs_tot(jhfj + i - 1, 1) - obs_tot(jefj + i - 1, 1))*da_energy_ave(k, icent, 1)
                     enddo
 
                     do iparm = 1, nparm
@@ -1016,15 +1031,15 @@ contains
                         p(iparm) = -0.5*p(iparm)
                     enddo
 
-                    force_tmp = da_energy_ave(k, icent)
+                    force_tmp = da_energy_ave(k, icent, 1)
                     do iparm = 1, nparm
                         force_tmp = force_tmp + p(iparm)*tmp(iparm)
                     enddo
-                    da_energy_ave(k, icent) = force_tmp
+                    da_energy_ave(k, icent, 1) = force_tmp
 
                 endif
             enddo
-            write(ounit, '(''FORCE after '',i4,3e15.7)') icent, (da_energy_ave(k, icent), k=1, 3)
+            write(ounit, '(''FORCE after '',i4,3e15.7)') icent, (da_energy_ave(k, icent, 1), k=1, 3)
         enddo
 
         return

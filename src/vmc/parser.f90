@@ -9,7 +9,7 @@ subroutine parser
   !> @email  r.l.shinde@utwente.nl
   !> @date   11-08-2021
   !> @version 1.2
-  
+
       use fdf               ! modified libfdf
       use allocation_mod, only: allocate_dmc,allocate_vmc
       use array_resize_utils, only: resize_tensor
@@ -33,9 +33,10 @@ subroutine parser
       use control_vmc, only: vmc_isite,vmc_nblk,vmc_nblk_ci,vmc_nblk_max
       use control_vmc, only: vmc_nblkeq,vmc_nconf,vmc_nconf_new
       use control_vmc, only: vmc_nstep
-      use csfs,    only: anormo,cxdet,ncsf,nstates
+      use csfs,    only: anormo,ccsf,cxdet,iadet,ibdet,icxdet,maxcsf,ncsf,nstates
       use cuspinit4_mod, only: cuspinit4
       use custom_broadcast, only: bcast
+      use dets,    only: nmap
       use dmc_mod, only: mwalk,set_mwalk
       use dorb_m,  only: iworbd
       use efield,  only: iefield,ncharges
@@ -61,7 +62,7 @@ subroutine parser
       use inputflags, only: node_cutoff,scalecoef
       use jastrow, only: norda,nordb,nordc
       use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
-      use jastrow, only: a4,allocate_jaspar6,asymp_jasa,asymp_jasb,b,c
+      use jastrow, only: a4,allocate_jasasymp,asymp_jasa,asymp_jasb,b,c
       use jastrow, only: ianalyt_lap,ijas,is,isc,neqsx,nordj,nordj1
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
@@ -99,12 +100,14 @@ subroutine parser
       use optwf_control, only: iuse_orbeigv,lin_jdav,method
       use optwf_control, only: micro_iter_sr,multiple_adiag,ncore
       use optwf_control, only: no_active,nopt_iter,nparm,nvec,nvecx
-      use optwf_control, only: ratio_j,sr_adiag,sr_eps,sr_tau
+      use optwf_control, only: orbitals_ortho,ratio_j,sr_adiag,sr_eps,sr_tau
       use optwf_corsam, only: add_diag
       use optwf_func, only: ifunc_omega,n_omegaf,n_omegat,omega0
       use optwf_handle_wf, only: set_nparms_tot
       use optwf_parms, only: nparmj
       use orbval,  only: ddorb,dorb,nadorb,ndetorb,orb
+      use pathak_mod, only: ipathak, eps_max, deps
+      use pathak_mod, only: init_pathak
       use parser_read_data, only: header_printing
       use parser_read_data, only: read_basis_num_info_file,read_csf_file
       use parser_read_data, only: read_csfmap_file
@@ -140,7 +143,6 @@ subroutine parser
       use prp003,  only: cc_nuc
       use pseudo,  only: nloc
       use pseudo_mod, only: MPS_QUAD
-      use pw_read, only: read_orb_pw_tm
       use qua,     only: nquad,wq,xq,yq,zq
       use random_mod, only: setrn, jumprn
       use read_bas_num_mod, only: read_bas_num,readps_gauss
@@ -156,6 +158,7 @@ subroutine parser
       use system,  only: atomtyp,cent,iwctype,ncent,ncent_tot,nctype
       use system,  only: nctype_tot,ndn,nelec,newghostype,nghostcent,nup
       use system,  only: symbol,znuc
+      use vd_mod, only: dmc_ivd
       use verify_orbitals_mod, only: verify_orbitals
       use vmc_mod, only: mterms,norb_tot
       use vmc_mod, only: nwftypejas,stoj,jtos,nstoj_tot,nstojmax,extraj
@@ -181,8 +184,16 @@ subroutine parser
       use qmckl_data
 #endif
 
-      
+
   use, intrinsic :: iso_fortran_env, only : iostat_end
+
+
+  !! Allocate_periodic
+  use periodic,         only: npoly,np,cutg,cutg_big,cutg_sim,cutg_sim_big, alattice
+  use periodic,         only: rlatt, rlatt_inv, rlatt_sim, rkvec_shift, n_images, ell
+  use ewald_breakup, only: pot_en_coul_ewald, pot_ee_ewald, set_ewald
+  use  m_ewald, only : allocate_m_ewald
+  use  m_pseudo, only : allocate_m_pseudo
 
 ! CHAMP modules
 
@@ -251,7 +262,7 @@ subroutine parser
   character(:), allocatable  :: file_trexio
   character(:), allocatable  :: file_trexio_path
   character(:), allocatable  :: trex_backend
-
+  character(:), allocatable  :: file_lattice
 
 ! from process input subroutine
 
@@ -267,6 +278,7 @@ subroutine parser
   integer                    :: i,j,k, n, iostat
   integer                    :: ic, iwft, istate, imax
   type(atom_t)               :: atoms
+  real(dp)                   :: acsfmax,acsfnow
   character(len=2), allocatable   :: unique(:)
 
   real(dp), parameter        :: zero = 0.d0
@@ -275,11 +287,11 @@ subroutine parser
 
 #if defined(QMCKL_FOUND)
   integer, allocatable :: keep(:)
-  integer :: rc 
+  integer :: rc
   integer*8 :: n8
   character*(1024) :: err_message = ''
   integer*8 :: norb_qmckl
-#endif 
+#endif
 
 ! Initialize # get the filenames from the commandline arguments
   call fdf_init(file_input, 'parser.log')
@@ -300,6 +312,7 @@ subroutine parser
   nwftypejas  = fdf_get('nwftypejas', 1)
   nwftypeorb  = fdf_get('nwftypeorb', 1)
   iperiodic   = fdf_get('iperiodic', 0)
+  nstates     = fdf_get('nstates', 1)
   ibasis      = fdf_get('ibasis', 1)
   cseed       = fdf_string('seed', "18123437465549275475255231234865")
   ipr         = fdf_get('ipr', -1)
@@ -318,6 +331,22 @@ subroutine parser
   if (trex_backend == "hdf5") backend = TREXIO_HDF5
   if (trex_backend == "text") backend = TREXIO_TEXT
 #endif
+
+  ! Ewald module for periodic
+  !npoly, order polynimial split ewald-breakup
+  npoly  = fdf_get('npoly', 8)
+  ! polynomial order of the cuttoff better even value
+  np     = fdf_get('np', 6)
+  !cutoffs in recirpotal space
+  cutg   = fdf_get('cutg', 1.0d0)
+  cutg_sim   = fdf_get('cutg_sim', 1.0d0)
+  cutg_big   = fdf_get('cutg_big', 1.d0)
+  cutg_sim_big   = fdf_get('cutg_sim_big', 1.0d0)
+  ! number of images for ao's evaluation in PBC
+  n_images  = fdf_get('n_images', 1)
+  !alattice = fdf_get('alattice', 1.0d0)
+
+
 
 ! %module electrons (complete)
   nelec       = fdf_get('nelec', 1)
@@ -402,8 +431,14 @@ subroutine parser
   etrial      = fdf_get('etrial', 1.0d0)
   esigmatrial = fdf_get('esigmatrial', 1.0d0)
   nfprod      = fdf_get('nfprod', 100)
+  nwprod      = fdf_get('nwprod', 1)
   itausec     = fdf_get('itausec', 1)
   icasula     = fdf_get('icasula', 0)
+  dmc_ivd     = fdf_get('dmc_ivd', 0)
+  ipathak     = fdf_get('ipathak', 0)
+  call init_pathak()
+  eps_max     = fdf_get('eps_max', 0.d0)
+  deps        = fdf_get('deps', 0.d0)
 
 ! %module dmc / blocking_dmc (complete)
   dmc_nstep     = fdf_get('dmc_nstep', 1)
@@ -417,10 +452,18 @@ subroutine parser
 
 
 !optimization flags vmc/dmc
+! %module optwf
+
   ioptwf        = fdf_get('ioptwf', 0)
   method        = fdf_get('method', 'sr_n')
+  ioptjas       = fdf_get('ioptjas', 0)
+  ioptorb       = fdf_get('ioptorb', 0)
+  ioptci        = fdf_get('ioptci', 0)
+  nopt_iter     = fdf_get('nopt_iter',6)
+  micro_iter_sr = fdf_get('micro_iter_sr', 1)
+  isample_cmat  = fdf_get('isample_cmat', 1)
+  energy_tol    = fdf_get('energy_tol', 1.d-3)
 
-! %module optwf (can be moved somewhere else)
   if (fdf_defined("optwf")) then
     if ( method .eq. 'linear' ) then
       MFORCE = 3  ! Only set MFORCE here. nwftype=3 is set just before the allocation
@@ -431,27 +474,30 @@ subroutine parser
     endif
   endif
 
+  dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
+  ilastvmc      = fdf_get('ilastvmc',1)
+
   idl_flag      = fdf_get('idl_flag', 0)
+  dl_mom        = fdf_get('dl_mom', 0.0d0)
+  dl_alg        = fdf_get('dl_alg','nag')
+
   ilbfgs_flag   = fdf_get('ilbfgs_flag', 0)
   ilbfgs_m      = fdf_get('ilbfgs_m', 5)
-  i_sr_rescale  = fdf_get('sr_rescale', 0)
+
   ibeta         = fdf_get('ibeta', -1)
   ratio         = fdf_get('ratio', ratio_j)
   iapprox       = fdf_get('iapprox', 0)
-  ncore         = fdf_get('ncore', 0)
   iuse_orbeigv  = fdf_get('iuse_orbeigv', 0)
-  ioptjas       = fdf_get('ioptjas', 0)
-  ioptorb       = fdf_get('ioptorb', 0)
-  ioptci        = fdf_get('ioptci', 0)
+
   no_active     = fdf_get('no_active', 0)
-  energy_tol    = fdf_get('energy_tol', 1.d-3)
-  dparm_norm_min = fdf_get('dparm_norm_min', 1.0d0)
+  ncore         = fdf_get('ncore', 0)
+  orbitals_ortho = fdf_get('orbitals_ortho', .false.)
+
+  multiple_adiag = fdf_get('multiple_adiag',0)
 ! attention needed here.
   if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
   add_diag(1)   = fdf_get('add_diag',1.d-6)
 
-  nopt_iter     = fdf_get('nopt_iter',6)
-  micro_iter_sr = fdf_get('micro_iter_sr', 1)
   ifunc_omega   = fdf_get('func_omega', 0)
   if (ifunc_omega .gt. 0) then
     omega0        = fdf_get('omega', 0.d0)
@@ -463,15 +509,13 @@ subroutine parser
   alin_adiag    = fdf_get('lin_adiag', 1.0d-2)
   alin_eps      = fdf_get('lin_eps', 1.0d-3)
   lin_jdav      = fdf_get('lin_jdav',0)
-  multiple_adiag = fdf_get('multiple_adiag',0)
+
   sr_tau        = fdf_get('sr_tau', 2.0d-2)
   sr_adiag      = fdf_get('sr_adiag', 1.0d-2)
   sr_eps        = fdf_get('sr_eps', 1.0d-3)
-  ilastvmc      = fdf_get('ilastvmc',1)
-  dl_mom        = fdf_get('dl_mom', 0.0d0)
-  dl_alg        = fdf_get('dl_alg','nag')
+  i_sr_rescale  = fdf_get('sr_rescale', 0)
+
   ngrad_jas_blocks = fdf_get('ngrad_jas_blocks',0)
-  isample_cmat  = fdf_get('isample_cmat', 1)
   isavebl       = fdf_get('save_blocks', 0)
   nefp_blocks   = fdf_get('force_blocks',1)
   iorbsample    = fdf_get('iorbsample',1)
@@ -556,6 +600,7 @@ subroutine parser
   file_hessian_zmatrix      = fdf_load_filename('hessian_zmatrix',  'default.hzmat')
   file_zmatrix_connection   = fdf_load_filename('zmatrix_connection',   'default.zmcon')
   file_efield             = fdf_load_filename('efield',   'default.efield')
+  file_lattice              = fdf_load_filename('lattice',              'lattice.txt')
 
   call header_printing()
 
@@ -604,7 +649,7 @@ subroutine parser
   write(ounit,'(a25,t40,8i5)') " Random number seed root", irn
   call setrn(irn)
   do n=1,idtask ! unique 2^128 non-overlapping sequences for each process
-    call jumprn() 
+    call jumprn()
   end do
 
   write(ounit,*)
@@ -683,7 +728,7 @@ subroutine parser
     write(ounit,*)
     write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
 #if defined(TREXIO_FOUND)
-  elseif ( fdf_load_defined('trexio') ) then
+  elseif ( fdf_load_defined('trexio') .and. nloc .ne. 0) then
     call read_trexio_ecp_file(file_trexio)
     write(ounit,*)
     write(ounit,int_format ) " number of quadrature points (nquad) = ", nquad
@@ -696,7 +741,7 @@ subroutine parser
   endif
   write(ounit,*)
 
-  call elapsed_time ( "Reading ECP files : " )
+  if (nloc .ne. 0) call elapsed_time ( "Reading ECP files : " )
 
   ! Pseudopotential section ends here
 
@@ -711,7 +756,10 @@ subroutine parser
     write(ounit,*)
 
     write(ounit,int_format)  " Version of Metropolis = ", imetro
-    write(ounit,real_format) " VMC eps node cutoff   = ", eps_node_cutoff
+    if(node_cutoff.gt.0) then
+      write(ounit,real_format) " Sampling finite guiding wave function at nodes "
+      write(ounit,real_format) " VMC eps node cutoff   = ", eps_node_cutoff
+    endif
 
     if (imetro.eq.1) then
       deltai= one/delta
@@ -752,7 +800,10 @@ subroutine parser
     rttau=dsqrt(tau)
 
     write(ounit,int_format) " Version of DMC ",  idmc
-    write(ounit,real_format)" DMC eps node cutoff   = ", dmc_eps_node_cutoff
+    if( dmc_node_cutoff.gt.0 ) then
+      write(ounit,real_format) " Sampling finite guiding wave function at nodes "
+      write(ounit,real_format) " DMC eps node cutoff   = ", dmc_eps_node_cutoff
+    endif
     write(ounit,int_format) " nfprod ",  nfprod
     write(ounit,real_format) " tau ", tau
 
@@ -771,10 +822,13 @@ subroutine parser
 
     if (dmc_node_cutoff.gt.0) write(ounit,real_format) " enode cutoff = ", dmc_eps_node_cutoff
 
+    if (icasula.eq.-1.and.dmc_irstar.eq.1) write(ounit,*) 'Restart is not consistent with icasula = -1'
+
     if (iabs(idmc).ne.2) call fatal_error('INPUT: only idmc=2 supported')
 
     if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
 
+    if ((iforce_analy.gt.0.and.dmc_ivd.gt.0).or.nforce.gt.1) write(ounit,int_format) " nwprod", nwprod
     if (.not. fdf_defined('etrial')) call fatal_error("etrial required for DMC calculations")
 
   else
@@ -954,8 +1008,14 @@ subroutine parser
   write(ounit, int_format ) " nspin1 = ", nspin1
   write(ounit, int_format ) " nspin2 = ", nspin2
 
-  if(ijas.ne.4 .and. iperiodic.gt.0) &
-    call fatal_error('Only ijas=4 implemented for periodic systems')
+  if(ijas.ne.1..and.iperiodic.gt.0) then
+     if(ijas.ne.4..and.iperiodic.gt.0) then
+        write(ounit,*) 'Only ijas4 for HF with periodic systems'
+        write(ounit,*) 'Only ijas1 for WF optimization with periodic systems'
+        call fatal_error('Only ijas=1 and ijas=4 implemented for periodic systems')
+     endif
+  endif
+
 
   if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
   if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
@@ -966,44 +1026,23 @@ subroutine parser
   if(isc.eq.4) write(ounit,'(a)') " dist scaled r=r/(1+scalek*r)"
   if(isc.eq.5) write(ounit,'(a)') " dist scaled r=r/(1+(scalek*r)**2)**.5"
 
-  ! Call set_scale_dist to evaluate constants that need to be reset if
-  ! scalek is being varied. If cutjas=0, then reset cutjas to infinity
-  ! Warning: At present we are assuming that the same scalek is used for
-  ! primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
-  ! should be dimensioned to MWF
-  if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
-    if(iperiodic.ne.0 .and. cutjas_tmp.gt.cutjas) then
-        write(ounit, '(a,f9.5,a,f9.5)')  "**Warning: input cutjas > half shortest sim. cell lattice vector; &
-                                          &cutjas reset from ", cutjas_tmp, " to ", cutjas
-        else
-        cutjas=cutjas_tmp
-        write(ounit,'(a, d12.5)' ) " input cutjas = ", cutjas_tmp
-    endif
-    if(cutjas.gt.0.d0) then
-        cutjasi=1/cutjas
-        else
-        write(ounit, *) "cutjas reset to infinity"
-        cutjas=1.d99
-        cutjasi=0
-    endif
-    call set_scale_dist(ipr)
-  else
-    cutjas=1.d99
-    cutjasi=0
-    c1_jas6i=1
-    c1_jas6=1
-    c2_jas6=0
-    asymp_r=0
-    call allocate_jaspar6()  ! Needed for the following two arrays
-    do j=1,nwftypejas
-        do i=1,nctype
-            asymp_jasa(i,j)=0
-        enddo
-        do i=1,2
-            asymp_jasb(i,j)=0
-        enddo
-    enddo
-  endif
+
+  cutjas=1.d99
+  cutjasi=0
+  c1_jas6i=1
+  c1_jas6=1
+  c2_jas6=0
+  asymp_r=0
+  call allocate_jasasymp()  ! Needed for the following two arrays
+  do j=1,nwftypejas
+     do i=1,nctype
+        asymp_jasa(i,j)=0
+     enddo
+     do i=1,2
+        asymp_jasb(i,j)=0
+     enddo
+  enddo
+
   call set_scale_dist(ipr)
 
   call elapsed_time ("Setting Jastrow parameters : ")
@@ -1025,7 +1064,7 @@ subroutine parser
   elseif ( fdf_load_defined('trexio') ) then
     call read_trexio_determinant_file(file_trexio)
     if (ioptci .ne. 0) mxciterm = ndet
-#endif 
+#endif
   elseif(nwftype.gt.1) then
       if(ideterminants.ne.nwftype) then
         write(ounit,*) "Warning INPUT: block determinants missing for one wave function"
@@ -1052,7 +1091,7 @@ subroutine parser
 
   if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
     call read_csf_file(file_determinants)
-    if (ioptci .ne. 0) mxciterm = ncsf
+    if (ioptci .ne. 0 .and. ncsf .gt. 0 ) mxciterm = ncsf
   elseif (fdf_block('csf', bfdf)) then
     call fdf_read_csf_block(bfdf)
     if (ioptci .ne. 0) mxciterm = ncsf
@@ -1061,7 +1100,36 @@ subroutine parser
     nstates = 1
     ncsf = 0
     if (ioptci .ne. 0 .and. ici_def .eq. 1) nciterm = nciprim
+
+    if( (method(1:3) == 'lin')) then
+      if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, 3))
+    else
+      if (.not. allocated(ccsf)) allocate(ccsf(ndet, nstates, nwftype))
+    endif
+    do j = 1, ndet
+      ccsf(j,1,1) = cdet(j,1,1)
+    enddo
   endif
+
+  if(.not. allocated(maxcsf)) allocate(maxcsf(nstates))
+
+  if(ncsf.gt.0 .and. method(1:3) .ne. 'lin') then
+      do istate=1,nstates
+        acsfmax=dabs(ccsf(1,istate,1))
+        maxcsf(istate)=1
+        do j=2,ncsf
+          acsfnow=dabs(ccsf(j,istate,1))
+          if(acsfnow.gt.acsfmax) then
+            acsfmax=acsfnow
+            maxcsf(istate)=j
+          endif
+        enddo
+        write(ounit,'(''Saving max scf:state,csf,value'',2i5,f20.15)') &
+                          istate,maxcsf(istate),acsfmax
+      enddo
+    else
+      maxcsf(1:nstates)=1
+   endif
 
 ! (4) CSFMAP [#####]
 
@@ -1072,11 +1140,26 @@ subroutine parser
     write(errunit,'(a)') "Error:: No information about csfmaps provided."
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
+  else
+   nmap = ndet
+   if (.not. allocated(cxdet)) allocate (cxdet(nmap))
+   if (.not. allocated(iadet)) allocate (iadet(ndet))
+   if (.not. allocated(ibdet)) allocate (ibdet(ndet))
+   if (.not. allocated(icxdet)) allocate (icxdet(nmap))
+
+   do i = 1, ndet
+     iadet(i) = i
+     ibdet(i) = i
+     icxdet(i) = i
+     cxdet(i) = 1.0d0
+   enddo
+
+   write(ounit,*) " Determinant - CSF has one-to-one mapping  "
   endif
 
   call elapsed_time ("Reading CSF and CSFMAP file : ")
 
-  
+
   if (mode(1:3) == 'vmc') write(ounit, *) "nstoj_tot, nstoo_tot, nstates", nstoj_tot, nstoo_tot, nstates
   if (extraj.eq.1.and.nstoj_tot.ne.nstates) &
           call fatal_error('Some states have not been assigned a jastrow type')
@@ -1118,14 +1201,16 @@ subroutine parser
   endif
 
   do istate=1,nstates
-    if (stoj(istate) .eq. 0) then 
+    if (stoj(istate) .eq. 0) then
       if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " State ", istate, " has not been assigned a jastrow type. "
       call fatal_error('JASTROW INPUT: a state has not been assigned a jastrow type.')
     endif
   enddo
 
+
+
 ! Orbital mapping
-  if (extrao.eq.0) then
+  if (extrao.eq.0 .and. .not. fdf_defined("trexio") ) then
     do istate=1,nstates
       stoo(istate)=1
       if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Orbital set"
@@ -1149,7 +1234,7 @@ subroutine parser
   call bcast(stoj)
 
   do istate=1,nstates
-    if (stoo(istate) .eq. 0) then 
+    if (stoo(istate) .eq. 0) then
       if (mode(1:3) == 'vmc') write(ounit,'(A,i4,A)') " State ", istate, " has not been assigned an orbital set . "
       call fatal_error('LCAO INPUT: a state has not been assigned an orbital set.')
     endif
@@ -1157,7 +1242,7 @@ subroutine parser
 
   allocate(stobjx(nstates))
   if (nwftypejas.eq.1.and.nwftypeorb.eq.1) then
-    nbjx = 1 
+    nbjx = 1
     allocate(bjxtoo(1))
     allocate(bjxtoj(1))
     bjxtoo(1)=1
@@ -1166,17 +1251,21 @@ subroutine parser
       stobjx(istate) = 1
     enddo
   else
-    nbjx = 1 
+    nbjx = 1
     stobjx(1)=1
     do istate=2,nstates
-      do k=1,istate
-        if (stoo(istate).ne.stoo(k).and.stoj(istate).ne.stoj(k)) then
-          stobjx(istate)=istate
-          nbjx = nbjx + 1
-        else
+      j=0
+      do k=1,istate-1
+        if (stoo(istate).eq.stoo(k).and.stoj(istate).eq.stoj(k)) then
           stobjx(istate)=k
+          j=1
+          exit
         endif
       enddo
+      if (j.eq.0) then
+        stobjx(istate)=istate
+        nbjx = nbjx + 1
+      endif
     enddo
     allocate(bjxtoo(nbjx))
     allocate(bjxtoj(nbjx))
@@ -1185,7 +1274,7 @@ subroutine parser
         imax=stobjx(istate)
         bjxtoo(1)=stoo(1)
         bjxtoj(1)=stoj(1)
-      else 
+      else
         if (stobjx(istate).gt.imax) then
           bjxtoo(stobjx(istate))=stoo(istate)
           bjxtoj(stobjx(istate))=stoj(istate)
@@ -1194,7 +1283,7 @@ subroutine parser
       endif
     enddo
   endif
- 
+
   do istate=1,nstates
     if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Mixed Quantity #  <--  Jastrow #, Orbital set"
     if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4,A,2i4)') istate, '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
@@ -1211,7 +1300,7 @@ subroutine parser
   ! Set maximum number of parameters. For multistate orbital optimization
   ! the following additional terms will be present. The last +1 is failsafe mechanism.
   if (method.eq.'sr_n') then
-    mparm = nparm*nstates + 2 !necessary because storing 2 quantities in sr_o, and atimesn increments ddot by mparm. 
+    mparm = nparm*nstates + 2 !necessary because storing 2 quantities in sr_o, and atimesn increments ddot by mparm.
   else
     mparm = nparm + (nstates-1)*(norbterm) + 1
   endif
@@ -1225,6 +1314,19 @@ subroutine parser
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
+
+  ! for periodic calculations
+  if ( fdf_load_defined('lattice') ) then
+     call read_lattice_file(file_lattice)
+  endif
+
+  ! allocate ewald module and initialize the module
+  if (iperiodic.gt.0) then
+     call allocate_m_ewald()
+     call set_ewald
+  endif
+
+
 
 ! (17) multideterminants information (either block or from a file)
 
@@ -1289,7 +1391,7 @@ subroutine parser
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
 
-  if(ibasis.eq.2) write(ounit,'(a)') " PW orbitals "
+
   if(numr.gt.0)   write(ounit,'(a)') " Numerical basis used"
 
   if(ibasis.eq.1) then
@@ -1332,9 +1434,7 @@ subroutine parser
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     endif
-  elseif (ibasis.eq.2) then
-    call read_orb_pw_tm
-  endif
+ endif
 
   call elapsed_time ("Reading basis file : ")
 
@@ -1429,7 +1529,7 @@ subroutine parser
     if(ioptwf.gt.0) then
       write(ounit,'(a)' ) " Perform wave function optimization in vmc/dmc"
       write(ounit,'(a,a)' ) " Computing/writing quantities for optimization with method = ", method
-      if(nstates.gt.1 .and. ioptwf.gt.0 .and. method.eq.'sr_n') then 
+      if(nstates.gt.1 .and. ioptwf.gt.0 .and. method.eq.'sr_n') then
       !    call fatal_error('READ_INPUT: nstates>1 and sr_n')
            write(ounit,'(a)' ) " Performing multi-state sr_n, setting ortho=1"
            ortho=1
@@ -1441,7 +1541,7 @@ subroutine parser
 
     if(ioptwf.gt.0.or.ioptjas+ioptorb+ioptci.ne.0) then
       if(method.eq.'lin_d' .or. method.eq.'mix_n') then
-        if(lin_jdav.eq.0) then 
+        if(lin_jdav.eq.0) then
                 write(ounit,'(a)' ) " Use old Regterg"
         elseif(lin_jdav.eq.1) then
                 write(ounit,'(a)' ) " Use new Davidson"
@@ -1458,10 +1558,10 @@ subroutine parser
     if(ioptjas.gt.0) then
       write(ounit,'(a)' ) " Jastrow derivatives are sampled "
       write(ounit,int_format) " Number of Jastrow derivatives ",  nparmj
-      if(ijas.eq.4) then
+      if(ijas.eq.1.or.ijas.eq.4) then
         call cuspinit4(1)
       else
-        call fatal_error('READ_INPUT: jasderiv only for ijas=4')
+         call fatal_error('READ_INPUT: jasderiv only for ijas=1 or 4')
       endif
     else
       nparmj=0
@@ -1492,11 +1592,11 @@ subroutine parser
         method='linear'
         write(ounit,'(a)' ) " Reset optimization method to linear"
       endif
-  ! TMP due to changing kref -> also for ncsf=0, we need to have cxdet(i) carrying the phase
-  !         if(ncsf.eq.0) call fatal_error('ncsf.eq.0 - further changes needed due to kref')
       if(ncsf.gt.0) then
         nciterm=ncsf
       else
+  ! TMP due to changing kref -> also for ncsf=0, we need to have cxdet(i) carrying the phase
+  !     if(kref_fix.eq.0) call fatal_error('ncsf.eq.0 - further changes needed due to kref')
         nciterm=nciprim
       endif
     else
@@ -1515,6 +1615,8 @@ subroutine parser
 ! Multiple states/efficiency/guiding flags
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
+      if(node_cutoff.gt.0)  call fatal_error('INPUT: guiding wave function AND node_cutoff > 0')
+
       write(ounit, *) "Guiding function: square root of sum of squares"
 
       ! Part which handles the guiding weights
@@ -1573,7 +1675,7 @@ subroutine parser
     write(ounit, *) "ANORMO: Determining normalization constants for guiding wave function."
 
     if (.not. allocated(anormo)) allocate (anormo(MSTATES))
-      
+
     if ( fdf_islreal('anorm') .and. fdf_islist('anorm') &
         .and. (.not. fdf_islinteger('anorm')) ) then
       i = -1
@@ -1598,15 +1700,15 @@ subroutine parser
     ! Part which handles the overlap penalty factors
     if (.not. allocated(isr_lambda)) allocate (isr_lambda(MSTATES*(MSTATES-1)/2))
     if (.not. allocated(sr_lambda)) allocate (sr_lambda(MSTATES,MSTATES))
-      
+
     if ( fdf_islreal('sr_lambda') .and. fdf_islist('sr_lambda') &
         .and. (.not. fdf_islinteger('sr_lambda')) ) then
       i = -1
       call fdf_list('sr_lambda',i,isr_lambda)
       write(ounit,'(a)' )
       write(ounit,'(tr1,a,i0,a)') ' SR lambda has ',i,' entries'
-      if(i.ne.nstates*(nstates-1)/2) call fatal_error('READ_INPUT: sr_lambda array, & 
-          &must contain nstates*(nstates-1)/2 entries, [ 1-2, 1-3, ..., 1-nstates, & 
+      if(i.ne.nstates*(nstates-1)/2) call fatal_error('READ_INPUT: sr_lambda array, &
+          &must contain nstates*(nstates-1)/2 entries, [ 1-2, 1-3, ..., 1-nstates, &
           &2-3, 2-4, ..., 2-nstates, ..., (nstates-1)-nstates ]')
       call fdf_list('sr_lambda',i,isr_lambda)
       write(temp5, '(a,i0,a)') '(a,', MSTATES*(MSTATES-1)/2, '(f12.6))'
@@ -1883,6 +1985,7 @@ subroutine parser
   ! arrays if something is missing.
 
 
+
   !qmckl initialization
 
 #ifdef QMCKL_FOUND
@@ -1890,18 +1993,18 @@ subroutine parser
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
      !!create qmckl context
      qmckl_ctx = qmckl_context_create()
-     
+
      iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
      if (iostat /= QMCKL_SUCCESS) then
         write(ounit,*) 'Error: Unable to read TREXIO file '//trim(file_trexio)
         call abort()
      end if
-     
+
 
      !! to check change in mo's number to be computed by qmckl inside champ
      norb_qmckl=norb+nadorb
 
-     
+
      write(ounit,*) "inside parser after reading trexio file"
      write(ounit,*) "norb_tot",norb_tot
      write(ounit,*) "norb",norb
@@ -1914,31 +2017,31 @@ subroutine parser
         write(ounit,*) '00 Error getting mo_num from verify orbitals'
         stop
      end if
-     
-     
+
+
      write(ounit,*) "n8", n8
 
      if (n8 > norb_qmckl) then
-        
+
 
         write(ounit,*) "inside if mo's to compute change in parser"
         write(ounit,*) "norb_qmckl",norb_qmckl
         write(ounit,*) "n8 mo's before selection", n8
         !! allocate orbital selection array for qmckl
         allocate(keep(n8))
-        
+
 
         !! selecting range of orbitals to compute qith QMCkl
         keep(1:norb_qmckl) = 1
         keep((norb_qmckl+1):n8) = 0
 
-        
+
         rc = qmckl_mo_basis_select_mo(qmckl_ctx, keep, n8)
         if (rc /= QMCKL_SUCCESS) then
            write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
            stop
         end if
-        
+
         !!deallocate keep
         deallocate(keep)
 
@@ -1950,26 +2053,25 @@ subroutine parser
         end if
         write(ounit,*) "n8 after mo's selec", n8
         write(ounit,*) "norb_qmckl after mo's selec", norb_qmckl
-        
-        
+
+
         !! checking if the current number of orbitals in qmckl is consistent
-        
+
         if (n8 /= norb_qmckl) then
            write(ounit,*) 'Bug in MO selection in QMCkl verify orb'
            stop
         end if
 
      endif
-     
+
   endif
 #endif
 
 
-  
+
 
   !----------------------------------------------------------------------------END
 
-  
 
   contains
 
@@ -1983,6 +2085,152 @@ subroutine parser
   !!   'c' is matched by a list with reals
   !!   'e' is matched by a list with integers or reals
   !!   'd' is reserved for future dictionaries...
+
+!! for periodic assuming square cell still
+    subroutine read_lattice_file(file_lattice)
+
+      use contrl_file, only: errunit,ounit
+      use m_string_operations, only: wordcount
+      use custom_broadcast, only: bcast
+      use mpiconf, only: wid
+      use periodic, only: rkvec_shift, alattice
+      use periodic, only: rlatt_sim, rlatt_sim_inv
+      use periodic, only: rlatt, rlatt_inv
+      use jaspar6, only: cutjas, cutjasi
+      use precision_kinds, only: dp
+
+
+      implicit none
+
+      character(len=72), intent(in)   :: file_lattice
+      character(len=90)               :: file_lattice_path, line
+      real(dp) :: latt
+      integer                         :: iunit, iostat, count
+      logical                         :: exist
+      integer :: i,k
+
+      !   External file reading
+
+      if((file_lattice(1:6) == '$pool/') .or. (file_lattice(1:6) == '$POOL/')) then
+         file_lattice_path = pooldir // file_lattice(7:)
+      else
+         file_lattice_path = file_lattice
+      endif
+
+
+      write(ounit,*) '-----------------------------------------------------------------------'
+      write(ounit,string_format)  " Reading Lattice Parameters from the file :: ",  trim(file_lattice_path)
+      write(ounit,*)
+
+      if (wid) then
+         inquire(file=file_lattice_path, exist=exist)
+         if (exist) then
+            open (newunit=iunit,file=file_lattice_path, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error("Problem opening the Super-cell file")
+         else
+            call fatal_error (" Super-cell file "// trim(file_lattice) // " does not exist.")
+         endif
+      endif
+
+
+      !Initialization to avoid garbage
+
+      rlatt_sim =0.d0
+      rlatt = 0.d0
+      rlatt_sim_inv = 0.d0
+      rlatt_inv = 0.d0
+      count=0
+
+
+
+      if (wid) then
+         do i = 1, 3
+            !! Reading each row as a vector of the box
+            read(iunit,*, iostat=iostat) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
+            if(iostat.ne.0.and.count.eq.0) then
+               if(rlatt_sim(1,1).gt.0.d0) then
+                  alattice=rlatt_sim(1,1)
+                  count=count+1
+                  exit
+               else
+                  write(ounit, *) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
+                  call fatal_error("Error in reading lattice parameters file")
+               endif
+            endif
+            count=count+1
+            if(iostat.ne.0.and.count.ne.1) then
+               write(ounit, *) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
+               call fatal_error("Error in reading lattice parameters file")
+            endif
+         enddo
+
+
+         if(count.eq.1) then
+
+
+            write(ounit,*) 'This is a cubic cell'
+            write(ounit,*) 'The lattice constant is', alattice
+
+            rlatt_sim(1,1) = alattice
+            rlatt_sim(2,2) = alattice
+            rlatt_sim(3,3) = alattice
+
+
+
+         else if(count.eq.3) then
+
+
+            write(ounit,*) "The simulation cell is:"
+
+            write(ounit,*) "a", rlatt_sim(1,1), rlatt_sim(1,2), rlatt_sim(1,3)
+            write(ounit,*) "b", rlatt_sim(2,1), rlatt_sim(2,2), rlatt_sim(2,3)
+            write(ounit,*) "c", rlatt_sim(3,1), rlatt_sim(3,2), rlatt_sim(3,3)
+
+
+            !! assuming still rectangular box
+            alattice=rlatt_sim(1,1)
+            do i = 2, 3
+               if(rlatt_sim(i,i).lt.alattice) alattice=rlatt_sim(i,i)
+            enddo
+
+            if(alattice.le.0.d0) call fatal_error("Wrong lattice parameter")
+
+         else
+
+            call fatal_error("Error reading lattice file")
+
+         endif
+
+
+         !   regarding Ewald Breakup assume column not row vectors for the lattice
+         rlatt_sim=TRANSPOSE(rlatt_sim)
+
+
+
+      endif
+
+
+
+      call bcast(rlatt_sim)
+      if (wid) close(iunit)
+
+
+      !! set primitive and super-cell to be the same
+      rlatt =rlatt_sim
+
+      !! set twist k-shift vector
+      rkvec_shift =0.0d0
+
+!!! override jastrow cutoff to half of the lattice parameter
+!!! need to be adapted to half of the wigner-seitz cell (orthorombic boxes)
+      cutjas = 0.5*alattice
+      cutjasi=1/cutjas
+
+
+end subroutine read_lattice_file
+
+
+
 
   subroutine fdf_read_molecule_block(bfdf)
     implicit none
@@ -2313,8 +2561,9 @@ subroutine compute_mat_size_new()
   ! use system, only: nctype_tot, ncent_tot
 
   use sr_mod, only: mparm, mobs, mconf
+  use control, only: mode
   use control_vmc, only: vmc_nstep, vmc_nblk_max
-
+  use control_dmc, only: dmc_nstep
   use vmc_mod, only: set_vmc_size
   use optci, only: set_optci_size
   use optorb_mod, only: set_optorb_size
@@ -2325,7 +2574,12 @@ subroutine compute_mat_size_new()
 
   ! leads to circular dependecy of put in sr_mod ..
   mobs = 10 + 6*mparm
-  mconf = vmc_nstep * vmc_nblk_max
+
+  if( mode(1:3) == 'vmc' ) then
+     mconf = vmc_nstep * vmc_nblk_max
+  else
+     mconf = dmc_nstep * vmc_nblk_max
+  endif
 
   call set_vmc_size
   call set_optci_size

@@ -103,7 +103,7 @@ contains
       enddo
 
       if(ipr.ge.4) then
-        do k=1,nwftypeorb      
+        do k=1,nwftypeorb
           write(ounit,'(A,i4)') "Dets for orbital set ", k
           write(ounit,'(''detu,detd'',9d12.5)') detiab(kref,1,k),detiab(kref,2,k)
         enddo
@@ -243,7 +243,7 @@ contains
       use contrl_file, only: ounit
       implicit none
 
-      integer :: i, ic, iorb, iparm, l, k
+      integer :: i, ic, iorb, iparm, l, k, xo, xj
 
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = 0.5d0
@@ -255,23 +255,27 @@ contains
 ! call resize_tensor(dorb, norb+nadorb, 3)
 
       do k=1,nbjx
+        xo=bjxtoo(k)
+        xj=bjxtoj(k)
 ! compute kinetic contribution of B+Btilde to compute Eloc
         do i=1,nelec
           do iorb=1,norb+nadorb
-            bkin(iorb,i,k)=-hb*(ddorb(iorb,i,bjxtoo(k))+2*(vj(1,i,bjxtoj(k))*dorb(iorb,i,1,bjxtoo(k)) &
-            +vj(2,i,bjxtoj(k))*dorb(iorb,i,2,bjxtoo(k))+vj(3,i,bjxtoj(k))*dorb(iorb,i,3,bjxtoo(k))))
+            bkin(iorb,i,k)=-hb*(ddorb(iorb,i,xo)+2*(vj(1,i,xj)*dorb(iorb,i,1,xo) &
+            +vj(2,i,xj)*dorb(iorb,i,2,xo)+vj(3,i,xj)*dorb(iorb,i,3,xo)))
           enddo
         enddo
       enddo
 ! compute derivative of kinetic contribution of B+Btilde wrt jastrow parameters
       if(ioptjas.gt.0) then
         do k=1,nbjx
+          xo=bjxtoo(k)
+          xj=bjxtoj(k)
           do iparm=1,nparmj
             do i=1,nelec
               do iorb=1,norb
-                b_dj(iorb,i,iparm,k)=-2*hb*(g(1,i,iparm,bjxtoj(k))*dorb(iorb,i,1,bjxtoo(k)) &
-                            +g(2,i,iparm,bjxtoj(k))*dorb(iorb,i,2,bjxtoo(k)) &
-                            +g(3,i,iparm,bjxtoj(k))*dorb(iorb,i,3,bjxtoo(k)))
+                b_dj(iorb,i,iparm,k)=-2*hb*(g(1,i,iparm,xj)*dorb(iorb,i,1,xo) &
+                                           +g(2,i,iparm,xj)*dorb(iorb,i,2,xo) &
+                                           +g(3,i,iparm,xj)*dorb(iorb,i,3,xo))
               enddo
             enddo
           enddo

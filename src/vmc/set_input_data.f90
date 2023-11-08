@@ -249,12 +249,24 @@ subroutine multideterminants_define(iflag, icheck)
         enddo
     endif
 
-    do icsf = 1, ncsf
-        do j = iadet(icsf), ibdet(icsf)
-            k = icxdet(j)
-            cxdet(j) = cxdet(j)*(-1)**itotphase(k)
-        enddo
-    enddo
+    if(ncsf.gt.0) then
+      do icsf = 1, ncsf
+          do j = iadet(icsf), ibdet(icsf)
+              k = icxdet(j)
+              cxdet(j) = cxdet(j)*(-1)**itotphase(k)
+          enddo
+      enddo
+
+     else
+
+    ! Not sure that is needed
+      do icsf = 1, ndet
+          do j = iadet(icsf), ibdet(icsf)
+              k = icxdet(j)
+              cxdet(j) = cxdet(j)*(-1)**itotphase(k)
+          enddo
+      enddo
+    endif
 
     
     !reshufling arrays to avoid redundancy of unequivalent determinats
@@ -555,7 +567,37 @@ subroutine inputjastrow()
                     c(iparm, it, iwft) = c(iparm, it, 1)
                 enddo
             enddo
-        enddo
+         enddo
+
+      elseif(ijas.eq.1) then
+         mparmja = norda
+         mparmjb = nordb
+         mparmjc = nterms4(nordc)
+
+         if (.not. allocated(a4)) allocate (a4(mparmja+1, nctype, nwftype))
+         if (.not. allocated(b))  allocate (b(mparmjb+1, 2, nwftype))
+         if (.not. allocated(c))  allocate (c(mparmjc, nctype, nwftype))
+
+         do iwft = 2, nwftype
+            do it = 1, nctype
+               do iparm = 1, mparmja+1
+                  a4(iparm, it, iwft) = a4(iparm, it, 1)
+               enddo
+            enddo
+
+            do isp = nspin1, nspin2b
+               do iparm = 1, mparmjb+1
+                  b(iparm, isp, iwft) = b(iparm, isp, 1)
+               enddo
+            enddo
+
+            do it = 1, nctype
+               do iparm = 1, mparmjc
+                  c(iparm, it, iwft) = c(iparm, it, 1)
+               enddo
+            enddo
+         enddo
+                  
     endif
 
 end subroutine inputjastrow

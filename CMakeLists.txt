@@ -48,9 +48,6 @@ option(ENABLE_MPI "enable_mpi" on)
 # QMMM option
 option(ENABLE_QMMM "enable_qmmm" off)
 
-# Periodic option
-option(ENABLE_PERIODIC "enable_periodic" off)
-
 ## External packages
 option(ENABLE_TREXIO "enable_trexio" off)
 option(ENABLE_QMCKL  "enable_qmckl" off)
@@ -171,8 +168,11 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
         "-Wno-character-truncation" "-Wno-compare-reals"
         "-Wno-function-elimination"
         "-fno-check-array-temporaries"
-        "-std=f2018" "-Werror"
-        # "-ffpe-trap=invalid,zero,overflow" 
+        "-std=f2018"
+	#"-Wintrinsics-std"
+	"-std=legacy"
+	#"-Werror"
+        # "-ffpe-trap=invalid,zero,overflow"
         )
   endif()
 #  if (TREXIO_FOUND)

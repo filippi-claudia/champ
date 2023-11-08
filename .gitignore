@@ -69,3 +69,4 @@ config/
 !.f90$
 !.f$
 !hf_cc-VDZ.out
+!cas129_b3lyp_BFD-dan-normf0.out

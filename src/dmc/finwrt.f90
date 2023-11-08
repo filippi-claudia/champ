@@ -4,43 +4,42 @@ contains
 ! MPI version created by Claudia Filippi starting from serial version
 ! routine to print out final results
 
-      use age,     only: iage,ioldest,ioldestmx
-      use branch,  only: eold,nwalk
-      use config,  only: vold_dmc,xold_dmc
+      use age,     only: iage, ioldest, ioldestmx
+      use branch,  only: eold, nwalk
+      use config,  only: vold_dmc, xold_dmc
       use const,   only: etrial
       use contrl_file, only: ounit
       use contrl_per, only: iperiodic
-      use contrldmc, only: idmc,nfprod,tau
-      use control, only: ipr,mode
-      use control_dmc, only: dmc_nblkeq,dmc_nconf,dmc_nstep
+      use contrldmc, only: idmc, nfprod, tau
+      use control, only: ipr, mode
+      use control_dmc, only: dmc_nblkeq, dmc_nconf, dmc_nstep
       use custom_broadcast, only: bcast
-      use denupdn, only: rprobdn,rprobup
-      use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
-      use est2cm,  only: pecm2_dmc,tpbcm2_dmc,wcm2,wcm21,wfcm2
-      use est2cm,  only: wfcm21,wgcm2,wgcm21
-      use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
-      use estcum,  only: iblk,pecum_dmc,taucum,tpbcum_dmc
-      use estcum,  only: wcum1,wcum_dmc,wfcum,wfcum1,wgcum,wgcum1
+      use est2cm,  only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21
+      use est2cm,  only: pecm2_dmc, tpbcm2_dmc, wcm2, wcm21, wfcm2
+      use est2cm,  only: wfcm21, wgcm2, wgcm21
+      use estcum,  only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1
+      use estcum,  only: iblk, pecum_dmc, taucum, tpbcum_dmc
+      use estcum,  only: wcum1, wcum_dmc, wfcum, wfcum1, wgcum, wgcum1
       use finwrt_more_mod, only: finwrt_more
-      use grdntspar, only: igrdtype,ngradnts
+      use force_analytic, only: force_analy_fin
+      use grdntspar, only: igrdtype, ngradnts
       use general, only: write_walkalize
       use header,  only: title
-      use misc_grdnts, only: finwrt_diaghess_zmat,finwrt_grdnts_cart
+      use misc_grdnts, only: finwrt_diaghess_zmat, finwrt_grdnts_cart
       use misc_grdnts, only: finwrt_grdnts_zmat
       use mmpol_dmc, only: mmpol_fin
       use mpi
       use mpiblk,  only: iblk_proc
-      use mpiconf, only: nproc,wid
-      use multiple_geo, only: MFORCE,fgcm2,fgcum,nforce
-      use optwf_corsam, only: energy,energy_err,force,force_err
+      use mpiconf, only: nproc, wid
+      use multiple_geo, only: MFORCE, fgcm2, fgcum, nforce
+      use optwf_corsam, only: energy, energy_err, force, force_err
       use pcm_dmc, only: pcm_fin
       use precision_kinds, only: dp
       use prop_dmc, only: prop_prt_dmc
-      use stats,   only: acc,nacc,nodecr,trymove
-      use step,    only: rprob
-      use system,  only: ncent,nelec
-      use vmc_mod, only: delri,nrad
-!      use contrl, only: nblkeq, nconf, nstep
+      use stats,   only: acc, nacc, nodecr, trymove
+      use system,  only: ncent, nelec
+      use vmc_mod, only: delri, nrad
+
       implicit none
 
       integer :: i, ierr, ifr, j, k
@@ -60,7 +59,6 @@ contains
       real(dp) :: x, x2
       real(dp), dimension(MFORCE) :: ffin_grdnts
       real(dp), dimension(MFORCE) :: ferr_grdnts
-      real(dp), dimension(nrad) :: rprobcollect
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
@@ -90,12 +88,19 @@ contains
 !     eval_eff=nconf*rn_eff(wcum1,wcm21)
 !     evalf_eff=nconf*rn_eff(wfcum1,wfcm21)
 !     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
-      eval_eff=dmc_nconf*dmc_nstep*rn_eff(wcum_dmc,wcm2)
-      evalf_eff=dmc_nconf*dmc_nstep*rn_eff(wfcum,wfcm2)
+
+      eval_eff=1.0
+      evalf_eff=1.0
+
+      if(idmc.gt.0) then
+         eval_eff=dmc_nconf*dmc_nstep*rn_eff(wcum_dmc,wcm2)
+         evalf_eff=dmc_nconf*dmc_nstep*rn_eff(wfcum,wfcm2)
+         rteval_eff1=dsqrt(eval_eff-1)
+         rtevalf_eff1=dsqrt(evalf_eff-1)
+      endif
+
       evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
       rtpass1=dsqrt(pass_proc-1)
-      rteval_eff1=dsqrt(eval_eff-1)
-      rtevalf_eff1=dsqrt(evalf_eff-1)
       rtevalg_eff1=dsqrt(evalg_eff-1)
 
       write(ounit,'(''passes,eval,pass_proc,eval_proc,eval_eff,evalf_eff,evalg_eff'',19f9.0)') &
@@ -104,23 +109,10 @@ contains
 
       if(mode.eq.'mpi_one_mpi2') then
 
-! Collect radial charge density for atoms
-      if(iperiodic.eq.0) then
-        call mpi_reduce(rprob,rprobcollect,nrad,mpi_double_precision &
-        ,mpi_sum,0,MPI_COMM_WORLD,ierr)
-        do i=1,nrad
-          rprob(i)=rprobcollect(i)
-        enddo
-      endif
-
-      call mpi_reduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,0, &
-      MPI_COMM_WORLD,ierr)
-      call mpi_reduce(trymove,trymove_collect,1,mpi_double_precision,mpi_sum,0, &
-      MPI_COMM_WORLD,ierr)
-      call mpi_reduce(acc,acc_collect,1,mpi_double_precision,mpi_sum,0, &
-      MPI_COMM_WORLD,ierr)
-      call mpi_reduce(nacc,nacc_collect,1,mpi_integer,mpi_sum,0, &
-      MPI_COMM_WORLD,ierr)
+      call mpi_reduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,0, MPI_COMM_WORLD,ierr)
+      call mpi_reduce(trymove,trymove_collect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(acc,acc_collect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(nacc,nacc_collect,1,mpi_integer,mpi_sum,0,MPI_COMM_WORLD,ierr)
       nodecr=nodecr_collect
       trymove=trymove_collect
       acc=acc_collect
@@ -133,15 +125,6 @@ contains
         dmc_nstep,iblk,dmc_nconf,etrial,tau,taucum(1)/wgcum(1)
 
       if(.not.wid.and.mode.eq.'dmc_one_mpi2') return
-
-      if(iperiodic.eq.0 .and. ncent.eq.1) then
-        write(45,'(''  r   rprob'')')
-        delr=one/delri
-        term=one/(wgcum(1)*delr)
-        do i=1,nrad
-          write(45,'(f5.3,3f9.5)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
-        enddo
-      endif
 
       if(idmc.ge.0) then
         write(ounit,'(10i6)') (iage(i),i=1,nwalk)
@@ -156,28 +139,27 @@ contains
         write(ounit,'(''age of oldest walker (this generation, any gen)='',3i9)') ioldest,ioldestmx
       endif
 
-!     write(ounit,'(''average of the squares of the accepted step-size='',
-!    & f10.5)') dr2ac/trymove
-
-      write(ounit,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr), &
-       ifr=1,nforce)
+      write(ounit,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),ifr=1,nforce)
 
       if (wid) then
         accav=acc/trymove
         accavn=dble(nacc)/trymove
-        wave=wcum_dmc/pass_proc
-        wfave=wfcum/pass_proc
-        eave=ecum_dmc/wcum_dmc
-        efave=efcum/wfcum
 
-        werr=errw(wcum_dmc,wcm2)
-        wferr=errw(wfcum,wfcm2)
-        werr1=errw1(wcum1,wcm21)
-        wferr1=errw1(wfcum1,wfcm21)
-        eerr=errc(ecum_dmc,ecm2_dmc)
-        eferr=errf(efcum,efcm2)
-        eerr1=errc1(ecum1_dmc,ecm21_dmc)
-        eferr1=errf1(efcum1,efcm21)
+        if(idmc.gt.0) then
+           wave=wcum_dmc/pass_proc
+           wfave=wfcum/pass_proc
+           eave=ecum_dmc/wcum_dmc
+           efave=efcum/wfcum
+           werr=errw(wcum_dmc,wcm2)
+           wferr=errw(wfcum,wfcm2)
+           werr1=errw1(wcum1,wcm21)
+           wferr1=errw1(wfcum1,wfcm21)
+           eerr=errc(ecum_dmc,ecm2_dmc)
+           eferr=errf(efcum,efcm2)
+           eerr1=errc1(ecum1_dmc,ecm21_dmc)
+           eferr1=errf1(efcum1,efcm21)
+        endif
+
       endif
 
 

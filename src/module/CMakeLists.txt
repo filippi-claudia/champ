@@ -31,6 +31,8 @@ if (MPI_Fortran_FOUND)
     m_metropolis.f90
     m_dmc.f90
     m_vmc.f90
+    m_vd.f90
+    m_pathak.f90
     m_grid.f90
     m_pcm.f90
     m_ewald.f90
@@ -50,7 +52,12 @@ if (MPI_Fortran_FOUND)
     m_grdnt.f90
     m_allocation.f90
     m_state_avrg.f90
-    m_error.f90)
+    m_error.f90
+    ${CMAKE_PARSER_DIR}/fdf.F90
+    ${CMAKE_PARSER_DIR}/io_fdf.F90
+    ${CMAKE_PARSER_DIR}/parse.F90
+    ${CMAKE_PARSER_DIR}/prec.F90
+    ${CMAKE_PARSER_DIR}/utils.F90)
 
     if (TREXIO_FOUND)
       list(APPEND SHARED_MODULES m_trexio.F90)

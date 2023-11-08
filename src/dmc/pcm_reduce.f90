@@ -61,7 +61,6 @@ contains
       call mpi_reduce(qopcm2sum,qopcm2collect,1 &
       ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(.not.wid) return
 

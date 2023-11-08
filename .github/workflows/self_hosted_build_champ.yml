@@ -1,4 +1,4 @@
-name: Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01
+name: Self-hosted Intel OneAPI build
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
       - feature/debug-ci
       - optimization
       - champ-ortho-merge
+      - champ-periodic-dev
     # Sequence of patterns matched against refs/tags
     tags:
       - v2.*.*
@@ -19,6 +20,7 @@ on:
       - cartesian_d_qmckl
       - optimization
       - feature/debug-ci
+      - champ-periodic-dev
 
 jobs:
   build_champ:
@@ -46,7 +48,7 @@ jobs:
         module load python3/latest
         module load cmake/3.22.1-intel
         module load hdf5/1.14.1-intel
-        module load trexio/2.3.0-intel
+        module load trexio/2.4.0-intel
 
         which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
@@ -86,7 +88,7 @@ jobs:
       run: |
         echo "Compressing the test results from workflow"
         cd tests/
-        tar -czvf workflow_artifacts.tar.gz CI_test/*/*_core_?.out 
+        tar -czvf workflow_artifacts.tar.gz CI_test/*/*_core_?.out
 
     - name: "Upload calculation result artifacts"
       uses: actions/upload-artifact@v2

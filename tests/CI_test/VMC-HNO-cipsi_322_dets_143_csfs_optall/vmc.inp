@@ -8,6 +8,7 @@
     mode            'vmc_one_mpi1'
     sr_lambda       [ 1.0d0 ]
     anorm           [ 1.0d0, 0.32154638 ]
+    nstates         2
 %endmodule
 
 %module mstates
@@ -37,14 +38,11 @@ load symmetry        champ_v2_cas129_symmetry.sym
     ioptjas       1
     ioptorb       1
     method        'sr_n'
-    multiple_adiag 0
     ncore         0
     nextorb       600
     nblk_max      250
     no_active     0
     nopt_iter     5
-    isample_cmat  0
-    energy_tol    0.0
     sr_tau      0.025
     sr_eps      0.0005
     sr_adiag    0.01

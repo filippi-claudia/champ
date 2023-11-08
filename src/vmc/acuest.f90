@@ -8,16 +8,15 @@ module acuest_mod
       use contrl_file, only: ounit
       use control, only: ipr
       use csfs,    only: nstates
-      use denupdn, only: rprobdn,rprobup
       use determinant_psig_mod, only: determinant_psig
       use determinante_mod, only: compute_determinante_grad
-      use distance_mod, only: r_en,rshift,rvec_en
+      use distance_mod, only: r_en,rvec_en
       use distances_mod, only: distances
-      use est2cm,  only: ecm2,ecm21,pecm2,r2cm2,tpbcm2
-      use estcum,  only: ecum,ecum1,iblk,pecum,r2cum,tpbcum
+      use est2cm,  only: ecm2,ecm21,pecm2,tpbcm2
+      use estcum,  only: ecum,ecum1,iblk,pecum,tpbcum
       use estpsi,  only: apsi,aref,detref
       use estsig,  only: ecm21s,ecum1s
-      use estsum,  only: acc,esum,esum1,pesum,r2sum,tpbsum
+      use estsum,  only: acc,esum,esum1,pesum,tpbsum
       use force_analytic, only: force_analy_cum,force_analy_init
       use force_analytic, only: force_analy_save
       use forcewt, only: wcum,wsum
@@ -25,6 +24,8 @@ module acuest_mod
       use inputflags, only: eps_node_cutoff,node_cutoff
       use mmpol,   only: mmpol_init
       use mmpol_vmc, only: mmpol_cum,mmpol_save
+      use mpi
+      use mpiconf, only: nproc,wid
       use mstates_ctrl, only: iguiding
       use mstates_mod, only: MSTATES
       use multiple_geo, only: MFORCE,fcm2,fcum,nforce,pecent
@@ -49,7 +50,7 @@ module acuest_mod
       use qua,     only: nquad,wq,xq,yq,zq
       use rotqua_mod, only: gesqua
       use slater,  only: kref
-      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use step,    only: ekin,ekin2,suc,trunfb,try
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,znuc
       use vmc_mod, only: nrad, nwftypeorb, stoj
@@ -61,9 +62,9 @@ contains
 
       implicit none
 
-      integer :: i, ic, ifr, istate, jel, k
-      real(dp) :: ajacob, distance_node
-      real(dp) :: psidg, r2now, rnorm_nodes
+      integer :: i, ic, ierr, ifr, istate, jel, k
+      real(dp) :: ajacob, distance_node, eave
+      real(dp) :: psidg, rnorm_nodes
       real(dp) :: penow, tpbnow
       real(dp), dimension(3,nelec) :: xstrech
       real(dp), dimension(MSTATES) :: ekino
@@ -80,7 +81,6 @@ contains
 
 
 ! collect cumulative averages
-
       do ifr=1,nforce
         do istate=1,nstates
 
@@ -92,15 +92,12 @@ contains
         if(ifr.eq.1) then
           penow=pesum(istate)/wsum(istate,ifr)
           tpbnow=tpbsum(istate)/wsum(istate,ifr)
-          r2now=r2sum/(wsum(istate,ifr)*nelec)
 
           pecm2(istate)=pecm2(istate)+pesum(istate)*penow
           tpbcm2(istate)=tpbcm2(istate)+tpbsum(istate)*tpbnow
-          r2cm2=r2cm2+r2sum*r2now/nelec
 
           pecum(istate)=pecum(istate)+pesum(istate)
           tpbcum(istate)=tpbcum(istate)+tpbsum(istate)
-          r2cum=r2cum+r2sum/nelec
 
          else
           fcum(istate,ifr)=fcum(istate,ifr)+wsum(istate,1)*(enow(istate,ifr)-esum(istate,1)/wsum(istate,1))
@@ -116,7 +113,11 @@ contains
       call prop_cum(wsum(1,1))
       call pcm_cum(wsum(1,1))
       call mmpol_cum(wsum(1,1))
-      call force_analy_cum(wsum(1,1),ecum(1,1)/wcum(1,1),wcum(1,1))
+
+      if(wid) eave=ecum(1,1)/wcum(1,1)
+      call MPI_BCAST(eave,1,MPI_REAL8,0,MPI_COMM_WORLD,ierr)
+
+      call force_analy_cum(wsum(1,1),eave)
 
 ! zero out xsum variables for metrop
 
@@ -128,7 +129,6 @@ contains
         pesum(istate)=0
         tpbsum(istate)=0
       enddo
-      r2sum=0
 
       call prop_init(1)
       call optorb_init(1)
@@ -137,8 +137,8 @@ contains
       call mmpol_init(1)
       call force_analy_init(1)
 
-
       call acuest_reduce(enow)
+
       if(allocated(enow)) deallocate(enow)
 
       end subroutine
@@ -182,7 +182,7 @@ contains
       subroutine zerest
       implicit none
       integer :: i, ic, ifr, istate, jel, k
-      real(dp) :: psidg, r2now, rnorm_nodes
+      real(dp) :: psidg, rnorm_nodes
       real(dp) :: ajacob, distance_node
       real(dp), dimension(3,nelec) :: xstrech
       real(dp), dimension(MSTATES) :: ekino
@@ -221,10 +221,6 @@ contains
         aref(k)=0
       enddo
 
-      r2cm2=0
-      r2cum=0
-      r2sum=0
-
       call optjas_init
       call optci_init(0)
       call optorb_init(0)
@@ -257,9 +253,6 @@ contains
         trunfb(i)=0
         ekin(i)=0
         ekin2(i)=0
-        rprobup(i)=0
-        rprobdn(i)=0
-        rprob(i)=0
       enddo
 
 ! get nuclear potential energy

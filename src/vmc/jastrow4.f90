@@ -1,6 +1,6 @@
-module jastrow4_mod
-contains
-      subroutine jastrow4(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
+      module jastrow4_mod
+      contains
+      subroutine jastrow_factor4(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
 ! Written by Cyrus Umrigar, modified by C. Filippi
 ! Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 ! Jastrow 6   must be used with one of isc=6,7
@@ -12,7 +12,7 @@ contains
       use bparm, only: nocuspb, nspin2b
       use scale_dist_mod, only: scale_dist2, switch_scale2
       use m_force_analytic, only: iforce_analy
-      use distance_mod, only: rshift, r_en, rvec_en, r_ee, rvec_ee
+      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
       use vmc_mod, only: nwftypejas
@@ -32,7 +32,7 @@ contains
       real(dp) :: fuj, fuu, ri, rij
       real(dp) :: rj, s, t, term
       real(dp) :: top, topi, topii, topu
-      real(dp) :: topuu, u2mst, u2pst 
+      real(dp) :: topuu, u2mst, u2pst
       real(dp), dimension(3, *) :: x
       real(dp), dimension(-2:nordj) :: uu
       real(dp), dimension(-2:nordj) :: ss
@@ -166,9 +166,6 @@ contains
         rj=r_en(j,ic)
 
         if(ri.gt.cutjas .or. rj.gt.cutjas) goto 50
-        do k=1,3
-          if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) goto 50
-        enddo
 
         call scale_dist2(ri,rri(1),dd7,dd9,2)
         call scale_dist2(rj,rrj(1),dd8,dd10,2)

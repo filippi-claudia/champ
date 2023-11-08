@@ -80,44 +80,103 @@ contains
       open(2,file=filename,status='unknown')
       write(2,'(''jastrow_parameter'',i4)') iwf_fit
       write(2,'(3i3,a28)') norda,nordb,nordc,' norda,nordb,nordc'
-! tmp
-      write(2,'(f13.8,a15)') scalek(1),' scalek'
-      do k=1,nwftypejas
-!        if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)')
+
+
+      if(ijas.eq.4) then
+
+!      tmp
+         write(2,'(f13.8,a15)') scalek(1),' scalek'
+         do k=1,nwftypejas
+!     if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)')
 !     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             ! Intel version
-        if (extraj.eq.1) write(temp,'(a,i0,a,a)') '(a,1x,i0,1x,',nstoj(k),'(1x,i0,1x)',')'
-        if (extraj.eq.1) write(2,temp) "jastrows_to_states",nstoj(k),(jtos(k,i),i=1,nstoj(k)) ! GNU version
+            if (extraj.eq.1) write(temp,'(a,i0,a,a)') '(a,1x,i0,1x,',nstoj(k),'(1x,i0,1x)',')'
+            if (extraj.eq.1) write(2,temp) "jastrows_to_states",nstoj(k),(jtos(k,i),i=1,nstoj(k)) ! GNU version
 
-        mparmja=2+max(0,norda-1)
-        mparmjb=2+max(0,nordb-1)
-        mparmjc=nterms4(nordc)
-        if(mparmja.gt.0) then
-          write(fmt,'(''('',i2,''f13.8,a28)'')') mparmja
-        else
-          write(fmt,'(''(a28)'')')
-        endif
-        do ict=1,nctype
-          write(2,fmt) (a4(i,ict,k),i=1,mparmja),' (a(iparmj),iparmj=1,nparma)'
-        enddo
+            mparmja=2+max(0,norda-1)
+            mparmjb=2+max(0,nordb-1)
+            mparmjc=nterms4(nordc)
+            if(mparmja.gt.0) then
+               write(fmt,'(''('',i2,''f13.8,a28)'')') mparmja
+            else
+               write(fmt,'(''(a28)'')')
+            endif
+            do ict=1,nctype
+               write(2,fmt) (a4(i,ict,k),i=1,mparmja),' (a(iparmj),iparmj=1,nparma)'
+            enddo
 
-        if(mparmjb.gt.0) then
-          write(fmt,'(''('',i2,''f13.8,a28)'')') mparmjb
-        else
-          write(fmt,'(''(a28)'')')
-        endif
-        do isp=1,nspin2b
-          write(2,fmt) (b(i,isp,k),i=1,mparmjb),' (b(iparmj),iparmj=1,nparmb)'
-        enddo
+            if(mparmjb.gt.0) then
+               write(fmt,'(''('',i2,''f13.8,a28)'')') mparmjb
+            else
+               write(fmt,'(''(a28)'')')
+            endif
+            do isp=1,nspin2b
+               write(2,fmt) (b(i,isp,k),i=1,mparmjb),' (b(iparmj),iparmj=1,nparmb)'
+            enddo
 
-        if(mparmjc.gt.0) then
-          write(fmt,'(''('',i2,''f13.8,a28)'')') mparmjc
-        else
-          write(fmt,'(''(a28)'')')
-        endif
-        do ict=1,nctype
-          write(2,fmt) (c(i,ict,k),i=1,mparmjc),' (c(iparmj),iparmj=1,nparmc)'
-        enddo
-      enddo
+            if(mparmjc.gt.0) then
+               write(fmt,'(''('',i2,''f13.8,a28)'')') mparmjc
+            else
+               write(fmt,'(''(a28)'')')
+            endif
+            do ict=1,nctype
+               write(2,fmt) (c(i,ict,k),i=1,mparmjc),' (c(iparmj),iparmj=1,nparmc)'
+            enddo
+         enddo
+
+
+
+      else
+
+!     tmp
+
+         do k=1,nwftypejas
+!     if (extraj.eq.1) write(2,'(''jastrows_to_states'',i6,<nstoj(k)>i4)')
+!     &                          nstoj(k), (jtos(k,i),i=1,nstoj(k))             ! Intel version
+            if (extraj.eq.1) write(temp,'(a,i0,a,a)') '(a,1x,i0,1x,',nstoj(k),'(1x,i0,1x)',')'
+            if (extraj.eq.1) write(2,temp) "jastrows_to_states",nstoj(k),(jtos(k,i),i=1,nstoj(k)) ! GNU version
+
+            mparmja=norda
+            mparmjb=nordb
+            mparmjc=nterms4(nordc)
+            if(mparmja.gt.0) then
+               write(fmt,'(''('',i2,''f13.8,a28)'')') mparmja+1
+               do ict=1,nctype
+                  write(2,fmt) (a4(i,ict,k),i=1,mparmja+1),' (a(iparmj),iparmj=1,nparma)'
+               enddo
+            else
+               write(fmt,'(''(a28)'')')
+               do ict=1,nctype
+                  write(2,fmt) ' (a(iparmj),iparmj=1,nparma)'
+               enddo
+            endif
+
+            if(mparmjb.gt.0) then
+               write(fmt,'(''('',i2,''f13.8,a28)'')') mparmjb+1
+               do isp=1,nspin2b
+                  write(2,fmt) (b(i,isp,k),i=1,mparmjb+1),' (b(iparmj),iparmj=1,nparmb)'
+               enddo
+            else
+               write(fmt,'(''(a28)'')')
+               do isp=1,nspin2b
+                  write(2,fmt) ' (b(iparmj),iparmj=1,nparmb)'
+               enddo
+            endif
+
+            if(mparmjc.gt.0) then
+               write(fmt,'(''('',i2,''f13.8,a28)'')') mparmjc
+            else
+               write(fmt,'(''(a28)'')')
+            endif
+            do ict=1,nctype
+               write(2,fmt) (c(i,ict,k),i=1,mparmjc),' (c(iparmj),iparmj=1,nparmc)'
+            enddo
+         enddo
+
+
+
+      endif
+
+
 
       write(2,'(''end'')')
       close(2)
@@ -288,7 +347,7 @@ contains
       subroutine save_jastrow
 
       use bparm,   only: nspin2b
-      use jastrow, only: norda,nordb,nordc
+      use jastrow, only: ijas, norda,nordb,nordc
       use jastrow, only: a4,b,c,nordj1
       use save_mod,only: mparmja, mparmjb, mparmjc
       use save_mod,only: a4_save, b_save, c_save
@@ -316,8 +375,14 @@ contains
 
 ! Save parameters corresponding to run generating hessian
 
-      mparmja=2+max(0,norda-1)
-      mparmjb=2+max(0,nordb-1)
+      if(ijas.eq.1) then
+         mparmja=norda
+         mparmjb=nordb
+      else
+         mparmja=2+max(0,norda-1)
+         mparmjb=2+max(0,nordb-1)
+      endif
+
       mparmjc=nterms4(nordc)
 
       if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
@@ -551,7 +616,7 @@ contains
       use save_mod, only: cdet_save, ccsf_save
       use set_input_data, only: multideterminants_define
       use slater,  only: cdet,ndet
-      implicit none 
+      implicit none
       integer :: i, iadiag, icsf, j, k
       integer :: kx
 
@@ -570,7 +635,7 @@ contains
        enddo
       enddo
 
-! if kref (iwdetorb, cxdet) has changed
+! if kref (iwdorb, cxdet) has changed
       if(ncsf.gt.0) then
         do j=1,nstates
           do k=1,ndet
@@ -584,9 +649,10 @@ contains
           enddo
         enddo
 
+      endif
+
 ! reset kref=1
       call multideterminants_define(0,0)
-      endif
 
       return
       end
@@ -594,7 +660,7 @@ contains
       subroutine copy_jastrow(iadiag)
 
       use system, only: nctype
-      use jastrow, only: b, c, scalek, a4, norda, nordb, nordc
+      use jastrow, only: b, c, scalek, a4, ijas, norda, nordb, nordc
       use bparm, only: nspin2b
       use optwf_control, only: method
       use vmc_mod, only: nwftypejas
@@ -604,11 +670,41 @@ contains
       integer :: i, isp, iadiag, ict, mparmja, mparmjb
       integer :: mparmjc, k
 
-      mparmja=2+max(0,norda-1)
-      mparmjb=2+max(0,nordb-1)
+      if(ijas.eq.1) then
+        mparmja=norda
+        mparmjb=nordb
+
+        if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
+
+           do k=1,nwftypejas
+              do ict=1,nctype
+                 a4(mparmja+1,ict,k)=a4(mparmja+1,ict,k)
+              enddo
+              do isp=1,nspin2b
+                 b(mparmjb+1,isp,k)=b(mparmjb+1,isp,k)
+              enddo
+           enddo
+
+        else
+
+           do ict=1,nctype
+              a4(mparmja+1,ict,iadiag)=a4(mparmja+1,ict,1)
+           enddo
+           do isp=1,nspin2b
+              b(mparmjb+1,isp,iadiag)=b(mparmjb+1,isp,1)
+           enddo
+
+        endif
+
+      else
+        mparmja=2+max(0,norda-1)
+        mparmjb=2+max(0,nordb-1)
+        scalek(iadiag)=scalek(1)
+      endif
+
+
       mparmjc=nterms4(nordc)
 
-      scalek(iadiag)=scalek(1)
 
       if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
         do k=1,nwftypejas
@@ -730,7 +826,7 @@ contains
       subroutine save_jastrow_best
 
       use bparm,   only: nspin2b
-      use jastrow, only: norda,nordb,nordc
+      use jastrow, only: ijas, norda,nordb,nordc
       use jastrow, only: a4,b,c,nordj1
       use multiple_geo, only: nwftype
       use precision_kinds, only: dp
@@ -753,8 +849,15 @@ contains
 
 ! Save parameters corresponding to run generating hessian
 
-      mparmja_best=2+max(0,norda-1)
-      mparmjb_best=2+max(0,nordb-1)
+
+      if(ijas.eq.1) then
+         mparmja_best=norda
+         mparmjb_best=nordb
+      else
+         mparmja_best=2+max(0,norda-1)
+         mparmjb_best=2+max(0,nordb-1)
+      endif
+
       mparmjc_best=nterms4(nordc)
 
       do ict=1,nctype
@@ -1074,8 +1177,9 @@ contains
       subroutine compute_lcao(dparm,iadiag)
 
       use vmc_mod, only: norb_tot, nwftypeorb, stoo
-      use optwf_control, only: ioptorb, method
+      use optwf_control, only: ioptorb, method, orbitals_ortho
       use optwf_parms, only: nparmd, nparmj
+      use orbval, only: nadorb
       use coefs, only: nbasis
       use slater, only: norb, coef
       use optorb_cblock, only: norbterm
@@ -1084,43 +1188,28 @@ contains
       use orb_mat_022, only: ideriv
       use precision_kinds, only: dp
       use sr_mat_n, only: sr_state
+      use contrl_file, only: ounit
 
       implicit none
 
-      integer :: i, iadiag, io, j, jo, o!, k
+      integer :: i, iadiag, io, j, jo, k, o
       real(dp), dimension(nbasis, norb_tot) :: acoef
       real(dp), dimension(*) :: dparm
+      real(dp), dimension(norb+nadorb,norb+nadorb) :: xmat, umat
 
       if(ioptorb.eq.0) return
 
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         o=stoo(sr_state)
-          do i=1,norb
-            do j=1,nbasis
-              acoef(j,i)=coef(j,i,o)
-            enddo
-          enddo
+       else
+        o=iadiag
+      endif
 
-! Update the orbitals
-          do i=1,norbterm
-            io=ideriv(1,i)
-            jo=ideriv(2,i)
-            do j=1,nbasis
-              acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,o)
-            enddo
-          enddo
-
-          do i=1,norb
-            do j=1,nbasis
-              coef(j,i,o)=acoef(j,i)
-            enddo
-          enddo
-
-      else
+      if(.not.orbitals_ortho) then
 
         do i=1,norb
           do j=1,nbasis
-            acoef(j,i)=coef(j,i,iadiag)
+            acoef(j,i)=coef(j,i,o)
           enddo
         enddo
 
@@ -1129,15 +1218,59 @@ contains
           io=ideriv(1,i)
           jo=ideriv(2,i)
           do j=1,nbasis
-            acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,iadiag)
+            acoef(j,io)=acoef(j,io)-dparm(i+nparmj+nparmd)*coef(j,jo,o)
           enddo
         enddo
 
         do i=1,norb
           do j=1,nbasis
-            coef(j,i,iadiag)=acoef(j,i)
+            coef(j,i,o)=acoef(j,i)
           enddo
         enddo
+
+      else
+
+        xmat(:,:)=0.d0
+        do i=1,norbterm
+          io=ideriv(1,i)
+          jo=ideriv(2,i)
+          xmat(io,jo)=-dparm(i+nparmj+nparmd)
+        enddo
+
+        do i=1,norb+nadorb
+          do j=1,i-1
+            if(xmat(i,j).ne.0.d0.and.xmat(j,i).ne.0.d0) then
+              xmat(i,j)=0.5*(xmat(i,j)-xmat(j,i))
+              xmat(j,i)=-xmat(i,j)
+             elseif(xmat(i,j).ne.0.d0) then
+              xmat(j,i)=-xmat(i,j)
+             else
+              xmat(i,j)=-xmat(j,i)
+            endif
+          enddo
+        enddo
+
+        call ortho_orbitals(norb+nadorb,xmat,umat)
+
+        acoef(:,:)=0.d0
+        do i=1,norb+nadorb
+          do j=1,norb+nadorb
+            do k=1,nbasis
+              acoef(k,i)=acoef(k,i)+umat(i,j)*coef(k,j,o)
+            enddo
+          enddo
+        enddo
+
+        do i=1,norb+nadorb
+          if(acoef(1,i)*coef(1,i,o).lt.0.d0) call fatal_error('COMPUTE_LCAO: orbitals have changed sign through ortho')
+        enddo
+
+        do i=1,norb+nadorb
+          do j=1,nbasis
+            coef(j,i,o)=acoef(j,i)
+          enddo
+        enddo
+
       endif
 
       return
@@ -1145,7 +1278,7 @@ contains
 !-----------------------------------------------------------------------
       subroutine compute_ci(dparm,iadiag)
 
-      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
+      use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,maxcsf,ncsf,nstates
       use optwf_control, only: ioptci,ioptjas,ioptorb,method
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
@@ -1154,7 +1287,7 @@ contains
 
       implicit none
 
-      integer :: i, iadiag, icsf, idet, j
+      integer :: i, iadiag, icsf, idet, ish, j
       integer :: jx, k
       real(dp) :: c90
       real(dp), dimension(*) :: dparm
@@ -1189,13 +1322,23 @@ contains
             cdet(idet,sr_state,iadiag)=cdet(idet,sr_state,iadiag)-dparm(idet-1+nparmj)
           enddo
         else
-          do icsf=2,ncsf
+          do icsf=1,maxcsf(sr_state)-1
             do j=iadet(icsf),ibdet(icsf)
               jx=icxdet(j)
-              cdet(jx,sr_state,iadiag)=cdet(jx,sr_state,iadiag)-dparm(icsf-1+nparmj)*cxdet(j)
+              cdet(jx,sr_state,iadiag)=cdet(jx,sr_state,iadiag)-dparm(icsf+nparmj)*cxdet(j)
             enddo
-            ccsf(icsf,sr_state,iadiag)=ccsf(icsf,sr_state,iadiag)-dparm(icsf-1+nparmj)
+            ccsf(icsf,sr_state,iadiag)=ccsf(icsf,sr_state,iadiag)-dparm(icsf+nparmj)
           enddo
+
+          ish=1
+          do icsf=maxcsf(sr_state)+1,ncsf
+            do j=iadet(icsf),ibdet(icsf)
+              jx=icxdet(j)
+              cdet(jx,sr_state,iadiag)=cdet(jx,sr_state,iadiag)-dparm(icsf-ish+nparmj)*cxdet(j)
+            enddo
+            ccsf(icsf,sr_state,iadiag)=ccsf(icsf,sr_state,iadiag)-dparm(icsf-ish+nparmj)
+          enddo
+
         endif
       endif
 
@@ -1208,7 +1351,7 @@ contains
       subroutine check_parms_jas(iflag)
 
       use system, only: nctype
-      use jastrow, only: b, scalek, a4
+      use jastrow, only: ijas, b, scalek, a4
       use bparm, only: nspin2b
       use optwf_nparmj, only: nparma, nparmb
       use optwf_wjas, only: iwjasa, iwjasb
@@ -1222,6 +1365,7 @@ contains
       integer :: i, isp, ict, iflag, iflaga, iflagb, k
       real(dp) :: scalem
 
+      if(ijas.eq.1) return
       iflag=0
       iflaga=0
       iflagb=0
@@ -1414,7 +1558,7 @@ contains
 
       use sr_mod, only: mparm, mconf
       use optwf_parms, only: nparmj
-      use csfs, only: nstates
+      use csfs, only: maxcsf,nstates
       use derivjas, only: gvalue
       use optwf_control, only: ioptci, ioptjas, ioptorb
       use optwf_func, only: ifunc_omega
@@ -1434,6 +1578,7 @@ contains
       use optgeo_lib, only: force_store
       use vmc_mod, only: nwftypeorb, nwftypejas, stoj, stoo
       use contrl_file, only: ounit
+      use control_vmc, only: vmc_nstep, vmc_nblk_max
 
       implicit none
 
@@ -1452,13 +1597,22 @@ contains
       i0=1
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0
 
-      if(l.gt.mconf) call fatal_error('SR_STORE: l gt mconf')
+      if(l.gt.mconf) then
+        print*, "l",l, "mconf", mconf
+        print*, "vmc_nstep", vmc_nstep, "vmc_nblk_max", vmc_nblk_max
+        call fatal_error('SR_STORE: l gt mconf')
+      endif
 
-      if (method.eq.'sr_n'.and.ortho.eq.1.or.nstates.eq.1) then ! for sr_n w/ ortho, or sr_n 1-state
+      if (method.eq.'sr_n'.and.(ortho.eq.1.or.nstates.eq.1)) then ! for sr_n w/ ortho, or sr_n 1-state
         do istate=1,nstates
           if(nparmj /= 0) call dcopy(nparmj,gvalue(1,stoj(istate)),1,sr_o(1,l,istate),1)
           ntmp=max(nciterm-i0,0)
-          if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0,istate),1,sr_o(nparmj+1,l,istate),1)
+!         if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0,istate),1,sr_o(nparmj+1,l,istate),1)
+          if (ntmp /= 0) then
+            if(maxcsf(istate).gt.1) call dcopy(maxcsf(istate)-1,ci_o(1,istate),1,sr_o(nparmj+1,l,istate),1)
+            if(maxcsf(istate).lt.nciterm)
+     &      call dcopy(nciterm-maxcsf(istate),ci_o(maxcsf(istate)+1,istate),1,sr_o(nparmj+maxcsf(istate),l,istate),1)
+          endif
           ijasci=nparmj+ntmp
           if((ijasci+norbterm)*nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')
           ii=ijasci

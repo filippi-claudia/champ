@@ -5,72 +5,37 @@ contains
 ! routine to pick up and dump everything needed to restart
 ! job where it left off
 
-      use vmc_mod, only: nrad
-      use dmc_mod, only: MWALK
-      use basis, only: zex
-      use constants, only: hb
-      use multiple_geo, only: fgcm2, fgcum, nforce, pecent
       use age, only: iage, ioldest, ioldestmx
-      use contrldmc, only: idmc
-      use contrldmc, only: nfprod, rttau, tau
-      use system, only: cent, iwctype, ncent, nctype, znuc, nelec, ndn, nup, newghostype, nghostcent
-      use estcum, only: iblk, ipass
-      use config, only: xold_dmc
-      use stats, only: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
-      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum, ei2cum
-      use estcum, only: ei3cum, pecum_dmc, r2cum_dmc, ricum, taucum, tjfcum_dmc, tpbcum_dmc
-      use estcum, only: wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1, wgcum, wgcum1
-      use estcum, only: wgdcum
-      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2, ei2cm2
-      use est2cm, only: ei3cm2, pecm2_dmc, r2cm2_dmc, ricm2, tjfcm_dmc, tpbcm2_dmc, wcm2, wcm21, wdcm2, wdcm21
-      use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2
-      use derivest, only: derivcum
-      use step, only: rprob
-      use mpiconf, only: idtask, nproc, wid
-      use denupdn, only: rprobdn, rprobup
-      use qua, only: nquad, wq, xq, yq, zq
+      use basis, only: zex
       use branch, only: eest, eigv, ff, fprod, nwalk, wdsumo, wgdsumo, wt, wtgen
-      use jacobsave, only: ajacob
-      use pseudo, only: nloc
-      use slater, only: ndet, cdet
       use coefs, only: nbasis
-      use slater, only: norb, coef
-      use velratio, only: fratio
-!      use contrl, only: nconf
-      use control_dmc, only: dmc_nconf
-      use denupdn, only: rprobdn,rprobup
-      use derivest, only: derivcum
-      use dmc_mod, only: MWALK
-      use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
-      use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
-      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21,wdcm2,wdcm21
-      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21,wgdcm2
-      use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
-      use estcum,  only: ei1cum,ei2cum,ei3cum,iblk,ipass,pecum_dmc
-      use estcum,  only: r2cum_dmc,ricum,taucum,tpbcum_dmc
-      use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
-      use estcum,  only: wgcum1,wgdcum
-      use jacobsave, only: ajacob
-      use mpi
-      use mpiconf, only: idtask,nproc,wid
-      use multiple_geo, only: fgcm2,fgcum,nforce,pecent
-      use precision_kinds, only: dp
-      use pseudo,  only: nloc
-      use qua,     only: nquad,wq,xq,yq,zq
-      use random_mod, only: savern
-      use slater,  only: cdet,coef,ndet,norb
-      use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nbrnch
-      use stats,   only: nodecr,trymove
-      use step,    only: rprob
-      use strech_mod, only: strech
-      use system,  only: cent,iwctype,ncent,nctype,ndn,nelec,newghostype
-      use system,  only: nghostcent,nup,znuc
-      use velratio, only: fratio
-      use vmc_mod, only: nrad
+      use config, only: xold_dmc
+      use constants, only: hb
+      use contrldmc, only: idmc, nfprod, rttau, tau
       use contrl_file,    only: ounit
-
-
-!      use contrl, only: nconf
+      use control_dmc, only: dmc_nconf
+      use dmc_mod, only: MWALK
+      use estcum, only: iblk, ipass
+      use estcum, only: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1
+      use estcum, only: pecum_dmc, taucum, tpbcum_dmc
+      use estcum, only: wcum1, wcum_dmc, wfcum, wfcum1, wgcum, wgcum1
+      use est2cm, only: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21
+      use est2cm, only: pecm2_dmc, tpbcm2_dmc, wcm2, wcm21
+      use est2cm, only: wfcm2, wfcm21, wgcm2, wgcm21
+      use jacobsave, only: ajacob
+      use mpiconf, only: idtask, nproc, wid
+      use mpi
+      use multiple_geo, only: fgcm2, fgcum, nforce, pecent
+      use precision_kinds, only: dp
+      use qua, only: nquad, wq, xq, yq, zq
+      use velratio, only: fratio
+      use random_mod, only: savern
+      use pseudo, only: nloc
+      use slater,  only: cdet,coef,ndet,norb
+      use stats, only: acc, dfus2ac, dfus2un, nacc, nbrnch, nodecr, trymove
+      use stats,   only: nodecr,trymove
+      use strech_mod, only: strech
+      use system, only: cent, iwctype, ncent, nctype, znuc, nelec, ndn, nup, newghostype, nghostcent
 
       implicit none
 
@@ -153,7 +118,6 @@ contains
 !    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         enddo
       endif
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(.not.wid) return
 
@@ -165,20 +129,13 @@ contains
       write(10) tau,rttau,idmc
       write(10) nelec,dmc_nconf
       write(10) (wtgen(i),i=0,nfprod),wgdsumo
-      write(10) wcum_dmc,wfcum,wdcum,wgdcum &
-      ,wcum1,wfcum1,(wgcum1(i),i=1,nforce),wdcum1 &
-      ,ecum_dmc,efcum,ecum1_dmc,efcum1,(egcum1(i),i=1,nforce) &
-      ,ei1cum,ei2cum,ei3cum,r2cum_dmc,ricum
+      write(10) wcum_dmc,wfcum,wcum1,wfcum1,(wgcum1(i),i=1,nforce), &
+                ecum_dmc,efcum,ecum1_dmc,efcum1,(egcum1(i),i=1,nforce)
       write(10) ipass,iblk
-      write(10) wcm2,wfcm2,wdcm2,wgdcm2,wcm21 &
-      ,wfcm21,(wgcm21(i),i=1,nforce),wdcm21, ecm2_dmc,efcm2 &
-      ,ecm21_dmc,efcm21,(egcm21(i),i=1,nforce) &
-      ,ei1cm2,ei2cm2,ei3cm2,r2cm2_dmc,ricm2
-      write(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce) &
-      ,((derivcum(k,i),k=1,3),i=1,nforce)
-      write(10) (rprob(i)/nproc,rprobup(i),rprobdn(i),i=1,nrad)
-      write(10) dfus2ac,dfus2un,dr2ac,dr2un,acc &
-      ,trymove,nacc,nbrnch,nodecr
+      write(10) wcm2,wfcm2,wcm21,wfcm21,(wgcm21(i),i=1,nforce),ecm2_dmc,efcm2, &
+                ecm21_dmc,efcm21,(egcm21(i),i=1,nforce)
+      write(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
+      write(10) dfus2ac,dfus2un,acc,trymove,nacc,nbrnch,nodecr
 
       write(10) ((coef(ib,i,1),ib=1,nbasis),i=1,norb)
       write(10) nbasis

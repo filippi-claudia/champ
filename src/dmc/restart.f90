@@ -14,22 +14,21 @@ contains
       use contrldmc, only: idmc,nfprod,rttau,tau
       use control, only: ipr,mode
       use control_dmc, only: dmc_nconf
-      use denupdn, only: rprobdn,rprobup
-      use derivest, only: derivcm2,derivcum,derivsum,derivtotave_num_old
       use determinante_mod, only: compute_determinante_grad
       use error,   only: fatal_error
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
-      use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
-      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21,wdcm2,wdcm21
-      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21,wgdcm2
+      use est2cm,  only: pecm2_dmc
+      use est2cm,  only: tpbcm2_dmc,wcm2,wcm21
+      use est2cm,  only: wfcm2,wfcm21,wgcm2,wgcm21
       use estcum,  only: ecum1_dmc,ecum_dmc,efcum,efcum1,egcum,egcum1
-      use estcum,  only: ei1cum,ei2cum,ei3cum,iblk,ipass,pecum_dmc
-      use estcum,  only: r2cum_dmc,ricum,taucum,tpbcum_dmc
-      use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
-      use estcum,  only: wgcum1,wgdcum
-      use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
-      use estsum,  only: r2sum,risum,tausum,tpbsum_dmc,wdsum
-      use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
+      use estcum,  only: iblk,ipass,pecum_dmc
+      use estcum,  only: taucum,tpbcum_dmc
+      use estcum,  only: wcum1,wcum_dmc,wfcum,wfcum1,wgcum
+      use estcum,  only: wgcum1
+      use estsum,  only: efsum,egsum,esum_dmc,pesum_dmc
+      use estsum,  only: tausum,tpbsum_dmc
+      use estsum,  only: wfsum,wgsum,wsum_dmc
+      use force_analytic, only: force_analy_rstrt
       use general, only: write_walkalize
       use hpsi_mod, only: hpsi
       use jacobsave, only: ajacob,ajacold
@@ -50,9 +49,8 @@ contains
       use random_mod, only: setrn
       use restart_gpop, only: startr_gpop
       use slater,  only: cdet,coef,ndet,norb
-      use stats,   only: acc,dfus2ac,dfus2un,dr2ac,dr2un,nacc,nbrnch
+      use stats,   only: acc,dfus2ac,dfus2un,nacc,nbrnch
       use stats,   only: nodecr,trymove
-      use step,    only: rprob
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,ncent_tot,nctype,ndn,nelec
       use system,  only: nghostcent,nup,znuc
@@ -60,6 +58,8 @@ contains
       use vmc_mod, only: norb_tot,nrad
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
+      use mpitimer, only: elapsed_time
+      use estsum, only: wsum1
 !      use contrl, only: nconf
 
       implicit none
@@ -140,21 +140,13 @@ contains
       if (dabs(taux-tau).gt.small) call fatal_error('STARTR: tau')
       if (nelecx.ne.nelec) call fatal_error('STARTR: nelec')
       read(10) (wtgen(i),i=0,nfprod),wgdsumo
-      read(10) wcum_dmc,wfcum,wdcum,wgdcum,wcum1 &
-      ,wfcum1,(wgcum1(i),i=1,nforce),wdcum1, ecum_dmc,efcum &
-      ,ecum1_dmc,efcum1,(egcum1(i),i=1,nforce) &
-      ,ei1cum,ei2cum,ei3cum, r2cum_dmc,ricum
+      read(10) wcum_dmc,wfcum,wcum1,wfcum1,(wgcum1(i),i=1,nforce),ecum_dmc,efcum, &
+               ecum1_dmc,efcum1,(egcum1(i),i=1,nforce)
       read(10) ipass,iblk,iblk_proc
-      read(10) wcm2,wfcm2,wdcm2,wgdcm2,wcm21 &
-      ,wfcm21,(wgcm21(i),i=1,nforce),wdcm21, ecm2_dmc,efcm2 &
-      ,ecm21_dmc,efcm21,(egcm21(i),i=1,nforce) &
-      ,ei1cm2,ei2cm2,ei3cm2,r2cm2_dmc,ricm2
-      read(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce) &
-      ,((derivcum(k,i),k=1,3),i=1,nforce),(derivcm2(i),i=1,nforce) &
-      ,(derivtotave_num_old(i),i=1,nforce)
-      read(10) (rprob(i),rprobup(i),rprobdn(i),i=1,nrad)
-      read(10) dfus2ac,dfus2un,dr2ac,dr2un,acc &
-      ,trymove,nacc,nbrnch,nodecr
+      read(10) wcm2,wfcm2,wcm21,wfcm21,(wgcm21(i),i=1,nforce),ecm2_dmc,efcm2, &
+               ecm21_dmc,efcm21,(egcm21(i),i=1,nforce)
+      read(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
+      read(10) dfus2ac,dfus2un,acc,trymove,nacc,nbrnch,nodecr
       if(.not.wid) then
         acc=0
         nacc=0
@@ -164,6 +156,7 @@ contains
       call prop_rstrt(10)
       call pcm_rstrt(10)
       call mmpol_rstrt(10)
+      call force_analy_rstrt(10)
       read(10) ((coefx(ib,i),ib=1,nbasis),i=1,norb)
       read(10) nbasx
       do j=1,norb
@@ -178,13 +171,13 @@ contains
       read(10) pecent
       read(10) (znucx(i),i=1,nctypex)
 
-! read the number of basis per shell type
-      read(10) (nsx(i),i=1,nctype)
-      read(10) (npx(i),i=1,nctype)
-      read(10) (ndx(i),i=1,nctype)
-      read(10) (nfx(i),i=1,nctype)
-      read(10) (ngx(i),i=1,nctype)
-      do i = 1, nctype
+      ! read the number of basis per shell type
+      read(10) (nsx(i),i=1,nctypex)
+      read(10) (npx(i),i=1,nctypex)
+      read(10) (ndx(i),i=1,nctypex)
+      read(10) (nfx(i),i=1,nctypex)
+      read(10) (ngx(i),i=1,nctypex)
+      do i = 1, nctypex
         if (nsx(i) .ne. ns(i)) call fatal_error('STARTR: ns')
         if (npx(i) .ne. np(i)) call fatal_error('STARTR: np')
         if (ndx(i) .ne. nd(i)) call fatal_error('STARTR: nd')
@@ -260,14 +253,8 @@ contains
 
       wsum_dmc=zero
       wfsum=zero
-      wdsum=zero
-      wgdsum=zero
       esum_dmc=zero
       efsum=zero
-      ei1sum=zero
-      ei2sum=zero
-      r2sum=zero
-      risum=zero
 
       do ifr=1,nforce
         egsum(ifr)=zero
@@ -275,9 +262,7 @@ contains
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
         tausum(ifr)=zero
-        do k=1,3
-          derivsum(k,ifr)=zero
-        enddo
+        wsum1(ifr)=zero
       enddo
 
       call prop_init(1)

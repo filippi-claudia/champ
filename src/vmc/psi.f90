@@ -3,9 +3,6 @@ module psi_mod
 contains
       function psi(rij,ri,rj,it)
 ! Written by Cyrus Umrigar, modified by Claudia Filippi
-! **Warning** This routine needs to be upgraded to check rshifts
-! if we add in the capability to use numerical Laplacian for
-! periodic systems.
 
 
       use jastrow, only: nordc

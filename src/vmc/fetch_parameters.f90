@@ -98,7 +98,7 @@ contains
 !-----------------------------------------------------------------------
       subroutine fetch_ci(p,n)
       use contrl_file, only: ounit
-      use csfs,    only: ccsf,ncsf
+      use csfs, only: ccsf,maxcsf,ncsf
       use optwf_control, only: ioptci
       use precision_kinds, only: dp
       use slater,  only: cdet,ndet
@@ -109,13 +109,6 @@ contains
       real(dp) :: c90
       real(dp), dimension(*) :: p
 
-
-
-
-
-
-
-
       if(ioptci.eq.0) return
 
       if(ncsf.eq.0) then
@@ -124,7 +117,10 @@ contains
         enddo
         n=ndet-1
        else
-        do icsf=2,ncsf
+        do icsf=1,maxcsf(1)-1
+          p(icsf)=ccsf(icsf,1,1)
+        enddo
+        do icsf=maxcsf(1)+1,ncsf
           p(icsf-1)=ccsf(icsf,1,1)
         enddo
         n=ncsf-1

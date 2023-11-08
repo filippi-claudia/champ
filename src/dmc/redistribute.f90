@@ -111,19 +111,14 @@ contains
       if(icomm.gt.0) call send_walker(icomm-1)
       if(icomm.lt.0) call recv_walker(-icomm-1)
 
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(icomm.gt.0) call send_det(icomm-1)
       if(icomm.lt.0) call recv_det(-icomm-1)
-
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(icomm.gt.0) call send_jas(icomm-1)
       if(icomm.lt.0) call recv_jas(-icomm-1)
 
       if(icomm.gt.0) nwalk=nwalk-1
-
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       ido_again=0
       do i=0,nproc-1

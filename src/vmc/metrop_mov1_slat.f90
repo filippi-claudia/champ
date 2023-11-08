@@ -22,7 +22,7 @@ contains
       use determinante_mod, only: compute_determinante_grad
       use detsav_mod, only: detsav
       use distances_mod, only: distancese_restore
-      use estsum,  only: acc,esum,esum1,pesum,r2sum,tpbsum
+      use estsum,  only: acc,esum,esum1,pesum,tpbsum
       use force_analytic, only: force_analy_sum
       use forcewt, only: wsum
       use gammai_mod, only: gammai
@@ -57,7 +57,7 @@ contains
       use pseudo,  only: nloc
       use random_mod, only: random_dp
       use stats,   only: rejmax
-      use step,    only: ekin,ekin2,rprob,suc,trunfb,try
+      use step,    only: ekin,ekin2,suc,trunfb,try
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,nup,znuc
       use tmpnode, only: distance_node_sum
@@ -101,7 +101,7 @@ contains
       real(dp), dimension(MSTATES) :: psidn
       real(dp), dimension(nwftypejas) :: psijn
       real(dp), dimension(MSTATES) :: wtg
-      real(dp), dimension(MSTATES) :: wtg_sqrt 
+      real(dp), dimension(MSTATES) :: wtg_sqrt
       real(dp), parameter :: zero = 0.d0
       real(dp), dimension(MSTATES) :: zero_array = 0.0_dp
       real(dp), parameter :: one = 1.d0
@@ -611,8 +611,8 @@ contains
 ! and q times old, and keep track of which bin the old was in
       rold=dsqrt(xold(1,i)**2+xold(2,i)**2+xold(3,i)**2)
       rnew=dsqrt(xnew(1,i)**2+xnew(2,i)**2+xnew(3,i)**2)
-!write(ounit,*) 'rold,min(int(delri*rold),itryo', rold, int(delri*rold)+1,nrad 
-!write(ounit,*) 'rnew,min(int(delri*rnew),itryn', rnew, int(delri*rnew)+1,nrad 
+!write(ounit,*) 'rold,min(int(delri*rold),itryo', rold, int(delri*rold)+1,nrad
+!write(ounit,*) 'rnew,min(int(delri*rnew),itryn', rnew, int(delri*rnew)+1,nrad
       itryo=min(int(delri*rold)+1,nrad)
       itryn=min(int(delri*rnew)+1,nrad)
       try(itryo)=try(itryo)+1
@@ -624,12 +624,6 @@ contains
       if(voldp*raver*sintht.gt.one) trunfb(itryo)=trunfb(itryo)+1
 
 ! write(ounit, *) 'xnew', xnew(1,i), xnew(2, i), xnew(3,i)
-
-      rprob(itryo)=rprob(itryo)+q
-      rprob(itryn)=rprob(itryn)+p
-      do ic=1,3
-        r2sum=r2sum+p*xnew(ic,i)**2+q*xold(ic,i)**2
-      enddo
 
 ! accept new move with probability p
 ! Note when one electron moves the velocity on all electrons change.

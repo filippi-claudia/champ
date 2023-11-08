@@ -1,21 +1,30 @@
 ![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.jpg?raw=true)
 
 
-[![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml)
-
-[![DEBUG build and testing](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml)
-
-<!-- [![CI using Doxygen generated doc](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/CI.yml) -->
+[![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml) [![DEBUG build and testing](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml) [![Unit Tests](https://github.com/filippi-claudia/champ/actions/workflows/champ_unit_test.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/champ_unit_test.yml) [![TREXIO python interface](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml)
 
 
-The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo
-suite of programs for electronic structure calculations of atomic and molecular systems.
-The code is a sister code of the homonymous program originally developed by Cyrus Umrigar
-and Claudia Filippi of which it retains the accelerated Metropolis method and the efficient
-diffusion Monte Carlo algorithms.
+![Github Issues](https://img.shields.io/github/issues/filippi-claudia/champ) ![Github Pull Requests](https://img.shields.io/github/issues-pr/filippi-claudia/champ) ![Github Last Commit](https://img.shields.io/github/last-commit/filippi-claudia/champ) [![Commit Activity](https://img.shields.io/github/commit-activity/w/filippi-claudia/champ)](https://img.shields.io/github/commit-activity/t/filippi-claudia/champ
+)
+
+![Last release tag](https://img.shields.io/github/v/tag/filippi-claudia/champ) ![Github forks](https://img.shields.io/github/forks/filippi-claudia/champ) ![Github stars](https://img.shields.io/github/stars/filippi-claudia/champ) ![Repo Size](https://img.shields.io/github/repo-size/filippi-claudia/champ) ![Code Size](https://img.shields.io/github/languages/code-size/filippi-claudia/champ)
+
+![Github license](https://img.shields.io/github/license/filippi-claudia/champ)
+
+
+
+
+The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo suite of programs for electronic structure calculations of atomic and molecular systems. The code is a sister code of the homonymous program originally developed by Cyrus Umrigar and Claudia Filippi of which it retains the accelerated Metropolis method and the efficient diffusion Monte Carlo algorithms.
 
 The European branch of the code is currently developed by Claudia Filippi and Saverio Moroni,
-with significant contributions by Claudio Amovilli and other collaborators.
+with significant contributions by Ravindra Shinde, Nicolas Renaud, Victor Azizi, Edgar Landinez, and Stuart Shepard.
+
+
+<!-- <a href = "https://github.com/filippi-claudia/champ/graphs/contributors">
+  <img src = "https://contrib.rocks/image?repo=filippi-claudia/champ"/>
+</a> -->
+
+
 
 CHAMP has three basic capabilities:
 
@@ -25,44 +34,42 @@ CHAMP has three basic capabilities:
 
 Noteworthy features of CHAMP are:
 
-* Efficient wave function optimization also in a state-average fashion for multiple states of the same symmetry (VMC)
+* Efficient wave function optimization also in a state-average and a state-specific fashion for multiple states of the same symmetry (VMC)
 * Efficient computation of analytical interatomic forces (VMC)
 * Compact formulation for a fast evaluation of multi-determinant expansions and their derivatives (VMC and DMC)
 * Multiscale VMC and DMC calculations in classical point charges (MM), polarizable continuum model (PCM), and polarizable force fields (MMpol)
 
-**NOTE**
+**Note**
 
-You should neither obtain this program from any other source nor should you distribute it
-or any portion thereof to any person, including people in the same research group.
-
-It is expected that users of the programs will do so in collaboration
-with one of the principal authors.  This serves to ensure both that the
-programs are used correctly and that the principal authors get adequate
-scientific credit for the time invested in developing the programs.
+The code is available for free under the GPL-3.0 license. Developers and contributors are welcome to use and contribute back to the code. If you have used the code for your publications, please cite this source.
 
 **Usual disclaimer**
 
-The authors make no claims about the correctness of
-the program suite and people who use it do so at their own risk.
+The authors make no claims about the correctness of the program suite and people who use it do so at their own risk.
 
 ------------------------------------------------------------------------
 
-CHAMP relies on various other program packages:
+CHAMP utilizes various other program packages:
 
 1. [Parser](https://github.com/neelravi/mpi-libfdf-parser):
    An easy-to-use and easy-to-extend keyword-value pair based input file parser written in Fortran 2008.  This parser uses a heavily modified libFDF library and is written by [Ravindra Shinde](https://github.com/neelravi). It can parse keyword-value pairs, blocks of data, and general variables with different physical units in an order-independent manner. Our implementation can handle multiple data types and file formats. The parser is kept as a library in the code, however, it can be easily adapted by any other Fortran-based code.
 
-2. GAMESS:
-   For finite systems the starting wavefunction is obtained from the
-   quantum chemistry program GAMESS, written by Mike Schmidt and
-   collaborators at Iowa State University.
+2. [TREXIO](https://github.com/TREX-CoE/trexio):
+   TREXIO is an open-source file format and library developed for the storage and manipulation of data produced by quantum chemistry calculations. CHAMP can read the starting wavefunction from a trexio file. The library has interfaces to a lot of quantum chemical programs.
+   CHAMP can directly read the contents of this file with a single load statement in the input file. This library is currently optional.
 
-3. GAMESS_Interface:
-   The wavefunction produced by GAMESS has to be cast in a form
-   suitable for input to CHAMP.  This is a lot more work than first meets
-   the eye. We provide a python package inside the CHAMP's tool directory to extract all the necessary information needed from a GAMESS calculation. The tool can also extract information from a TREXIO file in the hdf5 file format. This utility is written by [Ravindra Shinde](https://github.com/neelravi).
+  <p align="center">
+    <img src="docs/trexio.png" alt="trexio interface" width="150"/>
+  </p>
 
-4. MOLCAS_Interface: A python package qc2champ can be used to convert a MOLCAS or an openMOLCAS calculation into the input files needed by CHAMP. This package is written by [Ravindra Shinde](https://github.com/neelravi). An independent version of the convertor script was added thanks to Csaba Daday and Monika Dash.
+
+3. [TREXIO Tools](https://github.com/TREX-CoE/trexio_tools):
+   We provide a python package inside the CHAMP's tool directory to extract all the necessary information from a TREXIO file in the hdf5 file format to a human-readable text format. This allows one to bypass the use of the TREXIO library within CHAMP and input the necessary data via the Parser (see Option 2 in Section "Preparing the Input File" below).
+
+4. [QMCKL](https://github.com/TREX-CoE/qmckl):
+  This library provides a high-performance implementation of the main kernels of Quantum Monte Carlo methods. This library is currently optional.
+
+
 
 ------------------------------------------------------------------------
 
@@ -71,7 +78,7 @@ CHAMP relies on various other program packages:
 2. gfortran/gcc >= 9.3.0 or Intel Fortran 2020 onwards
 3. BLAS/LAPACK or Intel MKL
 4. openMPI >= 3.0 or Intel MPI
-5. [Optional] TREXIO library >= 2.0.0
+5. [Optional] TREXIO library >= 2.3.0
 6. [Optional] QMCkl library >= 0.2.1
 7. [Optional] doxygen (for documentation)
 
@@ -119,17 +126,18 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 * **Snellius** (snellius.surfa.nl):
 	- To compile the code, first load the required modules:
 		```bash
-        module purge
-		module load 2021
-		module load git
-        module load CMake/3.20.1-GCCcore-10.3.0
-        module load intel-compilers/2021.2.0
-        module load imkl/2021.2.0-iimpi-2021a
-        module load impi/2021.2.0-intel-compilers-2021.2.0
+		module purge
+		module load 2022
+		module load intel/2022a               
+		module load HDF5/1.12.2-iimpi-2022a
 		```
 		then set-up the build:
 		```bash
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+		```
+		Optionally, you may link the trexio library using the following command:
+		```bash
+		cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=$HOME/include/
 		```
 		and finally build:
 		```bash
@@ -139,25 +147,23 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```bash
 		sbatch job.cmd
 		```
-		where `job.cmd` is a SLURM script that looks like this:
+		where `job.cmd` is a SLURM script for `genoa` partition that looks like this:
 
 		```bash
 		#!/bin/bash
-        #!/bin/bash
         #SBATCH -t 0-12:00:00            # time in (day-hours:min:sec)
-        #SBATCH -N 1                     # number of nodes
-        #SBATCH -n 128                   # number of cores
-        #SBATCH --ntasks-per-node 128    # tasks per node
-        #SBATCH -J 1-128-AMD             # name of the job
+        #SBATCH -N 1                     # number of nodes (change this number to use more nodes)
+        #SBATCH --ntasks-per-node 192    # tasks per node (Use 192 for genoa and 128 for rome partition)
+        #SBATCH -J vmc                   # name of the job
         #SBATCH -o vmc.%j.out            # std output file name for slurm
         #SBATCH -e vmc.%j.err            # std error file name for slurm
         #SBATCH --exclusive              # specific requirements about node
-        #SBATCH --partition thin         # partition (queue)
+        #SBATCH --partition genoa        # partition (queue)
         #
         module purge
-        module load 2021
-        module load imkl/2021.2.0-iimpi-2021a
-        module load CMake/3.20.1-GCCcore-10.3.0
+        module load 2022
+        module load intel/2022a
+        module load HDF5/1.12.2-iimpi-2022a
         #
         export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
         cd $PWD
@@ -181,12 +187,12 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	- To enable TREXIO library:
 		```
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON
-		```		
+		```
 	- To disable vectorization of the code:
 		```
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DVECTORIZED=no
-		```				
-		
+		```
+
 	- To run the code with Intel Compilers and MPI:
 	    ```bash
         mpirun -np 24  champ/bin/vmc.mov1 -i input.inp -o output.out -e error
@@ -227,14 +233,8 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	The code also compiles on WSL.
 ------------------------------------------------------------------------
 
-### Developer's Documentation
-CHAMP developer documentation can be generated using [Doxygen](http://www.doxygen.nl/) tool. To install the package, we advise to follow the instructions at the Doxygen web page: <http://www.doxygen.nl/download.html>.
-
-The Doxyfile file provided in CHAMP docs directory contains all the settings needed to generate the documentation. Once Doxygen is installed, at the docs folder of CHAMP simply run:
-```
-doxygen Doxyfile
-```
-Then two folders will be created, /docs/developers/html and ./docs/developers/latex, containing the documentation about modules, subroutines and functions in both html and latex formats.
+## User's manual and documentation
+The user's manual and documentation is hosted at [https://trex-coe.github.io/champ-user-manual/](https://trex-coe.github.io/champ-user-manual)
 
 
 # Preparing the input files
