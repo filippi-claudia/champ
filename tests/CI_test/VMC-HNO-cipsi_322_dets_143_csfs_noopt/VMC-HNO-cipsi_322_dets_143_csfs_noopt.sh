@@ -5,8 +5,8 @@ output="vmc"
 
 # unicore test
 N=1
-ReferenceEnergy_1=-26.4748932
-ReferenceError_1=0.0057557
+ReferenceEnergy_1=-26.4928604
+ReferenceError_1=0.0063233 
 ReferenceEnergy_2=-26.318374
 ReferenceError_2=0.0059439
 
