@@ -108,18 +108,18 @@ contains
             do i=lilm+1, uilm
                iwlbas0 = iwlbas(i-lilm,it)
 !     compute sml and combine to generate molecular orbitals
-               call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,iwrwf(i-lilm,it)),
-     &              y(iwlbas0),
-     &              dy(:,iwlbas0),
-     &              ddy(:,:,iwlbas0),
-     &              ddy_lap(iwlbas0),
-     &              dlapy(:,iwlbas0),
-     &              phin(i,k),
-     &              temp_dphin,
-     &              d2phin(i,k),
-     &              d2phin_all(1,1,i,k),
-     &              d3phin(1,i,k),
-     &              ider)
+               call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,iwrwf(i-lilm,it)), &
+                   y(iwlbas0), &
+                   dy(:,iwlbas0), &
+                   ddy(:,:,iwlbas0), &
+                   ddy_lap(iwlbas0), &
+                   dlapy(:,iwlbas0), &
+                   phin(i,k), &
+                   temp_dphin, &
+                   d2phin(i,k), &
+                   d2phin_all(1,1,i,k), &
+                   d3phin(1,i,k), &
+                   ider)
                dphin(i,k,:)=temp_dphin(:)
 
 #ifndef VECTORIZATION
@@ -173,18 +173,18 @@ contains
                   do i=lilm+1, uilm
                      iwlbas0 = iwlbas(i-lilm,it)
 !                     compute sml and combine to generate molecular orbitals
-                     call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,iwrwf(i-lilm,it)),
-     &                    y(iwlbas0),
-     &                    dy(:,iwlbas0),
-     &                    ddy(:,:,iwlbas0),
-     &                    ddy_lap(iwlbas0),
-     &                    dlapy(:,iwlbas0),
-     &                    temp_phin,
-     &                    temp_dphin,
-     &                    temp_d2phin,
-     &                    temp_d2phin_all,
-     &                    temp_d3phin,
-     &                    ider)
+                     call phi_combine(iwlbas0,xc,ri,ri2,wfv(1,iwrwf(i-lilm,it)), &
+                         y(iwlbas0), &
+                         dy(:,iwlbas0), &
+                         ddy(:,:,iwlbas0), &
+                         ddy_lap(iwlbas0), &
+                         dlapy(:,iwlbas0), &
+                         temp_phin, &
+                         temp_dphin, &
+                         temp_d2phin, &
+                         temp_d2phin_all, &
+                         temp_d3phin, &
+                         ider)
 ! adding contributions from the images to the original cell
                      phin(i,k)=phin(i,k)+temp_phin
                      dphin(i,k,:)=dphin(i,k,:)+temp_dphin(:)

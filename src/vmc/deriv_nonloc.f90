@@ -1,6 +1,6 @@
 module deriv_nonloc
 contains
-      subroutine deriv_nonlocj_quad(nxquad,xquad,ielquad,x,r_en,rvec_en_quad,r_en_quad, &
+      subroutine deriv_nonlocj_quad1(nxquad,xquad,ielquad,x,r_en,rvec_en_quad,r_en_quad, &
                                     psij_ratio,dpsij_ratio,vjn,da_psij_ratio,iwfjas)
 
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
@@ -56,9 +56,9 @@ contains
         vjn(k,iq)=0.d0
       enddo
 
-C TMP
-c     do 5 iparm=1,nparmj
-c   5   dpsij_ratio(iparm)=gvalue(iparm)
+! TMP
+!     do 5 iparm=1,nparmj
+!   5   dpsij_ratio(iparm)=gvalue(iparm)
       do iparm=1,nparmj
         dpsij_ratio(iparm,iq)=0
       enddo
@@ -66,10 +66,10 @@ c   5   dpsij_ratio(iparm)=gvalue(iparm)
       if (nelec.lt.2) goto 47
 
       ipara=nparma(1)
-c      write(ounit,*) 'nparmj,nparma(1),ijas', nparmj, nparma(1), ijas
+!      write(ounit,*) 'nparmj,nparma(1),ijas', nparmj, nparma(1), ijas
         do it=2,nctype
           ipara=ipara+nparma(it)
-c          write(ounit,*) 'it,nparma(it)', it, nparma(it)
+!          write(ounit,*) 'it,nparma(it)', it, nparma(it)
         enddo
 
 
@@ -123,7 +123,7 @@ c          write(ounit,*) 'it,nparma(it)', it, nparma(it)
           call find_image3(dx,rij)
         endif
 
-c e-e terms
+! e-e terms
         if(iforce_analy.gt.0) then
            dum=dpsibnl(rij,isb,ipar,iwfjas)/rij
            do k=1,3
@@ -138,17 +138,17 @@ c e-e terms
 
         do jparm=1,nparmb(isb)
           iparm=iparm0+jparm
-c          write(ounit,*) 'jparm,iparm0,iparm,nparmb(isb),isb', jparm,iparm0,iparm,nparmb(isb),isb
+!          write(ounit,*) 'jparm,iparm0,iparm,nparmb(isb),isb', jparm,iparm0,iparm,nparmb(isb),isb
           dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(i,j,iparm,iwfjas)
         enddo
 
-c e-e-n terms
+! e-e-n terms
         do ic=1,ncent
           it=iwctype(ic)
           if(nparmc(it).gt.0) then
             iparm0=npoint(it)
-            fsn(i,j)=fsn(i,j) +
-     &      deriv_psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
+            fsn(i,j)=fsn(i,j) + &
+            deriv_psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
           endif
         enddo
 
@@ -164,22 +164,22 @@ c e-e-n terms
    45 continue
       enddo
 
-c e-n terms
+! e-n terms
    47 fsn(iel,iel)=0
 
       do ic=1,ncent
          it=iwctype(ic)
          iparm0=npointa(it)
-         fsn(iel,iel)=fsn(iel,iel)+
-     &        deriv_psianl(r_en_quad(iq,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
-c          write(ounit,*) 'ic,it,iwctype(ic),iparm0,iparm0+1', ic,it,iwctype(ic),iparm0,iparm0+1
+         fsn(iel,iel)=fsn(iel,iel)+ &
+              deriv_psianl(r_en_quad(iq,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
+!          write(ounit,*) 'ic,it,iwctype(ic),iparm0,iparm0+1', ic,it,iwctype(ic),iparm0,iparm0+1
       enddo
       do it=1,nctype
          iparm0=npointa(it)
          do jparm=1,nparma(it)
             iparm=iparm0+jparm
             dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(iel,iel,iparm,iwfjas)
-c     write(ounit,*) 'it,npointa(it),jparm,iparm0,iparm', it,npointa(it),jparm,iparm0,iparm
+!     write(ounit,*) 'it,npointa(it),jparm,iparm0,iparm', it,npointa(it),jparm,iparm0,iparm
          enddo
       enddo
 
@@ -207,10 +207,10 @@ c     write(ounit,*) 'it,npointa(it),jparm,iparm0,iparm', it,npointa(it),jparm,i
 
 
 
-      subroutine deriv_nonlocj_quad4(nxquad,xquad,ielquad,x,r_en,rvec_en_quad,r_en_quad,
-     &     psij_ratio,dpsij_ratio,vjn,da_psij_ratio,iwfjas)
+      subroutine deriv_nonlocj_quad4(nxquad,xquad,ielquad,x,r_en,rvec_en_quad,r_en_quad, &
+          psij_ratio,dpsij_ratio,vjn,da_psij_ratio,iwfjas)
 
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm,   only: nocuspb,nspin2b
       use contrl_per, only: iperiodic
       use da_jastrow4val, only: da_j

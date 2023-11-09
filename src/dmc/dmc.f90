@@ -34,7 +34,7 @@ contains
 
       implicit none
 
-      integer :: i, j
+      integer :: i, j, irun, lpass
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: four = 4.d0
 
@@ -174,7 +174,7 @@ contains
 !           call dmc_brock
            elseif(iabs(idmc).eq.2) then
             if (nloc.gt.0) then
-              call dmc_ps
+              call dmc_ps(lpass,irun)
              else
 !             call dmc_good
             endif

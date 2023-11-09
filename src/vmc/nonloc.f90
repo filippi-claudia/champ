@@ -603,8 +603,8 @@ contains
            end if
 
 !     computing ao's zero image
-           rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
-     &          ao_qmckl, nxquad*5_8*nbasis)
+           rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx, &
+                ao_qmckl, nxquad*5_8*nbasis)
            if (rc /= QMCKL_SUCCESS) then
               print *, 'Error getting AOs from QMCkl zero image'
            endif
@@ -1007,8 +1007,8 @@ contains
 ! e-e-n terms
         do ic=1,ncent
           it=iwctype(ic)
-          fsn(i,j)=fsn(i,j) +
-     &    psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),it,iwfjas)
+          fsn(i,j)=fsn(i,j) + &
+          psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),it,iwfjas)
         enddo
 
         fsumn=fsumn+fsn(i,j)-fso(i,j)

@@ -293,7 +293,7 @@ module nonlpsi
 
       dpsibnl=0.d0
       if(ijas.eq.1) then
-         if(ijas.eq.1. and. u.gt.cutjas_ee(isb,iwf)) return
+         if(ijas.eq.1 .and. u.gt.cutjas_ee(isb,iwf)) return
       else
          if(u.eq.asymp_r) return
       endif

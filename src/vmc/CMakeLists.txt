@@ -34,8 +34,10 @@ if (MPI_Fortran_FOUND)
     hpsie.f90
     jassav.f90
     jastrow.f90
+    jastrow1.f90
     jastrow4.f90
     jastrow4e.f90
+    jastrow1e.f90
     jastrow_num.f90
     jastrowe.f90
     mc_configs.f90
@@ -88,16 +90,11 @@ if (MPI_Fortran_FOUND)
     prop_vmc.f90
     properties.f90
     psi.f90
-    pw_ewald.f90
-    pw_find_image.f90
-    pw_orbitals.f90
-    pw_orbitals_e.f90
-    pw_placeholder.f90
-    pw_read.f90
+    ewald.f90
+    find_image.f90
     qmmm_placeholder.f90
     random.f90
     readps_gauss.f90
-    readps_tm.f90
     rotqua.f90
     scale_dist.f90
     sites.f90
@@ -222,11 +219,11 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_matrix_corsamp.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_matrix.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lib.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/ortho_orbitals.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/orbitals.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_gauss.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/readps_tm.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante_psit.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pot.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f90
@@ -241,6 +238,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/bxmatrices.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonlpsi.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/force_analytic.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/force_analy_reduce.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonlpsi.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/psi.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/rotqua.f90
@@ -250,9 +248,13 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/store_diag_hs.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/random.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid_orbitals.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/find_image.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/ewald.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/distances.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/parser.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow1.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow1e.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4e.f90

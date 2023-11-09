@@ -1610,8 +1610,8 @@ contains
 !         if (ntmp /= 0) call dcopy(ntmp,ci_o(1+i0,istate),1,sr_o(nparmj+1,l,istate),1)
           if (ntmp /= 0) then
             if(maxcsf(istate).gt.1) call dcopy(maxcsf(istate)-1,ci_o(1,istate),1,sr_o(nparmj+1,l,istate),1)
-            if(maxcsf(istate).lt.nciterm)
-     &      call dcopy(nciterm-maxcsf(istate),ci_o(maxcsf(istate)+1,istate),1,sr_o(nparmj+maxcsf(istate),l,istate),1)
+            if(maxcsf(istate).lt.nciterm) &
+            call dcopy(nciterm-maxcsf(istate),ci_o(maxcsf(istate)+1,istate),1,sr_o(nparmj+maxcsf(istate),l,istate),1)
           endif
           ijasci=nparmj+ntmp
           if((ijasci+norbterm)*nstates.gt.mparm) call fatal_error('SR_STORE: iparm gt mparm')

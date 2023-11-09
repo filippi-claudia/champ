@@ -94,14 +94,10 @@ contains
         wgcm21(ifr)=wg21collect(ifr)
       enddo
 
-      call mpi_reduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,0,
-     &MPI_COMM_WORLD,ierr)
-      call mpi_reduce(trymove,trymove_collect,1,mpi_double_precision,mpi_sum,0,
-     &MPI_COMM_WORLD,ierr)
-      call mpi_reduce(acc,acc_collect,1,mpi_double_precision,mpi_sum,0,
-     &MPI_COMM_WORLD,ierr)
-      call mpi_reduce(nacc,nacc_collect,1,mpi_integer,mpi_sum,0,
-     &MPI_COMM_WORLD,ierr)
+      call mpi_reduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(trymove,trymove_collect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(acc,acc_collect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(nacc,nacc_collect,1,mpi_integer,mpi_sum,0,MPI_COMM_WORLD,ierr)
       nodecr=nodecr_collect
       trymove=trymove_collect
       acc=acc_collect

@@ -1,11 +1,6 @@
-<<<<<<< HEAD:src/vmc/pw_find_image.f90
-module pw_find_image
-contains
-=======
-c Modified by Edgar Josue Landinez Borda
+! Modified by Edgar Josue Landinez Borda
       module find_pimage
       contains
->>>>>>> main:src/vmc/find_image.f
       subroutine check_lattice(rlatt,cutr,isim_cell)
 ! Written by Cyrus Umrigar
 ! Checks to see if the lattice vectors specified are the smallest
@@ -24,11 +19,11 @@ c Modified by Edgar Josue Landinez Borda
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
       use error, only: fatal_error
-      
+
       implicit none
 
       integer :: i, i1, i2, i3, imax
-      integer :: imin, isim_cell, k   
+      integer :: imin, isim_cell, k
       real(dp) :: cutr, rlen, rlenmax, rlenmin
       real(dp), dimension(3,3) :: rlatt
       real(dp), parameter :: eps = 1.d-12
@@ -187,17 +182,10 @@ c Modified by Edgar Josue Landinez Borda
 !-----------------------------------------------------------------------
 
       subroutine find_image(r,rlatt,rlatt_inv)
-<<<<<<< HEAD:src/vmc/pw_find_image.f90
 ! Written by Cyrus Umrigar
 ! For any vector (from one particle to another) it finds the
 ! image that is closest.
-      use contrl_file, only: ounit
-=======
-c Written by Cyrus Umrigar
-c For any vector (from one particle to another) it finds the
-c image that is closest.
       use contrl_file,    only: ounit
->>>>>>> main:src/vmc/find_image.f
       use precision_kinds, only: dp
       implicit none
 
@@ -347,24 +335,15 @@ c image that is closest.
 
       return
       end
-<<<<<<< HEAD:src/vmc/pw_find_image.f90
+
 !-----------------------------------------------------------------------
 
-      subroutine find_image3(r,rnorm)
-! Written by Cyrus Umrigar
-! For any vector r (from one particle to another) it replaces the vector
-! by its closest image and finds its norm
-=======
-
-c-----------------------------------------------------------------------
-
       subroutine find_image_pbc(r,rnorm)
-c Written by Edgar Landinez
-c Simple algorithm for PBC minimum image convention
-c to get the minimum distnace between two particles and it's norm 
->>>>>>> main:src/vmc/find_image.f
+! Written by Edgar Landinez
+! Simple algorithm for PBC minimum image convention
+! to get the minimum distnace between two particles and it's norm
 
-      
+
       use periodic, only: rlatt, rlatt_inv
       use precision_kinds, only: dp
       implicit none
@@ -374,7 +353,68 @@ c to get the minimum distnace between two particles and it's norm
       real(dp), dimension(3) :: s
       real(dp), dimension(3) :: r
 
-<<<<<<< HEAD:src/vmc/pw_find_image.f90
+!     minimum image in relative coordiantes space (a cube of length 1)
+!     rlatt or rlatt is assumend to be rlatt=(a,b,c)
+!     (a,b,c) the box vectors (the input should be always consistent with this )
+
+      do k=1,3
+        s(k)=0.d0
+        do i=1,3
+          s(k)=s(k)+rlatt_inv(k,i)*r(i)
+        enddo
+        s(k)=s(k)-nint(s(k))
+      enddo
+
+! resotring coordinates in real space
+      do k=1,3
+        r(k)=0.d0
+        do i=1,3
+          r(k)=r(k)+rlatt(k,i)*s(i)
+       enddo
+      enddo
+
+! compute norm of the distance
+      rnorm=0.d0
+      do k=1,3
+         rnorm=rnorm+(r(k)*r(k))
+      enddo
+      rnorm=dsqrt(rnorm)
+
+
+      return
+      end
+!-----------------------------------------------------------------------
+
+      subroutine find_image3(r,rnorm)
+! Written by Cyrus Umrigar
+! For any vector r (from one particle to another) it replaces the vector
+! by its closest image and finds its norm
+
+      use periodic, only: rlatt, rlatt_inv
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, i1, i2, i3, k
+      integer, dimension(3) :: i_sav
+      integer, dimension(3) :: isign
+      real(dp) :: r2, r_try2, rnorm
+      real(dp), dimension(3) :: r
+      real(dp), dimension(3) :: r_basis
+      real(dp), dimension(3) :: r1_try
+      real(dp), dimension(3) :: r2_try
+      real(dp), dimension(3) :: r3_try
+      real(dp), dimension(3) :: rsav
+
+
+
+! COMMENTED!
+!     rlatt=0.0d0
+
+!      print*, 'rlatt',rlatt
+!      print*, 'rlatt_inv', rlatt_inv
+!       if(.true.)stop
+
+
 ! Warning: tempor
       do k=1,3
         rsav(k)=r(k)
@@ -385,41 +425,27 @@ c to get the minimum distnace between two particles and it's norm
 ! b) sign along each of lattice directions of vector reduced to central cell
       do k=1,3
         r_basis(k)=0
-=======
-c     minimum image in relative coordiantes space (a cube of length 1)
-c     rlatt or rlatt is assumend to be rlatt=(a,b,c)
-c     (a,b,c) the box vectors (the input should be always consistent with this ) 
-      
-      do k=1,3
-        s(k)=0.d0
->>>>>>> main:src/vmc/find_image.f
         do i=1,3
-          s(k)=s(k)+rlatt_inv(k,i)*r(i)
+          r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
         enddo
-        s(k)=s(k)-nint(s(k))
+        r_basis(k)=r_basis(k)-nint(r_basis(k))
+        isign(k)=nint(sign(1.d0,r_basis(k)))
       enddo
 
-<<<<<<< HEAD:src/vmc/pw_find_image.f90
 ! Convert back to cartesian coodinates and find squared length
       r2=0
-=======
-c resotring coordinates in real space       
->>>>>>> main:src/vmc/find_image.f
       do k=1,3
-        r(k)=0.d0
+        r(k)=0
         do i=1,3
-          r(k)=r(k)+rlatt(k,i)*s(i)
-       enddo
+          r(k)=r(k)+rlatt(k,i)*r_basis(i)
+        enddo
+        r2=r2+r(k)**2
       enddo
 
-c compute norm of the distance       
-      rnorm=0.d0
       do k=1,3
-         rnorm=rnorm+(r(k)*r(k))
+        i_sav(k)=0
       enddo
-      rnorm=dsqrt(rnorm)
 
-<<<<<<< HEAD:src/vmc/pw_find_image.f90
 ! Check just 8, rather than 27, trapezoids (not needed for orthorhombic lattice)
       do i1=0,isign(1),isign(1)
 !     do 60 i1=-1,1,1
@@ -460,138 +486,8 @@ c compute norm of the distance
 
 !     if(rnorm.gt.5.d0) write(ounit,'(''long'',6i2,10f8.4)')
 !    &(isign(k),k=1,3),(i_sav(k),k=1,3),rnorm,(r(k),k=1,3),(rsav(k),k=1,3),(r_basis(k),k=1,3)
-=======
->>>>>>> main:src/vmc/find_image.f
 
       return
       end
 !-----------------------------------------------------------------------
-
-<<<<<<< HEAD:src/vmc/pw_find_image.f90
-      subroutine find_image4(rshift,r,rnorm)
-! Written by Cyrus Umrigar
-! For any vector r (from one particle to another) it replaces the vector
-! by its closest image and finds its norm and the shift needed.
-=======
-      subroutine find_image3(r,rnorm)
-c Written by Cyrus Umrigar
-c For any vector r (from one particle to another) it replaces the vector
-c by its closest image and finds its norm
->>>>>>> main:src/vmc/find_image.f
-
-      use periodic, only: rlatt, rlatt_inv
-      use precision_kinds, only: dp
-      implicit none
-
-      integer :: i, i1, i2, i3, k
-      integer, dimension(3) :: i_sav
-      integer, dimension(3) :: isign
-      real(dp) :: r2, r_try2, rnorm
-      real(dp), dimension(3) :: r
-      real(dp), dimension(3) :: r_basis
-      real(dp), dimension(3) :: r1_try
-      real(dp), dimension(3) :: r2_try
-      real(dp), dimension(3) :: r3_try
-      real(dp), dimension(3) :: rsav
-
-
-
-c COMMENTED!
-c     rlatt=0.0d0
-
-c      print*, 'rlatt',rlatt
-c      print*, 'rlatt_inv', rlatt_inv
-c       if(.true.)stop
-      
-
-c Warning: tempor
-      do k=1,3
-        rsav(k)=r(k)
-      enddo
-
-<<<<<<< HEAD:src/vmc/pw_find_image.f90
-! a) reduce vector to central cell by expressing vector in lattice coordinates and
-!    removing nint of it in each direction
-! b) sign along each of lattice directions of vector reduced to central cell
-! Note: rhift is just a work array here; calculated for real only at end.
-=======
-c a) reduce vector to central cell by expressing vector in lattice coordinates and
-c    removing nint of it in each direction
-c b) sign along each of lattice directions of vector reduced to central cell
->>>>>>> main:src/vmc/find_image.f
-      do k=1,3
-        r_basis(k)=0
-        do i=1,3
-          r_basis(k)=r_basis(k)+rlatt_inv(k,i)*r(i)
-        enddo
-        r_basis(k)=r_basis(k)-nint(r_basis(k))
-        isign(k)=nint(sign(1.d0,r_basis(k)))
-      enddo
-
-! Convert back to cartesian coodinates and find squared length
-      r2=0
-      do k=1,3
-        r(k)=0
-        do i=1,3
-          r(k)=r(k)+rlatt(k,i)*r_basis(i)
-        enddo
-        r2=r2+r(k)**2
-      enddo
-
-      do k=1,3
-        i_sav(k)=0
-      enddo
-
-! Check just 8, rather than 27, trapezoids (not needed for orthorhombic lattice)
-      do i1=0,isign(1),isign(1)
-c     do 60 i1=-1,1,1
-        do k=1,3
-          r1_try(k)=r(k)-i1*rlatt(k,1)
-        enddo
-        do i2=0,isign(2),isign(2)
-c       do 60 i2=-1,1,1
-          do k=1,3
-            r2_try(k)=r1_try(k)-i2*rlatt(k,2)
-          enddo
-          do i3=0,isign(3),isign(3)
-c         do 60 i3=-1,1,1
-            r_try2=0
-            do k=1,3
-              r3_try(k)=r2_try(k)-i3*rlatt(k,3)
-              r_try2=r_try2+r3_try(k)**2
-            enddo
-          if(r_try2.lt.r2) then
-            i_sav(1)=i1
-            i_sav(2)=i2
-            i_sav(3)=i3
-            r2=r_try2
-          endif
-          enddo
-        enddo
-      enddo
-
-<<<<<<< HEAD:src/vmc/pw_find_image.f90
-! Replace r by its shortest image and calculate rshift
-=======
-c Replace r by its shortest image
->>>>>>> main:src/vmc/find_image.f
-      rnorm=0
-      do k=1,3
-        do i=1,3
-          r(k)=r(k)-rlatt(k,i)*i_sav(i)
-        enddo
-        rnorm=rnorm+r(k)**2
-      enddo
-      rnorm=sqrt(rnorm)
-
-c     if(rnorm.gt.5.d0) write(ounit,'(''long'',6i2,10f8.4)')
-c    &(isign(k),k=1,3),(i_sav(k),k=1,3),rnorm,(r(k),k=1,3),(rsav(k),k=1,3),(r_basis(k),k=1,3)
-
-      return
-      end
-<<<<<<< HEAD:src/vmc/pw_find_image.f90
-end module
-=======
-c-----------------------------------------------------------------------
       end module
->>>>>>> main:src/vmc/find_image.f

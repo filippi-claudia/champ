@@ -62,17 +62,12 @@ contains
 
       npass=iblk*dmc_nstep
 
-      call mpi_reduce(pesum_dmc,pecollect,MFORCE
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tpbsum_dmc,tpbcollect,MFORCE
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tausum,taucollect,MFORCE
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(pesum_dmc,pecollect,MFORCE,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(tpbsum_dmc,tpbcollect,MFORCE,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(tausum,taucollect,MFORCE,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-      call mpi_allreduce(ioldest,ioldest_collect,1 &
-      ,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(ioldestmx,ioldestmx_collect,1 &
-      ,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(ioldest,ioldest_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(ioldestmx,ioldestmx_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
 
       ioldest=ioldest_collect
       ioldestmx=ioldestmx_collect
@@ -157,8 +152,8 @@ contains
 
         if (iblk.eq.1.and.ifr.eq.1) &
         write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32&
-        &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66&
-        &,''fgave'',t74,''(fgerr)'',t85,''npass'',t95,''wgsum'',t101,''ioldest'')')
+         ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66&
+         ,''fgave'',t74,''(fgerr)'',t85,''npass'',t95,''wgsum'',t101,''ioldest'')')
 
 ! write out current values of averages etc.
 

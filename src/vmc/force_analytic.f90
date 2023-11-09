@@ -319,7 +319,7 @@ contains
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine force_analy_vd(ecutn, ecuto, e_cutoff, iw, iwmod)
 
@@ -358,14 +358,14 @@ c-----------------------------------------------------------------------
         do ic=1,ncent
           do k=1,3
             if (ipathak.gt.0) then
-              esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
-     &+deriv_eold(k,ic,iw)*pold(iw,iph)-ehist(k,ic,iw,iwmod,iph)
+              esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)*pnew(iph) &
+      +deriv_eold(k,ic,iw)*pold(iw,iph)-ehist(k,ic,iw,iwmod,iph)
               ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)*pold(iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
 
               da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
             else
-              esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)
-     &+deriv_eold(k,ic,iw)-ehist(k,ic,iw,iwmod,iph)
+              esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic) &
+      +deriv_eold(k,ic,iw)-ehist(k,ic,iw,iwmod,iph)
 
               ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)+deriv_energy_new(k,ic)
 

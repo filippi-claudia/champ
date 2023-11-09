@@ -275,8 +275,8 @@ contains
 
 
 !     computing aos zero image
-         rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
-     &        ao_qmckl, nbasis*5_8*nelec)
+         rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx, &
+              ao_qmckl, nbasis*5_8*nelec)
          if (rc /= QMCKL_SUCCESS) then
             print *, 'Error getting AOs from QMCkl zero image'
          endif
@@ -307,8 +307,8 @@ contains
 
                ao_vgl_qmckl=0.d0
 !     computing aos for the given image
-               rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
-     &              ao_vgl_qmckl, nbasis*5_8*nelec)
+               rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx, &
+                    ao_vgl_qmckl, nbasis*5_8*nelec)
                if (rc /= QMCKL_SUCCESS) then
                   print *, 'Error getting AOs from QMCkl zero image'
                endif
@@ -793,7 +793,7 @@ contains
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
 
-      #ifdef QMCKL_FOUND
+#ifdef QMCKL_FOUND
       real(dp), allocatable :: mo_vgl_qmckl(:,:)
       integer :: rc
       integer*8 :: n8, na8, i_image, ivgl, i_basis
@@ -954,8 +954,8 @@ contains
 
 
 !computing aos zero image
-            rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
-     &           ao_qmckl, nbasis*5_8)
+            rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx, &
+                 ao_qmckl, nbasis*5_8)
             if (rc /= QMCKL_SUCCESS) then
                print *, 'Error getting AOs from QMCkl zero image'
             endif
@@ -986,8 +986,8 @@ contains
                end if
 
 
-               rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx,
-     &              ao_vgl_qmckl, nbasis*n_images*5_8)
+               rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx, &
+                    ao_vgl_qmckl, nbasis*n_images*5_8)
                if (rc /= QMCKL_SUCCESS) then
                   print *, 'Error getting AOs from QMCkl'
                endif
