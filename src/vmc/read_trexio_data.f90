@@ -9,6 +9,8 @@ module trexio_read_data
     logical :: trexio_has_group_basis         = .false.
     logical :: trexio_has_group_determinant   = .false.
     logical :: trexio_has_group_ecp           = .false.
+  
+    character(:), allocatable  :: file_trexio_new, file_trexio_path
 
     private
     public :: dp
@@ -19,6 +21,9 @@ module trexio_read_data
     public :: trexio_has_group_basis
     public :: trexio_has_group_determinant
     public :: trexio_has_group_ecp
+    public :: file_trexio_new
+    public :: file_trexio_path
+
 
 #if defined(TREXIO_FOUND)
     public :: read_trexio_molecule_file
@@ -528,7 +533,7 @@ module trexio_read_data
     end subroutine write_trexio_basis_num_info_file
 
 
-    subroutine update_trexio_orbitals(file_trexio, coefficients)
+    subroutine update_trexio_orbitals(coefficients)
         !> This subroutine updates the .hdf5 trexio generated file/folder. It then reads the
         !! number of molecular and atomic orbitals and their corresponding coefficients.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
@@ -551,7 +556,6 @@ module trexio_read_data
         implicit none
 
     !   local use
-        character(len=72), intent(in)   :: file_trexio
         double precision, intent(in)    :: coefficients(nbasis, norb_tot, 3)
         character(len=120)              :: file_trexio_path
         integer                         :: iunit, iwft
@@ -568,10 +572,10 @@ module trexio_read_data
         trex_orbitals_file = 0
         !   External file reading
 
-        if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
-            file_trexio_path = pooldir // file_trexio(7:)
+        if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
+            file_trexio_path = pooldir // file_trexio_new(7:)
         else
-            file_trexio_path = file_trexio
+            file_trexio_path = file_trexio_new
         endif
 
         write(ounit,*) '---------------------------------------------------------------------------'

@@ -174,6 +174,7 @@ subroutine parser
       use trexio_read_data, only: read_trexio_orbitals_file
       use trexio_read_data, only: read_trexio_symmetry_file
       use trexio_read_data, only: write_trexio_basis_num_info_file
+      use trexio_read_data, only: file_trexio_path, file_trexio_new
       use verify_orbitals_mod, only: verify_orbitals
       use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
@@ -260,7 +261,6 @@ subroutine parser
   character(:), allocatable  :: file_multideterminants
   character(:), allocatable  :: file_forces
   character(:), allocatable  :: file_trexio
-  character(:), allocatable  :: file_trexio_path
   character(:), allocatable  :: trex_backend
   character(:), allocatable  :: file_lattice
 
@@ -577,7 +577,7 @@ subroutine parser
 
 
   ! Filenames parsing
-  file_trexio          = fdf_load_filename('trexio',   'default.hdf5')
+  file_trexio            = fdf_load_filename('trexio',   'default.hdf5')
   file_basis             = fdf_load_filename('basis',   'default.bas')
   file_molecule          = fdf_load_filename('molecule',   'default.xyz')
   file_determinants      = fdf_load_filename('determinants',  'default.det')
@@ -876,6 +876,7 @@ subroutine parser
 #if defined(TREXIO_FOUND)
     call read_trexio_orbitals_file(file_trexio, .false.)
 #endif
+
   elseif ( fdf_block('orbitals', bfdf)) then
   ! call fdf_read_orbitals_block(bfdf)
     write(errunit,'(a)') "Error:: No information about orbitals provided."
@@ -1990,89 +1991,73 @@ subroutine parser
 
 #ifdef QMCKL_FOUND
   if (use_qmckl) then
+
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
      !!create qmckl context
      qmckl_ctx = qmckl_context_create()
 
-     iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
-     if (iostat /= QMCKL_SUCCESS) then
-        write(ounit,*) 'Error: Unable to read TREXIO file '//trim(file_trexio)
-        call abort()
-     end if
+     if(ioptorb.gt.0) then
+       file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
+       if (trexio_inquire(file_trexio_new) .eq. TREXIO_SUCCESS) then
+         write(ounit,'(a)') "Removing existing " // file_trexio_new // " file"
+         call system('rm ' // file_trexio_new)
+       endif
+       rc = trexio_cp(file_trexio, file_trexio_new)
+       if (rc .ne. TREXIO_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to copy trexio file')
+       
+       iostat = qmckl_trexio_read(qmckl_ctx, file_trexio_new, 1_8*len(trim(file_trexio_new)))
+      else
+       iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
+     endif
 
+     if (iostat /= QMCKL_SUCCESS) then
+       call fatal_error('INPUT: QMCkl error: Unable to read TREXIO file')
+     end if
 
      !! to check change in mo's number to be computed by qmckl inside champ
      norb_qmckl=norb+nadorb
 
-
-     write(ounit,*) "inside parser after reading trexio file"
-     write(ounit,*) "norb_tot",norb_tot
-     write(ounit,*) "norb",norb
-     write(ounit,*) "nadorb",nadorb
-     write(ounit,*) "norb_qmckl", norb_qmckl
+     write(ounit,'(a)') "Inside parser after reading trexio file"
+     write(ounit,int_format) "QMCkl norb_qmckl=norb+nadorb", norb_qmckl
 
      !!get mo's number should correspond to norb_tot
      rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
      if (rc /= QMCKL_SUCCESS) then
-        write(ounit,*) '00 Error getting mo_num from verify orbitals'
-        stop
+        call fatal_error('INPUT: QMCkl getting mo_num from verify orbitals')
      end if
 
-
-     write(ounit,*) "n8", n8
+     write(ounit,int_format) "QMCkl number mo found", n8
 
      if (n8 > norb_qmckl) then
 
-
-        write(ounit,*) "inside if mo's to compute change in parser"
-        write(ounit,*) "norb_qmckl",norb_qmckl
-        write(ounit,*) "n8 mo's before selection", n8
         !! allocate orbital selection array for qmckl
         allocate(keep(n8))
-
 
         !! selecting range of orbitals to compute qith QMCkl
         keep(1:norb_qmckl) = 1
         keep((norb_qmckl+1):n8) = 0
 
-
         rc = qmckl_mo_basis_select_mo(qmckl_ctx, keep, n8)
-        if (rc /= QMCKL_SUCCESS) then
-           write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
-           stop
-        end if
+        if (rc /= QMCKL_SUCCESS) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
 
         !!deallocate keep
         deallocate(keep)
 
         !!getting new number of orbitals to be computed
         rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
-        if (rc /= QMCKL_SUCCESS) then
-           write(ounit,*), 'Error 02  mo_num from verify orbitals'
-           stop
-        end if
-        write(ounit,*) "n8 after mo's selec", n8
-        write(ounit,*) "norb_qmckl after mo's selec", norb_qmckl
-
+        if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl mo_num from verify orbitals')
+        write(ounit,int_format) "QMCkl number of orbitals after mo's selec", n8
+        write(ounit,int_format) "QMCkl norb_qmckl after mo's selec", norb_qmckl
 
         !! checking if the current number of orbitals in qmckl is consistent
 
-        if (n8 /= norb_qmckl) then
-           write(ounit,*) 'Bug in MO selection in QMCkl verify orb'
-           stop
-        end if
+        if (n8 /= norb_qmckl) call fatal_error('INPUT: Problem in MO selection in QMCkl verify orb')
 
      endif
-
   endif
 #endif
 
-
-
-
   !----------------------------------------------------------------------------END
-
-
   contains
 
   !! Here all the subroutines that handle the block data are written

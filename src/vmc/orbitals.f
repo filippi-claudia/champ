@@ -88,12 +88,6 @@ c     real(dp), dimension(nelec,nbasis) :: d2bhin
       if (.not. allocated(auxdorb)) allocate (auxdorb(norb+nadorb,3))
       if (.not. allocated(auxddorb)) allocate (auxddorb(norb+nadorb))
 
-
-      
-
-
-
-      
       ier=1
 
 c     spline interpolation
@@ -175,7 +169,6 @@ c     get basis functions for all electrons
          if(iforce_analy.eq.1) ider=3
 
 #ifdef QMCKL_FOUND
-
 
          if(iperiodic.eq.0) then 
          
