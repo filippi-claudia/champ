@@ -553,6 +553,10 @@ module trexio_read_data
         use contrl_file,        only: backend
         use slater,             only: norb
 
+#if defined(QMCKL_FOUND)
+        use qmckl_data
+#endif
+
         implicit none
 
     !   local use
@@ -566,10 +570,11 @@ module trexio_read_data
 
     ! trexio
         integer(8)                      :: trex_orbitals_file
-        integer                         :: rc = 1
+        integer                         :: rc = 1, iostat
 
         iwft = 1
         trex_orbitals_file = 0
+
         !   External file reading
 
         if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
@@ -599,6 +604,17 @@ module trexio_read_data
             rc = trexio_close(trex_orbitals_file)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
         endif
+
+	! Destroy the existing QMCkl context first
+	rc = qmckl_context_destroy(qmckl_ctx)
+
+	! Create a new QMCkl context with the new trexio file
+	qmckl_ctx = qmckl_context_create()
+        iostat = qmckl_trexio_read(qmckl_ctx, file_trexio_new, 1_8*len(trim(file_trexio_new)))
+   
+        if (iostat /= QMCKL_SUCCESS) then
+          call fatal_error('INPUT: QMCkl error: Unable to read TREXIO file')
+        end if
 
         write(ounit,*) "----------------------------------------------------------"
 
