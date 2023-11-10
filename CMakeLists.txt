@@ -133,24 +133,25 @@ if (QMCKL_FOUND)
 endif(QMCKL_FOUND)
 
 
-find_package(CUDA OPTIONAL_COMPONENTS CUDA QUIET)
+find_package(CUDA)
+find_package(CUDAToolkit)
 
-if (CUDA_FOUND)
-  message(" ")
-  message(STATUS "Is CUDA found                   :: " ${CUDA_FOUND})
-  message(STATUS "CUDA version                    :: " ${CUDA_VERSION})
-  message(STATUS "CUDA toolkit directory          :: " ${CUDA_TOOLKIT_ROOT_DIR})
-  # Printing individual libraries in the list
-  message(STATUS "CUDA LIBRARIES          : ")
-  foreach(lib ${CUDA_LIBRARIES})
-    message("                                    :: " ${lib})
-  endforeach(lib)
-  foreach(lib ${CUDA_CUBLAS_LIBRARIES})
-    message("                                    :: " ${lib})
-  endforeach(lib)
-  message(" ")
-endif()
-
+#if (CUDA_FOUND)
+#  message(" ")
+#  message(STATUS "Is CUDA found                   :: " ${CUDA_FOUND})
+#  message(STATUS "CUDA version                    :: " ${CUDA_VERSION})
+#  message(STATUS "CUDA toolkit directory          :: " ${CUDA_TOOLKIT_ROOT_DIR})
+#  # Printing individual libraries in the list
+#  message(STATUS "CUDA LIBRARIES          : ")
+#  foreach(lib ${CUDA_LIBRARIES})
+#    message("                                    :: " ${lib})
+#  endforeach(lib)
+#  foreach(lib ${CUDA_CUBLAS_LIBRARIES})
+#    message("                                    :: " ${lib})
+#  endforeach(lib)
+#  message(" ")
+#endif()
+#
 
 #  documentation requirements
 if (BUILD_DOC)
@@ -160,15 +161,7 @@ endif(BUILD_DOC)
 
 # Find MPI
 if (ENABLE_MPI)
-	find_package(MPI REQUIRED COMPONENTS Fortran)
-
-  if (MPI_FOUND)
-    message(" ")
-    message(STATUS "Is MPI  found                   :: " ${MPI_FOUND})
-    message(STATUS "MPI  Fortran Compiler           :: " ${MPI_Fortran_COMPILER})
-    message(STATUS "MPI  Fortran Compiler version   :: " ${MPI_Fortran_VERSION})
-    message(" ")
-  endif()
+   find_package(MPI REQUIRED COMPONENTS Fortran)
 endif(ENABLE_MPI)
 
 # SIMD instructions
