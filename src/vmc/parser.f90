@@ -287,7 +287,7 @@ subroutine parser
 
 #if defined(QMCKL_FOUND)
   integer, allocatable :: keep(:)
-  integer :: rc
+  integer(qmckl_exit_code) :: rc
   integer*8 :: n8
   character*(1024) :: err_message = ''
   integer*8 :: norb_qmckl
@@ -1993,25 +1993,37 @@ subroutine parser
   if (use_qmckl) then
 
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
-     !!create qmckl context
-     qmckl_ctx = qmckl_context_create()
 
-     if(ioptorb.gt.0) then
+     ! Create a new QMCkl context
+       !if (wid) then
+          qmckl_ctx = qmckl_context_create()
+          write(ounit, *) " QMCkl initial context created  " , qmckl_ctx , " successfully "
+      !endif
+      !call bcast(qmckl_ctx)
+
+      if(ioptorb.gt.0) then
        file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
-       if (trexio_inquire(file_trexio_new) .eq. TREXIO_SUCCESS) then
-         write(ounit,'(a)') "Removing existing " // file_trexio_new // " file"
-         call system('rm ' // file_trexio_new)
+       if(wid) then
+         if (trexio_inquire(file_trexio_new) .eq. TREXIO_SUCCESS) then
+           write(ounit,'(a)') "Removing existing " // file_trexio_new // " file"
+           call system('rm -v ' // file_trexio_new)
+         endif
+
+         rc = trexio_cp(file_trexio, file_trexio_new)
+         if (rc .ne. TREXIO_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to copy trexio file')
        endif
-       rc = trexio_cp(file_trexio, file_trexio_new)
-       if (rc .ne. TREXIO_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to copy trexio file')
-       
+       call bcast(file_trexio_new)
+
        iostat = qmckl_trexio_read(qmckl_ctx, file_trexio_new, 1_8*len(trim(file_trexio_new)))
+       write(ounit, *) "Status QMCKl trexio read file_trexio_new", iostat
       else
        iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
-     endif
+       write(ounit, *) "Status QMCKl trexio read file_trexio ", iostat
+      endif
+
 
      if (iostat /= QMCKL_SUCCESS) then
-       call fatal_error('INPUT: QMCkl error: Unable to read TREXIO file')
+       call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
      end if
 
      !! to check change in mo's number to be computed by qmckl inside champ

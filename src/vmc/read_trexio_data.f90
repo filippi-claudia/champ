@@ -539,6 +539,7 @@ module trexio_read_data
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
         !! @date 08 November 2023
         use mpiconf,            only: wid
+        use custom_broadcast,   only: bcast
         use contrl_file,        only: ounit, errunit
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
@@ -588,33 +589,31 @@ module trexio_read_data
         write(ounit,*) '---------------------------------------------------------------------------'
 
         ! Check if the file exists
-        if (wid) then
             trex_orbitals_file = trexio_open(file_trexio_path, 'u', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
-        endif
+            write(ounit, '(a)') "File opened successfully "
 
         ! Update the orbitals
-        if (wid) then
             rc = trexio_write_mo_coefficient(trex_orbitals_file, coefficients(:,:,1))
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_write_mo_coeffs', __FILE__, __LINE__)
-        endif
+            write(ounit, '(a)') " MO coeffs updated successfully "
 
         ! Close the file
-        if (wid) then
             rc = trexio_close(trex_orbitals_file)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
-        endif
+            write(ounit, '(a)') "File " // trim(file_trexio_path) // " closed successfully "
 
-	! Destroy the existing QMCkl context first
-	rc = qmckl_context_destroy(qmckl_ctx)
+        ! Destroy the existing QMCkl context first
+            rc = qmckl_context_destroy(qmckl_ctx)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
+            write(ounit, '(a,i4,a)') " QMCkl old context destroyed successfully "
 
-	! Create a new QMCkl context with the new trexio file
-	qmckl_ctx = qmckl_context_create()
-        iostat = qmckl_trexio_read(qmckl_ctx, file_trexio_new, 1_8*len(trim(file_trexio_new)))
+        ! Create a new QMCkl context with the new trexio file
+            qmckl_ctx = qmckl_context_create()
+            rc = qmckl_trexio_read(qmckl_ctx, file_trexio_new, 1_8*len(trim(file_trexio_new)))
+            call trexio_error(rc, TREXIO_SUCCESS, 'INPUT: QMCkl error: Unable to read TREXIO file', __FILE__, __LINE__)
+            write(ounit, '(a,i4,a)') " QMCkl new context created  successfully "
    
-        if (iostat /= QMCKL_SUCCESS) then
-          call fatal_error('INPUT: QMCkl error: Unable to read TREXIO file')
-        end if
 
         write(ounit,*) "----------------------------------------------------------"
 
