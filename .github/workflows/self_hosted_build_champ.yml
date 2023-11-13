@@ -5,10 +5,6 @@ on:
     branches:
       - 'releases/**'
       - main
-      - feature/debug-ci
-      - optimization
-      - champ-ortho-merge
-      - champ-periodic-dev
     # Sequence of patterns matched against refs/tags
     tags:
       - v2.*.*
@@ -16,11 +12,6 @@ on:
     branches:
       - 'releases/**'
       - main
-      - champ-ortho-merge
-      - cartesian_d_qmckl
-      - optimization
-      - feature/debug-ci
-      - champ-periodic-dev
 
 jobs:
   build_champ:
