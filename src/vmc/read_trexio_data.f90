@@ -9,7 +9,7 @@ module trexio_read_data
     logical :: trexio_has_group_basis         = .false.
     logical :: trexio_has_group_determinant   = .false.
     logical :: trexio_has_group_ecp           = .false.
-  
+
     character(:), allocatable  :: file_trexio_new, file_trexio_path
 
     private
@@ -577,7 +577,7 @@ module trexio_read_data
         trex_orbitals_file = 0
 
         !   External file reading
-
+#if defined(QMCKL_FOUND)
         if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
             file_trexio_path = pooldir // file_trexio_new(7:)
         else
@@ -604,16 +604,17 @@ module trexio_read_data
             write(ounit, '(a)') "File " // trim(file_trexio_path) // " closed successfully "
 
         ! Destroy the existing QMCkl context first
+            write(ounit, *) " QMCkl destroying the old context " , qmckl_ctx , " successfully "
             rc = qmckl_context_destroy(qmckl_ctx)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
-            write(ounit, '(a,i4,a)') " QMCkl old context destroyed successfully "
+            write(ounit, '(a)') " QMCkl old context destroyed successfully "
 
         ! Create a new QMCkl context with the new trexio file
             qmckl_ctx = qmckl_context_create()
             rc = qmckl_trexio_read(qmckl_ctx, file_trexio_new, 1_8*len(trim(file_trexio_new)))
             call trexio_error(rc, TREXIO_SUCCESS, 'INPUT: QMCkl error: Unable to read TREXIO file', __FILE__, __LINE__)
-            write(ounit, '(a,i4,a)') " QMCkl new context created  successfully "
-   
+            write(ounit, * ) " QMCkl new context created  ", qmckl_ctx,  " successfully "
+#endif
 
         write(ounit,*) "----------------------------------------------------------"
 
