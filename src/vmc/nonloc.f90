@@ -430,7 +430,7 @@ contains
       implicit none
 
       integer :: ic, iel, ider, ier, ii, iq
-      integer :: iorb = 0, k, m, m0, nxquad, iwforb
+      integer :: iorb, k, m, m0, nxquad, iwforb
       integer :: nadorb_sav
 
       real(dp), dimension(3,*) :: xquad
