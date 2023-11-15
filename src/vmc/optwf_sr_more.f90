@@ -40,7 +40,7 @@ contains
       integer, parameter :: m_parm_opt = 59000
       integer :: n, imax, imod, i, j
       real(8) b(*),x(*),eps
-      real(8), save :: r(m_parm_opt), d(m_parm_opt), q(m_parm_opt), s(m_parm_opt)
+      real(8) :: r(m_parm_opt), d(m_parm_opt), q(m_parm_opt), s(m_parm_opt)
       real(8) delta_0,delta_new,delta_old,alpha,beta
 
       if(n.gt.m_parm_opt) stop 'nparm > m_parm_opt'
@@ -136,7 +136,7 @@ contains
       use optwf_func, only: ifunc_omega,omega,omega_hes
       use precision_kinds, only: dp
       use contrl_file, only: ounit
-      use sr_mat_n, only: elocal, h_sr 
+      use sr_mat_n, only: elocal, h_sr
 
       implicit none
 

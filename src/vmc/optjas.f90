@@ -44,7 +44,7 @@ contains
       if(ioptjas.eq.0) return
 
       do iparm=1,nparmj
-        
+
         do ibjx=1,nbjx
           xj=bjxtoj(ibjx)
           deloc_dj_kref(ibjx)=dvpsp_dj(iparm,ibjx)
@@ -96,7 +96,7 @@ contains
 
             ddenergy_det=0.d0
             denergy_det=0.d0
-        
+
             do iab=1,2
 
 !             ddenergy_det(:,iab)=0
@@ -105,14 +105,14 @@ contains
                 iorb=irepcol_det(1,k,iab)
                 jorb=ireporb_det(1,k,iab)
                 ddenergy_det(k,iab)=wfmat(k,1,iab,o)*dtildem(iorb,jorb,iab)
-             
-              enddo          
+
+              enddo
 
 !             do k=1,ndetiab(iab)
               do k=ndetsingle(iab)+1,ndetiab(iab)
-                    
-                ndim=numrep_det(k,iab) 
-             
+
+                ndim=numrep_det(k,iab)
+
                 do irep=1,ndim
                    iorb=irepcol_det(irep,k,iab)
                    do jrep=1,ndim
@@ -120,9 +120,9 @@ contains
                       ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,jrep+(irep-1)*ndim,iab,o)*dtildem(iorb,jorb,iab)
                    enddo
                 enddo
-              enddo          
-           
-           
+              enddo
+
+
 !     Unrolling determinants different to kref
               do kk=1,ndetiab2(iab)
                 k=k_det2(kk,iab)
@@ -132,13 +132,13 @@ contains
 !             k_det2(1:ndetiab2(iab),iab)
 !             k_aux(1:ndetiab2(iab),iab)
 !             denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
-           
-           
+
+
             enddo
 !           iab loop
-        
+
 !           do k=1,ndet
-!             deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref             
+!             deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref
 !             do istate=1,nstates
 !               denergy(iparm,istate)=denergy(iparm,istate)+cdet(k,istate,1)*deloc_dj_k*detiab(k,1)*detiab(k,2)
 !             enddo
@@ -157,7 +157,7 @@ contains
             enddo
             denergy(iparm,istate)=cum_deloc_k_state
           enddo
-        
+
         endif
 ! endif ndet.gt.1
 
@@ -455,8 +455,8 @@ contains
       integer :: i, j, isb, istate, it
 
       if(ioptjas.eq.0) return
-        
-      do istate=1,nstates 
+
+      do istate=1,nstates
 
         do i=1,nparmj
           j=stoj(istate)
@@ -619,7 +619,7 @@ contains
 
       integer :: i, istate, j, n
       real(dp) :: botsum_j, eave
-      real(dp) :: passes, ratio = 0, topsum_j, x
+      real(dp) :: passes, ratio, topsum_j, x
       real(dp) :: x2
       real(dp), dimension(nparmj, nparmj) :: hess1
       real(dp), dimension(nparmj, nparmj) :: hess2

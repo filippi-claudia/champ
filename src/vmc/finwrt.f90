@@ -47,7 +47,7 @@ contains
       real(dp) :: passes, peerr, pefin, r2err
       real(dp) :: rtpass, sucsum
       real(dp) :: tcsq, term
-      real(dp) :: tpberr, tpbfin, trysum = 0, x
+      real(dp) :: tpberr, tpbfin, trysum, x
       real(dp) :: x2
       real(dp), dimension(MFORCE) :: ffin_grdnts
       real(dp), dimension(MFORCE) :: ferr_grdnts
