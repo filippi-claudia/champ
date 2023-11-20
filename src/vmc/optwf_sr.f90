@@ -224,14 +224,17 @@ contains
                 if( mode(1:3) == 'vmc' ) then
                    vmc_nblk = vmc_nblk*1.2
                    vmc_nblk = min(vmc_nblk, vmc_nblk_max)
-                   write (ounit, '(''nblk = '',i6)') vmc_nblk
                 else
                    dmc_nblk = dmc_nblk*1.2
                    dmc_nblk = min(dmc_nblk, vmc_nblk_max)
-                   write (ounit, '(''nblk = '',i6)') dmc_nblk
                 endif
-
-                   
+  
+            endif
+            
+            if( mode(1:3) == 'vmc' ) then
+              write (ounit, '(''nblk = '',i6)') vmc_nblk
+            else
+              write (ounit, '(''nblk = '',i6)') dmc_nblk
             endif
             
             write (ounit, '(''alfgeo = '',f10.4)') alfgeo

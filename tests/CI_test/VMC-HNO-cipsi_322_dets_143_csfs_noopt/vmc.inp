@@ -33,7 +33,7 @@ load symmetry        champ_v2_cas129_symmetry.sym
 
 %module blocking_vmc
     vmc_nstep     20
-    vmc_nblk      1000
+    vmc_nblk      4000
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule
