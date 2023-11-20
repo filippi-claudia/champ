@@ -194,7 +194,9 @@ contains
       use vmc_mod, only: nwftypeorb, otos, nstoo, extrao
       use precision_kinds, only: dp
       use slater,  only: coef,norb
-
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      use trexio_read_data, only: update_trexio_orbitals
+#endif
       implicit none
 
       integer :: i, index, iwf_fit, j, k
@@ -218,7 +220,13 @@ contains
         do i=1,norb+nadorb
           write(2,'(1000e20.8)') (coef(j,i,k)/scalecoef,j=1,nbasis)
         enddo
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      call update_trexio_orbitals(coef(:,:,k)/scalecoef)
+#endif
+
       enddo
+
 
       write(2,'(''end'')')
       close(2)

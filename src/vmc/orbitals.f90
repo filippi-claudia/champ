@@ -88,12 +88,6 @@ contains
       if (.not. allocated(auxdorb)) allocate (auxdorb(norb+nadorb,3))
       if (.not. allocated(auxddorb)) allocate (auxddorb(norb+nadorb))
 
-
-
-
-
-
-
       ier=1
 
 !     spline interpolation
@@ -175,7 +169,6 @@ contains
          if(iforce_analy.eq.1) ider=3
 
 #ifdef QMCKL_FOUND
-
 
          if(iperiodic.eq.0) then
 
