@@ -158,10 +158,11 @@ if (BUILD_DOC)
   find_package(DOXYGEN)
 endif(BUILD_DOC)
 
-
+list(APPEND CMAKE_PREFIX_PATH "/sw/arch/RHEL8/EB_production/2022/software/OpenMPI/4.1.4-NVHPC-22.7-CUDA-11.7.0/bin")
+list(APPEND CMAKE_PREFIX_PATH "/sw/arch/RHEL8/EB_production/2022/software/NVHPC/22.7-CUDA-11.7.0/Linux_x86_64/22.7/compilers/bin")
 # Find MPI
 if (ENABLE_MPI)
-   find_package(MPI REQUIRED COMPONENTS Fortran)
+  find_package(MPI)
 endif(ENABLE_MPI)
 
 # SIMD instructions
