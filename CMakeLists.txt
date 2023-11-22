@@ -51,6 +51,7 @@ option(ENABLE_QMMM "enable_qmmm" off)
 ## External packages
 option(ENABLE_TREXIO "enable_trexio" off)
 option(ENABLE_QMCKL  "enable_qmckl" off)
+option(ENABLE_GPU  "enable_gpu" off)
 
 # Include function to Load MKL
 message("")
@@ -133,33 +134,37 @@ if (QMCKL_FOUND)
 endif(QMCKL_FOUND)
 
 
-find_package(CUDA)
-find_package(CUDAToolkit)
+if (ENABLE_GPU)
+   find_package(CUDA)
+   find_package(CUDAToolkit)
+endif(ENABLE_GPU)
 
-#if (CUDA_FOUND)
-#  message(" ")
-#  message(STATUS "Is CUDA found                   :: " ${CUDA_FOUND})
-#  message(STATUS "CUDA version                    :: " ${CUDA_VERSION})
-#  message(STATUS "CUDA toolkit directory          :: " ${CUDA_TOOLKIT_ROOT_DIR})
-#  # Printing individual libraries in the list
-#  message(STATUS "CUDA LIBRARIES          : ")
-#  foreach(lib ${CUDA_LIBRARIES})
-#    message("                                    :: " ${lib})
-#  endforeach(lib)
-#  foreach(lib ${CUDA_CUBLAS_LIBRARIES})
-#    message("                                    :: " ${lib})
-#  endforeach(lib)
-#  message(" ")
-#endif()
-#
+if (CUDA_FOUND)
+  message(" ")
+  message(STATUS "Is CUDA found                   :: " ${CUDA_FOUND})
+  message(STATUS "CUDA version                    :: " ${CUDA_VERSION})
+  message(STATUS "CUDA toolkit directory          :: " ${CUDA_TOOLKIT_ROOT_DIR})
+# Printing individual libraries in the list
+  message(STATUS "CUDA LIBRARIES          : ")
+  foreach(lib ${CUDA_LIBRARIES})
+    message("                                    :: " ${lib})
+  endforeach(lib)
+  foreach(lib ${CUDA_CUBLAS_LIBRARIES})
+    message("                                    :: " ${lib})
+  endforeach(lib)
+  message(" ")
+endif()
 
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)
 endif(BUILD_DOC)
 
+if (ENABLE_GPU)
 list(APPEND CMAKE_PREFIX_PATH "/sw/arch/RHEL8/EB_production/2022/software/OpenMPI/4.1.4-NVHPC-22.7-CUDA-11.7.0/bin")
 list(APPEND CMAKE_PREFIX_PATH "/sw/arch/RHEL8/EB_production/2022/software/NVHPC/22.7-CUDA-11.7.0/Linux_x86_64/22.7/compilers/bin")
+endif(ENABLE_GPU)
+
 # Find MPI
 if (ENABLE_MPI)
   find_package(MPI)

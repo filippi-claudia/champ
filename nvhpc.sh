@@ -2,5 +2,5 @@ module load 2022
 module load CMake/3.23.1-GCCcore-11.3.0
 module load OpenMPI/4.1.4-NVHPC-22.7-CUDA-11.7.0
 
-cmake -H. -B build -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_C_COMPILER=mpicc -DCMAKE_VERBOSE_MAKEFILE=ON
+cmake -H. -B build -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_C_COMPILER=mpicc -DENABLE_GPU=ON
 cmake --build build -j 12
