@@ -6,14 +6,21 @@ module qmckl_data
 #ifdef QMCKL_FOUND
 
   use qmckl
-  integer(qmckl_context), public :: qmckl_ctx
-  logical, public :: use_qmckl = .True.
+  integer(qmckl_context) :: qmckl_ctx
+  logical                :: use_qmckl = .True.
+
+  public :: qmckl_ctx, use_qmckl
+  save
 
 #else
 
-  integer, public :: qmckl_ctx = 0
-  integer, public :: QMCKL_SUCCESS = 0
-  logical, public :: use_qmckl = .False.
+  integer :: qmckl_ctx = 0
+  integer :: QMCKL_SUCCESS = 0
+  logical :: use_qmckl = .False.
+
+  public :: qmckl_ctx, use_qmckl, QMCKL_SUCCESS
+  save
 
 #endif
 end module
+

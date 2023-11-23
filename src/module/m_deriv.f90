@@ -4,11 +4,11 @@ module da_energy_sumcum
 
     implicit none
 
-    real(dp), dimension(:, :), allocatable :: da_energy_cm2 !(3, MCENT)
-    real(dp), dimension(:, :), allocatable :: da_energy_cum !(3, MCENT)
-    real(dp), dimension(:, :), allocatable :: da_energy_sum !(3, MCENT)
-    real(dp), dimension(:, :), allocatable :: da_psi_cum !(3, MCENT)
-    real(dp), dimension(:, :), allocatable :: da_psi_sum !(3, MCENT)
+    real(dp), dimension(:, :, :), allocatable :: da_energy_cm2 !(3, MCENT, PTH)
+    real(dp), dimension(:, :, :), allocatable :: da_energy_cum !(3, MCENT, PTH)
+    real(dp), dimension(:, :, :), allocatable :: da_energy_sum !(3, MCENT, PTH)
+    real(dp), dimension(:, :, :), allocatable :: da_psi_cum !(3, MCENT, PTH)
+    real(dp), dimension(:, :, :), allocatable :: da_psi_sum !(3, MCENT, PTH)
 
     private
     public :: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
@@ -17,11 +17,12 @@ module da_energy_sumcum
 contains
     subroutine allocate_da_energy_sumcum()
       use system,  only: ncent_tot
-        if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, ncent_tot))
-        if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, ncent_tot))
-        if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, ncent_tot))
-        if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, ncent_tot))
-        if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, ncent_tot))
+      use force_pth, only: PTH
+        if (.not. allocated(da_energy_cm2)) allocate (da_energy_cm2(3, ncent_tot, PTH))
+        if (.not. allocated(da_energy_cum)) allocate (da_energy_cum(3, ncent_tot, PTH))
+        if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, ncent_tot, PTH))
+        if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, ncent_tot, PTH))
+        if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, ncent_tot, PTH))
     end subroutine allocate_da_energy_sumcum
 
     subroutine deallocate_da_energy_sumcum()
@@ -210,33 +211,6 @@ contains
 
 end module denergy_det_m
 
-module denupdn
-    !> Arguments: rprobdn, rprobup
-    use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp), dimension(:), allocatable :: rprobdn !(nrad)
-    real(dp), dimension(:), allocatable :: rprobup !(nrad)
-
-    private
-    public   ::  rprobdn, rprobup
-    public :: allocate_denupdn, deallocate_denupdn
-    save
-contains
-    subroutine allocate_denupdn()
-      use vmc_mod, only: nrad
-        if (.not. allocated(rprobdn)) allocate (rprobdn(nrad))
-        if (.not. allocated(rprobup)) allocate (rprobup(nrad))
-    end subroutine allocate_denupdn
-
-    subroutine deallocate_denupdn()
-        if (allocated(rprobup)) deallocate(rprobup)
-        if (allocated(rprobdn)) deallocate(rprobdn)
-    end subroutine deallocate_denupdn
-
-end module denupdn
-
 module derivjas
     !> Arguments: d2g, g, go, gvalue
     use precision_kinds, only: dp
@@ -333,37 +307,38 @@ end module ijasnonlin
 
 module derivest
    !> DMC derivatives
-   !> Arguments: derivcm2, derivcum, derivsum, derivtotave_num_old
+   !> Arguments: derivcm2, derivcum, derivsum, derivtotave
 
-   use multiple_geo, only: MFORCE
    use precision_kinds, only: dp
+   use system,  only: ncent_tot
+   use force_pth, only: PTH
 
    implicit none
 
 
-    real(dp), dimension(:), allocatable :: derivcm2 !(MFORCE)
-    real(dp), dimension(:,:), allocatable :: derivcum !(10,MFORCE)
-    real(dp), dimension(:,:), allocatable :: derivsum !(10,MFORCE)
-    real(dp), dimension(:), allocatable :: derivtotave_num_old !(MFORCE)
+    real(dp), dimension(:,:,:), allocatable :: derivcm2 ! (3,NCENT,IPTH)
+    real(dp), dimension(:,:,:,:), allocatable :: derivcum !(3,3,NCENT,IPTH)
+    real(dp), dimension(:,:,:,:), allocatable :: derivsum !(3,3,NCENT,IPTH)
+    real(dp), dimension(:,:,:), allocatable :: derivtotave ! (3,NCENT,IPTH)
 
     private
-    public :: derivcm2, derivcum, derivsum, derivtotave_num_old
+    public :: derivcm2, derivcum, derivsum, derivtotave
     public :: allocate_derivest, deallocate_derivest
     save
 
 contains
     subroutine allocate_derivest()
-        if (.not. allocated(derivcm2)) allocate(derivcm2(MFORCE))
-        if (.not. allocated(derivcum)) allocate(derivcum(10,MFORCE))
-        if (.not. allocated(derivsum)) allocate(derivsum(10,MFORCE))
-        if (.not. allocated(derivtotave_num_old)) allocate(derivtotave_num_old(MFORCE))
+        if (.not. allocated(derivcm2)) allocate(derivcm2(3,ncent_tot,PTH))
+        if (.not. allocated(derivcum)) allocate(derivcum(3,3,ncent_tot, PTH))
+        if (.not. allocated(derivsum)) allocate(derivsum(3,3,ncent_tot, PTH))
+        if (.not. allocated(derivtotave)) allocate(derivtotave(3,ncent_tot, PTH))
     end subroutine allocate_derivest
 
     subroutine deallocate_derivest
         if (allocated(derivcm2)) deallocate(derivcm2)
         if (allocated(derivcum)) deallocate(derivcum)
         if (allocated(derivsum)) deallocate(derivsum)
-        if (allocated(derivtotave_num_old)) deallocate(derivtotave_num_old)
+        if (allocated(derivtotave)) deallocate(derivtotave)
     end subroutine deallocate_derivest
  end module derivest
 
@@ -377,7 +352,6 @@ subroutine allocate_m_deriv()
     use da_pseudo, only: allocate_da_pseudo
     use deloc_dj_m, only: allocate_deloc_dj_m
     use denergy_det_m, only: allocate_denergy_det_m
-    use denupdn, only: allocate_denupdn
     use derivjas, only: allocate_derivjas
     use dorb_m, only: allocate_dorb_m
     use ijasnonlin, only: allocate_ijasnonlin
@@ -391,7 +365,6 @@ subroutine allocate_m_deriv()
     call allocate_da_energy_now()
     call allocate_deloc_dj_m()
     call allocate_denergy_det_m()
-    call allocate_denupdn()
     call allocate_derivjas()
     call allocate_dorb_m()
     call allocate_ijasnonlin()
@@ -405,7 +378,6 @@ subroutine deallocate_m_deriv()
     use da_pseudo, only: deallocate_da_pseudo
     use deloc_dj_m, only: deallocate_deloc_dj_m
     use denergy_det_m, only: deallocate_denergy_det_m
-    use denupdn, only: deallocate_denupdn
     use derivjas, only: deallocate_derivjas
     use dorb_m, only: deallocate_dorb_m
     use ijasnonlin, only: deallocate_ijasnonlin
@@ -419,7 +391,6 @@ subroutine deallocate_m_deriv()
     call deallocate_da_energy_now()
     call deallocate_deloc_dj_m()
     call deallocate_denergy_det_m()
-    call deallocate_denupdn()
     call deallocate_derivjas()
     call deallocate_dorb_m()
     call deallocate_ijasnonlin()

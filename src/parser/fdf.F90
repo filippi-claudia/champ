@@ -124,14 +124,14 @@ module keywords
   !> @date October 15, 2022
   implicit none
   integer                     :: num_modules  = 11   ! change this number after every adition/deletion
-  integer                     :: num_keywords = 175 ! change this number after every adition/deletion
+  integer                     :: num_keywords = 180 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
   type(string_t) allowed_modules(11)
-  type(string_t) allowed_keywords(175)       ! change this number after every adition/deletion
+  type(string_t) allowed_keywords(180)       ! change this number after every adition/deletion
 
 
   private
@@ -232,7 +232,9 @@ module keywords
     allowed_keywords(169)%keys = 'cutg_sim';        allowed_keywords(170)%keys = 'cutg_big'
     allowed_keywords(171)%keys = 'cutg_sim_big';    allowed_keywords(172)%keys = 'alattice'
     allowed_keywords(173)%keys = 'cutjas';          allowed_keywords(174)%keys = 'nstates'
-    allowed_keywords(175)%keys = 'orbitals_ortho'
+    allowed_keywords(175)%keys = 'orbitals_ortho';  allowed_keywords(176)%keys = 'dmc_ivd'
+    allowed_keywords(177)%keys = 'ipathak';         allowed_keywords(178)%keys = 'eps_max'
+    allowed_keywords(179)%keys = 'deps';            allowed_keywords(180)%keys = 'nwprod'
 
   end subroutine allocate_keywords
 
@@ -1103,11 +1105,6 @@ endif ! (rank==0)
                         ' file ', filein, ' in step', (i/BLOCKSIZE)+1
       endif
 
-      call MPI_Barrier(MPI_COMM_WORLD, ierr)
-      if (ierr .ne. MPI_SUCCESS) then
-        call die('FDF module: fdf_readblocking', 'Error in MPI_Barrier (fdf_read).' //    &
-                'Terminating.', THIS_FILE, __LINE__, fdf_err, rc=ierr)
-      endif
     enddo
 
     RETURN

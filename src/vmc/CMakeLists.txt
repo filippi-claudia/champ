@@ -1,111 +1,109 @@
 if (MPI_Fortran_FOUND)
 
   # Source files
-  file(GLOB VMC_SOURCE
-    3dgrid.f
-    3dgrid_orbitals.f
-    acuest.f
-    acuest_reduce.f
-    acuest_write.f
-    basis_fns.f
-    bxmatrices.f
-    cuspexact4.f
-    deriv_nonloc.f
-    deriv_nonlpsi.f
-    determinant.f
-    determinant_psig.f
-    determinant_psit.f
-    determinante.f
-    determinante_psit.f
-    detsav.f
-    distances.f
-    dumper.f
-    dumper_more.f
-    efield.f
-    fetch_parameters.f
-    fin_reduce.f
-    finwrt.f
-    finwrt_more.f
-    force_analy_reduce.f
-    force_analytic.f
-    gammai.f
-    hpsi.f
-    hpsie.f
-    jassav.f
-    jastrow.f
-    jastrow1.f
-    jastrow4.f
-    jastrow4e.f
-    jastrow1e.f
-    jastrow_num.f
-    jastrowe.f
-    mc_configs.f
-    metrop_mov1_slat.f
-    misc_grdnts.f
-    mmpol.f
-    mmpol_reduce.f
-    mmpol_vmc.f
-    multideterminant.f
-    multideterminante.f
-    multiple_states.f
-    multiply_slmi_mderiv.f
-    nodes_distance.f
-    nonloc.f
-    nonloc_pot.f
-    nonlpsi.f
-    optci.f
-    optci_reduce.f
-    optgeo_lib.f
-    optjas.f
-    optjas_reduce.f
-    optorb.f
-    optorb_reduce.f
-    optwf_handle_wf.f
-    optwf_lib.f
-    optwf_lin_dav.f
-    optwf_lin_dav_more.f
-    optwf_lin_dav_extra.f
-    optwf_lin_matrix.f
-    optwf_matrix_corsamp.f
-    optwf_mix_sa.f
-    optwf_olbfgs.f
-    optwf_olbfgs_more.f
-    optwf_sr_more.f
-    optwf_vmc.f
-    optx_jas_ci.f
-    optx_jas_ci_reduce.f
-    optx_jas_orb.f
-    optx_jas_orb_reduce.f
-    optx_orb_ci.f
-    optx_orb_ci_reduce.f
-    orbitals.f
-    pcm.f
-    pcm_3dgrid.f
-    pcm_reduce.f
-    pcm_vmc.f
-    pot.f
-    pot_local.f
-    prop_reduce.f
-    prop_vmc.f
-    properties.f
-    psi.f
-    ewald.f
-    find_image.f
-    qmmm_placeholder.f
-    random.f
-    readps_gauss.f
-    rotqua.f
-    scale_dist.f
-    sites.f
-    splfit.f
-    spline2.f
-    store_diag_hs.f
-    strech.f
-    verify_orbitals.f
-    vmc.f
-	  )
-
   file(GLOB VMC90_SOURCE
+    3dgrid.f90
+    3dgrid_orbitals.f90
+    acuest.f90
+    acuest_reduce.f90
+    acuest_write.f90
+    basis_fns.f90
+    bxmatrices.f90
+    cuspexact4.f90
+    deriv_jastrow.f90
+    deriv_nonloc.f90
+    deriv_nonlpsi.f90
+    determinant.f90
+    determinant_psig.f90
+    determinant_psit.f90
+    determinante.f90
+    determinante_psit.f90
+    detsav.f90
+    distances.f90
+    dumper.f90
+    dumper_more.f90
+    efield.f90
+    fetch_parameters.f90
+    fin_reduce.f90
+    finwrt.f90
+    finwrt_more.f90
+    force_analy_reduce.f90
+    force_analytic.f90
+    gammai.f90
+    hpsi.f90
+    hpsie.f90
+    jassav.f90
+    jastrow.f90
+    jastrow1.f90
+    jastrow4.f90
+    jastrow4e.f90
+    jastrow1e.f90
+    jastrow_num.f90
+    jastrowe.f90
+    mc_configs.f90
+    metrop_mov1_slat.f90
+    misc_grdnts.f90
+    mmpol.f90
+    mmpol_reduce.f90
+    mmpol_vmc.f90
+    multideterminant.f90
+    multideterminante.f90
+    multiple_states.f90
+    multiply_slmi_mderiv.f90
+    nodes_distance.f90
+    nonloc.f90
+    nonloc_pot.f90
+    nonlpsi.f90
+    optci.f90
+    optci_reduce.f90
+    optgeo_lib.f90
+    optjas.f90
+    optjas_reduce.f90
+    optorb.f90
+    optorb_reduce.f90
+    optwf_handle_wf.f90
+    optwf_lib.f90
+    optwf_lin_dav.f90
+    optwf_lin_dav_more.f90
+    optwf_lin_dav_extra.f90
+    optwf_lin_matrix.f90
+    optwf_matrix_corsamp.f90
+    optwf_mix_sa.f90
+    optwf_olbfgs.f90
+    optwf_olbfgs_more.f90
+    optwf_sr_more.f90
+    optwf_vmc.f90
+    optx_jas_ci.f90
+    optx_jas_ci_reduce.f90
+    optx_jas_orb.f90
+    optx_jas_orb_reduce.f90
+    optx_orb_ci.f90
+    optx_orb_ci_reduce.f90
+    orbitals.f90
+    pcm.f90
+    pcm_3dgrid.f90
+    pcm_reduce.f90
+    pcm_vmc.f90
+    pot.f90
+    pot_local.f90
+    prop_reduce.f90
+    prop_vmc.f90
+    properties.f90
+    psi.f90
+    ewald.f90
+    find_image.f90
+    qmmm_placeholder.f90
+    random.f90
+    readps_gauss.f90
+    rotqua.f90
+    scale_dist.f90
+    sites.f90
+    splfit.f90
+    spline2.f90
+    store_diag_hs.f90
+    strech.f90
+    verify_orbitals.f90
+    vmc.f90
     array_resize_utils.f90
     array_utils.f90
     cuspinit4.f90
@@ -166,11 +164,11 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_writecube.f90)
   else()
     message(STATUS "QMMM is enabled!")
-    list(REMOVE_ITEM VMC_SOURCE
-      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f)
+    list(REMOVE_ITEM VMC90_SOURCE
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90)
   endif()
 
-  
+
   find_package(FortranFormat)
   formatFortran("${VMC_SOURCE}") # Set Fixed format property
 
@@ -192,100 +190,100 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/new_parser_read_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/read_trexio_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/set_input_data.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/strech.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/strech.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/slm.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/jassav.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/gammai.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/sites.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonloc.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/jassav.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/gammai.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/sites.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonloc.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/fitting.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow1.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f    # This file should be refactored and eliminated.
-    ${CMAKE_CURRENT_SOURCE_DIR}/efield.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/nodes_distance.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/hpsie.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/verify_orbitals.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/multideterminante.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/multideterminant.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/pcm.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/jastrowe.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90   # This file should be refactored and eliminated.
+    ${CMAKE_CURRENT_SOURCE_DIR}/efield.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/nodes_distance.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/hpsie.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/verify_orbitals.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/multideterminante.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/multideterminant.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pcm.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrowe.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/write_orb_loc.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/cuspexact4.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_matrix_corsamp.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_matrix.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lib.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/cuspexact4.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_matrix_corsamp.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lin_matrix.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_lib.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/ortho_orbitals.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/orbitals.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/readps_gauss.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/determinante_psit.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/pot.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/orbitals.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/readps_gauss.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/determinante_psit.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pot.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/mmpol.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/basis_fns.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/determinant_psit.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/determinant.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/determinante.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/nonloc_pot.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_num.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/bxmatrices.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonlpsi.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/force_analytic.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/nonlpsi.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/psi.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/rotqua.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/misc_grdnts.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/spline2.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/mmpol.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/basis_fns.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/determinant_psit.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/determinant.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/determinante.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/nonloc_pot.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f90  # This file should be refactored and eliminated.
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_num.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/bxmatrices.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonlpsi.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/force_analytic.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/force_analy_reduce.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/nonlpsi.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/psi.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/rotqua.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/misc_grdnts.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/spline2.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/read_bas_num.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/store_diag_hs.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/random.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid_orbitals.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/find_image.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/ewald.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/distances.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/store_diag_hs.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/random.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid_orbitals.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/find_image.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/ewald.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/distances.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/multiply_slmi_mderiv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/parser.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow1.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow1e.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4e.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/detsav.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_lib.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optjas.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optorb.f
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow1.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow1e.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/hpsi.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow4e.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/3dgrid.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/detsav.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_lib.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optjas.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optorb.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/get_norbterm.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/optci.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optx_orb_ci.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_ci.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_orb.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_ci_reduce.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_orb_reduce.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optx_orb_ci_reduce.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optci_reduce.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optjas_reduce.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f
-    ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f)
+    ${CMAKE_CURRENT_SOURCE_DIR}/optci.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_orb_ci.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_ci.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_orb.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_handle_wf.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optwf_sr_more.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_ci_reduce.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_jas_orb_reduce.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optx_orb_ci_reduce.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optci_reduce.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optjas_reduce.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/optorb_reduce.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f90)
 
   # --------------------------------------------------------------------
   # Remove objects to share depending on CMAKE options:
   # --------------------------------------------------------------------
   if (ENABLE_QMMM)
     list(REMOVE_ITEM SHARED_OBJECTS
-      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f)
+      ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90)
     list(APPEND SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_bspline.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_modules.f90
@@ -318,13 +316,7 @@ if (MPI_Fortran_FOUND)
   # --------------------------------------------------------------------
 
   foreach(s ${SHARED_OBJECTS})
-    list(REMOVE_ITEM VMC_SOURCE ${s})
-  endforeach(s)
-  foreach(s ${SHARED_OBJECTS})
     list(REMOVE_ITEM VMC90_SOURCE ${s})
-  endforeach(s)
-  foreach(s ${SHARED_MODULES})
-    list(REMOVE_ITEM VMC_SOURCE ${s})
   endforeach(s)
   foreach(s ${SHARED_MODULES})
     list(REMOVE_ITEM VMC90_SOURCE ${s})
@@ -335,7 +327,7 @@ if (MPI_Fortran_FOUND)
   # --------------------------------------------------------------------
   add_library(rng OBJECT
     xoroshiro256starstar.c)
-  
+
   target_compile_options(rng
     PUBLIC
     "-O3")
@@ -346,7 +338,6 @@ if (MPI_Fortran_FOUND)
     $<TARGET_OBJECTS:shared_objects>
     $<TARGET_OBJECTS:rng>
     # source that is not already included in the objects
-    ${VMC_SOURCE}
     ${VMC90_SOURCE}
     )
 
@@ -402,6 +393,6 @@ ENDIF()
       ${CUDA_LIBRARIES}
       MPI::MPI_Fortran)
   endif()
-  
+
 
 endif()
