@@ -24,7 +24,7 @@ contains
       allocate(parms_lbfgs(nparm))
 
       parms_lbfgs = parameters(1:nparm)
-      parameters_old = parms_lbfgs
+      parameters_old(1:nparm) = parms_lbfgs(1:nparm)
 
 
 ! we only need h_sr = - grad_parm E

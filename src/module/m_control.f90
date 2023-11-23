@@ -154,12 +154,12 @@ contains
         !> Open the standard output and the log file only on the master
         if (wid) then
             log_filename = 'output.log'
+            open (45, file=log_filename, status='unknown')
         else
             log_filename = '/dev/null'
             close (6)
             open (6, file='/dev/null')
         endif
-        open (45, file=log_filename, status='unknown')
     end subroutine init_logfile
 
     subroutine initialize()
@@ -220,10 +220,10 @@ contains
                         stop
                     endif
 !                        write(output_unit, fmt=string_format) ' input file      :: ', file_input
-                    if (wid) then
-                        open (newunit=iunit,file=file_input, iostat=iostat, action='read' )
-                        if (iostat /= 0) error stop "error in opening input file"
-                    endif
+!                    if (wid) then
+!                        open (newunit=iunit,file=file_input, iostat=iostat, action='read' )
+!                        if (iostat /= 0) error stop "error in opening input file"
+!                    endif
 
                 case ('-o', '-ou', '-out', '-output', '--output')
                     file_output = arg(i+1)
@@ -231,9 +231,10 @@ contains
                         file_output = '/dev/null'
                         close (6)
                         open (6, file='/dev/null')
+                    else
+                        open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='unknown' )
+                        if (iostat /= 0) error stop "error in opening output unit"
                     endif
-                    open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='unknown' )
-                    if (iostat /= 0) error stop "error in opening output unit"
 
                 case ('-e', '-er', '-err', '-error', '--error')
                     file_error = arg(i+1)
