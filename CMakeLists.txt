@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
 # Project's name
-project(CHAMP VERSION 2.0.5 LANGUAGES Fortran CXX C)
+project(CHAMP VERSION 2.3.0 LANGUAGES Fortran CXX C)
 
 
 # Needed for something which we don't know
@@ -109,8 +109,6 @@ if (TREXIO_FOUND)
   message(STATUS "TREXIO Library lib dirs          :: " ${TREXIO_LIBRARY})
   message(STATUS "                                    ")
   add_definitions(-DTREXIO_FOUND=\"${TREXIO_FOUND}\")
-# Taken from TurboRVB
-# list( APPEND PPDIRECTIVES _TREXIO )
   link_libraries(${TREXIO_LIBRARIES})
   include_directories( ${TREXIO_INCLUDE_DIRS} )
 endif(TREXIO_FOUND)
@@ -133,7 +131,8 @@ if (QMCKL_FOUND)
   include_directories( ${QMCKL_INCLUDE_DIRS} )
 endif(QMCKL_FOUND)
 
-
+#
+set(NVFORTRAN_PATH "" CACHE PATH "Path to CUDA executable nvfortran and nvcc")
 if (ENABLE_GPU)
    find_package(CUDA)
    find_package(CUDAToolkit)
@@ -144,15 +143,6 @@ if (CUDA_FOUND)
   message(STATUS "Is CUDA found                   :: " ${CUDA_FOUND})
   message(STATUS "CUDA version                    :: " ${CUDA_VERSION})
   message(STATUS "CUDA toolkit directory          :: " ${CUDA_TOOLKIT_ROOT_DIR})
-# Printing individual libraries in the list
-  message(STATUS "CUDA LIBRARIES          : ")
-  foreach(lib ${CUDA_LIBRARIES})
-    message("                                    :: " ${lib})
-  endforeach(lib)
-  foreach(lib ${CUDA_CUBLAS_LIBRARIES})
-    message("                                    :: " ${lib})
-  endforeach(lib)
-  message(" ")
 endif()
 
 #  documentation requirements
@@ -161,13 +151,14 @@ if (BUILD_DOC)
 endif(BUILD_DOC)
 
 if (ENABLE_GPU)
-list(APPEND CMAKE_PREFIX_PATH "/sw/arch/RHEL8/EB_production/2022/software/OpenMPI/4.1.4-NVHPC-22.7-CUDA-11.7.0/bin")
-list(APPEND CMAKE_PREFIX_PATH "/sw/arch/RHEL8/EB_production/2022/software/NVHPC/22.7-CUDA-11.7.0/Linux_x86_64/22.7/compilers/bin")
+# list(APPEND CMAKE_PREFIX_PATH "/sw/arch/RHEL8/EB_production/2022/software/OpenMPI/4.1.4-NVHPC-22.7-CUDA-11.7.0/bin")
+# list(APPEND CMAKE_PREFIX_PATH "/sw/arch/RHEL8/EB_production/2022/software/NVHPC/22.7-CUDA-11.7.0/Linux_x86_64/22.7/compilers/bin")
+  list(APPEND CMAKE_PREFIX_PATH ${NVFORTRAN_PATH})
 endif(ENABLE_GPU)
 
 # Find MPI
 if (ENABLE_MPI)
-  find_package(MPI)
+  find_package(MPI COMPONENTS Fortran REQUIRED)
 endif(ENABLE_MPI)
 
 # SIMD instructions
