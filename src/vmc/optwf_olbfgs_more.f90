@@ -17,14 +17,14 @@ contains
       real(dp), dimension(*) :: deltap
       real(dp), dimension(*) :: parameters
       character(len=20) dl_alg
-      real(dp), dimension(1), allocatable :: parameters_old(:)
+      real(dp), dimension(1), allocatable :: parms_old(:)
       real(dp), dimension(1), allocatable :: parms_lbfgs(:)
 
-      allocate(parameters_old(nparm))
+      allocate(parms_old(nparm))
       allocate(parms_lbfgs(nparm))
 
       parms_lbfgs = parameters(1:nparm)
-      parameters_old(1:nparm) = parms_lbfgs(1:nparm)
+      parms_old(1:nparm) = parms_lbfgs(1:nparm)
 
 
 ! we only need h_sr = - grad_parm E
@@ -37,7 +37,7 @@ contains
 ! perform actual oLBFGS iteration
         call olbfgs_iteration(parms_lbfgs, -h_sr(:,1), sr_tau, iter)
 
-        deltap(1:nparm) = parms_lbfgs - parameters_old
+        deltap(1:nparm) = parms_lbfgs - parms_old
         parameters(1:nparm) = parameters(1:nparm) + deltap(1:nparm)
       end if
 
@@ -45,7 +45,7 @@ contains
 
       call MPI_BCAST(deltap,nparm,MPI_REAL8,0,MPI_COMM_WORLD,ier)
 
-      deallocate(parameters_old)
+      deallocate(parms_old)
       deallocate(parms_lbfgs)
 
       return
