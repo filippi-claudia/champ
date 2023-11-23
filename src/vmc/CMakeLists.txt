@@ -150,6 +150,9 @@ if (MPI_Fortran_FOUND)
   )
 
 
+  set(ENABLE_GPU ${ENABLE_GPU} PARENT_SCOPE)
+  message (STATUS "GPU IS ENABLED")
+
   # --------------------------------------------------------------------
   # Set files according to CMAKE options:
   # --------------------------------------------------------------------

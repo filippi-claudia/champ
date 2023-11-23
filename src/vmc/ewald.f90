@@ -2259,7 +2259,7 @@
           ewald_pot=ewald_pot+cos(product)*y(k)*expon
         enddo
       enddo
-      ewald_pot=2*ewald_pot+y(1)+derfc(gauss_exp*rr)/rr
+      ewald_pot=2*ewald_pot+y(1)+erfc(gauss_exp*rr)/rr
 
       return
       end
