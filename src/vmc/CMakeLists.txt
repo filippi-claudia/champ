@@ -372,12 +372,14 @@ ENDIF()
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
     )
-  
-  target_link_options(vmc.mov1
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-    )
+
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")    
+     target_link_options(vmc.mov1
+       PRIVATE
+       ${Fortran_FLAGS}
+       "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+       )
+  endif()
 
   if (TREXIO_FOUND)
     target_link_libraries(vmc.mov1
