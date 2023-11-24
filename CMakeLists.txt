@@ -116,18 +116,18 @@ endif(ENABLE_TREXIO)
 
 
 # Find QMCkl
-if (TREXIO_FOUND)
+if (TREXIO_FOUND AND ENABLE_QMCKL)
+  message(" ")
+  message("Looking for QMCkl library:")
   find_package(QMCKL QUIET)
-endif(TREXIO_FOUND)
+endif()
 if (QMCKL_FOUND)
   message(STATUS "Is QMCkl library found           :: " ${QMCKL_FOUND})
   message(STATUS "QMCKL Library include dirs       :: " ${QMCKL_INCLUDE_DIR})
   message(STATUS "QMCKL Library lib dirs           :: " ${QMCKL_LIBRARY})
   message("                                    ")
   add_definitions(-DQMCKL_FOUND=\"${QMCKL_FOUND}\")
-# Taken from TurboRVB
-#   list( APPEND PPDIRECTIVES _QMCKL )
-   link_libraries(${QMCKL_LIBRARIES})
+  link_libraries(${QMCKL_LIBRARIES})
   include_directories( ${QMCKL_INCLUDE_DIRS} )
 endif(QMCKL_FOUND)
 
