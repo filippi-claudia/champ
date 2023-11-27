@@ -50,14 +50,14 @@ contains
       use find_pimage, only: find_image_pbc
       use precision_kinds, only: dp
 
-#ifdef QMCKL_FOUND
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
       use const
       use qmckl_data
 #endif
 
       implicit none
 
-#ifdef QMCKL_FOUND
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
       real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
       integer :: rc
       integer*8 :: n8
@@ -168,7 +168,7 @@ contains
          ider=2
          if(iforce_analy.eq.1) ider=3
 
-#ifdef QMCKL_FOUND
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
 
          if(iperiodic.eq.0) then
 
@@ -771,7 +771,7 @@ contains
       use periodic, only : n_images, ell
       use find_pimage, only: find_image_pbc
 
-#ifdef QMCKL_FOUND
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
       use qmckl_data
 #endif
 
@@ -786,7 +786,7 @@ contains
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
 
-#ifdef QMCKL_FOUND
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
       real(dp), allocatable :: mo_vgl_qmckl(:,:)
       integer :: rc
       integer*8 :: n8, na8, i_image, ivgl, i_basis
@@ -833,7 +833,7 @@ contains
          ider=1
          if(iflag.gt.0) ider=2
 
-#ifdef QMCKL_FOUND
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
 
          if(iperiodic.eq.0) then
 

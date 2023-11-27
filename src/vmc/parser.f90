@@ -106,6 +106,7 @@ subroutine parser
       use optwf_handle_wf, only: set_nparms_tot
       use optwf_parms, only: nparmj
       use orbval,  only: ddorb,dorb,nadorb,ndetorb,orb
+      use mpi
       use pathak_mod, only: ipathak, eps_max, deps
       use pathak_mod, only: init_pathak
       use parser_read_data, only: header_printing
@@ -181,7 +182,7 @@ subroutine parser
       use contrl_file, only: backend
       use trexio            ! trexio library for reading and writing hdf5 files
 #endif
-#if defined(QMCKL_FOUND)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
       use qmckl_data
 #endif
 
@@ -223,7 +224,7 @@ subroutine parser
 
   character(len=72)          :: fname, key
   character(len=20)          :: temp1, temp2, temp3, temp4, temp5
-  integer                    :: ratio, isavebl
+  integer                    :: ierr, ratio, isavebl
   real(dp)                   :: cutjas_tmp = 0
 
   real(dp)                   :: wsum
@@ -285,7 +286,7 @@ subroutine parser
   real(dp), parameter        :: one  = 1.d0
   real(dp), parameter        :: two  = 2.d0
 
-#if defined(QMCKL_FOUND)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
   integer, allocatable :: keep(:)
   integer(qmckl_exit_code) :: rc
   integer*8 :: n8
@@ -1568,7 +1569,6 @@ subroutine parser
       nparmj=0
     endif
 
-
 ! ORB optimization flags (vmc/dmc only)
     if(ioptorb.ne.0) then
       write(ounit,'(a)' ) " Orbital derivatives are sampled"
@@ -1582,8 +1582,6 @@ subroutine parser
         endif
       endif
     endif
-
-
 
 ! CI optimization flags
     if(ioptci.ne.0) then
@@ -1989,33 +1987,37 @@ subroutine parser
 
   !qmckl initialization
 
-#ifdef QMCKL_FOUND
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
   if (use_qmckl) then
 
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
 
      ! Create a new QMCkl context
-       !if (wid) then
-          qmckl_ctx = qmckl_context_create()
-          write(ounit, *) " QMCkl initial context created  " , qmckl_ctx , " successfully "
-      !endif
-      !call bcast(qmckl_ctx)
+      qmckl_ctx = qmckl_context_create()
+      write(ounit, *) " QMCkl initial context created  " , qmckl_ctx , " successfully "
 
       if(ioptorb.gt.0) then
+
        file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
+        if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
+            file_trexio_path = pooldir // file_trexio_new(7:)
+        else
+            file_trexio_path = file_trexio_new
+        endif
+
        if(wid) then
-         if (trexio_inquire(file_trexio_new) .eq. TREXIO_SUCCESS) then
-           write(ounit,'(a)') "Removing existing " // file_trexio_new // " file"
-           call system('rm -v ' // file_trexio_new)
+         if (trexio_inquire(file_trexio_path) .eq. TREXIO_SUCCESS) then
+           write(ounit,'(a)') "Removing existing " // file_trexio_path // " file"
+           call system('rm -v ' // file_trexio_path)
          endif
 
-         rc = trexio_cp(file_trexio, file_trexio_new)
+         rc = trexio_cp(file_trexio, file_trexio_path)
          if (rc .ne. TREXIO_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to copy trexio file')
        endif
-       call bcast(file_trexio_new)
+       call MPI_Barrier( MPI_COMM_WORLD, ierr )
 
-       iostat = qmckl_trexio_read(qmckl_ctx, file_trexio_new, 1_8*len(trim(file_trexio_new)))
-       write(ounit, *) "Status QMCKl trexio read file_trexio_new", iostat
+       iostat = qmckl_trexio_read(qmckl_ctx, file_trexio_path, 1_8*len(trim(file_trexio_path)))
+       write(ounit, *) "Status QMCKl trexio read file_trexio_path", iostat
       else
        iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
        write(ounit, *) "Status QMCKl trexio read file_trexio ", iostat

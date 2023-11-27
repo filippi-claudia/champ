@@ -1,5 +1,6 @@
 module trexio_read_data
     use error, only: fatal_error
+    use mpi
     use precision_kinds, only: dp
     use array_utils, only: unique_elements
 
@@ -58,7 +59,7 @@ module trexio_read_data
         use system, only: ndn
         use trexio
         use contrl_file, only: backend
-      use multiple_geo, only: pecent
+        use multiple_geo, only: pecent
 
         implicit none
 
@@ -205,7 +206,7 @@ module trexio_read_data
         use custom_broadcast,   only: bcast
         use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
-        use coefs, only: nbasis
+        use coefs,              only: nbasis
         use csfs,               only: nstates
         use inputflags,         only: ilcao
         use numbas,             only: nrbas
@@ -533,7 +534,7 @@ module trexio_read_data
     end subroutine write_trexio_basis_num_info_file
 
 
-    subroutine update_trexio_orbitals(coefficients)
+    subroutine update_trexio_orbitals
         !> This subroutine updates the .hdf5 trexio generated file/folder. It then reads the
         !! number of molecular and atomic orbitals and their corresponding coefficients.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
@@ -545,39 +546,39 @@ module trexio_read_data
         use contrl_file,        only: ounit, errunit
         use coefs,              only: nbasis
         use csfs,               only: nstates
+        use inputflags,         only: scalecoef
         use vmc_mod,            only: norb_tot, nwftypeorb
+        use mpiconf,            only: wid
         use multiple_geo,       only: nwftype
+        use optwf_control,      only: ioptorb
+        use slater,             only: coef
         use general,            only: pooldir
         use precision_kinds,    only: dp
         use error,              only: trexio_error
         use trexio
         use contrl_file,        only: backend
         use slater,             only: norb
+  
 
-#if defined(QMCKL_FOUND)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
         use qmckl_data
 #endif
 
         implicit none
 
     !   local use
-        double precision, intent(in)    :: coefficients(nbasis, norb_tot, 3)
         character(len=120)              :: file_trexio_path
-        integer                         :: iunit, iwft
-
-
-        logical                         :: exist
-        logical                         :: skip = .true.
 
     ! trexio
         integer(8)                      :: trex_orbitals_file
-        integer                         :: rc = 1, iostat
+        integer                         :: k, rc, ierr
 
-        iwft = 1
+        if(ioptorb.eq.0) return
+
         trex_orbitals_file = 0
 
         !   External file reading
-#if defined(QMCKL_FOUND)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
         if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
             file_trexio_path = pooldir // file_trexio_new(7:)
         else
@@ -588,32 +589,39 @@ module trexio_read_data
         write(ounit,*) " Updating LCAO orbitals from the file :: ",  trim(file_trexio_path)
         write(ounit,*) '---------------------------------------------------------------------------'
 
+        ! Destroy the existing QMCkl context first
+        write(ounit, *) " QMCkl destroying the old context " , qmckl_ctx , " successfully "
+        rc = qmckl_context_destroy(qmckl_ctx)
+        call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
+        write(ounit, '(a)') " QMCkl old context destroyed successfully "
+
+        if(wid) then
+
         ! Check if the file exists
             trex_orbitals_file = trexio_open(file_trexio_path, 'u', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
             write(ounit, '(a)') "File opened successfully "
 
         ! Update the orbitals
-            rc = trexio_write_mo_coefficient(trex_orbitals_file, coefficients(:,:,1))
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_write_mo_coeffs', __FILE__, __LINE__)
-            write(ounit, '(a)') " MO coeffs updated successfully "
+            do k=1,nwftypeorb
+              rc = trexio_write_mo_coefficient(trex_orbitals_file, coef(:,:,k)/scalecoef)
+              call trexio_error(rc, TREXIO_SUCCESS, 'trexio_write_mo_coeffs', __FILE__, __LINE__)
+              write(ounit, '(a)') " MO coeffs updated successfully "
+            enddo
 
         ! Close the file
             rc = trexio_close(trex_orbitals_file)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
             write(ounit, '(a)') "File " // trim(file_trexio_path) // " closed successfully "
-
-        ! Destroy the existing QMCkl context first
-            write(ounit, *) " QMCkl destroying the old context " , qmckl_ctx , " successfully "
-            rc = qmckl_context_destroy(qmckl_ctx)
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
-            write(ounit, '(a)') " QMCkl old context destroyed successfully "
+        endif
+        call MPI_Barrier( MPI_COMM_WORLD, ierr )
 
         ! Create a new QMCkl context with the new trexio file
-            qmckl_ctx = qmckl_context_create()
-            rc = qmckl_trexio_read(qmckl_ctx, file_trexio_new, 1_8*len(trim(file_trexio_new)))
-            call trexio_error(rc, TREXIO_SUCCESS, 'INPUT: QMCkl error: Unable to read TREXIO file', __FILE__, __LINE__)
-            write(ounit, * ) " QMCkl new context created  ", qmckl_ctx,  " successfully "
+        qmckl_ctx = qmckl_context_create()
+        rc = qmckl_trexio_read(qmckl_ctx, file_trexio_path, 1_8*len(trim(file_trexio_path)))
+        call trexio_error(rc, TREXIO_SUCCESS, 'INPUT: QMCkl error: Unable to read TREXIO file', __FILE__, __LINE__)
+        write(ounit, *) " QMCkl new context created  ", qmckl_ctx,  " successfully "
+
 #endif
 
         write(ounit,*) "----------------------------------------------------------"

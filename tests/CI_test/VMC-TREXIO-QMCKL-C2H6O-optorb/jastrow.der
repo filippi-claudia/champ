@@ -1,0 +1,10 @@
+jasderiv
+4 4 4  5 0 0 0 0 0 0 nparma,nparmb,nparmc,nparmf
+3 4 5 6   (iwjasa(iparm),iparm=1,nparma)
+3 4 5 6   (iwjasa(iparm),iparm=1,nparma)
+3 4 5 6   (iwjasa(iparm),iparm=1,nparma)
+2 3 4 5 6 (iwjasb(iparm),iparm=1,nparmb)
+(c(iparmj),iparmj=1,nparmc)
+(c(iparmj),iparmj=1,nparmc)
+(c(iparmj),iparmj=1,nparmc)
+end
