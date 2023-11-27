@@ -560,7 +560,7 @@ module trexio_read_data
         use slater,             only: norb
   
 
-#if defined(QMCKL_FOUND)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
         use qmckl_data
 #endif
 
@@ -578,7 +578,7 @@ module trexio_read_data
         trex_orbitals_file = 0
 
         !   External file reading
-#if defined(QMCKL_FOUND)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
         if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
             file_trexio_path = pooldir // file_trexio_new(7:)
         else

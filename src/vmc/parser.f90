@@ -182,7 +182,7 @@ subroutine parser
       use contrl_file, only: backend
       use trexio            ! trexio library for reading and writing hdf5 files
 #endif
-#if defined(QMCKL_FOUND)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
       use qmckl_data
 #endif
 
@@ -286,7 +286,7 @@ subroutine parser
   real(dp), parameter        :: one  = 1.d0
   real(dp), parameter        :: two  = 2.d0
 
-#if defined(QMCKL_FOUND)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
   integer, allocatable :: keep(:)
   integer(qmckl_exit_code) :: rc
   integer*8 :: n8
@@ -1987,7 +1987,7 @@ subroutine parser
 
   !qmckl initialization
 
-#ifdef QMCKL_FOUND
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
   if (use_qmckl) then
 
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
