@@ -160,6 +160,7 @@ contains
             close (6)
             open (6, file='/dev/null')
         endif
+        !open (45, file=log_filename, status='unknown')
     end subroutine init_logfile
 
     subroutine initialize()
@@ -182,7 +183,7 @@ contains
         file_output = ''
 
 
-        
+
         ! Make sure ounit default is stdout, and errunit is stderr
         ounit = output_unit
         errunit = error_unit
@@ -232,8 +233,8 @@ contains
                         close (6)
                         open (6, file='/dev/null')
                     else
-                        open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='unknown' )
-                        if (iostat /= 0) error stop "error in opening output unit"
+                      open (newunit=ounit,file=file_output, iostat=iostat, action='write', status='unknown' )
+                      if (iostat /= 0) error stop "error in opening output unit"
                     endif
 
                 case ('-e', '-er', '-err', '-error', '--error')

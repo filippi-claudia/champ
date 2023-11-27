@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
 # Project's name
-project(CHAMP VERSION 2.2.0 LANGUAGES Fortran CXX C)
+project(CHAMP VERSION 2.3.0 LANGUAGES Fortran CXX C)
 
 
 # Needed for something which we don't know
@@ -51,6 +51,7 @@ option(ENABLE_QMMM "enable_qmmm" off)
 ## External packages
 option(ENABLE_TREXIO "enable_trexio" off)
 option(ENABLE_QMCKL  "enable_qmckl" off)
+option(ENABLE_GPU  "enable_gpu" off)
 
 # Include function to Load MKL
 message("")
@@ -108,8 +109,6 @@ if (TREXIO_FOUND)
   message(STATUS "TREXIO Library lib dirs          :: " ${TREXIO_LIBRARY})
   message(STATUS "                                    ")
   add_definitions(-DTREXIO_FOUND=\"${TREXIO_FOUND}\")
-# Taken from TurboRVB
-# list( APPEND PPDIRECTIVES _TREXIO )
   link_libraries(${TREXIO_LIBRARIES})
   include_directories( ${TREXIO_INCLUDE_DIRS} )
 endif(TREXIO_FOUND)
@@ -117,29 +116,43 @@ endif(ENABLE_TREXIO)
 
 
 # Find QMCkl
-if (TREXIO_FOUND)
+if (TREXIO_FOUND AND ENABLE_QMCKL)
+  message(" ")
+  message("Looking for QMCkl library:")
   find_package(QMCKL QUIET)
-endif(TREXIO_FOUND)
+endif()
 if (QMCKL_FOUND)
   message(STATUS "Is QMCkl library found           :: " ${QMCKL_FOUND})
   message(STATUS "QMCKL Library include dirs       :: " ${QMCKL_INCLUDE_DIR})
   message(STATUS "QMCKL Library lib dirs           :: " ${QMCKL_LIBRARY})
   message("                                    ")
   add_definitions(-DQMCKL_FOUND=\"${QMCKL_FOUND}\")
-# Taken from TurboRVB
-#   list( APPEND PPDIRECTIVES _QMCKL )
-   link_libraries(${QMCKL_LIBRARIES})
+  link_libraries(${QMCKL_LIBRARIES})
   include_directories( ${QMCKL_INCLUDE_DIRS} )
 endif(QMCKL_FOUND)
 
+#
+set(NVFORTRAN_PATH "" CACHE PATH "Path to CUDA executable nvfortran and nvcc")
+if (ENABLE_GPU)
+   find_package(CUDA)
+   find_package(CUDAToolkit)
+endif(ENABLE_GPU)
 
-
+if (CUDA_FOUND)
+  message(" ")
+  message(STATUS "Is CUDA found                   :: " ${CUDA_FOUND})
+  message(STATUS "CUDA version                    :: " ${CUDA_VERSION})
+  message(STATUS "CUDA toolkit directory          :: " ${CUDA_TOOLKIT_ROOT_DIR})
+endif()
 
 #  documentation requirements
 if (BUILD_DOC)
   find_package(DOXYGEN)
 endif(BUILD_DOC)
 
+if (ENABLE_GPU)
+  list(APPEND CMAKE_PREFIX_PATH ${NVFORTRAN_PATH})
+endif(ENABLE_GPU)
 
 # Find MPI
 if (ENABLE_MPI)
@@ -155,6 +168,32 @@ find_package(SystemInfo)
 # Git information
 find_package(GitInfo)
 gitinfo(${CMAKE_SOURCE_DIR})
+
+## Compiler FLAGS
+if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=medium")
+  list(APPEND Fortran_FLAGS "-D_MPI_")
+  list(APPEND Fortran_FLAGS "-DCLUSTER")
+  list(APPEND Fortran_FLAGS "-DPGI")
+  list(APPEND Fortran_FLAGS "-DOPENACC")
+  list(APPEND Fortran_FLAGS "-Mfree")
+  list(APPEND Fortran_FLAGS "-mp=multicore,gpu")
+  list(APPEND Fortran_FLAGS "-acc")
+  list(APPEND Fortran_FLAGS "-gpu=cc80")
+  list(APPEND Fortran_FLAGS "-Mcudalib=cublas")
+  list(APPEND Fortran_FLAGS "-Mcuda=lineinfo")
+  list(APPEND Fortran_FLAGS "-Minfo=mp,acc")
+  list(APPEND Fortran_FLAGS "-gopt")
+  list(APPEND Fortran_FLAGS "-traceback")
+  list(APPEND Fortran_FLAGS "-Mextend")
+  list(APPEND Fortran_FLAGS "-Mnoframe")
+
+  #CUDALIB= -L$(CUDA_LIB) -lcufft -lcublasLt -lcublas -lcudart
+  if (MKL_FOUND)
+    list(APPEND Fortran_FLAGS "-m64")
+  endif()
+endif()
+
 
 ## Compiler FLAGS
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
@@ -239,11 +278,11 @@ add_subdirectory(tests)
 set(CPACK_ARCHIVE_COMPONENT_INSTALL 1)
 set(CPACK_ARCHIVE_GENERATOR "TBZ2")
 set(CPACK_SOURCE_GENERATOR "ZIP")
-set(CPACK_PACKAGE_VERSION "2.2.0")
+set(CPACK_PACKAGE_VERSION "2.3.0")
 set(CPACK_PACKAGE_NAME "CHAMP")
-set(CPACK_ARCHIVE_FILE_NAME "CHAMP-v2.2.0.zip")
-set(CPACK_PACKAGE_VERSION "v2.2.0")
+set(CPACK_ARCHIVE_FILE_NAME "CHAMP-v2.3.0.zip")
+set(CPACK_PACKAGE_VERSION "v2.3.0")
 set(CPACK_PACKAGE_VERSION_MAJOR "2")
-set(CPACK_PACKAGE_VERSION_MINOR "2")
+set(CPACK_PACKAGE_VERSION_MINOR "3")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 include(CPack)

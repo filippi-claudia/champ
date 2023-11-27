@@ -59,6 +59,14 @@ target_compile_options(dmc.mov1
   "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
   )
 
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")
+  	target_link_options(dmc.mov1
+	  PRIVATE
+	  ${Fortran_FLAGS}
+	  "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+	  )
+  endif()
+
 if (TREXIO_FOUND)
   target_link_libraries(dmc.mov1
     PRIVATE
@@ -73,6 +81,7 @@ else()
     pspline
     parser
     ${LINEAR_ALGEBRA}
+    ${CUDA_LIBRARIES}
     MPI::MPI_Fortran)
 endif()
 

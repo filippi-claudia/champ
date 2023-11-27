@@ -1265,9 +1265,6 @@ subroutine read_csf_file(file_determinants)
         enddo
     endif
 
-    icsfs = 1
-    call bcast(icsfs)
-
     if (wid) close(iunit)
 
 end subroutine read_csf_file

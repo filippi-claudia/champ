@@ -42,28 +42,14 @@ jobs:
         module load trexio/2.4.0-intel
         module load qmckl/0.5.4-intel
 
-
+        which mpirun
         export LD_LIBRARY_PATH=/software/intel/oneapi/mkl/latest/lib/intel64:/software/intel/oneapi/mpi/latest/lib:/software/intel/oneapi/intelpython/python3.7/lib:$LD_LIBRARY_PATH
-        export LD_RUN_PATH=/software/intel/oneapi/compiler/latest/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
-        export TREXIO_DIR="/software/trexio"
-        export QMCKL_DIR="/software/qmckl"
-        echo $TREXIO_DIR
-        echo $QMCKL_DIR
+        export LD_LIBRARY_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.7.0/linux/compiler/lib/intel64_lin:$LD_LIBRARY_PATH
+        export LD_RUN_PATH=/home/filippi/lib:/software/intel/oneapi/compiler/2021.7.0/linux/compiler/lib/intel64_lin:/software/intel/oneapi/mkl/latest/lib/intel64:$LD_RUN_PATH
         cmake --version
-        cmake -H. -Bbuild \
-          -DCMAKE_Fortran_COMPILER=mpiifort \
-          -DCMAKE_C_COMPILER=mpiicc \
-          -DBLA_STATIC=ON \
-          -DBLA_VENDOR=Intel10_64lp \
-          -DENABLE_TREXIO=ON \
-          -DTREXIO_LIBRARY=/software/trexio/lib/libtrexio.so \
-          -DTREXIO_INCLUDE_DIR=/software/trexio/include/ \
-          -DHDF5_LIBRARIES=/software/hdf5/1.14.1/lib/libhdf5.so \
-          -DHDF5_INCLUDE_DIRS=/software/hdf5/1.14.1/include \
-          -DENABLE_QMCKL=ON \
-          -DQMCKL_LIBRARY=/software/qmckl/0.5.4/lib/libqmckl.so \
-          -DQMCKL_INCLUDE_DIR=/software/qmckl/0.5.4/include
-
+        export TREXIO_DIR=/software/trexio
+        export QMCKL_DIR=/software/trexio
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_C_COMPILER=mpiicc -DBLA_STATIC=ON -DBLA_VENDOR=Intel10_64lp -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=/software/trexio/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=/software/trexio/include/ -DHDF5_LIBRARIES=/software/hdf5/1.14.1/lib/libhdf5.so -DHDF5_INCLUDE_DIRS=/software/hdf5/1.14.1/include
         cmake --build build -- -j8
         cd build
         ctest --output-on-failure --verbose

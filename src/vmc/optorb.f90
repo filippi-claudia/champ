@@ -11,7 +11,7 @@ contains
       use optwf_control, only: ioptorb
       use orb_mat_022, only: ideriv
       use orb_mat_033, only: ideriv_ref,irepcol_ref
-      use orbval,  only: orb      
+      use orbval,  only: orb
       use Bloc, only: b, tildem
       use multimat, only: aa
       use multislater, only: detiab
