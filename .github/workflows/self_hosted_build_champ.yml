@@ -61,8 +61,8 @@ jobs:
           -DHDF5_LIBRARIES=/software/hdf5/1.14.1/lib/libhdf5.so \
           -DHDF5_INCLUDE_DIRS=/software/hdf5/1.14.1/include \
           -DENABLE_QMCKL=ON \
-          -DQMCKL_LIBRARY=/software/qmckl/0.5.4/lib/libqmckl.so \
-          -DQMCKL_INCLUDE_DIR=/software/qmckl/0.5.4/include
+          -DQMCKL_LIBRARY=/software/qmckl/lib/libqmckl.so \
+          -DQMCKL_INCLUDE_DIR=/software/qmckl/include
 
         cmake --build build -- -j8
         cd build
