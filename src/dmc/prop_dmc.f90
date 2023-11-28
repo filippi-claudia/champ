@@ -79,9 +79,9 @@ contains
       write(ounit,40) 'Dip   ',dip,diperr
 
 
-      30 format('-------- dipole operator averages  ----------')
-      40 format(a6,'   ',f16.8,' +- ',f16.8)
-      50 format(a25,' ',3f12.8)
+      30   format('-------- dipole operator averages  ----------')
+      40   format(a6,'   ',f16.8,' +- ',f16.8)
+      50   format(a25,' ',3f12.8)
 
       return
 contains
