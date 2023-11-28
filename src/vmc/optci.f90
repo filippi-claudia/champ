@@ -147,7 +147,7 @@ contains
         enddo
       enddo
 
-!$ iflg = 0: init *cum, *cm2 as well
+! $ iflg = 0: init *cum, *cm2 as well
       if(iflg.gt.0) return
 
       do k=1,nstates
