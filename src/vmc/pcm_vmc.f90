@@ -170,7 +170,7 @@ contains
       implicit none
 
       integer :: i
-      real(dp) :: pcms = 0, pcmv = 0
+      real(dp) :: pcms, pcmv
 
 
       if(ipcm.eq.0) return
