@@ -363,7 +363,7 @@ contains
       orb_w_bsum(istate)=0.d0
 
       enddo
-!$ iflg = 0: init *cum, *cm2 as well
+! $ iflg = 0: init *cum, *cm2 as well
       if(iflg.gt.0) return
 
       ns_current=0

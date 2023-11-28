@@ -55,7 +55,7 @@ contains
        vprop_sum(i)=0.d0
       enddo
 
-!$ iflg = 0: init *cum, *cm2 as well
+! $ iflg = 0: init *cum, *cm2 as well
       if(iflg.gt.0) return
       do i=1,nprop
        vprop_cum(i)=0.d0
