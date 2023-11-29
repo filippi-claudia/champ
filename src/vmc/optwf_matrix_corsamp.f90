@@ -38,7 +38,7 @@ contains
 
       integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk
       integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, nadorb_sav, iter
-      integer :: iwft, k, k_demax = 0, k_demin = 0
+      integer :: iwft, k, k_demax, k_demin
       integer :: lwork, lwork_all_save, lwork_ci_save, nblk_sav
       real(dp) :: add_diag_sav, de_worse1, de_worse2
       real(dp) :: de_worse3, de_worse_err1, de_worse_err2, de_worse_err3
@@ -593,7 +593,7 @@ contains
       implicit none
 
       integer :: i, ierr, iwadd_diag, j, k
-      integer :: k_min = 0, nfunc, npts
+      integer :: k_min, nfunc, npts
       integer, parameter :: MFUNC = 3
       real(dp) :: add_diag_log_min, add_diag_min, ee, energy_max
       real(dp) :: energy_min, energy_var, eopt, rms

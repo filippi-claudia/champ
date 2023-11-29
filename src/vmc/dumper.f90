@@ -128,7 +128,7 @@ contains
       rewind 10
       read(10) nproco
       if(nproco.ne.nproc) write(ounit,'(''Warning: different number of processors'',/ &
-       &,9x,''old number of processors'',i3,/,9x,''continuing with'',i3,'' processors'')') &
+       ,9x,''old number of processors'',i3,/,9x,''continuing with'',i3,'' processors'')') &
        nproco,nproc
       read(10) ((irn(i,j),i=1,8),j=0,nproco-1)
       if(idtask.le.nproco-1) call setrn(irn(1,idtask))

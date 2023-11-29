@@ -364,7 +364,7 @@ contains
 
       implicit none
 
-      integer :: iu, i, j, ipcm_grid = 0
+      integer :: iu, i, j, ipcm_grid
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return
 
@@ -387,7 +387,7 @@ contains
 
       implicit none
 
-      integer :: iu, i, j, ipcm_grid = 0
+      integer :: iu, i, j, ipcm_grid
 
       if (ipcm.eq.0.or.ipcm_grid.eq.0) return
 

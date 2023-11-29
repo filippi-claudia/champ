@@ -21,10 +21,10 @@ contains
       use vmc_mod, only: nbjx
       implicit none
 
-      integer :: i, i1, i2, ic, ic_good = 0
-      integer :: iel, iel_good = 0, ii, imove
+      integer :: i, i1, i2, ic, ic_good
+      integer :: iel, iel_good, ii, imove
       integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iq
-      integer :: iq_good = 0, iw
+      integer :: iq_good, iw
       real(dp) :: costh, p, pe, psid
       real(dp) :: psidi, ri, t_cum
       real(dp) :: t_norm, t_normi, tauprim

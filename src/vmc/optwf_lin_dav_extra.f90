@@ -775,7 +775,7 @@ contains
 
       implicit none
 
-      integer :: i, iadiag = 0, icsf, iroot
+      integer :: i, iadiag, icsf, iroot
 
 
       do i=1,ndet
