@@ -1,10 +1,20 @@
-#install trexio with hdf5 
-#install qmckl linked to trexio
-#set or replace the directories  regarding your installation 
-trexio_dir=''
-qmckl_dir=''
+#!/bin/bash
+# Install trexio with hdf5
+# Install qmckl linked to trexio
+# Set the library paths according to your installation
 
-cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort  -DENABLE_QMCKL=ON -DBLAS_LIBRARIES="-qmkl=parallel"  -DQMCKL_FOUND="TRUE" -DQMCKL_INCLUDE_DIR=${qmckl_dir}/include -DQMCKL_LIBRARY=${qmckl_dir}/lib/libqmckl.so -DENABLE_TREXIO=ON -DTREXIO_FOUND="TRUE" -DTREXIO_INCLUDE_DIR=${trexio_dir}/include -DTREXIO_LIBRARY=${trexio_dir}/lib/libtrexio.so -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON 
+compiler=''             # 'mpiifort' or 'mpiifx'
+trexio_dir=''           # Root directory of TREXIO library
+qmckl_dir=''            # Root directory of QMCkl library
 
-cmake --build build
+cmake -S. -Bbuild \
+    -DCMAKE_Fortran_COMPILER=${compiler} \
+    -DENABLE_TREXIO=ON \
+    -DTREXIO_INCLUDE_DIR=${trexio_dir}/include \
+    -DTREXIO_LIBRARY=${trexio_dir}/lib/libtrexio.so \
+    -DENABLE_QMCKL=ON \
+    -DQMCKL_INCLUDE_DIR=${qmckl_dir}/include \
+    -DQMCKL_LIBRARY=${qmckl_dir}/lib/libqmckl.so \
+
+cmake --build build -j
 

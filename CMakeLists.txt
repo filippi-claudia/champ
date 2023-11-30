@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
 # Project's name
-project(CHAMP VERSION 2.3.0 LANGUAGES Fortran CXX C)
+project(CHAMP VERSION 2.3.0 LANGUAGES Fortran C)
 
 
 # Needed for something which we don't know
@@ -169,7 +169,7 @@ find_package(SystemInfo)
 find_package(GitInfo)
 gitinfo(${CMAKE_SOURCE_DIR})
 
-## Compiler FLAGS
+# List of Fortran flags for Nvidia's NVHPC compiler begins here
 if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")
   list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=medium")
   list(APPEND Fortran_FLAGS "-D_MPI_")
@@ -193,9 +193,10 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")
     list(APPEND Fortran_FLAGS "-m64")
   endif()
 endif()
+# List of Fortran flags for Nvidia's NVHPC compiler ends here
 
 
-## Compiler FLAGS
+# List of Fortran flags for GNU compiler begins here
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-none")
   list(APPEND Fortran_FLAGS "-D_MPI_")
@@ -224,9 +225,10 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
     #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
     list(APPEND Fortran_FLAGS "-m64")
   endif()
-  #set(CMAKE_Fortran_FORMAT_FREE_FLAG "-ffree-form")
+  # List of Fortran flags for GNU compiler ends here
 
-elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+# List of Fortran flags for Intel's ifort compiler begins here
+elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
   list(APPEND Fortran_FLAGS "-O2")
   list(APPEND Fortran_FLAGS "-fPIC")
   list(APPEND Fortran_FLAGS "-implicitnone")
@@ -236,21 +238,32 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
-    #list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "bounds" )
   else()
   endif()
   if (TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
+  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-free")
+  # List of Fortran flags for Intel's ifort compiler ends here
 
-  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-fixed -132")
-  #if (MKL_FOUND)
-  #    list(APPEND Fortran_FLAGS "-i8")
-  #endif()
-
-  # debug
-  # list(APPEND Fortran_FLAGS "-g" "-debug" "all" "-traceback")
-
+# List of Fortran flags for Intel's LLVM based compiler begins here
+elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "IntelLLVM")
+  list(APPEND Fortran_FLAGS "-O2")
+  list(APPEND Fortran_FLAGS "-fPIC")
+  list(APPEND Fortran_FLAGS "-implicitnone")
+  list(APPEND Fortran_FLAGS "-finline" "-align" "array64byte" "-fma" "-ftz" "-fomit-frame-pointer")
+	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
+  list(APPEND Fortran_FLAGS "-D_MPI_")
+  list(APPEND Fortran_FLAGS "-DCLUSTER")
+  if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+    list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
+  else()
+  endif()
+  if (TREXIO_FOUND)
+    list(APPEND Fortran_FLAGS "-ltrexio")
+  endif()
+  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-free")
+  # List of Fortran flags for Intel's LLVM based compiler ends here
 
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")

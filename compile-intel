@@ -1,2 +1,9 @@
-cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-cmake --build build
+#!/bin/bash
+
+MPIFC='mpiifort'    # OR 'mpiifx'   Intel's LLVM based compiler
+
+cmake -S. -Bbuild \
+    -DCMAKE_Fortran_COMPILER=${MPIFC}
+
+cmake --build build -j
+
