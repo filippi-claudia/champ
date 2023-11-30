@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Load the following modules on Fugaku Supercomputer
+. /vol0004/apps/oss/spack/share/spack/setup-env.sh
+spack load cmake@3.24.3%fj@4.8.1/p5qsrqc
+spack load fujitsu-mpi@head%fj@4.8.1
+spack load hdf5@1.12.2%fj@4.8.1/tpglq6h
+spack load fujitsu-ssl2@head%fj@4.8.1/nndozbk
+
+MPIFC='mpifrt'    # Fujitsu Fortran compiler
+MPICC='mpifcc'    # Fujitsu C compiler
+
+cmake -S. -Bbuild \
+    -DCMAKE_Fortran_COMPILER=${MPIFC} \
+    -DCMAKE_C_COMPILER=${MPICC}
+
+cmake --build build -j
+

@@ -373,7 +373,7 @@ ENDIF()
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
     )
 
-  if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")    
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
      target_link_options(vmc.mov1
        PRIVATE
        ${Fortran_FLAGS}

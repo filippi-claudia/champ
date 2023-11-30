@@ -195,6 +195,17 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")
 endif()
 # List of Fortran flags for Nvidia's NVHPC compiler ends here
 
+# List of Fortran flags for Fujitsu compiler begins here
+if(CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
+  message(STATUS "Fujitsu compiler detected :: ")
+  list(APPEND Fortran_FLAGS "-O3" "-Cpp" "-Nalloc_assign" "-Fwide" "-fs" "-Kopenmp" "-Kparallel" "-Kfast" "-mcmodel=large" )
+  list(APPEND Fortran_FLAGS "-D_MPI_")
+  list(APPEND Fortran_FLAGS "-DCLUSTER")
+  if (TREXIO_FOUND)
+     list(APPEND Fortran_FLAGS "-L${TREXIO_LIBRARY} -ltrexio -I${TREXIO_INCLUDE_DIR}")
+  endif()
+endif()
+# List of Fortran flags for Fujitsu compiler ends here
 
 # List of Fortran flags for GNU compiler begins here
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
