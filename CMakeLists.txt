@@ -276,6 +276,20 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "IntelLLVM")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-free")
   # List of Fortran flags for Intel's LLVM based compiler ends here
 
+#List of Fortran flags for LLVM "classic" Flang based compiler begins here
+	#This include flang and aocc-flang and shouldn't be confused with flang-new (LLVMFlang in cmake)
+elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Flang")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large")
+  list(APPEND Fortran_FLAGS "-D_MPI_")
+  list(APPEND Fortran_FLAGS "-DCLUSTER")
+  if (TREXIO_FOUND)
+    list(APPEND Fortran_FLAGS "-ltrexio")
+  endif()
+
+  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132")
+
+#List of Fortran flags for LLVM Flang based compiler ends here
+
 elseif(Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
 endif()
