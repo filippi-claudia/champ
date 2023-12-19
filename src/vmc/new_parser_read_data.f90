@@ -14,6 +14,9 @@ subroutine header_printing()
 #if defined(TREXIO_FOUND)
       use trexio
 #endif
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      use qmckl_data
+#endif
     use, intrinsic :: iso_fortran_env, only: iostat_end
 
     implicit none
@@ -110,6 +113,10 @@ subroutine header_printing()
     if (TREXIO_SUCCESS == 0) write(ounit,*) "TREXIO library version     :: ", TREXIO_PACKAGE_VERSION
 #endif
     write(ounit,*)
+#if defined(QMCKL_FOUND)
+    if (QMCKL_SUCCESS == 0) write(ounit,*)  "QMCkl library found        :: ", "True"
+#endif
+    write(ounit,*)
 
 
 
@@ -131,6 +138,7 @@ subroutine read_molecule_file(file_molecule)
       use multiple_geo, only: pecent
       use periodic_table, only: atom_t,element
       use precision_kinds, only: dp
+      use pseudo, only: nloc
       use system,  only: atomtyp,cent,iwctype,ncent,ncent_tot,nctype
       use system,  only: nctype_tot,newghostype,nghostcent,symbol,znuc
 
@@ -258,10 +266,14 @@ subroutine read_molecule_file(file_molecule)
 
     if (count == 4) then
             ! Get the znuc for each unique atom
-            do j = 1, nctype
+        do j = 1, nctype
             atoms = element(atomtyp(j))
-            znuc(j) = atoms%nvalence
-            enddo
+            if (nloc == 0) then
+                znuc(j) = atoms%znuclear
+            else
+                znuc(j) = atoms%znuclear - atoms%core
+            endif
+        enddo
     endif
 
     ncent_tot = ncent + nghostcent
