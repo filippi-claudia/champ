@@ -54,6 +54,7 @@ module trexio_read_data
         use contrl_file, only: ounit, errunit
         use general, only: pooldir
         use precision_kinds, only: dp
+        use pseudo, only: nloc
         use system, only: nelec
         use system, only: nup
         use system, only: ndn
@@ -167,7 +168,11 @@ module trexio_read_data
         ! Get the znuc for each unique atom
         do j = 1, nctype
             atoms = element(atomtyp(j))
-            znuc(j) = atoms%nvalence
+            if (nloc == 0) then
+                znuc(j) = atoms%znuclear
+            else
+                znuc(j) = atoms%znuclear - atoms%core
+            endif
         enddo
 
         ncent_tot = ncent + nghostcent
@@ -558,9 +563,9 @@ module trexio_read_data
         use trexio
         use contrl_file,        only: backend
         use slater,             only: norb
-  
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
         use qmckl_data
 #endif
 
@@ -578,7 +583,7 @@ module trexio_read_data
         trex_orbitals_file = 0
 
         !   External file reading
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
         if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
             file_trexio_path = pooldir // file_trexio_new(7:)
         else

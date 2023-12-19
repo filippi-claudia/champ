@@ -16,7 +16,7 @@ contains
 
       use mpi
       use mpiconf, only: idtask
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use trexio_read_data, only: update_trexio_orbitals
 #endif
 
@@ -25,7 +25,7 @@ contains
       integer :: index, iter, iwf_fit
       character(len=40) filetype,wf,itn
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       call update_trexio_orbitals
 #endif
 

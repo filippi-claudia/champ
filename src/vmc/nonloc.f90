@@ -423,7 +423,7 @@ contains
       use qua,     only: nquad
       use precision_kinds, only: dp
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
 #endif
 
@@ -442,7 +442,7 @@ contains
       real(dp), dimension(3) :: dtmp
       real(dp) :: ddtmp
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       real(dp), allocatable :: mo_qmckl(:,:)
       integer :: rc
       real(dp), allocatable :: ao_qmckl(:,:,:)
@@ -487,7 +487,7 @@ contains
          ider=0
          if(iforce_analy.gt.0) ider=1
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
 
          if(iperiodic.eq.0) then
 !     Send electron coordinates to QMCkl to compute the MOs at these positions

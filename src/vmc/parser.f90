@@ -159,7 +159,7 @@ subroutine parser
       use system,  only: atomtyp,cent,iwctype,ncent,ncent_tot,nctype
       use system,  only: nctype_tot,ndn,nelec,newghostype,nghostcent,nup
       use system,  only: symbol,znuc
-      use vd_mod, only: dmc_ivd
+      use vd_mod,  only: dmc_ivd
       use verify_orbitals_mod, only: verify_orbitals
       use vmc_mod, only: mterms,norb_tot
       use vmc_mod, only: nwftypejas,stoj,jtos,nstoj_tot,nstojmax,extraj
@@ -179,23 +179,22 @@ subroutine parser
       use verify_orbitals_mod, only: verify_orbitals
       use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
-      use contrl_file, only: backend
+      use contrl_file,       only: backend
       use trexio            ! trexio library for reading and writing hdf5 files
 #endif
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
 #endif
 
-
   use, intrinsic :: iso_fortran_env, only : iostat_end
-
 
   !! Allocate_periodic
   use periodic,         only: npoly,np,cutg,cutg_big,cutg_sim,cutg_sim_big, alattice
   use periodic,         only: rlatt, rlatt_inv, rlatt_sim, rkvec_shift, n_images, ell
-  use ewald_breakup, only: pot_en_coul_ewald, pot_ee_ewald, set_ewald
-  use  m_ewald, only : allocate_m_ewald
-  use  m_pseudo, only : allocate_m_pseudo
+  use ewald_breakup,    only: pot_en_coul_ewald, pot_ee_ewald, set_ewald
+  use m_ewald,          only: allocate_m_ewald
+  use m_pseudo,         only: allocate_m_pseudo
 
 ! CHAMP modules
 
@@ -206,14 +205,7 @@ subroutine parser
 ! Note the additions: Ravindra
 ! Note the additions: Ravindra
 
-
-
-
-
-
-
 ! Note the following modules are new additions
-
 
 !
   implicit none
@@ -235,6 +227,7 @@ subroutine parser
   character(len=100)         :: real_format    = '(A, T40, ":: ", T42, F25.16)'
   character(len=100)         :: int_format     = '(A, T40, ":: ", T50, I0)'
   character(len=100)         :: string_format  = '(A, T40, ":: ", T50, A)'
+  character(len=100)         :: array_format   = '(A, "(",I0,")", T40, ":: ", T42, F25.16)'
 
 !------------------------------------------------------------------------- BEGIN
 
@@ -272,7 +265,6 @@ subroutine parser
   character(len=10)          :: eunit
   character(len=32)          :: cseed
   integer                    :: irn(8), cent_tmp(3), nefpterm, nstates_g
-!  integer, allocatable       :: anorm(:) ! dimensions = nbasis
   real(dp), allocatable       :: anorm(:) ! dimensions = nbasis
 
 ! local counter variables
@@ -286,17 +278,21 @@ subroutine parser
   real(dp), parameter        :: one  = 1.d0
   real(dp), parameter        :: two  = 2.d0
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
-  integer, allocatable :: keep(:)
-  integer(qmckl_exit_code) :: rc
-  integer*8 :: n8
-  character*(1024) :: err_message = ''
-  integer*8 :: norb_qmckl
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+  integer(qmckl_exit_code)   :: rc
+  integer*8                  :: n8
+  integer*8                  :: norb_qmckl
+  integer, allocatable       :: keep(:)
+  character*(1024)           :: err_message = ''
+
+  logical                    :: do_nucl_fitcusp
+  real(dp), allocatable      :: nucl_fitcusp_radius(:)
+  real(dp), parameter        :: a_cusp = 1.74891d0
+  real(dp), parameter        :: b_cusp = 0.126057d0
 #endif
 
 ! Initialize # get the filenames from the commandline arguments
   call fdf_init(file_input, 'parser.log')
-
 
   call flaginit_new()
   !! Number of input variables found so far :: 171
@@ -1753,9 +1749,6 @@ subroutine parser
     call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
   endif
 
-
-
-
 ! (13) Forces information (either block or from a file) [#####]
 
   if (fdf_load_defined('forces') ) then
@@ -1983,27 +1976,25 @@ subroutine parser
   ! It does the processing of the input read so far and initializes some
   ! arrays if something is missing.
 
-
-
   !qmckl initialization
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) && (ENABLE_QMCKL)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
   if (use_qmckl) then
 
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
 
      ! Create a new QMCkl context
-      qmckl_ctx = qmckl_context_create()
-      write(ounit, *) " QMCkl initial context created  " , qmckl_ctx , " successfully "
+     qmckl_ctx = qmckl_context_create()
+     write(ounit, *) " QMCkl initial context created  " , qmckl_ctx , " successfully "
 
-      if(ioptorb.gt.0) then
+     if(ioptorb.gt.0) then
 
        file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
-        if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
-            file_trexio_path = pooldir // file_trexio_new(7:)
-        else
-            file_trexio_path = file_trexio_new
-        endif
+       if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
+           file_trexio_path = pooldir // file_trexio_new(7:)
+       else
+           file_trexio_path = file_trexio_new
+       endif
 
        if(wid) then
          if (trexio_inquire(file_trexio_path) .eq. TREXIO_SUCCESS) then
@@ -2021,12 +2012,40 @@ subroutine parser
       else
        iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
        write(ounit, *) "Status QMCKl trexio read file_trexio ", iostat
-      endif
-
+     endif
 
      if (iostat /= QMCKL_SUCCESS) then
        call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
      end if
+
+     if(nloc.eq.0) then
+       allocate(nucl_fitcusp_radius(ncent))
+       do_nucl_fitcusp = .true.
+
+       if(.not. do_nucl_fitcusp) then
+          nucl_fitcusp_radius = 0.d0
+        else
+         do k=1,ncent
+           nucl_fitcusp_radius(k) = 1.d0/(a_cusp*znuc(iwctype(k)+b_cusp))
+           write(ounit, array_format) "Radius fit cusps for atom", k, nucl_fitcusp_radius(k)
+         enddo
+
+         ! Avoid dummy atoms
+         do k=1,ncent
+          if (znuc(k) < 5.d-1) then
+            nucl_fitcusp_radius(k) = 0.d0
+          endif
+         enddo
+
+         write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx
+         iostat = qmckl_set_mo_basis_r_cusp(qmckl_ctx,dble(nucl_fitcusp_radius(:)), int(ncent,8))
+         write(ounit, *) "Status QMCKl set mo basis r cusp  ", iostat
+
+         if (iostat /= QMCKL_SUCCESS) then
+           call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
+         end if
+       endif
+     endif
 
      !! to check change in mo's number to be computed by qmckl inside champ
      norb_qmckl=norb+nadorb
