@@ -1,0 +1,36 @@
+%module general
+    title           'Benzene RHF calc cc-VDZ basis converted using gamess-trexio-champ converter'
+    pool            './pool/'
+    pseudopot       ECP
+    basis	    BASISGRID
+    mode            'vmc_one_mpi1'
+    ipr		    4
+%endmodule
+
+
+#load molecule        $pool/champ_v2_benzene_geom.xyz
+load trexio	      TREXIO/benzene.hdf5
+
+# These two files are taken from the original gamess2qmc converter
+load basis_num_info  $pool/champ_v3_benzene_basis_pointers.bfinfo
+load orbitals        champ_v3_benzene_trexio_orbitals.lcao
+
+
+load determinants    champ_v2_benzene_determinants_state1.det
+load symmetry        champ_v2_benzene_symmetry.sym
+load jastrow         jastrow.jas
+
+%module electrons
+    nup           15
+    nelec         30
+%endmodule
+
+
+%module blocking_vmc
+    vmc_nstep     1
+    vmc_nblk      20
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+    vmc_isite	  0
+%endmodule
+
