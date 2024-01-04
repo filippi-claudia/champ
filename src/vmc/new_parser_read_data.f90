@@ -114,7 +114,7 @@ subroutine header_printing()
 #endif
     write(ounit,*)
 #if defined(QMCKL_FOUND)
-    if (QMCKL_SUCCESS == 0) write(ounit,*)  "QMCkl library found        :: ", "True"
+    if (QMCKL_SUCCESS_DEVICE == 0) write(ounit,*)  "QMCkl library found        :: ", "True"
 #endif
     write(ounit,*)
 

@@ -20,7 +20,7 @@ set(QMCKL_SEARCH_PATHS
 )
 
 find_path(QMCKL_INCLUDE_DIR
-	  NAMES qmckl.h
+	  NAMES qmckl_gpu.h
 	  HINTS $ENV{QMCKL_DIR}
 	  PATH_SUFFIXES include/qmckl include
 	  PATHS ${QMCKL_SEARCH_PATHS}

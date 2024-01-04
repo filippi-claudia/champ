@@ -185,6 +185,7 @@ subroutine parser
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
+      use, intrinsic :: iso_c_binding
 #endif
 
   use, intrinsic :: iso_fortran_env, only : iostat_end
@@ -279,10 +280,18 @@ subroutine parser
   real(dp), parameter        :: two  = 2.d0
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-  integer(qmckl_exit_code)   :: rc
+  !integer(qmckl_exit_code)   :: rc
+  integer                    :: rc
   integer*8                  :: n8
   integer*8                  :: norb_qmckl
-  integer, allocatable       :: keep(:)
+  !integer*8, allocatable       :: keep(:)
+  type(integer*8), allocatable, target :: keep(:)
+  type(c_ptr) :: keep_ptr
+  type(c_ptr) :: keep_d
+  type(c_ptr) :: c_file_trexio
+  character(kind=c_char), allocatable, target :: f2ctarget(:)
+  integer :: lsc
+  
   character*(1024)           :: err_message = ''
 
   logical                    :: do_nucl_fitcusp
@@ -1984,7 +1993,7 @@ subroutine parser
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
 
      ! Create a new QMCkl context
-     qmckl_ctx = qmckl_context_create()
+     qmckl_ctx = qmckl_context_create_device(0)
      write(ounit, *) " QMCkl initial context created  " , qmckl_ctx , " successfully "
 
      if(ioptorb.gt.0) then
@@ -1997,26 +2006,43 @@ subroutine parser
        endif
 
        if(wid) then
-         if (trexio_inquire(file_trexio_path) .eq. TREXIO_SUCCESS) then
-           write(ounit,'(a)') "Removing existing " // file_trexio_path // " file"
-           call system('rm -v ' // file_trexio_path)
-         endif
+          if (trexio_inquire(file_trexio_path) .eq. TREXIO_SUCCESS) then
+             write(ounit,'(a)') "Removing existing " // file_trexio_path // " file"
+             call system('rm -v ' // file_trexio_path)
+          endif
 
-         rc = trexio_cp(file_trexio, file_trexio_path)
-         if (rc .ne. TREXIO_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to copy trexio file')
+          rc = trexio_cp(file_trexio, file_trexio_path)
+          if (rc .ne. TREXIO_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to copy trexio file')
        endif
        call MPI_Barrier( MPI_COMM_WORLD, ierr )
 
-       iostat = qmckl_trexio_read(qmckl_ctx, file_trexio_path, 1_8*len(trim(file_trexio_path)))
+       !to pass the c pointer to qmckl_gpu
+       lsc=len_trim(file_trexio_path)
+       !allocate(f2ctarget(lsc))
+       allocate(f2ctarget(lsc+1))
+       f2ctarget=trim(file_trexio_path)//c_null_char
+       c_file_trexio = c_loc(f2ctarget)
+       
+       iostat = qmckl_trexio_read_device(qmckl_ctx, c_file_trexio, 1_8*lsc)
        write(ounit, *) "Status QMCKl trexio read file_trexio_path", iostat
-      else
-       iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
+       
+    else
+
+       !to pass the c pointer to qmckl_gpu
+       lsc=len_trim(file_trexio)
+       !allocate(f2ctarget(lsc))
+       allocate(f2ctarget(lsc+1))
+       f2ctarget=trim(file_trexio)//c_null_char
+       c_file_trexio = c_loc(f2ctarget)
+       
+       iostat = qmckl_trexio_read_device(qmckl_ctx, c_file_trexio, 1_8*lsc)
        write(ounit, *) "Status QMCKl trexio read file_trexio ", iostat
+       
      endif
 
-     if (iostat /= QMCKL_SUCCESS) then
+     if (iostat /= QMCKL_SUCCESS_DEVICE) then
        call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
-     end if
+    end if
 
      if(nloc.eq.0) then
        allocate(nucl_fitcusp_radius(ncent))
@@ -2035,13 +2061,14 @@ subroutine parser
           if (znuc(k) < 5.d-1) then
             nucl_fitcusp_radius(k) = 0.d0
           endif
-         enddo
+       enddo
+       
+! commented seeems not avialble in the gpu version 
+!         write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx
+!         iostat = qmckl_set_mo_basis_r_cusp_device(qmckl_ctx,dble(nucl_fitcusp_radius(:)), int(ncent,8))
+!         write(ounit, *) "Status QMCKl set mo basis r cusp  ", iostat
 
-         write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx
-         iostat = qmckl_set_mo_basis_r_cusp(qmckl_ctx,dble(nucl_fitcusp_radius(:)), int(ncent,8))
-         write(ounit, *) "Status QMCKl set mo basis r cusp  ", iostat
-
-         if (iostat /= QMCKL_SUCCESS) then
+         if (iostat /= QMCKL_SUCCESS_DEVICE) then
            call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
          end if
        endif
@@ -2054,8 +2081,8 @@ subroutine parser
      write(ounit,int_format) "QMCkl norb_qmckl=norb+nadorb", norb_qmckl
 
      !!get mo's number should correspond to norb_tot
-     rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
-     if (rc /= QMCKL_SUCCESS) then
+     rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, n8)
+     if (rc /= QMCKL_SUCCESS_DEVICE) then
         call fatal_error('INPUT: QMCkl getting mo_num from verify orbitals')
      end if
 
@@ -2066,19 +2093,31 @@ subroutine parser
         !! allocate orbital selection array for qmckl
         allocate(keep(n8))
 
-        !! selecting range of orbitals to compute qith QMCkl
+        !! selecting range of orbitals to compute with QMCkl
+        ! keep_d = c_loc(keep(1))
+        keep_ptr = c_loc(keep)
         keep(1:norb_qmckl) = 1
         keep((norb_qmckl+1):n8) = 0
 
-        rc = qmckl_mo_basis_select_mo(qmckl_ctx, keep, n8)
-        if (rc /= QMCKL_SUCCESS) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
+        !!copy and pass it to the gpu
+        keep_d = qmckl_malloc_device(qmckl_ctx, c_int64_t*n8);
+        rc = qmckl_memcpy_H2D(qmckl_ctx, keep_d, keep_ptr, c_int64_t*n8);
+        if (rc /= QMCKL_SUCCESS_DEVICE) write(ounit,*) 'Error 0001 copying keep from device'
+        
+        
+        rc = qmckl_mo_basis_select_mo_device(qmckl_ctx, keep_d, n8)
+        if (rc /= QMCKL_SUCCESS_DEVICE) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
 
         !!deallocate keep
-        deallocate(keep)
-
+        if(allocated(keep)) deallocate(keep)
+        rc = qmckl_free_host(qmckl_ctx,keep_ptr)
+        if (rc /= QMCKL_SUCCESS_DEVICE) call fatal_error('INPUT: QMCkl free keep_ptr')
+        rc = qmckl_free_device(qmckl_ctx,keep_d)
+        if (rc /= QMCKL_SUCCESS_DEVICE) call fatal_error('INPUT: QMCkl free keep_d')
+        
         !!getting new number of orbitals to be computed
-        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
-        if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl mo_num from verify orbitals')
+        rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, n8)
+        if (rc /= QMCKL_SUCCESS_DEVICE) call fatal_error('INPUT: QMCkl mo_num from verify orbitals')
         write(ounit,int_format) "QMCkl number of orbitals after mo's selec", n8
         write(ounit,int_format) "QMCkl norb_qmckl after mo's selec", norb_qmckl
 

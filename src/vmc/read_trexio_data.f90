@@ -567,6 +567,7 @@ module trexio_read_data
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
         use qmckl_data
+        use, intrinsic :: iso_c_binding
 #endif
 
         implicit none
@@ -578,9 +579,21 @@ module trexio_read_data
         integer(8)                      :: trex_orbitals_file
         integer                         :: k, rc, ierr
 
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+        ! for the gpu interface
+        type(c_ptr) c_file_trexio_path
+        character(kind=c_char), allocatable, target :: f2ctarget(:)
+        integer :: lsc
+#endif
+        
+        
         if(ioptorb.eq.0) return
 
         trex_orbitals_file = 0
+        
+
+        
 
         !   External file reading
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
@@ -590,13 +603,21 @@ module trexio_read_data
             file_trexio_path = file_trexio_new
         endif
 
+        !allocate fortran char to c string
+        lsc=len_trim(file_trexio_path)
+        allocate(f2ctarget(lsc+1))
+        f2ctarget=trim(file_trexio_path)//c_null_char
+        c_file_trexio_path = c_loc(f2ctarget)
+        
+
+        
         write(ounit,*) '---------------------------------------------------------------------------'
         write(ounit,*) " Updating LCAO orbitals from the file :: ",  trim(file_trexio_path)
         write(ounit,*) '---------------------------------------------------------------------------'
 
         ! Destroy the existing QMCkl context first
         write(ounit, *) " QMCkl destroying the old context " , qmckl_ctx , " successfully "
-        rc = qmckl_context_destroy(qmckl_ctx)
+        rc = qmckl_context_destroy_device(qmckl_ctx)
         call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
         write(ounit, '(a)') " QMCkl old context destroyed successfully "
 
@@ -622,8 +643,8 @@ module trexio_read_data
         call MPI_Barrier( MPI_COMM_WORLD, ierr )
 
         ! Create a new QMCkl context with the new trexio file
-        qmckl_ctx = qmckl_context_create()
-        rc = qmckl_trexio_read(qmckl_ctx, file_trexio_path, 1_8*len(trim(file_trexio_path)))
+        qmckl_ctx = qmckl_context_create_device(0)
+        rc = qmckl_trexio_read_device(qmckl_ctx, c_file_trexio_path, 1_8*lsc)
         call trexio_error(rc, TREXIO_SUCCESS, 'INPUT: QMCkl error: Unable to read TREXIO file', __FILE__, __LINE__)
         write(ounit, *) " QMCkl new context created  ", qmckl_ctx,  " successfully "
 
