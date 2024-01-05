@@ -583,7 +583,8 @@ module trexio_read_data
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
         ! for the gpu interface
         type(c_ptr) c_file_trexio_path
-        character(kind=c_char), allocatable, target :: f2ctarget(:)
+        !character(kind=c_char), allocatable, target :: f2ctarget(:)
+        character(kind=c_char,len=:), allocatable, target :: f2ctarget
         integer :: lsc
 #endif
         
@@ -605,7 +606,7 @@ module trexio_read_data
 
         !allocate fortran char to c string
         lsc=len_trim(file_trexio_path)
-        allocate(f2ctarget(lsc+1))
+        !allocate(f2ctarget(lsc+1))
         f2ctarget=trim(file_trexio_path)//c_null_char
         c_file_trexio_path = c_loc(f2ctarget)
         

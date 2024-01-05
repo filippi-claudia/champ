@@ -289,8 +289,10 @@ subroutine parser
   type(c_ptr) :: keep_ptr
   type(c_ptr) :: keep_d
   type(c_ptr) :: c_file_trexio
-  character(kind=c_char), allocatable, target :: f2ctarget(:)
+  !character(kind=c_char), allocatable, target :: f2ctarget(:)
+  character(kind=c_char,len=:), allocatable, target :: f2ctarget
   integer :: lsc
+ 
   
   character*(1024)           :: err_message = ''
 
@@ -1995,45 +1997,63 @@ subroutine parser
      ! Create a new QMCkl context
      qmckl_ctx = qmckl_context_create_device(0)
      write(ounit, *) " QMCkl initial context created  " , qmckl_ctx , " successfully "
-
+     !print*, "CIAO"
+     !print*, "file name path",  file_trexio_path
+     !print*, "file name",  file_trexio 
+     
      if(ioptorb.gt.0) then
 
-       file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
-       if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
+        file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
+        if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
            file_trexio_path = pooldir // file_trexio_new(7:)
-       else
+        else
            file_trexio_path = file_trexio_new
-       endif
+        endif
 
-       if(wid) then
-          if (trexio_inquire(file_trexio_path) .eq. TREXIO_SUCCESS) then
-             write(ounit,'(a)') "Removing existing " // file_trexio_path // " file"
-             call system('rm -v ' // file_trexio_path)
-          endif
+        if(wid) then
+           if (trexio_inquire(file_trexio_path) .eq. TREXIO_SUCCESS) then
+              write(ounit,'(a)') "Removing existing " // file_trexio_path // " file"
+              call system('rm -v ' // file_trexio_path)
+           endif
 
-          rc = trexio_cp(file_trexio, file_trexio_path)
-          if (rc .ne. TREXIO_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to copy trexio file')
-       endif
-       call MPI_Barrier( MPI_COMM_WORLD, ierr )
+           rc = trexio_cp(file_trexio, file_trexio_path)
+           if (rc .ne. TREXIO_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to copy trexio file')
+        endif
 
-       !to pass the c pointer to qmckl_gpu
-       lsc=len_trim(file_trexio_path)
-       !allocate(f2ctarget(lsc))
-       allocate(f2ctarget(lsc+1))
-       f2ctarget=trim(file_trexio_path)//c_null_char
-       c_file_trexio = c_loc(f2ctarget)
+        !       write(ounit,*) "CIAO"
+        !print*, "CIAO 2"
        
-       iostat = qmckl_trexio_read_device(qmckl_ctx, c_file_trexio, 1_8*lsc)
-       write(ounit, *) "Status QMCKl trexio read file_trexio_path", iostat
+        !to pass the c pointer to qmckl_gpu
+        lsc=len_trim(file_trexio_path)
+        f2ctarget=trim(file_trexio_path)//c_null_char
+        c_file_trexio = c_loc(f2ctarget)
+
+        !write(ounit,*) "file_trexio_path", file_trexio_path 
+        write(ounit,*) "f2ctarget", f2ctarget
+        write(ounit,*) "c file trexio", c_file_trexio
+        
+        call MPI_Barrier( MPI_COMM_WORLD, ierr )
+
+
+       
+        iostat = qmckl_trexio_read_device(qmckl_ctx, c_file_trexio, 1_8*lsc)
+        write(ounit, *) "Status QMCKl trexio read file_trexio_path", iostat
        
     else
 
+       !       write(ounit,*) "CIAO"
+       ! print*, "CIAO 2"
+       
        !to pass the c pointer to qmckl_gpu
        lsc=len_trim(file_trexio)
-       !allocate(f2ctarget(lsc))
-       allocate(f2ctarget(lsc+1))
        f2ctarget=trim(file_trexio)//c_null_char
        c_file_trexio = c_loc(f2ctarget)
+       
+       !write(ounit,*) "file_trexio_path", file_trexio_path
+       !write(ounit,*) "file_trexio", file_trexio
+       write(ounit,*) "f2ctarget", f2ctarget
+       write(ounit,*) "c file trexio", c_file_trexio
+
        
        iostat = qmckl_trexio_read_device(qmckl_ctx, c_file_trexio, 1_8*lsc)
        write(ounit, *) "Status QMCKl trexio read file_trexio ", iostat
