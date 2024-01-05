@@ -282,14 +282,10 @@ subroutine parser
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
   !integer(qmckl_exit_code)   :: rc
   integer                    :: rc
-  integer*8                  :: n8
+  integer(c_int64_t), target :: n8
   integer*8                  :: norb_qmckl
-  !integer*8, allocatable       :: keep(:)
-  type(integer*8), allocatable, target :: keep(:)
-  type(c_ptr) :: keep_ptr
-  type(c_ptr) :: keep_d
+  integer(c_int64_t), allocatable, target :: keep(:)
   type(c_ptr) :: c_file_trexio
-  !character(kind=c_char), allocatable, target :: f2ctarget(:)
   character(kind=c_char,len=:), allocatable, target :: f2ctarget
   integer :: lsc
  
@@ -2101,42 +2097,36 @@ subroutine parser
      write(ounit,int_format) "QMCkl norb_qmckl=norb+nadorb", norb_qmckl
 
      !!get mo's number should correspond to norb_tot
-     rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, n8)
+     rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, c_loc(n8))
      if (rc /= QMCKL_SUCCESS_DEVICE) then
         call fatal_error('INPUT: QMCkl getting mo_num from verify orbitals')
      end if
 
+     
      write(ounit,int_format) "QMCkl number mo found", n8
+     write(ounit,int_format) "norb_qmckl", norb_qmckl
 
      if (n8 > norb_qmckl) then
 
         !! allocate orbital selection array for qmckl
         allocate(keep(n8))
-
         !! selecting range of orbitals to compute with QMCkl
-        ! keep_d = c_loc(keep(1))
-        keep_ptr = c_loc(keep)
         keep(1:norb_qmckl) = 1
         keep((norb_qmckl+1):n8) = 0
+        
 
-        !!copy and pass it to the gpu
-        keep_d = qmckl_malloc_device(qmckl_ctx, c_int64_t*n8);
-        rc = qmckl_memcpy_H2D(qmckl_ctx, keep_d, keep_ptr, c_int64_t*n8);
-        if (rc /= QMCKL_SUCCESS_DEVICE) write(ounit,*) 'Error 0001 copying keep from device'
-        
-        
-        rc = qmckl_mo_basis_select_mo_device(qmckl_ctx, keep_d, n8)
+        !write(ounit,*) "CIAO selection"
+        rc = qmckl_mo_basis_select_mo_device(qmckl_ctx, c_loc(keep), c_loc(n8))
         if (rc /= QMCKL_SUCCESS_DEVICE) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
-
+        !write(ounit,*) "CIAO goodbye!!"
+        
+        
         !!deallocate keep
         if(allocated(keep)) deallocate(keep)
-        rc = qmckl_free_host(qmckl_ctx,keep_ptr)
-        if (rc /= QMCKL_SUCCESS_DEVICE) call fatal_error('INPUT: QMCkl free keep_ptr')
-        rc = qmckl_free_device(qmckl_ctx,keep_d)
-        if (rc /= QMCKL_SUCCESS_DEVICE) call fatal_error('INPUT: QMCkl free keep_d')
-        
+                
         !!getting new number of orbitals to be computed
-        rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, n8)
+        rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, c_loc(n8))
+        
         if (rc /= QMCKL_SUCCESS_DEVICE) call fatal_error('INPUT: QMCkl mo_num from verify orbitals')
         write(ounit,int_format) "QMCkl number of orbitals after mo's selec", n8
         write(ounit,int_format) "QMCkl norb_qmckl after mo's selec", norb_qmckl
@@ -2144,7 +2134,8 @@ subroutine parser
         !! checking if the current number of orbitals in qmckl is consistent
 
         if (n8 /= norb_qmckl) call fatal_error('INPUT: Problem in MO selection in QMCkl verify orb')
-
+        !write(ounit,*) "Finish QMCKl at PARSER!!"
+        
      endif
   endif
 #endif
