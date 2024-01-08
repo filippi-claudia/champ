@@ -21,7 +21,7 @@ module load CMake/3.23.1-GCCcore-11.3.0
 
 #cmake -H. -B build -DCMAKE_BUILD_TYPE="DEBUG" -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_C_COMPILER=mpicc -DENABLE_GPU=ON -DENABLE_QMCKL=ON -DQMCKL_FOUND="TRUE" -DQMCKL_INCLUDE_DIR=${qmckl_dir}/include -DQMCKL_LIBRARY=${qmckl_dir}/lib/libqmckl_gpu.so -DENABLE_TREXIO=ON -DTREXIO_FOUND="TRUE" -DTREXIO_INCLUDE_DIR=${trexio_dir}/include -DTREXIO_LIBRARY=${trexio_dir}/lib/libtrexio.so -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_Fortran_FLAGS="-lcusolver"
 
-cmake -H. -B build -DCMAKE_BUILD_TYPE="DEBUG" -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_C_COMPILER=mpicc -DENABLE_GPU=ON -DENABLE_QMCKL=ON -DQMCKL_FOUND="TRUE" -DQMCKL_INCLUDE_DIR=${qmckl_dir}/include -DQMCKL_LIBRARY=${qmckl_dir}/lib/libqmckl_gpu.so -DENABLE_TREXIO=ON -DTREXIO_FOUND="TRUE" -DTREXIO_INCLUDE_DIR=${trexio_dir}/include -DTREXIO_LIBRARY=${trexio_dir}/lib/libtrexio.so -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_Fortran_FLAGS="-fopenmp -fsanitize -foffload=-mgomp  -foffload=-lgfortran"
+cmake -H. -B build -DCMAKE_BUILD_TYPE="DEBUG" -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_C_COMPILER=mpicc -DENABLE_GPU=ON -DENABLE_QMCKL=ON -DQMCKL_FOUND="TRUE" -DQMCKL_INCLUDE_DIR=${qmckl_dir}/include -DQMCKL_LIBRARY=${qmckl_dir}/lib/libqmckl_gpu.so -DENABLE_TREXIO=ON -DTREXIO_FOUND="TRUE" -DTREXIO_INCLUDE_DIR=${trexio_dir}/include -DTREXIO_LIBRARY=${trexio_dir}/lib/libtrexio.so -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_Fortran_FLAGS="-fopenmp -foffload=-mgomp  -foffload=-lgfortran"
 
 cmake --build build -j 12 
 

@@ -435,7 +435,8 @@ contains
       integer :: iorb, k, m, m0, nxquad, iwforb
       integer :: nadorb_sav
 
-      real(dp), dimension(3,*) :: xquad
+      !real(dp), dimension(3,*) :: xquad
+      real(dp), dimension(3,nxquad), intent(in) :: xquad
       real(dp), dimension(nquad*nelec*2, ncent_tot) :: r_en
       real(dp), dimension(3,nquad*nelec*2, ncent_tot) :: rvec_en
       real(dp), dimension(norb_tot, *) :: orbn
@@ -446,21 +447,25 @@ contains
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       integer :: rc
-      integer*8 :: n8, na8, i_image, ivgl, i_basis
+      integer*8 :: i_image, ivgl, i_basis
+      integer(c_int64_t), target :: n8
+      integer(c_int64_t), target :: na8   
       character*(1024) :: err_message = ''
       real(dp), allocatable, target :: xqmckl_quad(:,:)
       type(c_ptr) xquad_ptr
       type(c_ptr) xquad_d
       
       !Molecular
-      real(dp), pointer :: mo_qmckl(:,:)
+      real(dp), pointer :: mo_qmckl_t(:,:)
+      real(dp), allocatable,target :: mo_qmckl(:,:)
       type(c_ptr) mo_qmckl_d
       type(c_ptr) mo_qmckl_h
       
       !Periodic
       real(dp), allocatable, target :: xqmckl_quad_i(:,:)
-      real(dp), pointer :: ao_vgl_qmckl(:,:,:)
-      real(dp), pointer :: ao_vgl_qmckl_i(:,:,:)
+      real(dp), allocatable, target :: ao_vgl_qmckl(:,:,:)
+      real(dp), allocatable, target :: ao_vgl_qmckl_i(:,:,:)
+      real(dp), pointer :: ao_vgl_qmckl_t(:,:,:)
       type(c_ptr) ao_vgl_qmckl_d
       type(c_ptr) ao_vgl_qmckl_h
       real(dp) :: rnorm
@@ -501,6 +506,12 @@ contains
 
          if(iperiodic.eq.0) then
 
+            ! get Mo's number
+            rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, c_loc(n8))
+            if (rc /= QMCKL_SUCCESS_DEVICE) then
+               write(ounit,*) 'orbitals quad Error getting mo_num from QMCkl', n8
+               stop
+            end if
             
             !     !allocate xquad array for qmckl
             allocate(xqmckl_quad(3,nxquad))
@@ -513,23 +524,18 @@ contains
             !copy this array to the gpu
             rc = qmckl_memcpy_H2D(qmckl_ctx, xquad_d, xquad_ptr, nxquad*3_8);
             if (rc /= QMCKL_SUCCESS_DEVICE) then
-               print *, 'copy xquad to decide QMCkl'
+               write(ounit,*) 'copy xquad to decide QMCkl'
                stop 
             end if            
             !Send electron coordinates to QMCkl to compute the MOs at these positions
             rc = qmckl_set_point_device(qmckl_ctx, 'N', nxquad*1_8, xquad_d, nxquad*3_8)
             if (rc /= QMCKL_SUCCESS_DEVICE) then
-               print *, 'orbitals quad Error setting electron coordinates in QMCkl'
-               print *, "nxquad", nxquad
+               write(ounit,*) 'Error setting electron coordinates xquad'
+               write(ounit,*) "nxquad", nxquad
                stop
             end if
 
-            ! get Mo's number
-            rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, n8)
-            if (rc /= QMCKL_SUCCESS_DEVICE) then
-               write(ounit,*) 'orbitals quad Error getting mo_num from QMCkl', n8
-               stop
-            end if
+
 
             !!allocate mo array for device
             mo_qmckl_d = qmckl_malloc_device(qmckl_ctx, 1_8*n8*nxquad);          
@@ -542,24 +548,44 @@ contains
              
              !allocate array for host(CPU) 
              mo_qmckl_h = qmckl_malloc_host(qmckl_ctx, 1_8*nxquad*n8);
-             rc = qmckl_memcpy_D2H(qmckl_ctx, mo_qmckl_h, mo_qmckl_d, 5_8*nelec*n8);                                                                         
-             if (rc /= QMCKL_SUCCESS_DEVICE) then                                 
-                print *, 'Error copying back MOs from QMCkl device'               
-                stop                                                              
+             rc = qmckl_memcpy_D2H(qmckl_ctx, mo_qmckl_h, mo_qmckl_d, 1_8*nxquad*n8);                                                                         
+             if (rc /= QMCKL_SUCCESS_DEVICE) then                                
+                write(ounit,*) 'Error copying back MOs from QMCkl device'
+                stop                                                             
              end if
              
-            call c_f_pointer(mo_qmckl_h, mo_qmckl, [int(nxquad, kind(4)), int(n8, kind(4))]);                                                           
+            call c_f_pointer(mo_qmckl_h, mo_qmckl_t, [int(nxquad, kind(4)), int(n8, kind(4))]);                                                           
             
             !reshape array fortran order                                         
-            mo_qmckl = reshape(mo_qmckl,shape=[size(mo_qmckl,2),size(mo_qmckl,1)],order=[2,1])
-             
+            mo_qmckl = reshape(mo_qmckl_t,shape=[int(n8,kind(4)),int(nxquad,kind(4))],order=[2,1])          
+            
+            !orbn(1:norb+nadorb,1:nxquad) = mo_qmckl(1:norb+nadorb,1:nxquad)
+            do iorb=1,norb+nadorb
+               do iq=1, nxquad
+                  orbn(iorb,iq) = mo_qmckl(iorb,iq)
+               enddo
+            enddo
 
-            orbn(1:norb+nadorb,1:nxquad) = mo_qmckl(1:norb+nadorb,1:nxquad)
+
 
             
             if (allocated(xqmckl_quad)) deallocate(xqmckl_quad)
+            if (allocated(mo_qmckl)) deallocate(mo_qmckl)
+            if (rc /= QMCKL_SUCCESS_DEVICE) then
+               write(ounit,*) 'Error deallocate xqmckl_quad'
+               stop                                                             
+            end if
+            !rc = qmckl_free_device(qmckl_ctx,mo_qmckl_t)
             rc = qmckl_free_host(qmckl_ctx,mo_qmckl_h)
+            if (rc /= QMCKL_SUCCESS_DEVICE) then
+               write(ounit,*) 'Error deallocate mo_qmckl_h'
+               stop                                                             
+            end if
             rc = qmckl_free_device(qmckl_ctx,mo_qmckl_d)
+            if (rc /= QMCKL_SUCCESS_DEVICE) then
+               write(ounit,*) 'Error deallocate mo_qmckl_d'
+               stop                                                             
+            end if
             
             
 !     To fix - QMCkl does not give da_orbitals
@@ -610,7 +636,7 @@ contains
 
 
 !     ! get number of atomic orbitals
-           rc = qmckl_get_ao_basis_ao_num_device(qmckl_ctx, na8)
+           rc = qmckl_get_ao_basis_ao_num_device(qmckl_ctx, c_loc(na8))
            if (rc /= QMCKL_SUCCESS_DEVICE) then
               print *, 'Error getting mo_num from QMCkl'
               stop
@@ -670,10 +696,10 @@ contains
               print *, 'Error copying aos_quad to GPU'
               stop
            end if
-           call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl, [int(nxquad, kind(4)), 5, int(nbasis, kind(4))]);                                                           
+           call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl_t, [int(nxquad, kind(4)), 5, int(nbasis, kind(4))]);                                                           
            
            !reshape array fortran order (nelec,5,nbasis)->(nbasis,5,nelec)      
-           ao_vgl_qmckl = reshape(ao_vgl_qmckl,shape=[size(ao_vgl_qmckl,3),size(ao_vgl_qmckl,2),size(ao_vgl_qmckl,1)],order=[3,2,1])    
+           ao_vgl_qmckl = reshape(ao_vgl_qmckl_t,shape=[size(ao_vgl_qmckl,3),size(ao_vgl_qmckl,2),size(ao_vgl_qmckl,1)],order=[3,2,1])    
 
            
            
@@ -721,14 +747,13 @@ contains
                     stop
                  end if
                  !pass C to F pointer
-                 call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl_i, [int(nxquad, kind(4)), 5, int(nbasis, kind(4))]);                                                           
-                 
+                 call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl_t, [int(nxquad, kind(4)), 5, int(nbasis, kind(4))]);                                                                            
                  !reshape array fortran order (nelec,5,nbasis)->(nbasis,5,nelec)
-                  ao_vgl_qmckl_i = reshape(ao_vgl_qmckl_i,shape=[size(ao_vgl_qmckl_i,3),size(ao_vgl_qmckl_i,2),size(ao_vgl_qmckl_i,1)],order=[3,2,1]) 
+                 ao_vgl_qmckl_i = reshape(ao_vgl_qmckl_t,shape=[size(ao_vgl_qmckl_i,3),size(ao_vgl_qmckl_i,2),size(ao_vgl_qmckl_i,1)],order=[3,2,1]) 
 
-
-                  !     add contribution of the given image
-                  do iq=1, nxquad
+                 
+                 !     add contribution of the given image
+                 do iq=1, nxquad
                      do ivgl=1, 5
                         do i_basis=1, nbasis
                            !ao_vgl_qmckl(i_basis,ivgl, iq)=ao_vgl_qmckl(i_basis,ivgl,iq)+ao_vgl_qmckl_i(iq,ivgl,i_basis)

@@ -12,8 +12,9 @@ module orbitals_mod
         SUBROUTINE dcopy(N,DX,INCX,DY,INCY)
           INTEGER INCX,INCY,N
           DOUBLE PRECISION DX(*),DY(*)
-        END SUBROUTINE
-      end interface
+        END SUBROUTINE 
+     end interface
+
 contains
       subroutine orbitals(x,rvec_en,r_en)
 ! Written by Cyrus Umrigar starting from Kevin Schmidt's routine
@@ -64,19 +65,29 @@ contains
       type(c_ptr) xqmckl_d
       type(c_ptr) :: xqmckl_ptr
       ! Molecular
-      integer*8 :: n8
-      real(dp), pointer :: mo_vgl_qmckl(:,:,:)      
+      !integer*8 :: n8
+      integer(c_int64_t), target :: n8
+      real(dp), pointer :: mo_vgl_qmckl_t(:,:,:) =>NULL()
+      real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+      !real(kind=8), allocatable, target :: mo_vgl_qmckl_g(:,:,:)
+      !real(kind=8), dimension (:,:,:), allocatable, target, intent(out) :: mo_vgl_qmckl_g
+      !real(kind=8), dimension (:,:,:), allocatable, intent(out) :: mo_vgl_qmckl_g
       type(c_ptr) mo_vgl_qmckl_h
       type(c_ptr) mo_vgl_qmckl_d
       
       ! periodic
       real(dp), allocatable :: xqmckl0(:,:)
-      real(dp), pointer :: ao_vgl_qmckl(:,:,:)
+      real(dp), pointer  :: ao_vgl_qmckl_t(:,:,:)=>NULL()      
+      real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
+      !real(dp), pointer :: ao_vgl_qmckl(:,:,:) =>NULL()
       type(c_ptr) ao_vgl_qmckl_h
       type(c_ptr) ao_vgl_qmckl_d
-      real(dp), pointer :: ao_vgl_qmckl_i(:,:,:)
       
-      integer*8 :: na8, i_image, ivgl, i_basis, i_elec
+      !real(dp), pointer :: ao_vgl_qmckl_i(:,:,:)
+      real(dp), allocatable :: ao_vgl_qmckl_i(:,:,:)
+
+      integer(c_int64_t), target :: na8 
+      integer*8 :: i_image, ivgl, i_basis, i_elec
       real(dp), dimension(3) :: r_image
       real(dp) :: rnorm
       character*(1024) :: err_message = ''
@@ -184,7 +195,7 @@ contains
          if(iperiodic.eq.0) then
             
             !     get number MO's
-            rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, n8)
+            rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, c_loc(n8))
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                print *, 'Error getting mo_num from QMCkl'
                stop
@@ -196,7 +207,7 @@ contains
             ! xqmckl_ptr = c_loc(xqmckl(1))
             xqmckl_ptr = c_loc(xqmckl)
             xqmckl(1:3,1:nelec)=x(1:3,1:nelec)
-            
+
             ! allocate xelec in device and host
             xqmckl_d = qmckl_malloc_device(qmckl_ctx, nelec*3_8);
 
@@ -207,18 +218,19 @@ contains
                stop
             end if
             
-
             !     Send electron coordinates to QMCkl to compute the MOs at these positions
             rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, xqmckl_d, nelec*3_8)
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error setting electron coordinates in QMCkl'
                stop
             end if
+
             
-            
+            !write(ounit,*) "BEFORE PASS TEST HERE"
             ! allocate mo array at device
             mo_vgl_qmckl_d = qmckl_malloc_device(qmckl_ctx, 5_8*n8*nelec);
-                        
+            !write(ounit,*) "PASS TEST HERE"
+            
             !     Compute the MOs
             rc = qmckl_get_mo_basis_mo_vgl_inplace_device( &
                  qmckl_ctx, &
@@ -228,7 +240,7 @@ contains
                write(ounit,*) 'Error getting MOs from QMCkl'
                stop
             end if
-            
+           
             ! Copy values back to CPU
             mo_vgl_qmckl_h = qmckl_malloc_host(qmckl_ctx, 5_8*nelec*n8);
             rc = qmckl_memcpy_D2H(qmckl_ctx, mo_vgl_qmckl_h, mo_vgl_qmckl_d, 5_8*nelec*n8);
@@ -236,12 +248,35 @@ contains
                write(ounit,*) 'Error copying back MOs from QMCkl device'
                stop
             end if
+
+
+            !for testing simplification ideas
+            !allocate(mo_vgl_qmckl_g(int(nelec, kind(4)), int(5,kind(4)), int(n8, kind(4))))
+            !!!copy to g vector
+            !rc = qmckl_memcpy_D2H(qmckl_ctx, mo_vgl_qmckl_h, mo_vgl_qmckl_d, 5_8*nelec*n8);
+            !if (rc /= QMCKL_SUCCESS_DEVICE) then
+            !   write(ounit,*) 'Error copying back MOs from QMCkl device'
+            !   stop
+            !end if
+            !write(ounit,*) "shape mo_vgl_qmckl-g", shape(mo_vgl_qmckl_g)
+            !mo_vgl_qmckl_g = reshape(mo_vgl_qmckl_g, shape=[int(n8, kind(4)), int(5, kind(4)), int(nelec, kind(4))], order=[3,2,1])
+            !write(ounit,*) "after reshape mo_vgl_qmckl-g", shape(mo_vgl_qmckl_g)
             
-            call c_f_pointer(mo_vgl_qmckl_h, mo_vgl_qmckl, [int(nelec, kind(4)), 5, int(n8, kind(4))]);
+            call c_f_pointer(mo_vgl_qmckl_h, mo_vgl_qmckl_t, [int(nelec, kind(4)), int(5,kind(4)), int(n8, kind(4))])
+
+            !write(ounit,*) "Associated:", associated(mo_vgl_qmckl)
+            write(ounit,*) "n8", n8, "int(n8,kind(4))", int(n8,kind(4))
+            
+            
+!            write(ounit,*) "before reshape"
+            write(ounit,*) "shape mo_vgl_qmckl", shape(mo_vgl_qmckl_t)
 
             !reshape array fortran order
-            mo_vgl_qmckl = reshape(mo_vgl_qmckl,shape=[size(mo_vgl_qmckl,3),size(mo_vgl_qmckl,2),size(mo_vgl_qmckl,1)],order=[3,2,1])
-            
+            mo_vgl_qmckl = reshape(mo_vgl_qmckl_t, shape=[int(n8, kind(4)), int(5, kind(4)), int(nelec, kind(4))], order=[3,2,1])
+
+           
+            write(ounit,*) "after shape mo_vgl_qmckl", shape(mo_vgl_qmckl)
+            write(ounit,*) "after reshape"
             
 
 !     print*, "inside qmckl"
@@ -251,20 +286,44 @@ contains
          k=1                    ! until state specific orbitals can be used
          do i=1,nelec
             do iorb=1,norb+nadorb
+               !write(ounit,*) "iorb", iorb
                orb  (  i,iorb,k) = mo_vgl_qmckl(iorb,1,i)
                dorb (iorb,i,1,k) = mo_vgl_qmckl(iorb,2,i)
                dorb (iorb,i,2,k) = mo_vgl_qmckl(iorb,3,i)
                dorb (iorb,i,3,k) = mo_vgl_qmckl(iorb,4,i)
                ddorb(  iorb,i,k) = mo_vgl_qmckl(iorb,5,i)
+               !orb  (  i,iorb,k) = mo_vgl_qmckl_g(iorb,1,i)
+               !dorb (iorb,i,1,k) = mo_vgl_qmckl_g(iorb,2,i)
+               !dorb (iorb,i,2,k) = mo_vgl_qmckl_g(iorb,3,i)
+               !dorb (iorb,i,3,k) = mo_vgl_qmckl_g(iorb,4,i)
+               !ddorb(  iorb,i,k) = mo_vgl_qmckl_g(iorb,5,i)
             end do
          end do
 
 
          if(allocated(xqmckl)) deallocate(xqmckl)
-         !rc = qmckl_free_host(qmckl_ctx,mo_vgl_qmckl)
+         !if(allocated(mo_vgl_qmckl_g)) deallocate(mo_vgl_qmckl_g)
+         if(allocated(mo_vgl_qmckl)) deallocate(mo_vgl_qmckl)
+         !if(allocated(mo_vgl_qmckl_t)) deallocate(mo_vgl_qmckl_t)
+         !if (rc /= QMCKL_SUCCESS_DEVICE) then
+         !   write(ounit,*) 'Error deallocate mo_vgl_qmckl_t'
+         !   stop
+         !end if
          rc = qmckl_free_host(qmckl_ctx,mo_vgl_qmckl_h)
+         if (rc /= QMCKL_SUCCESS_DEVICE) then
+            write(ounit,*) 'Error deallocate mo_vgl_qmckl_h'
+            stop
+         end if
          rc = qmckl_free_device(qmckl_ctx,xqmckl_d)
+                  if (rc /= QMCKL_SUCCESS_DEVICE) then
+            write(ounit,*) 'Error deallocate xqmckl_d'
+            stop
+         end if
          rc = qmckl_free_device(qmckl_ctx,mo_vgl_qmckl_d)
+         if (rc /= QMCKL_SUCCESS_DEVICE) then
+            write(ounit,*) 'Error deallocate mo_vgl_qmckl_d'
+            stop
+         end if
          
          
 
@@ -275,7 +334,7 @@ contains
 !     call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 
          !     ! get number of atomic orbitals
-         rc = qmckl_get_ao_basis_ao_num_device(qmckl_ctx, na8)
+         rc = qmckl_get_ao_basis_ao_num_device(qmckl_ctx, c_loc(na8))
          if (rc /= QMCKL_SUCCESS_DEVICE) then
             write(ounit,*) 'Error getting mo_num from QMCkl'
             stop
@@ -313,7 +372,6 @@ contains
             stop
          end if
          
-
          !     Send electron coordinates to QMCkl to compute the MOs at these positions
          rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, xqmckl_d, nelec*3_8)
          if (rc /= QMCKL_SUCCESS_DEVICE) then
@@ -321,6 +379,7 @@ contains
             stop
          end if
 
+         write(ounit,*) "PASS xqmckl set point"
 
          ! allocate auxiliary arrays
          ao_vgl_qmckl_d = qmckl_malloc_device(qmckl_ctx, 5_8*nelec*nbasis);      
@@ -331,7 +390,7 @@ contains
             print *, 'Error getting AOs from QMCkl zero image'
          endif
 
-         
+        
          !auxiliar allocations
          ao_vgl_qmckl_h = qmckl_malloc_host(qmckl_ctx, 5_8*nelec*nbasis);        
          !copying back fist image AO's to the CPU
@@ -340,11 +399,10 @@ contains
             write(ounit,*) 'Error copying back AOs from QMCkl zero image'
          endif
          !copying pointers 
-         call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl, [int(nelec, kind(4)), 5, int(nbasis, kind(4))]);
-
+         call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl_t, [int(nelec, kind(4)), int(5,kind(4)), int(nbasis, kind(4))]);
          
          !reshape array fortran order (nelec,5,nbasis)->(nbasis,5,nelec)
-         ao_vgl_qmckl = reshape(ao_vgl_qmckl,shape=[size(ao_vgl_qmckl,3),size(ao_vgl_qmckl,2),size(ao_vgl_qmckl,1)],order=[3,2,1])
+         ao_vgl_qmckl = reshape(ao_vgl_qmckl_t,shape=[size(ao_vgl_qmckl,3),size(ao_vgl_qmckl,2),size(ao_vgl_qmckl,1)],order=[3,2,1])
 
                   
          !     computing images distance for iel
@@ -381,19 +439,18 @@ contains
 
 
                !auxiliar allocations
-               ao_vgl_qmckl_h = qmckl_malloc_host(qmckl_ctx, 5_8*nelec*nbasis);        
+               !ao_vgl_qmckl_h = qmckl_malloc_host(qmckl_ctx, 5_8*nelec*nbasis);        
                !copying back fist image AO's to the CPU
                rc = qmckl_memcpy_D2H(qmckl_ctx, ao_vgl_qmckl_h, ao_vgl_qmckl_d, 5_8*nelec*nbasis);
                if (rc /= QMCKL_SUCCESS_DEVICE) then
                   write(ounit,*) 'Error copying back AOs from QMCkl zero image'
                endif
                !copying pointers 
-               call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl_i, [int(nelec, kind(4)), 5, int(nbasis, kind(4))]);
+               call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl_t, [int(nelec, kind(4)), 5, int(nbasis, kind(4))]);
                
                !reshape array fortran order (nelec,5,nbasis)->(nbasis,5,nelec)
-               ao_vgl_qmckl_i = reshape(ao_vgl_qmckl_i,shape=[size(ao_vgl_qmckl_i,3),size(ao_vgl_qmckl_i,2),size(ao_vgl_qmckl_i,1)],order=[3,2,1])
+               ao_vgl_qmckl_i = reshape(ao_vgl_qmckl_t,shape=[size(ao_vgl_qmckl_i,3),size(ao_vgl_qmckl_i,2),size(ao_vgl_qmckl_i,1)],order=[3,2,1])
 
-               
                !     adding contribution of the given image
                do i_elec=1, nelec
                   do ivgl=1, 5
@@ -427,9 +484,9 @@ contains
          !     ! deallocate QMCkl champ arrays
          if(allocated(xqmckl0)) deallocate(xqmckl0)
          if(allocated(xqmckl)) deallocate(xqmckl)
+         if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl) 
          rc = qmckl_free_host(qmckl_ctx,ao_vgl_qmckl_h)
-         !         rc = qmckl_free_host(qmckl_ctx,ao_vgl_qmckl)
-         !         rc = qmckl_free_host(qmckl_ctx,ao_vgl_qmckl_i)
+         !         rc = qmckl_free_host(qmckl_ctx,ao_vgl_qmckl_t)
          rc = qmckl_free_device(qmckl_ctx,xqmckl_d)
          rc = qmckl_free_device(qmckl_ctx,ao_vgl_qmckl_d)
          
@@ -882,7 +939,9 @@ contains
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       integer :: rc
-      integer*8 :: n8, na8, i_image, ivgl, i_basis
+      integer(c_int64_t), target :: n8
+      integer(c_int64_t), target :: na8   
+      integer*8 :: i_image, ivgl, i_basis
       character*(1024) :: err_message = ''
       real(dp), allocatable, target :: xiel(:)
       real(dp), allocatable, target :: xqmckl(:,:)
@@ -890,18 +949,19 @@ contains
       type(c_ptr) :: xqmckl_d
       
       !Molecular
-      real(dp), pointer :: mo_vgl_qmckl(:,:)
+      real(dp), allocatable :: mo_vgl_qmckl(:,:) 
+      real(dp), pointer :: mo_vgl_qmckl_t(:,:)=>NULL()
       type(c_ptr) :: mo_vgl_qmckl_h
       type(c_ptr) :: mo_vgl_qmckl_d
       
       !periodic
-      real(dp), pointer :: ao_vgl_qmckl(:,:,:)
       real(dp), allocatable :: ao_qmckl(:,:)
+      real(dp), allocatable :: ao_vgl_qmckl(:,:,:)     
+      real(dp), pointer :: ao_vgl_qmckl_t(:,:,:)=>NULL()      
       type(c_ptr) :: ao_vgl_qmckl_d
       type(c_ptr) :: ao_vgl_qmckl_h
       real(dp) :: rnorm
 #endif
-
 
 
 
@@ -940,7 +1000,7 @@ contains
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
          if(iperiodic.eq.0) then
 
-            rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, n8)
+            rc = qmckl_get_mo_basis_mo_num_device(qmckl_ctx, c_loc(n8))
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error getting mo_num from QMCkl'
                stop
@@ -957,7 +1017,6 @@ contains
                write(ounit,*) 'Error copying x_iel to device QMCkl'
                stop
             end if
-
             
             !     send electron coordinates
             rc = qmckl_set_point_device(qmckl_ctx, 'N', 1_8, xqmckl_d, 3_8)
@@ -988,10 +1047,10 @@ contains
             end if
             
             !copy C->fortran
-            call c_f_pointer(mo_vgl_qmckl_h, mo_vgl_qmckl, [5, int(n8, kind(4))])
+            call c_f_pointer(mo_vgl_qmckl_h, mo_vgl_qmckl_t, [5, int(n8, kind(4))])
             
             !reshape array fortran order
-            mo_vgl_qmckl = reshape(mo_vgl_qmckl,shape=[size(mo_vgl_qmckl,2),size(mo_vgl_qmckl,1)],order=[2,1])
+            mo_vgl_qmckl = reshape(mo_vgl_qmckl_t,shape=[int(n8,kind(4)),5],order=[2,1])
 
 
             k=1                 ! until state-specific orbitals can use QMCKL
@@ -1020,20 +1079,20 @@ contains
                   orbn(iorb,k)=mo_vgl_qmckl(iorb,1)
                   dorbn(iorb,1,k)=mo_vgl_qmckl(iorb,2)
                   dorbn(iorb,2,k)=mo_vgl_qmckl(iorb,3)
-               dorbn(iorb,3,k)=mo_vgl_qmckl(iorb,4)
+                  dorbn(iorb,3,k)=mo_vgl_qmckl(iorb,4)
 
             enddo
          endif
 
          if(allocated(xiel)) deallocate(xiel)
          if(allocated(xiel)) deallocate(xqmckl)
+         if(allocated(mo_vgl_qmckl)) deallocate(mo_vgl_qmckl)
          !rc = qmckl_free_host(qmckl_ctx,mo_vgl_qmckl) 
-         rc = qmckl_free_host(qmckl_ctx,mo_vgl_qmckl_h)
+         rc = qmckl_free_host(qmckl_ctx,mo_vgl_qmckl_h) 
          rc = qmckl_free_device(qmckl_ctx,mo_vgl_qmckl_d)
          rc = qmckl_free_device(qmckl_ctx,xqmckl_d)
 
          
-
 
       else
 !     iperiodic else
@@ -1046,7 +1105,7 @@ contains
 !     ! setting test to verify qmckl-ao calculation
 
 !! get number of atomic orbitals
-         rc = qmckl_get_ao_basis_ao_num_device(qmckl_ctx, na8)
+         rc = qmckl_get_ao_basis_ao_num_device(qmckl_ctx, c_loc(na8))
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error getting mo_num from QMCkl'
                stop
@@ -1065,6 +1124,7 @@ contains
             ! applying pbc (wrapping inside the box)
             call find_image_pbc(xiel,rnorm)
             allocate(xqmckl(3,n_images+1))
+            xqmckl=0.d0
             xqmckl(1:3,1)=xiel(1:3)
 
             if(n_images.gt.0) then
@@ -1082,8 +1142,7 @@ contains
                write(ounit,*) 'Error copying x_iel to device QMCkl'
                stop
             end if
-            
-            
+                        
             !     send electron images coordinates
             rc = qmckl_set_point_device(qmckl_ctx, 'N', 1_8*(n_images+1), xqmckl_d, 3_8*(n_images+1))
             if (rc /= QMCKL_SUCCESS_DEVICE) then
@@ -1091,7 +1150,6 @@ contains
                stop
             end if
             
-
             ! set ao arrays and compute its value
             ao_vgl_qmckl_d = qmckl_malloc_device(qmckl_ctx, 5_8*nbasis*(n_images+1));
             rc = qmckl_get_ao_basis_ao_vgl_inplace_device(qmckl_ctx, &
@@ -1100,7 +1158,6 @@ contains
                write(ounit,*) 'Error getting AOs from QMCkl'
             endif
 
-
             !copying the ao's for image zero back tp the cpu
             ao_vgl_qmckl_h = qmckl_malloc_host(qmckl_ctx, 5_8*nbasis*(n_images+1));
             rc = qmckl_memcpy_D2H(qmckl_ctx, ao_vgl_qmckl_h, ao_vgl_qmckl_d, 5_8*nbasis*(n_images+1));
@@ -1108,12 +1165,11 @@ contains
                write(ounit,*) 'Error getting AOs from QMCkl device'
             endif
             !copying pointers 
-            call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl, [int((n_images+1), kind(4)), 5, int(nbasis, kind(4))]);
- 
-            !reshape array fortran order (nelec,5,nbasis)->(nbasis,5,nelec)
-            ao_vgl_qmckl = reshape(ao_vgl_qmckl,shape=[size(ao_vgl_qmckl,3),size(ao_vgl_qmckl,2),size(ao_vgl_qmckl,1)],order=[3,2,1])
-
-
+            call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl_t, [int((n_images+1), kind(4)), int(5,kind(4)), int(nbasis, kind(4))]);
+             !reshape array fortran order (nelec,5,nbasis)->(nbasis,5,nelec)
+            ao_vgl_qmckl = reshape(ao_vgl_qmckl_t,shape=[int(nbasis, kind(4)), int(5,kind(4)), int((n_images+1), kind(4))],order=[3,2,1])
+            
+            
             !      summing it all over the images
             allocate(ao_qmckl(nbasis,5))
             ao_qmckl=0.d0
@@ -1141,6 +1197,7 @@ contains
             if(allocated(xiel)) deallocate(xiel)
             if(allocated(xqmckl)) deallocate(xqmckl)
             if(allocated(ao_qmckl)) deallocate(ao_qmckl)
+            if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl)
             rc = qmckl_free_host(qmckl_ctx,ao_vgl_qmckl_h)
             rc = qmckl_free_device(qmckl_ctx,ao_vgl_qmckl_d)
             rc = qmckl_free_device(qmckl_ctx,xqmckl_d)
