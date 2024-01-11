@@ -2024,9 +2024,11 @@ subroutine parser
         f2ctarget=trim(file_trexio_path)//c_null_char
         c_file_trexio = c_loc(f2ctarget)
 
+        if(allocated(f2ctarget)) write(ounit,*) 'f2ctarget seems allocated' 
+        
         !write(ounit,*) "file_trexio_path", file_trexio_path 
         write(ounit,*) "f2ctarget", f2ctarget
-        write(ounit,*) "c file trexio", c_file_trexio
+        !write(ounit,*) "c file trexio", c_file_trexio
         
         call MPI_Barrier( MPI_COMM_WORLD, ierr )
 
@@ -2044,12 +2046,15 @@ subroutine parser
        lsc=len_trim(file_trexio)
        f2ctarget=trim(file_trexio)//c_null_char
        c_file_trexio = c_loc(f2ctarget)
+
+       if(allocated(f2ctarget)) write(ounit,*) 'f2ctarget seems allocated' 
        
        !write(ounit,*) "file_trexio_path", file_trexio_path
        !write(ounit,*) "file_trexio", file_trexio
-       write(ounit,*) "f2ctarget", f2ctarget
-       write(ounit,*) "c file trexio", c_file_trexio
+       write(ounit,*) "f2ctarget ",  f2ctarget
+       !write(ounit,*) "c file trexio", c_file_trexio
 
+       
        
        iostat = qmckl_trexio_read_device(qmckl_ctx, c_file_trexio, 1_8*lsc)
        write(ounit, *) "Status QMCKl trexio read file_trexio ", iostat
