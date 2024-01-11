@@ -63,6 +63,7 @@ contains
       integer :: rc
       real(dp), allocatable, target :: xqmckl(:,:)
       real(dp), allocatable, target :: xqmckl_t(:,:)
+      real(dp), allocatable, target :: xqmckl1d(:)
       type(c_ptr) xqmckl_d
       type(c_ptr) :: xqmckl_ptr
       !for testing
@@ -218,9 +219,9 @@ contains
             
 
             allocate(xqmckl_t(nelec,3))
-            !$omp target data map(tofrom:xqmckl_t(1:nelec,1:3))
+            !!!$omp target data map(tofrom:xqmckl_t(1:nelec,1:3))
             xqmckl_t=1.d0
-            !$omp target update to(xqmckl_t(1:nelec,1:3))
+            !!!$omp target update to(xqmckl_t(1:nelec,1:3))
             
             
             do i=1, nelec
@@ -233,6 +234,12 @@ contains
             xqmckl=1.d0
             !!!$omp target update to(xqmckl(1:nelec,1:3))
 
+
+            !!!$omp target data map(tofrom:xqmckl1d(1:3*nelec))
+            xqmckl1d=1.d0
+            !!!$omp target update to(xqmckl1d(1:3*nelec))
+
+            
             
             write(ounit,*) "after openmp allocation"
             
@@ -241,7 +248,8 @@ contains
 
             !xqmckl_ptr = c_loc(xqmckl)
 
-            xqmckl_ptr = c_loc(xqmckl_t)
+            !xqmckl_ptr = c_loc(xqmckl_t)
+            xqmckl_ptr = c_loc(xqmckl1d)
             
             xqmckl_d = qmckl_malloc_device(qmckl_ctx, nelec*3_8);
 
@@ -255,16 +263,21 @@ contains
             !using qmckl
             !     Send electron coordinates to QMCkl to compute the MOs at these positions
             !rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, xqmckl_d, nelec*3_8)
+            rc = qmckl_set_electron_coord_device(qmckl_ctx, 'N', 1_8, xqmckl_d, nelec*3_8)
 
             !!!$omp target data use_device_ptr(xqmckl)
-            !rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, c_loc(xqmckl), nelec*3_8)
-            !$omp target data use_device_ptr(xqmckl_t)         
-            !rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, c_loc(xqmckl_t), nelec*3_8)
-            rc = qmckl_set_electron_coord_device(qmckl_ctx, 'N', 1_8, c_loc(xqmckl_t), nelec*3_8)
+            !rc = qmckl_set_point_device(qmckl_ctx, 'T', nelec*1_8, c_loc(xqmckl), nelec*3_8)
+            !!!$omp target data use_device_ptr(xqmckl_t)         
+            !!!rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, c_loc(xqmckl_t), nelec*3_8)
+            !!!$omp target data use_device_ptr(xqmckl1d)
+            !rc = qmckl_set_electron_coord_device(qmckl_ctx, 'N', 1_8, c_loc(xqmckl1d), nelec*3_8)
+
+           
+
             
-            !$omp end target data
+            !!!$omp end target data
             
-            !$omp end target data
+            !!!$omp end target data
             !end the whole omp scope
 
             if (rc /= QMCKL_SUCCESS_DEVICE) then
@@ -281,7 +294,7 @@ contains
             write(ounit,*) "pass device allocation"
             
             !rc = qmckl_get_point_device(qmckl_ctx, 'N', xback_d, nelec*3_8)
-            rc =  qmckl_get_electron_coord_device(qmcklk_ctx, 'N', xback_d, nelec*3_8)
+            rc = qmckl_get_electron_coord_device(qmckl_ctx, 'N', xback_d, nelec*3_8)
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error getting electron coordinates back from QMCkl'
                stop
