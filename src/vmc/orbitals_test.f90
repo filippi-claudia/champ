@@ -61,20 +61,24 @@ contains
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       integer :: rc
-      real(dp), allocatable, target :: xqmckl(:,:)
-      real(dp), allocatable, target :: xqmckl_t(:,:)
-      real(dp), allocatable, target :: xqmckl1d(:)
+      real*8, allocatable, target :: xqmckl(:,:)
+      real*8, allocatable, target :: xqmckl_t(:,:)
+      !real(dp), allocatable, target :: xqmckl1d(:)
+      real*8, allocatable :: xqmckl1d(:)
       type(c_ptr) xqmckl_d
       type(c_ptr) :: xqmckl_ptr
       !for testing
       type(c_ptr) xback_h
       type(c_ptr) xback_d
-      real(8), pointer :: xback_t(:,:) =>NULL()
-      real(8), allocatable :: xback(:,:)
+      !real(8), pointer :: xback_t(:,:) =>NULL()
+      !real(8), allocatable :: xback(:,:)
+      real(8), pointer :: xback_t(:) =>NULL()
+      real(8), allocatable :: xback(:)
       
       
       ! Molecular
       !integer*8 :: n8
+      integer*8 :: n3nelec
       integer(c_int64_t), target :: n8
       real(dp), pointer :: mo_vgl_qmckl_t(:,:,:) =>NULL()
       real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
@@ -219,9 +223,7 @@ contains
             
 
             allocate(xqmckl_t(nelec,3))
-            !!!$omp target data map(tofrom:xqmckl_t(1:nelec,1:3))
             xqmckl_t=1.d0
-            !!!$omp target update to(xqmckl_t(1:nelec,1:3))
             
             
             do i=1, nelec
@@ -230,14 +232,10 @@ contains
                enddo
             enddo
 
-            !!!$omp target data map(tofrom:xqmckl(1:3,1:nelec))
             xqmckl=1.d0
-            !!!$omp target update to(xqmckl(1:nelec,1:3))
 
-
-            !!!$omp target data map(tofrom:xqmckl1d(1:3*nelec))
+            allocate(xqmckl1d(3*nelec))
             xqmckl1d=1.d0
-            !!!$omp target update to(xqmckl1d(1:3*nelec))
 
             
             
@@ -249,12 +247,13 @@ contains
             !xqmckl_ptr = c_loc(xqmckl)
 
             !xqmckl_ptr = c_loc(xqmckl_t)
-            xqmckl_ptr = c_loc(xqmckl1d)
+            !xqmckl_ptr = c_loc(xqmckl1d(1))
             
-            xqmckl_d = qmckl_malloc_device(qmckl_ctx, nelec*3_8);
+            xqmckl_d = qmckl_malloc_device(qmckl_ctx, nelec*3_8*8);
 
-            ! copy electron coordinates to device
-            rc = qmckl_memcpy_H2D(qmckl_ctx, xqmckl_d, xqmckl_ptr, nelec*3_8);
+            !! copy electron coordinates to device
+            !rc = qmckl_memcpy_H2D(qmckl_ctx, xqmckl_d, xqmckl_ptr, nelec*3_8);
+            rc = qmckl_memcpy_H2D_double(qmckl_ctx, xqmckl_d, xqmckl1d, 8*nelec*3_8);
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error copy elec-coord to device qmckl'
                stop
@@ -265,20 +264,11 @@ contains
             !rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, xqmckl_d, nelec*3_8)
             rc = qmckl_set_electron_coord_device(qmckl_ctx, 'N', 1_8, xqmckl_d, nelec*3_8)
 
-            !!!$omp target data use_device_ptr(xqmckl)
-            !rc = qmckl_set_point_device(qmckl_ctx, 'T', nelec*1_8, c_loc(xqmckl), nelec*3_8)
-            !!!$omp target data use_device_ptr(xqmckl_t)         
-            !!!rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, c_loc(xqmckl_t), nelec*3_8)
-            !!!$omp target data use_device_ptr(xqmckl1d)
-            !rc = qmckl_set_electron_coord_device(qmckl_ctx, 'N', 1_8, c_loc(xqmckl1d), nelec*3_8)
-
-           
-
+            write(ounit,*) "before testing from host"
+            !rc = qmckl_set_electron_coord_device_from_host(qmckl_ctx, 'N', 1_8, xqmckl1d, nelec*3_8)
+            !rc = qmckl_set_point_device_from_host(qmckl_ctx, 'N', 1_8*nelec, xqmckl1d, nelec*3_8)
+            write(ounit,*) "passs from host call"
             
-            !!!$omp end target data
-            
-            !!!$omp end target data
-            !end the whole omp scope
 
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error setting electron coordinates in QMCkl'
@@ -290,7 +280,7 @@ contains
 
             write(ounit,*) "PERFORM TEST ELECTRON COORDINATES"
             
-            xback_d = qmckl_malloc_device(qmckl_ctx, 3_8*nelec);
+            xback_d = qmckl_malloc_device(qmckl_ctx, 3_8*nelec*8);
             write(ounit,*) "pass device allocation"
             
             !rc = qmckl_get_point_device(qmckl_ctx, 'N', xback_d, nelec*3_8)
@@ -301,28 +291,36 @@ contains
             end if
             write(ounit,*) "pass get point"
 
-            xback_h = qmckl_malloc_host(qmckl_ctx, 3_8*nelec);
+            xback_h = qmckl_malloc_host(qmckl_ctx, 3_8*nelec*8);
             write(ounit,*) "pass host allocation"
-            rc = qmckl_memcpy_D2H(qmckl_ctx, xback_h, xback_d, 3_8*nelec);
+            rc = qmckl_memcpy_D2H(qmckl_ctx, xback_h, xback_d, 3_8*nelec*8);
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error copying back elec coords from QMCkl device'
                stop
             end if
             write(ounit,*) "pass copy device to host"
-            call c_f_pointer(xback_h, xback_t, [int(nelec, kind(4)), int(3,kind(4))])
+            !call c_f_pointer(xback_h, xback_t, (/ 3, nelec/))
+            !call c_f_pointer(xback_h, xback_t, (/ nelec, 3/))
+            n3nelec=3*nelec
+            !call c_f_pointer(xback_h, xback_t, (/ 3*nelec/))
+            call c_f_pointer(xback_h, xback_t, (/ n3nelec/))
             write(ounit,*) "pass c to f pointer"
             
             write(ounit,*) "shape xback_h", shape(xback_t)
             
 
             write(ounit,*) "TEST ELECTRON COORDINATES"
-            do i=1, nelec
-               do j=1,3
-                  !write(ounit,*) "i",i, x(j,i), xback(j,i)
-                  write(ounit,*) "i",i, x(j,i), xback_t(i,j)
-               enddo
-            enddo
+            !do i=1, nelec
+            !   do j=1,3
+            !      !write(ounit,*) "i",i, x(j,i), xback(j,i)
+            !      write(ounit,*) "i",i, xback_t(i,j)
+            !   enddo
+            !enddo
 
+            do i=1, 3*nelec
+               write(ounit,*) "i",i, xback_t(i)
+            enddo
+            
             write(ounit,*) "STOP TEST ELECTRON COORDINATES"
             
             stop
