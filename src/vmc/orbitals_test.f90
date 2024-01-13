@@ -70,10 +70,10 @@ contains
       !for testing
       type(c_ptr) xback_h
       type(c_ptr) xback_d
-      !real(8), pointer :: xback_t(:,:) =>NULL()
-      !real(8), allocatable :: xback(:,:)
-      real(8), pointer :: xback_t(:) =>NULL()
-      real(8), allocatable :: xback(:)
+      real*8, pointer :: xback_t(:,:) =>NULL()
+      real*8, allocatable :: xback(:,:)
+      !real*8, pointer :: xback_t(:) =>NULL()
+      !real*8, allocatable :: xback(:)
       
       
       ! Molecular
@@ -222,17 +222,22 @@ contains
             xqmckl(1:3,1:nelec)=x(1:3,1:nelec)
             
 
-            allocate(xqmckl_t(nelec,3))
-            xqmckl_t=1.d0
+            ! allocate(xqmckl_t(nelec,3))
+            allocate(xqmckl_t(3,nelec))
+            !xqmckl_t=0.d0
+            xqmckl_t=0.d0
             
             
             do i=1, nelec
                do j=1, 3
+                  xqmckl_t(i,j)=j
+                  xqmckl(j,i)=j
+                  !write(ounit,*) "x_o", xqmckl(j,i), "x_t", xqmckl_t(i,j)
                   write(ounit,*) "x_o", xqmckl(j,i), "x_t", xqmckl_t(i,j)
                enddo
             enddo
 
-            xqmckl=1.d0
+            !xqmckl=1.d0
 
             allocate(xqmckl1d(3*nelec))
             xqmckl1d=1.d0
@@ -253,7 +258,8 @@ contains
 
             !! copy electron coordinates to device
             !rc = qmckl_memcpy_H2D(qmckl_ctx, xqmckl_d, xqmckl_ptr, nelec*3_8);
-            rc = qmckl_memcpy_H2D_double(qmckl_ctx, xqmckl_d, xqmckl1d, 8*nelec*3_8);
+            !rc = qmckl_memcpy_H2D_double(qmckl_ctx, xqmckl_d, xqmckl1d, 8*nelec*3_8);
+            rc = qmckl_memcpy_H2D_double(qmckl_ctx, xqmckl_d, xqmckl, 8*nelec*3_8);
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error copy elec-coord to device qmckl'
                stop
@@ -261,13 +267,13 @@ contains
 
             !using qmckl
             !     Send electron coordinates to QMCkl to compute the MOs at these positions
-            !rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, xqmckl_d, nelec*3_8)
-            rc = qmckl_set_electron_coord_device(qmckl_ctx, 'N', 1_8, xqmckl_d, nelec*3_8)
+            rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, xqmckl_d, nelec*3_8)
+            !rc = qmckl_set_electron_coord_device(qmckl_ctx, 'N', 1_8, xqmckl_d, nelec*3_8)
 
-            write(ounit,*) "before testing from host"
+            !write(ounit,*) "before testing from host"
             !rc = qmckl_set_electron_coord_device_from_host(qmckl_ctx, 'N', 1_8, xqmckl1d, nelec*3_8)
             !rc = qmckl_set_point_device_from_host(qmckl_ctx, 'N', 1_8*nelec, xqmckl1d, nelec*3_8)
-            write(ounit,*) "passs from host call"
+            !write(ounit,*) "passs from host call"
             
 
             if (rc /= QMCKL_SUCCESS_DEVICE) then
@@ -283,8 +289,8 @@ contains
             xback_d = qmckl_malloc_device(qmckl_ctx, 3_8*nelec*8);
             write(ounit,*) "pass device allocation"
             
-            !rc = qmckl_get_point_device(qmckl_ctx, 'N', xback_d, nelec*3_8)
-            rc = qmckl_get_electron_coord_device(qmckl_ctx, 'N', xback_d, nelec*3_8)
+            rc = qmckl_get_point_device(qmckl_ctx, 'N', xback_d, nelec*3_8)
+            !rc = qmckl_get_electron_coord_device(qmckl_ctx, 'N', xback_d, nelec*3_8)
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error getting electron coordinates back from QMCkl'
                stop
@@ -299,27 +305,46 @@ contains
                stop
             end if
             write(ounit,*) "pass copy device to host"
-            !call c_f_pointer(xback_h, xback_t, (/ 3, nelec/))
+            call c_f_pointer(xback_h, xback_t, (/ 3, nelec/))
             !call c_f_pointer(xback_h, xback_t, (/ nelec, 3/))
-            n3nelec=3*nelec
+            !n3nelec=3*nelec
             !call c_f_pointer(xback_h, xback_t, (/ 3*nelec/))
-            call c_f_pointer(xback_h, xback_t, (/ n3nelec/))
+            !call c_f_pointer(xback_h, xback_t, (/ n3nelec/))
             write(ounit,*) "pass c to f pointer"
             
             write(ounit,*) "shape xback_h", shape(xback_t)
             
 
             write(ounit,*) "TEST ELECTRON COORDINATES"
-            !do i=1, nelec
-            !   do j=1,3
-            !      !write(ounit,*) "i",i, x(j,i), xback(j,i)
-            !      write(ounit,*) "i",i, xback_t(i,j)
-            !   enddo
+            do i=1, nelec
+               do j=1,3
+                  !write(ounit,*) "i",i, x(j,i), xback(j,i)
+                  !write(ounit,*) "i",i, xback_t(i,j)
+                  write(ounit,*) "i",i, xback_t(j,i)
+               enddo
+            enddo
+
+            !do i=1, 3*nelec
+            !   write(ounit,*) "i",i, xback_t(i)
             !enddo
 
-            do i=1, 3*nelec
-               write(ounit,*) "i",i, xback_t(i)
+
+            rc = qmckl_memcpy_D2H_double(qmckl_ctx, xqmckl_t, xback_d, 3_8*nelec*8);
+            if (rc /= QMCKL_SUCCESS_DEVICE) then
+               write(ounit,*) 'Error copying back elec coords from QMCkl device'
+               stop
+            end if
+            write(ounit,*) "TEST ELECTRON COORDINATES from direct double copy"
+            do i=1, nelec
+               do j=1,3
+                  write(ounit,*) "i",i, xqmckl_t(j,i)
+               enddo
             enddo
+            
+
+
+            !!pass double pointer array
+            
             
             write(ounit,*) "STOP TEST ELECTRON COORDINATES"
             
