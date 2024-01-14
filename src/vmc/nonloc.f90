@@ -436,14 +436,14 @@ contains
       integer :: nadorb_sav
 
       !real(dp), dimension(3,*) :: xquad
-      real(dp), dimension(3,nxquad), intent(in) :: xquad
-      real(dp), dimension(nquad*nelec*2, ncent_tot) :: r_en
-      real(dp), dimension(3,nquad*nelec*2, ncent_tot) :: rvec_en
-      real(dp), dimension(norb_tot, *) :: orbn
-      real(dp), dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
-      real(dp), dimension(3,ncent_tot, norb_tot, *) :: da_orbn
-      real(dp), dimension(3) :: dtmp
-      real(dp) :: ddtmp
+      real*8, dimension(3,nxquad), intent(in) :: xquad
+      real*8, dimension(nquad*nelec*2, ncent_tot) :: r_en
+      real*8, dimension(3,nquad*nelec*2, ncent_tot) :: rvec_en
+      real*8, dimension(norb_tot, *) :: orbn
+      real*8, dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
+      real*8, dimension(3,ncent_tot, norb_tot, *) :: da_orbn
+      real*8, dimension(3) :: dtmp
+      real*8 :: ddtmp
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       integer :: rc
@@ -451,23 +451,19 @@ contains
       integer(c_int64_t), target :: n8
       integer(c_int64_t), target :: na8   
       character*(1024) :: err_message = ''
-      real(dp), allocatable, target :: xqmckl_quad(:,:)
-      type(c_ptr) xquad_ptr
+      real(dp), allocatable :: xqmckl_quad(:,:)
       type(c_ptr) xquad_d
       
       !Molecular
-      real(dp), pointer :: mo_qmckl_t(:,:)
-      real(dp), allocatable,target :: mo_qmckl(:,:)
+      real*8, allocatable :: mo_qmckl(:,:)
       type(c_ptr) mo_qmckl_d
-      type(c_ptr) mo_qmckl_h
+      
       
       !Periodic
-      real(dp), allocatable, target :: xqmckl_quad_i(:,:)
-      real(dp), allocatable, target :: ao_vgl_qmckl(:,:,:)
-      real(dp), allocatable, target :: ao_vgl_qmckl_i(:,:,:)
-      real(dp), pointer :: ao_vgl_qmckl_t(:,:,:)
+      real*8, allocatable :: xqmckl_quad_i(:,:)
+      real*8, allocatable :: ao_vgl_qmckl(:,:,:)
+      real*8, allocatable :: ao_vgl_qmckl_i(:,:,:)
       type(c_ptr) ao_vgl_qmckl_d
-      type(c_ptr) ao_vgl_qmckl_h
       real(dp) :: rnorm
       real(dp), dimension(3) :: r_image
 #endif
@@ -516,13 +512,11 @@ contains
             !     !allocate xquad array for qmckl
             allocate(xqmckl_quad(3,nxquad))
             xqmckl_quad(1:3,1:nxquad)=xquad(1:3,1:nxquad)
-            !pass F-array to c pointer 
-            xquad_ptr = c_loc(xqmckl_quad)
-           
+                       
             !allocated xquad for device
-            xquad_d = qmckl_malloc_device(qmckl_ctx, nxquad*3_8);
+            xquad_d = qmckl_malloc_device(qmckl_ctx, nxquad*3_8*8);
             !copy this array to the gpu
-            rc = qmckl_memcpy_H2D(qmckl_ctx, xquad_d, xquad_ptr, nxquad*3_8);
+            rc = qmckl_memcpy_H2D_double(qmckl_ctx, xquad_d, xqmckl_quad, nxquad*3_8*8);
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'copy xquad to decide QMCkl'
                stop 
@@ -534,11 +528,10 @@ contains
                write(ounit,*) "nxquad", nxquad
                stop
             end if
-
-
+            
 
             !!allocate mo array for device
-            mo_qmckl_d = qmckl_malloc_device(qmckl_ctx, 1_8*n8*nxquad);          
+            mo_qmckl_d = qmckl_malloc_device(qmckl_ctx, 1_8*n8*nxquad*8);          
             !     Compute the MOs
             rc = qmckl_get_mo_basis_mo_value_inplace_device(qmckl_ctx, mo_qmckl_d, 1_8*nxquad*n8)
             if (rc /= QMCKL_SUCCESS_DEVICE) then
@@ -547,17 +540,12 @@ contains
              end if
              
              !allocate array for host(CPU) 
-             mo_qmckl_h = qmckl_malloc_host(qmckl_ctx, 1_8*nxquad*n8);
-             rc = qmckl_memcpy_D2H(qmckl_ctx, mo_qmckl_h, mo_qmckl_d, 1_8*nxquad*n8);                                                                         
+             allocate(mo_qmckl(n8,nxquad))
+             rc = qmckl_memcpy_D2H_double(qmckl_ctx, mo_qmckl, mo_qmckl_d, 1_8*nxquad*n8*8);
              if (rc /= QMCKL_SUCCESS_DEVICE) then                                
                 write(ounit,*) 'Error copying back MOs from QMCkl device'
                 stop                                                             
-             end if
-             
-            call c_f_pointer(mo_qmckl_h, mo_qmckl_t, [int(nxquad, kind(4)), int(n8, kind(4))]);                                                           
-            
-            !reshape array fortran order                                         
-            mo_qmckl = reshape(mo_qmckl_t,shape=[int(n8,kind(4)),int(nxquad,kind(4))],order=[2,1])          
+             end if           
             
             !orbn(1:norb+nadorb,1:nxquad) = mo_qmckl(1:norb+nadorb,1:nxquad)
             do iorb=1,norb+nadorb
@@ -566,21 +554,14 @@ contains
                enddo
             enddo
 
-
-
             
             if (allocated(xqmckl_quad)) deallocate(xqmckl_quad)
             if (allocated(mo_qmckl)) deallocate(mo_qmckl)
+            rc = qmckl_free_device(qmckl_ctx,xquad_d)
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error deallocate xqmckl_quad'
                stop                                                             
-            end if
-            !rc = qmckl_free_device(qmckl_ctx,mo_qmckl_t)
-            rc = qmckl_free_host(qmckl_ctx,mo_qmckl_h)
-            if (rc /= QMCKL_SUCCESS_DEVICE) then
-               write(ounit,*) 'Error deallocate mo_qmckl_h'
-               stop                                                             
-            end if
+            end if           
             rc = qmckl_free_device(qmckl_ctx,mo_qmckl_d)
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error deallocate mo_qmckl_d'
@@ -645,7 +626,6 @@ contains
 !     print*,"na8",na8
 !     print*,"nbasis",nbasis
 
-
            if (nbasis.ne.na8) then
               write(ounit,*) 'Error getting ao_num from QMCkl'
               stop
@@ -659,13 +639,11 @@ contains
            do iq=1,nxquad
               call find_image_pbc(xqmckl_quad(1:3,iq),rnorm)
            enddo
-           !pass F-array to c pointer 
-           xquad_ptr = c_loc(xqmckl_quad)
-           
+                      
            !allocated xquad for device
-           xquad_d = qmckl_malloc_device(qmckl_ctx, nxquad*3_8);
+           xquad_d = qmckl_malloc_device(qmckl_ctx, nxquad*3_8*8);
            !copy this array to the gpu
-           rc = qmckl_memcpy_H2D(qmckl_ctx, xquad_d, xquad_ptr, nxquad*3_8);
+           rc = qmckl_memcpy_H2D_double(qmckl_ctx, xquad_d, xqmckl_quad, nxquad*3_8*8);
            if (rc /= QMCKL_SUCCESS_DEVICE) then
               print *, 'copy xquad to decide QMCkl'
               stop 
@@ -679,7 +657,7 @@ contains
            end if
 
            !create array ao's gpu 
-           ao_vgl_qmckl_d = qmckl_malloc_device(qmckl_ctx, 5_8*nxquad*nbasis);
+           ao_vgl_qmckl_d = qmckl_malloc_device(qmckl_ctx, 5_8*nxquad*nbasis*8);
            rc = qmckl_get_ao_basis_ao_vgl_inplace_device(qmckl_ctx, &
                 ao_vgl_qmckl_d, nxquad*5_8*nbasis)
            if (rc /= QMCKL_SUCCESS_DEVICE) then
@@ -689,18 +667,13 @@ contains
            
       
            ! allocate ao_vgl array CPU
-           ao_vgl_qmckl_h = qmckl_malloc_host(qmckl_ctx, 5_8*nbasis*nxquad);
+           allocate(ao_vgl_qmckl(nbasis,5,nxquad))
            !copy array to CPU
-           rc = qmckl_memcpy_D2H(qmckl_ctx, ao_vgl_qmckl_h, ao_vgl_qmckl_d, 5_8*nbasis*nxquad);
+           rc = qmckl_memcpy_D2H_double(qmckl_ctx, ao_vgl_qmckl, ao_vgl_qmckl_d, 5_8*nbasis*nxquad*8);
            if (rc /= QMCKL_SUCCESS_DEVICE) then
               print *, 'Error copying aos_quad to GPU'
               stop
            end if
-           call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl_t, [int(nxquad, kind(4)), 5, int(nbasis, kind(4))]);                                                           
-           
-           !reshape array fortran order (nelec,5,nbasis)->(nbasis,5,nelec)      
-           ao_vgl_qmckl = reshape(ao_vgl_qmckl_t,shape=[size(ao_vgl_qmckl,3),size(ao_vgl_qmckl,2),size(ao_vgl_qmckl,1)],order=[3,2,1])    
-
            
            
 !     computing images distance for nxquad points
@@ -708,18 +681,19 @@ contains
 
               ! allocate positions of image nxquad points
               allocate(xqmckl_quad_i(3,nxquad))
-              !pass F-array to c pointer 
-              xquad_ptr = c_loc(xqmckl_quad_i)
-
+              !allocate image ao-vgl vector
+              allocate(ao_vgl_qmckl_i(nbasis, 5, nxquad))
+              
+              
               do i_image=1, n_images
-                 
+                 !set xquad images position vectors
+                 xqmckl_quad_i=0.d0
                  r_image=ell(1:3,i_image)
                  do iq=1, nxquad
                     xqmckl_quad_i(1:3,iq)=xqmckl_quad(1:3,iq)-r_image(1:3)
                  enddo
-
-                 
-                 rc = qmckl_memcpy_H2D(qmckl_ctx, xquad_d, xquad_ptr, nxquad*3_8);
+                
+                 rc = qmckl_memcpy_H2D_double(qmckl_ctx, xquad_d, xqmckl_quad_i, nxquad*3_8*8);
                  if (rc /= QMCKL_SUCCESS_DEVICE) then
                     print *, 'copy xquad to decide QMCkl'
                     stop 
@@ -741,22 +715,17 @@ contains
 
            
                  !copy ao's array to CPU
-                 rc = qmckl_memcpy_D2H(qmckl_ctx, ao_vgl_qmckl_h, ao_vgl_qmckl_d, 5_8*nbasis*nxquad);
+                 rc = qmckl_memcpy_D2H_double(qmckl_ctx, ao_vgl_qmckl_i, ao_vgl_qmckl_d, 5_8*nbasis*nxquad*8);
                  if (rc /= QMCKL_SUCCESS_DEVICE) then
                     print *, 'Error copying aos_quad to GPU'
                     stop
                  end if
-                 !pass C to F pointer
-                 call c_f_pointer(ao_vgl_qmckl_h, ao_vgl_qmckl_t, [int(nxquad, kind(4)), 5, int(nbasis, kind(4))]);                                                                            
-                 !reshape array fortran order (nelec,5,nbasis)->(nbasis,5,nelec)
-                 ao_vgl_qmckl_i = reshape(ao_vgl_qmckl_t,shape=[size(ao_vgl_qmckl_i,3),size(ao_vgl_qmckl_i,2),size(ao_vgl_qmckl_i,1)],order=[3,2,1]) 
-
+                  
                  
                  !     add contribution of the given image
                  do iq=1, nxquad
                      do ivgl=1, 5
                         do i_basis=1, nbasis
-                           !ao_vgl_qmckl(i_basis,ivgl, iq)=ao_vgl_qmckl(i_basis,ivgl,iq)+ao_vgl_qmckl_i(iq,ivgl,i_basis)
                            ao_vgl_qmckl(i_basis,ivgl, iq)=ao_vgl_qmckl(i_basis,ivgl,iq)+ao_vgl_qmckl_i(i_basis,ivgl,iq)
                         enddo
                      enddo
@@ -805,9 +774,16 @@ contains
 
            if(allocated(xqmckl_quad)) deallocate(xqmckl_quad)
            if(allocated(xqmckl_quad_i)) deallocate(xqmckl_quad_i)
-           rc = qmckl_free_host(qmckl_ctx,ao_vgl_qmckl_h)
+           if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl)
+           if(allocated(ao_vgl_qmckl_i)) deallocate(ao_vgl_qmckl_i)
            rc = qmckl_free_device(qmckl_ctx,ao_vgl_qmckl_d)
-
+           if (rc /= QMCKL_SUCCESS_DEVICE) then
+              write(ounit,*) 'Error free memory device AOs QMCkl'
+           endif
+           rc = qmckl_free_device(qmckl_ctx,xquad_d)
+           if (rc /= QMCKL_SUCCESS_DEVICE) then
+              write(ounit,*) 'Error free memory device xquad_d'
+           endif
 
            
 
