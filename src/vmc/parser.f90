@@ -284,7 +284,8 @@ subroutine parser
   integer                    :: rc
   integer(c_int64_t), target :: n8
   integer*8                  :: norb_qmckl
-  integer(c_int64_t), allocatable, target :: keep(:)
+  !integer(c_int64_t), allocatable, target :: keep(:)
+  integer(c_int32_t), allocatable :: keep(:)
   type(c_ptr) :: c_file_trexio
   character(kind=c_char,len=:), allocatable, target :: f2ctarget
   integer :: lsc
@@ -2111,6 +2112,10 @@ subroutine parser
      write(ounit,int_format) "QMCkl number mo found", n8
      write(ounit,int_format) "norb_qmckl", norb_qmckl
 
+
+     !norb_qmckl = n8
+
+     
      if (n8 > norb_qmckl) then
 
         !! allocate orbital selection array for qmckl
@@ -2118,10 +2123,12 @@ subroutine parser
         !! selecting range of orbitals to compute with QMCkl
         keep(1:norb_qmckl) = 1
         keep((norb_qmckl+1):n8) = 0
+
         
 
         !write(ounit,*) "CIAO selection"
-        rc = qmckl_mo_basis_select_mo_device(qmckl_ctx, c_loc(keep), c_loc(n8))
+        !rc = qmckl_mo_basis_select_mo_device(qmckl_ctx, c_loc(keep), n8)
+        rc = qmckl_mo_basis_select_mo_device(qmckl_ctx, keep, n8)
         if (rc /= QMCKL_SUCCESS_DEVICE) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
         !write(ounit,*) "CIAO goodbye!!"
         
