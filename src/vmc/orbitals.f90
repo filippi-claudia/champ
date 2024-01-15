@@ -70,12 +70,15 @@ contains
       ! Molecular
       !integer*8 :: n8
       integer(c_int64_t), target :: n8
+      !integer*8, target :: n8
       real*8, allocatable :: mo_vgl_qmckl(:,:,:)
+      real*8, allocatable :: mo_vgl_qmckl_rs(:,:,:)
       real*8, pointer :: mo_vgl_qmckl_t(:,:,:)=>NULL()
       type(c_ptr) mo_vgl_qmckl_d
       type(c_ptr) mo_vgl_qmckl_h
       !for testing
       real*8, allocatable :: mo_qmckl(:,:)
+      real*8, allocatable :: mo_qmckl_rs(:,:)
       real*8, pointer :: mo_qmckl_t(:,:)=>NULL()
       type(c_ptr) mo_qmckl_d
       type(c_ptr) mo_qmckl_h
@@ -215,9 +218,6 @@ contains
                stop
             end if
 
-            
-
-            
             !     Send electron coordinates to QMCkl to compute the MOs at these positions
             rc = qmckl_set_point_device(qmckl_ctx, 'N', nelec*1_8, xqmckl_d, nelec*3_8)
             if (rc /= QMCKL_SUCCESS_DEVICE) then
@@ -226,20 +226,13 @@ contains
             end if
 
             
-
             !test set points
             
             write(ounit,*) "test qmckl set points start"
-            ! allocate xelec in device and host
+            !! allocate xelec in device and host
             xback_d = qmckl_malloc_device(qmckl_ctx, nelec*3_8*8);
-            ! copy electron coordinates to device
-            rc = qmckl_memcpy_H2D_double(qmckl_ctx, xback_d, xqmckl, nelec*3_8*8);
-            if (rc /= QMCKL_SUCCESS_DEVICE) then
-               write(ounit,*) 'Error copy elec-coord to device qmckl'
-               stop
-            end if
             
-            !set points
+            !get points to device array
             rc = qmckl_get_point_device(qmckl_ctx, 'N', xback_d, nelec*3_8)
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error getting electron coordinates in QMCkl'
@@ -247,7 +240,7 @@ contains
             end if
 
             allocate(xback(3,nelec))
-
+            xback=0.d0
             ! copy electron coordinates to device
             rc = qmckl_memcpy_D2H_double(qmckl_ctx, xback, xback_d, nelec*3_8*8);
             if (rc /= QMCKL_SUCCESS_DEVICE) then
@@ -271,6 +264,9 @@ contains
             
             !write(ounit,*) "BEFORE PASS TEST HERE"
             ! allocate mo array at device for transfer
+
+            write(ounit,*) "check orbitals number", n8, norb+nadorb
+            
             mo_qmckl_d = qmckl_malloc_device(qmckl_ctx, 1_8*n8*nelec*8);
             !write(ounit,*) "PASS TEST HERE"
             !     Compute the MOs
@@ -292,6 +288,7 @@ contains
             mo_qmckl=0.d0
             !way one
             rc = qmckl_memcpy_D2H_double(qmckl_ctx, mo_qmckl, mo_qmckl_d, 1_8*nelec*n8*8);
+            !rc = qmckl_memcpy_D2H_double(qmckl_ctx, mo_qmckl, mo_qmckl_d, 1_8*nelec*n8);
             if (rc /= QMCKL_SUCCESS_DEVICE) then
                write(ounit,*) 'Error copying back MOs from QMCkl device'
                stop
@@ -308,6 +305,8 @@ contains
             !call c_f_pointer(mo_qmckl_h, mo_qmckl_t, (/nelec,n8/))
                         
             write(ounit,*) "shape mo vgl to host", shape(mo_qmckl_t)
+
+            !!write(ounit,*) "shape mo vgl-- to host", shape(mo_qmckl)
 
             !stop          
 
@@ -404,12 +403,14 @@ contains
             write(ounit,*) "electron i", i
             do iorb=1,norb+nadorb
                write(ounit,*) "iorb", iorb
-               !write(ounit,*) orb(i,iorb,k),  mo_qmckl(iorb,i)
-               
-               write(ounit,*) orb(i,iorb,k),  mo_qmckl_t(iorb,i)
-               
+               write(ounit,*) orb(i,iorb,k),  mo_qmckl(iorb,i)
+               !write(ounit,*) orb(i,iorb,k),  mo_vgl_qmckl_t(iorb,i)
                !write(ounit,*) orb(i,iorb,k),  mo_vgl_qmckl_t(i,iorb)
-                 
+
+               
+               !write(ounit,"(*(f10.7,2X))") orb(i,iorb,k),  mo_qmckl_t(iorb,i)
+               !write(ounit,"(f10.6))") orb(i,iorb,k),  mo_qmckl_t(iorb,i)
+                                
             end do
          end do
         
@@ -425,20 +426,20 @@ contains
             write(ounit,*) "electron i", i
             do iorb=1,norb+nadorb
                write(ounit,*) "iorb", iorb
-               !write(ounit,*) orb  (  i,iorb,k),  mo_vgl_qmckl(iorb,1,i)
-               !write(ounit,*) dorb (iorb,i,1,k),  mo_vgl_qmckl(iorb,2,i)
-               !write(ounit,*) dorb (iorb,i,2,k),  mo_vgl_qmckl(iorb,3,i)
-               !write(ounit,*) dorb (iorb,i,3,k),  mo_vgl_qmckl(iorb,4,i)
-               !write(ounit,*) ddorb(  iorb,i,k),  mo_vgl_qmckl(iorb,5,i)
+               write(ounit,*) orb  (  i,iorb,k),  mo_vgl_qmckl(iorb,1,i)
+               write(ounit,*) dorb (iorb,i,1,k),  mo_vgl_qmckl(iorb,2,i)
+               write(ounit,*) dorb (iorb,i,2,k),  mo_vgl_qmckl(iorb,3,i)
+               write(ounit,*) dorb (iorb,i,3,k),  mo_vgl_qmckl(iorb,4,i)
+               write(ounit,*) ddorb(  iorb,i,k),  mo_vgl_qmckl(iorb,5,i)
 
-               write(ounit,*) orb  (  i,iorb,k),  mo_vgl_qmckl_t(iorb,1,i)
-               write(ounit,*) dorb (iorb,i,1,k),  mo_vgl_qmckl_t(iorb,2,i)
-               write(ounit,*) dorb (iorb,i,2,k),  mo_vgl_qmckl_t(iorb,3,i)
-               write(ounit,*) dorb (iorb,i,3,k),  mo_vgl_qmckl_t(iorb,4,i)
-               write(ounit,*) ddorb(  iorb,i,k),  mo_vgl_qmckl_t(iorb,5,i)
+               !write(ounit,*) orb  (  i,iorb,k),  mo_vgl_qmckl_t(iorb,1,i)
+               !write(ounit,*) dorb (iorb,i,1,k),  mo_vgl_qmckl_t(iorb,2,i)
+               !write(ounit,*) dorb (iorb,i,2,k),  mo_vgl_qmckl_t(iorb,3,i)
+               !write(ounit,*) dorb (iorb,i,3,k),  mo_vgl_qmckl_t(iorb,4,i)
+               !write(ounit,*) ddorb(  iorb,i,k),  mo_vgl_qmckl_t(iorb,5,i)
 
                !write(ounit,*) orb  (  i,iorb,k),  mo_vgl_qmckl_t(i,1,iorb)
-               !write(ounit,*) dorb (iorb,i,1,k),  mo_vgl_qmckl_t(i,2,iorb)
+               !!write(ounit,*) dorb (iorb,i,1,k),  mo_vgl_qmckl_t(i,2,iorb)
                !write(ounit,*) dorb (iorb,i,2,k),  mo_vgl_qmckl_t(i,3,iorb)
                !write(ounit,*) dorb (iorb,i,3,k),  mo_vgl_qmckl_t(i,4,iorb)
                !write(ounit,*) ddorb(  iorb,i,k),  mo_vgl_qmckl_t(i,5,iorb)
