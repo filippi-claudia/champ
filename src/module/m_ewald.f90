@@ -50,12 +50,12 @@ module ewald_mod
      real(dp), dimension(:), allocatable :: sin_p_sum !(NGVECX)
      real(dp), dimension(:), allocatable :: cos_e_sum_sim !(NGVECX)
      real(dp), dimension(:), allocatable :: sin_e_sum_sim !(NGVECX)
-
+     real(dp), dimension(:), allocatable :: sk !(NGNORX number of shells)
      
      private
      public   ::  b_coul, b_coul_sim, b_psp, b_jas, y_coul, y_coul_sim, y_psp, y_jas
      public   ::  cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_p_sum, sin_p_sum, cos_e_sum_sim, sin_e_sum_sim
-     public :: allocate_ewald, deallocate_ewald
+     public :: allocate_ewald, deallocate_ewald, sk
      save
  contains
      subroutine allocate_ewald()
@@ -74,6 +74,7 @@ module ewald_mod
          if (.not. allocated(cos_e_sum)) allocate (cos_e_sum(NGVECX))
          if (.not. allocated(sin_p_sum)) allocate (sin_p_sum(NGVECX))
          if (.not. allocated(cos_p_sum)) allocate (cos_p_sum(NGVECX))
+         if (.not. allocated(sk)) allocate (sk(NGNORMX))
          if (.not. allocated(sin_e_sum_sim)) allocate (sin_e_sum_sim(NGVEC_SIMX))
          if (.not. allocated(cos_e_sum_sim)) allocate (cos_e_sum_sim(NGVEC_SIMX))
 
@@ -96,6 +97,7 @@ module ewald_mod
          if (allocated(sin_p_sum)) deallocate (sin_p_sum)
          if (allocated(cos_e_sum_sim)) deallocate (cos_e_sum_sim)
          if (allocated(sin_e_sum_sim)) deallocate (sin_e_sum_sim)
+         if (allocated(sk)) deallocate (sk)
 
      end subroutine deallocate_ewald
 

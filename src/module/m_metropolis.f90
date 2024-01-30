@@ -10,6 +10,7 @@ module metropolis
     real(dp) :: deltat
 
     real(dp) :: fbias
+    real(dp) :: vmc_tau
 
     save
 end module

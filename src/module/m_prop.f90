@@ -1,11 +1,3 @@
-module properties
-    !> Arguments: MAXPROP
-    integer, parameter :: MAXPROP = 6
-    private
-    public :: MAXPROP
-    save
-end module properties
-
 module prp000
     !> Arguments: ipropprt, iprop, nprop
 
@@ -21,7 +13,7 @@ end module prp000
 module prp001
     !> Arguments: vprop
       use precision_kinds, only: dp
-      use properties, only: MAXPROP
+      use prp000,  only: nprop
 
     real(dp), dimension(:), allocatable :: vprop !(MAXPROP)
 
@@ -31,8 +23,8 @@ module prp001
     save
 contains
     subroutine allocate_prp001()
-      use properties, only: MAXPROP
-        if (.not. allocated(vprop)) allocate (vprop(MAXPROP))
+      use prp000, only: nprop
+        if (.not. allocated(vprop)) allocate (vprop(nprop))
     end subroutine allocate_prp001
 
     subroutine deallocate_prp001()
@@ -45,7 +37,7 @@ module prp002
     !> Arguments: vprop_old
       use dmc_mod, only: mwalk
       use precision_kinds, only: dp
-      use properties, only: MAXPROP
+      use prp000, only: nprop
 
     real(dp), dimension(:, :), allocatable :: vprop_old !(MAXPROP,mwalk)
     real(dp), dimension(:), allocatable :: vprop_old2 !(MAXPROP)
@@ -56,9 +48,9 @@ module prp002
     save
 contains
     subroutine allocate_prp002()
-      use properties, only: MAXPROP
-        if (.not. allocated(vprop_old)) allocate (vprop_old(MAXPROP, mwalk))
-        if (.not. allocated(vprop_old2)) allocate (vprop_old2(MAXPROP))
+      use prp000, only: nprop
+        if (.not. allocated(vprop_old)) allocate (vprop_old(nprop, mwalk))
+        if (.not. allocated(vprop_old2)) allocate (vprop_old2(nprop))
     end subroutine allocate_prp002
 
     subroutine deallocate_prp002()
@@ -71,7 +63,7 @@ end module prp002
 module prp003
     !> Arguments: vprop_cm2, vprop_cum, cc_nuc, vprop_sum
       use precision_kinds, only: dp
-      use properties, only: MAXPROP
+      use prp000, only: nprop
 
     real(dp), dimension(:), allocatable :: cc_nuc !(3)
     real(dp), dimension(:), allocatable :: vprop_cm2 !(MAXPROP)
@@ -84,11 +76,11 @@ module prp003
     save
 contains
     subroutine allocate_prp003()
-      use properties, only: MAXPROP
+      use prp000, only: nprop
         if (.not. allocated(cc_nuc)) allocate (cc_nuc(3))
-        if (.not. allocated(vprop_cm2)) allocate (vprop_cm2(MAXPROP))
-        if (.not. allocated(vprop_cum)) allocate (vprop_cum(MAXPROP))
-        if (.not. allocated(vprop_sum)) allocate (vprop_sum(MAXPROP))
+        if (.not. allocated(vprop_cm2)) allocate (vprop_cm2(nprop))
+        if (.not. allocated(vprop_cum)) allocate (vprop_cum(nprop))
+        if (.not. allocated(vprop_sum)) allocate (vprop_sum(nprop))
     end subroutine allocate_prp003
 
     subroutine deallocate_prp003()
