@@ -2001,9 +2001,12 @@ subroutine parser
      qmckl_ctx = qmckl_context_create()
      write(ounit, *) " QMCkl initial context created  " , qmckl_ctx , " successfully "
 
-     rc = qmckl_set_numprec_precision(qmckl_ctx, 24)
+!    Activate this for super-fast QMCkl. Maybe, set a flag in input.
+!     rc = qmckl_set_numprec_precision(qmckl_ctx, 24)
+     rc = qmckl_set_numprec_precision(qmckl_ctx, 53)
      if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
-     write(ounit, *) " QMCkl precision set to 24 bits"
+!     write(ounit, *) " QMCkl precision set to 24 bits"
+     write(ounit, *) " QMCkl precision set to 53 bits"
 
      if(ioptorb.gt.0) then
 
