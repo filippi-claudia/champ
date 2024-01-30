@@ -2001,6 +2001,10 @@ subroutine parser
      qmckl_ctx = qmckl_context_create()
      write(ounit, *) " QMCkl initial context created  " , qmckl_ctx , " successfully "
 
+     rc = qmckl_set_numprec_precision(qmckl_ctx, 24)
+     if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
+     write(ounit, *) " QMCkl precision set to 24 bits"
+
      if(ioptorb.gt.0) then
 
        file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
