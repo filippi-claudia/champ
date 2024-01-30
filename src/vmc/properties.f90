@@ -14,13 +14,12 @@ contains
       use prp000,  only: iprop,nprop
       use prp001,  only: vprop
       use system,  only: nelec
+      use periodic, only: ngnorm_sim,ngvec_sim
       implicit none
 
-      integer :: i, m
+      integer :: i, jprop, m
 
       real(dp), dimension(3,*) :: coord
-
-
 
 !     electron coordinates
 
@@ -35,6 +34,15 @@ contains
         vprop(3+m)= vprop(3+m) + coord(m,i)**2
        enddo
       enddo
+
+      jprop=6
+
+      call sofk(jprop)
+
+      jprop=6+(ngvec_sim-1)
+
+      call rhok(jprop)
+
       end
 
 !-----------------------------------------------------------------------
@@ -45,9 +53,6 @@ contains
       implicit none
 
       integer :: i, iflg
-
-
-
 
       if(iprop.eq.0) return
 
@@ -74,8 +79,6 @@ contains
       integer :: i
       real(dp) :: vprop_now, w
 
-
-
       if(iprop.eq.0) return
       do i=1,nprop
        vprop_now = vprop_sum(i)/w
@@ -87,7 +90,6 @@ contains
 !-----------------------------------------------------------------------
       subroutine prop_avrg(wcum,iblk,pav,perr)
       use precision_kinds, only: dp
-      use properties, only: MAXPROP
       use prp000,  only: iprop,nprop
       use prp003,  only: vprop_cm2,vprop_cum
 
@@ -95,8 +97,8 @@ contains
 
       integer :: i, iblk
       real(dp) :: wcum, x, x2
-      real(dp), dimension(MAXPROP) :: pav
-      real(dp), dimension(MAXPROP) :: perr
+      real(dp), dimension(nprop) :: pav
+      real(dp), dimension(nprop) :: perr
 
       if(iprop.eq.0) return
       do i=1,nprop
@@ -162,24 +164,21 @@ contains
 !-----------------------------------------------------------------------
       subroutine prop_prt(w,iblk,iu)
       use m_icount, only: icount_prop
+      use periodic, only: ngnorm_sim, gvec_sim, ngvec_sim
       use precision_kinds, only: dp
-      use properties, only: MAXPROP
-      use prp000,  only: iprop,ipropprt
+      use prp000,  only: iprop,ipropprt,nprop
       use prp003,  only: cc_nuc
       use system,  only: nelec
 
       implicit none
 
-      integer :: iblk, iu
+      integer :: i, iblk, iu
       real(dp) :: dble, dip, diperr, dipx
-      real(dp) :: dipy, dipz, w
-      real(dp), dimension(MAXPROP) :: pav
-      real(dp), dimension(MAXPROP) :: perr
-
-
+      real(dp) :: dipy, dipz, norm_aux, w
+      real(dp), dimension(nprop) :: pav
+      real(dp), dimension(nprop) :: perr
 
 ! compute averages and print then out
-
 
 ! ipropprt 0 no printout
 !          1 each iteration full printout
@@ -227,7 +226,22 @@ contains
       write(iu,40) 'Dip Z ',dipz,perr(3)*2.5417
       write(iu,40) 'Dip   ',dip,diperr
 
-
+      do i=6+1,6+ngvec_sim-1
+        call gnormf(3,gvec_sim(1,i-5), norm_aux)
+        write(iu,'(''s(k)     '',t17,f12.7,f12.7,'' +-'' &
+        ,f12.7,f12.7)') norm_aux,pav(i),perr(i), &
+        pav(i)-(pav(i+ngvec_sim-1)**2)-(pav(i+2*(ngvec_sim-1))**2)
+      enddo
+      do i=6+ngvec_sim,6+2*(ngvec_sim-1)
+        call gnormf(3,gvec_sim(1,i-5-ngvec_sim+1), norm_aux)
+        write(iu,'(''cos(kr)  '',t17,f12.7,f12.7,'' +-'' &
+        ,f12.7)') norm_aux,pav(i),perr(i)
+      enddo
+      do i=6+2*(ngvec_sim-1)+1,nprop
+        call gnormf(3,gvec_sim(1,i-5-2*(ngvec_sim-1)), norm_aux)
+        write(iu,'(''sin(kr)  '',t17,f12.7,f12.7,'' +-'' &
+        ,f12.7)') norm_aux,pav(i),perr(i)
+      enddo
 
       10 format('-------- property operator averages  ----------')
       20 format(a3,'   ',f16.8,' +- ',f16.8,' ( ',f16.8,' +- ',f16.8,' )')
@@ -271,5 +285,108 @@ contains
 
         return
         end
+
+!-----------------------------------------------------------------------
+
+      subroutine sofk(ip)
+! Written by Edgar Landinez and Saverio Moroni
+
+      use prp001,   only: vprop
+      use ewald,    only: cos_e_sum_sim, sin_e_sum_sim
+      use periodic, only: igmult_sim, ngnorm_sim, ngvec_sim
+
+      use system, only: nelec
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: im, ip, ivec, k,ik
+      real(dp) :: skcum
+      real(dp), dimension(ngvec_sim) :: cos1_sum
+      real(dp), dimension(ngvec_sim) :: cos2_sum
+      real(dp), dimension(ngvec_sim) :: sin1_sum
+      real(dp), dimension(ngvec_sim) :: sin2_sum
+
+      cos1_sum=cos_e_sum_sim
+      cos2_sum=cos_e_sum_sim
+      sin1_sum=sin_e_sum_sim
+      sin2_sum=sin_e_sum_sim
+
+!     print*,"sofk, ngnorm", ngnorm_sim
+
+      !vprop(ip+1)=(cos1_sum(1)*cos2_sum(1)+sin1_sum(1)*sin2_sum(1))/nelec
+
+!      ivec=1
+!      do k=2,ngnorm_sim
+!         skcum=0.d0
+!         do im=1,igmult_sim(k)
+!            ivec=ivec+1
+!            skcum=skcum+(cos1_sum(ivec)*cos2_sum(ivec)+sin1_sum(ivec)*sin2_sum(ivec))
+!         enddo
+!         vprop(ip+k-1)=skcum/(nelec*igmult_sim(k))
+!      enddo
+
+      ivec=1
+
+      ik=0
+      do k=2,ngnorm_sim
+         do im=1,igmult_sim(k)
+            ik=ik+1
+            ivec=ivec+1
+            vprop(ip+ik)=(cos1_sum(ivec)*cos2_sum(ivec)+sin1_sum(ivec)*sin2_sum(ivec))
+         enddo
+      enddo
+
+
+      
+      return
+      end
+
+! ------------------------------------------------------------------------------------------------
+      subroutine rhok(ip)
+! Written by Edgar Landinez and Saverio Moroni
+
+      use prp001,   only: vprop
+      use ewald,    only: cos_e_sum_sim, sin_e_sum_sim
+      use periodic, only: igmult_sim, ngnorm_sim, ngvec_sim
+
+      use system, only: nelec
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: im, ip, ivec, k, ik 
+      real(dp) :: skcum
+
+!     print*,"sofk, ngnorm", ngnorm_sim
+
+      !vprop(ip+1)=(cos1_sum(1)*cos2_sum(1)+sin1_sum(1)*sin2_sum(1))/nelec
+
+      ivec=1
+      ik=2
+      do k=2,ngvec_sim
+         vprop(ip+ik-1)=cos_e_sum_sim(k)
+         ik=ik+1
+      enddo
+
+      do k=2,ngvec_sim
+         vprop(ip+ik-1)=sin_e_sum_sim(k)
+         ik=ik+1
+      enddo
+      return
+      end
+! ------------------------------------------------------------------------------------------------
+      subroutine gnormf(n,gvec,gnorm)
+      use precision_kinds, only: dp
+      implicit none
+      integer :: i, n
+      real(dp),  dimension(n)::gvec
+      real(dp) :: gnorm
+      gnorm=0.d0
+      do i=1,n
+         gnorm=gnorm+gvec(i)*gvec(i)
+      enddo
+      gnorm=dsqrt(gnorm)
+
+      return
+      end
 
 end module

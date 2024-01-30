@@ -67,7 +67,8 @@ subroutine parser
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
       use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
-      use metropolis, only: delta,deltai,deltar,deltat,fbias,imetro
+      use metropolis, only: imetro, vmc_tau
+      use metropolis, only: delta,deltai,deltar,deltat,fbias
       use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
       use misc_grdnts, only: inpwrt_zmatrix
       use mmpol_cntrl, only: ich_mmpol,immpol,immpolprt,isites_mmpol
@@ -135,10 +136,10 @@ subroutine parser
       use pcm_grid3d_param, only: pcm_endpt,pcm_origin,pcm_step3d
       use pcm_parms, only: eps_solv,iscov,ncopcm,nscv,nvopcm
       use pcm_unit, only: pcmfile_cavity,pcmfile_chs,pcmfile_chv
+      use periodic, only: ngnorm_sim, ngvec_sim
       use periodic_table, only: atom_t,element
       use pot,     only: pot_nn
       use precision_kinds, only: dp
-      use properties, only: MAXPROP
       use properties_mod, only: prop_cc_nuc
       use prp000,  only: iprop,ipropprt,nprop
       use prp003,  only: cc_nuc
@@ -395,6 +396,7 @@ subroutine parser
   deltar      = fdf_get('deltar', 5.0d0)
   deltat      = fdf_get('deltat', 1.0d0)
   fbias       = fdf_get('fbias', 1.0d0)
+  vmc_tau      = fdf_get('vmc_tau', 0.5d0)
 
 ! %module vmc / blocking_vmc (complete)
   vmc_nstep     = fdf_get('vmc_nstep', 1)
@@ -635,10 +637,6 @@ subroutine parser
   pooldir = trim(pooldir)
   write(ounit,'(a,a)') " Pool directory for common input files :: ",  pooldir
 
-  !checks
-  if( (mode(1:3) == 'vmc') .and. iperiodic.gt.0) &
-    call fatal_error('INPUT: VMC for periodic system -> run dmc/dmc.mov1 with idmc < 0')
-
   write(ounit,*)
   if (wid) read(cseed,'(8i4)') irn
   call bcast(irn)
@@ -759,8 +757,7 @@ subroutine parser
     endif
 
     if (imetro.eq.1) then
-      deltai= one/delta
-      write(ounit,'(a,t36,f12.6)') " Step size = ",  delta
+      write(ounit,real_format)  " Drift-diffusion tau = ", vmc_tau
     else
       if(deltar .lt. one) then
         write(ounit,'(a)') '**Warning value of deltar reset to 2.'
@@ -1309,22 +1306,41 @@ subroutine parser
     ! or we force a fatal error.
   endif
 
-  call compute_mat_size_new()
-  call allocate_vmc()
-  call allocate_dmc()
-
-  ! for periodic calculations
-  if ( fdf_load_defined('lattice') ) then
-     call read_lattice_file(file_lattice)
-  endif
+  !call compute_mat_size_new()
+  !call allocate_vmc()
+  !call allocate_dmc()
 
   ! allocate ewald module and initialize the module
   if (iperiodic.gt.0) then
      call allocate_m_ewald()
+  ! for periodic calculations
+     if ( fdf_load_defined('lattice') ) then
+        call read_lattice_file(file_lattice)
+     endif
      call set_ewald
   endif
 
+! Additional Properties
+! properties will be sampled iprop
+! properties will be printed ipropprt
+  nprop=1
+  if(iprop.ne.0) then
+     if (iperiodic.gt.0) then
+        !        nprop=5+ngnorm_sim
+        nprop=6+(ngvec_sim-1)+2*(ngvec_sim-1)
+     else
+        nprop=5
+     endif
 
+     write(ounit,'(a)' ) " Properties will be sampled "
+     write(ounit,*) " NPROP ", nprop
+     write(ounit,int_format ) " Properties printout flag = ", ipropprt
+!    call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
+  endif
+
+  call compute_mat_size_new()
+  call allocate_vmc()
+  call allocate_dmc()
 
 ! (17) multideterminants information (either block or from a file)
 
@@ -1737,17 +1753,15 @@ subroutine parser
     call efield_compute_extint
   endif
 
-
-
 ! Additional Properties
 ! properties will be sampled iprop
 ! properties will be printed ipropprt
-  if(iprop.ne.0) then
-    nprop=MAXPROP
-    write(ounit,'(a)' ) " Properties will be sampled "
-    write(ounit,int_format ) " Properties printout flag = ", ipropprt
-    call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
-  endif
+! if(iprop.ne.0) then
+!   nprop=MAXPROP
+!   write(ounit,'(a)' ) " Properties will be sampled "
+!   write(ounit,int_format ) " Properties printout flag = ", ipropprt
+!   call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
+! endif
 
 ! (13) Forces information (either block or from a file) [#####]
 

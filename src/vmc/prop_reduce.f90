@@ -5,7 +5,6 @@ contains
       use mpi
       use mpiconf, only: wid
       use precision_kinds, only: dp
-      use properties, only: MAXPROP
       use prp000,  only: iprop,nprop
       use prp003,  only: vprop_cm2,vprop_cum
 
@@ -13,9 +12,8 @@ contains
 
       integer :: i, ierr
 
-      real(dp), dimension(MAXPROP) :: vpcollect
-      real(dp), dimension(MAXPROP) :: vp2collect
-
+      real(dp), dimension(nprop) :: vpcollect
+      real(dp), dimension(nprop) :: vp2collect
 
       if(iprop.eq.0) return
 

@@ -3,14 +3,9 @@ contains
       subroutine vmc
 ! Written by Cyrus Umrigar and Claudia Filippi
 
-! Program to do variational Monte Carlo calculations
-! on atoms and molecules.
+! Program to do variational Monte Carlo calculations on atoms and molecules.
 ! Various types of Metropolis moves can be done, including a few
 ! versions of directed Metropolis in spherical polar coordinates.
-! Also, one or all electrons can be moved at once.
-! Currently this program contains
-! 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater basis states.
-! and sa, pa, da asymptotic functions
 
       use acuest_mod, only: acuest,zerest
       use coefs,   only: nbasis
@@ -23,6 +18,8 @@ contains
       use finwrt_mod, only: finwrt
       use mc_configs, only: mc_configs_start,mc_configs_write
       use metrop_mov1_slat, only: metrop6
+      use metrop_mov1_driftdif, only: metrop1
+      use metropolis, only: imetro
       use mpitimer, only: elapsed_time
       use multiple_geo, only: iwftype,nforce,nwftype
       use precision_kinds, only: dp
@@ -39,51 +36,7 @@ contains
       integer :: ngfmc
       real(dp) ::err
 
-
-
-
       character(len=25) fmt
-
-! common block variables:
-
-!   /const/
-!        nelec  = number of electrons
-!        pi     = 3.14159...
-!        hb     = hbar**2/(2m)
-!        delta  = side of box in which metropolis steps are made
-!        deltai = 1/delta
-!        fbias  = force bias parameter
-!   /contrl/
-!        nstep  = number of metropolis steps/block
-!        nblk   = number of blocks od nstep steps after the
-!                equilibrium steps
-!        nblkeq = number of equilibrium blocks
-!        nconf  = target number of mc configurations (dmc only)
-!        nconf_new = number of mc configurations generated for optim and dmc
-!        idump  =  1 dump out stuff for a restart
-!        irstar =  1 pick up stuff for a restart
-!   /config/
-!        xold   = current position of the electrons
-!        xnew   = new position after a trial move
-!        vold   = grad(psi)/psi at current position
-!        vnew   = same after trial move
-!        psi2o  = psi**2 at current position
-!        psi2n  = same after trial move
-!        eold   = local energy at current position
-!        enew   = same after trial move
-!        ekino   = local kinetic energy at current position
-!        psido  = determinantal part of wave function
-!        psijo  = log(Jastrow)
-!   /coefs/
-!        coef   = read in coefficients of the basis functions
-!                 to get the molecular orbitals used in determinant
-!        nbasis = number of basis functions read in
-!   /dets/
-!        cdet   = coefficients of the determinants
-!        ndet   = number of determinants of molecular orbitals
-!                 used
-!        nup    = number of up spin electrons
-!        ndn    = number of down spin electrons
 
       if(nforce.gt.1) then
 ! force parameters
@@ -109,7 +62,6 @@ contains
             call elapsed_time("VMC : zero out estimators and averages : ")
       endif
 
-
 ! check if restart flag is on. If so then read input from
 ! dumped data to restart
 
@@ -132,7 +84,11 @@ contains
           do j=1,vmc_nstep
             l=l+1
             if (nloc.gt.0) call rotqua
-            call metrop6(l,0)
+            if(imetro.eq.1) then
+              call metrop1(l,0)
+             else
+              call metrop6(l,0)
+            endif
           enddo
 
          call acuest
@@ -152,7 +108,11 @@ contains
         l=l+1
 !   write(ounit, *) i, nblk, j, nstep
         if (nloc.gt.0) call rotqua
-        call metrop6(l,1)
+        if(imetro.eq.1) then
+          call metrop1(l,1)
+         else
+          call metrop6(l,1)
+        endif
 ! write out configuration for optimization/dmc/gfmc here
         if (mod(l,ngfmc).eq.0 .or. ngfmc.eq.1) then
           if(3*nelec.lt.100) then

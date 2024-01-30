@@ -30,6 +30,7 @@ if (MPI_Fortran_FOUND)
     force_analy_reduce.f90
     force_analytic.f90
     gammai.f90
+    gauss.f90
     hpsi.f90
     hpsie.f90
     jassav.f90
@@ -41,6 +42,7 @@ if (MPI_Fortran_FOUND)
     jastrow_num.f90
     jastrowe.f90
     mc_configs.f90
+    metrop_mov1_driftdif.f90
     metrop_mov1_slat.f90
     misc_grdnts.f90
     mmpol.f90
@@ -203,6 +205,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/jassav.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/gammai.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/gauss.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/sites.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonloc.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f90
@@ -239,7 +242,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/determinant.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc_pot.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/pw_placeholder.f90  # This file should be refactored and eliminated.
     ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_num.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/bxmatrices.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonlpsi.f90
