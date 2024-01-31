@@ -1,0 +1,35 @@
+%module general
+    title           'H10/RHF'
+    pool            './pool/'
+    pseudopot       ECP
+    basis	    BASISGRID
+    mode            'vmc_one_mpi1'
+%endmodule
+
+
+#load molecule        $pool/champ_v2_RHF_cart_geom.xyz
+load trexio	      pyscf/RHF_cart.hdf5
+
+# These two files are taken from the original gamess2qmc converter
+load basis_num_info  $pool/champ_v3_RHF_cart_basis_pointers.bfinfo
+load orbitals        champ_v3_RHF_cart_trexio_orbitals.lcao
+
+
+load determinants    champ_v3_H10_cartesian_determinants_state1.det
+load symmetry        champ_v2_H10_cartesian_symmetry.sym
+load jastrow         jastrow.jas
+
+%module electrons
+    nup           5
+    nelec         10
+%endmodule
+
+
+%module blocking_vmc
+    vmc_nstep     20
+    vmc_nblk      10
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+#    vmc_isite	  0
+%endmodule
+
