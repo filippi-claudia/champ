@@ -14,13 +14,21 @@ module load OpenMPI/4.1.4-NVHPC-22.7-CUDA-11.7.0
 
 compiler=mpif90             # 'mpiifort' or 'mpiifx'
 trexio_dir=/home/landinez/Codes/trexio_gcc_b/build       # Root directory of TREXIO library
-qmckl_dir=/home/landinez/Codes/qmckl_gpu_nvgcc/_install            # Root directory of QMCkl library
-#qmckl_dir=/home/landinez/Codes/qmckl_gpu_gcc/_install            # Root directory of QMCkl library
+#qmckl_dir=/home/landinez/Codes/qmckl_gpu_nvgcc/_install            # Root directory of QMCkl library
+qmckl_dir=/home/landinez/Codes/qmckl_gpu_nvgcc_check/_install            # Root directory of QMCkl library
+
+
+
 
 #### #-DCMAKE_Fortran_FLAGS="-mp=gpu,noautopar" \
 #  2090 |            nucl_fitcusp_radius(k) = 1.d0/(a_cusp*znuc(iwctype(k)+b_cusp))
 #       -DENABLE_GPU=ON \
-    
+
+#export I_MPI_PIN_RESPECT_CPUSET=0
+
+#unset I_MPI_PMI_LIBRARY
+
+
 cmake -S. -Bbuild \
       -DCMAKE_Fortran_COMPILER=${compiler} \
       -DCMAKE_Fortran_FLAGS="-mp=gpu,noautopar -Minfo" \

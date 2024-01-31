@@ -1,5 +1,5 @@
 %module general
-    title           'Benzene RHF calc cc-VDZ basis converted using gamess-trexio-champ converter'
+    title           'H10/RHF'
     pool            './pool/'
     pseudopot       ECP
     basis	    BASISGRID
@@ -15,21 +15,21 @@ load basis_num_info  $pool/champ_v3_RHF_cart_basis_pointers.bfinfo
 load orbitals        champ_v3_RHF_cart_trexio_orbitals.lcao
 
 
-load determinants    champ_v3_C60_cartesian_determinants_state1.det
-load symmetry        champ_v2_C60_cartesian_symmetry.sym
+load determinants    champ_v3_H10_cartesian_determinants_state1.det
+load symmetry        champ_v2_H10_cartesian_symmetry.sym
 load jastrow         jastrow.jas
 
 %module electrons
-    nup           120
-    nelec         240
+    nup           5
+    nelec         10
 %endmodule
 
 
 %module blocking_vmc
-    vmc_nstep     20
+    vmc_nstep     10
     vmc_nblk      2
     vmc_nblkeq    1
     vmc_nconf_new 0
-    vmc_isite	  0
+#    vmc_isite	  0
 %endmodule
 

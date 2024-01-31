@@ -181,16 +181,23 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")
 #  list(APPEND Fortran_FLAGS "-mp=multicore,gpu")
 #  list(APPEND Fortran_FLAGS "-acc")
 #  list(APPEND Fortran_FLAGS "-gpu=cc80")
-#  list(APPEND Fortran_FLAGS "-Mcudalib=cublas")
+## added for testing if it works
+  list(APPEND Fortran_FLAGS "-Mcudalib=cublas")
 #  list(APPEND Fortran_FLAGS "-Mcuda=lineinfo")
 #  list(APPEND Fortran_FLAGS "-Minfo=mp,acc")
    list(APPEND Fortran_FLAGS "-gopt")
-   list(APPEND Fortran_FLAGS "-traceback")
+#commented for now testing
+   #   list(APPEND Fortran_FLAGS "-g")
+#   list(APPEND Fortran_FLAGS "-traceback")
+#   list(APPEND Fortran_FLAGS "-Mextend")
+#   list(APPEND Fortran_FLAGS "-Mdclchk")
+   list(APPEND Fortran_FLAGS "-fast")
    list(APPEND Fortran_FLAGS "-mp=gpu,noautopar")
-   list(APPEND Fortran_FLAGS "-Mextend")
+   list(APPEND Fortran_FLAGS "-tp=native")
 #  list(APPEND Fortran_FLAGS "-Mnoframe")
 
-  #CUDALIB= -L$(CUDA_LIB) -lcufft -lcublasLt -lcublas -lcudart
+#testing for now
+#CUDALIB= -L$(CUDA_LIB) -lcufft -lcublasLt -lcublas -lcudart
 #  if (MKL_FOUND)
 #    list(APPEND Fortran_FLAGS "-m64")
 #  endif()

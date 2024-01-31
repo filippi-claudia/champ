@@ -4,7 +4,6 @@
     pseudopot       ECP
     basis	    BASISGRID
     mode            'vmc_one_mpi1'
-    ipr 	    4
 %endmodule
 
 
@@ -16,9 +15,7 @@ load basis_num_info  $pool/champ_v3_RHF_cart_basis_pointers.bfinfo
 load orbitals        champ_v3_RHF_cart_trexio_orbitals.lcao
 
 
-#load determinants    champ_v3_H10_cartesian_determinants_state1.det
-load determinants    champ_v3_H10_cartesian_determinants.det
-
+load determinants    champ_v3_H10_cartesian_determinants_state1.det
 load symmetry        champ_v2_H10_cartesian_symmetry.sym
 load jastrow         jastrow.jas
 
@@ -29,10 +26,10 @@ load jastrow         jastrow.jas
 
 
 %module blocking_vmc
-    vmc_nstep     10
-    vmc_nblk      1
+    vmc_nstep     400
+    vmc_nblk      50
     vmc_nblkeq    1
     vmc_nconf_new 0
-    vmc_isite	  0
+#    vmc_isite	  0
 %endmodule
 
