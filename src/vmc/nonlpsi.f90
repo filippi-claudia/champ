@@ -32,7 +32,7 @@ module nonlpsi
       if(ijas.ge.5) call fatal_error('PSINL: ijas >= 5 not implemented')
 
       psinl=0.d0
-      if(nordc.le.1) return
+      !if(nordc.le.1) return
 
 
 
