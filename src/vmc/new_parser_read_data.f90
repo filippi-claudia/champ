@@ -2040,7 +2040,9 @@ subroutine read_basis_num_info_file(file_basis_num_info)
       use system,  only: nctype,newghostype
       use write_orb_loc_mod, only: write_orb_loc
       use mpitimer, only: elapsed_time
+      use control, only: ipr
 
+      
     implicit none
 
     !   local use
@@ -2168,7 +2170,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
     write(ounit,*) "Orbital coefficients are written to the output.log file"
 
-    if (wid) call write_orb_loc()
+    if (wid .and. ipr.ge.3) call write_orb_loc()
 
 end subroutine read_basis_num_info_file
 
