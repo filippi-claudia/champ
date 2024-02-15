@@ -906,7 +906,7 @@ contains
       use contrl_per, only: iperiodic
       use da_jastrow4val, only: da_j
       use ewald_breakup, only: jastrow_longrange
-      use jastrow, only: isc,sspinn
+      use jastrow, only: isc,sspinn, nordc
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
       use precision_kinds, only: dp
@@ -1007,12 +1007,15 @@ contains
 
         fsn(i,j)=psibnl(rij,isb,ipar,iwfjas)
 
-! e-e-n terms
-        do ic=1,ncent
-          it=iwctype(ic)
-          fsn(i,j)=fsn(i,j) + &
-          psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),it,iwfjas)
-        enddo
+        ! e-e-n terms
+        if(nordc.gt.1) then
+           do ic=1,ncent
+              it=iwctype(ic)
+              fsn(i,j)=fsn(i,j) + &
+              psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),it,iwfjas)
+           enddo
+        end if
+        
 
         fsumn=fsumn+fsn(i,j)-fso(i,j)
    45 continue
@@ -1056,7 +1059,7 @@ contains
       use bparm,   only: nocuspb,nspin2b
       use contrl_per, only: iperiodic
       use da_jastrow4val, only: da_j
-      use jastrow, only: isc,sspinn
+      use jastrow, only: isc,sspinn, nordc
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
       use precision_kinds, only: dp
@@ -1192,11 +1195,13 @@ contains
 ! The scaling is switched in psinl, so do not do it here.
       if(isc.ge.12) call scale_dist(rij,u,3)
 
+      if(nordc.gt.1) then
         do ic=1,ncent
           it=iwctype(ic)
           fsn(i,j)=fsn(i,j) + psinl(u,rr_en2_quad(ic),rr_en2(jj,ic),it,iwfjas)
         enddo
-
+      end if
+        
         fsumn=fsumn+fsn(i,j)-fso(i,j)
       45 continue
       enddo

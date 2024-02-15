@@ -13,6 +13,7 @@ module ewald_mod
      save
  end module ewald_mod
 
+
  module periodic
      !> Arguments: cutg, cutg_big, cutr, glatt, glatt_inv,
      !> gnorm, gvec, igmult, igvec

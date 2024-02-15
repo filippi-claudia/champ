@@ -294,7 +294,6 @@ contains
       use prp001,   only: vprop
       use ewald,    only: cos_e_sum, sin_e_sum
       use periodic, only: igmult, ngnorm, ngvec
-
       use system, only: nelec
       use precision_kinds, only: dp
       implicit none
@@ -348,7 +347,6 @@ contains
       use prp001,   only: vprop
       use ewald,    only: cos_e_sum, sin_e_sum
       use periodic, only: igmult, ngnorm, ngvec
-
       use system, only: nelec
       use precision_kinds, only: dp
       implicit none

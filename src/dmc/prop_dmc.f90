@@ -47,7 +47,7 @@ contains
 
       icount=1
 
-      write(ounit,*) 'HELLO',nprop
+      !write(ounit,*) 'HELLO',nprop
       do i=1,nprop
          pav(i)=vprop_cum(i)/wgcum(1)
       enddo
