@@ -46,7 +46,6 @@ contains
       use system,  only: cent,iwctype,ncent,nctype,ndn,nelec,newghostype
       use system,  only: nghostcent,nup,znuc
       use velratio, only: fratio
-      use vmc_mod, only: nrad
 
       implicit none
 

@@ -23,8 +23,7 @@
       use distances_mod, only: distances,distancese_restore
       use estcum,  only: ipass
       use estsum,  only: efsum1,egsum1,esum1_dmc,pesum_dmc
-      use estsum,  only: tausum,tpbsum_dmc,wfsum1,wgsum1
-      use estsum,  only: wsum1
+      use estsum,  only: tausum,tpbsum_dmc,wfsum1,wgsum1,wsum1
       use force_analytic, only: force_analy_sum, force_analy_save
       use force_analytic, only: force_analy_vd
       use force_pth, only: PTH
@@ -62,7 +61,6 @@
       use system,  only: cent,nelec,nup, ncent
       use velratio, only: fratio
       use vd_mod, only: dmc_ivd
-      use vmc_mod, only: delri,nrad
       use walksav_det_mod, only: walksav_det,walkstrdet
       use walksav_jas_mod, only: walksav_jas,walkstrjas
 

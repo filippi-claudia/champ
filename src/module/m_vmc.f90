@@ -23,10 +23,6 @@ module vmc_mod
     !     parameter(neqsx=2*(nordj-1),MTERMS=55)
 
 
-    real(dp), parameter :: radmax = 10.d0
-    integer, parameter :: nrad = 3001
-    real(dp), parameter :: delri = (nrad - 1)/radmax
-
     integer, dimension(:), allocatable :: nstoo !(nwftypeorb) allocate later
     integer, dimension(:), allocatable :: nstoj !(nwftypejas) allocate later
     integer, dimension(:, :), allocatable :: jtos  !(nwftypejas,entry) allocate later
@@ -59,8 +55,7 @@ module vmc_mod
 
     private
     public :: norb_tot, nctyp3x
-    public :: nrad, nmat_dim, nmat_dim2
-    public :: radmax, delri
+    public :: nmat_dim, nmat_dim2
 
     public :: mterms, nwftypejas, nwftypeorb, nstojmax, nstoomax, nbjx, nstoj_tot, nstoo_tot
     public :: nstoo, nstoj, jtos, otos, stoj, stoo, stobjx, extrao, extraj, bjxtoo, bjxtoj

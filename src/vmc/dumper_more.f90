@@ -44,15 +44,12 @@
       use properties_mod, only: prop_dump,prop_rstrt
       use slater,  only: cdet,coef,ndet,norb
       use stats, only: rejmax
-      use step, only: ekin, ekin2, suc, trunfb, try
       use strech_mod, only: setup_force,strech
       use system, only: znuc, cent, iwctype, nctype, ncent, ncent_tot, nctype_tot
       use system, only: newghostype, nghostcent, nelec, ndn, nup
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: nrad, stoj
+      use vmc_mod, only: norb_tot, norb_tot, stoj
       use system,  only: cent,iwctype,ncent,ncent_tot,nctype,nctype_tot
       use system,  only: ndn,nelec,newghostype,nghostcent,nup,znuc
-      use vmc_mod, only: norb_tot,nrad
 
       implicit none
 
@@ -91,7 +88,6 @@ contains
         endif
         write(10) ecum1s(istate),ecm21s(istate)
       enddo
-      write(10) (try(i),suc(i),trunfb(i),ekin(i),ekin2(i),i=1,nrad)
       call optorb_dump(10)
       call optci_dump(10)
       call prop_dump(10)
@@ -160,7 +156,6 @@ contains
         endif
         read(10) ecum1s(istate),ecm21s(istate)
       enddo
-      read(10) (try(i),suc(i),trunfb(i),ekin(i),ekin2(i),i=1,nrad)
 
       call prop_rstrt(10)
       call optorb_rstrt(10)

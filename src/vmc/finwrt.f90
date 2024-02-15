@@ -30,12 +30,8 @@ contains
       use qmmm_pot, only: qmmm_extpot_final
       use sa_check, only: energy_all,energy_err_all
       use sa_weights, only: weights
-      use step,    only: suc,try
       use system,  only: ncent,nelec
       use tmpnode, only: distance_node_sum
-      use vmc_mod, only: delri,nrad
-!use contrl, only: nblk, nstep
-
 
       implicit none
 
@@ -45,9 +41,8 @@ contains
       real(dp) :: eerr1s, eerr_p, efin, efin_p
       real(dp) :: ferr, ffin
       real(dp) :: passes, peerr, pefin, r2err
-      real(dp) :: rtpass, sucsum
-      real(dp) :: tcsq, term
-      real(dp) :: tpberr, tpbfin, trysum, x
+      real(dp) :: rtpass, tcsq
+      real(dp) :: tpberr, tpbfin, x
       real(dp) :: x2
       real(dp), dimension(MFORCE) :: ffin_grdnts
       real(dp), dimension(MFORCE) :: ferr_grdnts
@@ -58,17 +53,6 @@ contains
       rtpass=dsqrt(passes)
 
 ! quantities not computed in acuest_write
-
-      if(iperiodic.eq.0 .and. ncent.eq.1) then
-        delr=one/delri
-        term=one/(passes*delr)
-        trysum=0
-        sucsum=0
-        do i=1,nrad
-          trysum=trysum+try(i)
-          sucsum=sucsum+suc(i)
-        enddo
-      endif
 
 ! quantities also computed in acuest_write
 
@@ -172,17 +156,7 @@ contains
 
       enddo
 
-! TMP
-!     do 250 ifr=1,nforce
-!       energy_err(ifr)=sqrt(energy_err(ifr))
-! 250   force_err(ifr)=sqrt(force_err(ifr))
-
-
-      if(index(mode,'mov1').ne.0.and.iperiodic.eq.0.and.ncent.eq.1) then
-        write(ounit,'(''acceptance ='',t17,2f12.7)') accept,sucsum/trysum
-       else
-        write(ounit,'(''acceptance ='',t17,2f12.7)') accept
-      endif
+      write(ounit,'(''acceptance ='',t17,2f12.7)') accept
 
       if(iqmmm.gt.0) call qmmm_extpot_final(nelec)
 

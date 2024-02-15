@@ -65,7 +65,7 @@ subroutine multideterminants_define(iflag, icheck)
       use multiple_geo, only: MFORCE,MFORCE_WT_PRD,MWF,nwftype
       use slater,  only: cdet,iwundet,kref,ndet,norb
       use system,  only: ndn,nelec,nup
-      use vmc_mod, only: delri,nmat_dim,nmat_dim2,nrad,radmax
+      use vmc_mod, only: nmat_dim,nmat_dim2
 
 
     ! not sure about that one either ....
@@ -94,7 +94,6 @@ subroutine multideterminants_define(iflag, icheck)
     if (iflag .eq. 0) then
        kref = 1
        kref_old = kref
-
     endif
 !    write (ounit, *) 'I am in multi_def',kref,kref_old
 

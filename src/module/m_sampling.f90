@@ -174,42 +174,6 @@ module stats
     save
 end module stats
 
-module step
-    !> I guess has to do with the sampling
-    !> Arguments: ekin, ekin2, suc, trunfb, try
-      use precision_kinds, only: dp
-      use vmc_mod, only: nrad
-
-    real(dp), dimension(:), allocatable :: ekin !(nrad)
-    real(dp), dimension(:), allocatable :: ekin2 !(nrad)
-    real(dp), dimension(:), allocatable :: suc !(nrad)
-    real(dp), dimension(:), allocatable :: trunfb !(nrad)
-    real(dp), dimension(:), allocatable :: try !(nrad)
-
-    private
-    public :: ekin, ekin2, suc, trunfb, try
-    public :: allocate_step, deallocate_step
-    save
-contains
-    subroutine allocate_step()
-      use vmc_mod, only: nrad
-        if (.not. allocated(ekin)) allocate (ekin(nrad))
-        if (.not. allocated(ekin2)) allocate (ekin2(nrad))
-        if (.not. allocated(suc)) allocate (suc(nrad))
-        if (.not. allocated(trunfb)) allocate (trunfb(nrad))
-        if (.not. allocated(try)) allocate (try(nrad))
-    end subroutine allocate_step
-
-    subroutine deallocate_step()
-        if (allocated(try)) deallocate (try)
-        if (allocated(trunfb)) deallocate (trunfb)
-        if (allocated(suc)) deallocate (suc)
-        if (allocated(ekin2)) deallocate (ekin2)
-        if (allocated(ekin)) deallocate (ekin)
-    end subroutine deallocate_step
-
-end module step
-
 module tmpnode
     !> has to do with the sampling
     !> Arguments: distance_node_sum
@@ -222,53 +186,17 @@ module tmpnode
     save
 end module tmpnode
 
-module kinet
-    !> kinetic energy ?
-    !> only used in metropolis
-    !> Arguments: dtdx2n, dtdx2o
-      use precision_kinds, only: dp
-
-    real(dp), dimension(:), allocatable :: dtdx2n !(MELEC)
-    real(dp), dimension(:), allocatable :: dtdx2o !(MELEC)
-
-    private
-    public :: dtdx2n, dtdx2o
-    public :: allocate_kinet, deallocate_kinet
-    save
-contains
-    subroutine allocate_kinet()
-        use system, only: nelec
-        if (.not. allocated(dtdx2n)) allocate (dtdx2n(nelec))
-        if (.not. allocated(dtdx2o)) allocate (dtdx2o(nelec))
-    end subroutine allocate_kinet
-
-    subroutine deallocate_kinet()
-        if (allocated(dtdx2o)) deallocate (dtdx2o)
-        if (allocated(dtdx2n)) deallocate (dtdx2n)
-    end subroutine deallocate_kinet
-
-end module kinet
-
 module m_sampling
 contains
 subroutine allocate_m_sampling()
-      use config, only: allocate_config
-      use kinet, only: allocate_kinet
-      use step, only: allocate_step
-      use system, only: nelec
+    use config, only: allocate_config
 
     call allocate_config()
-    call allocate_step()
-    call allocate_kinet()
 end subroutine allocate_m_sampling
 
 subroutine deallocate_m_sampling()
-      use config, only: deallocate_config
-      use kinet, only: deallocate_kinet
-      use step, only: deallocate_step
+    use config, only: deallocate_config
 
     call deallocate_config()
-    call deallocate_step()
-    call deallocate_kinet()
 end subroutine deallocate_m_sampling
 end module 

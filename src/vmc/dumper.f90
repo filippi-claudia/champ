@@ -3,26 +3,23 @@ module dumper_mod
 ! routine to pick up and dump everything needed to restart
 ! job where it left off
 
-      use vmc_mod, only: nrad
-      use system, only: nelec
       use config, only: xold
+      use contrl_file,    only: ounit
       use csfs, only: nstates
-
       use est2cm, only: ecm2, ecm21, pecm2, tjfcm2, tpbcm2
       use estcum, only: ecum, ecum1, pecum, tjfcum, tpbcum
       use estsig, only: ecm21s, ecum1s
       use estsum, only: acc
-      use multiple_geo, only: nforce, fcm2, fcum
       use forcewt, only: wcum
+      use multiple_geo, only: nforce, fcm2, fcum
+      use multiple_states, only: efficiency_init
+      use mpi
       use mpiconf, only: idtask, nproc, wid
-      use step, only: ekin, ekin2, suc, trunfb, try
+      use precision_kinds, only: dp
       use pseudo, only: nloc
       use qua, only: nquad, wq, xq, yq, zq
-      use mpi
-      use contrl_file,    only: ounit
-      use precision_kinds, only: dp
+      use system, only: nelec
 
-      use multiple_states, only: efficiency_init
       use random_mod,      only: savern
       use dumper_more_mod, only: dumper_more, startr_more
       use error, only: fatal_error
@@ -36,7 +33,6 @@ module dumper_mod
       use force_analytic, only: force_analy_init
       use forcewt, only: wcum
       use mmpol,   only: mmpol_init
-      use mpi
       use mpiconf, only: idtask,nproc,wid
       use multiple_geo, only: fcm2,fcum,nforce
       use multiple_states, only: efficiency_init
@@ -46,13 +42,7 @@ module dumper_mod
       use pcm_mod, only: pcm_init
       use precision_kinds, only: dp
       use properties_mod, only: prop_init
-      use pseudo,  only: nloc
-      use qua,     only: nquad,wq,xq,yq,zq
       use random_mod, only: random_dp,savern,setrn
-      use step,    only: ekin,ekin2,suc,trunfb,try
-      use system,  only: nelec
-      use vmc_mod, only: nrad
-
 
       implicit none
 
@@ -199,14 +189,6 @@ contains
         fcum(istate,ifr)=0
         fcm2(istate,ifr)=0
       enddo
-      enddo
-
-      do i=1,nrad
-        try(i)=0
-        suc(i)=0
-        trunfb(i)=0
-        ekin(i)=0
-        ekin2(i)=0
       enddo
 
       call optjas_init

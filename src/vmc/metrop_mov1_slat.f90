@@ -30,7 +30,6 @@ contains
       use hpsie,   only: psie
       use inputflags, only: eps_node_cutoff,node_cutoff
       use jassav_mod, only: jassav
-      use kinet,   only: dtdx2n,dtdx2o
       use metropolis, only: deltar,deltat,fbias
       use mmpol,   only: mmpol_efield
       use mmpol_cntrl, only: ich_mmpol
@@ -57,22 +56,18 @@ contains
       use pseudo,  only: nloc
       use random_mod, only: random_dp
       use stats,   only: rejmax
-      use step,    only: ekin,ekin2,suc,trunfb,try
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,nup,znuc
       use tmpnode, only: distance_node_sum
-      use vmc_mod, only: delri,nrad, nwftypejas, stoj
-
+      use vmc_mod, only: nwftypejas, stoj
 
       implicit none
 
       integer :: i, iab, ic, iel, iflag_dn
       integer :: iflag_up, iflagb, iflagt, iflagz
       integer :: ifr, igeometrical, ii, ipass
-      integer :: irun, istate, itryn, itryo
-      integer :: j, jel, k, nearn
-      integer :: nearo
-      integer, dimension(nelec) :: idist
+      integer :: irun, istate
+      integer :: j, jel, k, nearn, nearo
       real(dp) :: ajacob, arean, areao, bot
       real(dp) :: clim, co, cosphi, costht
       real(dp) :: deltri, deltt
@@ -102,8 +97,8 @@ contains
       real(dp), dimension(nwftypejas) :: psijn
       real(dp), dimension(MSTATES) :: wtg
       real(dp), dimension(MSTATES) :: wtg_sqrt
-      real(dp), parameter :: zero = 0.d0
       real(dp), dimension(MSTATES) :: zero_array = 0.0_dp
+      real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: four = 4.d0
@@ -114,10 +109,7 @@ contains
       real(dp), parameter :: eps = 1.d-10
       real(dp), parameter :: g5b2 = 1.329340388179137d0
 
-
-!     parameter (g3b2=.886226925452758d0)
 ! g3b2, g5b2 are gamma3/2), gamma(5/2)
-
 
 ! The moves are now being made in local r,theta phi coordinates.
 
@@ -126,22 +118,12 @@ contains
 ! 2) Make theta_max a function of r
 ! 3) Generalize to molecules. This requires geometric rejections.
 
-! The foll. still need to be tried:
-! 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
-!    Last 2 are prob. best
-
-
-! TMP
-
-!     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
-!    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
-!    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
-
       mode='vmc_mov1    '
 
       deltri=one/deltar
 
       call check_orbitals
+
       do i=1,nelec
 
         if(i.le.nup) then
@@ -229,10 +211,6 @@ contains
           endif
         endif
         co=(zeta+voldr)/(one-(zeta+voldr)*rmino(i))
-
-!       write(ounit,'(''rmino(i),voldr,zeta,co='',9f10.5)')
-!    &  rmino(i),voldr,zeta,co,(co-zeta-co*zeta*rmino(i))/
-!    &  (one+co*rmino(i))
 
 ! Use Slater approx for radial fn
 ! Determine the maximum value of radial function for rejection sampling
@@ -604,31 +582,10 @@ contains
       q=one-p
 
       208 continue
-! Calculate as a function of the distance to the nucleus
-! 1) acceptance,  2) force-bias truncation probability,
-! 3) kinetic energy and it's fluctuation
-! The K.E. is not quite correct, since we should use p times new
-! and q times old, and keep track of which bin the old was in
-      rold=dsqrt(xold(1,i)**2+xold(2,i)**2+xold(3,i)**2)
-      rnew=dsqrt(xnew(1,i)**2+xnew(2,i)**2+xnew(3,i)**2)
-!write(ounit,*) 'rold,min(int(delri*rold),itryo', rold, int(delri*rold)+1,nrad
-!write(ounit,*) 'rnew,min(int(delri*rnew),itryn', rnew, int(delri*rnew)+1,nrad
-      itryo=min(int(delri*rold)+1,nrad)
-      itryn=min(int(delri*rnew)+1,nrad)
-      try(itryo)=try(itryo)+1
-      suc(itryo)=suc(itryo)+p
-      if(try(itryo).lt.0.) write(ounit,'(''itryo,try'',i5,d13.5)')itryo, &
-      try(itryo)
-      if(suc(itryo).lt.0.) write(ounit,'(''itryo,suc'',i5,d13.5)')itryo, &
-      suc(itryo)
-      if(voldp*raver*sintht.gt.one) trunfb(itryo)=trunfb(itryo)+1
-
-! write(ounit, *) 'xnew', xnew(1,i), xnew(2, i), xnew(3,i)
 
 ! accept new move with probability p
 ! Note when one electron moves the velocity on all electrons change.
       if (random_dp().lt.p) then
-        idist(i)=itryn
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
         psi2o(1,1)=psi2n(1)
@@ -653,7 +610,6 @@ contains
         if(ipr.ge.1) write(ounit,*)'METROP ACCEPT'
        else
         if(ipr.ge.1) write(ounit,*)'METROP REJECT'
-        idist(i)=itryo
         do ic=1,3
           xnew(ic,i)=xold(ic,i)
         enddo
@@ -664,11 +620,10 @@ contains
 
       enddo
 
-
 ! loop over secondary configurations
       do ifr=2,nforce
         call strech(xold,xstrech,ajacob,ifr,1)
-        call hpsi(xstrech,psido(1),psijo,ekino,eold(1,ifr),ipass,ifr)
+        call hpsi(xstrech,psido,psijo,ekino,eold(1,ifr),ipass,ifr)
         do istate=1,nstates
           j=stoj(istate)
           psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(j))+dlog(ajacob)
@@ -679,7 +634,7 @@ contains
 
 ! primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
-      call hpsi(xold,psido(1),psijo,ekino,eold(1,1),ipass,1)
+      call hpsi(xold,psido,psijo,ekino,eold(1,1),ipass,1)
       do istate=1,nstates
          j=stoj(istate)
          psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(j))
@@ -765,11 +720,6 @@ contains
           wsum(istate,ifr)=wsum(istate,ifr)+wstro
         enddo
       enddo
-      do i=1,nelec
-        dtdx2o(i)=dtdx2n(i)
-        ekin(idist(i))=ekin(idist(i))+dtdx2o(i)*wtg(1)
-        ekin2(idist(i))=ekin2(idist(i))+dtdx2o(i)**2*wtg(1)
-      enddo
 
 ! rewrite psi2o for next metropolis step if you are sampling guiding
       if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psig)))
@@ -778,11 +728,20 @@ contains
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)
       endif
       return
-contains
-        elemental pure function thetamx(r,z)
-          real(dp), intent(in) :: r, z
-          real(dp)             :: thetamx
-          thetamx=deltat+(two-deltat)/(one+(z*r)**2)
-        end function
       end
+
+!contains
+      elemental pure function thetamx(r,z)
+      use metropolis, only: deltat
+      use precision_kinds, only: dp
+
+      implicit none
+      real(dp), intent(in) :: r, z
+      real(dp)             :: thetamx
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+
+      thetamx=deltat+(two-deltat)/(one+(z*r)**2)
+
+      end function
 end module

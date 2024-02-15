@@ -52,10 +52,9 @@ contains
       use system,  only: cent,iwctype,ncent,ncent_tot,nctype,ndn,nelec
       use system,  only: nghostcent,nup,znuc
       use velratio, only: fratio
-      use vmc_mod, only: norb_tot,nrad
+      use vmc_mod, only: norb_tot
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
-!      use contrl, only: nconf
 
       implicit none
 

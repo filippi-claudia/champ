@@ -38,7 +38,6 @@ contains
       use prop_dmc, only: prop_prt_dmc
       use stats,   only: acc, nacc, nodecr, trymove
       use system,  only: ncent, nelec
-      use vmc_mod, only: delri, nrad
 
       implicit none
 

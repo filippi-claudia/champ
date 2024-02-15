@@ -30,11 +30,9 @@ contains
       use precision_kinds, only: dp
       use properties_mod, only: prop_init
       use stats,   only: acc,nacc,nbrnch,nodecr,trymove
-      use vmc_mod, only: nrad
       use force_analytic, only: force_analy_init
       use system,    only: ncent
       use force_pth, only: PTH
-
 
       implicit none
 
@@ -42,7 +40,6 @@ contains
 
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
-
 
 ! routine to accumulate estimators for energy etc.
 

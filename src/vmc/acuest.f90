@@ -50,10 +50,9 @@ module acuest_mod
       use qua,     only: nquad,wq,xq,yq,zq
       use rotqua_mod, only: gesqua
       use slater,  only: kref
-      use step,    only: ekin,ekin2,suc,trunfb,try
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,znuc
-      use vmc_mod, only: nrad, nwftypeorb, stoj
+      use vmc_mod, only: nwftypeorb, stoj
 
       implicit none
 
@@ -67,18 +66,15 @@ contains
       real(dp) :: psidg, rnorm_nodes
       real(dp) :: penow, tpbnow
       real(dp), dimension(3,nelec) :: xstrech
-      real(dp), dimension(MSTATES) :: ekino
-      real(dp), dimension(MSTATES) :: wtg
 
       real(dp), dimension(:,:), allocatable :: enow
+
+      allocate(enow(MSTATES, MFORCE))
 
 ! xsum = sum of values of x from metrop
 ! xnow = average of values of x from metrop
 ! xcum = accumulated sums of xnow
 ! xcm2 = accumulated sums of xnow**2
-
-      allocate(enow(MSTATES, MFORCE))
-
 
 ! collect cumulative averages
       do ifr=1,nforce
@@ -145,7 +141,7 @@ contains
 !-----------------------------------------------------------------------
       subroutine acues1(wtg)
       implicit none
-      real(dp), dimension(MSTATES) :: wtg
+      real(dp), dimension(*) :: wtg
       integer :: istate, k
 ! statistical fluctuations without blocking
       do istate=1,nstates
@@ -169,7 +165,7 @@ contains
 !-----------------------------------------------------------------------
       subroutine acusig(wtg)
       implicit none
-      real(dp), dimension(MSTATES) :: wtg
+      real(dp), dimension(*) :: wtg
       integer :: istate
 ! sigma evaluation
       do istate=1,nstates
@@ -244,15 +240,6 @@ contains
           fcum(istate,ifr)=0
           fcm2(istate,ifr)=0
         enddo
-      enddo
-
-! Zero out estimators for acceptance, force-bias trun., kin. en. and density
-      do i=1,nrad
-        try(i)=0
-        suc(i)=0
-        trunfb(i)=0
-        ekin(i)=0
-        ekin2(i)=0
       enddo
 
 ! get nuclear potential energy
