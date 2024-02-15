@@ -36,20 +36,7 @@ contains
 
 ! Calculates wave function
 
-! dimension coord(3,*),psid(*)
-
       iwf=iwftype(1)
-
-      do i=1,iel-1
-       do k=1,3
-        coord(k,i)=xold(k,i)
-       enddo
-      enddo
-      do i=iel+1,nelec
-       do k=1,3
-        coord(k,i)=xold(k,i)
-       enddo
-      enddo
 
       call distances(iel,coord)
 
@@ -71,7 +58,6 @@ contains
         endif
       enddo
       if(icheck.eq.1) return
-
 
       call multideterminante(iel)
 
