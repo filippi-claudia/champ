@@ -11,8 +11,9 @@ contains
       use contrl_file, only: ounit
       use control_dmc, only: dmc_nconf,dmc_nstep
       use multiple_geo, only: MFORCE
+      use periodic, only: gnorm, gvec, ngvec
       use precision_kinds, only: dp
-      use properties, only: MAXPROP
+      use properties_mod, only: gnormf
       use prp000,  only: iprop,ipropprt,nprop
       use prp003,  only: cc_nuc,vprop_cm2,vprop_cum
       use system,  only: nelec
@@ -22,13 +23,13 @@ contains
       integer :: i, iblk, icount, ifinal, iperr
       real(dp) :: dip, diperr, dipx, dipy
       real(dp) :: dipz, evalg_eff
-      real(dp) :: rtevalg_eff1
+      real(dp) :: rtevalg_eff1, norm_aux
       real(dp), dimension(MFORCE) :: wgcum
       real(dp), dimension(MFORCE) :: wgcm2
-      real(dp), dimension(MAXPROP) :: perr
-      real(dp), dimension(MAXPROP) :: pav
+      real(dp), dimension(nprop) :: perr
+      real(dp), dimension(nprop) :: pav
 
-      character (len=3) pnames(MAXPROP)
+      character (len=3) pnames(6)
       data pnames /'X  ','Y  ','Z  ','XX ','YY ','ZZ '/
       data icount /1/
       save icount
@@ -46,8 +47,12 @@ contains
 
       icount=1
 
+      write(ounit,*) 'HELLO',nprop
       do i=1,nprop
-        pav(i)=vprop_cum(i)/wgcum(1)
+         pav(i)=vprop_cum(i)/wgcum(1)
+      enddo
+
+      do i=1,nprop
         if(iblk.eq.1) then
           perr(i)=0
          else
@@ -60,7 +65,23 @@ contains
          else
           evalg_eff=dmc_nconf*dmc_nstep*rn_eff(wgcum(1),wgcm2(1))
           rtevalg_eff1=dsqrt(evalg_eff-1)
-          write(ounit,'(''property '',a3,t17,f12.7,'' +-'',f11.7,f9.5)') pnames(i),pav(i),perr(i),perr(i)*rtevalg_eff1
+          if(i.le.6) then
+              write(ounit,'(''property '',a3,t17,f12.7,'' +-'' &
+             ,f11.7,f9.5)') pnames(i),pav(i),perr(i),perr(i)*rtevalg_eff1
+           elseif(i.le.(6+ngvec-1)) then
+             call gnormf(3,gvec(1,i-5), norm_aux)
+              write(ounit,'(''s(k)     '',t17,f12.7,f12.7,'' +-'' &
+              ,f12.7,f12.7,f22.7)') norm_aux,pav(i),perr(i),perr(i)*rtevalg_eff1, &
+              pav(i)-(pav(i+ngvec-1)**2)-(pav(i+2*(ngvec-1))**2) 
+           elseif(i.le.(6+2*(ngvec-1))) then
+             call gnormf(3,gvec(1,i-5-ngvec+1), norm_aux)
+              write(ounit,'(''cos(kr)  '',t17,f12.7,f12.7,'' +-'' &
+              ,f12.7,f12.7)') norm_aux,pav(i),perr(i),perr(i)*rtevalg_eff1
+           else
+             call gnormf(3,gvec(1,i-5-2*(ngvec-1)), norm_aux)
+              write(ounit,'(''sin(kr)  '',t17,f12.7,f12.7,'' +-'' &
+              ,f12.7,f12.7)') norm_aux,pav(i),perr(i),perr(i)*rtevalg_eff1
+          endif
         endif
       enddo
 !....dipole

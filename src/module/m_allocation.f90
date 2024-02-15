@@ -8,7 +8,7 @@ module allocation_mod
       use m_efield, only: allocate_m_efield,deallocate_m_efield
       use m_estimators, only: allocate_m_estimators
       use m_estimators, only: deallocate_m_estimators
-      use m_ewald, only: allocate_m_ewald,deallocate_m_ewald
+      use m_ewald, only: deallocate_m_ewald
       use m_force, only: allocate_m_force,deallocate_m_force
       use m_gradhess, only: allocate_m_gradhess,deallocate_m_gradhess
       use m_grdnt, only: allocate_m_grdnt,deallocate_m_grdnt
@@ -41,7 +41,6 @@ contains
         call allocate_m_deriv
         call allocate_m_efield
         call allocate_m_estimators
-        call allocate_m_ewald
         call allocate_m_force
         call allocate_m_gradhess
         call allocate_m_grdnt

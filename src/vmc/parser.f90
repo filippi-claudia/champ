@@ -63,11 +63,12 @@ subroutine parser
       use jastrow, only: norda,nordb,nordc
       use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
       use jastrow, only: a4,allocate_jasasymp,asymp_jasa,asymp_jasb,b,c
-      use jastrow, only: ianalyt_lap,ijas,is,isc,neqsx,nordj,nordj1
+      use jastrow, only: ianalyt_lap,ijas,ijas_lr,is,isc,neqsx,nordj,nordj1
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
       use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
-      use metropolis, only: delta,deltai,deltar,deltat,fbias,imetro
+      use metropolis, only: imetro, vmc_tau
+      use metropolis, only: delta,deltai,deltar,deltat,fbias
       use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
       use misc_grdnts, only: inpwrt_zmatrix
       use mmpol_cntrl, only: ich_mmpol,immpol,immpolprt,isites_mmpol
@@ -135,10 +136,10 @@ subroutine parser
       use pcm_grid3d_param, only: pcm_endpt,pcm_origin,pcm_step3d
       use pcm_parms, only: eps_solv,iscov,ncopcm,nscv,nvopcm
       use pcm_unit, only: pcmfile_cavity,pcmfile_chs,pcmfile_chv
+      use periodic, only: ngnorm, ngvec
       use periodic_table, only: atom_t,element
       use pot,     only: pot_nn
       use precision_kinds, only: dp
-      use properties, only: MAXPROP
       use properties_mod, only: prop_cc_nuc
       use prp000,  only: iprop,ipropprt,nprop
       use prp003,  only: cc_nuc
@@ -190,10 +191,11 @@ subroutine parser
   use, intrinsic :: iso_fortran_env, only : iostat_end
 
   !! Allocate_periodic
-  use periodic,         only: npoly,np,cutg,cutg_big,cutg_sim,cutg_sim_big, alattice
-  use periodic,         only: rlatt, rlatt_inv, rlatt_sim, rkvec_shift, n_images, ell
-  use ewald_breakup,    only: pot_en_coul_ewald, pot_ee_ewald, set_ewald
-  use m_ewald,          only: allocate_m_ewald
+  use periodic,         only: npoly,np_coul, np_jas,cutg, cutg_big, alattice
+  use periodic,         only: rlatt, rlatt_inv, n_images, ell
+  use ewald_breakup,    only: set_ewald
+  use periodic,         only: allocate_periodic
+  use ewald_test,       only: allocate_ewald_test, deallocate_ewald_test
   use m_pseudo,         only: allocate_m_pseudo
 
 ! CHAMP modules
@@ -330,20 +332,17 @@ subroutine parser
 #endif
 
   ! Ewald module for periodic
-  !npoly, order polynimial split ewald-breakup
+  ! npoly, order polynimial split ewald-breakup
   npoly  = fdf_get('npoly', 8)
   ! polynomial order of the cuttoff better even value
-  np     = fdf_get('np', 6)
-  !cutoffs in recirpotal space
+  np_coul= fdf_get('np_coul', 2)
+  np_jas = fdf_get('np_jas', 3)
+  ! cutoffs in reciprocal space
   cutg   = fdf_get('cutg', 1.0d0)
-  cutg_sim   = fdf_get('cutg_sim', 1.0d0)
   cutg_big   = fdf_get('cutg_big', 1.d0)
-  cutg_sim_big   = fdf_get('cutg_sim_big', 1.0d0)
   ! number of images for ao's evaluation in PBC
   n_images  = fdf_get('n_images', 1)
   !alattice = fdf_get('alattice', 1.0d0)
-
-
 
 ! %module electrons (complete)
   nelec       = fdf_get('nelec', 1)
@@ -360,6 +359,8 @@ subroutine parser
   nspin1      = fdf_get('nspin1', 1)
   nspin2      = fdf_get('nspin2', 1)
   ianalyt_lap = fdf_get('ianalyt_lap',1)
+
+  ijas_lr     = fdf_get('ijas_lr', 0)
 
 ! %module optgeo (complete)
   iforce_analy= fdf_get('iforce_analy', 0)
@@ -395,6 +396,7 @@ subroutine parser
   deltar      = fdf_get('deltar', 5.0d0)
   deltat      = fdf_get('deltat', 1.0d0)
   fbias       = fdf_get('fbias', 1.0d0)
+  vmc_tau      = fdf_get('vmc_tau', 0.5d0)
 
 ! %module vmc / blocking_vmc (complete)
   vmc_nstep     = fdf_get('vmc_nstep', 1)
@@ -635,10 +637,6 @@ subroutine parser
   pooldir = trim(pooldir)
   write(ounit,'(a,a)') " Pool directory for common input files :: ",  pooldir
 
-  !checks
-  if( (mode(1:3) == 'vmc') .and. iperiodic.gt.0) &
-    call fatal_error('INPUT: VMC for periodic system -> run dmc/dmc.mov1 with idmc < 0')
-
   write(ounit,*)
   if (wid) read(cseed,'(8i4)') irn
   call bcast(irn)
@@ -759,8 +757,7 @@ subroutine parser
     endif
 
     if (imetro.eq.1) then
-      deltai= one/delta
-      write(ounit,'(a,t36,f12.6)') " Step size = ",  delta
+      write(ounit,real_format)  " Drift-diffusion tau = ", vmc_tau
     else
       if(deltar .lt. one) then
         write(ounit,'(a)') '**Warning value of deltar reset to 2.'
@@ -952,6 +949,8 @@ subroutine parser
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
 
+  if(iperiodic.eq.0.and.ijas_lr.gt.0) call fatal_error('No long-range Jastrow for non-periodic system')
+
 ! Jastrow Parameters (either block or from a file)
 
   if ( fdf_load_defined('jastrow') ) then
@@ -1006,14 +1005,8 @@ subroutine parser
   write(ounit, int_format ) " nspin1 = ", nspin1
   write(ounit, int_format ) " nspin2 = ", nspin2
 
-  if(ijas.ne.1..and.iperiodic.gt.0) then
-     if(ijas.ne.4..and.iperiodic.gt.0) then
-        write(ounit,*) 'Only ijas4 for HF with periodic systems'
-        write(ounit,*) 'Only ijas1 for WF optimization with periodic systems'
-        call fatal_error('Only ijas=1 and ijas=4 implemented for periodic systems')
-     endif
-  endif
-
+  if(ijas.ne.1.and.iperiodic.gt.0) &
+    call fatal_error('Only ijas=1 4 implemented for periodic systems')
 
   if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
   if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
@@ -1309,22 +1302,39 @@ subroutine parser
     ! or we force a fatal error.
   endif
 
+  ! allocate ewald module and initialize the module
+  if (iperiodic.gt.0) then
+     call allocate_periodic()
+     call allocate_ewald_test()
+  ! for periodic calculations
+     if ( fdf_load_defined('lattice') ) then
+        call read_lattice_file(file_lattice)
+     endif
+     call set_ewald
+     call deallocate_ewald_test()
+  endif
+
+! Additional Properties
+! properties will be sampled iprop
+! properties will be printed ipropprt
+  nprop=1
+  if(iprop.ne.0) then
+     if (iperiodic.gt.0) then
+        !        nprop=5+ngnorm
+        nprop=6+(ngvec-1)+2*(ngvec-1)
+     else
+        nprop=5
+     endif
+
+     write(ounit,'(a)' ) " Properties will be sampled "
+     write(ounit,*) " NPROP ", nprop
+     write(ounit,int_format ) " Properties printout flag = ", ipropprt
+!    call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
+  endif
+
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
-
-  ! for periodic calculations
-  if ( fdf_load_defined('lattice') ) then
-     call read_lattice_file(file_lattice)
-  endif
-
-  ! allocate ewald module and initialize the module
-  if (iperiodic.gt.0) then
-     call allocate_m_ewald()
-     call set_ewald
-  endif
-
-
 
 ! (17) multideterminants information (either block or from a file)
 
@@ -1737,17 +1747,15 @@ subroutine parser
     call efield_compute_extint
   endif
 
-
-
 ! Additional Properties
 ! properties will be sampled iprop
 ! properties will be printed ipropprt
-  if(iprop.ne.0) then
-    nprop=MAXPROP
-    write(ounit,'(a)' ) " Properties will be sampled "
-    write(ounit,int_format ) " Properties printout flag = ", ipropprt
-    call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
-  endif
+! if(iprop.ne.0) then
+!   nprop=MAXPROP
+!   write(ounit,'(a)' ) " Properties will be sampled "
+!   write(ounit,int_format ) " Properties printout flag = ", ipropprt
+!   call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
+! endif
 
 ! (13) Forces information (either block or from a file) [#####]
 
@@ -2111,8 +2119,7 @@ subroutine parser
       use m_string_operations, only: wordcount
       use custom_broadcast, only: bcast
       use mpiconf, only: wid
-      use periodic, only: rkvec_shift, alattice
-      use periodic, only: rlatt_sim, rlatt_sim_inv
+      use periodic, only: alattice
       use periodic, only: rlatt, rlatt_inv
       use jaspar6, only: cutjas, cutjasi
       use precision_kinds, only: dp
@@ -2150,34 +2157,29 @@ subroutine parser
          endif
       endif
 
-
       !Initialization to avoid garbage
 
-      rlatt_sim =0.d0
       rlatt = 0.d0
-      rlatt_sim_inv = 0.d0
       rlatt_inv = 0.d0
       count=0
-
-
 
       if (wid) then
          do i = 1, 3
             !! Reading each row as a vector of the box
-            read(iunit,*, iostat=iostat) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
+            read(iunit,*, iostat=iostat) rlatt(i,1), rlatt(i,2), rlatt(i,3)
             if(iostat.ne.0.and.count.eq.0) then
-               if(rlatt_sim(1,1).gt.0.d0) then
-                  alattice=rlatt_sim(1,1)
+               if(rlatt(1,1).gt.0.d0) then
+                  alattice=rlatt(1,1)
                   count=count+1
                   exit
                else
-                  write(ounit, *) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
+                  write(ounit, *) rlatt(i,1), rlatt(i,2), rlatt(i,3)
                   call fatal_error("Error in reading lattice parameters file")
                endif
             endif
             count=count+1
             if(iostat.ne.0.and.count.ne.1) then
-               write(ounit, *) rlatt_sim(i,1), rlatt_sim(i,2), rlatt_sim(i,3)
+               write(ounit, *) rlatt(i,1), rlatt(i,2), rlatt(i,3)
                call fatal_error("Error in reading lattice parameters file")
             endif
          enddo
@@ -2189,9 +2191,9 @@ subroutine parser
             write(ounit,*) 'This is a cubic cell'
             write(ounit,*) 'The lattice constant is', alattice
 
-            rlatt_sim(1,1) = alattice
-            rlatt_sim(2,2) = alattice
-            rlatt_sim(3,3) = alattice
+            rlatt(1,1) = alattice
+            rlatt(2,2) = alattice
+            rlatt(3,3) = alattice
 
 
 
@@ -2200,15 +2202,15 @@ subroutine parser
 
             write(ounit,*) "The simulation cell is:"
 
-            write(ounit,*) "a", rlatt_sim(1,1), rlatt_sim(1,2), rlatt_sim(1,3)
-            write(ounit,*) "b", rlatt_sim(2,1), rlatt_sim(2,2), rlatt_sim(2,3)
-            write(ounit,*) "c", rlatt_sim(3,1), rlatt_sim(3,2), rlatt_sim(3,3)
+            write(ounit,*) "a", rlatt(1,1), rlatt(1,2), rlatt(1,3)
+            write(ounit,*) "b", rlatt(2,1), rlatt(2,2), rlatt(2,3)
+            write(ounit,*) "c", rlatt(3,1), rlatt(3,2), rlatt(3,3)
 
 
             !! assuming still rectangular box
-            alattice=rlatt_sim(1,1)
+            alattice=rlatt(1,1)
             do i = 2, 3
-               if(rlatt_sim(i,i).lt.alattice) alattice=rlatt_sim(i,i)
+               if(rlatt(i,i).lt.alattice) alattice=rlatt(i,i)
             enddo
 
             if(alattice.le.0.d0) call fatal_error("Wrong lattice parameter")
@@ -2221,7 +2223,7 @@ subroutine parser
 
 
          !   regarding Ewald Breakup assume column not row vectors for the lattice
-         rlatt_sim=TRANSPOSE(rlatt_sim)
+         rlatt=TRANSPOSE(rlatt)
 
 
 
@@ -2229,15 +2231,8 @@ subroutine parser
 
 
 
-      call bcast(rlatt_sim)
+      call bcast(rlatt)
       if (wid) close(iunit)
-
-
-      !! set primitive and super-cell to be the same
-      rlatt =rlatt_sim
-
-      !! set twist k-shift vector
-      rkvec_shift =0.0d0
 
 !!! override jastrow cutoff to half of the lattice parameter
 !!! need to be adapted to half of the wigner-seitz cell (orthorombic boxes)

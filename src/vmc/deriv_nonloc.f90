@@ -18,7 +18,7 @@ contains
       use optwf_nparmj, only: nparma,nparmb,nparmc
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
-      use find_pimage, only: find_image3
+      use find_pimage, only: find_image_pbc
       use qua, only: nquad
       use system,  only: iwctype,ncent,ncent_tot,nctype,nelec,nup
       use contrl_file, only: ounit
@@ -120,7 +120,7 @@ contains
           enddo
           rij=dsqrt(rij)
          else
-          call find_image3(dx,rij)
+          call find_image_pbc(dx,rij)
         endif
 
 ! e-e terms
@@ -225,7 +225,7 @@ contains
       use optwf_nparmj, only: nparma,nparmb,nparmc
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
-      use find_pimage, only: find_image3
+      use find_pimage, only: find_image_pbc
       use qua, only: nquad
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nctype,nelec,nup
@@ -365,7 +365,7 @@ contains
           enddo
           rij=dsqrt(rij)
          else
-          call find_image3(dx,rij)
+          call find_image_pbc(dx,rij)
         endif
 
 ! e-e terms

@@ -15,7 +15,7 @@
       use error,   only: fatal_error
       use vmc_mod, only: nbjx
       use optwf_parms, only: nparmj
-      use ewald_breakup, only: pot_en_coul_ewald
+      use ewald_breakup, only: pot_en_ewald
 
 
       implicit none
@@ -57,7 +57,7 @@
       else
 
 ! this add coulumb pe_en contribution from PBC/Ewald split Natoli-Ceperley algorithm
-         call pot_en_coul_ewald(x,pe_en)
+         call pot_en_ewald(x,pe_en)
          pe=pe+pe_en
 
 !     Add and fix remaining local component from gaussian (BFD) pseudo

@@ -133,7 +133,7 @@
       termuu=6*(1.d0-xij)*cutjas_eei(isb,iwf)*cutjas_eei(isb,iwf)
 
       feeu_save=feeu*term+fee*termu
-      feeuu=feeuu*term+2*feeu*termu+fee*termuu
+      if(iflag.gt.0) feeuu=feeuu*term+2*feeu*termu+fee*termuu
 
       feeu=feeu_save/rij(1)
 
@@ -315,7 +315,7 @@
         termii=6*(1.d0-xi)*cutjas_eni(it,iwf)*cutjas_eni(it,iwf)
 
         feni_save=feni*term+fen*termi
-        fenii=fenii*term+2*feni*termi+fen*termii
+        if(iflag.gt.0) fenii=fenii*term+2*feni*termi+fen*termii
 
         feni=feni_save/ri(1)
 

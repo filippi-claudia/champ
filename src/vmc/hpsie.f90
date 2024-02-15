@@ -3,6 +3,7 @@ contains
       subroutine psie(iel,coord,psid,psij,ipass,iflag)
 ! Written by Claudia Filippi by modifying hpsi
 
+      use config,  only: xold
       use contrl_file, only: ounit
       use csfs, only: nstates
       use determinante_mod, only: determinante
@@ -25,6 +26,7 @@ contains
 
       implicit none
 
+      integer :: i,k
       integer :: iel, iflag, ipass, istate, icheck
       real(dp) :: apsi_now, aref_now, check_apsi, check_apsi_min, check_dref
       real(dp), dimension(3, nelec) :: coord
@@ -38,9 +40,18 @@ contains
 
       iwf=iwftype(1)
 
+      do i=1,iel-1
+       do k=1,3
+        coord(k,i)=xold(k,i)
+       enddo
+      enddo
+      do i=iel+1,nelec
+       do k=1,3
+        coord(k,i)=xold(k,i)
+       enddo
+      enddo
 
       call distances(iel,coord)
-
 
       if(ianalyt_lap.eq.1) then
         call jastrowe(iel,coord,vjn,d2j,psij,iflag)

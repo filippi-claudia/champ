@@ -357,7 +357,7 @@ contains
       use contrl_per, only: iperiodic
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
-      use find_pimage, only: find_image3, find_image_pbc
+      use find_pimage, only: find_image_pbc
       use qua,     only: xq,yq,zq
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: cent,ncent,ncent_tot,nelec
@@ -695,16 +695,12 @@ contains
               enddo
            enddo
 
-
-
            if(allocated(ao_qmckl)) deallocate(ao_qmckl)
            if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl)
            if(allocated(xqmckl)) deallocate(xqmckl)
            if(allocated(xqmckl_i)) deallocate(xqmckl_i)
 
-
 !! here ends QMCklimplementeation
-
 
            if(nwftypeorb.gt.1) iwf=iwforb
 
@@ -771,12 +767,8 @@ contains
            enddo
 !     ! enddo nxquad
 
-
-
-
         endif
 !     endif iperiodic
-
 
 #else
 
@@ -910,13 +902,15 @@ contains
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use bparm,   only: nocuspb,nspin2b
+      use contrl_file,    only: ounit
       use contrl_per, only: iperiodic
       use da_jastrow4val, only: da_j
+      use ewald_breakup, only: jastrow_longrange
       use jastrow, only: isc,sspinn
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
       use precision_kinds, only: dp
-      use find_pimage, only: find_image3, find_image_pbc
+      use find_pimage, only: find_image_pbc
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
       use optwf_control, only: ioptjas
       use qua,     only: nquad
@@ -928,20 +922,25 @@ contains
       integer, dimension(*) :: iequad
 
       real(dp) :: dd1u, dum, dumk, fsumn
+      real(dp) :: psij_per, d2_per
       real(dp) :: rij
+
       real(dp), dimension(nelec,*) :: fso
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,*) :: xquad
+      real(dp), dimension(3,nelec) :: xtmp
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nquad*nelec*2,*) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
       real(dp), dimension(nelec,nelec) :: fsn
       real(dp), dimension(3) :: dx
       real(dp), dimension(3,*) :: vjn
+      real(dp), dimension(3, nelec) :: v_per
       real(dp), dimension(*) :: ratio_jn
       real(dp), dimension(3,ncent_tot,*) :: da_psij_ratio
       real(dp), parameter :: half = .5d0
 
+      !xtmp(:,1:nelec)=x(:,1:nelec)
 
       do iq=1,nxquad
 
@@ -953,6 +952,11 @@ contains
       enddo
 
       if (nelec.lt.2) goto 47
+
+      psij_per=0.d0
+
+      !xtmp(:,iel)=xquad(:,iq)
+      !if(iperiodic.eq.1.and.ijas_lr.eq.1) call jastrow_longrange(iel,xtmp,psij_per,d2_per,v_per,1)
 
       do jj=1,nelec
 
@@ -989,7 +993,6 @@ contains
           enddo
           rij=dsqrt(rij)
          else
-!          call find_image3(dx,rij)
             call find_image_pbc(dx,rij)
         endif
 
@@ -1022,9 +1025,9 @@ contains
         it=iwctype(ic)
         fsn(iel,iel)=fsn(iel,iel)+psianl(r_en_quad(iq,ic),it,iwfjas)
       enddo
-
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
-      ratio_jn(iq)=fsumn
+
+      ratio_jn(iq)=fsumn+psij_per
 
       if(iforce_analy.gt.0) then
 
@@ -1040,6 +1043,7 @@ contains
 
       endif
 
+      xtmp(:,iel)=x(:,iel)
       enddo
 
       return
@@ -1056,7 +1060,7 @@ contains
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
       use precision_kinds, only: dp
-      use find_pimage, only: find_image3, find_image_pbc
+      use find_pimage, only: find_image_pbc
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
       use optwf_control, only: ioptjas
@@ -1167,7 +1171,6 @@ contains
           enddo
           rij=dsqrt(rij)
          else
-!          call find_image3(dx,rij)
             call find_image_pbc(dx,rij)
         endif
 

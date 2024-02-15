@@ -34,8 +34,6 @@ module nonlpsi
       psinl=0.d0
       if(nordc.le.1) return
 
-
-
       if(nwftypejas.gt.1) iwf=iwfjas
 
       uuu=u
@@ -50,8 +48,6 @@ module nonlpsi
       elseif(ijas.eq.1) then
          if(rrri.gt.cutjas_en(it,iwf).or.rrrj.gt.cutjas_en(it,iwf)) return
       endif
-
-
 
       uu(0)=one
       ss(0)=two
@@ -80,20 +76,16 @@ module nonlpsi
         enddo
       enddo
 
-
       if(ijas.eq.1) then
          xi=rrri*cutjas_eni(it,iwf)
          xj=rrrj*cutjas_eni(it,iwf)
          psinl=psinl*((1.d0-xi)*(1.d0-xj))**3
       endif
 
-
       return
       end
 !-----------------------------------------------------------------------
       function psianl(rri,it,iwfjas)
-
-
 
       use jastrow, only: norda
       use jaspar6, only: asymp_r
@@ -108,7 +100,6 @@ module nonlpsi
       integer :: i, it, iwfjas
       real(dp) :: rri, rrip, xi, a1_cusp
       real(dp) :: psianl
-
 
 ! Not updated for ijas=5,6 because we will probably stay with ijas=4
 ! If we want to use ijas=5,6 update this routine similarly to psi.f
@@ -145,7 +136,6 @@ module nonlpsi
          enddo
 
       endif
-
 
       return
       end

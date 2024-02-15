@@ -124,14 +124,14 @@ module keywords
   !> @date October 15, 2022
   implicit none
   integer                     :: num_modules  = 11   ! change this number after every adition/deletion
-  integer                     :: num_keywords = 180 ! change this number after every adition/deletion
+  integer                     :: num_keywords = 182 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
   type(string_t) allowed_modules(11)
-  type(string_t) allowed_keywords(180)       ! change this number after every adition/deletion
+  type(string_t) allowed_keywords(182)       ! change this number after every adition/deletion
 
 
   private
@@ -227,14 +227,15 @@ module keywords
     allowed_keywords(159)%keys = 'esigmatrial';     allowed_keywords(160)%keys = 'limit_wt_dmc'
     allowed_keywords(161)%keys = 'write_walkalize'; allowed_keywords(162)%keys = 'sr_lambda'
     allowed_keywords(163)%keys = 'anorm';           allowed_keywords(164)%keys = 'lattice'
-    allowed_keywords(165)%keys = 'np';              allowed_keywords(166)%keys = 'n_images'
+    allowed_keywords(165)%keys = 'np_coul';         allowed_keywords(166)%keys = 'np_jas'
     allowed_keywords(167)%keys = 'npoly';           allowed_keywords(168)%keys = 'cutg'
-    allowed_keywords(169)%keys = 'cutg_sim';        allowed_keywords(170)%keys = 'cutg_big'
-    allowed_keywords(171)%keys = 'cutg_sim_big';    allowed_keywords(172)%keys = 'alattice'
+    allowed_keywords(169)%keys = 'n_images';        allowed_keywords(170)%keys = 'cutg_big'
+    allowed_keywords(171)%keys = 'alattice';        allowed_keywords(172)%keys = 'iprop'
     allowed_keywords(173)%keys = 'cutjas';          allowed_keywords(174)%keys = 'nstates'
     allowed_keywords(175)%keys = 'orbitals_ortho';  allowed_keywords(176)%keys = 'dmc_ivd'
     allowed_keywords(177)%keys = 'ipathak';         allowed_keywords(178)%keys = 'eps_max'
     allowed_keywords(179)%keys = 'deps';            allowed_keywords(180)%keys = 'nwprod'
+    allowed_keywords(181)%keys = 'vmc_tau';         allowed_keywords(182)%keys = 'ijas_lr'
 
   end subroutine allocate_keywords
 

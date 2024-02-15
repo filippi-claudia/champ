@@ -8,7 +8,7 @@ contains
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       use distances_sav, only: r_ee_sav, r_en_sav, rvec_ee_sav, rvec_en_sav
       use precision_kinds, only: dp
-      use find_pimage, only: find_image3, find_image_pbc
+      use find_pimage, only: find_image_pbc
       use system, only: cent, ncent, nghostcent, nelec
       implicit none
 
@@ -136,7 +136,6 @@ contains
                   rvec_ee(m,ij)=x(m,i)-x(m,iel)
                enddo
 
-
                r_ee(ij)=0
                do m=1,3
                   r_ee(ij)=r_ee(ij)+rvec_ee(m,ij)**2
@@ -145,20 +144,11 @@ contains
 
          enddo
 
-
-
-
       endif
-
-
-
-
 
       else
 
-
 !     periodic systems
-
 
 !     Calculate e-N inter-particle distances
          do i=i1,i2
@@ -172,9 +162,6 @@ contains
 
             enddo
          enddo
-
-
-
 
 !     Calculate e-e inter-particle distances
          if(iel.eq.0) then
@@ -193,7 +180,6 @@ contains
                enddo
             enddo
 
-
          else
 
 !     iel!=0
@@ -210,7 +196,6 @@ contains
 
             enddo
 
-
             do i=iel+1,nelec
 
                ij=((i-1)*(i-2))/2+iel
@@ -223,22 +208,11 @@ contains
 
             enddo
 
-
-
-
          endif
          !!iel enif
 
-
-
-
       endif
       !! periodic endif
-
-
-
-
-
 
 !     write(ounit,*) 'in distances'
 !     write(ounit,'(''r_en(i,j)'',9f9.5)') ((r_en(i,j),i=1,nelec),j=1,2)

@@ -118,40 +118,33 @@ module jastrow
     use precision_kinds, only: dp
     implicit none
 
-    ! From contr2
-    integer :: ijas
+    integer :: ijas, ijas_lr
     integer :: isc
     integer :: ianalyt_lap
 
-    ! From jaspar
     integer :: is
     integer :: nspin1
     integer :: nspin2
     real(dp) :: sspin
     real(dp) :: sspinn
 
-    ! jastrow1
     real(dp), dimension(:,:)    , allocatable :: cutjas_en !(MCTYPE,MWF)
     real(dp), dimension(:,:)    , allocatable :: cutjas_eni!(MCTYPE,MWF)
     real(dp), dimension(:,:)    , allocatable :: cutjas_ee !(2,MWF)
     real(dp), dimension(:,:)    , allocatable :: cutjas_eei!(2,MWF)
 
-    ! From jaspar3
     real(dp), dimension(:, :, :), allocatable :: b !(nordj1,2,MWF)
     real(dp), dimension(:, :, :), allocatable :: c !(83,MCTYPE,MWF)
     real(dp), dimension(:), allocatable :: scalek !(MWF)
 
-    ! From jaspar4
     real(dp), dimension(:, :, :), allocatable :: a4 !(nordj1,nctype_tot,MWF)
     integer :: norda
     integer :: nordb
     integer :: nordc
 
-    ! From jaspar6 
     real(dp), dimension(:,:), allocatable :: asymp_jasa !(MCTYPE,nwftypejas)
     real(dp), dimension(:,:), allocatable :: asymp_jasb !(2,nwftypejas)
 
-    ! From vmc_mod
     integer :: nordj
     integer :: nordj1   ! nordj+1
     integer :: neqsx    ! 6*nordj
@@ -163,7 +156,6 @@ subroutine allocate_m_jastrow()
       use jastrow_update, only: allocate_jasn,allocate_jaso
       use multiple_geo, only: MWF
       use system,  only: nctype_tot
-
 
     implicit none
 
