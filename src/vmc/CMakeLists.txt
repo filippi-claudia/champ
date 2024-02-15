@@ -10,7 +10,6 @@ if (MPI_Fortran_FOUND)
     basis_fns.f90
     bxmatrices.f90
     cuspexact4.f90
-    deriv_jastrow.f90
     deriv_nonloc.f90
     deriv_nonlpsi.f90
     determinant.f90

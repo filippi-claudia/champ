@@ -1,142 +1,28 @@
 module ewald_mod
      ! NP         is the number of factors of (r/cutr-1) we multiply polynomial by
-     ! IVOL_RATIO is the ratio of the simulation to primitive cell volumes
-     ! IBIG_RATIO is the ratio of the number of vectors or norms before the optimal Ewald separation
-     !            to the number after the separation
-     ! NSYM       is the ratio of the number of vectors to the number of norms
-     !            and depends on the symmetry of the lattice.
 
      implicit none
 
 !  Original parameters     
-!     integer, parameter :: NCOEFX = 10, NPX = 4, IVOL_RATIO = 10, IBIG_RATIO = 15, NSYM = 8
-!     integer, parameter :: NGNORMX = 1000, NGVECX = NGNORMX*NSYM, NG1DX = 60
-     integer, parameter :: NCOEFX = 10, NPX = 4, IVOL_RATIO = 10, IBIG_RATIO = 15, NSYM = 8
-     integer, parameter :: NGNORMX = 10000, NGVECX = NGNORMX*NSYM, NG1DX = 60
-     integer, parameter :: NGNORM_SIMX = NGNORMX*IVOL_RATIO, NGVEC_SIMX = NGVECX*IVOL_RATIO
-     integer, parameter :: NGNORM_BIGX = IBIG_RATIO*NGNORMX, NGVEC_BIGX = IBIG_RATIO*NGVECX
-     integer, parameter :: NGNORM_SIM_BIGX = IBIG_RATIO*NGNORM_SIMX, NGVEC_SIM_BIGX = IBIG_RATIO*NGVEC_SIMX
+     integer, parameter :: NCOEFX = 10, NPX = 4
+     integer, parameter :: NG1DX = 60, NGNORM_BIGX = 80000, NGVEC_BIGX = 80000
 
      private
-     public :: NCOEFX, NPX, IVOL_RATIO, IBIG_RATIO, NSYM
-     public :: NGNORMX, NGVECX, NG1DX
-     public :: NGNORM_SIMX, NGVEC_SIMX
+     public :: NCOEFX, NPX, NG1DX
      public :: NGNORM_BIGX, NGVEC_BIGX
-     public :: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
      save
  end module ewald_mod
 
- module ewald
-     !> Arguments: b_coul, b_coul_sim, y_coul, y_coul_sim
-     use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX, NGVECX, NGVEC_SIMX
-     use system, only: ncent_tot
-     use precision_kinds, only: dp
-
-     implicit none
-
-     real(dp), dimension(:), allocatable :: b_coul !(NCOEFX)
-     real(dp), dimension(:), allocatable :: b_coul_sim !(NCOEFX)
-     real(dp), dimension(:,:), allocatable :: b_psp !(NCOEFX, MCTYPE)
-     real(dp), dimension(:), allocatable :: b_jas !(NCOEFX)
-     real(dp), dimension(:), allocatable :: y_coul !(NGNORMX)
-     real(dp), dimension(:), allocatable :: y_coul_sim !(NGNORM_SIMX)
-     real(dp), dimension(:), allocatable :: y_jas !(NGNORM_SIMX)
-     real(dp), dimension(:,:), allocatable :: y_psp !(NGNORM_SIMX)
-     real(dp), dimension(:), allocatable :: cos_n_sum !(NGVECX)
-     real(dp), dimension(:), allocatable :: sin_n_sum !(NGVECX)
-     real(dp), dimension(:), allocatable :: cos_e_sum !(NGVECX)
-     real(dp), dimension(:), allocatable :: sin_e_sum !(NGVECX)
-     real(dp), dimension(:), allocatable :: cos_p_sum !(NGVECX)
-     real(dp), dimension(:), allocatable :: sin_p_sum !(NGVECX)
-     real(dp), dimension(:), allocatable :: cos_e_sum_sim !(NGVECX)
-     real(dp), dimension(:), allocatable :: sin_e_sum_sim !(NGVECX)
-     real(dp), dimension(:), allocatable :: sk !(NGNORX number of shells)
-     
-     private
-     public   ::  b_coul, b_coul_sim, b_psp, b_jas, y_coul, y_coul_sim, y_psp, y_jas
-     public   ::  cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum, cos_p_sum, sin_p_sum, cos_e_sum_sim, sin_e_sum_sim
-     public :: allocate_ewald, deallocate_ewald, sk
-     save
- contains
-     subroutine allocate_ewald()
-      use ewald_mod, only: NCOEFX, NGNORMX, NGNORM_SIMX
-         if (.not. allocated(b_coul)) allocate (b_coul(NCOEFX))
-         if (.not. allocated(b_coul_sim)) allocate (b_coul_sim(NCOEFX))
-         if (.not. allocated(b_psp)) allocate (b_psp(NCOEFX, ncent_tot))
-         if (.not. allocated(b_jas)) allocate (b_jas(NCOEFX))
-         if (.not. allocated(y_coul)) allocate (y_coul(NGNORMX))
-         if (.not. allocated(y_coul_sim)) allocate (y_coul_sim(NGNORM_SIMX))
-         if (.not. allocated(y_psp)) allocate (y_psp(NGNORMX, ncent_tot))
-         if (.not. allocated(y_jas)) allocate (y_jas(NGNORM_SIMX))
-         if (.not. allocated(sin_n_sum)) allocate (sin_n_sum(NGVECX))
-         if (.not. allocated(cos_n_sum)) allocate (cos_n_sum(NGVECX))
-         if (.not. allocated(sin_e_sum)) allocate (sin_e_sum(NGVECX))
-         if (.not. allocated(cos_e_sum)) allocate (cos_e_sum(NGVECX))
-         if (.not. allocated(sin_p_sum)) allocate (sin_p_sum(NGVECX))
-         if (.not. allocated(cos_p_sum)) allocate (cos_p_sum(NGVECX))
-         if (.not. allocated(sk)) allocate (sk(NGNORMX))
-         if (.not. allocated(sin_e_sum_sim)) allocate (sin_e_sum_sim(NGVEC_SIMX))
-         if (.not. allocated(cos_e_sum_sim)) allocate (cos_e_sum_sim(NGVEC_SIMX))
-
-     end subroutine allocate_ewald
-
-     subroutine deallocate_ewald()
-         if (allocated(y_coul_sim)) deallocate (y_coul_sim)
-         if (allocated(y_coul)) deallocate (y_coul)
-         if (allocated(y_psp)) deallocate (y_psp)
-         if (allocated(y_jas)) deallocate (y_jas)
-         if (allocated(b_coul_sim)) deallocate (b_coul_sim)
-         if (allocated(b_coul)) deallocate (b_coul)
-         if (allocated(b_psp)) deallocate (b_psp)
-         if (allocated(b_jas)) deallocate (b_jas)
-         if (allocated(cos_n_sum)) deallocate (cos_n_sum)
-         if (allocated(sin_n_sum)) deallocate (sin_n_sum)
-         if (allocated(cos_e_sum)) deallocate (cos_e_sum)
-         if (allocated(sin_e_sum)) deallocate (sin_e_sum)
-         if (allocated(cos_p_sum)) deallocate (cos_p_sum)
-         if (allocated(sin_p_sum)) deallocate (sin_p_sum)
-         if (allocated(cos_e_sum_sim)) deallocate (cos_e_sum_sim)
-         if (allocated(sin_e_sum_sim)) deallocate (sin_e_sum_sim)
-         if (allocated(sk)) deallocate (sk)
-
-     end subroutine deallocate_ewald
-
- end module ewald
-
- module ewald_basis
-     !> Arguments: vps_basis_fourier
-     use ewald_mod, only: NGNORM_BIGX
-     use precision_kinds, only: dp
-
-     implicit none
-
-     real(dp), dimension(:), allocatable :: vps_basis_fourier !(NGNORM_BIGX)
-
-     private
-     public   :: vps_basis_fourier
-     public :: allocate_ewald_basis, deallocate_ewald_basis
-     save
- contains
-     subroutine allocate_ewald_basis()
-      use ewald_mod, only: NGNORM_BIGX
-         if (.not. allocated(vps_basis_fourier)) allocate (vps_basis_fourier(NGNORM_BIGX))
-     end subroutine allocate_ewald_basis
-
-     subroutine deallocate_ewald_basis()
-         if (allocated(vps_basis_fourier)) deallocate (vps_basis_fourier)
-     end subroutine deallocate_ewald_basis
-
- end module ewald_basis
 
  module periodic
-     !> Arguments: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt, glatt_inv,
-     !> glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec, igvec_sim,
-     !> ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim, ngnorm, ngnorm_big,
-     !> ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big, ngvec_orb, ngvec_sim, ngvec_sim_big,
-     !> nkvec, np, npoly, rknorm, rkvec, rkvec_shift, rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell,
-     !> vcell_sim, znuc2_sum, znuc_sum
-      use ewald_mod, only: IVOL_RATIO,NGNORM_BIGX,NGNORM_SIM_BIGX
-      use ewald_mod, only: NGVEC_BIGX,NGVEC_SIM_BIGX
+     !> Arguments: cutg, cutg_big, cutr, glatt, glatt_inv,
+     !> gnorm, gvec, igmult, igvec
+     !> isrange, ncoef_per, ng1d, ngnorm, ngnorm_big,
+     !> ngvec, ngvec_big
+     !> np_coul, np_jas, npoly, rlatt, rlatt_inv, vcell,
+     !> znuc2_sum, znuc_sum
+      use ewald_mod, only: NGNORM_BIGX
+      use ewald_mod, only: NGVEC_BIGX
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot
       use system, only : nctype
@@ -145,123 +31,60 @@ module ewald_mod
 
      real(dp) :: cutg
      real(dp) :: cutg_big
-     real(dp) :: cutg_sim
-     real(dp) :: cutg_sim_big
      real(dp) :: cutr
-     real(dp) :: cutr_sim
      real(dp), dimension(:, :), allocatable :: glatt !(3,3)
      real(dp), dimension(:, :), allocatable :: glatt_inv !(3,3)
-     real(dp), dimension(:, :), allocatable :: glatt_sim !(3,3)
-     real(dp), dimension(:), allocatable :: gnorm !(NGNORM_BIGX)
-     real(dp), dimension(:), allocatable :: gnorm_sim !(NGNORM_SIM_BIGX)
+     real(dp), dimension(:),    allocatable :: gnorm !(NGNORM_BIGX)
      real(dp), dimension(:, :), allocatable :: gvec !(3,NGVEC_BIGX)
-     real(dp), dimension(:, :), allocatable :: gvec_sim !(3,NGVEC_SIM_BIGX)
-     integer, dimension(:), allocatable :: igmult !(NGNORM_BIGX)
-     integer, dimension(:), allocatable :: igmult_sim !(NGNORM_SIM_BIGX)
-     integer, dimension(:, :), allocatable :: igvec !(3,NGVEC_BIGX)
-     integer, dimension(:, :), allocatable :: igvec_sim !(3,NGVEC_SIM_BIGX)
-     integer, dimension(:), allocatable :: ireal_imag !(norb_tot)
-     integer :: isrange
-     integer, dimension(:), allocatable :: k_inv !(IVOL_RATIO)
-     integer, dimension(:, :), allocatable :: kvec !(3,IVOL_RATIO)
-     integer, dimension(:), allocatable :: nband !(IVOL_RATIO)
-     integer :: ncoef_per
-     integer, dimension(:), allocatable :: ng1d !(3)
-     integer, dimension(:), allocatable :: ng1d_sim !(3)
-     integer :: ngnorm
-     integer :: ngnorm_big
-     integer :: ngnorm_orb
-     integer :: ngnorm_sim
-     integer :: ngnorm_sim_big
-     integer :: ngvec
-     integer :: ngvec_big
-     integer :: ngvec_orb
-     integer :: ngvec_sim
-     integer :: ngvec_sim_big
-     integer :: nkvec
-     integer :: np
-     integer :: npoly
+     integer, dimension(:),     allocatable :: igmult !(NGNORM_BIGX)
+     integer, dimension(:, :),  allocatable :: igvec !(3,NGVEC_BIGX)
+     integer, dimension(:),     allocatable :: ng1d !(3)
+     integer :: isrange, ncoef_per
+     integer :: ngnorm, ngnorm_big, ngvec, ngvec_big
+     integer :: np_coul, np_jas, npoly
      integer :: n_images
-     real(dp), dimension(:), allocatable :: rknorm !(IVOL_RATIO)
-     real(dp), dimension(:, :), allocatable :: rkvec !(3,IVOL_RATIO)
-     real(dp), dimension(:), allocatable :: rkvec_shift !(3)
      real(dp), dimension(:, :), allocatable :: rlatt !(3,3)
      real(dp), dimension(:, :), allocatable :: rlatt_inv !(3,3)
-     real(dp), dimension(:, :), allocatable :: rlatt_sim !(3,3)
-     real(dp), dimension(:, :), allocatable :: rlatt_sim_inv !(3,3)
      real(dp), dimension(:, :), allocatable :: ell !(3,n_images)
      real(dp) :: vcell
-     real(dp) :: vcell_sim
      real(dp) :: znuc2_sum
      real(dp) :: znuc_sum
      real(dp) :: alattice
      
      private
-     public :: cutg, cutg_big, cutg_sim, cutg_sim_big, cutr, cutr_sim, glatt, glatt_inv
-     public :: glatt_sim, gnorm, gnorm_sim, gvec, gvec_sim, igmult, igmult_sim, igvec
-     public :: igvec_sim, ireal_imag, isrange, k_inv, kvec, nband, ncoef_per, ng1d, ng1d_sim
-     public :: ngnorm, ngnorm_big, ngnorm_orb, ngnorm_sim, ngnorm_sim_big, ngvec, ngvec_big
-     public :: ngvec_orb, ngvec_sim, ngvec_sim_big, nkvec, np, npoly, rknorm, rkvec, rkvec_shift
-     public :: rlatt, rlatt_inv, rlatt_sim, rlatt_sim_inv, vcell, vcell_sim, znuc2_sum, znuc_sum
+     public :: cutg, cutg_big, cutr, glatt, glatt_inv
+     public :: gnorm, gvec, igmult, igvec
+     public :: isrange, ncoef_per, ng1d
+     public :: ngnorm, ngnorm_big, ngvec, ngvec_big
+     public :: np_coul, np_jas, npoly
+     public :: rlatt, rlatt_inv, vcell, znuc2_sum, znuc_sum
      public :: allocate_periodic, deallocate_periodic
      public :: alattice, n_images, ell
      save
  contains
      subroutine allocate_periodic()
-      use ewald_mod, only: IVOL_RATIO
       use ewald_mod, only: NGNORM_BIGX, NGVEC_BIGX
-      use ewald_mod, only: NGNORM_SIM_BIGX, NGVEC_SIM_BIGX
       use vmc_mod, only: norb_tot
          if (.not. allocated(glatt)) allocate (glatt(3, 3))
          if (.not. allocated(glatt_inv)) allocate (glatt_inv(3, 3))
-         if (.not. allocated(glatt_sim)) allocate (glatt_sim(3, 3))
          if (.not. allocated(gnorm)) allocate (gnorm(NGNORM_BIGX))
-         if (.not. allocated(gnorm_sim)) allocate (gnorm_sim(NGNORM_SIM_BIGX))
          if (.not. allocated(gvec)) allocate (gvec(3, NGVEC_BIGX))
-         if (.not. allocated(gvec_sim)) allocate (gvec_sim(3, NGVEC_SIM_BIGX))
          if (.not. allocated(igmult)) allocate (igmult(NGNORM_BIGX), source=0)
-         if (.not. allocated(igmult_sim)) allocate (igmult_sim(NGNORM_SIM_BIGX), source=0)
          if (.not. allocated(igvec)) allocate (igvec(3, NGVEC_BIGX), source=0)
-         if (.not. allocated(igvec_sim)) allocate (igvec_sim(3, NGVEC_SIM_BIGX), source=0)
-         if (.not. allocated(ireal_imag)) allocate (ireal_imag(norb_tot), source=0)
-         if (.not. allocated(k_inv)) allocate (k_inv(IVOL_RATIO), source=0)
-         if (.not. allocated(kvec)) allocate (kvec(3, IVOL_RATIO), source=0)
-         if (.not. allocated(nband)) allocate (nband(IVOL_RATIO), source=0)
          if (.not. allocated(ng1d)) allocate (ng1d(3), source=0)
-         if (.not. allocated(ng1d_sim)) allocate (ng1d_sim(3), source=0)
-         if (.not. allocated(rknorm)) allocate (rknorm(IVOL_RATIO))
-         if (.not. allocated(rkvec)) allocate (rkvec(3, IVOL_RATIO))
-         if (.not. allocated(rkvec_shift)) allocate (rkvec_shift(3))
          if (.not. allocated(rlatt)) allocate (rlatt(3, 3))
          if (.not. allocated(rlatt_inv)) allocate (rlatt_inv(3, 3))
-         if (.not. allocated(rlatt_sim)) allocate (rlatt_sim(3, 3))
-         if (.not. allocated(rlatt_sim_inv)) allocate (rlatt_sim_inv(3, 3))
          if (.not. allocated(ell)) allocate (ell(3, n_images))
      end subroutine allocate_periodic
 
      subroutine deallocate_periodic()
-         if (allocated(rlatt_sim_inv)) deallocate (rlatt_sim_inv)
-         if (allocated(rlatt_sim)) deallocate (rlatt_sim)
          if (allocated(rlatt_inv)) deallocate (rlatt_inv)
          if (allocated(rlatt)) deallocate (rlatt)
-         if (allocated(rkvec_shift)) deallocate (rkvec_shift)
-         if (allocated(rkvec)) deallocate (rkvec)
-         if (allocated(rknorm)) deallocate (rknorm)
-         if (allocated(ng1d_sim)) deallocate (ng1d_sim)
          if (allocated(ng1d)) deallocate (ng1d)
-         if (allocated(nband)) deallocate (nband)
-         if (allocated(kvec)) deallocate (kvec)
-         if (allocated(k_inv)) deallocate (k_inv)
-         if (allocated(ireal_imag)) deallocate (ireal_imag)
-         if (allocated(igvec_sim)) deallocate (igvec_sim)
          if (allocated(igvec)) deallocate (igvec)
-         if (allocated(igmult_sim)) deallocate (igmult_sim)
          if (allocated(igmult)) deallocate (igmult)
-         if (allocated(gvec_sim)) deallocate (gvec_sim)
          if (allocated(gvec)) deallocate (gvec)
-         if (allocated(gnorm_sim)) deallocate (gnorm_sim)
          if (allocated(gnorm)) deallocate (gnorm)
-         if (allocated(glatt_sim)) deallocate (glatt_sim)
          if (allocated(glatt_inv)) deallocate (glatt_inv)
          if (allocated(glatt)) deallocate (glatt)
          if (allocated(ell)) deallocate (ell)
@@ -269,128 +92,148 @@ module ewald_mod
 
  end module periodic
 
- module test
-     !> Arguments: f, vbare_coul, vbare_jas, vbare_psp
-      use ewald_mod, only: NGNORM_BIGX,NGNORM_SIM_BIGX
+ module ewald
+     !> Arguments: b_coul, y_coul
+     use ewald_mod, only: NCOEFX
+     use system, only: ncent_tot
+     use precision_kinds, only: dp
+
+     implicit none
+
+     real(dp), dimension(:), allocatable :: b_coul !(NCOEFX)
+     real(dp), dimension(:), allocatable :: b_jas  !(NCOEFX)
+     real(dp), dimension(:), allocatable :: y_coul !(NGNORMX)
+     real(dp), dimension(:), allocatable :: y_jas  !(NGNORMX)
+     real(dp), dimension(:), allocatable :: cos_n_sum !(NGVECX)
+     real(dp), dimension(:), allocatable :: sin_n_sum !(NGVECX)
+     real(dp), dimension(:), allocatable :: cos_e_sum !(NGVECX)
+     real(dp), dimension(:), allocatable :: sin_e_sum !(NGVECX)
+     real(dp), dimension(:), allocatable :: cos_sum ! (NGVECX)
+     real(dp), dimension(:), allocatable :: sin_sum ! (NGVECX)
+     real(dp), dimension(:,:), allocatable :: cos_g ! (nelec,NGVECX)
+     real(dp), dimension(:,:), allocatable :: sin_g ! (nelec,NGVECX)
+     real(dp), dimension(:,:,:), allocatable :: dcos_g ! (3,nelec,NGVECX)
+     real(dp), dimension(:,:,:), allocatable :: dsin_g ! (3,nelec,NGVECX)
+     real(dp), dimension(:), allocatable :: cos_sum_new ! (NGVECX)
+     real(dp), dimension(:), allocatable :: sin_sum_new ! (NGVECX)
+     real(dp), dimension(:,:), allocatable :: cos_g_new ! (nelec,NGVECX)
+     real(dp), dimension(:,:), allocatable :: sin_g_new ! (nelec,NGVECX)
+     real(dp), dimension(:,:,:), allocatable :: dcos_g_new ! (3,nelec,NGVECX)
+     real(dp), dimension(:,:,:), allocatable :: dsin_g_new ! (3,nelec,NGVECX)
+     real(dp), dimension(:), allocatable :: sk !(NGNORMX number of shells)
+     
+     private
+     public   ::  b_coul, b_jas, y_coul, y_jas
+     public   ::  cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum
+     public   ::  cos_sum, sin_sum, cos_g, sin_g, dcos_g, dsin_g
+     public   ::  cos_sum_new, sin_sum_new, cos_g_new, sin_g_new, dcos_g_new, dsin_g_new
+     public :: allocate_ewald, deallocate_ewald, sk
+     save
+ contains
+     subroutine allocate_ewald()
+      use ewald_mod, only: NCOEFX
+      use periodic, only: ngnorm,ngvec
+      use system, only: nelec
+         if (.not. allocated(b_coul)) allocate (b_coul(NCOEFX))
+         if (.not. allocated(b_jas))  allocate (b_jas(NCOEFX))
+         if (.not. allocated(y_coul)) allocate (y_coul(ngnorm))
+         if (.not. allocated(y_jas))  allocate (y_jas(ngnorm))
+         if (.not. allocated(sin_n_sum)) allocate (sin_n_sum(ngvec))
+         if (.not. allocated(cos_n_sum)) allocate (cos_n_sum(ngvec))
+         if (.not. allocated(sin_e_sum)) allocate (sin_e_sum(ngvec))
+         if (.not. allocated(cos_e_sum)) allocate (cos_e_sum(ngvec))
+         if (.not. allocated(sin_sum)) allocate (sin_sum(ngvec))
+         if (.not. allocated(cos_sum)) allocate (cos_sum(ngvec))
+         if (.not. allocated(cos_g)) allocate (cos_g(nelec,ngvec))
+         if (.not. allocated(sin_g)) allocate (sin_g(nelec,ngvec))
+         if (.not. allocated(dcos_g)) allocate (dcos_g(3,nelec,ngvec))
+         if (.not. allocated(dsin_g)) allocate (dsin_g(3,nelec,ngvec))
+         if (.not. allocated(sin_sum_new)) allocate (sin_sum_new(ngvec))
+         if (.not. allocated(cos_sum_new)) allocate (cos_sum_new(ngvec))
+         if (.not. allocated(cos_g_new)) allocate (cos_g_new(nelec,ngvec))
+         if (.not. allocated(sin_g_new)) allocate (sin_g_new(nelec,ngvec))
+         if (.not. allocated(dcos_g_new)) allocate (dcos_g_new(3,nelec,ngvec))
+         if (.not. allocated(dsin_g_new)) allocate (dsin_g_new(3,nelec,ngvec))
+         if (.not. allocated(sk)) allocate (sk(ngnorm))
+     end subroutine allocate_ewald
+
+     subroutine deallocate_ewald()
+         if (allocated(y_coul)) deallocate (y_coul)
+         if (allocated(y_jas))  deallocate (y_jas)
+         if (allocated(b_coul)) deallocate (b_coul)
+         if (allocated(b_jas))  deallocate (b_jas)
+         if (allocated(cos_n_sum)) deallocate (cos_n_sum)
+         if (allocated(sin_n_sum)) deallocate (sin_n_sum)
+         if (allocated(cos_e_sum)) deallocate (cos_e_sum)
+         if (allocated(sin_e_sum)) deallocate (sin_e_sum)
+         if (allocated(cos_sum)) deallocate (cos_sum)
+         if (allocated(sin_sum)) deallocate (sin_sum)
+         if (allocated(cos_g)) deallocate (cos_g)
+         if (allocated(sin_g)) deallocate (sin_g)
+         if (allocated(dcos_g)) deallocate (dcos_g)
+         if (allocated(dsin_g)) deallocate (dsin_g)
+         if (allocated(cos_sum_new)) deallocate (cos_sum_new)
+         if (allocated(sin_sum_new)) deallocate (sin_sum_new)
+         if (allocated(cos_g_new)) deallocate (cos_g_new)
+         if (allocated(sin_g_new)) deallocate (sin_g_new)
+         if (allocated(dcos_g_new)) deallocate (dcos_g_new)
+         if (allocated(dsin_g_new)) deallocate (dsin_g_new)
+         if (allocated(sk)) deallocate (sk)
+     end subroutine deallocate_ewald
+
+ end module ewald
+
+ module ewald_test
+     !> Arguments: f, vbare_coul, vbare_jas
+      use ewald_mod, only: NGNORM_BIGX
       use precision_kinds, only: dp
 
      implicit none
 
      real(dp) :: f
-     real(dp), dimension(:), allocatable :: vbare_coul !(NGNORM_SIM_BIGX)
-     real(dp), dimension(:), allocatable :: vbare_jas !(NGNORM_SIM_BIGX)
-     real(dp), dimension(:), allocatable :: vbare_psp !(NGNORM_BIGX)
+     real(dp), dimension(:), allocatable :: vbare_coul !(NGNORM_BIGX)
+     real(dp), dimension(:), allocatable :: vbare_jas !(NGNORM_BIGX)
 
      private
-     public :: f, vbare_coul, vbare_jas, vbare_psp
-     public :: allocate_test, deallocate_test
+     public :: f, vbare_coul, vbare_jas
+     public :: allocate_ewald_test, deallocate_ewald_test
      save
  contains
-     subroutine allocate_test()
+     subroutine allocate_ewald_test()
       use ewald_mod, only: NGNORM_BIGX
-      use ewald_mod, only: NGNORM_SIM_BIGX
-         if (.not. allocated(vbare_coul)) allocate (vbare_coul(NGNORM_SIM_BIGX))
-         if (.not. allocated(vbare_jas)) allocate (vbare_jas(NGNORM_SIM_BIGX))
-         if (.not. allocated(vbare_psp)) allocate (vbare_psp(NGNORM_BIGX))
-     end subroutine allocate_test
+         if (.not. allocated(vbare_coul)) allocate (vbare_coul(NGNORM_BIGX))
+         if (.not. allocated(vbare_jas)) allocate (vbare_jas(NGNORM_BIGX))
+     end subroutine allocate_ewald_test
 
-     subroutine deallocate_test()
-         if (allocated(vbare_psp)) deallocate (vbare_psp)
+     subroutine deallocate_ewald_test()
          if (allocated(vbare_jas)) deallocate (vbare_jas)
          if (allocated(vbare_coul)) deallocate (vbare_coul)
-     end subroutine deallocate_test
-
- end module test
-
- module tempor
-     !> Arguments: dist_nn
-      use precision_kinds, only: dp
-
-     implicit none
-
-     real(dp) :: dist_nn
-
-     private
-     public :: dist_nn
-     save
- end module tempor
-
- module tempor_test
-     !> Arguments: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
-      use ewald_mod, only: IVOL_RATIO,NGVEC_BIGX
-      use precision_kinds, only: dp
-
-     implicit none
-
-     real(dp), dimension(:), allocatable :: c_imag !(NGVEC_BIGX)
-     real(dp), dimension(:), allocatable :: c_real !(NGVEC_BIGX)
-     integer, dimension(:, :), allocatable :: igvec_dft !(3,NGVEC_BIGX)
-     integer, dimension(:), allocatable :: iwgvec !(NGVEC_BIGX)
-     integer, dimension(:), allocatable :: ngg !(IVOL_RATIO)
-     integer :: ngvec_dft
-     real(dp), dimension(:), allocatable :: rkvec_tmp !(3)
-     real(dp), dimension(:), allocatable :: rkvec_tmp2 !(3)
-
-     private
-     public :: c_imag, c_real, igvec_dft, iwgvec, ngg, ngvec_dft, rkvec_tmp, rkvec_tmp2
-     public :: allocate_tempor_test, deallocate_tempor_test
-     save
- contains
-     subroutine allocate_tempor_test()
-      use ewald_mod, only: IVOL_RATIO
-      use ewald_mod, only: NGVEC_BIGX
-         if (.not. allocated(c_imag)) allocate (c_imag(NGVEC_BIGX))
-         if (.not. allocated(c_real)) allocate (c_real(NGVEC_BIGX))
-         if (.not. allocated(igvec_dft)) allocate (igvec_dft(3, NGVEC_BIGX), source=0)
-         if (.not. allocated(iwgvec)) allocate (iwgvec(NGVEC_BIGX), source=0)
-         if (.not. allocated(ngg)) allocate (ngg(IVOL_RATIO), source=0)
-         if (.not. allocated(rkvec_tmp)) allocate (rkvec_tmp(3))
-         if (.not. allocated(rkvec_tmp2)) allocate (rkvec_tmp2(3))
-     end subroutine allocate_tempor_test
-
-     subroutine deallocate_tempor_test()
-         if (allocated(rkvec_tmp2)) deallocate (rkvec_tmp2)
-         if (allocated(rkvec_tmp)) deallocate (rkvec_tmp)
-         if (allocated(ngg)) deallocate (ngg)
-         if (allocated(iwgvec)) deallocate (iwgvec)
-         if (allocated(igvec_dft)) deallocate (igvec_dft)
-         if (allocated(c_real)) deallocate (c_real)
-         if (allocated(c_imag)) deallocate (c_imag)
-     end subroutine deallocate_tempor_test
-
- end module tempor_test
+     end subroutine deallocate_ewald_test
+ end module ewald_test
 
 module m_ewald
 contains
- subroutine allocate_m_ewald()
-     use ewald, only: allocate_ewald
-     use ewald_basis, only: allocate_ewald_basis
-     use periodic, only: allocate_periodic
-     use tempor_test, only: allocate_tempor_test
-     use test, only: allocate_test
-
-     implicit none
-
-     call allocate_ewald()
-     call allocate_ewald_basis()
-     call allocate_periodic()
-     call allocate_test()
-     call allocate_tempor_test()
- end subroutine allocate_m_ewald
+! allocation of ewald done in set_ewald after definition of ngvec etc.
+! subroutine allocate_m_ewald()
+!     use ewald, only: allocate_ewald
+!     use periodic, only: allocate_periodic
+!     use ewald_test, only: allocate_ewald_test
+!
+!     implicit none
+!
+!     call allocate_periodic()
+!     call allocate_ewald()
+! end subroutine allocate_m_ewald
 
  subroutine deallocate_m_ewald()
      use ewald, only: deallocate_ewald
-     use ewald_basis, only: deallocate_ewald_basis
      use periodic, only: deallocate_periodic
-     use tempor_test, only: deallocate_tempor_test
-     use test, only: deallocate_test
+     use ewald_test, only: deallocate_ewald_test
 
      implicit none
 
-     call deallocate_ewald()
-     call deallocate_ewald_basis()
      call deallocate_periodic()
-     call deallocate_test()
-     call deallocate_tempor_test()
+     call deallocate_ewald()
  end subroutine deallocate_m_ewald
-end module 
+end module
+

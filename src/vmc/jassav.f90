@@ -3,15 +3,34 @@ contains
       subroutine jassav(iel,iflag)
 ! Written by Claudia Filippi
 
-      use system, only: nelec
+      use contrl_per, only: iperiodic
+      use ewald, only: cos_sum, cos_g, dcos_g
+      use ewald, only: sin_sum, sin_g, dsin_g
+      use ewald, only: cos_sum_new, cos_g_new, dcos_g_new
+      use ewald, only: sin_sum_new, sin_g_new, dsin_g_new
       use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-      use velocity_jastrow, only: vj, vjn
       use jastrow_update, only: d2ijn, d2n, fijn, fjn, fsn, fsumn
+      use velocity_jastrow, only: vj, vjn
+      use periodic, only: ngvec
+      use system, only: nelec
       use vmc_mod, only: nwftypejas
 
       implicit none
 
       integer :: i, iel, iflag, j, k
+
+      if(iperiodic.eq.1) then
+        do i=1,ngvec
+          cos_sum(i)=cos_sum_new(i)
+          sin_sum(i)=sin_sum_new(i)
+          cos_g(iel,i)=cos_g_new(iel,i)
+          sin_g(iel,i)=sin_g_new(iel,i)
+          do k=1,3
+            dcos_g(k,iel,i)=dcos_g_new(k,iel,i)
+            dsin_g(k,iel,i)=dsin_g_new(k,iel,i)
+          enddo
+        enddo
+      endif
 
       do k=1,nwftypejas
         fsumo(k)=fsumn(k)

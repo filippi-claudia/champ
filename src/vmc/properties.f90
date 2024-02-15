@@ -14,7 +14,7 @@ contains
       use prp000,  only: iprop,nprop
       use prp001,  only: vprop
       use system,  only: nelec
-      use periodic, only: ngnorm_sim,ngvec_sim
+      use periodic, only: ngnorm,ngvec
       implicit none
 
       integer :: i, jprop, m
@@ -39,7 +39,7 @@ contains
 
       call sofk(jprop)
 
-      jprop=6+(ngvec_sim-1)
+      jprop=6+(ngvec-1)
 
       call rhok(jprop)
 
@@ -164,7 +164,7 @@ contains
 !-----------------------------------------------------------------------
       subroutine prop_prt(w,iblk,iu)
       use m_icount, only: icount_prop
-      use periodic, only: ngnorm_sim, gvec_sim, ngvec_sim
+      use periodic, only: ngnorm, gvec, ngvec
       use precision_kinds, only: dp
       use prp000,  only: iprop,ipropprt,nprop
       use prp003,  only: cc_nuc
@@ -226,19 +226,19 @@ contains
       write(iu,40) 'Dip Z ',dipz,perr(3)*2.5417
       write(iu,40) 'Dip   ',dip,diperr
 
-      do i=6+1,6+ngvec_sim-1
-        call gnormf(3,gvec_sim(1,i-5), norm_aux)
+      do i=6+1,6+ngvec-1
+        call gnormf(3,gvec(1,i-5), norm_aux)
         write(iu,'(''s(k)     '',t17,f12.7,f12.7,'' +-'' &
         ,f12.7,f12.7)') norm_aux,pav(i),perr(i), &
-        pav(i)-(pav(i+ngvec_sim-1)**2)-(pav(i+2*(ngvec_sim-1))**2)
+        pav(i)-(pav(i+ngvec-1)**2)-(pav(i+2*(ngvec-1))**2)
       enddo
-      do i=6+ngvec_sim,6+2*(ngvec_sim-1)
-        call gnormf(3,gvec_sim(1,i-5-ngvec_sim+1), norm_aux)
+      do i=6+ngvec,6+2*(ngvec-1)
+        call gnormf(3,gvec(1,i-5-ngvec+1), norm_aux)
         write(iu,'(''cos(kr)  '',t17,f12.7,f12.7,'' +-'' &
         ,f12.7)') norm_aux,pav(i),perr(i)
       enddo
-      do i=6+2*(ngvec_sim-1)+1,nprop
-        call gnormf(3,gvec_sim(1,i-5-2*(ngvec_sim-1)), norm_aux)
+      do i=6+2*(ngvec-1)+1,nprop
+        call gnormf(3,gvec(1,i-5-2*(ngvec-1)), norm_aux)
         write(iu,'(''sin(kr)  '',t17,f12.7,f12.7,'' +-'' &
         ,f12.7)') norm_aux,pav(i),perr(i)
       enddo
@@ -292,44 +292,43 @@ contains
 ! Written by Edgar Landinez and Saverio Moroni
 
       use prp001,   only: vprop
-      use ewald,    only: cos_e_sum_sim, sin_e_sum_sim
-      use periodic, only: igmult_sim, ngnorm_sim, ngvec_sim
-
+      use ewald,    only: cos_e_sum, sin_e_sum
+      use periodic, only: igmult, ngnorm, ngvec
       use system, only: nelec
       use precision_kinds, only: dp
       implicit none
 
       integer :: im, ip, ivec, k,ik
       real(dp) :: skcum
-      real(dp), dimension(ngvec_sim) :: cos1_sum
-      real(dp), dimension(ngvec_sim) :: cos2_sum
-      real(dp), dimension(ngvec_sim) :: sin1_sum
-      real(dp), dimension(ngvec_sim) :: sin2_sum
+      real(dp), dimension(ngvec) :: cos1_sum
+      real(dp), dimension(ngvec) :: cos2_sum
+      real(dp), dimension(ngvec) :: sin1_sum
+      real(dp), dimension(ngvec) :: sin2_sum
 
-      cos1_sum=cos_e_sum_sim
-      cos2_sum=cos_e_sum_sim
-      sin1_sum=sin_e_sum_sim
-      sin2_sum=sin_e_sum_sim
+      cos1_sum=cos_e_sum(1:ngvec)
+      cos2_sum=cos_e_sum(1:ngvec)
+      sin1_sum=sin_e_sum(1:ngvec)
+      sin2_sum=sin_e_sum(1:ngvec)
 
-!     print*,"sofk, ngnorm", ngnorm_sim
+!     print*,"sofk, ngnorm", ngnorm
 
       !vprop(ip+1)=(cos1_sum(1)*cos2_sum(1)+sin1_sum(1)*sin2_sum(1))/nelec
 
 !      ivec=1
-!      do k=2,ngnorm_sim
+!      do k=2,ngnorm
 !         skcum=0.d0
-!         do im=1,igmult_sim(k)
+!         do im=1,igmult(k)
 !            ivec=ivec+1
 !            skcum=skcum+(cos1_sum(ivec)*cos2_sum(ivec)+sin1_sum(ivec)*sin2_sum(ivec))
 !         enddo
-!         vprop(ip+k-1)=skcum/(nelec*igmult_sim(k))
+!         vprop(ip+k-1)=skcum/(nelec*igmult(k))
 !      enddo
 
       ivec=1
 
       ik=0
-      do k=2,ngnorm_sim
-         do im=1,igmult_sim(k)
+      do k=2,ngnorm
+         do im=1,igmult(k)
             ik=ik+1
             ivec=ivec+1
             vprop(ip+ik)=(cos1_sum(ivec)*cos2_sum(ivec)+sin1_sum(ivec)*sin2_sum(ivec))
@@ -346,9 +345,8 @@ contains
 ! Written by Edgar Landinez and Saverio Moroni
 
       use prp001,   only: vprop
-      use ewald,    only: cos_e_sum_sim, sin_e_sum_sim
-      use periodic, only: igmult_sim, ngnorm_sim, ngvec_sim
-
+      use ewald,    only: cos_e_sum, sin_e_sum
+      use periodic, only: igmult, ngnorm, ngvec
       use system, only: nelec
       use precision_kinds, only: dp
       implicit none
@@ -356,19 +354,19 @@ contains
       integer :: im, ip, ivec, k, ik 
       real(dp) :: skcum
 
-!     print*,"sofk, ngnorm", ngnorm_sim
+!     print*,"sofk, ngnorm", ngnorm
 
       !vprop(ip+1)=(cos1_sum(1)*cos2_sum(1)+sin1_sum(1)*sin2_sum(1))/nelec
 
       ivec=1
       ik=2
-      do k=2,ngvec_sim
-         vprop(ip+ik-1)=cos_e_sum_sim(k)
+      do k=2,ngvec
+         vprop(ip+ik-1)=cos_e_sum(k)
          ik=ik+1
       enddo
 
-      do k=2,ngvec_sim
-         vprop(ip+ik-1)=sin_e_sum_sim(k)
+      do k=2,ngvec
+         vprop(ip+ik-1)=sin_e_sum(k)
          ik=ik+1
       enddo
       return

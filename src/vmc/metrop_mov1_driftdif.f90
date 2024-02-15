@@ -59,7 +59,7 @@
 
       integer :: i, iab, ic, iel, iflag_dn
       integer :: iflag_up, iflagb, iflagt, iflagz
-      integer :: ifr, igeometrical, ii, ipass
+      integer :: ifr, ii, ipass
       integer :: irun, istate, itryn, itryo
       integer :: j, jel, k, nearn
       integer :: nearo
@@ -271,13 +271,12 @@
         do ic=1,3
           xnew(ic,i)=xold(ic,i)
         enddo
-        if(igeometrical.eq.0) call distancese_restore(i)
+        call distancese_restore(i)
       endif
 
       call update_ymat(i)
 
       enddo
-
 
 ! loop over secondary configurations
       do ifr=2,nforce

@@ -11,7 +11,7 @@ contains
       use contrl_file, only: ounit
       use control_dmc, only: dmc_nconf,dmc_nstep
       use multiple_geo, only: MFORCE
-      use periodic, only: gnorm_sim, gvec_sim, ngvec_sim
+      use periodic, only: gnorm, gvec, ngvec
       use precision_kinds, only: dp
       use properties_mod, only: gnormf
       use prp000,  only: iprop,ipropprt,nprop
@@ -68,17 +68,17 @@ contains
           if(i.le.6) then
               write(ounit,'(''property '',a3,t17,f12.7,'' +-'' &
              ,f11.7,f9.5)') pnames(i),pav(i),perr(i),perr(i)*rtevalg_eff1
-           elseif(i.le.(6+ngvec_sim-1)) then
-             call gnormf(3,gvec_sim(1,i-5), norm_aux)
+           elseif(i.le.(6+ngvec-1)) then
+             call gnormf(3,gvec(1,i-5), norm_aux)
               write(ounit,'(''s(k)     '',t17,f12.7,f12.7,'' +-'' &
               ,f12.7,f12.7,f22.7)') norm_aux,pav(i),perr(i),perr(i)*rtevalg_eff1, &
-              pav(i)-(pav(i+ngvec_sim-1)**2)-(pav(i+2*(ngvec_sim-1))**2) 
-           elseif(i.le.(6+2*(ngvec_sim-1))) then
-             call gnormf(3,gvec_sim(1,i-5-ngvec_sim+1), norm_aux)
+              pav(i)-(pav(i+ngvec-1)**2)-(pav(i+2*(ngvec-1))**2) 
+           elseif(i.le.(6+2*(ngvec-1))) then
+             call gnormf(3,gvec(1,i-5-ngvec+1), norm_aux)
               write(ounit,'(''cos(kr)  '',t17,f12.7,f12.7,'' +-'' &
               ,f12.7,f12.7)') norm_aux,pav(i),perr(i),perr(i)*rtevalg_eff1
            else
-             call gnormf(3,gvec_sim(1,i-5-2*(ngvec_sim-1)), norm_aux)
+             call gnormf(3,gvec(1,i-5-2*(ngvec-1)), norm_aux)
               write(ounit,'(''sin(kr)  '',t17,f12.7,f12.7,'' +-'' &
               ,f12.7,f12.7)') norm_aux,pav(i),perr(i),perr(i)*rtevalg_eff1
           endif
