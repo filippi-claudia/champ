@@ -28,7 +28,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Setup Intel OneAPI
-      uses: neelravi/intel-oneapi-github-actions@v1.0.2
+      uses: neelravi/intel-oneapi-github-actions@v1.1.0
 
     - name: Compile the CHAMP code using Intel and run all tests
       if: matrix.toolchain == 'intel'
@@ -40,8 +40,8 @@ jobs:
 
         cmake --version
         cmake -H. -Bbuild \
-          -DCMAKE_Fortran_COMPILER=mpiifort \
-          -DCMAKE_C_COMPILER=mpiicc \
+          -DCMAKE_Fortran_COMPILER=mpiifx \
+          -DCMAKE_C_COMPILER=mpiicx \
           -DBLA_STATIC=ON \
           -DBLA_VENDOR=Intel10_64lp_seq \
           -DENABLE_TREXIO=OFF \
@@ -50,16 +50,3 @@ jobs:
         cmake --build build -- -j2
         cd build
         ctest --output-on-failure --verbose -LE "(TREXIO|QMCKL)"
-
-    - name: "Zip the test results"
-      run: |
-        echo "Compressing the test results from workflow"
-        cd tests/
-        tar -czvf workflow_artifacts.tar.gz CI_test/*/*_core_?.out
-
-    - name: "Upload calculation result artifacts"
-      uses: actions/upload-artifact@v2
-      with:
-        name: results-workflow-actions
-        path: tests/workflow_artifacts.tar.gz
-        retention-days: 4
