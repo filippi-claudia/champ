@@ -1,7 +1,6 @@
 ![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.jpg?raw=true)
 
-
-[![Self-hosted Intel OneAPI Build and Testing on ccpgate/ccp01](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/self_hosted_build_champ.yml) [![DEBUG build and testing](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml) [![Unit Tests](https://github.com/filippi-claudia/champ/actions/workflows/champ_unit_test.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/champ_unit_test.yml) [![TREXIO python interface](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml)
+[![GitHub-hosted Intel OneAPI build](https://github.com/filippi-claudia/champ/actions/workflows/github_hosted_build_champ.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/github_hosted_build_champ.yml) [![DEBUG build and testing](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml) [![Unit Tests](https://github.com/filippi-claudia/champ/actions/workflows/champ_unit_test.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/champ_unit_test.yml) [![TREXIO python interface](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml)
 
 
 ![Github Issues](https://img.shields.io/github/issues/filippi-claudia/champ) ![Github Pull Requests](https://img.shields.io/github/issues-pr/filippi-claudia/champ) ![Github Last Commit](https://img.shields.io/github/last-commit/filippi-claudia/champ) [![Commit Activity](https://img.shields.io/github/commit-activity/w/filippi-claudia/champ)](https://img.shields.io/github/commit-activity/t/filippi-claudia/champ
@@ -52,7 +51,7 @@ The authors make no claims about the correctness of the program suite and people
 CHAMP utilizes various other program packages:
 
 1. [Parser](https://github.com/neelravi/mpi-libfdf-parser):
-   An easy-to-use and easy-to-extend keyword-value pair based input file parser written in Fortran 2008.  This parser uses a heavily modified libFDF library and is written by [Ravindra Shinde](https://github.com/neelravi). It can parse keyword-value pairs, blocks of data, and general variables with different physical units in an order-independent manner. Our implementation can handle multiple data types and file formats. The parser is kept as a library in the code, however, it can be easily adapted by any other Fortran-based code.
+   An easy-to-use and easy-to-extend keyword-value pair-based input file parser written in Fortran 2008.  This parser uses a heavily modified libFDF library and is written by [Ravindra Shinde](https://github.com/neelravi). It can parse keyword-value pairs, blocks of data, and general variables with different physical units in an order-independent manner. Our implementation can handle multiple data types and file formats. The parser is kept as a library in the code, however, it can be easily adapted by any other Fortran-based code.
 
 2. [TREXIO](https://github.com/TREX-CoE/trexio):
    TREXIO is an open-source file format and library developed for the storage and manipulation of data produced by quantum chemistry calculations. CHAMP can read the starting wavefunction from a trexio file. The library has interfaces to a lot of quantum chemical programs.
@@ -69,11 +68,23 @@ CHAMP utilizes various other program packages:
 4. [QMCKL](https://github.com/TREX-CoE/qmckl):
   This library provides a high-performance implementation of the main kernels of Quantum Monte Carlo methods. This library is currently optional.
 
+------------------------------------------------------------------------
+### CHAMP in a container
 
+CHAMP is available as a container image from Dockerhub. Here are the instructions to obtain the images:
 
+1. CHAMP built with Intel oneAPI compilers:
+	- `docker pull neelravi/champ:latest`
+ 	- `docker pull neelravi/champ:intel`
+  	- `docker pull neelravi/champ:intel-trexio`
+2. CHAMP built with GNU compilers
+   	- `docker pull neelravi/champ:2.3.0`
+   	- `docker pull neelravi/champ:gnu`
+   	- `docker pull neelravi/champ:gnu-trexio`
 ------------------------------------------------------------------------
 
-### Requirements
+### Compiling CHAMP for the source
+#### Requirements
 1. cmake >= 3.17
 2. gfortran/gcc >= 9.3.0 or Intel Fortran 2020 onwards
 3. BLAS/LAPACK or Intel MKL
