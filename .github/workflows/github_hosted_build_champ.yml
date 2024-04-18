@@ -1,0 +1,65 @@
+name: GitHub-hosted Intel OneAPI build
+
+on:
+  push:
+    branches:
+      - 'releases/**'
+      - main
+    tags:
+      - v2.*.*
+      - v3.*.*
+  pull_request:
+    branches:
+      - 'releases/**'
+      - main
+
+jobs:
+  build_champ:
+    strategy:
+      matrix:
+        toolchain: ['intel']
+    name: Build CHAMP with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash --noprofile --norc {0}
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Intel OneAPI
+      uses: rscohn2/setup-oneapi@v0
+
+    - name: Compile the CHAMP code using Intel and run all tests
+      if: matrix.toolchain == 'intel'
+      run: |
+        source /opt/intel/oneapi/setvars.sh
+
+        # Setup your environment here since GitHub-hosted runners do not persist software installations and environment settings
+        # Ensure any additional software required is setup here
+
+        cmake --version
+        cmake -H. -Bbuild \
+          -DCMAKE_Fortran_COMPILER=mpiifort \
+          -DCMAKE_C_COMPILER=mpiicc \
+          -DBLA_STATIC=ON \
+          -DBLA_VENDOR=Intel10_64lp_seq \
+          -DENABLE_TREXIO=OFF \
+          -DENABLE_QMCKL=OFF \
+
+        cmake --build build -- -j2
+        cd build
+        ctest --output-on-failure --verbose -LE "(TREXIO|QMCKL)"
+
+    - name: "Zip the test results"
+      run: |
+        echo "Compressing the test results from workflow"
+        cd tests/
+        tar -czvf workflow_artifacts.tar.gz CI_test/*/*_core_?.out
+
+    - name: "Upload calculation result artifacts"
+      uses: actions/upload-artifact@v2
+      with:
+        name: results-workflow-actions
+        path: tests/workflow_artifacts.tar.gz
+        retention-days: 4
