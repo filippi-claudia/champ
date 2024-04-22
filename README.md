@@ -180,33 +180,68 @@ Here are a couple of recipes for commonly used computing facilities, which can b
         cd $PWD
 		srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
 		```
-* **CCPGate**:
+* **CCPhead**:
 	- To build with mpiifort, load the required modules of the Intel Compiler and MPI:
 
 		```bash
-        module load compiler
-        module load compiler-rt
-        module load mkl
-        module load mpi
-        module load trexio/2.3.0-intel     # Optional
-        module load python3                # Optional
-		```
+ 		module load cmake/latest 
+ 		module load compiler-rt/latest
+ 		module load debugger/latest
+ 		module load compiler/latest
+ 		module load icc/latest
+ 		module load mpi/latest
+ 		module load hdf5/latest   
+ 		module load tbb/latest
+ 		module load dpl/latest
+ 		module load dev-utilities/latest
+ 		module load mkl/latest
+ 		module load trexio/latest
+ 		```
 		Setup the build:
 		```
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
 		```
 	- To enable TREXIO library:
 		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON \
+          -DTREXIO_LIBRARY=/software/libraries/trexio/latest/lib/libtrexio.so \
+          -DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest/include/ 
 		```
 	- To disable vectorization of the code:
 		```
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DVECTORIZED=no
 		```
 
-	- To run the code with Intel Compilers and MPI:
-	    ```bash
-        mpirun -np 24  champ/bin/vmc.mov1 -i input.inp -o output.out -e error
+	- To run the code, you need to submit a job to the queue system:
+		```bash
+		sbatch job.cmd
+		```
+		where `job.cmd` is a SLURM script for `genoa` partition that looks like this:
+
+		```bash
+		#!/bin/bash
+		#SBATCH -t 2-0
+		#SBATCH -p ccp22
+		#SBATCH -N 2 --exclusive --ntasks-per-node 32
+		#SBATCH -J champ
+		#SBATCH --output=o%j
+		#SBATCH --ntasks-per-core=1
+		#SBATCH --error=e%j
+
+ 		module load compiler-rt/latest
+ 		module load debugger/latest
+ 		module load compiler/latest
+ 		module load icc/latest
+ 		module load mpi/latest
+ 		module load hdf5/latest   
+ 		module load tbb/latest
+ 		module load dpl/latest
+ 		module load dev-utilities/latest
+ 		module load mkl/latest
+ 		module load trexio/latest
+        	
+	 	cd $PWD
+		srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
 		```
 
  	- To build with gfortran:
