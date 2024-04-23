@@ -241,7 +241,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
  		module load trexio/latest
         	
 	 	cd $PWD
-		srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
+		mpirun -np 64 champ/bin/vmc.mov1 -i input.inp -o output.out -e error
 		```
 
  	- To build with gfortran:
