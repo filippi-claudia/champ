@@ -10,8 +10,8 @@ contains
       use csfs,    only: nstates
       use deloc_dj_m, only: denergy
       use derivjas, only: d2g,g
-      use multidet, only: irepcol_det,ireporb_det,ivirt,k_aux,k_det
-      use multidet, only: k_det2,ndet_req,ndetiab,ndetiab2,ndetsingle
+      use multidet, only: irepcol_det,ireporb_det,ivirt,k_det
+      use multidet, only: k_aux2, k_det2,ndet_req,ndetiab,ndetiab2,ndetsingle
       use multidet, only: numrep_det
       use multimat, only: wfmat
       use multislater, only: detiab
@@ -96,23 +96,16 @@ contains
 
             ddenergy_det=0.d0
             denergy_det=0.d0
-
             do iab=1,2
 
-!             ddenergy_det(:,iab)=0
               do k=1,ndetsingle(iab)
-
                 iorb=irepcol_det(1,k,iab)
                 jorb=ireporb_det(1,k,iab)
                 ddenergy_det(k,iab)=wfmat(k,1,iab,o)*dtildem(iorb,jorb,iab)
-
               enddo
 
-!             do k=1,ndetiab(iab)
               do k=ndetsingle(iab)+1,ndetiab(iab)
-
                 ndim=numrep_det(k,iab)
-
                 do irep=1,ndim
                    iorb=irepcol_det(irep,k,iab)
                    do jrep=1,ndim
@@ -122,20 +115,14 @@ contains
                 enddo
               enddo
 
-
-!     Unrolling determinants different to kref
+! Unrolling determinants different to kref
               do kk=1,ndetiab2(iab)
                 k=k_det2(kk,iab)
-                kw=k_aux(kk,iab)
+                kw=k_aux2(kk,iab)
                 denergy_det(k,iab,x)=ddenergy_det(kw,iab)
               enddo
-!             k_det2(1:ndetiab2(iab),iab)
-!             k_aux(1:ndetiab2(iab),iab)
-!             denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
-
-
             enddo
-!           iab loop
+! iab loop
 
 !           do k=1,ndet
 !             deloc_dj_k=denergy_det(k,1)+denergy_det(k,2)+deloc_dj_kref

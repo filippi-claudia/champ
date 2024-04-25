@@ -6,7 +6,7 @@ contains
       use csfs, only: nstates
       use matinv_mod, only: matinv
       use multidet, only: irepcol_det, ireporb_det, ivirt, numrep_det, k_det, ndetiab, ndet_req
-      use multidet, only: k_det2, ndetiab2, k_aux, ndetsingle, ndetdouble
+      use multidet, only: k_aux2, k_det2, ndetiab2, ndetsingle, ndetdouble
       use multideterminant_mod, only: compute_ymat
       use multimatn, only: aan, wfmatn
       use multislater, only: detiab
@@ -31,8 +31,6 @@ contains
       real(dp), dimension(3) :: ddx_mdet
       real(dp), dimension(norb_tot) :: orb_sav
       real(dp), dimension(ndet_req) :: ddetn
-
-
 
       if(ndet.eq.1) return
 
@@ -65,8 +63,9 @@ contains
         enddo
 
 ! compute wave function
-!     loop inequivalent determinants
-!     loop over single exitations
+! loop inequivalent determinants
+!
+! loop over single exitations
         if(ndetsingle(iab).ge.1) then
           do k=1,ndetsingle(iab)
             jorb=ireporb_det(1,k,iab)
@@ -77,39 +76,11 @@ contains
           enddo
         endif
 
-!     loop over single exitations      
-!         jorb=ireporb_det(1,1:ndetsingle(iab),iab)
-!         iorb=irepcol_det(1,1Kndetsingle(iab),iab)
-
-!      wfmatn(1:ndetsingle(iab),1)=aan(irepcol_det(1,1:ndetsingle(iab),iab)+nelec*(ireporb_det(1,1:ndetsingle(iab),iab)-1))
-!      ddetn(1:ndetsingle(iab))=wfmatn(1:ndetsingle(iab),1)
-!      wfmatn(1:ndetsingle(iab),1)=1.0d0/wfmatn(1:ndetsingle(iab),1)
-
-
         kcum=ndetsingle(iab)+ndetdouble(iab)
 
+! loop over double exitations
         if(ndetdouble(iab).ge.1)then
-!         loop over double exitations      
-!         do k=ndetsingle(iab)+1,kcum
-!     
-!           ndim=numrep_det(k,iab)
-!           ndim2=ndim*ndim
-!     
-!           jj=0
-!           do= jrep=1,ndim
-!             jorb=ireporb_det(jrep,k,iab)
-!             do irep=1,ndim
-!               iorb=irepcol_det(irep,k,iab)
-!               jj=jj+1
-!               wfmatn(k,jj)=aan(iorb+nelec*(jorb-1))
-!             enddo
-!           enddo
-!           call matinv(wfmatn(k,1:ndim2),ndim,ddetn(k))
-!         enddo
-!       endif
-
           do k=ndetsingle(iab)+1,kcum
-             
             jorb=ireporb_det(1,k,iab)
             iorb=irepcol_det(1,k,iab)
             wfmatn(k,1,o)=aan(iorb,jorb,o)
@@ -120,7 +91,6 @@ contains
             wfmatn(k,3,o)=aan(iorb,jorb,o)
             iorb=irepcol_det(2,k,iab)
             wfmatn(k,4,o)=aan(iorb,jorb,o)
-!     test to save         
             
             ddetn(k)=wfmatn(k,1,o)*wfmatn(k,4,o)-wfmatn(k,3,o)*wfmatn(k,2,o)
             deti=1.d0/ddetn(k)
@@ -129,18 +99,11 @@ contains
             wfmatn(k,2,o)=-wfmatn(k,2,o)*deti
             wfmatn(k,3,o)=-wfmatn(k,3,o)*deti
             wfmatn(k,4,o)=auxdet*deti
-
                   
           enddo
-
-         
-
         endif
 
-
-
-
-!     loop over multiple exitations      
+! loop over multiple exitations      
         if(kcum.lt.ndetiab(iab))then
           do k=kcum+1,ndetiab(iab)
 
@@ -160,16 +123,13 @@ contains
           enddo
         endif 
 
-!     Unrolling determinats different to kref
+! unrolling determinats different from kref
         detn(:,o)=detn(kref,o)
         do kk=1,ndetiab2(iab)
           k=k_det2(kk,iab)
-          kw=k_aux(kk,iab)  
+          kw=k_aux2(kk,iab)  
           detn(k,o)=detn(k,o)*ddetn(kw)
         enddo
-!      k_det2(1:ndetiab2(iab),iab)
-!      k_aux(1:ndetiab2(iab),iab)  
-!      detn(k_det2(1:ndetiab2(iab),iab))=detn(k_det2(1:ndetiab2(iab),iab))*ddetn(k_aux(1:ndetiab2(iab),iab))
 
         if (iab.eq.1) then
           call compute_ymat(iab,detn(1,o),detiab(1,2,o),wfmatn(1,1,o),ymatn(1,1,istate),istate)
@@ -179,7 +139,6 @@ contains
         do iorb=1,norb
           orb(iel,iorb,o)=orb_sav(iorb)
         enddo
-
 
       enddo
 
@@ -214,9 +173,6 @@ contains
       real(dp), dimension(3) :: velocity
       real(dp), dimension(nmat_dim) :: slmi
 
-
-
-
       do k=1,3
         velocity(k)=0.d0
       enddo
@@ -233,7 +189,6 @@ contains
       endif
 
       jel=iel-ish
-
 
       do kk=1,3
 

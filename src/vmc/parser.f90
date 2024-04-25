@@ -1348,7 +1348,7 @@ subroutine parser
   else
     if(imultideterminants.eq.0) then
       write(errunit,*) "INPUT: multideterminant bloc MISSING"
-      call multideterminants_define(0,0)
+      call multideterminants_define(0)
     endif
   endif
   imultideterminants = 1
@@ -1517,7 +1517,7 @@ subroutine parser
     endif
     if(ioptorb_def.eq.0) then
       write(ounit,*) "INPUT: definition of orbital variations missing"
-      call optorb_define
+      call optorb_define(0)
     endif
   endif
   if(ioptci.ne.0.and.ici_def.eq.0) then

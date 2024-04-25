@@ -10,7 +10,7 @@ contains
       use m_force_analytic, only: iforce_analy
       use matinv_mod, only: matinv
       use multidet, only: irepcol_det, ireporb_det, numrep_det, ndetiab, k_det, ndet_req
-      use multidet, only: k_det2, k_aux, ndetiab2, ndetsingle, ndetdouble
+      use multidet, only: k_aux2, k_det2, ndetiab2, ndetsingle, ndetdouble
       use multimat, only: aa, wfmat
       use multislater, only: detiab
       use optwf_control, only: ioptorb
@@ -38,21 +38,6 @@ contains
       real(dp), dimension(nelec**2, 2) :: btemp
       real(dp), dimension(ndet_req,2) :: ddetiab
       real(dp), dimension(ndet_req,2) :: ddenergy_det
-
-
-! note that the dimension of the slater matrices is assumed
-! to be given by nmat_dim = (MELEC/2)**2, that is there are
-! as many ups as downs. If this is not true then be careful if
-! nelec is close to MELEC. The Slater matrices must be
-! dimensioned at least max(nup**2,ndn**2)
-
-
-
-
-! call resize_matrix(b, norb+nadorb, 1)
-! call resize_matrix(orb, norb+nadorb, 2)
-! call resize_tensor(tildem, norb+nadorb, 2)
-! call resize_tensor(aa, norb+nadorb, 2)
 
       do istate=1,nstates 
         j=stoj(istate) 
@@ -142,32 +127,29 @@ contains
 !       endif
 
         call allocate_denergy_det_m()
-        denergy_det(kref,1,x)=0
-        denergy_det(kref,2,x)=0
+        denergy_det=0.0d0
         ddenergy_det=0.0d0
 
         if(ndet.eq.1) return
         do iab=1,2
          
-!     loop inequivalent determinants
+! loop inequivalent determinants
+!
 ! determinants with single exitations
           if(ndetsingle(iab).ge.1)then
             do k=1,ndetsingle(iab)
-                     
               iorb=irepcol_det(1,k,iab)
               jorb=ireporb_det(1,k,iab)
               ddetiab(k,iab)=aa(iorb,jorb,iab,o)
               wfmat(k,1,iab,o)=1.0d0/ddetiab(k,iab)
               ddenergy_det(k,iab)=wfmat(k,1,iab,o)*tildem(iorb,jorb,iab,x)
-            
             enddo
           endif
 
-         
           kcum=ndetsingle(iab)+ndetdouble(iab)
          
-          if(ndetdouble(iab).ge.1)then
 ! determinants double exitations
+          if(ndetdouble(iab).ge.1)then
             do k=ndetsingle(iab)+1,kcum
            
 !               ndim=numrep_det(k,iab)
@@ -177,13 +159,10 @@ contains
 !                     jorb=ireporb_det(jrep,k,iab)
 !                     wfmat(k,irep+(jrep-1)*ndim,iab)=aa(iorb,jorb,iab)
 !                  enddo
-!     enddo
-
-               
+!               enddo
 !               ndim2=ndim*ndim
 !               call matinv(wfmat(k,1:ndim2,iab),ndim,det)
 !               ddetiab(k,iab)=det
-
 
               iorb=irepcol_det(1,k,iab)
               jorb=ireporb_det(1,k,iab)
@@ -196,8 +175,8 @@ contains
               jorb=ireporb_det(2,k,iab)
               wfmat(k,4,iab,o)=aa(iorb,jorb,iab,o)
 
-!               call matinv(wfmat(k,1:4,iab),2,det)             
-!               ddetiab(k,iab)=det
+!             call matinv(wfmat(k,1:4,iab),2,det)             
+!             ddetiab(k,iab)=det
               ddetiab(k,iab)=wfmat(k,1,iab,o)*wfmat(k,4,iab,o) &
                    -wfmat(k,3,iab,o)*wfmat(k,2,iab,o)
               deti=1.d0/ddetiab(k,iab)
@@ -206,9 +185,7 @@ contains
               wfmat(k,2,iab,o)=-wfmat(k,2,iab,o)*deti
               wfmat(k,3,iab,o)=-wfmat(k,3,iab,o)*deti
               wfmat(k,4,iab,o)=auxdet*deti
-               
-               
-               
+
 !               do irep=1,ndim
 !                  iorb=irepcol_det(irep,k,iab)
 !                  do jrep=1,ndim
@@ -227,11 +204,6 @@ contains
               ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,3,iab,o)*tildem(iorb,jorb,iab,x)
               jorb=ireporb_det(2,k,iab)
               ddenergy_det(k,iab)=ddenergy_det(k,iab)+wfmat(k,4,iab,o)*tildem(iorb,jorb,iab,x)
-
-
-               
-               
-
                
             enddo
           endif
@@ -270,21 +242,13 @@ contains
           eloc_det(:,iab,x)=eloc_det(kref,iab,x)
           do kk=1,ndetiab2(iab)
             k=k_det2(kk,iab)
-            kw=k_aux(kk,iab)
+            kw=k_aux2(kk,iab)
             detiab(k,iab,o)=detiab(k,iab,o)*ddetiab(kw,iab)
             denergy_det(k,iab,x)=ddenergy_det(kw,iab)
             eloc_det(k,iab,x)=eloc_det(k,iab,x)+denergy_det(k,iab,x)
-
           enddo
 
-!        detiab(k_det2(1:ndetiab2(iab),iab),iab)=detiab(k_det2(1:ndetiab2(iab),iab),iab)*ddetiab(k_aux(1:ndetiab2(iab),iab),iab)
-!        denergy_det(k_det2(1:ndetiab2(iab),iab),iab)=ddenergy_det(k_aux(1:ndetiab2(iab),iab),iab)
-!        eloc_det(k_det2(1:ndetiab2(iab),iab),iab)=eloc_det(k_det2(1:ndetiab2(iab),iab),iab)+
-!     &       denergy_det(k_det2(1:ndetiab2(iab),iab),iab)
-        
-
         enddo ! end iab loop
-
          
 ! compute Ymat for future use
 
@@ -312,7 +276,7 @@ contains
 
       use denergy_det_m, only: denergy_det
       use multidet, only: irepcol_det, ireporb_det, numrep_det, k_det, ndetiab
-      use multidet, only: k_det2, ndetiab2, k_aux, ndetsingle, ndetdouble
+      use multidet, only: k_aux2, k_det2, ndetiab2, ndetsingle, ndetdouble
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use slater, only: ndet, cdet, iwundet, kref, cdet_equiv, dcdet_equiv
@@ -339,55 +303,32 @@ contains
       real(dp), dimension(ndetiab2(iab)) :: detallv
       real(dp), dimension(ndetiab2(iab)) :: sumde
 
-
       detrefi=1.d0/(detu(kref)*detd(kref))
-      ymat=0
 
+      ymat=0
       cdet_equiv=0.0d0
       dcdet_equiv=0.0d0
+
       iwf_save=iwf
       if(nwftypeorb.gt.1) iwf=1
-! Unroling determinants different to kref
+
+! unroling determinants different to kref
       do kk=1,ndetiab2(iab)
          k=k_det2(kk,iab)
-         kw=k_aux(kk,iab)
+         kw=k_aux2(kk,iab)
          detall=detrefi*detu(k)*detd(k)*cdet(k,istate,iwf)
          cdet_equiv(kw)=cdet_equiv(kw)+detall
          dcdet_equiv(kw)=dcdet_equiv(kw)+detall*(denergy_det(k,1,stobjx(istate))+denergy_det(k,2,stobjx(istate))) 
       enddo
-      iwf=iwf_save
-!      detallv=detrefi*detu(k_det2(1:ndetiab2(iab),iab))*detd(k_det2(1:ndetiab2(iab),iab))
-!     &     *cdet(k_det2(1:ndetiab2(iab),iab),istate,iwf)
 
-!      cdet_equiv(k_aux(1:ndetiab2(iab),iab))=cdet_equiv(k_aux(1:ndetiab2(iab),iab))+detallv
-
-!      sumde=denergy_det(k_det2(1:ndetiab2(iab),iab),1)+denergy_det(k_det2(1:ndetiab2(iab),iab),2)
-
-!      detallv=detallv*sumde
-
-!      dcdet_equiv(k_aux(1:ndetiab2(iab),iab))=dcdet_equiv(k_aux(1:ndetiab2(iab),iab))+detallv
-
-
-!! loop over single exitations
+! loop over single exitations
       if(ndetsingle(iab).ge.1)then
          do kk=1,ndetsingle(iab)
-!!     print *,'OLA',kk,cdet_equiv(kk)
-
             iorb=irepcol_det(1,kk,iab)
             jorb=ireporb_det(1,kk,iab)
             ymat(jorb+norb_tot*(iorb-1))=ymat(jorb+norb_tot*(iorb-1))+cdet_equiv(kk)*wfmat(kk,1)
-         
          enddo
       endif
-
-!      irepcol_det(1,1:ndetsingle(iab),iab)
-!      ireporb_det(1,1:ndetsingle(iab),iab)
-!      ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingle(iab),iab)-1))
-
-!     loop over single exitations     
-!      ymat(ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingle(iab),iab)-1))) =
-!     &     ymat(ireporb_det(1,1:ndetsingle(iab),iab)+(norb_tot*(irepcol_det(1,1:ndetsingle(iab),iab)-1))) +
-!     &     cdet_equiv(1:ndetsingle(iab))*wfmat(1:ndetsingle(iab),1)
 
       kcum=ndetsingle(iab)+ndetdouble(iab)
       if(ndetdouble(iab).ge.1)then
@@ -395,7 +336,6 @@ contains
          do kk=ndetsingle(iab)+1,kcum !ndetiab(iab)
          
 !            ndim=numrep_det(kk,iab)
-!
 !            do irep=1,ndim
 !               iorb=irepcol_det(irep,kk,iab)
 !               do jrep=1,ndim
@@ -403,6 +343,7 @@ contains
 !                  ymat(jorb+norb_tot*(iorb-1))=ymat(jorb+norb_tot*(iorb-1))+cdet_equiv(kk)*wfmat(kk,jrep+(irep-1)*ndim)
 !               enddo  
 !            enddo
+
             iorb=irepcol_det(1,kk,iab)
             jorb=ireporb_det(1,kk,iab)
             ymat(jorb+norb_tot*(iorb-1))=ymat(jorb+norb_tot*(iorb-1))+cdet_equiv(kk)*wfmat(kk,1)
@@ -414,11 +355,7 @@ contains
             ymat(jorb+norb_tot*(iorb-1))=ymat(jorb+norb_tot*(iorb-1))+cdet_equiv(kk)*wfmat(kk,3)
             jorb=ireporb_det(2,kk,iab)
             ymat(jorb+norb_tot*(iorb-1))=ymat(jorb+norb_tot*(iorb-1))+cdet_equiv(kk)*wfmat(kk,4)
-
-
-
          enddo
- 
 
       endif
 
@@ -426,9 +363,7 @@ contains
       if(kcum.lt.ndetiab(iab))then
 
          do kk=kcum+1,ndetiab(iab)
-         
             ndim=numrep_det(kk,iab)
-         
             do irep=1,ndim
                iorb=irepcol_det(irep,kk,iab)
                do jrep=1,ndim
@@ -436,9 +371,7 @@ contains
                   ymat(jorb+norb_tot*(iorb-1))=ymat(jorb+norb_tot*(iorb-1))+cdet_equiv(kk)*wfmat(kk,jrep+(irep-1)*ndim)
                enddo   
             enddo
-            
          enddo
-         
       endif
 
 
@@ -475,20 +408,17 @@ contains
 ! loop over single exitations      
       if(ndetsingle(iab).ge.1) then
          do kk=1,ndetsingle(iab)
-
             iorb=ireporb_det(1,kk,iab)
             jorb=irepcol_det(1,kk,iab)
             dmat1(1)=wfmat(kk,1,iab,o)*tildem(jorb,iorb,iab,x)
             dmat2(1)=dmat1(1)*wfmat(kk,1,iab,o)
             dymat(iorb,jorb)=dymat(iorb,jorb)+wfmat(kk,1,iab,o)*dcdet_equiv(kk)-cdet_equiv(kk)*dmat2(1)
-                  
          enddo
       endif
 
-
-!     double excitations
       kcum=ndetsingle(iab)+ndetdouble(iab)
 
+! double excitations
       if(ndetdouble(iab).ge.1) then
          do kk=ndetsingle(iab)+1,kcum
 
@@ -510,11 +440,11 @@ contains
             dmat1(3)=dmat1(3)+wfmat(kk,3,iab,o)*tildem(lorb,iorb,iab,x)
             dmat1(4)=dmat1(4)+wfmat(kk,4,iab,o)*tildem(lorb,iorb,iab,x)
 
-           dmat2(1:4)=0.d0
-           dmat2(1)=dmat1(1)*wfmat(kk,1,iab,o)+dmat1(3)*wfmat(kk,2,iab,o)
-           dmat2(2)=dmat1(2)*wfmat(kk,1,iab,o)+dmat1(4)*wfmat(kk,2,iab,o)
-           dmat2(3)=dmat1(1)*wfmat(kk,3,iab,o)+dmat1(3)*wfmat(kk,4,iab,o)
-           dmat2(4)=dmat1(2)*wfmat(kk,3,iab,o)+dmat1(4)*wfmat(kk,4,iab,o)
+            dmat2(1:4)=0.d0
+            dmat2(1)=dmat1(1)*wfmat(kk,1,iab,o)+dmat1(3)*wfmat(kk,2,iab,o)
+            dmat2(2)=dmat1(2)*wfmat(kk,1,iab,o)+dmat1(4)*wfmat(kk,2,iab,o)
+            dmat2(3)=dmat1(1)*wfmat(kk,3,iab,o)+dmat1(3)*wfmat(kk,4,iab,o)
+            dmat2(4)=dmat1(2)*wfmat(kk,3,iab,o)+dmat1(4)*wfmat(kk,4,iab,o)
            
             iorb=irepcol_det(1,kk,iab)
             jorb=ireporb_det(1,kk,iab)
@@ -528,11 +458,10 @@ contains
             jorb=ireporb_det(2,kk,iab)
             dymat(jorb,iorb)=dymat(jorb,iorb)+wfmat(kk,4,iab,o)*dcdet_equiv(kk)-cdet_equiv(kk)*dmat2(4)
             
-            
          enddo
       endif
 
-!     multiple excitations
+! multiple excitations
       if(kcum.lt.ndetiab(iab)) then
         do kk=kcum+1,ndetiab(iab)
          
@@ -603,7 +532,6 @@ contains
       real(dp), dimension(nelec, nelec, 2) :: emz
       real(dp), dimension(nelec, nelec, 2) :: aaz
 
-
       o=stoo(istate)
       x=stobjx(istate)
 
@@ -664,10 +592,6 @@ contains
 
       integer :: iab, iel, istate
 
-
-
-
-
       if((iel.ne.nup.and.iel.ne.nelec).or.ndn.eq.0) return
 
       if(iel.eq.nup) then
@@ -677,34 +601,55 @@ contains
       endif
 
       do istate=1,nstates
-      100   call compute_ymat(iab,detiab(1,1,stoo(istate)),detiab(1,2,stoo(istate)), &
+         call compute_ymat(iab,detiab(1,1,stoo(istate)),detiab(1,2,stoo(istate)), &
                   wfmat(:,:,iab,stoo(istate)),ymat(1,1,iab,istate),istate)
       enddo
-
 
       return
       end
 
 !-----------------------------------------------------------------------
+      function idiff0(j,i,iab)
+! used when setting up the determinant list and numrep, irepcol, ireporb available for all dets
 
-!-----------------------------------------------------------------------
-      function idiff(j,i,iab)
       use multidet, only: irepcol_det, ireporb_det, numrep_det
       use contrl_file, only: ounit
 
       implicit none
 
       integer :: i, iab, j, k
-      integer :: idiff          ! added by Ravindra
+      integer :: idiff0
 
+      idiff0=1
+
+      if(numrep_det(i,iab).ne.numrep_det(j,iab)) return
+      do k=1,numrep_det(i,iab)
+        if(irepcol_det(k,j,iab).ne.irepcol_det(k,i,iab)) return
+        if(ireporb_det(k,j,iab).ne.ireporb_det(k,i,iab)) return
+      enddo
+
+      idiff0=0
+
+      return
+      end
+
+!-----------------------------------------------------------------------
+      function idiff(j,i,iab)
+! used when iwundet available
+
+      use slater, only: iwundet
+      use contrl_file, only: ounit
+
+      implicit none
+
+      integer :: i, iab, j
+      integer :: idiff
 
       idiff=1
-      if(numrep_det(i,iab).ne.numrep_det(j,iab))return
-      do k=1,numrep_det(i,iab)
-        if(irepcol_det(k,j,iab).ne.irepcol_det(k,i,iab))return
-        if(ireporb_det(k,j,iab).ne.ireporb_det(k,i,iab))return
-      enddo
+      if(iwundet(i,iab).ne.iwundet(j,iab)) return
+
       idiff=0
+
       return
       end
 

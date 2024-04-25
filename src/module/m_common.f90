@@ -323,13 +323,14 @@ module multidet
     integer, dimension(:, :), allocatable :: k_det !(MDET,2)
     integer, dimension(:, :), allocatable :: k_det2 !(MDET,2)
     integer, dimension(:, :), allocatable :: k_aux !(MDET,2)
+    integer, dimension(:, :), allocatable :: k_aux2 !(MDET,2)
     integer, dimension(:), allocatable :: ndetiab !(2)
     integer, dimension(:), allocatable :: ndetiab2 !(2)
     integer, dimension(:), allocatable :: ndetsingle !(2)
     integer, dimension(:), allocatable :: ndetdouble !(2)
 
     private
-    public :: iactv, irepcol_det, ireporb_det, ivirt, kref_fixed, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, ndetiab2, ndetsingle, kref_old, kchange
+    public :: iactv, irepcol_det, ireporb_det, ivirt, kref_fixed, numrep_det, k_det, ndetiab, ndet_req, k_det2, k_aux, k_aux2, ndetiab2, ndetsingle, kref_old, kchange
     public :: allocate_multidet, deallocate_multidet, ndetdouble
     save
 contains
@@ -341,10 +342,11 @@ contains
         if (.not. allocated(ireporb_det)) allocate (ireporb_det(nelec, ndet, 2), source=0)
         if (.not. allocated(ivirt)) allocate (ivirt(2), source=0)
         if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2), source=0)
-        if (.not. allocated(k_det)) allocate (k_det(ndet, 2), source=0)
         if (.not. allocated(ndetiab)) allocate (ndetiab(2), source=0)
-        if (.not. allocated(k_det2)) allocate (k_det2(ndet, 2), source=0)
         if (.not. allocated(k_aux)) allocate (k_aux(ndet, 2), source=0)
+        if (.not. allocated(k_aux2)) allocate (k_aux2(ndet, 2), source=0)
+        if (.not. allocated(k_det)) allocate (k_det(ndet, 2), source=0)
+        if (.not. allocated(k_det2)) allocate (k_det2(ndet, 2), source=0)
         if (.not. allocated(ndetiab2)) allocate (ndetiab2(2), source=0)
         if (.not. allocated(ndetsingle)) allocate (ndetsingle(2), source=0)
         if (.not. allocated(ndetdouble)) allocate (ndetdouble(2), source=0)

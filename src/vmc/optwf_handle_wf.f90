@@ -654,7 +654,7 @@ contains
       endif
 
 ! reset kref=1
-      call multideterminants_define(0,0)
+      call multideterminants_define(0)
 
       return
       end
@@ -1071,7 +1071,7 @@ contains
         enddo
 
 ! reset kref=1
-      call multideterminants_define(0,0)
+      call multideterminants_define(0)
       endif
 
       return

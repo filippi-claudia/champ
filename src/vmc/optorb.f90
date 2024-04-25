@@ -835,7 +835,7 @@ contains
 
       end
 !-----------------------------------------------------------------------
-      subroutine optorb_define
+      subroutine optorb_define(iprint)
 
       use coefs,   only: next_max
       use contrl_file, only: errunit,ounit
@@ -855,7 +855,7 @@ contains
       implicit none
 
       integer :: i, iab, icount_orbdef, ie, iesave
-      integer :: io, iocc, iprt, iterm
+      integer :: iprint, io, iocc, iterm
       integer :: j, jo, k, n0
       integer :: n1, noporb
       integer, dimension(2, ndet) :: iodet
@@ -868,8 +868,6 @@ contains
 
       save icount_orbdef
 
-      iprt=3
-
       ndn=nelec-nup
 
       ne(1)=nup
@@ -880,7 +878,7 @@ contains
       do i=1,ndet
        do j=1,nelec
         if(iworbd(j,i).gt.norb) then
-         write(ounit,1) i,j,iworbd(j,i),norb
+         if(iprint.eq.0) write(ounit,1) i,j,iworbd(j,i),norb
          call fatal_error('VERIFY: orbital index out of range')
         endif
         if(iworbd(j,i).gt.ndetorb) then
@@ -893,13 +891,14 @@ contains
 ! Number of external orbitals for orbital optimization
       next_max=norb-ndetorb
       if(nadorb.gt.next_max) nadorb=next_max
-       write(ounit, '(a, t40, i0)' ) 'norb', norb
-       write(ounit, '(a, t40, i0)') 'nadorb', nadorb
-       write(ounit, '(a, t40, i0)') 'ndet_orb', ndetorb
-       write(ounit, '(a, t40, i0)') 'next_max', next_max
-! call fatal_error('optorb.f')
+      if(iprint.eq.0) then
+        write(ounit, '(a, t40, i0)' ) 'norb', norb
+        write(ounit, '(a, t40, i0)') 'nadorb', nadorb
+        write(ounit, '(a, t40, i0)') 'ndet_orb', ndetorb
+        write(ounit, '(a, t40, i0)') 'next_max', next_max
+      endif
 
-      if(iprt.gt.0) then
+      if(iprint.eq.0) then
        write(ounit,'(''Determinantal orbitals in orbital optimization: '',i0)') ndetorb
        write(ounit,'(''External orbitals in orbital optimization:      '',i0)') nadorb
        write(ounit,'(''Total orbitals in orbital optimization:         '',i0)') nadorb+ndetorb-ncore
@@ -950,8 +949,6 @@ contains
        call fatal_error('OPTORB_DEFINE: Mixvirt block, inconsistent')
       endif
 
-
-
 ! Orbital variation io -> io+a*jo
 ! io: occupied orbitals in twf
 ! jo: all orbitals
@@ -959,7 +956,7 @@ contains
       noporb=0
       iterm=0
 
-      if(iprt.gt.2) then
+      if(iprint.eq.0) then
        write(ounit,*) '(''=========== orbital pair list =========='')'
       endif
 
@@ -1005,7 +1002,7 @@ contains
           enddo
         enddo
         if(m(1)+m(2).eq.0) then
-          if(iprt.gt.3) write(ounit,'(''no appropriate determinant for '',2i4)') io,jo
+!         if(iprint.eq.0) write(ounit,'(''no appropriate determinant for '',2i4)') io,jo
           goto 50
         endif
 
@@ -1037,7 +1034,7 @@ contains
             endif
           enddo
         enddo
-        if(iprt.gt.2) write(ounit,'(a16,i4,a8,i4,i5,a15,i4)') 'new variation: ',noporb,' pair ',io,jo,' spin ',ideriv_iab(noporb)
+        if(iprint.eq.0) write(ounit,'(a16,i4,a8,i4,i5,a15,i4)') 'new variation: ',noporb,' pair ',io,jo,' spin ',ideriv_iab(noporb)
 
       50  continue
        enddo

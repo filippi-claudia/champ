@@ -27,11 +27,6 @@ contains
       use system,  only: ncent_tot,ndn,nelec,nup
       use vmc_mod, only: norb_tot
       use vmc_mod, only: norb_tot, nwftypeorb
-      use csfs,    only: nstates
-
-
-
-
 
       implicit none
 
@@ -77,12 +72,12 @@ contains
              call dcopy(nel,ddorb (jorb,1+ish,k),norb_tot,fpp (j,iab,k),nel)
            enddo
 
-!     calculate the inverse transpose matrix and itsdeterminant
+! calculate the inverse transpose matrix and its determinant
            if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
 
-!     loop through up spin electrons
-!     take inner product of transpose inverse with derivative
-!     vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
+! loop through up/down-spin electrons
+! take inner product of transpose inverse with derivative vectors
+! to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
            ik=-nel
            do i=1,nel
              ik=ik+nel
@@ -109,7 +104,7 @@ contains
         enddo
       endif
 
-!     for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
+! for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
       if(index(mode,'dmc').eq.0 .and. kref_fixed.eq.0) then ! allow if kref is allowed to vary
          icheck=icheck+1
          if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.10) then
@@ -118,11 +113,11 @@ contains
 
 ! reshuffling determinants just if the new kref was accepted
             if(newref.eq.0 .and. kchange.gt.0) then
-               call multideterminants_define(kchange,icheck)
+               call multideterminants_define(kchange)
                if (ioptorb.ne.0) then
                   norb=norb+nadorb
-                  write(ounit, *) norb
-                  call optorb_define
+!                 write(ounit, *) norb
+                  call optorb_define(kchange)
                endif
             endif
 
@@ -130,16 +125,14 @@ contains
 
 ! reshuffling determinants if the maximum number of iterations looking for kref was exhausted
          if (kchange.eq.10) then
-            call multideterminants_define(kchange,icheck)
+            call multideterminants_define(kchange)
             if (ioptorb.ne.0) then
                norb=norb+nadorb
-               write(ounit, *) norb
-               call optorb_define
+!              write(ounit, *) norb
+               call optorb_define(kchange)
             endif
             write(ounit, *) "kref changed but it is not optimal"
          endif
-
-
 
       endif
 
@@ -149,34 +142,29 @@ contains
       subroutine check_detref(ipass,icheck,iflag)
 
       use control, only: ipr
+      use error, only: fatal_error
       use estpsi, only: detref
-      use multidet, only: kref_old, kchange
-      use slater, only: kref
-      use multislater, only: detiab, allocate_multislater
-      use precision_kinds, only: dp
       use contrl_file, only: ounit
-      use slater, only: ndet
+      use mpiconf, only: idtask
+      use multidet, only: k_aux,kchange,kref_fixed,kref_old,ndetiab
       use multideterminant_mod, only: idiff
+      use multislater, only: detiab, allocate_multislater
       use multislater, only: allocate_multislater,detiab
       use precision_kinds, only: dp
       use slater,  only: kref,ndet
-      use error, only: fatal_error
       implicit none
 
       integer :: iab, icheck, iflag, ipass
       real(dp) :: dcheck, dlogdet
-
 
       iflag=0
 
       if(ipass.le.2) return
 
       call allocate_multislater() !access elements after allocating
+
       do iab=1,2
         dlogdet=dlog10(dabs(detiab(kref,iab,1)))
-!     dcheck=dabs(dlogdet-detref(iab)/ipass)
-!     if(iab.eq.1.and.dcheck.gt.6) iflag=1
-!     if(iab.eq.2.and.dcheck.gt.6) iflag=2
         dcheck=detref(iab,1)/ipass-dlogdet
         if(iab.eq.1.and.dcheck.gt.6) iflag=1
         if(iab.eq.2.and.dcheck.gt.6) iflag=2
@@ -184,31 +172,22 @@ contains
       enddo
 
       if(ipr.ge.2) write(ounit,*) 'check detref',iflag
+
+! to change kref if required
       if(iflag.gt.0) then
 
-
-!     block of code decoupled from multideterminants_define
-! to change kref if the change is accepted or required
          if (kref .gt. 1 .and. icheck .eq. 1) then
             kref = 1
          endif
 
-
-
          if (idiff(kref_old, kref, iflag) .eq. 0) then
-            kref = kref + 1
-            if (kref .gt. ndet) then
-               call fatal_error('MULTIDET_DEFINE: kref > ndet')
-            endif
+            if (icheck .gt. ndetiab(iflag)) &
+                call fatal_error('MULTIDET_DEFINE: kref > ndet')
+            kref=k_aux(icheck,iflag)
          endif
 
-         write (ounit, *) 'kref change', iflag, kref_old, kref
-
          kref_old = kref
-
          kchange = kchange + 1
-
-
       endif
 
       return
@@ -238,7 +217,6 @@ contains
       use precision_kinds, only: dp
       use slater,  only: norb
       use sr_more, only: daxpy
-      use csfs, only: nstates
       use vmc_mod, only: stoo, stoj, stobjx, nbjx, nwftypeorb, nwftypejas, bjxtoo, bjxtoj
       use contrl_file, only: ounit
       implicit none

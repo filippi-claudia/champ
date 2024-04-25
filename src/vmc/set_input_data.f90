@@ -3,20 +3,15 @@ module set_input_data
 contains
 subroutine inputzex
     ! Set the exponents to one when using a numerical basis
-      use basis,   only: zex
-      use coefs,   only: nbasis
-      use contrl_per, only: iperiodic
-      use multiple_geo, only: MWF,nwftype
-      use numbas,  only: numr
-      use optwf_control, only: method
-      use precision_kinds, only: dp
+    use basis,   only: zex
+    use coefs,   only: nbasis
+    use contrl_per, only: iperiodic
+    use multiple_geo, only: nwftype
+    use numbas,  only: numr
+    use optwf_control, only: method
+    use precision_kinds, only: dp
 
-    ! are they needed ??!!
-      implicit none
-
-      integer :: i, iwft
-
-
+    implicit none
 
     if( (method(1:3) == 'lin')) then
         if (.not. allocated(zex)) allocate (zex(nbasis, 3))
@@ -34,15 +29,12 @@ end subroutine inputzex
 subroutine inputcsf
     ! Check that the required blocks are there in the input
 
+    use ci000,   only: nciprim,nciterm
+    use csfs,    only: ncsf,nstates
+    use inputflags, only: ici_def
+    use optwf_control, only: ioptci
 
-      use ci000,   only: nciprim,nciterm
-      use csfs,    only: ncsf,nstates
-      use inputflags, only: ici_def
-      use optwf_control, only: ioptci
-
-    ! are they needed ??!!
     implicit none
-
 
     nstates = 1
     ncsf = 0
@@ -51,28 +43,26 @@ subroutine inputcsf
     return
 end subroutine inputcsf
 
-subroutine multideterminants_define(iflag, icheck)
+subroutine multideterminants_define(iflag)
 
-      use contrl_file, only: errunit,ounit
-      use csfs,    only: cxdet,iadet,ibdet,icxdet,ncsf,nstates
-      use dorb_m,  only: iworbd
-      use jastrow, only: neqsx,nordj,nordj1
-      use multidet, only: allocate_multidet,iactv,irepcol_det
-      use multidet, only: ireporb_det,ivirt,k_aux,k_det,k_det2,kref_old
-      use multidet, only: ndet_req,ndetiab,ndetiab2,ndetsingle
-      use multidet, only: numrep_det, ndetdouble
-      use multideterminant_mod, only: idiff
-      use multiple_geo, only: MFORCE,MFORCE_WT_PRD,MWF,nwftype
-      use slater,  only: cdet,iwundet,kref,ndet,norb
-      use system,  only: ndn,nelec,nup
-      use vmc_mod, only: nmat_dim,nmat_dim2
+    use contrl_file, only: errunit,ounit
+    use csfs,    only: cxdet,iadet,ibdet,icxdet,ncsf,nstates
+    use dorb_m,  only: iworbd
+    use multidet, only: allocate_multidet,iactv,irepcol_det
+    use multidet, only: ireporb_det,ivirt,k_aux,k_det,k_aux2,k_det2,kref_old
+    use multidet, only: ndet_req,ndetiab,ndetiab2,ndetsingle
+    use multidet, only: numrep_det, ndetdouble
+    use multideterminant_mod, only: idiff0
+    use multiple_geo, only: MWF,nwftype
+    use slater,  only: cdet,iwundet,kref,ndet,norb
+    use system,  only: ndn,nelec,nup
+    use vmc_mod, only: MEXCIT
 
-
-    ! not sure about that one either ....
+    use mpiconf, only: idtask
 
     implicit none
 
-    integer :: i, iab, icheck, icsf, idist
+    integer :: i, iab, icsf, idist
     integer :: iflag, in, iphase, iref
     integer :: irep, isav, ish, istate
     integer :: isub, iw, iwf, iwref
@@ -82,20 +72,16 @@ subroutine multideterminants_define(iflag, icheck)
     integer, dimension(ndet) :: itotphase
     integer, dimension(nelec) :: auxdet
 
-
     if (nup .lt. nelec/2) call fatal_error('INPUT: nelec/2 exceeds nup')
     ndn = nelec - nup
 
-    !!call p2gtid('general:nwftype', nwftype, 1, 1)
     if (nwftype .gt. MWF) call fatal_error('INPUT: nwftype exceeds MWF')
-    
 
 ! This part remains just for the initialization calls set kref and kref_old first time    
     if (iflag .eq. 0) then
        kref = 1
        kref_old = kref
     endif
-!    write (ounit, *) 'I am in multi_def',kref,kref_old
 
     if (.not. allocated(iwundet)) allocate (iwundet(ndet, 2))
     if (.not. allocated(numrep_det)) allocate (numrep_det(ndet, 2))
@@ -143,7 +129,7 @@ subroutine multideterminants_define(iflag, icheck)
                 endif
             enddo
             if (isub .ne. numrep_det(k, iab)) then
-                write (ounit, *) isub, numrep_det(k, iab)
+                if(iflag.eq.0) write (ounit, *) isub, numrep_det(k, iab)
                 stop 'silly error'
             endif
             do irep = 1, nel
@@ -201,17 +187,19 @@ subroutine multideterminants_define(iflag, icheck)
         if (k .ne. kref) then
         do iab = 1, 2
             do irep = 1, numrep_det(k, iab)
-        if (irepcol_det(irep, k, iab) .ne. 0 .and. irepcol_det(irep, k, iab) .lt. iactv(iab)) iactv(iab)=irepcol_det(irep, k, iab)
-                if (ireporb_det(irep, k, iab) .lt. ivirt(iab)) ivirt(iab) = ireporb_det(irep, k, iab)
+              if (irepcol_det(irep, k, iab) .ne. 0 .and. irepcol_det(irep, k, iab) .lt. iactv(iab)) iactv(iab)=irepcol_det(irep, k, iab)
+              if (ireporb_det(irep, k, iab) .lt. ivirt(iab)) ivirt(iab) = ireporb_det(irep, k, iab)
             enddo
         enddo
         endif
     enddo
 
-    write (ounit, *) ' Multideterminants :: '
-    write (ounit, *) 'norb  =', norb
-    write (ounit, *) 'iactv =', (iactv(iab), iab=1, 2)
-    write (ounit, *) 'ivirt =', (ivirt(iab), iab=1, 2)
+    if(iflag.eq.0) then
+      write (ounit, *) ' Multideterminants :: '
+      write (ounit, *) 'norb  =', norb
+      write (ounit, *) 'iactv =', (iactv(iab), iab=1, 2)
+      write (ounit, *) 'ivirt =', (ivirt(iab), iab=1, 2)
+    endif
 
     idist = 1
     if (idist .eq. 0) then
@@ -225,11 +213,11 @@ subroutine multideterminants_define(iflag, icheck)
           do i = 1, ndet
             iwundet(i, iab) = i
             if (i .ne. kref) then
-              if (idiff(kref, i, iab) .eq. 0) then
+              if (idiff0(kref, i, iab) .eq. 0) then
                 iwundet(i, iab) = kref
               else
                 j=1
-                do while (j.ne.i .and. idiff(j, i, iab) .ne. 0)
+                do while (j.ne.i .and. idiff0(j, i, iab) .ne. 0)
                   j= j+1
                 enddo
                 iwundet(i, iab) = j
@@ -244,7 +232,7 @@ subroutine multideterminants_define(iflag, icheck)
                ndet_dist = ndet_dist + 1
              endif
            enddo
-           write (ounit, *) iab, ndet_dist, ' distinct out of ', ndet
+           if(iflag.eq.0) write (ounit, *) iab, ndet_dist, ' distinct out of ', ndet
         enddo
     endif
 
@@ -267,8 +255,7 @@ subroutine multideterminants_define(iflag, icheck)
       enddo
     endif
 
-    
-    !reshufling arrays to avoid redundancy of unequivalent determinats
+! reshufling arrays to avoid redundancy of unequivalent determinats
     k_det=0
     ndetiab=0
     do iab = 1, 2
@@ -276,11 +263,10 @@ subroutine multideterminants_define(iflag, icheck)
        kaux=0
        do k = 1, ndet
           if(iwundet(k,iab).eq.k.and.k.ne.kref) then
-             if(numrep_det(k, iab).gt.0) then
-                
+            !if(numrep_det(k, iab).gt.0) then
                 kk=kk+1
                 k_det(k,iab)=kk
-    
+                k_aux(kk,iab)=k
 
                 auxdet=irepcol_det(:, kk, iab)                
                 irepcol_det(:, kk, iab) = irepcol_det(:, k, iab)
@@ -293,21 +279,15 @@ subroutine multideterminants_define(iflag, icheck)
                 naux=numrep_det(kk, iab)
                 numrep_det(kk, iab)=numrep_det(k, iab)
                 numrep_det(k, iab)=naux
-                
-                
-             endif
+            !endif
           endif
        enddo
        
-       
        ndetiab(iab)=kk
 
-!       print*,"multiple",iab,kk,kaux
-!       print*,"ndetiab",iab,ndetiab(iab)
-!    ordering first excitations at the begining for specialization
+! ordering first excitations at the begining for specialization
        kkn=0
        do kk=1,ndetiab(iab)
-
           if (numrep_det(kk, iab).eq.1) then
              kkn=kkn+1
              
@@ -322,10 +302,9 @@ subroutine multideterminants_define(iflag, icheck)
                 kn=kn+1
              enddo
              
-!             print*,"kk",kk,"k_det(kk,",iab,")",kaux
+!            print*,"kk",kk,"k_det(kk,",iab,")",kaux
              k_det(k,iab)=kkn
              k_det(kn,iab)=kk
-
 
              auxdet=irepcol_det(:, kkn, iab)                
              irepcol_det(:, kkn, iab) = irepcol_det(:, kk, iab)
@@ -339,22 +318,17 @@ subroutine multideterminants_define(iflag, icheck)
              numrep_det(kkn, iab)=numrep_det(kk, iab)
              numrep_det(kk, iab)=naux
              
-!             print*,"single kkn",kkn,"ndetiab",ndetiab(iab),"ndim",numrep_det(kkn,iab)
-             
-          
+!            print*,"single kkn",kkn,"ndetiab",ndetiab(iab),"ndim",numrep_det(kkn,iab)
           endif
-          
        enddo
 
        ndetsingle(iab)=kkn
        
-       !       print*,"kkn singles",iab,kkn
-!       print*,"kkn singles",iab,ndetsingle(iab)
-       
+!      print*,"kkn singles",iab,kkn
+!      print*,"kkn singles",iab,ndetsingle(iab)
 
-
-!    ordering double excitations at the begining for specialization
-       !       keep counting on knn
+! ordering double excitations at the begining for specialization
+! keep counting knn
        do kk=1,ndetiab(iab)
 
           if (numrep_det(kk, iab).eq.2) then
@@ -375,7 +349,6 @@ subroutine multideterminants_define(iflag, icheck)
              k_det(k,iab)=kkn
              k_det(kn,iab)=kk
 
-
              auxdet=irepcol_det(:, kkn, iab)                
              irepcol_det(:, kkn, iab) = irepcol_det(:, kk, iab)
              irepcol_det(:, kk, iab) = auxdet
@@ -388,46 +361,52 @@ subroutine multideterminants_define(iflag, icheck)
              numrep_det(kkn, iab)=numrep_det(kk, iab)
              numrep_det(kk, iab)=naux
              
-!             print*,"double kkn",kkn,"ndetiab",ndetiab(iab),"ndim",numrep_det(kkn,iab)
+!            print*,"double kkn",kkn,"ndetiab",ndetiab(iab),"ndim",numrep_det(kkn,iab)
           
           endif
-          
        enddo
 
        ndetdouble(iab)=kkn-ndetsingle(iab)
 
-
-!       print*,"ns,nd,ns+nd,ndet",ndetsingle(iab),ndetdouble(iab),ndetsingle(iab)+ndetdouble(iab), ndetiab(iab)
-       
+!      print*,"ns,nd,ns+nd,ndet",ndetsingle(iab),ndetdouble(iab),ndetsingle(iab)+ndetdouble(iab), ndetiab(iab)
        
     enddo
+  
+!   do iab=1,2
+!     ndetsingle(iab)=0 
+!     ndetdouble(iab)=0
+!   enddo
 
-    !setting larger number of required determinants for unequivalent or unique determinants 
+    do iab=1,2
+      do kk=1,ndetiab(iab)
+        if(numrep_det(kk, iab).gt.MEXCIT) call fatal_error('MULTIDET_DEFINE: numrep > MEXCIT')
+      enddo
+    enddo
+
+! setting larger number of required determinants for unequivalent or unique determinants 
     if(ndetiab(1).ge.ndetiab(2)) then
        ndet_req=ndetiab(1)
     else
        ndet_req=ndetiab(2)
     endif
 
-    !arrays for all not equivalent to kref
+! arrays for all not equivalent to kref
     do iab = 1, 2
        kk=0
        do k = 1, ndet
           kun=iwundet(k,iab)
           if(kun.ne.kref.and.k.ne.kref) then
-!          if(numrep_det(k,iab).gt.1) then
              kk=kk+1
              k_det2(kk,iab)=k
-             k_aux(kk,iab)=k_det(kun,iab)
-!          endif
-       endif
+             k_aux2(kk,iab)=k_det(kun,iab)
+          endif
        enddo
        ndetiab2(iab)=kk
     enddo
     
     !do iab = 1, 2
     !   do k = 1, ndetiab2(iab)
-          !write(ounit,*) 'LAST',iab,k,k_aux(k,iab),k_det2(k,iab)
+    !      write(ounit,*) 'LAST',iab,k,k_aux(k,iab),k_det2(k,iab)
     !   enddo
     !enddo
     

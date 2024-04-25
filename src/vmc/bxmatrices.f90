@@ -9,7 +9,6 @@ contains
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: norb_tot
 
-
       implicit none
 
       integer :: i, iab, iel, ish, j, k
@@ -20,10 +19,6 @@ contains
       real(dp), dimension(nelec**2) :: xmatu
       real(dp), dimension(nelec**2) :: xmatd
       real(dp), dimension(nelec) :: work
-
-
-
-
 
       do iab=1,2
         if(iab.eq.1) then
