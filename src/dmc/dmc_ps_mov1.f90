@@ -110,8 +110,8 @@
       data ncall /0/
 
       sqrt_pi_o2 = dsqrt(4.0d0 * atan (one))/two
-      ! branching_c = 15.51d0/dsqrt(ivmc_corr - one)
-      branching_c = ivmc_corr
+      branching_c = 124.62d0/dsqrt(ivmc_corr - one)
+      !branching_c = ivmc_corr
       sqrt_nelec = dsqrt(dble(nelec))
 
       eps_node_cutoff=eps_node_cutoff*sqrt(tau)
