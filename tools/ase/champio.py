@@ -65,7 +65,7 @@ class Settings(BaseModel, extra=Extra.allow):
         """DMC module class.
         """
 
-        dmc_nstep_nstep: int = 40
+        dmc_nstep: int = 40
         dmc_nblk: int = 20
         dmc_nblkeq: int = 1
         dmc_nconf: int = 100
@@ -73,15 +73,15 @@ class Settings(BaseModel, extra=Extra.allow):
         ipathak: int = 1
         eps_max: float = 0.05
         deps: float = 0.005
-        nwprod: int = 900
-        tau: float = 0.005
-        etrial: float = -30.0
+        nwprod: int = 20
+        tau: float = 0.05
+        etrial: float = -31.0
         icasula: int = -1
 
 
     # general: General = General()
 
-    trex: Optional[Path] = Field(default=None, prefix="load ")
+    trexio: Optional[Path] = Field(default=None, prefix="load ")
     """:obj:`path <pathlib.Path>`: path to trexio."""
 
     determinants: FilePath = Field(default=None, prefix="load ")
@@ -95,6 +95,8 @@ class Settings(BaseModel, extra=Extra.allow):
 
     jastrow_der: FilePath = Field(default=None, prefix="load ")
     """:obj:`path <pathlib.Path>`: path to the jastrow derivatives file."""
+
+    previous: bool = False
 
 
     optgeo: Optional[Force] = Force()
@@ -124,9 +126,11 @@ class Settings(BaseModel, extra=Extra.allow):
         """
 
         input_file = open(filename, 'w', encoding="utf-8")
-
+        exclude = ['previous']
         schema = self.schema()['properties']
         for _, item in enumerate(self):
+            if item[0] in exclude:
+                continue
             if isinstance(item[1], BaseModel):
                 if callable(getattr(item[1], 'schema')):
                     schema2 = item[1].schema()['properties']
@@ -243,6 +247,43 @@ class Settings(BaseModel, extra=Extra.allow):
             :obj:`str`: json dictionary.
         """
         return self.json(exclude_none=True)
+    
+def write_jastrow(atoms, filename='jastrow.0'):
+    with open(filename, 'w') as jastrow_file:
+        jastrow_file.write('jastrow_parameter   1\n')
+        jastrow_file.write('  5  5  0           norda,nordb,nordc\n')
+        jastrow_file.write('   0.60000000         scalek\n')
+        for i in range(atoms):
+            jastrow_file.write('   0.00000000   0.00000000   0.00000000   0.00000000  0.00000000   0.00000000 (a(iparmj),iparmj=1,nparma)\n')
+        jastrow_file.write('   0.50000000   0.00000000   0.00000000   0.00000000   0.00000000   0.00000000 (b(iparmj),iparmj=1,nparmb)\n')
+        for i in range(atoms):
+            jastrow_file.write(' (c(iparmj),iparmj=1,nparmc)\n')
+        jastrow_file.write('end')
+
+def write_jastrow_der(atoms, filename='jastrow_der'):
+    with open(filename, 'w') as der_file:
+        der_file.write('jasderiv\n')
+        der_file.write('4 4 4  5 0 0 0 0 0 0 nparma,nparmb,nparmc,nparmf\n')
+        for i in range(atoms):
+            der_file.write('3 4 5 6   (iwjasa(iparm),iparm=1,nparma)\n')
+        der_file.write('2 3 4 5 6 (iwjasb(iparm),iparm=1,nparmb)\n')
+        for i in range(atoms):
+            der_file.write('(c(iparmj),iparmj=1,nparmc)\n')
+        der_file.write('end')
+
+
+def write_determinant(electron_num, filename='det.0'):
+    with open(filename, 'w') as file:
+        file.write('determinants 1 1 \n')
+        file.write('1.00000000\n')
+        dets = [i+1 for i in range(electron_num//2)]
+        file.write(' '.join(map(str, dets)))
+        file.write(' ')
+        file.write(' '.join(map(str, dets)))
+        file.write('\n')
+        file.write('end')        
+
+
 
 def cleanup(*args):
     """Remove files created by CHAMP.
