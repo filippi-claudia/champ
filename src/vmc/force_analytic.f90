@@ -323,51 +323,85 @@ contains
 
       subroutine force_analy_vd(ecutn, ecuto, e_cutoff, iw, iwmod)
 
-      use contrldmc, only: tau
+      use branch, only: eold, eest
+      use contrldmc, only: tau, ivmc_corr, icut_e
       use da_energy_now, only: da_energy
       use force_pth, only: PTH
       use pathak_mod, only: ipathak, eps_pathak, pold, pnew, pathak
       use precision_kinds, only: dp
       use system,  only: ncent, nelec
       use vd_mod, only: da_branch, deriv_eold, esnake, ehist
+      use velratio, only: fratio
 
       implicit none
 
       integer :: ic, k, iph
       integer :: iw, iwmod
       real(dp) :: ecuto, ecutn, e_cutoff
+      real(dp) :: sqrt_pi_o2, branching_c, sqrt_nelec, fratio_aux, fratio_aux2
 
       real(dp), dimension(3, ncent) :: deriv_energy_new
 
+      real(dp), dimension(3, ncent) :: deriv_f_old
+      real(dp), dimension(3, ncent) :: deriv_f_new
+
       real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
       real(dp), parameter :: half = .5d0
+      real(dp), parameter :: two = 2.d0
       real(dp), parameter :: small = 1.d-10
 
-      deriv_energy_new=da_energy
+      sqrt_pi_o2 = dsqrt(4.0d0 * atan (one))/two
+      ! branching_c = 15.51d0/dsqrt(ivmc_corr - one)
+      branching_c = ivmc_corr
+      sqrt_nelec = dsqrt(dble(nelec))
 
-      if(dabs(ecutn-e_cutoff).lt.small) deriv_energy_new=zero
-      if(dabs(ecuto-e_cutoff).lt.small) then
+      deriv_energy_new=da_energy
+      
+      if (icut_e.eq.2) then
+        ! New first
+        fratio_aux = branching_c * e_cutoff * dabs(eest - ecutn)/sqrt_nelec
         do ic=1,ncent
           do k=1,3
-            deriv_eold(k,ic,iw)=zero
+            fratio_aux2 = (exp(-1* fratio_aux**2)/fratio_aux - ecuto/fratio_aux)*(branching_c * e_cutoff * (-(eest - ecutn) * deriv_energy_new(k, ic)/dabs(eest - ecutn))/sqrt_nelec)
+            deriv_f_new(k,ic) = deriv_energy_new(k,ic) * ecuto + ecutn * fratio_aux2 - eest * fratio_aux2
           enddo
         enddo
+        ! Now old
+        fratio_aux = branching_c * e_cutoff * dabs(eest - eold(iw, 1))/sqrt_nelec
+        do ic=1,ncent
+          do k=1,3
+            fratio_aux2 = (exp(-1* fratio_aux**2)/fratio_aux - fratio(iw,1)/fratio_aux)*(branching_c * e_cutoff * (-(eest - eold(iw, 1)) * deriv_eold(k,ic,iw)/dabs(eest - eold(iw, 1)))/sqrt_nelec)
+            deriv_f_old(k,ic) = deriv_eold(k,ic,iw) * fratio(iw,1) + eold(iw,1) * fratio_aux2 - eest * fratio_aux2
+          enddo
+        enddo
+      else
+        if(dabs(ecutn-e_cutoff).lt.small) deriv_energy_new=zero
+        if(dabs(ecuto-e_cutoff).lt.small) then
+          do ic=1,ncent
+            do k=1,3
+              deriv_eold(k,ic,iw)=zero
+            enddo
+          enddo
+        endif
+        deriv_f_new(:,:)=deriv_energy_new(:,:)
+        deriv_f_old(:,:)=deriv_eold(:,:,iw)
       endif
 
       do iph=1,PTH
         do ic=1,ncent
           do k=1,3
             if (ipathak.gt.0) then
-              esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic)*pnew(iph) &
-      +deriv_eold(k,ic,iw)*pold(iw,iph)-ehist(k,ic,iw,iwmod,iph)
-              ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)*pold(iw,iph)+deriv_energy_new(k,ic)*pnew(iph)
+              esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_f_new(k,ic)*pnew(iph) &
+      +deriv_f_old(k,ic)*pold(iw,iph)-ehist(k,ic,iw,iwmod,iph)
+              ehist(k,ic,iw,iwmod,iph)=deriv_f_old(k,ic)*pold(iw,iph)+deriv_f_new(k,ic)*pnew(iph)
 
               da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
             else
-              esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_energy_new(k,ic) &
-      +deriv_eold(k,ic,iw)-ehist(k,ic,iw,iwmod,iph)
+              esnake(k,ic,iw,iph)=esnake(k,ic,iw,iph)+deriv_f_new(k,ic) &
+      +deriv_f_old(k,ic)-ehist(k,ic,iw,iwmod,iph)
 
-              ehist(k,ic,iw,iwmod,iph)=deriv_eold(k,ic,iw)+deriv_energy_new(k,ic)
+              ehist(k,ic,iw,iwmod,iph)=deriv_f_old(k,ic)+deriv_f_new(k,ic)
 
               da_branch(k,ic,iph)=-half*tau*esnake(k,ic,iw,iph)
             endif

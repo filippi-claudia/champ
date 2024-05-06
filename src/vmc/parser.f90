@@ -23,7 +23,7 @@ subroutine parser
       use contrl_file, only: errunit,file_error,file_input
       use contrl_file, only: file_output,iunit,ounit
       use contrl_per, only: ibasis,iperiodic
-      use contrldmc, only: iacc_rej,icross,icuspg,icut_br,icut_e,idiv_v
+      use contrldmc, only: iacc_rej,icross,icuspg,icut_br,icut_e,idiv_v, ivmc_corr
       use contrldmc, only: idmc,ipq,itau_eff,nfprod,rttau,tau,limit_wt_dmc
       use control, only: ipr,mode
       use control_dmc, only: dmc_idump,dmc_irstar,dmc_isite,dmc_nblk
@@ -423,6 +423,7 @@ subroutine parser
   idiv_v      = fdf_get('idiv_v', 0)
   icut_br     = fdf_get('icut_br', 0)
   icut_e      = fdf_get('icut_e', 0)
+  ivmc_corr   = fdf_get('ivmc_corr', 0.0d0)
   limit_wt_dmc= fdf_get('limit_wt_dmc', 0)
   dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)
   dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)
