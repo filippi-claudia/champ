@@ -87,13 +87,14 @@ module contrldmc
     integer :: itau_eff
     integer :: nfprod
     integer :: limit_wt_dmc
+    real(dp) :: ivmc_corr
     real(dp) :: rttau
     real(dp) :: tau
     real(dp), dimension(:), allocatable :: taueff !(MFORCE)
     real(dp) :: tautot
 
     private
-    public :: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot, limit_wt_dmc
+    public :: iacc_rej, icross, icuspg, icut_br, icut_e, ivmc_corr, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot, limit_wt_dmc
     public :: allocate_contrldmc, deallocate_contrldmc
     save
 contains
