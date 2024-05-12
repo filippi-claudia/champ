@@ -619,18 +619,20 @@ subroutine parser
   write(ounit,*)
 
   select case (mode)
-  case ('vmc')
-    mode = 'vmc_one_mpi'
-    write(ounit,'(a,a)') " Calculation mode :: Variational MC for ", title
+  case ('vmc_all_mpi')
+    write(ounit,'(a,a)') " Calculation mode :: Variational MC all-electron move for ", title
   case ('vmc_one_mpi')
     write(ounit,'(a,a)') " Calculation mode :: Variational MC one-electron move mpi for ",  title
-  case ('dmc')
-    mode = 'dmc_one_mpi1'
-    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC for ",  title
+  case ('dmc_all_mpi1')
+    write(ounit,'(a,a)') " Calculation mode :: Diffusion MC all-electron move, mpi no global pop for ", title
+    call fatal_error('INPUT: This calculations mode not implemented yet')
   case ('dmc_one_mpi1')
     write(ounit,'(a,a)') " Calculation mode :: Diffusion MC one-electron move, mpi no global pop for ", title
   case ('dmc_one_mpi2')
     write(ounit,'(a,a)') " Calculation mode :: Diffusion MC one-electron move, mpi global pop comm for ",  title
+  case default
+    write(ounit,'(a,a)') " Calculation mode :: ",  title
+    call fatal_error('INPUT: This calculations mode not implemented yet')
   end select
 
   write(ounit,*)
@@ -780,9 +782,6 @@ subroutine parser
     write(ounit,int_format) " Number of VMC blocks before eq.  ", vmc_nblkeq
     write(ounit,int_format) " Number of VMC configurations saved  ", vmc_nconf_new
   endif
-
-  !checks
-  if(index(mode,'mov1').ne.0 .and. imetro.eq.1) call fatal_error('INPUT: metrop_mov1 not updated')
 
   ! DMC
   if( mode(1:3) == 'dmc' ) then

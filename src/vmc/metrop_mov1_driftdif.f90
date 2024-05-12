@@ -7,7 +7,7 @@
       use config, only: vnew,vold,xnew,xold
       use constants, only: pi
       use contrl_file, only: ounit
-      use control, only: ipr, mode
+      use control, only: ipr
       use csfs, only: nstates
       use determinant_psig_mod, only: determinant_psig
       use determinante_mod, only: compute_determinante_grad
@@ -70,8 +70,6 @@
       real(dp), dimension(MSTATES) :: zero_array = 0.0_dp
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
-
-      mode='vmc_mov1    '
 
       tau=vmc_tau
       rttau=sqrt(tau)

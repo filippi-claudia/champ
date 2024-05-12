@@ -43,6 +43,8 @@ if (MPI_Fortran_FOUND)
     mc_configs.f90
     metrop_mov1_driftdif.f90
     metrop_mov1_slat.f90
+    metrop_driftdif.f90
+    metrop_slat.f90
     misc_grdnts.f90
     mmpol.f90
     mmpol_reduce.f90

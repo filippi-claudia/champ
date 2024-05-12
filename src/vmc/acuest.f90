@@ -6,7 +6,7 @@ module acuest_mod
       use config,  only: eold,nearesto,psi2o,psido,psijo,rmino,rvmino
       use config,  only: vold,xold
       use contrl_file, only: ounit
-      use control, only: ipr
+      use control, only: ipr, mode
       use csfs,    only: nstates
       use determinant_psig_mod, only: determinant_psig
       use determinante_mod, only: compute_determinante_grad
@@ -276,10 +276,13 @@ contains
         if(ipr.gt.1) write(ounit,'(''zerest after guiding: psig,psi2o='',2d12.4)') psidg/exp(psijo(1)),psi2o(1,1)
       endif
 
-      if(node_cutoff.gt.0) then
+      if(index(mode,'all').ne.0.or.node_cutoff.gt.0) then
         do jel=1,nelec
           call compute_determinante_grad(jel,psido(1),psido,psijo,vold(1,jel),1)
         enddo
+      endif
+
+      if(node_cutoff.gt.0) then
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
 

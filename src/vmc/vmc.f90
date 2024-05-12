@@ -8,27 +8,27 @@ contains
 ! versions of directed Metropolis in spherical polar coordinates.
 
       use acuest_mod, only: acuest,zerest
-      use coefs,   only: nbasis
       use config,  only: eold,psido,psijo,xold
       use contrl_file, only: ounit
+      use control, only: mode
       use control_vmc, only: vmc_idump,vmc_irstar,vmc_nblk,vmc_nblkeq
       use control_vmc, only: vmc_nconf,vmc_nconf_new,vmc_nstep
       use dumper_mod, only: dumper,startr
-      use error,   only: fatal_error
+      use error, only: fatal_error
       use finwrt_mod, only: finwrt
       use mc_configs, only: mc_configs_start,mc_configs_write
       use metrop_mov1_slat, only: metrop6
       use metrop_mov1_driftdif, only: metrop1
+      use metrop_slat, only: metrop6_moveall
+      use metrop_driftdif, only: metrop1_moveall
       use metropolis, only: imetro
       use mpitimer, only: elapsed_time
       use multiple_geo, only: iwftype,nforce,nwftype
       use precision_kinds, only: dp
       use pseudo,  only: nloc
       use rotqua_mod, only: rotqua
-      use slater,  only: coef
       use strech_mod, only: setup_force
       use system,  only: nelec
-!      use contrl, only: idump, irstar, nconf, nblk, nblkeq, nconf_new, nstep
 
       implicit none
 
@@ -56,15 +56,12 @@ contains
       call elapsed_time("VMC : initial walker configuration : ")
 
 ! zero out estimators and averages
-
       if (vmc_irstar.ne.1) then
-            call zerest
-            call elapsed_time("VMC : zero out estimators and averages : ")
+        call zerest
+        call elapsed_time("VMC : zero out estimators and averages : ")
       endif
 
-! check if restart flag is on. If so then read input from
-! dumped data to restart
-
+! check if restart flag is on. If so then read input from dumped data to restart
       if (vmc_irstar.eq.1) then
         open(10,err=401,form='unformatted',file='restart_vmc')
         goto 402
@@ -77,7 +74,6 @@ contains
 
 ! if there are equilibrium steps to take, do them here
 ! skip equilibrium steps if restart run
-! imetro = 6 spherical-polar with slater T
       if (vmc_nblkeq.ge.1.and.vmc_irstar.ne.1) then
         l=0
         do i=1,vmc_nblkeq
@@ -85,16 +81,18 @@ contains
             l=l+1
             if (nloc.gt.0) call rotqua
             if(imetro.eq.1) then
-              call metrop1(l,0)
+              if(mode.eq.'vmc_one_mpi') call metrop1(l,0)
+              if(mode.eq.'vmc_all_mpi') call metrop1_moveall(l,0)
              else
-              call metrop6(l,0)
+              if(mode.eq.'vmc_one_mpi') call metrop6(l,0)
+              if(mode.eq.'vmc_all_mpi') call metrop6_moveall(l,0)
             endif
           enddo
 
          call acuest
         enddo
 
-!       Equilibration steps done. Zero out estimators again.
+! Equilibration steps done. Zero out estimators again.
 
         call elapsed_time("VMC : equilibrium CP : ")
 
@@ -109,9 +107,11 @@ contains
 !   write(ounit, *) i, nblk, j, nstep
         if (nloc.gt.0) call rotqua
         if(imetro.eq.1) then
-          call metrop1(l,1)
+          if(mode.eq.'vmc_one_mpi') call metrop1(l,1)
+          if(mode.eq.'vmc_all_mpi') call metrop1_moveall(l,1)
          else
-          call metrop6(l,1)
+          if(mode.eq.'vmc_one_mpi') call metrop6(l,1)
+          if(mode.eq.'vmc_all_mpi') call metrop6_moveall(l,1)
         endif
 ! write out configuration for optimization/dmc/gfmc here
         if (mod(l,ngfmc).eq.0 .or. ngfmc.eq.1) then

@@ -10,13 +10,13 @@ contains
 !    Mathematical and Physical Sciences, Vol. C-525,
 !    (Kluwer Academic Publishers, Boston, 1999)
       use acuest_mod, only: acues1,acusig
-      use config,  only: delttn,eold,nearestn,nearesto,psi2n,psi2o
-      use config,  only: psido,psijo,rminn,rminno,rmino,rminon,rvminn
-      use config,  only: rvminno,rvmino,rvminon,vnew,vold,xnew
-      use config,  only: xold
+      use config, only: delttn,eold,nearestn,nearesto,psi2n,psi2o
+      use config, only: psido,psijo,rminn,rminno,rmino,rminon,rvminn
+      use config, only: rvminno,rvmino,rvminon,vnew,vold,xnew
+      use config, only: xold
       use constants, only: pi
+      use control, only: ipr
       use contrl_file, only: ounit
-      use control, only: ipr,mode
       use csfs,    only: nstates
       use determinant_psig_mod, only: determinant_psig
       use determinante_mod, only: compute_determinante_grad
@@ -117,8 +117,6 @@ contains
 ! 1) Slater form of Tij.
 ! 2) Make theta_max a function of r
 ! 3) Generalize to molecules. This requires geometric rejections.
-
-      mode='vmc_mov1    '
 
       deltri=one/deltar
 
