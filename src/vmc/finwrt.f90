@@ -56,7 +56,7 @@ contains
 
 ! quantities also computed in acuest_write
 
-      if(index(mode,'mov1').eq.0) then
+      if(index(mode,'one').eq.0) then
         accept=acc/passes
        else
         accept=acc/(passes*nelec)

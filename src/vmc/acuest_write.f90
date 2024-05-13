@@ -52,7 +52,7 @@ contains
 
 ! write out current values of averages
       acc_denom=dble(vmc_nstep*iblk)
-      if(index(mode,'mov1').eq.0) then
+      if(index(mode,'one').eq.0) then
         accept=acc/acc_denom
        else
         accept=acc/(acc_denom*nelec)
