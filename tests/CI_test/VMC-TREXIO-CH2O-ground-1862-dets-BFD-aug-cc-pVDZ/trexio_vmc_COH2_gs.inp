@@ -1,7 +1,7 @@
 %module general
     title           'COH2 Formaldehyde VMC optimization calculation ground state'
     pool            './pool/'
-    mode            'vmc'
+    mode            'vmc_one_mpi'
     basis           BFD-aug-cc-pVDZ
 %endmodule
 

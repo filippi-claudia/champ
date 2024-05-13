@@ -2,7 +2,7 @@
     title           'butadiene'
     pool            'pool/'
     backend         hdf5
-    mode            vmc
+    mode            vmc_one_mpi
     pseudopot	    BFD
 %endmodule
 

@@ -3,7 +3,7 @@
     pool         './pool/'
     pseudopot    BFD
     basis        BFD-Q
-    mode         'vmc_one_mpi1'
+    mode         'vmc_one_mpi'
 %endmodule
 
 load molecule        $pool/champ_v3_butadiene_champ_v2_gamess_ci44_pVQZ_1_geom.xyz

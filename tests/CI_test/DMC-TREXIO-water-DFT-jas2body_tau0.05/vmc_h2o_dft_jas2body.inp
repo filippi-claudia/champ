@@ -1,7 +1,7 @@
 %module general
     title           'H2O DFT calculation'
     pool            './pool/'
-    mode            vmc
+    mode            vmc_one_mpi
 %endmodule
 
 load trexio          H2O_DFT.hdf5

@@ -3,7 +3,7 @@
     pool            './pool/'
     pseudopot       ECP
     basis           BFD-aug-cc-pVDZ
-    mode            'vmc_one_mpi1'
+    mode            'vmc_one_mpi'
 %endmodule
 
 load molecule        $pool/champ_v3_champ_v2_COH2_ES_geom.xyz

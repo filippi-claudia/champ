@@ -5,7 +5,7 @@
     basis           BFD-Da
     weights         [ 1.0d0,  1.0d0]
     weights_guiding [ 1.0d0,  1.0d0]
-    mode            'vmc_one_mpi1'
+    mode            'vmc_one_mpi'
 %endmodule
 
 %module mstates

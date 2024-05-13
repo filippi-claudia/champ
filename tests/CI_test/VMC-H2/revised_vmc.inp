@@ -2,7 +2,7 @@
     title        'H2'
     pool         './pool/'
     basis        sto_cvb1
-    mode         'vmc_one_mpi1'
+    mode         'vmc_one_mpi'
     nloc        0
 %endmodule
 

@@ -1,7 +1,7 @@
 %module general
     title           'butadiene'
     pool            'pool/'
-    mode            'vmc'
+    mode            'vmc_one_mpi'
     backend         'text'
     pseudopot	    BFD
 %endmodule

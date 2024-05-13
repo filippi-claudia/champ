@@ -1,7 +1,7 @@
 %module general
     title           'COH2 Formaldehyde VMC optimization calculation first excited state'
     pool            './pool/'
-    mode            'vmc'
+    mode            'vmc_one_mpi'
     ipr -1
 %endmodule
 

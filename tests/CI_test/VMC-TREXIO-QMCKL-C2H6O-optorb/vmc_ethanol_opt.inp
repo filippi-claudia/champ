@@ -1,7 +1,7 @@
 %module general
     title        'Ethanol vmc calculation jastrow and orbitals'
     pool         '../pool/'
-    mode         'vmc_one_mpi1'
+    mode         'vmc_one_mpi'
 %endmodule
 
 load trexio          ethanol.hdf5

@@ -5,7 +5,7 @@
     basis           BFD
     weights         [ 1.0d0,  1.0d0 ]
     weights_guiding [ 1.0d0,  1.0d0 ]
-    mode            'vmc_one_mpi1'
+    mode            'vmc_one_mpi'
     sr_lambda       [ 1.0d0 ]
     anorm           [ 1.0d0, 0.32154638 ]
     nstates         2
