@@ -9,6 +9,7 @@ module nonlpsi
       use jastrow, only: cutjas_en,cutjas_eni
       use jastrow, only: a4, c,ijas,nordj
       use multiple_geo, only: iwf
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
       use scale_dist_mod, only: switch_scale
 
@@ -20,14 +21,12 @@ module nonlpsi
       real(dp) :: u, uuu
       real(dp) :: psinl
       real(dp), dimension(0:nordj) :: uu
+      real(dp), dimension(0:nordj) :: ri
+      real(dp), dimension(0:nordj) :: rj
       real(dp), dimension(0:nordj) :: ss
       real(dp), dimension(0:nordj) :: tt
-      real(dp), parameter :: one = 1.d0
-      real(dp), parameter :: two = 2.d0
-      real(dp), parameter :: half = 0.5d0
       real(dp), parameter :: eps = 1.d-12
 
-! Not updated for ijas=5,6 because we will probably stay with ijas=4
 ! If we want to use ijas=5,6 update this routine similarly to psi.f
       if(ijas.ge.5) call fatal_error('PSINL: ijas >= 5 not implemented')
 
@@ -36,26 +35,30 @@ module nonlpsi
 
       if(nwftypejas.gt.1) iwf=iwfjas
 
-      uuu=u
-      rrri=rri
-      rrrj=rrj
+      uu(1)=u
+      ri(1)=rri
+      rj(1)=rrj
 
       if(ijas.eq.4) then
          if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
-         call switch_scale(uuu)
-         call switch_scale(rrri)
-         call switch_scale(rrrj)
+         call switch_scale(uu(1))
+         call switch_scale(ri(1))
+         call switch_scale(rj(1))
       elseif(ijas.eq.1) then
-         if(rrri.gt.cutjas_en(it,iwf).or.rrrj.gt.cutjas_en(it,iwf)) return
+         if(rri.gt.cutjas_en(it,iwf).or.rrj.gt.cutjas_en(it,iwf)) return
       endif
 
-      uu(0)=one
-      ss(0)=two
-      tt(0)=one
+      uu(0)=1
+      ri(0)=1
+      rj(0)=1
+      ss(0)=2
+      tt(0)=1
       do jp=1,nordc
-        uu(jp)=uuu**uu(jp-1)
-        ss(jp)=rrri**jp+rrrj**jp
-        tt(jp)=(rrri*rrrj)**jp
+        uu(jp)=uu(1)*uu(jp-1)
+        ri(jp)=ri(1)*ri(jp-1)
+        rj(jp)=rj(1)*rj(jp-1)
+        ss(jp)=ri(jp)+rj(jp)
+        tt(jp)=ri(jp)*rj(jp)
       enddo
 
       ll=0
@@ -77,8 +80,8 @@ module nonlpsi
       enddo
 
       if(ijas.eq.1) then
-         xi=rrri*cutjas_eni(it,iwf)
-         xj=rrrj*cutjas_eni(it,iwf)
+         xi=rri*cutjas_eni(it,iwf)
+         xj=rrj*cutjas_eni(it,iwf)
          psinl=psinl*((1.d0-xi)*(1.d0-xj))**3
       endif
 
