@@ -205,8 +205,6 @@ contains
       return
       end
 
-
-
       subroutine deriv_nonlocj_quad4(nxquad,xquad,ielquad,x,r_en,rvec_en_quad,r_en_quad, &
           psij_ratio,dpsij_ratio,vjn,da_psij_ratio,iwfjas)
 

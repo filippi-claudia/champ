@@ -33,8 +33,6 @@
       deriv_psinl = 0.0
       if(nordc.eq.0) return
 
-
-
       if(nwftypejas.gt.1) iwf=iwfjas
 
       uu(1)=u
