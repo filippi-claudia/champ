@@ -1099,17 +1099,19 @@ contains
 !-----------------------------------------------------------------------
       subroutine compute_jastrow(dparm,iflag,iadiag)
 
-      use system, only: nctype
+      use control, only: ipr
+      use cuspinit4_mod, only: cuspinit4
+      use cuspexact4_mod, only: cuspexact4
       use jastrow, only: b, c, a4
       use bparm, only: nspin2b
       use optwf_control, only: ioptjas, method
       use optwf_nparmj, only: nparma, nparmb, nparmc
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
-      use cuspinit4_mod, only: cuspinit4
-      use cuspexact4_mod, only: cuspexact4
-      use vmc_mod, only: nwftypejas, stoj
+      use scale_dist_mod, only: set_scale_dist
       use sr_mat_n, only: sr_state
+      use system, only: nctype
+      use vmc_mod, only: nwftypejas, stoj
 
       implicit none
 
@@ -1172,7 +1174,8 @@ contains
 
 ! Check parameters a2 and b2 > -scalek
       call check_parms_jas(iflag)
-
+      
+      call set_scale_dist(ipr)
       return
       end
 !-----------------------------------------------------------------------
