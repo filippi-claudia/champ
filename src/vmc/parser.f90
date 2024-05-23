@@ -1035,7 +1035,9 @@ subroutine parser
      enddo
   enddo
 
-  call set_scale_dist(1,ipr)
+  do j=1,nwftypejas
+    call set_scale_dist(j,ipr)
+  enddo
 
   call elapsed_time ("Setting Jastrow parameters : ")
 
