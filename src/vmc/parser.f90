@@ -640,6 +640,9 @@ subroutine parser
   write(ounit,'(a,a)') " Pool directory for common input files :: ",  pooldir
 
   write(ounit,*)
+  if (len_trim(cseed) < 32) then
+    call fatal_error('INPUT: Random number seed is shorter than 32 characters.')
+  endif
   if (wid) read(cseed,'(8i4)') irn
   call bcast(irn)
 
