@@ -655,12 +655,11 @@ subroutine parser
   write(ounit, int_format) " Number of geometries ", nforce
   write(ounit, int_format) " Number of wave functions ", nwftype
   if(nwftype.gt.nforce) call fatal_error('INPUT: nwftype gt nforce')
+  if(nwftype.gt.MWF) call fatal_error('INPUT: MWF needs to be still modified in module - to fix')
   write(ounit,*)
 
   call elapsed_time ( "Parsing input file and printing headers : " )
   ! Printing header information and common calculation parameters ends here
-
-
 
 ! Molecular geometry file in .xyz format [#####]
   write(ounit,*)
@@ -1033,7 +1032,7 @@ subroutine parser
      enddo
   enddo
 
-  call set_scale_dist(ipr)
+  call set_scale_dist(1,ipr)
 
   call elapsed_time ("Setting Jastrow parameters : ")
 

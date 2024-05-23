@@ -21,7 +21,7 @@ contains
       use optwf_control, only: ioptjas,ioptorb,multiple_adiag,nopt_iter
       use optwf_control, only: nparm
       use optwf_corsam, only: add_diag,energy,energy_err,force,force_err
-      use optwf_handle_wf, only: compute_parameters,copy_zex,restore_wf
+      use optwf_handle_wf, only: compute_parameters,copy_bas_num,copy_zex,restore_wf
       use optwf_handle_wf, only: save_nparms,save_wf,save_wf_best
       use optwf_handle_wf, only: set_nparms,setup_wf,test_solution_parm
       use optwf_handle_wf, only: write_wf,write_wf_best
@@ -33,7 +33,6 @@ contains
 
 !     use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
 
-! I think that's needed
       implicit none
 
       integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk
@@ -79,7 +78,7 @@ contains
       enddo
       if(numr.gt.0) then
         do iwft=2,3
-          call read_bas_num(iwft)
+          call copy_bas_num(iwft)
         enddo
        else
         do iwft=2,3

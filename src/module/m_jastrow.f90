@@ -142,8 +142,8 @@ module jastrow
     integer :: nordb
     integer :: nordc
 
-    real(dp), dimension(:,:), allocatable :: asymp_jasa !(MCTYPE,nwftypejas)
-    real(dp), dimension(:,:), allocatable :: asymp_jasb !(2,nwftypejas)
+    real(dp), dimension(:,:), allocatable :: asymp_jasa !(MCTYPE,MWF)
+    real(dp), dimension(:,:), allocatable :: asymp_jasb !(2,MWF)
 
     integer :: nordj
     integer :: nordj1   ! nordj+1
@@ -176,13 +176,14 @@ subroutine allocate_m_jastrow()
 end subroutine allocate_m_jastrow
 
 subroutine allocate_jasasymp()
+      use multiple_geo, only: MWF
       use system,  only: nctype_tot
       use vmc_mod, only: nwftypejas
 
       implicit none
       
-      if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot,nwftypejas))
-      if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2,nwftypejas))
+      if (.not. allocated(asymp_jasa)) allocate (asymp_jasa(nctype_tot,MWF))
+      if (.not. allocated(asymp_jasb)) allocate (asymp_jasb(2,MWF))
 
 end subroutine allocate_jasasymp
 

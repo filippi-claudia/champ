@@ -201,6 +201,7 @@ contains
                 do istate=1,nstates
                   sr_state = istate
                   call compute_parameters(deltap(:,sr_state), iflag, 1)
+                  if(iflag.ne.0) call fatal_error('OPTWF: jastrow opt has problems')
                 enddo
                 call write_wf(1, iter)
 

@@ -11,10 +11,6 @@
       integer :: i, iord, iprin, k, l
       integer :: l_hi, m, n
 
-
-
-
-
       if(nordc.eq.0) return
 
       do n=1,2*(nordc-1)
@@ -88,11 +84,6 @@
       integer :: i, iprin, it, j, l
       integer :: neqs
       real(dp) :: factor
-
-
-
-
-
 
       neqs=2*(nordc-1)
 
