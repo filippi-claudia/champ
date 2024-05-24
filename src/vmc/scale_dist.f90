@@ -1,31 +1,22 @@
 module scale_dist_mod
 contains
-      subroutine set_scale_dist(ipr)
+      subroutine set_scale_dist(iadiag,ipr)
 ! Written by Cyrus Umrigar
       use bparm,   only: nocuspb,nspin2b
       use contrl_file, only: ounit
       use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,ijas,isc,norda,nordb
       use jastrow, only: scalek,sspinn
+      use multiple_geo, only: nforce,nwftype
       use precision_kinds, only: dp
       use system,  only: nctype
       use vmc_mod, only: nwftypejas
 
-
       implicit none
 
-      integer :: i, j, iord, ipr, isp, it
+      integer :: i, iadiag, i0, i1, j, iord, ipr, isp, it, nwf
       real(dp) :: val_cutjas
       real(dp), parameter :: third = 1.d0/3.d0
-
-
-
-
-
-
-
-
-
 
 ! isc = 2,3 are exponential scalings
 ! isc = 4,5 are inverse power scalings
@@ -65,59 +56,59 @@ contains
 
 ! Calculate asymptotic value of A and B terms
       asymp_r=c1_jas6i/scalek(1)
-      do j=1,nwftypejas
-        do it=1,nctype
-          asymp_jasa(it,j)=a4(1,it,j)*asymp_r/(1+a4(2,it,j)*asymp_r)
-          do iord=2,norda
-            asymp_jasa(it,j)=asymp_jasa(it,j)+a4(iord+1,it,j)*asymp_r**iord
+
+      j=iadiag
+      do it=1,nctype
+        asymp_jasa(it,j)=a4(1,it,j)*asymp_r/(1+a4(2,it,j)*asymp_r)
+        do iord=2,norda
+          asymp_jasa(it,j)=asymp_jasa(it,j)+a4(iord+1,it,j)*asymp_r**iord
+        enddo
+      enddo
+
+      if(ijas.eq.4) then
+        do i=1,2
+          if(i.eq.1) then
+            sspinn=1
+            isp=1
+          else
+            if(nspin2b.eq.1.and.nocuspb.eq.0) then
+              sspinn=0.5d0
+            else
+              sspinn=1
+            endif
+            isp=nspin2b
+          endif
+          asymp_jasb(i,j)=sspinn*b(1,isp,j)*asymp_r/(1+b(2,isp,j)*asymp_r)
+          do iord=2,nordb
+            asymp_jasb(i,j)=asymp_jasb(i,j)+b(iord+1,isp,j)*asymp_r**iord
           enddo
         enddo
-
-        if(ijas.eq.4) then
-          do i=1,2
-            if(i.eq.1) then
-              sspinn=1
-              isp=1
+      elseif(ijas.eq.5) then
+        do i=1,2
+          if(i.eq.1) then
+            sspinn=1
+            isp=1
+          else
+            if(nspin2b.eq.1.and.nocuspb.eq.0) then
+              sspinn=0.5d0
             else
-              if(nspin2b.eq.1.and.nocuspb.eq.0) then
-                sspinn=0.5d0
-              else
-                sspinn=1
-              endif
-              isp=nspin2b
-            endif
-            asymp_jasb(i,j)=sspinn*b(1,isp,j)*asymp_r/(1+b(2,isp,j)*asymp_r)
-            do iord=2,nordb
-              asymp_jasb(i,j)=asymp_jasb(i,j)+b(iord+1,isp,j)*asymp_r**iord
-            enddo
-          enddo
-        elseif(ijas.eq.5) then
-          do i=1,2
-            if(i.eq.1) then
               sspinn=1
-              isp=1
-            else
-              if(nspin2b.eq.1.and.nocuspb.eq.0) then
-                sspinn=0.5d0
-              else
-                sspinn=1
-              endif
-              isp=nspin2b
             endif
-            asymp_jasb(i,j)=b(1,isp,j)*asymp_r/(1+b(2,isp,j)*asymp_r)
-            do iord=2,nordb
-              asymp_jasb(i,j)=asymp_jasb(i,j)+b(iord+1,isp,j)*asymp_r**iord
-            enddo
-            asymp_jasb(i,j)=sspinn*asymp_jasb(i,j)
+            isp=nspin2b
+          endif
+          asymp_jasb(i,j)=b(1,isp,j)*asymp_r/(1+b(2,isp,j)*asymp_r)
+          do iord=2,nordb
+            asymp_jasb(i,j)=asymp_jasb(i,j)+b(iord+1,isp,j)*asymp_r**iord
           enddo
-        endif
-        if((ijas.eq.4.or.ijas.eq.5).and.ipr.gt.1) then
-          write(ounit,'(''Jastrow type='',i4)') j
-          write(ounit,'(''asymp_r='',f10.6)') asymp_r
-          write(ounit,'(''asympa='',10f10.6)') (asymp_jasa(it,1),it=1,nctype)
-          write(ounit,'(''asympb='',10f10.6)') (asymp_jasb(i,1),i=1,2)
-        endif
-      enddo
+          asymp_jasb(i,j)=sspinn*asymp_jasb(i,j)
+        enddo
+      endif
+      if((ijas.eq.4.or.ijas.eq.5).and.ipr.gt.1) then
+        write(ounit,'(''Jastrow type='',i4)') j
+        write(ounit,'(''asymp_r='',f10.6)') asymp_r
+        write(ounit,'(''asympa='',10f10.6)') (asymp_jasa(it,1),it=1,nctype)
+        write(ounit,'(''asympb='',10f10.6)') (asymp_jasb(i,1),i=1,2)
+      endif
 
       return
       end

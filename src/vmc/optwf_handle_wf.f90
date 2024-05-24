@@ -130,8 +130,6 @@ contains
             enddo
          enddo
 
-
-
       else
 
 !     tmp
@@ -178,8 +176,6 @@ contains
                write(2,fmt) (c(i,ict,k),i=1,mparmjc),' (c(iparmj),iparmj=1,nparmc)'
             enddo
          enddo
-
-
 
       endif
 
@@ -353,10 +349,9 @@ contains
       use jastrow, only: a4,b,c,nordj1
       use save_mod,only: mparmja, mparmjb, mparmjc
       use save_mod,only: a4_save, b_save, c_save
-      use multiple_geo, only: nwftype
+      use multiple_geo, only: MWF, nwftype
       use precision_kinds, only: dp
       use system, only: nctype, nctype_tot
-      use multiple_geo, only: nwftype
       use jastrow, only: b, c, a4, norda, nordb, nordc, nordj1
       use bparm, only: nspin2b
       use vmc_mod, only: nwftypejas
@@ -365,15 +360,6 @@ contains
       implicit none
 
       integer :: i, isp, iadiag, ict, k
-
-! dimension a4_save(nordj1,nctype_tot,MWF),b_save(nordj1,2,MWF),
-! dimension c_save(83,nctype_tot,MWF)
-! save a4_save,b_save,c_save
-
-
-!if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftype))
-!if(.not.allocated(b_save)) allocate(b_save(nordj1,2,nwftype))
-!if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
 
 ! Save parameters corresponding to run generating hessian
 
@@ -432,82 +418,49 @@ contains
 
       endif
       end subroutine
-
+!-----------------------------------------------------------------------
       subroutine restore_jastrow(iadiag)
       use bparm, only: nspin2b
       use jastrow, only: b, c, a4, norda, nordb, nordc, nordj1
+      use scale_dist_mod, only: set_scale_dist
       use save_mod,only: mparmja, mparmjb, mparmjc
       use save_mod,only: a4_save, b_save, c_save
-      use system, only: nctype, nctype_tot
-      use multiple_geo, only: nwftype
-      use optwf_control, only: method
-      use vmc_mod, only: nwftypejas
+      use system, only: nctype
+
       implicit none
-      integer :: i, isp, iadiag, ict, k
 
-      if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
-        if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftypejas))
-        if(.not.allocated(b_save)) allocate(b_save(nordj1,2,nwftypejas))
-        if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftypejas))
+      integer :: i, isp, iadiag, ict
 
-! Restore parameters corresponding to run generating hessian
-        do k=1,nwftypejas
-          do ict=1,nctype
-            do i=1,mparmja
-              a4(i,ict,k)=a4_save(i,ict,k)
-            enddo
-          enddo
-          do isp=1,nspin2b
-            do i=1,mparmjb
-              b(i,isp,k)=b_save(i,isp,k)
-            enddo
-          enddo
-          do ict=1,nctype
-            do i=1,mparmjc
-              c(i,ict,k)=c_save(i,ict,k)
-            enddo
-          enddo
+      do ict=1,nctype
+        do i=1,mparmja
+          a4(i,ict,iadiag)=a4_save(i,ict,1)
         enddo
-
-      else
-
-        if(.not.allocated(a4_save)) allocate(a4_save(nordj1,nctype_tot,nwftype))
-        if(.not.allocated(b_save)) allocate(b_save(nordj1,2,nwftype))
-        if(.not.allocated(c_save)) allocate(c_save(83,nctype_tot,nwftype))
-
-! Restore parameters corresponding to run generating hessian
-        do ict=1,nctype
-          do i=1,mparmja
-            a4(i,ict,iadiag)=a4_save(i,ict,1)
-          enddo
+      enddo
+      do isp=1,nspin2b
+        do i=1,mparmjb
+          b(i,isp,iadiag)=b_save(i,isp,1)
         enddo
-        do isp=1,nspin2b
-          do i=1,mparmjb
-            b(i,isp,iadiag)=b_save(i,isp,1)
-          enddo
+      enddo
+      do ict=1,nctype
+        do i=1,mparmjc
+          c(i,ict,iadiag)=c_save(i,ict,1)
         enddo
-        do ict=1,nctype
-          do i=1,mparmjc
-            c(i,ict,iadiag)=c_save(i,ict,1)
-          enddo
-        enddo
-      endif
+      enddo
+
+      call set_scale_dist(iadiag,0)
 
       return
       end
-
 !-----------------------------------------------------------------------
       subroutine save_lcao
 
       use coefs,   only: nbasis
       use multiple_geo, only: nwftype
+      use optwf_control, only: method
       use precision_kinds, only: dp
       use vmc_mod, only: norb_tot, nwftypeorb
-      use coefs, only: nbasis
-      use slater, only: norb, coef
       use save_mod, only: coef_save
-      use multiple_geo, only: nwftype
-      use optwf_control, only: method
+      use slater, only: norb, coef
 
       implicit none
 
@@ -515,8 +468,6 @@ contains
 
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb_tot, nwftypeorb))
-        ! dimension coef_save(nbasis,norb,MWF)
-        ! save coef_save
 
         do k=1,nwftypeorb
           do i=1,norb
@@ -527,10 +478,7 @@ contains
         enddo
 
       else
-
         if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb_tot, nwftype))
-        ! dimension coef_save(nbasis,norb,MWF)
-        ! save coef_save
 
         do i=1,norb
           do j=1,nbasis
@@ -541,39 +489,19 @@ contains
       endif
 
       end subroutine
-
+!-----------------------------------------------------------------------
       subroutine restore_lcao(iadiag)
       use coefs, only: nbasis
-      use optwf_control, only: method
-      use multiple_geo, only: nwftype
       use save_mod, only: coef_save
       use slater, only: norb, coef
-      use vmc_mod, only: norb_tot, nwftypeorb
       implicit none
-      integer :: i, iadiag, j, k
+      integer :: i, iadiag, j
 
-      if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
-        if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb_tot, nwftypeorb))
-
-        do k=1,nwftypeorb
-          do i=1,norb
-            do j=1,nbasis
-              coef(j,i,k)=coef_save(j,i,k)
-            enddo
-          enddo
+      do i=1,norb
+        do j=1,nbasis
+          coef(j,i,iadiag)=coef_save(j,i,1)
         enddo
-
-      else
-
-        if (.not. allocated(coef_save)) allocate(coef_save(nbasis, norb_tot, nwftype))
-
-        do i=1,norb
-          do j=1,nbasis
-            coef(j,i,iadiag)=coef_save(j,i,1)
-          enddo
-        enddo
-
-      endif
+      enddo
 
       return
       end
@@ -590,13 +518,9 @@ contains
       implicit none
 
       integer :: i, iadiag, icsf, j, k
-      integer :: kx
 
       if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
       if(.not. allocated(ccsf_save)) allocate(ccsf_save(ndet,MSTATES))
-
-! dimension cdet_save(ndet,nstates),ccsf_save(ndet,nstates)
-! save cdet_save,ccsf_save
 
       do j=1,nstates
         do i=1,ndet
@@ -611,7 +535,7 @@ contains
       enddo
 
       end subroutine
-
+!-----------------------------------------------------------------------
       subroutine restore_ci(iadiag)
       use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
       use mstates_mod, only: MSTATES
@@ -661,91 +585,50 @@ contains
 !-----------------------------------------------------------------------
       subroutine copy_jastrow(iadiag)
 
-      use system, only: nctype
-      use jastrow, only: b, c, scalek, a4, ijas, norda, nordb, nordc
       use bparm, only: nspin2b
-      use optwf_control, only: method
-      use vmc_mod, only: nwftypejas
+      use jastrow, only: b, c, scalek, a4, ijas, norda, nordb, nordc
+      use scale_dist_mod, only: set_scale_dist
+      use system, only: nctype
 
       implicit none
 
-      integer :: i, isp, iadiag, ict, mparmja, mparmjb
-      integer :: mparmjc, k
+      integer :: i, isp, iadiag, ict, mparmja, mparmjb, mparmjc
 
       if(ijas.eq.1) then
         mparmja=norda
         mparmjb=nordb
 
-        if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
-
-           do k=1,nwftypejas
-              do ict=1,nctype
-                 a4(mparmja+1,ict,k)=a4(mparmja+1,ict,k)
-              enddo
-              do isp=1,nspin2b
-                 b(mparmjb+1,isp,k)=b(mparmjb+1,isp,k)
-              enddo
-           enddo
-
-        else
-
-           do ict=1,nctype
-              a4(mparmja+1,ict,iadiag)=a4(mparmja+1,ict,1)
-           enddo
-           do isp=1,nspin2b
-              b(mparmjb+1,isp,iadiag)=b(mparmjb+1,isp,1)
-           enddo
-
-        endif
-
+        do ict=1,nctype
+          a4(mparmja+1,ict,iadiag)=a4(mparmja+1,ict,1)
+        enddo
+        do isp=1,nspin2b
+          b(mparmjb+1,isp,iadiag)=b(mparmjb+1,isp,1)
+        enddo
       else
         mparmja=2+max(0,norda-1)
         mparmjb=2+max(0,nordb-1)
         scalek(iadiag)=scalek(1)
       endif
 
-
       mparmjc=nterms4(nordc)
 
-
-      if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
-        do k=1,nwftypejas
-          do ict=1,nctype
-            do i=1,mparmja
-              a4(i,ict,k)=a4(i,ict,k)
-            enddo
-          enddo
-          do isp=1,nspin2b
-            do i=1,mparmjb
-              b(i,isp,k)=b(i,isp,k)
-            enddo
-          enddo
-          do ict=1,nctype
-            do i=1,mparmjc
-              c(i,ict,k)=c(i,ict,k)
-            enddo
-          enddo
+      do ict=1,nctype
+        do i=1,mparmja
+          a4(i,ict,iadiag)=a4(i,ict,1)
         enddo
-
-      else
-
-        do ict=1,nctype
-          do i=1,mparmja
-            a4(i,ict,iadiag)=a4(i,ict,1)
-          enddo
+      enddo
+      do isp=1,nspin2b
+        do i=1,mparmjb
+          b(i,isp,iadiag)=b(i,isp,1)
         enddo
-        do isp=1,nspin2b
-          do i=1,mparmjb
-            b(i,isp,iadiag)=b(i,isp,1)
-          enddo
+      enddo
+      do ict=1,nctype
+        do i=1,mparmjc
+          c(i,ict,iadiag)=c(i,ict,1)
         enddo
-        do ict=1,nctype
-          do i=1,mparmjc
-            c(i,ict,iadiag)=c(i,ict,1)
-          enddo
-        enddo
+      enddo
 
-      endif
+      call set_scale_dist(iadiag,0)
 
       return
       end
@@ -756,31 +639,16 @@ contains
       use coefs, only: nbasis
       use slater, only: norb, coef
       use orbval, only: nadorb
-      use optwf_control, only: method
-      use vmc_mod, only: nwftypeorb
 
       implicit none
 
-      integer :: i, iadiag, j, k
+      integer :: i, iadiag, j
 
-      if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
-        do k=1,nwftypeorb
-          do i=1,norb+nadorb
-            do j=1,nbasis
-              coef(j,i,k)=coef(j,i,k)
-            enddo
-          enddo
+      do i=1,norb+nadorb
+        do j=1,nbasis
+          coef(j,i,iadiag)=coef(j,i,1)
         enddo
-
-      else
-
-        do i=1,norb+nadorb
-          do j=1,nbasis
-            coef(j,i,iadiag)=coef(j,i,1)
-          enddo
-        enddo
-
-      endif
+      enddo
 
       return
       end
@@ -806,6 +674,28 @@ contains
        enddo
       enddo
 
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine copy_bas_num(iadiag)
+
+      use system,  only: nctype,newghostype
+      use numbas,  only: rwf, d2rwf,nr,nrbas
+      use numexp,  only: ae,ce
+
+      implicit none
+
+      integer :: i, iadiag, ic, irb
+
+      do ic=1,nctype+newghostype
+        do irb=1,nrbas(ic)
+          rwf(1:nr(ic),irb,ic,iadiag)=rwf(1:nr(ic),irb,ic,1)
+          d2rwf(1:nr(ic),irb,ic,iadiag)=d2rwf(1:nr(ic),irb,ic,1)
+          ce(1:5,irb,ic,iadiag)=ce(1:5,irb,ic,1)
+          ae(1:2,irb,ic,iadiag)=ae(1:2,irb,ic,1)
+        enddo
+      enddo
+          
       return
       end
 !-----------------------------------------------------------------------
@@ -840,17 +730,11 @@ contains
 
       integer :: i, isp, ict
 
-! dimension a4_best(nordj1,nctype_tot,MWF),b_best(nordj1,2,MWF),
-! dimension c_best(83,nctype_tot,MWF)
-! save a4_best,b_best,c_best
-
-
       if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
-      if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftype))
-      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
+      if(.not.allocated(b_best))  allocate(b_best(nordj1,2,nwftype))
+      if(.not.allocated(c_best))  allocate(c_best(83,nctype_tot,nwftype))
 
 ! Save parameters corresponding to run generating hessian
-
 
       if(ijas.eq.1) then
          mparmja_best=norda
@@ -879,21 +763,24 @@ contains
       enddo
 
       end subroutine
-
+!-----------------------------------------------------------------------
       subroutine restore_jastrow_best
+
       use bparm,   only: nspin2b
       use jastrow, only: a4,b,c,nordj1
       use multiple_geo, only: nwftype
+      use scale_dist_mod, only: set_scale_dist
       use save_mod, only: a4_best, b_best, c_best
       use save_mod, only:  mparmja_best, mparmjb_best, mparmjc_best
       use system,  only: nctype,nctype_tot
+
       implicit none
 
       integer :: i, isp, ict
 
       if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
-      if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftype))
-      if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftype))
+      if(.not.allocated(b_best))  allocate(b_best(nordj1,2,nwftype))
+      if(.not.allocated(c_best))  allocate(c_best(83,nctype_tot,nwftype))
 
 ! Restore parameters corresponding to run generating hessian
       do ict=1,nctype
@@ -912,6 +799,8 @@ contains
         enddo
       enddo
 
+      call set_scale_dist(1,0)
+
       return
       end
 !-----------------------------------------------------------------------
@@ -919,23 +808,16 @@ contains
 
       use coefs,   only: nbasis
       use multiple_geo, only: nwftype
-      use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot, nwftypeorb
       use optwf_control, only: method
-      use coefs, only: nbasis
+      use precision_kinds, only: dp
       use save_mod, only: coef_best
       use slater, only: norb, coef
-      use multiple_geo, only: nwftype
+      use vmc_mod, only: norb_tot, nwftypeorb
 
       implicit none
 
       integer :: i, j, k
 
-!if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftype))
-! dimension coef_best(nbasis,norb,MWF)
-! save coef_best
-
-!remove multistate, allocate nwftype, remove loops over nwftypeorb, replace, 3rd index with 1.
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
         if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftypeorb))
         do k=1,nwftypeorb
@@ -958,8 +840,9 @@ contains
       endif
 
       end subroutine
-
+!-----------------------------------------------------------------------
       subroutine restore_lcao_best
+
       use coefs, only: nbasis
       use multiple_geo, only: nwftype
       use optwf_control, only: method
@@ -971,6 +854,7 @@ contains
       integer :: i, j, k
 
 !     if(ioptorb.eq.0) return
+
       if (method.eq.'sr_n'.and.nwftypeorb.gt.1) then
 
         if (.not. allocated(coef_best)) allocate(coef_best(nbasis, norb_tot, nwftypeorb))
@@ -1007,13 +891,10 @@ contains
 
       implicit none
 
-      integer :: i, icsf, j, k, kx
+      integer :: i, icsf, j
 
-      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
-
-! dimension cdet_best(ndet,nstates),ccsf_best(ndet,nstates)
-! save cdet_best,ccsf_best
+      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,nstates))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,nstates))
 
       do j=1,nstates
         do i=1,ndet
@@ -1028,7 +909,7 @@ contains
       enddo
 
       end subroutine
-
+!-----------------------------------------------------------------------
       subroutine restore_ci_best
       use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
       use mstates_mod, only: MSTATES
@@ -1039,8 +920,8 @@ contains
 
       integer :: i, icsf, j, k, kx
 
-      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,MSTATES))
-      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,MSTATES))
+      if(.not. allocated(cdet_best)) allocate(cdet_best(ndet,nstates))
+      if(.not. allocated(ccsf_best)) allocate(ccsf_best(ndet,nstates))
 
 !     if(ioptci.eq.0) return
 
@@ -1115,7 +996,7 @@ contains
 
       implicit none
 
-      integer :: i, isp, iadiag, ict, iflag, iparm, j!, k
+      integer :: i, iadiag, isp, ict, iflag, iparm, j
       real(dp), dimension(*) :: dparm
 
       if(ioptjas.eq.0) return
@@ -1123,59 +1004,37 @@ contains
 ! Set up cusp conditions
       call cuspinit4(0)
 
+      j=iadiag
+      if (method.eq.'sr_n'.and.nwftypejas.gt.1) j=stoj(sr_state)
+
 ! Add change to old parameters
-      if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
-          j=stoj(sr_state)
-          iparm=0
-          do ict=1,nctype
-            do i=1,nparma(ict)
-              iparm=iparm+1
-              a4(iwjasa(i,ict),ict,j)=a4(iwjasa(i,ict),ict,j)-dparm(iparm)
-            enddo
-          enddo
-          do isp=1,nspin2b
-            do i=1,nparmb(1)
-              iparm=iparm+1
-              b(iwjasb(i,isp),isp,j)=b(iwjasb(i,isp),isp,j)-dparm(iparm)
-            enddo
-          enddo
-          do ict=1,nctype
-            do i=1,nparmc(ict)
-              iparm=iparm+1
-              c(iwjasc(i,ict),ict,j)=c(iwjasc(i,ict),ict,j)-dparm(iparm)
-            enddo
-          enddo
-
-      else
-
-        iparm=0
-        do ict=1,nctype
-          do i=1,nparma(ict)
-            iparm=iparm+1
-            a4(iwjasa(i,ict),ict,iadiag)=a4(iwjasa(i,ict),ict,iadiag)-dparm(iparm)
-          enddo
+      iparm=0
+      do ict=1,nctype
+        do i=1,nparma(ict)
+          iparm=iparm+1
+          a4(iwjasa(i,ict),ict,j)=a4(iwjasa(i,ict),ict,j)-dparm(iparm)
         enddo
-        do isp=1,nspin2b
-          do i=1,nparmb(1)
-            iparm=iparm+1
-            b(iwjasb(i,isp),isp,iadiag)=b(iwjasb(i,isp),isp,iadiag)-dparm(iparm)
-          enddo
+      enddo
+      do isp=1,nspin2b
+        do i=1,nparmb(1)
+          iparm=iparm+1
+          b(iwjasb(i,isp),isp,j)=b(iwjasb(i,isp),isp,j)-dparm(iparm)
         enddo
-        do ict=1,nctype
-          do i=1,nparmc(ict)
-            iparm=iparm+1
-            c(iwjasc(i,ict),ict,iadiag)=c(iwjasc(i,ict),ict,iadiag)-dparm(iparm)
-          enddo
+      enddo
+      do ict=1,nctype
+        do i=1,nparmc(ict)
+          iparm=iparm+1
+          c(iwjasc(i,ict),ict,j)=c(iwjasc(i,ict),ict,j)-dparm(iparm)
         enddo
+      enddo
 
-      endif
-
-      call cuspexact4(0,iadiag)
+      call cuspexact4(0,j)
 
 ! Check parameters a2 and b2 > -scalek
-      call check_parms_jas(iflag)
-      
-      call set_scale_dist(ipr)
+      call check_parms_jas(j,iflag)
+
+      call set_scale_dist(j,ipr)
+
       return
       end
 !-----------------------------------------------------------------------
@@ -1353,7 +1212,7 @@ contains
       return
       end
 !-----------------------------------------------------------------------
-      subroutine check_parms_jas(iflag)
+      subroutine check_parms_jas(k,iflag)
 
       use system, only: nctype
       use jastrow, only: ijas, b, scalek, a4
@@ -1377,57 +1236,30 @@ contains
 
       scalem=-scalek(1)
 
-      if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
-
-        do k=1,nwftypejas
-          do ict=1,nctype
-            do i=1,nparma(ict)
-              if(iwjasa(i,ict).eq.2.and.a4(2,ict,k).le.scalem) iflaga=1
-            enddo
-          enddo
-
-          if(iflaga.eq.1) then
-            do ict=1,nctype
-              write(ounit,*) "Jastrow type: ", k
-              write(ounit,'(''a2 < -scalek'',f10.5)') a4(2,ict,k)
-            enddo
-          endif
-          do isp=1,nspin2b
-            do i=1,nparmb(1)
-              if(iwjasb(i,isp).eq.2.and.b(2,isp,k).le.scalem) iflagb=1
-            enddo
-          enddo
-          if(iflagb.eq.1) then
-            write(ounit,*) "Jastrow type: ", k
-            write(ounit,'(''b2 < -scalek'',f10.5)') b(2,1,k)
-          endif
+      do ict=1,nctype
+        do i=1,nparma(ict)
+          if(iwjasa(i,ict).eq.2.and.a4(2,ict,k).le.scalem) iflaga=1
         enddo
+      enddo
 
-      else
-
+      if(iflaga.eq.1) then
         do ict=1,nctype
-          do i=1,nparma(ict)
-            if(iwjasa(i,ict).eq.2.and.a4(2,ict,1).le.scalem) iflaga=1
-          enddo
+          write(ounit,*) "Jastrow type: ", k
+          write(ounit,'(''a2 < -scalek'',f10.5)') a4(2,ict,k)
         enddo
-
-        if(iflaga.eq.1) then
-          do ict=1,nctype
-            write(ounit,'(''a2 < -scalek'',f10.5)') a4(2,ict,1)
-          enddo
-        endif
-        do isp=1,nspin2b
-          do i=1,nparmb(1)
-            if(iwjasb(i,isp).eq.2.and.b(2,isp,1).le.scalem) iflagb=1
-          enddo
+      endif
+      do isp=1,nspin2b
+        do i=1,nparmb(1)
+          if(iwjasb(i,isp).eq.2.and.b(2,isp,k).le.scalem) iflagb=1
         enddo
-        if(iflagb.eq.1) then
-          write(ounit,'(''b2 < -scalek'',f10.5)') b(2,1,1)
-        endif
-
+      enddo
+      if(iflagb.eq.1) then
+        write(ounit,*) "Jastrow type: ", k
+        write(ounit,'(''b2 < -scalek'',f10.5)') b(2,1,k)
       endif
 
       if(iflaga.eq.1.or.iflagb.eq.1) iflag=1
+
       return
       end
 
@@ -1470,8 +1302,8 @@ contains
       use contrl_file,    only: ounit
       use orbval, only: nadorb
       use save_mod, only: nciterm_sav, norbterm_sav, nparmd_sav, nparmj_sav, nreduced_sav, nadorb_sav
-      implicit none
 
+      implicit none
 
       nparmj_sav=nparmj
       norbterm_sav=norbterm
@@ -1483,8 +1315,9 @@ contains
 
       write(ounit,'(''Saved max number of parameters, nparmj,norb,nciterm,nciterm-1: '',5i5)') nparmj,norbterm,nciterm,nparmd
       end subroutine
-
+!-----------------------------------------------------------------------
       subroutine set_nparms
+
       use ci000, only: nciterm
       use contrl_file,    only: ounit
       use optorb_cblock, only: norbterm, nreduced

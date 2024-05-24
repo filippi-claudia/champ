@@ -658,12 +658,11 @@ subroutine parser
   write(ounit, int_format) " Number of geometries ", nforce
   write(ounit, int_format) " Number of wave functions ", nwftype
   if(nwftype.gt.nforce) call fatal_error('INPUT: nwftype gt nforce')
+  if(nwftype.gt.MWF) call fatal_error('INPUT: MWF needs to be still modified in module - to fix')
   write(ounit,*)
 
   call elapsed_time ( "Parsing input file and printing headers : " )
   ! Printing header information and common calculation parameters ends here
-
-
 
 ! Molecular geometry file in .xyz format [#####]
   write(ounit,*)
@@ -1028,15 +1027,8 @@ subroutine parser
   asymp_r=0
   call allocate_jasasymp()  ! Needed for the following two arrays
   do j=1,nwftypejas
-     do i=1,nctype
-        asymp_jasa(i,j)=0
-     enddo
-     do i=1,2
-        asymp_jasb(i,j)=0
-     enddo
+    call set_scale_dist(j,ipr)
   enddo
-
-  call set_scale_dist(ipr)
 
   call elapsed_time ("Setting Jastrow parameters : ")
 
