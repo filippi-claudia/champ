@@ -1027,15 +1027,6 @@ subroutine parser
   asymp_r=0
   call allocate_jasasymp()  ! Needed for the following two arrays
   do j=1,nwftypejas
-     do i=1,nctype
-        asymp_jasa(i,j)=0
-     enddo
-     do i=1,2
-        asymp_jasb(i,j)=0
-     enddo
-  enddo
-
-  do j=1,nwftypejas
     call set_scale_dist(j,ipr)
   enddo
 
