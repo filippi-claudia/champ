@@ -58,6 +58,7 @@ jobs:
             -DBLA_VENDOR=Intel10_64lp_seq \
             -DENABLE_TREXIO=OFF \
             -DENABLE_QMCKL=OFF \
+            -DCMAKE_BUILD_TYPE=DEBUG \
 
           cmake --build build -- -j2
           cd build
