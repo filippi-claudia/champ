@@ -10,7 +10,7 @@
     anorm           [ 1.0d0, 0.32154638 ]
     nstates         2
 %endmodule
-ipr 2
+
 %module mstates
     iguiding        2
     iefficiency     1
