@@ -8,22 +8,29 @@ module gradhess_all
     implicit none
 
     ! integer, parameter :: nparmall = nparmj + mxcireduced + mxreduced
-    integer :: nparmall
+    integer :: nparmall, nparmjp1
     real(dp), dimension(:), allocatable :: grad !(nparmall)
     real(dp), dimension(:, :), allocatable :: h !(nparmall,nparmall)
     real(dp), dimension(:, :), allocatable :: s !(nparmall,nparmall)
 
     private
-    public :: nparmall, grad, h, s
+    public :: nparmall, nparmjp1, grad, h, s
     public :: allocate_gradhess_all, deallocate_gradhess_all, set_gradhess_all_size
     save
 contains
-
     subroutine set_gradhess_all_size()
+      use optwf_control, only: method, ioptjas, ioptorb
       use optci, only: mxcireduced
       use optorb_mod, only: mxreduced
       use optwf_parms, only: nparmj
-        nparmall = nparmj + mxcireduced + mxreduced
+
+      nparmall = nparmj + mxcireduced + mxreduced
+      nparmjp1 = nparmj
+      if(method.eq.'linear'.and.(ioptorb.gt.0.or.ioptjas.gt.0)) then
+        nparmall=nparmall+1
+        nparmjp1=nparmjp1+1
+      endif
+
     end subroutine set_gradhess_all_size
 
     subroutine allocate_gradhess_all()
@@ -192,10 +199,11 @@ module gradhess_jas
     save
 contains
     subroutine allocate_gradhess_jas()
-      use optwf_parms, only: nparmj
-        if (.not. allocated(grad_jas)) allocate (grad_jas(nparmj))
-        if (.not. allocated(h_jas)) allocate (h_jas(nparmj, nparmj))
-        if (.not. allocated(s_jas)) allocate (s_jas(nparmj, nparmj))
+    use gradhess_all, only: nparmjp1
+
+        if (.not. allocated(grad_jas)) allocate (grad_jas(nparmjp1))
+        if (.not. allocated(h_jas)) allocate (h_jas(nparmjp1, nparmjp1))
+        if (.not. allocated(s_jas)) allocate (s_jas(nparmjp1, nparmjp1))
     end subroutine allocate_gradhess_jas
 
     subroutine deallocate_gradhess_jas()

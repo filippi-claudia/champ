@@ -83,19 +83,12 @@ contains
             itpber=nint(100000*tpberr)
 
             if(istate.eq.1) then
-!           with single-state, fine, with multi gives write out errors, same for the else
-!              write(ounit,'(f10.5,4(f10.5,''('',i5,'')''),25x,f10.5,i10)')
-!     &        enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,accept,iblk*vmc_nstep
-
               if(nforce.gt.1) then
                 write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),25x,f10.5,i10)') &
                 enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,accept,iblk*vmc_nstep
               else
                 write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),1x,f10.5,i10)') &
                 enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,accept,iblk*vmc_nstep
-!                write(ounit,'(f10.5,3(f10.5,a,i0,a),1x,f10.5,i10)')
-!     &          enow(1,1),eave,"(", ieerr, ")", peave, "(", ipeerr , 
-!     &          ")", tpbave, "(", itpber, ")", accept,iblk*vmc_nstep
               endif
 
               call prop_prt(wcum(1,ifr),iblk,ounit)
@@ -110,10 +103,10 @@ contains
             endif
 
           else
-           fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))!/abs(deltot(ifr))
+            fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))!/abs(deltot(ifr))
             ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)!/abs(deltot(ifr))
             iferr=nint(1.0d9*ferr)
-            write(ounit,'(f10.5,f10.5,''('',i5,'')'',51x,f14.9,''('',i9,'')'')') enow(istate,ifr),eave,ieerr,fave,iferr
+            write(ounit,'(f10.5,f10.5,''('',i5,'')'',33x,f14.9,''('',i9,'')'')') enow(istate,ifr),eave,ieerr,fave,iferr
           endif
 ! endif for ifr.eq.1
         enddo
