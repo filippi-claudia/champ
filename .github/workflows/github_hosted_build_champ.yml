@@ -52,7 +52,7 @@ jobs:
           mpiicx --version
 
           cmake -H. -Bbuild \
-            -DCMAKE_Fortran_COMPILER=mpiifx \
+            -DCMAKE_Fortran_COMPILER=mpiifort \
             -DCMAKE_C_COMPILER=mpiicx \
             -DBLA_STATIC=ON \
             -DBLA_VENDOR=Intel10_64lp_seq \
