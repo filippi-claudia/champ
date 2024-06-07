@@ -64,6 +64,12 @@
       use walksav_det_mod, only: walksav_det,walkstrdet
       use walksav_jas_mod, only: walksav_jas,walkstrjas
       use mpiconf, only: idtask,mpiconf_init,nproc,wid
+
+      use distance_mod, only: r_en,rvec_en
+      use nonloc_pot_mod, only: nonloc_pot
+      use casula,  only: icasula,t_vpsp
+      use vmc_mod, only: nbjx
+      use optwf_parms, only: nparmj
       implicit none
 
       integer :: i, iaccept, iel, ic, iph
@@ -91,9 +97,15 @@
       real(dp) :: vavvn, vavvo, vavvt, wtg(1), wtg_sqrt(1)
       real(dp) :: wtg_derivsum1, wtnow
       real(dp) :: sqrt_pi_o2, branching_c, sqrt_nelec
+      real(dp) :: t_norm, t_norm_new
+
+      real(dp) :: pe
+      real(dp), dimension(2,nbjx) :: vpsp_det
+      real(dp), dimension(nparmj,nbjx) :: dvpsp_dj
 
       real(dp), dimension(3, nelec) :: xstrech
       real(dp), dimension(3) :: xnew
+      real(dp), dimension(3) :: x_tmove_old
       real(dp), dimension(3, nelec) :: vnew
       real(dp), dimension(3) :: xbac
       real(dp), dimension(nelec) :: unacp
@@ -110,8 +122,8 @@
       data ncall /0/
 
       sqrt_pi_o2 = dsqrt(4.0d0 * atan (one))/two
-      branching_c = 124.62d0/dsqrt(ivmc_corr - one)
-      !branching_c = ivmc_corr
+      !branching_c = 124.62d0/dsqrt(ivmc_corr - one)
+      branching_c = ivmc_corr
       sqrt_nelec = dsqrt(dble(nelec))
 
       eps_node_cutoff=eps_node_cutoff*sqrt(tau)
@@ -142,12 +154,12 @@
               call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumo, v2sumo)
               fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
             else if (icut_e.eq.2) then
-              ! call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumo, v2sumo)
+              call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumo, v2sumo)
               ! write(ounit,*) taunow, v2sumo, (3.5d0 * v2sumo * taunow/ dsqrt(dble(nelec)))**2
               ! write(ounit,*) tau, v2sumo, derf(3.5d0 * v2sumo * tau/ dsqrt(dble(nelec)))
 
-              ! fratio_aux = branching_c * sqrt(v2sumo) * tau/sqrt_nelec
-              fratio_aux = branching_c * tau * dabs(eest-eold(iw, ifr))/sqrt_nelec
+              fratio_aux = branching_c * sqrt(v2sumo) * tau/sqrt_nelec
+              !fratio_aux = branching_c * tau * dabs(eest-eold(iw, ifr))/sqrt_nelec
               fratio(iw, ifr)= sqrt_pi_o2 * derf(fratio_aux)/fratio_aux
 
               ! fratio(iw,ifr)=1.0d0/dsqrt(1.0d0 + (fratio_aux)**2)
@@ -184,7 +196,7 @@
           imove_dn=0
           do i=1,nelec
             imove=0
-            call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove)
+            call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove, t_norm)
             ncount_casula=ncount_casula+1
 
             if(imove.gt.0) then
@@ -467,12 +479,12 @@
             call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumn, v2sumn)
             fration=dsqrt(vav2sumn/v2sumn)
           else if (icut_e.eq.2) then
-            ! call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumn, v2sumn)
+            call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumn, v2sumn)
             ! write(ounit,*) taunow, v2sumn, (3.5d0 * v2sumn * taunow/ dsqrt(dble(nelec)))**2
             ! write(ounit,*) tau, v2sumn, derf(3.5d0 * v2sumn * tau/ dsqrt(dble(nelec)))
 
-            ! fratio_aux = branching_c * dsqrt(v2sumn) * taunow/sqrt_nelec
-            fratio_aux = branching_c * taunow * dabs(eest-enew(1))/sqrt_nelec
+            fratio_aux = branching_c * dsqrt(v2sumn) * taunow/sqrt_nelec
+            !fratio_aux = branching_c * taunow * dabs(eest-enew(1))/sqrt_nelec
             fration = sqrt_pi_o2 * derf(fratio_aux)/fratio_aux
 
 
@@ -648,7 +660,7 @@
           call t_vpsp_get
 
           imove=0
-          call nonloc_grid(iel,iw,xnew,psido_dmc(iw,1),imove)
+          call nonloc_grid(iel,iw,xnew,psido_dmc(iw,1),imove, t_norm)
 
           ncount_casula=ncount_casula+1
           if(imove.gt.0) then
@@ -659,6 +671,7 @@
 
             iage(iw)=0
             do k=1,3
+              x_tmove_old(k)=xold_dmc(k,iel,iw,1)
               xold_dmc(k,iel,iw,1)=xnew(k)
             enddo
             ! 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
@@ -683,7 +696,51 @@
               enddo
             endif
 
+            ! here
+            ! i_vpsp=-1
+            ! call hpsi(xold_dmc(1,1,iw,1),psidn,psijn,ekino,enew,ipass,1)
+            ! i_vpsp=0
+            call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
 
+            call nonloc_grid(iel,iw,xnew,psido_dmc(iw,1),imove, t_norm_new)
+            p=random_dp()
+            ! write(ounit, *) t_norm, t_norm/t_norm_new
+            if (t_norm/t_norm_new.lt.p) then
+              ! write(ounit, *) 'REJECTED TMOVE'
+              call psiedmc(iel,iw,x_tmove_old,psidn,psijn,0)
+              nmove_casula=nmove_casula-1
+  
+              iage(iw)=0
+              do k=1,3
+                xold_dmc(k,iel,iw,1)=x_tmove_old(k)
+              enddo
+              ! 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
+              psido_dmc(iw,1)=psidn(1)
+              psijo_dmc(iw,1)=psijn(1)
+              call jassav(iel,0)
+              call detsav(iel,0)
+  
+              if(iel.le.nup) call update_ymat(nup)
+              if(iel.gt.nup) call update_ymat(nelec)
+  
+              call walksav_det(iw)
+              call walksav_jas(iw)
+              if(nforce.gt.1.and.istrech.gt.0) then
+                do ifr=1,nforce
+                  call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
+                  do k=1,3
+                    do i=1,nelec
+                       xold_dmc(k,i,iw,ifr)=xstrech(k,i)
+                    enddo
+                  enddo
+                enddo
+              endif
+              imove = 0
+              ! i_vpsp=-1
+              ! call hpsi(xold_dmc(1,1,iw,1),psidn,psijn,ekino,enew,ipass,1)
+              ! i_vpsp=0
+              call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
+            endif 
           endif
         endif
 

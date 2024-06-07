@@ -1,6 +1,6 @@
 module nonloc_grid_mod
 contains
-      subroutine nonloc_grid(iel,iw,x,psid,imove)
+      subroutine nonloc_grid(iel,iw,x,psid,imove,t_norm)
 
       use casula,  only: icasula,t_vpsp
       use config,  only: xold_dmc
