@@ -155,15 +155,10 @@
               fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
             else if (icut_e.eq.2) then
               call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumo, v2sumo)
-              ! write(ounit,*) taunow, v2sumo, (3.5d0 * v2sumo * taunow/ dsqrt(dble(nelec)))**2
-              ! write(ounit,*) tau, v2sumo, derf(3.5d0 * v2sumo * tau/ dsqrt(dble(nelec)))
 
               fratio_aux = branching_c * sqrt(v2sumo) * tau/sqrt_nelec
               !fratio_aux = branching_c * tau * dabs(eest-eold(iw, ifr))/sqrt_nelec
               fratio(iw, ifr)= sqrt_pi_o2 * derf(fratio_aux)/fratio_aux
-
-              ! fratio(iw,ifr)=1.0d0/dsqrt(1.0d0 + (fratio_aux)**2)
-              ! write(ounit,'(''fratio'',f8.5)') fratio(iw,ifr)
             endif
           enddo
         enddo
@@ -200,24 +195,44 @@
             ncount_casula=ncount_casula+1
 
             if(imove.gt.0) then
-              write(ounit,*) 'icasula3', imove
+              ! write(ounit,*) 'icasula3', imove
               if(i.le.nup) then
                 imove_up=1
                else
                 imove_dn=1
               endif
               call psiedmc(i,iw,xnew,psidn,psijn,0)
-              nmove_casula=nmove_casula+1
 
               iaccept=1
-              iage(iw)=0
+
               do k=1,3
+                x_tmove_old(k)=xold_dmc(k,i,iw,1)
                 xold_dmc(k,i,iw,1)=xnew(k)
               enddo
+
               psido_dmc(iw,1)=psidn(1)
               psijo_dmc(iw,1)=psijn(1)
               call jassav(i,0)
               call detsav(i,0)
+
+              call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove, t_norm_new)
+              p=random_dp()
+              if (t_norm/t_norm_new.lt.p) then
+                call psiedmc(i,iw,x_tmove_old,psidn,psijn,0)
+     
+                do k=1,3
+                  xold_dmc(k,i,iw,1)=x_tmove_old(k)
+                enddo
+                psido_dmc(iw,1)=psidn(1)
+                psijo_dmc(iw,1)=psijn(1)
+                call jassav(i,0)
+                call detsav(i,0)
+                imove_up = 0
+                imove_dn = 0
+              else
+                nmove_casula=nmove_casula+1
+                iage(iw)=0
+              endif
              else
               call distancese_restore(i)
             endif
@@ -480,16 +495,10 @@
             fration=dsqrt(vav2sumn/v2sumn)
           else if (icut_e.eq.2) then
             call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumn, v2sumn)
-            ! write(ounit,*) taunow, v2sumn, (3.5d0 * v2sumn * taunow/ dsqrt(dble(nelec)))**2
-            ! write(ounit,*) tau, v2sumn, derf(3.5d0 * v2sumn * tau/ dsqrt(dble(nelec)))
-
+            
             fratio_aux = branching_c * dsqrt(v2sumn) * taunow/sqrt_nelec
             !fratio_aux = branching_c * taunow * dabs(eest-enew(1))/sqrt_nelec
             fration = sqrt_pi_o2 * derf(fratio_aux)/fratio_aux
-
-
-            ! fration = 1.0d0/dsqrt(1.0d0 + (fratio_aux)**2)
-            ! write(100+idtask,'(''fration'',i3,f8.5)') iw,fration
           endif            
 
           if(ipr.ge.1)write(ounit,'(''wt'',9f10.5)') wt(iw),etrial,eest
@@ -662,69 +671,56 @@
           imove=0
           call nonloc_grid(iel,iw,xnew,psido_dmc(iw,1),imove, t_norm)
 
-          ncount_casula=ncount_casula+1
           if(imove.gt.0) then
             call psiedmc(iel,iw,xnew,psidn,psijn,0)
-            nmove_casula=nmove_casula+1
 
             ! call compute_determinante_grad(iel,psidn,psidn,vnew(1,iel),0)
 
-            iage(iw)=0
             do k=1,3
               x_tmove_old(k)=xold_dmc(k,iel,iw,1)
               xold_dmc(k,iel,iw,1)=xnew(k)
             enddo
-            ! 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
             psido_dmc(iw,1)=psidn(1)
             psijo_dmc(iw,1)=psijn(1)
             call jassav(iel,0)
             call detsav(iel,0)
 
-            if(iel.le.nup) call update_ymat(nup)
-            if(iel.gt.nup) call update_ymat(nelec)
-
             call walksav_det(iw)
             call walksav_jas(iw)
-            if(nforce.gt.1.and.istrech.gt.0) then
-              do ifr=1,nforce
-                call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
-                do k=1,3
-                  do i=1,nelec
-                     xold_dmc(k,i,iw,ifr)=xstrech(k,i)
-                  enddo
-                enddo
-              enddo
-            endif
 
-            ! here
-            ! i_vpsp=-1
-            ! call hpsi(xold_dmc(1,1,iw,1),psidn,psijn,ekino,enew,ipass,1)
-            ! i_vpsp=0
             call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
 
             call nonloc_grid(iel,iw,xnew,psido_dmc(iw,1),imove, t_norm_new)
             p=random_dp()
-            ! write(ounit, *) t_norm, t_norm/t_norm_new
+
             if (t_norm/t_norm_new.lt.p) then
-              ! write(ounit, *) 'REJECTED TMOVE'
+              ! move was rejected
               call psiedmc(iel,iw,x_tmove_old,psidn,psijn,0)
               nmove_casula=nmove_casula-1
   
-              iage(iw)=0
               do k=1,3
                 xold_dmc(k,iel,iw,1)=x_tmove_old(k)
               enddo
-              ! 290         vold_dmc(k,iel,iw,1)=vnew(k,iel)
+
               psido_dmc(iw,1)=psidn(1)
               psijo_dmc(iw,1)=psijn(1)
               call jassav(iel,0)
               call detsav(iel,0)
   
-              if(iel.le.nup) call update_ymat(nup)
-              if(iel.gt.nup) call update_ymat(nelec)
-  
               call walksav_det(iw)
               call walksav_jas(iw)
+              imove = 0
+ 
+              call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
+
+            else
+              ! move was accepted
+              ncount_casula=ncount_casula+1
+              iage(iw)=0
+
+              if(iel.le.nup) call update_ymat(nup)
+              if(iel.gt.nup) call update_ymat(nelec)
+
               if(nforce.gt.1.and.istrech.gt.0) then
                 do ifr=1,nforce
                   call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
@@ -735,11 +731,7 @@
                   enddo
                 enddo
               endif
-              imove = 0
-              ! i_vpsp=-1
-              ! call hpsi(xold_dmc(1,1,iw,1),psidn,psijn,ekino,enew,ipass,1)
-              ! i_vpsp=0
-              call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,iel,1)
+
             endif 
           endif
         endif
