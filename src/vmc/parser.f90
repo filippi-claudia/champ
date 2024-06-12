@@ -1488,12 +1488,11 @@ subroutine parser
             endif
   endif
 
-
+  if(iforce_analy.gt.0.and.nordc.gt.0) call fatal_error('READ_INPUT: Nuclear analytic forces not implemented for 3-body J')
 
   ! Analytical forces flags (vmc only)
   if( mode(1:3) == 'vmc' ) then
     if(iforce_analy.gt.0) then
-      if(nordc.gt.0) call fatal_error('READ_INPUT: Nuclear analytic forces not implemented for 3-body J')
       write(ounit,'(a)' ) " Geometry optimization with analytic gradients"
       if(iuse_zmat.gt.0) write(ounit,'(a)' ) " Using internal coordinates "
       write(ounit,'(a,t36,f12.6)') " starting alfgeo = ", alfgeo
