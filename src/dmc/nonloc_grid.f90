@@ -1,6 +1,6 @@
 module nonloc_grid_mod
 contains
-      subroutine nonloc_grid(iel,iw,x,psid,imove)
+      subroutine nonloc_grid(iel,iw,x,psid,imove,t_norm,ipropose)
 
       use casula,  only: icasula,t_vpsp
       use config,  only: xold_dmc
@@ -24,7 +24,7 @@ contains
       integer :: i, i1, i2, ic, ic_good
       integer :: iel, iel_good, ii, imove
       integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, iq
-      integer :: iq_good, iw
+      integer :: iq_good, iw, ipropose
       real(dp) :: costh, p, pe, psid
       real(dp) :: psidi, ri, t_cum
       real(dp) :: t_norm, t_normi, tauprim
@@ -89,7 +89,7 @@ contains
 !     do i=i1,i2
 !     write(ounit,'(''t_vpsp after = '',100f14.6)') ((-tauprim*t_vpsp(ic,iq,i)*t_normi,ic=1,ncent),iq=1,nquad)
 !     enddo
-
+      if (ipropose.eq.0) return
       if(t_norm.eq.1.d0) return
 
       t_cum=0.d0
