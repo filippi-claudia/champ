@@ -352,13 +352,14 @@ contains
       real(dp), parameter :: small = 1.d-10
 
       sqrt_pi_o2 = dsqrt(4.0d0 * atan (one))/two
-      branching_c = 124.62d0/dsqrt(ivmc_corr - one)
-      !branching_c = ivmc_corr
+      ! branching_c = 124.62d0/dsqrt(ivmc_corr - one)
+      branching_c = ivmc_corr
       sqrt_nelec = dsqrt(dble(nelec))
 
       deriv_energy_new=da_energy
       
-      if (icut_e.eq.2) then
+      if (icut_e.eq.3) then
+        sqrt_nelec = 0.2d0*sqrt_nelec
         ! New first
         fratio_aux = branching_c * e_cutoff * dabs(eest - ecutn)/sqrt_nelec
         do ic=1,ncent
