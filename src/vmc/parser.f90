@@ -2016,45 +2016,16 @@ subroutine parser
        endif
        call MPI_Barrier( MPI_COMM_WORLD, ierr )
 
-       iostat = qmckl_trexio_read(qmckl_ctx, file_trexio_path, 1_8*len(trim(file_trexio_path)))
-       write(ounit, *) "Status QMCKl trexio read file_trexio_path", iostat
+       rc = qmckl_trexio_read(qmckl_ctx, file_trexio_path, 1_8*len(trim(file_trexio_path)))
+       write(ounit, *) "Status QMCKl trexio read file_trexio_path", rc
       else
-       iostat = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
-       write(ounit, *) "Status QMCKl trexio read file_trexio ", iostat
+       rc = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
+       write(ounit, *) "Status QMCKl trexio read file_trexio ", rc
      endif
 
-     if (iostat /= QMCKL_SUCCESS) then
+     if (rc /= QMCKL_SUCCESS) then
        call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
      end if
-
-     if(nloc.eq.0) then
-       allocate(nucl_fitcusp_radius(ncent))
-       do_nucl_fitcusp = .true.
-
-       if(.not. do_nucl_fitcusp) then
-          nucl_fitcusp_radius = 0.d0
-        else
-         do k=1,ncent
-           nucl_fitcusp_radius(k) = 1.d0/(a_cusp*znuc(iwctype(k)+b_cusp))
-           write(ounit, array_format) "Radius fit cusps for atom", k, nucl_fitcusp_radius(k)
-         enddo
-
-         ! Avoid dummy atoms
-         do k=1,ncent
-          if (znuc(k) < 5.d-1) then
-            nucl_fitcusp_radius(k) = 0.d0
-          endif
-         enddo
-
-         write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx
-         iostat = qmckl_set_mo_basis_r_cusp(qmckl_ctx,dble(nucl_fitcusp_radius(:)), int(ncent,8))
-         write(ounit, *) "Status QMCKl set mo basis r cusp  ", iostat
-
-         if (iostat /= QMCKL_SUCCESS) then
-           call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
-         end if
-       endif
-     endif
 
      !! to check change in mo's number to be computed by qmckl inside champ
      norb_qmckl=norb+nadorb
@@ -2096,6 +2067,37 @@ subroutine parser
         if (n8 /= norb_qmckl) call fatal_error('INPUT: Problem in MO selection in QMCkl verify orb')
 
      endif
+
+     if(nloc.eq.0) then
+       allocate(nucl_fitcusp_radius(ncent))
+       do_nucl_fitcusp = .true.
+
+       if(.not. do_nucl_fitcusp) then
+          nucl_fitcusp_radius = 0.d0
+        else
+         do k=1,ncent
+           nucl_fitcusp_radius(k) = 1.d0/(a_cusp*znuc(iwctype(k))+b_cusp)
+           write(ounit, array_format) "Radius fit cusps for atom", k, nucl_fitcusp_radius(k)
+         enddo
+
+         ! Avoid dummy atoms
+         do k=1,ncent
+          if (znuc(iwctype(k)) < 5.d-1) then
+            nucl_fitcusp_radius(k) = 0.d0
+          endif
+         enddo
+
+         write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx
+         rc = qmckl_set_mo_basis_r_cusp(qmckl_ctx,dble(nucl_fitcusp_radius(:)), int(ncent,8))
+         write(ounit, *) "Status QMCKl set mo basis r cusp  ", rc
+
+         if (rc /= QMCKL_SUCCESS) then
+           call fatal_error('PARSER: QMCkl error: Unable to set cusp parameters')
+         end if
+       endif
+     endif
+
+
   endif
 #endif
 
