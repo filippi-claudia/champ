@@ -315,6 +315,7 @@
       subroutine da_jastrow1(iwf,i,ic,it,rvec_en,r,feni,fenii)
 
       use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use error, only: fatal_error
       use jastrow, only: a4, norda, nordj
       use scale_more, only: dd3
       use precision_kinds, only: dp
