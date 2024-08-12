@@ -329,6 +329,8 @@
       real(dp), dimension(3) :: rvec_en
       real(dp), dimension(-2:nordj) :: r
 
+      call fatal_error('DA_JAS1: da_jastrow1 to fix')
+
       feniii=0.d0
       do iord=3,norda
         feniii=feniii+a4(iord,it,iwf)*iord*(iord-1)*(iord-2)*r(iord-3)

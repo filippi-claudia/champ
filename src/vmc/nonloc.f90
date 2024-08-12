@@ -997,7 +997,7 @@ contains
         endif
 
 ! e-e terms
-        if(iforce_analy.eq.0) then
+        if(iforce_analy.gt.0) then
           dum=dpsibnl(rij,isb,ipar,iwfjas)/rij
           do k=1,3
             dumk=-dum*dx(k)
