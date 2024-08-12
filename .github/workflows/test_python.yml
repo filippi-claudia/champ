@@ -31,13 +31,13 @@ jobs:
 
     - name: Install Cmake and HDF5
       run: |
+        sudo apt-get update
         sudo apt-get install -y cmake
         sudo apt-get install -y libhdf5-dev
 
     - name: Install Trexio
       run: |
-        sudo apt-get install -y cmake
-        sudo apt-get install -y libhdf5-dev
+        sudo apt-get update
         sudo apt-get install -y gfortran
         sudo apt-get install -y gcc
         wget https://github.com/TREX-CoE/trexio/releases/download/v2.3.0/trexio-2.3.0.tar.gz
