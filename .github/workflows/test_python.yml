@@ -40,9 +40,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y gfortran
         sudo apt-get install -y gcc
-        wget https://github.com/TREX-CoE/trexio/releases/download/v2.3.0/trexio-2.3.0.tar.gz
-        tar -xzf trexio-2.3.0.tar.gz
-        cd trexio-2.3.0/
+        wget https://github.com/TREX-CoE/trexio/releases/download/v2.4.2/trexio-2.4.2.tar.gz
+        tar -xzf trexio-2.4.2.tar.gz
+        cd trexio-2.4.2/
         ./configure FC=gfortran CC=gcc
         make all
         make check
