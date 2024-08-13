@@ -5,7 +5,7 @@ module nonlpsi
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
       use vmc_mod, only: nwftypejas
       use jastrow, only: norda, nordb, nordc
-      use jaspar6, only: asymp_r
+      use jastrow, only: asymp_r
       use jastrow, only: cutjas_en,cutjas_eni
       use jastrow, only: a4, c,ijas,nordj
       use multiple_geo, only: iwf
@@ -26,9 +26,6 @@ module nonlpsi
       real(dp), dimension(0:nordj) :: ss
       real(dp), dimension(0:nordj) :: tt
       real(dp), parameter :: eps = 1.d-12
-
-! If we want to use ijas=5,6 update this routine similarly to psi.f
-      if(ijas.ge.5) call fatal_error('PSINL: ijas >= 5 not implemented')
 
       psinl=0.d0
       !if(nordc.le.1) return
@@ -91,7 +88,7 @@ module nonlpsi
       function psianl(rri,it,iwfjas)
 
       use jastrow, only: norda
-      use jaspar6, only: asymp_r
+      use jastrow, only: asymp_r
       use jastrow, only: cutjas_en,cutjas_eni
       use jastrow, only: a4,asymp_jasa,ijas
       use multiple_geo, only: iwf
@@ -103,10 +100,6 @@ module nonlpsi
       integer :: i, it, iwfjas
       real(dp) :: rri, rrip, xi, a1_cusp
       real(dp) :: psianl
-
-! Not updated for ijas=5,6 because we will probably stay with ijas=4
-! If we want to use ijas=5,6 update this routine similarly to psi.f
-      if(ijas.ge.5) call fatal_error('PSINL: ijas >= 5 not implemented')
 
       psianl=0.d0
       if(nwftypejas.gt.1) iwf=iwfjas
@@ -147,9 +140,8 @@ module nonlpsi
       function psibnl(u,isb,ipar,iwfjas)
 
       use jastrow, only: nordb
-      use jaspar6, only: asymp_r
       use jastrow, only: cutjas_ee, cutjas_eei
-      use jastrow, only: asymp_jasb,b,ijas,sspinn
+      use jastrow, only: asymp_r,asymp_jasb,b,ijas,sspinn
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
       use vmc_mod, only: nwftypejas
@@ -158,10 +150,6 @@ module nonlpsi
 
       integer :: i, ipar, isb, iwfjas
       real(dp) :: b1_cusp, fee, psibnl, u, uu, xij
-
-! Not updated for ijas=5,6 because we will probably stay with ijas=4
-! If we want to use ijas=5,6 update this routine similarly to psi.f
-      if(ijas.ge.5) call fatal_error('PSINL: ijas >= 5 not implemented')
 
       psibnl=0.d0
       if(nwftypejas.gt.1) iwf=iwfjas
@@ -197,7 +185,7 @@ module nonlpsi
       function dpsianl(rri,it,iwfjas)
 
       use jastrow, only: norda
-      use jaspar6, only: asymp_r
+      use jastrow, only: asymp_r
       use jastrow, only: cutjas_en, cutjas_eni
       use jastrow, only: a4,ijas
       use multiple_geo, only: iwf
@@ -211,10 +199,6 @@ module nonlpsi
       real(dp) :: psianl, dpsianl, term, a1_cusp
       real(dp) :: bot, boti, top
       real(dp), dimension(norda) :: ri
-
-! Not updated for ijas=5,6 because we will probably stay with ijas=4
-! If we want to use ijas=5,6 update this routine similarly to psi.f
-      if(ijas.ge.5) call fatal_error('PSINL: ijas >= 5 not implemented')
 
       dpsianl=0.d0
 
@@ -265,7 +249,7 @@ module nonlpsi
       function dpsibnl(u,isb,ipar,iwfjas)
 
       use jastrow, only: nordb
-      use jaspar6, only: asymp_r
+      use jastrow, only: asymp_r
       use jastrow, only: cutjas_ee, cutjas_eei
       use jastrow, only: b,ijas,sspinn
       use multiple_geo, only: iwf
@@ -279,10 +263,6 @@ module nonlpsi
       real(dp) :: term, top, u, xij
       real(dp) :: dpsibnl, psibnl
       real(dp), dimension(nordb) :: uu
-
-! Not updated for ijas=5,6 because we will probably stay with ijas=4
-! If we want to use ijas=5,6 update this routine similarly to psi.f
-      if(ijas.ge.5) call fatal_error('PSINL: ijas >= 5 not implemented')
 
       dpsibnl=0.d0
       if(ijas.eq.1) then

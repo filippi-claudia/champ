@@ -2,12 +2,8 @@
       contains
       subroutine jastrow_factor4(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
 ! Written by Cyrus Umrigar, modified by C. Filippi
-! Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
-! Jastrow 6   must be used with one of isc=6,7
-
       use system, only: iwctype, ncent, nelec, nup
-      use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, ijas ,isc, nordj
-      use jaspar6, only: c1_jas6, cutjas
+      use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, nordj
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use scale_dist_mod, only: scale_dist2, switch_scale2
@@ -100,22 +96,15 @@
 
       rij=r_ee(ij)
 
-      call scale_dist2(rij,uu(1),dd1,dd2,1)
+      call scale_dist2(rij,uu(1),dd1,dd2)
 !      write(ounit,'(''rij,u in ee'',2f9.5)') rij,uu(1)
-
-! Check rij after scaling because uu(1) used in e-e-n terms too      if(rij.gt.cutjas) goto 22
 
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
       topuu=0
 
-      if(ijas.eq.4.or.ijas.eq.5) then
-        bot=1+b(2,isb,iwf)*uu(1)
-        botu=b(2,isb,iwf)
-       elseif(ijas.eq.6) then
-        bot=1+b(2,isb,iwf)*(1-uu(1))
-        botu=-b(2,isb,iwf)
-      endif
+      bot=1+b(2,isb,iwf)*uu(1)
+      botu=b(2,isb,iwf)
       botuu=0
       bot2=bot*bot
 
@@ -126,15 +115,9 @@
 
       do iord=2,nordb
         uu(iord)=uu(1)*uu(iord-1)
-        if(ijas.eq.4) then
-          fee=fee+b(iord+1,isb,iwf)*uu(iord)
-          feeu=feeu+b(iord+1,isb,iwf)*iord*uu(iord-1)
-          feeuu=feeuu+b(iord+1,isb,iwf)*iord*(iord-1)*uu(iord-2)
-         elseif(ijas.eq.5.or.ijas.eq.6) then
-          fee=fee+sspinn*b(iord+1,isb,iwf)*uu(iord)
-          feeu=feeu+sspinn*b(iord+1,isb,iwf)*iord*uu(iord-1)
-          feeuu=feeuu+sspinn*b(iord+1,isb,iwf)*iord*(iord-1)*uu(iord-2)
-        endif
+        fee=fee+b(iord+1,isb,iwf)*uu(iord)
+        feeu=feeu+b(iord+1,isb,iwf)*iord*uu(iord-1)
+        feeuu=feeuu+b(iord+1,isb,iwf)*iord*(iord-1)*uu(iord-2)
       enddo
 
       feeuu=feeuu*dd1*dd1+feeu*dd2
@@ -150,13 +133,10 @@
 ! There are no C terms to order 1.
       22 if(nordc.le.1) goto 55
 
-      if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
-      if(ijas.eq.4.or.ijas.eq.5) then
-        call switch_scale2(uu(1),dd1,dd2)
-        do iord=2,nordc
-          uu(iord)=uu(1)*uu(iord-1)
-        enddo
-      endif
+      call switch_scale2(uu(1),dd1,dd2)
+      do iord=2,nordc
+        uu(iord)=uu(1)*uu(iord-1)
+      enddo
 !      write(ounit,'(''rij,u in een'',2f12.9)') rij,uu(1)
 
       do ic=1,ncent
@@ -165,15 +145,11 @@
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
-        if(ri.gt.cutjas .or. rj.gt.cutjas) goto 50
+        call scale_dist2(ri,rri(1),dd7,dd9)
+        call scale_dist2(rj,rrj(1),dd8,dd10)
 
-        call scale_dist2(ri,rri(1),dd7,dd9,2)
-        call scale_dist2(rj,rrj(1),dd8,dd10,2)
-
-        if(ijas.eq.4.or.ijas.eq.5) then
-          call switch_scale2(rri(1),dd7,dd9)
-          call switch_scale2(rrj(1),dd8,dd10)
-        endif
+        call switch_scale2(rri(1),dd7,dd9)
+        call switch_scale2(rrj(1),dd8,dd10)
 !        write(ounit,'(''ri,rri in een'',2f12.9)') ri,rri(1)
 
         s=ri+rj
@@ -286,22 +262,16 @@
           it=iwctype(ic)
 
           ri=r_en(i,ic)
-          if(ri.gt.cutjas) goto 80
 
-          call scale_dist2(ri,rri(1),dd7,dd9,1)
+          call scale_dist2(ri,rri(1),dd7,dd9)
 !          write(ounit,'(''ri,rri in en'',2f9.5)') ri,rri(1)
 
           top=a4(1,it,iwf)*rri(1)
           topi=a4(1,it,iwf)
           topii=0
 
-          if(ijas.eq.4.or.ijas.eq.5) then
-            bot=1+a4(2,it,iwf)*rri(1)
-            boti=a4(2,it,iwf)
-           elseif(ijas.eq.6) then
-            bot=1+a4(2,it,iwf)*(1-rri(1))
-            boti=-a4(2,it,iwf)
-          endif
+          bot=1+a4(2,it,iwf)*rri(1)
+          boti=a4(2,it,iwf)
           botii=0
           bot2=bot*bot
 
@@ -342,23 +312,6 @@
 !        write(ounit,'(''v='',9d12.4)') (fjo(k,i),k=1,3)
         d2o=d2o+d2ijo(i,i)
       enddo
-
-      if(ijas.eq.6) then
-        term=1/(c1_jas6*scalek(iwf))
-        fsumo=term*fsumo
-        d2o=term*d2o
-        do i=1,nelec
-          do k=1,3
-            fjo(k,i)=term*fjo(k,i)
-          enddo
-          do j=1,nelec
-            d2ijo(i,j)=term*d2ijo(i,j)
-            do k=1,3
-              fijo(k,i,j)=term*fijo(k,i,j)
-            enddo
-          enddo
-        enddo
-      endif
 
       return
       end

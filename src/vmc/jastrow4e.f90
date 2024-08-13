@@ -3,11 +3,8 @@ contains
       subroutine jastrow4e(iel,x,fjn,d2n,fsumn,fsn,fijn,d2ijn, &
                                  fjo,d2o,fsumo,fso,fijo,d2ijo,iflag)
 ! Written by Cyrus Umrigar and Claudia Filippi
-! Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
-! Jastrow 6   must be used with one of isc=6,7
       use system, only: iwctype, ncent, nelec, nup
-      use jastrow, only: sspinn, b, c, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, ijas, isc, nordj
-      use jaspar6, only: cutjas
+      use jastrow, only: sspinn, b, c, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, nordj
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
@@ -15,7 +12,6 @@ contains
       use scale_dist_mod, only: scale_dist1,scale_dist2,switch_scale1
       use scale_dist_mod, only: switch_scale2
       use system,  only: iwctype,ncent,nelec,nup
-
 
       implicit none
 
@@ -110,12 +106,10 @@ contains
       rij=r_ee(ij)
 
       if(iflag.eq.0) then
-        call scale_dist1(rij,uu(1),dd1,1)
+        call scale_dist1(rij,uu(1),dd1)
        else
-        call scale_dist2(rij,uu(1),dd1,dd2,1)
+        call scale_dist2(rij,uu(1),dd1,dd2)
       endif
-
-      if(rij.gt.cutjas) goto 22
 
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
@@ -161,17 +155,13 @@ contains
       22 if(nordc.le.1) goto 55
 
       if(iflag.eq.0) then
-        if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
-        if(ijas.eq.4.or.ijas.eq.5) call switch_scale1(uu(1),dd1)
+        call switch_scale1(uu(1),dd1)
        else
-        if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
-        if(ijas.eq.4.or.ijas.eq.5) call switch_scale2(uu(1),dd1,dd2)
+        call switch_scale2(uu(1),dd1,dd2)
       endif
-      if(ijas.eq.4.or.ijas.eq.5) then
-        do iord=2,nordc
-          uu(iord)=uu(1)*uu(iord-1)
-        enddo
-      endif
+      do iord=2,nordc
+        uu(iord)=uu(1)*uu(iord-1)
+      enddo
 
       do ic=1,ncent
         it=iwctype(ic)
@@ -179,22 +169,18 @@ contains
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
-        if(ri.gt.cutjas .or. rj.gt.cutjas) goto 50
-
         if(iflag.eq.0) then
-          call scale_dist1(ri,rri(1),dd7,2)
-          call scale_dist1(rj,rrj(1),dd8,2)
-          if(ijas.eq.4.or.ijas.eq.5) then
-            call switch_scale1(rri(1),dd7)
-            call switch_scale1(rrj(1),dd8)
-          endif
+          call scale_dist1(ri,rri(1),dd7)
+          call scale_dist1(rj,rrj(1),dd8)
+
+          call switch_scale1(rri(1),dd7)
+          call switch_scale1(rrj(1),dd8)
          else
-          call scale_dist2(ri,rri(1),dd7,dd9,2)
-          call scale_dist2(rj,rrj(1),dd8,dd10,2)
-          if(ijas.eq.4.or.ijas.eq.5) then
-            call switch_scale2(rri(1),dd7,dd9)
-            call switch_scale2(rrj(1),dd8,dd10)
-          endif
+          call scale_dist2(ri,rri(1),dd7,dd9)
+          call scale_dist2(rj,rrj(1),dd8,dd10)
+
+          call switch_scale2(rri(1),dd7,dd9)
+          call switch_scale2(rrj(1),dd8,dd10)
         endif
 
         do iord=1,nordc
@@ -307,12 +293,11 @@ contains
         it=iwctype(ic)
 
         ri=r_en(iel,ic)
-        if(ri.gt.cutjas) goto 80
 
         if(iflag.eq.0) then
-          call scale_dist1(ri,rri(1),dd7,1)
+          call scale_dist1(ri,rri(1),dd7)
          else
-          call scale_dist2(ri,rri(1),dd7,dd9,1)
+          call scale_dist2(ri,rri(1),dd7,dd9)
         endif
 
         top=a4(1,it,iwf)*rri(1)

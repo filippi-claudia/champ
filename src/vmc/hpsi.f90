@@ -19,9 +19,7 @@ contains
       use efield_f_mod, only: efield_extpot_ene
       use force_analytic, only: compute_force
       use inputflags, only: iqmmm
-      use jastrow, only: ianalyt_lap
       use jastrow_mod, only: jastrow_factor
-      use jastrow_num_mod, only: jastrow_num
       use m_force_analytic, only: iforce_analy
       use mmpol,   only: mmpol_extpot_ene
       use mmpol_cntrl, only: immpol
@@ -121,17 +119,8 @@ contains
 ! get contribution from jastrow (also compute derivatives wrt parameters and nuclei)
       if(nforce.gt.1) iwf=iwftype(ifr)
 
-      if(ianalyt_lap.eq.1) then
-        call jastrow_factor(coord,vj,d2j,psij,ifr)
-      else
-        if(nforce.gt.1) then
-          call jastrow_num(coord,vj(:,:,1),d2j(1),psij(1))
-        else
-          do iwf=1,nwftypejas
-            call jastrow_num(coord,vj(:,:,iwf),d2j(iwf),psij(iwf))
-          enddo
-        endif
-      endif
+      call jastrow_factor(coord,vj,d2j,psij,ifr)
+
 ! reset iwf to 1, why?
       if(nwftypejas.gt.1) iwf = 1
 

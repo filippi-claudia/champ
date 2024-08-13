@@ -66,7 +66,7 @@ contains
       subroutine write_jastrow(iwf_fit,filetype)
 
       use system, only: nctype
-      use jastrow, only: nspin1, nspin2, b, c, scalek, a4, norda, nordb, nordc, ianalyt_lap, ijas, isc
+      use jastrow, only: nspin1, nspin2, b, c, scalek, a4, norda, nordb, nordc, ijas, isc
       use bparm, only: nspin2b
       use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma, nparmb, nparmc
@@ -87,7 +87,6 @@ contains
       open(2,file=filename,status='unknown')
       write(2,'(''jastrow_parameter'',i4)') iwf_fit
       write(2,'(3i3,a28)') norda,nordb,nordc,' norda,nordb,nordc'
-
 
       if(ijas.eq.4) then
 

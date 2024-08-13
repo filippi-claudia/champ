@@ -5,9 +5,8 @@
 
       use vmc_mod, only: nwftypejas
       use jastrow, only: c, nordc, ijas, nordj
-      use jaspar6, only: asymp_r
       use jastrow, only: cutjas_en,cutjas_eni
-      use jastrow, only: a4,c,ijas,nordj
+      use jastrow, only: asymp_r,a4,c,ijas,nordj
       use multiple_geo, only: iwf
       use optwf_wjas, only: iwjasc
       use vardep, only: cdep, iwdepend, nvdepend
@@ -109,17 +108,13 @@
          enddo
       enddo
 
-
-
       return
       end
 
 !-----------------------------------------------------------------------
       function deriv_psianl(rri,gn,it,iwfjas)
 
-
-      use jastrow, only: a4, norda, asymp_jasa, ijas
-      use jaspar6, only: asymp_r
+      use jastrow, only: asymp_r,a4, norda, asymp_jasa, ijas
       use jastrow, only: cutjas_en,cutjas_eni
       use optwf_nparmj, only: nparma
       use optwf_wjas, only: iwjasa
@@ -142,7 +137,6 @@
 ! written for general iwf, whereas others (asymp_r) assume iwf=1.
       if(nwftypejas.gt.1) iwf=iwfjas
       if(ijas.eq.1.and.rri.gt.cutjas_en(it,iwf))  return
-
 
       ri(1)=rri
       if(ijas.ge.4) then
@@ -195,11 +189,9 @@
 !-----------------------------------------------------------------------
       function deriv_psibnl(u,gn,isb,ipar,iwfjas)
 
-
       use jastrow, only: nordb
-      use jaspar6, only: asymp_r
       use jastrow, only: cutjas_ee,cutjas_eei
-      use jastrow, only: asymp_jasb,b,ijas,sspinn
+      use jastrow, only: asymp_jasb,asymp_r,b,ijas,sspinn
       use multiple_geo, only: iwf
       use optwf_nparmj, only: nparmb
       use optwf_wjas, only: iwjasb

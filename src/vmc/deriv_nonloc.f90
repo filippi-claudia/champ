@@ -10,7 +10,7 @@ contains
       use deriv_nonlpsi, only: deriv_psianl,deriv_psibnl,deriv_psinl
       use derivjas, only: go
       use jaspointer, only: npoint,npointa
-      use jastrow, only: ijas,is,isc,nspin2,sspinn
+      use jastrow, only: is,nspin2,sspinn
       use jastrow_update, only: fso
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl
@@ -66,12 +66,11 @@ contains
       if (nelec.lt.2) goto 47
 
       ipara=nparma(1)
-!      write(ounit,*) 'nparmj,nparma(1),ijas', nparmj, nparma(1), ijas
-        do it=2,nctype
-          ipara=ipara+nparma(it)
-!          write(ounit,*) 'it,nparma(it)', it, nparma(it)
-        enddo
-
+!      write(ounit,*) 'nparmj,nparma(1),', nparmj, nparma(1)
+      do it=2,nctype
+        ipara=ipara+nparma(it)
+!        write(ounit,*) 'it,nparma(it)', it, nparma(it)
+      enddo
 
       do jj=1,nelec
 
@@ -215,7 +214,7 @@ contains
       use deriv_nonlpsi, only: deriv_psianl,deriv_psibnl,deriv_psinl
       use derivjas, only: go
       use jaspointer, only: npoint,npointa
-      use jastrow, only: ijas,is,isc,nspin2,sspinn
+      use jastrow, only: is,nspin2,sspinn
       use jastrow_update, only: fso
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl
@@ -245,9 +244,7 @@ contains
       real(dp), dimension(3,nquad*nelec*2,*) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
       real(dp), dimension(nelec,ncent_tot) :: rr_en
-      real(dp), dimension(nelec,ncent_tot) :: rr_en2
       real(dp), dimension(ncent_tot) :: rr_en_quad
-      real(dp), dimension(ncent_tot) :: rr_en2_quad
       real(dp), dimension(*) :: psij_ratio
       real(dp), dimension(nparmj,*) :: dpsij_ratio
       real(dp), dimension(3,ncent_tot,*) :: da_psij_ratio
@@ -259,18 +256,13 @@ contains
       real(dp), parameter :: half = .5d0
 
       do ic=1,ncent
-!JF this is the culprit
         if(iforce_analy.eq.0) then
           do i=1,nelec
-            call scale_dist(r_en(i,ic),rr_en(i,ic),1)
-            call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
+            call scale_dist(r_en(i,ic),rr_en(i,ic))
           enddo
          else
           do i=1,nelec
-            call scale_dist1(r_en(i,ic),rr_en(i,ic),dd1(i,ic),1)
-!JF added to see what happens --> gives same as iforce_analy = 0
-!           call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
-            if(ioptjas.gt.0) call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
+            call scale_dist1(r_en(i,ic),rr_en(i,ic),dd1(i,ic))
           enddo
         endif
       enddo
@@ -281,15 +273,11 @@ contains
 
       if(iforce_analy.eq.0) then
         do ic=1,ncent
-          call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic),1)
-          call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
+          call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic))
         enddo
        else
         do ic=1,ncent
-          call scale_dist1(r_en_quad(iq,ic),rr_en_quad(ic),dd1_quad(ic),1)
-!JF added to see what happens --> gives same as iforce_analy = 0
-!         call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
-          if(ioptjas.gt.0) call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
+          call scale_dist1(r_en_quad(iq,ic),rr_en_quad(ic),dd1_quad(ic))
         enddo
       endif
 
@@ -309,13 +297,11 @@ contains
       if (nelec.lt.2) goto 47
 
       ipara=nparma(1)
-!      write(ounit,*) 'nparmj,nparma(1),ijas', nparmj, nparma(1), ijas
-      if(ijas.ge.4.and.ijas.le.6) then
-        do it=2,nctype
-          ipara=ipara+nparma(it)
-!          write(ounit,*) 'it,nparma(it)', it, nparma(it)
-        enddo
-      endif
+!      write(ounit,*) 'nparmj,nparma(1)', nparmj, nparma(1)
+      do it=2,nctype
+        ipara=ipara+nparma(it)
+!        write(ounit,*) 'it,nparma(it)', it, nparma(it)
+      enddo
 
       do jj=1,nelec
 
@@ -368,9 +354,9 @@ contains
 
 ! e-e terms
         if(iforce_analy.eq.0) then
-          call scale_dist(rij,u,1)
+          call scale_dist(rij,u)
          else
-          call scale_dist1(rij,u,dd1u,1)
+          call scale_dist1(rij,u,dd1u)
           dum=dpsibnl(u,isb,ipar,iwfjas)*dd1u/rij
           do k=1,3
             dumk=-dum*dx(k)
@@ -390,13 +376,12 @@ contains
 
 ! e-e-n terms
 ! The scaling is switched in deriv_psinl, so do not do it here.
-      if(isc.ge.12) call scale_dist(rij,u,3)
 
         do ic=1,ncent
           it=iwctype(ic)
           if(nparmc(it).gt.0) then
             iparm0=npoint(it)
-            fsn(i,j)=fsn(i,j) + deriv_psinl(u,rr_en2_quad(ic),rr_en2(jj,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
+            fsn(i,j)=fsn(i,j) + deriv_psinl(u,rr_en_quad(ic),rr_en(jj,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
           endif
         enddo
 
@@ -415,23 +400,21 @@ contains
 ! e-n terms
       47 fsn(iel,iel)=0
 
-      if(ijas.ge.4.and.ijas.le.6) then
-        do ic=1,ncent
-          it=iwctype(ic)
-          iparm0=npointa(it)
-          fsn(iel,iel)=fsn(iel,iel)+ &
-          deriv_psianl(rr_en_quad(ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
-!          write(ounit,*) 'ic,it,iwctype(ic),iparm0,iparm0+1', ic,it,iwctype(ic),iparm0,iparm0+1
+      do ic=1,ncent
+        it=iwctype(ic)
+        iparm0=npointa(it)
+        fsn(iel,iel)=fsn(iel,iel)+ &
+        deriv_psianl(rr_en_quad(ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
+!        write(ounit,*) 'ic,it,iwctype(ic),iparm0,iparm0+1', ic,it,iwctype(ic),iparm0,iparm0+1
+      enddo
+      do it=1,nctype
+        iparm0=npointa(it)
+        do jparm=1,nparma(it)
+          iparm=iparm0+jparm
+          dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(iel,iel,iparm,iwfjas)
+!          write(ounit,*) 'it,npointa(it),jparm,iparm0,iparm', it,npointa(it),jparm,iparm0,iparm
         enddo
-        do it=1,nctype
-          iparm0=npointa(it)
-          do jparm=1,nparma(it)
-            iparm=iparm0+jparm
-            dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(iel,iel,iparm,iwfjas)
-!            write(ounit,*) 'it,npointa(it),jparm,iparm0,iparm', it,npointa(it),jparm,iparm0,iparm
-          enddo
-        enddo
-      endif
+      enddo
 
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel,iwfjas)
       psij_ratio(iq)=fsumn

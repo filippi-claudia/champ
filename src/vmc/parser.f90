@@ -61,9 +61,9 @@ subroutine parser
       use inputflags, only: ioptorb_mixvirt,iqmmm,izmatrix_check,iznuc
       use inputflags, only: node_cutoff,scalecoef
       use jastrow, only: norda,nordb,nordc
-      use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
+      use jastrow, only: asymp_r
       use jastrow, only: a4,allocate_jasasymp,asymp_jasa,asymp_jasb,b,c
-      use jastrow, only: ianalyt_lap,ijas,ijas_lr,is,isc,neqsx,nordj,nordj1
+      use jastrow, only: ijas,ijas_lr,is,isc,neqsx,nordj,nordj1
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
       use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
@@ -217,9 +217,8 @@ subroutine parser
   logical                    :: doit, debug
 
   character(len=72)          :: fname, key
-  character(len=20)          :: temp1, temp2, temp3, temp4, temp5
+  character(len=20)          :: temp
   integer                    :: ierr, ratio, isavebl
-  real(dp)                   :: cutjas_tmp = 0
 
   real(dp)                   :: wsum
 
@@ -358,7 +357,6 @@ subroutine parser
   isc         = fdf_get('isc', 2)
   nspin1      = fdf_get('nspin1', 1)
   nspin2      = fdf_get('nspin2', 1)
-  ianalyt_lap = fdf_get('ianalyt_lap',1)
 
   ijas_lr     = fdf_get('ijas_lr', 0)
 
@@ -950,12 +948,13 @@ subroutine parser
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
 
+  if(ijas.ne.1.and.ijas.ne.4) call fatal_error('Only ijas 1 and 4 implemented')
   if(iperiodic.eq.0.and.ijas_lr.gt.0) call fatal_error('No long-range Jastrow for non-periodic system')
 
 ! Jastrow Parameters (either block or from a file)
 
   if ( fdf_load_defined('jastrow') ) then
-      call read_jastrow_file(file_jastrow)
+    call read_jastrow_file(file_jastrow)
   elseif (fdf_block('jastrow', bfdf)) then
   !call fdf_read_jastrow_block(bfdf)
     write(errunit,'(a)') "Error:: No information about jastrow provided in the block."
@@ -993,13 +992,6 @@ subroutine parser
 
 !printing some information and warnings and checks about Jastrow
   write(ounit, * )
-  write(ounit, int_format) " Analytical laplacian (ianalyt_lap) = ",  ianalyt_lap
-  if(ianalyt_lap.eq.0) then
-    if(nloc.gt.0) call fatal_error('No numerical jastrow derivatives with pseudopotentials')
-    if(iperiodic.gt.0) &
-      call fatal_error('No numerical jastrow derivatives with periodic system: distances in jastrow_num not correct')
-    if(ioptjas.gt.0) call fatal_error('No numerical jastrow derivatives and parms derivatives')
-  endif
 
   write(ounit, int_format ) " ijas = ", ijas
   write(ounit, int_format ) " isc = ",  isc
@@ -1007,29 +999,23 @@ subroutine parser
   write(ounit, int_format ) " nspin2 = ", nspin2
 
   if(ijas.ne.1.and.iperiodic.gt.0) &
-    call fatal_error('Only ijas=1 4 implemented for periodic systems')
+    call fatal_error('Only ijas=1 implemented for periodic systems')
 
-  if(ijas.eq.4) write(ounit,'(a)') " new transferable standard form 4"
-  if(ijas.eq.5) write(ounit,'(a)') " new transferable standard form 5"
-  if(ijas.eq.6) write(ounit,'(a)') " new transferable standard form 6"
+  if(ijas.eq.4) then
+    asymp_r=0
 
-  if(isc.eq.2) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r))/scalek"
-  if(isc.eq.3) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r-(scalek*r)**2/2))/scalek"
-  if(isc.eq.4) write(ounit,'(a)') " dist scaled r=r/(1+scalek*r)"
-  if(isc.eq.5) write(ounit,'(a)') " dist scaled r=r/(1+(scalek*r)**2)**.5"
+    write(ounit,'(a)') " transferable standard form 4"
 
+    if(isc.eq.2) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r))/scalek"
+    if(isc.eq.3) write(ounit,'(a)') " dist scaled r=(1-exp(-scalek*r-(scalek*r)**2/2))/scalek"
+    if(isc.eq.4) write(ounit,'(a)') " dist scaled r=r/(1+scalek*r)"
+    if(isc.eq.5) write(ounit,'(a)') " dist scaled r=r/(1+(scalek*r)**2)**.5"
 
-  cutjas=1.d99
-  cutjasi=0
-  c1_jas6i=1
-  c1_jas6=1
-  c2_jas6=0
-  asymp_r=0
-  call allocate_jasasymp()  ! Needed for the following two arrays
-  do j=1,nwftypejas
-    call set_scale_dist(j,ipr)
-  enddo
-
+    call allocate_jasasymp()  ! Needed for the following two arrays
+    do j=1,nwftypejas
+      call set_scale_dist(j,ipr)
+    enddo
+  endif
   call elapsed_time ("Setting Jastrow parameters : ")
 
 ! Determinants (only)
@@ -1560,11 +1546,7 @@ subroutine parser
     if(ioptjas.gt.0) then
       write(ounit,'(a)' ) " Jastrow derivatives are sampled "
       write(ounit,int_format) " Number of Jastrow derivatives ",  nparmj
-      if(ijas.eq.1.or.ijas.eq.4) then
-        call cuspinit4(1)
-      else
-         call fatal_error('READ_INPUT: jasderiv only for ijas=1 or 4')
-      endif
+      call cuspinit4(1)
     else
       nparmj=0
     endif
@@ -1629,9 +1611,9 @@ subroutine parser
         write(ounit,'(a)' )
         write(ounit,'(tr1,a,i0,a)') ' Guiding weights has ',i,' entries'
         call fdf_list('weights_guiding',i,weights_g)
-        write(temp5, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
+        write(temp, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
         !write(ounit, '(a,<MSTATES>(f12.6))') ' Weights_guiding : ', weights_g(1:i) ! Intel version
-        write(ounit, temp5) ' Weights_guiding : ', weights_g(1:i)                   ! GNU version
+        write(ounit, temp) ' Weights_guiding : ', weights_g(1:i)                   ! GNU version
       else
         weights_g = 1.0d0
         write(ounit,'(a,t40, 10f12.6)') 'Default weights_guiding ', weights_g(1:nstates)
@@ -1683,9 +1665,9 @@ subroutine parser
       write(ounit,'(tr1,a,i0,a)') ' anorm has ',i,' entries'
       if(i.ne.nstates) call fatal_error('READ_INPUT: anorm array must contain nstate entries.')
       call fdf_list('anorm',i,anormo)
-      write(temp5, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
+      write(temp, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
       !write(ounit, '(a,<MSTATES>(f12.6))') ' anormo : ', anormo(1:i) ! Intel version
-      write(ounit, temp5) ' anorm : ', anormo(1:i)                   ! GNU version
+      write(ounit, temp) ' anorm : ', anormo(1:i)                   ! GNU version
     else
       anormo = 1.0d0
       write(ounit,'(a,t40, 10f12.6)') 'Using default anorm correction ', anormo(1:nstates)
@@ -1710,9 +1692,9 @@ subroutine parser
           &must contain nstates*(nstates-1)/2 entries, [ 1-2, 1-3, ..., 1-nstates, &
           &2-3, 2-4, ..., 2-nstates, ..., (nstates-1)-nstates ]')
       call fdf_list('sr_lambda',i,isr_lambda)
-      write(temp5, '(a,i0,a)') '(a,', MSTATES*(MSTATES-1)/2, '(f12.6))'
+      write(temp, '(a,i0,a)') '(a,', MSTATES*(MSTATES-1)/2, '(f12.6))'
       !write(ounit, '(a,<MSTATES*(MSTATES-1)/2>(f12.6))') ' SR lambda : ', sr_lambda(1:i) ! Intel version
-      write(ounit, temp5) ' SR lambda : ', isr_lambda(1:i)                   ! GNU version
+      write(ounit, temp) ' SR lambda : ', isr_lambda(1:i)                   ! GNU version
     else
       isr_lambda = 0.0d0
       write(ounit,'(a,t40, 10f12.6)') 'Default SR lambda ', isr_lambda(1:nstates)
@@ -1793,9 +1775,9 @@ subroutine parser
     write(ounit,'(a)' )
     write(ounit,'(tr1,a,i0,a)') ' Weights has ',i,' entries'
     call fdf_list('weights',i,weights)
-    write(temp5, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
+    write(temp, '(a,i0,a)') '(a,', MSTATES, '(f12.6))'
     !write(ounit, '(a,<MSTATES>(f12.6))') 'weights : ', weights(1:i)  ! Intel version
-    write(ounit, temp5) 'weights : ', weights(1:i)                    ! GNU version
+    write(ounit, temp) 'weights : ', weights(1:i)                    ! GNU version
   else
     weights = 1.0d0
     write(ounit,'(a,t40, 10f12.6)') 'Default weights ', weights(1:nstates)
@@ -2124,9 +2106,7 @@ subroutine parser
       use mpiconf, only: wid
       use periodic, only: alattice
       use periodic, only: rlatt, rlatt_inv
-      use jaspar6, only: cutjas, cutjasi
       use precision_kinds, only: dp
-
 
       implicit none
 
@@ -2144,7 +2124,6 @@ subroutine parser
       else
          file_lattice_path = file_lattice
       endif
-
 
       write(ounit,*) '-----------------------------------------------------------------------'
       write(ounit,string_format)  " Reading Lattice Parameters from the file :: ",  trim(file_lattice_path)
@@ -2187,28 +2166,19 @@ subroutine parser
             endif
          enddo
 
-
          if(count.eq.1) then
-
-
             write(ounit,*) 'This is a cubic cell'
             write(ounit,*) 'The lattice constant is', alattice
 
             rlatt(1,1) = alattice
             rlatt(2,2) = alattice
             rlatt(3,3) = alattice
-
-
-
          else if(count.eq.3) then
-
-
             write(ounit,*) "The simulation cell is:"
 
             write(ounit,*) "a", rlatt(1,1), rlatt(1,2), rlatt(1,3)
             write(ounit,*) "b", rlatt(2,1), rlatt(2,2), rlatt(2,3)
             write(ounit,*) "c", rlatt(3,1), rlatt(3,2), rlatt(3,3)
-
 
             !! assuming still rectangular box
             alattice=rlatt(1,1)
@@ -2217,36 +2187,18 @@ subroutine parser
             enddo
 
             if(alattice.le.0.d0) call fatal_error("Wrong lattice parameter")
-
          else
-
             call fatal_error("Error reading lattice file")
-
          endif
-
 
          !   regarding Ewald Breakup assume column not row vectors for the lattice
          rlatt=TRANSPOSE(rlatt)
-
-
-
       endif
-
-
 
       call bcast(rlatt)
       if (wid) close(iunit)
 
-!!! override jastrow cutoff to half of the lattice parameter
-!!! need to be adapted to half of the wigner-seitz cell (orthorombic boxes)
-      cutjas = 0.5*alattice
-      cutjasi=1/cutjas
-
-
 end subroutine read_lattice_file
-
-
-
 
   subroutine fdf_read_molecule_block(bfdf)
     implicit none

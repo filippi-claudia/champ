@@ -531,7 +531,6 @@ subroutine read_jastrow_file(file_jastrow)
       use general, only: pooldir
       use inputflags, only: ijastrow_parameter
       use jastrow, only: norda,nordb,nordc
-      use jaspar6, only: asymp_r,c1_jas6,c1_jas6i,c2_jas6,cutjas,cutjasi
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,neqsx
       use jastrow, only: nordj,nordj1,nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
@@ -574,20 +573,10 @@ subroutine read_jastrow_file(file_jastrow)
     endif
 
 
-    !    if (ijas .lt. 4 .or. ijas .gt. 6) call fatal_error('JASTROW: only ijas=4,5,6 implemented')
-    if(ijas.ne.1)then
-       if (ijas .lt. 4 .or. ijas .gt. 6) call fatal_error('JASTROW: only ijas=4,5,6 implemented')
-    endif
-
     if (ndn .eq. 1 .and. nspin2 .eq. 3) call fatal_error('JASTROW: 1 spin down and nspin2=3')
 
-    if ((ijas .eq. 4 .or. ijas .eq. 5) .and. &
-        (isc .ne. 2 .and. isc .ne. 4 .and. isc .ne. 6 .and. isc .ne. 7 .and. &
-         isc .ne. 12 .and. isc .ne. 14 .and. isc .ne. 16 .and. isc .ne. 17)) &
-         call fatal_error('JASTROW: if ijas=4 or 5, isc must be one of 2,4,6,7,12,14,16,17')
-
-    if ((ijas .eq. 6) .and. (isc .ne. 6 .and. isc .ne. 7)) &
-        call fatal_error('JASTROW: if ijas=6, isc must be 6 or 7')
+    if (ijas .eq. 4 .and. (isc .lt. 2 .or. isc .gt. 5)) & 
+         call fatal_error('JASTROW: if ijas=4, isc must be one of 2,3,4,5')
 
     nspin2b = iabs(nspin2)
     nocuspb = 0
@@ -694,8 +683,7 @@ subroutine read_jastrow_file(file_jastrow)
         allocate (scalek(nwftype))
     endif
 
-
-    if (ijas .ge. 4 .and. ijas .le. 6) then
+    if (ijas .eq. 4 ) then
        if (wid) read (iunit, *) norda, nordb, nordc
        call bcast(norda)
        call bcast(nordb)
@@ -908,15 +896,6 @@ subroutine read_jastrow_file(file_jastrow)
        endif
 
      endif
-
-    !Read cutoff for Jastrow4, 5, 6
-    if (isc .eq. 6 .or. isc .eq. 7) then
-        if (wid) then
-          read (iunit, *) cutjas
-          write(iunit, '(A,2X,f12.8)') " cutjas = ", cutjas
-        endif
-    endif
-    call bcast(cutjas)
 
     ijastrow_parameter = ijastrow_parameter + 1
 
@@ -1612,7 +1591,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
         write(ounit, '(A,10i4)') " nparmc = ", (nparmc(it), it=1, nctype)
         write(ounit, '(A,10i4)') " nparmf = ", (nparmf(it), it=1, nctype)
 
-        if (ijas .ge. 4 .and. ijas .le. 6) then
+        if (ijas .eq. 4 ) then
             do it = 1, nctype
                 if (nloc .eq. 0) then
                     ! All-electron with numerical basis: a(1)=-Z, a(2) can vary
@@ -1629,27 +1608,14 @@ subroutine read_jasderiv_file(file_jastrow_der)
                     endif
                 endif
 
-                if (isc .le. 7 .and. &
-                    ((nordc .le. 2 .and. nparmc(it) .gt. 0) &
-                        .or. (nordc .eq. 3 .and. nparmc(it) .gt. 2) &
-                        .or. (nordc .eq. 4 .and. nparmc(it) .gt. 7) &
-                        .or. (nordc .eq. 5 .and. nparmc(it) .gt. 15) &
-                        .or. (nordc .eq. 6 .and. nparmc(it) .gt. 27) &
-                        .or. (nordc .eq. 7 .and. nparmc(it) .gt. 43))) then
+                if ( (nordc .le. 2 .and. nparmc(it) .gt. 0)  &
+                .or. (nordc .eq. 3 .and. nparmc(it) .gt. 2)  &
+                .or. (nordc .eq. 4 .and. nparmc(it) .gt. 7)  &
+                .or. (nordc .eq. 5 .and. nparmc(it) .gt. 15) &
+                .or. (nordc .eq. 6 .and. nparmc(it) .gt. 27) &
+                .or. (nordc .eq. 7 .and. nparmc(it) .gt. 43)) then
                     write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
                     call fatal_error( 'nparmc too large for nordc in J_een with cusp conds')
-                endif
-
-                if (isc .gt. 7 .and. &
-                    ((nordc .le. 1 .and. nparmc(it) .gt. 0) &
-                        .or. (nordc .eq. 2 .and. nparmc(it) .gt. 2) &
-                        .or. (nordc .eq. 3 .and. nparmc(it) .gt. 6) &
-                        .or. (nordc .eq. 4 .and. nparmc(it) .gt. 13) &
-                        .or. (nordc .eq. 5 .and. nparmc(it) .gt. 23) &
-                        .or. (nordc .eq. 6 .and. nparmc(it) .gt. 37) &
-                        .or. (nordc .eq. 7 .and. nparmc(it) .gt. 55))) then
-                    write(ounit, '(''it,nordc,nparmc(it)'',3i5)') it, nordc, nparmc(it)
-                    call fatal_error( 'nparmc too large for nordc without cusp conds')
                 endif
 
             enddo

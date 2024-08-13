@@ -8,9 +8,8 @@
       use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use jastrow, only: cutjas_ee, cutjas_eei, cutjas_en, cutjas_eni
       use jastrow, only: norda,nordb,nordc
-      use jaspar6, only: asymp_r,cutjas
       use jaspointer, only: npoint,npointa
-      use jastrow, only: a4,b,c,ijas,isc,nordj
+      use jastrow, only: a4,b,c,nordj
       use jastrow, only: sspinn
       use jaspointer, only: npoint,npointa
       use jastrow1_mod, only: da_jastrow1

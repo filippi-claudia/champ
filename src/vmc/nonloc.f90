@@ -18,7 +18,6 @@ contains
       use pseudo,  only: lpot,vps
       use pseudo_mod, only: MPS_QUAD
       use qua,     only: nquad,wq,xq,yq,zq
-      use scale_dist_mod, only: scale_dist,scale_dist1
       use slater,  only: norb,slmi
       use system,  only: cent,iwctype,ncent,ncent_tot,nelec,nup
       use vmc_mod, only: norb_tot, nwftypeorb, nwftypejas
@@ -359,7 +358,6 @@ contains
       use precision_kinds, only: dp
       use find_pimage, only: find_image_pbc
       use qua,     only: xq,yq,zq
-      use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: cent,ncent,ncent_tot,nelec
       use qua,     only: nquad
 
@@ -928,7 +926,7 @@ contains
       real(dp), dimension(nelec,*) :: fso
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,*) :: xquad
-      real(dp), dimension(3,nelec) :: xtmp
+      !real(dp), dimension(3,nelec) :: xtmp
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nquad*nelec*2,*) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
@@ -1046,7 +1044,7 @@ contains
 
       endif
 
-      xtmp(:,iel)=x(:,iel)
+      !xtmp(:,iel)=x(:,iel)
       enddo
 
       return
@@ -1084,9 +1082,7 @@ contains
       real(dp), dimension(3,nquad*nelec*2,*) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
       real(dp), dimension(nelec,ncent_tot) :: rr_en
-      real(dp), dimension(nelec,ncent_tot) :: rr_en2
       real(dp), dimension(ncent_tot) :: rr_en_quad
-      real(dp), dimension(ncent_tot) :: rr_en2_quad
       real(dp), dimension(nelec,nelec) :: fsn
       real(dp), dimension(3) :: dx
       real(dp), dimension(nelec,ncent_tot) :: dd1
@@ -1099,18 +1095,14 @@ contains
       if(iforce_analy.eq.0) then
         do ic=1,ncent
           do i=1,nelec
-            call scale_dist(r_en(i,ic),rr_en(i,ic),1)
-            call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
+            call scale_dist(r_en(i,ic),rr_en(i,ic))
           enddo
         enddo
 
        else
         do ic=1,ncent
           do i=1,nelec
-            call scale_dist1(r_en(i,ic),rr_en(i,ic),dd1(i,ic),1)
-!JF added to see what happens --> gives same as iforce_analy = 0
-!           call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
-            if(ioptjas.gt.0) call scale_dist(r_en(i,ic),rr_en2(i,ic),2)
+            call scale_dist1(r_en(i,ic),rr_en(i,ic),dd1(i,ic))
           enddo
         enddo
       endif
@@ -1121,15 +1113,11 @@ contains
 
       if(iforce_analy.eq.0) then
         do ic=1,ncent
-          call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic),1)
-          call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
+          call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic))
         enddo
        else
         do ic=1,ncent
-          call scale_dist1(r_en_quad(iq,ic),rr_en_quad(ic),dd1_quad(ic),1)
-!JF added to see what happens --> gives same as iforce_analy = 0
-!         call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
-          if(ioptjas.gt.0) call scale_dist(r_en_quad(iq,ic),rr_en2_quad(ic),2)
+          call scale_dist1(r_en_quad(iq,ic),rr_en_quad(ic),dd1_quad(ic))
         enddo
       endif
 
@@ -1179,9 +1167,9 @@ contains
 
 ! e-e terms
         if(iforce_analy.eq.0) then
-          call scale_dist(rij,u,1)
+          call scale_dist(rij,u)
          else
-          call scale_dist1(rij,u,dd1u,1)
+          call scale_dist1(rij,u,dd1u)
           dum=dpsibnl(u,isb,ipar,iwfjas)*dd1u/rij
           do k=1,3
             dumk=-dum*dx(k)
@@ -1193,12 +1181,10 @@ contains
 
 ! e-e-n terms
 ! The scaling is switched in psinl, so do not do it here.
-      if(isc.ge.12) call scale_dist(rij,u,3)
-
       if(nordc.gt.1) then
         do ic=1,ncent
           it=iwctype(ic)
-          fsn(i,j)=fsn(i,j) + psinl(u,rr_en2_quad(ic),rr_en2(jj,ic),it,iwfjas)
+          fsn(i,j)=fsn(i,j) + psinl(u,rr_en_quad(ic),rr_en(jj,ic),it,iwfjas)
         enddo
       end if
         

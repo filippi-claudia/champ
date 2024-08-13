@@ -3,11 +3,8 @@
       subroutine jastrow1e(iel,x,fjn,d2n,fsumn,fsn,fijn,d2ijn, &
                               fjo,d2o,fsumo,fso,fijo,d2ijo,iflag)
 ! Written by Cyrus Umrigar and Claudia Filippi
-! Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
-! Jastrow 6   must be used with one of isc=6,7
       use system, only: iwctype, ncent, nelec, nup
-      use jastrow, only: sspinn, b, c, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, ijas, isc, nordj
-      use jaspar6, only: cutjas
+      use jastrow, only: sspinn, b, c, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, nordj
       use jastrow, only: cutjas_ee, cutjas_en, cutjas_eei, cutjas_eni
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
@@ -16,7 +13,6 @@
       use scale_dist_mod, only: scale_dist1,scale_dist2,switch_scale1
       use scale_dist_mod, only: switch_scale2
       use system,  only: iwctype,ncent,nelec,nup
-
 
       implicit none
 

@@ -2,12 +2,9 @@
       contains
       subroutine jastrow_factor1(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
 ! Written by Cyrus Umrigar, modified by C. Filippi
-! Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
-! Jastrow 6   must be used with one of isc=6,7
 
       use system, only: iwctype, ncent, nelec, nup
-      use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, ijas ,isc, nordj
-      use jaspar6, only: c1_jas6, cutjas
+      use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, nordj
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use jastrow, only: cutjas_ee, cutjas_en, cutjas_eei, cutjas_eni

@@ -38,7 +38,6 @@ if (MPI_Fortran_FOUND)
     jastrow4.f90
     jastrow4e.f90
     jastrow1e.f90
-    jastrow_num.f90
     jastrowe.f90
     mc_configs.f90
     metrop_mov1_driftdif.f90
@@ -92,7 +91,6 @@ if (MPI_Fortran_FOUND)
     prop_reduce.f90
     prop_vmc.f90
     properties.f90
-    psi.f90
     ewald.f90
     find_image.f90
     qmmm_placeholder.f90
@@ -243,13 +241,11 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/determinant.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc_pot.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_num.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/bxmatrices.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonlpsi.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/force_analytic.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/force_analy_reduce.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonlpsi.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/psi.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/rotqua.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/misc_grdnts.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/spline2.f90

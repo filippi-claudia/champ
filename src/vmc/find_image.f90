@@ -7,16 +7,11 @@
 ! Checks to see if the lattice vectors specified are the smallest
 ! ones possible.  This is necessary for the simple heuristic algorithm
 ! Mathew Foulkes suggested to find the image particle (if any) that lies in the
-! inscribing sphere of the nearest Wigner Seitz cell.  Also set cutjas to
-! 1/2 the shortest simulation cell lattice vector (inscribing sphere radius.
-! If the input cutjas is smaller, it will be reset to the smaller value in read_input.
-! However, cutjas is used not only for r_ee but also r_en, so for that purpose
-! we should use shortest primitive cell lattice vector or sum over atoms in sim cell.
+! inscribing sphere of the nearest Wigner Seitz cell.  
 ! Warning:  I need to fix the above:
 ! Also return rlenmin to set cutr to 1/2 the shortest lattice vector.  I think that is
 ! good enough -- no need to use 1/2 the shortest perpendicular distance.
 
-      use jaspar6, only: cutjas
       use precision_kinds, only: dp
       use contrl_file,    only: ounit
       use error, only: fatal_error
@@ -49,26 +44,10 @@
       rlenmin=sqrt(rlenmin)
       cutr=rlenmin/2
 
-! Warning: setting cutjas=rlenmin/2 for sim cell is OK for B terms, but not for A and C.
-      if(isim_cell.eq.0) then
-        write(ounit,'(''primitive  cell lattice vector'',i3,'' is longest ; length='',f8.3)') &
-        imax,rlenmax
-        write(ounit,'(''primitive  cell lattice vector'',i3,'' is shortest; length='',f8.3)') &
-        imin,rlenmin
-       else
-        write(ounit,'(''simulation cell lattice vector'',i3,'' is longest ; length='',f8.3)') &
-        imax,rlenmax
-        write(ounit,'(''simulation cell lattice vector'',i3,'' is shortest; length='',f8.3)') &
-        imin,rlenmin
-        cutjas=rlenmin/2
-      endif
-
-!     if(cutjas.gt.rlenmin/2) then
-!       write(ounit,'(''Warning: input cutjas > half shortest lattice vector;
-!    &  cutjas reset from'',f9.5,'' to'',f9.5)') cutjas,rlenmin/2
-!       cutjas=rlenmin/2
-!     endif
-!     cutjas=rlenmin/2
+      write(ounit,'(''primitive  cell lattice vector'',i3,'' is longest ; length='',f8.3)') &
+      imax,rlenmax
+      write(ounit,'(''primitive  cell lattice vector'',i3,'' is shortest; length='',f8.3)') &
+      imin,rlenmin
 
       do i1=-1,1
         do i2=-1,1

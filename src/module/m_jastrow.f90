@@ -69,25 +69,6 @@ contains
 
 end module jastrow_update
 
-module jaspar6
-    !> Arguments: asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
-    use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp) :: asymp_r
-    real(dp) :: c1_jas6
-    real(dp) :: c1_jas6i
-    real(dp) :: c2_jas6
-    real(dp) :: cutjas
-    real(dp) :: cutjasi
-
-    private
-    public :: asymp_r, c1_jas6, c1_jas6i, c2_jas6, cutjas, cutjasi
-    save
-
-end module jaspar6
-
 module jaspointer
     !> Arguments: npoint, npointa
 
@@ -127,6 +108,8 @@ module jastrow
     integer :: nspin2
     real(dp) :: sspin
     real(dp) :: sspinn
+
+    real(dp) :: asymp_r
 
     real(dp), dimension(:,:)    , allocatable :: cutjas_en !(MCTYPE,MWF)
     real(dp), dimension(:,:)    , allocatable :: cutjas_eni!(MCTYPE,MWF)
@@ -251,7 +234,6 @@ end module cuspmat4
 !     use jastrow_update, only: allocate_jaso
 !     use jaspar3, only: allocate_jaspar3
 ! !    use jaspar4, only: allocate_jaspar4
-!     use jaspar6, only: allocate_jaspar6
 !     use jaspointer, only: allocate_jaspointer
 
 !     implicit none
@@ -260,7 +242,6 @@ end module cuspmat4
 !     call allocate_jaso()
 !     call allocate_jaspar3()
 !     ! call allocate_jaspar4()
-!     call allocate_jaspar6()
 !     call allocate_jaspointer()
 ! end subroutine allocate_m_jastrow
 
@@ -270,7 +251,6 @@ end module cuspmat4
 !     use jastrow_update, only: deallocate_jaso
 !     use jaspar3, only: deallocate_jaspar3
 !     use jaspar4, only: deallocate_jaspar4
-!     use jaspar6, only: deallocate_jaspar6
 !     use jaspointer, only: deallocate_jaspointer
 
 !     implicit none
@@ -279,7 +259,6 @@ end module cuspmat4
 !     call deallocate_jaso()
 !     call deallocate_jaspar3()
 !     call deallocate_jaspar4()
-!     call deallocate_jaspar6()
 !     call deallocate_jaspointer()
 ! end subroutine deallocate_m_jastrow
 ! end module

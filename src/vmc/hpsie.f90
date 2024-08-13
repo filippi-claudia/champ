@@ -12,7 +12,6 @@ contains
       use distances_mod, only: distances
       use error, only: fatal_error
       use estpsi, only: apsi, aref
-      use jastrow, only: ianalyt_lap
       use jastrowe_mod, only: jastrowe
       use mstates_mod, only: MSTATES
       use multideterminante_mod, only: multideterminante
@@ -40,11 +39,7 @@ contains
 
       call distances(iel,coord)
 
-      if(ianalyt_lap.eq.1) then
-        call jastrowe(iel,coord,vjn,d2j,psij,iflag)
-       else
-        call fatal_error('HPSIE: numerical one-electron move not implemented')
-      endif
+      call jastrowe(iel,coord,vjn,d2j,psij,iflag)
 
 ! compute all determinants
 

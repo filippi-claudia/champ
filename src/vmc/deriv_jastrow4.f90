@@ -8,9 +8,9 @@
       use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
       use jastrow, only: norda,nordb,nordc
-      use jaspar6, only: asymp_r,cutjas
+      use jastrow, only: asymp_r
       use jaspointer, only: npoint,npointa
-      use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,ijas,isc,nordj
+      use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,nordj
       use jastrow, only: sspinn
       use jastrow4_mod, only: da_jastrow4
       use m_force_analytic, only: iforce_analy
@@ -69,8 +69,6 @@
       real(dp), dimension(*) :: d2g
       real(dp), dimension(3, nelec, *) :: g
       real(dp), dimension(nelec, nelec, *) :: go
-
-
 
       iparma=nparma(1)
       do it=2,nctype
@@ -149,10 +147,7 @@
 
       rij=r_ee(ij)
 
-      call scale_dist2(rij,uu(1),dd1,dd2,1)
-
-! Check rij after scaling because uu(1) used in e-e-n terms too
-      if(rij.gt.cutjas) goto 30
+      call scale_dist2(rij,uu(1),dd1,dd2)
 
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
@@ -228,15 +223,9 @@
           endif
          else
           iord=iwjasb(jparm,isb)-1
-          if(ijas.eq.4) then
-            gee=uu(iord)-asymp_r**iord
-            geeu=iord*uu(iord-1)
-            geeuu=iord*(iord-1)*uu(iord-2)
-           elseif(ijas.eq.5) then
-            gee=sspinn*(uu(iord)-asymp_r**iord)
-            geeu=sspinn*iord*uu(iord-1)
-            geeuu=sspinn*iord*(iord-1)*uu(iord-2)
-          endif
+          gee=uu(iord)-asymp_r**iord
+          geeu=iord*uu(iord-1)
+          geeuu=iord*(iord-1)*uu(iord-2)
 
         endif
 
@@ -260,13 +249,10 @@
 ! There are no C terms to order 1.
    30 if(nordc.le.1) goto 58
 
-      if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
-      if(ijas.eq.4.or.ijas.eq.5) then
-        call switch_scale2(uu(1),dd1,dd2)
-        do iord=2,nordc
-          uu(iord)=uu(1)*uu(iord-1)
-        enddo
-      endif
+      call switch_scale2(uu(1),dd1,dd2)
+      do iord=2,nordc
+        uu(iord)=uu(1)*uu(iord-1)
+      enddo
 
       do ic=1,ncent
         it=iwctype(ic)
@@ -274,15 +260,11 @@
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
-        if(ri.gt.cutjas .or. rj.gt.cutjas) goto 57
-        
-        call scale_dist2(ri,rri(1),dd7,dd9,2)
-        call scale_dist2(rj,rrj(1),dd8,dd10,2)
+        call scale_dist2(ri,rri(1),dd7,dd9)
+        call scale_dist2(rj,rrj(1),dd8,dd10)
 
-        if(ijas.eq.4.or.ijas.eq.5) then
-          call switch_scale2(rri(1),dd7,dd9)
-          call switch_scale2(rrj(1),dd8,dd10)
-        endif
+        call switch_scale2(rri(1),dd7,dd9)
+        call switch_scale2(rrj(1),dd8,dd10)
 
         s=ri+rj
         t=ri-rj
@@ -504,9 +486,8 @@
           it=iwctype(ic)
 
           ri=r_en(i,ic)
-          if(ri.gt.cutjas) goto 80
 
-          call scale_dist2(ri,rri(1),dd7,dd9,1)
+          call scale_dist2(ri,rri(1),dd7,dd9)
 
           top=a4(1,it,iwf)*rri(1)
           topi=a4(1,it,iwf)

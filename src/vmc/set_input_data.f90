@@ -503,7 +503,7 @@ subroutine inputjastrow()
 
       use bparm,   only: nspin2b
       use jastrow, only: norda,nordb,nordc
-      use jastrow, only: a4,b,c,ijas,isc,nspin1,nspin2,scalek
+      use jastrow, only: a4,b,c,ijas,nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
       use multiple_geo, only: nwftype
       use precision_kinds, only: dp
@@ -517,7 +517,7 @@ subroutine inputjastrow()
 
     if (.not. allocated(scalek)) allocate (scalek(nwftype))
 
-    if (ijas .ge. 4 .and. ijas .le. 6) then
+    if (ijas .eq. 4) then
         mparmja = 2 + max(0, norda - 1)
         mparmjb = 2 + max(0, nordb - 1)
         mparmjc = nterms4(nordc)
