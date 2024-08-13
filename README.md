@@ -320,9 +320,8 @@ A sample input file would look like:
 %module general
     title           'VMC Calculation for a molecule'
     pool            './pool/'
-    mode            'vmc'
-    seed            1138139413245321
-    ipr -1
+    mode            'vmc_one_mpi'
+    ipr 	    -1
 %endmodule
 
 load trexio          molecule.hdf5
@@ -458,8 +457,7 @@ These files are generally kept in the `pool` directory of the calculation folder
 %module general
     title           'VMC Calculation for a molecule'
     pool            './pool/'
-    mode            'vmc'
-    seed            1138139413245321
+    mode            'vmc_one_mpi'
     pseudopot       BFD
     basis           ccpVTZ
     ipr             -1
