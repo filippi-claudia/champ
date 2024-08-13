@@ -40,8 +40,9 @@ jobs:
 
     - name: Install Cmake and HDF5
       run: |
+        sudo apt-get update
         sudo apt-get install -y cmake
-        sudo apt-get install -y libhdf5-serial-dev
+        sudo apt-get install -y libhdf5-dev
 
     - name: Install GNU compilers and libraries
       if: matrix.toolchain == 'gnu'
@@ -68,8 +69,9 @@ jobs:
 
     - name: Install Trexio
       run: |
+        sudo apt-get update
         sudo apt-get install -y cmake
-        sudo apt-get install -y libhdf5-serial-dev
+        sudo apt-get install -y libhdf5-dev
         sudo apt-get install -y gfortran
         sudo apt-get install -y gcc
         wget https://github.com/TREX-CoE/trexio/releases/download/v1.0/trexio-1.0.0.tar.gz
