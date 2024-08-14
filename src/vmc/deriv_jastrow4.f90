@@ -5,6 +5,7 @@
       use bparm,   only: nocuspb,nspin2b
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4
+      use da_jastrow, only: da_d2j,da_vj
       use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
       use jastrow, only: norda,nordb,nordc
@@ -55,11 +56,6 @@
       real(dp), dimension(-2:nordj) :: tt
       real(dp), dimension(-2:nordj) :: rri
       real(dp), dimension(-2:nordj) :: rrj
-      real(dp), parameter :: zero = 0.d0
-      real(dp), parameter :: one = 1.d0
-      real(dp), parameter :: two = 2.d0
-      real(dp), parameter :: half = .5d0
-      real(dp), parameter :: eps = 1.d-12
       real(dp) :: fsumo
       real(dp), dimension(3, *) :: fjo
       real(dp), dimension(nelec, *) :: fso
@@ -69,6 +65,12 @@
       real(dp), dimension(*) :: d2g
       real(dp), dimension(3, nelec, *) :: g
       real(dp), dimension(nelec, nelec, *) :: go
+
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: eps = 1.d-12
 
       iparma=nparma(1)
       do it=2,nctype
@@ -82,6 +84,10 @@
         fjo(3,i)=0
       enddo
       d2o=0
+      if(iforce_analy.gt.0) then
+        da_d2j=0.d0
+        da_vj=0.d0
+      endif
 
       do i=-2,-1
         uu(i)=0

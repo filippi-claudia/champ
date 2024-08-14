@@ -35,35 +35,35 @@ contains
 
 end module da_energy_sumcum
 
-module da_jastrow4val
+module da_jastrow
     !> Arguments: da_d2j, da_j, da_vj
       use precision_kinds, only: dp
 
     implicit none
 
-    real(dp), dimension(:, :, :), allocatable :: da_d2j !(3, MELEC, MCENT)
+    real(dp), dimension(:, :), allocatable :: da_d2j !(3, MCENT)
     real(dp), dimension(:, :, :), allocatable :: da_j !(3, MELEC, MCENT)
     real(dp), dimension(:, :, :, :), allocatable :: da_vj !(3, 3, MELEC, MCENT)
 
     private
     public   ::  da_d2j, da_j, da_vj
-    public :: allocate_da_jastrow4val, deallocate_da_jastrow4val
+    public :: allocate_da_jastrow, deallocate_da_jastrow
     save
 contains
-    subroutine allocate_da_jastrow4val()
+    subroutine allocate_da_jastrow()
       use system,  only: ncent_tot,nelec
-        if (.not. allocated(da_d2j)) allocate (da_d2j(3, nelec, ncent_tot))
+        if (.not. allocated(da_d2j)) allocate (da_d2j(3, ncent_tot))
         if (.not. allocated(da_j)) allocate (da_j(3, nelec, ncent_tot))
         if (.not. allocated(da_vj)) allocate (da_vj(3, 3, nelec, ncent_tot))
-    end subroutine allocate_da_jastrow4val
+    end subroutine allocate_da_jastrow
 
-    subroutine deallocate_da_jastrow4val()
+    subroutine deallocate_da_jastrow
         if (allocated(da_vj)) deallocate(da_vj)
         if (allocated(da_j)) deallocate(da_j)
         if (allocated(da_d2j)) deallocate(da_d2j)
-    end subroutine deallocate_da_jastrow4val
+    end subroutine deallocate_da_jastrow
 
-end module da_jastrow4val
+end module da_jastrow
 
 module da_orbval
     !> Arguments: da_d2orb, da_dorb, da_orb
@@ -347,7 +347,7 @@ contains
 subroutine allocate_m_deriv()
     use da_energy_now, only: allocate_da_energy_now
     use da_energy_sumcum, only: allocate_da_energy_sumcum
-    use da_jastrow4val, only: allocate_da_jastrow4val
+    use da_jastrow, only: allocate_da_jastrow
     use da_orbval, only: allocate_da_orbval
     use da_pseudo, only: allocate_da_pseudo
     use deloc_dj_m, only: allocate_deloc_dj_m
@@ -359,7 +359,7 @@ subroutine allocate_m_deriv()
     implicit none
 
     call allocate_da_energy_sumcum()
-    call allocate_da_jastrow4val()
+    call allocate_da_jastrow()
     call allocate_da_orbval()
     call allocate_da_pseudo()
     call allocate_da_energy_now()
@@ -373,7 +373,7 @@ end subroutine allocate_m_deriv
 subroutine deallocate_m_deriv()
     use da_energy_now, only: deallocate_da_energy_now
     use da_energy_sumcum, only: deallocate_da_energy_sumcum
-    use da_jastrow4val, only: deallocate_da_jastrow4val
+    use da_jastrow, only: deallocate_da_jastrow
     use da_orbval, only: deallocate_da_orbval
     use da_pseudo, only: deallocate_da_pseudo
     use deloc_dj_m, only: deallocate_deloc_dj_m
@@ -385,7 +385,7 @@ subroutine deallocate_m_deriv()
     implicit none
 
     call deallocate_da_energy_sumcum()
-    call deallocate_da_jastrow4val()
+    call deallocate_da_jastrow()
     call deallocate_da_orbval()
     call deallocate_da_pseudo()
     call deallocate_da_energy_now()

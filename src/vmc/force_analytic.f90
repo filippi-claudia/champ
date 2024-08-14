@@ -4,7 +4,7 @@ contains
 
       use contrl_file, only: ounit
       use da_energy_now, only: da_psi
-      use da_jastrow4val, only: da_j
+      use da_jastrow, only: da_j
       use precision_kinds, only: dp
       use system,  only: ncent,ncent_tot,nelec
       implicit none
@@ -35,7 +35,7 @@ contains
       subroutine compute_da_psi(psid,da_psi_ref)
 
       use da_energy_now, only: da_psi
-      use da_jastrow4val, only: da_j
+      use da_jastrow, only: da_j
       use da_orbval, only: da_orb
       use dorb_m,  only: iworbd
       use multidet, only: ivirt
@@ -131,7 +131,7 @@ contains
       use Bloc,    only: b_da,xmat
       use constants, only: hb
       use da_energy_now, only: da_energy,da_psi
-      use da_jastrow4val, only: da_d2j,da_vj
+      use da_jastrow, only: da_d2j,da_vj
       use da_orbval, only: da_orb
       use da_pseudo, only: da_pecent,da_vps
       use dorb_m,  only: iworbd
@@ -201,10 +201,10 @@ contains
 
         do k=1,3
 
-          da_other_kin=0.d0
+          da_other_kin=da_d2j(k,ic)
           da_other_pot=da_pecent(k,ic)
           do i=1,nelec
-            da_other_kin=da_other_kin+da_d2j(k,i,ic) &
+            da_other_kin=da_other_kin + &
             +2*(vj(1,i,1)*da_vj(k,1,i,ic)+vj(2,i,1)*da_vj(k,2,i,ic)+vj(3,i,1)*da_vj(k,3,i,ic))
             da_other_pot=da_other_pot+da_vps(k,i,ic,lpot(ict))
           enddo

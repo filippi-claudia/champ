@@ -902,7 +902,7 @@ contains
       use bparm,   only: nocuspb,nspin2b
       use contrl_file,    only: ounit
       use contrl_per, only: iperiodic
-      use da_jastrow4val, only: da_j
+      use da_jastrow, only: da_j
       use ewald_breakup, only: jastrow_longrange
       use jastrow, only: isc,sspinn, nordc
       use m_force_analytic, only: iforce_analy
@@ -1056,7 +1056,7 @@ contains
 
       use bparm,   only: nocuspb,nspin2b
       use contrl_per, only: iperiodic
-      use da_jastrow4val, only: da_j
+      use da_jastrow, only: da_j
       use jastrow, only: isc,sspinn, nordc
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl

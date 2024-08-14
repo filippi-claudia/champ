@@ -198,7 +198,7 @@ contains
       use system, only: ncent, nelec
       use Bloc,    only: bkin,b_da,b_dj
       use constants, only: hb
-      use da_jastrow4val, only: da_vj
+      use da_jastrow, only: da_vj
       use da_orbval, only: da_d2orb,da_dorb
       use derivjas, only: g
       use optwf_control, only: ioptjas

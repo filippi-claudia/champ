@@ -6,7 +6,7 @@ contains
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm,   only: nocuspb,nspin2b
       use contrl_per, only: iperiodic
-      use da_jastrow4val, only: da_j
+      use da_jastrow, only: da_j
       use deriv_nonlpsi, only: deriv_psianl,deriv_psibnl,deriv_psinl
       use derivjas, only: go
       use jaspointer, only: npoint,npointa
@@ -210,7 +210,7 @@ contains
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm,   only: nocuspb,nspin2b
       use contrl_per, only: iperiodic
-      use da_jastrow4val, only: da_j
+      use da_jastrow, only: da_j
       use deriv_nonlpsi, only: deriv_psianl,deriv_psibnl,deriv_psinl
       use derivjas, only: go
       use jaspointer, only: npoint,npointa

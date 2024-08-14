@@ -3,6 +3,7 @@
       subroutine jastrow_factor1(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
 ! Written by Cyrus Umrigar, modified by C. Filippi
 
+      use da_jastrow, only: da_d2j, da_vj
       use system, only: iwctype, ncent, nelec, nup
       use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, nordj
       use multiple_geo, only: iwf
@@ -51,6 +52,11 @@
            fjo(k,j)=0
         enddo
       enddo
+      if(iforce_analy.gt.0) then
+        da_d2j=0.d0
+        da_vj=0.d0
+      endif
+
       do i=-2,-1
          rij(i)=0
          ri(i)=0
@@ -311,7 +317,7 @@
 !-----------------------------------------------------------------------
       subroutine da_jastrow1(iwf,i,ic,it,rvec_en,r,feni,fenii)
 
-      use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use da_jastrow, only: da_d2j, da_j, da_vj
       use error, only: fatal_error
       use jastrow, only: a4, norda, nordj
       use scale_more, only: dd3
@@ -343,9 +349,9 @@
 
       do k=1,3
         da_j(k,i,ic)=-rvec_en(k)*ri*feni
-        da_d2j(k,i,ic)=-rvec_en(k)*ri*(feniii+fenii*(2*ri)+feni*(-2*ri2))
+        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k)*ri*(feniii+fenii*(2*ri)+feni*(-2*ri2))
         do l=1,3
-          da_vj(k,l,i,ic)=-rvec_en(k)*rvec_en(l)*ri2*(fenii-feni**ri)
+          da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(k)*rvec_en(l)*ri2*(fenii-feni**ri)
         enddo
         da_vj(k,k,i,ic)=da_vj(k,k,i,ic)-feni*ri
       enddo
