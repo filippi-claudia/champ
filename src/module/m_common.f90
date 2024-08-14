@@ -687,19 +687,6 @@ contains
 
 end module b_tmove
 
-module scale_more
-    !> Arguments: dd3
-      use precision_kinds, only: dp
-
-    implicit none
-
-    real(dp) :: dd3
-
-    private
-    public :: dd3
-    save
-end module scale_more
-
 module scratch
     !> Arguments: denergy_det, dtildem
     use precision_kinds, only: dp

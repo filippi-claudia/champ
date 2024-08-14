@@ -168,10 +168,66 @@ contains
       use jastrow, only: asymp_r,ijas,isc,scalek
       use multiple_geo, only: iwf
       use precision_kinds, only: dp
-      use scale_more, only: dd3
       implicit none
 
       real(dp) :: dd1, dd2, deni, exprij, r
+      real(dp) :: rr, rsc, rsc2, rsc3, term, term2
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = 0.5d0
+      real(dp), parameter :: third = 1.d0/3.d0
+
+! isc = 2,3 are exponential scalings
+! isc = 4,5 are inverse power scalings
+! isc = 3,5 have zero 2nd and 3rd derivatives at 0
+
+      if(scalek(iwf).ne.zero) then
+        if(isc.eq.2) then
+          rr=(one-dexp(-scalek(iwf)*r))/scalek(iwf)
+          dd1=one-scalek(iwf)*rr
+          dd2=-scalek(iwf)*dd1
+         elseif(isc.eq.3) then
+          rsc=scalek(iwf)*r
+          rsc2=rsc*rsc
+          rsc3=rsc*rsc2
+          exprij=dexp(-rsc-half*rsc2-third*rsc3)
+          rr=(one-exprij)/scalek(iwf)
+          dd1=(one+rsc+rsc2)*exprij
+          dd2=-scalek(iwf)*rsc2*(3+2*rsc+rsc2)*exprij
+         elseif(isc.eq.4) then
+          deni=one/(one+scalek(iwf)*r)
+          rr=r*deni
+          dd1=deni*deni
+          dd2=-two*scalek(iwf)*deni*dd1
+         elseif(isc.eq.5) then
+          deni=one/(one+(scalek(iwf)*r)**3)**third
+          rr=r*deni
+          dd1=deni**4
+          dd2=-4*(scalek(iwf)*r)**2*scalek(iwf)*dd1*dd1/deni
+        endif
+       else
+        rr=r
+        dd1=one
+        dd2=0
+      endif
+!     write(ounit,'(''r,rr='',9d12.4)') r,rr,dd1,dd2,scalek(iwf)
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine scale_dist3(r,rr,dd1,dd2,dd3)
+! Written by Cyrus Umrigar
+! Scale interparticle distances and calculate the 1st, 2nd, and 3rd derivs
+! of the scaled distances wrt the unscaled ones for calculating the
+! gradient and laplacian.
+
+      use jastrow, only: asymp_r,ijas,isc,scalek
+      use multiple_geo, only: iwf
+      use precision_kinds, only: dp
+      implicit none
+
+      real(dp) :: dd1, dd2, dd3, deni, exprij, r
       real(dp) :: rr, rsc, rsc2, rsc3, term, term2
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
@@ -268,6 +324,26 @@ contains
       rr=1-scalek(iwf)*rr
       dd1=-scalek(iwf)*dd1
       dd2=-scalek(iwf)*dd2
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine switch_scale3(rr,dd1,dd2,dd3)
+! Written by Cyrus Umrigar
+! Switch scaling for ijas=4 from that appropriate for A,B terms to
+! that appropriate for C terms, for dist and 1st two derivs.
+
+      use jastrow, only: scalek
+      use multiple_geo, only: iwf
+      use precision_kinds, only: dp
+      implicit none
+
+      real(dp) :: dd1, dd2, dd3, rr
+
+      rr=1-scalek(iwf)*rr
+      dd1=-scalek(iwf)*dd1
+      dd2=-scalek(iwf)*dd2
+      dd3=-scalek(iwf)*dd3
 
       return
       end

@@ -320,9 +320,7 @@
       use da_jastrow, only: da_d2j, da_j, da_vj
       use error, only: fatal_error
       use jastrow, only: a4, norda, nordj
-      use scale_more, only: dd3
       use precision_kinds, only: dp
-      use scale_more, only: dd3
 
       implicit none
 

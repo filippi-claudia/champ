@@ -13,7 +13,7 @@
       use jaspointer, only: npoint,npointa
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,nordj
       use jastrow, only: sspinn
-      use jastrow4_mod, only: da_jastrow4
+      use jastrow4_mod, only: da_jastrow4_en
       use m_force_analytic, only: iforce_analy
       use multiple_geo, only: iwf
       use optwf_control, only: ioptjas
@@ -21,7 +21,7 @@
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa,iwjasb,iwjasc
       use precision_kinds, only: dp
-      use scale_dist_mod, only: scale_dist2,switch_scale2
+      use scale_dist_mod, only: scale_dist2,switch_scale2, scale_dist3
       use system,  only: iwctype,ncent,nctype,nelec,nup
       use vardep,  only: cdep,iwdepend,nvdepend
       implicit none
@@ -30,12 +30,11 @@
       integer :: im1, iord, ipar, iparm
       integer :: iparm0, iparma, isb, it
       integer :: j, jj, jparm, k
-      integer :: l, l_hi, ll, m
-      integer :: n
+      integer :: l, l_hi, ll, m, n 
       real(dp) :: bot, bot0, bot2, boti, botii
       real(dp) :: botu, botuu, cd, d2o
-      real(dp) :: dd1, dd10, dd2, dd7
-      real(dp) :: dd8, dd9, fc, fee
+      real(dp) :: dd1, dd2, dd7, dd8, dd9, dd10, dd11, dd12
+      real(dp) :: fc, fee
       real(dp) :: feeu, feeuu, fen, feni
       real(dp) :: feni_save, fenii, fenii_save, fi
       real(dp) :: fii, fj, fjj
@@ -493,7 +492,11 @@
 
           ri=r_en(i,ic)
 
-          call scale_dist2(ri,rri(1),dd7,dd9)
+          if(iforce_analy.eq.0) then
+            call scale_dist2(ri,rri(1),dd7,dd9)
+          else
+            call scale_dist3(ri,rri(1),dd7,dd9,dd11)
+          endif
 
           top=a4(1,it,iwf)*rri(1)
           topi=a4(1,it,iwf)
@@ -531,7 +534,7 @@
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
 
-          if(iforce_analy.eq.1) call da_jastrow4(iwf,i,ic,it,rvec_en(1,i,ic),ri,rri,feni_save,fenii_save,dd7,dd9)
+          if(iforce_analy.eq.1) call da_jastrow4_en(iwf,i,ic,it,rvec_en(1,i,ic),ri,rri,feni_save,fenii_save,dd7,dd9,dd11)
 
           do jparm=1,nparma(it)
             iparm=npointa(it)+jparm

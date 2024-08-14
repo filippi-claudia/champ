@@ -7,7 +7,7 @@
       use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, nordj
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
-      use scale_dist_mod, only: scale_dist2, switch_scale2
+      use scale_dist_mod, only: scale_dist2, switch_scale2, scale_dist3, switch_scale3
       use m_force_analytic, only: iforce_analy
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
@@ -19,9 +19,8 @@
       integer :: ipar, isb, it, j
       integer :: k, l, l_hi, ll
       integer :: m, n
-      real(dp) :: bot, bot2, boti, botii, botu
-      real(dp) :: botuu, dd1, dd10
-      real(dp) :: dd2, dd7, dd8, dd9
+      real(dp) :: bot, bot2, boti, botii, botu, botuu
+      real(dp) :: dd1, dd2, dd3, dd7, dd8, dd9, dd10, dd11, dd12
       real(dp) :: fc, fee, feeu, feeuu
       real(dp) :: fen, feni, feni_save, fenii
       real(dp) :: fenii_save, fi, fii, fj
@@ -151,11 +150,19 @@
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
-        call scale_dist2(ri,rri(1),dd7,dd9)
-        call scale_dist2(rj,rrj(1),dd8,dd10)
+        if(iforce_analy.eq.0) then
+          call scale_dist2(ri,rri(1),dd7,dd9)
+          call scale_dist2(rj,rrj(1),dd8,dd10)
 
-        call switch_scale2(rri(1),dd7,dd9)
-        call switch_scale2(rrj(1),dd8,dd10)
+          call switch_scale2(rri(1),dd7,dd9)
+          call switch_scale2(rrj(1),dd8,dd10)
+        else
+          call scale_dist3(ri,rri(1),dd7,dd9,dd11)
+          call scale_dist3(rj,rrj(1),dd8,dd10,dd12)
+
+          call switch_scale3(rri(1),dd7,dd9,dd11)
+          call switch_scale3(rrj(1),dd8,dd10,dd12)
+       endif
 !        write(ounit,'(''ri,rri in een'',2f12.9)') ri,rri(1)
 
         s=ri+rj
@@ -269,7 +276,11 @@
 
           ri=r_en(i,ic)
 
-          call scale_dist2(ri,rri(1),dd7,dd9)
+          if(iforce_analy.eq.0) then
+            call scale_dist2(ri,rri(1),dd7,dd9)
+           else
+            call scale_dist3(ri,rri(1),dd7,dd9,dd11)
+          endif
 !          write(ounit,'(''ri,rri in en'',2f9.5)') ri,rri(1)
 
           top=a4(1,it,iwf)*rri(1)
@@ -286,12 +297,12 @@
           fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
           fenii=fenii/bot
 
-        do iord=2,norda
-          rri(iord)=rri(1)**iord
-          fen=fen+a4(iord+1,it,iwf)*rri(iord)
-          feni=feni+a4(iord+1,it,iwf)*iord*rri(iord-1)
-          fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
-        enddo
+          do iord=2,norda
+            rri(iord)=rri(1)**iord
+            fen=fen+a4(iord+1,it,iwf)*rri(iord)
+            feni=feni+a4(iord+1,it,iwf)*iord*rri(iord-1)
+            fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
+          enddo
 
           feni_save=feni
           fenii_save=fenii
@@ -307,7 +318,7 @@
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
 
-          if(iforce_analy.eq.1) call da_jastrow4(iwf,i,ic,it,rvec_en(1,i,ic),ri,rri,feni_save,fenii_save,dd7,dd9)
+          if(iforce_analy.eq.1) call da_jastrow4_en(iwf,i,ic,it,rvec_en(1,i,ic),ri,rri,feni_save,fenii_save,dd7,dd9,dd11)
       80   continue
         enddo
 
@@ -352,19 +363,17 @@
       return
       end
 !-----------------------------------------------------------------------
-      subroutine da_jastrow4(iwf,i,ic,it,rvec_en,r,rr,feni,fenii,dd1,dd2)
+      subroutine da_jastrow4_en(iwf,i,ic,it,rvec_en,r,rr,feni,fenii,dd1,dd2,dd3)
 
       use da_jastrow, only: da_d2j, da_j, da_vj
       use jastrow, only: a4, norda, nordj
-      use scale_more, only: dd3
       use precision_kinds, only: dp
-      use scale_more, only: dd3
 
       implicit none
 
       integer :: i, ic, iord, it, iwf
       integer :: k, l
-      real(dp) :: dd1, dd2, feni, fenii, feniii
+      real(dp) :: dd1, dd2, dd3, feni, fenii, feniii
       real(dp) :: r, ri, ri2
       real(dp), dimension(3) :: rvec_en
       real(dp), dimension(-2:nordj) :: rr
@@ -392,4 +401,73 @@
 
       return
       end
+!!-----------------------------------------------------------------------
+!      subroutine da_jastrow4(iwf,i,ic,it,rvec_en,r,rr,feni,fenii,dd1,dd2)
+!
+!      use da_jastrow, only: da_d2j, da_j, da_vj
+!      use jastrow, only: a4, norda, nordj
+!      use precision_kinds, only: dp
+!
+!      implicit none
+!
+!      integer :: i, ic, iord, it, iwf
+!      integer :: k, l
+!      real(dp) :: dd1, dd2, feni, fenii, feniii
+!      real(dp) :: r, ri, ri2
+!      real(dp), dimension(3) :: rvec_en
+!      real(dp), dimension(-2:nordj) :: rr
+!
+!      feniii=0.d0
+!      do iord=3,norda
+!        feniii=feniii+a4(iord+1,it,iwf)*iord*(iord-1)*(iord-2)*rr(iord-3)
+!      enddo
+!
+!      ri=1.d0/r
+!      ri2=ri*ri
+!
+!! can use iwf and loop over nwftypejas, since iwf is passed, this
+!! will only be called with 1 jas I believe, using iwf's original
+!! purpose
+!
+!      !d2ijo(i,j)=d2ijo(i,j) + 2*(fuu*dd1*dd1 + fu*dd2 + 2*fu*dd1/rij) + fui*dd1*dd7*(rij2+(ri2-rj2))/(ri*rij) &
+!      !+ fuj*dd1*dd8*(rij2-(ri2-rj2))/(rj*rij) + fii*dd7*dd7+fi*dd9 + 2*fi*dd7/ri + fjj*dd8*dd8+fj*dd10 + 2*fj*dd8/rj
+!
+!      do k=1,3
+!        da_j(k,i,ic)=da_j(k,i,ic)-rvec_en(k,i)*ri_i*fi*dd7-rvec_en(k,j)*rj_i*fj*dd8
+!        da_j(k,j,ic)=da_j(k,j,ic)-rvec_en(k,i)*ri_i*fi*dd7-rvec_en(k,j)*rj_i*fj*dd8
+!
+!        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k,i)*ri_i*(fiii*dd7*dd7*dd7+fii*dd7*(3*dd9+2*dd7*ri_i) +fi*(dd11+2*dd9*ri_i-2*dd7*ri_i2)) &
+!                                                   +dd7*(fjji*dd8*dd8+fji*(dd10+2*dd8*rj_i)) &
+!                                                   +2*dd7*(fuui*dd1*dd1 + fui*dd2 + 2*fui*dd1*rij_i) &
+!                                                   +fuii*dd1*dd7*dd7*(rij2+ri2-rj2)*ri_i*rij_i &
+!                                                   +fui*dd1*dd9*(rij2+ri2-rj2)*ri_i*rij_i &
+!                                                   +fui*dd1*dd7*2*rij_i &
+!                                                   -fui*dd1*dd7*(rij2+ri2-rj2)*ri_i2*rij_i &
+!                                                   +fuji*dd1*dd7*dd8*(rij2-ri2+rj2)*rj_i*rij_i &
+!                                                   -fuj*dd1*dd8*2*ri*rj_i*rij_i
+!                                 -rvec_en(k,j)*rj_i*(fjjj*dd8*dd8*dd8+fjj*dd8*(3*dd10+2*dd8*rj_i)+fj*(dd12+2*dd10*rj_i-2*dd8*rj_i2)) &
+!                                                   +dd8*(fiij*dd7*dd7+fij*(dd9+2*dd7*ri_i)) &
+!                                                   +2*dd8*(fuuj*dd1*dd1 + fuj*dd2 + 2*fuj*dd1*rij_i) &
+!                                                   +fujj*dd1*dd8*dd8*(rij2-ri2+rj2)*rj_i*rij_i &
+!                                                   +fuj*dd1*dd11*(rij2-ri2+rj2)*rj_i*rij_i &
+!                                                   +fuj*dd1*dd8*2*rij_i &
+!                                                   -fuj*dd1*dd8*(rij2-ri2+rj2)*rj_i2*rij_i &
+!                                                   +fuij*dd1*dd7*dd8*(rij2+ri2-rj2)*ri_i*rij_i &
+!                                                   -fui*dd1*dd7*2*rj*ri_i*rij_i
+!        do l=1,3
+!          da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(l,i)*rvec_en(k,i)*ri_i2*(fii*dd7*dd7+fi*dd9-fi*dd7*ri_i) &
+!                                         -rvec_en(l,i)*rvec_en(k,j)*ri_i*rj_i*fij*dd7*dd8 &
+!                                         -rvec_ee(l)*dd1*rij_i*(rvec_en(k,i)*fui*dd7*ri_i+rvec_en(k,j)*fuj*dd8*rj_i) 
+!
+!          da_vj(k,l,j,ic)=da_vj(k,l,j,ic)-rvec_en(l,j)*rvec_en(k,j)*rj_i2*(fjj*dd8*dd8+fj*dd9-fj*dd8*rj_i) &
+!                                         -rvec_en(l,j)*rvec_en(k,i)*rj_i*ri_i*fji*dd7*dd8 &
+!                                         +rvec_ee(l)*dd1*rij_i*(rvec_en(k,i)*fui*dd7*ri_i+rvec_en(k,j)*fuj*dd8*rj_i) 
+!        enddo
+!        da_vj(k,k,i,ic)=da_vj(k,k,i,ic)-fi*dd7*ri
+!        da_vj(k,k,j,ic)=da_vj(k,k,j,ic)-fj*dd8*rj
+!      enddo
+!
+!      return
+!      end
+
 end module
