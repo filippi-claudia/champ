@@ -5,7 +5,7 @@
       use bparm,   only: nocuspb,nspin2b
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4
-      use da_jastrow, only: da_d2j,da_vj
+      use da_jastrow, only: da_d2j,da_j,da_vj
       use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
       use jastrow, only: norda,nordb,nordc
@@ -84,6 +84,7 @@
       enddo
       d2o=0
       if(iforce_analy.gt.0) then
+        da_j=0.d0
         da_d2j=0.d0
         da_vj=0.d0
       endif
