@@ -240,7 +240,6 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
 
 # List of Fortran flags for Intel's ifort compiler begins here
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
-  list(APPEND Fortran_FLAGS "-g")
   list(APPEND Fortran_FLAGS "-O2")
   list(APPEND Fortran_FLAGS "-fPIC")
   list(APPEND Fortran_FLAGS "-implicitnone")
