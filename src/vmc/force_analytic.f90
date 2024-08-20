@@ -7,27 +7,33 @@ contains
       use da_jastrow, only: da_j
       use precision_kinds, only: dp
       use system,  only: ncent,ncent_tot,nelec
+      use contrl_file,    only: ounit
       implicit none
 
-      integer :: i, ic, k
-      real(dp) :: denergy, psid
+      integer :: i, ic, j, k
+      real(dp) :: denergy, psid, tmp
       real(dp), dimension(3, ncent_tot) :: da_psi_ref
 
 !     ! multistate indcies were not added
       call compute_da_psi(psid,da_psi_ref)
       call compute_da_energy(psid,denergy)
 
+!     tmp=0
       do ic=1,ncent
         do k=1,3
           da_psi(k,ic)=da_psi(k,ic)+da_psi_ref(k,ic)
           do i=1,nelec
-            da_psi(k,ic)=da_psi(k,ic)+da_j(k,i,ic)
+            do j=1,i
+              da_psi(k,ic)=da_psi(k,ic)+da_j(k,i,j,ic)
+!             if(k.eq.2.and.ic.eq.1) tmp=tmp+da_j(k,i,j,ic)
+            enddo
           enddo
         enddo
       enddo
 
-!     write(ounit,*)'da_ref',((da_psi_ref(l,ic),l=1,3),ic=1,ncent)
+!     write(ounit,*)'da_ref',((da_psi_ref(k,ic),k=1,3),ic=1,ncent)
 !     write(ounit,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
+!     write(ounit,*) 'da_j',tmp
 
       return
       end
@@ -143,6 +149,7 @@ contains
       use system,  only: iwctype,ncent,ncent_tot,ndn,nelec,nup
       use velocity_jastrow, only: vj
       use zcompact, only: aaz,dzmat,emz,zmat
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -208,6 +215,8 @@ contains
             +2*(vj(1,i,1)*da_vj(k,1,i,ic)+vj(2,i,1)*da_vj(k,2,i,ic)+vj(3,i,1)*da_vj(k,3,i,ic))
             da_other_pot=da_other_pot+da_vps(k,i,ic,lpot(ict))
           enddo
+!         write(ounit,*)'da_kin1',k,ic,da_other_kin,da_other_pot
+!         write(ounit,*)'da_kin2',k,ic,da_energy_ref(k,ic),da_psi(k,ic)
 
           da_energy(k,ic)=da_energy(k,ic)+da_energy_ref(k,ic)-hb*da_other_kin+da_other_pot &
                          -denergy*da_psi(k,ic)
@@ -217,6 +226,9 @@ contains
       enddo
 
 !     write(ounit,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
+!     write(ounit,*)'da_energy',da_energy(2,1)
+!     write(ounit,*)'da_vj',da_vj(2,1,1,1)
+!     write(ounit,*)'da_d2j',da_d2j(2,1)
 
       return
       end

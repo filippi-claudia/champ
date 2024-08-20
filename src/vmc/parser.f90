@@ -1475,7 +1475,6 @@ subroutine parser
 
   ! Analytical forces flags 
   if(iforce_analy.gt.0) then
-    if(nordc.gt.0) call fatal_error('READ_INPUT: Nuclear analytic forces not implemented for 3-body J')
     if(isc.ne.2) call fatal_error('READ_INPUT: Nuclear analytic forces only implemented for isc=2')
     write(ounit,'(a)' ) " Geometry optimization with analytic gradients"
     if(iuse_zmat.gt.0) write(ounit,'(a)' ) " Using internal coordinates "

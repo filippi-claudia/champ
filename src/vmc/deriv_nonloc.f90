@@ -151,6 +151,14 @@ contains
           endif
         enddo
 
+        if(iforce_analy.gt.0) then
+           !dum=dpsibnl(rij,isb,ipar,iwfjas)/rij
+           do k=1,3
+              dumk=-dum*dx(k)
+              vjn(k,iq)=vjn(k,iq)+dumk
+           enddo
+        endif
+
         do it=1,nctype
           iparm0=npoint(it)
           do jparm=1,nparmc(it)
@@ -193,7 +201,7 @@ contains
         do k=1,3
           dumk=dum*rvec_en_quad(k,iq,ic)
           vjn(k,iq)=vjn(k,iq)+dumk
-          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,ic)
+          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,iel,ic)
         enddo
        enddo
 
@@ -427,7 +435,7 @@ contains
         do k=1,3
           dumk=dum*rvec_en_quad(k,iq,ic)
           vjn(k,iq)=vjn(k,iq)+dumk
-          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,ic)
+          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,iel,ic)
         enddo
        enddo
 

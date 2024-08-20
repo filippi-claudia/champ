@@ -42,7 +42,7 @@ module da_jastrow
     implicit none
 
     real(dp), dimension(:, :), allocatable :: da_d2j !(3, MCENT)
-    real(dp), dimension(:, :, :), allocatable :: da_j !(3, MELEC, MCENT)
+    real(dp), dimension(:, :, :, :), allocatable :: da_j !(3, MELEC, MELEC, MCENT)
     real(dp), dimension(:, :, :, :), allocatable :: da_vj !(3, 3, MELEC, MCENT)
 
     private
@@ -53,7 +53,7 @@ contains
     subroutine allocate_da_jastrow()
       use system,  only: ncent_tot,nelec
         if (.not. allocated(da_d2j)) allocate (da_d2j(3, ncent_tot))
-        if (.not. allocated(da_j)) allocate (da_j(3, nelec, ncent_tot))
+        if (.not. allocated(da_j)) allocate (da_j(3, nelec, nelec, ncent_tot))
         if (.not. allocated(da_vj)) allocate (da_vj(3, 3, nelec, ncent_tot))
     end subroutine allocate_da_jastrow
 

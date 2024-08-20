@@ -136,7 +136,6 @@ module nonlpsi
       return
       end
 !-----------------------------------------------------------------------
-
       function psibnl(u,isb,ipar,iwfjas)
 
       use jastrow, only: nordb
@@ -177,6 +176,109 @@ module nonlpsi
           uu=u*uu
           psibnl=psibnl+b(i+1,isb,iwf)*uu
         enddo
+      endif
+
+      return
+      end
+!-----------------------------------------------------------------------
+      function dpsinl(u,rri,rrj,fu,fi,fj,dd1u,dd1i,dd1j,it,iwfjas,iforce_analy)
+! Written by Claudia Filippi, modified by Cyrus Umrigar
+      use vmc_mod, only: nwftypejas
+      use jastrow, only: norda, nordb, nordc
+      use jastrow, only: asymp_r
+      use jastrow, only: cutjas_en,cutjas_eni
+      use jastrow, only: a4, c,ijas,nordj
+      use multiple_geo, only: iwf
+      use contrl_file, only: ounit
+      use precision_kinds, only: dp
+      use scale_dist_mod, only: switch_scale, switch_scale1
+
+      implicit none
+
+      integer :: iforce_analy, it, jp, k, l, l_hi
+      integer :: ll, m, n, iwfjas
+      real(dp) :: rri, rrj, rrri, rrrj, xi, xj
+      real(dp) :: u, uuu, fu, fi, fj
+      real(dp) :: dd1u, dd1i, dd1j, dpsinl
+      real(dp), dimension(-1:nordj) :: uu
+      real(dp), dimension(-1:nordj) :: ri
+      real(dp), dimension(-1:nordj) :: rj
+      real(dp), dimension(-1:nordj) :: ss
+      real(dp), dimension(-1:nordj) :: tt
+      real(dp), parameter :: eps = 1.d-12
+
+      dpsinl=0.d0
+
+      if(nwftypejas.gt.1) iwf=iwfjas
+
+      uu=0.d0
+      ri=0.d0
+      rj=0.d0
+      ss=0.d0
+      tt=0.d0
+
+      uu(1)=u
+      ri(1)=rri
+      rj(1)=rrj
+
+      uu(0)=1
+      ri(0)=1
+      rj(0)=1
+      ss(0)=2
+      tt(0)=1
+
+      if(ijas.eq.4) then
+         if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
+         if(iforce_analy.eq.0) then
+           call switch_scale(uu(1))
+           call switch_scale(ri(1))
+           call switch_scale(rj(1))
+          else
+           call switch_scale1(uu(1),dd1u)
+           call switch_scale1(ri(1),dd1i)
+           call switch_scale1(rj(1),dd1j)
+        endif
+      elseif(ijas.eq.1) then
+         if(rri.gt.cutjas_en(it,iwf).or.rrj.gt.cutjas_en(it,iwf)) return
+      endif
+
+      do jp=1,nordc
+        uu(jp)=uu(1)*uu(jp-1)
+        ri(jp)=ri(1)*ri(jp-1)
+        rj(jp)=rj(1)*rj(jp-1)
+        ss(jp)=ri(jp)+rj(jp)
+        tt(jp)=ri(jp)*rj(jp)
+      enddo
+
+      fi=0
+      fj=0
+      fu=0
+      ll=0
+      do n=2,nordc
+        do k=n-1,0,-1
+          if(k.eq.0) then
+            l_hi=n-k-2
+           else
+            l_hi=n-k
+          endif
+          do l=l_hi,0,-1
+            m=(n-k-l)/2
+            if(2*m.eq.n-k-l) then
+              ll=ll+1
+              fu=fu+c(ll,it,iwf)*k*uu(k-1)*ss(l)*tt(m)
+              fi=fi+c(ll,it,iwf)*uu(k) &
+                 *((l+m)*ri(l+m-1)*rj(m)+m*ri(m-1)*rj(l+m))
+              fj=fj+c(ll,it,iwf)*uu(k) &
+                 *((l+m)*rj(l+m-1)*ri(m)+m*rj(m-1)*ri(l+m))
+            endif
+          enddo
+        enddo
+      enddo
+
+      if(ijas.eq.1) then
+         xi=rri*cutjas_eni(it,iwf)
+         xj=rrj*cutjas_eni(it,iwf)
+! to fix
       endif
 
       return
@@ -306,9 +408,6 @@ module nonlpsi
          enddo
 
       endif
-
-
-
 
       return
       end

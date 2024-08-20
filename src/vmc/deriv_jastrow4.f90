@@ -35,9 +35,8 @@
       real(dp) :: botu, botuu, cd, d2o
       real(dp) :: dd1, dd2, dd7, dd8, dd9, dd10, dd11, dd12
       real(dp) :: fc, fee
-      real(dp) :: feeu, feeuu, fen, feni
-      real(dp) :: feni_save, fenii, fenii_save, fi
-      real(dp) :: fii, fj, fjj
+      real(dp) :: feeu, feeuu, fen, feni, fenii, feniii
+      real(dp) :: fi, fii, fj, fjj
       real(dp) :: fu, fui, fuj, fuu
       real(dp) :: gee=0, geeu=0, geeuu=0, gen
       real(dp) :: geni, genii, gi, gii
@@ -520,8 +519,14 @@
             fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
           enddo
 
-          feni_save=feni
-          fenii_save=fenii
+          if(iforce_analy.eq.1) then
+! temporarely assuming no Pade' term in A Jastrow
+            feniii=0.d0
+            do iord=3,norda
+              feniii=feniii+a4(iord+1,it,iwf)*iord*(iord-1)*(iord-2)*rri(iord-3)
+            enddo
+            call da_jastrow4_en(i,ic,rvec_en(1,i,ic),ri,feni,fenii,feniii,dd7,dd9,dd11)
+          endif
 
           fenii=fenii*dd7*dd7+feni*dd9
           feni=feni*dd7/ri
@@ -534,8 +539,6 @@
 !         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
-
-          if(iforce_analy.eq.1) call da_jastrow4_en(iwf,i,ic,it,rvec_en(1,i,ic),ri,rri,feni_save,fenii_save,dd7,dd9,dd11)
 
           do jparm=1,nparma(it)
             iparm=npointa(it)+jparm

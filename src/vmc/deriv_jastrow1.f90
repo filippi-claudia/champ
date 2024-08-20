@@ -12,7 +12,7 @@
       use jastrow, only: a4,b,c,nordj
       use jastrow, only: sspinn
       use jaspointer, only: npoint,npointa
-      use jastrow1_mod, only: da_jastrow1
+      use jastrow1_mod, only: da_jastrow1_en
       use m_force_analytic, only: iforce_analy
       use multiple_geo, only: iwf
       use optwf_control, only: ioptjas
@@ -33,7 +33,7 @@
       real(dp) :: a1_cusp, da1_cusp, bot, bot0, bot2, boti, botii
       real(dp) :: botu, botuu, b1_cusp, db1_cusp, cd, d2, d2o
       real(dp) :: fc, fee, feeu, feeu_save, feeuu, fen, feni
-      real(dp) :: feni_save, fenii, fenii_save, fi, fi_save
+      real(dp) :: feni_save, fenii, feniii, fi, fi_save
       real(dp) :: fii, fj, fj_save, fjj, fsum
       real(dp) :: fu, fui, fuj, fuu
       real(dp) :: gee, geeu, geeu_save, geeuu, gen
@@ -470,10 +470,16 @@
           termi=-3*(1.d0-xi)**2*cutjas_eni(it,iwf)
           termii=6*(1.d0-xi)*cutjas_eni(it,iwf)*cutjas_eni(it,iwf)
           
-          feni_save=feni*term+fen*termi
+          feni=feni*term+fen*termi
           fenii=fenii*term+2*feni*termi+fen*termii
-          
-          feni=feni_save/ri(1)
+
+          if(iforce_analy.eq.1) then
+! still to compute
+            feniii=0.d0
+            call da_jastrow1_en(i,ic,rvec_en(1,i,ic),ri,feni,fenii,feniii)
+          endif
+
+          feni=feni/ri(1)
 
           fso(i,i)=fso(i,i)+fen*term
           
@@ -484,8 +490,6 @@
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
 
-          if(iforce_analy.eq.1) call da_jastrow1(iwf,i,ic,it,rvec_en(1,i,ic),ri,feni_save,fenii)
-          
           do jparm=1,nparma(it)
             iparm=npointa(it)+jparm
 

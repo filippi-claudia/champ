@@ -212,7 +212,7 @@ contains
 
          if(ioptjas.eq.0) then
             do iwfjas=1,nwftypejas
-               call nonlocj_quad4(nxquad,xquad,iequad,x,r_en, &
+               call nonlocj_quad4(nxquad,xquad,iequad,x,r_en,rvec_en, &
                     rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio, &
                     fso(1,1,iwfjas),iwfjas)
             enddo
@@ -1005,16 +1005,6 @@ contains
 
         fsn(i,j)=psibnl(rij,isb,ipar,iwfjas)
 
-        ! e-e-n terms
-        if(nordc.gt.1) then
-           do ic=1,ncent
-              it=iwctype(ic)
-              fsn(i,j)=fsn(i,j) + &
-              psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),it,iwfjas)
-           enddo
-        end if
-        
-
         fsumn=fsumn+fsn(i,j)-fso(i,j)
    45 continue
       enddo
@@ -1038,7 +1028,7 @@ contains
         do k=1,3
           dumk=dum*rvec_en_quad(k,iq,ic)
           vjn(k,iq)=vjn(k,iq)+dumk
-          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,ic)
+          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,iel,ic)
         enddo
        enddo
 
@@ -1050,7 +1040,7 @@ contains
       return
       end
 !-----------------------------------------------------------------------
-      subroutine nonlocj_quad4(nxquad,xquad,iequad,x,r_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio,fso,iwfjas)
+      subroutine nonlocj_quad4(nxquad,xquad,iequad,x,r_en,rvec_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio,fso,iwfjas)
 
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
 
@@ -1059,7 +1049,7 @@ contains
       use da_jastrow, only: da_j
       use jastrow, only: isc,sspinn, nordc
       use m_force_analytic, only: iforce_analy
-      use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
+      use nonlpsi, only: dpsianl,dpsibnl,dpsinl,psianl,psibnl,psinl
       use precision_kinds, only: dp
       use find_pimage, only: find_image_pbc
       use scale_dist_mod, only: scale_dist,scale_dist1
@@ -1073,12 +1063,13 @@ contains
       integer :: iq, it, j, jj, k, nxquad
       integer, dimension(*) :: iequad
 
-      real(dp) :: dd1u, dum, dumk, fsumn
+      real(dp) :: dd1i, dd1ij, dd1j, dd1u, dum, dumk, fsumn, fi, fj, fu
       real(dp) :: rij, u
       real(dp), dimension(nelec,*) :: fso
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,*) :: xquad
       real(dp), dimension(nelec,ncent_tot) :: r_en
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(3,nquad*nelec*2,*) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
       real(dp), dimension(nelec,ncent_tot) :: rr_en
@@ -1098,7 +1089,6 @@ contains
             call scale_dist(r_en(i,ic),rr_en(i,ic))
           enddo
         enddo
-
        else
         do ic=1,ncent
           do i=1,nelec
@@ -1116,6 +1106,7 @@ contains
           call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic))
         enddo
        else
+        da_psij_ratio(:,:,iq)=0.d0
         do ic=1,ncent
           call scale_dist1(r_en_quad(iq,ic),rr_en_quad(ic),dd1_quad(ic))
         enddo
@@ -1181,13 +1172,33 @@ contains
 
 ! e-e-n terms
 ! The scaling is switched in psinl, so do not do it here.
-      if(nordc.gt.1) then
-        do ic=1,ncent
-          it=iwctype(ic)
-          fsn(i,j)=fsn(i,j) + psinl(u,rr_en_quad(ic),rr_en(jj,ic),it,iwfjas)
-        enddo
-      end if
+        if(nordc.gt.1) then
+          do ic=1,ncent
+            it=iwctype(ic)
+            fsn(i,j)=fsn(i,j) + psinl(u,rr_en_quad(ic),rr_en(jj,ic),it,iwfjas)
+          enddo
         
+          if(iforce_analy.gt.0) then
+            do ic=1,ncent
+              it=iwctype(ic)
+              dd1ij=dd1u
+              dd1i=dd1_quad(ic)
+              dd1j=dd1(jj,ic)
+              dum=dpsinl(u,rr_en_quad(ic),rr_en(jj,ic),fu,fi,fj,dd1ij,dd1i,dd1j,it,iwfjas,iforce_analy)
+              fu=fu*dd1ij/rij
+              fi=fi*dd1i/r_en_quad(iq,ic)
+              fj=fj*dd1j/r_en(jj,ic)
+
+              do k=1,3
+                dumk=fi*rvec_en_quad(k,iq,ic)
+                vjn(k,iq)=vjn(k,iq)+dumk-fu*dx(k)
+                dumk=-dumk-fj*rvec_en(k,jj,ic)
+                da_psij_ratio(k,ic,iq)=da_psij_ratio(k,ic,iq)+dumk-da_j(k,i,j,ic)
+              enddo
+            enddo
+          endif
+        endif
+
         fsumn=fsumn+fsn(i,j)-fso(i,j)
       45 continue
       enddo
@@ -1211,7 +1222,7 @@ contains
         do k=1,3
           dumk=dum*rvec_en_quad(k,iq,ic)
           vjn(k,iq)=vjn(k,iq)+dumk
-          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,ic)
+          da_psij_ratio(k,ic,iq)=da_psij_ratio(k,ic,iq)-dumk-da_j(k,iel,iel,ic)
         enddo
        enddo
 
