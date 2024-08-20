@@ -1735,10 +1735,10 @@ subroutine parser
 
 ! (13) Forces information (either block or from a file) [#####]
 
-  if (fdf_load_defined('forces') ) then
-    call read_forces_file(file_forces)
-  elseif (fdf_block('forces', bfdf)) then
+  if (fdf_block('forces', bfdf)) then
     call fdf_read_forces_block(bfdf)
+  elseif (fdf_load_defined('forces') ) then
+    call read_forces_file(file_forces)
   else
     if(nforce.ge.1.and.iforces.eq.0.and.igradients.eq.0) then
       write(errunit,*) "INPUT: block forces_displace or gradients_* missing: geometries set equal to primary"
@@ -2333,26 +2333,66 @@ end subroutine read_lattice_file
     implicit none
     type(block_fdf)            :: bfdf
     type(parsed_line), pointer :: pline
-    integer                    :: i,j,k
+    integer                    :: i,j,k,l
+
+!  Format of the forces block
+!
+!    %block forces
+!    1 1
+!   -0.733652000000     0.1   -1.157935000000
+!    0.733652000000     0.1    1.157935000000
+!    0.298187000000     0.1   -3.466419000000
+!   -0.298187000000     0.1    3.466419000000
+!    2.326423000000     0.1   -3.706633000000
+!   -2.326423000000     0.1    3.706633000000
+!   -2.772181000000     0.1   -0.963193000000
+!    2.772181000000     0.1    0.963193000000
+!   -0.855551000000     0.1   -5.146950000000
+!    0.855551000000     0.1    5.146950000000
+!    #
+!   -3.733652000000     2.1   -1.157935000000
+!    3.733652000000     2.1    1.157935000000
+!    3.298187000000     2.1   -3.466419000000
+!   -3.298187000000     2.1    3.466419000000
+!    3.326423000000     2.1   -3.706633000000
+!   -3.326423000000     2.1    3.706633000000
+!   -3.772181000000     2.1   -0.963193000000
+!    3.772181000000     2.1    0.963193000000
+!   -3.855551000000     2.1   -5.146950000000
+!    3.855551000000     2.1    5.146950000000
+!    %endblock
 
     if (.not. allocated(delc)) allocate (delc(3, ncent, nforce))
     if (.not. allocated(iwftype)) allocate (iwftype(nforce))
 
     i = 1; j = 1
     do while((fdf_bline(bfdf, pline)))
-      if (pline%ntokens == 1) i = fdf_bintegers(pline, 1)
-      if (pline%ntokens == 3) then
+      if (pline%ntokens == nforce .and. (pline%id(1) .eq. "i") ) then
+        do l = 1, nforce
+          iwftype(l) = fdf_bintegers(pline, l)
+        enddo
+      endif
+      if (pline%ntokens == 3 .and. (any(pline%id(1:3).eq."r")) ) then
         do k = 1, 3
           delc(k, j, i) = fdf_bvalues(pline, k)
         enddo ! xyz
-        j = j + 1
+
+        if (mod(j, ncent) == 0) then
+          i = i + 1
+          j = 1
+        else
+          j = j + 1
+        endif
+
       endif ! expect only three values in a line
     enddo ! parse entire file
+
 
     write(ounit,*) 'Force displacements from the %block forces  '
     write(ounit,*)
     do i = 1, nforce
-      write(ounit,'(a,i4)') 'Number ::',i
+      write(ounit,*) '-----------------------------------------------------------------------'
+      write(ounit,'(a,i4)') 'Number (iwftype) :: ',i
       write(ounit,*) '-----------------------------------------------------------------------'
       write(ounit,'(a, t15, a, t27, a, t39, a, t45)') 'Symbol', 'x', 'y', 'z'
       write(ounit,'(t14, a, t26, a, t38, a )') '(A)', '(A)', '(A)'

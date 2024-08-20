@@ -1125,7 +1125,7 @@ endif ! (rank==0)
       character(len=MAX_LENGTH)  :: keyword
 
 !--------------------------------------------------------------- Local Variables
-      logical                    :: dump
+      logical                    :: dump, within_block
       logical, allocatable       :: found(:)
       character(80)              :: msg
       character(len=MAX_LENGTH)  :: label, inc_file, modulename
@@ -1159,7 +1159,7 @@ endif ! (rank==0)
 !         %block directive
           ind_less = search('<', pline)
           if (search('%block', pline) .eq. 1) then
-!            print*, "debug::library::  inside block construct "
+            within_block = .TRUE.
 !           No label found in %block directive
             if (ntok .eq. 1) then
               write(msg,*) '%block label not found in ', TRIM(filein)
@@ -1191,7 +1191,6 @@ endif ! (rank==0)
                 nullify(pline) ! it is stored in line
 
                 nlstart = file_in%nlines
-!                print*, "debug:: nlstart ", nlstart
 
                 call fdf_read(inc_file, label)
 
@@ -1208,6 +1207,7 @@ endif ! (rank==0)
                 call setmorphol(2, 'l', pline)
                 call fdf_addtoken(line, pline)
                 nullify(pline) ! it is stored in line
+                within_block = .FALSE.
 
 !               Dump included file to fileout
                 if (dump) call fdf_dump(label)
@@ -1238,6 +1238,7 @@ endif ! (rank==0)
 
 !         %endblock directive
           elseif (search('%endblock', pline) .eq. 1) then
+            within_block = .FALSE.
 !            print*, "debug::library::  inside endblock construct "
 !           Check if %block exists before %endblock
             if (label .eq. ' ') then
@@ -1372,7 +1373,10 @@ endif ! (rank==0)
             ! Following three lines will validate the keyword against allowed CHAMP keywords
             keyword = trim(tokens(pline,1))
             if (tokens(pline, 1) == "load" ) keyword = trim(tokens(pline,2))
-            call validate_keywords(keyword)
+
+            if (.not. within_block) then
+              call validate_keywords(keyword)
+            endif
 
             if (label .eq. ' ') call setmorphol(1, 'l', pline)
             call fdf_addtoken(line, pline)
