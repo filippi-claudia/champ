@@ -95,6 +95,8 @@ contains
       areao=one
       rratio=one
 
+      call check_orbitals
+
 ! Start loop over electrons
       do i=1,nelec
         !call compute_determinante_grad(i,psido(1),psido,psijo,vold(1,i),1)
