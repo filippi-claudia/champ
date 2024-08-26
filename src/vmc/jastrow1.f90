@@ -3,6 +3,7 @@
       subroutine jastrow_factor1(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
 ! Written by Cyrus Umrigar, modified by C. Filippi
 
+      use da_jastrow, only: da_d2j, da_j, da_vj
       use system, only: iwctype, ncent, nelec, nup
       use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, nordj
       use multiple_geo, only: iwf
@@ -21,8 +22,8 @@
       integer :: m, n
       real(dp) :: a1_cusp, b1_cusp, d2, dd2
       real(dp) :: fc, fee, feeu, feeu_save,feeuu
-      real(dp) :: fen, feni, feni_save, fenii
-      real(dp) :: fenii_save, fi, fi_save, fii, fj, fj_save
+      real(dp) :: fen, feni, fenii, feniii
+      real(dp) :: fi, fi_save, fii, fj, fj_save
       real(dp) :: fjj, fsum, fu, fui, fuj, fuu
       real(dp) :: s, t, term, termi, termii, termj, termjj
       real(dp) :: termu, termuu, term1, term2
@@ -51,6 +52,12 @@
            fjo(k,j)=0
         enddo
       enddo
+      if(iforce_analy.gt.0) then
+        da_j=0.d0
+        da_vj=0.d0
+        da_d2j=0.d0
+      endif
+
       do i=-2,-1
          rij(i)=0
          ri(i)=0
@@ -264,7 +271,6 @@
             fen=a1_cusp*ri(1)+a4(1,it,iwf)
             feni=a1_cusp
             fenii=0
-
             do iord=2,norda
                ri(iord)=ri(1)*ri(iord-1)
                fen=fen+a4(iord,it,iwf)*ri(iord)
@@ -272,16 +278,21 @@
                fenii=fenii+a4(iord,it,iwf)*iord*(iord-1)*ri(iord-2)
             enddo
 
-
             xi=ri(1)*cutjas_eni(it,iwf)
             term=(1.d0-xi)**3
             termi=-3*(1.d0-xi)**2*cutjas_eni(it,iwf)
             termii=6*(1.d0-xi)*cutjas_eni(it,iwf)*cutjas_eni(it,iwf)
 
-            feni_save=feni*term+fen*termi
+            feni=feni*term+fen*termi
             fenii=fenii*term+2*feni*termi+fen*termii
 
-            feni=feni_save/ri(1)
+            if(iforce_analy.eq.1) then
+! still to compute
+              feniii=0.d0
+              call da_jastrow1_en(i,ic,rvec_en(1,i,ic),ri,feni,fenii,feniii)
+            endif
+
+            feni=feni/ri(1)
 
             fso(i,i)=fso(i,i)+fen*term
 
@@ -292,7 +303,6 @@
 
             d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
 
-            if(iforce_analy.eq.1) call da_jastrow1(iwf,i,ic,it,rvec_en(1,i,ic),ri,feni_save,fenii)
  80         continue
          enddo
 
@@ -309,14 +319,12 @@
       end
 
 !-----------------------------------------------------------------------
-      subroutine da_jastrow1(iwf,i,ic,it,rvec_en,r,feni,fenii)
+      subroutine da_jastrow1_en(i,ic,rvec_en,r,feni,fenii,feniii)
 
-      use da_jastrow4val, only: da_d2j, da_j, da_vj
+      use da_jastrow, only: da_d2j, da_j, da_vj
+      use jastrow, only: nordj
       use error, only: fatal_error
-      use jastrow, only: a4, norda, nordj
-      use scale_more, only: dd3
       use precision_kinds, only: dp
-      use scale_more, only: dd3
 
       implicit none
 
@@ -329,11 +337,6 @@
 
       call fatal_error('DA_JAS1: da_jastrow1 to fix')
 
-      feniii=0.d0
-      do iord=3,norda
-        feniii=feniii+a4(iord,it,iwf)*iord*(iord-1)*(iord-2)*r(iord-3)
-      enddo
-
       ri=1.d0/r(1)
       ri2=ri*ri
 
@@ -342,10 +345,10 @@
       ! purpose
 
       do k=1,3
-        da_j(k,i,ic)=-rvec_en(k)*ri*feni
-        da_d2j(k,i,ic)=-rvec_en(k)*ri*(feniii+fenii*(2*ri)+feni*(-2*ri2))
+        da_j(k,i,i,ic)=da_j(k,i,i,ic)-rvec_en(k)*ri*feni
+        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k)*ri*(feniii+fenii*(2*ri)+feni*(-2*ri2))
         do l=1,3
-          da_vj(k,l,i,ic)=-rvec_en(k)*rvec_en(l)*ri2*(fenii-feni**ri)
+          da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(k)*rvec_en(l)*ri2*(fenii-feni**ri)
         enddo
         da_vj(k,k,i,ic)=da_vj(k,k,i,ic)-feni*ri
       enddo

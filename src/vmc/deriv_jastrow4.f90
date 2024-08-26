@@ -5,6 +5,7 @@
       use bparm,   only: nocuspb,nspin2b
       use contrl_file, only: ounit
       use cuspmat4, only: d,iwc4
+      use da_jastrow, only: da_d2j,da_j,da_vj
       use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
       use jastrow, only: norda,nordb,nordc
@@ -12,7 +13,7 @@
       use jaspointer, only: npoint,npointa
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,nordj
       use jastrow, only: sspinn
-      use jastrow4_mod, only: da_jastrow4
+      use jastrow4_mod, only: da_jastrow4_een, da_jastrow4_en
       use m_force_analytic, only: iforce_analy
       use multiple_geo, only: iwf
       use optwf_control, only: ioptjas
@@ -20,7 +21,7 @@
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa,iwjasb,iwjasc
       use precision_kinds, only: dp
-      use scale_dist_mod, only: scale_dist2,switch_scale2
+      use scale_dist_mod, only: scale_dist2,switch_scale2, scale_dist3, switch_scale3
       use system,  only: iwctype,ncent,nctype,nelec,nup
       use vardep,  only: cdep,iwdepend,nvdepend
       implicit none
@@ -29,16 +30,13 @@
       integer :: im1, iord, ipar, iparm
       integer :: iparm0, iparma, isb, it
       integer :: j, jj, jparm, k
-      integer :: l, l_hi, ll, m
-      integer :: n
+      integer :: l, l_hi, ll, m, n 
       real(dp) :: bot, bot0, bot2, boti, botii
       real(dp) :: botu, botuu, cd, d2o
-      real(dp) :: dd1, dd10, dd2, dd7
-      real(dp) :: dd8, dd9, fc, fee
-      real(dp) :: feeu, feeuu, fen, feni
-      real(dp) :: feni_save, fenii, fenii_save, fi
-      real(dp) :: fii, fj, fjj
-      real(dp) :: fu, fui, fuj, fuu
+      real(dp) :: dd1, dd2, dd3, dd7, dd8, dd9, dd10, dd11, dd12
+      real(dp) :: fc, fee, feeu, feeuu
+      real(dp) :: fen, feni, fenii, feniii
+      real(dp) :: fi, fii, fiii, fiij, fij, fj, fjj, fjji, fjjj, fu, fui, fuii, fuij, fuj, fujj, fuu, fuui, fuuj
       real(dp) :: gee=0, geeu=0, geeuu=0, gen
       real(dp) :: geni, genii, gi, gii
       real(dp) :: gj, gjj, gp, gu
@@ -50,16 +48,7 @@
       real(dp) :: topu, topuu, u2mst, u2pst
       real(dp) :: value
       real(dp), dimension(3, *) :: x
-      real(dp), dimension(-2:nordj) :: uu
-      real(dp), dimension(-2:nordj) :: ss
-      real(dp), dimension(-2:nordj) :: tt
-      real(dp), dimension(-2:nordj) :: rri
-      real(dp), dimension(-2:nordj) :: rrj
-      real(dp), parameter :: zero = 0.d0
-      real(dp), parameter :: one = 1.d0
-      real(dp), parameter :: two = 2.d0
-      real(dp), parameter :: half = .5d0
-      real(dp), parameter :: eps = 1.d-12
+      real(dp), dimension(-3:nordj) :: uu, ss, tt, rri, rrj
       real(dp) :: fsumo
       real(dp), dimension(3, *) :: fjo
       real(dp), dimension(nelec, *) :: fso
@@ -70,20 +59,32 @@
       real(dp), dimension(3, nelec, *) :: g
       real(dp), dimension(nelec, nelec, *) :: go
 
+      real(dp), parameter :: zero = 0.d0
+      real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: eps = 1.d-12
+
       iparma=nparma(1)
       do it=2,nctype
        iparma=iparma+nparma(it)
       enddo
 
-      fsumo=0
+      fsumo=0.d0
+      d2o=0.d0
       do i=1,nelec
-        fjo(1,i)=0
-        fjo(2,i)=0
-        fjo(3,i)=0
+        fjo(1,i)=0.d0
+        fjo(2,i)=0.d0
+        fjo(3,i)=0.d0
       enddo
-      d2o=0
 
-      do i=-2,-1
+      if(iforce_analy.gt.0) then
+        da_j=0.d0
+        da_d2j=0.d0
+        da_vj=0.d0
+      endif
+
+      do i=-3,-1
         uu(i)=0
         ss(i)=0
         tt(i)=0
@@ -260,11 +261,19 @@
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
-        call scale_dist2(ri,rri(1),dd7,dd9)
-        call scale_dist2(rj,rrj(1),dd8,dd10)
+        if(iforce_analy.eq.0) then
+          call scale_dist2(ri,rri(1),dd7,dd9)
+          call scale_dist2(rj,rrj(1),dd8,dd10)
 
-        call switch_scale2(rri(1),dd7,dd9)
-        call switch_scale2(rrj(1),dd8,dd10)
+          call switch_scale2(rri(1),dd7,dd9)
+          call switch_scale2(rrj(1),dd8,dd10)
+        else
+          call scale_dist3(ri,rri(1),dd7,dd9,dd11)
+          call scale_dist3(rj,rrj(1),dd8,dd10,dd12)
+
+          call switch_scale3(rri(1),dd7,dd9,dd11)
+          call switch_scale3(rrj(1),dd8,dd10,dd12)
+       endif
 
         s=ri+rj
         t=ri-rj
@@ -283,13 +292,25 @@
 
         fc=0
         fu=0
-        fuu=0
-        fi=0
-        fii=0
-        fj=0
-        fjj=0
         fui=0
         fuj=0
+        fuu=0
+        fuui=0
+        fuuj=0
+        fi=0
+        fii=0
+        fij=0
+        fiii=0
+        fiij=0
+        fj=0
+        fjj=0
+        fjjj=0
+        fjji=0
+        fui=0
+        fuii=0
+        fuij=0
+        fuj=0
+        fujj=0
         ll=0
         jj=1
         jparm=1
@@ -331,6 +352,32 @@
                 fjj=fjj+c(ll,it,iwf)*pjj
                 fui=fui+c(ll,it,iwf)*pui
                 fuj=fuj+c(ll,it,iwf)*puj
+                if(iforce_analy.gt.0) then
+                  fuii=fuii+c(ll,it,iwf)*k*uu(k-1) &
+                       *((l+m)*(l+m-1)*rri(l+m-2)*rrj(m)+m*(m-1)*rri(m-2)*rrj(l+m))
+                  fuij=fuij+c(ll,it,iwf)*k*uu(k-1) &
+                       *((l+m)*m*rri(l+m-1)*rrj(m-1)+m*(l+m)*rri(m-1)*rrj(l+m-1))
+                  fujj=fujj+c(ll,it,iwf)*k*uu(k-1) &
+                       *((l+m)*(l+m-1)*rrj(l+m-2)*rri(m)+m*(m-1)*rrj(m-2)*rri(l+m))
+                  fuui=fuui+c(ll,it,iwf)*k*(k-1)*uu(k-2) &
+                       *((l+m)*rri(l+m-1)*rrj(m)+m*rri(m-1)*rrj(l+m))
+                  fuuj=fuuj+c(ll,it,iwf)*k*(k-1)*uu(k-2) &
+                       *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
+                  fij=fij+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*m*rri(l+m-1)*rrj(m-1)+m*(l+m)*rri(m-1)*rrj(l+m-1))
+                  fiii=fiii+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*(l+m-2)*rri(l+m-3)*rrj(m) &
+                       +m*(m-1)*(m-2)*rri(m-3)*rrj(l+m))
+                  fiij=fiij+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*m*rri(l+m-2)*rrj(m-1) &
+                       +m*(m-1)*(l+m)*rri(m-2)*rrj(l+m-1))
+                  fjjj=fjjj+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*(l+m-2)*rrj(l+m-3)*rri(m) &
+                       +m*(m-1)*(m-2)*rrj(m-3)*rri(l+m))
+                  fjji=fjji+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*m*rrj(l+m-2)*rri(m-1) &
+                       +m*(m-1)*(l+m)*rrj(m-2)*rri(l+m-1))
+                endif
 
 ! derivatives of wave function wrt c-parameters
 !               ideriv=0
@@ -429,6 +476,9 @@
           enddo
         enddo
 
+        if(iforce_analy.eq.1) call da_jastrow4_een(i,j,ic,rvec_en(1,1,ic),rvec_ee(1,ij),ri,rj,rij,u2pst,u2mst, &
+          fi,fii,fiii,fij,fiij,fj,fjj,fjji,fjjj,fui,fuii,fuij,fuj,fujj,fuui,fuuj,dd1,dd2,dd7,dd8,dd9,dd10,dd11,dd12)
+
         fuu=fuu*dd1*dd1+fu*dd2
         fu=fu*dd1/rij
 
@@ -487,7 +537,11 @@
 
           ri=r_en(i,ic)
 
-          call scale_dist2(ri,rri(1),dd7,dd9)
+          if(iforce_analy.eq.0) then
+            call scale_dist2(ri,rri(1),dd7,dd9)
+          else
+            call scale_dist3(ri,rri(1),dd7,dd9,dd11)
+          endif
 
           top=a4(1,it,iwf)*rri(1)
           topi=a4(1,it,iwf)
@@ -510,8 +564,14 @@
             fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
           enddo
 
-          feni_save=feni
-          fenii_save=fenii
+          if(iforce_analy.eq.1) then
+! temporarely assuming no Pade' term in A Jastrow
+            feniii=0.d0
+            do iord=3,norda
+              feniii=feniii+a4(iord+1,it,iwf)*iord*(iord-1)*(iord-2)*rri(iord-3)
+            enddo
+            call da_jastrow4_en(i,ic,rvec_en(1,i,ic),ri,feni,fenii,feniii,dd7,dd9,dd11)
+          endif
 
           fenii=fenii*dd7*dd7+feni*dd9
           feni=feni*dd7/ri
@@ -524,8 +584,6 @@
 !         write(ounit,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,3),feni,rvec_en(1,i,ic)
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
-
-          if(iforce_analy.eq.1) call da_jastrow4(iwf,i,ic,it,rvec_en(1,i,ic),ri,rri,feni_save,fenii_save,dd7,dd9)
 
           do jparm=1,nparma(it)
             iparm=npointa(it)+jparm

@@ -6,7 +6,7 @@ contains
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm,   only: nocuspb,nspin2b
       use contrl_per, only: iperiodic
-      use da_jastrow4val, only: da_j
+      use da_jastrow, only: da_j
       use deriv_nonlpsi, only: deriv_psianl,deriv_psibnl,deriv_psinl
       use derivjas, only: go
       use jaspointer, only: npoint,npointa
@@ -193,7 +193,7 @@ contains
         do k=1,3
           dumk=dum*rvec_en_quad(k,iq,ic)
           vjn(k,iq)=vjn(k,iq)+dumk
-          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,ic)
+          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,iel,ic)
         enddo
        enddo
 
@@ -204,29 +204,29 @@ contains
       return
       end
 
-      subroutine deriv_nonlocj_quad4(nxquad,xquad,ielquad,x,r_en,rvec_en_quad,r_en_quad, &
+      subroutine deriv_nonlocj_quad4(nxquad,xquad,ielquad,x,rvec_en,r_en,rvec_en_quad,r_en_quad, &
           psij_ratio,dpsij_ratio,vjn,da_psij_ratio,iwfjas)
 
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm,   only: nocuspb,nspin2b
+      use contrl_file, only: ounit
       use contrl_per, only: iperiodic
-      use da_jastrow4val, only: da_j
+      use da_jastrow, only: da_j
       use deriv_nonlpsi, only: deriv_psianl,deriv_psibnl,deriv_psinl
       use derivjas, only: go
+      use find_pimage, only: find_image_pbc
       use jaspointer, only: npoint,npointa
-      use jastrow, only: is,nspin2,sspinn
+      use jastrow, only: is,nspin2,sspinn,nordc
       use jastrow_update, only: fso
       use m_force_analytic, only: iforce_analy
-      use nonlpsi, only: dpsianl,dpsibnl
+      use nonlpsi, only: dpsianl,dpsibnl,dpsinl
       use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma,nparmb,nparmc
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
-      use find_pimage, only: find_image_pbc
       use qua, only: nquad
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nctype,nelec,nup
-      use contrl_file, only: ounit
 
       implicit none
 
@@ -236,10 +236,11 @@ contains
       integer, dimension(nquad*nelec*2) :: ielquad
 
 
-      real(dp) :: dd1u, dum
-      real(dp) :: dumk, fsumn, rij, u
+      real(dp) :: dd1i, dd1ij, dd1j, dd1u, dum, dumk
+      real(dp) :: fi, fj, fsumn, fu, rij, u
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,*) :: xquad
+      real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nquad*nelec*2,*) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
@@ -276,13 +277,13 @@ contains
           call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic))
         enddo
        else
+        da_psij_ratio(:,:,iq)=0.d0
         do ic=1,ncent
           call scale_dist1(r_en_quad(iq,ic),rr_en_quad(ic),dd1_quad(ic))
         enddo
       endif
 
       fsumn=0
-
       do k=1,3
         vjn(k,iq)=0.d0
       enddo
@@ -377,23 +378,46 @@ contains
 ! e-e-n terms
 ! The scaling is switched in deriv_psinl, so do not do it here.
 
-        do ic=1,ncent
-          it=iwctype(ic)
-          if(nparmc(it).gt.0) then
-            iparm0=npoint(it)
-            fsn(i,j)=fsn(i,j) + deriv_psinl(u,rr_en_quad(ic),rr_en(jj,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
-          endif
-        enddo
-
-        do it=1,nctype
-          iparm0=npoint(it)
-          do jparm=1,nparmc(it)
-            iparm=iparm0+jparm
-            dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(i,j,iparm,iwfjas)
+        if(nordc.gt.1) then
+          do ic=1,ncent
+            it=iwctype(ic)
+            if(nparmc(it).gt.0) then
+              iparm0=npoint(it)
+              fsn(i,j)=fsn(i,j) + deriv_psinl(u,rr_en_quad(ic),rr_en(jj,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
+            endif
           enddo
-        enddo
+
+          do it=1,nctype
+            iparm0=npoint(it)
+            do jparm=1,nparmc(it)
+              iparm=iparm0+jparm
+              dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(i,j,iparm,iwfjas)
+            enddo
+          enddo
+
+          if(iforce_analy.gt.0) then
+            do ic=1,ncent
+              it=iwctype(ic)
+              dd1ij=dd1u
+              dd1i=dd1_quad(ic)
+              dd1j=dd1(jj,ic)
+              dum=dpsinl(u,rr_en_quad(ic),rr_en(jj,ic),fu,fi,fj,dd1ij,dd1i,dd1j,it,iwfjas)
+              fu=fu*dd1ij/rij
+              fi=fi*dd1i/r_en_quad(iq,ic)
+              fj=fj*dd1j/r_en(jj,ic)
+
+              do k=1,3
+                dumk=fi*rvec_en_quad(k,iq,ic)
+                vjn(k,iq)=vjn(k,iq)+dumk-fu*dx(k)
+                dumk=-dumk-fj*rvec_en(k,jj,ic)
+                da_psij_ratio(k,ic,iq)=da_psij_ratio(k,ic,iq)+dumk-da_j(k,i,j,ic)
+              enddo
+            enddo
+          endif
+        endif
 
         fsumn=fsumn+fsn(i,j)-fso(i,j,iwfjas)
+
       45 continue
       enddo
 
@@ -420,17 +444,15 @@ contains
       psij_ratio(iq)=fsumn
 
       if(iforce_analy.gt.0) then
-
-       do ic=1,ncent
-        it=iwctype(ic)
-        dum=dpsianl(rr_en_quad(ic),it,iwfjas)*dd1_quad(ic)/r_en_quad(iq,ic)
-        do k=1,3
-          dumk=dum*rvec_en_quad(k,iq,ic)
-          vjn(k,iq)=vjn(k,iq)+dumk
-          da_psij_ratio(k,ic,iq)=-dumk-da_j(k,iel,ic)
+        do ic=1,ncent
+          it=iwctype(ic)
+          dum=dpsianl(rr_en_quad(ic),it,iwfjas)*dd1_quad(ic)/r_en_quad(iq,ic)
+          do k=1,3
+            dumk=dum*rvec_en_quad(k,iq,ic)
+            vjn(k,iq)=vjn(k,iq)+dumk
+            da_psij_ratio(k,ic,iq)=da_psij_ratio(k,ic,iq)-dumk-da_j(k,iel,iel,ic)
+          enddo
         enddo
-       enddo
-
       endif
 
       enddo

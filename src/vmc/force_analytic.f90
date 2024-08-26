@@ -4,38 +4,45 @@ contains
 
       use contrl_file, only: ounit
       use da_energy_now, only: da_psi
-      use da_jastrow4val, only: da_j
+      use da_jastrow, only: da_j
       use precision_kinds, only: dp
       use system,  only: ncent,ncent_tot,nelec
+      use contrl_file,    only: ounit
       implicit none
 
-      integer :: i, ic, k
-      real(dp) :: denergy, psid
+      integer :: i, ic, j, k
+      real(dp) :: denergy, psid, tmp
       real(dp), dimension(3, ncent_tot) :: da_psi_ref
 
 !     ! multistate indcies were not added
       call compute_da_psi(psid,da_psi_ref)
       call compute_da_energy(psid,denergy)
 
+!     tmp=0
       do ic=1,ncent
         do k=1,3
           da_psi(k,ic)=da_psi(k,ic)+da_psi_ref(k,ic)
           do i=1,nelec
-            da_psi(k,ic)=da_psi(k,ic)+da_j(k,i,ic)
+            do j=1,i
+              da_psi(k,ic)=da_psi(k,ic)+da_j(k,i,j,ic)
+!             if(k.eq.2.and.ic.eq.1) tmp=tmp+da_j(k,i,j,ic)
+            enddo
           enddo
         enddo
       enddo
 
-!     write(ounit,*)'da_ref',((da_psi_ref(l,ic),l=1,3),ic=1,ncent)
+!     write(ounit,*)'da_ref',((da_psi_ref(k,ic),k=1,3),ic=1,ncent)
 !     write(ounit,*) 'da_psi',((da_psi(k,ic),k=1,3),ic=1,ncent)
+!     write(ounit,*) 'da_j',tmp
 
       return
       end
 !-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
 
+      use contrl_file, only: ounit
       use da_energy_now, only: da_psi
-      use da_jastrow4val, only: da_j
+      use da_jastrow, only: da_j
       use da_orbval, only: da_orb
       use dorb_m,  only: iworbd
       use multidet, only: ivirt
@@ -131,7 +138,7 @@ contains
       use Bloc,    only: b_da,xmat
       use constants, only: hb
       use da_energy_now, only: da_energy,da_psi
-      use da_jastrow4val, only: da_d2j,da_vj
+      use da_jastrow, only: da_d2j,da_vj
       use da_orbval, only: da_orb
       use da_pseudo, only: da_pecent,da_vps
       use dorb_m,  only: iworbd
@@ -143,6 +150,7 @@ contains
       use system,  only: iwctype,ncent,ncent_tot,ndn,nelec,nup
       use velocity_jastrow, only: vj
       use zcompact, only: aaz,dzmat,emz,zmat
+      use contrl_file,    only: ounit
 
       implicit none
 
@@ -201,13 +209,15 @@ contains
 
         do k=1,3
 
-          da_other_kin=0.d0
+          da_other_kin=da_d2j(k,ic)
           da_other_pot=da_pecent(k,ic)
           do i=1,nelec
-            da_other_kin=da_other_kin+da_d2j(k,i,ic) &
+            da_other_kin=da_other_kin + &
             +2*(vj(1,i,1)*da_vj(k,1,i,ic)+vj(2,i,1)*da_vj(k,2,i,ic)+vj(3,i,1)*da_vj(k,3,i,ic))
             da_other_pot=da_other_pot+da_vps(k,i,ic,lpot(ict))
           enddo
+!         write(ounit,*)'da_kin1',k,ic,da_other_kin,da_other_pot
+!         write(ounit,*)'da_kin2',k,ic,da_energy_ref(k,ic),da_psi(k,ic)
 
           da_energy(k,ic)=da_energy(k,ic)+da_energy_ref(k,ic)-hb*da_other_kin+da_other_pot &
                          -denergy*da_psi(k,ic)
@@ -216,7 +226,10 @@ contains
         enddo
       enddo
 
-!     write(ounit,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
+!     write(ounit,*)'da_energy',((da_energy(k,ic),k=1,3),ic=1,ncent)
+!     write(ounit,*)'da_energy',da_energy(2,1)
+!     write(ounit,*)'da_vj',da_vj(2,1,1,1)
+!     write(ounit,*)'da_d2j',da_d2j(2,1)
 
       return
       end

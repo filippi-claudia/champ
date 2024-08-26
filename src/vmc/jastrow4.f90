@@ -2,11 +2,12 @@
       contains
       subroutine jastrow_factor4(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
 ! Written by Cyrus Umrigar, modified by C. Filippi
+      use da_jastrow, only: da_d2j, da_j, da_vj
       use system, only: iwctype, ncent, nelec, nup
       use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, nordj
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
-      use scale_dist_mod, only: scale_dist2, switch_scale2
+      use scale_dist_mod, only: scale_dist2, switch_scale2, scale_dist3, switch_scale3
       use m_force_analytic, only: iforce_analy
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
       use precision_kinds, only: dp
@@ -18,33 +19,23 @@
       integer :: ipar, isb, it, j
       integer :: k, l, l_hi, ll
       integer :: m, n
-      real(dp) :: bot, bot2, boti, botii, botu
-      real(dp) :: botuu, dd1, dd10
-      real(dp) :: dd2, dd7, dd8, dd9
+      real(dp) :: bot, bot2, boti, botii, botu, botuu
+      real(dp) :: dd1, dd2, dd3, dd7, dd8, dd9, dd10, dd11, dd12
       real(dp) :: fc, fee, feeu, feeuu
-      real(dp) :: fen, feni, feni_save, fenii
-      real(dp) :: fenii_save, fi, fii, fj
-      real(dp) :: fjj, fu, fui
-      real(dp) :: fuj, fuu, ri, rij
-      real(dp) :: rj, s, t, term
+      real(dp) :: fen, feni, fenii, feniii
+      real(dp) :: fi, fii, fiii, fiij, fij, fj, fjj, fjji, fjjj, fu, fui, fuii, fuij, fuj, fujj, fuu, fuui, fuuj
+      real(dp) :: ri, rij, rj, s, t, term
       real(dp) :: top, topi, topii, topu
       real(dp) :: topuu, u2mst, u2pst
       real(dp), dimension(3, *) :: x
-      real(dp), dimension(-2:nordj) :: uu
-      real(dp), dimension(-2:nordj) :: ss
-      real(dp), dimension(-2:nordj) :: tt
-      real(dp), dimension(-2:nordj) :: rri
-      real(dp), dimension(-2:nordj) :: rrj
-      real(dp), parameter :: half = .5d0
-      real(dp), parameter :: eps = 1.d-12
-! replace global variables of fsumo, fjo, fso, fijo, and d2ijo
-! with locals of the same name, with one less dimension
+      real(dp), dimension(-3:nordj) :: uu, ss, tt, rri, rrj
       real(dp) :: fsumo, d2o
       real(dp), dimension(3, *) :: fjo
       real(dp), dimension(nelec, *) :: fso
       real(dp), dimension(3, nelec, *) :: fijo
       real(dp), dimension(nelec, *) :: d2ijo
-
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: eps = 1.d-12
 
       fsumo=0.d0
       d2o=0.d0
@@ -53,7 +44,14 @@
           fjo(k,j)=0
         enddo
       enddo
-      do i=-2,-1
+
+      if(iforce_analy.gt.0) then
+        da_j=0.d0
+        da_vj=0.d0
+        da_d2j=0.d0
+      endif
+
+      do i=-3,-1
         uu(i)=0
         ss(i)=0
         tt(i)=0
@@ -145,11 +143,19 @@
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
-        call scale_dist2(ri,rri(1),dd7,dd9)
-        call scale_dist2(rj,rrj(1),dd8,dd10)
+        if(iforce_analy.eq.0) then
+          call scale_dist2(ri,rri(1),dd7,dd9)
+          call scale_dist2(rj,rrj(1),dd8,dd10)
 
-        call switch_scale2(rri(1),dd7,dd9)
-        call switch_scale2(rrj(1),dd8,dd10)
+          call switch_scale2(rri(1),dd7,dd9)
+          call switch_scale2(rrj(1),dd8,dd10)
+        else
+          call scale_dist3(ri,rri(1),dd7,dd9,dd11)
+          call scale_dist3(rj,rrj(1),dd8,dd10,dd12)
+
+          call switch_scale3(rri(1),dd7,dd9,dd11)
+          call switch_scale3(rrj(1),dd8,dd10,dd12)
+       endif
 !        write(ounit,'(''ri,rri in een'',2f12.9)') ri,rri(1)
 
         s=ri+rj
@@ -169,13 +175,25 @@
 
         fc=0
         fu=0
-        fuu=0
-        fi=0
-        fii=0
-        fj=0
-        fjj=0
         fui=0
         fuj=0
+        fuu=0
+        fuui=0
+        fuuj=0
+        fi=0
+        fii=0
+        fij=0
+        fiii=0
+        fiij=0
+        fj=0
+        fjj=0
+        fjjj=0
+        fjji=0
+        fui=0
+        fuii=0
+        fuij=0
+        fuj=0
+        fujj=0
         ll=0
         do n=2,nordc
           do k=n-1,0,-1
@@ -188,6 +206,7 @@
               m=(n-k-l)/2
               if(2*m.eq.n-k-l) then
                 ll=ll+1
+!               write(ounit,*) 'order u s t',k,l,m
                 fc=fc+c(ll,it,iwf)*uu(k)*ss(l)*tt(m)
                 fu=fu+c(ll,it,iwf)*k*uu(k-1)*ss(l)*tt(m)
                 fuu=fuu+c(ll,it,iwf)*k*(k-1)*uu(k-2)*ss(l)*tt(m)
@@ -205,11 +224,40 @@
                 *((l+m)*rri(l+m-1)*rrj(m)+m*rri(m-1)*rrj(l+m))
                 fuj=fuj+c(ll,it,iwf)*k*uu(k-1) &
                 *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
+                if(iforce_analy.gt.0) then
+                  fuii=fuii+c(ll,it,iwf)*k*uu(k-1) &
+                       *((l+m)*(l+m-1)*rri(l+m-2)*rrj(m)+m*(m-1)*rri(m-2)*rrj(l+m))
+                  fuij=fuij+c(ll,it,iwf)*k*uu(k-1) &
+                       *((l+m)*m*rri(l+m-1)*rrj(m-1)+m*(l+m)*rri(m-1)*rrj(l+m-1))
+                  fujj=fujj+c(ll,it,iwf)*k*uu(k-1) &
+                       *((l+m)*(l+m-1)*rrj(l+m-2)*rri(m)+m*(m-1)*rrj(m-2)*rri(l+m))
+                  fuui=fuui+c(ll,it,iwf)*k*(k-1)*uu(k-2) &
+                       *((l+m)*rri(l+m-1)*rrj(m)+m*rri(m-1)*rrj(l+m))
+                  fuuj=fuuj+c(ll,it,iwf)*k*(k-1)*uu(k-2) &
+                       *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
+                  fij=fij+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*m*rri(l+m-1)*rrj(m-1)+m*(l+m)*rri(m-1)*rrj(l+m-1))
+                  fiii=fiii+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*(l+m-2)*rri(l+m-3)*rrj(m) &
+                       +m*(m-1)*(m-2)*rri(m-3)*rrj(l+m))
+                  fiij=fiij+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*m*rri(l+m-2)*rrj(m-1) &
+                       +m*(m-1)*(l+m)*rri(m-2)*rrj(l+m-1))
+                  fjjj=fjjj+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*(l+m-2)*rrj(l+m-3)*rri(m) &
+                       +m*(m-1)*(m-2)*rrj(m-3)*rri(l+m))
+                  fjji=fjji+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*m*rrj(l+m-2)*rri(m-1) &
+                       +m*(m-1)*(l+m)*rrj(m-2)*rri(l+m-1))
+                endif
               endif
 !        write(ounit,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
             enddo
           enddo
         enddo
+
+        if(iforce_analy.eq.1) call da_jastrow4_een(i,j,ic,rvec_en(1,1,ic),rvec_ee(1,ij),ri,rj,rij,u2pst,u2mst, &
+          fi,fii,fiii,fij,fiij,fj,fjj,fjji,fjjj,fui,fuii,fuij,fuj,fujj,fuui,fuuj,dd1,dd2,dd7,dd8,dd9,dd10,dd11,dd12)
 
         fuu=fuu*dd1*dd1+fu*dd2
         fu=fu*dd1/rij
@@ -263,7 +311,11 @@
 
           ri=r_en(i,ic)
 
-          call scale_dist2(ri,rri(1),dd7,dd9)
+          if(iforce_analy.eq.0) then
+            call scale_dist2(ri,rri(1),dd7,dd9)
+           else
+            call scale_dist3(ri,rri(1),dd7,dd9,dd11)
+          endif
 !          write(ounit,'(''ri,rri in en'',2f9.5)') ri,rri(1)
 
           top=a4(1,it,iwf)*rri(1)
@@ -280,15 +332,22 @@
           fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
           fenii=fenii/bot
 
-        do iord=2,norda
-          rri(iord)=rri(1)**iord
-          fen=fen+a4(iord+1,it,iwf)*rri(iord)
-          feni=feni+a4(iord+1,it,iwf)*iord*rri(iord-1)
-          fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
-        enddo
+          do iord=2,norda
+            rri(iord)=rri(1)**iord
+            fen=fen+a4(iord+1,it,iwf)*rri(iord)
+            feni=feni+a4(iord+1,it,iwf)*iord*rri(iord-1)
+            fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
+          enddo
 
-          feni_save=feni
-          fenii_save=fenii
+          if(iforce_analy.eq.1) then
+! temporarely assuming no Pade' term in A Jastrow
+            feniii=0.d0
+            do iord=3,norda
+              feniii=feniii+a4(iord+1,it,iwf)*iord*(iord-1)*(iord-2)*rri(iord-3)
+            enddo
+            call da_jastrow4_en(i,ic,rvec_en(1,i,ic),ri,feni,fenii,feniii,dd7,dd9,dd11)
+          endif
+
           fenii=fenii*dd7*dd7+feni*dd9
           feni=feni*dd7/ri
 
@@ -301,7 +360,6 @@
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + 2*feni
 
-          if(iforce_analy.eq.1) call da_jastrow4(iwf,i,ic,it,rvec_en(1,i,ic),ri,rri,feni_save,fenii_save,dd7,dd9)
       80   continue
         enddo
 
@@ -346,27 +404,18 @@
       return
       end
 !-----------------------------------------------------------------------
-      subroutine da_jastrow4(iwf,i,ic,it,rvec_en,r,rr,feni,fenii,dd1,dd2)
+      subroutine da_jastrow4_en(i,ic,rvec_en,r,feni,fenii,feniii,dd1,dd2,dd3)
 
-      use da_jastrow4val, only: da_d2j, da_j, da_vj
-      use jastrow, only: a4, norda, nordj
-      use scale_more, only: dd3
+      use da_jastrow, only: da_d2j, da_j, da_vj
+      use contrl_file, only: ounit
       use precision_kinds, only: dp
-      use scale_more, only: dd3
 
       implicit none
 
-      integer :: i, ic, iord, it, iwf
-      integer :: k, l
-      real(dp) :: dd1, dd2, feni, fenii, feniii
+      integer :: i, ic, k, l
+      real(dp) :: dd1, dd2, dd3, feni, fenii, feniii
       real(dp) :: r, ri, ri2
       real(dp), dimension(3) :: rvec_en
-      real(dp), dimension(-2:nordj) :: rr
-
-      feniii=0.d0
-      do iord=3,norda
-        feniii=feniii+a4(iord+1,it,iwf)*iord*(iord-1)*(iord-2)*rr(iord-3)
-      enddo
 
       ri=1.d0/r
       ri2=ri*ri
@@ -376,14 +425,114 @@
 ! purpose
 
       do k=1,3
-        da_j(k,i,ic)=-rvec_en(k)*ri*feni*dd1
-        da_d2j(k,i,ic)=-rvec_en(k)*ri*(feniii*dd1*dd1*dd1+fenii*dd1*(3*dd2+2*dd1*ri)+feni*(dd3+2*dd2*ri-2*dd1*ri2))
+        da_j(k,i,i,ic)=da_j(k,i,i,ic)-rvec_en(k)*ri*feni*dd1
+        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k)*ri*(feniii*dd1*dd1*dd1+fenii*dd1*(3*dd2+2*dd1*ri)+feni*(dd3+2*dd2*ri-2*dd1*ri2))
         do l=1,3
-          da_vj(k,l,i,ic)=-rvec_en(k)*rvec_en(l)*ri2*(fenii*dd1*dd1+feni*dd2-feni*dd1*ri)
+          da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(k)*rvec_en(l)*ri2*(fenii*dd1*dd1+feni*dd2-feni*dd1*ri)
         enddo
         da_vj(k,k,i,ic)=da_vj(k,k,i,ic)-feni*dd1*ri
+!       write(ounit,*) 'CIAO',k,ic,da_d2j(k,ic)
       enddo
 
       return
       end
+!-----------------------------------------------------------------------
+      subroutine da_jastrow4_een(i,j,ic,rvec_en,rvec_ee,ri,rj,rij,u2pst,u2mst, &
+          fi,fii,fiii,fij,fiij,fj,fjj,fjji,fjjj,fui,fuii,fuij,fuj,fujj,fuui,fuuj,dd1,dd2,dd7,dd8,dd9,dd10,dd11,dd12)
+               
+      use da_jastrow, only: da_d2j, da_j, da_vj
+      use contrl_file,    only: ounit
+      use contrl_file,    only: ounit
+      use precision_kinds, only: dp
+      use system, only: nelec
+
+      implicit none
+
+      integer :: i, ic, j, k, l
+      real(dp) :: dd1,dd2,dd7,dd8,dd9,dd10,dd11,dd12
+      real(dp) :: fi,fii,fiii,fij,fiij,fj,fjj,fjji,fjjj,fui,fuii,fuij,fuj,fujj,fuui,fuuj
+      real(dp) :: ri, ri_i, ri_i2, rj, rj_i, rj_i2, rij, rij_i,u2pst,u2mst
+      real(dp) :: dum,dum1i,dum1j,dum1ij,dum2i,dum2j
+      real(dp), dimension(3,nelec) :: rvec_en
+      real(dp), dimension(3) :: rvec_ee
+
+      ri_i=1.d0/ri
+      rj_i=1.d0/rj
+      rij_i=1.d0/rij
+      ri_i2=ri_i*ri_i
+      rj_i2=rj_i*rj_i
+
+      !fi*dd7*ri_i*rvec_en(1,i,ic)+fu*dd1*rij_i*rvec_ee(1,ij)
+      !fj*dd8*rj_i*rvec_en(1,j,ic)-fu*dd1*rij_i*rvec_ee(1,ij)
+
+      !d2ijo(i,j)=d2ijo(i,j) + 2*(fuu*dd1*dd1 + fu*dd2 + 2*fu*dd1/rij) + fui*dd1*dd7*(rij2+(ri2-rj2))/(ri*rij) &
+      !+ fuj*dd1*dd8*(rij2-(ri2-rj2))/(rj*rij) + fii*dd7*dd7 + fi*dd9 + 2*fi*dd7/ri + fjj*dd8*dd8 + fj*dd10 + 2*fj*dd8/rj
+
+      dum1i=ri_i2*(fii*dd7*dd7+fi*dd9-fi*dd7*ri_i)
+      dum1j=rj_i2*(fjj*dd8*dd8+fj*dd10-fj*dd8*rj_i)
+      dum1ij=rj_i*ri_i*fij*dd7*dd8
+      dum2i=ri_i*(fiii*dd7*dd7*dd7+fii*dd7*(3*dd9+2*dd7*ri_i) +fi*(dd11+2*dd9*ri_i-2*dd7*ri_i2) &
+                                                   +dd7*(fjji*dd8*dd8+fij*(dd10+2*dd8*rj_i)) &
+                                                   +2*dd7*(fuui*dd1*dd1 + fui*dd2 + 2*fui*dd1*rij_i) &
+                                                   +dd1*(fuii*dd7*dd7*u2pst*ri_i &
+                                                   +fui*(u2pst*(dd9*ri_i-dd7*ri_i2) + 2*dd7) &
+                                                   +dd8*(fuij*dd7*u2mst - 2*fuj*ri)*rj_i)*rij_i )
+      dum2j=rj_i*(fjjj*dd8*dd8*dd8+fjj*dd8*(3*dd10+2*dd8*rj_i)+fj*(dd12+2*dd10*rj_i-2*dd8*rj_i2) &
+                                                   +dd8*(fiij*dd7*dd7+fij*(dd9+2*dd7*ri_i)) &
+                                                   +2*dd8*(fuuj*dd1*dd1 + fuj*dd2 + 2*fuj*dd1*rij_i) &
+                                                   +dd1*(fujj*dd8*dd8*u2mst*rj_i &
+                                                   +fuj*(u2mst*(dd10*rj_i-dd8*rj_i2)+ 2*dd8) &
+                                                   +dd7*(fuij*dd8*u2pst -2*fui*rj)*ri_i)*rij_i)
+      do k=1,3
+        da_j(k,i,j,ic)=da_j(k,i,j,ic)-rvec_en(k,i)*ri_i*fi*dd7-rvec_en(k,j)*rj_i*fj*dd8
+        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k,i)*dum2i -rvec_en(k,j)*dum2j
+
+        dum=dd1*rij_i*(rvec_en(k,i)*fui*dd7*ri_i+rvec_en(k,j)*fuj*dd8*rj_i)
+        do l=1,3
+          da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(l,i)*(rvec_en(k,i)*dum1i+rvec_en(k,j)*dum1ij)&
+                                         -rvec_ee(l)*dum
+
+          da_vj(k,l,j,ic)=da_vj(k,l,j,ic)-rvec_en(l,j)*(rvec_en(k,j)*dum1j+rvec_en(k,i)*dum1ij) &
+                                         +rvec_ee(l)*dum
+        enddo
+        da_vj(k,k,i,ic)=da_vj(k,k,i,ic)-fi*dd7*ri_i
+        da_vj(k,k,j,ic)=da_vj(k,k,j,ic)-fj*dd8*rj_i
+
+!        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k,i)*ri_i*(fiii*dd7*dd7*dd7+fii*dd7*(3*dd9+2*dd7*ri_i) +fi*(dd11+2*dd9*ri_i-2*dd7*ri_i2) &
+!                                                   +dd7*(fjji*dd8*dd8+fij*(dd10+2*dd8*rj_i)) &
+!                                                   +2*dd7*(fuui*dd1*dd1 + fui*dd2 + 2*fui*dd1*rij_i) &
+!                                                   +fuii*dd1*dd7*dd7*(u2pst)*ri_i*rij_i &
+!                                                   +fui*dd1*dd9*(u2pst)*ri_i*rij_i &
+!                                                   +fui*dd1*dd7*2*rij_i &
+!                                                   -fui*dd1*dd7*(u2pst)*ri_i2*rij_i &
+!                                                   +fuij*dd1*dd7*dd8*(u2mst)*rj_i*rij_i &
+!                                                   -fuj*dd1*dd8*2*ri*rj_i*rij_i) &
+!                                 -rvec_en(k,j)*rj_i*(fjjj*dd8*dd8*dd8+fjj*dd8*(3*dd10+2*dd8*rj_i)+fj*(dd12+2*dd10*rj_i-2*dd8*rj_i2) &
+!                                                   +dd8*(fiij*dd7*dd7+fij*(dd9+2*dd7*ri_i)) &
+!                                                   +2*dd8*(fuuj*dd1*dd1 + fuj*dd2 + 2*fuj*dd1*rij_i) &
+!                                                   +fujj*dd1*dd8*dd8*(u2mst)*rj_i*rij_i &
+!                                                   +fuj*dd1*dd10*(u2mst)*rj_i*rij_i &
+!                                                   +fuj*dd1*dd8*2*rij_i &
+!                                                   -fuj*dd1*dd8*(u2mst)*rj_i2*rij_i &
+!                                                   +fuij*dd1*dd7*dd8*(u2pst)*ri_i*rij_i &
+!                                                   -fui*dd1*dd7*2*rj*ri_i*rij_i)
+!       do l=1,3
+!         da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(l,i)*rvec_en(k,i)*ri_i2*(fii*dd7*dd7+fi*dd9-fi*dd7*ri_i) &
+!                                        -rvec_en(l,i)*rvec_en(k,j)*ri_i*rj_i*fij*dd7*dd8 &
+!                                        -rvec_ee(l)*dd1*rij_i*(rvec_en(k,i)*fui*dd7*ri_i+rvec_en(k,j)*fuj*dd8*rj_i)
+
+!         da_vj(k,l,j,ic)=da_vj(k,l,j,ic)-rvec_en(l,j)*rvec_en(k,j)*rj_i2*(fjj*dd8*dd8+fj*dd10-fj*dd8*rj_i) &
+!                                        -rvec_en(l,j)*rvec_en(k,i)*rj_i*ri_i*fij*dd7*dd8 &
+!                                        +rvec_ee(l)*dd1*rij_i*(rvec_en(k,i)*fui*dd7*ri_i+rvec_en(k,j)*fuj*dd8*rj_i)
+!       enddo
+!       da_vj(k,k,i,ic)=da_vj(k,k,i,ic)-fi*dd7*ri_i
+!       da_vj(k,k,j,ic)=da_vj(k,k,j,ic)-fj*dd8*rj_i
+!
+!       write(ounit,*) k,i,ic,da_d2j(k,ic),(da_vj(k,l,i,ic),l=1,3)
+
+      enddo
+
+      return
+      end
+
 end module
