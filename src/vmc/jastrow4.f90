@@ -29,15 +29,13 @@
       real(dp) :: topuu, u2mst, u2pst
       real(dp), dimension(3, *) :: x
       real(dp), dimension(-3:nordj) :: uu, ss, tt, rri, rrj
-      real(dp), parameter :: half = .5d0
-      real(dp), parameter :: eps = 1.d-12
-! replace global variables of fsumo, fjo, fso, fijo, and d2ijo
-! with locals of the same name, with one less dimension
       real(dp) :: fsumo, d2o
       real(dp), dimension(3, *) :: fjo
       real(dp), dimension(nelec, *) :: fso
       real(dp), dimension(3, nelec, *) :: fijo
       real(dp), dimension(nelec, *) :: d2ijo
+      real(dp), parameter :: half = .5d0
+      real(dp), parameter :: eps = 1.d-12
 
       fsumo=0.d0
       d2o=0.d0
@@ -454,6 +452,7 @@
       real(dp) :: dd1,dd2,dd7,dd8,dd9,dd10,dd11,dd12
       real(dp) :: fi,fii,fiii,fij,fiij,fj,fjj,fjji,fjjj,fui,fuii,fuij,fuj,fujj,fuui,fuuj
       real(dp) :: ri, ri_i, ri_i2, rj, rj_i, rj_i2, rij, rij_i,u2pst,u2mst
+      real(dp) :: dum,dum1i,dum1j,dum1ij,dum2i,dum2j
       real(dp), dimension(3,nelec) :: rvec_en
       real(dp), dimension(3) :: rvec_ee
 
@@ -469,40 +468,68 @@
       !d2ijo(i,j)=d2ijo(i,j) + 2*(fuu*dd1*dd1 + fu*dd2 + 2*fu*dd1/rij) + fui*dd1*dd7*(rij2+(ri2-rj2))/(ri*rij) &
       !+ fuj*dd1*dd8*(rij2-(ri2-rj2))/(rj*rij) + fii*dd7*dd7 + fi*dd9 + 2*fi*dd7/ri + fjj*dd8*dd8 + fj*dd10 + 2*fj*dd8/rj
 
-      do k=1,3
-        da_j(k,i,j,ic)=da_j(k,i,j,ic)-rvec_en(k,i)*ri_i*fi*dd7-rvec_en(k,j)*rj_i*fj*dd8
-
-        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k,i)*ri_i*(fiii*dd7*dd7*dd7+fii*dd7*(3*dd9+2*dd7*ri_i) +fi*(dd11+2*dd9*ri_i-2*dd7*ri_i2) &
+      dum1i=ri_i2*(fii*dd7*dd7+fi*dd9-fi*dd7*ri_i)
+      dum1j=rj_i2*(fjj*dd8*dd8+fj*dd10-fj*dd8*rj_i)
+      dum1ij=rj_i*ri_i*fij*dd7*dd8
+      dum2i=ri_i*(fiii*dd7*dd7*dd7+fii*dd7*(3*dd9+2*dd7*ri_i) +fi*(dd11+2*dd9*ri_i-2*dd7*ri_i2) &
                                                    +dd7*(fjji*dd8*dd8+fij*(dd10+2*dd8*rj_i)) &
                                                    +2*dd7*(fuui*dd1*dd1 + fui*dd2 + 2*fui*dd1*rij_i) &
-                                                   +fuii*dd1*dd7*dd7*(u2pst)*ri_i*rij_i &
-                                                   +fui*dd1*dd9*(u2pst)*ri_i*rij_i &
-                                                   +fui*dd1*dd7*2*rij_i &
-                                                   -fui*dd1*dd7*(u2pst)*ri_i2*rij_i &
-                                                   +fuij*dd1*dd7*dd8*(u2mst)*rj_i*rij_i &
-                                                   -fuj*dd1*dd8*2*ri*rj_i*rij_i) &
-                                 -rvec_en(k,j)*rj_i*(fjjj*dd8*dd8*dd8+fjj*dd8*(3*dd10+2*dd8*rj_i)+fj*(dd12+2*dd10*rj_i-2*dd8*rj_i2) &
+                                                   +dd1*(fuii*dd7*dd7*u2pst*ri_i &
+                                                   +fui*(u2pst*(dd9*ri_i-dd7*ri_i2) + 2*dd7) &
+                                                   +dd8*(fuij*dd7*u2mst - 2*fuj*ri)*rj_i)*rij_i )
+      dum2j=rj_i*(fjjj*dd8*dd8*dd8+fjj*dd8*(3*dd10+2*dd8*rj_i)+fj*(dd12+2*dd10*rj_i-2*dd8*rj_i2) &
                                                    +dd8*(fiij*dd7*dd7+fij*(dd9+2*dd7*ri_i)) &
                                                    +2*dd8*(fuuj*dd1*dd1 + fuj*dd2 + 2*fuj*dd1*rij_i) &
-                                                   +fujj*dd1*dd8*dd8*(u2mst)*rj_i*rij_i &
-                                                   +fuj*dd1*dd10*(u2mst)*rj_i*rij_i &
-                                                   +fuj*dd1*dd8*2*rij_i &
-                                                   -fuj*dd1*dd8*(u2mst)*rj_i2*rij_i &
-                                                   +fuij*dd1*dd7*dd8*(u2pst)*ri_i*rij_i &
-                                                   -fui*dd1*dd7*2*rj*ri_i*rij_i)
-        do l=1,3
-          da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(l,i)*rvec_en(k,i)*ri_i2*(fii*dd7*dd7+fi*dd9-fi*dd7*ri_i) &
-                                         -rvec_en(l,i)*rvec_en(k,j)*ri_i*rj_i*fij*dd7*dd8 &
-                                         -rvec_ee(l)*dd1*rij_i*(rvec_en(k,i)*fui*dd7*ri_i+rvec_en(k,j)*fuj*dd8*rj_i) 
+                                                   +dd1*(fujj*dd8*dd8*u2mst*rj_i &
+                                                   +fuj*(u2mst*(dd10*rj_i-dd8*rj_i2)+ 2*dd8) &
+                                                   +dd7*(fuij*dd8*u2pst -2*fui*rj)*ri_i)*rij_i)
+      do k=1,3
+        da_j(k,i,j,ic)=da_j(k,i,j,ic)-rvec_en(k,i)*ri_i*fi*dd7-rvec_en(k,j)*rj_i*fj*dd8
+        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k,i)*dum2i -rvec_en(k,j)*dum2j
 
-          da_vj(k,l,j,ic)=da_vj(k,l,j,ic)-rvec_en(l,j)*rvec_en(k,j)*rj_i2*(fjj*dd8*dd8+fj*dd10-fj*dd8*rj_i) &
-                                         -rvec_en(l,j)*rvec_en(k,i)*rj_i*ri_i*fij*dd7*dd8 &
-                                         +rvec_ee(l)*dd1*rij_i*(rvec_en(k,i)*fui*dd7*ri_i+rvec_en(k,j)*fuj*dd8*rj_i) 
+        dum=dd1*rij_i*(rvec_en(k,i)*fui*dd7*ri_i+rvec_en(k,j)*fuj*dd8*rj_i)
+        do l=1,3
+          da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(l,i)*(rvec_en(k,i)*dum1i+rvec_en(k,j)*dum1ij)&
+                                         -rvec_ee(l)*dum
+
+          da_vj(k,l,j,ic)=da_vj(k,l,j,ic)-rvec_en(l,j)*(rvec_en(k,j)*dum1j+rvec_en(k,i)*dum1ij) &
+                                         +rvec_ee(l)*dum
         enddo
         da_vj(k,k,i,ic)=da_vj(k,k,i,ic)-fi*dd7*ri_i
         da_vj(k,k,j,ic)=da_vj(k,k,j,ic)-fj*dd8*rj_i
 
+!        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k,i)*ri_i*(fiii*dd7*dd7*dd7+fii*dd7*(3*dd9+2*dd7*ri_i) +fi*(dd11+2*dd9*ri_i-2*dd7*ri_i2) &
+!                                                   +dd7*(fjji*dd8*dd8+fij*(dd10+2*dd8*rj_i)) &
+!                                                   +2*dd7*(fuui*dd1*dd1 + fui*dd2 + 2*fui*dd1*rij_i) &
+!                                                   +fuii*dd1*dd7*dd7*(u2pst)*ri_i*rij_i &
+!                                                   +fui*dd1*dd9*(u2pst)*ri_i*rij_i &
+!                                                   +fui*dd1*dd7*2*rij_i &
+!                                                   -fui*dd1*dd7*(u2pst)*ri_i2*rij_i &
+!                                                   +fuij*dd1*dd7*dd8*(u2mst)*rj_i*rij_i &
+!                                                   -fuj*dd1*dd8*2*ri*rj_i*rij_i) &
+!                                 -rvec_en(k,j)*rj_i*(fjjj*dd8*dd8*dd8+fjj*dd8*(3*dd10+2*dd8*rj_i)+fj*(dd12+2*dd10*rj_i-2*dd8*rj_i2) &
+!                                                   +dd8*(fiij*dd7*dd7+fij*(dd9+2*dd7*ri_i)) &
+!                                                   +2*dd8*(fuuj*dd1*dd1 + fuj*dd2 + 2*fuj*dd1*rij_i) &
+!                                                   +fujj*dd1*dd8*dd8*(u2mst)*rj_i*rij_i &
+!                                                   +fuj*dd1*dd10*(u2mst)*rj_i*rij_i &
+!                                                   +fuj*dd1*dd8*2*rij_i &
+!                                                   -fuj*dd1*dd8*(u2mst)*rj_i2*rij_i &
+!                                                   +fuij*dd1*dd7*dd8*(u2pst)*ri_i*rij_i &
+!                                                   -fui*dd1*dd7*2*rj*ri_i*rij_i)
+!       do l=1,3
+!         da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(l,i)*rvec_en(k,i)*ri_i2*(fii*dd7*dd7+fi*dd9-fi*dd7*ri_i) &
+!                                        -rvec_en(l,i)*rvec_en(k,j)*ri_i*rj_i*fij*dd7*dd8 &
+!                                        -rvec_ee(l)*dd1*rij_i*(rvec_en(k,i)*fui*dd7*ri_i+rvec_en(k,j)*fuj*dd8*rj_i)
+
+!         da_vj(k,l,j,ic)=da_vj(k,l,j,ic)-rvec_en(l,j)*rvec_en(k,j)*rj_i2*(fjj*dd8*dd8+fj*dd10-fj*dd8*rj_i) &
+!                                        -rvec_en(l,j)*rvec_en(k,i)*rj_i*ri_i*fij*dd7*dd8 &
+!                                        +rvec_ee(l)*dd1*rij_i*(rvec_en(k,i)*fui*dd7*ri_i+rvec_en(k,j)*fuj*dd8*rj_i)
+!       enddo
+!       da_vj(k,k,i,ic)=da_vj(k,k,i,ic)-fi*dd7*ri_i
+!       da_vj(k,k,j,ic)=da_vj(k,k,j,ic)-fj*dd8*rj_i
+!
 !       write(ounit,*) k,i,ic,da_d2j(k,ic),(da_vj(k,l,i,ic),l=1,3)
+
       enddo
 
       return

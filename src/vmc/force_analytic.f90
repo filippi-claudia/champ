@@ -40,6 +40,7 @@ contains
 !-----------------------------------------------------------------------
       subroutine compute_da_psi(psid,da_psi_ref)
 
+      use contrl_file, only: ounit
       use da_energy_now, only: da_psi
       use da_jastrow, only: da_j
       use da_orbval, only: da_orb
@@ -225,7 +226,7 @@ contains
         enddo
       enddo
 
-!     write(ounit,*)'da_energy',((da_energy(l,ic),l=1,3),ic=1,ncent)
+!     write(ounit,*)'da_energy',((da_energy(k,ic),k=1,3),ic=1,ncent)
 !     write(ounit,*)'da_energy',da_energy(2,1)
 !     write(ounit,*)'da_vj',da_vj(2,1,1,1)
 !     write(ounit,*)'da_d2j',da_d2j(2,1)

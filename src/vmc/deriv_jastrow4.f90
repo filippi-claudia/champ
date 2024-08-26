@@ -13,7 +13,7 @@
       use jaspointer, only: npoint,npointa
       use jastrow, only: a4,asymp_jasa,asymp_jasb,b,c,nordj
       use jastrow, only: sspinn
-      use jastrow4_mod, only: da_jastrow4_en
+      use jastrow4_mod, only: da_jastrow4_een, da_jastrow4_en
       use m_force_analytic, only: iforce_analy
       use multiple_geo, only: iwf
       use optwf_control, only: ioptjas
@@ -21,7 +21,7 @@
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa,iwjasb,iwjasc
       use precision_kinds, only: dp
-      use scale_dist_mod, only: scale_dist2,switch_scale2, scale_dist3
+      use scale_dist_mod, only: scale_dist2,switch_scale2, scale_dist3, switch_scale3
       use system,  only: iwctype,ncent,nctype,nelec,nup
       use vardep,  only: cdep,iwdepend,nvdepend
       implicit none
@@ -33,11 +33,10 @@
       integer :: l, l_hi, ll, m, n 
       real(dp) :: bot, bot0, bot2, boti, botii
       real(dp) :: botu, botuu, cd, d2o
-      real(dp) :: dd1, dd2, dd7, dd8, dd9, dd10, dd11, dd12
-      real(dp) :: fc, fee
-      real(dp) :: feeu, feeuu, fen, feni, fenii, feniii
-      real(dp) :: fi, fii, fj, fjj
-      real(dp) :: fu, fui, fuj, fuu
+      real(dp) :: dd1, dd2, dd3, dd7, dd8, dd9, dd10, dd11, dd12
+      real(dp) :: fc, fee, feeu, feeuu
+      real(dp) :: fen, feni, fenii, feniii
+      real(dp) :: fi, fii, fiii, fiij, fij, fj, fjj, fjji, fjjj, fu, fui, fuii, fuij, fuj, fujj, fuu, fuui, fuuj
       real(dp) :: gee=0, geeu=0, geeuu=0, gen
       real(dp) :: geni, genii, gi, gii
       real(dp) :: gj, gjj, gp, gu
@@ -49,11 +48,7 @@
       real(dp) :: topu, topuu, u2mst, u2pst
       real(dp) :: value
       real(dp), dimension(3, *) :: x
-      real(dp), dimension(-2:nordj) :: uu
-      real(dp), dimension(-2:nordj) :: ss
-      real(dp), dimension(-2:nordj) :: tt
-      real(dp), dimension(-2:nordj) :: rri
-      real(dp), dimension(-2:nordj) :: rrj
+      real(dp), dimension(-3:nordj) :: uu, ss, tt, rri, rrj
       real(dp) :: fsumo
       real(dp), dimension(3, *) :: fjo
       real(dp), dimension(nelec, *) :: fso
@@ -75,20 +70,21 @@
        iparma=iparma+nparma(it)
       enddo
 
-      fsumo=0
+      fsumo=0.d0
+      d2o=0.d0
       do i=1,nelec
-        fjo(1,i)=0
-        fjo(2,i)=0
-        fjo(3,i)=0
+        fjo(1,i)=0.d0
+        fjo(2,i)=0.d0
+        fjo(3,i)=0.d0
       enddo
-      d2o=0
+
       if(iforce_analy.gt.0) then
         da_j=0.d0
         da_d2j=0.d0
         da_vj=0.d0
       endif
 
-      do i=-2,-1
+      do i=-3,-1
         uu(i)=0
         ss(i)=0
         tt(i)=0
@@ -265,11 +261,19 @@
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
-        call scale_dist2(ri,rri(1),dd7,dd9)
-        call scale_dist2(rj,rrj(1),dd8,dd10)
+        if(iforce_analy.eq.0) then
+          call scale_dist2(ri,rri(1),dd7,dd9)
+          call scale_dist2(rj,rrj(1),dd8,dd10)
 
-        call switch_scale2(rri(1),dd7,dd9)
-        call switch_scale2(rrj(1),dd8,dd10)
+          call switch_scale2(rri(1),dd7,dd9)
+          call switch_scale2(rrj(1),dd8,dd10)
+        else
+          call scale_dist3(ri,rri(1),dd7,dd9,dd11)
+          call scale_dist3(rj,rrj(1),dd8,dd10,dd12)
+
+          call switch_scale3(rri(1),dd7,dd9,dd11)
+          call switch_scale3(rrj(1),dd8,dd10,dd12)
+       endif
 
         s=ri+rj
         t=ri-rj
@@ -288,13 +292,25 @@
 
         fc=0
         fu=0
-        fuu=0
-        fi=0
-        fii=0
-        fj=0
-        fjj=0
         fui=0
         fuj=0
+        fuu=0
+        fuui=0
+        fuuj=0
+        fi=0
+        fii=0
+        fij=0
+        fiii=0
+        fiij=0
+        fj=0
+        fjj=0
+        fjjj=0
+        fjji=0
+        fui=0
+        fuii=0
+        fuij=0
+        fuj=0
+        fujj=0
         ll=0
         jj=1
         jparm=1
@@ -336,6 +352,32 @@
                 fjj=fjj+c(ll,it,iwf)*pjj
                 fui=fui+c(ll,it,iwf)*pui
                 fuj=fuj+c(ll,it,iwf)*puj
+                if(iforce_analy.gt.0) then
+                  fuii=fuii+c(ll,it,iwf)*k*uu(k-1) &
+                       *((l+m)*(l+m-1)*rri(l+m-2)*rrj(m)+m*(m-1)*rri(m-2)*rrj(l+m))
+                  fuij=fuij+c(ll,it,iwf)*k*uu(k-1) &
+                       *((l+m)*m*rri(l+m-1)*rrj(m-1)+m*(l+m)*rri(m-1)*rrj(l+m-1))
+                  fujj=fujj+c(ll,it,iwf)*k*uu(k-1) &
+                       *((l+m)*(l+m-1)*rrj(l+m-2)*rri(m)+m*(m-1)*rrj(m-2)*rri(l+m))
+                  fuui=fuui+c(ll,it,iwf)*k*(k-1)*uu(k-2) &
+                       *((l+m)*rri(l+m-1)*rrj(m)+m*rri(m-1)*rrj(l+m))
+                  fuuj=fuuj+c(ll,it,iwf)*k*(k-1)*uu(k-2) &
+                       *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
+                  fij=fij+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*m*rri(l+m-1)*rrj(m-1)+m*(l+m)*rri(m-1)*rrj(l+m-1))
+                  fiii=fiii+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*(l+m-2)*rri(l+m-3)*rrj(m) &
+                       +m*(m-1)*(m-2)*rri(m-3)*rrj(l+m))
+                  fiij=fiij+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*m*rri(l+m-2)*rrj(m-1) &
+                       +m*(m-1)*(l+m)*rri(m-2)*rrj(l+m-1))
+                  fjjj=fjjj+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*(l+m-2)*rrj(l+m-3)*rri(m) &
+                       +m*(m-1)*(m-2)*rrj(m-3)*rri(l+m))
+                  fjji=fjji+c(ll,it,iwf)*uu(k) &
+                       *((l+m)*(l+m-1)*m*rrj(l+m-2)*rri(m-1) &
+                       +m*(m-1)*(l+m)*rrj(m-2)*rri(l+m-1))
+                endif
 
 ! derivatives of wave function wrt c-parameters
 !               ideriv=0
@@ -433,6 +475,9 @@
             enddo
           enddo
         enddo
+
+        if(iforce_analy.eq.1) call da_jastrow4_een(i,j,ic,rvec_en(1,1,ic),rvec_ee(1,ij),ri,rj,rij,u2pst,u2mst, &
+          fi,fii,fiii,fij,fiij,fj,fjj,fjji,fjjj,fui,fuii,fuij,fuj,fujj,fuui,fuuj,dd1,dd2,dd7,dd8,dd9,dd10,dd11,dd12)
 
         fuu=fuu*dd1*dd1+fu*dd2
         fu=fu*dd1/rij

@@ -181,7 +181,7 @@ module nonlpsi
       return
       end
 !-----------------------------------------------------------------------
-      function dpsinl(u,rri,rrj,fu,fi,fj,dd1u,dd1i,dd1j,it,iwfjas,iforce_analy)
+      function dpsinl(u,rri,rrj,fu,fi,fj,dd1u,dd1i,dd1j,it,iwfjas)
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
       use vmc_mod, only: nwftypejas
       use jastrow, only: norda, nordb, nordc
@@ -228,18 +228,12 @@ module nonlpsi
       tt(0)=1
 
       if(ijas.eq.4) then
-         if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
-         if(iforce_analy.eq.0) then
-           call switch_scale(uu(1))
-           call switch_scale(ri(1))
-           call switch_scale(rj(1))
-          else
-           call switch_scale1(uu(1),dd1u)
-           call switch_scale1(ri(1),dd1i)
-           call switch_scale1(rj(1),dd1j)
-        endif
-      elseif(ijas.eq.1) then
-         if(rri.gt.cutjas_en(it,iwf).or.rrj.gt.cutjas_en(it,iwf)) return
+        if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
+        call switch_scale1(uu(1),dd1u)
+        call switch_scale1(ri(1),dd1i)
+        call switch_scale1(rj(1),dd1j)
+       elseif(ijas.eq.1) then
+        if(rri.gt.cutjas_en(it,iwf).or.rrj.gt.cutjas_en(it,iwf)) return
       endif
 
       do jp=1,nordc

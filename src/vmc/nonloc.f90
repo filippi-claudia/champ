@@ -212,13 +212,13 @@ contains
 
          if(ioptjas.eq.0) then
             do iwfjas=1,nwftypejas
-               call nonlocj_quad4(nxquad,xquad,iequad,x,r_en,rvec_en, &
+               call nonlocj_quad4(nxquad,xquad,iequad,x,rvec_en,r_en, &
                     rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio, &
                     fso(1,1,iwfjas),iwfjas)
             enddo
          else
             do iwfjas=1,nwftypejas
-               call deriv_nonlocj_quad4(nxquad,xquad,iequad,x,r_en, &
+               call deriv_nonlocj_quad4(nxquad,xquad,iequad,x,rvec_en,r_en, &
                     rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),dj_psij_ratio(1,1,iwfjas),vjn, &
                     da_psij_ratio,iwfjas)
             enddo
@@ -1040,7 +1040,7 @@ contains
       return
       end
 !-----------------------------------------------------------------------
-      subroutine nonlocj_quad4(nxquad,xquad,iequad,x,r_en,rvec_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio,fso,iwfjas)
+      subroutine nonlocj_quad4(nxquad,xquad,iequad,x,rvec_en,r_en,rvec_en_quad,r_en_quad,ratio_jn,vjn,da_psij_ratio,fso,iwfjas)
 
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
 
@@ -1068,8 +1068,8 @@ contains
       real(dp), dimension(nelec,*) :: fso
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,*) :: xquad
-      real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+      real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nquad*nelec*2,*) :: rvec_en_quad
       real(dp), dimension(nquad*nelec*2,ncent_tot) :: r_en_quad
       real(dp), dimension(nelec,ncent_tot) :: rr_en
@@ -1184,7 +1184,7 @@ contains
               dd1ij=dd1u
               dd1i=dd1_quad(ic)
               dd1j=dd1(jj,ic)
-              dum=dpsinl(u,rr_en_quad(ic),rr_en(jj,ic),fu,fi,fj,dd1ij,dd1i,dd1j,it,iwfjas,iforce_analy)
+              dum=dpsinl(u,rr_en_quad(ic),rr_en(jj,ic),fu,fi,fj,dd1ij,dd1i,dd1j,it,iwfjas)
               fu=fu*dd1ij/rij
               fi=fi*dd1i/r_en_quad(iq,ic)
               fj=fj*dd1j/r_en(jj,ic)
@@ -1200,6 +1200,7 @@ contains
         endif
 
         fsumn=fsumn+fsn(i,j)-fso(i,j)
+
       45 continue
       enddo
 
