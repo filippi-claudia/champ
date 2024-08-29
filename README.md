@@ -63,7 +63,7 @@ CHAMP utilizes various other program packages:
 
 
 3. [TREXIO Tools](https://github.com/TREX-CoE/trexio_tools):
-   We provide a python package inside the CHAMP's tool directory to extract all the necessary information from a TREXIO file in the hdf5 file format to a human-readable text format. This allows one to bypass the use of the TREXIO library within CHAMP and input the necessary data via the Parser (see Option 2 in Section "Preparing the Input File" below).
+   We provide a Python package inside the CHAMP's tool directory to extract all the necessary information from a TREXIO file in the hdf5 file format to a human-readable text format. This allows one to bypass the TREXIO library within CHAMP and input the necessary data via the Parser (see Option 2 in Section "Preparing the Input File" below).
 
 4. [QMCKL](https://github.com/TREX-CoE/qmckl):
   This library provides a high-performance implementation of the main kernels of Quantum Monte Carlo methods. This library is currently optional.
@@ -89,8 +89,8 @@ CHAMP is available as a container image from Dockerhub. Here are the instruction
 2. gfortran/gcc >= 9.3.0 or Intel Fortran 2020 onwards
 3. BLAS/LAPACK or Intel MKL
 4. openMPI >= 3.0 or Intel MPI
-5. [Optional] TREXIO library >= 2.3.0
-6. [Optional] QMCkl library >= 0.2.1
+5. [Optional] TREXIO library >= 2.4.0
+6. [Optional] QMCkl library >= 1.0.0
 7. [Optional] doxygen (for documentation)
 
 
@@ -113,7 +113,10 @@ cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=mpif90
 ```
 To use LAPACK and BLAS installed locally, include the path to the libraries:
 ```
-cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=mpif90 -D BLAS_blas_LIBRARY=/home/user/lib/BLAS/blas_LINUX.a -D LAPACK_lapack_LIBRARY=/home/user/lib/LAPACK/liblapack.a
+cmake -H. -Bbuild \
+	-DCMAKE_Fortran_COMPILER=mpif90 \
+	-DBLAS_blas_LIBRARY=/home/user/lib/BLAS/blas_LINUX.a \
+	-DLAPACK_lapack_LIBRARY=/home/user/lib/LAPACK/liblapack.a
 ```
 To enable/disable vectorization based on the architecture:
 ```bash
@@ -128,8 +131,6 @@ Clean and build:
 ```
 cmake --build build --clean-first
 ```
-Compared to the previous Makefiles the dependencies for the include files
-(e.g include/vmc.h) are correctly setup and no `--clean-first` is required. ##
 
 #### CMAKE Recipes
 
@@ -148,7 +149,11 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```
 		Optionally, you may link the trexio library using the following command:
 		```bash
-		cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so -DTREXIO_INCLUDE_DIR=$HOME/include/
+		cmake -S. -Bbuild  \
+  			-DCMAKE_Fortran_COMPILER=mpiifort  \
+  			-DENABLE_TREXIO=ON  \
+  			-DTREXIO_LIBRARY=$HOME/lib/libtrexio.so  \
+  			-DTREXIO_INCLUDE_DIR=$HOME/include/
 		```
 		and finally build:
 		```bash
@@ -203,9 +208,10 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```
 	- To enable TREXIO library:
 		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON \
-          -DTREXIO_LIBRARY=/software/libraries/trexio/latest/lib/libtrexio.so \
-          -DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest/include/ 
+		cmake -H. -Bbuild  \
+  			-DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON  \
+  			-DTREXIO_LIBRARY=/software/libraries/trexio/latest/lib/libtrexio.so  \
+			-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest/include/ 
 		```
 	- To disable vectorization of the code:
 		```
@@ -271,7 +277,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```
 		To run in parallel:
 		```
-		mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 < vmc.inp > vmc.out
+		mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 -i vmc.inp -o vmc.out -e error
 		```
 	- Ubuntu 18:
 	Install the dependencies using conda instead of apt
@@ -285,7 +291,7 @@ The user's manual and documentation is hosted at [https://trex-coe.github.io/cha
 
 # Preparing the input files
 
-CHAMP needs following input files to describe a system
+CHAMP needs the following input files to describe a system
 1. Geometry
 1. ECP / Pseudopotentials
 1. Basis Set (Radial Grid files)
@@ -360,7 +366,7 @@ Allowed values of MOtype are `'RHF', 'ROHF', 'MCSCF', 'NATURAL', 'GUGA' ...`
 
 ## Option 2 (Specification using individual text files)
 
-The trexio file can be converted into several text files to be used with CHAMP. The python converter is provided in the CHAMP's repository in the `champ/tools/trex_tools` folder.
+The trexio file can be converted into several text files to be used with CHAMP. The Python converter is provided in the CHAMP's repository in the `champ/tools/trex_tools` folder.
 
 A sample script is given below:
 
@@ -451,7 +457,7 @@ BFD Si pseudo
 1
 15.43693603 2 2.11659661
 ```
-These files are generally kept in the `pool` directory of the calculation folder. You just need to specify the the name `BFD` in the general module of CHAMP input file under the keyword `pseudopot`. There should be a file for each type of an atom.
+These files are generally kept in the `pool` directory of the calculation folder. You just need to specify the name `BFD` in the general module of the CHAMP input file under the keyword `pseudopot`. There should be a file for each type of an atom.
 
 ```python
 %module general
@@ -467,7 +473,7 @@ These files are generally kept in the `pool` directory of the calculation folder
 ## Basis set (Basis on the radial grid) files
 
 Basis files have a fixed format. The files generated from the trex2champ converter can also be used as they are.
-These files are generally kept in the `pool` directory of the calculation folder. You just need to specify the name of the basis file (say, `ccpVTZ`) in the general module of CHAMP input file under the keyword `basis`. This will read the file `ccpVTZ.basis.Si` for the element `Si`.
+These files are generally kept in the `pool` directory of the calculation folder. You just need to specify the name of the basis file (say, `ccpVTZ`) in the general module of the CHAMP input file under the keyword `basis`. This will read the file `ccpVTZ.basis.Si` for the element `Si`.
 
 The top few lines of `BFD-T.basis.C` look like
 
@@ -477,7 +483,7 @@ The top few lines of `BFD-T.basis.C` look like
  1.508957441883e-04  5.469976454488e-01  2.376319870895e+00  5.557936481942e-01  3.412817957941e+00  2.206803015581e-01  8.610719410992e-01  3.738901923954e-01  3.289925989316e+00  1.106692890335e+00
  ...
  ```
-This means there are 9 radial shells in the basis set of carbon put on a radial grid of 2000 points (upto 20 bohr).
+This means there are 9 radial shells in the basis set of carbon put on a radial grid of 2000 points (up to 20 bohr).
 
 
 ## Basis pointers (formerly bfinfo) files
@@ -489,7 +495,7 @@ This file is generated automatically by the `trex2champ.py` converter.
 # Format of the new basis information file champ_v3
 # num_ao_per_center, n(s), n(p), n(d), n(f), n(g)
 # Index of Slm (Range 1 to 35)
-# Index of column from numerical basis file
+# Index of the column from numerical basis file
 qmc_bf_info 1
 54 4 4 3 2 0
 1 1 1 1 2 3 4 2 3 4 2 3 4 2 3 4 5 6 7 8 9 10 5 6 7 8 9 10 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 11 12 13 14 15 16 17 18 19 20
@@ -502,9 +508,9 @@ end
 
 Each unique type of atom will have a pair of lines in the basis pointers file.
 
-The first line after the comments `qmc_bf_info 1` is a specification line to make sure that we are reading basis function information file.
+The first line after the comments `qmc_bf_info 1` is a specification line to make sure that we are reading the basis function information file.
 
-The second line is for the first unique atom in the system. It contains the number of atomic orbitals for that atom, the number of s-type functions, number of p-type functions, number of d-type functions, number of f-type functions, and number of g-type functions.
+The second line is for the first unique atom in the system. It contains the number of atomic orbitals for that atom, the number of s-type functions, the number of p-type functions, the number of d-type functions, the number of f-type functions, and the number of g-type functions.
 `num_ao_per_center, n(s), n(p), n(d), n(f), n(g)`
 
 The third line gives the index of Slm (or real Ylm). The numbers depend on how many radial shells are there in the basis set.
@@ -537,9 +543,9 @@ lcao  226 200  1
 end
 ```
 
-The number 226 will be number of AOs, 200 will be number of orbitals, 1 will be number of types of orbitals.
+The number 226 will be the number of AOs, 200 will be the number of orbitals, and 1 will be the number of types of orbitals.
 
-## determinants and/or CSF file
+## Determinants and/or CSF file
 The determinant file is automatically obtained from the `trex2champ.py` converter. Note that the `trex2champ.py` can also provide CSF and CSF map information if the corresponding GAMESS output file is provided with `--gamess` option.
 
 The below is a typical file.
@@ -683,8 +689,8 @@ end
 
 ```
 
-The first line contains a keyword `eigenvalues` followed by the number of orbitals. The following line contains
- eigenvalues as they appear in GAMESS or similar output. The file ends with keyword `end`.
+The first line contains the keyword `eigenvalues` followed by the number of orbitals. The following line contains
+ eigenvalues as they appear in GAMESS or similar output. The file ends with the keyword `end`.
 
 ## Jastrow parameters file
 The Jastrow parameters can be provided using this file. It has the following format [Example: water].
@@ -701,11 +707,11 @@ jastrow_parameter   1
 end
 ```
 
-The set `a`should appear for each unique atom type (in the same order as in the .xyz file).
+The set `a` should appear for each unique atom type (in the same order as in the .xyz file).
 
 The set `b` should appear once.
 
-The three-body Jastrow terms `c` should appear for each unique atom type (in the same order as in the .xyz file)
+Three-body Jastrow terms `c` should appear for each unique atom type (in the same order as in the .xyz file)
 
 
 ## Jastrow derivatives file
