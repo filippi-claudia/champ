@@ -87,7 +87,7 @@
       real(dp) :: ecuto, ecutn
       real(dp) :: dx, e_cutoff, dwt_cutoff, ekino(1), enew(1)
       real(dp) :: ewtn, ewto, expon, ffi
-      real(dp) :: ffn, fration, fratio_aux, ginv
+      real(dp) :: ffn, fration, ginv
       real(dp) :: p, pen, pp, psi2savo
       real(dp) :: psidn(1), psijn(1), q, r2n, r2o
       real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new
@@ -155,11 +155,9 @@
               fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
             else if (icut_e.eq.2) then
               call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumo, v2sumo)
-              fratio_aux = branching_c * sqrt(v2sumo) * tau/sqrt_nelec
-              fratio(iw, ifr)= sqrt_pi_o2 * derf(fratio_aux)/fratio_aux
+              fratio(iw, ifr)= branching_c * sqrt(v2sumo)/sqrt_nelec
             else if (icut_e.eq.3) then
-              fratio_aux = branching_c * tau * dabs(eest-eold(iw, ifr))/(0.2d0 * sqrt_nelec)
-              fratio(iw, ifr)= sqrt_pi_o2 * derf(fratio_aux)/fratio_aux
+              fratio(iw, ifr)= branching_c * dabs(eest-eold(iw, ifr))/(0.2d0 * sqrt_nelec)
             endif
           enddo
         enddo
@@ -497,11 +495,9 @@
             fration=dsqrt(vav2sumn/v2sumn)
           else if (icut_e.eq.2) then
             call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumn, v2sumn)
-            fratio_aux = branching_c * dsqrt(v2sumn) * taunow/sqrt_nelec
-            fration = sqrt_pi_o2 * derf(fratio_aux)/fratio_aux
+            fration = branching_c * dsqrt(v2sumn)/sqrt_nelec
           else if (icut_e.eq.3) then
-            fratio_aux = branching_c * taunow * dabs(eest-enew(1))/(0.2d0 * sqrt_nelec)
-            fration = sqrt_pi_o2 * derf(fratio_aux)/fratio_aux
+            fration = branching_c * dabs(eest-enew(1))/(0.2d0 * sqrt_nelec)
           endif            
 
           if(ipr.ge.1)write(ounit,'(''wt'',9f10.5)') wt(iw),etrial,eest
@@ -517,8 +513,8 @@
             ewto=eest-sign(1.d0,deo)*ecuto
             ewtn=eest-sign(1.d0,den)*ecutn
           else if (icut_e.eq.2.or.icut_e.eq.3) then
-            ewto=eest-(eest-eold(iw,ifr))*fratio(iw,ifr)
-            ewtn=eest-(eest-enew(1))*fration
+            ewto=eest-(eest-eold(iw,ifr))*max(sqrt_pi_o2 * derf(fratio(iw,ifr)*taunow)/(fratio(iw,ifr)*taunow),1e-9)
+            ewtn=eest-(eest-enew(1))*max(sqrt_pi_o2 * derf(fration*taunow)/(fration*taunow),1e-9)
           endif
 
           if(idmc.gt.0) then
