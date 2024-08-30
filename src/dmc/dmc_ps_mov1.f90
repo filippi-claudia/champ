@@ -528,7 +528,7 @@
 
           ! Limit the weights for LA
           if(limit_wt_dmc.gt.0) then
-            dwt_cutoff=exp((etrial-eest+limit_wt_dmc*esigma/rttau)*tau)
+            dwt_cutoff=exp((etrial-eest+limit_wt_dmc*esigma/sqrt(rttau))*tau)
             if(dwt.gt.dwt_cutoff) dwt=dwt_cutoff
           endif
 
