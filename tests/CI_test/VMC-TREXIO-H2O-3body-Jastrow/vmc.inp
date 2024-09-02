@@ -1,0 +1,20 @@
+%module general
+    title           'H2O VMC energy-only calculation with 3-body Jastrow'
+    pool            './pool/'
+    mode            vmc_one_mpi
+    pseudopot       ccECP
+%endmodule
+
+
+# Get all the input data
+load trexio         water_c2v_LDA.hdf5
+load jastrow        jastrow_3body.jas
+load determinants   single.det
+
+%module blocking_vmc
+    vmc_nstep     60
+    vmc_nblk      1000
+    vmc_nblkeq    2
+    vmc_nconf_new 0
+%endmodule
+
