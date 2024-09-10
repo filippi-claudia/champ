@@ -1,4 +1,4 @@
-name: Intel OneAPI build and test CHAMP with QMCkl and TREXIO
+name: CHAMP with QMCkl and TREXIO build with Intel
 
 on:
   push:
@@ -12,6 +12,7 @@ on:
     branches:
       - 'releases/**'
       - main
+  workflow_dispatch:
 
 jobs:
   build_champ:

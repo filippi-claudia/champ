@@ -1,4 +1,4 @@
-name: Github CI
+name: Debug build CHAMP with Intel and GNU
 
 on:
   push:
@@ -169,7 +169,7 @@ jobs:
         mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
 
         echo "Comparing the energy with the reference one (Current energy = -0.9926131 +- 0.0120065  ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -0.9926131 0.0120065   
+        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -0.9926131 0.0120065
 
         #echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0018"
         #$HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0018 0.0114836
