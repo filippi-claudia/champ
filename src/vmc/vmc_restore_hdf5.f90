@@ -132,9 +132,9 @@ module vmc_restore_hdf5_mod
         integer :: ifr, istate, j, k
         integer :: nelecx, nforcex, nlocx, nproco
         integer :: nq_id, nqd_id, nqx, nscounts
-        integer, dimension(4,0:nproc) :: irn
+        integer, dimension(8,0:nproc) :: irn
         integer, dimension(MPI_STATUS_SIZE) :: istatus
-        integer, dimension(4,0:nproc) :: irn_tmp
+        integer, dimension(8,0:nproc) :: irn_tmp
         integer, dimension(0:nproc) :: ircounts
         integer, dimension(0:nproc) :: idispls
         integer :: irequest, iw
@@ -199,7 +199,7 @@ module vmc_restore_hdf5_mod
           write(ounit, '(a,i4,a,i4,a)') "Number of processors from restart file = ", nproco, ", Current number of processors = ", nproc
         endif
 
-        call hdf5_read(file_id, group_id, "Random Numbers Each Processor", irn(1:4,0:nproc-1))
+        call hdf5_read(file_id, group_id, "Random Numbers Each Processor", irn(1:8,0:nproc-1))
         if(idtask.le.nproco-1) call setrn(irn(1,idtask))
 
         call hdf5_read(file_id, group_id, "nelec", nelecx)

@@ -18,11 +18,13 @@ c and sa, pa, da asymptotic functions
       use contrl_file, only: ounit
       use control_vmc, only: vmc_idump,vmc_irstar,vmc_nblk,vmc_nblkeq
       use control_vmc, only: vmc_nconf,vmc_nconf_new,vmc_nstep
+      use custom_broadcast, only: bcast
       use dumper_mod, only: dumper,startr
       use error,   only: fatal_error
       use finwrt_mod, only: finwrt
       use mc_configs, only: mc_configs_start,mc_configs_write
       use metrop_mov1_slat, only: metrop6
+      use mpiconf, only: wid
       use mpitimer, only: elapsed_time
       use multiple_geo, only: iwftype,nforce,nwftype
       use precision_kinds, only: dp
@@ -187,12 +189,14 @@ c print out final results
       call elapsed_time("writing final results : ")
 
 
-c     Get the date-time stamp
-      call date_and_time(date=date, time=time)
-
 c if dump flag is on then dump out data for a restart
       if (vmc_idump.eq.1) then
 #if defined(HDF5_FOUND)
+      if (wid) then
+        call date_and_time(date=date, time=time)
+      endif
+      call bcast(date)
+      call bcast(time)
       call vmc_store_hdf5("restart_vmc_"//date(1:4)//'-'//date(5:6)//'-'//date(7:8)//"-"//time(1:6)//".hdf5")
 #else
         open(10,form='unformatted',file='restart_vmc')

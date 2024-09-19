@@ -119,7 +119,7 @@ module vmc_store_hdf5_mod
         implicit none
 
         ! HDF5 related variables
-        character(len=*), intent(in)  ::  restart_filename
+        character(len=*), intent(in)   ::  restart_filename
         integer(hid_t)                 ::  file_id
         integer(hid_t)                 ::  group_id
         character(len=20)              ::  author = "CHAMP", s
@@ -128,84 +128,89 @@ module vmc_store_hdf5_mod
         integer :: ifr, istate, j, k
         integer :: nelecx, nforcex, nlocx, nproco
         integer :: nq_id, nqd_id, nqx, nscounts
-        integer, dimension(4,0:nproc) :: irn
+        integer, dimension(8,0:nproc-1) :: irn
         integer, dimension(MPI_STATUS_SIZE) :: istatus
-        integer, dimension(4,0:nproc) :: irn_tmp
+        integer, dimension(8,0:nproc-1) :: irn_tmp
         integer, dimension(0:nproc) :: ircounts
         integer, dimension(0:nproc) :: idispls
         integer :: irequest, iw
         real(dp) :: rnd, wq_id, x_id, xq_id, yq_id, zq_id
+        integer, dimension(nquad,0:nproc-1) :: temp_xq, temp_yq, temp_zq, temp_wq
 
         ! optorb
         integer :: matdim
 
 
         do i=0,nproc-1
-           ircounts(i)=4
-           idispls(i)=i*4
+           ircounts(i)=8
+           idispls(i)=i*8
         enddo
 
-        idispls(nproc)=4*nproc
+        idispls(nproc)=8*nproc
         nscounts=ircounts(idtask)
 
         call savern(irn(1,idtask))
 
+        write(*,*) "irn direct ", idtask, " = ",  irn(:,idtask)
+
         call mpi_gatherv(irn(1,idtask),nscounts,mpi_integer,irn_tmp,ircounts,idispls,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
-         ! Bradcast the data which is spread across the processors
-        if(idtask.ne.0) then
-            call mpi_send(xold,3*nelec,mpi_double_precision,0,1,MPI_COMM_WORLD,ierr)
-            call mpi_send(xq,nquad,mpi_double_precision,0,2,MPI_COMM_WORLD,ierr)
-            call mpi_send(yq,nquad,mpi_double_precision,0,3,MPI_COMM_WORLD,ierr)
-            call mpi_send(zq,nquad,mpi_double_precision,0,4,MPI_COMM_WORLD,ierr)
-        else
-            call hdf5_group_create(file_id, "MPIGroup", group_id)
-            call hdf5_group_open(file_id, "MPIGroup", group_id)
-            call hdf5_write(file_id, group_id, "nproc", nproc)
-            call hdf5_write(file_id, group_id, "Random Numbers Each Processor", irn_tmp(1:4,0:nproc-1))
-            call hdf5_write(file_id, group_id, "nelec", nelec)
-            call hdf5_write(file_id, group_id, "nforce", nforce)
-            call hdf5_write(file_id, group_id, "nloc", nloc)
-            call hdf5_write(file_id, group_id, "xold_proc_0", xold)
-            if (nloc .gt. 0) then
-               call hdf5_write(file_id, group_id, "nquad_proc_0", nquad)
-               call hdf5_write(file_id, group_id, "xq_proc_0", xq(1:nquad))
-               call hdf5_write(file_id, group_id, "yq_proc_0", yq(1:nquad))
-               call hdf5_write(file_id, group_id, "zq_proc_0", zq(1:nquad))
-               call hdf5_write(file_id, group_id, "wq_proc_0", wq(1:nquad))
-            endif
-            call hdf5_group_close(group_id)
-            write(ounit, *) " HDF5 Group saved :: MPIGroup "
+        ! call mpi_gatherv(xq(1:nquad),nscounts,mpi_double_precision,temp_xq,ircounts,idispls,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+        ! call mpi_gatherv(yq(1:nquad),nscounts,mpi_double_precision,temp_yq,ircounts,idispls,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+        ! call mpi_gatherv(zq(1:nquad),nscounts,mpi_double_precision,temp_zq,ircounts,idispls,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+        ! call mpi_gatherv(wq(1:nquad),nscounts,mpi_double_precision,temp_wq,ircounts,idispls,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-            do id=1,nproc-1
-               call mpi_recv(xold,3*nelec,mpi_double_precision,id,1,MPI_COMM_WORLD,istatus,ierr)
-               call mpi_recv(xq,nquad,mpi_double_precision,id,2,MPI_COMM_WORLD,istatus,ierr)
-               call mpi_recv(yq,nquad,mpi_double_precision,id,3,MPI_COMM_WORLD,istatus,ierr)
-               call mpi_recv(zq,nquad,mpi_double_precision,id,4,MPI_COMM_WORLD,istatus,ierr)
+        write(*,*) "idtasks ", idtask, nproc, wid, "filename ", restart_filename
 
-               call hdf5_group_open(file_id, "MPIGroup", group_id)
-               write (unit=s,fmt=*) id
-               call hdf5_write(file_id, group_id, "xold_proc_"//s, xold)
-               if (nloc .gt. 0) then
-                   call hdf5_write(file_id, group_id, "nquad_proc_"//s, nquad)
-                   call hdf5_write(file_id, group_id, "xq_proc_"//s, xq(1:nquad))
-                   call hdf5_write(file_id, group_id, "yq_proc_"//s, yq(1:nquad))
-                   call hdf5_write(file_id, group_id, "zq_proc_"//s, zq(1:nquad))
-                   call hdf5_write(file_id, group_id, "wq_proc_"//s, wq(1:nquad))
-               endif
-               call hdf5_group_close(group_id)
-           enddo
+        if (wid) then
+                ! Open the HDF5 file
+                write(ounit, *) " HDF5 Restart file name:: ", restart_filename
+                ! call hdf5_file_create("sample.hdf5", file_id)
+
+                call hdf5_group_create(file_id, "MPIGroup", group_id)
+                call hdf5_group_open(file_id, "MPIGroup", group_id)
+                call hdf5_write(file_id, group_id, "nproc", nproc)
+                call hdf5_write(file_id, group_id, "Random Numbers Each Processor", irn_tmp(1:8,0:nproc-1))
+                call hdf5_write(file_id, group_id, "nelec", nelec)
+                call hdf5_write(file_id, group_id, "nforce", nforce)
+                call hdf5_write(file_id, group_id, "nloc", nloc)
+                call hdf5_write(file_id, group_id, "xold_proc_0", xold)
+                if (nloc .gt. 0) then
+                        call hdf5_write(file_id, group_id, "nquad_proc_0", nquad)
+                        ! call hdf5_write(file_id, group_id, "xq_proc_0", temp_xq(1:nquad,0:nproc-1))
+                        ! call hdf5_write(file_id, group_id, "yq_proc_0", temp_yq(1:nquad,0:nproc-1))
+                        ! call hdf5_write(file_id, group_id, "zq_proc_0", temp_zq(1:nquad,0:nproc-1))
+                        ! call hdf5_write(file_id, group_id, "wq_proc_0", temp_wq(1:nquad,0:nproc-1))
+                endif
+                call hdf5_group_close(group_id)
+                write(ounit, *) " HDF5 Group saved :: MPIGroup "
         endif
+        !     do id=1,nproc-1
+        !        call mpi_recv(xold,3*nelec,mpi_double_precision,id,1,MPI_COMM_WORLD,istatus,ierr)
+        !        call mpi_recv(xq,nquad,mpi_double_precision,id,2,MPI_COMM_WORLD,istatus,ierr)
+        !        call mpi_recv(yq,nquad,mpi_double_precision,id,3,MPI_COMM_WORLD,istatus,ierr)
+        !        call mpi_recv(zq,nquad,mpi_double_precision,id,4,MPI_COMM_WORLD,istatus,ierr)
+
+        !        call hdf5_group_open(file_id, "MPIGroup", group_id)
+        !        write (unit=s,fmt=*) id
+        !        call hdf5_write(file_id, group_id, "xold_proc_"//s, xold)
+        !        if (nloc .gt. 0) then
+        !            call hdf5_write(file_id, group_id, "nquad_proc_"//s, nquad)
+        !            call hdf5_write(file_id, group_id, "xq_proc_"//s, xq(1:nquad))
+        !            call hdf5_write(file_id, group_id, "yq_proc_"//s, yq(1:nquad))
+        !            call hdf5_write(file_id, group_id, "zq_proc_"//s, zq(1:nquad))
+        !            call hdf5_write(file_id, group_id, "wq_proc_"//s, wq(1:nquad))
+        !        endif
+        !        call hdf5_group_close(group_id)
+        !    enddo
+        ! endif
 
 
-        call mpi_barrier(MPI_COMM_WORLD,ierr)
+        ! call mpi_barrier(MPI_COMM_WORLD,ierr)
 
 
         ! Only the master process will write the data to the HDF5 file
         if (wid) then
-        ! Open the HDF5 file
-        write(ounit, *) " HDF5 Group saved :: HDF5 Restart file name:: ", restart_filename
-        call hdf5_file_create(restart_filename, file_id)
 
         call hdf5_group_create(file_id, "Metadata", group_id)
         call hdf5_group_open(file_id, "Metadata", group_id)
