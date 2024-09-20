@@ -2,11 +2,11 @@ module parser_read_data
       use error,   only: fatal_error
       implicit none
 contains
-subroutine header_printing()
-    !> This subroutine prints the header in each output file. It contains some
-    !! useful information about the compilers, version of the code, input and output file names.
-    !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
 
+!> This subroutine prints the header in each output file. It contains some
+!! useful information about the compilers, version of the code, input and output file names.
+!! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+subroutine header_printing()
       use contrl_file, only: errunit,file_error,file_input,file_output
       use contrl_file, only: ounit
       use mpi_f08
@@ -123,12 +123,12 @@ subroutine header_printing()
 end subroutine header_printing
 
 
+!> This subroutine reads the .xyz molecule file. It then computes the
+!! number of types of atoms, nuclear charges (from the symbol), and
+!! number of valence electrons if pseudopotential is provided.
+!! @author Ravindra Shinde (r.l.shinde@utwente.nl)
+!! @date
 subroutine read_molecule_file(file_molecule)
-    !> This subroutine reads the .xyz molecule file. It then computes the
-    !! number of types of atoms, nuclear charges (from the symbol), and
-    !! number of valence electrons if pseudopotential is provided.
-    !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
-    !! @date
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -298,11 +298,9 @@ end subroutine read_molecule_file
 
 
 
-
+!> This subroutine reads the single state determinant file.
+!! @author Ravindra Shinde
 subroutine read_determinants_file(file_determinants)
-    !> This subroutine reads the single state determinant file.
-    !! @author Ravindra Shinde
-
       use contrl_file, only: errunit,ounit
       use csfs,    only: nstates
       use custom_broadcast, only: bcast
@@ -440,10 +438,10 @@ subroutine read_determinants_file(file_determinants)
 
 end subroutine read_determinants_file
 
+!> This subroutine reads the multideterminants file. The first line appears as 'multideterminants' ndet_local
+!! CI coefficients and occupation of determinants in wf
+!! @author Ravindra Shinde
 subroutine read_multideterminants_file(file_multideterminants)
-    !> This subroutine reads the multideterminants file. The first line appears as 'multideterminants' ndet_local
-    !! CI coefficients and occupation of determinants in wf
-    !! @author Ravindra Shinde
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -517,11 +515,9 @@ end subroutine read_multideterminants_file
 
 
 
-
+!> This subroutine reads jastrow parameters from a text file.
+!>@author Ravindra Shinde
 subroutine read_jastrow_file(file_jastrow)
-    ! This subroutine reads jastrow parameters from a file.
-    ! Ravindra
-
       use bparm,   only: nocuspb,nspin2b
       use csfs,    only: nstates
       use contrl_file, only: errunit,ounit
@@ -575,7 +571,7 @@ subroutine read_jastrow_file(file_jastrow)
 
     if (ndn .eq. 1 .and. nspin2 .eq. 3) call fatal_error('JASTROW: 1 spin down and nspin2=3')
 
-    if (ijas .eq. 4 .and. (isc .lt. 2 .or. isc .gt. 5)) & 
+    if (ijas .eq. 4 .and. (isc .lt. 2 .or. isc .gt. 5)) &
          call fatal_error('JASTROW: if ijas=4, isc must be one of 2,3,4,5')
 
     nspin2b = iabs(nspin2)
@@ -906,10 +902,10 @@ subroutine read_jastrow_file(file_jastrow)
 
 end subroutine read_jastrow_file
 
-
+!> This subroutine reads the LCAO orbitals from a text file.
+!> @author Ravindra Shinde
+!> @author Stu Shepard
 subroutine read_orbitals_file(file_orbitals)
-    ! Ravindra
-
       use coefs,   only: nbasis
       use contrl_file, only: errunit,ounit
       use control, only: mode
@@ -925,8 +921,6 @@ subroutine read_orbitals_file(file_orbitals)
       use slater,  only: coef,norb
       use vmc_mod, only: norb_tot, nwftypeorb, nstoo, nstoomax, otos, extrao, nstoo_tot
       use write_orb_loc_mod, only: write_orb_loc
-
-    ! was not in master but is needed
 
     implicit none
 
@@ -1117,11 +1111,9 @@ subroutine read_orbitals_file(file_orbitals)
 
 end subroutine read_orbitals_file
 
-
+!> This subroutine reads the csf coefficients from the determinant file.
+!> @author Ravindra Shinde
 subroutine read_csf_file(file_determinants)
-    ! This subroutine reads the csf coefficients from the determinant file.
-    ! Ravindra
-
       use ci000,   only: nciprim,nciterm
       use contrl_file, only: errunit,ounit
       use csfs,    only: ccsf,ncsf,nstates
@@ -1260,10 +1252,9 @@ subroutine read_csf_file(file_determinants)
 
 end subroutine read_csf_file
 
+!> This subroutine reads the csf coefficients from the determinant file.
+!> @author Ravindra Shinde
 subroutine read_csfmap_file(file_determinants)
-    ! This subroutine reads the csf coefficients from the determinant file.
-    ! Ravindra
-
       use contrl_file, only: errunit,ounit
       use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
       use custom_broadcast, only: bcast
@@ -1419,11 +1410,9 @@ end subroutine read_csfmap_file
 
 
 
-
+!> Read basis function exponents (only if no numerical basis)
+!> @author Ravindra
 subroutine read_exponents_file(file_exponents)
-    ! Read basis function exponents (only if no numerical basis)
-    ! Ravindra
-
       use basis,   only: zex
       use coefs,   only: nbasis
       use contrl_file, only: errunit,ounit
@@ -1490,11 +1479,9 @@ subroutine read_exponents_file(file_exponents)
 
 end subroutine read_exponents_file
 
-
+!> This subroutines reads the jastrow derivatives for the jastrow optimization.
+!> @author Ravindra Shinde
 subroutine read_jasderiv_file(file_jastrow_der)
-    ! Read jastrow derivatives
-    ! Ravindra
-
       use bparm,   only: nspin2b
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
@@ -1673,9 +1660,8 @@ subroutine read_jasderiv_file(file_jastrow_der)
 end subroutine read_jasderiv_file
 
 
+!> This subroutine reads the forces from the forces file.
 subroutine read_forces_file(file_forces)
-    !
-    ! Ravindra
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -1753,9 +1739,9 @@ subroutine read_forces_file(file_forces)
     if (wid) close(iunit)
 end subroutine read_forces_file
 
-subroutine read_symmetry_file(file_symmetry)
-    ! Ravindra
 
+!> This subroutine reads the symmetry information of orbitals from the symmetry file.
+subroutine read_symmetry_file(file_symmetry)
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -1832,6 +1818,7 @@ subroutine read_symmetry_file(file_symmetry)
 end subroutine read_symmetry_file
 
 
+!> This subroutine reads the optorb_mixvirt from the optorb_mixvirt file.
 subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     !
     ! Ravindra
@@ -1913,7 +1900,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
 end subroutine read_optorb_mixvirt_file
 
 
-
+!> This subroutine reads the orbital energies from the eigenvalues file.
 subroutine read_eigenvalues_file(file_eigenvalues)
 
       use contrl_file, only: errunit,ounit
@@ -1984,7 +1971,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
 end subroutine read_eigenvalues_file
 
 
-
+!> This subroutine reads the information about the numerical basis from the basis_num_info file.
 subroutine read_basis_num_info_file(file_basis_num_info)
     ! Ravindra
     ! Basis function types and pointers to radial parts tables
@@ -2008,7 +1995,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
       use mpitimer, only: elapsed_time
       use control, only: ipr
 
-      
+
     implicit none
 
     !   local use
@@ -2140,7 +2127,7 @@ subroutine read_basis_num_info_file(file_basis_num_info)
 
 end subroutine read_basis_num_info_file
 
-
+!> This subroutine reads the dmatrix from the dmatrix file.
 subroutine read_dmatrix_file(file_dmatrix)
     ! Ravindra (no=ndetorb, ns=nweight)
     !INPUT dmatrix i i a=<input>
@@ -2246,7 +2233,7 @@ subroutine read_dmatrix_file(file_dmatrix)
 
 end subroutine read_dmatrix_file
 
-
+!> This subroutine reads the cavity spheres file.
 subroutine read_cavity_spheres_file(file_cavity_spheres)
     ! Ravindra
     ! Read centers of cavity spheres and radii
@@ -2316,12 +2303,10 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
 end subroutine read_cavity_spheres_file
 
 
+!> This subroutine reads the information for which x,y,z cartesian coordiantes of
+!> atoms energy gradients are to be calculated for.
+!> @author Omar Valsson
 subroutine read_gradients_cartesian_file(file_gradients_cartesian)
-    !Ravindra
-    !INPUT gradients_cartesian inp
-    !KEYDOC Read for which x,y,z cartesian coordiantes of
-    !KEYDOC atoms energy gradients are to be calculated for.
-
     !     Originally written by Omar Valsson
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
@@ -2415,12 +2400,10 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     if (wid) close(iunit)
 end subroutine read_gradients_cartesian_file
 
+!> This subroutine reads the information for which Z matrix (internal) coordiantes of
+!> atoms energy gradients are to be calculated for.
+!> @author Omar Valsson
 subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
-    ! Ravindra
-    ! Read for which Z matrix (internal) coordiantes of
-    ! atoms energy gradients are to be calculated for.
-
-    ! Originally written by Omar Valsson.
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -2513,11 +2496,11 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
 
 end subroutine read_gradients_zmatrix_file
 
+
+!> This subroutine reads the information for which Z matrix (internal) coordiantes of
+!> atoms energy gradients are to be calculated for.
+!> @author Omar Valsson
 subroutine read_modify_zmatrix_file(file_modify_zmatrix)
-    ! Ravindra
-    !
-    ! Read for which Z matrix (internal) coordiantes of
-    ! atoms energy gradients are to be calculated for.
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -2585,11 +2568,10 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     if (wid) close(iunit)
 end subroutine read_modify_zmatrix_file
 
+
+!> This subroutine reads the information from the hessian zmatrix file.
+!> @author Omar Valsson
 subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
-    ! Ravindra
-    !
-    ! Read for which Z matrix (internal) coordiantes of
-    ! atoms energy gradients are to be calculated for.
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use general, only: pooldir
@@ -2658,9 +2640,10 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
 end subroutine read_hessian_zmatrix_file
 
 
+!> This subroutine reads the information from the zmatrix connection file
+!> for the Z matrix coordinates.
+!> @author Omar Valsson
 subroutine read_zmatrix_connection_file(file_zmatrix_connection)
-    ! Ravindra
-    !
     ! Read the atom connection matrix for the Z matrix.
     ! It is need when calculating forces in Z matrix
     ! coordinates.
@@ -2750,6 +2733,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     if (wid) close(iunit)
 end subroutine read_zmatrix_connection_file
 
+!> This subroutine reads the efield file.
 subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     ! Ravindra
       use contrl_file, only: errunit,ounit
