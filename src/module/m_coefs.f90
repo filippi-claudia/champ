@@ -1,11 +1,12 @@
+!> Module that contains the wavefunction coefficients information.
+!>@author Ravindra Shinde
 module coefs
-    !> need a better name is that the MO ?
-    !> if yes can we put it in basis ?
-    !> Arguments: coef, nbasis, norb
-
     implicit none
 
+    !> Number of AO basis functions.
     integer :: nbasis
+
+    !> Maximum number of additional orbitals
     integer :: next_max
 
     save
