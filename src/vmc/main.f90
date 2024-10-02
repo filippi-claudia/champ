@@ -1,19 +1,18 @@
-!------------------------------------------------------------------------------
-!        Main Program of CHAMP
-!------------------------------------------------------------------------------
-!> @author
-!> Claudia Filippi
-!
-! DESCRIPTION:
+!>------------------------------------------------------------------------------
+!>        Main Program of CHAMP
+!>------------------------------------------------------------------------------
+!>
+!> DESCRIPTION:
 !> Read the input file and run either a simple sampling or optimize the
-! wave function using the method specified in the input
-!
-! URL           : https://github.com/filippi-claudia/champ
-!---------------------------------------------------------------------------
-
+!> wave function using the method specified in the input
+!>
+!> URL           : https://github.com/filippi-claudia/champ
+!>---------------------------------------------------------------------------
+!> @author Claudia Filippi
 module main_mod
     contains
 subroutine initialize_main
+    !> Initialize MPI
       use allocation_mod, only: deallocate_vmc
       use contrl_file, only: close_files,init_logfile,init_procfile
       use contrl_file, only: initialize,ounit
@@ -30,7 +29,6 @@ subroutine initialize_main
     integer :: ierr
 
 
-    !> Initialize MPI
     call mpi_init(ierr)
     call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
     call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
@@ -61,6 +59,7 @@ subroutine initialize_main
 end subroutine
 
 subroutine finalize_main()
+    !> Finalize MPI
     use mpi_f08
     use allocation_mod, only: deallocate_vmc
     use contrl_file,    only: ounit
@@ -81,16 +80,19 @@ end module
 
 
 program main
+    !> Main program of CHAMP
     use main_mod, only: initialize_main, finalize_main
     use optwf_mod, only: optwf
 
     implicit None
     integer :: ierr
 
+    !> Initialize MPI
     call initialize_main()
 
-    ! ! run the the optimization
+    !> Run the optimization
     call optwf()
 
+    !> Finalize MPI
     call finalize_main()
 end

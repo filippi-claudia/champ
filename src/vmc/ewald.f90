@@ -345,14 +345,15 @@
       end
 !-----------------------------------------------------------------------
 
+!> Written by Cyrus Umrigar
+!> distcell(i) is the perpendicular distance between cell faces parallel
+!> to the other 2 directions from i.
+!> dist_min is the shortest of these three.
+!> By choosing the range of the short-range part of the Ewald sums to be
+!> <= half the shortest perpendicular distance we ensure that the short-range
+!> part has zero or one terms.
       subroutine short_distance(vector,volume,dist_min,distcell)
-! Written by Cyrus Umrigar
-! distcell(i) is the perpendicular distance between cell faces parallel
-! to the other 2 directions from i.
-! dist_min is the shortest of these three.
-! By choosing the range of the short-range part of the Ewald sums to be
-! <= half the shortest perpendicular distance we ensure that the short-range
-! part has zero or one terms.
+
       use contrl_file,    only: ounit
       use precision_kinds, only: dp
       implicit none
@@ -407,8 +408,9 @@
       end
 !-----------------------------------------------------------------------
 
+!> evaluates the cross-product of v1 and v2 and puts it in v3
+!> @author Edgar Josue Landinez Borda
       subroutine cross(v1,v2,v3)
-! evaluates the cross-product of v1 and v2 and puts it in v3
 
       use precision_kinds, only: dp
       implicit none
@@ -1510,7 +1512,7 @@
        enddo
        ddvl=ddvl+2*y(1)*(ddcos_g(ir,ivec)*cos_sum(1)+ddsin_g(ir,ivec)*sin_sum(1)+gnorm(1)*gnorm(1))
       enddo
-      
+
       do k=2,ngnorm
         do im=1,igmult(k)
           ivec=ivec+1

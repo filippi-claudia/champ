@@ -1,8 +1,8 @@
+!> MPI version created by Claudia Filippi starting from serial version
+!> routine to pick up and dump everything needed to restart
+!> job where it left off
+!> @author Claudia Filippi
 module dumper_mod
-! MPI version created by Claudia Filippi starting from serial version
-! routine to pick up and dump everything needed to restart
-! job where it left off
-
       use config, only: xold
       use contrl_file,    only: ounit
       use csfs, only: nstates
@@ -47,6 +47,7 @@ module dumper_mod
       implicit none
 
 contains
+      !> routine to dump everything needed to restart
       subroutine dumper
       implicit none
       integer :: i, id, idfrom, idget, ierr
@@ -102,6 +103,7 @@ contains
       end subroutine
 
 !-----------------------------------------------------------------------
+      !> routine to pick up everything needed to restart
       subroutine startr
       implicit none
       integer :: i, id, idfrom, idget, ierr

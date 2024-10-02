@@ -1,17 +1,18 @@
+!>----------------------------------------------------------------------------
+!>
+!> ... iterative solution of the eigenvalue problem:
+!>
+!> ... ( H - e S ) * v = 0
+!>
+!> ... where H is an hermitean operator, e is a real scalar,
+!> ... S is an symmetric matrix, v is a real vector
+!> ... (real wavefunctions with only half plane waves stored)
+!>
 module davidson_wrap_mod
 contains
 SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
                          eigenvalues, btype, notcnv, dav_iter, ipr, method)
-    !----------------------------------------------------------------------------
-    !
-    ! ... iterative solution of the eigenvalue problem:
-    !
-    ! ... ( H - e S ) * v = 0
-    !
-    ! ... where H is an hermitean operator, e is a real scalar,
-    ! ... S is an symmetric matrix, v is a real vector
-    ! ... (real wavefunctions with only half plane waves stored)
-    !
+
       use array_utils, only: eye,write_matrix,write_vector
       use contrl_file, only: errunit,ounit
       use davidson, only: davidson_parameters,fun_mtx_gemv,fun_stx_gemv
@@ -22,7 +23,6 @@ SUBROUTINE davidson_wrap(nparm, nparmx, nvec, nvecx, mvec, eigenvectors, ethr, &
       use precision_kinds, only: dp
 
     IMPLICIT NONE
-
 
     !> \param npram dimension of the matrix to be diagonalized
     !> \param nparmx leading dimension of matrix eigenvectors

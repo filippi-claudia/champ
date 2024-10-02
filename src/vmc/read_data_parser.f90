@@ -1,3 +1,5 @@
+!> This module contains the subroutines to read the text input files.
+!> @author Ravindra Shinde
 module parser_read_data
       use error,   only: fatal_error
       implicit none
