@@ -1,10 +1,14 @@
+!> Module to control the flow of the program
 module control
-    !> Arguments: mode
 
     implicit none
 
+    !> mode of the program
     character(len=12) :: mode
+
+    !> ipr flag; decides the verbosity of the output
     integer  :: ipr
+
     private
     public :: mode, ipr, init_control_mode
     save
@@ -17,20 +21,51 @@ module control
 
 end module control
 
+!> Module to control the VMC calculation mode
+!> @var vmc_idump: Whether to store the dump files at the end of the VMC calculation
+!> @var vmc_irstar: Whether to restart the VMC calculation
+!> @var vmc_isite: Whether to read the configuration from a file or generate it
+!> @var vmc_nconf: Number of configurations to generate
+!> @var vmc_nblk: Number of blocks to run
+!> @var vmc_nblk_max: Maximum number of blocks to run
+!> @var vmc_nblkeq: Number of blocks to equilibrate
+!> @var vmc_nconf_new: Number of configurations to generate in the new block
+!> @var vmc_nstep: Number of steps to run in a block
+!> @var vmc_icharged_atom: Index of the charged atom
+!> @var vmc_nblk_ci: Number of blocks to run in the CI calculation
 module control_vmc
-    !> Arguments: idump, irstar, isite, nconf, nblk, nblk_max, nblkeq, nconf_new, nstep,
-    !> icharged_atom, nblk_ci for vmc module
 
+    !> Whether to store the dump files at the end of the VMC calculation
     integer :: vmc_idump
+
+    !> Whether to restart the VMC calculation
     integer :: vmc_irstar
+
+    !> Whether to read the configuration from a file or generate it
     integer :: vmc_isite
+
+    !> Number of configurations to generate
     integer :: vmc_nconf
+
+    !> Number of blocks to run
     integer :: vmc_nblk
+
+    !> Maximum number of blocks to run
     integer :: vmc_nblk_max
+
+    !> Number of blocks to equilibrate
     integer :: vmc_nblkeq
+
+    !> Number of configurations to generate in the new block
     integer :: vmc_nconf_new
+
+    !> Number of steps to run in a block
     integer :: vmc_nstep
+
+    !> Index of the charged atom
     integer :: vmc_icharged_atom
+
+    !> Number of blocks to run in the CI calculation
     integer :: vmc_nblk_ci
 
     private
@@ -39,16 +74,41 @@ module control_vmc
     save
 end module control_vmc
 
-module control_dmc
-    !> Arguments: idump, irstar, isite, nconf, nblk, nblk_max, nblkeq, nconf_new, nstep,
 
+!> Module to control the DMC calculation mode
+!> @var dmc_idump: Whether to store the dump files at the end of the DMC calculation
+!> @var dmc_irstar: Whether to restart the DMC calculation
+!> @var dmc_isite: Whether to read the configuration from a file or generate it
+!> @var dmc_nconf: Number of configurations to generate
+!> @var dmc_nblk: Number of blocks to run
+!> @var dmc_nblkeq: Number of blocks to equilibrate
+!> @var dmc_nconf_new: Number of configurations to generate in the new block
+!> @var dmc_nstep: Number of steps to run in a block
+
+module control_dmc
+
+    !> Whether to store the dump files at the end of the DMC calculation
     integer :: dmc_idump
+
+    !> Whether to restart the DMC calculation
     integer :: dmc_irstar
+
+    !> Whether to read the configuration from a file or generate it
     integer :: dmc_isite
+
+    !> Number of configurations to generate
     integer :: dmc_nconf
+
+    !> Number of blocks to run
     integer :: dmc_nblk
+
+    !> Number of blocks to equilibrate
     integer :: dmc_nblkeq
+
+    !> Number of configurations to generate in the new block
     integer :: dmc_nconf_new
+
+    !> Number of steps to run in a block
     integer :: dmc_nstep
 
     private
@@ -57,12 +117,18 @@ module control_dmc
     save
 end module control_dmc
 
+!> Module to control the periodic calculations
+!> @var iperiodic: periodic boundary conditions
+!> @var ibasis: the basis set
 module contrl_per
-    !> Arguments: iperiodic, ibasis
 
     implicit none
 
-    integer :: iperiodic, ibasis
+    !> periodic boundary conditions
+    integer :: iperiodic
+
+    !> the basis set
+    integer :: ibasis
 
     private
     public   :: iperiodic, ibasis
@@ -109,16 +175,38 @@ contains
 
 end module contrldmc
 
+
+!> Module to control the file handling
 module contrl_file
 #if defined(TREXIO_FOUND)
       use trexio,  only: trexio_back_end_t
 #endif
     implicit none
 
+    !> Name of the log file
     character(20) :: log_filename
+
+    !> Name of the proc file
     character(20) :: proc_filename
-    character(80) :: file_input, file_output, file_error
-    integer       :: iunit, ounit, errunit
+
+    !> Name of the input file
+    character(80) :: file_input
+
+    !> Name of the output file
+    character(80) :: file_output
+
+    !> Name of the error file
+    character(80) :: file_error
+
+    !> Unit number for the input file
+    integer       :: iunit
+
+    !> Unit number for the output file
+    integer       :: ounit
+
+    !> Unit number for the error file
+    integer       :: errunit
+
 #if defined(TREXIO_FOUND)
     integer(trexio_back_end_t) :: backend
 #endif
@@ -135,13 +223,7 @@ module contrl_file
     save
 contains
 
-! Open all log/output files at once does not work because init_procfile
-! needs to know the value of ipr flag from read_input.f.
-!    subroutine init_files()
-!        call init_logfile()
-!        call init_procfile()
-!    end subroutine init_files
-
+    !> Subroutine to close the files
     subroutine close_files()
       use mpiconf, only: wid
         close (5)
@@ -149,6 +231,7 @@ contains
         if (wid) close (45)
     end subroutine close_files
 
+    !> Subroutine to initialize the log file
     subroutine init_logfile()
       use mpiconf, only: wid
 
@@ -161,11 +244,11 @@ contains
             close (6)
             open (6, file='/dev/null')
         endif
-        !open (45, file=log_filename, status='unknown')
     end subroutine init_logfile
 
+    !> Subroutine to initialize the file handling
+    !> @author Ravindra Shinde
     subroutine initialize()
-        ! Ravindra
         use mpiconf, only: wid      ! logical :: true only for mpirank=0
 
         use, intrinsic :: iso_fortran_env !, only: stdin=>input_unit, stdout=>output_unit, stderr=>error_unit
@@ -189,7 +272,7 @@ contains
         ounit = output_unit
         errunit = error_unit
         ! Get all the command line arguments
-! The next line is commented as all mpi processes read this information. old style
+
 
         argcount = command_argument_count()
         if ( .not. allocated(arg)) allocate(arg(12))
@@ -221,11 +304,6 @@ contains
                         write(error_unit,*) "input file should have an extention .in / .inp / .dat"
                         stop
                     endif
-!                        write(output_unit, fmt=string_format) ' input file      :: ', file_input
-!                    if (wid) then
-!                        open (newunit=iunit,file=file_input, iostat=iostat, action='read' )
-!                        if (iostat /= 0) error stop "error in opening input file"
-!                    endif
 
                 case ('-o', '-ou', '-out', '-output', '--output')
                     file_output = arg(i+1)
@@ -283,7 +361,7 @@ contains
     end subroutine initialize
 
 
-
+    !> Subroutine to initialize the proc file
     subroutine init_procfile()
         use mpiconf, only: idtask
         use control, only: ipr
@@ -300,8 +378,10 @@ contains
 
 end module contrl_file
 
+!> Module to control the allocation and deallocation of the control modules
 module m_control
 contains
+!> Subroutine to allocate the control modules
 subroutine allocate_m_control()
     use contrldmc, only: allocate_contrldmc
 
@@ -311,6 +391,7 @@ subroutine allocate_m_control()
 
 end subroutine allocate_m_control
 
+!> Subroutine to deallocate the control modules
 subroutine deallocate_m_control()
     use contrldmc, only: deallocate_contrldmc
 
