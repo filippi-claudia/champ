@@ -1,3 +1,4 @@
+!> Module that computes the number of orbital parameters needed for the allocations of the arrays.
 module get_norbterm_mod
 contains
 subroutine get_norbterm

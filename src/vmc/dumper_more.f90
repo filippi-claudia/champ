@@ -1,4 +1,5 @@
-      module dumper_more_mod
+    !> Module to dump and restart data for a calculation
+    module dumper_more_mod
 
       use basis,   only: zex
       use constants, only: hb
@@ -54,6 +55,7 @@
       implicit none
 
 contains
+      !> \brief Dumps the data to a file
       subroutine dumper_more
       implicit none
       integer :: i, ib, ic, ifr, istate
@@ -118,6 +120,7 @@ contains
       end subroutine
 
 !-----------------------------------------------------------------------
+      !> \brief Restarts the data from a file
       subroutine startr_more
       implicit none
       integer :: i, ib, ic, ifr, istate

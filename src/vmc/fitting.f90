@@ -1,3 +1,4 @@
+    !> Module for fitting methods.
     module fitting_methods
 
         implicit none
@@ -8,10 +9,10 @@
         contains
 
         subroutine exp_fit(x, y, n, a, b)
-!! This subroutine takes an array of floating point numbers and fits them to
-!! an exponential function in the form of y = a*exp(-b*x).
-!! @Author: Ravindra Shinde
-!! @Date:   Tue May 18 13:54:00 EDT 2022
+!> This subroutine takes an array of floating point numbers and fits them to
+!> an exponential function in the form of y = a*exp(-b*x).
+!> @author: Ravindra Shinde
+!> @date:   Tue May 18 13:54:00 EDT 2022
 !> \param[in] x: Array of floating point numbers.
 !> \param[in] y: Array of floating point numbers.
 !> \param[in] n: Number of elements in x or y.
@@ -43,7 +44,7 @@
         xx_sum = 0.0
 
         do i = 1, n
-            
+
             w(i) = log(dabs(y(i)))
             x_sum = x_sum + x(i)
             y_sum = y_sum + y(i)

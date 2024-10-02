@@ -1,11 +1,11 @@
+!> calculate the values of the basis functions and their derivatives
+!> ider = 0 -> value
+!> ider = 1 -> value, gradient
+!> ider = 2 -> value, gradient, laplacian
+!> ider = 3 -> value, gradient, laplacian, forces
 module basis_fns_mod
 contains
       subroutine basis_fns(ie1,ie2,ncoord,rvec_en,r_en,ider)
-! calculate the values of the basis functions and their derivatives
-! ider = 0 -> value
-! ider = 1 -> value, gradient
-! ider = 2 -> value, gradient, laplacian
-! ider = 3 -> value, gradient, laplacian, forces
 
       use m_force_analytic, only: iforce_analy
       use multiple_geo, only: iwf
@@ -229,6 +229,7 @@ contains
       return
       end
 !-------------------------------------------------------------------
+      !> Calculates the wavefunction and its derivatives and laplacian
       subroutine phi_combine(l,xc,ri,ri2,wfv,y,dy,ddy,ddy_lap,dlapy,phi,dphi,d2phi,d2phi_all,d3phi,ider)
       use precision_kinds, only: dp
       implicit none
@@ -310,6 +311,7 @@ contains
       return
       end
 !-------------------------------------------------------------------
+      !> n0_inc subroutine
       subroutine n0_inc(l,k,ic)
 
       use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
