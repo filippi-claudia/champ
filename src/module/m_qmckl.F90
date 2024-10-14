@@ -7,9 +7,13 @@ module qmckl_data
 #ifdef QMCKL_FOUND
 
   use qmckl
+  !> The maximum amount of QMCKL contexts
   integer, parameter     :: qmckl_no_ctx_max = 2
+  !> QMCKL context
   integer(qmckl_context) :: qmckl_ctx(qmckl_no_ctx_max)
-  integer                :: qmckl_no_ctx 
+  !> The amount of QMCKL contexts
+  integer                :: qmckl_no_ctx
+  !> Logical to check if QMCKL is used
   logical                :: use_qmckl = .True.
 
   public :: qmckl_no_ctx_max, qmckl_no_ctx, qmckl_ctx, use_qmckl
@@ -17,11 +21,14 @@ module qmckl_data
 
 #else
 
+  !> The maximum amount of QMCKL contexts
   integer :: qmckl_no_ctx_max = 0
+  !> QMCKL context
   integer :: qmckl_ctx(1) = 0
+  !> The amount of QMCKL contexts
   integer :: qmckl_no_ctx = 0
+  !> Logical to check if QMCKL is successfully linked
   integer :: QMCKL_SUCCESS = 0
-
   !> Logical to check if QMCKL is used
   logical :: use_qmckl = .False.
 
