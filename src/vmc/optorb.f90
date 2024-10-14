@@ -1065,59 +1065,7 @@ contains
       use optorb_mod, only: nadorb_save
       use slater,  only: norb
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-      use qmckl_data
-#endif
-
       implicit none
-
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-      integer(qmckl_exit_code)   :: rc
-      integer*8                  :: n8
-      integer*8                  :: norb_qmckl
-      integer, allocatable       :: keep(:)
-#endif
-
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-      if (use_qmckl) then
-
-        nadorb_save=nadorb
-        nadorb=0
-        !! to check change in mo's number to be computed by qmckl inside champ
-        norb_qmckl=norb+nadorb
-
-        !!get mo's number should correspond to norb_tot
-        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
-        if (rc /= QMCKL_SUCCESS) then
-            call fatal_error('INPUT: QMCkl getting mo_num from verify orbitals')
-        end if
-
-        if (n8 > norb_qmckl) then
-
-            !! allocate orbital selection array for qmckl
-            allocate(keep(n8))
-
-            !! selecting range of orbitals to compute qith QMCkl
-            keep(1:norb_qmckl) = 1
-            keep((norb_qmckl+1):n8) = 0
-
-            rc = qmckl_mo_basis_select_mo(qmckl_ctx, keep, n8)
-            if (rc /= QMCKL_SUCCESS) call fatal_error('Error 01 selecting MOs in verify orbitals')
-
-            !!deallocate keep
-            deallocate(keep)
-
-            !!getting new number of orbitals to be computed
-            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
-            if (rc /= QMCKL_SUCCESS) call fatal_error('QMCkl mo_num from verify orbitals')
-
-            !! checking if the current number of orbitals in qmckl is consistent
-            if (n8 /= norb_qmckl) call fatal_error('Problem in MO selection in QMCkl verify orb')
-
-        endif
-      endif
-#endif
-
 
       nadorb_save=nadorb
       nadorb=0
@@ -1129,57 +1077,7 @@ contains
       use optorb_mod, only: nadorb_save
       use slater,  only: norb
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-      use qmckl_data
-#endif
-
       implicit none
-
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-      integer(qmckl_exit_code)   :: rc
-      integer*8                  :: n8
-      integer*8                  :: norb_qmckl
-      integer, allocatable       :: keep(:)
-#endif
-
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-      if (use_qmckl) then
-
-        nadorb=nadorb_save
-        !! to check change in mo's number to be computed by qmckl inside champ
-        norb_qmckl=norb+nadorb
-
-        !!get mo's number should correspond to norb_tot
-        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
-        if (rc /= QMCKL_SUCCESS) then
-            call fatal_error('INPUT: QMCkl getting mo_num from verify orbitals')
-        end if
-
-        if (n8 > norb_qmckl) then
-
-            !! allocate orbital selection array for qmckl
-            allocate(keep(n8))
-
-            !! selecting range of orbitals to compute qith QMCkl
-            keep(1:norb_qmckl) = 1
-            keep((norb_qmckl+1):n8) = 0
-
-            rc = qmckl_mo_basis_select_mo(qmckl_ctx, keep, n8)
-            if (rc /= QMCKL_SUCCESS) call fatal_error('Error 01 selecting MOs in verify orbitals')
-
-            !!deallocate keep
-            deallocate(keep)
-
-            !!getting new number of orbitals to be computed
-            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
-            if (rc /= QMCKL_SUCCESS) call fatal_error('QMCkl mo_num from verify orbitals')
-
-            !! checking if the current number of orbitals in qmckl is consistent
-            if (n8 /= norb_qmckl) call fatal_error('Problem in MO selection in QMCkl verify orb')
-
-        endif
-      endif
-#endif
 
       nadorb=nadorb_save
 

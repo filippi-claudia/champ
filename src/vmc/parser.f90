@@ -282,7 +282,8 @@ subroutine parser
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
   integer(qmckl_exit_code)   :: rc
   integer*8                  :: n8
-  integer*8                  :: norb_qmckl
+  integer*8                  :: ncheck, ictx
+  integer*8                  :: norb_qmckl(qmckl_no_ctx_max)
   integer, allocatable       :: keep(:)
   character*(1024)           :: err_message = ''
 
@@ -1962,16 +1963,21 @@ subroutine parser
 
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
 
-     ! Create a new QMCkl context
-     qmckl_ctx = qmckl_context_create()
-     write(ounit, *) " QMCkl initial context created  " , qmckl_ctx , " successfully "
+     qmckl_no_ctx = 1
+     if(ioptorb.gt.0) qmckl_no_ctx = 2
 
-!    Activate this for super-fast QMCkl. Maybe, set a flag in input.
-!     rc = qmckl_set_numprec_precision(qmckl_ctx, 24)
-     rc = qmckl_set_numprec_precision(qmckl_ctx, 53)
-     if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
-!     write(ounit, *) " QMCkl precision set to 24 bits"
-     write(ounit, *) " QMCkl precision set to 53 bits"
+     ! Create a new QMCkl context
+     do ictx=1,qmckl_no_ctx
+       qmckl_ctx(ictx) = qmckl_context_create()
+       write(ounit, *) " QMCkl initial context created  " , qmckl_ctx(ictx) , " successfully "
+
+! Activate this for super-fast QMCkl. Maybe, set a flag in input.
+!      rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 24)
+       rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 53)
+       if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
+!      write(ounit, *) " QMCkl precision set to 24 bits"
+       write(ounit, *) " QMCkl precision set to 53 bits"
+     enddo
 
      if(ioptorb.gt.0) then
 
@@ -1993,57 +1999,59 @@ subroutine parser
        endif
        call MPI_Barrier( MPI_COMM_WORLD, ierr )
 
-       rc = qmckl_trexio_read(qmckl_ctx, file_trexio_path, 1_8*len(trim(file_trexio_path)))
-       write(ounit, *) "Status QMCKl trexio read file_trexio_path", rc
-      else
-       rc = qmckl_trexio_read(qmckl_ctx, file_trexio, 1_8*len(trim(file_trexio)))
+       do ictx=1,qmckl_no_ctx
+         rc = qmckl_trexio_read(qmckl_ctx(ictx), file_trexio_path, 1_8*len(trim(file_trexio_path)))
+         write(ounit, *) "Status QMCKl trexio read file_trexio_path", rc
+         if (rc /= QMCKL_SUCCESS) call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
+       enddo
+
+      else ! ioptorb.eq.0
+       rc = qmckl_trexio_read(qmckl_ctx(1), file_trexio, 1_8*len(trim(file_trexio)))
        write(ounit, *) "Status QMCKl trexio read file_trexio ", rc
+       if (rc /= QMCKL_SUCCESS) call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
      endif
 
-     if (rc /= QMCKL_SUCCESS) then
-       call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
-     end if
+     ! get mo's number should correspond to norb_tot
 
-     !! to check change in mo's number to be computed by qmckl inside champ
-     norb_qmckl=norb+nadorb
+     do ictx=1,qmckl_no_ctx
+       rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
+       if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl getting mo_num from trexio file')
 
-     write(ounit,'(a)') "Inside parser after reading trexio file"
-     write(ounit,int_format) "QMCkl norb_qmckl=norb+nadorb", norb_qmckl
+       if(n8.ne.norb_tot) call fatal_error('INPUT: QMCkl getting wrong number of orbitals')
+       write(ounit,int_format) "QMCkl number mo found", n8
+     enddo
 
-     !!get mo's number should correspond to norb_tot
-     rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
-     if (rc /= QMCKL_SUCCESS) then
-        call fatal_error('INPUT: QMCkl getting mo_num from verify orbitals')
-     end if
+     ! allocate orbital selection array for qmckl
+     allocate(keep(n8))
 
-     write(ounit,int_format) "QMCkl number mo found", n8
+     ! maximum mo's number to occupied in determinants and for optimization
+     norb_qmckl(1)=norb
+     norb_qmckl(2)=norb+nadorb
+     norb_qmckl(2)=min(norb_qmckl(2),norb_tot) ! perhaps done before
 
-     if (n8 > norb_qmckl) then
+     do ictx=1,qmckl_no_ctx
 
-        !! allocate orbital selection array for qmckl
-        allocate(keep(n8))
+       if (n8 > norb_qmckl(ictx)) then
 
-        !! selecting range of orbitals to compute qith QMCkl
-        keep(1:norb_qmckl) = 1
-        keep((norb_qmckl+1):n8) = 0
+        ! selecting range of orbitals to compute qith QMCkl
+        keep(1:norb_qmckl(ictx)) = 1
+        keep((norb_qmckl(ictx)+1):n8) = 0
 
-        rc = qmckl_mo_basis_select_mo(qmckl_ctx, keep, n8)
+        rc = qmckl_mo_basis_select_mo(qmckl_ctx(ictx), keep, n8)
         if (rc /= QMCKL_SUCCESS) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
 
-        !!deallocate keep
-        deallocate(keep)
-
-        !!getting new number of orbitals to be computed
-        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx, n8)
+        ! getting new number of orbitals to be computed
+        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), ncheck)
         if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl mo_num from verify orbitals')
-        write(ounit,int_format) "QMCkl number of orbitals after mo's selec", n8
-        write(ounit,int_format) "QMCkl norb_qmckl after mo's selec", norb_qmckl
+        write(ounit,int_format) "QMCkl number of orbitals after mo's selec", ncheck
+        write(ounit,int_format) "QMCkl norb_qmckl after mo's selec", norb_qmckl(ictx)
 
-        !! checking if the current number of orbitals in qmckl is consistent
+        if (ncheck /= norb_qmckl(ictx)) call fatal_error('INPUT: Problem in MO selection in QMCkl verify orb')
+       endif
 
-        if (n8 /= norb_qmckl) call fatal_error('INPUT: Problem in MO selection in QMCkl verify orb')
-
-     endif
+     enddo
+     ! deallocate keep
+     deallocate(keep)
 
      if(nloc.eq.0) then
        allocate(nucl_fitcusp_radius(ncent))
@@ -2064,13 +2072,13 @@ subroutine parser
           endif
          enddo
 
-         write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx
-         rc = qmckl_set_mo_basis_r_cusp(qmckl_ctx,dble(nucl_fitcusp_radius(:)), int(ncent,8))
-         write(ounit, *) "Status QMCKl set mo basis r cusp  ", rc
+         do ictx=1,qmckl_no_ctx
+           write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx(ictx)
+           rc = qmckl_set_mo_basis_r_cusp(qmckl_ctx(ictx),dble(nucl_fitcusp_radius(:)), int(ncent,8))
+           write(ounit, *) "Status QMCKl set mo basis r cusp  ", rc
 
-         if (rc /= QMCKL_SUCCESS) then
-           call fatal_error('PARSER: QMCkl error: Unable to set cusp parameters')
-         end if
+           if (rc /= QMCKL_SUCCESS) call fatal_error('PARSER: QMCkl error: Unable to set cusp parameters')
+         enddo
        endif
      endif
 
