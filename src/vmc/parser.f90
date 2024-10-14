@@ -23,7 +23,7 @@ subroutine parser
       use contrl_file, only: errunit,file_error,file_input
       use contrl_file, only: file_output,iunit,ounit
       use contrl_per, only: ibasis,iperiodic
-      use contrldmc, only: iacc_rej,icross,icuspg,icut_br,icut_e,idiv_v
+      use contrldmc, only: iacc_rej,icross,icuspg,icut_br,icut_e,idiv_v, ibranching_c
       use contrldmc, only: idmc,ipq,itau_eff,nfprod,rttau,tau,limit_wt_dmc
       use control, only: ipr,mode
       use control_dmc, only: dmc_idump,dmc_irstar,dmc_isite,dmc_nblk
@@ -422,6 +422,7 @@ subroutine parser
   idiv_v      = fdf_get('idiv_v', 0)
   icut_br     = fdf_get('icut_br', 0)
   icut_e      = fdf_get('icut_e', 0)
+  ibranching_c   = fdf_get('ibranching_c', 0.0d0)
   limit_wt_dmc= fdf_get('limit_wt_dmc', 0)
   dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)
   dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)
@@ -1474,12 +1475,13 @@ subroutine parser
             endif
   endif
 
-  ! Analytical forces flags 
-  if(iforce_analy.gt.0) then
-    if(isc.ne.2) call fatal_error('READ_INPUT: Nuclear analytic forces only implemented for isc=2')
-    write(ounit,'(a)' ) " Geometry optimization with analytic gradients"
-    if(iuse_zmat.gt.0) write(ounit,'(a)' ) " Using internal coordinates "
-    write(ounit,'(a,t36,f12.6)') " starting alfgeo = ", alfgeo
+  ! Analytical forces flags (vmc only)
+  if( mode(1:3) == 'vmc' ) then
+    if(iforce_analy.gt.0) then
+      write(ounit,'(a)' ) " Geometry optimization with analytic gradients"
+      if(iuse_zmat.gt.0) write(ounit,'(a)' ) " Using internal coordinates "
+      write(ounit,'(a,t36,f12.6)') " starting alfgeo = ", alfgeo
+    endif
   endif
 
 ! Contents from flagcheck. Moved here because ndet and norb should be defined by now

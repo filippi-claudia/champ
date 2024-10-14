@@ -1,3 +1,7 @@
+!> Compute the zero-th, first, second, and third derivatives of a Ylm function
+!> @author Claudia Filippi
+!> @author Ravindra Shinde
+!> @date 2022-02-11
 module slm_mod
 contains
 subroutine slm(l,rvec,r2,y,dy,ddy,ddy_lap,dlapy,ider)

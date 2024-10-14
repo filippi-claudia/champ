@@ -2,6 +2,7 @@
 #include "qmckl_f.F90"
 #endif
 
+!> Module that contains the qmckl context
 module qmckl_data
 #ifdef QMCKL_FOUND
 
@@ -20,6 +21,8 @@ module qmckl_data
   integer :: qmckl_ctx(1) = 0
   integer :: qmckl_no_ctx = 0
   integer :: QMCKL_SUCCESS = 0
+
+  !> Logical to check if QMCKL is used
   logical :: use_qmckl = .False.
 
   public :: qmckl_no_ctx_max, qmckl_no_ctx, qmckl_ctx, use_qmckl, QMCKL_SUCCESS

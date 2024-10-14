@@ -119,8 +119,8 @@ if (MPI_Fortran_FOUND)
     lapack_wrapper.f90
     main.f90
     matinv.f90
-    new_parser_read_data.f90
-    read_trexio_data.f90
+    read_data_parser.f90
+    read_data_trexio.f90
     fitting.f90
     olbfgs.f90
     optgeo_convcartzmat.f90
@@ -143,7 +143,7 @@ if (MPI_Fortran_FOUND)
     )
 
   set_property(
-  SOURCE new_parser_read_data.f90
+  SOURCE read_data_parser.f90
   APPEND
   PROPERTY COMPILE_DEFINITIONS
   CMAKE_Fortran_COMPILER=\"${CMAKE_Fortran_COMPILER}\"
@@ -156,7 +156,7 @@ if (MPI_Fortran_FOUND)
 
   set(ENABLE_GPU ${ENABLE_GPU} PARENT_SCOPE)
   message (STATUS "GPU IS ENABLED")
-  
+
   set(ENABLE_TREXIO ${ENABLE_TREXIO} PARENT_SCOPE)
   set(ENABLE_QMCKL  ${ENABLE_QMCKL} PARENT_SCOPE)
 
@@ -197,8 +197,8 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_convcartzmat.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_coords_int.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/optgeo_hessian.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/new_parser_read_data.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/read_trexio_data.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/read_data_parser.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/read_data_trexio.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/set_input_data.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pot_local.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/pcm_3dgrid.f90

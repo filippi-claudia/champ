@@ -1,3 +1,9 @@
+!> Utility module for array manipulation
+!> @author Viktor Azizi
+!> @author Alice Cuzzocrea
+!> @author Ravindra Shinde
+!> @author Nico Renaud
+!> @date 24/05/2022
 module array_utils
 
       use lapack_wrapper, only: lapack_matrix_vector,lapack_sort
@@ -14,8 +20,8 @@ module array_utils
 
 contains
 
+    !> Create an identity matrix
     pure function eye(m, n, alpha)
-        !> Create a matrix with ones in the diagonal and zero everywhere else
         !> \param m: number of rows
         !> \param n: number of colums
         !> \param alpha: optional diagonal value
@@ -53,6 +59,7 @@ contains
 
     end function eye
 
+    !> Create a diagnoal matrix from a vector
     pure function diag_mat(vec)
         real(dp), dimension(:), intent(in) :: vec
         real(dp), dimension(size(vec, 1), size(vec, 1)) :: diag_mat
@@ -65,8 +72,8 @@ contains
 
     end function diag_mat
 
+    !> compute the norm-2 of a vector
     pure function norm(vector)
-        !> compute the norm-2 of a vector
         real(dp), dimension(:), intent(in) :: vector
         real(dp) :: norm
 
@@ -74,9 +81,8 @@ contains
 
     end function norm
 
+    !> Concatenate two matrices
     subroutine concatenate(arr, brr)
-
-        !> Concatenate two matrices
         !> \param arr: first array
         !> \param brr: second array
         !>
@@ -106,8 +112,8 @@ contains
 
     end subroutine concatenate
 
+    !> Generate a diagonal dominant square matrix of dimension m
     function generate_diagonal_dominant(m, sparsity, diag_val) result(arr)
-        !> Generate a diagonal dominant square matrix of dimension m
         !> \param m dimension of the matrix
         !> \param sparsity magnitude order of the off-diagonal values
 
@@ -135,8 +141,9 @@ contains
 
     end function generate_diagonal_dominant
 
+    !> return the diagonal of a matrix
     function diagonal(matrix)
-        !> return the diagonal of a matrix
+        !> \param matrix: input matrix
         real(dp), dimension(:, :), intent(in) :: matrix
         real(dp), dimension(size(matrix, 1)) :: diagonal
 
@@ -156,9 +163,8 @@ contains
 
     end function diagonal
 
+    !> Brief generates a diagonal preconditioner for .
     function initialize_subspace(diag, dim_sub, dim_base) result(precond)
-        !> Brief generates a diagonal preconditioner for .
-        !>
         !> return diagonal matrix
 
         ! input variable
@@ -183,10 +189,9 @@ contains
 
     end function initialize_subspace
 
+    !> Brief use modifed gram-schmidt orthogonalization on mat
+    !> Brief nstart is the index of the first vector to orthogonalize
     subroutine modified_gram_schmidt(mat, nstart)
-        !> Brief use modifed gram-schmidt orthogonalization on mat
-        !> Brief nstart is the index of the first vector to orthogonalize
-
         ! input
         real(dp), dimension(:, :), intent(inout) :: mat
         integer, optional, intent(in) :: nstart
@@ -217,8 +222,8 @@ contains
 
     end subroutine modified_gram_schmidt
 
+    !> Brief Search for a given index  in a vector
     function search_key(keys, i) result(k)
-        !> Brief Search for a given index  in a vector
         !> \param keys Vector of index
         !> \param i Index to search for
         !>
@@ -238,8 +243,8 @@ contains
 
     end function search_key
 
+    !> Write matrix to path_file
     subroutine write_matrix(path_file, mtx)
-        !> Write matrix to path_file
         character(len=*), intent(in) :: path_file
         real(dp), dimension(:, :), intent(in) :: mtx
         integer :: i, j
@@ -254,8 +259,8 @@ contains
 
     end subroutine write_matrix
 
+    !> Write vector to path_file
     subroutine write_vector(path_file, vector)
-        !> Write vector to path_file
         character(len=*), intent(in) :: path_file
         real(dp), dimension(:), intent(in) :: vector
         integer :: i
@@ -268,9 +273,9 @@ contains
 
     end subroutine write_vector
 
+    !> deallocate a matrix if allocated
     subroutine check_deallocate_matrix(mtx)
 
-        !> deallocate a matrix if allocated
         real(dp), dimension(:, :), allocatable, intent(inout) ::  mtx
 
         if (allocated(mtx)) then
@@ -279,9 +284,10 @@ contains
 
     end subroutine check_deallocate_matrix
 
+    !> deallocate a vector if allocated
     subroutine check_deallocate_vector(vec)
 
-        !> deallocate a matrix if allocated
+
         real(dp), dimension(:), allocatable, intent(inout) ::  vec
 
         if (allocated(vec)) then
@@ -290,9 +296,9 @@ contains
 
     end subroutine check_deallocate_vector
 
+    !> Returns the unique elements of a vector
+    !> Also returns the number of unique elements, their indices in the original vector.
     subroutine unique_elements(n, arr, res, count, frequency, ind)
-        !> Returns the unique elements of a vector
-        !> Also returns the number of unique elements, their indices in the original vector.
         !> \param[in] n: size of the vector
         !> \param[in] arr: vector to be processed
         !> \param[out] res: vector of unique elements
@@ -343,10 +349,9 @@ contains
 
     end subroutine unique_elements
 
-
+    !> Returns the unique elements of a vector
+    !> Also returns the number of unique elements, their indices in the original vector.
     subroutine unique_string_elements(n, arr, res, count)
-        !> Returns the unique elements of a vector
-        !> Also returns the number of unique elements, their indices in the original vector.
         !> \param[in] n: size of the vector
         !> \param[in] arr: vector to be processed
         !> \param[out] res: vector of unique elements
@@ -399,8 +404,15 @@ contains
     end subroutine unique_string_elements
 
 
-
+    !> find "indices", the list of unique numbers in "list"
+    !> and return the sorted unique numbers in "sorted"
     subroutine sortedunique(list, n, indices, sorted)
+        !> \param[in] list: input list
+        !> \param[in] n: size of the list
+        !> \param[out] indices: indices of the unique elements
+        !> \param[out] sorted: sorted unique elements
+        !> @author: Ravindra Shinde
+        !> @date: 24/05/2022
         implicit none
         !   find "indices", the list of unique numbers in "list"
 

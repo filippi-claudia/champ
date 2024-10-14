@@ -37,7 +37,7 @@ contains
         if (.not. allocated(tildem)) allocate (tildem(nelec, norb_tot, 2, MSTATES))
         if (.not. allocated(tildemkin)) allocate (tildemkin(nelec, norb_tot, 2, MSTATES))
         if (.not. allocated(xmat)) allocate (xmat(nelec**2, 2, MSTATES))
-        if (.not. allocated(xmatkin)) allocate (xmatkin(nelec**2, 2, MSTATES))        
+        if (.not. allocated(xmatkin)) allocate (xmatkin(nelec**2, 2, MSTATES))
         if (.not. allocated(b_da)) allocate (b_da(3, nelec, norb_tot, ncent_tot))
         if (.not. allocated(b_dj)) allocate (b_dj(norb_tot, nelec, nparmj, MSTATES))
 
@@ -127,7 +127,7 @@ contains
         if (allocated(rvec_en)) deallocate (rvec_en)
         if (allocated(r_en)) deallocate (r_en)
         if (allocated(rvec_en)) deallocate (rvec_ee)
-        if (allocated(r_ee)) deallocate (r_ee)    
+        if (allocated(r_ee)) deallocate (r_ee)
     end subroutine deallocate_distance_mod
 
 end module distance_mod
@@ -188,16 +188,22 @@ module embed
     save
 end module embed
 
+!> Module containing the pseudopotential or effective core potential information
 module gauss_ecp
-    !> only used in read_gauss ....
-    !> Arguments: ecp_coef, ecp_exponent, necp_power, necp_term
     use precision_kinds, only: dp
 
     implicit none
 
+    !> ECP coefficients
     real(dp), dimension(:, :, :), allocatable :: ecp_coef !(MGAUSS,MPS_L,MCTYPE)
+
+    !> ECP exponents
     real(dp), dimension(:, :, :), allocatable :: ecp_exponent !(MGAUSS,MPS_L,MCTYPE)
+
+    !> ECP power
     integer, dimension(:, :, :), allocatable :: necp_power !(MGAUSS,MPS_L,MCTYPE)
+
+    !> ECP term
     integer, dimension(:, :), allocatable :: necp_term !(MPS_L,MCTYPE)
 
     private
@@ -205,19 +211,37 @@ module gauss_ecp
     public :: allocate_gauss_ecp, deallocate_gauss_ecp
     save
 contains
+    !> Allocate the ECP arrays
     subroutine allocate_gauss_ecp()
       use pseudo_mod, only: MPS_L, MGAUSS
       use system, only: nctype_tot
+
+        !> Allocate the ECP coefficients
         if (.not. allocated(ecp_coef)) allocate (ecp_coef(MGAUSS, MPS_L, nctype_tot))
+
+        !> Allocate the ECP exponents
         if (.not. allocated(ecp_exponent)) allocate (ecp_exponent(MGAUSS, MPS_L, nctype_tot))
+
+        !> Allocate the ECP power
         if (.not. allocated(necp_power)) allocate (necp_power(MGAUSS, MPS_L, nctype_tot), source=0)
+
+        !> Allocate the ECP term
         if (.not. allocated(necp_term)) allocate (necp_term(MPS_L, nctype_tot), source=0)
     end subroutine allocate_gauss_ecp
 
+    !> Deallocate the ECP arrays
     subroutine deallocate_gauss_ecp()
+
+        !> Deallocate the ECP term
         if (allocated(necp_term)) deallocate (necp_term)
+
+        !> Deallocate the ECP power
         if (allocated(necp_power)) deallocate (necp_power)
+
+        !> Deallocate the ECP exponents
         if (allocated(ecp_exponent)) deallocate (ecp_exponent)
+
+        !> Deallocate the ECP coefficients
         if (allocated(ecp_coef)) deallocate (ecp_coef)
     end subroutine deallocate_gauss_ecp
 

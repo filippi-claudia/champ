@@ -1,13 +1,20 @@
+!> This module provides the walltime (obtained from MPI_Wtime for better precision)
+!> @author Ravindra Shinde
+!> @date June 23 2021
 module mpitimer
-    !> This module provides the walltime (obtained from MPI_Wtime for better precision)
-    !! @author Ravindra Shinde
-    !! @date June 23 2021
 
-      use precision_kinds, only: dp
+    use precision_kinds, only: dp
 
+    !> the starting time logged
     real(dp), save  :: time_start
+
+    !> the time at the last check1
     real(dp), save  :: time_check1
+
+    !> the time at the last check2
     real(dp)        :: time_check2
+
+    !> the final time logged
     real(dp), save  :: time_final
 
     private
@@ -18,16 +25,22 @@ module mpitimer
     public :: time, elapsed_time
 
 contains
+    !> Subroutine that uses MPI_Wtime to get the current time
     double precision function time()
         use mpi
         implicit None
         time = MPI_Wtime()
     end function time
 
+    !> Subroutine that logs the elapsed time between two points
     subroutine elapsed_time(message, iter)
         use contrl_file,    only: ounit
         implicit None
+
+        !> @param message :: the message to be printed
         character(len=*), intent(in)    :: message
+
+        !> @param iter :: the iteration number
         integer, intent(in), optional   :: iter
 
         if (present(iter)) then

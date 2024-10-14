@@ -1,6 +1,6 @@
 ![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.jpg?raw=true)
 
-[![GitHub-hosted Intel OneAPI build](https://github.com/filippi-claudia/champ/actions/workflows/github_hosted_build_champ.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/github_hosted_build_champ.yml) [![DEBUG build and testing](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_debug.yml) [![Unit Tests](https://github.com/filippi-claudia/champ/actions/workflows/champ_unit_test.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/champ_unit_test.yml) [![TREXIO python interface](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml)
+[![CHAMP release build with Intel](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml) [![CHAMP debug build with Intel and GNU](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml) [![CHAMP with QMCkl and TREXIO build with Intel](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio_qmckl.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio_qmckl.yml) [![Build Docker Image](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml) [![Publish Docker image](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml) [![TREXIO python interface](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml)
 
 
 ![Github Issues](https://img.shields.io/github/issues/filippi-claudia/champ) ![Github Pull Requests](https://img.shields.io/github/issues-pr/filippi-claudia/champ) ![Github Last Commit](https://img.shields.io/github/last-commit/filippi-claudia/champ) [![Commit Activity](https://img.shields.io/github/commit-activity/w/filippi-claudia/champ)](https://img.shields.io/github/commit-activity/t/filippi-claudia/champ
@@ -140,7 +140,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		```bash
 		module purge
 		module load 2022
-		module load intel/2022a               
+		module load intel/2022a
 		module load HDF5/1.12.2-iimpi-2022a
 		```
 		then set-up the build:
@@ -189,13 +189,13 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	- To build with mpiifort, load the required modules of the Intel Compiler and MPI:
 
 		```bash
- 		module load cmake/latest 
+ 		module load cmake/latest
  		module load compiler-rt/latest
  		module load debugger/latest
  		module load compiler/latest
  		module load icc/latest
  		module load mpi/latest
- 		module load hdf5/latest   
+ 		module load hdf5/latest
  		module load tbb/latest
  		module load dpl/latest
  		module load dev-utilities/latest
@@ -211,7 +211,7 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		cmake -H. -Bbuild  \
   			-DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON  \
   			-DTREXIO_LIBRARY=/software/libraries/trexio/latest/lib/libtrexio.so  \
-			-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest/include/ 
+			-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest/include/
 		```
 	- To disable vectorization of the code:
 		```
@@ -239,13 +239,13 @@ Here are a couple of recipes for commonly used computing facilities, which can b
  		module load compiler/latest
  		module load icc/latest
  		module load mpi/latest
- 		module load hdf5/latest   
+ 		module load hdf5/latest
  		module load tbb/latest
  		module load dpl/latest
  		module load dev-utilities/latest
  		module load mkl/latest
  		module load trexio/latest
-        	
+
 	 	cd $PWD
 		mpirun -np 64 champ/bin/vmc.mov1 -i input.inp -o output.out -e error
 		```

@@ -1,9 +1,14 @@
 module hpsi_mod
 contains
       subroutine hpsi(coord,psid,psij,ekin,energy,ipass,ifr)
-
-! Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
-! modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
+!> @author Cyrus Umrigar
+!> @author Claudia Filippi
+!> @author Anthony Scemama
+!> @author Claudio Amovilli
+!> @author Franca Floris
+!>
+!> Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
+!> modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
       use Bloc,    only: tildem,tildemkin,b,bkin
       use casula,  only: i_vpsp,t_vpsp
