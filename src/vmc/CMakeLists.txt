@@ -82,8 +82,8 @@ if (MPI_Fortran_FOUND)
     optx_orb_ci.f90
     optx_orb_ci_reduce.f90
     orbitals_normal.f90
-    orbitals_qmckl.f90
     orbitals_periodic.f90
+    orbitals_qmckl.f90
     orbitals.f90
     pcm.f90
     pcm_3dgrid.f90
@@ -178,6 +178,13 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90)
   endif()
 
+  if (NOT QMCKL_FOUND)
+	  list(REMOVE_ITEM VMC90_SOURCE
+         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
+         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_periodic.f90)
+  endif()
+
+
 
   find_package(FortranFormat)
   formatFortran("${VMC_SOURCE}") # Set Fixed format property
@@ -234,8 +241,6 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_normal.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_periodic.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/orbitals.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_gauss.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante_psit.f90
@@ -292,6 +297,12 @@ if (MPI_Fortran_FOUND)
   # --------------------------------------------------------------------
   # Remove objects to share depending on CMAKE options:
   # --------------------------------------------------------------------
+  if (QMCKL_FOUND)
+       list(APPEND SHARED_OBJECTS
+	 ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
+         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_periodic.f90)
+  endif()
+
   if (ENABLE_QMMM)
     list(REMOVE_ITEM SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90)

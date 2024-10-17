@@ -564,12 +564,8 @@ module trexio_read_data
         use trexio
         use contrl_file,        only: backend
         use slater,             only: norb
-        
-
-
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
         use qmckl_data
-#endif
+
 
         implicit none
 

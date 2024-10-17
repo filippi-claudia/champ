@@ -22,7 +22,7 @@ module qmckl_data
 #else
 
   !> The maximum amount of QMCKL contexts
-  integer :: qmckl_no_ctx_max = 0
+  integer, parameter :: qmckl_no_ctx_max = 0
   !> QMCKL context
   integer :: qmckl_ctx(1) = 0
   !> The amount of QMCKL contexts

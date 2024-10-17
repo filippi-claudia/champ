@@ -401,13 +401,17 @@ contains
 ! Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use contrl_per, only: iperiodic
-      use orbitals_periodic_mod, only: orbitals_quad_periodic
       use orbitals_normal_mod, only: orbitals_quad_normal
-      use orbitals_qmckl_mod, only: orbitals_quad_qmckl
       use precision_kinds, only: dp
       use qua,     only: nquad
       use system,  only: ncent_tot,nelec
       use vmc_mod, only: norb_tot
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use orbitals_periodic_mod, only: orbitals_quad_periodic
+      use orbitals_qmckl_mod, only: orbitals_quad_qmckl
+#endif
+
 
       implicit none
 

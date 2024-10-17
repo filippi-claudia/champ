@@ -23,14 +23,17 @@ contains
       use contrl_per, only: iperiodic
       use contrl_file, only: ounit
       use m_force_analytic, only: iforce_analy
-      use orbitals_periodic_mod, only: orbitals_periodic
       use orbitals_normal_mod, only: orbitals_normal
-      use orbitals_qmckl_mod, only: orbitals_qmckl
       use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
       use slater, only: norb, coef
       use system, only: ncent_tot, nelec
       use vmc_mod, only: nwftypeorb
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use orbitals_periodic_mod, only: orbitals_periodic
+      use orbitals_qmckl_mod, only: orbitals_qmckl
+#endif
 
       implicit none
 
@@ -128,11 +131,16 @@ contains
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
       use contrl_per, only: iperiodic
-      use orbitals_periodic_mod, only: orbitalse_periodic
       use orbitals_normal_mod, only: orbitalse_normal
-      use orbitals_qmckl_mod, only: orbitalse_qmckl
       use precision_kinds, only: dp
       use system, only: ncent_tot, nelec
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use orbitals_periodic_mod, only: orbitalse_periodic
+      use orbitals_qmckl_mod, only: orbitalse_qmckl
+#endif
+
+
 
       implicit none
 
