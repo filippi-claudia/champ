@@ -23,7 +23,7 @@ contains
       use contrl_per, only: iperiodic
       use contrl_file, only: ounit
       use m_force_analytic, only: iforce_analy
-      use orbitals_normal_mod, only: orbitals_normal
+      use orbitals_no_qmckl_mod, only: orbitals_no_qmckl
       use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
       use slater, only: norb, coef
@@ -31,7 +31,7 @@ contains
       use vmc_mod, only: nwftypeorb
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      use orbitals_periodic_mod, only: orbitals_periodic
+      use orbitals_qmckl_periodic_mod, only: orbitals_qmckl_periodic
       use orbitals_qmckl_mod, only: orbitals_qmckl
 #endif
 
@@ -43,20 +43,17 @@ contains
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
-
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       if (iperiodic.eq.0) then
          call orbitals_qmckl(x,rvec_en,r_en)
       else
-         call orbitals_periodic(x,rvec_en,r_en)
+         call orbitals_qmckl_periodic(x,rvec_en,r_en)
       endif
 #else
-      call orbitals_normal(x,rvec_en,r_en)
+      call orbitals_no_qmckl(x,rvec_en,r_en)
 #endif
 
-
       if(iforce_analy.eq.1) call da_orbitals
-
 
       if(ipr.ge.0) then
          do j=1,nwftypeorb
@@ -131,16 +128,14 @@ contains
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
       use contrl_per, only: iperiodic
-      use orbitals_normal_mod, only: orbitalse_normal
+      use orbitals_no_qmckl_mod, only: orbitalse_no_qmckl
       use precision_kinds, only: dp
       use system, only: ncent_tot, nelec
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      use orbitals_periodic_mod, only: orbitalse_periodic
+      use orbitals_qmckl_periodic_mod, only: orbitalse_qmckl_periodic
       use orbitals_qmckl_mod, only: orbitalse_qmckl
 #endif
-
-
 
       implicit none
 
@@ -154,12 +149,11 @@ contains
       if (iperiodic.eq.0) then
          call orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
       else
-         call orbitalse_periodic(iel,x,rvec_en,r_en,iflag)
+         call orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
       endif
 #else
-      call orbitalse_normal(iel,x,rvec_en,r_en,iflag)
+      call orbitalse_no_qmckl(iel,x,rvec_en,r_en,iflag)
 #endif
-
 
       return
       end

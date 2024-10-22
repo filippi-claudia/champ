@@ -111,8 +111,6 @@ subroutine orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
         stop
     end if
 
-
-
     ! set one electron coordinates
     rc = qmckl_set_point(qmckl_ctx(ictx), 'N', 1_8, x(1:3,iel), 3_8)
     if (rc /= QMCKL_SUCCESS) then
@@ -225,7 +223,6 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
         print *, "n8", n8
         stop
     end if
-
 
     allocate(mo_qmckl(n8, nxquad))
 

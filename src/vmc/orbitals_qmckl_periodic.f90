@@ -1,8 +1,8 @@
-module orbitals_periodic_mod
+module orbitals_qmckl_periodic_mod
 
 contains
 
-subroutine orbitals_periodic(x,rvec_en,r_en)
+subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
 
     use coefs, only: nbasis
     use find_pimage, only: find_image_pbc
@@ -32,7 +32,6 @@ subroutine orbitals_periodic(x,rvec_en,r_en)
     real(dp) :: rnorm
     character*(1024) :: err_message = ''
 
-
     integer :: i, iorb, k, m
     integer :: m0, j
 
@@ -45,7 +44,6 @@ subroutine orbitals_periodic(x,rvec_en,r_en)
     if (.not. allocated(auxorb)) allocate (auxorb(norb+nadorb))
     if (.not. allocated(auxdorb)) allocate (auxdorb(norb+nadorb,3))
     if (.not. allocated(auxddorb)) allocate (auxddorb(norb+nadorb))
-
 
     ! get number of atomic orbitals
     rc = qmckl_get_ao_basis_ao_num(qmckl_ctx(qmckl_no_ctx), na8)
@@ -210,7 +208,6 @@ subroutine orbitals_periodic(x,rvec_en,r_en)
             ddorb(1:(norb+nadorb),i,1)=auxddorb(1:(norb+nadorb))
         enddo
 
-
     endif
     ! nwftype endif
 
@@ -284,13 +281,12 @@ subroutine orbitals_periodic(x,rvec_en,r_en)
     endif
     ! nwftype endif
 
-
 #endif
 ! vectorization endif
 return
 end
 
-subroutine orbitalse_periodic(iel,x,rvec_en,r_en,iflag)
+subroutine orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
 
     use coefs, only: nbasis
     use find_pimage, only: find_image_pbc
@@ -330,7 +326,6 @@ subroutine orbitalse_periodic(iel,x,rvec_en,r_en,iflag)
         ictx = 2
     end if
 
-
     ! get number of atomic orbitals
     rc = qmckl_get_ao_basis_ao_num(qmckl_ctx(ictx), na8)
     if (rc /= QMCKL_SUCCESS) then
@@ -343,7 +338,6 @@ subroutine orbitalse_periodic(iel,x,rvec_en,r_en,iflag)
        print *, 'Error getting ao_num from QMCkl'
        stop
     end if
-
 
     ! allocate ao_vlg array
     allocate(ao_qmckl(nbasis, 5))
@@ -362,13 +356,11 @@ subroutine orbitalse_periodic(iel,x,rvec_en,r_en,iflag)
        call abort()
     end if
 
-
     ! computing aos zero image
     rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(ictx), ao_qmckl, nbasis*5_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting AOs from QMCkl zero image'
     endif
-
 
     ! intialize before computation just in case garbage appears
     xqmckl=0.d0
@@ -420,8 +412,6 @@ subroutine orbitalse_periodic(iel,x,rvec_en,r_en,iflag)
 
     if(allocated(ao_qmckl)) deallocate(ao_qmckl)
     if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl)
-
-
 
     if(iflag.gt.0) then
 
@@ -508,7 +498,7 @@ subroutine orbitalse_periodic(iel,x,rvec_en,r_en,iflag)
 return
 end
 
-subroutine orbitals_quad_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
+subroutine orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
 
     use coefs, only: nbasis
     use find_pimage, only: find_image_pbc

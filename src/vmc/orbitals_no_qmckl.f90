@@ -1,4 +1,4 @@
-module orbitals_normal_mod
+module orbitals_no_qmckl_mod
     interface !LAPACK interface
     SUBROUTINE dgemm(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
 ! *  -- Reference BLAS level3 routine --
@@ -16,7 +16,7 @@ module orbitals_normal_mod
   end interface
 contains
 
-subroutine orbitals_normal(x,rvec_en,r_en)
+subroutine orbitals_no_qmckl(x,rvec_en,r_en)
 
     use basis_fns_mod, only: basis_fns
     use coefs, only: nbasis
@@ -30,7 +30,6 @@ subroutine orbitals_normal(x,rvec_en,r_en)
     use vmc_mod, only: nwftypeorb
         
     implicit none
-        
         
     integer :: i, ider, iorb, k, m
     integer :: m0, j
@@ -47,7 +46,6 @@ subroutine orbitals_normal(x,rvec_en,r_en)
     if (.not. allocated(auxorb)) allocate (auxorb(norb+nadorb))
     if (.not. allocated(auxdorb)) allocate (auxdorb(norb+nadorb,3))
     if (.not. allocated(auxddorb)) allocate (auxddorb(norb+nadorb))
-
 
     ! get basis functions for all electrons
     ider=2
@@ -194,7 +192,7 @@ return
 end
 
 
-subroutine orbitalse_normal(iel,x,rvec_en,r_en,iflag)
+subroutine orbitalse_no_qmckl(iel,x,rvec_en,r_en,iflag)
 
     use basis_fns_mod, only: basis_fns
     use coefs, only: nbasis
@@ -206,7 +204,6 @@ subroutine orbitalse_normal(iel,x,rvec_en,r_en,iflag)
     use slater, only: norb, coef
     use system, only: ncent_tot, nelec
     use vmc_mod, only: nwftypeorb
-
 
     implicit none
 
@@ -387,7 +384,7 @@ subroutine orbitalse_normal(iel,x,rvec_en,r_en,iflag)
 return
 end
 
-subroutine orbitals_quad_normal(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
+subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
 
     use basis_fns_mod, only: basis_fns
     use coefs,   only: nbasis
@@ -427,7 +424,6 @@ subroutine orbitals_quad_normal(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwf
     ! get basis functions for electron iel
     ider=0
     if(iforce_analy.gt.0) ider=1
-
 
     if(nwftypeorb.gt.1) iwf=1
     call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
