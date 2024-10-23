@@ -53,6 +53,7 @@ if (MPI_Fortran_FOUND)
     m_allocation.f90
     m_state_avrg.f90
     m_error.f90
+    m_qmckl.F90
     ${CMAKE_PARSER_DIR}/fdf.F90
     ${CMAKE_PARSER_DIR}/io_fdf.F90
     ${CMAKE_PARSER_DIR}/parse.F90
@@ -63,9 +64,9 @@ if (MPI_Fortran_FOUND)
       list(APPEND SHARED_MODULES m_trexio.F90)
     endif()
 
-    if (QMCKL_FOUND)
-       list(APPEND SHARED_MODULES m_qmckl.F90)
-    endif()
+    #if (QMCKL_FOUND)
+    #   list(APPEND SHARED_MODULES m_qmckl.F90)
+    #endif()
 
     add_library(shared_modules OBJECT ${SHARED_MODULES})
     target_compile_options(shared_modules
