@@ -87,12 +87,56 @@ contains
       use precision_kinds, only: dp
       use slater,  only: coef,norb
       use system,  only: ncent,nelec
+      use contrl_file, only: ounit
+      use error,   only: fatal_error
+
+
+      #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      use qmckl_data
+      #endif
 
       implicit none
 
       integer :: ibasis, i, ic, ielec, j, k
       integer :: l, m, n
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+
+      integer(qmckl_exit_code) :: rc
+
+      real(dp), dimension(:,:,:,:),allocatable :: da_orb_two
+      real(dp), dimension(:,:,:,:,:),allocatable :: da_dorb_two
+      real(dp), dimension(:,:,:,:),allocatable :: da_d2orb_two
+      allocate (da_dorb_two(norb,3,  nelec, 3, ncent))
+      allocate (da_orb_two(norb,nelec,3,ncent))
+      allocate (da_d2orb_two(norb,nelec,3,ncent))
+
+      rc = qmckl_get_forces_mo_value(qmckl_ctx(qmckl_no_ctx-1), da_orb_two, nelec*norb*3*ncent)
+      if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO values.')
+
+      rc = qmckl_get_forces_mo_g(qmckl_ctx(qmckl_no_ctx-1), da_dorb_two, 3*nelec*norb*3*ncent)
+      if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO gradients/')
+
+      rc = qmckl_get_forces_mo_l(qmckl_ctx(qmckl_no_ctx-1), da_d2orb_two, nelec*norb*3*ncent)
+      if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO laplacian.')
+
+      do j = 1, norb
+            do i = 1, nelec
+                  do k = 1, 3
+                        do ic = 1, ncent
+                              da_orb(k, i, j, ic) = da_orb_two(j, i, k, ic)
+                              da_d2orb(k, i, j, ic) = da_d2orb_two(j, i, k, ic)
+                              do l = 1, 3
+                                    da_dorb(k, l, i, j, ic) = da_dorb_two(j, l, i, k, ic)
+                              enddo
+                        enddo
+                  enddo
+            enddo
+      enddo
+
+      deallocate(da_orb_two,da_dorb_two,da_d2orb_two)
+#else
+      
       real(dp), dimension(3*nelec,nbasis) :: tphin
       real(dp), dimension(3*3*nelec,nbasis) :: t2phin_all
       real(dp), dimension(3*nelec,nbasis) :: t3phin
@@ -122,6 +166,7 @@ contains
         call dgemm('n','n',3*n,norb,k,-1.d0,t2phin_all(1,j),3*m,coef(j,1,iwf),nbasis,0.d0,da_dorb(1,1,1,1,ic),3*m)
       enddo
 
+#endif
       return
       end
 !------------------------------------------------------------------------------------

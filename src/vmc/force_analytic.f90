@@ -52,11 +52,12 @@ contains
       use system,  only: ncent,ncent_tot,ndn,nelec,nup
       use vmc_mod, only: norb_tot
       use zcompact, only: aaz,zmat
+      use control, only: ipr
 
       implicit none
 
       integer :: i, iab, ic, ii, iorb
-      integer :: irep, ish, j, jorb
+      integer :: irep, ish, j, jorb, l
       integer :: jrep, k, nel
       real(dp) :: c800, psid, trace
       real(dp), dimension(norb_tot, nelec) :: b_a
@@ -128,7 +129,7 @@ contains
 !800        da_psi(k,ic)=da_psi(k,ic)+da_j(k,i,ic)
 
 !     if(ipr.gt.3) write(ounit,*)'da_ref',((da_psi_ref(l,ic),l=1,3),ic=1,ncent)
-!     if(ipr.gt.3) write(ounit,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
+     if(ipr.gt.3) write(ounit,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
 
       return
       end
@@ -151,7 +152,7 @@ contains
       use velocity_jastrow, only: vj
       use zcompact, only: aaz,dzmat,emz,zmat
       use contrl_file,    only: ounit
-
+      use control, only: ipr
       implicit none
 
       integer :: i, iab, ic, ict, irep
@@ -216,8 +217,8 @@ contains
             +2*(vj(1,i,1)*da_vj(k,1,i,ic)+vj(2,i,1)*da_vj(k,2,i,ic)+vj(3,i,1)*da_vj(k,3,i,ic))
             da_other_pot=da_other_pot+da_vps(k,i,ic,lpot(ict))
           enddo
-!         write(ounit,*)'da_kin1',k,ic,da_other_kin,da_other_pot
-!         write(ounit,*)'da_kin2',k,ic,da_energy_ref(k,ic),da_psi(k,ic)
+          if(ipr.gt.3) write(ounit,*)'da_kin1',k,ic,da_other_kin,da_other_pot
+          if(ipr.gt.3) write(ounit,*)'da_kin2',k,ic,da_energy_ref(k,ic),da_psi(k,ic)
 
           da_energy(k,ic)=da_energy(k,ic)+da_energy_ref(k,ic)-hb*da_other_kin+da_other_pot &
                          -denergy*da_psi(k,ic)
@@ -225,11 +226,14 @@ contains
 ! complete da_psi
         enddo
       enddo
-
-!     write(ounit,*)'da_energy',((da_energy(k,ic),k=1,3),ic=1,ncent)
-!     write(ounit,*)'da_energy',da_energy(2,1)
-!     write(ounit,*)'da_vj',da_vj(2,1,1,1)
-!     write(ounit,*)'da_d2j',da_d2j(2,1)
+      if(ipr.gt.3) then
+    write(ounit,*)'da_energy',((da_energy(k,ic),k=1,3),ic=1,ncent)
+    write(ounit,*)'da_energy',da_energy(2,1)
+    write(ounit,*)'da_vj',da_vj(2,1,1,1)
+    write(ounit,*)'da_d2j',da_d2j(2,1)
+    write(ounit,*)'denergy',denergy
+    write(ounit,*)'da_psi',da_psi(2,1)
+      endif
 
       return
       end

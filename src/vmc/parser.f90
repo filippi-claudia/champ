@@ -186,6 +186,7 @@ subroutine parser
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
+      use jastrow_qmckl_mod, only: jastrow_init_qmckl
 #endif
 
   use, intrinsic :: iso_fortran_env, only : iostat_end
@@ -1965,8 +1966,8 @@ subroutine parser
 
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
 
-     qmckl_no_ctx = 1
-     if(ioptorb.gt.0) qmckl_no_ctx = 2
+     qmckl_no_ctx = 3
+     if(ioptorb.gt.0) qmckl_no_ctx = 4
 
      ! Create a new QMCkl context
      do ictx=1,qmckl_no_ctx
@@ -1974,7 +1975,7 @@ subroutine parser
        write(ounit, *) " QMCkl initial context created  " , qmckl_ctx(ictx) , " successfully "
 
 ! Activate this for super-fast QMCkl. Maybe, set a flag in input.
-!      rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 24)
+      !rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 24)
        rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 53)
        if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
 !      write(ounit, *) " QMCkl precision set to 24 bits"
@@ -2008,30 +2009,39 @@ subroutine parser
        enddo
 
       else ! ioptorb.eq.0
-       rc = qmckl_trexio_read(qmckl_ctx(1), file_trexio, 1_8*len(trim(file_trexio)))
-       write(ounit, *) "Status QMCKl trexio read file_trexio ", rc
-       if (rc /= QMCKL_SUCCESS) call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
+        do ictx=1,qmckl_no_ctx
+          rc = qmckl_trexio_read(qmckl_ctx(ictx), file_trexio, 1_8*len(trim(file_trexio)))
+          write(ounit, *) "Status QMCKl trexio read file_trexio_path", rc
+          if (rc /= QMCKL_SUCCESS) call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
+        enddo
      endif
 
      ! get mo's number should correspond to norb_tot
 
-     do ictx=1,qmckl_no_ctx
+     do ictx=1,qmckl_no_ctx-1
        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
        if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl getting mo_num from trexio file')
 
        if(n8.ne.norb_tot) call fatal_error('INPUT: QMCkl getting wrong number of orbitals')
        write(ounit,int_format) "QMCkl number mo found", n8
+
+      ! TODO IF NOT SET
+      rc = qmckl_set_mo_basis_coefficient(qmckl_ctx(ictx), coef(:,:, 1), nbasis*norb_tot*1_8)
+      if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl setting orbital coefficients')
      enddo
+
+     call jastrow_init_qmckl(qmckl_no_ctx)
 
      ! allocate orbital selection array for qmckl
      allocate(keep(n8))
 
      ! maximum mo's number to occupied in determinants and for optimization
      norb_qmckl(1)=norb
-     norb_qmckl(2)=norb+nadorb
-     norb_qmckl(2)=min(norb_qmckl(2),norb_tot) ! perhaps done before
+     norb_qmckl(2)=norb
+     norb_qmckl(3)=norb+nadorb
+     norb_qmckl(3)=min(norb_qmckl(2),norb_tot) ! perhaps done before
 
-     do ictx=1,qmckl_no_ctx
+     do ictx=1,qmckl_no_ctx-1
 
        if (n8 > norb_qmckl(ictx)) then
 
@@ -2074,7 +2084,7 @@ subroutine parser
           endif
          enddo
 
-         do ictx=1,qmckl_no_ctx
+         do ictx=1,qmckl_no_ctx-1
            write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx(ictx)
            rc = qmckl_set_mo_basis_r_cusp(qmckl_ctx(ictx),dble(nucl_fitcusp_radius(:)), int(ncent,8))
            write(ounit, *) "Status QMCKl set mo basis r cusp  ", rc

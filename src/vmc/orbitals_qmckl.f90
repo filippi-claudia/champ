@@ -34,7 +34,7 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
 
     
     ! get number MO's
-    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(qmckl_no_ctx), n8)
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(qmckl_no_ctx-1), n8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting mo_num from QMCkl'
         stop
@@ -42,14 +42,14 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
 
     allocate(mo_vgl_qmckl(n8, 5, nelec))
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', nelec*1_8, x, nelec*3_8)
+    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx-1), 'N', nelec*1_8, x, nelec*3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error setting electron coordinates in QMCkl'
         stop
     end if
 
     ! Compute the MOs
-    rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(qmckl_no_ctx), mo_vgl_qmckl, n8*nelec*5_8)
+    rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(qmckl_no_ctx-1), mo_vgl_qmckl, n8*nelec*5_8)
 
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting MOs from QMCkl'
@@ -100,9 +100,9 @@ subroutine orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
     real(dp) :: rnorm
 
     if (iflag .eq. 0) then
-        ictx = 1
-    else
         ictx = 2
+    else
+        ictx = 3
     end if
 
     rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
@@ -175,6 +175,8 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     use sr_mod,  only: i_sr_rescale
     use system,  only: iwctype,ncent,ncent_tot,nelec
     use vmc_mod, only: norb_tot, nwftypeorb
+    use error,   only: fatal_error
+    use contrl_file, only: ounit
 
     use qmckl_data
 
@@ -190,6 +192,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     real(dp), dimension(norb_tot, *) :: orbn
     real(dp), dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
     real(dp), dimension(3,ncent_tot, norb_tot, *) :: da_orbn
+    real(dp), dimension(:,:,:,:),allocatable :: da_orbn_temp
     real(dp), dimension(3) :: dtmp
     real(dp) :: ddtmp
 
@@ -240,22 +243,19 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 
     ! To fix - QMCkl does not give da_orbitals
     if(iforce_analy.gt.0) then
+        allocate(da_orbn_temp(norb,nxquad,3,ncent))
+
+        rc = qmckl_get_forces_mo_value(qmckl_ctx(1), da_orbn_temp, nxquad*norb*3*ncent)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl MO forces.')
         do iq=1,nxquad
 
             do iorb=1,norb
                 do ic=1,ncent
                     do k=1,3
-                        da_orbn(k,ic,iorb,iq)=0.d0
+                        da_orbn(k,ic,iorb,iq)=da_orbn_temp(iorb,iq,k,ic)
                     enddo
                 enddo
-                do m0=1,n0_nbasis(iq)
-                    m=n0_ibasis(m0,iq)
-                    ic=n0_ic(m0,iq)
-                    ii=iwctype(ic)
-                    do k=1,3
-                        da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
-                    enddo
-                enddo
+
                 do k=1,3
                     dorbn(iorb,iq,k)=0.d0
                 enddo
@@ -267,6 +267,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
             enddo
         enddo
         ! enddo nxquad
+        deallocate(da_orbn_temp)
 
     endif
     ! endif iforce

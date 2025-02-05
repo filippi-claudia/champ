@@ -46,7 +46,7 @@ subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
     if (.not. allocated(auxddorb)) allocate (auxddorb(norb+nadorb))
 
     ! get number of atomic orbitals
-    rc = qmckl_get_ao_basis_ao_num(qmckl_ctx(qmckl_no_ctx), na8)
+    rc = qmckl_get_ao_basis_ao_num(qmckl_ctx(qmckl_no_ctx-1), na8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting mo_num from QMCkl'
         stop
@@ -72,14 +72,14 @@ subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
     enddo
 
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', nelec*1_8, xelec, nelec*3_8)
+    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx-1), 'N', nelec*1_8, xelec, nelec*3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error setting electron coordinates in QMCkl'
         stop
     end if
 
     ! computing aos zero image
-    rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(qmckl_no_ctx), ao_qmckl, nbasis*5_8*nelec)
+    rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(qmckl_no_ctx-1), ao_qmckl, nbasis*5_8*nelec)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting AOs from QMCkl zero image'
     endif
@@ -98,17 +98,17 @@ subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
             enddo
 
             ! send electron images coordinates
-            rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', 1_8*nelec, xqmckl, 3_8*nelec)
+            rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx-1), 'N', 1_8*nelec, xqmckl, 3_8*nelec)
             if (rc /= QMCKL_SUCCESS) then
                 print *, 'Error setting electron coords orbitalse'
-                call qmckl_last_error(qmckl_ctx(qmckl_no_ctx),err_message)
+                call qmckl_last_error(qmckl_ctx(qmckl_no_ctx-1),err_message)
                 print *, trim(err_message)
                 call abort()
             end if
 
             ao_vgl_qmckl=0.d0
             ! computing aos for the given image
-            rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(qmckl_no_ctx), ao_vgl_qmckl, nbasis*5_8*nelec)
+            rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(qmckl_no_ctx-1), ao_vgl_qmckl, nbasis*5_8*nelec)
             if (rc /= QMCKL_SUCCESS) then
                 print *, 'Error getting AOs from QMCkl zero image'
             endif
@@ -321,9 +321,9 @@ subroutine orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
     real(dp) :: rnorm
 
     if (iflag .eq. 0) then
-        ictx = 1
-    else
         ictx = 2
+    else
+        ictx = 3
     end if
 
     ! get number of atomic orbitals

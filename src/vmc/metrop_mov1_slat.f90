@@ -60,13 +60,18 @@ contains
       use system,  only: cent,iwctype,ncent,nelec,nup,znuc
       use tmpnode, only: distance_node_sum
       use vmc_mod, only: nwftypejas, stoj
+      use mpitimer, only: elapsed_time
+      use mpi
 
-      implicit none
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use qmckl_data
+#endif
+      implicit none 
 
-      integer :: i, iab, ic, iel, iflag_dn
+      integer :: i, iab, ic, iel, iflag_dn, rc
       integer :: iflag_up, iflagb, iflagt, iflagz
       integer :: ifr, igeometrical, ii, ipass
-      integer :: irun, istate
+      integer :: irun, istate, ierr
       integer :: j, jel, k, nearn, nearo
       real(dp) :: ajacob, arean, areao, bot
       real(dp) :: clim, co, cosphi, costht
@@ -584,6 +589,11 @@ contains
 ! accept new move with probability p
 ! Note when one electron moves the velocity on all electrons change.
       if (random_dp().lt.p) then
+!UNDO
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+        rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+!rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', 1_8*nelec, xnew, 3_8*nelec)
+#endif
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
         psi2o(1,1)=psi2n(1)

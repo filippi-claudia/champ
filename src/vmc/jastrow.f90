@@ -19,6 +19,11 @@ contains
       use system, only: nelec
       use vmc_mod, only: nwftypejas
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use jastrow_qmckl_mod, only: jastrow_qmckl
+      use qmckl_data
+#endif
+
       implicit none
 
       integer :: i, j, jwf, ifr
@@ -102,8 +107,12 @@ contains
            else
             do jwf=1,nwftypejas
               iwf=jwf
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+           call jastrow_qmckl(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf))
+#else
               call jastrow_factor4(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf),fso(1,1,iwf), &
                    fijo(1,1,1,iwf),d2ijo(1,1,iwf))
+#endif
             enddo
           endif
          elseif(ioptjas.gt.0) then

@@ -8,13 +8,14 @@ module qmckl_data
 
   use qmckl
   !> The maximum amount of QMCKL contexts
-  integer, parameter     :: qmckl_no_ctx_max = 2
+  integer, parameter     :: qmckl_no_ctx_max = 4
   !> QMCKL context
   integer(qmckl_context) :: qmckl_ctx(qmckl_no_ctx_max)
   !> The amount of QMCKL contexts
   integer                :: qmckl_no_ctx
   !> Logical to check if QMCKL is used
   logical                :: use_qmckl = .True.
+  logical                :: first_step = .True.
 
   public :: qmckl_no_ctx_max, qmckl_no_ctx, qmckl_ctx, use_qmckl
   save

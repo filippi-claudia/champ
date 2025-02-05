@@ -401,6 +401,7 @@ subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,i
     use sr_mod,  only: i_sr_rescale
     use system,  only: ncent,ncent_tot,nelec
     use vmc_mod, only: norb_tot, nwftypeorb
+    use contrl_file, only: ounit
 
     implicit none
 

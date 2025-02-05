@@ -629,11 +629,12 @@ module trexio_read_data
 
 
         norb_qmckl(1)=norb
-        norb_qmckl(2)=norb+nadorb
-        norb_qmckl(2)=min(norb_qmckl(2),norb_tot)
+        norb_qmckl(2)=norb
+        norb_qmckl(3)=norb+nadorb
+        norb_qmckl(3)=min(norb_qmckl(2),norb_tot)
 
 
-        do ictx = 1 ,qmckl_no_ctx
+        do ictx = 1 ,qmckl_no_ctx-1
             ! Create a new QMCkl context with the new trexio file
             qmckl_ctx(ictx) = qmckl_context_create()
             rc = qmckl_trexio_read(qmckl_ctx(ictx), file_trexio_path, 1_8*len(trim(file_trexio_path)))

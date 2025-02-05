@@ -14,6 +14,14 @@ contains
       use jastrow, only: ijas, ijas_lr
       use contrl_per, only: iperiodic
       use ewald_breakup, only: jastrow_longrange
+      use contrl_file, only: ounit
+      use jastrow4_mod, only: jastrow_factor4
+      use distances_mod, only: distances
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use jastrow_qmckl_mod, only: jastrow_qmckl, jastrowe_qmckl
+      use qmckl_data
+#endif
 
       implicit none
 
@@ -47,13 +55,29 @@ contains
         enddo
       else
          do iwf=1,nwftypejas
-            call jastrow4e(iel,x,fjn(1,1,iwf),d2n(iwf),fsumn(iwf),fsn(1,1,iwf),fijn(1,1,1,iwf),d2ijn(1,1,iwf), &
+            !UNDO
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+           call jastrowe_qmckl(iel, x(:,iel),fjn(1,1,iwf),d2n(iwf),fsumn(iwf),1)
+
+           fsumn(iwf)=fsumn(iwf)+fsumo(iwf)
+           d2n(iwf)=d2n(iwf)+d2o(iwf)
+           do i=1,nelec
+           fjn(1,i,iwf)=fjn(1,i,iwf)+fjo(1,i,iwf)
+           fjn(2,i,iwf)=fjn(2,i,iwf)+fjo(2,i,iwf)
+           fjn(3,i,iwf)=fjn(3,i,iwf)+fjo(3,i,iwf)
+           enddo
+#else 
+
+           call jastrow4e(iel,x,fjn(1,1,iwf),d2n(iwf),fsumn(iwf),fsn(1,1,iwf),fijn(1,1,1,iwf),d2ijn(1,1,iwf), &
                  fjo(1,1,iwf),d2o(iwf),fsumo(iwf),fso(1,1,iwf),fijo(1,1,1,iwf),d2ijo(1,1,iwf),iflag)
+               
+#endif
             do i=1,nelec
                v(1,i,iwf)=fjn(1,i,iwf)
                v(2,i,iwf)=fjn(2,i,iwf)
                v(3,i,iwf)=fjn(3,i,iwf)
             enddo
+
             psij(iwf)=fsumn(iwf)
             d2j(iwf)=d2n(iwf)
          enddo
