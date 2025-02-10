@@ -321,9 +321,9 @@ subroutine orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
     real(dp) :: rnorm
 
     if (iflag .eq. 0) then
-        ictx = 2
+        ictx = 1
     else
-        ictx = 3
+        ictx = 2
     end if
 
     ! get number of atomic orbitals

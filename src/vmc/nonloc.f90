@@ -26,6 +26,11 @@ contains
       use vmc_mod, only: stoj, stoo, nbjx, bjxtoo, bjxtoj
       use jastrow, only: ijas
       use deriv_nonloc, only: deriv_nonlocj_quad1, deriv_nonlocj_quad4
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      use jastrow_qmckl_mod, only: jastrow_quad_qmckl
+      use qmckl_data
+#endif
       implicit none
 
 ! variables in subroutine call
@@ -212,9 +217,13 @@ contains
 
          if(ioptjas.eq.0) then
             do iwfjas=1,nwftypejas
-               call nonlocj_quad4(nxquad,xquad,iequad,x,rvec_en,r_en, &
-                    rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio, &
-                    fso(1,1,iwfjas),iwfjas)
+!#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+!               call jastrow_quad_qmckl(nxquad,iequad*1_8,xquad,psij_ratio(1,iwfjas),vjn,da_psij_ratio,iforce_analy)
+!#else
+              call nonlocj_quad4(nxquad,xquad,iequad,x,rvec_en,r_en, &
+                     rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio, &
+                     fso(1,1,iwfjas),iwfjas)
+!#endif
             enddo
          else
             do iwfjas=1,nwftypejas
@@ -713,7 +722,7 @@ contains
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
 
       if(iforce_analy.eq.1) then
-        call jastrowe_qmckl(iel, xquad(:,iq),fjn,d2n,fsumn,1)
+        call jastrowe_qmckl(iel, xquad(:,iq),fjn,d2n,fsumn,2)
 
         
         rc = qmckl_get_forces_jastrow_single_en(qmckl_ctx(qmckl_no_ctx), da_single_en, 3*ncent)

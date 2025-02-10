@@ -107,32 +107,56 @@ contains
       real(dp), dimension(:,:,:,:),allocatable :: da_orb_two
       real(dp), dimension(:,:,:,:,:),allocatable :: da_dorb_two
       real(dp), dimension(:,:,:,:),allocatable :: da_d2orb_two
+
+      double precision, parameter :: alpha = 1.0d0, beta = 0.0d0
+      double precision :: identity(3,3)
+
       allocate (da_dorb_two(norb,3,  nelec, 3, ncent))
       allocate (da_orb_two(norb,nelec,3,ncent))
       allocate (da_d2orb_two(norb,nelec,3,ncent))
 
-      rc = qmckl_get_forces_mo_value(qmckl_ctx(qmckl_no_ctx-1), da_orb_two, nelec*norb*3*ncent)
+      rc = qmckl_get_forces_mo_value(qmckl_ctx(1), da_orb_two, nelec*norb*3*ncent)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO values.')
 
-      rc = qmckl_get_forces_mo_g(qmckl_ctx(qmckl_no_ctx-1), da_dorb_two, 3*nelec*norb*3*ncent)
+      rc = qmckl_get_forces_mo_g(qmckl_ctx(1), da_dorb_two, 3*nelec*norb*3*ncent)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO gradients/')
 
-      rc = qmckl_get_forces_mo_l(qmckl_ctx(qmckl_no_ctx-1), da_d2orb_two, nelec*norb*3*ncent)
+      rc = qmckl_get_forces_mo_l(qmckl_ctx(1), da_d2orb_two, nelec*norb*3*ncent)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO laplacian.')
 
-      do j = 1, norb
-            do i = 1, nelec
-                  do k = 1, 3
-                        do ic = 1, ncent
-                              da_orb(k, i, j, ic) = da_orb_two(j, i, k, ic)
-                              da_d2orb(k, i, j, ic) = da_d2orb_two(j, i, k, ic)
-                              do l = 1, 3
-                                    da_dorb(k, l, i, j, ic) = da_dorb_two(j, l, i, k, ic)
-                              enddo
-                        enddo
-                  enddo
-            enddo
-      enddo
+      ! do j = 1, norb
+      !       do i = 1, nelec
+      !             do k = 1, 3
+      !                   do ic = 1, ncent
+      !                         da_orb(k, i, j, ic) = da_orb_two(j, i, k, ic)
+      !                         da_d2orb(k, i, j, ic) = da_d2orb_two(j, i, k, ic)
+      !                         do l = 1, 3
+      !                               da_dorb(k, l, i, j, ic) = da_dorb_two(j, l, i, k, ic)
+      !                         enddo
+      !                   enddo
+      !             enddo
+      !       enddo
+      ! enddo
+
+  
+      ! Create a 3x3 identity matrix
+      identity = reshape([1.0d0, 0.0d0, 0.0d0, &
+                           0.0d0, 1.0d0, 0.0d0, &
+                           0.0d0, 0.0d0, 1.0d0], [3,3])
+  
+      do ic = 1, ncent
+          ! Transpose da_orb using dgemm
+          call dgemm('T', 'N', 3, nelec * norb, 3, alpha, da_orb_two(1, 1, 1, ic), 3, &
+                     identity, 3, beta, da_orb(1, 1, 1, ic), 3)
+  
+          ! Transpose da_d2orb using dgemm
+          call dgemm('T', 'N', 3, nelec * norb, 3, alpha, da_d2orb_two(1, 1, 1, ic), 3, &
+                     identity, 3, beta, da_d2orb(1, 1, 1, ic), 3)
+  
+          ! Transpose da_dorb using dgemm
+          call dgemm('T', 'N', 3 * 3, nelec * norb, 3, alpha, da_dorb_two(1, 1, 1, 1, ic), 3, &
+                     identity, 3, beta, da_dorb(1, 1, 1, 1, ic), 3 * 3)
+      end do
 
       deallocate(da_orb_two,da_dorb_two,da_d2orb_two)
 #else

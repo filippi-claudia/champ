@@ -1966,8 +1966,8 @@ subroutine parser
 
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
 
-     qmckl_no_ctx = 3
-     if(ioptorb.gt.0) qmckl_no_ctx = 4
+     qmckl_no_ctx = 2
+     if(ioptorb.gt.0) qmckl_no_ctx = 3
 
      ! Create a new QMCkl context
      do ictx=1,qmckl_no_ctx
@@ -2037,9 +2037,8 @@ subroutine parser
 
      ! maximum mo's number to occupied in determinants and for optimization
      norb_qmckl(1)=norb
-     norb_qmckl(2)=norb
-     norb_qmckl(3)=norb+nadorb
-     norb_qmckl(3)=min(norb_qmckl(2),norb_tot) ! perhaps done before
+     norb_qmckl(2)=norb+nadorb
+     norb_qmckl(2)=min(norb_qmckl(2),norb_tot) ! perhaps done before
 
      do ictx=1,qmckl_no_ctx-1
 

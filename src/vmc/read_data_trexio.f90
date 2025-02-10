@@ -629,9 +629,8 @@ module trexio_read_data
 
 
         norb_qmckl(1)=norb
-        norb_qmckl(2)=norb
-        norb_qmckl(3)=norb+nadorb
-        norb_qmckl(3)=min(norb_qmckl(2),norb_tot)
+        norb_qmckl(2)=norb+nadorb
+        norb_qmckl(2)=min(norb_qmckl(2),norb_tot)
 
 
         do ictx = 1 ,qmckl_no_ctx-1

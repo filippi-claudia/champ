@@ -100,9 +100,9 @@ subroutine orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
     real(dp) :: rnorm
 
     if (iflag .eq. 0) then
-        ictx = 2
+        ictx = 1
     else
-        ictx = 3
+        ictx = 2
     end if
 
     rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
