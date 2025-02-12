@@ -592,7 +592,6 @@ contains
 !UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
         rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
-!rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', 1_8*nelec, xnew, 3_8*nelec)
 #endif
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)

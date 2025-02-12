@@ -107,6 +107,7 @@ contains
            else
             do jwf=1,nwftypejas
               iwf=jwf
+!UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
            call jastrow_qmckl(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf))
 #else

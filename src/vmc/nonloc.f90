@@ -694,6 +694,8 @@ contains
       real(dp), dimension(3, nelec) :: fjn
       real(dp), parameter :: half = .5d0
       real(dp) :: d2n
+
+      real(dp), dimension(3, ncent_tot) :: temp_een, temp_en
       
       #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       real(dp), dimension(3,ncent) :: da_single_een, da_single_en
@@ -718,7 +720,7 @@ contains
 
       iel=iequad(iq)
 
-
+!UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
 
       if(iforce_analy.eq.1) then
@@ -732,6 +734,7 @@ contains
         do ic=1,ncent
           do k=1,3
             da_psij_ratio(k,ic,iq)=da_single_en(k,ic)+da_single_een(k,ic)
+            ! write(ounit, *), 'da_psij', da_psij_ratio(k,ic,iq), da_single_en(k,ic), da_single_een(k,ic)
           enddo
         enddo
         do k=1,3
@@ -745,6 +748,10 @@ contains
 
       ratio_jn(iq)=fsumn
 #else
+
+      ! temp_en = 0.d0
+      ! temp_een = 0.d0
+
       if(iforce_analy.eq.0) then
         do ic=1,ncent
           call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic))
@@ -838,6 +845,7 @@ contains
                 vjn(k,iq)=vjn(k,iq)+dumk-fu*dx(k)
                 dumk=-dumk-fj*rvec_en(k,jj,ic)
                 da_psij_ratio(k,ic,iq)=da_psij_ratio(k,ic,iq)+dumk-da_j(k,i,j,ic)
+                ! temp_een(k, ic) =  temp_een(k, ic)+dumk-da_j(k,i,j,ic)
               enddo
             enddo
           endif
@@ -868,10 +876,17 @@ contains
           dumk=dum*rvec_en_quad(k,iq,ic)
           vjn(k,iq)=vjn(k,iq)+dumk
           da_psij_ratio(k,ic,iq)=da_psij_ratio(k,ic,iq)-dumk-da_j(k,iel,iel,ic)
+          ! temp_en(k, ic) =  temp_en(k, ic)+dumk-da_j(k,iel,iel,ic)
         enddo
        enddo
 
       endif
+
+      ! do ic=1,ncent
+      !   do k=1,3
+      !     write(ounit, *), 'da_psij', da_psij_ratio(k,ic,iq), temp_en(k, ic),temp_een(k, ic)
+      !   enddo
+      ! enddo
 
 #endif
       enddo

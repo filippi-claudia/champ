@@ -138,25 +138,41 @@ contains
       !       enddo
       ! enddo
 
+      do ic = 1, ncent
+            do k = 1,3
+                  do i = 1, nelec
+                        do j = 1, norb
+                              da_orb(k, i, j, ic) = da_orb_two(j, i, k, ic)
+                              da_d2orb(k, i, j, ic) = da_d2orb_two(j, i, k, ic)
+                        enddo
+                        do l = 1, 3
+                              do j = 1, norb
+                              da_dorb(k, l, i, j, ic) = da_dorb_two(j, l, i, k, ic)
+                              enddo
+                       enddo
+                  enddo
+            enddo
+      enddo
+
   
       ! Create a 3x3 identity matrix
-      identity = reshape([1.0d0, 0.0d0, 0.0d0, &
-                           0.0d0, 1.0d0, 0.0d0, &
-                           0.0d0, 0.0d0, 1.0d0], [3,3])
+      ! identity = reshape([1.0d0, 0.0d0, 0.0d0, &
+      !                      0.0d0, 1.0d0, 0.0d0, &
+      !                      0.0d0, 0.0d0, 1.0d0], [3,3])
   
-      do ic = 1, ncent
-          ! Transpose da_orb using dgemm
-          call dgemm('T', 'N', 3, nelec * norb, 3, alpha, da_orb_two(1, 1, 1, ic), 3, &
-                     identity, 3, beta, da_orb(1, 1, 1, ic), 3)
+      ! do ic = 1, ncent
+      !     ! Transpose da_orb using dgemm
+      !     call dgemm('T', 'N', 3, nelec * norb, 3, alpha, da_orb_two(1, 1, 1, ic), nelec, &
+      !                identity, 3, beta, da_orb(1, 1, 1, ic), 3)
   
-          ! Transpose da_d2orb using dgemm
-          call dgemm('T', 'N', 3, nelec * norb, 3, alpha, da_d2orb_two(1, 1, 1, ic), 3, &
-                     identity, 3, beta, da_d2orb(1, 1, 1, ic), 3)
+      !     ! Transpose da_d2orb using dgemm
+      !     call dgemm('T', 'N', 3, nelec * norb, 3, alpha, da_d2orb_two(1, 1, 1, ic), 3, &
+      !                identity, 3, beta, da_d2orb(1, 1, 1, ic), 3)
   
-          ! Transpose da_dorb using dgemm
-          call dgemm('T', 'N', 3 * 3, nelec * norb, 3, alpha, da_dorb_two(1, 1, 1, 1, ic), 3, &
-                     identity, 3, beta, da_dorb(1, 1, 1, 1, ic), 3 * 3)
-      end do
+      !     ! Transpose da_dorb using dgemm
+      !     call dgemm('T', 'N', 3 * 3, nelec * norb, 3, alpha, da_dorb_two(1, 1, 1, 1, ic), 3, &
+      !                identity, 3, beta, da_dorb(1, 1, 1, 1, ic), 3 * 3)
+      ! end do
 
       deallocate(da_orb_two,da_dorb_two,da_d2orb_two)
 #else
@@ -191,6 +207,15 @@ contains
       enddo
 
 #endif
+
+      ! do ic = 1, ncent
+      !       do i = 1, nelec
+      !             write(ounit, *), 'da_orb', (da_orb(k,i,1,ic), k=1, 3)
+      !             write(ounit, *), 'da_d2orb', (da_d2orb(k,i,1,ic), k=1, 3)
+      !             write(ounit, *), 'da_dorb', (da_dorb(k,1,i,1,ic), k=1, 3)
+
+      !       enddo
+      ! enddo
       return
       end
 !------------------------------------------------------------------------------------
