@@ -967,10 +967,8 @@ contains
       integer :: iadiag, iflag
       real(dp), dimension(*) :: dparm
 
-      write(ounit,*) 'IN1'
       iflag=0
       call compute_jastrow(dparm,iflag,iadiag)
-      write(ounit,*) 'IN2'
 
       if(iflag.ne.0) return
 
