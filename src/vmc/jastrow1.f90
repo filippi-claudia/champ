@@ -22,7 +22,7 @@
       integer :: m, n
       real(dp) :: a1_cusp, b1_cusp, d2, dd2
       real(dp) :: fc, fee, feeu, feeu_save,feeuu
-      real(dp) :: fen, feni, fenii, feniii
+      real(dp) :: fen, feni, feni_save, fenii, feniii
       real(dp) :: fi, fi_save, fii, fj, fj_save
       real(dp) :: fjj, fsum, fu, fui, fuj, fuu
       real(dp) :: s, t, term, termi, termii, termj, termjj
@@ -283,7 +283,7 @@
             termi=-3*(1.d0-xi)**2*cutjas_eni(it,iwf)
             termii=6*(1.d0-xi)*cutjas_eni(it,iwf)*cutjas_eni(it,iwf)
 
-            feni=feni*term+fen*termi
+            feni_save=feni*term+fen*termi
             fenii=fenii*term+2*feni*termi+fen*termii
 
             if(iforce_analy.eq.1) then
@@ -292,7 +292,7 @@
               call da_jastrow1_en(i,ic,rvec_en(1,i,ic),ri,feni,fenii,feniii)
             endif
 
-            feni=feni/ri(1)
+            feni=feni_save/ri(1)
 
             fso(i,i)=fso(i,i)+fen*term
 

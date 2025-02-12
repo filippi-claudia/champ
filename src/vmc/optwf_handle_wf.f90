@@ -960,14 +960,17 @@ contains
       subroutine compute_parameters(dparm,iflag,iadiag)
 
       use precision_kinds, only: dp
+      use contrl_file, only: ounit
 
       implicit none
 
       integer :: iadiag, iflag
       real(dp), dimension(*) :: dparm
 
+      write(ounit,*) 'IN1'
       iflag=0
       call compute_jastrow(dparm,iflag,iadiag)
+      write(ounit,*) 'IN2'
 
       if(iflag.ne.0) return
 
@@ -992,6 +995,7 @@ contains
       use sr_mat_n, only: sr_state
       use system, only: nctype
       use vmc_mod, only: nwftypejas, stoj
+      use contrl_file, only: ounit
 
       implicit none
 

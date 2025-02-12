@@ -470,7 +470,7 @@
           termi=-3*(1.d0-xi)**2*cutjas_eni(it,iwf)
           termii=6*(1.d0-xi)*cutjas_eni(it,iwf)*cutjas_eni(it,iwf)
           
-          feni=feni*term+fen*termi
+          feni_save=feni*term+fen*termi
           fenii=fenii*term+2*feni*termi+fen*termii
 
           if(iforce_analy.eq.1) then
@@ -479,7 +479,7 @@
             call da_jastrow1_en(i,ic,rvec_en(1,i,ic),ri,feni,fenii,feniii)
           endif
 
-          feni=feni/ri(1)
+          feni=feni_save/ri(1)
 
           fso(i,i)=fso(i,i)+fen*term
           
