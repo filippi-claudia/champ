@@ -726,9 +726,9 @@ contains
       if(iforce_analy.eq.1) then
         call jastrowe_qmckl(iel, xquad(:,iq),fjn,d2n,fsumn,2)
 
-        rc = qmckl_get_forces_jastrow_single_en(qmckl_ctx(qmckl_no_ctx), da_single_en, 3*ncent)
+        rc = qmckl_get_forces_jastrow_single_en(qmckl_ctx(qmckl_no_ctx), da_single_en, 3_8*ncent)
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single en force.')
-        rc = qmckl_get_forces_jastrow_single_een(qmckl_ctx(qmckl_no_ctx), da_single_een, 3*ncent)
+        rc = qmckl_get_forces_jastrow_single_een(qmckl_ctx(qmckl_no_ctx), da_single_een, 3_8*ncent)
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single een force.')
         do ic=1,ncent
           do k=1,3

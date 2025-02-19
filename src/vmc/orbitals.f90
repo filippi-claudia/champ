@@ -91,9 +91,9 @@ contains
       use error,   only: fatal_error
 
 
-      #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
-      #endif
+#endif
 
       implicit none
 
@@ -115,13 +115,13 @@ contains
       allocate (da_orb_two(norb,nelec,3,ncent))
       allocate (da_d2orb_two(norb,nelec,3,ncent))
 
-      rc = qmckl_get_forces_mo_value(qmckl_ctx(1), da_orb_two, nelec*norb*3*ncent)
+      rc = qmckl_get_forces_mo_value(qmckl_ctx(1), da_orb_two, nelec*norb*3_8*ncent)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO values.')
 
-      rc = qmckl_get_forces_mo_g(qmckl_ctx(1), da_dorb_two, 3*nelec*norb*3*ncent)
+      rc = qmckl_get_forces_mo_g(qmckl_ctx(1), da_dorb_two, 3*nelec*norb*3_8*ncent)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO gradients/')
 
-      rc = qmckl_get_forces_mo_l(qmckl_ctx(1), da_d2orb_two, nelec*norb*3*ncent)
+      rc = qmckl_get_forces_mo_l(qmckl_ctx(1), da_d2orb_two, nelec*norb*3_8*ncent)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO laplacian.')
 
       ! do j = 1, norb

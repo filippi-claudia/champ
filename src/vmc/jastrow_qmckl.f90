@@ -194,10 +194,10 @@ end subroutine
    if (iforce_analy.eq.1) then
 
 
-      rc = qmckl_get_forces_jastrow_en(qmckl_ctx(qmckl_no_ctx), da_j_en, ncent*3)
+      rc = qmckl_get_forces_jastrow_en(qmckl_ctx(qmckl_no_ctx), da_j_en, ncent*3_8)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow forces.')
 
-      rc = qmckl_get_forces_jastrow_een(qmckl_ctx(qmckl_no_ctx), da_j_een, ncent*3)
+      rc = qmckl_get_forces_jastrow_een(qmckl_ctx(qmckl_no_ctx), da_j_een, ncent*3_8)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow forces.')
       
     
@@ -206,10 +206,10 @@ end subroutine
       !  write(ounit,'(''qmck da_j,ic='',i4,1000f15.11)') ic, (da_j_en(k,ic)+da_j_een(k,ic),k=1,3)
       !enddo
 
-      rc = qmckl_get_forces_jastrow_en_g(qmckl_ctx(qmckl_no_ctx), da_vj_en, 3*nelec*ncent*3)
+      rc = qmckl_get_forces_jastrow_en_g(qmckl_ctx(qmckl_no_ctx), da_vj_en, 3_8*nelec*ncent*3_8)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow gradient forces.')
 
-      rc = qmckl_get_forces_jastrow_een_g(qmckl_ctx(qmckl_no_ctx), da_vj_een, 3*nelec*ncent*3)
+      rc = qmckl_get_forces_jastrow_een_g(qmckl_ctx(qmckl_no_ctx), da_vj_een, 3_8*nelec*ncent*3_8)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow gradient forces.')
 
       !do ic=1,ncent
@@ -218,10 +218,10 @@ end subroutine
       !  enddo
       !enddo
 
-      rc = qmckl_get_forces_jastrow_en_l(qmckl_ctx(qmckl_no_ctx), da_d2j_en, 3*ncent)
+      rc = qmckl_get_forces_jastrow_en_l(qmckl_ctx(qmckl_no_ctx), da_d2j_en, 3_8*ncent)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow Laplacian forces.')
 
-      rc = qmckl_get_forces_jastrow_een_l(qmckl_ctx(qmckl_no_ctx), da_d2j_een, 3*ncent)
+      rc = qmckl_get_forces_jastrow_een_l(qmckl_ctx(qmckl_no_ctx), da_d2j_een, 3_8*ncent)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow Laplacian forces.')
 
     !   do ic = 1,ncent
@@ -293,7 +293,7 @@ end subroutine
     ! 2 = value, gradient and laplacian ! not implemented
 
  
-    rc = qmckl_set_single_point(qmckl_ctx(qmckl_no_ctx), 'N', iel, x, 3_8)
+    rc = qmckl_set_single_point(qmckl_ctx(qmckl_no_ctx), 'N', iel*1_8, x, 3_8)
     if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting single point.')
 
     rc = qmckl_get_jastrow_champ_single_en(qmckl_ctx(qmckl_no_ctx), jen, 1_8)
