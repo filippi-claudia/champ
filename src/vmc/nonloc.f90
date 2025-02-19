@@ -28,7 +28,7 @@ contains
       use deriv_nonloc, only: deriv_nonlocj_quad1, deriv_nonlocj_quad4
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-      use jastrow_qmckl_mod, only: jastrow_quad_qmckl
+      !use jastrow_qmckl_mod, only: jastrow_quad_qmckl
       use qmckl_data
 #endif
       implicit none
@@ -697,10 +697,10 @@ contains
 
       real(dp), dimension(3, ncent_tot) :: temp_een, temp_en
       
-      #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       real(dp), dimension(3,ncent) :: da_single_een, da_single_en
       integer :: rc
-      #endif
+#endif
 
       if(iforce_analy.eq.0) then
         do ic=1,ncent
@@ -726,7 +726,6 @@ contains
       if(iforce_analy.eq.1) then
         call jastrowe_qmckl(iel, xquad(:,iq),fjn,d2n,fsumn,2)
 
-        
         rc = qmckl_get_forces_jastrow_single_en(qmckl_ctx(qmckl_no_ctx), da_single_en, 3*ncent)
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single en force.')
         rc = qmckl_get_forces_jastrow_single_een(qmckl_ctx(qmckl_no_ctx), da_single_een, 3*ncent)
@@ -739,6 +738,7 @@ contains
         enddo
         do k=1,3
           vjn(k,iq)=fjn(k,iel)+fjo(k,iel,1)
+          !write(ounit, *), 'vjn', vjn(k,iq)
         enddo
 
       else
@@ -881,7 +881,9 @@ contains
        enddo
 
       endif
-
+      ! do k=1,3
+      !   write(ounit, *), 'vjn', vjn(k,iq)
+      ! enddo
       ! do ic=1,ncent
       !   do k=1,3
       !     write(ounit, *), 'da_psij', da_psij_ratio(k,ic,iq), temp_en(k, ic),temp_een(k, ic)
