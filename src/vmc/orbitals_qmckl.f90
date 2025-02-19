@@ -245,7 +245,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     if(iforce_analy.gt.0) then
         allocate(da_orbn_temp(norb,nxquad,3,ncent))
 
-        rc = qmckl_get_forces_mo_value(qmckl_ctx(1), da_orbn_temp, nxquad*norb*3*ncent)
+        rc = qmckl_get_forces_mo_value(qmckl_ctx(1), da_orbn_temp, nxquad*norb*3_8*ncent)
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl MO forces.')
         do iq=1,nxquad
 
