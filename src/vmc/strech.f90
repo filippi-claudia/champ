@@ -2,6 +2,7 @@ module strech_mod
       use precision_kinds, only: dp
       use contrl_file, only: ounit
       use control, only: mode
+      use ewald, only: cos_n_sum, sin_n_sum
       use error,   only: fatal_error
       use matinv_mod, only: matinv
       use multiple_geo, only: MFORCE,MFORCE_WT_PRD,alfstr,delc,istrech
@@ -61,8 +62,6 @@ contains
       real(dp), dimension(ncent_tot) :: wt_pcm
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
-
-
 
       if(.not.allocated(centsav)) allocate(centsav(3, ncent_tot))
       if(.not.allocated(pecentn)) allocate(pecentn(MFORCE))
@@ -304,7 +303,7 @@ contains
             do k=1,3
               cent_str(k,i)=cent(k,i)+delc(k,i,ifl)
             enddo
-          call pot_nn(cent_str,znuc,iwctype,ncent,pecentn(ifl))
+          call pot_nn(cent_str,znuc,iwctype,ncent,pecentn(ifl),cos_n_sum(1,ifl),sin_n_sum(1,ifl))
         enddo
 
 ! PCM

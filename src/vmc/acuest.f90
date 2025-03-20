@@ -17,6 +17,7 @@ module acuest_mod
       use estpsi,  only: apsi,aref,detref
       use estsig,  only: ecm21s,ecum1s
       use estsum,  only: acc,esum,esum1,pesum,tpbsum
+      use ewald, only: cos_n_sum,sin_n_sum
       use force_analytic, only: force_analy_cum,force_analy_init
       use force_analytic, only: force_analy_save
       use forcewt, only: wcum,wsum
@@ -243,7 +244,7 @@ contains
       enddo
 
 ! get nuclear potential energy
-      call pot_nn(cent,znuc,iwctype,ncent,pecent)
+      call pot_nn(cent,znuc,iwctype,ncent,pecent,cos_n_sum,sin_n_sum)
 
 ! get wavefunction etc. at initial point
 

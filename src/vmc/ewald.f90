@@ -74,15 +74,12 @@
 ! of a nucleus or an electron is present within cutr and cutr_sim respectively.
       call check_lattice(rlatt,cutr,0)
 
-      write(ounit, *)  "================================================================================="
-      write(ounit, *)  "==  Setting-up Ewald-Breakup                                                   =="
-      write(ounit, *)  "================================================================================="
-      write(ounit, *)  " "
+      write(ounit,*) '-----------------------------------------------------------------------'
+      write(ounit,*) ' Setting-up Ewald breakup'
 
       write(ounit,'(''cutr ='',9f9.5)') cutr
 
-! Calculate inverse transformations (from lattice coordinates to real coordinates)
-! and cell volumes
+! Calculate inverse transformations (from lattice to real coordinates) and cell volumes
       do i=1,3
         do k=1,3
           rlatt_inv(k,i)=rlatt(k,i)
@@ -298,8 +295,8 @@
         znuc2_sum=znuc2_sum+znuc(iwctype(i))**2
       enddo
 
-      call pot_nn_ewald
-      write(ounit,'(''pecent='',f12.6)') pecent
+!     call pot_nn_ewald
+!     write(ounit,'(''set_ewald :: pecent='',f12.6)') pecent
 
 ! images for periodic basis functions
       if(n_images.ge.1)then
@@ -982,16 +979,13 @@
 
 !-----------------------------------------------------------------------
 
-      subroutine pot_nn_ewald
+      subroutine pot_nn_ewald(cent,znuc,iwctype,ncent,pecent,cos_n_sum,sin_n_sum)
 ! Written by Cyrus Umrigar
 
-      use contrl_file,    only: ounit
-      use control,    only: ipr
-      use system, only: znuc, cent, iwctype, ncent
-      use multiple_geo, only: pecent
-
-      use ewald, only: b_coul, y_coul, cos_n_sum, sin_n_sum
-
+      use contrl_file, only: ounit
+      use control, only: ipr
+      use ewald, only: b_coul, y_coul
+      use find_pimage, only: find_image_pbc
       use periodic, only: cutr, glatt
       use periodic, only: igmult, igvec
       use periodic, only: ncoef_per, ng1d, ngnorm
@@ -999,13 +993,17 @@
       use periodic, only: np_coul, vcell
       use periodic, only: vcell, znuc2_sum, znuc_sum
       use precision_kinds, only: dp
-      use find_pimage, only: find_image_pbc
+
       implicit none
 
-      integer :: i, j, k, lowest_pow
-      real(dp) :: c0, rnorm, vl
-      real(dp) :: vs, zprod
+      integer :: i, j, k, lowest_pow, ncent
+      real(dp) :: c0, pecent, rnorm, vl, vs, zprod
       real(dp), dimension(3) :: r
+      integer,  dimension(*)   :: iwctype
+      real(dp), dimension(3,*) :: cent
+      real(dp), dimension(*)   :: cos_n_sum
+      real(dp), dimension(*)   :: sin_n_sum
+      real(dp), dimension(*)   :: znuc
 
 ! short-range sum
       lowest_pow=-1
@@ -1039,16 +1037,14 @@
 
 !-----------------------------------------------------------------------
 
-      subroutine pot_en_ewald(x,pe_en)
+      subroutine pot_en_ewald(x,pe_en,cos_n_sum,sin_n_sum)
 ! Written by Cyrus Umrigar
 
-      use contrl_file,    only: ounit
-      use vmc_mod, only: nmat_dim2
-      use system, only: znuc, cent, iwctype, ncent, ncent_tot
+      use contrl_file, only: ounit
       use control, only: ipr
-      use system, only: nelec
+      use distance_mod, only: r_en, rvec_en
       use ewald, only: b_coul, y_coul, y_jas, b_jas
-      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum
+      use ewald, only: cos_e_sum, sin_e_sum
       use periodic, only: cutr, glatt
       use periodic, only: igmult, igvec
       use periodic, only: ncoef_per, ng1d, ngnorm
@@ -1056,7 +1052,9 @@
       use periodic, only: np_coul
       use periodic, only: znuc_sum
       use pseudo, only: lpot, nloc
-      use distance_mod, only: r_en, rvec_en
+      use vmc_mod, only: nmat_dim2
+      use system, only: nelec
+      use system, only: znuc, cent, iwctype, ncent, ncent_tot
 
       use find_pimage, only: find_image_pbc
 
@@ -1067,6 +1065,8 @@
       real(dp) :: pe_en, vl
       real(dp) :: vs, vs_aux
       real(dp), dimension(3,*) :: x
+      real(dp), dimension(*)   :: cos_n_sum
+      real(dp), dimension(*)   :: sin_n_sum
 
 ! short-range sum
 ! Warning: I need to call the appropriate vsrange

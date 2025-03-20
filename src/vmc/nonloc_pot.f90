@@ -6,17 +6,17 @@
 ! Calculates non-local potential derivatives
 ! pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
       use contrl_per, only: iperiodic
+      use error,   only: fatal_error
+      use ewald, only: cos_n_sum, sin_n_sum
+      use ewald_breakup, only: pot_en_ewald
       use nonloc_mod, only: nonloc
+      use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use pseudo,  only: lpot,nloc,vps
       use pseudo_mod, only: MPS_QUAD
       use readps_gauss, only: getvps_gauss, gauss_pot
       use system,  only: iwctype,ncent,ncent_tot,nelec, znuc
-      use error,   only: fatal_error
       use vmc_mod, only: nbjx
-      use optwf_parms, only: nparmj
-      use ewald_breakup, only: pot_en_ewald
-
 
       implicit none
 
@@ -57,11 +57,11 @@
       else
 
 ! this add coulumb pe_en contribution from PBC/Ewald split Natoli-Ceperley algorithm
-         call pot_en_ewald(x,pe_en)
+         call pot_en_ewald(x,pe_en,cos_n_sum(1,ifr),sin_n_sum(1,ifr))
          pe=pe+pe_en
 
 !     Add and fix remaining local component from gaussian (BFD) pseudo
-!     It can be two done ways
+!     It can be done in two ways
 !     this to be improved and updated later
 
          do ic=1,ncent
@@ -70,22 +70,16 @@
                r=max(1.0d-10,r_en(i,ic))
                ri=1.d0/r
 
-
 !     1- substract Coulumb term obc in local component vps(:,:lpot(ict)
 !     current simplest one /subtract local coulumb term which was added at the begining at pe por periodic
-!     pe=pe+vps(i,ic,lpot(ict))+(znuc(ict)*ri)
-
+!              pe=pe+vps(i,ic,lpot(ict))+(znuc(ict)*ri)
 
 !     2- get local component without coulmb regarding local was added from pot_loc with pot_en_ewald
 !     implies recompute gauss pot need to be a better way
                call gauss_pot(r,lpot(ict),ict,vcoule,dvpot)
                pe=pe+vcoule
-
-
             enddo
          enddo
-
-
       endif
 
 

@@ -104,8 +104,8 @@ module ewald_mod
      real(dp), dimension(:), allocatable :: b_jas  !(NCOEFX)
      real(dp), dimension(:), allocatable :: y_coul !(NGNORMX)
      real(dp), dimension(:), allocatable :: y_jas  !(NGNORMX)
-     real(dp), dimension(:), allocatable :: cos_n_sum !(NGVECX)
-     real(dp), dimension(:), allocatable :: sin_n_sum !(NGVECX)
+     real(dp), dimension(:,:), allocatable :: cos_n_sum !(NGVECX)
+     real(dp), dimension(:,:), allocatable :: sin_n_sum !(NGVECX)
      real(dp), dimension(:), allocatable :: cos_e_sum !(NGVECX)
      real(dp), dimension(:), allocatable :: sin_e_sum !(NGVECX)
      real(dp), dimension(:), allocatable :: cos_sum ! (NGVECX)
@@ -132,14 +132,15 @@ module ewald_mod
  contains
      subroutine allocate_ewald()
       use ewald_mod, only: NCOEFX
+      use multiple_geo, only: MFORCE
       use periodic, only: ngnorm,ngvec
       use system, only: nelec
          if (.not. allocated(b_coul)) allocate (b_coul(NCOEFX))
          if (.not. allocated(b_jas))  allocate (b_jas(NCOEFX))
          if (.not. allocated(y_coul)) allocate (y_coul(ngnorm))
          if (.not. allocated(y_jas))  allocate (y_jas(ngnorm))
-         if (.not. allocated(sin_n_sum)) allocate (sin_n_sum(ngvec))
-         if (.not. allocated(cos_n_sum)) allocate (cos_n_sum(ngvec))
+         if (.not. allocated(sin_n_sum)) allocate (sin_n_sum(ngvec,MFORCE))
+         if (.not. allocated(cos_n_sum)) allocate (cos_n_sum(ngvec,MFORCE))
          if (.not. allocated(sin_e_sum)) allocate (sin_e_sum(ngvec))
          if (.not. allocated(cos_e_sum)) allocate (cos_e_sum(ngvec))
          if (.not. allocated(sin_sum)) allocate (sin_sum(ngvec))

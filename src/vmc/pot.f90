@@ -1,6 +1,6 @@
 module pot
 contains
-      subroutine pot_nn(cent,znuc,iwctype,ncent,pecent)
+      subroutine pot_nn(cent,znuc,iwctype,ncent,pecent,cos_n_sum,sin_n_sum)
 ! Written by Cyrus Umrigar
 ! get nuclear potential energy
       use contrl_per, only: ibasis,iperiodic
@@ -16,8 +16,10 @@ contains
       integer, dimension(ncent_tot) :: iwctype
       real(dp) :: pecent, r, r2, ri, ri2
       real(dp) :: term, zij
-      real(dp), dimension(nctype_tot) :: znuc
+      real(dp), dimension(nctype_tot)  :: znuc
       real(dp), dimension(3,ncent_tot) :: cent
+      real(dp), dimension(*)           :: cos_n_sum
+      real(dp), dimension(*)           :: sin_n_sum
 
 !
       if(iperiodic.eq.0) then
@@ -34,7 +36,7 @@ contains
           enddo
         enddo
        else
-        call pot_nn_ewald
+        call pot_nn_ewald(cent,znuc,iwctype,ncent,pecent,cos_n_sum,sin_n_sum)
       endif
 
       if(iforce_analy.eq.0) return
