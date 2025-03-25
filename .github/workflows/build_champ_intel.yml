@@ -34,6 +34,15 @@ jobs:
       - name: Get the CHAMP code
         uses: actions/checkout@v4
 
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache
+          key: ${{ runner.os }}-build-${{ hashFiles('**/lockfiles') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
       - name: Compile the CHAMP code using Intel and run all tests
         run: |
           source /opt/intel/oneapi/setvars.sh
