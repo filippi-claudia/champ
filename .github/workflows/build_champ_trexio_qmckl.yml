@@ -29,6 +29,11 @@ jobs:
         run: |
           apt update
           apt install -y emacs cmake git wget
+          apt install -y python3
+          ln -sf /usr/bin/python3 /usr/bin/python
+          which python
+          python --version
+
 
       - name: Build HDF5 from source
         run: |
@@ -74,6 +79,7 @@ jobs:
       - name: Compile the CHAMP code with TREXIO and QMCkl using Intel and run all tests
         run: |
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
+          export PATH="/usr/bin:$PATH"
           cmake -H. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpiifx \
             -DCMAKE_C_COMPILER=mpiicx \
@@ -92,6 +98,7 @@ jobs:
         run: |
           rm -rf build bin
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
+          export PATH="/usr/bin:$PATH"
           cmake -H. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpiifx \
             -DCMAKE_C_COMPILER=mpiicx \
