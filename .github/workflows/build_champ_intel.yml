@@ -32,6 +32,9 @@ jobs:
         run: |
           apt update
           apt install -y cmake python3
+          ln -sf /usr/bin/python3 /usr/bin/python
+          which python
+          python --version
 
       - name: Compile the CHAMP code using Intel and run all tests
         run: |
@@ -44,11 +47,10 @@ jobs:
           cmake -H. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpiifort \
             -DCMAKE_C_COMPILER=mpiicx \
-            -DBLA_STATIC=ON \
-            -DBLA_VENDOR=Intel10_64lp_seq \
-            -DENABLE_TREXIO=OFF \
-            -DENABLE_QMCKL=OFF \
+          -DENABLE_TREXIO=OFF \
+          -DENABLE_QMCKL=OFF
 
           cmake --build build -- -j2
           cd build
+          export PATH="/usr/bin:$PATH"
           ctest --output-on-failure --verbose -LE "(TREXIO|QMCKL)"

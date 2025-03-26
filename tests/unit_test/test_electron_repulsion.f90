@@ -23,6 +23,8 @@ module test_nuclear_repulsion_mod
     integer                   :: iperiodic = 0
     real(dp),dimension(2)     :: znuc = (/6.0d0, 1.0d0/)
     integer,dimension(3)      :: iwctype = (/1,2,2/)
+    real(dp), dimension(*)    :: cos_n_sum
+    real(dp), dimension(*)    :: sin_n_sum
     real(dp)                  :: pecent
     real                      :: pecent_compare
     real                      :: pecent_expected = 6.98361052364638
@@ -64,7 +66,7 @@ module test_nuclear_repulsion_mod
     call tag_test("Test pot_nn: Nuclear repulsion energy")
     ncent_tot = 3 ! Necessary because pot_nn redefines the bounds of cent to be (3,ncent_tot)
     nctype_tot = 2 ! Necessary becaue pot_nn redefines the bounds of znuc to be (nctype_tot)
-    call pot_nn(cent,znuc,iwctype,ncent,pecent)
+    call pot_nn(cent,znuc,iwctype,ncent,pecent,cos_n_sum,sin_n_sum)
 
     ! Lower the precision because FortUTF does not yet provide double precision comparison
     pecent_compare = real(pecent, kind=4)
