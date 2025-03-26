@@ -21,32 +21,21 @@ jobs:
         toolchain: ['intel']
     name: Build CHAMP with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
     runs-on: ubuntu-latest
+    container:
+      image: intel/hpckit:latest
     timeout-minutes: 180
     defaults:
       run:
         shell: bash --noprofile --norc {0}
     steps:
-      - name: Use Intel oneAPI GitHub Actions fast setup
-        uses: neelravi/intel-oneapi-github-actions@latest
-        with:
-          components: fortran,cpp,mpi,mkl
-
       - name: Get the CHAMP code
         uses: actions/checkout@v4
 
       - name: Cache dependencies
         uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache
-          key: ${{ runner.os }}-build-${{ hashFiles('**/lockfiles') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
 
       - name: Compile the CHAMP code using Intel and run all tests
         run: |
-          source /opt/intel/oneapi/setvars.sh
-
           cmake --version
           ifx --version
           icx --version
