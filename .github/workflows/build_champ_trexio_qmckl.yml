@@ -58,7 +58,7 @@ jobs:
         run: |
           apt update
           apt install -y autoconf libtool
-          git clone https://github.com/TREX-CoE/qmckl.git
+          git clone --depth 1 --branch v1.0.0 https://github.com/TREX-CoE/qmckl.git
           cd qmckl
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           ./autogen.sh
