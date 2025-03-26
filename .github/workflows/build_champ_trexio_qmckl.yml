@@ -56,11 +56,13 @@ jobs:
 
       - name: Clone and Install QMCKL
         run: |
+          apt update
+          apt install -y autoconf
           git clone https://github.com/TREX-CoE/qmckl.git
           cd qmckl
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           ./autogen.sh
-          ./configure --prefix=$HOME --with-icx --with-ifort --enable-hpc --with-hdf5=$HOME --with-trexio=$HOME --with-openmp --disable-python
+          ./configure --prefix=$HOME --with-icx --with-ifx --enable-hpc --with-hdf5=$HOME --with-trexio=$HOME --with-openmp --disable-python
           make -j$(nproc)
           make check -j$(nproc)
           make install

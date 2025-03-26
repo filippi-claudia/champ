@@ -28,8 +28,10 @@ jobs:
       - name: Get the CHAMP code
         uses: actions/checkout@v4
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
+      - name: Install dependencies
+        run: |
+          apt update
+          apt install -y cmake python3
 
       - name: Compile the CHAMP code using Intel and run all tests
         run: |
