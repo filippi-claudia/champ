@@ -24,9 +24,6 @@ jobs:
     container:
       image: intel/hpckit:latest
     timeout-minutes: 180
-    defaults:
-      run:
-        shell: bash --noprofile --norc {0}
     steps:
       - name: Get the CHAMP code
         uses: actions/checkout@v4
