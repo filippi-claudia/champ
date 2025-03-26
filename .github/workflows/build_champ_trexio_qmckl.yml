@@ -57,7 +57,7 @@ jobs:
       - name: Clone and Install QMCKL
         run: |
           apt update
-          apt install -y autoconf
+          apt install -y autoconf libtool
           git clone https://github.com/TREX-CoE/qmckl.git
           cd qmckl
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
