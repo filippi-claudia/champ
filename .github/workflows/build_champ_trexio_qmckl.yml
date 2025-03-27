@@ -39,10 +39,15 @@ jobs:
       - name: Build HDF5 from source
         run: |
           source /opt/intel/oneapi/setvars.sh
+          which ifx
+          which icx
+          which mpiifx
+          which mpiicx
+          which icpx
           wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_2.tar.gz
           tar -xzf hdf5-1_14_2.tar.gz
           cd hdf5-hdf5-1_14_2
-          ./configure FC=mpiifx CC=mpiicx FCFLAGS=-O2 CFLAGS=-O2 CXX=icpx --enable-static --enable-shared --enable-fortran --enable-parallel --prefix=$HOME
+          ./configure FC=ifx CC=icx FCFLAGS=-O2 CFLAGS=-O2 CXX=icpx --enable-static --enable-shared --enable-fortran --prefix=$HOME
           make -j$(nproc)
           make install
 

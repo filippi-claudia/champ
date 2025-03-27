@@ -36,14 +36,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt update
-          apt install -y cmake python3
+          sudo apt update
+          sudo apt install -y cmake python3
           ln -sf /usr/bin/python3 /usr/bin/python
           which python
           python --version
 
       - name: Compile the CHAMP code using Intel and run all tests
         run: |
+          source /opt/intel/oneapi/setvars.sh
           cmake --version
           ifx --version
           icx --version
