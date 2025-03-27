@@ -47,7 +47,7 @@ jobs:
           wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_2.tar.gz
           tar -xzf hdf5-1_14_2.tar.gz
           cd hdf5-hdf5-1_14_2
-          ./configure FC=ifx CC=icx FCFLAGS=-O2 CFLAGS=-O2 CXX=icpx --enable-static --enable-shared --enable-fortran --prefix=$HOME
+          ./configure FC=mpiifx CC=mpiicx FCFLAGS=-O2 CFLAGS=-O2 CXX=mpiicpx --enable-parallel --enable-static --enable-shared --enable-fortran --prefix=$HOME
           make -j$(nproc)
           make install
 
