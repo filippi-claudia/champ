@@ -4,7 +4,9 @@ contains
 
       use control, only: mode
       use contrl_per, only: iperiodic
+      use contrl_file, only: ounit
       use control, only: mode
+      use derivest, only: derivcm2, derivcum, derivtotave
       use estcum, only: iblk
       use stats, only: acc, nacc, nodecr, trymove
       use estcum, only: ecum1_dmc, efcum1, egcum, egcum1
@@ -14,9 +16,10 @@ contains
       use est2cm, only: wfcm21, wgcm21, wgcm2
       use force_analytic, only: force_analy_fin
       use force_analy_reduce_mod, only: force_analy_reduce
+      use force_pth, only: PTH
+      use m_force_analytic, only: iforce_analy
       use mpiconf, only: nproc, wid
       use mpi
-      use mpiconf, only: nproc,wid
       use multiple_geo, only: MFORCE,nforce
       use optci_mod, only: optci_fin
       use optci_reduce_mod, only: optci_reduce
@@ -31,22 +34,26 @@ contains
       use optx_orb_ci, only: optx_orb_ci_fin
       use optx_orb_ci_reduce_mod, only: optx_orb_ci_reduce
       use precision_kinds, only: dp
+      use pathak_mod, only: ipathak      
       use stats,   only: acc,nacc,nodecr,trymove
+      use system,    only: ncent
 
 
       implicit none
 
-      integer :: ierr, ifr, i, nodecr_collect, nacc_collect, id, irequest
+      integer :: ierr, ifr, i, nodecr_collect, nacc_collect, id, irequest, ic, k, iph
       integer, dimension(MPI_STATUS_SIZE) :: istatus
       real(dp) :: e1collect, e21collect, w1collect, w21collect, ef1collect
       real(dp) :: ef21collect, wf1collect, wf21collect, trymove_collect
       real(dp) :: acc_collect, efin
       real(dp) :: rn_eff
 
+
       real(dp), dimension(MFORCE) :: eg1collect
       real(dp), dimension(MFORCE) :: eg21collect
       real(dp), dimension(MFORCE) :: wg1collect
       real(dp), dimension(MFORCE) :: wg21collect
+      real(dp), dimension(3,ncent,PTH) :: derivgerr
 
       if(mode.eq.'dmc_one_mpi2') return
 
@@ -135,7 +142,42 @@ contains
       call optx_jas_orb_fin(wgcum1(1),egcum1(1))
       call optx_orb_ci_fin(wgcum1(1),efin)
       if(wid) call force_analy_fin(wgcum(1),rn_eff,efin)
+      
+      if(wid) then
+         if (iforce_analy.gt.0) then
+            do iph=1,PTH
+               do ic=1,ncent
+                  do k=1,3
+                     derivtotave(k,ic,iph)=(derivcum(1,k,ic,iph)+2.d0*derivcum(2,k,ic,iph)-2.d0*efin*derivcum(3,k,ic,iph))/wgcum(1)
+                     derivgerr(k,ic,iph)=errg(derivtotave(k,ic,iph)*wgcum(1),derivcm2(k,ic,iph),wgcum(1),rn_eff)
+                  enddo
+               enddo
+            enddo
+            do iph=1,PTH
+               do ic=1,ncent
+                  if (ipathak.gt.0) then
+                     write(ounit,'(i5,i5,1p6e14.5)')iph,ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
+                  else
+                     write(ounit,'(i5,1p6e14.5)') ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
+                  endif
+               enddo
+            enddo
+         endif
+      endif
 
       return
+contains
+        elemental pure function error(x,x2,w,rn)
+          implicit none
+          real(dp), intent(in) :: x, x2,w,rn
+          real(dp)             :: error
+          error=dsqrt(max((x2/w-(x/w)**2)/rn,0.d0))
+        end function
+        elemental pure function errg(x,x2,w,rn)
+          implicit none
+          real(dp), intent(in) :: x, x2, w, rn
+          real(dp)             :: errg
+          errg=error(x,x2,w,rn)  
+        end function
       end
 end module

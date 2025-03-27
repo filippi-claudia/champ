@@ -382,26 +382,16 @@ contains
         fratio_aux = max(ibranching_c * e_cutoff * dabs(eest - ecutn)/sqrt_nelec, 1e-9)
         do ic=1,ncent
           do k=1,3
-            da_av = (da_energy_cum(k,ic,1) + da_energy_sum(k,ic,1))/(wgcum(1) + wgsum(1))
-
-            if (isnan(da_av).or.abs(da_av)>1e9) da_av = 0!deriv_energy_new(k,ic)
-            !print *, da_av
             fratio_aux2 = (exp(-1* fratio_aux**2)/fratio_aux - ecuto/fratio_aux)*(ibranching_c * e_cutoff * ((eest - ecutn) * (- deriv_energy_new(k, ic))/dabs(eest - ecutn))/sqrt_nelec)
             deriv_f_new(k,ic) = deriv_energy_new(k,ic) * ecuto + ecutn * fratio_aux2 - eest * fratio_aux2 
-            !print *, fratio_aux, fratio_aux2, deriv_f_new(k,ic)
-            !print *,'deriv_f_new', k, ic, 
           enddo
         enddo
         ! Now old
         fratio_aux = max(ibranching_c * e_cutoff * dabs(eest - eold(iw, 1))/sqrt_nelec, 1e-9)
         do ic=1,ncent
           do k=1,3
-            da_av = (da_energy_cum(k,ic,1) + da_energy_sum(k,ic,1))/(wgcum(1) + wgsum(1))
-            if (isnan(da_av).or.abs(da_av)>1e9) da_av = 0!deriv_eold(k,ic,iw)
             fratio_aux2 = (exp(-1* fratio_aux**2)/fratio_aux - sqrt_pi_o2 * derf(fratio_aux)/fratio_aux/fratio_aux)*(ibranching_c * e_cutoff * ((eest - eold(iw, 1)) * (- deriv_eold(k,ic,iw))/dabs(eest - eold(iw, 1)))/sqrt_nelec)
             deriv_f_old(k,ic) = deriv_eold(k,ic,iw) * sqrt_pi_o2 * derf(fratio_aux)/fratio_aux + eold(iw,1) * fratio_aux2 - eest * fratio_aux2
-            !print *, 'deriv_f_old', k, ic, deriv_f_old(k,ic)
-            !print *, fratio_aux, fratio_aux2, deriv_f_old(k,ic)
           enddo
         enddo
       else
