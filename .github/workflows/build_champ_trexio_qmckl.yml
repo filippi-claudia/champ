@@ -21,22 +21,24 @@ jobs:
         toolchain: ['intel']
     name: Build CHAMP and TREXIO with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
     runs-on: ubuntu-latest
-    container:
-      image: intel/hpckit:latest
     timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash --noprofile --norc {0}
     steps:
+      - name: Use Intel oneAPI GitHub Actions fast setup
+        uses: neelravi/intel-oneapi-github-actions@v2.0.0
+        with:
+          components: fortran,cpp,mpi,mkl
+
       - name: Install dependencies
         run: |
-          apt update
-          apt install -y emacs cmake git wget
-          apt install -y python3
-          ln -sf /usr/bin/python3 /usr/bin/python
-          which python
-          python --version
-
+          sudo apt update
+          sudo apt install -y emacs cmake git wget
 
       - name: Build HDF5 from source
         run: |
+          source /opt/intel/oneapi/setvars.sh
           wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_2.tar.gz
           tar -xzf hdf5-1_14_2.tar.gz
           cd hdf5-hdf5-1_14_2
@@ -46,6 +48,7 @@ jobs:
 
       - name: Clone and Install TREXIO
         run: |
+          source /opt/intel/oneapi/setvars.sh
           git clone https://github.com/TREX-CoE/trexio.git
           cd trexio
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
@@ -61,13 +64,12 @@ jobs:
 
       - name: Clone and Install QMCKL
         run: |
-          apt update
-          apt install -y autoconf libtool
-          git clone --depth 1 --branch v1.0.0 https://github.com/TREX-CoE/qmckl.git
+          source /opt/intel/oneapi/setvars.sh
+          git clone https://github.com/TREX-CoE/qmckl.git
           cd qmckl
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           ./autogen.sh
-          ./configure --prefix=$HOME --with-icx --with-ifx --enable-hpc --with-hdf5=$HOME --with-trexio=$HOME --with-openmp --disable-python
+          ./configure --prefix=$HOME --with-icx --with-ifort --enable-hpc --with-hdf5=$HOME --with-trexio=$HOME --with-openmp --disable-python
           make -j$(nproc)
           make check -j$(nproc)
           make install
@@ -78,8 +80,8 @@ jobs:
 
       - name: Compile the CHAMP code with TREXIO and QMCkl using Intel and run all tests
         run: |
+          source /opt/intel/oneapi/setvars.sh
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
-          export PATH="/usr/bin:$PATH"
           cmake -H. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpiifx \
             -DCMAKE_C_COMPILER=mpiicx \
@@ -96,9 +98,9 @@ jobs:
 
       - name: Clean and Re-Compile CHAMP with TREXIO only
         run: |
+          source /opt/intel/oneapi/setvars.sh
           rm -rf build bin
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
-          export PATH="/usr/bin:$PATH"
           cmake -H. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpiifx \
             -DCMAKE_C_COMPILER=mpiicx \

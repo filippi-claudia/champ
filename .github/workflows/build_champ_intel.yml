@@ -22,7 +22,7 @@ jobs:
     name: Build CHAMP with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
     runs-on: ubuntu-latest
     container:
-      image: intel/hpckit:latest
+      image: intel/oneapi-hpckit:latest
     timeout-minutes: 180
     steps:
       - name: Get the CHAMP code
