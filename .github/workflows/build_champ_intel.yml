@@ -21,10 +21,16 @@ jobs:
         toolchain: ['intel']
     name: Build CHAMP with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
     runs-on: ubuntu-latest
-    container:
-      image: intel/oneapi-hpckit:latest
     timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash --noprofile --norc {0}
     steps:
+      - name: Use Intel oneAPI GitHub Actions fast setup
+        uses: neelravi/intel-oneapi-github-actions@latest
+        with:
+          components: fortran,cpp,mpi,mkl
+
       - name: Get the CHAMP code
         uses: actions/checkout@v4
 
@@ -47,8 +53,8 @@ jobs:
           cmake -H. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpiifort \
             -DCMAKE_C_COMPILER=mpiicx \
-          -DENABLE_TREXIO=OFF \
-          -DENABLE_QMCKL=OFF
+            -DENABLE_TREXIO=OFF \
+            -DENABLE_QMCKL=OFF
 
           cmake --build build -- -j2
           cd build
