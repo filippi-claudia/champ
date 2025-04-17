@@ -243,7 +243,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 
     ! To fix - QMCkl does not give da_orbitals
     if(iforce_analy.gt.0) then
-        allocate(da_orbn_temp(norb,nxquad,3,ncent))
+        allocate(da_orbn_temp(3,norb,nxquad,ncent))
 
         rc = qmckl_get_forces_mo_value(qmckl_ctx(1), da_orbn_temp, nxquad*norb*3_8*ncent)
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl MO forces.')
@@ -252,7 +252,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
             do iorb=1,norb
                 do ic=1,ncent
                     do k=1,3
-                        da_orbn(k,ic,iorb,iq)=da_orbn_temp(iorb,iq,k,ic)
+                        da_orbn(k,ic,iorb,iq)=da_orbn_temp(k,iorb,iq,ic)
                     enddo
                 enddo
 

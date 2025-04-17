@@ -309,48 +309,37 @@ end subroutine
 
     if (iflag .ge. 1) then
 
-    rc = qmckl_get_jastrow_champ_single_ee_gl(qmckl_ctx(qmckl_no_ctx), jee_gl, 1_8*4*nelec)
-    if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e Jastrow gl.')
-    do i = 1, nelec
-        fjn(1,i) = fjn(1,i) +  jee_gl(1,i)
-        fjn(2,i) = fjn(2,i) +  jee_gl(2,i)
-        fjn(3,i) = fjn(3,i) +  jee_gl(3,i)
-        ! print *, 'jeen_gl', jeen_gl(i+nelec*3)
-    enddo
+        rc = qmckl_get_jastrow_champ_single_ee_gl(qmckl_ctx(qmckl_no_ctx), jee_gl, 1_8*4*nelec)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e Jastrow gl.')
+        do i = 1, nelec
+            fjn(1,i) = fjn(1,i) +  jee_gl(1,i)
+            fjn(2,i) = fjn(2,i) +  jee_gl(2,i)
+            fjn(3,i) = fjn(3,i) +  jee_gl(3,i)
+            ! print *, 'jeen_gl', jeen_gl(i+nelec*3)
+        enddo
 
-    rc = qmckl_get_jastrow_champ_single_en_gl(qmckl_ctx(qmckl_no_ctx), jen_gl, 1_8*4*nelec)
-    if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow gl.')
-    do i = 1, nelec
-        fjn(1,i) = fjn(1,i) +  jen_gl(1,i)
-        fjn(2,i) = fjn(2,i) +  jen_gl(2,i)
-        fjn(3,i) = fjn(3,i) +  jen_gl(3,i)
-        ! print *, 'jeen_gl', jeen_gl(i+nelec*3)
-    enddo
-   if (iflag.eq.1) then
-   rc = qmckl_get_jastrow_champ_single_een_gl(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
+        rc = qmckl_get_jastrow_champ_single_en_gl(qmckl_ctx(qmckl_no_ctx), jen_gl, 1_8*4*nelec)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow gl.')
+        do i = 1, nelec
+            fjn(1,i) = fjn(1,i) +  jen_gl(1,i)
+            fjn(2,i) = fjn(2,i) +  jen_gl(2,i)
+            fjn(3,i) = fjn(3,i) +  jen_gl(3,i)
+            ! print *, 'jeen_gl', jeen_gl(i+nelec*3)
+        enddo
+        if (iflag.eq.1) then
+            rc = qmckl_get_jastrow_champ_single_een_gl(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
+        else
+            rc = qmckl_get_jastrow_champ_single_een_g(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
+        endif
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow gl.')
+        do i = 1, nelec
+            fjn(1,i) = fjn(1,i) +  jeen_gl(i+nelec*0)
+            fjn(2,i) = fjn(2,i) +  jeen_gl(i+nelec*1)
+            fjn(3,i) = fjn(3,i) +  jeen_gl(i+nelec*2)
+            ! print *, 'jeen_gl', jeen_gl(i+nelec*3)
+        enddo
 
-    else
-        rc = qmckl_get_jastrow_champ_single_een_g(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
     endif
-    if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow gl.')
-    do i = 1, nelec
-        fjn(1,i) = fjn(1,i) +  jeen_gl(i+nelec*0)
-        fjn(2,i) = fjn(2,i) +  jeen_gl(i+nelec*1)
-        fjn(3,i) = fjn(3,i) +  jeen_gl(i+nelec*2)
-        ! print *, 'jeen_gl', jeen_gl(i+nelec*3)
-    enddo
-   !print *, 'jeen_gl', jeen_gl(1 + nelec*0),jeen_gl(1 + nelec*1),jeen_gl(1 + nelec*2)
-   !stop
-
-   endif
-
-!     print *, 'iel', iel
-!     do i =1,nelec
-!         write(ounit, '(i,4f13.7)')  i , jee_gl(1,i) , jee_gl(2,i) , jee_gl(3,i) , jee_gl(4,i)
-!         write(ounit, '(i,4f13.7)')  i , jen_gl(1,i) , jen_gl(2,i) , jen_gl(3,i) , jen_gl(4,i)
-!         write(ounit, '(i,4f13.7)')  i , jeen_gl(i+nelec*0) , jeen_gl(i+nelec*1) , jeen_gl(i+nelec*2) , jeen_gl(i+nelec*3)
-!     enddo
-! stop
 
 
     end subroutine

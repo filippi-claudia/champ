@@ -112,7 +112,7 @@ contains
       double precision :: identity(3,3)
 
       allocate (da_dorb_two(norb,3,  nelec, 3, ncent))
-      allocate (da_orb_two(norb,nelec,3,ncent))
+      allocate (da_orb_two(3,norb,nelec,ncent))
       allocate (da_d2orb_two(norb,nelec,3,ncent))
 
       rc = qmckl_get_forces_mo_value(qmckl_ctx(1), da_orb_two, nelec*norb*3_8*ncent)
@@ -142,7 +142,7 @@ contains
             do k = 1,3
                   do i = 1, nelec
                         do j = 1, norb
-                              da_orb(k, i, j, ic) = da_orb_two(j, i, k, ic)
+                              da_orb(k, i, j, ic) = da_orb_two(k, j, i, ic)
                               da_d2orb(k, i, j, ic) = da_d2orb_two(j, i, k, ic)
                         enddo
                         do l = 1, 3
