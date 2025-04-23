@@ -35,7 +35,7 @@ contains
       use multiple_geo, only: iwf,iwftype, nforce
       use multislater, only: detiab
       use nonloc_pot_mod, only: nonloc_pot
-      use vmc_mod,        only: nwftypejas, nwftypeorb, nbjx, stoo, stoj, stobjx
+      use vmc_mod,        only: nwftypejas, nbjx, stoo, stoj, stobjx
       use optci_mod, only: optci_deloc
       use optjas_mod, only: optjas_deloc
       use optorb_f_mod, only: optorb_compute
@@ -58,8 +58,7 @@ contains
 
       integer :: i, iab, ifr, ii, ipass, j, o, x
       integer :: irep, istate, jrep, nel, iorb, i1, i2, iparm
-      real(dp) :: e_other, ekin_other, ext_pot, peQM, pe_local
-      real(dp) :: pepcm
+      real(dp) :: e_other, ekin_other, ext_pot, peQM, pe_local, pepcm
       real(dp), dimension(3, *) :: coord
       real(dp), dimension(*) :: psid
       real(dp), dimension(*) :: psij

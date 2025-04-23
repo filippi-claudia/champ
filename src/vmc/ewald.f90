@@ -842,6 +842,46 @@
       end
 !-----------------------------------------------------------------------
 
+      subroutine compute_da_vs(rnorm, rvec, lowest_pow, dvs)
+      ! Compute the \partial_\alpha of the short range term
+      ! in the ewald summation, used for computing analytical
+      ! forces.
+      ! output: da_vsrange
+      use periodic, only: cutr, ncoef_per, np_coul
+      use ewald, only: b_coul
+      use contrl_file, only: ounit
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: lowest_pow, i, k
+      real(dp) :: term, x, rnorm, vs, poly, dpoly
+      real(dp), dimension(3) :: rvec, dvs
+
+      x=rnorm/cutr
+      if(x.gt.1.d0) return
+      vs = vsrange(rnorm,cutr,lowest_pow,ncoef_per,np_coul,b_coul)
+
+      poly = 0.d0
+      dpoly = 0.d0
+      do i=1,ncoef_per
+        poly = b_coul(ncoef_per-i+1)+x*poly
+        dpoly = dpoly + b_coul(i)*(i-1)*x**(i-2)
+      enddo
+      if (lowest_pow.eq.-1) then
+        term = -np_coul*(1-x)**(np_coul-1) / x - (1-x)**np_coul/x**2
+        do k=1,3
+          dvs(k)=-rvec(k)/rnorm/cutr*(dpoly/x*(1-x)**np_coul+poly*term)
+        enddo
+      else
+        do k=1,3
+          dvs(k)=-rvec(k)/rnorm/cutr*(dpoly*(1-x)**np_coul-vs*np_coul/(1-x))
+        enddo
+      endif
+      return
+      end
+
+!-----------------------------------------------------------------------
+
       real*8 function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
 ! Written by Cyrus Umrigar
 
@@ -979,52 +1019,79 @@
 
 !-----------------------------------------------------------------------
 
-      subroutine pot_nn_ewald(cent,znuc,iwctype,ncent,pecent,cos_n_sum,sin_n_sum)
+      subroutine pot_nn_ewald(cent,znuc,ncent,pecent,cos_n_sum,sin_n_sum)
 ! Written by Cyrus Umrigar
 
+      use system, only: iwctype
       use contrl_file, only: ounit
       use control, only: ipr
-      use ewald, only: b_coul, y_coul
       use find_pimage, only: find_image_pbc
-      use periodic, only: cutr, glatt
-      use periodic, only: igmult, igvec
+      use periodic, only: igmult, np_coul, cutr
       use periodic, only: ncoef_per, ng1d, ngnorm
-      use periodic, only: ngvec
-      use periodic, only: np_coul, vcell
-      use periodic, only: vcell, znuc2_sum, znuc_sum
+      use periodic, only: znuc2_sum, znuc_sum
+      use ewald, only: dcos_n_sum, dsin_n_sum
+      use ewald, only: b_coul, y_coul
       use precision_kinds, only: dp
-
+      use m_force_analytic, only: iforce_analy
+      use da_pseudo, only: da_pecent, da_pe_en
       implicit none
 
-      integer :: i, j, k, lowest_pow, ncent
+      integer :: i, j, k, lowest_pow, ncent, ic
       real(dp) :: c0, pecent, rnorm, vl, vs, zprod
-      real(dp), dimension(3) :: r
-      integer,  dimension(*)   :: iwctype
+      real(dp), dimension(3) :: r, da_term
       real(dp), dimension(3,*) :: cent
       real(dp), dimension(*)   :: cos_n_sum
       real(dp), dimension(*)   :: sin_n_sum
       real(dp), dimension(*)   :: znuc
+      real(dp), dimension(3,ncent) :: da_vl, da_vs
 
 ! short-range sum
       lowest_pow=-1
       c0=(b_coul(2)-np_coul*b_coul(1))/2
       vs=c0*znuc2_sum
+
+      if (iforce_analy.gt.0) then
+        do ic=1,ncent
+          do k=1,3
+            da_vs(k,ic) = 0.d0
+          enddo
+        enddo
+      endif
+
       do i=1,ncent
         do j=1,i-1
           zprod=znuc(iwctype(i))*znuc(iwctype(j))
           do k=1,3
             r(k)=cent(k,j)-cent(k,i)
+            da_term(k) = 0.d0
           enddo
+
           call find_image_pbc(r,rnorm)
           vs=vs+zprod*vsrange(rnorm,cutr,lowest_pow,ncoef_per,np_coul,b_coul)
+
+          if (iforce_analy.gt.0) then
+            call compute_da_vs(rnorm, r, lowest_pow, da_term)
+            do k=1,3
+              da_vs(k,i) = da_vs(k,i) + zprod*da_term(k)
+              da_vs(k,j) = da_vs(k,j) - zprod*da_term(k)
+            enddo
+          endif
         enddo
       enddo
 
+
 ! long-range sum
-      call cossin_n(znuc,iwctype,glatt,igvec,ngvec,cent,ncent,ng1d,cos_n_sum,sin_n_sum)
-
+      call cossin_n(cent,cos_n_sum,sin_n_sum,dcos_n_sum,dsin_n_sum)
       vl=vlrange(ngnorm,igmult,cos_n_sum,cos_n_sum,sin_n_sum,sin_n_sum,y_coul)
+      if (iforce_analy.gt.0) then
+        call da_vlrange(cos_n_sum,sin_n_sum,cos_n_sum,sin_n_sum,dcos_n_sum,dsin_n_sum,da_vl)
 
+        do k=1,3
+          do ic=1,ncent
+            da_pecent(k,ic) = da_vs(k,ic) + 2.d0*da_vl(k,ic)
+          enddo
+        enddo
+      endif
       pecent=vs+vl
       vs=vs*2/ncent
       vl=vl*2/ncent
@@ -1043,55 +1110,78 @@
       use contrl_file, only: ounit
       use control, only: ipr
       use distance_mod, only: r_en, rvec_en
-      use ewald, only: b_coul, y_coul, y_jas, b_jas
+      use ewald, only: b_coul, y_coul
       use ewald, only: cos_e_sum, sin_e_sum
-      use periodic, only: cutr, glatt
-      use periodic, only: igmult, igvec
-      use periodic, only: ncoef_per, ng1d, ngnorm
-      use periodic, only: ngvec
-      use periodic, only: np_coul
-      use periodic, only: znuc_sum
-      use pseudo, only: lpot, nloc
-      use vmc_mod, only: nmat_dim2
-      use system, only: nelec
-      use system, only: znuc, cent, iwctype, ncent, ncent_tot
+      use ewald, only: dcos_n_sum, dsin_n_sum
+      use periodic, only: ncoef_per, ng1d, ngnorm, ngvec
+      use periodic, only: np_coul, znuc_sum, igmult, cutr
 
+      use da_pseudo, only: da_pecent, da_pe_en
+      use pseudo, only: nloc
+      use system, only: znuc, cent, iwctype, ncent, nelec
+      use m_force_analytic, only: iforce_analy
       use find_pimage, only: find_image_pbc
-
       use precision_kinds, only: dp
+
       implicit none
 
-      integer :: i, ict, j, k, lowest_pow
-      real(dp) :: pe_en, vl
-      real(dp) :: vs, vs_aux
+      integer :: ic, ict, i, k, lowest_pow
+      real(dp) :: vs, vl, d2_vl, pe_en
       real(dp), dimension(3,*) :: x
       real(dp), dimension(*)   :: cos_n_sum
       real(dp), dimension(*)   :: sin_n_sum
-
+      real(dp), dimension(3)    :: da_term
+      real(dp), dimension(3,ncent) :: da_vl, da_vs
 ! short-range sum
 ! Warning: I need to call the appropriate vsrange
-      vs=0.d0
-      do i=1,ncent
-        ict=iwctype(i)
-        do j=1,nelec
-          do k=1,3
-             rvec_en(k,j,i)=x(k,j)-cent(k,i)
-          enddo
-          call find_image_pbc(rvec_en(1,j,i),r_en(j,i))
       lowest_pow=-1
-          vs=vs-znuc(ict)*vsrange(r_en(j,i),cutr,lowest_pow,ncoef_per,np_coul,b_coul)
+      vs=0.d0
+      do k=1,3
+        do ic=1,ncent
+          da_vl(k,ic)=0.d0
+          da_vs(k,ic)=0.d0
         enddo
       enddo
+      do ic=1,ncent
+        ict=iwctype(ic)
+        do i=1,nelec
+          do k=1,3
+             rvec_en(k,i,ic)=x(k,i)-cent(k,ic)
+             da_term(k) = 0.d0
+          enddo
 
+          call find_image_pbc(rvec_en(1,i,ic),r_en(i,ic))
+          vs=vs-znuc(ict)*vsrange(r_en(i,ic),cutr,lowest_pow,ncoef_per,np_coul,b_coul)
+
+          ! compute derivative of short-range sum for forces
+          if (iforce_analy.gt.0) then
+            call compute_da_vs(r_en(i,ic), rvec_en(:,i,ic),lowest_pow, da_term)
+            do k=1,3
+              da_vs(k,ic) = da_vs(k,ic) - znuc(ict) * da_term(k)
+            enddo
+          endif
+        enddo
+      enddo
 ! long-range sum
-      call cossin_e(glatt,igvec,ngvec,x,nelec,ng1d,cos_e_sum,sin_e_sum)
+      call cossin_e(ngvec,x,nelec,ng1d,cos_e_sum,sin_e_sum)
 
       vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
 
-      pe_en=vs+vl
+      ! compute derivative of long-range sum for forces
+      if (iforce_analy.gt.0) then
+        call da_vlrange(cos_e_sum,sin_e_sum,cos_n_sum,sin_n_sum &
+                                    ,dcos_n_sum,dsin_n_sum,da_vl)
+      endif
 
+      pe_en=vs+vl
+      do ic=1,ncent
+        do k=1,3
+          da_pe_en(k,ic) = da_vs(k,ic) - 2.d0*da_vl(k,ic)
+        enddo
+      enddo
       vs=vs/nelec
       vl=vl/nelec
+
       if(ipr.ge.2) then
         if(nloc.eq.0) write(ounit,'(''v_en,vs,vl,vl1='',9f12.8)') pe_en/nelec,vs,vl,-y_coul(1)*znuc_sum
       endif
@@ -1105,30 +1195,23 @@
 ! Written by Cyrus Umrigar
 
       use contrl_file,    only: ounit
-      use vmc_mod, only: nmat_dim2
       use control, only: ipr
       use system, only: nelec
       use ewald, only: b_coul, y_coul
-      use ewald, only: cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum
+      use ewald, only: cos_e_sum, sin_e_sum
 
-      use periodic, only: cutr
-      use periodic, only: glatt, igmult, igvec
-      use periodic, only: ncoef_per, ng1d
-      use periodic, only: ngnorm, ngvec
-      use periodic, only: np_coul
-      use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
+      use periodic, only: ncoef_per, ng1d, cutr
+      use periodic, only: ngnorm, ngvec, igmult, np_coul
+      use distance_mod, only: r_ee, rvec_ee
       use find_pimage, only: find_image_pbc
-      use pseudo, only: lpot, nloc
+      use pseudo, only: nloc
 
       use precision_kinds, only: dp
       implicit none
 
       integer :: i, ij, j, k, lowest_pow
-      real(dp) :: c0, pe_ee, vl
-      real(dp) :: vs
+      real(dp) :: c0, pe_ee, vl, vs
       real(dp), dimension(3,*) :: x
-
-!      write(ounit,*) "inside pot_ee_ewald nloc", nloc
 
 ! short-range sum
       lowest_pow=-1
@@ -1147,14 +1230,14 @@
       enddo
 
 ! long-range sum
-      call cossin_e(glatt,igvec,ngvec,x,nelec,ng1d,cos_e_sum,sin_e_sum)
+      call cossin_e(ngvec,x,nelec,ng1d,cos_e_sum,sin_e_sum)
 
       vl=vlrange(ngnorm,igmult,cos_e_sum,cos_e_sum,sin_e_sum,sin_e_sum,y_coul)
-
       pe_ee=vs+vl
 
       vs=vs*2/nelec
       vl=vl*2/nelec
+
       if(ipr.ge.2) write(ounit,'(''v_ee,vs,vl,vs1,vl1='',9f12.8)') pe_ee*2/nelec,vs,vl,c0*2,y_coul(1)*nelec
 
       return
@@ -1198,7 +1281,7 @@
       real(dp), dimension(-NG1DX:NG1DX,3) :: sin_gr
 
 ! Calculate cosines and sines for recip. lattice vectors along axes first.
-      if(iel.eq.0)then
+      if(iel.eq.0) then
         i1=1
         i2=nr
        else
@@ -1207,24 +1290,24 @@
       endif
       do ir=i1,i2
 
-      do i=1,3
-        dot=0
-        do k=1,3
-          dot=dot+glatt(k,i)*r(k,ir)
+        do i=1,3
+          dot=0
+          do k=1,3
+            dot=dot+glatt(k,i)*r(k,ir)
+          enddo
+          cos_gr(1,i)=cos(dot)
+          sin_gr(1,i)=sin(dot)
+          cos_gr(-1,i)=cos_gr(1,i)
+          sin_gr(-1,i)=-sin_gr(1,i)
+          cos_gr(0,i)=1.d0
+          sin_gr(0,i)=0.d0
+          do n=2,ng1d(i)
+            cos_gr(n,i)=cos_gr(n-1,i)*cos_gr(1,i)-sin_gr(n-1,i)*sin_gr(1,i)
+            sin_gr(n,i)=sin_gr(n-1,i)*cos_gr(1,i)+cos_gr(n-1,i)*sin_gr(1,i)
+            cos_gr(-n,i)=cos_gr(n,i)
+            sin_gr(-n,i)=-sin_gr(n,i)
+          enddo
         enddo
-        cos_gr(1,i)=cos(dot)
-        sin_gr(1,i)=sin(dot)
-        cos_gr(-1,i)=cos_gr(1,i)
-        sin_gr(-1,i)=-sin_gr(1,i)
-        cos_gr(0,i)=1.d0
-        sin_gr(0,i)=0.d0
-        do n=2,ng1d(i)
-          cos_gr(n,i)=cos_gr(n-1,i)*cos_gr(1,i)-sin_gr(n-1,i)*sin_gr(1,i)
-          sin_gr(n,i)=sin_gr(n-1,i)*cos_gr(1,i)+cos_gr(n-1,i)*sin_gr(1,i)
-          cos_gr(-n,i)=cos_gr(n,i)
-          sin_gr(-n,i)=-sin_gr(n,i)
-        enddo
-      enddo
 
 ! If the calculation is for g-vectors then no shift; if for k-vectors there could be one.
       cos_tmp0=1.d0
@@ -1271,39 +1354,35 @@
 ! nuclear charge, pseudopotential or electronic charge is used, so they
 ! could be merged, but I did not do that to get a small gain in efficiency.
 !-----------------------------------------------------------------------
+      subroutine cossin_n(r,cos_sum,sin_sum,dcos_sum, dsin_sum)
 
-      subroutine cossin_n(znuc,iwctype,glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
       use ewald_mod, only: NG1DX
-      use system, only: ncent_tot
+      use system, only: ncent_tot, ncent, znuc, iwctype
+      use periodic, only: gvec, glatt, igvec, ngvec, ng1d
+
+      use precision_kinds, only: dp
 ! Written by Cyrus Umrigar
 ! Calculate cos_sum and sin_sum for nuclei
 
-      use precision_kinds, only: dp
       implicit none
 
-      integer :: i, ir, k, n, ngvec
-      integer :: nr
-      integer, dimension(*) :: iwctype
-      integer, dimension(3,*) :: igvec
-      integer, dimension(3) :: ng1d
-      real(dp) :: cos, cos_tmp, dot, sin, sin_tmp
-      real(dp), dimension(*) :: znuc
-      real(dp), dimension(3,3) :: glatt
+      integer :: i, ir, k, n
+      real(dp) :: dcos, cos_tmp, dot, dsin, sin_tmp
       real(dp), dimension(3,*) :: r
-      real(dp), dimension(*) :: cos_sum
-      real(dp), dimension(*) :: sin_sum
-      real(dp), dimension(-NG1DX:NG1DX,3,ncent_tot) :: cos_gr
-      real(dp), dimension(-NG1DX:NG1DX,3,ncent_tot) :: sin_gr
+      real(dp), dimension(ngvec) :: cos_sum, sin_sum, cos_term, sin_term
+      real(dp), dimension(3, ncent, ngvec) :: dcos_sum, dsin_sum
+      real(dp), dimension(-NG1DX:NG1DX,3,ncent_tot) :: cos_gr, sin_gr
 
 ! Calculate cosines and sines for all positions and reciprocal lattice vectors
-      do ir=1,nr
+      do ir=1,ncent
         do i=1,3
-          dot=0
+          dot=0.d0
           do k=1,3
             dot=dot+glatt(k,i)*r(k,ir)
           enddo
-          cos_gr(1,i,ir)=cos(dot)
-          sin_gr(1,i,ir)=sin(dot)
+          cos_gr(1,i,ir)=dcos(dot)
+          sin_gr(1,i,ir)=dsin(dot)
+
           cos_gr(-1,i,ir)=cos_gr(1,i,ir)
           sin_gr(-1,i,ir)=-sin_gr(1,i,ir)
           cos_gr(0,i,ir)=1.d0
@@ -1318,29 +1397,36 @@
       enddo
 
       do i=1,ngvec
-        cos_sum(i)=0
-        sin_sum(i)=0
-        do ir=1,nr
+        cos_sum(i)=0.d0
+        sin_sum(i)=0.d0
+        do ir=1,ncent
           cos_tmp=cos_gr(igvec(1,i),1,ir)*cos_gr(igvec(2,i),2,ir) &
                  -sin_gr(igvec(1,i),1,ir)*sin_gr(igvec(2,i),2,ir)
           sin_tmp=sin_gr(igvec(1,i),1,ir)*cos_gr(igvec(2,i),2,ir) &
                  +cos_gr(igvec(1,i),1,ir)*sin_gr(igvec(2,i),2,ir)
-          cos_sum(i)=cos_sum(i)+znuc(iwctype(ir))* &
+          cos_term(i)=znuc(iwctype(ir))* &
                      (cos_tmp*cos_gr(igvec(3,i),3,ir) &
                      -sin_tmp*sin_gr(igvec(3,i),3,ir))
-          sin_sum(i)=sin_sum(i)+znuc(iwctype(ir))* &
+          sin_term(i)=znuc(iwctype(ir))* &
                      (sin_tmp*cos_gr(igvec(3,i),3,ir) &
                      +cos_tmp*sin_gr(igvec(3,i),3,ir))
+          cos_sum(i)=cos_sum(i)+cos_term(i)
+          sin_sum(i)=sin_sum(i)+sin_term(i)
+          do k=1,3
+            dcos_sum(k,ir,i)=-gvec(k,i)*sin_term(i)
+            dsin_sum(k,ir,i)= gvec(k,i)*cos_term(i)
+          enddo
         enddo
       enddo
-
       return
       end
 
 !-----------------------------------------------------------------------
 
-      subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
+      subroutine cossin_e(ngvec,r,nr,ng1d,cos_sum,sin_sum)
+
       use ewald_mod, only: NG1DX
+      use periodic, only: glatt, igvec
       use system, only: nelec
 ! Written by Cyrus Umrigar
 ! Calculate cos_sum and sin_sum for electrons
@@ -1350,10 +1436,8 @@
 
       integer :: i, ir, k, n, ngvec
       integer :: nr
-      integer, dimension(3,*) :: igvec
       integer, dimension(3) :: ng1d
-      real(dp) :: cos, cos_tmp, dot, sin, sin_tmp
-      real(dp), dimension(3,3) :: glatt
+      real(dp) :: dcos, cos_tmp, dot, dsin, sin_tmp
       real(dp), dimension(3,*) :: r
       real(dp), dimension(*) :: cos_sum
       real(dp), dimension(*) :: sin_sum
@@ -1367,8 +1451,8 @@
           do k=1,3
             dot=dot+glatt(k,i)*r(k,ir)
           enddo
-          cos_gr(1,i,ir)=cos(dot)
-          sin_gr(1,i,ir)=sin(dot)
+          cos_gr(1,i,ir)=dcos(dot)
+          sin_gr(1,i,ir)=dsin(dot)
           cos_gr(-1,i,ir)=cos_gr(1,i,ir)
           sin_gr(-1,i,ir)=-sin_gr(1,i,ir)
           cos_gr(0,i,ir)=1.d0
@@ -1508,7 +1592,7 @@
       ddvl=0.d0
       do ir=1,nelec
        do j=1,3
-        dvl(j,ir)=2*y(1)*(dcos_g(j,ir,ivec)*cos_sum(1)+dsin_g(j,ir,ivec)*sin_sum(1))
+         dvl(j,ir)=2*y(1)*(dcos_g(j,ir,ivec)*cos_sum(1)+dsin_g(j,ir,ivec)*sin_sum(1))
        enddo
        ddvl=ddvl+2*y(1)*(ddcos_g(ir,ivec)*cos_sum(1)+ddsin_g(ir,ivec)*sin_sum(1)+gnorm(1)*gnorm(1))
       enddo
@@ -1527,4 +1611,49 @@
 
       return
       end
+
+! ---------------
+
+      subroutine da_vlrange(cos1,sin1,cos2,sin2,dcos2,dsin2,dvl)
+      ! This function is used to compute d_alpha of the long-range ewald term
+      ! It is used both for the vl_range term in the en_component and the nn_component
+      ! so in one case 1: electron term, 2: nucleus term. 
+      ! In the other case 1: nucleus 2: nucleus
+
+      use ewald, only: y_coul
+      use periodic, only: ngnorm, igmult, ngvec
+      use precision_kinds, only: dp
+      use system, only: ncent
+      implicit none
+
+      integer :: im, ir, ivec, j, k
+      real(dp) :: vl
+      real(dp), dimension(3,ncent) :: dvl
+      real(dp), dimension(*) :: cos1, cos2
+      real(dp), dimension(*) :: sin1, sin2
+      real(dp), dimension(3,ncent,ngvec) :: dcos1,dcos2,dsin1,dsin2
+
+      ivec=1
+      do ir=1,ncent
+        do j=1,3
+          dvl(j,ir)=0.5d0*y_coul(1)*(cos1(1)*dcos2(j,ir,ivec)&
+                               +sin1(1)*dsin2(j,ir,ivec))
+        enddo
+      enddo
+
+      do k=2,ngnorm
+        do im=1,igmult(k)
+          ivec=ivec+1
+          do j=1,3
+            do ir=1,ncent
+              dvl(j,ir)=dvl(j,ir)+y_coul(k)*(cos1(ivec)*dcos2(j,ir,ivec)&
+                                         +sin1(ivec)*dsin2(j,ir,ivec))
+            enddo
+          enddo
+        enddo
+      enddo
+
+      return
+      end
+
       end module

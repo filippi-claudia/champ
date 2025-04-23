@@ -22,10 +22,10 @@
       integer :: m, n
       real(dp) :: a1_cusp, b1_cusp, d2, dd2
       real(dp) :: fc, fee, feeu, feeu_save,feeuu
-      real(dp) :: fen, feni, feni_save, fenii, feniii
+      real(dp) :: fen, feni, fenii, feniii
       real(dp) :: fi, fi_save, fii, fj, fj_save
       real(dp) :: fjj, fsum, fu, fui, fuj, fuu
-      real(dp) :: s, t, term, termi, termii, termj, termjj
+      real(dp) :: s, t, term, termi, termii, termiii, termj, termjj
       real(dp) :: termu, termuu, term1, term2
       real(dp) :: u2mst, u2pst, value, xi, xij, xj
       real(dp), dimension(3, *) :: x
@@ -283,16 +283,19 @@
             termi=-3*(1.d0-xi)**2*cutjas_eni(it,iwf)
             termii=6*(1.d0-xi)*cutjas_eni(it,iwf)*cutjas_eni(it,iwf)
 
-            feni_save=feni*term+fen*termi
-            fenii=fenii*term+2*feni*termi+fen*termii
-
             if(iforce_analy.eq.1) then
-! still to compute
               feniii=0.d0
-              call da_jastrow1_en(i,ic,rvec_en(1,i,ic),ri,feni,fenii,feniii)
+              termiii=-6*cutjas_eni(it,iwf)*cutjas_eni(it,iwf)*cutjas_eni(it,iwf)
+              do iord=3,norda
+                  feniii=feniii+a4(iord,it,iwf)*iord*(iord-1)*(iord-2)*ri(iord-3)
+              enddo
+
+              call da_jastrow1_en(i,ic,rvec_en(1,i,ic),ri,fen,feni,fenii,feniii,term,termi,termii,termiii)
             endif
 
-            feni=feni_save/ri(1)
+            fenii=fenii*term+2*feni*termi+fen*termii
+            feni=feni*term+fen*termi
+            feni=feni/ri(1)
 
             fso(i,i)=fso(i,i)+fen*term
 
@@ -319,23 +322,20 @@
       end
 
 !-----------------------------------------------------------------------
-      subroutine da_jastrow1_en(i,ic,rvec_en,r,feni,fenii,feniii)
+      subroutine da_jastrow1_en(i,ic,rvec_en,r,fen,feni,fenii,feniii,term,termi,termii,termiii)
 
       use da_jastrow, only: da_d2j, da_j, da_vj
       use jastrow, only: nordj
-      use error, only: fatal_error
       use precision_kinds, only: dp
 
       implicit none
 
-      integer :: i, ic, iord, it, iwf
-      integer :: k, l
-      real(dp) :: feni, fenii, feniii
+      integer :: k, l, i, ic
+      real(dp) :: fen, feni, fenii, feniii
+      real(dp) :: term, termi, termii, termiii
       real(dp) :: ri, ri2
       real(dp), dimension(3) :: rvec_en
       real(dp), dimension(-2:nordj) :: r
-
-      call fatal_error('DA_JAS1: da_jastrow1 to fix')
 
       ri=1.d0/r(1)
       ri2=ri*ri
@@ -345,12 +345,22 @@
       ! purpose
 
       do k=1,3
-        da_j(k,i,i,ic)=da_j(k,i,i,ic)-rvec_en(k)*ri*feni
-        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k)*ri*(feniii+fenii*(2*ri)+feni*(-2*ri2))
+        ! d_alpha of jastrow
+        da_j(k,i,i,ic)=da_j(k,i,i,ic)-rvec_en(k)*ri*(feni*term+fen*termi)
+
+        ! d_alpha of laplacian of jastrow
+        da_d2j(k,ic)=da_d2j(k,ic)-rvec_en(k)*ri*(feniii*term &
+                                                +fenii*(3*termi+2*ri*term) &
+                                                +feni*(3*termii+4*ri*termi-2*ri2*term) &
+                                                +fen*(termiii+2*ri*termii-2*ri2*termi))
+
+        ! d_alpha of gradient of jastrow
         do l=1,3
-          da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(k)*rvec_en(l)*ri2*(fenii-feni**ri)
+          da_vj(k,l,i,ic)=da_vj(k,l,i,ic)-rvec_en(k)*rvec_en(l)*ri2*(fenii*term+fen*termii &
+                                                                     +2*feni*termi &
+                                                                     -ri*(fen*termi+feni*term))
         enddo
-        da_vj(k,k,i,ic)=da_vj(k,k,i,ic)-feni*ri
+        da_vj(k,k,i,ic) = da_vj(k,k,i,ic)-ri*(fen*termi+feni*term)
       enddo
 
       return

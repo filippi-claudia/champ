@@ -98,7 +98,7 @@ contains
 end module da_orbval
 
 module da_pseudo
-    !> Arguments: da_pecent, da_vps, da_nonloc
+    !> Arguments: da_pecent, da_vps, da_nonloc, da_pe_en
 
     use precision_kinds, only: dp
 
@@ -107,9 +107,10 @@ module da_pseudo
     real(dp), dimension(:, :), allocatable :: da_pecent !(3, MCENT)
     real(dp), dimension(:, :, :, :), allocatable :: da_vps !(3, MELEC, MCENT, MPS_L)
     real(dp), dimension(:, :), allocatable :: da_nonloc !(3, MCENT)
+    real(dp), dimension(:, :), allocatable :: da_pe_en  !(3, MCENT)
 
     private
-    public   :: da_pecent, da_vps, da_nonloc
+    public   :: da_pecent, da_vps, da_nonloc, da_pe_en
     public :: allocate_da_pseudo, deallocate_da_pseudo
     save
 contains
@@ -119,6 +120,7 @@ contains
         if (.not. allocated(da_pecent)) allocate (da_pecent(3, ncent_tot))
         if (.not. allocated(da_vps)) allocate (da_vps(3, nelec, ncent_tot, MPS_L))
         if (.not. allocated(da_nonloc)) allocate (da_nonloc(3, ncent_tot))
+        if (.not. allocated(da_pe_en)) allocate (da_pe_en(3, ncent_tot))
 
         da_nonloc = 0.0D0
 
@@ -128,6 +130,7 @@ contains
         if (allocated(da_nonloc)) deallocate(da_nonloc)
         if (allocated(da_vps)) deallocate(da_vps)
         if (allocated(da_pecent)) deallocate(da_pecent)
+        if (allocated(da_pe_en)) deallocate(da_pe_en)
     end subroutine deallocate_da_pseudo
 
 end module da_pseudo
