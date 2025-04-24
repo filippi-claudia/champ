@@ -40,10 +40,9 @@
 
       else
 
-
          call pot_ee_ewald(x,pe_ee)
-         pe=pe+pe_en+pe_ee
 
+         pe=pe+pe_ee
       endif
       if(ipr.ge.3) write(ounit,'(''pe,pe_en(loc),pe_ee'',9f9.5)') pe,pe_en,pe_ee
       return

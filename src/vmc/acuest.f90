@@ -54,6 +54,7 @@ module acuest_mod
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,znuc
       use vmc_mod, only: nwftypeorb, stoj
+      use pathak_mod, only: init_eps_pathak, ipathak
 
       implicit none
 
@@ -133,6 +134,7 @@ contains
       call pcm_init(1)
       call mmpol_init(1)
       call force_analy_init(1)
+      if(ipathak.gt.0) call init_eps_pathak()
 
       call acuest_reduce(enow)
 

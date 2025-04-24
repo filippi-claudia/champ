@@ -36,7 +36,7 @@ contains
           enddo
         enddo
        else
-        call pot_nn_ewald(cent,znuc,iwctype,ncent,pecent,cos_n_sum,sin_n_sum)
+        call pot_nn_ewald(cent,znuc,ncent,pecent,cos_n_sum,sin_n_sum)
       endif
 
       if(iforce_analy.eq.0) return
