@@ -227,6 +227,30 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
         stop
     end if
 
+
+    ! To fix - QMCkl does not give da_orbitals
+    if(iforce_analy.gt.0) then
+        allocate(da_orbn_temp(norb,3,nxquad,ncent))  
+
+        rc = qmckl_get_forces_mo_value_inplace(qmckl_ctx(1), da_orbn_temp, nxquad*norb*3_8*ncent)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl MO forces.')
+
+        dorbn(1:norb,1:nxquad,1:3) = 0.d0
+        do ic=1,ncent
+            do iq=1,nxquad
+                do k =1,3
+                    do iorb=1,norb
+                        da_orbn(k,ic,iorb,iq)=da_orbn_temp(iorb,k,iq,ic)
+                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn_temp(iorb,k,iq,ic)
+                    enddo
+                enddo
+            enddo
+        enddo
+        ! enddo nxquad
+        deallocate(da_orbn_temp)
+
+    endif
+
     allocate(mo_qmckl(n8, nxquad))
 
     ! Compute the MOs
@@ -240,36 +264,6 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     orbn(1:norb+nadorb,1:nxquad) = mo_qmckl(1:norb+nadorb,1:nxquad)
 
     deallocate(mo_qmckl)
-
-    ! To fix - QMCkl does not give da_orbitals
-    if(iforce_analy.gt.0) then
-        allocate(da_orbn_temp(norb,3,nxquad,ncent))  
-
-        rc = qmckl_get_forces_mo_value_inplace(qmckl_ctx(1), da_orbn_temp, nxquad*norb*3_8*ncent)
-        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl MO forces.')
-        do iq=1,nxquad
-
-            do iorb=1,norb
-                do ic=1,ncent
-                    do k=1,3
-                        da_orbn(k,ic,iorb,iq)=da_orbn_temp(iorb,k,iq,ic)
-                    enddo
-                enddo
-
-                do k=1,3
-                    dorbn(iorb,iq,k)=0.d0
-                enddo
-                do ic=1,ncent
-                    do k=1,3
-                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
-                    enddo
-                enddo
-            enddo
-        enddo
-        ! enddo nxquad
-        deallocate(da_orbn_temp)
-
-    endif
     ! endif iforce
 
     nadorb = nadorb_sav
