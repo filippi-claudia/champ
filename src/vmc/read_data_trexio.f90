@@ -598,7 +598,7 @@ module trexio_read_data
         write(ounit,*) " Updating LCAO orbitals from the file :: ",  trim(file_trexio_path)
         write(ounit,*) '---------------------------------------------------------------------------'
 
-        do ictx = 1 ,qmckl_no_ctx
+        do ictx = 1 ,qmckl_no_ctx-1
             ! Destroy the existing QMCkl context first
             write(ounit, *) " QMCkl destroying the old context " , qmckl_ctx(ictx) , " successfully "
             rc = qmckl_context_destroy(qmckl_ctx(ictx))

@@ -182,7 +182,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 
     implicit none
 
-    integer :: ic, iel, ier, ii, iq
+    integer :: ic, iel, ier, ii, iq, ictx
     integer :: iorb, k, m, m0, nxquad, iwforb
     integer :: nadorb_sav
 
@@ -209,18 +209,20 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 
     nadorb_sav=nadorb
 
-    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
+    ictx = 1
+
+    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) ictx=2
 
 
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(1), 'N', nxquad*1_8, xquad, nxquad*3_8)
+    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', nxquad*1_8, xquad, nxquad*3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'orbitals quad Error setting electron coordinates in QMCkl'
         print *, "nxquad", nxquad
         stop
     end if
 
-    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(1), n8)
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'orbitals quad Error getting mo_num from QMCkl'
         print *, "n8", n8
@@ -230,6 +232,13 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 
     ! To fix - QMCkl does not give da_orbitals
     if(iforce_analy.gt.0) then
+
+        if (ictx .eq. 2) then
+           rc = qmckl_set_point(qmckl_ctx(1), 'N', nxquad*1_8, xquad, nxquad*3_8)
+           if (rc /= QMCKL_SUCCESS) then
+              stop
+           end if
+        end if
 
         rc = qmckl_get_forces_mo_value_inplace(qmckl_ctx(1), da_orbn, nxquad*norb*3_8*ncent_tot)
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl MO forces.')
@@ -250,7 +259,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     allocate(mo_qmckl(n8, nxquad))
 
     ! Compute the MOs
-    rc = qmckl_get_mo_basis_mo_value_inplace(qmckl_ctx(1), mo_qmckl, nxquad*n8)
+    rc = qmckl_get_mo_basis_mo_value_inplace(qmckl_ctx(ictx), mo_qmckl, nxquad*n8)
 
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error orbitals quad getting MOs from QMCkl'
