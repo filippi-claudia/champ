@@ -106,7 +106,6 @@ contains
       if(allocated(dorbn)) deallocate(dorbn)
       allocate(dorbn(norb_tot,ndim,3,nwftypeorb))
       if(allocated(da_orbn)) deallocate(da_orbn)
-      !allocate(da_orbn(norb_tot,3,ndim,ncent_tot))
       if(allocated(vjn)) deallocate(vjn)
       allocate(vjn(3,ndim))
 
@@ -191,6 +190,7 @@ contains
 
       if(nxquad.eq.0) return
       allocate(da_orbn(norb,3,nxquad,ncent_tot))
+      
       do iwforb=1,nwftypeorb
         call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,iwforb), &
                          dorbn(1,1,1,iwforb),da_orbn,iwforb)
@@ -935,7 +935,7 @@ contains
       real(dp), parameter :: one = 1.d0
 
       if(iforce_analy.eq.0) return
-      !print *, "nxquad", nxquad
+
       do iq=1,nxquad
 
       i=iequad(iq)

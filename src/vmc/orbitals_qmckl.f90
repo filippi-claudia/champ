@@ -212,8 +212,6 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
 
 
-    !print *, "nxquad", nxquad, norb, norb_tot, ncent, ncent_tot
-
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
     rc = qmckl_set_point(qmckl_ctx(1), 'N', nxquad*1_8, xquad, nxquad*3_8)
     if (rc /= QMCKL_SUCCESS) then
@@ -232,7 +230,6 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 
     ! To fix - QMCkl does not give da_orbitals
     if(iforce_analy.gt.0) then
-        !allocate(da_orbn_temp(norb,3,nxquad,ncent))  
 
         rc = qmckl_get_forces_mo_value_inplace(qmckl_ctx(1), da_orbn, nxquad*norb*3_8*ncent_tot)
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl MO forces.')
@@ -242,13 +239,11 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
             do iq=1,nxquad
                 do k =1,3
                     do iorb=1,norb
-                        !da_orbn(k,ic,iorb,iq)=da_orbn_temp(iorb,k,iq,ic)
                         dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(iorb,k,iq,ic)
                     enddo
                 enddo
             enddo
         enddo
-        !deallocate(da_orbn_temp)
 
     endif
 
@@ -265,7 +260,6 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     orbn(1:norb+nadorb,1:nxquad) = mo_qmckl(1:norb+nadorb,1:nxquad)
 
     deallocate(mo_qmckl)
-    ! endif iforce
 
     nadorb = nadorb_sav
 return
