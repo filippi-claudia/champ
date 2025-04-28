@@ -18,8 +18,8 @@ contains
       real(dp) :: term, zij
       real(dp), dimension(nctype_tot)  :: znuc
       real(dp), dimension(3,ncent_tot) :: cent
-      real(dp), dimension(*)           :: cos_n_sum
-      real(dp), dimension(*)           :: sin_n_sum
+      real(dp), dimension(*), optional :: cos_n_sum   ! required for pot_nn_ewald
+      real(dp), dimension(*), optional :: sin_n_sum   ! required for pot_nn_ewald
 
 !
       if(iperiodic.eq.0) then

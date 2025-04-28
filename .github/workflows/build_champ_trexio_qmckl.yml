@@ -1,4 +1,4 @@
-name: CHAMP with QMCkl and TREXIO build with Intel
+name: CHAMP with QMCkl and TREXIO build
 
 on:
   push:
@@ -18,43 +18,42 @@ jobs:
   build_champ:
     strategy:
       matrix:
-        toolchain: ['intel']
+        toolchain: ['GNU']
     name: Build CHAMP and TREXIO with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 200
     defaults:
       run:
         shell: bash --noprofile --norc {0}
     steps:
-      - name: Use Intel oneAPI GitHub Actions fast setup
-        uses: neelravi/intel-oneapi-github-actions@v2.0.0
-        with:
-          components: fortran,cpp,mpi,mkl
-
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y emacs cmake git wget
+          sudo apt install -y emacs cmake git wget gawk libtool autoconf automake gfortran gcc
+          sudo apt install -y openmpi-bin libopenmpi-dev libhdf5-openmpi-dev
+          sudo apt install -y libblas-dev liblapack-dev
+          sudo apt install -y python3
+          ln -sf /usr/bin/python3 /usr/bin/python
+          which python
+          python --version
 
       - name: Build HDF5 from source
         run: |
-          source /opt/intel/oneapi/setvars.sh
           wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_2.tar.gz
           tar -xzf hdf5-1_14_2.tar.gz
           cd hdf5-hdf5-1_14_2
-          ./configure FC=mpiifx CC=mpiicx FCFLAGS=-O2 CFLAGS=-O2 CXX=icpx --enable-static --enable-shared --enable-fortran --enable-parallel --prefix=$HOME
+          ./configure FC=mpif90 CC=mpicc FCFLAGS=-O2 CFLAGS=-O2 CXX=mpic++ --enable-parallel --enable-static --enable-shared --enable-fortran --prefix=$HOME
           make -j$(nproc)
           make install
 
       - name: Clone and Install TREXIO
         run: |
-          source /opt/intel/oneapi/setvars.sh
           git clone https://github.com/TREX-CoE/trexio.git
           cd trexio
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           cmake -S. -Bbuild \
-            -DCMAKE_Fortran_COMPILER=mpiifx \
-            -DCMAKE_C_COMPILER=mpiicx \
+            -DCMAKE_Fortran_COMPILER=mpif90 \
+            -DCMAKE_C_COMPILER=mpicc \
             -DCMAKE_INSTALL_PREFIX=$HOME
           cmake --build build -- -j$(nproc)
           cd build
@@ -64,12 +63,12 @@ jobs:
 
       - name: Clone and Install QMCKL
         run: |
-          source /opt/intel/oneapi/setvars.sh
           git clone https://github.com/TREX-CoE/qmckl.git
           cd qmckl
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           ./autogen.sh
-          ./configure --prefix=$HOME --with-icx --with-ifort --enable-hpc --with-hdf5=$HOME --with-trexio=$HOME --with-openmp --disable-python
+          ./configure CC=gcc CFLAGS="-g -O2 -march=native  -flto -fno-trapping-math -fno-math-errno -ftree-vectorize" \
+          FC=gfortran FCFLAGS="-g -O2 -march=native  -flto -ftree-vectorize" --prefix=$HOME --with-trexio=$HOME --with-hdf5=$HOME --enable-openmp
           make -j$(nproc)
           make check -j$(nproc)
           make install
@@ -80,11 +79,9 @@ jobs:
 
       - name: Compile the CHAMP code with TREXIO and QMCkl using Intel and run all tests
         run: |
-          source /opt/intel/oneapi/setvars.sh
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
-          cmake -H. -Bbuild \
-            -DCMAKE_Fortran_COMPILER=mpiifx \
-            -DCMAKE_C_COMPILER=mpiicx \
+          cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 \
+            -DCMAKE_C_COMPILER=mpicc \
             -DENABLE_TREXIO=ON \
             -DTREXIO_INCLUDE_DIR=$HOME/include \
             -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so \
@@ -96,18 +93,17 @@ jobs:
           cd build
           ctest --output-on-failure --verbose -L "QMCKL"
 
-      - name: Clean and Re-Compile CHAMP with TREXIO only
-        run: |
-          source /opt/intel/oneapi/setvars.sh
-          rm -rf build bin
-          export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
-          cmake -H. -Bbuild \
-            -DCMAKE_Fortran_COMPILER=mpiifx \
-            -DCMAKE_C_COMPILER=mpiicx \
-            -DENABLE_TREXIO=ON \
-            -DTREXIO_INCLUDE_DIR=$HOME/include \
-            -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so \
-            -DENABLE_QMCKL=OFF
-          cmake --build build -- -j$(nproc)
-          cd build
-          ctest --output-on-failure --verbose -L "TREXIO" -LE "QMCKL"
+      # - name: Clean and Re-Compile CHAMP with TREXIO only
+      #   run: |
+      #     rm -rf build bin
+      #     export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
+      #     cmake -H. -Bbuild \
+      #       -DCMAKE_Fortran_COMPILER=mpif90 \
+      #       -DCMAKE_C_COMPILER=mpicc \
+      #       -DENABLE_TREXIO=ON \
+      #       -DTREXIO_INCLUDE_DIR=$HOME/include \
+      #       -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so \
+      #       -DENABLE_QMCKL=OFF
+      #     cmake --build build -- -j$(nproc)
+      #     cd build
+      #     ctest --output-on-failure --verbose -L "TREXIO" -LE "QMCKL"

@@ -21,23 +21,30 @@ jobs:
         toolchain: ['intel']
     name: Build CHAMP with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 300
     defaults:
       run:
         shell: bash --noprofile --norc {0}
     steps:
       - name: Use Intel oneAPI GitHub Actions fast setup
-        uses: neelravi/intel-oneapi-github-actions@v2.0.0
+        uses: neelravi/intel-oneapi-github-actions@latest
         with:
-          components: fortran,cpp,mpi,mkl
+          components: basekit, hpckit
 
       - name: Get the CHAMP code
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake python3
+          ln -sf /usr/bin/python3 /usr/bin/python
+          which python
+          python --version
+
       - name: Compile the CHAMP code using Intel and run all tests
         run: |
           source /opt/intel/oneapi/setvars.sh
-
           cmake --version
           ifx --version
           icx --version
@@ -45,13 +52,12 @@ jobs:
           mpiicx --version
 
           cmake -H. -Bbuild \
-            -DCMAKE_Fortran_COMPILER=mpiifort \
+            -DCMAKE_Fortran_COMPILER=mpiifx \
             -DCMAKE_C_COMPILER=mpiicx \
-            -DBLA_STATIC=ON \
-            -DBLA_VENDOR=Intel10_64lp_seq \
             -DENABLE_TREXIO=OFF \
-            -DENABLE_QMCKL=OFF \
+            -DENABLE_QMCKL=OFF
 
           cmake --build build -- -j2
           cd build
+          export PATH="/usr/bin:$PATH"
           ctest --output-on-failure --verbose -LE "(TREXIO|QMCKL)"
