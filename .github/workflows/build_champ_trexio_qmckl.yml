@@ -93,17 +93,17 @@ jobs:
           cd build
           ctest --output-on-failure --verbose -L "QMCKL"
 
-      # - name: Clean and Re-Compile CHAMP with TREXIO only
-      #   run: |
-      #     rm -rf build bin
-      #     export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
-      #     cmake -H. -Bbuild \
-      #       -DCMAKE_Fortran_COMPILER=mpif90 \
-      #       -DCMAKE_C_COMPILER=mpicc \
-      #       -DENABLE_TREXIO=ON \
-      #       -DTREXIO_INCLUDE_DIR=$HOME/include \
-      #       -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so \
-      #       -DENABLE_QMCKL=OFF
-      #     cmake --build build -- -j$(nproc)
-      #     cd build
-      #     ctest --output-on-failure --verbose -L "TREXIO" -LE "QMCKL"
+      - name: Clean and Re-Compile CHAMP - VMC, DMC tests
+        run: |
+          rm -rf build bin
+          export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
+          cmake -H. -Bbuild \
+            -DCMAKE_Fortran_COMPILER=mpif90 \
+            -DCMAKE_C_COMPILER=mpicc \
+            -DENABLE_TREXIO=ON \
+            -DTREXIO_INCLUDE_DIR=$HOME/include \
+            -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so \
+            -DENABLE_QMCKL=OFF
+          cmake --build build -- -j$(nproc)
+          cd build
+          ctest --output-on-failure --verbose -L "VMC|DMC" -LE "QMCKL|TREXIO" 
