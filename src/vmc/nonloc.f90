@@ -106,7 +106,7 @@ contains
       if(allocated(dorbn)) deallocate(dorbn)
       allocate(dorbn(norb_tot,ndim,3,nwftypeorb))
       if(allocated(da_orbn)) deallocate(da_orbn)
-      allocate(da_orbn(3,ncent_tot,norb_tot,ndim))
+      !allocate(da_orbn(norb_tot,3,ndim,ncent_tot))
       if(allocated(vjn)) deallocate(vjn)
       allocate(vjn(3,ndim))
 
@@ -190,7 +190,7 @@ contains
       enddo
 
       if(nxquad.eq.0) return
-
+      allocate(da_orbn(norb,3,nxquad,ncent_tot))
       do iwforb=1,nwftypeorb
         call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,iwforb), &
                          dorbn(1,1,1,iwforb),da_orbn,iwforb)
@@ -414,6 +414,7 @@ contains
       use precision_kinds, only: dp
       use qua,     only: nquad
       use system,  only: ncent_tot,nelec
+      use slater,  only: norb
       use vmc_mod, only: norb_tot
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
@@ -431,7 +432,7 @@ contains
       real(dp), dimension(3,nquad*nelec*2, ncent_tot) :: rvec_en
       real(dp), dimension(norb_tot, *) :: orbn
       real(dp), dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
-      real(dp), dimension(3,ncent_tot, norb_tot, *) :: da_orbn
+      real(dp), dimension(norb, 3,nxquad,ncent_tot) :: da_orbn
 
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
@@ -925,7 +926,7 @@ contains
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(norb_tot,nquad*nelec*2) :: orbn
       real(dp), dimension(norb_tot,nquad*nelec*2,3) :: dorbn
-      real(dp), dimension(3,ncent_tot,norb_tot,nquad*nelec*2) :: da_orbn
+      real(dp), dimension(norb,3,nxquad,ncent_tot) :: da_orbn
       real(dp), dimension(nquad*nelec*2) :: psij_ratio
       real(dp), dimension(nquad*nelec*2) :: term_radial
       real(dp), dimension(3,*) :: vjn
@@ -934,7 +935,7 @@ contains
       real(dp), parameter :: one = 1.d0
 
       if(iforce_analy.eq.0) return
-
+      !print *, "nxquad", nxquad
       do iq=1,nxquad
 
       i=iequad(iq)
@@ -982,7 +983,7 @@ contains
          do jc=1,ncent
 !          if(jc.ne.ic) then
              do k=1,3
-               b_da(k,i,iorb,jc)=b_da(k,i,iorb,jc)+term_radial(iq)*(da_orbn(k,jc,iorb,iq)+orbn(iorb,iq)*da_psij_ratio(k,jc,iq))
+               b_da(k,i,iorb,jc)=b_da(k,i,iorb,jc)+term_radial(iq)*(da_orbn(iorb,k,iq,jc)+orbn(iorb,iq)*da_psij_ratio(k,jc,iq))
              enddo
 !          endif
          enddo

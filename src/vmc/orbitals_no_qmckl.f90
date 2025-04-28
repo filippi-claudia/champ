@@ -414,7 +414,7 @@ subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,i
     real(dp), dimension(3,nquad*nelec*2, ncent_tot) :: rvec_en
     real(dp), dimension(norb_tot, *) :: orbn
     real(dp), dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
-    real(dp), dimension(3,ncent_tot, norb_tot, *) :: da_orbn
+    real(dp), dimension(norb,3,nxquad,ncent_tot) :: da_orbn
     real(dp), dimension(3) :: dtmp
     real(dp) :: ddtmp
 
@@ -455,14 +455,14 @@ subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,i
             do iorb=1,norb
                 do ic=1,ncent
                     do k=1,3
-                        da_orbn(k,ic,iorb,iq)=0.d0
+                        da_orbn(iorb,k,iq,ic)=0.d0
                     enddo
                 enddo
 #ifdef VECTORIZATION
                 do ic=1,ncent
                     do k=1,3
                         do m=ibas0(ic),ibas1(ic)
-                            da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                            da_orbn(iorb,k,iq,ic)=da_orbn(iorb,k,iq,ic)-coef(m,iorb,iwf)*dphin(m,iq,k)
                         enddo
                     enddo
                 enddo
@@ -471,7 +471,7 @@ subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,i
                     m=n0_ibasis(m0,iq)
                     ic=n0_ic(m0,iq)
                     do k=1,3
-                        da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                        da_orbn(iorb,k,iq,ic)=da_orbn(iorb,k,iq,ic)-coef(m,iorb,iwf)*dphin(m,iq,k)
                     enddo
                 enddo
 #endif
@@ -480,7 +480,7 @@ subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,i
                 enddo
                 do ic=1,ncent
                     do k=1,3
-                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
+                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(iorb,k,iq,ic)
                     enddo
                 enddo
             enddo

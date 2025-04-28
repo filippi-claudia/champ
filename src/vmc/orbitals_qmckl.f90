@@ -191,7 +191,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     real(dp), dimension(3,nquad*nelec*2, ncent_tot) :: rvec_en
     real(dp), dimension(norb_tot, *) :: orbn
     real(dp), dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
-    real(dp), dimension(3,ncent_tot, norb_tot, *) :: da_orbn
+    real(dp), dimension(norb,3,nxquad,ncent_tot) :: da_orbn
     real(dp), dimension(:,:,:,:),allocatable :: da_orbn_temp
     real(dp), dimension(3) :: dtmp
     real(dp) :: ddtmp
@@ -212,6 +212,8 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
 
 
+    !print *, "nxquad", nxquad, norb, norb_tot, ncent, ncent_tot
+
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
     rc = qmckl_set_point(qmckl_ctx(1), 'N', nxquad*1_8, xquad, nxquad*3_8)
     if (rc /= QMCKL_SUCCESS) then
@@ -230,9 +232,9 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 
     ! To fix - QMCkl does not give da_orbitals
     if(iforce_analy.gt.0) then
-        allocate(da_orbn_temp(norb,3,nxquad,ncent))  
+        !allocate(da_orbn_temp(norb,3,nxquad,ncent))  
 
-        rc = qmckl_get_forces_mo_value_inplace(qmckl_ctx(1), da_orbn_temp, nxquad*norb*3_8*ncent)
+        rc = qmckl_get_forces_mo_value_inplace(qmckl_ctx(1), da_orbn, nxquad*norb*3_8*ncent_tot)
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl MO forces.')
 
         dorbn(1:norb,1:nxquad,1:3) = 0.d0
@@ -240,14 +242,13 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
             do iq=1,nxquad
                 do k =1,3
                     do iorb=1,norb
-                        da_orbn(k,ic,iorb,iq)=da_orbn_temp(iorb,k,iq,ic)
-                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn_temp(iorb,k,iq,ic)
+                        !da_orbn(k,ic,iorb,iq)=da_orbn_temp(iorb,k,iq,ic)
+                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(iorb,k,iq,ic)
                     enddo
                 enddo
             enddo
         enddo
-        ! enddo nxquad
-        deallocate(da_orbn_temp)
+        !deallocate(da_orbn_temp)
 
     endif
 
