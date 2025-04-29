@@ -209,9 +209,9 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 
     nadorb_sav=nadorb
 
-    ictx = 1
+    ictx = 2
 
-    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) ictx=2
+    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) ictx=1
 
 
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
