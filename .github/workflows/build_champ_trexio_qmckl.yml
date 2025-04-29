@@ -46,10 +46,11 @@ jobs:
           make -j$(nproc)
           make install
 
-      - name: Clone and Install TREXIO
+      - name: Clone and Install TREXIO-v2.5.0
         run: |
-          git clone https://github.com/TREX-CoE/trexio.git
-          cd trexio
+          wget https://github.com/TREX-CoE/trexio/releases/download/v2.5.0/trexio-2.5.0.tar.gz
+          tar -xzf trexio-2.5.0.tar.gz
+          cd trexio-2.5.0
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           cmake -S. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpif90 \
@@ -57,7 +58,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=$HOME
           cmake --build build -- -j$(nproc)
           cd build
-          ctest --output-on-failure --verbose
+          ctest --output-on-failure
           make install
 
 
@@ -77,7 +78,7 @@ jobs:
       - name: Clone the CHAMP code from GitHub
         uses: actions/checkout@v4
 
-      - name: Compile the CHAMP code with TREXIO and QMCkl using Intel and run all tests
+      - name: Compile the CHAMP code with TREXIO and QMCkl using GNU compilers and run the QMCKL tests
         run: |
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 \
@@ -93,7 +94,7 @@ jobs:
           cd build
           ctest --output-on-failure --verbose -L "QMCKL"
 
-      - name: Clean and Re-Compile CHAMP - VMC, DMC tests
+      - name: Clean and Re-Compile CHAMP and run the VMC and DMC tests
         run: |
           rm -rf build bin
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
@@ -106,4 +107,19 @@ jobs:
             -DENABLE_QMCKL=OFF
           cmake --build build -- -j$(nproc)
           cd build
-          ctest --output-on-failure --verbose -L "VMC|DMC" -LE "QMCKL|TREXIO" 
+          ctest --output-on-failure --verbose -L "VMC|DMC" -LE "QMCKL|TREXIO"
+
+      - name: Clean and Re-Compile CHAMP and run the TREXIO tests
+        run: |
+            rm -rf build bin
+            export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
+            cmake -H. -Bbuild \
+              -DCMAKE_Fortran_COMPILER=mpif90 \
+              -DCMAKE_C_COMPILER=mpicc \
+              -DENABLE_TREXIO=ON \
+              -DTREXIO_INCLUDE_DIR=$HOME/include \
+              -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so \
+              -DENABLE_QMCKL=OFF
+            cmake --build build -- -j$(nproc)
+            cd build
+            ctest --output-on-failure --verbose -L "H2O" -LE "(QMCKL)"
