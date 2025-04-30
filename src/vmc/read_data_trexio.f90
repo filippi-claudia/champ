@@ -565,8 +565,10 @@ module trexio_read_data
         use contrl_file,        only: backend
         use slater,             only: norb
         use qmckl_data
-        use orbitals_qmckl_mod, only: init_orbitals_qmckl
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+        use orbitals_qmckl_mod, only: init_orbitals_qmckl
+#endif
 
         implicit none
 
