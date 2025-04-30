@@ -565,6 +565,7 @@ module trexio_read_data
         use contrl_file,        only: backend
         use slater,             only: norb
         use qmckl_data
+        use orbitals_qmckl_mod, only: init_orbitals_qmckl
 
 
         implicit none
@@ -640,34 +641,9 @@ module trexio_read_data
             call trexio_error(rc, TREXIO_SUCCESS, 'INPUT: QMCkl error: Unable to read TREXIO file', __FILE__, __LINE__)
             write(ounit, *) " QMCkl new context created  ", qmckl_ctx(ictx),  " successfully "
 
-            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
-            if (rc /= QMCKL_SUCCESS) then
-                call fatal_error('INPUT: QMCkl getting mo_num from verify orbitals')
-            end if
-            
-            allocate(keep(n8))
-    
-            if (n8 > norb_qmckl(ictx)) then
-    
-                !! selecting range of orbitals to compute qith QMCkl
-                keep(1:norb_qmckl(ictx)) = 1
-                keep((norb_qmckl(ictx)+1):n8) = 0
-    
-                rc = qmckl_mo_basis_select_mo(qmckl_ctx(ictx), keep, n8)
-                if (rc /= QMCKL_SUCCESS) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
-        
-                ! getting new number of orbitals to be computed
-                rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), ncheck)
-                if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl mo_num from verify orbitals')
-                write(ounit,int_format) "QMCkl number of orbitals after mo's selec", ncheck
-                write(ounit,int_format) "QMCkl norb_qmckl after mo's selec", norb_qmckl(ictx)
-        
-                if (ncheck /= norb_qmckl(ictx)) call fatal_error('INPUT: Problem in MO selection in QMCkl verify orb')
-    
-            endif
-
-            deallocate(keep)
         enddo
+
+        call init_orbitals_qmckl(.False.)
 
 #endif
 

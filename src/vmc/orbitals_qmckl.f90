@@ -274,4 +274,126 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 return
 end
 
+subroutine init_orbitals_qmckl(update_coef)
+
+    use qmckl_data
+    use slater,  only: norb, coef
+    use system,  only: ncent, znuc, iwctype
+    use orbval,  only: nadorb
+    use vmc_mod, only: norb_tot
+    use precision_kinds, only: dp
+    use coefs,   only: nbasis
+    use pseudo,  only: nloc
+    use contrl_file, only: ounit
+    use error,   only: fatal_error
+
+    implicit none
+
+    integer(qmckl_exit_code)   :: rc
+    integer*8                  :: n8
+    integer*8                  :: ncheck, ictx
+    integer*8                  :: norb_qmckl(qmckl_no_ctx_max)
+    integer, allocatable       :: keep(:)
+    character*(1024)           :: err_message = ''
+    integer                    :: k   
+  
+    logical                    :: do_nucl_fitcusp
+    real(dp), allocatable      :: nucl_fitcusp_radius(:)
+    real(dp), parameter        :: a_cusp = 1.74891d0
+    real(dp), parameter        :: b_cusp = 0.126057d0
+    character(len=100)         :: int_format     = '(A, T40, ":: ", T50, I0)'
+    character(len=100)         :: array_format   = '(A, "(",I0,")", T40, ":: ", T42, F25.16)'
+    logical                    :: update_coef
+
+
+
+    do ictx = 1, qmckl_no_ctx
+        rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 53) ! 24
+        if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
+    end do
+
+    write(ounit, *) " QMCkl precision set to 53 bits"
+
+
+
+    do ictx=1,qmckl_no_ctx-1
+        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl getting mo_num from trexio file')
+ 
+        if(n8.ne.norb_tot) call fatal_error('INPUT: QMCkl getting wrong number of orbitals')
+        write(ounit,int_format) "QMCkl number mo found", n8
+        
+       if (update_coef) then
+          rc = qmckl_set_mo_basis_coefficient(qmckl_ctx(ictx), coef(:,:, 1), nbasis*norb_tot*1_8)
+          if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl setting orbital coefficients')
+       end if
+    enddo
+
+
+    n8 = norb_tot*1_8
+
+    allocate(keep(n8))
+
+    ! maximum mo's number to occupied in determinants and for optimization
+    norb_qmckl(1)=norb
+    norb_qmckl(2)=norb+nadorb
+    norb_qmckl(2)=min(norb_qmckl(2),norb_tot) ! perhaps done before
+
+    do ictx=1,qmckl_no_ctx-1
+
+      if (n8 > norb_qmckl(ictx)) then
+
+       ! selecting range of orbitals to compute qith QMCkl
+       keep(1:norb_qmckl(ictx)) = 1
+       keep((norb_qmckl(ictx)+1):n8) = 0
+
+       rc = qmckl_mo_basis_select_mo(qmckl_ctx(ictx), keep, n8)
+       if (rc /= QMCKL_SUCCESS) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
+
+       ! getting new number of orbitals to be computed
+       rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), ncheck)
+       if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl mo_num from verify orbitals')
+       write(ounit,int_format) "QMCkl number of orbitals after mo's selec", ncheck
+       write(ounit,int_format) "QMCkl norb_qmckl after mo's selec", norb_qmckl(ictx)
+
+       if (ncheck /= norb_qmckl(ictx)) call fatal_error('INPUT: Problem in MO selection in QMCkl verify orb')
+      endif
+
+    enddo
+    ! deallocate keep
+    deallocate(keep)
+
+    if(nloc.eq.0) then
+      allocate(nucl_fitcusp_radius(ncent))
+      do_nucl_fitcusp = .true.
+
+      if(.not. do_nucl_fitcusp) then
+         nucl_fitcusp_radius = 0.d0
+       else
+        do k=1,ncent
+          nucl_fitcusp_radius(k) = 1.d0/(a_cusp*znuc(iwctype(k))+b_cusp)
+          write(ounit, array_format) "Radius fit cusps for atom", k, nucl_fitcusp_radius(k)
+        enddo
+
+        ! Avoid dummy atoms
+        do k=1,ncent
+         if (znuc(iwctype(k)) < 5.d-1) then
+           nucl_fitcusp_radius(k) = 0.d0
+         endif
+        enddo
+
+        do ictx=1,qmckl_no_ctx-1
+          write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx(ictx)
+          rc = qmckl_set_mo_basis_r_cusp(qmckl_ctx(ictx),dble(nucl_fitcusp_radius(:)), int(ncent,8))
+          write(ounit, *) "Status QMCKl set mo basis r cusp  ", rc
+
+          if (rc /= QMCKL_SUCCESS) call fatal_error('PARSER: QMCkl error: Unable to set cusp parameters')
+        enddo
+      endif
+    endif
+
+return
+end
+
+
 end module

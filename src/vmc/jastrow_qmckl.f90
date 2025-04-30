@@ -39,7 +39,7 @@ subroutine jastrow_init_qmckl(ictx)
     rc = qmckl_set_jastrow_champ_aord_num (qmckl_ctx(ictx), norda_l*1_8)
     if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow aord num.')
 
-    rc = qmckl_set_jastrow_champ_bord_num (qmckl_ctx(ictx), (nordb_l+1)*1_8)
+    rc = qmckl_set_jastrow_champ_bord_num (qmckl_ctx(ictx), nordb_l*1_8)
     if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow bord num.')
 
     rc = qmckl_set_jastrow_champ_cord_num (qmckl_ctx(ictx), nordc*1_8)

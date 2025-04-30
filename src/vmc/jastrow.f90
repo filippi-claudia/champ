@@ -109,7 +109,12 @@ contains
               iwf=jwf
 !UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-           call jastrow_qmckl(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf))
+            if (ioptjas.eq.0) then
+               call jastrow_qmckl(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf))
+            else
+               call jastrow_factor4(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf),fso(1,1,iwf), &
+                  fijo(1,1,1,iwf),d2ijo(1,1,iwf))
+            endif
 #else
               call jastrow_factor4(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf),fso(1,1,iwf), &
                    fijo(1,1,1,iwf),d2ijo(1,1,iwf))
