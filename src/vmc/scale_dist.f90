@@ -5,7 +5,7 @@ contains
       use bparm,   only: nocuspb,nspin2b
       use contrl_file, only: ounit
       use jastrow, only: a4,asymp_jasa,asymp_jasb,asymp_r,b,ijas,isc,norda,nordb
-      use jastrow, only: scalek,sspinn
+      use jastrow, only: ijas,scalek,sspinn
       use multiple_geo, only: nforce,nwftype
       use precision_kinds, only: dp
       use system,  only: nctype
@@ -22,6 +22,8 @@ contains
 ! Evaluate constants that need to be reset if scalek is being varied
 
 ! Warning: we are assuming that same scalek is used for primary and secondary wavefns
+
+      if(ijas.ne.4) return
 
 ! Calculate asymptotic value of A and B terms
       asymp_r=1.d0/scalek(1)

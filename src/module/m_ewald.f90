@@ -104,14 +104,16 @@ module ewald_mod
      real(dp), dimension(:), allocatable :: b_jas  !(NCOEFX)
      real(dp), dimension(:), allocatable :: y_coul !(NGNORMX)
      real(dp), dimension(:), allocatable :: y_jas  !(NGNORMX)
-     real(dp), dimension(:), allocatable :: cos_n_sum !(NGVECX)
-     real(dp), dimension(:), allocatable :: sin_n_sum !(NGVECX)
+     real(dp), dimension(:,:), allocatable :: cos_n_sum !(NGVECX)
+     real(dp), dimension(:,:), allocatable :: sin_n_sum !(NGVECX)
      real(dp), dimension(:), allocatable :: cos_e_sum !(NGVECX)
      real(dp), dimension(:), allocatable :: sin_e_sum !(NGVECX)
      real(dp), dimension(:), allocatable :: cos_sum ! (NGVECX)
      real(dp), dimension(:), allocatable :: sin_sum ! (NGVECX)
      real(dp), dimension(:,:), allocatable :: cos_g ! (nelec,NGVECX)
      real(dp), dimension(:,:), allocatable :: sin_g ! (nelec,NGVECX)
+     real(dp), dimension(:,:,:), allocatable :: dcos_n_sum ! (3,ncent,NGVECX)
+     real(dp), dimension(:,:,:), allocatable :: dsin_n_sum ! (3,ncent,NGVECX)
      real(dp), dimension(:,:,:), allocatable :: dcos_g ! (3,nelec,NGVECX)
      real(dp), dimension(:,:,:), allocatable :: dsin_g ! (3,nelec,NGVECX)
      real(dp), dimension(:), allocatable :: cos_sum_new ! (NGVECX)
@@ -126,26 +128,30 @@ module ewald_mod
      public   ::  b_coul, b_jas, y_coul, y_jas
      public   ::  cos_n_sum, sin_n_sum, cos_e_sum, sin_e_sum
      public   ::  cos_sum, sin_sum, cos_g, sin_g, dcos_g, dsin_g
+     public   ::  dcos_n_sum, dsin_n_sum
      public   ::  cos_sum_new, sin_sum_new, cos_g_new, sin_g_new, dcos_g_new, dsin_g_new
      public :: allocate_ewald, deallocate_ewald, sk
      save
  contains
      subroutine allocate_ewald()
       use ewald_mod, only: NCOEFX
+      use multiple_geo, only: MFORCE
       use periodic, only: ngnorm,ngvec
-      use system, only: nelec
+      use system, only: nelec, ncent
          if (.not. allocated(b_coul)) allocate (b_coul(NCOEFX))
          if (.not. allocated(b_jas))  allocate (b_jas(NCOEFX))
          if (.not. allocated(y_coul)) allocate (y_coul(ngnorm))
          if (.not. allocated(y_jas))  allocate (y_jas(ngnorm))
-         if (.not. allocated(sin_n_sum)) allocate (sin_n_sum(ngvec))
-         if (.not. allocated(cos_n_sum)) allocate (cos_n_sum(ngvec))
+         if (.not. allocated(sin_n_sum)) allocate (sin_n_sum(ngvec,MFORCE))
+         if (.not. allocated(cos_n_sum)) allocate (cos_n_sum(ngvec,MFORCE))
          if (.not. allocated(sin_e_sum)) allocate (sin_e_sum(ngvec))
          if (.not. allocated(cos_e_sum)) allocate (cos_e_sum(ngvec))
          if (.not. allocated(sin_sum)) allocate (sin_sum(ngvec))
          if (.not. allocated(cos_sum)) allocate (cos_sum(ngvec))
          if (.not. allocated(cos_g)) allocate (cos_g(nelec,ngvec))
          if (.not. allocated(sin_g)) allocate (sin_g(nelec,ngvec))
+         if (.not. allocated(dcos_n_sum)) allocate (dcos_n_sum(3,ncent,ngvec))
+         if (.not. allocated(dsin_n_sum)) allocate (dsin_n_sum(3,ncent,ngvec))
          if (.not. allocated(dcos_g)) allocate (dcos_g(3,nelec,ngvec))
          if (.not. allocated(dsin_g)) allocate (dsin_g(3,nelec,ngvec))
          if (.not. allocated(sin_sum_new)) allocate (sin_sum_new(ngvec))
@@ -170,6 +176,8 @@ module ewald_mod
          if (allocated(sin_sum)) deallocate (sin_sum)
          if (allocated(cos_g)) deallocate (cos_g)
          if (allocated(sin_g)) deallocate (sin_g)
+         if (allocated(dcos_n_sum)) deallocate (dcos_n_sum)
+         if (allocated(dsin_n_sum)) deallocate (dsin_n_sum)
          if (allocated(dcos_g)) deallocate (dcos_g)
          if (allocated(dsin_g)) deallocate (dsin_g)
          if (allocated(cos_sum_new)) deallocate (cos_sum_new)

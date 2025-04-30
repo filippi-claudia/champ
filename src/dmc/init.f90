@@ -16,6 +16,7 @@ contains
       use determinante_mod, only: compute_determinante_grad
       use dmc_mod, only: MFPRD1
       use estcum,  only: ipass
+      use ewald, only: cos_n_sum, sin_n_sum
       use force_pth, only: PTH
       use force_analytic, only: force_analy_save
       use hpsi_mod, only: hpsi
@@ -29,14 +30,14 @@ contains
       use nodes_distance_mod,   only: nodes_distance
       use nonloc_grid_mod, only: t_vpsp_sav
       use pcm_dmc, only: pcm_save
-      use pot,     only: pot_nn
+      use pot, only: pot_nn
       use precision_kinds, only: dp
       use prop_dmc, only: prop_save_dmc
-      use pseudo,  only: nloc
-      use qua,     only: nquad,wq,xq,yq,zq
+      use pseudo, only: nloc
+      use qua,only: nquad,wq,xq,yq,zq
       use rotqua_mod, only: gesqua
       use strech_mod, only: strech
-      use system,  only: cent,iwctype,ncent,nelec,znuc
+      use system, only: cent,iwctype,ncent,nelec,znuc
       use vd_mod, only: deriv_eold, esnake, ehist, dmc_ivd
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
@@ -44,7 +45,6 @@ contains
       use pathak_mod, only: init_eps_pathak, pathak
       use pathak_mod, only: ipathak, eps_pathak, pold
 !      use contrl, only: nconf
-
 
       implicit none
 
@@ -56,7 +56,6 @@ contains
       real(dp), parameter :: one = 1.d0
       real(dp) :: distance_node
 
-
 ! Initialize various quantities at beginning of run
 ! the initial values of energy psi etc. are calculated here
 
@@ -66,7 +65,7 @@ contains
       if(nloc.gt.0) call gesqua (nquad,xq,yq,zq,wq)
 
 ! get nuclear potential energy
-      call pot_nn(cent,znuc,iwctype,ncent,pecent)
+      call pot_nn(cent,znuc,iwctype,ncent,pecent,cos_n_sum,sin_n_sum)
 
       eigv=one
       eest=etrial

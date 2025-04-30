@@ -7,7 +7,6 @@ module basis_fns_mod
 contains
       subroutine basis_fns(ie1,ie2,ncoord,rvec_en,r_en,ider)
 
-      use m_force_analytic, only: iforce_analy
       use multiple_geo, only: iwf
       use numbas,  only: iwrwf,nrbas,rmaxwf
       use numbas1, only: iwlbas,nbastyp
@@ -234,7 +233,7 @@ contains
       use precision_kinds, only: dp
       implicit none
 
-      integer :: iforce_analy, ider, ii, jj, l
+      integer :: ider, ii, jj, l
       real(dp) :: d2phi, ddy_lap, dum, dum1, phi
       real(dp) :: prod, ri, ri2, ri3
       real(dp) :: y

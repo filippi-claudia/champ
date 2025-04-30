@@ -323,8 +323,8 @@ module nonlpsi
             psianl=psianl+a4(i,it,iwf)*ri(i)
             dpsianl=dpsianl+i*a4(i,it,iwf)*ri(i-1)
          enddo
+         dpsianl=dpsianl*term-3.d0*psianl*(1.d0-xi)**2*cutjas_eni(it,iwf)
          psianl=psianl*term
-         dpsianl=dpsianl*term+3.d0*psianl*(1.d0-xi)**2*cutjas_eni(it,iwf)
 
       else
          top=a4(1,it,iwf)*rri
@@ -385,8 +385,8 @@ module nonlpsi
             psibnl=psibnl+b(i,isb,iwf)*uu(i)
             dpsibnl=dpsibnl+i*b(i,isb,iwf)*uu(i-1)
          enddo
-         psibnl=psibnl*term
          dpsibnl=dpsibnl*term-3.d0*psibnl*(1.d0-xij)**2*cutjas_eei(isb,iwf)
+         psibnl=psibnl*term
 
       else
          top=b(1,isb,iwf)*u

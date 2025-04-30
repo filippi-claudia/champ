@@ -81,6 +81,7 @@ subroutine parser
       use mstates_ctrl, only: iefficiency,iguiding,nstates_psig
       use mstates_mod, only: MSTATES
       use multidet, only: kref_fixed
+      use multiple_geo, only: alfstr,istrech
       use multiple_geo, only: MFORCE,MWF,delc,itausec,iwftype,nforce
       use multiple_geo, only: nwftype,nwprod,pecent
       use numbas,  only: numr
@@ -324,6 +325,8 @@ subroutine parser
   i3dsplorb   = fdf_get('i3dsplorb',0)
   i3dlagorb   = fdf_get('i3dlagorb',0)
   i3ddensity  = fdf_get('i3ddensity',0)
+  istrech     = fdf_get('istrech',0)
+  alfstr      = fdf_get('alfstr',4.0d0)
   write_walkalize  = fdf_get('write_walkalize', .false.)
 
   ! trexio
@@ -1704,7 +1707,9 @@ subroutine parser
       do j = 1, nstates
         if(j.gt.i) then
           sr_lambda(i,j) = isr_lambda((i-1)*nstates-i*(i-1)/2+j-i)
-          sr_lambda(j,i) = sr_lambda(i,j)
+!         sr_lambda(j,i) = sr_lambda(i,j)
+! TMP -> to change optwf_sr/compute_grad
+          sr_lambda(j,i) = 0.d0
         endif
       enddo
     enddo
@@ -1807,8 +1812,6 @@ subroutine parser
 
 
 ! Processing of data read from the parsed files or setting them with defaults
-
-
 
 
 ! (10) optorb_mixvirt information of orbitals (either block or from a file)
@@ -1944,8 +1947,8 @@ subroutine parser
 
 ! Done reading all the files
 
-  ! Not sure if this line should be here or not.
-  call pot_nn(cent,znuc,iwctype,ncent,pecent)
+! ! Not sure if this line should be here or not.
+! call pot_nn(cent,znuc,iwctype,ncent,pecent)
 
 ! Make sure that all the blocks are read. Use inputflags here to check
 

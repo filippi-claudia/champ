@@ -15,12 +15,14 @@
       use distances_mod, only: distancese_restore
       use estsum,  only: acc,esum,esum1,pesum,tpbsum
       use force_analytic, only: force_analy_sum
+      use force_pth, only: PTH
       use forcewt, only: wsum
       use gauss_mod, only: gauss
       use hpsi_mod, only: hpsi
       use hpsie, only: psie
       use inputflags, only: eps_node_cutoff,node_cutoff
       use jassav_mod, only: jassav
+      use m_force_analytic, only: iforce_analy
       use metropolis, only: vmc_tau
       use mmpol, only: mmpol_efield
       use mmpol_cntrl, only: ich_mmpol
@@ -39,6 +41,7 @@
       use optx_jas_ci, only: optx_jas_ci_sum
       use optx_jas_orb, only: optx_jas_orb_sum
       use optx_orb_ci, only: optx_orb_ci_sum
+      use pathak_mod, only: ipathak, eps_pathak, pold, pnew, pathak
       use pcm_cntrl, only: ichpol
       use pcm_mod, only: qpcm_efield
       use pcm_vmc, only: pcm_sum
@@ -54,7 +57,7 @@
 
       integer :: i, iab, ic, iel, iflag_dn, iflag_up
       integer :: ifr, ii, ipass, irun, istate
-      integer :: j, jel, k
+      integer :: j, jel, k, iph
       real(dp) :: ajacob, bot
       real(dp) :: distance_node, dmin1, dot
       real(dp) :: p, psidg, psig, q
@@ -289,6 +292,16 @@
       call pcm_sum(wtg(1),0.d0)
       call mmpol_sum(wtg(1),0.d0)
       call prop_sum(wtg(1),0.d0)
+
+      if(iforce_analy.eq.1) then
+         if (ipathak.gt.0) then
+            call nodes_distance(vold(1,1),distance_node,1)
+            do iph=1,PTH
+               call pathak(distance_node,pnew(iph),eps_pathak(iph))
+            enddo
+         endif
+      endif
+
       call force_analy_sum(wtg(1),0.d0,eold(1,1),0.0d0)
 
       call optjas_sum(wtg,zero_array,eold(1,1),eold(1,1),0)

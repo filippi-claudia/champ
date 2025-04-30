@@ -6,21 +6,23 @@
 ! Calculates non-local potential derivatives
 ! pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
       use contrl_per, only: iperiodic
+      use error,   only: fatal_error
+      use ewald, only: cos_n_sum, sin_n_sum
+      use ewald_breakup, only: pot_en_ewald
+      use m_force_analytic, only: iforce_analy
       use nonloc_mod, only: nonloc
+      use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use pseudo,  only: lpot,nloc,vps
       use pseudo_mod, only: MPS_QUAD
+      use da_pseudo, only: da_vps
       use readps_gauss, only: getvps_gauss, gauss_pot
       use system,  only: iwctype,ncent,ncent_tot,nelec, znuc
-      use error,   only: fatal_error
       use vmc_mod, only: nbjx
-      use optwf_parms, only: nparmj
-      use ewald_breakup, only: pot_en_ewald
-
 
       implicit none
 
-      integer :: i, i1, i2, i_vpsp, ic
+      integer :: i, i1, i2, i_vpsp, ic,k
       integer :: ifr, ict
       real(dp) :: pe, pe_en, r, ri, ri2,vcoule,dvpot
       real(dp), dimension(3, *) :: x
@@ -29,6 +31,7 @@
       real(dp), dimension(2, nbjx) :: vpsp_det
       real(dp), dimension(nparmj, nbjx) :: dvpsp_dj
       real(dp), dimension(ncent_tot, MPS_QUAD, *) :: t_vpsp
+      real(dp), dimension(3,ncent) :: da_pe_en
 
       if(i_vpsp.gt.0)then
         i1=i_vpsp
@@ -52,16 +55,17 @@
           do i=i1,i2
             pe=pe+vps(i,ic,lpot(iwctype(ic)))
           enddo
-       enddo
+        enddo
 
       else
 
 ! this add coulumb pe_en contribution from PBC/Ewald split Natoli-Ceperley algorithm
-         call pot_en_ewald(x,pe_en)
+
+         call pot_en_ewald(x,pe_en,cos_n_sum(1,ifr),sin_n_sum(1,ifr))
          pe=pe+pe_en
 
 !     Add and fix remaining local component from gaussian (BFD) pseudo
-!     It can be two done ways
+!     It can be done in two ways
 !     this to be improved and updated later
 
          do ic=1,ncent
@@ -69,23 +73,21 @@
             do i=i1,i2
                r=max(1.0d-10,r_en(i,ic))
                ri=1.d0/r
+!     1- subtract Coulomb term obc in local component vps(:,:lpot(ict)
+!     current simplest one /subtract local coulomb term which was added at the beginning at pe for periodic
+!               pe=pe+vps(i,ic,lpot(ict))+(znuc(ict)*ri)
 
-
-!     1- substract Coulumb term obc in local component vps(:,:lpot(ict)
-!     current simplest one /subtract local coulumb term which was added at the begining at pe por periodic
-!     pe=pe+vps(i,ic,lpot(ict))+(znuc(ict)*ri)
-
-
-!     2- get local component without coulmb regarding local was added from pot_loc with pot_en_ewald
+!     2- get local component without coulomb regarding local was added from pot_loc with pot_en_ewald
 !     implies recompute gauss pot need to be a better way
                call gauss_pot(r,lpot(ict),ict,vcoule,dvpot)
                pe=pe+vcoule
-
-
+               if (iforce_analy.gt.0) then
+                 do k=1,3
+                   da_vps(k,i,ic,lpot(ict))=-dvpot*rvec_en(k,i,ic)*ri
+                 enddo
+               endif
             enddo
          enddo
-
-
       endif
 
 

@@ -960,6 +960,7 @@ contains
       subroutine compute_parameters(dparm,iflag,iadiag)
 
       use precision_kinds, only: dp
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -992,6 +993,7 @@ contains
       use sr_mat_n, only: sr_state
       use system, only: nctype
       use vmc_mod, only: nwftypejas, stoj
+      use contrl_file, only: ounit
 
       implicit none
 
