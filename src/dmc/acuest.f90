@@ -248,26 +248,11 @@ contains
                   derivcum(1,k,ic,iph)=derivcum(1,k,ic,iph)+derivcollect(1,k,ic,iph)
                   derivcum(2,k,ic,iph)=derivcum(2,k,ic,iph)+derivcollect(2,k,ic,iph)
                   derivcum(3,k,ic,iph)=derivcum(3,k,ic,iph)+derivcollect(3,k,ic,iph)
-                  derivtotave(k,ic,iph)=(derivcum(1,k,ic,iph)+2.d0*derivcum(2,k,ic,iph)-2.d0*egave*derivcum(3,k,ic,iph))/wgcum(1)
                   derivcm2(k,ic,iph)=derivcm2(k,ic,iph)+derivcollect2(k,ic,iph)
-                  derivgerr(k,ic,iph)=errg(derivtotave(k,ic,iph)*wgcum(1),derivcm2(k,ic,iph),1)
-                  iderivgerr(k,ic,iph)=nint(1e12* derivgerr(k,ic,iph))
                 enddo
               enddo
             enddo
-            ! if(iblk.gt.1) then
-            !   do iph=1,PTH
-            !     do ic=1,ncent
-            !       if (ipathak.gt.0) then
-            !         write(ounit,'(i5,i5,1p6e14.5)')iph,ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
-            !       else
-            !         write(ounit,'(i5,1p6e14.5)') ic,(derivtotave(k,ic,iph),k=1,3),(derivgerr(k,ic,iph),k=1,3)
-            !       endif
-            !     enddo
-            !   enddo
-            ! endif
-          endif
-
+          end if
           call prop_prt_dmc(iblk,0,wgcum,wgcm2)
           call pcm_prt(iblk,wgcum,wgcm2)
           call mmpol_prt(iblk,wgcum,wgcm2)

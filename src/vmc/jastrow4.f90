@@ -36,6 +36,7 @@
       real(dp), dimension(nelec, *) :: d2ijo
       real(dp), parameter :: half = .5d0
       real(dp), parameter :: eps = 1.d-12
+      real(dp), dimension(3,ncent) :: tempjas
 
       fsumo=0.d0
       d2o=0.d0
@@ -370,6 +371,25 @@
 !        write(ounit,'(''v='',9d12.4)') (fjo(k,i),k=1,3)
         d2o=d2o+d2ijo(i,i)
       enddo
+
+  !     tempjas = 0.d0
+  !     do ic=1,ncent
+  !     do k = 1,3
+  !     do i = 1, nelec
+  !       do j =1,i
+  !         tempjas(k,ic) = tempjas(k,ic) + da_j(k,i,j,ic)
+  !       enddo
+  !     enddo
+  !   enddo
+  ! enddo
+
+      ! do ic=1,ncent
+      !   write(ounit,'(''da_j,ic='',i4,1000f15.11)') ic, (tempjas(k,ic),k=1,3)
+      !   do i=1,1
+      !    write(ounit,'(''da_vj,ic,i='',2i4,1000f15.11)') ic, i, ((da_vj(k,l,i,ic),k=1,3),l=1,3)
+      !   enddo
+      !   write(ounit,'(''da_d2j,ic='',i4,1000f15.11)') ic, (da_d2j(k,ic),k=1,3)
+      ! enddo
 
       return
       end

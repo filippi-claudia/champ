@@ -44,11 +44,12 @@ contains
       use system,  only: ncent,ncent_tot,ndn,nelec,nup
       use vmc_mod, only: norb_tot
       use zcompact, only: aaz,zmat
+      use control, only: ipr
 
       implicit none
 
       integer :: i, iab, ic, ii, iorb
-      integer :: irep, ish, j, jorb
+      integer :: irep, ish, j, jorb, l
       integer :: jrep, k, nel
       real(dp) :: c800, psid, trace
       real(dp), dimension(norb_tot, nelec) :: b_a
@@ -120,7 +121,7 @@ contains
 !800        da_psi(k,ic)=da_psi(k,ic)+da_j(k,i,ic)
 
 !     if(ipr.gt.3) write(ounit,*)'da_ref',((da_psi_ref(l,ic),l=1,3),ic=1,ncent)
-!     if(ipr.gt.3) write(ounit,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
+     if(ipr.gt.3) write(ounit,*)'da_psi',((da_psi(l,ic),l=1,3),ic=1,ncent)
 
       return
       end
@@ -144,7 +145,7 @@ contains
       use zcompact, only: aaz,dzmat,emz,zmat
       use contrl_per, only: iperiodic
       use contrl_file,    only: ounit
-
+      use control, only: ipr
       implicit none
 
       integer :: i, iab, ic, ict, irep
@@ -220,11 +221,14 @@ contains
 ! complete da_psi
         enddo
       enddo
-
-!     write(ounit,*)'da_energy',((da_energy(k,ic),k=1,3),ic=1,ncent)
-!     write(ounit,*)'da_energy',da_energy(2,1)
-!     write(ounit,*)'da_vj',da_vj(2,1,1,1)
-!     write(ounit,*)'da_d2j',da_d2j(2,1)
+      if(ipr.gt.3) then
+    write(ounit,*)'da_energy',((da_energy(k,ic),k=1,3),ic=1,ncent)
+    write(ounit,*)'da_energy',da_energy(2,1)
+    write(ounit,*)'da_vj',da_vj(2,1,1,1)
+    write(ounit,*)'da_d2j',da_d2j(2,1)
+    write(ounit,*)'denergy',denergy
+    write(ounit,*)'da_psi',da_psi(2,1)
+      endif
 
       return
       end
@@ -340,13 +344,16 @@ contains
       use system,  only: ncent, nelec
       use vd_mod, only: da_branch, deriv_eold, esnake, ehist
       use velratio, only: fratio
+      use da_energy_sumcum, only: da_energy_cum, da_energy_sum
+      use estcum, only: wgcum
+      use estsum, only: wgsum
 
       implicit none
 
       integer :: ic, k, iph
       integer :: iw, iwmod
       real(dp) :: ecuto, ecutn, e_cutoff
-      real(dp) :: sqrt_pi_o2, sqrt_nelec, fratio_aux, fratio_aux2
+      real(dp) :: sqrt_pi_o2, sqrt_nelec, fratio_aux, fratio_aux2, da_av
 
       real(dp), dimension(3, ncent) :: deriv_energy_new
 
@@ -367,19 +374,19 @@ contains
       if (icut_e.eq.3) then
         sqrt_nelec = 0.2d0*sqrt_nelec
         ! New first
-        fratio_aux = ibranching_c * e_cutoff * dabs(eest - ecutn)/sqrt_nelec
+        fratio_aux = max(ibranching_c * e_cutoff * dabs(eest - ecutn)/sqrt_nelec, 1e-9)
         do ic=1,ncent
           do k=1,3
-            fratio_aux2 = (exp(-1* fratio_aux**2)/fratio_aux - ecuto/fratio_aux)*(ibranching_c * e_cutoff * (-(eest - ecutn) * deriv_energy_new(k, ic)/dabs(eest - ecutn))/sqrt_nelec)
-            deriv_f_new(k,ic) = deriv_energy_new(k,ic) * ecuto + ecutn * fratio_aux2 - eest * fratio_aux2
+            fratio_aux2 = (exp(-1* fratio_aux**2)/fratio_aux - ecuto/fratio_aux)*(ibranching_c * e_cutoff * ((eest - ecutn) * (- deriv_energy_new(k, ic))/dabs(eest - ecutn))/sqrt_nelec)
+            deriv_f_new(k,ic) = deriv_energy_new(k,ic) * ecuto + ecutn * fratio_aux2 - eest * fratio_aux2 
           enddo
         enddo
         ! Now old
-        fratio_aux = ibranching_c * e_cutoff * dabs(eest - eold(iw, 1))/sqrt_nelec
+        fratio_aux = max(ibranching_c * e_cutoff * dabs(eest - eold(iw, 1))/sqrt_nelec, 1e-9)
         do ic=1,ncent
           do k=1,3
-            fratio_aux2 = (exp(-1* fratio_aux**2)/fratio_aux - fratio(iw,1)/fratio_aux)*(ibranching_c * e_cutoff * (-(eest - eold(iw, 1)) * deriv_eold(k,ic,iw)/dabs(eest - eold(iw, 1)))/sqrt_nelec)
-            deriv_f_old(k,ic) = deriv_eold(k,ic,iw) * fratio(iw,1) + eold(iw,1) * fratio_aux2 - eest * fratio_aux2
+            fratio_aux2 = (exp(-1* fratio_aux**2)/fratio_aux - sqrt_pi_o2 * derf(fratio_aux)/fratio_aux/fratio_aux)*(ibranching_c * e_cutoff * ((eest - eold(iw, 1)) * (- deriv_eold(k,ic,iw))/dabs(eest - eold(iw, 1)))/sqrt_nelec)
+            deriv_f_old(k,ic) = deriv_eold(k,ic,iw) * sqrt_pi_o2 * derf(fratio_aux)/fratio_aux + eold(iw,1) * fratio_aux2 - eest * fratio_aux2
           enddo
         enddo
       else

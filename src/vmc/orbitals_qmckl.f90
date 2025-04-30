@@ -34,7 +34,7 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
 
     
     ! get number MO's
-    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(qmckl_no_ctx), n8)
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(qmckl_no_ctx-1), n8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting mo_num from QMCkl'
         stop
@@ -42,14 +42,14 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
 
     allocate(mo_vgl_qmckl(n8, 5, nelec))
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', nelec*1_8, x, nelec*3_8)
+    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx-1), 'N', nelec*1_8, x, nelec*3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error setting electron coordinates in QMCkl'
         stop
     end if
 
     ! Compute the MOs
-    rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(qmckl_no_ctx), mo_vgl_qmckl, n8*nelec*5_8)
+    rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(qmckl_no_ctx-1), mo_vgl_qmckl, n8*nelec*5_8)
 
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting MOs from QMCkl'
@@ -175,12 +175,14 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     use sr_mod,  only: i_sr_rescale
     use system,  only: iwctype,ncent,ncent_tot,nelec
     use vmc_mod, only: norb_tot, nwftypeorb
+    use error,   only: fatal_error
+    use contrl_file, only: ounit
 
     use qmckl_data
 
     implicit none
 
-    integer :: ic, iel, ier, ii, iq
+    integer :: ic, iel, ier, ii, iq, ictx
     integer :: iorb, k, m, m0, nxquad, iwforb
     integer :: nadorb_sav
 
@@ -189,7 +191,8 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     real(dp), dimension(3,nquad*nelec*2, ncent_tot) :: rvec_en
     real(dp), dimension(norb_tot, *) :: orbn
     real(dp), dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
-    real(dp), dimension(3,ncent_tot, norb_tot, *) :: da_orbn
+    real(dp), dimension(norb,3,nxquad,ncent_tot) :: da_orbn
+    real(dp), dimension(:,:,:,:),allocatable :: da_orbn_temp
     real(dp), dimension(3) :: dtmp
     real(dp) :: ddtmp
 
@@ -206,28 +209,61 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 
     nadorb_sav=nadorb
 
-    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
+    ictx = 2
+
+    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) then
+       ictx=1
+       nadorb = 0
+    end if
+
 
 
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(1), 'N', nxquad*1_8, xquad, nxquad*3_8)
+    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', nxquad*1_8, xquad, nxquad*3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'orbitals quad Error setting electron coordinates in QMCkl'
         print *, "nxquad", nxquad
         stop
     end if
 
-    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(1), n8)
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'orbitals quad Error getting mo_num from QMCkl'
         print *, "n8", n8
         stop
     end if
 
+
+    ! To fix - QMCkl does not give da_orbitals
+    if(iforce_analy.gt.0) then
+
+        if (ictx .eq. 2) then
+           rc = qmckl_set_point(qmckl_ctx(1), 'N', nxquad*1_8, xquad, nxquad*3_8)
+           if (rc /= QMCKL_SUCCESS) then
+              stop
+           end if
+        end if
+
+        rc = qmckl_get_forces_mo_value_inplace(qmckl_ctx(1), da_orbn, nxquad*norb*3_8*ncent_tot)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl MO forces.')
+
+        dorbn(1:norb,1:nxquad,1:3) = 0.d0
+        do ic=1,ncent
+            do iq=1,nxquad
+                do k =1,3
+                    do iorb=1,norb
+                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(iorb,k,iq,ic)
+                    enddo
+                enddo
+            enddo
+        enddo
+
+    endif
+
     allocate(mo_qmckl(n8, nxquad))
 
     ! Compute the MOs
-    rc = qmckl_get_mo_basis_mo_value_inplace(qmckl_ctx(1), mo_qmckl, nxquad*n8)
+    rc = qmckl_get_mo_basis_mo_value_inplace(qmckl_ctx(ictx), mo_qmckl, nxquad*n8)
 
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error orbitals quad getting MOs from QMCkl'
@@ -238,41 +274,130 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 
     deallocate(mo_qmckl)
 
-    ! To fix - QMCkl does not give da_orbitals
-    if(iforce_analy.gt.0) then
-        do iq=1,nxquad
-
-            do iorb=1,norb
-                do ic=1,ncent
-                    do k=1,3
-                        da_orbn(k,ic,iorb,iq)=0.d0
-                    enddo
-                enddo
-                do m0=1,n0_nbasis(iq)
-                    m=n0_ibasis(m0,iq)
-                    ic=n0_ic(m0,iq)
-                    ii=iwctype(ic)
-                    do k=1,3
-                        da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
-                    enddo
-                enddo
-                do k=1,3
-                    dorbn(iorb,iq,k)=0.d0
-                enddo
-                do ic=1,ncent
-                    do k=1,3
-                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
-                    enddo
-                enddo
-            enddo
-        enddo
-        ! enddo nxquad
-
-    endif
-    ! endif iforce
-
     nadorb = nadorb_sav
 return
 end
+
+subroutine init_orbitals_qmckl(update_coef)
+
+    use qmckl_data
+    use slater,  only: norb, coef
+    use system,  only: ncent, znuc, iwctype
+    use orbval,  only: nadorb
+    use vmc_mod, only: norb_tot
+    use precision_kinds, only: dp
+    use coefs,   only: nbasis
+    use pseudo,  only: nloc
+    use contrl_file, only: ounit
+    use error,   only: fatal_error
+
+    implicit none
+
+    integer(qmckl_exit_code)   :: rc
+    integer*8                  :: n8
+    integer*8                  :: ncheck, ictx
+    integer*8                  :: norb_qmckl(qmckl_no_ctx_max)
+    integer, allocatable       :: keep(:)
+    character*(1024)           :: err_message = ''
+    integer                    :: k   
+  
+    logical                    :: do_nucl_fitcusp
+    real(dp), allocatable      :: nucl_fitcusp_radius(:)
+    real(dp), parameter        :: a_cusp = 1.74891d0
+    real(dp), parameter        :: b_cusp = 0.126057d0
+    character(len=100)         :: int_format     = '(A, T40, ":: ", T50, I0)'
+    character(len=100)         :: array_format   = '(A, "(",I0,")", T40, ":: ", T42, F25.16)'
+    logical                    :: update_coef
+
+
+
+    do ictx = 1, qmckl_no_ctx
+        rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 53) ! 24
+        if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
+    end do
+
+    write(ounit, *) " QMCkl precision set to 53 bits"
+
+
+
+    do ictx=1,qmckl_no_ctx-1
+        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl getting mo_num from trexio file')
+ 
+        if(n8.ne.norb_tot) call fatal_error('INPUT: QMCkl getting wrong number of orbitals')
+        write(ounit,int_format) "QMCkl number mo found", n8
+        
+       if (update_coef) then
+          rc = qmckl_set_mo_basis_coefficient(qmckl_ctx(ictx), coef(:,:, 1), nbasis*norb_tot*1_8)
+          if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl setting orbital coefficients')
+       end if
+    enddo
+
+
+    n8 = norb_tot*1_8
+
+    allocate(keep(n8))
+
+    ! maximum mo's number to occupied in determinants and for optimization
+    norb_qmckl(1)=norb
+    norb_qmckl(2)=norb+nadorb
+    norb_qmckl(2)=min(norb_qmckl(2),norb_tot) ! perhaps done before
+
+    do ictx=1,qmckl_no_ctx-1
+
+      if (n8 > norb_qmckl(ictx)) then
+
+       ! selecting range of orbitals to compute qith QMCkl
+       keep(1:norb_qmckl(ictx)) = 1
+       keep((norb_qmckl(ictx)+1):n8) = 0
+
+       rc = qmckl_mo_basis_select_mo(qmckl_ctx(ictx), keep, n8)
+       if (rc /= QMCKL_SUCCESS) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
+
+       ! getting new number of orbitals to be computed
+       rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), ncheck)
+       if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl mo_num from verify orbitals')
+       write(ounit,int_format) "QMCkl number of orbitals after mo's selec", ncheck
+       write(ounit,int_format) "QMCkl norb_qmckl after mo's selec", norb_qmckl(ictx)
+
+       if (ncheck /= norb_qmckl(ictx)) call fatal_error('INPUT: Problem in MO selection in QMCkl verify orb')
+      endif
+
+    enddo
+    ! deallocate keep
+    deallocate(keep)
+
+    if(nloc.eq.0) then
+      allocate(nucl_fitcusp_radius(ncent))
+      do_nucl_fitcusp = .true.
+
+      if(.not. do_nucl_fitcusp) then
+         nucl_fitcusp_radius = 0.d0
+       else
+        do k=1,ncent
+          nucl_fitcusp_radius(k) = 1.d0/(a_cusp*znuc(iwctype(k))+b_cusp)
+          write(ounit, array_format) "Radius fit cusps for atom", k, nucl_fitcusp_radius(k)
+        enddo
+
+        ! Avoid dummy atoms
+        do k=1,ncent
+         if (znuc(iwctype(k)) < 5.d-1) then
+           nucl_fitcusp_radius(k) = 0.d0
+         endif
+        enddo
+
+        do ictx=1,qmckl_no_ctx-1
+          write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx(ictx)
+          rc = qmckl_set_mo_basis_r_cusp(qmckl_ctx(ictx),dble(nucl_fitcusp_radius(:)), int(ncent,8))
+          write(ounit, *) "Status QMCKl set mo basis r cusp  ", rc
+
+          if (rc /= QMCKL_SUCCESS) call fatal_error('PARSER: QMCkl error: Unable to set cusp parameters')
+        enddo
+      endif
+    endif
+
+return
+end
+
 
 end module

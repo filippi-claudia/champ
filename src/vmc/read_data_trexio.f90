@@ -566,6 +566,9 @@ module trexio_read_data
         use slater,             only: norb
         use qmckl_data
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+        use orbitals_qmckl_mod, only: init_orbitals_qmckl
+#endif
 
         implicit none
 
@@ -598,7 +601,7 @@ module trexio_read_data
         write(ounit,*) " Updating LCAO orbitals from the file :: ",  trim(file_trexio_path)
         write(ounit,*) '---------------------------------------------------------------------------'
 
-        do ictx = 1 ,qmckl_no_ctx
+        do ictx = 1 ,qmckl_no_ctx-1
             ! Destroy the existing QMCkl context first
             write(ounit, *) " QMCkl destroying the old context " , qmckl_ctx(ictx) , " successfully "
             rc = qmckl_context_destroy(qmckl_ctx(ictx))
@@ -633,41 +636,16 @@ module trexio_read_data
         norb_qmckl(2)=min(norb_qmckl(2),norb_tot)
 
 
-        do ictx = 1 ,qmckl_no_ctx
+        do ictx = 1 ,qmckl_no_ctx-1
             ! Create a new QMCkl context with the new trexio file
             qmckl_ctx(ictx) = qmckl_context_create()
             rc = qmckl_trexio_read(qmckl_ctx(ictx), file_trexio_path, 1_8*len(trim(file_trexio_path)))
             call trexio_error(rc, TREXIO_SUCCESS, 'INPUT: QMCkl error: Unable to read TREXIO file', __FILE__, __LINE__)
             write(ounit, *) " QMCkl new context created  ", qmckl_ctx(ictx),  " successfully "
 
-            rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
-            if (rc /= QMCKL_SUCCESS) then
-                call fatal_error('INPUT: QMCkl getting mo_num from verify orbitals')
-            end if
-            
-            allocate(keep(n8))
-    
-            if (n8 > norb_qmckl(ictx)) then
-    
-                !! selecting range of orbitals to compute qith QMCkl
-                keep(1:norb_qmckl(ictx)) = 1
-                keep((norb_qmckl(ictx)+1):n8) = 0
-    
-                rc = qmckl_mo_basis_select_mo(qmckl_ctx(ictx), keep, n8)
-                if (rc /= QMCKL_SUCCESS) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
-        
-                ! getting new number of orbitals to be computed
-                rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), ncheck)
-                if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl mo_num from verify orbitals')
-                write(ounit,int_format) "QMCkl number of orbitals after mo's selec", ncheck
-                write(ounit,int_format) "QMCkl norb_qmckl after mo's selec", norb_qmckl(ictx)
-        
-                if (ncheck /= norb_qmckl(ictx)) call fatal_error('INPUT: Problem in MO selection in QMCkl verify orb')
-    
-            endif
-
-            deallocate(keep)
         enddo
+
+        call init_orbitals_qmckl(.False.)
 
 #endif
 

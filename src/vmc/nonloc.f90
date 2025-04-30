@@ -26,6 +26,11 @@ contains
       use vmc_mod, only: stoj, stoo, nbjx, bjxtoo, bjxtoj
       use jastrow, only: ijas
       use deriv_nonloc, only: deriv_nonlocj_quad1, deriv_nonlocj_quad4
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      !use jastrow_qmckl_mod, only: jastrow_quad_qmckl
+      use qmckl_data
+#endif
       implicit none
 
 ! variables in subroutine call
@@ -101,7 +106,6 @@ contains
       if(allocated(dorbn)) deallocate(dorbn)
       allocate(dorbn(norb_tot,ndim,3,nwftypeorb))
       if(allocated(da_orbn)) deallocate(da_orbn)
-      allocate(da_orbn(3,ncent_tot,norb_tot,ndim))
       if(allocated(vjn)) deallocate(vjn)
       allocate(vjn(3,ndim))
 
@@ -185,7 +189,8 @@ contains
       enddo
 
       if(nxquad.eq.0) return
-
+      allocate(da_orbn(norb,3,nxquad,ncent_tot))
+      
       do iwforb=1,nwftypeorb
         call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,iwforb), &
                          dorbn(1,1,1,iwforb),da_orbn,iwforb)
@@ -212,9 +217,13 @@ contains
 
          if(ioptjas.eq.0) then
             do iwfjas=1,nwftypejas
-               call nonlocj_quad4(nxquad,xquad,iequad,x,rvec_en,r_en, &
-                    rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio, &
-                    fso(1,1,iwfjas),iwfjas)
+!#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+!               call jastrow_quad_qmckl(nxquad,iequad*1_8,xquad,psij_ratio(1,iwfjas),vjn,da_psij_ratio,iforce_analy)
+!#else
+              call nonlocj_quad4(nxquad,xquad,iequad,x,rvec_en,r_en, &
+                     rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio, &
+                     fso(1,1,iwfjas),iwfjas)
+!#endif
             enddo
          else
             do iwfjas=1,nwftypejas
@@ -405,6 +414,7 @@ contains
       use precision_kinds, only: dp
       use qua,     only: nquad
       use system,  only: ncent_tot,nelec
+      use slater,  only: norb
       use vmc_mod, only: norb_tot
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
@@ -422,7 +432,7 @@ contains
       real(dp), dimension(3,nquad*nelec*2, ncent_tot) :: rvec_en
       real(dp), dimension(norb_tot, *) :: orbn
       real(dp), dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
-      real(dp), dimension(3,ncent_tot, norb_tot, *) :: da_orbn
+      real(dp), dimension(norb, 3,nxquad,ncent_tot) :: da_orbn
 
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
@@ -643,12 +653,20 @@ contains
       use jastrow, only: isc,sspinn, nordc
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,dpsinl,psianl,psibnl,psinl
+      use jastrow_update, only: fjo
       use precision_kinds, only: dp
       use find_pimage, only: find_image_pbc
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
       use optwf_control, only: ioptjas
       use qua,     only: nquad
+      use contrl_file, only: ounit
+
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use jastrow_qmckl_mod, only: jastrowe_qmckl, jastrow_qmckl
+      use qmckl_data
+#endif
 
       implicit none
 
@@ -674,7 +692,16 @@ contains
       real(dp), dimension(3,*) :: vjn
       real(dp), dimension(*) :: ratio_jn
       real(dp), dimension(3,ncent_tot,*) :: da_psij_ratio
+      real(dp), dimension(3, nelec) :: fjn
       real(dp), parameter :: half = .5d0
+      real(dp) :: d2n
+
+      real(dp), dimension(3, ncent_tot) :: temp_een, temp_en
+      
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      real(dp), dimension(3,ncent) :: da_single_een, da_single_en
+      integer :: rc
+#endif
 
       if(iforce_analy.eq.0) then
         do ic=1,ncent
@@ -693,6 +720,35 @@ contains
       do iq=1,nxquad
 
       iel=iequad(iq)
+
+!UNDO
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      if(iforce_analy.eq.1) then
+        call jastrowe_qmckl(iel, xquad(:,iq),fjn,d2n,fsumn,2)
+
+        rc = qmckl_get_forces_jastrow_single_en(qmckl_ctx(qmckl_no_ctx), da_single_en, 3_8*ncent)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single en force.')
+        rc = qmckl_get_forces_jastrow_single_een(qmckl_ctx(qmckl_no_ctx), da_single_een, 3_8*ncent)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single een force.')
+        do ic=1,ncent
+          do k=1,3
+            da_psij_ratio(k,ic,iq)=da_single_en(k,ic)+da_single_een(k,ic)
+            ! write(ounit, *), 'da_psij', da_psij_ratio(k,ic,iq), da_single_en(k,ic), da_single_een(k,ic)
+          enddo
+        enddo
+        do k=1,3
+          vjn(k,iq)=fjn(k,iel)+fjo(k,iel,1)
+          !write(ounit, *), 'vjn', vjn(k,iq)
+        enddo
+
+      else
+        call jastrowe_qmckl(iel, xquad(:,iq),fjn,d2n,fsumn,0)
+
+      endif
+
+      ratio_jn(iq)=fsumn
+
+#else
 
       if(iforce_analy.eq.0) then
         do ic=1,ncent
@@ -822,6 +878,7 @@ contains
 
       endif
 
+#endif
       enddo
 
       return
@@ -856,7 +913,7 @@ contains
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(norb_tot,nquad*nelec*2) :: orbn
       real(dp), dimension(norb_tot,nquad*nelec*2,3) :: dorbn
-      real(dp), dimension(3,ncent_tot,norb_tot,nquad*nelec*2) :: da_orbn
+      real(dp), dimension(norb,3,nxquad,ncent_tot) :: da_orbn
       real(dp), dimension(nquad*nelec*2) :: psij_ratio
       real(dp), dimension(nquad*nelec*2) :: term_radial
       real(dp), dimension(3,*) :: vjn
@@ -913,7 +970,7 @@ contains
          do jc=1,ncent
 !          if(jc.ne.ic) then
              do k=1,3
-               b_da(k,i,iorb,jc)=b_da(k,i,iorb,jc)+term_radial(iq)*(da_orbn(k,jc,iorb,iq)+orbn(iorb,iq)*da_psij_ratio(k,jc,iq))
+               b_da(k,i,iorb,jc)=b_da(k,i,iorb,jc)+term_radial(iq)*(da_orbn(iorb,k,iq,jc)+orbn(iorb,iq)*da_psij_ratio(k,jc,iq))
              enddo
 !          endif
          enddo

@@ -39,6 +39,7 @@ if (MPI_Fortran_FOUND)
     jastrow4e.f90
     jastrow1e.f90
     jastrowe.f90
+    jastrow_qmckl.f90
     mc_configs.f90
     metrop_mov1_driftdif.f90
     metrop_mov1_slat.f90
@@ -181,7 +182,8 @@ if (MPI_Fortran_FOUND)
   if (NOT QMCKL_FOUND)
 	  list(REMOVE_ITEM VMC90_SOURCE
          ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
-         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90)
+         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
+         ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90)
   endif()
 
 
@@ -298,9 +300,11 @@ if (MPI_Fortran_FOUND)
   # Remove objects to share depending on CMAKE options:
   # --------------------------------------------------------------------
   if (QMCKL_FOUND)
-    list(APPEND SHARED_OBJECTS
-      ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90)
+       list(APPEND SHARED_OBJECTS
+         ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90
+	 ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
+         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
+	 )
   endif()
 
   if (ENABLE_QMMM)

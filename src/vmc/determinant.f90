@@ -265,6 +265,7 @@ contains
         do ic=1,ncent
           do iorb=1,norb
             call dcopy(3*nelec,da_d2orb(1,1,iorb,ic),1,b_da(1,1,iorb,ic),1)
+            !write(ounit, *), 'da_d2orb', da_d2orb(1,1,iorb,ic)
           enddo
         enddo
         do ic=1,ncent
@@ -276,6 +277,10 @@ contains
               call daxpy(norb,2*da_vj(l,1,i,ic),dorb(1:norb,i,1,1),1,b_da(l,i,1,ic),3*nelec)
               call daxpy(norb,2*da_vj(l,2,i,ic),dorb(1:norb,i,2,1),1,b_da(l,i,1,ic),3*nelec)
               call daxpy(norb,2*da_vj(l,3,i,ic),dorb(1:norb,i,3,1),1,b_da(l,i,1,ic),3*nelec)
+              !write(ounit, *), 'vj', vj(1,i,1), vj(2,i,1)
+              !write(ounit, *), 'da_dorb', da_dorb(l,1,i,1,ic), da_dorb(l,2,i,1,ic)
+              !write(ounit, *), 'da_vj', da_vj(l,1,i,ic), da_vj(l,2,i,ic)
+              !write(ounit, *), 'dorb', dorb(1,i,1,1), dorb(1,i,2,1)
               do iorb=1,norb
                 b_da(l,i,iorb,ic)=-hb*b_da(l,i,iorb,ic)
               enddo

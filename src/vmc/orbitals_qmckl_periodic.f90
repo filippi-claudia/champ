@@ -46,7 +46,7 @@ subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
     if (.not. allocated(auxddorb)) allocate (auxddorb(norb+nadorb))
 
     ! get number of atomic orbitals
-    rc = qmckl_get_ao_basis_ao_num(qmckl_ctx(qmckl_no_ctx), na8)
+    rc = qmckl_get_ao_basis_ao_num(qmckl_ctx(qmckl_no_ctx-1), na8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting mo_num from QMCkl'
         stop
@@ -72,14 +72,14 @@ subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
     enddo
 
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', nelec*1_8, xelec, nelec*3_8)
+    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx-1), 'N', nelec*1_8, xelec, nelec*3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error setting electron coordinates in QMCkl'
         stop
     end if
 
     ! computing aos zero image
-    rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(qmckl_no_ctx), ao_qmckl, nbasis*5_8*nelec)
+    rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(qmckl_no_ctx-1), ao_qmckl, nbasis*5_8*nelec)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting AOs from QMCkl zero image'
     endif
@@ -98,17 +98,17 @@ subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
             enddo
 
             ! send electron images coordinates
-            rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', 1_8*nelec, xqmckl, 3_8*nelec)
+            rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx-1), 'N', 1_8*nelec, xqmckl, 3_8*nelec)
             if (rc /= QMCKL_SUCCESS) then
                 print *, 'Error setting electron coords orbitalse'
-                call qmckl_last_error(qmckl_ctx(qmckl_no_ctx),err_message)
+                call qmckl_last_error(qmckl_ctx(qmckl_no_ctx-1),err_message)
                 print *, trim(err_message)
                 call abort()
             end if
 
             ao_vgl_qmckl=0.d0
             ! computing aos for the given image
-            rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(qmckl_no_ctx), ao_vgl_qmckl, nbasis*5_8*nelec)
+            rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(qmckl_no_ctx-1), ao_vgl_qmckl, nbasis*5_8*nelec)
             if (rc /= QMCKL_SUCCESS) then
                 print *, 'Error getting AOs from QMCkl zero image'
             endif
@@ -530,7 +530,7 @@ subroutine orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_
     real(dp), dimension(3,nquad*nelec*2, ncent_tot) :: rvec_en
     real(dp), dimension(norb_tot, *) :: orbn
     real(dp), dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
-    real(dp), dimension(3,ncent_tot, norb_tot, *) :: da_orbn
+    real(dp), dimension(norb,3,nxquad,ncent_tot) :: da_orbn
     real(dp), dimension(3) :: dtmp
     real(dp) :: ddtmp
 
@@ -678,14 +678,14 @@ subroutine orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_
             do iorb=1,norb
                 do ic=1,ncent
                     do k=1,3
-                        da_orbn(k,ic,iorb,iq)=0.d0
+                        da_orbn(iorb,k,iq,ic)=0.d0
                     enddo
                 enddo
 #ifdef VECTORIZATION
                 do ic=1,ncent
                     do k=1,3
                         do m=ibas0(ic),ibas1(ic)
-                            da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                            da_orbn(iorb,k,iq,ic)=da_orbn(iorb,k,iq,ic)-coef(m,iorb,iwf)*dphin(m,iq,k)
                         enddo
                     enddo
                 enddo
@@ -694,7 +694,7 @@ subroutine orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_
                     m=n0_ibasis(m0,iq)
                     ic=n0_ic(m0,iq)
                     do k=1,3
-                        da_orbn(k,ic,iorb,iq)=da_orbn(k,ic,iorb,iq)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                        da_orbn(iorb,k,iq,ic)=da_orbn(iorb,k,iq,ic)-coef(m,iorb,iwf)*dphin(m,iq,k)
                     enddo
                 enddo
 #endif
@@ -703,7 +703,7 @@ subroutine orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_
                 enddo
                 do ic=1,ncent
                     do k=1,3
-                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(k,ic,iorb,iq)
+                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(iorb,k,iq,ic)
                     enddo
                 enddo
             enddo
