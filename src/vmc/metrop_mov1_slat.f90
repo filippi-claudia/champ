@@ -62,6 +62,7 @@ contains
       use vmc_mod, only: nwftypejas, stoj
       use mpitimer, only: elapsed_time
       use mpi
+      use optwf_control, only: ioptjas
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
@@ -591,7 +592,9 @@ contains
       if (random_dp().lt.p) then
 !UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+        if (ioptjas.eq.0) then
         rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+        endif
 #endif
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
