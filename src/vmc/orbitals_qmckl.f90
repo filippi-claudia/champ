@@ -328,6 +328,7 @@ subroutine init_orbitals_qmckl(update_coef)
         write(ounit,int_format) "QMCkl number mo found", n8
         
        if (update_coef) then
+          print *, 'updated!!!!!!!'
           rc = qmckl_set_mo_basis_coefficient(qmckl_ctx(ictx), coef(:,:, 1), nbasis*norb_tot*1_8)
           if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl setting orbital coefficients')
        end if

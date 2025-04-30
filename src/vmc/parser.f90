@@ -2014,10 +2014,8 @@ subroutine parser
 
      call jastrow_init_qmckl(qmckl_no_ctx)
 
-
      call init_orbitals_qmckl(.True.)
-     rc = qmckl_set_mo_basis_coefficient(qmckl_ctx(1), coef(:,:, 1), nbasis*norb_tot*1_8)
-     if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl setting orbital coefficients')
+
 
 
   endif

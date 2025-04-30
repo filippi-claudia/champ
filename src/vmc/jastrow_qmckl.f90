@@ -156,7 +156,6 @@ end subroutine
         fjo(2,i) = fjo(2,i) + jen_gl(i+nelec*1)
         fjo(3,i) = fjo(3,i) + jen_gl(i+nelec*2)
         d2o = d2o + jen_gl(i+nelec*3)
-        ! print *, 'jen_gl', jen_gl(i+nelec*3)
     enddo
 
     rc = qmckl_get_jastrow_champ_factor_ee_gl(qmckl_ctx(qmckl_no_ctx), jee_gl, 1_8*4*nelec)
@@ -166,7 +165,6 @@ end subroutine
         fjo(2,i) = fjo(2,i) +  jee_gl(i+nelec*1)
         fjo(3,i) = fjo(3,i) +  jee_gl(i+nelec*2)
         d2o = d2o + jee_gl(i+nelec*3)
-        ! print *, 'jee_gl', jee_gl(i+nelec*3)
     enddo
 
    rc = qmckl_get_jastrow_champ_factor_een_gl(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
@@ -176,35 +174,16 @@ end subroutine
        fjo(2,i) = fjo(2,i) +  jeen_gl(i+nelec*1)
        fjo(3,i) = fjo(3,i) +  jeen_gl(i+nelec*2)
        d2o = d2o + jeen_gl(i+nelec*3)
-       ! print *, 'jeen_gl', jeen_gl(i+nelec*3)
    enddo
 
-    ! do i = 1, nelec
-    !     write(ounit, '(''e-n gl '', 9d12.4)') (jen_gl(i+nelec*j), j=0,3)
-    !   enddo
-
-    !   do i = 1, nelec
-    !     write(ounit, '(''e-e gl '', 9d12.4)') (jee_gl(i+nelec*j), j=0,3)
-    !   enddo
-
-    !   do i = 1, nelec
-    !     write(ounit, '(''e-e-n gl '', 9d12.4)') (jeen_gl(i+nelec*j), j=0,3)
-    !   enddo
 
    if (iforce_analy.eq.1) then
-
 
       rc = qmckl_get_forces_jastrow_en(qmckl_ctx(qmckl_no_ctx), da_j_en, ncent*3_8)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow forces.')
 
       rc = qmckl_get_forces_jastrow_een(qmckl_ctx(qmckl_no_ctx), da_j_een, ncent*3_8)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow forces.')
-      
-    
-      !UNDO
-      !do ic = 1,ncent
-      !  write(ounit,'(''qmck da_j,ic='',i4,1000f15.11)') ic, (da_j_en(k,ic)+da_j_een(k,ic),k=1,3)
-      !enddo
 
       rc = qmckl_get_forces_jastrow_en_g(qmckl_ctx(qmckl_no_ctx), da_vj_en, 3_8*nelec*ncent*3_8)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow gradient forces.')
@@ -212,21 +191,11 @@ end subroutine
       rc = qmckl_get_forces_jastrow_een_g(qmckl_ctx(qmckl_no_ctx), da_vj_een, 3_8*nelec*ncent*3_8)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow gradient forces.')
 
-      !do ic=1,ncent
-      !  do i=2,2
-      !    write(ounit,'(''qmckl da_vj,ic,i='',2i4,1000f15.11)') ic, i, ((da_vj_en(l,i,k,ic)+da_vj_een(i,l,ic,k),k=1,3),l=1,3)
-      !  enddo
-      !enddo
-
       rc = qmckl_get_forces_jastrow_en_l(qmckl_ctx(qmckl_no_ctx), da_d2j_en, 3_8*ncent)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow Laplacian forces.')
 
       rc = qmckl_get_forces_jastrow_een_l(qmckl_ctx(qmckl_no_ctx), da_d2j_een, 3_8*ncent)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow Laplacian forces.')
-
-    !   do ic = 1,ncent
-    !   write(ounit,'(''qmck da_d2j,ic='',i4,1000f15.11)') ic, (da_d2j_en(k,ic),k=1,3), (da_d2j_een(ic,k),k=1,3)
-    !   enddo
 
       da_j = 0.d0
       do ic=1,ncent
@@ -240,16 +209,6 @@ end subroutine
             enddo
         enddo
       enddo 
-
-      !UNDO 
-    !   do ic=1,ncent
-    !     write(ounit,'(''da_j,ic='',i4,1000f15.11)') ic, (da_j(k,1,1,ic),k=1,3)
-    !     do i=1,1
-    !      write(ounit,'(''da_vj,ic,i='',2i4,1000f15.11)') ic, i, ((da_vj(k,l,i,ic),k=1,3),l=1,3)
-    !     enddo
-    !     write(ounit,'(''da_d2j,ic='',i4,1000f15.11)') ic, (da_d2j(k,ic),k=1,3)
-    !   enddo
-    !   stop
 
    endif
 
@@ -315,7 +274,6 @@ end subroutine
             fjn(1,i) = fjn(1,i) +  jee_gl(1,i)
             fjn(2,i) = fjn(2,i) +  jee_gl(2,i)
             fjn(3,i) = fjn(3,i) +  jee_gl(3,i)
-            ! print *, 'jeen_gl', jeen_gl(i+nelec*3)
         enddo
 
         rc = qmckl_get_jastrow_champ_single_en_gl(qmckl_ctx(qmckl_no_ctx), jen_gl, 1_8*4*nelec)
@@ -324,7 +282,6 @@ end subroutine
             fjn(1,i) = fjn(1,i) +  jen_gl(1,i)
             fjn(2,i) = fjn(2,i) +  jen_gl(2,i)
             fjn(3,i) = fjn(3,i) +  jen_gl(3,i)
-            ! print *, 'jeen_gl', jeen_gl(i+nelec*3)
         enddo
         if (iflag.eq.1) then
             rc = qmckl_get_jastrow_champ_single_een_gl(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
@@ -336,7 +293,6 @@ end subroutine
             fjn(1,i) = fjn(1,i) +  jeen_gl(i+nelec*0)
             fjn(2,i) = fjn(2,i) +  jeen_gl(i+nelec*1)
             fjn(3,i) = fjn(3,i) +  jeen_gl(i+nelec*2)
-            ! print *, 'jeen_gl', jeen_gl(i+nelec*3)
         enddo
 
     endif
