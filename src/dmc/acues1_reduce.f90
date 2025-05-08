@@ -14,6 +14,7 @@ contains
       use est2cm, only: wfcm21, wgcm21, wgcm2
       use force_analytic, only: force_analy_fin
       use force_analy_reduce_mod, only: force_analy_reduce
+      use fragments, only: egcm21frag, egcum1frag, nfrag
       use mpiconf, only: nproc, wid
       use mpi
       use mpiconf, only: nproc,wid
@@ -45,6 +46,8 @@ contains
 
       real(dp), dimension(MFORCE) :: eg1collect
       real(dp), dimension(MFORCE) :: eg21collect
+      real(dp), dimension(nfrag) :: eg1collectfrag
+      real(dp), dimension(nfrag) :: eg21collectfrag
       real(dp), dimension(MFORCE) :: wg1collect
       real(dp), dimension(MFORCE) :: wg21collect
 
@@ -86,6 +89,16 @@ contains
       ,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(wgcm21,wg21collect,MFORCE,mpi_double_precision &
       ,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      
+      if (nfrag.gt.1) then
+        call mpi_reduce(egcum1frag,eg1collectfrag,nfrag,mpi_double_precision &
+        ,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        call mpi_reduce(egcm21frag,eg21collectfrag,nfrag,mpi_double_precision &
+        ,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+        egcum1frag(:)=eg1collectfrag(:)
+        egcm21frag(:)=eg21collectfrag(:)
+      endif
 
       do ifr=1,nforce
         egcum1(ifr)=eg1collect(ifr)

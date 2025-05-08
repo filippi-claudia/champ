@@ -9,6 +9,8 @@ contains
       use acues1_mod, only: acues1
       use acues1_reduce_mod, only: acues1_reduce
       use acuest_mod, only: acuest
+      use branch, only: eest
+      use const, only: etrial
       ! use averages, only: average,average_write,init_averages_index
       use constants, only: pi
       use contrl_file, only: ounit
@@ -20,9 +22,12 @@ contains
       use error,   only: fatal_error
       use estcum,  only: ipass
       use finwrt_mod, only: finwrt
+      use fragments, only: etrialfrag, eestfrag, nfrag
       use init_mod, only: init
       use mc_configs_mod, only: mc_configs,mc_configs_write
       use mpitimer, only: elapsed_time
+      use mpiconf, only: nproc
+      use mpi
       use multiple_geo, only: iwftype,nforce,nwftype,nwprod
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
@@ -35,9 +40,11 @@ contains
 
       implicit none
 
-      integer :: i, j, irun, lpass
+      integer :: i, j, irun, lpass, ifrag, ierr
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: four = 4.d0
+      real(dp) :: etrialcollect
+      real(dp), dimension(:), allocatable :: etrialfragcollect
 
       if(nforce.gt.1) then
         call setup_force
