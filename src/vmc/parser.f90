@@ -1322,6 +1322,7 @@ subroutine parser
   call allocate_dmc()
 
   ! read fragment indeces
+  if ( (nfrag.gt.1).and.(ndet.gt.1) ) call fatal_error('READ_INPUT: Fragments not implemented for multideterminant wavefunctions')
   if (nfrag.eq.1) call fatal_error("READ_INPUT: nfrag=1, do not use nfrag if you dont have any fragments")
   if(nfrag.gt.0) then
     write(ounit, *) ""
