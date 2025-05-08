@@ -124,14 +124,14 @@ module keywords
   !> @date October 15, 2022
   implicit none
   integer                     :: num_modules  = 11   ! change this number after every adition/deletion
-  integer                     :: num_keywords = 183 ! change this number after every adition/deletion
+  integer                     :: num_keywords = 186 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
   type(string_t) allowed_modules(11)
-  type(string_t) allowed_keywords(184)       ! change this number after every adition/deletion
+  type(string_t) allowed_keywords(188)       ! change this number after every adition/deletion
 
 
   private
@@ -235,8 +235,10 @@ module keywords
     allowed_keywords(175)%keys = 'orbitals_ortho';  allowed_keywords(176)%keys = 'dmc_ivd'
     allowed_keywords(177)%keys = 'ipathak';         allowed_keywords(178)%keys = 'eps_max'
     allowed_keywords(179)%keys = 'deps';            allowed_keywords(180)%keys = 'nwprod'
-    allowed_keywords(181)%keys = 'vmc_tau';         allowed_keywords(182)%keys = 'ibranching_c'
-    allowed_keywords(183)%keys = 'istrech';         allowed_keywords(184)%keys = 'alfastr'
+    allowed_keywords(181)%keys = 'vmc_tau';         allowed_keywords(182)%keys = 'ifragcent'
+    allowed_keywords(183)%keys = 'ibranching_c';    allowed_keywords(184)%keys = 'istrech'
+    allowed_keywords(185)%keys = 'alfastr';         allowed_keywords(186)%keys = 'nfrag'
+    allowed_keywords(187)%keys = 'ibranching_cfrag';allowed_keywords(188)%keys = 'etrialfrag';
 
   end subroutine allocate_keywords
 

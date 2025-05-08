@@ -8,6 +8,7 @@ contains
       use b_tmove, only: b_t,iskip
       use contrl_file, only: ounit, errunit
       use control, only: ipr,mode
+      use fragments, only: eloc_i, elocfrag, ifragcent, ifragelec, nfrag
       use jastrow_update, only: fso
       use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
       use multislater, only: detiab
@@ -261,6 +262,11 @@ contains
           xj=bjxtoj(ibjx)
           xo=bjxtoo(ibjx)
           vpsp_det(iab,ibjx)=vpsp_det(iab,ibjx)+term_radial_jas(iq,xj)*det_ratio(iq,xo)
+          if (nfrag.gt.1) then
+            eloc_i(iel) = eloc_i(iel) + term_radial_jas(iq,xj)*det_ratio(iq,xo)
+            elocfrag(ifragelec(iel)) = elocfrag(ifragelec(iel)) + 0.5d0 * term_radial_jas(iq,xj)*det_ratio(iq,xo)
+            elocfrag(ifragcent(ic)) = elocfrag(ifragcent(ic)) + 0.5d0 * term_radial_jas(iq,xj)*det_ratio(iq,xo)
+          endif
 ! pseudopotential contribution to B_eloc matrix
           do iorb=1,norb+nadorb
             b(iorb,iel,ibjx)=b(iorb,iel,ibjx)+term_radial_jas(iq,xj)*orbn(iorb,iq,xo)

@@ -22,6 +22,7 @@ contains
       use estcum,  only: wcum1, wcum_dmc, wfcum, wfcum1, wgcum, wgcum1
       use finwrt_more_mod, only: finwrt_more
       use force_analytic, only: force_analy_fin
+      use fragments,  only: egcumfrag, egcum1frag, egcm2frag, egcm21frag, nfrag
       use grdntspar, only: igrdtype, ngradnts
       use general, only: write_walkalize
       use header,  only: title
@@ -58,10 +59,13 @@ contains
       real(dp) :: x, x2
       real(dp), dimension(MFORCE) :: ffin_grdnts
       real(dp), dimension(MFORCE) :: ferr_grdnts
+      real(dp), dimension(nfrag) :: egavefrag
+      real(dp), dimension(nfrag) :: egerrfrag
+      real(dp), dimension(nfrag) :: egerr1frag
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
-
+      integer :: rank
       do ifr=1,nforce
         energy(ifr)=0
         energy_err(ifr)=0
@@ -230,6 +234,47 @@ contains
         energy(ifr)=egave
         energy_err(ifr)=egerr
       enddo
+
+      if (nfrag.gt.1) then
+        egavefrag = egcumfrag(:) / wgcum(1)
+        egerrfrag = errg(egcumfrag(:), egcm2frag(:),1)
+        egerr1frag = errg1(egcum1frag(:), egcm21frag(:),1) ! Not implemented for nforce > 1
+      endif
+
+      !!Debug code
+      ! call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
+      ! do j = 0, 1
+      !   call MPI_Barrier(MPI_COMM_WORLD, ierr)
+      ! if ( j.eq.rank ) then
+      !   print*,'Total'
+      !   print*, 'Tcorr', ((egerr/egerr1)**2)
+      !   print*, 'egerr', egerr, 'egerr1', egerr1
+      !   print*, 'egcum', egcum, 'egcm2', egcm2
+      !   print*, 'egcum1', egcum1, 'egcm21', egcm21
+      !   print*, ''
+      !   do i = 1, nfrag
+      !     print*,'Fragment', i 
+      !     print*, 'Tcorr', ((egerrfrag(i)/egerr1frag(i))**2)
+      !     print*, 'egerr', egerrfrag(i), 'egerr1', egerr1frag(i)
+      !     print*, 'egcum', egcumfrag(i), 'egcm2', egcm2frag(i)
+      !     print*, 'egcum1', egcum1frag(i), 'egcm21', egcm21frag(i)
+      !     print*, ''
+      !   enddo  
+      ! endif
+      ! enddo
+      
+      if (idmc.lt.0) then
+        do i = 1, nfrag
+          write(ounit,'(''Fragment: '',i4,'' Energy '',f12.7,'' +- '',f11.7,'' Tcorr '',f8.2,'' c '',f9.5)') &
+          i, egavefrag(i), egerrfrag(i), ((egerrfrag(i)/egerr1frag(i))**2), 15.51d0 / dsqrt(((egerrfrag(i)/egerr1frag(i))**2) - 1.0d0)
+        enddo
+      else
+        do i = 1, nfrag
+          write(ounit,'(''Fragment: '',i4,'' Energy '',f12.7,'' +- '',f11.7,'' Tcorr '',f8.2)') &
+          i, egavefrag(i), egerrfrag(i), ((egerrfrag(i)/egerr1frag(i))**2)
+        enddo
+      end if
+
       do ifr=1,nforce
         peave=pecum_dmc(ifr)/wgcum(ifr)
         tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
