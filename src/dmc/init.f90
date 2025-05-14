@@ -76,7 +76,7 @@ contains
       eigv=one
       eest=etrial
 
-      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then 
+      if (nfrag.gt.1) then 
         call assign_elecs(xold_dmc(:,:,1,1), 2)
         sqrt_nelecfrag = 0
         do i = 1, nelec
@@ -87,7 +87,8 @@ contains
           !etrialfrag(ifragelec(i)) = etrialfrag(ifragelec(i)) + etrial/nelec
         end do
         sqrt_nelecfrag = sqrt(sqrt_nelecfrag)
-      
+      end if
+      if (icut_e.lt.1) then
         do i = 1, nelec
           eest_i(i) = etrial/nelec
         enddo
@@ -122,8 +123,10 @@ contains
           if(icasula.lt.0) i_vpsp=icasula
           
           call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),ekino,eold(iw,ifr),0,ifr)
-          if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+          if (icut_e.lt.0) then
             eloco_i(:,iw,ifr) = eloc_i(:)
+          endif
+          if (nfrag.gt.1) then
             elocofrag(:,iw,ifr) = elocfrag(:)
           endif
 

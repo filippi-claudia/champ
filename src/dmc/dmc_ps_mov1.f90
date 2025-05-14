@@ -621,10 +621,13 @@
           ! call update_reweight
           eold(iw,ifr)=enew(1)
           !if (abs(sum(eloc_i(:)))<1e-6) print *, 'eloc zero'
-          if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+          if (icut_e.lt.0) then
             eloco_i(:,iw,ifr) = eloc_i(:)
-            elocofrag(:,iw,ifr) = elocfrag(:)
             fratio_i(:,iw,ifr)=fration_i(:)
+          end if 
+          
+          if (nfrag.gt.1) then 
+            elocofrag(:,iw,ifr) = elocfrag(:)
             fratiofrag(:,iw,ifr)=frationfrag(:)
           endif
 
@@ -648,10 +651,13 @@
 
             wsum1(ifr)=wsum1(ifr)+wtnow
             esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)
-            if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+            if (icut_e.lt.0) then
               esum_i1(:) = esum_i1(:) + wtnow*eloc_i(:)
+            endif
+            if (nfrag.gt.1) then
               esumfrag1(:) = esumfrag1(:) + wtnow*elocfrag(:)
             endif
+
             !print *, 'esum', esum1_dmc(1),  sum(esum_i1(:))!, esum1_dmc(1) - sum(esum_i(:))
             pesum_dmc(ifr)=pesum_dmc(ifr)+wtg(1)*(eold(iw,ifr)-ekino(1))
             tpbsum_dmc(ifr)=tpbsum_dmc(ifr)+wtg(1)*ekino(1)
@@ -793,10 +799,14 @@
         endif
       enddo
 
-      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+      if (icut_e.lt.0) then
+        if (idmc.gt.0.or.iacc_rej.eq.0) then
+          esum_i(:) = esum_i(:) + esum_i1(:)*fprod
+        endif
+      endif
+      if (nfrag.gt.1) then
         if (idmc.gt.0.or.iacc_rej.eq.0) then
           egsum1frag(:)=esumfrag1(:) * fprod
-          esum_i(:) = esum_i(:) + esum_i1(:)*fprod
           esumfrag(:) = esumfrag(:) + esumfrag1(:)*fprod
         else 
           egsum1frag(:)=esumfrag1(:)

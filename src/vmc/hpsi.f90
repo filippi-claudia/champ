@@ -183,8 +183,10 @@ contains
         do i=1,nelec
           tmp = -hb*(vj(1,i,j)**2+vj(2,i,j)**2+vj(3,i,j)**2)
           ekin_other=ekin_other+tmp
-          if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+          if (icut_e.lt.0) then
             eloc_i(i)=eloc_i(i)+tmp
+          end if
+          if (nfrag.gt.1) then
             elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) + tmp
           endif
         enddo

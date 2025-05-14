@@ -85,8 +85,10 @@ contains
         eigv=(wgsum1(1)/wtgen(ipmod))**(one/nfpro)
        else
         eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
-        if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+        if (icut_e.lt.0) then
           eest_i(:) = (ecum_i(:) + esum_i(:))/(wgcum(1)+wgsum(1))
+        endif
+        if (nfrag.gt.1) then
           eestfrag(:) = (ecumfrag(:) + esumfrag(:)) / (wgcum(1) + wgsum(1))
         endif
         !print *, 'acues1', egsum(1), sum(esum_i(:)), egsum(1) - sum(esum_i(:))
@@ -112,7 +114,7 @@ contains
       enddo
       
       if (nfrag.gt.1) then
-        egsum1frag(:)=zero !Not implemented for nforce > 0
+        egsum1frag(:)=zero
       endif
 
       return

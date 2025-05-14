@@ -57,8 +57,10 @@
           do i=i1,i2
             tmp = vps(i,ic,lpot(iwctype(ic)))
             pe=pe+tmp
-            if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+            if (icut_e.lt.0) then
               eloc_i(i)=eloc_i(i)+tmp
+            endif
+            if (nfrag.gt.1) then
               elocfrag(ifragcent(ic)) = elocfrag(ifragcent(ic)) + 0.5d0 * tmp
               elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) + 0.5d0 * tmp
             endif

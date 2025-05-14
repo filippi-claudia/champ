@@ -22,8 +22,9 @@ contains
       real(dp), dimension(3,ncent_tot) :: cent
       real(dp), dimension(*), optional :: cos_n_sum   ! required for pot_nn_ewald
       real(dp), dimension(*), optional :: sin_n_sum   ! required for pot_nn_ewald
+      
+      if (nfrag.gt.1) potnnfrag = 0.0d0
 
-      potnnfrag = 0.0d0
       if(iperiodic.eq.0) then
         pecent=0
         do i=2,ncent
@@ -36,7 +37,7 @@ contains
             r=dsqrt(r2)
             tmp = znuc(iwctype(i))*znuc(iwctype(j))/r
             pecent=pecent+tmp
-            if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+            if ( (nfrag.gt.1) ) then
               potnnfrag(ifragcent(i)) = potnnfrag(ifragcent(i)) + 0.5d0 * tmp
               potnnfrag(ifragcent(j)) = potnnfrag(ifragcent(j)) + 0.5d0 * tmp
             endif

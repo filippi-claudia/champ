@@ -128,10 +128,12 @@ contains
             pwt(iw2,ifr)=pwt(iw,ifr)
             fratio(iw2,ifr)=fratio(iw,ifr)
             
-            if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+            if (nfrag.gt.1) then
               eloco_i(:,iw2,ifr)=eloco_i(:,iw,ifr)
-              elocofrag(:,iw2,ifr)=elocofrag(:,iw,ifr)
               fratio_i(:,iw2,ifr)=fratio_i(:,iw,ifr)
+            endif
+            if (icut_e.lt.0) then
+              elocofrag(:,iw2,ifr)=elocofrag(:,iw,ifr)
               fratiofrag(:,iw2,ifr)=fratiofrag(:,iw,ifr)
             endif
 
@@ -194,11 +196,13 @@ contains
           d2o(iw2,ifr)=d2o(iw,ifr)
           pwt(iw2,ifr)=pwt(iw,ifr)
           fratio(iw2,ifr)=fratio(iw,ifr)
-
-          if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+          
+          if (icut_e.lt.0) then
             eloco_i(:,iw2,ifr)=eloco_i(:,iw,ifr)
-            elocofrag(:,iw2,ifr)=elocofrag(:,iw,ifr)
             fratio_i(:,iw2,ifr)=fratio_i(:,iw,ifr)
+          endif
+          if (nfrag.gt.1) then
+            elocofrag(:,iw2,ifr)=elocofrag(:,iw,ifr)
             fratiofrag(:,iw2,ifr)=fratiofrag(:,iw,ifr)
           endif
 
