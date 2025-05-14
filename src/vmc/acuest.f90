@@ -134,7 +134,6 @@ contains
       call pcm_init(1)
       call mmpol_init(1)
       call force_analy_init(1)
-      if(ipathak.gt.0) call init_eps_pathak()
 
       call acuest_reduce(enow)
 
@@ -232,6 +231,7 @@ contains
       call mmpol_init(0)
       call force_analy_init(0)
       call efficiency_init
+      if(ipathak.gt.0) call init_eps_pathak()
 
       do ifr=1,nforce
         do istate=1,nstates
