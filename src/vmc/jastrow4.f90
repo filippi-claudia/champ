@@ -299,9 +299,11 @@
       fjo(3,j)=fjo(3,j)+fijo(3,j,i)
       d2o=d2o+d2ijo(i,j)
       
-      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+      if (icut_e.lt.0) then
         eloc_i(i)=eloc_i(i)-hb*0.5d0*d2ijo(i,j)
         eloc_i(j)=eloc_i(j)-hb*0.5d0*d2ijo(i,j)
+      endif
+      if (nfrag.gt.1) then
         elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) - hb*0.5d0*d2ijo(i,j)
         elocfrag(ifragelec(j)) = elocfrag(ifragelec(j)) - hb*0.5d0*d2ijo(i,j)
       endif  
@@ -380,8 +382,10 @@
         fjo(3,i)=fjo(3,i)+fijo(3,i,i)
 !        write(ounit,'(''v='',9d12.4)') (fjo(k,i),k=1,3)
         d2o=d2o+d2ijo(i,i)
-        if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+        if (icut_e.lt.0) then
           eloc_i(i) = eloc_i(i) - hb * d2ijo(i,i)
+        endif 
+        if (nfrag.gt.1) then
           elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) - hb * d2ijo(i,i)
         endif
       enddo

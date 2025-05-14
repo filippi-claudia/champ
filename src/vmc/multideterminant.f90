@@ -55,8 +55,10 @@ contains
           ekin_det(iab,x)=0.d0
           do i=1,nel
             tmpe=-hb*(d2dx2(i+ish,o)+2.d0*(vj(1,i+ish,j)*ddx(1,i+ish,o)+vj(2,i+ish,j)*ddx(2,i+ish,o)+vj(3,i+ish,j)*ddx(3,i+ish,o)))
-            if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+            if (icut_e.lt.0) then
               eloc_i(i+ish)=eloc_i(i+ish)+tmpe
+            endif
+            if (nfrag.gt.1) then
               elocfrag(ifragelec(i+ish))=elocfrag(ifragelec(i+ish))+tmpe
             endif
             ekin_det(iab,x)=ekin_det(iab,x)+tmpe

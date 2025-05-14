@@ -76,10 +76,12 @@ contains
       esum_dmc=zero
       efsum=zero
       
-      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+      if (icut_e.lt.0) then
         ecum_i = zero
         esum_i = zero
-        
+      endif
+      
+      if (nfrag.gt.1) then
         ecumfrag = zero
         esumfrag = zero
         egcumfrag = zero

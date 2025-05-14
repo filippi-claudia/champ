@@ -142,24 +142,23 @@ contains
         endif
       enddo
 
-      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+      if (icut_e.lt.0) then
+        call mpi_allreduce(esum_i,ecollect_i,nelec &
+        ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        ecum_i(:) = ecum_i(:) + ecollect_i(:)
+      end if
+      if (nfrag.gt.1) then
         egnowfrag(:)=egsumfrag(:)/wgsum(1)
         eg2sumfrag(:)=egsumfrag(:)*egnowfrag(:)
         
         call mpi_allreduce(egsumfrag,egcollectfrag,nfrag &
         ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-        call mpi_allreduce(esum_i,ecollect_i,nelec &
-        ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         call mpi_allreduce(esumfrag,ecollectfrag,nfrag &
         ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
         egcumfrag(:)=egcumfrag(:)+egcollectfrag(:)
-
-        ecum_i(:) = ecum_i(:) + ecollect_i(:)
         ecumfrag(:) = ecumfrag(:) + ecollectfrag(:)
-
         call mpi_reduce(eg2sumfrag,eg2collectfrag,nfrag,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-
         egcm2frag(:)=egcm2frag(:)+eg2collectfrag(:)
       endif
 
@@ -336,8 +335,11 @@ contains
       wfsum=zero
       esum_dmc=zero
       efsum=zero
-      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+      if (icut_e.lt.0) then
         esum_i = zero
+      endif
+
+      if (nfrag.gt.1) then
         esumfrag = zero
         egsumfrag(:)=zero
       endif

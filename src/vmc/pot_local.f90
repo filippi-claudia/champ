@@ -25,7 +25,7 @@
       pe_ee=0.d0
       pe_en=0.d0
 
-      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+      if (icut_e.lt.0) then
          do i=1,nelec
             eloc_i(i) = eloc_i(i) + pecent/nelec
          enddo
@@ -38,8 +38,10 @@
                do ic=1,ncent
                   tmp=-znuc(iwctype(ic))/r_en(i,ic)
                   pe=pe+tmp
-                  if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+                  if (icut_e.lt.0) then
                      eloc_i(i)=eloc_i(i)+tmp
+                  endif
+                  if (nfrag.gt.1) then
                      elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) + 0.5d0*tmp
                      elocfrag(ifragcent(ic)) = elocfrag(ifragcent(ic)) + 0.5d0*tmp
                   endif
@@ -54,9 +56,11 @@
                tmp = 1/r_ee(ij)
                pe=pe+tmp
                
-               if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
+               if (icut_e.lt.0) then
                   eloc_i(i) = eloc_i(i) + 0.5d0 * tmp
                   eloc_i(j) = eloc_i(j) + 0.5d0 * tmp
+               endif
+               if (nfrag.gt.1) then
                   elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) + 0.5d0 * tmp
                   elocfrag(ifragelec(j)) = elocfrag(ifragelec(j)) + 0.5d0 * tmp
                endif
