@@ -61,7 +61,7 @@ contains
           j=0
           do ic=1,ncent
              pot=-znuc(iwctype(ic))/norm2(x(:,i)-cent(:,ic))
-             do k=1,znuc(iwctype(ic))
+             do k=1,int(znuc(iwctype(ic)))
                j=j+1
                CC(j,i)=pot
                nuclj(j)=ic

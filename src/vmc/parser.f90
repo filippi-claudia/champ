@@ -1340,7 +1340,10 @@ subroutine parser
       if(i.ne.ncent) call fatal_error('READ_INPUT: ifragcent array must contain ncent entries.')
       ! The ifragcent array is already allocated in allocate_dmc so this does not have to be done again.
       call fdf_list('ifragcent',i,ifragcent)
-      write(ounit, '(a, <ncent>i)') 'Fragmentation indices : ', (ifragcent(i), i=1,ncent)
+      write(temp, '(a,i0,a)') '(a,', ncent, '(i4))'
+      !write(ounit, '(a, <ncent>i)') 'Fragmentation indices : ', (ifragcent(i), i=1,ncent)
+      write(ounit, temp) 'Fragmentation indices : ', (ifragcent(i), i=1,ncent) ! GNU version
+
       if (maxval(ifragcent) .ne. nfrag) call fatal_error("READ_INPUT: The number of fragments (nfrag) must match the maximal fragment index in ifragcent")
     else
       call fatal_error("READ_INPUT: ifragcent must be defined if nfrag is used")
@@ -1358,7 +1361,9 @@ subroutine parser
       if(i.ne.nfrag) call fatal_error('READ_INPUT: ibranching_cfrag array must contain nfrag entries.')
       ! The ifragcent array is already allocated in allocate_dmc so this does not have to be done again.
       call fdf_list('ibranching_cfrag',i,ibranching_cfrag)
-      write(ounit, '(a, <nfrag>f12.6)') 'branching c: ', (ibranching_cfrag(i), i=1,nfrag)
+      write(temp, '(a,i0,a)') '(a,', nfrag, '(f12.6))'
+      !write(ounit, '(a, <nfrag>f12.6)') 'branching c: ', (ibranching_cfrag(i), i=1,nfrag)
+      write(ounit, temp) 'branching c: ', (ibranching_cfrag(i), i=1,nfrag) ! GNU version
     else
       call fatal_error("READ_INPUT: chosen icut_e requires ibranching_cfrag")
     endif
@@ -1375,7 +1380,8 @@ subroutine parser
       if(i.ne.nfrag) call fatal_error('READ_INPUT: etrialfrag array must contain nfrag entries.')
       ! The etrialfrag array is already allocated in allocate_dmc so this does not have to be done again.
       call fdf_list('etrialfrag',i,etrialfrag)
-      write(ounit, '(a, <nfrag>f12.6)') 'etrialfrag: ', (etrialfrag(i), i=1,nfrag)
+      !write(ounit, '(a, <nfrag>f12.6)') 'etrialfrag: ', (etrialfrag(i), i=1,nfrag)
+      write(ounit, temp) 'etrialfrag: ', (etrialfrag(i), i=1,nfrag) ! GNU version
     else
       call fatal_error("READ_INPUT: chosen icut_e requires etrialfrag")
     endif
