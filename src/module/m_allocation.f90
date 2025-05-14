@@ -184,7 +184,7 @@ contains
     call allocate_velratio()
     call allocate_da_branch()
     call allocate_pathak()
-    if (nfrag.gt.1) call allocate_fragments()
+    call allocate_fragments()
   end subroutine allocate_dmc
 
   !> Subroutines to deallocate memory of specific DMC-related variables.

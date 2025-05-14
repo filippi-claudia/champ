@@ -5,6 +5,7 @@ contains
 ! get nuclear potential energy
       use fragments, only: potnnfrag, ifragcent, nfrag
       use contrl_per, only: ibasis,iperiodic
+      use contrldmc, only: icut_e
       use da_pseudo, only: da_pecent,da_vps
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
@@ -35,7 +36,7 @@ contains
             r=dsqrt(r2)
             tmp = znuc(iwctype(i))*znuc(iwctype(j))/r
             pecent=pecent+tmp
-            if (nfrag.gt.1) then
+            if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
               potnnfrag(ifragcent(i)) = potnnfrag(ifragcent(i)) + 0.5d0 * tmp
               potnnfrag(ifragcent(j)) = potnnfrag(ifragcent(j)) + 0.5d0 * tmp
             endif

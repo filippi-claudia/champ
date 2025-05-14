@@ -8,6 +8,7 @@
       use averages, only: average
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
+      use branching, only: calculate_fratio, calculate_reweight
       use casula,  only: i_vpsp,icasula, t_vpsp
       use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
       use const,   only: etrial,esigmatrial
@@ -97,8 +98,8 @@
       real(dp) :: ewtn, ewto, expon, ffi
       real(dp) :: ffn, fration, fratio_aux, ginv
       real(dp) :: p, pen, pp, psi2savo
-      real(dp) :: psidn(1), psijn(1), q, r2n, r2o
-      real(dp) :: rminn, rmino, rnorm_nodes, rnorm_nodes_new
+      real(dp) :: psidn(1), psijn(1), q
+      real(dp) :: rnorm_nodes, rnorm_nodes_new
       real(dp) :: rnorm_nodes_old, ro, taunow
       real(dp) :: tauprim, tratio, v2new, v2old, v2
       real(dp) :: v2sumn, v2sumo, vavfac, vav2sumn, vav2sumo
@@ -163,55 +164,12 @@
         do ifr=1,nforce
           do iw=1,nwalk
             tratio = one
-            if (icut_e.eq.0) then
-              call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumo, v2sumo)
-              fratio(iw,ifr)=dsqrt(vav2sumo/v2sumo)
-            else if (icut_e.eq.2) then
-              v2sumn = 0
-              do i=1,nelec
-                 v2sumo = v2sumo + vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2 + vold_dmc(3,i,iw,ifr)**2
-              enddo
-              fratio(iw, ifr)= ibranching_c * sqrt(v2sumo)/sqrt_nelec
-            else if (icut_e.eq.3) then
-              fratio(iw, ifr)= ibranching_c * dabs(eest-eold(iw, ifr))/(0.2d0 * sqrt_nelec)
-
-            ! Electron fragments
-            else if (icut_e.eq.-1) then 
-              do i = 1, nelec
-                v2_i(i) = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2 + vold_dmc(3,i,iw,ifr)**2
-                vavfac = (-1.d0 + dsqrt(1.d0 + 2.d0 * adrift * v2_i(i) * tau)) / (adrift * v2_i(i) * tau)
-                vav2_i(i) = vavfac**2 * v2_i(i)
-                fratio_i(i,iw,ifr) = dsqrt(vav2_i(i) / v2_i(i))
-              end do
-            else if (icut_e.eq.-2) then 
-              do i = 1, nelec
-                fratio_i(i,iw,ifr) = ibranching_c * norm2(vold_dmc(:,i,iw,ifr)) / sqrt_nelec
-              end do
-            else if (icut_e.eq.-3) then
-              fratio_i(:,iw,ifr) = ibranching_c * dabs(eest_i(:) - eloco_i(:,iw,ifr)) / (0.2d0 * sqrt_nelec)
-
-            ! Fragments
-            else if (icut_e.eq.-4) then
-              v2frag = 0.d0
-              vav2frag = 0.0d0
-              do i = 1, nelec
-                v2 = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2 + vold_dmc(3,i,iw,ifr)**2
-                vavfac = (-1.d0 + dsqrt(1.d0 + 2.d0 * adrift * v2 * taunow)) / (adrift * v2 * taunow)
-                v2frag(ifragelec(i)) = v2frag(ifragelec(i)) + v2
-                vav2frag(ifragelec(i)) = vav2frag(ifragelec(i)) + vavfac**2 * v2
-              end do
-              fratiofrag(:,iw,ifr) = dsqrt(vav2frag / v2frag)
-
-            else if (icut_e.eq.-5) then
-              v2frag = 0.d0
-              do i=1,nelec
-                v2frag(ifragelec(i)) = v2frag(ifragelec(i)) + vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2 + vold_dmc(3,i,iw,ifr)**2
-              enddo
-              fratiofrag(:,iw,ifr) = ibranching_cfrag(:) * sqrt(v2frag(:)) / sqrt_nelecfrag(:)
-
-            else if (icut_e.eq.-6) then 
-              fratiofrag(:,iw,ifr) = ibranching_cfrag(:) * dabs(eestfrag(:) - elocofrag(:,iw,ifr)) / (0.2d0 * sqrt_nelec)
-            endif   
+            ! Todo Joris - Think of a way to not pass in the fragments if they are not needed. 
+            call calculate_fratio(icut_e, adrift, tratio, taunow, sqrt_nelec, &
+                                  vold_dmc(:,:,iw,ifr), &
+                                  eest, eold(iw,ifr), fratio(iw,ifr), &
+                                  eest_i, eloco_i(:,iw,ifr), fratio_i(:,iw,ifr), &
+                                  eestfrag, elocofrag(:,iw,ifr), fratiofrag(:,iw,ifr))
           enddo
         enddo
         ncall=ncall+1
@@ -441,20 +399,6 @@
             dfus2unfrag(ifragelec(i)) = dfus2unfrag(ifragelec(i)) + dfus2o
           endif
 
-          ! Calculate density and moments of r for primary walk
-          r2o=zero
-          r2n=zero
-          rmino=zero
-          rminn=zero
-          do k=1,3
-            r2o=r2o+xold_dmc(k,i,iw,1)**2
-            r2n=r2n+xnew(k)**2
-            rmino=rmino+(xold_dmc(k,i,iw,1)-cent(k,1))**2
-            rminn=rminn+(xnew(k)-cent(k,1))**2
-          enddo
-          rmino=sqrt(rmino)
-          rminn=sqrt(rminn)
-
           ! If we are using weights rather than accept/reject
           if(iacc_rej.le.0) then
             p=one
@@ -570,146 +514,21 @@
 
 
           taunow=tauprim*drifdifr
-
-
-          if (icut_e.eq.0) then
-            call dmc_eloc_cutoff(vold_dmc(1,1,iw,ifr), adrift, tratio, vav2sumn, v2sumn)
-            fration=dsqrt(vav2sumn/v2sumn)
+          call calculate_fratio(icut_e, adrift, tratio, taunow, sqrt_nelec, &
+                                  vold_dmc(:,:,iw,ifr), &
+                                  eest, enew(1), fration, &
+                                  eest_i, eloc_i(:), fration_i(:), &
+                                  eestfrag, elocfrag(:), frationfrag(:))
           
-          else if (icut_e.eq.2) then
-            v2sumn = 0
-            do i=1,nelec
-               v2sumn = v2sumn + vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2 + vold_dmc(3,i,iw,ifr)**2
-            enddo
-            fration = ibranching_c * dsqrt(v2sumn)/sqrt_nelec
-          
-          else if (icut_e.eq.3) then
-            fration = ibranching_c * dabs(eest-enew(1))/(0.2d0 * sqrt_nelec)
-          
-          else if (icut_e.eq.-1) then
-            do i = 1, nelec
-              v2_i(i) = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2 + vold_dmc(3,i,iw,ifr)**2
-              vavfac = (-1.d0 + dsqrt(1.d0 + 2.d0 * adrift * v2_i(i) * taunow)) / (adrift * v2_i(i) * taunow)
-              vav2_i(i) = vavfac**2 * v2_i(i)
-              fration_i(i) = dsqrt(vav2_i(i) / v2_i(i))
-            end do
-          
-          else if (icut_e.eq.-2) then 
-            do i = 1, nelec
-              fration_i(i) = ibranching_c * norm2(vold_dmc(:,i,iw,ifr))
-            end do
-          
-          else if (icut_e.eq.-3) then
-            fration_i(:) = ibranching_c * abs(eest_i(:) - eloc_i(:)) / (0.2d0)      
-          
-          ! Fragments
-          else if (icut_e.eq.-4) then
-            v2frag = 0.d0
-            vav2frag = 0.0d0
-            do i = 1, nelec
-              v2 = vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2 + vold_dmc(3,i,iw,ifr)**2
-              vavfac = (-1.d0 + dsqrt(1.d0 + 2.d0 * adrift * v2 * taunow)) / (adrift * v2 * taunow)
-              v2frag(ifragelec(i)) = v2frag(ifragelec(i)) + v2
-              vav2frag(ifragelec(i)) = vav2frag(ifragelec(i)) + vavfac**2 * v2
-            end do
-            frationfrag = dsqrt(vav2frag / v2frag)
-
-          else if (icut_e.eq.-5) then 
-            v2frag = 0.d0
-            do i=1,nelec
-              v2frag(ifragelec(i)) = v2frag(ifragelec(i)) + vold_dmc(1,i,iw,ifr)**2 + vold_dmc(2,i,iw,ifr)**2 + vold_dmc(3,i,iw,ifr)**2
-            enddo
-            frationfrag(:) = ibranching_cfrag(:) * sqrt(v2frag(:)) / sqrt_nelecfrag(:)
-
-          else if (icut_e.eq.-6) then 
-            frationfrag(:) = ibranching_cfrag(:) * dabs(eestfrag(:) - elocfrag(:)) / (0.2d0 * sqrt_nelecfrag(:))
-          endif   
-
           if(ipr.ge.1)write(ounit,'(''wt'',9f10.5)') wt(iw),etrial,eest
           
-          deo=eest-eold(iw,ifr)
-          den=eest-enew(1)
-          ecuto=min(e_cutoff,dabs(deo))
-          ecutn=min(e_cutoff,dabs(den))
-          if(icut_e.eq.0) then
-            ewto=eest-deo*fratio(iw,ifr)
-            ewtn=eest-den*fration
-          else if (icut_e.eq.1) then
-            ewto=eest-sign(1.d0,deo)*ecuto
-            ewtn=eest-sign(1.d0,den)*ecutn
-          else if (icut_e.eq.2.or.icut_e.eq.3) then
-            fratio_aux = max(fratio(iw,ifr)*taunow, 1e-9)
-            ewto=eest-deo*sqrt_pi_o2*derf(fratio_aux)/(fratio_aux)
-            fratio_aux = max(fration*taunow, 1e-9)
-            ewtn=eest-den*sqrt_pi_o2*derf(fratio_aux)/(fratio_aux)
-            
-          ! electron fragments
-          else if (icut_e.eq.-1) then
-            deo_i(:) = eest_i(:) - eloco_i(:,iw,ifr)
-            den_i(:) = eest_i(:) - eloc_i(:) 
-            ewto=eest-sum(deo_i(:) * fratio_i(:,iw,ifr))
-            ewtn=eest-sum(den_i(:) * fration_i(:))
-          else if (icut_e.eq.-2.or.icut_e.eq.-3) then
-            deo_i(:) = eest_i(:) - eloco_i(:,iw,ifr)
-            den_i(:) = eest_i(:) - eloc_i(:) 
-            do i = 1, nelec
-              fratio_aux_i(i) = max(fratio_i(i,iw,ifr)*taunow, 1e-9)
-            end do
-            ewto=eest-sum(deo_i(:)*sqrt_pi_o2*derf(fratio_aux_i(:))/(fratio_aux_i(:)))
-            do i = 1, nelec
-              fratio_aux_i(i) = max(fration_i(i)*taunow, 1e-9)
-            end do
-            ewtn=eest-sum(den_i(:)*sqrt_pi_o2*derf(fratio_aux_i(:))/(fratio_aux_i(:)))
-          
-            ! fragments
-          else if (icut_e.eq.-4) then
-            deofrag(:) = eestfrag(:) - elocofrag(:,iw,ifr)
-            denfrag(:) = eestfrag(:) - elocfrag(:) 
-            ewto=eest-sum(deofrag(:) * fratiofrag(:,iw,ifr))
-            ewtn=eest-sum(denfrag(:) * frationfrag(:))
 
-          else if (icut_e.eq.-5.or.icut_e.eq.-6) then
-            deofrag(:) = eestfrag(:) - elocofrag(:,iw,ifr)
-            denfrag(:) = eestfrag(:) - elocfrag(:) 
-            do i = 1, nelec
-              fratio_auxfrag(ifragelec(i)) = max(fratiofrag(ifragelec(i),iw,ifr)*tauefffrag(ifragelec(i)), 1e-9)
-            end do
-            ewtofrag=eestfrag-deofrag*sqrt_pi_o2*derf(fratio_auxfrag(:))/(fratio_auxfrag(:))
-            do i = 1, nelec
-              fratio_auxfrag(ifragelec(i)) = max(frationfrag(ifragelec(i))*tauefffrag(ifragelec(i)), 1e-9)
-            end do
-            ewtnfrag=eestfrag-denfrag(:)*sqrt_pi_o2*derf(fratio_auxfrag(:))/(fratio_auxfrag(:))
-          endif
+          call calculate_reweight(idmc, icut_e, icut_br, taunow, e_cutoff, &
+                                  etrial, eest, eold(iw,ifr), enew(1), fratio(iw,ifr), fration, &
+                                  eest_i, eloco_i(:,iw,ifr), eloc_i, fratio_i(:,iw,ifr), fration_i, &
+                                  etrialfrag, eestfrag, elocofrag(:,iw,ifr), elocfrag, fratiofrag(:,iw,ifr), frationfrag, tauefffrag, &
+                                  dwt)
 
-          !if (abs((sum(eloc_i(:)) - enew(1))) > 1e-9) print *, 'eloc wrong'
-          !if (abs((sum(eloco_i(:, iw,ifr)) - eold(iw,ifr))) > 1e-9) print *, 'eloco wrong', sum(eloco_i(:, iw,ifr)), eold(iw,ifr)
-          !if (abs((sum(eest_i(:)) - eest)) > 1e-9) print *, 'eest wrong', eest-sum(eestfrag(:))
-          !if (abs((sum(elocfrag(:)) - enew(1))) > 1e-9 .and. nfrag.ge.1) print *, 'elocfrag wrong'
-          !if (abs((sum(elocofrag(:, iw,ifr)) - eold(iw,ifr))) > 1e-9 .and. nfrag.ge.1) print *, 'elocofrag wrong', sum(elocofrag(:, iw,ifr)), eold(iw,ifr)
-          !if (abs((sum(eestfrag(:)) - eest)) > 1e-9 .and. nfrag.ge.1 ) print *, 'eestfrag wrong', eest-sum(eestfrag(:))
-
-
-          if(idmc.gt.0) then
-            if (nfrag.gt.1) then
-              expon = sum((etrialfrag - half * (ewtofrag + ewtnfrag)) * tauefffrag) 
-            else
-              expon=(etrial-half*(ewto+ewtn))*taunow
-            endif
-            if(icut_br.le.0) then
-              dwt=dexp(expon)
-              !print*, 'dwt', dwt
-              !print*, 'etrialfrag', etrialfrag
-              !print*, 'ewtnfrag', ewtnfrag
-              !print*, 'ewtofrag', ewtofrag
-              !print*, 'tauefffrag', tauefffrag
-              !print*, 'taunow', taunow
-              !print*, 'expon', expon
-
-             else
-              dwt=0.5d0+1/(1+exp(-4*expon))
-            endif
-          endif
-          
           !if (abs(dwt - 1) > 0.1) then 
           !  print*, 'dwt:', dwt
           !  print*, 'ewto:', ewto, 'ewtn:', ewtn
@@ -799,9 +618,10 @@
             enddo
           endif
           
+          ! call update_reweight
           eold(iw,ifr)=enew(1)
           !if (abs(sum(eloc_i(:)))<1e-6) print *, 'eloc zero'
-          if (nfrag.gt.1) then
+          if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
             eloco_i(:,iw,ifr) = eloc_i(:)
             elocofrag(:,iw,ifr) = elocfrag(:)
             fratio_i(:,iw,ifr)=fration_i(:)
@@ -828,7 +648,7 @@
 
             wsum1(ifr)=wsum1(ifr)+wtnow
             esum1_dmc(ifr)=esum1_dmc(ifr)+wtnow*eold(iw,ifr)
-            if (nfrag.gt.1) then
+            if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
               esum_i1(:) = esum_i1(:) + wtnow*eloc_i(:)
               esumfrag1(:) = esumfrag1(:) + wtnow*elocfrag(:)
             endif
@@ -973,7 +793,7 @@
         endif
       enddo
 
-      if (nfrag.gt.1) then
+      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
         if (idmc.gt.0.or.iacc_rej.eq.0) then
           egsum1frag(:)=esumfrag1(:) * fprod
           esum_i(:) = esum_i(:) + esum_i1(:)*fprod

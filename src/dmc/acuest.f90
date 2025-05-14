@@ -8,6 +8,7 @@ contains
       use age, only: ioldest
       use contrldmc, only: idmc
       use contrl_file, only: ounit
+      use contrldmc, only: icut_e
       use control, only: mode
       use control_dmc, only: dmc_nstep
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave
@@ -141,7 +142,7 @@ contains
         endif
       enddo
 
-      if (nfrag.gt.1) then
+      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
         egnowfrag(:)=egsumfrag(:)/wgsum(1)
         eg2sumfrag(:)=egsumfrag(:)*egnowfrag(:)
         
@@ -335,7 +336,7 @@ contains
       wfsum=zero
       esum_dmc=zero
       efsum=zero
-      if (nfrag.gt.1) then
+      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
         esum_i = zero
         esumfrag = zero
         egsumfrag(:)=zero

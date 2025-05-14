@@ -4,6 +4,7 @@ contains
 ! Written by Cyrus Umrigar, modified by Claudia Filippi
 
       use age,     only: iage,ioldest,ioldestmx
+      use contrldmc, only: icut_e
       use derivest, only: derivcm2,derivcum,derivsum
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
       use est2cm,  only: pecm2_dmc
@@ -75,7 +76,7 @@ contains
       esum_dmc=zero
       efsum=zero
       
-      if (nfrag.gt.1) then
+      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
         ecum_i = zero
         esum_i = zero
         

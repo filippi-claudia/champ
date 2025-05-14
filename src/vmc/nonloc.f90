@@ -7,6 +7,7 @@ contains
       use Bloc,    only: b,bkin,b_dj
       use b_tmove, only: b_t,iskip
       use contrl_file, only: ounit, errunit
+      use contrldmc, only: icut_e
       use control, only: ipr,mode
       use fragments, only: eloc_i, elocfrag, ifragcent, ifragelec, nfrag
       use jastrow_update, only: fso
@@ -262,7 +263,7 @@ contains
           xj=bjxtoj(ibjx)
           xo=bjxtoo(ibjx)
           vpsp_det(iab,ibjx)=vpsp_det(iab,ibjx)+term_radial_jas(iq,xj)*det_ratio(iq,xo)
-          if (nfrag.gt.1) then
+          if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
             eloc_i(iel) = eloc_i(iel) + term_radial_jas(iq,xj)*det_ratio(iq,xo)
             elocfrag(ifragelec(iel)) = elocfrag(ifragelec(iel)) + 0.5d0 * term_radial_jas(iq,xj)*det_ratio(iq,xo)
             elocfrag(ifragcent(ic)) = elocfrag(ifragcent(ic)) + 0.5d0 * term_radial_jas(iq,xj)*det_ratio(iq,xo)

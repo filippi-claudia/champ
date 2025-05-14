@@ -14,6 +14,7 @@ contains
       use casula,  only: i_vpsp,t_vpsp
       use constants, only: hb
       use contrl_file, only: ounit
+      use contrldmc, only: icut_e
       use control, only: ipr
       use csfs,    only: nstates
       use determinant_mod, only: compute_bmatrices_kin,determinant
@@ -170,6 +171,7 @@ contains
         enddo
       endif
 
+      
       call multideterminant_hpsi(vj,ekin_det,vpsp_det,eloc_det)
 
       do istate=1,nstates
@@ -181,7 +183,7 @@ contains
         do i=1,nelec
           tmp = -hb*(vj(1,i,j)**2+vj(2,i,j)**2+vj(3,i,j)**2)
           ekin_other=ekin_other+tmp
-          if (nfrag.gt.1) then
+          if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
             eloc_i(i)=eloc_i(i)+tmp
             elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) + tmp
           endif

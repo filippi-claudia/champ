@@ -11,6 +11,7 @@ contains
       use casula,  only: i_vpsp,icasula
       use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
       use const,   only: etrial,esigmatrial
+      use contrldmc, only: icut_e
       use control, only: mode
       use control_dmc, only: dmc_nconf
       use da_energy_now, only: da_energy
@@ -75,7 +76,7 @@ contains
       eigv=one
       eest=etrial
 
-      if (nfrag.gt.1) then 
+      if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then 
         call assign_elecs(xold_dmc(:,:,1,1), 2)
         sqrt_nelecfrag = 0
         do i = 1, nelec
@@ -121,7 +122,7 @@ contains
           if(icasula.lt.0) i_vpsp=icasula
           
           call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),ekino,eold(iw,ifr),0,ifr)
-          if (nfrag.gt.1) then
+          if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
             eloco_i(:,iw,ifr) = eloc_i(:)
             elocofrag(:,iw,ifr) = elocfrag(:)
           endif

@@ -9,6 +9,7 @@ contains
       use fragments, only: egcum1frag, egsum1frag, egsumfrag, egcm21frag, nfrag
       use precision_kinds, only: dp
       use const, only: etrial
+      use contrldmc, only: icut_e
       use control, only: ipr, mode
       use multiple_geo, only: nforce
       use const,   only: etrial
@@ -84,7 +85,7 @@ contains
         eigv=(wgsum1(1)/wtgen(ipmod))**(one/nfpro)
        else
         eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
-        if (nfrag.gt.1) then
+        if ( (nfrag.gt.1) .or. (icut_e.lt.0) ) then
           eest_i(:) = (ecum_i(:) + esum_i(:))/(wgcum(1)+wgsum(1))
           eestfrag(:) = (ecumfrag(:) + esumfrag(:)) / (wgcum(1) + wgsum(1))
         endif

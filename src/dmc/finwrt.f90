@@ -238,43 +238,9 @@ contains
       if (nfrag.gt.1) then
         egavefrag = egcumfrag(:) / wgcum(1)
         egerrfrag = errg(egcumfrag(:), egcm2frag(:),1)
-        egerr1frag = errg1(egcum1frag(:), egcm21frag(:),1) ! Not implemented for nforce > 1
-      endif
-
-      !!Debug code
-      ! call MPI_Comm_rank(MPI_COMM_WORLD, rank, ierr)
-      ! do j = 0, 1
-      !   call MPI_Barrier(MPI_COMM_WORLD, ierr)
-      ! if ( j.eq.rank ) then
-      !   print*,'Total'
-      !   print*, 'Tcorr', ((egerr/egerr1)**2)
-      !   print*, 'egerr', egerr, 'egerr1', egerr1
-      !   print*, 'egcum', egcum, 'egcm2', egcm2
-      !   print*, 'egcum1', egcum1, 'egcm21', egcm21
-      !   print*, ''
-      !   do i = 1, nfrag
-      !     print*,'Fragment', i 
-      !     print*, 'Tcorr', ((egerrfrag(i)/egerr1frag(i))**2)
-      !     print*, 'egerr', egerrfrag(i), 'egerr1', egerr1frag(i)
-      !     print*, 'egcum', egcumfrag(i), 'egcm2', egcm2frag(i)
-      !     print*, 'egcum1', egcum1frag(i), 'egcm21', egcm21frag(i)
-      !     print*, ''
-      !   enddo  
-      ! endif
-      ! enddo
+        egerr1frag = errg1(egcum1frag(:), egcm21frag(:),1)
+      endif     
       
-      if (idmc.lt.0) then
-        do i = 1, nfrag
-          write(ounit,'(''Fragment: '',i4,'' Energy '',f12.7,'' +- '',f11.7,'' Tcorr '',f8.2,'' c '',f9.5)') &
-          i, egavefrag(i), egerrfrag(i), ((egerrfrag(i)/egerr1frag(i))**2), 15.51d0 / dsqrt(((egerrfrag(i)/egerr1frag(i))**2) - 1.0d0)
-        enddo
-      else
-        do i = 1, nfrag
-          write(ounit,'(''Fragment: '',i4,'' Energy '',f12.7,'' +- '',f11.7,'' Tcorr '',f8.2)') &
-          i, egavefrag(i), egerrfrag(i), ((egerrfrag(i)/egerr1frag(i))**2)
-        enddo
-      end if
-
       do ifr=1,nforce
         peave=pecum_dmc(ifr)/wgcum(ifr)
         tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
@@ -284,6 +250,19 @@ contains
         write(ounit,'(''potential energy ='',t24,f12.7,'' +-'',f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
         write(ounit,'(''pb kinetic energy ='',t24,f12.7,'' +-'',f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
       enddo
+
+      if (nfrag.gt.1) then
+        do i = 1, nfrag
+          write(ounit,'(''fragment  '',i4,'' energy  '',f12.7,'' +-'',f11.7,'' Tcorr '',f8.2,'' c '',f9.5)') &
+          i, egavefrag(i), egerrfrag(i), ((egerrfrag(i)/egerr1frag(i))**2), 15.51d0 / dsqrt(((egerrfrag(i)/egerr1frag(i))**2) - 1.0d0)
+        enddo
+      ! else
+      !   do i = 1, nfrag
+      !     write(ounit,'(''fragment  '',i4,'' energy  '',f12.7,'' +-'',f11.7,'' Tcorr '',f8.2)') &
+      !     i, egavefrag(i), egerrfrag(i), ((egerrfrag(i)/egerr1frag(i))**2)
+      !   enddo
+      end if
+
       do ifr=2,nforce
         fgave=egcum(1)/wgcum(1)-egcum(ifr)/wgcum(ifr)
         fgerr=errg(fgcum(ifr),fgcm2(ifr),1)
