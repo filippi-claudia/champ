@@ -1362,14 +1362,13 @@ subroutine parser
       ! The ifragcent array is already allocated in allocate_dmc so this does not have to be done again.
       call fdf_list('ibranching_cfrag',i,ibranching_cfrag)
       write(temp, '(a,i0,a)') '(a,', nfrag, '(f12.6))'
-      !write(ounit, '(a, <nfrag>f12.6)') 'branching c: ', (ibranching_cfrag(i), i=1,nfrag)
-      write(ounit, temp) 'branching c: ', (ibranching_cfrag(i), i=1,nfrag) ! GNU version
+      write(ounit, temp) 'branching c: ', (ibranching_cfrag(i), i=1,nfrag) 
     else
       call fatal_error("READ_INPUT: chosen icut_e requires ibranching_cfrag")
     endif
   endif
   ! read etrialfrag
-  if(nfrag.gt.1.and.(icut_e.eq.-5.or.icut_e.eq.-6)) then
+  if(nfrag.gt.1.and.((icut_e.eq.-4) .or. (icut_e.eq.-5) .or. (icut_e.eq.-6))) then
     write(ounit, *) ""
 
     if ( fdf_islist('etrialfrag') .and. fdf_islreal('etrialfrag') ) then
@@ -1380,8 +1379,7 @@ subroutine parser
       if(i.ne.nfrag) call fatal_error('READ_INPUT: etrialfrag array must contain nfrag entries.')
       ! The etrialfrag array is already allocated in allocate_dmc so this does not have to be done again.
       call fdf_list('etrialfrag',i,etrialfrag)
-      !write(ounit, '(a, <nfrag>f12.6)') 'etrialfrag: ', (etrialfrag(i), i=1,nfrag)
-      write(ounit, temp) 'etrialfrag: ', (etrialfrag(i), i=1,nfrag) ! GNU version
+      write(ounit, temp) 'etrialfrag: ', (etrialfrag(i), i=1,nfrag) 
     else
       call fatal_error("READ_INPUT: chosen icut_e requires etrialfrag")
     endif

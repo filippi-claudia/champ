@@ -10,7 +10,8 @@ contains
 !> Written by Cyrus Umrigar, modified by Claudia Filippi and A. Scemama
 !> modified by Claudio Amovilli and Franca Floris for PCM and QM-MMPOl
 
-      use Bloc,    only: tildem,tildemkin,b,bkin
+      use Bloc,    only: tildem, tildemkin, b, bkin, xmat, xmatkin
+      use bxmatrices, only: bxmatrix
       use casula,  only: i_vpsp,t_vpsp
       use constants, only: hb
       use contrl_file, only: ounit
@@ -42,6 +43,7 @@ contains
       use optjas_mod, only: optjas_deloc
       use optorb_f_mod, only: optorb_compute
       use orbval, only: nadorb
+      use optwf_control, only: ioptorb
       use optwf_parms, only: nparmj
       use pcm_cntrl, only: ipcm
       use pcm_hpsi, only: pcms,pcmv
@@ -51,14 +53,14 @@ contains
       use properties_mod, only: prop_compute
       use pseudo,  only: nloc
       use qmmm_pot, only: qmmm_extpot_ene
-      use slater,  only: kref,ndet,norb
+      use slater,  only: kref,ndet,norb, d2dx2, ddx
       use system,  only: ndn,nelec,nup
       use velocity_jastrow, only: vj
       use ycompact, only: ymat
 
       implicit none
 
-      integer :: i, iab, ifr, ii, ipass, j, o, x
+      integer :: i, iab, ifr, ii, ipass, j, o, x, ish
       integer :: irep, istate, jrep, nel, iorb, i1, i2, iparm
       real(dp) :: e_other, ekin_other, ext_pot, peQM, pe_local, pepcm
       real(dp) :: tmp
@@ -171,8 +173,39 @@ contains
         enddo
       endif
 
-      
-      call multideterminant_hpsi(vj,ekin_det,vpsp_det,eloc_det)
+      ! single determinant local energy calculations
+      do istate = 1, nstates
+        j=stoj(istate) 
+        o=stoo(istate)
+        x=stobjx(istate)
+        nel=nup
+        ish=0
+        do iab=1,2
+          if(iab.eq.2) then
+            nel=ndn
+            ish=nup
+          endif
+          ekin_det(iab,x)=0.d0
+          do i=1,nel
+            tmp=-hb*(d2dx2(i+ish,o)+2.d0*(vj(1,i+ish,j)*ddx(1,i+ish,o)+vj(2,i+ish,j)*ddx(2,i+ish,o)+vj(3,i+ish,j)*ddx(3,i+ish,o)))
+            if (icut_e.lt.0) then
+              eloc_i(i+ish)=eloc_i(i+ish)+tmp
+            endif
+            if (nfrag.gt.1) then
+              elocfrag(ifragelec(i+ish))=elocfrag(ifragelec(i+ish))+tmp
+            endif
+            ekin_det(iab,x)=ekin_det(iab,x)+tmp
+          enddo
+          eloc_det(kref,iab,x)=ekin_det(iab,x) + vpsp_det(iab,x)
+        enddo
+
+        if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) then
+          call bxmatrix(kref,xmat(1,1,x),xmat(1,2,x),b(1,1,x),x)
+          call bxmatrix(kref,xmatkin(1,1,x),xmatkin(1,2,x),bkin(1,1,x),x)
+        endif
+      enddo
+
+      if (.not.(ndet.eq.1.and.ioptorb.eq.0)) call multideterminant_hpsi(vj,ekin_det,vpsp_det,eloc_det)
 
       do istate=1,nstates
         j=stoj(istate)
