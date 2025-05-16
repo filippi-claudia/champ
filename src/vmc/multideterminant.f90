@@ -45,33 +45,8 @@ contains
         j=stoj(istate) 
         o=stoo(istate)
         x=stobjx(istate)
-        nel=nup
-        ish=0
-        do iab=1,2
-          if(iab.eq.2) then
-            nel=ndn
-            ish=nup
-          endif
-          ekin_det(iab,x)=0.d0
-          do i=1,nel
-            tmpe=-hb*(d2dx2(i+ish,o)+2.d0*(vj(1,i+ish,j)*ddx(1,i+ish,o)+vj(2,i+ish,j)*ddx(2,i+ish,o)+vj(3,i+ish,j)*ddx(3,i+ish,o)))
-            if (icut_e.lt.0) then
-              eloc_i(i+ish)=eloc_i(i+ish)+tmpe
-            endif
-            if (nfrag.gt.1) then
-              elocfrag(ifragelec(i+ish))=elocfrag(ifragelec(i+ish))+tmpe
-            endif
-            ekin_det(iab,x)=ekin_det(iab,x)+tmpe
-          enddo
-          eloc_det(kref,iab,x)=ekin_det(iab,x) + vpsp_det(iab,x)
-        enddo
 
-        if(ndet.ne.1.or.iforce_analy.ne.0.or.ioptorb.ne.0) then
-          call bxmatrix(kref,xmat(1,1,x),xmat(1,2,x),b(1,1,x),x)
-          call bxmatrix(kref,xmatkin(1,1,x),xmatkin(1,2,x),bkin(1,1,x),x)
-        endif
-
-        if(ndet.eq.1.and.ioptorb.eq.0) return
+        !if(ndet.eq.1.and.ioptorb.eq.0) return
 
         nel=nup
         iel=0
