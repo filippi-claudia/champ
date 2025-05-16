@@ -22,6 +22,7 @@ contains
       use estcum,  only: wcum1, wcum_dmc, wfcum, wfcum1, wgcum, wgcum1
       use finwrt_more_mod, only: finwrt_more
       use force_analytic, only: force_analy_fin
+      use fragments,  only: egcumfrag, egcum1frag, egcm2frag, egcm21frag, nfrag
       use grdntspar, only: igrdtype, ngradnts
       use general, only: write_walkalize
       use header,  only: title
@@ -58,10 +59,13 @@ contains
       real(dp) :: x, x2
       real(dp), dimension(MFORCE) :: ffin_grdnts
       real(dp), dimension(MFORCE) :: ferr_grdnts
+      real(dp), dimension(nfrag) :: egavefrag
+      real(dp), dimension(nfrag) :: egerrfrag
+      real(dp), dimension(nfrag) :: egerr1frag
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
-
+      integer :: rank
       do ifr=1,nforce
         energy(ifr)=0
         energy_err(ifr)=0
@@ -230,6 +234,13 @@ contains
         energy(ifr)=egave
         energy_err(ifr)=egerr
       enddo
+
+      if (nfrag.gt.1) then
+        egavefrag = egcumfrag(:) / wgcum(1)
+        egerrfrag = errg(egcumfrag(:), egcm2frag(:),1)
+        egerr1frag = errg1(egcum1frag(:), egcm21frag(:),1)
+      endif     
+      
       do ifr=1,nforce
         peave=pecum_dmc(ifr)/wgcum(ifr)
         tpbave=tpbcum_dmc(ifr)/wgcum(ifr)
@@ -239,6 +250,19 @@ contains
         write(ounit,'(''potential energy ='',t24,f12.7,'' +-'',f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
         write(ounit,'(''pb kinetic energy ='',t24,f12.7,'' +-'',f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
       enddo
+
+      if (nfrag.gt.1) then
+        do i = 1, nfrag
+          write(ounit,'(''fragment  '',i4,'' energy  '',f12.7,'' +-'',f11.7,'' Tcorr '',f8.2,'' c '',f9.5)') &
+          i, egavefrag(i), egerrfrag(i), ((egerrfrag(i)/egerr1frag(i))**2), 15.51d0 / dsqrt(((egerrfrag(i)/egerr1frag(i))**2) - 1.0d0)
+        enddo
+      ! else
+      !   do i = 1, nfrag
+      !     write(ounit,'(''fragment  '',i4,'' energy  '',f12.7,'' +-'',f11.7,'' Tcorr '',f8.2)') &
+      !     i, egavefrag(i), egerrfrag(i), ((egerrfrag(i)/egerr1frag(i))**2)
+      !   enddo
+      end if
+
       do ifr=2,nforce
         fgave=egcum(1)/wgcum(1)-egcum(ifr)/wgcum(ifr)
         fgerr=errg(fgcum(ifr),fgcm2(ifr),1)

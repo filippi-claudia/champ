@@ -3,7 +3,9 @@ contains
       subroutine pot_nn(cent,znuc,iwctype,ncent,pecent,cos_n_sum,sin_n_sum)
 ! Written by Cyrus Umrigar
 ! get nuclear potential energy
+      use fragments, only: potnnfrag, ifragcent, nfrag
       use contrl_per, only: ibasis,iperiodic
+      use contrldmc, only: icut_e
       use da_pseudo, only: da_pecent,da_vps
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
@@ -15,13 +17,14 @@ contains
       integer :: i, j, j1, k, ncent
       integer, dimension(ncent_tot) :: iwctype
       real(dp) :: pecent, r, r2, ri, ri2
-      real(dp) :: term, zij
+      real(dp) :: tmp, term, zij
       real(dp), dimension(nctype_tot)  :: znuc
       real(dp), dimension(3,ncent_tot) :: cent
       real(dp), dimension(*), optional :: cos_n_sum   ! required for pot_nn_ewald
       real(dp), dimension(*), optional :: sin_n_sum   ! required for pot_nn_ewald
+      
+      if (nfrag.gt.1) potnnfrag = 0.0d0
 
-!
       if(iperiodic.eq.0) then
         pecent=0
         do i=2,ncent
@@ -32,7 +35,12 @@ contains
               r2=r2+(cent(k,i)-cent(k,j))**2
             enddo
             r=dsqrt(r2)
-            pecent=pecent+znuc(iwctype(i))*znuc(iwctype(j))/r
+            tmp = znuc(iwctype(i))*znuc(iwctype(j))/r
+            pecent=pecent+tmp
+            if ( (nfrag.gt.1) ) then
+              potnnfrag(ifragcent(i)) = potnnfrag(ifragcent(i)) + 0.5d0 * tmp
+              potnnfrag(ifragcent(j)) = potnnfrag(ifragcent(j)) + 0.5d0 * tmp
+            endif
           enddo
         enddo
        else

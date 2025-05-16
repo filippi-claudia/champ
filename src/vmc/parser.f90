@@ -41,6 +41,7 @@ subroutine parser
       use dorb_m,  only: iworbd
       use efield,  only: iefield,ncharges
       use efield_f_mod, only: efield_compute_extint
+      use fragments, only: nfrag, ifragcent, ibranching_cfrag, etrialfrag
       use general, only: bas_id,filenames_bas_num,pooldir,pp_id,write_walkalize
       use get_norbterm_mod, only: get_norbterm
       use gradjerrb, only: ngrad_jas_blocks
@@ -428,6 +429,7 @@ subroutine parser
   icut_br     = fdf_get('icut_br', 0)
   icut_e      = fdf_get('icut_e', 0)
   ibranching_c   = fdf_get('ibranching_c', 0.0d0)
+  nfrag       = fdf_get('nfrag', 0)
   limit_wt_dmc= fdf_get('limit_wt_dmc', 0)
   dmc_node_cutoff = fdf_get('dmc_node_cutoff', 0)
   dmc_eps_node_cutoff = fdf_get('dmc_enode_cutoff', 1.0d-7)
@@ -1318,10 +1320,72 @@ subroutine parser
      write(ounit,int_format ) " Properties printout flag = ", ipropprt
 !    call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
   endif
-
+  
+  
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
+
+  ! read fragment indeces
+  if ( (nfrag.gt.1).and.(ndet.gt.1) ) call fatal_error('READ_INPUT: Fragments not implemented for multideterminant wavefunctions')
+  if (nfrag.eq.1) call fatal_error("READ_INPUT: nfrag=1, do not use nfrag if you dont have any fragments")
+  if(nfrag.gt.0) then
+    write(ounit, *) ""
+
+    if ( fdf_islist('ifragcent') .and. fdf_islinteger('ifragcent') ) then
+      i = -1
+      call fdf_list('ifragcent',i,ifragcent)
+      write(ounit,'(a)' )
+      write(ounit,'(tr1,a,i0,a)') ' ifragcent has ',i,' entries'
+      if(i.ne.ncent) call fatal_error('READ_INPUT: ifragcent array must contain ncent entries.')
+      ! The ifragcent array is already allocated in allocate_dmc so this does not have to be done again.
+      call fdf_list('ifragcent',i,ifragcent)
+      write(temp, '(a,i0,a)') '(a,', ncent, '(i4))'
+      !write(ounit, '(a, <ncent>i)') 'Fragmentation indices : ', (ifragcent(i), i=1,ncent)
+      write(ounit, temp) 'Fragmentation indices : ', (ifragcent(i), i=1,ncent) ! GNU version
+
+      if (maxval(ifragcent) .ne. nfrag) call fatal_error("READ_INPUT: The number of fragments (nfrag) must match the maximal fragment index in ifragcent")
+    else
+      call fatal_error("READ_INPUT: ifragcent must be defined if nfrag is used")
+    endif
+  endif
+  ! read ibranching_cfrag
+  if(nfrag.gt.1.and.(icut_e.eq.-5.or.icut_e.eq.-6)) then
+    write(ounit, *) ""
+
+    if ( fdf_islist('ibranching_cfrag') .and. fdf_islreal('ibranching_cfrag') ) then
+      i = -1
+      call fdf_list('ibranching_cfrag',i,ibranching_cfrag)
+      write(ounit,'(a)' )
+      write(ounit,'(tr1,a,i0,a)') ' ibranching_cfrag has ',i,' entries'
+      if(i.ne.nfrag) call fatal_error('READ_INPUT: ibranching_cfrag array must contain nfrag entries.')
+      ! The ifragcent array is already allocated in allocate_dmc so this does not have to be done again.
+      call fdf_list('ibranching_cfrag',i,ibranching_cfrag)
+      write(temp, '(a,i0,a)') '(a,', nfrag, '(f12.6))'
+      !write(ounit, '(a, <nfrag>f12.6)') 'branching c: ', (ibranching_cfrag(i), i=1,nfrag)
+      write(ounit, temp) 'branching c: ', (ibranching_cfrag(i), i=1,nfrag) ! GNU version
+    else
+      call fatal_error("READ_INPUT: chosen icut_e requires ibranching_cfrag")
+    endif
+  endif
+  ! read etrialfrag
+  if(nfrag.gt.1.and.(icut_e.eq.-5.or.icut_e.eq.-6)) then
+    write(ounit, *) ""
+
+    if ( fdf_islist('etrialfrag') .and. fdf_islreal('etrialfrag') ) then
+      i = -1
+      call fdf_list('etrialfrag',i,etrialfrag)
+      write(ounit,'(a)' )
+      write(ounit,'(tr1,a,i0,a)') ' etrialfrag has ',i,' entries'
+      if(i.ne.nfrag) call fatal_error('READ_INPUT: etrialfrag array must contain nfrag entries.')
+      ! The etrialfrag array is already allocated in allocate_dmc so this does not have to be done again.
+      call fdf_list('etrialfrag',i,etrialfrag)
+      !write(ounit, '(a, <nfrag>f12.6)') 'etrialfrag: ', (etrialfrag(i), i=1,nfrag)
+      write(ounit, temp) 'etrialfrag: ', (etrialfrag(i), i=1,nfrag) ! GNU version
+    else
+      call fatal_error("READ_INPUT: chosen icut_e requires etrialfrag")
+    endif
+  endif
 
 ! (17) multideterminants information (either block or from a file)
 

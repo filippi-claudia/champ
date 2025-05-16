@@ -4,8 +4,12 @@ contains
 ! MPI version created by Claudia Filippi starting from serial version
 ! routine to accumulate estimators for energy etc.
 
+      use fragments, only: esum_i, ecum_i, eest_i
+      use fragments, only: esumfrag, ecumfrag, eestfrag
+      use fragments, only: egcum1frag, egsum1frag, egsumfrag, egcm21frag, nfrag
       use precision_kinds, only: dp
       use const, only: etrial
+      use contrldmc, only: icut_e
       use control, only: ipr, mode
       use multiple_geo, only: nforce
       use const,   only: etrial
@@ -50,13 +54,13 @@ contains
          efcm21=efcm21+efsum1**2/wfsum1
       endif
 
-      do ifr=1,nforce
+      do ifr=1,nforce !TODO: Fragment this block
         wgcum1(ifr)=wgcum1(ifr)+wgsum1(ifr)
         egcum1(ifr)=egcum1(ifr)+egsum1(ifr)
         wgcm21(ifr)=wgcm21(ifr)+wgsum1(ifr)**2
         egcm21(ifr)=egcm21(ifr)+egsum1(ifr)**2/wgsum1(ifr)
       enddo
-
+      
 ! collect block averages
       wsum_dmc=wsum_dmc+wsum1(1)
       wfsum=wfsum+wfsum1
@@ -68,6 +72,12 @@ contains
         egsum(ifr)=egsum(ifr)+egsum1(ifr)
       enddo
 
+      if (nfrag.gt.1) then
+        egcum1frag(:)=egcum1frag(:)+egsum1frag(:)
+        egcm21frag(:)=egcm21frag(:)+egsum1frag(:)**2/wgsum1(1)
+        egsumfrag(:)=egsumfrag(:)+egsum1frag(:)
+      endif
+
 ! Estimate eigenvalue of G from the energy
       ipmod=mod(ipass,nfprod)
       if(iabs(idmc).eq.1) then
@@ -75,6 +85,14 @@ contains
         eigv=(wgsum1(1)/wtgen(ipmod))**(one/nfpro)
        else
         eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
+        if (icut_e.lt.0) then
+          eest_i(:) = (ecum_i(:) + esum_i(:))/(wgcum(1)+wgsum(1))
+        endif
+        if (nfrag.gt.1) then
+          eestfrag(:) = (ecumfrag(:) + esumfrag(:)) / (wgcum(1) + wgsum(1))
+        endif
+        !print *, 'acues1', egsum(1), sum(esum_i(:)), egsum(1) - sum(esum_i(:))
+        !print *, 'eest (acues1)', eest, sum(eest_i(:)), eest - sum(eest_i(:))
         eigv=dexp((etrial-eest)*(taucum(1)+tausum(1))/ &
                                 (wgcum(1)+wgsum(1)))
         if(ipr.ge.1) write(ounit,'(''eigv'',9f14.6)') eigv,eest, &
@@ -94,6 +112,10 @@ contains
         esum1_dmc(ifr)=zero
         egsum1(ifr)=zero
       enddo
+      
+      if (nfrag.gt.1) then
+        egsum1frag(:)=zero
+      endif
 
       return
       end

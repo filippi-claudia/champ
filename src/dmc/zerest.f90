@@ -4,6 +4,7 @@ contains
 ! Written by Cyrus Umrigar, modified by Claudia Filippi
 
       use age,     only: iage,ioldest,ioldestmx
+      use contrldmc, only: icut_e
       use derivest, only: derivcm2,derivcum,derivsum
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
       use est2cm,  only: pecm2_dmc
@@ -17,6 +18,8 @@ contains
       use estsum,  only: esum1_dmc,esum_dmc,pesum_dmc,tausum
       use estsum,  only: tpbsum_dmc,wfsum,wfsum1
       use estsum,  only: wgsum,wgsum1,wsum1,wsum_dmc
+      use fragments,  only: esum_i, ecum_i, esumfrag, ecumfrag
+      use fragments,  only: egsum1frag, egsumfrag, egcum1frag, egcumfrag, egcm21frag, egcm2frag, nfrag
       use mmpol,   only: mmpol_init
       use mpiblk,  only: iblk_proc
       use multiple_geo, only: fgcm2,fgcum,nforce
@@ -72,7 +75,22 @@ contains
       efsum1=zero
       esum_dmc=zero
       efsum=zero
-
+      
+      if (icut_e.lt.0) then
+        ecum_i = zero
+        esum_i = zero
+      endif
+      
+      if (nfrag.gt.1) then
+        ecumfrag = zero
+        esumfrag = zero
+        egcumfrag = zero
+        egcum1frag = zero
+        egsumfrag = zero
+        egsum1frag = zero
+        egcm2frag = zero
+        egcm21frag = zero
+      endif
 ! debug
       iage=0
       ioldest=0

@@ -2,6 +2,9 @@
       contains
       subroutine jastrow_factor4(x,fjo,d2o,fsumo,fso,fijo,d2ijo)
 ! Written by Cyrus Umrigar, modified by C. Filippi
+      use fragments, only: eloc_i, elocfrag, ifragelec, nfrag
+      use constants, only: hb
+      use contrldmc, only: icut_e
       use da_jastrow, only: da_d2j, da_j, da_vj
       use system, only: iwctype, ncent, nelec, nup
       use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, nordj
@@ -295,6 +298,15 @@
       fjo(2,j)=fjo(2,j)+fijo(2,j,i)
       fjo(3,j)=fjo(3,j)+fijo(3,j,i)
       d2o=d2o+d2ijo(i,j)
+      
+      if (icut_e.lt.0) then
+        eloc_i(i)=eloc_i(i)-hb*0.5d0*d2ijo(i,j)
+        eloc_i(j)=eloc_i(j)-hb*0.5d0*d2ijo(i,j)
+      endif
+      if (nfrag.gt.1) then
+        elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) - hb*0.5d0*d2ijo(i,j)
+        elocfrag(ifragelec(j)) = elocfrag(ifragelec(j)) - hb*0.5d0*d2ijo(i,j)
+      endif  
       enddo
       enddo
 
@@ -370,6 +382,12 @@
         fjo(3,i)=fjo(3,i)+fijo(3,i,i)
 !        write(ounit,'(''v='',9d12.4)') (fjo(k,i),k=1,3)
         d2o=d2o+d2ijo(i,i)
+        if (icut_e.lt.0) then
+          eloc_i(i) = eloc_i(i) - hb * d2ijo(i,i)
+        endif 
+        if (nfrag.gt.1) then
+          elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) - hb * d2ijo(i,i)
+        endif
       enddo
 
   !     tempjas = 0.d0

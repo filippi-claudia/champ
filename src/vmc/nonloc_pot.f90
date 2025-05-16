@@ -6,6 +6,8 @@
 ! Calculates non-local potential derivatives
 ! pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
       use contrl_per, only: iperiodic
+      use contrldmc, only: icut_e
+      use fragments, only: eloc_i, elocfrag, ifragelec, ifragcent, nfrag
       use error,   only: fatal_error
       use ewald, only: cos_n_sum, sin_n_sum
       use ewald_breakup, only: pot_en_ewald
@@ -24,7 +26,7 @@
 
       integer :: i, i1, i2, i_vpsp, ic,k
       integer :: ifr, ict
-      real(dp) :: pe, pe_en, r, ri, ri2,vcoule,dvpot
+      real(dp) :: pe, pe_en, r, ri, ri2,vcoule,dvpot, tmp
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
@@ -53,7 +55,15 @@
       if(iperiodic.eq.0) then
         do ic=1,ncent
           do i=i1,i2
-            pe=pe+vps(i,ic,lpot(iwctype(ic)))
+            tmp = vps(i,ic,lpot(iwctype(ic)))
+            pe=pe+tmp
+            if (icut_e.lt.0) then
+              eloc_i(i)=eloc_i(i)+tmp
+            endif
+            if (nfrag.gt.1) then
+              elocfrag(ifragcent(ic)) = elocfrag(ifragcent(ic)) + 0.5d0 * tmp
+              elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) + 0.5d0 * tmp
+            endif
           enddo
         enddo
 

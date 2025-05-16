@@ -162,6 +162,7 @@ contains
     use est2cm,  only: allocate_est2cm_dmc
     use estcum,  only: allocate_estcum_dmc
     use estsum,  only: allocate_estsum_dmc
+    use fragments, only: allocate_fragments, nfrag
     use jacobsave, only: allocate_jacobsave
     use velratio, only: allocate_velratio
     use vd_mod, only: allocate_da_branch
@@ -183,6 +184,7 @@ contains
     call allocate_velratio()
     call allocate_da_branch()
     call allocate_pathak()
+    call allocate_fragments()
   end subroutine allocate_dmc
 
   !> Subroutines to deallocate memory of specific DMC-related variables.
@@ -212,6 +214,7 @@ contains
     use est2cm,  only: deallocate_est2cm_dmc
     use estcum,  only: deallocate_estcum_dmc
     use estsum,  only: deallocate_estsum_dmc
+    use fragments,  only: deallocate_fragments
     use jacobsave, only: deallocate_jacobsave
     use velratio, only: deallocate_velratio
     use vd_mod, only: deallocate_da_branch
@@ -231,5 +234,6 @@ contains
     call deallocate_velratio()
     call deallocate_da_branch()
     call deallocate_pathak()
+    call deallocate_fragments()
   end subroutine deallocate_dmc
 end module allocation_mod

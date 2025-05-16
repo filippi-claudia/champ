@@ -5,11 +5,13 @@ contains
 ! routine to accumulate estimators for energy etc.
 
       use system, only: ncent
+      use assignment_mod, only: assign_elecs
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wtgen,wthist
       use casula,  only: i_vpsp,icasula
       use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
       use const,   only: etrial,esigmatrial
+      use contrldmc, only: icut_e
       use control, only: mode
       use control_dmc, only: dmc_nconf
       use da_energy_now, only: da_energy
@@ -19,6 +21,8 @@ contains
       use ewald, only: cos_n_sum, sin_n_sum
       use force_pth, only: PTH
       use force_analytic, only: force_analy_save
+      use fragments,  only: eest_i, eloco_i, eloc_i ! electron fragments
+      use fragments,  only: eestfrag, elocofrag, elocfrag, nfrag, ifragelec, sqrt_nelecfrag, etrialfrag ! fragments
       use hpsi_mod, only: hpsi
       use jacobsave, only: ajacob,ajacold
       use mmpol_dmc, only: mmpol_save
@@ -64,11 +68,32 @@ contains
 ! set quadrature points
       if(nloc.gt.0) call gesqua (nquad,xq,yq,zq,wq)
 
+      
 ! get nuclear potential energy
       call pot_nn(cent,znuc,iwctype,ncent,pecent,cos_n_sum,sin_n_sum)
 
+      eestfrag = 0.d0
       eigv=one
       eest=etrial
+
+      if (nfrag.gt.1) then 
+        call assign_elecs(xold_dmc(:,:,1,1), 2)
+        sqrt_nelecfrag = 0
+        do i = 1, nelec
+          sqrt_nelecfrag(ifragelec(i)) = sqrt_nelecfrag(ifragelec(i)) + 1
+          ! Inital value for eest maybe think of something better
+          eestfrag(ifragelec(i)) = etrialfrag(ifragelec(i))
+          !eestfrag(ifragelec(i)) = eestfrag(ifragelec(i)) + etrial/nelec
+          !etrialfrag(ifragelec(i)) = etrialfrag(ifragelec(i)) + etrial/nelec
+        end do
+        sqrt_nelecfrag = sqrt(sqrt_nelecfrag)
+      end if
+      if (icut_e.lt.1) then
+        do i = 1, nelec
+          eest_i(i) = etrial/nelec
+        enddo
+      end if
+      
       esigma=esigmatrial
       nwalk=dmc_nconf
       fprod=one
@@ -96,7 +121,15 @@ contains
           endif
           ajacold(iw,ifr)=ajacob
           if(icasula.lt.0) i_vpsp=icasula
+          
           call hpsi(xold_dmc(1,1,iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),ekino,eold(iw,ifr),0,ifr)
+          if (icut_e.lt.0) then
+            eloco_i(:,iw,ifr) = eloc_i(:)
+          endif
+          if (nfrag.gt.1) then
+            elocofrag(:,iw,ifr) = elocfrag(:)
+          endif
+
           i_vpsp=0
           do i=1,nelec !STU check psijo_dmc, should be one state so should be ok?
             call compute_determinante_grad(i,psido_dmc(iw,ifr),psido_dmc(iw,ifr),psijo_dmc(iw,ifr),vold_dmc(1,i,iw,ifr),1)

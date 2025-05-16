@@ -8,6 +8,7 @@ contains
       use age, only: ioldest
       use contrldmc, only: idmc
       use contrl_file, only: ounit
+      use contrldmc, only: icut_e
       use control, only: mode
       use control_dmc, only: dmc_nstep
       use derivest, only: derivcm2, derivcum, derivsum, derivtotave
@@ -24,6 +25,9 @@ contains
       use force_analytic,   only: force_analy_init, force_analy_cum
       use force_analy_reduce_mod, only: force_analy_reduce
       use force_pth, only: PTH
+      use fragments, only: esum_i, ecum_i
+      use fragments, only: esumfrag, ecumfrag, nfrag
+      use fragments, only: egsumfrag, egcumfrag, egcm2frag
       use m_force_analytic, only: iforce_analy
       use mmpol,   only: mmpol_init
       use mmpol_dmc, only: mmpol_prt
@@ -43,7 +47,7 @@ contains
       use prop_dmc, only: prop_prt_dmc
       use prop_reduce_mod, only: prop_reduce
       use properties_mod, only: prop_init
-      use system,    only: ncent
+      use system,    only: ncent, nelec
 
       implicit none
 
@@ -80,6 +84,12 @@ contains
       real(dp), dimension(MFORCE) :: taucollect
       real(dp), dimension(MFORCE) :: fcollect
       real(dp), dimension(MFORCE) :: f2collect
+      real(dp), dimension(nelec) :: ecollect_i
+      real(dp), dimension(nfrag) :: ecollectfrag
+      real(dp), dimension(nfrag) :: egcollectfrag
+      real(dp), dimension(nfrag) :: eg2collectfrag
+      real(dp), dimension(nfrag) :: egnowfrag
+      real(dp), dimension(nfrag) :: eg2sumfrag
       real(dp), dimension(3,3,ncent,PTH) :: derivcollect
       real(dp), dimension(3,ncent,PTH) :: derivsum2
       real(dp), dimension(3,ncent,PTH) :: derivcollect2
@@ -131,6 +141,26 @@ contains
           f2sum(ifr)=wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
         endif
       enddo
+
+      if (icut_e.lt.0) then
+        call mpi_allreduce(esum_i,ecollect_i,nelec &
+        ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        ecum_i(:) = ecum_i(:) + ecollect_i(:)
+      end if
+      if (nfrag.gt.1) then
+        egnowfrag(:)=egsumfrag(:)/wgsum(1)
+        eg2sumfrag(:)=egsumfrag(:)*egnowfrag(:)
+        
+        call mpi_allreduce(egsumfrag,egcollectfrag,nfrag &
+        ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        call mpi_allreduce(esumfrag,ecollectfrag,nfrag &
+        ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+
+        egcumfrag(:)=egcumfrag(:)+egcollectfrag(:)
+        ecumfrag(:) = ecumfrag(:) + ecollectfrag(:)
+        call mpi_reduce(eg2sumfrag,eg2collectfrag,nfrag,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        egcm2frag(:)=egcm2frag(:)+eg2collectfrag(:)
+      endif
 
       call mpi_allreduce(wgsum,wgcollect,MFORCE &
       ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -305,6 +335,14 @@ contains
       wfsum=zero
       esum_dmc=zero
       efsum=zero
+      if (icut_e.lt.0) then
+        esum_i = zero
+      endif
+
+      if (nfrag.gt.1) then
+        esumfrag = zero
+        egsumfrag(:)=zero
+      endif
 
       do ifr=1,nforce
         egsum(ifr)=zero

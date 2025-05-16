@@ -1,7 +1,9 @@
 # Source files
 file(GLOB DMC_SOURCE
   acues1_reduce.f90
+  assignment.f90
   averages.f90
+  branching.f90
   dumper.f90
   main.f90
   mmpol_reduce.f90

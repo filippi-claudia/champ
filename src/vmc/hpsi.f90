@@ -14,6 +14,7 @@ contains
       use casula,  only: i_vpsp,t_vpsp
       use constants, only: hb
       use contrl_file, only: ounit
+      use contrldmc, only: icut_e
       use control, only: ipr
       use csfs,    only: nstates
       use determinant_mod, only: compute_bmatrices_kin,determinant
@@ -23,6 +24,7 @@ contains
       use efield,  only: iefield
       use efield_f_mod, only: efield_extpot_ene
       use force_analytic, only: compute_force
+      use fragments, only: eloc_i, elocfrag, ifragelec, potnnfrag, nfrag
       use inputflags, only: iqmmm
       use jastrow_mod, only: jastrow_factor
       use m_force_analytic, only: iforce_analy
@@ -59,6 +61,7 @@ contains
       integer :: i, iab, ifr, ii, ipass, j, o, x
       integer :: irep, istate, jrep, nel, iorb, i1, i2, iparm
       real(dp) :: e_other, ekin_other, ext_pot, peQM, pe_local, pepcm
+      real(dp) :: tmp
       real(dp), dimension(3, *) :: coord
       real(dp), dimension(*) :: psid
       real(dp), dimension(*) :: psij
@@ -71,6 +74,8 @@ contains
       real(dp), dimension(*) :: ekin
       real(dp), dimension(MSTATES) :: dekin
 
+      eloc_i = 0.d0 
+      elocfrag = potnnfrag
 ! Calculates energy
 
 
@@ -166,6 +171,7 @@ contains
         enddo
       endif
 
+      
       call multideterminant_hpsi(vj,ekin_det,vpsp_det,eloc_det)
 
       do istate=1,nstates
@@ -175,7 +181,14 @@ contains
 
         ekin_other=-hb*d2j(j)
         do i=1,nelec
-          ekin_other=ekin_other-hb*(vj(1,i,j)**2+vj(2,i,j)**2+vj(3,i,j)**2)
+          tmp = -hb*(vj(1,i,j)**2+vj(2,i,j)**2+vj(3,i,j)**2)
+          ekin_other=ekin_other+tmp
+          if (icut_e.lt.0) then
+            eloc_i(i)=eloc_i(i)+tmp
+          end if
+          if (nfrag.gt.1) then
+            elocfrag(ifragelec(i)) = elocfrag(ifragelec(i)) + tmp
+          endif
         enddo
         e_other=ekin_other+pe_local
 ! combine determinantal quantities to obtain trial wave function

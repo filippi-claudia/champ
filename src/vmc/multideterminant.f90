@@ -6,7 +6,9 @@ contains
       use bxmatrices, only: bxmatrix
       use constants, only: hb
       use csfs, only: nstates
+      use contrldmc, only: icut_e
       use denergy_det_m, only: denergy_det, allocate_denergy_det_m
+      use fragments, only: eloc_i, elocfrag, ifragelec, nfrag
       use m_force_analytic, only: iforce_analy
       use matinv_mod, only: matinv
       use multidet, only: irepcol_det, ireporb_det, numrep_det, ndetiab, k_det, ndet_req
@@ -30,7 +32,7 @@ contains
       integer :: i, iab, iel, index_det, iorb, kun, kw
       integer :: irep, ish, istate, jorb, j, o, x
       integer :: jrep, k, ndim, nel, ndim2, kk, kcum
-      real(dp) :: det, dum1, dum2, dum3, dum4, dum5, deti, auxdet
+      real(dp) :: det, dum1, dum2, dum3, dum4, dum5, deti, auxdet, tmpe
       real(dp), dimension(ndet, 2, nbjx) :: eloc_det
       real(dp), dimension(3, nelec, nwftypejas) :: vj
       real(dp), dimension(2, nbjx) :: vpsp_det
@@ -52,8 +54,14 @@ contains
           endif
           ekin_det(iab,x)=0.d0
           do i=1,nel
-            ekin_det(iab,x)=ekin_det(iab,x) &
-            -hb*(d2dx2(i+ish,o)+2.d0*(vj(1,i+ish,j)*ddx(1,i+ish,o)+vj(2,i+ish,j)*ddx(2,i+ish,o)+vj(3,i+ish,j)*ddx(3,i+ish,o)))
+            tmpe=-hb*(d2dx2(i+ish,o)+2.d0*(vj(1,i+ish,j)*ddx(1,i+ish,o)+vj(2,i+ish,j)*ddx(2,i+ish,o)+vj(3,i+ish,j)*ddx(3,i+ish,o)))
+            if (icut_e.lt.0) then
+              eloc_i(i+ish)=eloc_i(i+ish)+tmpe
+            endif
+            if (nfrag.gt.1) then
+              elocfrag(ifragelec(i+ish))=elocfrag(ifragelec(i+ish))+tmpe
+            endif
+            ekin_det(iab,x)=ekin_det(iab,x)+tmpe
           enddo
           eloc_det(kref,iab,x)=ekin_det(iab,x) + vpsp_det(iab,x)
         enddo

@@ -7,9 +7,11 @@ contains
       use branch,  only: eold,nwalk,pwt,wt,wthist
       use config,  only: d2o,peo_dmc,psido_dmc,psijo_dmc,vold_dmc
       use config,  only: xold_dmc
+      use contrldmc, only: icut_e
       use dmc_mod, only: MWALK
       use error,   only: fatal_error
       use force_pth, only: PTH
+      use fragments,  only: eloco_i, fratio_i, elocofrag, fratiofrag, nfrag
       use jacobsave, only: ajacold
       use mmpol_dmc, only: mmpol_splitj
       use multiple_geo, only: nforce,nwprod
@@ -125,6 +127,16 @@ contains
             d2o(iw2,ifr)=d2o(iw,ifr)
             pwt(iw2,ifr)=pwt(iw,ifr)
             fratio(iw2,ifr)=fratio(iw,ifr)
+            
+            if (nfrag.gt.1) then
+              eloco_i(:,iw2,ifr)=eloco_i(:,iw,ifr)
+              fratio_i(:,iw2,ifr)=fratio_i(:,iw,ifr)
+            endif
+            if (icut_e.lt.0) then
+              elocofrag(:,iw2,ifr)=elocofrag(:,iw,ifr)
+              fratiofrag(:,iw2,ifr)=fratiofrag(:,iw,ifr)
+            endif
+
             do ip=0,nwprod-1
               wthist(iw2,ip,ifr)=wthist(iw,ip,ifr)
             enddo
@@ -184,6 +196,16 @@ contains
           d2o(iw2,ifr)=d2o(iw,ifr)
           pwt(iw2,ifr)=pwt(iw,ifr)
           fratio(iw2,ifr)=fratio(iw,ifr)
+          
+          if (icut_e.lt.0) then
+            eloco_i(:,iw2,ifr)=eloco_i(:,iw,ifr)
+            fratio_i(:,iw2,ifr)=fratio_i(:,iw,ifr)
+          endif
+          if (nfrag.gt.1) then
+            elocofrag(:,iw2,ifr)=elocofrag(:,iw,ifr)
+            fratiofrag(:,iw2,ifr)=fratiofrag(:,iw,ifr)
+          endif
+
           do ip=0,nwprod-1
             wthist(iw2,ip,ifr)=wthist(iw,ip,ifr)
           enddo
