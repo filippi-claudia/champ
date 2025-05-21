@@ -16,8 +16,13 @@ contains
 
       use mpi
       use mpiconf, only: idtask
+      use optwf_control,      only: ioptorb, ioptjas
+
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      use trexio_read_data, only: update_trexio_orbitals
+      use qmckl_data
+      use trexio_read_data, only: update_trexio_orbitals, jastrow_update_qmckl
+      use orbitals_qmckl_mod, only: init_context_qmckl
+      use jastrow_qmckl_mod, only: jastrow_init_qmckl
 #endif
 
       implicit none
@@ -27,6 +32,13 @@ contains
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       call update_trexio_orbitals
+      if(ioptjas.ne.0) then
+        call jastrow_update_qmckl(qmckl_no_ctx)
+        call jastrow_init_qmckl(qmckl_no_ctx)
+      endif
+      if(ioptorb.ne.0) then
+        call init_context_qmckl(.False.)
+      endif
 #endif
 
       if(idtask.ne.0) return

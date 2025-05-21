@@ -76,6 +76,10 @@ subroutine jastrow_init_qmckl(ictx)
     rc = qmckl_set_jastrow_champ_spin_independent(qmckl_ctx(ictx), 0)
     if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow spin.')
 
+    rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 53) ! 24
+    if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
+
+    write(ounit, *) " QMCkl precision set to 53 bits"
 end subroutine
 
 

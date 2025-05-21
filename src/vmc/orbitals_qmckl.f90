@@ -278,7 +278,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 return
 end
 
-subroutine init_orbitals_qmckl(update_coef)
+subroutine init_context_qmckl(update_coef)
 
     use qmckl_data
     use slater,  only: norb, coef
@@ -311,7 +311,7 @@ subroutine init_orbitals_qmckl(update_coef)
 
 
 
-    do ictx = 1, qmckl_no_ctx
+    do ictx = 1, qmckl_no_ctx-1
         rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 53) ! 24
         if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
     end do
@@ -319,13 +319,12 @@ subroutine init_orbitals_qmckl(update_coef)
     write(ounit, *) " QMCkl precision set to 53 bits"
 
 
-
     do ictx=1,qmckl_no_ctx-1
         rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
         if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl getting mo_num from trexio file')
- 
-        if(n8.ne.norb_tot) call fatal_error('INPUT: QMCkl getting wrong number of orbitals')
+
         write(ounit,int_format) "QMCkl number mo found", n8
+        if(n8.ne.norb_tot) call fatal_error('INPUT: QMCkl getting wrong number of orbitals')
         
        if (update_coef) then
           rc = qmckl_set_mo_basis_coefficient(qmckl_ctx(ictx), coef(:,:, 1), nbasis*norb_tot*1_8)

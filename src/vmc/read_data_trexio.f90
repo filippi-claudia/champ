@@ -32,6 +32,7 @@ module trexio_read_data
     public :: read_trexio_orbitals_file
     public :: read_trexio_basis_file
     public :: update_trexio_orbitals
+    public :: jastrow_update_qmckl
     public :: read_trexio_determinant_file
     public :: read_trexio_ecp_file
     public :: write_trexio_basis_num_info_file
@@ -67,7 +68,7 @@ module trexio_read_data
         !   local use
         character(len=*), intent(in)   :: file_trexio
         character(len=40)               :: temp1, temp2, temp3, temp4
-        character(len=80)               :: comment, file_trexio_path
+        character(len=80)               :: comment
         integer                         :: iostat, i, j, k, iunit
         logical                         :: exist
         type(atom_t)                    :: atoms
@@ -544,10 +545,7 @@ module trexio_read_data
         !! number of molecular and atomic orbitals and their corresponding coefficients.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
         !! @date 08 November 2023
-        use mpiconf,            only: wid
         use custom_broadcast,   only: bcast
-        use contrl_file,        only: ounit, errunit
-        use mpiconf,            only: wid
         use contrl_file,        only: ounit, errunit
         use coefs,              only: nbasis
         use csfs,               only: nstates
@@ -565,10 +563,6 @@ module trexio_read_data
         use contrl_file,        only: backend
         use slater,             only: norb
         use qmckl_data
-
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-        use orbitals_qmckl_mod, only: init_orbitals_qmckl
-#endif
 
         implicit none
 
@@ -631,11 +625,6 @@ module trexio_read_data
         call MPI_Barrier( MPI_COMM_WORLD, ierr )
 
 
-        norb_qmckl(1)=norb
-        norb_qmckl(2)=norb+nadorb
-        norb_qmckl(2)=min(norb_qmckl(2),norb_tot)
-
-
         do ictx = 1 ,qmckl_no_ctx-1
             ! Create a new QMCkl context with the new trexio file
             qmckl_ctx(ictx) = qmckl_context_create()
@@ -645,13 +634,52 @@ module trexio_read_data
 
         enddo
 
-        call init_orbitals_qmckl(.False.)
-
 #endif
 
         write(ounit,*) "----------------------------------------------------------"
 
     end subroutine update_trexio_orbitals
+
+
+    subroutine jastrow_update_qmckl(ictx)
+
+        use contrl_file,        only: ounit
+        use error,              only: trexio_error
+        use optwf_control,      only: ioptjas
+
+        use qmckl_data
+        use trexio
+    
+        implicit none
+
+        integer                         :: rc
+        integer, intent(in)             :: ictx
+
+        if(ioptjas.eq.0) return
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+    
+        write(ounit,*) '---------------------------------------------------------------------------'
+        write(ounit,*) " Updating Jastrow coefficients "
+        write(ounit,*) '---------------------------------------------------------------------------'
+    
+        ! Destroy the existing QMCkl context first
+        write(ounit, *) " QMCkl destroying the old context " , qmckl_ctx(ictx) , " successfully "
+        rc = qmckl_context_destroy(qmckl_ctx(ictx))
+        call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
+        write(ounit, '(a)') " QMCkl old context destroyed successfully "
+    
+
+        ! Create a new QMCkl context with the new trexio file
+        qmckl_ctx(ictx) = qmckl_context_create()
+        rc = qmckl_trexio_read(qmckl_ctx(ictx), file_trexio_path, 1_8*len(trim(file_trexio_path)))
+        call trexio_error(rc, TREXIO_SUCCESS, 'INPUT: QMCkl error: Unable to read TREXIO file', __FILE__, __LINE__)
+        write(ounit, *) " QMCkl new context created  ", qmckl_ctx(ictx),  " successfully "
+    
+#endif
+
+        write(ounit,*) "----------------------------------------------------------"
+    end subroutine
 
 
     subroutine read_trexio_basis_file(file_trexio)

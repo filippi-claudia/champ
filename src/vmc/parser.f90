@@ -189,7 +189,7 @@ subroutine parser
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
       use jastrow_qmckl_mod, only: jastrow_init_qmckl
-      use orbitals_qmckl_mod, only: init_orbitals_qmckl
+      use orbitals_qmckl_mod, only: init_context_qmckl
 #endif
 
   use, intrinsic :: iso_fortran_env, only : iostat_end
@@ -2079,7 +2079,7 @@ subroutine parser
 
      call jastrow_init_qmckl(qmckl_no_ctx)
 
-     call init_orbitals_qmckl(.True.)
+     call init_context_qmckl(.True.)
 
 
 
