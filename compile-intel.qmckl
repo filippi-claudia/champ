@@ -3,9 +3,9 @@
 # Install qmckl linked to trexio
 # Set the library paths according to your installation
 
-compiler='mpifort'             # 'mpiifort' or 'mpiifx'
-trexio_dir='/usr/local'           # Root directory of TREXIO library
-qmckl_dir='/home/scemama/Collab/Emiel/qmckl/gcc_fast/install/'            # Root directory of QMCkl library
+compiler=''             # 'mpiifort' or 'mpiifx'
+trexio_dir=''           # Root directory of TREXIO library
+qmckl_dir=''            # Root directory of QMCkl library
 
 cmake -S. -Bbuild \
     -DCMAKE_Fortran_COMPILER=${compiler} \
