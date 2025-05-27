@@ -268,6 +268,19 @@
         distance_node_sum=distance_node_sum+distance_node
       endif
 
+      if(iforce_analy.eq.1) then
+         if (ipathak.gt.0) then
+            do jel=1,nelec
+              call compute_determinante_grad(jel,psig,psido(1),psijo,vold(1,jel),1)
+            enddo
+            call nodes_distance(vold,distance_node,1)
+            do iph=1,PTH
+               call pathak(distance_node,pnew(iph),eps_pathak(iph))
+            enddo
+            distance_node_sum=distance_node_sum+distance_node
+         endif
+      endif
+
       do istate=1,nstates
         j=stoj(istate)
         wtg_sqrt(istate)=psido(istate)*exp(psijo(j))/psig
@@ -292,15 +305,6 @@
       call pcm_sum(wtg(1),0.d0)
       call mmpol_sum(wtg(1),0.d0)
       call prop_sum(wtg(1),0.d0)
-
-      if(iforce_analy.eq.1) then
-         if (ipathak.gt.0) then
-            call nodes_distance(vold(1,1),distance_node,1)
-            do iph=1,PTH
-               call pathak(distance_node,pnew(iph),eps_pathak(iph))
-            enddo
-         endif
-      endif
 
       call force_analy_sum(wtg(1),0.d0,eold(1,1),0.0d0)
 
