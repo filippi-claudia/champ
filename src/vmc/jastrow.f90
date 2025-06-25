@@ -5,9 +5,11 @@ contains
 
       use contrl_file, only: ounit
       use contrl_per, only: iperiodic
+      use cuspmat4, only: nterms
       use derivjas, only: d2g, g, go, gvalue
       use deriv_jastrow4_mod, only: deriv_jastrow4
       use deriv_jastrow1_mod, only: deriv_jastrow1
+      
       use ewald_breakup, only: jastrow_longrange
       use jastrow, only: ijas, ijas_lr
       use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo
@@ -15,24 +17,36 @@ contains
       use jastrow4_mod, only: jastrow_factor4
       use multiple_geo, only: iwf, nforce
       use optwf_control, only: ioptjas
+      use optwf_parms, only: nparmj
       use precision_kinds, only: dp
-      use system, only: nelec
+      use system, only: nelec, nctype
       use vmc_mod, only: nwftypejas
+      use jastrow, only: norda, nordb, nordc
+      use optwf_nparmj, only: nparmc
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use jastrow_qmckl_mod, only: jastrow_qmckl
+      use deriv_jastrow_qmckl_mod, only: deriv_jastrow4_qmckl
+      
       use qmckl_data
 #endif
 
       implicit none
 
-      integer :: i, j, jwf, ifr
+      integer :: i, j, jwf, ifr, rc
       real(dp) :: psij_per, d2_per
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, nwftypejas) :: v
       real(dp), dimension(3, nelec) :: v_per
       real(dp), dimension(nwftypejas) :: psij
       real(dp), dimension(nwftypejas) :: d2j
+      real(dp), dimension(norda+1,nctype) :: deriv_a
+      real(dp), dimension(nordb+1) :: deriv_b
+      real(dp), dimension(nterms,nctype) :: deriv_c
+
+      real(dp), dimension(3,nelec,nparmj,1) :: g_champ
+      real(dp), dimension(nparmj,1) :: d2g_champ
+      integer :: idim, iel, iparm
 
       real(dp) :: a,b
 !     real(dp) :: psij_per0
@@ -109,6 +123,7 @@ contains
               iwf=jwf
 !UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+
               call jastrow_qmckl(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf))
 #else
               call jastrow_factor4(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf),fso(1,1,iwf), &
@@ -128,10 +143,31 @@ contains
            else
             do jwf=1,nwftypejas
               iwf=jwf
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+              call deriv_jastrow4_qmckl(x,fjo(:,:,iwf),d2o(iwf),fsumo(iwf),g(:,:,:,iwf),d2g(:,iwf),gvalue(:,iwf))
+              ! print*, "begin deriv_jastrow4_qmckl"
+              ! print*, "fjo", fjo(:,:,iwf)
+              ! print*, "d2o", d2o(iwf)
+              ! print*, "fsumo", fsumo(iwf)
+              ! print*, "g", g(:,:,:,iwf)
+              ! print*, "gvalue", gvalue(:,iwf)
+              ! print*, "end deriv_jastrow4_qmckl"
+#else
               call deriv_jastrow4(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf), &
                    fso(1,1,iwf),fijo(1,1,1,iwf), &
                    d2ijo(1,1,iwf),g(1,1,1,iwf),go(1,1,1,iwf), &
                    d2g(1,iwf),gvalue(1,iwf))
+              
+              ! print*, "begin deriv_jastrow4 old"
+              ! print*, "fjo", fjo(:,:,iwf)
+              ! print*, "d2o", d2o(iwf)
+              ! print*, "fsumo", fsumo(iwf)
+              ! print*, "g", g(:,:,:,iwf)
+              ! print*, "gvalue", gvalue(:,iwf)
+              ! print*, "end deriv_jastrow4 old"
+#endif
+
             enddo
           endif
         endif

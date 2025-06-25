@@ -217,7 +217,7 @@ contains
       use find_pimage, only: find_image_pbc
       use jaspointer, only: npoint,npointa
       use jastrow, only: is,nspin2,sspinn,nordc
-      use jastrow_update, only: fso
+      use jastrow_update, only: fso, fjo
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,dpsinl
       use optwf_control, only: ioptjas
@@ -227,7 +227,12 @@ contains
       use qua, only: nquad
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nctype,nelec,nup
-
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      use qmckl
+      use qmckl_data
+      use error, only: fatal_error
+      use deriv_jastrow_qmckl_mod, only: deriv_jastrowe_qmckl
+#endif
       implicit none
 
       integer :: i, ic, iel, ipar, ipara
@@ -254,8 +259,13 @@ contains
       real(dp), dimension(nelec,ncent_tot) :: dd1
       real(dp), dimension(ncent_tot) :: dd1_quad
       real(dp), dimension(3,*) :: vjn
+      real(dp), dimension(3, nelec) :: fjn
+      real(dp), dimension(3, ncent) :: da_single_en, da_single_een
+      real(dp) :: d2n
       real(dp), parameter :: half = .5d0
-
+      integer(qmckl_exit_code) :: rc
+      !for testing
+      !real(dp), dimension(nparmj,nxquad) :: dpsij_ratio_new
       do ic=1,ncent
         if(iforce_analy.eq.0) then
           do i=1,nelec
@@ -267,11 +277,46 @@ contains
           enddo
         endif
       enddo
-
+      
       do iq=1,nxquad
 
       iel=ielquad(iq)
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      
+      if (iforce_analy .gt. 0) then
+        call deriv_jastrowe_qmckl(iel,xquad(:,iq),fjn(:,:),d2n,fsumn,dpsij_ratio(:,iq),1)   
+
+        rc = qmckl_get_forces_jastrow_single_en(qmckl_ctx(qmckl_no_ctx), da_single_en, 3_8*ncent)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single en force.')
+        rc = qmckl_get_forces_jastrow_single_een(qmckl_ctx(qmckl_no_ctx), da_single_een, 3_8*ncent)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single een force.')
+        do ic =1, ncent
+          do k = 1, 3
+            da_psij_ratio(k,ic,iq)=da_single_en(k,ic)+da_single_een(k,ic)
+            ! write(ounit, *), 'da_psij', da_psij_ratio(k,ic,iq), da_single_en(k,ic), da_single_een(k,ic)
+          enddo
+        enddo
+        do k=1,3
+          vjn(k,iq)=fjn(k,iel)+fjo(k,iel,1)
+          !write(ounit, *), 'vjn', vjn(k,iq)
+        enddo
+
+      else
+        call deriv_jastrowe_qmckl(iel,xquad(:,iq),fjn(:,:),d2n,fsumn,dpsij_ratio(:,iq),0)
+      endif
+      
+      ! print*, "begin deriv_jastrowe_qmckl"
+      ! print*, "iel", iel
+      ! print*, "xquad", xquad(:,iq)
+      ! print*, "fjn", fjn(:,:)
+      ! print*, "d2n", d2n
+      ! print*, "fsumn", fsumn
+      ! print*, "dpsij_ratio", dpsij_ratio(:,iq)
+      ! print*, "end deriv_jastrowe_qmckl"
+
+      psij_ratio(iq) = fsumn
+#else
       if(iforce_analy.eq.0) then
         do ic=1,ncent
           call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic))
@@ -454,6 +499,15 @@ contains
           enddo
         enddo
       endif
+#endif
+      ! print*, "begin deriv_jastrowe old"
+      ! print*, "iel", iel
+      ! print*, "xquad", xquad(:,iq)
+      ! print*, "fjn", fjn(:,:)
+      ! print*, "d2n", d2n
+      ! print*, "fsumn", fsumn
+      ! print*, "dpsij_ratio", dpsij_ratio(:,iq)
+      ! print*, "end deriv_jastrowe old"
 
       enddo
 
