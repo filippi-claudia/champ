@@ -29,6 +29,7 @@ contains
       use rotqua_mod, only: rotqua
       use strech_mod, only: setup_force
       use system,  only: nelec
+      use m_force_analytic, only: current_block
 
       implicit none
 
@@ -75,8 +76,10 @@ contains
 ! if there are equilibrium steps to take, do them here
 ! skip equilibrium steps if restart run
       if (vmc_nblkeq.ge.1.and.vmc_irstar.ne.1) then
+        current_block = 0
         l=0
         do i=1,vmc_nblkeq
+          current_block = current_block + 1
           do j=1,vmc_nstep
             l=l+1
             if (nloc.gt.0) call rotqua
@@ -100,32 +103,34 @@ contains
       endif
 ! now do averaging steps
 
+      current_block = 0
       l=0
       do i=1,vmc_nblk
+        current_block = current_block + 1
         do j=1,vmc_nstep
-        l=l+1
+          l=l+1
 !   write(ounit, *) i, nblk, j, nstep
-        if (nloc.gt.0) call rotqua
-        if(imetro.eq.1) then
-          if(mode.eq.'vmc_one_mpi') call metrop1(l,1)
-          if(mode.eq.'vmc_all_mpi') call metrop1_moveall(l,1)
-         else
-          if(mode.eq.'vmc_one_mpi') call metrop6(l,1)
-          if(mode.eq.'vmc_all_mpi') call metrop6_moveall(l,1)
-        endif
-! write out configuration for optimization/dmc/gfmc here
-        if (mod(l,ngfmc).eq.0 .or. ngfmc.eq.1) then
-          if(3*nelec.lt.100) then
-           write(fmt,'(a1,i2,a21)')'(',3*nelec,'f13.8,i3,d12.4,f12.5)'
-          else
-           write(fmt,'(a1,i3,a21)')'(',3*nelec,'f13.8,i3,d12.4,f12.5)'
+          if (nloc.gt.0) call rotqua
+          if(imetro.eq.1) then
+            if(mode.eq.'vmc_one_mpi') call metrop1(l,1)
+            if(mode.eq.'vmc_all_mpi') call metrop1_moveall(l,1)
+           else
+            if(mode.eq.'vmc_one_mpi') call metrop6(l,1)
+            if(mode.eq.'vmc_all_mpi') call metrop6_moveall(l,1)
           endif
-          write(7,fmt) ((xold(ii,jj),ii=1,3),jj=1,nelec), &
-          int(sign(1.d0,psido(1))),log(dabs(psido(1)))+psijo,eold(1,1)
-        endif
+! write out configuration for optimization/dmc/gfmc here
+          if (mod(l,ngfmc).eq.0 .or. ngfmc.eq.1) then
+            if(3*nelec.lt.100) then
+              write(fmt,'(a1,i2,a21)')'(',3*nelec,'f13.8,i3,d12.4,f12.5)'
+            else
+              write(fmt,'(a1,i3,a21)')'(',3*nelec,'f13.8,i3,d12.4,f12.5)'
+            endif
+            write(7,fmt) ((xold(ii,jj),ii=1,3),jj=1,nelec), &
+            int(sign(1.d0,psido(1))),log(dabs(psido(1)))+psijo,eold(1,1)
+          endif
         enddo
 
-      call acuest
+        call acuest
       enddo
 
       call elapsed_time("VMC : all CP : ")

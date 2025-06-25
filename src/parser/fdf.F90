@@ -124,14 +124,14 @@ module keywords
   !> @date October 15, 2022
   implicit none
   integer                     :: num_modules  = 11   ! change this number after every adition/deletion
-  integer                     :: num_keywords = 186 ! change this number after every adition/deletion
+  integer                     :: num_keywords = 189 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
   type(string_t) allowed_modules(11)
-  type(string_t) allowed_keywords(188)       ! change this number after every adition/deletion
+  type(string_t) allowed_keywords(189)       ! change this number after every adition/deletion
 
 
   private
@@ -239,6 +239,7 @@ module keywords
     allowed_keywords(183)%keys = 'ibranching_c';    allowed_keywords(184)%keys = 'istrech'
     allowed_keywords(185)%keys = 'alfastr';         allowed_keywords(186)%keys = 'nfrag'
     allowed_keywords(187)%keys = 'ibranching_cfrag';allowed_keywords(188)%keys = 'etrialfrag';
+    allowed_keywords(189)%keys = 'f_analy_err';
 
   end subroutine allocate_keywords
 
@@ -1138,6 +1139,7 @@ endif ! (rank==0)
 
 !-------------------------------------------------------------- Initialize
       nlstart = 0
+      within_block = .false.
 
 !------------------------------------------------------------------------- BEGIN
 !     Open reading input file

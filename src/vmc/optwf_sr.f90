@@ -433,7 +433,7 @@ contains
         integer :: nstates_eff, jwtg
         integer :: jfifj, jfhfj, n_obs, nparm_jasci, ier, nreduce
         real(dp) :: sr_adiag, var, wts, aux, den, dum1, dum2, smax
-        real(dp), parameter :: eps_eigval = 0.d0
+        real(dp), parameter :: eps_eigval = 1.d-14
 
         allocate (obs_wtg(MSTATES))
         allocate (obs_wtg_tot(MSTATES))

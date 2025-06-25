@@ -263,7 +263,7 @@
         if(ipr.gt.1) then
           write(ounit,'(''distance_node='',d12.4)') distance_node
           write(ounit,'(''rnorm_nodes='',d12.4)') rnorm_nodes
-          write(ounit,'(''psig_ncut='',d12.4)') psidg
+          write(ounit,'(''psig_ncut='',d12.4)') psig
         endif
         distance_node_sum=distance_node_sum+distance_node
       endif
