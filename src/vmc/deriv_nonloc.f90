@@ -264,7 +264,9 @@ contains
       real(dp), dimension(3, ncent) :: da_single_en, da_single_een
       real(dp) :: d2n
       real(dp), parameter :: half = .5d0
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       integer(qmckl_exit_code) :: rc
+#endif
 
       do ic=1,ncent
         if(iforce_analy.eq.0) then
