@@ -291,8 +291,8 @@ module deriv_jastrow_qmckl_mod
 
       !> Sets if the Jastrow parameters should be computed \ 
       !> iflag = 0 -> Do not calculate derivatives         \ 
-      !> iflag = 1 -> Only calculate the gradient          \ 
-      !> iflag = 2 -> Calculate the gradient and the Laplacian
+      !> iflag = 1 -> Calculate the gradient and the Laplacian
+      !> iflag = 2 -> Only calculate the gradient          \ 
       integer,                           intent(in) :: iflag
 
       !for forces (not yet implemented)
@@ -438,15 +438,15 @@ module deriv_jastrow_qmckl_mod
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow gl.')
         
         if (iflag .eq. 1) then
-          rc = qmckl_get_jastrow_champ_single_een_g(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
-          if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow g.')
-        elseif (iflag .eq. 2) then
           rc = qmckl_get_jastrow_champ_single_een_gl(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
           if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow gl.')
 
           do i = 1, nelec
             d2n = d2n + jeen_gl(i+nelec*3)
           enddo
+        elseif (iflag .eq. 2) then
+          rc = qmckl_get_jastrow_champ_single_een_g(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
+          if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow g.')
         else 
           call fatal_error('Error in deriv_jastrowe_qmckl: iflag greater than 2 does not existe')
         endif

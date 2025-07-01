@@ -100,8 +100,8 @@ end subroutine
     use da_jastrow, only: da_d2j, da_j, da_vj
 
     implicit none
-    real(dp)  :: x(3,*)
-    real(dp), dimension(3, *) :: fjo
+    real(dp)  :: x(3,nelec)
+    real(dp), dimension(3, nelec) :: fjo
     real(dp) :: old_x(3,nelec)
     real(dp) :: fsumo, d2o
     real(dp) :: value
@@ -287,19 +287,12 @@ end subroutine
             fjn(2,i) = fjn(2,i) +  jen_gl(2,i)
             fjn(3,i) = fjn(3,i) +  jen_gl(3,i)
         enddo
-        
         if (iflag.eq.1) then
-            rc = qmckl_get_jastrow_champ_single_een_g(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
-            if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow gl.')
-        else
             rc = qmckl_get_jastrow_champ_single_een_gl(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
-            if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow gl.')
-
-            do i = 1, nelec
-                d2n = d2n + jee_gl(4,i) + jen_gl(4,i) + jeen_gl(i+3*nelec)
-            end do
+        else
+            rc = qmckl_get_jastrow_champ_single_een_g(qmckl_ctx(qmckl_no_ctx), jeen_gl, 1_8*4*nelec)
         endif
-        
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow gl.')
         do i = 1, nelec
             fjn(1,i) = fjn(1,i) +  jeen_gl(i+nelec*0)
             fjn(2,i) = fjn(2,i) +  jeen_gl(i+nelec*1)
