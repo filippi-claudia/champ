@@ -9,9 +9,11 @@ module da_energy_sumcum
     real(dp), dimension(:, :, :), allocatable :: da_energy_sum !(3, MCENT, PTH)
     real(dp), dimension(:, :, :), allocatable :: da_psi_cum !(3, MCENT, PTH)
     real(dp), dimension(:, :, :), allocatable :: da_psi_sum !(3, MCENT, PTH)
+    real(dp), dimension(:, :, :), allocatable :: da_energy_psi_sum !(3, MCENT, PTH)
 
     private
-    public :: da_energy_cm2, da_energy_cum, da_energy_sum, da_psi_cum, da_psi_sum
+    public :: da_energy_cm2, da_energy_cum, da_energy_sum
+    public :: da_energy_psi_sum, da_psi_cum, da_psi_sum
     public :: allocate_da_energy_sumcum, deallocate_da_energy_sumcum
     save
 contains
@@ -23,6 +25,7 @@ contains
         if (.not. allocated(da_energy_sum)) allocate (da_energy_sum(3, ncent_tot, PTH))
         if (.not. allocated(da_psi_cum)) allocate (da_psi_cum(3, ncent_tot, PTH))
         if (.not. allocated(da_psi_sum)) allocate (da_psi_sum(3, ncent_tot, PTH))
+        if (.not. allocated(da_energy_psi_sum)) allocate (da_energy_psi_sum(3, ncent_tot, PTH))
     end subroutine allocate_da_energy_sumcum
 
     subroutine deallocate_da_energy_sumcum()
@@ -31,6 +34,7 @@ contains
         if (allocated(da_energy_sum)) deallocate(da_energy_sum)
         if (allocated(da_energy_cum)) deallocate(da_energy_cum)
         if (allocated(da_energy_cm2)) deallocate(da_energy_cm2)
+        if (allocated(da_energy_psi_sum)) deallocate(da_energy_psi_sum)
     end subroutine deallocate_da_energy_sumcum
 
 end module da_energy_sumcum

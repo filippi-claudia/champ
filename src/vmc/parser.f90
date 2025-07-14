@@ -67,7 +67,7 @@ subroutine parser
       use jastrow, only: ijas,ijas_lr,is,isc,neqsx,nordj,nordj1
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
-      use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
+      use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat,f_analy_err
       use metropolis, only: imetro, vmc_tau
       use metropolis, only: delta,deltai,deltar,deltat,fbias
       use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
@@ -369,6 +369,7 @@ subroutine parser
 
 ! %module optgeo (complete)
   iforce_analy= fdf_get('iforce_analy', 0)
+  f_analy_err = fdf_get('f_analy_err', 1)
   iuse_zmat   = fdf_get('iuse_zmat', 0)
   izvzb       = fdf_get('izvzb', 0)
   if (iforce_analy .gt. 0) then
