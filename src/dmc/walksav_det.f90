@@ -103,27 +103,22 @@ contains
 
 ! loop over unique or unequivalent determinants
 ! single excitations
-        if(ndetsingle(iab).ge.1)then
-          do k=1,ndetsingle(iab)
-            wfmatw(k,1,iw,iab)=wfmat(k,1,iab,1)
-          enddo
-        endif
+        do k=1,ndetsingle(iab)
+          wfmatw(k,1,iw,iab)=wfmat(k,1,iab,1)
+        enddo
 
 ! double excitations  
-        if(ndetdouble(iab).ge.1)then
-           do k=ndetsingle(iab)+1,ndetsingle(iab)+ndetdouble(iab)
-              wfmatw(k,1:4,iw,iab)=wfmat(k,1:4,iab,1)
-           enddo
-        endif
+        kcum=ndetsingle(iab)+ndetdouble(iab)
+        do k=ndetsingle(iab)+1,kcum
+          wfmatw(k,1:4,iw,iab)=wfmat(k,1:4,iab,1)
+        enddo
 
 ! multiple excitations
-        if(kcum.lt.ndetiab(iab))then
-           do k=ndetdouble(iab)+1,ndetiab(iab)
-              ndim=numrep_det(k,iab)
-              ndim2=ndim*ndim
-              wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab,1)
-           enddo
-        endif
+        do k=kcum+1,ndetiab(iab)
+          ndim=numrep_det(k,iab)
+          ndim2=ndim*ndim
+          wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab,1)
+        enddo
 
        enddo
 
@@ -188,28 +183,22 @@ contains
 
 ! loop over unique or unequivalent determinants
 ! single excitations
-        if(ndetsingle(iab).ge.1)then
-          do k=1,ndetsingle(iab)
-            wfmat(k,1,iab,1)=wfmatw(k,1,iw,iab)
-          enddo
-        endif
+        do k=1,ndetsingle(iab)
+          wfmat(k,1,iab,1)=wfmatw(k,1,iw,iab)
+        enddo
 
 ! double excitations
         kcum=ndetsingle(iab)+ndetdouble(iab)
-        if(ndetdouble(iab).ge.1)then
-           do k=ndetsingle(iab)+1,kcum
-              wfmat(k,1:4,iab,1)=wfmatw(k,1:4,iw,iab)
-           enddo
-        endif
+        do k=ndetsingle(iab)+1,kcum
+          wfmat(k,1:4,iab,1)=wfmatw(k,1:4,iw,iab)
+        enddo
 
 ! multiple excitations
-        if(kcum.lt.ndetiab(iab))then
-           do k=ndetdouble(iab)+1,ndetiab(iab)
-              ndim=numrep_det(k,iab)
-              ndim2=ndim*ndim
-              wfmat(k,1:ndim2,iab,1)=wfmatw(k,1:ndim2,iw,iab)
-           enddo
-        endif
+        do k=kcum+1,ndetiab(iab)
+          ndim=numrep_det(k,iab)
+          ndim2=ndim*ndim
+          wfmat(k,1:ndim2,iab,1)=wfmatw(k,1:ndim2,iw,iab)
+        enddo
 
        enddo
 
@@ -311,28 +300,32 @@ contains
 
 ! loop over unique or unequivalent determinants
 ! single excitations
-        if(ndetsingle(iab).ge.1)then
-          do k=1,ndetsingle(iab)
-            wfmatw(k,1,iw2,iab)=wfmatw(k,1,iw,iab)
-          enddo
-        endif
+        do k=1,ndetsingle(iab)
+          wfmatw(k,1,iw2,iab)=wfmatw(k,1,iw,iab)
+        enddo
 
 ! double excitations
-        if(ndetdouble(iab).ge.1)then
-           do k=ndetsingle(iab)+1,ndetsingle(iab)+ndetdouble(iab)
-              wfmatw(k,1:4,iw2,iab)=wfmatw(k,1:4,iw,iab)
-           enddo
-        endif
+        kcum=ndetsingle(iab)+ndetdouble(iab)
+        do k=ndetsingle(iab)+1,kcum
+          wfmatw(k,1:4,iw2,iab)=wfmatw(k,1:4,iw,iab)
+        enddo
 
 ! multiple excitations
-        if(kcum.lt.ndetiab(iab))then
-           do k=ndetdouble(iab)+1,ndetiab(iab)
-              ndim=numrep_det(k,iab)
-              ndim2=ndim*ndim
-              wfmatw(k,1:ndim2,iw2,iab)=wfmatw(k,1:ndim2,iw,iab)
-           enddo
-        endif
+        do k=kcum+1,ndetiab(iab)
+          ndim=numrep_det(k,iab)
+          ndim2=ndim*ndim
+          wfmatw(k,1:ndim2,iw2,iab)=wfmatw(k,1:ndim2,iw,iab)
+        enddo
 
+       enddo
+
+       do i=1,nelec
+         do iorb=1,norb
+           orbw(i,iorb,iw2)=orbw(i,iorb,iw)
+           do kk=1,3
+             dorbw(iorb,i,kk,iw2)=dorbw(kk,i,iorb,iw)
+           enddo
+         enddo
        enddo
 
       end subroutine
