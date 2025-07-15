@@ -58,7 +58,7 @@ contains
          do iwf=1,nwftypejas
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
 
-           call jastrowe_qmckl(iel, x(:,iel),fjn(1,1,iwf),d2n(iwf),fsumn(iwf),2)
+           call jastrowe_qmckl(iel, x(:,iel),fjn(1,1,iwf),d2n(iwf),fsumn(iwf),1)
 
            fsumn(iwf)=fsumn(iwf)+fsumo(iwf)
            d2n(iwf)=d2n(iwf)+d2o(iwf)

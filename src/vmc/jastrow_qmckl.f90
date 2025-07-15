@@ -253,7 +253,7 @@ end subroutine
     ! iflag
     ! 0 = value only
     ! 1 = value and gradient 
-    ! 2 = value, gradient and laplacian ! not implemented
+    ! 2 = value, gradient and laplacian
 
  
     rc = qmckl_set_single_point(qmckl_ctx(qmckl_no_ctx), 'N', iel*1_8, x, 3_8)
