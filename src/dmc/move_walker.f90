@@ -26,9 +26,6 @@ module move_walker
       integer :: isend, itag
       integer, dimension(MPI_STATUS_SIZE) :: istatus
 
-
-
-
       call mpi_isend(wt(nwalk),1,mpi_double_precision,irecv,1 &
       ,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(iage(nwalk),1,mpi_integer,irecv,2 &

@@ -829,7 +829,7 @@ subroutine parser
 
     if (iabs(idmc).ne.2) call fatal_error('INPUT: only idmc=2 supported')
 
-    if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
+    !if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
 
     if ((iforce_analy.gt.0.and.dmc_ivd.gt.0).or.nforce.gt.1) write(ounit,int_format) " nwprod", nwprod
     if (.not. fdf_defined('etrial')) call fatal_error("etrial required for DMC calculations")
