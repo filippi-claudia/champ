@@ -590,11 +590,8 @@ contains
 ! accept new move with probability p
 ! Note when one electron moves the velocity on all electrons change.
       if (random_dp().lt.p) then
-!UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-        !if (ioptjas.eq.0) then
         rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
-        !endif
 #endif
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
