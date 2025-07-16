@@ -321,7 +321,7 @@ subroutine read_determinants_file(file_determinants)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_determinants
+    character(len=72)               :: file_determinants
     character(len=80)               :: temp1, temp2, temp3
     integer                         :: iostat, i, j, iunit, counter, istate, itmp
     logical                         :: exist, skip = .true., found = .false.
@@ -331,6 +331,11 @@ subroutine read_determinants_file(file_determinants)
     character(len=100)               :: string_format  = '(A, T40, A)'
 
     !   External file reading
+
+    if((file_determinants(1:6) == '$pool/') .or. (file_determinants(1:6) == '$POOL/')) then
+        file_determinants = pooldir // file_determinants(7:)
+    endif
+
     write(ounit,*) '------------------------------------------------------'
     write(ounit,string_format)  " Reading determinants from the file :: ",  trim(file_determinants)
     write(ounit,*) '------------------------------------------------------'
@@ -456,7 +461,7 @@ subroutine read_multideterminants_file(file_multideterminants)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_multideterminants
+    character(len=72)               :: file_multideterminants
     character(len=80)               :: temp1, temp2, temp3
     integer                         :: iostat, k, iunit, ndet_local, iab, irep
     logical                         :: exist, skip = .true.
@@ -466,6 +471,11 @@ subroutine read_multideterminants_file(file_multideterminants)
     character(len=100)               :: string_format  = '(A, T40, A)'
 
     !   External file reading
+
+    if((file_multideterminants(1:6) == '$pool/') .or. (file_multideterminants(1:6) == '$POOL/')) then
+        file_multideterminants = pooldir // file_multideterminants(7:)
+    endif
+
     write(ounit,*) '------------------------------------------------------'
     write(ounit,string_format)  " Reading multideterminants from the file :: ",  trim(file_multideterminants)
     write(ounit,*) '------------------------------------------------------'
@@ -543,7 +553,7 @@ subroutine read_jastrow_file(file_jastrow)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_jastrow
+    character(len=72)               :: file_jastrow
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iunit, iostat, it, isp, iparm, iwft
     integer                         :: mparmja, mparmjb, mparmjc, int1, int2
@@ -556,6 +566,11 @@ subroutine read_jastrow_file(file_jastrow)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_jastrow(1:6) == '$pool/') .or. (file_jastrow(1:6) == '$POOL/')) then
+        file_jastrow = pooldir // file_jastrow(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading jastrow parameters from the file :: ",  trim(file_jastrow)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -927,7 +942,7 @@ subroutine read_orbitals_file(file_orbitals)
     implicit none
 
 !   local use
-    character(len=72), intent(in)   :: file_orbitals
+    character(len=72)               :: file_orbitals
     character(len=40)               :: temp1, temp2
     character(len=120)              :: temp3
     integer                         :: iunit, iostat, iwft
@@ -941,6 +956,11 @@ subroutine read_orbitals_file(file_orbitals)
     character(len=100)               :: float_format   = '(A, T60, f12.8)'
 
     !   External file reading
+
+    if((file_orbitals(1:6) == '$pool/') .or. (file_orbitals(1:6) == '$POOL/')) then
+        file_orbitals = pooldir // file_orbitals(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading LCAO orbitals from the file :: ",  trim(file_orbitals)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -1134,7 +1154,7 @@ subroutine read_csf_file(file_determinants)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_determinants
+    character(len=72)               :: file_determinants
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iostat, i, j, iunit
     integer                         :: nstates_local
@@ -1146,6 +1166,11 @@ subroutine read_csf_file(file_determinants)
     character(len=100)              :: string_format  = '(A, T40, A)'
 
     !   External file reading
+
+    if((file_determinants(1:6) == '$pool/') .or. (file_determinants(1:6) == '$POOL/')) then
+        file_determinants = pooldir // file_determinants(7:)
+    endif
+
     write(ounit,*) '------------------------------------------------------'
     write(ounit,string_format)  " Reading csf from the file :: ",  trim(file_determinants)
     write(ounit,*) '------------------------------------------------------'
@@ -1272,7 +1297,7 @@ subroutine read_csfmap_file(file_determinants)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_determinants
+    character(len=72)               :: file_determinants
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iostat, i, j, k, iunit
     integer                         :: icsf, jx
@@ -1287,6 +1312,11 @@ subroutine read_csfmap_file(file_determinants)
     character(len=100)              :: string_format  = '(A, T40, A)'
 
     !   External file reading
+
+    if((file_determinants(1:6) == '$pool/') .or. (file_determinants(1:6) == '$POOL/')) then
+        file_determinants = pooldir // file_determinants(7:)
+    endif
+
     write(ounit,*) '------------------------------------------------------'
     write(ounit,string_format)  " Reading csfmap from the file :: ",  trim(file_determinants)
     write(ounit,*) '------------------------------------------------------'
@@ -1429,7 +1459,7 @@ subroutine read_exponents_file(file_exponents)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_exponents
+    character(len=72)               :: file_exponents
     character(len=40)               :: temp1, temp2
     integer                         :: iostat, i, iwft, iunit
     logical                         :: exist
@@ -1439,6 +1469,11 @@ subroutine read_exponents_file(file_exponents)
     character(len=100)              :: string_format  = '(A, T40, A)'
 
     !   External file reading
+
+    if((file_exponents(1:6) == '$pool/') .or. (file_exponents(1:6) == '$POOL/')) then
+        file_exponents = pooldir // file_exponents(7:)
+    endif
+
     write(ounit,*) '------------------------------------------------------'
     write(ounit,string_format)  " Reading exponents from the file :: ",  trim(file_exponents)
     write(ounit,*) '------------------------------------------------------'
@@ -1503,7 +1538,7 @@ subroutine read_jasderiv_file(file_jastrow_der)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_jastrow_der
+    character(len=72)               :: file_jastrow_der
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iunit, iostat
     integer                         :: na1, na2, it, isp, iparm, ia
@@ -1515,6 +1550,11 @@ subroutine read_jasderiv_file(file_jastrow_der)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_jastrow_der(1:6) == '$pool/') .or. (file_jastrow_der(1:6) == '$POOL/')) then
+            file_jastrow_der = pooldir // file_jastrow_der(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading jastrow derivative parameters from the file :: ", trim(file_jastrow_der)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -1677,7 +1717,7 @@ subroutine read_forces_file(file_forces)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_forces
+    character(len=72)               :: file_forces
     character(len=40)               :: temp1, temp2, temp3, temp4, temp5
     integer                         :: iunit, iostat
     integer                         :: i,ic,j, k
@@ -1689,6 +1729,11 @@ subroutine read_forces_file(file_forces)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_forces(1:6) == '$pool/') .or. (file_forces(1:6) == '$POOL/')) then
+        file_forces = pooldir // file_forces(7:)
+    endif
+
     write(ounit,*) '-----------------------------------------------------------------------'
     write(ounit,string_format)  " Reading force displacements from the file :: ", trim(file_forces)
     write(ounit,*) '-----------------------------------------------------------------------'
@@ -1757,7 +1802,7 @@ subroutine read_symmetry_file(file_symmetry)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_symmetry
+    character(len=72)               :: file_symmetry
     character(len=40)               :: temp1, temp2, label
     integer                         :: iunit, iostat
     integer                         :: io, nsym, mo
@@ -1769,6 +1814,11 @@ subroutine read_symmetry_file(file_symmetry)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_symmetry(1:6) == '$pool/') .or. (file_symmetry(1:6) == '$POOL/')) then
+        file_symmetry = pooldir // file_symmetry(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading orbital symmetries from the file :: ", trim(file_symmetry)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -1837,7 +1887,7 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_optorb_mixvirt
+    character(len=72)               :: file_optorb_mixvirt
     character(len=40)               :: temp1, temp2
     integer                         :: iunit, iostat, io, jo
     integer                         :: moopt, movirt
@@ -1849,6 +1899,11 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_optorb_mixvirt(1:6) == '$pool/') .or. (file_optorb_mixvirt(1:6) == '$POOL/')) then
+        file_optorb_mixvirt = pooldir // file_optorb_mixvirt(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading optorb_mixvirt from the file :: ", trim(file_optorb_mixvirt)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -1918,7 +1973,7 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_eigenvalues
+    character(len=72)               :: file_eigenvalues
     character(len=40)               :: temp1, temp2
     integer                         :: iunit, iostat
     integer                         :: io, mo
@@ -1930,6 +1985,11 @@ subroutine read_eigenvalues_file(file_eigenvalues)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_eigenvalues(1:6) == '$pool/') .or. (file_eigenvalues(1:6) == '$POOL/')) then
+        file_eigenvalues = pooldir // file_eigenvalues(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading orbital eigenvalues from the file :: ", trim(file_eigenvalues)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -2150,7 +2210,7 @@ subroutine read_dmatrix_file(file_dmatrix)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_dmatrix
+    character(len=72)               :: file_dmatrix
     character(len=40)               :: temp1, temp2
     integer                         :: iunit, iostat
     integer                         :: i,j, iw, ndetorb, ipr
@@ -2166,6 +2226,11 @@ subroutine read_dmatrix_file(file_dmatrix)
     ipr = 0
 
     !   External file reading
+
+    if((file_dmatrix(1:6) == '$pool/') .or. (file_dmatrix(1:6) == '$POOL/')) then
+        file_dmatrix = pooldir // file_dmatrix(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading dmatrix the file :: ",  trim(file_dmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -2250,7 +2315,7 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
     implicit none
 
     !   local use
-    character(len=72), intent(in)   :: file_cavity_spheres
+    character(len=72)               :: file_cavity_spheres
     character(len=40)               :: key
     integer                         :: iunit, iostat
     integer                         :: i,j
@@ -2261,6 +2326,11 @@ subroutine read_cavity_spheres_file(file_cavity_spheres)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_cavity_spheres(1:6) == '$pool/') .or. (file_cavity_spheres(1:6) == '$POOL/')) then
+        file_cavity_spheres = pooldir // file_cavity_spheres(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading cavity spheres from the file :: ", trim(file_cavity_spheres)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -2325,7 +2395,7 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     implicit none
 
 !   local use
-    character(len=72), intent(in)   :: file_gradients_cartesian
+    character(len=72)               :: file_gradients_cartesian
     character(len=40)               :: key
     integer                         :: iunit, iostat
     integer                         :: i,ia, ic, k
@@ -2336,6 +2406,11 @@ subroutine read_gradients_cartesian_file(file_gradients_cartesian)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_gradients_cartesian(1:6) == '$pool/') .or. (file_gradients_cartesian(1:6) == '$POOL/')) then
+        file_gradients_cartesian = pooldir // file_gradients_cartesian(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading gradients cartesian from the file :: ", trim(file_gradients_cartesian)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -2422,7 +2497,7 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     implicit none
 
 !   local use
-    character(len=72), intent(in)   :: file_gradients_zmatrix
+    character(len=72)               :: file_gradients_zmatrix
     character(len=40)               :: key
     integer                         :: iunit, iostat
     integer                         :: i,ia, ic, k
@@ -2433,6 +2508,11 @@ subroutine read_gradients_zmatrix_file(file_gradients_zmatrix)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_gradients_zmatrix(1:6) == '$pool/') .or. (file_gradients_zmatrix(1:6) == '$POOL/')) then
+        file_gradients_zmatrix = pooldir // file_gradients_zmatrix(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading gradients zmatrix from the file :: ", trim(file_gradients_zmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -2515,7 +2595,7 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     implicit none
 
 !   local use
-    character(len=72), intent(in)   :: file_modify_zmatrix
+    character(len=72)               :: file_modify_zmatrix
     character(len=40)               :: key
     integer                         :: iunit, iostat
     integer                         :: ic,k
@@ -2526,6 +2606,11 @@ subroutine read_modify_zmatrix_file(file_modify_zmatrix)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_modify_zmatrix(1:6) == '$pool/') .or. (file_modify_zmatrix(1:6) == '$POOL/')) then
+        file_modify_zmatrix = pooldir // file_modify_zmatrix(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading modify zmatrix from the file :: ", trim(file_modify_zmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -2586,7 +2671,7 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     implicit none
 
 !   local use
-    character(len=72), intent(in)   :: file_hessian_zmatrix
+    character(len=72)               :: file_hessian_zmatrix
     character(len=40)               :: key
     integer                         :: iunit, iostat
     integer                         :: ic,k
@@ -2597,6 +2682,11 @@ subroutine read_hessian_zmatrix_file(file_hessian_zmatrix)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_hessian_zmatrix(1:6) == '$pool/') .or. (file_hessian_zmatrix(1:6) == '$POOL/')) then
+        file_hessian_zmatrix = pooldir // file_hessian_zmatrix(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading hessian zmatrix from the file :: ", trim(file_hessian_zmatrix)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -2664,7 +2754,7 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     implicit none
 
 !   local use
-    character(len=72), intent(in)   :: file_zmatrix_connection
+    character(len=72)               :: file_zmatrix_connection
     character(len=40)               :: key
     integer                         :: iunit, iostat
     integer                         :: k, ic
@@ -2675,6 +2765,11 @@ subroutine read_zmatrix_connection_file(file_zmatrix_connection)
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_zmatrix_connection(1:6) == '$pool/') .or. (file_zmatrix_connection(1:6) == '$POOL/')) then
+        file_zmatrix_connection = pooldir // file_zmatrix_connection(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading zmatrix connection matrix from the file :: ", trim(file_zmatrix_connection)
     write(ounit,*) '---------------------------------------------------------------------------'
@@ -2752,7 +2847,7 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     implicit none
 
 !   local use
-    character(len=72), intent(in)   :: file_efield
+    character(len=72)               :: file_efield
     character(len=40)               :: key
     integer                         :: iunit, iostat
     integer                         :: ncharges_tmp, iscreen_tmp, i
@@ -2763,6 +2858,11 @@ subroutine read_efield_file(file_efield) !ncharges_tmp, iscreen_tmp
     character(len=100)               :: string_format  = '(A, T60, A)'
 
     !   External file reading
+
+    if((file_efield(1:6) == '$pool/') .or. (file_efield(1:6) == '$POOL/')) then
+        file_efield = pooldir // file_efield(7:)
+    endif
+
     write(ounit,*) '---------------------------------------------------------------------------'
     write(ounit,string_format)  " Reading efield from the file :: ", trim(file_efield)
     write(ounit,*) '---------------------------------------------------------------------------'

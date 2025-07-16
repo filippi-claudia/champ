@@ -6,4 +6,3 @@ cmake -S. -Bbuild \
     -DCMAKE_Fortran_COMPILER=${MPIFC}
 
 cmake --build build -j
-

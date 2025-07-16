@@ -119,11 +119,21 @@ contains
             write (ounit, '(''SR n_omegat: '',i4)') n_omegat
         endif
 
+        !Non symmetric lambda
+        do istate=1,nstates
+            do jstate=1,nstates
+                if (jstate .gt. istate) then
+                    sr_lambda(istate,jstate)=0.0
+                endif
+            enddo
+        enddo
+
         write (ounit, '(/,''SR adiag: '',f10.5)') sr_adiag
         write (ounit, '(''SR tau:   '',f10.5)') sr_tau
         write (ounit, '(''SR eps:   '',f10.5)') sr_eps
         if (nstates .gt. 1) then
-            write (ounit, '(''SR lambda:   '',10(2i4,f10.5))') ((istate,jstate,sr_lambda(istate,jstate),jstate=istate+1,nstates),istate=1,nstates-1)
+            !write (ounit, '(''SR lambda:   '',10(2i4,f10.5))') ((istate,jstate,sr_lambda(istate,jstate),jstate=istate+1,nstates),istate=1,nstates-1)
+            write (ounit, '(''SR lambda:   '',10(2i4,f10.5))') ((istate,jstate,sr_lambda(istate,jstate),jstate=1,nstates),istate=1,nstates)
         endif
 
         call save_params()
@@ -183,6 +193,13 @@ contains
                     write (ounit, '(''Norm of parm variation '',d12.5)') dparm_norm
                     if (iflag .ne. 0) iflagin = 1
                 enddo
+
+                !print gradients of the first state (Alfonso)
+                !write(ounit,*) "State 1 gradients"
+                !write(ounit,*) "parm, deltap, grad"
+                !do k=1,nparm
+                !    write(ounit,'(i7,2es26.10e3)') k, deltap(k,1), h_sr(k,1)
+                !enddo
 
                 !call print_gradients(nparm, deltap)
 
@@ -367,7 +384,7 @@ contains
             deltap(i) = 0.d0     ! initial guess of solution
         enddo
 
-        call pcg(nparm, h_sr(1:nparm), deltap(1:nparm), i, imax, imod, sr_eps)
+        call pcg(nparm, h_sr(1:nparm), deltap(1:nparm), i, imax, imod, sr_eps)   !preconditioned conjugate gradient, it contains subroutine atimes, check optwf_sr_more.f90
         
         call sr_rescale_deltap(nparm, deltap(1:nparm))
         
@@ -407,7 +424,7 @@ contains
         return
     end
 
-    subroutine sr_hs(nparm, sr_adiag)
+    subroutine sr_hs(nparm, sr_adiag)       ! for one state or state-average
         ! <elo>, <o_i>, <elo o_i>, <o_i o_i>; s_diag, s_ii_inv, h_sr
 
         use mpi
@@ -443,7 +460,7 @@ contains
         if (method .eq. 'lin_d') nstates_eff = 1
 
         jwtg = 1
-        jelo = 2
+        jelo = 2    !elo = local energy
         n_obs = 2
         jfj = n_obs + 1
         n_obs = n_obs + nparm
@@ -474,7 +491,7 @@ contains
 
         do istate = 1, nstates
             obs(jwtg, istate) = 0.d0
-            do iconf = 1, nconf_n
+            do iconf = 1, nconf_n       ! nconf_n = nstep * nblk
                 obs(jwtg, istate) = obs(jwtg, istate) + wtg(iconf, istate)
             enddo
             obs_wtg(istate) = obs(jwtg, istate)
@@ -511,20 +528,20 @@ contains
             call MPI_REDUCE(obs(1, istate), obs_tot(1, istate), n_obs, MPI_REAL8, MPI_SUM, 0, MPI_COMM_WORLD, ier)
         enddo
 
-        if (idtask .eq. 0) then
+        if (idtask .eq. 0) then     ! only in the master process
             do istate = 1, nstates_eff
                 wts = weights(istate)
                 if (method .eq. 'lin_d') wts = 1.d0
 
                 do i = 2, n_obs
-                    obs_tot(i, istate) = obs_tot(i, istate)/obs_tot(1, istate)
+                    obs_tot(i, istate) = obs_tot(i, istate)/obs_tot(1, istate)      !divide by the weight (total number of configurations * nproc)
                 enddo
 
                 do k = 1, nparm
-                    aux = obs_tot(jfifj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jfj + k - 1, istate)
+                    aux = obs_tot(jfifj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jfj + k - 1, istate)    ! \overline S_ii = S_ii - S_0i*S_0i
                     s_diag(k, istate) = aux*sr_adiag
                     s_ii_inv(k,1) = s_ii_inv(k,1) + wts*(aux + s_diag(k, istate))
-                    h_sr(k,1) = h_sr(k,1) - 2*wts*(obs_tot(jefj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jelo, istate))
+                    h_sr(k,1) = h_sr(k,1) - 2*wts*(obs_tot(jefj + k - 1, istate) - obs_tot(jfj + k - 1, istate)*obs_tot(jelo, istate))      ! negative energy gradient
                 enddo
             enddo
 
@@ -542,9 +559,9 @@ contains
             do k = 1, nparm
                 if (s_ii_inv(k,1)/smax .gt. eps_eigval) then
                     kk = kk + 1
-                    s_ii_inv(k,1) = 1.d0/s_ii_inv(k,1)
+                    s_ii_inv(k,1) = 1.d0/s_ii_inv(k,1)      !preconditioner as a diagonal matrix with the inverse of the overlap matrix diagonal
                 else
-                    s_ii_inv(k,1) = 0.d0
+                    s_ii_inv(k,1) = 0.d0                    !zeros on the diagonal when the corresponding overlap is too small compared to the maximum one
                 endif
             enddo
             write (ounit, '(''nparm, non-zero S diag'',t41,2i5)') nparm, kk
@@ -647,7 +664,7 @@ contains
 
         real(dp), DIMENSION(:, :), allocatable :: obs
         real(dp) :: sr_adiag, dum, aux2, smax, penalty
-        real(dp), parameter :: eps_eigval=1.d-14
+        real(dp), parameter :: eps_eigval=1.d-9
 
         integer :: jwtg, jfifj, jfjsi, n_obs, istate, jstate, iconf, i, ier, k, kk, n_obs_reduce
 
@@ -662,7 +679,7 @@ contains
         jefj=n_obs+1
         n_obs=n_obs+nparm
         jfifj=n_obs+1
-        n_obs=n_obs+nparm
+        n_obs=n_obs+nparm       !all the observables are stored in the same vector
 
         if(nstates.gt.1) then
            jfjsi=n_obs+1
@@ -680,29 +697,29 @@ contains
 
         do istate=1,nstates
 
-           do iconf=1,nconf_n
+           do iconf=1,nconf_n   !samples of R
 
 ! <psi(istate)^2/psig^2>
               obs(jwtg,istate)=obs(jwtg,istate)+wtg(iconf,istate)
 
-! <(psi(istate)/psig)*(*psi(jstate)/psig)>
+! <(psi(istate)/psig)*(*psi(jstate)/psig)>  overlap
               do jstate=1,istate-1
                  obs(jwtg+jstate,istate)=obs(jwtg+jstate,istate)&
-                         +sr_o(nparm+2,iconf,jstate)*sr_o(nparm+2,iconf,istate)
+                         +sr_o(nparm+2,iconf,jstate)*sr_o(nparm+2,iconf,istate)     !sr_o(nparm+2,iconf,jstate) = psi(jstate)/psig
               enddo
 
-! <eloc(istate)*psi(istate)^2/psig^2>
+! <eloc(istate)*psi(istate)^2/psig^2>   !local energy
               obs(jelo,istate)=obs(jelo,istate)&
                       +elocal(iconf,istate)*wtg(iconf,istate)
 
               do i=1,nparm
-! <psi_i(istate)/psi(istate)*psi(istate)^2/psig^2>
+! <psi_i(istate)/psi(istate)*psi(istate)^2/psig^2>      !psi_i, derivative with respect to the parameter i      !second term in the energy gradient
                  obs(jfj+i-1,istate)=obs(jfj+i-1,istate)&
-                         +sr_o(i,iconf,istate)*wtg(iconf,istate)
+                         +sr_o(i,iconf,istate)*wtg(iconf,istate)        !sr_o(i,iconf,istate) = psi_i(istate)/psi(istate)
 
 ! <eloc(istate)*psi_i(istate)/psi(istate)*psi(istate)^2/psig^2>
                  obs(jefj+i-1,istate)=obs(jefj+i-1,istate)&
-                         +elocal(iconf,istate)*sr_o(i,iconf,istate)*wtg(iconf,istate)
+                         +elocal(iconf,istate)*sr_o(i,iconf,istate)*wtg(iconf,istate)       !first term of the energy gradient "g"
 
 ! <(psi_i(istate)/psi(istate))^2*psi(istate)^2/psig^2>
                  obs(jfifj+i-1,istate)=obs(jfifj+i-1,istate)&
@@ -715,7 +732,7 @@ contains
            if(nstates.gt.1) n_obs_reduce=n_obs-nparm
 
            call MPI_REDUCE(obs(1,istate),obs_tot(1,istate),&
-                   n_obs_reduce,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)
+                   n_obs_reduce,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,ier)     !observables array 'obs' passed to the master process '0' and summed over the configuration index, then stored in 'obs_tot'. MPI_REAL8 datatype, MPI_COMM_WORLD communicator for the operation, ier error code
 
 ! bcast overlaps only
            call MPI_BCAST(obs_tot(1,istate),nstates,MPI_REAL8,0,MPI_COMM_WORLD,i)

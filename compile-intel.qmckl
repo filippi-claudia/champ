@@ -17,4 +17,3 @@ cmake -S. -Bbuild \
     -DQMCKL_LIBRARY=${qmckl_dir}/lib/libqmckl.so \
 
 cmake --build build -j
-

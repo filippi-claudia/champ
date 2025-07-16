@@ -33,7 +33,7 @@ module sa_check
      integer :: nweight
      real(dp), dimension(:), allocatable :: weights !(MSTATES)
 
-     private
+     private    !Private entities cannot be accessed directly from outside the module.
      public :: iweight, nweight, weights
      public :: allocate_sa_weights, deallocate_sa_weights
      save

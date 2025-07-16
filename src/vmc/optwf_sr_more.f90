@@ -2,12 +2,12 @@ module sr_more
       interface !LAPACK interface
 !*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
 !*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-        DOUBLE PRECISION FUNCTION ddot(N,DX,INCX,DY,INCY)
+        DOUBLE PRECISION FUNCTION ddot(N,DX,INCX,DY,INCY)   ! dot product of two vectors DX and DY. N number of elements in input vector(s).
 !*  -- Reference BLAS level1 routine --
           INTEGER incx,incy,n
           DOUBLE PRECISION dx(*),dy(*)
         END FUNCTION
-        SUBROUTINE dgemv(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
+        SUBROUTINE dgemv(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)     ! for matrix-vector operations, from LAPACK. If BETA = 0, simple matrix-vector multiplication
 !*  -- Reference BLAS level2 routine --
           DOUBLE PRECISION ALPHA,BETA
           INTEGER INCX,INCY,LDA,M,N
@@ -28,7 +28,7 @@ module sr_more
         END SUBROUTINE
         end interface
 contains
-      subroutine pcg(n,b,x,i,imax,imod,eps)
+      subroutine pcg(n,b,x,i,imax,imod,eps)   !n is nparm, x is deltap
 ! one-shot preconditioned conjugate gradients; convergence thr is residual.lt.initial_residual*eps**2 (after J.R.Shewchuck)
 
       use contrl_file, only: ounit
@@ -118,10 +118,10 @@ contains
 
 !cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      subroutine atimes_n(n,z,r)
+      subroutine atimes_n(n,z,r)      ! z are the deltap's, n = nparm
 ! r=a*z, i cicli doppi su n e nconf_n sono parallelizzati
 
-      use sr_mod, only: mparm, mconf
+      use sr_mod, only: mparm, mconf    !mparm = nparm*nstates + 2 in sr
       use csfs, only: nstates
       use optwf_func, only: ifunc_omega, omega, omega_hes
       use sa_weights, only: weights
@@ -169,7 +169,7 @@ contains
         if(ifunc_omega.eq.0) then
 
           do iconf=1,nconf_n
-            oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf,1),1)
+            oz_jasci(iconf)=ddot(nparm_jasci,z,1,sr_o(1,iconf,1),1)   !sr_o(i,iconf,istate) = psi_i(istate)/psi(istate), then multiplied by deltap's for the jastrow and ci parameters
           enddo
 
           do istate=1,nstates
@@ -178,7 +178,7 @@ contains
             i0=nparm_jasci+(istate-1)*norbterm+1
             do iconf=1,nconf_n
               oz_orb=ddot(norbterm,z(nparm_jasci+1),1,sr_o(i0,iconf,1),1)
-              aux(iconf)=(oz_jasci(iconf)+oz_orb)*wtg(iconf,istate)
+              aux(iconf)=(oz_jasci(iconf)+oz_orb)*wtg(iconf,istate)       ! wtg = psi(istate)^2/psig^2
             enddo
 
 !       Following three lines commented and replaced by dgemv after profiling
@@ -186,8 +186,8 @@ contains
 !          rloc(i)=ddot(nconf_n,aux(1),1,sr_o(i,1),mparm)
 !        enddo
 
-            call dgemv('N', nparm_jasci, nconf_n, 1.0d0, sr_o(1,1,1), mparm, aux(1), 1, 0.0d0, rloc(1), 1)
-
+            call dgemv('N', nparm_jasci, nconf_n, 1.0d0, sr_o(1,1,1), mparm, aux(1), 1, 0.0d0, rloc(1), 1)      !nparm_jasci and nconf_n are dimension of the (portion of) matrix sr_o we use in the operation
+            ! product between S and dp for jasci parameters, check formula 1.31 in Feldt, Filippi, 2019
 
 !       Following code commented and replaced by dgemv after profiling
 !        do i=nparm_jasci+1,n
@@ -197,14 +197,14 @@ contains
 
             i0 = nparm_jasci + 1 +(istate-1)*norbterm
             i1 = nparm_jasci + 1
-            call dgemv('N', n - nparm_jasci, nconf_n, 1.0d0, sr_o(i0,1,1), mparm, aux(1), 1, 0.0d0, rloc(i1), 1)
-
-            call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
+            call dgemv('N', n - nparm_jasci, nconf_n, 1.0d0, sr_o(i0,1,1), mparm, aux(1), 1, 0.0d0, rloc(i1), 1)  !same as before, but for the orbitals parameters.
+            !the result is stored in the vector rloc
+            call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)  !summing over the number of configurations, the output vector still has the size of nparm
 
             if(idtask.eq.0)then
-              aux0=ddot(n,z,1,obs_tot(jfj,istate),1)
+              aux0=ddot(n,z,1,obs_tot(jfj,istate),1)  !obs_tot(jfj, istate) = sum_conf psi_i(istate)/psi(istate)*psi(istate)^2/psig^2
               do i=1,n
-                r(i)=r(i)+wts*(r_s(i)/obs_tot(1,istate)-obs_tot(jfj+i-1,istate)*aux0+s_diag(i,istate)*z(i))
+                r(i)=r(i)+wts*(r_s(i)/obs_tot(1,istate)-obs_tot(jfj+i-1,istate)*aux0+s_diag(i,istate)*z(i))   !obs_tot(1, istate) = sum_conf psi(istate)^2/psig^2
               enddo
             endif
 

@@ -339,10 +339,12 @@ module trexio_read_data
         endif
 
         ! Make a copy of orbital coeffs for multiple states
-        if( (method == 'sr_n') .and. (nstates .gt. 1)) then
-            do i=2,nstates
-              coef(:,:,i)=coef(:,:,1)
-            enddo
+        if (.not. build_only_basis) then
+            if( (method == 'sr_n') .and. (nstates .gt. 1)) then
+                do i=2,nstates
+                    coef(:,:,i)=coef(:,:,1)
+                enddo
+            endif
         endif
 
 !   Generate the basis information (which radial to be read for which Slm)

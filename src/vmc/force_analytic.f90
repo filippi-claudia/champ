@@ -554,7 +554,13 @@ contains
         enddo
       endif
 
-      open(80,file='force_analytic',form='formatted',status='unknown')
+      !open(80,file='force_analytic',form='formatted',status='unknown')
+      open(80, file='force_analytic', status='unknown', position='append', action='write', form='formatted')
+      if (ipathak.gt.0) then
+        write(80,'(a)') '# iph, atom number, force(xyz), error(xyz)'
+      else
+        write(80,'(a)') '# atom number, force(xyz), error(xyz)'
+      endif
       do iph=1,PTH
         do ic=1,ncent
           do k=1,3
