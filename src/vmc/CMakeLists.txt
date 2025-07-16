@@ -114,6 +114,7 @@ if (MPI_Fortran_FOUND)
     cuspinit4.f90
     davidson.f90
     davidson_wrap.f90
+    deriv_jastrow_qmckl.f90
     deriv_jastrow1.f90
     deriv_jastrow4.f90
     get_norbterm.f90
@@ -183,7 +184,8 @@ if (MPI_Fortran_FOUND)
 	  list(REMOVE_ITEM VMC90_SOURCE
          ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
          ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
-         ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90)
+         ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90
+	 ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow_qmckl.f90)
   endif()
 
 
@@ -300,10 +302,11 @@ if (MPI_Fortran_FOUND)
   # Remove objects to share depending on CMAKE options:
   # --------------------------------------------------------------------
   if (QMCKL_FOUND)
-       list(APPEND SHARED_OBJECTS
-         ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90
-	 ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
-         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
+    list(APPEND SHARED_OBJECTS
+      ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow_qmckl.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
 	 )
   endif()
 
