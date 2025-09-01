@@ -123,7 +123,7 @@ contains
         write (ounit, '(''SR tau:   '',f10.5)') sr_tau
         write (ounit, '(''SR eps:   '',f10.5)') sr_eps
         if (nstates .gt. 1) then
-            write (ounit, '(''SR lambda:   '',10(2i4,f10.5))') ((istate,jstate,sr_lambda(istate,jstate),jstate=istate+1,nstates),istate=1,nstates-1)
+            write (ounit, '(''SR lambda:   '',10(2i4,f10.5))') ((istate,jstate,sr_lambda(istate,jstate),jstate=1,nstates),istate=1,nstates)
         endif
 
         call save_params()
