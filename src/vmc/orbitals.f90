@@ -31,6 +31,7 @@ contains
       use vmc_mod, only: nwftypeorb
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use qmckl_data
       use orbitals_qmckl_periodic_mod, only: orbitals_qmckl_periodic
       use orbitals_qmckl_mod, only: orbitals_qmckl
 #endif
@@ -44,13 +45,17 @@ contains
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      if (iperiodic.eq.0) then
-         call orbitals_qmckl(x,rvec_en,r_en)
+      if (use_qmckl_orbitals.eq..True.) then
+        if (iperiodic.eq.0) then
+          call orbitals_qmckl(x,rvec_en,r_en)
+        else
+          call orbitals_qmckl_periodic(x,rvec_en,r_en)
+        endif
       else
-         call orbitals_qmckl_periodic(x,rvec_en,r_en)
-      endif
-#else
+#endif
       call orbitals_no_qmckl(x,rvec_en,r_en)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      end if ! use_qmckl_orbitals
 #endif
 
       if(iforce_analy.eq.1) call da_orbitals
@@ -100,7 +105,12 @@ contains
       integer :: ibasis, i, ic, ielec, j, k
       integer :: l, m, n
 
+      real(dp), dimension(3*nelec,nbasis) :: tphin
+      real(dp), dimension(3*3*nelec,nbasis) :: t2phin_all
+      real(dp), dimension(3*nelec,nbasis) :: t3phin
+
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+
 
       integer(qmckl_exit_code) :: rc
 
@@ -110,6 +120,8 @@ contains
 
       double precision, parameter :: alpha = 1.0d0, beta = 0.0d0
       double precision :: identity(3,3)
+
+      if (use_qmckl_orbitals.eq..True.) then
 
       allocate (da_dorb_two(norb,3,  nelec, 3, ncent))
       allocate (da_orb_two(norb,3,nelec,ncent))
@@ -175,11 +187,10 @@ contains
       ! end do
 
       deallocate(da_orb_two,da_dorb_two,da_d2orb_two)
-#else
+
+      else
+#endif
       
-      real(dp), dimension(3*nelec,nbasis) :: tphin
-      real(dp), dimension(3*3*nelec,nbasis) :: t2phin_all
-      real(dp), dimension(3*nelec,nbasis) :: t3phin
 
       do ibasis=1,nbasis
        i=0
@@ -205,17 +216,10 @@ contains
         call dgemm('n','n',  n,norb,k,-1.d0,t3phin(1,j)    ,  m,coef(j,1,iwf),nbasis,0.d0,da_d2orb(1,1,1,ic) ,  m)
         call dgemm('n','n',3*n,norb,k,-1.d0,t2phin_all(1,j),3*m,coef(j,1,iwf),nbasis,0.d0,da_dorb(1,1,1,1,ic),3*m)
       enddo
-
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      end if ! use_qmckl_orbitals
 #endif
 
-      ! do ic = 1, ncent
-      !       do i = 1, nelec
-      !             write(ounit, *), 'da_orb', (da_orb(k,i,1,ic), k=1, 3)
-      !             write(ounit, *), 'da_d2orb', (da_d2orb(k,i,1,ic), k=1, 3)
-      !             write(ounit, *), 'da_dorb', (da_dorb(k,1,i,1,ic), k=1, 3)
-
-      !       enddo
-      ! enddo
       return
       end
 !------------------------------------------------------------------------------------
@@ -227,6 +231,7 @@ contains
       use system, only: ncent_tot, nelec
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use qmckl_data
       use orbitals_qmckl_periodic_mod, only: orbitalse_qmckl_periodic
       use orbitals_qmckl_mod, only: orbitalse_qmckl
 #endif
@@ -240,13 +245,17 @@ contains
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      if (iperiodic.eq.0) then
-         call orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
+      if (use_qmckl_orbitals.eq..True.) then
+        if (iperiodic.eq.0) then
+          call orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
+        else
+          call orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
+        endif
       else
-         call orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
-      endif
-#else
+#endif
       call orbitalse_no_qmckl(iel,x,rvec_en,r_en,iflag)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      end if ! use_qmckl_orbitals
 #endif
 
       return

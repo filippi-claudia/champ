@@ -427,6 +427,7 @@ contains
       use vmc_mod, only: norb_tot
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use qmckl_data
       use orbitals_qmckl_periodic_mod, only: orbitals_quad_qmckl_periodic
       use orbitals_qmckl_mod, only: orbitals_quad_qmckl
 #endif
@@ -445,13 +446,17 @@ contains
 
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      if(iperiodic.eq.0) then
-         call orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
+      if(use_qmckl_orbitals.eq..True.) then
+        if(iperiodic.eq.0) then
+          call orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
+        else
+          call orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
+        endif
       else
-         call orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
-      endif
-#else
+#endif
       call orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      end if ! use_qmckl_orbitals
 #endif
 
 
@@ -730,8 +735,9 @@ contains
 
       iel=iequad(iq)
 
-!UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      if(use_qmckl_jastrow.eq..True.) then
+
       if(iforce_analy.eq.1) then
         call jastrowe_qmckl(iel, xquad(:,iq),fjn,d2n,fsumn,2)
 
@@ -742,12 +748,10 @@ contains
         do ic=1,ncent
           do k=1,3
             da_psij_ratio(k,ic,iq)=da_single_en(k,ic)+da_single_een(k,ic)
-            ! write(ounit, *), 'da_psij', da_psij_ratio(k,ic,iq), da_single_en(k,ic), da_single_een(k,ic)
           enddo
         enddo
         do k=1,3
           vjn(k,iq)=fjn(k,iel)+fjo(k,iel,1)
-          !write(ounit, *), 'vjn', vjn(k,iq)
         enddo
 
       else
@@ -757,7 +761,9 @@ contains
 
       ratio_jn(iq)=fsumn
 
-#else
+    else
+
+#endif
 
       if(iforce_analy.eq.0) then
         do ic=1,ncent
@@ -886,7 +892,8 @@ contains
        enddo
 
       endif
-
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      end if ! use_qmckl_jastrow
 #endif
       enddo
 

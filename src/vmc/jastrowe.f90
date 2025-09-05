@@ -57,6 +57,7 @@ contains
       else
          do iwf=1,nwftypejas
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+         if (use_qmckl_jastrow.eq..True.) then
 
            call jastrowe_qmckl(iel, x(:,iel),fjn(1,1,iwf),d2n(iwf),fsumn(iwf),1)
 
@@ -67,9 +68,12 @@ contains
            fjn(2,i,iwf)=fjn(2,i,iwf)+fjo(2,i,iwf)
            fjn(3,i,iwf)=fjn(3,i,iwf)+fjo(3,i,iwf)
            enddo
-#else 
+         else
+#endif
            call jastrow4e(iel,x,fjn(1,1,iwf),d2n(iwf),fsumn(iwf),fsn(1,1,iwf),fijn(1,1,1,iwf),d2ijn(1,1,iwf), &
                  fjo(1,1,iwf),d2o(iwf),fsumo(iwf),fso(1,1,iwf),fijo(1,1,1,iwf),d2ijo(1,1,iwf),iflag)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+         end if ! use_qmckl_jastrow
 #endif
             do i=1,nelec
                v(1,i,iwf)=fjn(1,i,iwf)

@@ -113,10 +113,14 @@ contains
               iwf=jwf
 !UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+            if (use_qmckl_jastrow.eq..True.) then
               call jastrow_qmckl(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf))
-#else
+            else
+#endif
               call jastrow_factor4(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf),fso(1,1,iwf), &
                    fijo(1,1,1,iwf),d2ijo(1,1,iwf))
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+            end if ! use_qmckl_jastrow
 #endif
             enddo
           endif
@@ -133,13 +137,17 @@ contains
             do jwf=1,nwftypejas
               iwf=jwf
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+            if (use_qmckl_jastrow.eq..True.) then
               call deriv_jastrow4_qmckl(x,fjo(:,:,iwf),d2o(iwf),fsumo(iwf),g(:,:,:,iwf),d2g(:,iwf),gvalue(:,iwf))
-#else
+            else
+#endif
               call deriv_jastrow4(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf), &
                    fso(1,1,iwf),fijo(1,1,1,iwf), &
                    d2ijo(1,1,iwf),g(1,1,1,iwf),go(1,1,1,iwf), &
                    d2g(1,iwf),gvalue(1,iwf))
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+            end if ! use_qmckl_jastrow
 #endif
 
             enddo

@@ -181,8 +181,10 @@
       nmove_casula=0
       do iw=1,nwalk
         ! Loop over primary walker
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)        
-        rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', nelec*1_8, xold_dmc(:,:,iw,1), nelec*3_8)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)   
+        if (use_qmckl_jastrow.eq..True.) then
+          rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', nelec*1_8, xold_dmc(:,:,iw,1), nelec*3_8)
+        endif
 #endif
 
         call distances(0,xold_dmc(1,1,iw,1))
@@ -233,7 +235,9 @@
               call jassav(i,0)
               call detsav(i,0)
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-              rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+              if (use_qmckl_jastrow.eq..True.) then
+                rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+              endif
 #endif
               if(icasula.eq.4) then
                  call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove, t_norm_new,0)
@@ -252,7 +256,9 @@
                     imove_up = imove_up - 1
                     imove_dn = imove_dn - 1
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-                    rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+                    if (use_qmckl_jastrow.eq..True.) then
+                      rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+                    endif
 #endif
                  else
                     nmove_casula=nmove_casula+1
@@ -408,7 +414,9 @@
           iacc_elec(i)=0
           if(random_dp().lt.p) then
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-            rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+            if (use_qmckl_jastrow.eq..True.) then
+              rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+            endif
 #endif
             iaccept=1
             nacc=nacc+1
@@ -724,7 +732,9 @@
             call walksav_det(iw)
             call walksav_jas(iw)
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-            rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+            if (use_qmckl_jastrow.eq..True.) then
+              rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+            endif
 #endif
             if (icasula.eq.-2) then
                call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,0,1)
@@ -753,7 +763,9 @@
                   call walksav_jas(iw)
                   imove = 0
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-                  rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+                  if (use_qmckl_jastrow.eq..True.) then
+                    rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+                  endif
 #endif
  
                   call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,0,1)

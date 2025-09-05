@@ -2028,9 +2028,19 @@ subroutine parser
   !qmckl initialization
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-  if (use_qmckl) then
+  if (use_qmckl_orbitals.or.use_qmckl_jastrow) then
 
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
+
+     if (nforce.gt.1) then 
+        write(errunit,'(a)') "Warning: QMCKL does not correlated sampling, so the QMCkl Jastrow will not be used."
+        use_qmckl_jastrow = .false.
+     end if
+     if (nstates.gt.1) then
+        write(errunit,'(a)') "Warning: QMCKL does not support multi-state calculations, QMCkl will not be used."
+        use_qmckl_jastrow = .false.
+        use_qmckl_orbitals = .false.
+     end if
 
      qmckl_no_ctx = 2
      if(ioptorb.gt.0) qmckl_no_ctx = 3

@@ -53,9 +53,13 @@
       use tmpnode, only: distance_node_sum
       use vmc_mod, only: nwftypejas, stoj
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use qmckl_data
+#endif
+
       implicit none
 
-      integer :: i, iab, ic, iel, iflag_dn, iflag_up
+      integer :: i, iab, ic, iel, iflag_dn, iflag_up, rc
       integer :: ifr, ii, ipass, irun, istate
       integer :: j, jel, k, iph
       real(dp) :: ajacob, bot
@@ -190,6 +194,11 @@
 ! accept new move with probability p
 ! Note when one electron moves the velocity on all electrons change.
       if (random_dp().lt.p) then
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+        if (use_qmckl_jastrow.eq..true.) then
+          rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+        endif
+#endif
         psi2o(1,1)=psi2n(1)
         do ic=1,3
           xold(ic,i)=xnew(ic,i)

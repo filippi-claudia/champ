@@ -14,10 +14,11 @@ module qmckl_data
   !> The amount of QMCKL contexts
   integer                :: qmckl_no_ctx
   !> Logical to check if QMCKL is used
-  logical                :: use_qmckl = .True.
+  logical                :: use_qmckl_orbitals = .True.
+  logical                :: use_qmckl_jastrow = .True.
   logical                :: first_step = .True.
 
-  public :: qmckl_no_ctx_max, qmckl_no_ctx, qmckl_ctx, use_qmckl
+  public :: qmckl_no_ctx_max, qmckl_no_ctx, qmckl_ctx, use_qmckl_orbitals, use_qmckl_jastrow
   save
 
 #else
@@ -31,9 +32,9 @@ module qmckl_data
   !> Logical to check if QMCKL is successfully linked
   integer :: QMCKL_SUCCESS = 0
   !> Logical to check if QMCKL is used
-  logical :: use_qmckl = .False.
-
-  public :: qmckl_no_ctx_max, qmckl_no_ctx, qmckl_ctx, use_qmckl, QMCKL_SUCCESS
+  logical :: use_qmckl_orbitals = .False.
+  logical :: use_qmckl_jastrow = .False.
+  public :: qmckl_no_ctx_max, qmckl_no_ctx, qmckl_ctx, use_qmckl_orbitals, use_qmckl_jastrow, QMCKL_SUCCESS
   save
 
 #endif

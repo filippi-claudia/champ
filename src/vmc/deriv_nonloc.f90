@@ -278,30 +278,31 @@ contains
       iel=ielquad(iq)
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-      
-      if (iforce_analy .gt. 0) then
-        call deriv_jastrowe_qmckl(iel,xquad(:,iq),fjn,d2n,fsumn,dpsij_ratio(:,iq),2)   
+      if (use_qmckl_jastrow.eq..True.) then
+        if (iforce_analy .gt. 0) then
+          call deriv_jastrowe_qmckl(iel,xquad(:,iq),fjn,d2n,fsumn,dpsij_ratio(:,iq),2)   
 
-        rc = qmckl_get_forces_jastrow_single_en(qmckl_ctx(qmckl_no_ctx), da_single_en, 3_8*ncent)
-        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single en force.')
-        rc = qmckl_get_forces_jastrow_single_een(qmckl_ctx(qmckl_no_ctx), da_single_een, 3_8*ncent)
-        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single een force.')
-        do ic =1, ncent
-          do k = 1, 3
-            da_psij_ratio(k,ic,iq)=da_single_en(k,ic)+da_single_een(k,ic)
+          rc = qmckl_get_forces_jastrow_single_en(qmckl_ctx(qmckl_no_ctx), da_single_en, 3_8*ncent)
+          if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single en force.')
+          rc = qmckl_get_forces_jastrow_single_een(qmckl_ctx(qmckl_no_ctx), da_single_een, 3_8*ncent)
+          if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single een force.')
+          do ic =1, ncent
+            do k = 1, 3
+              da_psij_ratio(k,ic,iq)=da_single_en(k,ic)+da_single_een(k,ic)
+            enddo
           enddo
-        enddo
-        do k=1,3
-          vjn(k,iq)=fjn(k,iel)+fjo(k,iel,1)
-        enddo
+          do k=1,3
+            vjn(k,iq)=fjn(k,iel)+fjo(k,iel,1)
+          enddo
 
-      else
-        call deriv_jastrowe_qmckl(iel,xquad(:,iq),fjn(:,:),d2n,fsumn,dpsij_ratio(:,iq),0)
-      endif
+        else
+          call deriv_jastrowe_qmckl(iel,xquad(:,iq),fjn(:,:),d2n,fsumn,dpsij_ratio(:,iq),0)
+        endif
 
-      psij_ratio(iq) = fsumn
+        psij_ratio(iq) = fsumn
+      else 
       
-#else
+#endif
       if(iforce_analy.eq.0) then
         do ic=1,ncent
           call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic))
@@ -477,6 +478,8 @@ contains
           enddo
         enddo
       endif
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      end if ! use_qmckl_jastrow
 #endif
 
       enddo
