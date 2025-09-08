@@ -330,6 +330,11 @@ subroutine parser
   alfstr      = fdf_get('alfstr',4.0d0)
   write_walkalize  = fdf_get('write_walkalize', .false.)
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+  use_qmckl_jastrow = fdf_get('use_qmckl_jastrow', .true.)
+  use_qmckl_orbitals = fdf_get('use_qmckl_orbitals', .true.)
+#endif
+
   ! trexio
   trex_backend = fdf_get('backend', 'hdf5')
 #if defined(TREXIO_FOUND)
@@ -2033,7 +2038,7 @@ subroutine parser
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
 
      if (nforce.gt.1) then 
-        write(errunit,'(a)') "Warning: QMCKL does not correlated sampling, so the QMCkl Jastrow will not be used."
+        write(errunit,'(a)') "Warning: QMCKL does not support correlated sampling, so the QMCkl Jastrow will not be used."
         use_qmckl_jastrow = .false.
      end if
      if (nstates.gt.1) then

@@ -131,7 +131,7 @@ module keywords
   end type string_t
 
   type(string_t) allowed_modules(11)
-  type(string_t) allowed_keywords(188)       ! change this number after every adition/deletion
+  type(string_t) allowed_keywords(190)       ! change this number after every adition/deletion
 
 
   private
@@ -239,6 +239,7 @@ module keywords
     allowed_keywords(183)%keys = 'ibranching_c';    allowed_keywords(184)%keys = 'istrech'
     allowed_keywords(185)%keys = 'alfastr';         allowed_keywords(186)%keys = 'nfrag'
     allowed_keywords(187)%keys = 'ibranching_cfrag';allowed_keywords(188)%keys = 'etrialfrag';
+    allowed_keywords(189)%keys = 'use_qmckl_jastrow';allowed_keywords(190)%keys = 'use_qmckl_orbitals'
 
   end subroutine allocate_keywords
 
