@@ -1769,10 +1769,10 @@ subroutine parser
     do i = 1, nstates
       do j = 1, nstates
         if(j.gt.i) then
-          sr_lambda(i,j) = isr_lambda((i-1)*nstates-i*(i-1)/2+j-i)
-!         sr_lambda(j,i) = sr_lambda(i,j)
+          sr_lambda(j,i) = isr_lambda((i-1)*nstates-i*(i-1)/2+j-i)
+
 ! TMP -> to change optwf_sr/compute_grad
-          sr_lambda(j,i) = 0.d0
+          sr_lambda(i,j) = 0.d0
         endif
       enddo
     enddo

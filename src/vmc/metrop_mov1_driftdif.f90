@@ -61,7 +61,7 @@
       real(dp) :: ajacob, bot
       real(dp) :: distance_node, dmin1, dot
       real(dp) :: p, psidg, psig, q
-      real(dp) :: rnorm_nodes, wstro
+      real(dp) :: rnorm_nodes, vavvt, v2new, v2old, wstro
       real(dp) :: rttau, tau, drift, dfus2o, dfus2n, dfus, dx
       real(dp), dimension(3,nelec) :: xstrech
       real(dp), dimension(3) :: xbac
@@ -71,8 +71,10 @@
       real(dp), dimension(MSTATES) :: wtg
       real(dp), dimension(MSTATES) :: wtg_sqrt 
       real(dp), dimension(MSTATES) :: zero_array = 0.0_dp
+      real(dp), parameter :: adrift = 0.5d0
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
+      real(dp), parameter :: two = 2.d0
 
       tau=vmc_tau
       rttau=sqrt(tau)
@@ -99,9 +101,12 @@
         endif
         call compute_determinante_grad(i,psig,psido,psijo,vold(1,i),1)
 
+        v2old=vold(1,i)**2+vold(2,i)**2+vold(3,i)**2
+        vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/(adrift*v2old)
+
         dfus2o=zero
         do k=1,3
-          drift=vold(k,i)*tau
+          drift=vavvt*vold(k,i)*tau
           dfus=gauss()*rttau
           dx=drift+dfus
           dfus2o=dfus2o+dfus**2
@@ -155,10 +160,14 @@
           endif
         endif
 
+
+        v2new=vnew(1,iel)**2+vnew(2,iel)**2+vnew(3,iel)**2
+        vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/(adrift*v2new)
+
 ! calculate probability for reverse transition
         dfus2n=zero
         do k=1,3
-          drift=vnew(k,iel)*tau
+          drift=vavvt*vnew(k,iel)*tau
           xbac(k)=xnew(k,i)+drift
           dfus=xbac(k)-xold(k,iel)
           dfus2n=dfus2n+dfus**2
