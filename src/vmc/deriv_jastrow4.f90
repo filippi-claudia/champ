@@ -149,6 +149,7 @@
       rij=r_ee(ij)
 
       call scale_dist2(rij,uu(1),dd1,dd2)
+      if(uu(1).eq.asymp_r) goto 30
 
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
@@ -542,6 +543,7 @@
           else
             call scale_dist3(ri,rri(1),dd7,dd9,dd11)
           endif
+          if(rri(1).eq.asymp_r) cycle
 
           top=a4(1,it,iwf)*rri(1)
           topi=a4(1,it,iwf)

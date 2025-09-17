@@ -99,6 +99,7 @@
       rij=r_ee(ij)
 
       call scale_dist2(rij,uu(1),dd1,dd2)
+      if(uu(1).eq.asymp_r) goto 22
 !      write(ounit,'(''rij,u in ee'',2f9.5)') rij,uu(1)
 
       top=sspinn*b(1,isb,iwf)*uu(1)
@@ -150,13 +151,13 @@
         if(iforce_analy.eq.0) then
           call scale_dist2(ri,rri(1),dd7,dd9)
           call scale_dist2(rj,rrj(1),dd8,dd10)
-            if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
+          if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
           call switch_scale2(rri(1),dd7,dd9)
           call switch_scale2(rrj(1),dd8,dd10)
         else
           call scale_dist3(ri,rri(1),dd7,dd9,dd11)
           call scale_dist3(rj,rrj(1),dd8,dd10,dd12)
-            if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
+          if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
           call switch_scale3(rri(1),dd7,dd9,dd11)
           call switch_scale3(rrj(1),dd8,dd10,dd12)
        endif
@@ -329,6 +330,7 @@
            else
             call scale_dist3(ri,rri(1),dd7,dd9,dd11)
           endif
+          if(rri(1).eq.asymp_r) cycle
 !          write(ounit,'(''ri,rri in en'',2f9.5)') ri,rri(1)
 
           top=a4(1,it,iwf)*rri(1)
