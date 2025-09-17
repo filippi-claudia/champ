@@ -622,6 +622,14 @@ contains
 
         fsn(i,j)=psibnl(rij,isb,ipar,iwfjas)
 
+        if(nordc.gt.1) then
+          do ic=1,ncent
+            it=iwctype(ic)
+            fsn(i,j)=fsn(i,j) + psinl(rij,r_en_quad(iq,ic),r_en(jj,ic),it,iwfjas)
+          enddo
+        endif
+
+
         fsumn=fsumn+fsn(i,j)-fso(i,j)
    45 continue
       enddo

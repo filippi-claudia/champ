@@ -264,13 +264,13 @@
         if(iforce_analy.eq.0) then
           call scale_dist2(ri,rri(1),dd7,dd9)
           call scale_dist2(rj,rrj(1),dd8,dd10)
-
+          if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
           call switch_scale2(rri(1),dd7,dd9)
           call switch_scale2(rrj(1),dd8,dd10)
         else
           call scale_dist3(ri,rri(1),dd7,dd9,dd11)
           call scale_dist3(rj,rrj(1),dd8,dd10,dd12)
-
+          if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
           call switch_scale3(rri(1),dd7,dd9,dd11)
           call switch_scale3(rrj(1),dd8,dd10,dd12)
        endif

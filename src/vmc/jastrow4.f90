@@ -7,7 +7,7 @@
       use contrldmc, only: icut_e
       use da_jastrow, only: da_d2j, da_j, da_vj
       use system, only: iwctype, ncent, nelec, nup
-      use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, nordj
+      use jastrow, only: sspinn, b, c, scalek, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, nordj, asymp_r
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use scale_dist_mod, only: scale_dist2, switch_scale2, scale_dist3, switch_scale3
@@ -150,13 +150,13 @@
         if(iforce_analy.eq.0) then
           call scale_dist2(ri,rri(1),dd7,dd9)
           call scale_dist2(rj,rrj(1),dd8,dd10)
-
+            if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
           call switch_scale2(rri(1),dd7,dd9)
           call switch_scale2(rrj(1),dd8,dd10)
         else
           call scale_dist3(ri,rri(1),dd7,dd9,dd11)
           call scale_dist3(rj,rrj(1),dd8,dd10,dd12)
-
+            if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
           call switch_scale3(rri(1),dd7,dd9,dd11)
           call switch_scale3(rrj(1),dd8,dd10,dd12)
        endif

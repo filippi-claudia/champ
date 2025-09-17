@@ -1864,13 +1864,11 @@ subroutine read_optorb_mixvirt_file(file_optorb_mixvirt)
 
         read (iunit, *, iostat=iostat) temp1, moopt, movirt
         if (iostat /= 0) call fatal_error( "Error in reading optorb_mixvirt file :: expecting 'optorb_mixvirt', norbopt, norbvirt")
-    endif
-    call bcast(temp1)
-
-    if (trim(temp1) == "optorb_mixvirt") then
-        if (moopt .gt. norb) call fatal_error( "Number of orbitals for optimization are greater than the total orbitals")
-    else
-        call fatal_error (" optorb_mixvirt file "// trim(file_optorb_mixvirt) // " is corrupt.")
+        if (trim(temp1) == "optorb_mixvirt") then
+            if (moopt .gt. norb) call fatal_error( "Number of orbitals for optimization are greater than the total orbitals")
+        else
+            call fatal_error (" optorb_mixvirt file "// trim(file_optorb_mixvirt) // " is corrupt.")
+        endif
     endif
 
     norbopt     =   moopt

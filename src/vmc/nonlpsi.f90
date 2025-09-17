@@ -37,7 +37,7 @@ module nonlpsi
       rj(1)=rrj
 
       if(ijas.eq.4) then
-         if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
+         if(rri.eq.asymp_r .and. rrj.eq.asymp_r) return
          call switch_scale(uu(1))
          call switch_scale(ri(1))
          call switch_scale(rj(1))
@@ -228,7 +228,7 @@ module nonlpsi
       tt(0)=1
 
       if(ijas.eq.4) then
-        if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
+        if(rri.eq.asymp_r .and. rrj.eq.asymp_r) return
         call switch_scale1(uu(1),dd1u)
         call switch_scale1(ri(1),dd1i)
         call switch_scale1(rj(1),dd1j)

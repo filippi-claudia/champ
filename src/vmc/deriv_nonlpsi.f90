@@ -39,7 +39,7 @@
       rj(1)=rrj
 
       if(ijas.eq.4) then
-         if(rri.eq.asymp_r .or. rrj.eq.asymp_r) return
+         if(rri.eq.asymp_r .and. rrj.eq.asymp_r) return
          call switch_scale(uu(1))
          call switch_scale(ri(1))
          call switch_scale(rj(1))

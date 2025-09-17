@@ -4,7 +4,7 @@ contains
                                  fjo,d2o,fsumo,fso,fijo,d2ijo,iflag)
 ! Written by Cyrus Umrigar and Claudia Filippi
       use system, only: iwctype, ncent, nelec, nup
-      use jastrow, only: sspinn, b, c, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, nordj
+      use jastrow, only: sspinn, b, c, a4, norda, nordb, nordc, asymp_jasa, asymp_jasb, nordj, asymp_r
       use multiple_geo, only: iwf
       use bparm, only: nocuspb, nspin2b
       use distance_mod, only: r_en, rvec_en, r_ee, rvec_ee
@@ -172,13 +172,13 @@ contains
         if(iflag.eq.0) then
           call scale_dist1(ri,rri(1),dd7)
           call scale_dist1(rj,rrj(1),dd8)
-
+            if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
           call switch_scale1(rri(1),dd7)
           call switch_scale1(rrj(1),dd8)
          else
           call scale_dist2(ri,rri(1),dd7,dd9)
           call scale_dist2(rj,rrj(1),dd8,dd10)
-
+            if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
           call switch_scale2(rri(1),dd7,dd9)
           call switch_scale2(rrj(1),dd8,dd10)
         endif
