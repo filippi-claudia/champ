@@ -278,7 +278,7 @@ contains
       iel=ielquad(iq)
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-      if (use_qmckl_jastrow.eq..True.) then
+      if (use_qmckl_jastrow) then
         if (iforce_analy .gt. 0) then
           call deriv_jastrowe_qmckl(iel,xquad(:,iq),fjn,d2n,fsumn,dpsij_ratio(:,iq),2)   
 

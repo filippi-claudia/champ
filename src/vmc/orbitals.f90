@@ -45,7 +45,7 @@ contains
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      if (use_qmckl_orbitals.eq..True.) then
+      if (use_qmckl_orbitals) then
         if (iperiodic.eq.0) then
           call orbitals_qmckl(x,rvec_en,r_en)
         else
@@ -121,7 +121,7 @@ contains
       double precision, parameter :: alpha = 1.0d0, beta = 0.0d0
       double precision :: identity(3,3)
 
-      if (use_qmckl_orbitals.eq..True.) then
+      if (use_qmckl_orbitals) then
 
       allocate (da_dorb_two(norb,3,  nelec, 3, ncent))
       allocate (da_orb_two(norb,3,nelec,ncent))
@@ -245,7 +245,7 @@ contains
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      if (use_qmckl_orbitals.eq..True.) then
+      if (use_qmckl_orbitals) then
         if (iperiodic.eq.0) then
           call orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
         else

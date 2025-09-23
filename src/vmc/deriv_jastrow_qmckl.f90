@@ -289,10 +289,10 @@ module deriv_jastrow_qmckl_mod
       real(dp),                          intent(out) :: fsumn
       real(dp), dimension(nparmj)      , intent(out) :: dpsij_ratio
 
-      !> Sets if the Jastrow parameters should be computed \ 
-      !> iflag = 0 -> Do not calculate derivatives         \ 
+      !> Sets if the Jastrow parameters should be computed 
+      !> iflag = 0 -> Do not calculate derivatives         
       !> iflag = 1 -> Calculate the gradient and the Laplacian
-      !> iflag = 2 -> Only calculate the gradient          \ 
+      !> iflag = 2 -> Only calculate the gradient          
       integer,                           intent(in) :: iflag
 
       !for forces (not yet implemented)

@@ -446,7 +446,7 @@ contains
 
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      if(use_qmckl_orbitals.eq..True.) then
+      if(use_qmckl_orbitals) then
         if(iperiodic.eq.0) then
           call orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
         else
@@ -744,7 +744,7 @@ contains
       iel=iequad(iq)
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      if(use_qmckl_jastrow.eq..True.) then
+      if(use_qmckl_jastrow) then
 
       if(iforce_analy.eq.1) then
         call jastrowe_qmckl(iel, xquad(:,iq),fjn,d2n,fsumn,2)

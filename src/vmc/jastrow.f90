@@ -113,7 +113,7 @@ contains
               iwf=jwf
 !UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-            if (use_qmckl_jastrow.eq..True.) then
+            if (use_qmckl_jastrow) then
               call jastrow_qmckl(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf))
             else
 #endif
@@ -138,7 +138,7 @@ contains
               iwf=jwf
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-            if (use_qmckl_jastrow.eq..True.) then
+            if (use_qmckl_jastrow) then
               call deriv_jastrow4_qmckl(x,fjo(:,:,iwf),d2o(iwf),fsumo(iwf),g(:,:,:,iwf),d2g(:,iwf),gvalue(:,iwf))
             else
 #endif
