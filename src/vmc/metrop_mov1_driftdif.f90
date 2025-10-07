@@ -204,7 +204,7 @@
 ! Note when one electron moves the velocity on all electrons change.
       if (random_dp().lt.p) then
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-        if (use_qmckl_jastrow.eq..true.) then
+        if (use_qmckl_jastrow) then
           rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
         endif
 #endif

@@ -57,7 +57,7 @@ contains
       else
          do iwf=1,nwftypejas
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-         if (use_qmckl_jastrow.eq..True.) then
+         if (use_qmckl_jastrow) then
 
            call jastrowe_qmckl(iel, x(:,iel),fjn(1,1,iwf),d2n(iwf),fsumn(iwf),1)
 

@@ -182,7 +182,7 @@
       do iw=1,nwalk
         ! Loop over primary walker
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)   
-        if (use_qmckl_jastrow.eq..True.) then
+        if (use_qmckl_jastrow) then
           rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', nelec*1_8, xold_dmc(:,:,iw,1), nelec*3_8)
         endif
 #endif
@@ -235,7 +235,7 @@
               call jassav(i,0)
               call detsav(i,0)
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-              if (use_qmckl_jastrow.eq..True.) then
+              if (use_qmckl_jastrow) then
                 rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
               endif
 #endif
@@ -256,7 +256,7 @@
                     imove_up = imove_up - 1
                     imove_dn = imove_dn - 1
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-                    if (use_qmckl_jastrow.eq..True.) then
+                    if (use_qmckl_jastrow) then
                       rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
                     endif
 #endif
@@ -414,7 +414,7 @@
           iacc_elec(i)=0
           if(random_dp().lt.p) then
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-            if (use_qmckl_jastrow.eq..True.) then
+            if (use_qmckl_jastrow) then
               rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
             endif
 #endif
@@ -731,7 +731,7 @@
             call walksav_det(iw)
             call walksav_jas(iw)
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-            if (use_qmckl_jastrow.eq..True.) then
+            if (use_qmckl_jastrow) then
               rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
             endif
 #endif
@@ -762,7 +762,7 @@
                   call walksav_jas(iw)
                   imove = 0
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-                  if (use_qmckl_jastrow.eq..True.) then
+                  if (use_qmckl_jastrow) then
                     rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
                   endif
 #endif
