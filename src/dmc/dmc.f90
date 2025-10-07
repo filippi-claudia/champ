@@ -18,6 +18,7 @@ contains
       use control_dmc, only: dmc_idump,dmc_irstar,dmc_nblk,dmc_nblkeq
       use control_dmc, only: dmc_nconf,dmc_nstep
       use dmc_ps_mov1, only: dmc_ps
+      use dmc_ae_mov1, only: dmc_ae
       use dumper_mod, only: dumper
       use error,   only: fatal_error
       use estcum,  only: ipass
@@ -97,7 +98,7 @@ contains
             if (nloc.gt.0) then
               call dmc_ps(lpass,irun)
              else
-!             call dmc_good
+              call dmc_ae(lpass,irun)
             endif
            else
             call fatal_error('DMC: iabs(idmc) must be 1 or 2')

@@ -67,7 +67,7 @@ subroutine parser
       use jastrow, only: ijas,ijas_lr,is,isc,neqsx,nordj,nordj1
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
-      use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
+      use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat,f_analy_err
       use metropolis, only: imetro, vmc_tau
       use metropolis, only: delta,deltai,deltar,deltat,fbias
       use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
@@ -374,6 +374,7 @@ subroutine parser
 
 ! %module optgeo (complete)
   iforce_analy= fdf_get('iforce_analy', 0)
+  f_analy_err = fdf_get('f_analy_err', 1)
   iuse_zmat   = fdf_get('iuse_zmat', 0)
   izvzb       = fdf_get('izvzb', 0)
   if (iforce_analy .gt. 0) then
@@ -833,7 +834,7 @@ subroutine parser
 
     if (iabs(idmc).ne.2) call fatal_error('INPUT: only idmc=2 supported')
 
-    if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
+    !if (nloc.eq.0) call fatal_error('INPUT: no all-electron DMC calculations supported')
 
     if ((iforce_analy.gt.0.and.dmc_ivd.gt.0).or.nforce.gt.1) write(ounit,int_format) " nwprod", nwprod
     if (.not. fdf_defined('etrial')) call fatal_error("etrial required for DMC calculations")
@@ -1773,10 +1774,10 @@ subroutine parser
     do i = 1, nstates
       do j = 1, nstates
         if(j.gt.i) then
-          sr_lambda(i,j) = isr_lambda((i-1)*nstates-i*(i-1)/2+j-i)
-!         sr_lambda(j,i) = sr_lambda(i,j)
+          sr_lambda(j,i) = isr_lambda((i-1)*nstates-i*(i-1)/2+j-i)
+
 ! TMP -> to change optwf_sr/compute_grad
-          sr_lambda(j,i) = 0.d0
+          sr_lambda(i,j) = 0.d0
         endif
       enddo
     enddo

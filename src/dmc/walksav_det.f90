@@ -1,10 +1,11 @@
 module walksav_det_mod
       use branch,  only: nwalk
+      use contrl_file, only: ounit
       use csfs,    only: nstates
       use dmc_mod, only: mwalk
       use mpi
       use mstates_mod, only: MSTATES
-      use multidet, only: ivirt,numrep_det
+      use multidet, only: ivirt, ndetiab, numrep_det, ndetsingle, ndetdouble
       use multimat, only: aa,wfmat
       use multislater, only: detiab
       use orbval,  only: dorb,orb
@@ -40,7 +41,7 @@ contains
       integer :: i, iab, ierr, iorb, irecv
       integer :: irequest, irequest_array, isend, istate
       integer :: istatus, itag, iw, iw2
-      integer :: j, k, kk
+      integer :: j, k, kcum, kk
       integer :: ndim, nel, ndim2
 
       dimension istatus(MPI_STATUS_SIZE)
@@ -63,8 +64,6 @@ contains
       if(.not.allocated(d2dx2w)) allocate(d2dx2w(nelec,mwalk))
       if(.not.allocated(detuw)) allocate(detuw(ndet,mwalk))
       if(.not.allocated(detdw)) allocate(detdw(ndet,mwalk))
-
-
 
        do k=1,ndet
          detuw(k,iw)=detiab(k,1,1)
@@ -101,16 +100,26 @@ contains
             aaw(i,j,iw,iab)=aa(i,j,iab,1)
           enddo
          enddo
-         do k=1,kref-1
-              ndim=numrep_det(k,iab)
-              ndim2=ndim*ndim
-              wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab,1)
-         enddo
-         do k=kref+1,ndet
-            ndim=numrep_det(k,iab)
-            ndim2=ndim*ndim
-            wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab,1)
-          enddo
+
+! loop over unique or unequivalent determinants
+! single excitations
+        do k=1,ndetsingle(iab)
+          wfmatw(k,1,iw,iab)=wfmat(k,1,iab,1)
+        enddo
+
+! double excitations  
+        kcum=ndetsingle(iab)+ndetdouble(iab)
+        do k=ndetsingle(iab)+1,kcum
+          wfmatw(k,1:4,iw,iab)=wfmat(k,1:4,iab,1)
+        enddo
+
+! multiple excitations
+        do k=kcum+1,ndetiab(iab)
+          ndim=numrep_det(k,iab)
+          ndim2=ndim*ndim
+          wfmatw(k,1:ndim2,iw,iab)=wfmat(k,1:ndim2,iab,1)
+        enddo
+
        enddo
 
        do i=1,nelec
@@ -130,7 +139,7 @@ contains
       integer :: i, iab, ierr, iorb, irecv
       integer :: irequest, irequest_array, isend, istate
       integer :: istatus, itag, iw, iw2
-      integer :: j, k, kk
+      integer :: j, k, kcum, kk
       integer :: ndim, nel, ndim2
 
       dimension istatus(MPI_STATUS_SIZE)
@@ -171,16 +180,26 @@ contains
             aa(i,j,iab,1)=aaw(i,j,iw,iab)
           enddo
          enddo
-          do k=1,kref-1
-             ndim=numrep_det(k,iab)
-             ndim2=ndim*ndim
-             wfmat(k,1:ndim2,iab,1)=wfmatw(k,1:ndim2,iw,iab)
-          enddo
-          do k=kref+1,ndet
-              ndim=numrep_det(k,iab)
-              ndim2=ndim*ndim
-              wfmat(k,1:ndim2,iab,1)=wfmatw(k,1:ndim2,iw,iab)
-          enddo
+
+! loop over unique or unequivalent determinants
+! single excitations
+        do k=1,ndetsingle(iab)
+          wfmat(k,1,iab,1)=wfmatw(k,1,iw,iab)
+        enddo
+
+! double excitations
+        kcum=ndetsingle(iab)+ndetdouble(iab)
+        do k=ndetsingle(iab)+1,kcum
+          wfmat(k,1:4,iab,1)=wfmatw(k,1:4,iw,iab)
+        enddo
+
+! multiple excitations
+        do k=kcum+1,ndetiab(iab)
+          ndim=numrep_det(k,iab)
+          ndim2=ndim*ndim
+          wfmat(k,1:ndim2,iab,1)=wfmatw(k,1:ndim2,iw,iab)
+        enddo
+
        enddo
 
        do i=1,nelec
@@ -194,13 +213,50 @@ contains
 
       end subroutine
 
+      subroutine walkcheckdet(iw)
+      implicit none
+
+      integer :: i, iab, ierr, iorb, irecv
+      integer :: irequest, irequest_array, isend, istate
+      integer :: istatus, itag, iw, iw2
+      integer :: j, k, kcum, kk
+      integer :: ndim, nel, ndim2
+
+      dimension istatus(MPI_STATUS_SIZE)
+      dimension irequest_array(MPI_STATUS_SIZE)
+
+      do k=1,ndet
+        write(ounit,*) 'detiab1',detiab(k,1,1)
+        write(ounit,*) 'detiab2',detiab(k,2,1)
+      enddo
+
+      !write(ounit,*) 'slm1'(slmi(j,1,1),j=1,nup*nup)
+
+       do iab=1,2
+         nel=nup
+         if(iab.eq.2) nel=ndn
+          write(ounit,*) 'aa iab',iab, ((aa(i,j,iab,1),i=1,nel),j=ivirt(iab),norb)
+          write(ounit,*) 'ymat iab',iab, ((ymat(j,i,iab,istate),j=ivirt(iab),norb),i=1,nel)
+       enddo
+
+       do iab=1,2
+         do k=2,ndet
+           ndim=numrep_det(k,iab)
+           ndim2=ndim*ndim
+           write(ounit,*) 'wfmat iab numrep_det',iab, numrep_det(k,iab),(wfmat(k,j,iab,1),j=1,ndim2)
+         enddo
+       enddo
+
+
+      end subroutine
+
       subroutine splitjdet(iw,iw2)
       implicit none
 
       integer :: i, iab, ierr, iorb, irecv
       integer :: irequest, irequest_array, isend, istate
       integer :: istatus, itag, iw, iw2
-      integer :: j, k, kk
+      integer :: j, k, kcum, kk
       integer :: ndim, nel, ndim2
 
       dimension istatus(MPI_STATUS_SIZE)
@@ -241,23 +297,33 @@ contains
             aaw(i,j,iw2,iab)=aaw(i,j,iw,iab)
           enddo
          enddo
-          do k=1,krefw(iw)-1
-              ndim=numrep_det(k,iab)
-              ndim2=ndim*ndim
-              wfmatw(k,1:ndim2,iw2,iab)=wfmatw(k,1:ndim2,iw,iab)
-          enddo
-          do k=krefw(iw)+1,ndet
-              ndim=numrep_det(k,iab)
-              ndim2=ndim*ndim
-              wfmatw(k,1:ndim2,iw2,iab)=wfmatw(k,1:ndim2,iw,iab)
-          enddo
+
+! loop over unique or unequivalent determinants
+! single excitations
+        do k=1,ndetsingle(iab)
+          wfmatw(k,1,iw2,iab)=wfmatw(k,1,iw,iab)
+        enddo
+
+! double excitations
+        kcum=ndetsingle(iab)+ndetdouble(iab)
+        do k=ndetsingle(iab)+1,kcum
+          wfmatw(k,1:4,iw2,iab)=wfmatw(k,1:4,iw,iab)
+        enddo
+
+! multiple excitations
+        do k=kcum+1,ndetiab(iab)
+          ndim=numrep_det(k,iab)
+          ndim2=ndim*ndim
+          wfmatw(k,1:ndim2,iw2,iab)=wfmatw(k,1:ndim2,iw,iab)
+        enddo
+
        enddo
 
        do i=1,nelec
          do iorb=1,norb
            orbw(i,iorb,iw2)=orbw(i,iorb,iw)
            do kk=1,3
-             dorbw(kk,i,iorb,iw2)=dorbw(kk,i,iorb,iw)
+             dorbw(iorb,i,kk,iw2)=dorbw(kk,i,iorb,iw)
            enddo
          enddo
        enddo
@@ -312,13 +378,11 @@ contains
       enddo
 
       do iab=1,2
-        do k=1,ndet
+        do k=1,ndetiab(iab)
           ndim=numrep_det(k,iab)
-          if(k.ne.krefw(nwalk).and.ndim.gt.0) then
-            itag=itag+1
-            call mpi_isend(wfmatw(k,:,nwalk,iab),ndim*ndim,mpi_double_precision &
+          itag=itag+1
+          call mpi_isend(wfmatw(k,:,nwalk,iab),ndim*ndim,mpi_double_precision &
            ,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
-          endif
         enddo
       enddo
 
@@ -378,13 +442,11 @@ contains
       enddo
 
       do iab=1,2
-        do k=1,ndet
+        do k=1,ndetiab(iab)
           ndim=numrep_det(k,iab)
-          if(k.ne.krefw(nwalk).and.ndim.gt.0) then
-            itag=itag+1
-            call mpi_recv(wfmatw(k,:,nwalk,iab),ndim*ndim,mpi_double_precision &
+          itag=itag+1
+          call mpi_recv(wfmatw(k,:,nwalk,iab),ndim*ndim,mpi_double_precision &
            ,isend,itag,MPI_COMM_WORLD,istatus,ierr)
-        endif
         enddo
       enddo
 

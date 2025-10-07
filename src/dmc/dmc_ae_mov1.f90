@@ -1,7 +1,7 @@
-      module dmc_ps_mov1
+      module dmc_ae_mov1
       contains
 
-      subroutine dmc_ps(lpass,irun)
+      subroutine dmc_ae(lpass,irun)
 
       use age,     only: iage,ioldest,ioldestmx
       use assignment_mod, only: assign_elecs
@@ -9,7 +9,6 @@
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
       use branching, only: calculate_fratio, calculate_reweight
-      use casula,  only: i_vpsp,icasula, t_vpsp
       use config,  only: psido_dmc,psijo_dmc,vold_dmc,xold_dmc
       use const,   only: etrial,esigmatrial
       use constants, only: hb
@@ -68,7 +67,7 @@
       use stats, only: acc,dfus2ac,dfus2un,nacc,nodecr
       use stats, only: trymove
       use strech_mod, only: strech
-      use system,  only: cent,nelec,nup, ncent
+      use system,  only: cent,iwctype, znuc, nelec,nup, ncent
       use velratio, only: fratio
       use vd_mod, only: dmc_ivd
       use vmc_mod, only: nbjx
@@ -84,39 +83,42 @@
       integer :: i, iaccept, iel, ic, iph, rc
       integer :: iflag_dn, iflag_up, ifr, ii
       integer :: imove, imove_dn, imove_up, ipmod, ipmod2, iw, irun
-      integer :: iwmod, j, jel, k, lpass
-      integer :: ncall, ncount_casula, nmove_casula
+      integer :: iwmod, iwnuc, j, jel, k, lpass
+      integer :: ncall
       integer, dimension(nelec) :: itryo
       integer, dimension(nelec) :: itryn
       integer, dimension(nelec) :: iacc_elec
-      real(dp) :: d2n, den, deo, dfus
-      real(dp) :: dfus2n, dfus2o, distance_node, distance_node_ratio2
+      real(dp) :: adrift, costht, d2n, den, deo, dfus, dfusb
+      real(dp) :: dfus2a, dfus2b, dfus2n, dfus2o, distance_node, distance_node_ratio2
       real(dp) :: dmin1, dr2, drifdif, drifdifgfunc
       real(dp) :: drifdifr, drifdifs, drift, dwt
-      real(dp) :: ecuto, ecutn
-      real(dp) :: dx, e_cutoff, dwt_cutoff, ekino(1), enew(1)
+      real(dp) :: ecuto, ecutn, fnormn, fnormo
+      real(dp) :: driftr, dx, e_cutoff, dwt_cutoff, ekino(1), enew(1)
       real(dp) :: ewtn, ewto, expon, ffi
-      real(dp) :: ffn, fration, fratio_aux, ginv
-      real(dp) :: p, pen, pp, psi2savo
-      real(dp) :: psidn(1), psijn(1), q
+      real(dp) :: ffn, fration, fratio_aux, ginv, hafzr2
+      real(dp) :: p, phi, pen, pgaus, pp, psi2savo
+      real(dp) :: psidn(1), psijn(1), q, qgaus
+      real(dp) :: ren2, ren2mn, rmino, rminn
       real(dp) :: rnorm_nodes, rnorm_nodes_new
-      real(dp) :: rnorm_nodes_old, ro, taunow
-      real(dp) :: tauprim, tratio, v2new, v2old, v2
+      real(dp) :: rnorm_nodes_old, ro, rtry, taunow, tauprim, tratio
+      real(dp) :: term, volda, voldp, voldr, vnewa, vnewp, vnewr, v2new, v2old, v2
       real(dp) :: v2sumn, v2sumo, vavfac, vav2sumn, vav2sumo
       real(dp) :: vavvn, vavvo, vavvt, wtg(1), wtg_sqrt(1)
       real(dp) :: wtg_derivsum1, wtnow
-      real(dp) :: sqrt_pi_o2, sqrt_nelec
-      real(dp) :: t_norm, t_norm_new
+      real(dp) :: pi, sqrt_pi_o2, sintht, sqrt_nelec
+      real(dp) :: t_norm, t_norm_new, zeta, zprime, xprime
 
       real(dp) :: pe
       real(dp), dimension(2,nbjx) :: vpsp_det
       real(dp), dimension(nparmj,nbjx) :: dvpsp_dj
 
-      real(dp), dimension(3, nelec) :: xstrech
+      real(dp), dimension(3) :: rvminn, rvmino
+      real(dp), dimension(3) :: xaxis, zaxis
+      real(dp), dimension(3) :: xbac
       real(dp), dimension(3) :: xnew
       real(dp), dimension(3) :: x_tmove_old
+      real(dp), dimension(3, nelec) :: xstrech
       real(dp), dimension(3, nelec) :: vnew
-      real(dp), dimension(3) :: xbac
       real(dp), dimension(nelec) :: unacp
       real(dp), dimension(10, 3, ncent) :: deriv_esum
       real(dp), dimension(nelec) :: deo_i, den_i
@@ -128,7 +130,9 @@
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: two = 2.d0
       real(dp), parameter :: half = .5d0
-      real(dp), parameter :: adrift = 0.5d0
+      real(dp), parameter :: eps = 1.d-10
+      real(dp), parameter :: huge = 1.d+100
+      real(dp), parameter :: adrift0 = 0.1d0
       real(dp), parameter :: small = 1.d-10
       real(dp), parameter :: zero_1d(1) = (/0.d0/)
 
@@ -139,6 +143,9 @@
 
       sqrt_pi_o2 = 0.88622692545d0
       sqrt_nelec = dsqrt(dble(nelec))
+
+      pi=4.d0*datan(1.d0)
+      term=(sqrt(two*pi*tau))**3/pi
 
       eps_node_cutoff=eps_node_cutoff*sqrt(tau)
       e_cutoff=0.2d0*sqrt(nelec/tau)
@@ -160,12 +167,12 @@
       iwmod=mod(ipass,nwprod)
 
       ! Store (well behaved velocity/velocity)
-      if(ncall.eq.0.and.dmc_irstar.eq.0) then
+      if(idmc.gt.0.and.ncall.eq.0.and.dmc_irstar.eq.0) then
         do ifr=1,nforce
           do iw=1,nwalk
             tratio = one
             ! Todo Joris - Think of a way to not pass in the fragments if they are not needed. 
-            call calculate_fratio(icut_e, adrift, tratio, taunow, sqrt_nelec, &
+            call calculate_fratio(icut_e, adrift0, tratio, taunow, sqrt_nelec, &
                                   xold_dmc(:,:,iw,ifr), vold_dmc(:,:,iw,ifr), &
                                   eest, eold(iw,ifr), fratio(iw,ifr), &
                                   eest_i, eloco_i(:,iw,ifr), fratio_i(:,iw,ifr), &
@@ -177,14 +184,10 @@
 
       imove=0
       ioldest=0
-      ncount_casula=0
-      nmove_casula=0
       do iw=1,nwalk
         ! Loop over primary walker
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)   
-        if (use_qmckl_jastrow.eq..True.) then
-          rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', nelec*1_8, xold_dmc(:,:,iw,1), nelec*3_8)
-        endif
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)        
+        rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', nelec*1_8, xold_dmc(:,:,iw,1), nelec*3_8)
 #endif
 
         call distances(0,xold_dmc(1,1,iw,1))
@@ -206,86 +209,6 @@
           dfus2unfrag = zero
         endif
 
-        if(icasula.ge.3) then
-          imove_up=0
-          imove_dn=0
-          do i=1,nelec
-            imove=0
-            call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove, t_norm,1)
-            ncount_casula=ncount_casula+1
-
-            if(imove.gt.0) then
-              ! write(ounit,*) 'icasula3', imove
-              if(i.le.nup) then
-                imove_up=imove_up+1
-               else
-                imove_dn=imove_dn+1
-              endif
-              call psiedmc(i,iw,xnew,psidn,psijn,0)
-
-              iaccept=1
-
-              do k=1,3
-                x_tmove_old(k)=xold_dmc(k,i,iw,1)
-                xold_dmc(k,i,iw,1)=xnew(k)
-              enddo
-
-              psido_dmc(iw,1)=psidn(1)
-              psijo_dmc(iw,1)=psijn(1)
-              call jassav(i,0)
-              call detsav(i,0)
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-              if (use_qmckl_jastrow.eq..True.) then
-                rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
-              endif
-#endif
-              if(icasula.eq.4) then
-                 call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove, t_norm_new,0)
-                 p=random_dp()
-                 if (t_norm/t_norm_new.lt.p) then
-                    call psiedmc(i,iw,x_tmove_old,psidn,psijn,0)
-     
-                    do k=1,3
-                      xold_dmc(k,i,iw,1)=x_tmove_old(k)
-                    enddo
-                    psido_dmc(iw,1)=psidn(1)
-                    psijo_dmc(iw,1)=psijn(1)
-                    call jassav(i,0)
-                    call detsav(i,0)
-
-                    imove_up = imove_up - 1
-                    imove_dn = imove_dn - 1
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-                    if (use_qmckl_jastrow.eq..True.) then
-                      rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
-                    endif
-#endif
-                 else
-                    nmove_casula=nmove_casula+1
-                    iage(iw)=0
-                 endif
-              else
-                 nmove_casula=nmove_casula+1
-                 iage(iw)=0
-              endif
-            else
-              call distancese_restore(i)
-            endif
-            if(imove_up.gt.0.and.i.eq.nup) call update_ymat(i)
-            if(imove_dn.gt.0.and.i.eq.nelec) call update_ymat(i)
-          enddo
-          if(nforce.gt.1.and.istrech.gt.0) then
-            do ifr=1,nforce
-              call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
-              do k=1,3
-                do j=1,nelec
-                  xold_dmc(k,j,iw,ifr)=xstrech(k,j)
-                enddo
-              enddo
-            enddo
-          endif
-        endif
-
         dwt=1
 
         !     to initilialize pp
@@ -301,21 +224,133 @@
           endif
           call compute_determinante_grad(i,psido_dmc(iw,1),psido_dmc(iw,1),psijo_dmc(iw,1),vold_dmc(1,i,iw,1),1)
 
-          ! Use more accurate formula for the drift
-          v2old=vold_dmc(1,i,iw,1)**2+vold_dmc(2,i,iw,1)**2+vold_dmc( 3,i,iw,1)**2
-          ! Tau primary -> tratio=one
+! Find nearest nucleus, vector from that nucleus to electron, component of velocity in that direction
+          ren2mn=huge
+          do ic=1,ncent
+            ren2=(xold_dmc(1,i,iw,1)-cent(1,ic))**2 &
+                +(xold_dmc(2,i,iw,1)-cent(2,ic))**2 &
+                +(xold_dmc(3,i,iw,1)-cent(3,ic))**2
+            if(ren2.lt.ren2mn) then
+              ren2mn=ren2
+              iwnuc=ic
+            endif
+          enddo
+          rmino=zero
+          voldr=zero
+          v2old=zero
+          do k=1,3
+            rvmino(k)=xold_dmc(k,i,iw,1)-cent(k,iwnuc)
+            rmino=rmino+rvmino(k)**2
+            voldr=voldr+vold_dmc(k,i,iw,1)*rvmino(k)
+            v2old=v2old+vold_dmc(k,i,iw,1)**2
+          enddo
+          rmino=sqrt(rmino)
+          voldr=voldr/rmino
+          volda=sqrt(v2old)
+          zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
+
+! Place zaxis along direction from nearest nucleus to electron and
+! x-axis along direction of angular component of velocity.
+! Calculate the velocity in the phi direction
+          voldp=zero
+          do k=1,3
+            zaxis(k)=rvmino(k)/rmino
+            xaxis(k)=vold_dmc(k,i,iw,1)-voldr*zaxis(k)
+            voldp=voldp+xaxis(k)**2
+          enddo
+          voldp=sqrt(voldp)
+          if(voldp.lt.eps) then
+            xaxis(1)=eps*(one-zaxis(1)**2)
+            xaxis(2)=eps*(-zaxis(1)*zaxis(2))
+            xaxis(3)=eps*(-zaxis(1)*zaxis(3))
+            voldp=eps*dsqrt(one+eps-zaxis(1)**2)
+          endif
+          do k=1,3
+            xaxis(k)=xaxis(k)/voldp
+          enddo
+
+! Use more accurate formula for the drift
+          hafzr2=(half*znuc(iwctype(iwnuc))*rmino)**2
+          adrift=(half*(1+eps+voldr/volda))+adrift0*hafzr2/(1+hafzr2)
+
+! Tau primary -> tratio=one
           vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/(adrift*v2old)
 
+          driftr=vavvt*voldr
+          rtry=rmino+driftr
+
+! Prob. of sampling exponential rather than gaussian is
+! half*derfc(rtry/dsqrt(two*tau)) = half*(one+derf(-rtry/dsqrt(two*tau)))
+! We use both expressions because under AIX the former is faster if rtry>0
+! and the latter is faster if rtry<0.
+! Note that if adrift is always set to 1 then it may be better to use
+! vavvt rather than tau since the max drift distance is dsqrt(2*tau/adrift),
+! so both the position of the gaussian and its width are prop to dsqrt(tau)
+! if tau is used in derfc, and so qgaus does not tend to 1 for large tau.
+! However, we are using a variable adrift that can be very small and then
+! using tau is the better choice.
+
+          if(rtry.gt.zero) then
+            qgaus=half*derfc(rtry/dsqrt(two*tau))
+
+! Calculate drifted x and y coordinates in local coordinate system centered
+! on nearest nucleus
+            xprime=vavvt*voldp*rtry/(half*(rmino+rtry))
+            zprime=rtry
+
+! Convert back to original coordinate system
+            do k=1,3
+              xnew(k)=cent(k,iwnuc)+xaxis(k)*xprime+zaxis(k)*zprime
+            enddo
+           else
+            qgaus=half*(one+derf(-rtry/dsqrt(two*tau)))
+            rtry=zero
+            do k=1,3
+              xnew(k)=cent(k,iwnuc)
+            enddo
+          endif
+          pgaus=one-qgaus
+
+          if(ipr.ge.1) write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,3)
+
+! Do the diffusion
+! Sample gaussian with prob pgaus, exponential with prob. qgaus
           dr2=zero
-          dfus2o=zero
-          do k=1,3
-            drift=vavvt*vold_dmc(k,i,iw,1)
-            dfus=gauss()*rttau
-            dx=drift+dfus
-            dr2=dr2+dx**2
-            dfus2o=dfus2o+dfus**2
-            xnew(k)=xold_dmc(k,i,iw,1)+dx
-          enddo
+          dfus2a=zero
+          if(random_dp().lt.pgaus) then
+            dfus2b=zero
+            do k=1,3
+              drift=xnew(k)-xold_dmc(k,i,iw,1)
+              dfus=gauss()*rttau
+              dx=drift+dfus
+              dr2=dr2+dx**2
+              dfus2a=dfus2a+dfus**2
+              xnew(k)=xnew(k)+dfus
+              dfus2b=dfus2b+(xnew(k)-cent(k,iwnuc))**2
+            enddo
+            dfusb=sqrt(dfus2b)
+           else
+            dfusb=(-half/zeta)*dlog(random_dp()*random_dp()*random_dp())
+            costht=two*(random_dp()-half)
+            sintht=sqrt(one-costht*costht)
+            phi=two*pi*random_dp()
+            do k=1,3
+              drift=xnew(k)-xold_dmc(k,i,iw,1)
+              if(k.eq.1) then
+                dfus=dfusb*sintht*dcos(phi)
+               elseif(k.eq.2) then
+                dfus=dfusb*sintht*dsin(phi)
+               else
+                dfus=dfusb*costht
+              endif
+              dx=drift+dfus
+              dr2=dr2+dx**2
+              dfus2a=dfus2a+(cent(k,iwnuc)+dfus-xnew(k))**2
+              xnew(k)=cent(k,iwnuc)+dfus
+            enddo
+          endif
+          dfus2o=dfus2a
+          fnormo=(pgaus+qgaus*term*(zeta**3)*dexp(-two*zeta*dfusb+half*dfus2a/tau))
 
           if(ipr.ge.1) then
             write(ounit,'(''xold_dmc'',2i4,9f8.5)') iw,i,(xold_dmc(k,i,iw,1),k=1,3)
@@ -358,32 +393,106 @@
 
           ! Calculate Green function for the reverse move
 
-          v2new=vnew(1,i)**2+vnew(2,i)**2+vnew(3,i)**2
+! Find the nearest nucleus, vector from that nucleus to electron, component of velocity in that direction
+          ren2mn=huge
+          do ic=1,ncent
+            ren2=(xnew(1)-cent(1,ic))**2 &
+                +(xnew(2)-cent(2,ic))**2 &
+                +(xnew(3)-cent(3,ic))**2
+            if(ren2.lt.ren2mn) then
+              ren2mn=ren2
+              iwnuc=ic
+            endif
+          enddo
+          rminn=zero
+          vnewr=zero
+          v2new=zero
+          do k=1,3
+            rvminn(k)=xnew(k)-cent(k,iwnuc)
+            rminn=rminn+rvminn(k)**2
+            vnewr=vnewr+vnew(k,i)*rvminn(k)
+            v2new=v2new+vnew(k,i)**2
+          enddo
+          rminn=sqrt(rminn)
+          vnewr=vnewr/rminn
+          vnewa=sqrt(v2new)
+          zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
+
+! Place zaxis along direction from nearest nucleus to electron and
+! x-axis along direction of angular component of velocity.
+! Calculate the velocity in the phi direction
+          vnewp=zero
+          do k=1,3
+            zaxis(k)=rvminn(k)/rminn
+            xaxis(k)=vnew(k,i)-vnewr*zaxis(k)
+            vnewp=vnewp+xaxis(k)**2
+          enddo
+          vnewp=sqrt(vnewp)
+          if(vnewp.lt.eps) then
+            xaxis(1)=eps*(one-zaxis(1)**2)
+            xaxis(2)=eps*(-zaxis(1)*zaxis(2))
+            xaxis(3)=eps*(-zaxis(1)*zaxis(3))
+            vnewp=eps*dsqrt(one+eps-zaxis(1)**2)
+          endif
+          do k=1,3
+            xaxis(k)=xaxis(k)/vnewp
+          enddo
+
+! Use more accurate formula for the drift
+          hafzr2=(half*znuc(iwctype(iwnuc))*rminn)**2
+          adrift=(half*(1+eps+vnewr/vnewa))+adrift0*hafzr2/(1+hafzr2)
+
           vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/(adrift*v2new)
 
-          dfus2n=zero
-          do k=1,3
-            drift=vavvt*vnew(k,i)
-            xbac(k)=xnew(k)+drift
-            dfus=xbac(k)-xold_dmc(k,i,iw,1)
-            dfus2n=dfus2n+dfus**2
-          enddo
+          driftr=vavvt*vnewr
+          rtry=rminn+driftr
+          dfus2a=zero
+          dfus2b=zero
+          if(rtry.gt.zero) then
+            qgaus=half*derfc(rtry/dsqrt(two*tau))
+
+! Calculate drifted x and y coordinates in local coordinate system centered
+! on nearest nucleus
+            xprime=vavvt*vnewp*rtry/(half*(rminn+rtry))
+            zprime=rtry
+
+! Convert back to original coordinate system
+            do k=1,3
+              xbac(k)=cent(k,iwnuc)+xaxis(k)*xprime+zaxis(k)*zprime
+              dfus2b=dfus2b+(cent(k,iwnuc)-xold_dmc(k,i,iw,1))**2
+              dfus=xbac(k)-xold_dmc(k,i,iw,1)
+              dfus2a=dfus2a+dfus**2
+            enddo
+           else
+            qgaus=half*(one+derf(-rtry/dsqrt(two*tau)))
+            rtry=zero
+            do k=1,3
+              xbac(k)=cent(k,iwnuc)
+              dfus=xbac(k)-xold_dmc(k,i,iw,1)
+              dfus2b=dfus2b+dfus**2
+            enddo
+            dfus2a=dfus2b
+          endif
+          dfus2n=dfus2a
+          pgaus=one-qgaus
+          dfusb=sqrt(dfus2b)
+
+          fnormn=pgaus+qgaus*term*(zeta**3)*dexp(-two*zeta*dfusb+half*dfus2a/tau)
 
           if(ipr.ge.1) then
             write(ounit,'(''xold_dmc'',9f10.6)')(xold_dmc(k,i,iw,1),k=1,3), &
             (xnew(k),k=1,3), (xbac(k),k=1,3)
             write(ounit,'(''dfus2o'',9f10.6)')dfus2o,dfus2n, &
-            psido_dmc(iw,1),psidn,psijo_dmc(iw,1),psijn(1)
+            psido_dmc(iw,1),psidn,psijo_dmc(iw,1),psijn(1),fnormo,fnormn
           endif
 
           p=(psidn(1)/psido_dmc(iw,1))**2*exp(2*(psijn(1)-psijo_dmc(iw,1)))* &
-          exp((dfus2o-dfus2n)/(two*tau))*distance_node_ratio2
+          exp((dfus2o-dfus2n)/(two*tau))*fnormn/fnormo*distance_node_ratio2
 
-          if(ipr.ge.1) write(ounit,'(''p'',11f10.6)') &
+          if(ipr.ge.1) write(6,'(''p'',11f10.6)') &
           p,(psidn/psido_dmc(iw,1))**2*exp(2*(psijn(1)-psijo_dmc(iw,1))), &
           exp((dfus2o-dfus2n)/(two*tau)),psidn,psido_dmc(iw,1), &
-               psijn(1),psijo_dmc(iw,1),dfus2o,dfus2n
-
+          psijn(1),psijo_dmc(iw,1),dfus2o,dfus2n,fnormo,fnormn
 
           !          if(ipr.ge.1) write(ounit,'(''parts p'',11f10.6)')
           !     &         psidn(1), psijn, psido_dmc(iw,1), dfus2o, dfus2n, distance_node_ratio2
@@ -414,9 +523,7 @@
           iacc_elec(i)=0
           if(random_dp().lt.p) then
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-            if (use_qmckl_jastrow.eq..True.) then
-              rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
-            endif
+            rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
 #endif
             iaccept=1
             nacc=nacc+1
@@ -454,7 +561,6 @@
 
           if(ifr.eq.1) then
             ! Primary configuration
-            if(icasula.lt.0) i_vpsp=icasula
             drifdifr=one
             if(nforce.gt.1) &
             call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
@@ -470,10 +576,6 @@
 
             call walksav_det(iw)
             call walksav_jas(iw)
-            if(icasula.lt.0) call multideterminant_tmove(psidn(1),0)
-            !           call t_vpsp_sav(iw)
-            call t_vpsp_sav
-            i_vpsp=0
             rnorm_nodes=1.d0
             if(node_cutoff.gt.0) then
               call nodes_distance(vold_dmc(1,1,iw,1),distance_node,1)
@@ -508,9 +610,7 @@
                 drifdifr=drifdifs/drifdif
               endif
             endif
-            if(icasula.lt.0) i_vpsp=icasula
             call hpsi(xold_dmc(1,1,iw,ifr),psidn,psijn,ekino,enew,ipass,ifr)
-            i_vpsp=0
           endif
 
           do i=1,nelec
@@ -523,17 +623,19 @@
           taunow=tauprim*drifdifr
 
           if(idmc.gt.0) then
-          call calculate_fratio(icut_e, adrift, tratio, taunow, sqrt_nelec, &
+
+          call calculate_fratio(icut_e, adrift0, tratio, taunow, sqrt_nelec, &
                xold_dmc(:,:,iw,ifr), vold_dmc(:,:,iw,ifr), eest, enew(1), fration, &
                eest_i, eloc_i(:), fration_i(:), eestfrag, elocfrag(:), frationfrag(:))
           
           if(ipr.ge.1) write(ounit,'(''wt'',9f10.5)') wt(iw),etrial,eest
-
+          
           call calculate_reweight(idmc, icut_e, icut_br, taunow, e_cutoff, &
                etrial, eest, eold(iw,ifr), enew(1), fratio(iw,ifr), fration, &
                eest_i, eloco_i(:,iw,ifr), eloc_i, fratio_i(:,iw,ifr), fration_i, &
                etrialfrag, eestfrag, elocofrag(:,iw,ifr), elocfrag, fratiofrag(:,iw,ifr), frationfrag, tauefffrag, dwt)
 
+          if(ipr.ge.1) write(ounit,*) 'dwt', taunow, fratio(iw,ifr), fration, etrial, eest, eold(iw,ifr), enew(1), dwt
           !if (abs(dwt - 1) > 0.1) then 
           !  print*, 'dwt:', dwt
           !  print*, 'ewto:', ewto, 'ewtn:', ewtn
@@ -696,102 +798,6 @@
           endif
         enddo
 
-        if(icasula.le.-1) then
-
-          ! Set nuclear coordinates (0 flag = no strech e-coord)
-          if(nforce.gt.1) &
-          call strech(xold_dmc(1,1,iw,1),xold_dmc(1,1,iw,1),ajacob,1,0)
-
-          call walkstrdet(iw)
-          call walkstrjas(iw)
-          ! call t_vpsp_get(iw)
-          call t_vpsp_get
-
-          imove=0
-          call nonloc_grid(iel,iw,xnew,psido_dmc(iw,1),imove, t_norm,1)
-          ncount_casula=ncount_casula+1
-
-          if(imove.gt.0) then
-            call psiedmc(iel,iw,xnew,psidn,psijn,0)
-
-            ! call compute_determinante_grad(iel,psidn,psidn,vnew(1,iel),0)
-
-            do k=1,3
-              x_tmove_old(k)=xold_dmc(k,iel,iw,1)
-              xold_dmc(k,iel,iw,1)=xnew(k)
-            enddo
-            psido_dmc(iw,1)=psidn(1)
-            psijo_dmc(iw,1)=psijn(1)
-            call jassav(iel,0)
-            call detsav(iel,0)
-
-            if(iel.le.nup) call update_ymat(nup)
-            if(iel.gt.nup) call update_ymat(nelec)
-
-            call walksav_det(iw)
-            call walksav_jas(iw)
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-            if (use_qmckl_jastrow.eq..True.) then
-              rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
-            endif
-#endif
-            if (icasula.eq.-2) then
-               call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,0,1)
-
-               call nonloc_grid(0,iw,xnew,psido_dmc(iw,1),imove, t_norm_new,0)
-               p=random_dp()
-
-               if (t_norm/t_norm_new.lt.p) then
-                  ! move was rejected
-                  ! write(idtask+1000, *) "icas reject"
-                  call psiedmc(iel,iw,x_tmove_old,psidn,psijn,0)
-
-                  do k=1,3
-                     xold_dmc(k,iel,iw,1)=x_tmove_old(k)
-                  enddo
-
-                  psido_dmc(iw,1)=psidn(1)
-                  psijo_dmc(iw,1)=psijn(1)
-                  call jassav(iel,0)
-                  call detsav(iel,0)
-
-                  if(iel.le.nup) call update_ymat(nup)
-                  if(iel.gt.nup) call update_ymat(nelec)
-  
-                  call walksav_det(iw)
-                  call walksav_jas(iw)
-                  imove = 0
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-                  if (use_qmckl_jastrow.eq..True.) then
-                    rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
-                  endif
-#endif
- 
-                  call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,0,1)
-
-               else
-                  ! move was accepted
-                  ! write(idtask+1000, *) 'icas accept'
-                  nmove_casula=nmove_casula+1
-                  iage(iw)=0
-               endif
-            else   
-               nmove_casula=nmove_casula+1
-               iage(iw)=0
-            endif
-            if(nforce.gt.1.and.istrech.gt.0) then
-               do ifr=1,nforce
-                  call strech(xold_dmc(1,1,iw,1),xstrech,ajacob,ifr,1)
-                  do k=1,3
-                    do i=1,nelec
-                       xold_dmc(k,i,iw,ifr)=xstrech(k,i)
-                    enddo
-                  enddo
-                enddo
-             endif
-          endif 
-        endif
-      ! call average(1)
       enddo
 
       if(ipr.gt.5.and.wsum1(1).gt.1.1d0*dmc_nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,fprod/ff(ipmod2),wsum1(1),wgdsumo
@@ -825,10 +831,8 @@
       endif
 
       if(idmc.gt.0) call splitj
-      if(icasula.eq.0) ncount_casula=1
       if(write_walkalize) write(11,'(i8,f9.6,f12.5,f11.6,i5,f11.5)') ipass,ffn, &
-      wsum1(1),esum1_dmc(1)/wsum1(1),nwalk &
-      ,float(nmove_casula)/float(ncount_casula)
+      wsum1(1),esum1_dmc(1)/wsum1(1),nwalk
 
       return
       endsubroutine

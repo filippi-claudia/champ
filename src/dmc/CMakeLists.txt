@@ -26,6 +26,7 @@ file(GLOB DMC_SOURCE
   acues1_gpop.f90
   acuest_gpop.f90
   dmc_ps_mov1.f90
+  dmc_ae_mov1.f90
   finwrt.f90
   init.f90
   mmpol_dmc.f90
