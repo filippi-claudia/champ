@@ -124,7 +124,7 @@ module keywords
   !> @date October 15, 2022
   implicit none
   integer                     :: num_modules  = 11   ! change this number after every adition/deletion
-  integer                     :: num_keywords = 189 ! change this number after every adition/deletion
+  integer                     :: num_keywords = 191 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
