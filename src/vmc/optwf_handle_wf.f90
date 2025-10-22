@@ -31,12 +31,13 @@ contains
       character(len=40) filetype,wf,itn
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      call update_trexio_orbitals
-      if(ioptjas.ne.0) then
+
+      if(ioptjas.ne.0.and.use_qmckl_jastrow) then
         call jastrow_update_qmckl(qmckl_no_ctx)
         call jastrow_init_qmckl(qmckl_no_ctx)
       endif
-      if(ioptorb.ne.0) then
+      if(ioptorb.ne.0.and.use_qmckl_orbitals) then
+        call update_trexio_orbitals
         call init_context_qmckl(.False.)
       endif
 #endif
