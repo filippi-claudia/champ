@@ -2040,16 +2040,18 @@ subroutine parser
 
      if (nforce.gt.1) then 
         write(errunit,'(a)') "Warning: QMCKL does not support correlated sampling, so the QMCkl Jastrow will not be used."
-        use_qmckl_jastrow = .false.
+        !use_qmckl_jastrow = .false.
      end if
      if (nstates.gt.1) then
         write(errunit,'(a)') "Warning: QMCKL does not support multi-state calculations, QMCkl will not be used."
         use_qmckl_jastrow = .false.
         use_qmckl_orbitals = .false.
      end if
-
-     qmckl_no_ctx = 2
-     if(ioptorb.gt.0) qmckl_no_ctx = 3
+     
+     qmckl_no_ctx = 0
+     if (use_qmckl_jastrow) qmckl_no_ctx = qmckl_no_ctx + 1
+     if (use_qmckl_orbitals) qmckl_no_ctx = qmckl_no_ctx + 1
+     if (use_qmckl_orbitals.and.ioptorb.gt.0) qmckl_no_ctx = qmckl_no_ctx + 1
 
      ! Create a new QMCkl context
      do ictx=1,qmckl_no_ctx
@@ -2057,7 +2059,7 @@ subroutine parser
        write(ounit, *) " QMCkl initial context created  " , qmckl_ctx(ictx) , " successfully "
      enddo
 
-     if(ioptorb.gt.0) then
+     if(ioptorb.gt.0.and.use_qmckl_orbitals) then
 
        file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
        if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
@@ -2092,10 +2094,13 @@ subroutine parser
      endif
 
      ! get mo's number should correspond to norb_tot
+     if (use_qmckl_jastrow) then
+       call jastrow_init_qmckl(qmckl_no_ctx)
+     end if
+     if (use_qmckl_orbitals) then
+       call init_context_qmckl(.True.)
+     end if
 
-     call jastrow_init_qmckl(qmckl_no_ctx)
-
-     call init_context_qmckl(.True.)
 
 
 
