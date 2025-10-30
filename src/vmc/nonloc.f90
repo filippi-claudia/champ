@@ -723,6 +723,8 @@ contains
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       real(dp), dimension(3,ncent) :: da_single_een, da_single_en
       integer :: rc
+
+      if(.not.use_qmckl_jastrow) then
 #endif
 
       if(iforce_analy.eq.0) then
@@ -738,6 +740,10 @@ contains
           enddo
         enddo
       endif
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+    endif
+#endif
 
       do iq=1,nxquad
 

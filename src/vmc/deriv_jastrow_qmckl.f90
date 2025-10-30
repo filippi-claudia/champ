@@ -155,7 +155,7 @@ module deriv_jastrow_qmckl_mod
       enddo
       
       ! Resolving the dependencies in the c parameters due to e-n and e-e cusp conditions
-      if(nordc.gt.1) then
+      if(nordc.gt.0) then
         do it = 1, nctype  
           ll=0
           jj=1
@@ -369,7 +369,7 @@ module deriv_jastrow_qmckl_mod
       enddo
 
       ! Resolving the dependencies in the c parameters due to e-n and e-e cusp conditions
-      if(nordc.gt.1) then
+      if(nordc.gt.0) then
         do it = 1, nctype  
           ll=0
           jj=1

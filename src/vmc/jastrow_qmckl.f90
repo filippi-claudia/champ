@@ -60,7 +60,7 @@ subroutine jastrow_init_qmckl(ictx)
     rc = qmckl_set_jastrow_champ_b_vector (qmckl_ctx(ictx), b(1:(nordb_l+1),1,1), (nordb_l+1)*2_8)
     if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow b vec.')
     
-    if (nordc.gt.1) then
+    if (nordc.gt.0) then
         dimc = nterms4(nordc)
         rc = qmckl_set_jastrow_champ_c_vector (qmckl_ctx(ictx), c(1:dimc,1:nctype,1), dimc*nctype*1_8)
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow c vec.')
