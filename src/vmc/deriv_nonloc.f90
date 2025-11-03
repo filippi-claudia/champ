@@ -259,6 +259,8 @@ contains
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       integer(qmckl_exit_code) :: rc
+
+      if(.not.use_qmckl_jastrow) then
 #endif
 
       do ic=1,ncent
@@ -272,6 +274,10 @@ contains
           enddo
         endif
       enddo
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+    endif
+#endif
       
       do iq=1,nxquad
 

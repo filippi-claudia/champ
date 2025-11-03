@@ -102,7 +102,6 @@ end subroutine
     implicit none
     real(dp)  :: x(3,nelec)
     real(dp), dimension(3, nelec) :: fjo
-    real(dp) :: old_x(3,nelec)
     real(dp) :: fsumo, d2o
     real(dp) :: value
 
@@ -124,23 +123,8 @@ end subroutine
     enddo
     d2o = 0.0d0
 
-    rc = qmckl_get_point(qmckl_ctx(qmckl_no_ctx), 'N', old_x, 3_8*nelec)
-    if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow x-coords.')
-   
-    same = 1
-    do i = 1, nelec
-        do k = 1, 3
-            if (abs(old_x(k,i) - x(k,i)) > 1e-6) then
-                same = 0
-            end if
-        end do
-        !if (same == 0) exit
-    end do
-
-    ! if (same == 0) then
-        rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', 1_8*nelec, x, 3_8*nelec)
-        if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow x-coords.')
-    ! endif
+    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', 1_8*nelec, x, 3_8*nelec)
+    if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow x-coords.')
     
     rc = qmckl_get_jastrow_champ_factor_ee(qmckl_ctx(qmckl_no_ctx), jee, 1_8)
     if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e Jastrow.')
