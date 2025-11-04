@@ -3,21 +3,18 @@ module deriv_jastrow_qmckl_mod
     !> Calculates the Jastrow factor AND its derivative.
     !> One shoul consider calculating the value and derivative in separate subroutines
     subroutine deriv_jastrow4_qmckl(x,fjo,d2o,fsumo,g,d2g,gvalue)
-
-      use contrl_file, only: ounit
       use cuspmat4, only: iwc4, nterms
       use da_jastrow, only: da_d2j, da_j, da_vj
       use error, only: fatal_error
       use jastrow, only: norda, nordb, nordc
       use jaspointer, only: npoint
       use m_force_analytic, only: iforce_analy
-      use optwf_nparmj, only: nparma ,nparmb, nparmc
+      use optwf_nparmj, only: nparma ,nparmb
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
-      use qmckl
       use qmckl_data
-      use system,  only: iwctype, nctype, nelec, ncent
+      use system,  only: nctype, nelec, ncent
       use vardep,  only: cdep, iwdepend, nvdepend
       implicit none
 
@@ -273,13 +270,12 @@ module deriv_jastrow_qmckl_mod
       use error, only: fatal_error
       use jaspointer, only: npoint
       use jastrow, only: norda, nordb, nordc
-      use optwf_nparmj, only: nparma ,nparmb, nparmc
+      use optwf_nparmj, only: nparma ,nparmb
       use optwf_parms, only: nparmj
       use optwf_wjas, only: iwjasa, iwjasb, iwjasc
       use precision_kinds, only: dp
-      use qmckl
       use qmckl_data
-      use system,  only: nctype, nelec, ncent_tot
+      use system,  only: nctype, nelec
       use vardep,  only: cdep, iwdepend, nvdepend
       implicit none
       integer                          , intent(in) :: iel
@@ -300,7 +296,7 @@ module deriv_jastrow_qmckl_mod
       !real(dp), dimension(3, ncent_tot), intent(out) :: da_psij_ratio
 
       integer :: i, id, ideriv, iparm, it 
-      integer :: j, jj, jparm
+      integer :: jj, jparm
       integer :: k, l, l_hi, ll, m, n
       integer :: rc
       

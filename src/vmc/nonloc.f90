@@ -9,9 +9,11 @@ contains
       use contrl_file, only: ounit, errunit
       use contrldmc, only: icut_e
       use control, only: ipr,mode
+      use deriv_nonloc, only: deriv_nonlocj_quad1, deriv_nonlocj_quad4
       use fragments, only: eloc_i, elocfrag, ifragcent, ifragelec, nfrag
+      use jastrow, only: ijas
       use jastrow_update, only: fso
-      use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat
+      use m_force_analytic, only: iforce_analy
       use multislater, only: detiab
       use optwf_control, only: ioptjas
       use optwf_parms, only: nparmj
@@ -20,17 +22,13 @@ contains
       use pseudo,  only: lpot,vps
       use pseudo_mod, only: MPS_QUAD
       use qua,     only: nquad,wq,xq,yq,zq
-      use slater,  only: norb,slmi
+      use slater,  only: norb
       use system,  only: cent,iwctype,ncent,ncent_tot,nelec,nup
       use vmc_mod, only: norb_tot, nwftypeorb, nwftypejas
-      use contrl_per, only: iperiodic
-      use csfs,    only: nstates
-      use vmc_mod, only: stoj, stoo, nbjx, bjxtoo, bjxtoj
-      use jastrow, only: ijas
-      use deriv_nonloc, only: deriv_nonlocj_quad1, deriv_nonlocj_quad4
+      use vmc_mod, only: nbjx, bjxtoo, bjxtoj
+
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-      !use jastrow_qmckl_mod, only: jastrow_quad_qmckl
       use qmckl_data
 #endif
       implicit none
@@ -45,11 +43,11 @@ contains
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
 
 ! local variables
-      integer :: i, i1, i2, iab, istate, auxy
+      integer :: i, i1, i2, iab
       integer :: ic, ict, iel, index
       integer :: iorb, iparm, iq, iqq
-      integer :: jc, k, l, nxquad, ndim, iwforb, iwfjas, ibjx, xo, xj
-      real(dp) :: ri, term1, term2
+      integer :: k, l, nxquad, ndim, iwforb, iwfjas, ibjx, xo, xj
+      real(dp) :: ri, term2
       real(dp), parameter :: one = 1.d0
 
 ! local, allocatable arrays
@@ -219,13 +217,9 @@ contains
 
          if(ioptjas.eq.0) then
             do iwfjas=1,nwftypejas
-!#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-!               call jastrow_quad_qmckl(nxquad,iequad*1_8,xquad,psij_ratio(1,iwfjas),vjn,da_psij_ratio,iforce_analy)
-!#else
               call nonlocj_quad4(nxquad,xquad,iequad,x,rvec_en,r_en, &
                      rvec_en_quad,r_en_quad,psij_ratio(1,iwfjas),vjn,da_psij_ratio, &
                      fso(1,1,iwfjas),iwfjas)
-!#endif
             enddo
          else
             do iwfjas=1,nwftypejas
@@ -372,10 +366,8 @@ contains
       subroutine distance_quad(iq,ic,x,r_en_quad,rvec_en_quad)
 
       use contrl_per, only: iperiodic
-      use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
       use find_pimage, only: find_image_pbc
-      use qua,     only: xq,yq,zq
       use system,  only: cent,ncent,ncent_tot,nelec
       use qua,     only: nquad
 
@@ -471,9 +463,7 @@ contains
       use precision_kinds, only: dp
       use slater,  only: kref
       use system,  only: ndn,nup
-      use vmc_mod, only: nmat_dim
       use slater, only: slmi
-      use contrl_file,    only: ounit
       use vmc_mod, only: norb_tot
 
       implicit none
@@ -517,17 +507,15 @@ contains
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use bparm,   only: nocuspb,nspin2b
-      use contrl_file,    only: ounit
       use contrl_per, only: iperiodic
       use da_jastrow, only: da_j
       use ewald_breakup, only: jastrow_longrange
-      use jastrow, only: isc,sspinn, nordc
+      use jastrow, only: sspinn, nordc
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,psianl,psibnl,psinl
       use precision_kinds, only: dp
       use find_pimage, only: find_image_pbc
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
-      use optwf_control, only: ioptjas
       use qua,     only: nquad
 
       implicit none
@@ -536,9 +524,7 @@ contains
       integer :: iq, it, j, jj, k, nxquad
       integer, dimension(*) :: iequad
 
-      real(dp) :: dd1u, dum, dumk, fsumn
-      real(dp) :: psij_per, d2_per
-      real(dp) :: rij
+      real(dp) :: dum, dumk, fsumn, psij_per, rij
 
       real(dp), dimension(nelec,*) :: fso
       real(dp), dimension(3,*) :: x
@@ -550,7 +536,6 @@ contains
       real(dp), dimension(nelec,nelec) :: fsn
       real(dp), dimension(3) :: dx
       real(dp), dimension(3,*) :: vjn
-      real(dp), dimension(3, nelec) :: v_per
       real(dp), dimension(*) :: ratio_jn
       real(dp), dimension(3,ncent_tot,*) :: da_psij_ratio
       real(dp), parameter :: half = .5d0
@@ -672,7 +657,7 @@ contains
       use bparm,   only: nocuspb,nspin2b
       use contrl_per, only: iperiodic
       use da_jastrow, only: da_j
-      use jastrow, only: isc,sspinn, nordc
+      use jastrow, only: sspinn, nordc
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,dpsinl,psianl,psibnl,psinl
       use jastrow_update, only: fjo
@@ -680,9 +665,7 @@ contains
       use find_pimage, only: find_image_pbc
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nelec,nup
-      use optwf_control, only: ioptjas
       use qua,     only: nquad
-      use contrl_file, only: ounit
 
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
@@ -717,8 +700,6 @@ contains
       real(dp), dimension(3, nelec) :: fjn
       real(dp), parameter :: half = .5d0
       real(dp) :: d2n
-
-      real(dp), dimension(3, ncent_tot) :: temp_een, temp_en
       
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       real(dp), dimension(3,ncent) :: da_single_een, da_single_en
@@ -750,7 +731,7 @@ contains
       iel=iequad(iq)
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
-      if(use_qmckl_jastrow) then
+    if(use_qmckl_jastrow) then
 
       if(iforce_analy.eq.1) then
         call jastrowe_qmckl(iel, xquad(:,iq),fjn,d2n,fsumn,2)
@@ -918,7 +899,6 @@ contains
                                       ,orbn,dorbn,da_orbn,psij_ratio,vjn,da_psij_ratio)
 
       use Bloc,    only: b_da
-      use contrl_file,    only: ounit
       use da_pseudo, only: da_vps
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp

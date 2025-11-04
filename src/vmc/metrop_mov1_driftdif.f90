@@ -41,7 +41,7 @@
       use optx_jas_ci, only: optx_jas_ci_sum
       use optx_jas_orb, only: optx_jas_orb_sum
       use optx_orb_ci, only: optx_orb_ci_sum
-      use pathak_mod, only: ipathak, eps_pathak, pold, pnew, pathak
+      use pathak_mod, only: ipathak, eps_pathak, pnew, pathak
       use pcm_cntrl, only: ichpol
       use pcm_mod, only: qpcm_efield
       use pcm_vmc, only: pcm_sum
@@ -49,7 +49,7 @@
       use prop_vmc, only: prop_sum
       use random_mod, only: random_dp
       use strech_mod, only: strech
-      use system,  only: cent,iwctype,ncent,nelec,nup,znuc
+      use system,  only: nelec,nup
       use tmpnode, only: distance_node_sum
       use vmc_mod, only: nwftypejas, stoj
 
@@ -62,8 +62,7 @@
       integer :: i, iab, ic, iel, iflag_dn, iflag_up, rc
       integer :: ifr, ii, ipass, irun, istate
       integer :: j, jel, k, iph
-      real(dp) :: ajacob, bot
-      real(dp) :: distance_node, dmin1, dot
+      real(dp) :: ajacob, distance_node, dmin1
       real(dp) :: p, psidg, psig, q
       real(dp) :: rnorm_nodes, vavvt, v2new, v2old, wstro
       real(dp) :: rttau, tau, drift, dfus2o, dfus2n, dfus, dx

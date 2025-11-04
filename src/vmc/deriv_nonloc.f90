@@ -14,14 +14,12 @@ contains
       use jastrow_update, only: fso
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl
-      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma,nparmb,nparmc
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use find_pimage, only: find_image_pbc
       use qua, only: nquad
       use system,  only: iwctype,ncent,ncent_tot,nctype,nelec,nup
-      use contrl_file, only: ounit
 
       implicit none
 
@@ -201,7 +199,6 @@ contains
 
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm,   only: nocuspb,nspin2b
-      use contrl_file, only: ounit
       use contrl_per, only: iperiodic
       use da_jastrow, only: da_j
       use deriv_nonlpsi, only: deriv_psianl,deriv_psibnl,deriv_psinl
@@ -213,7 +210,6 @@ contains
       use jastrow_update, only: fso, fjo
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,dpsinl
-      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma,nparmb,nparmc
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
