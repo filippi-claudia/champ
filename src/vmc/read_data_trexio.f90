@@ -571,7 +571,7 @@ module trexio_read_data
 
     ! trexio
         integer(8)                      :: trex_orbitals_file
-        integer                         :: k, rc, ierr, ictx
+        integer                         :: k, rc, ierr, ictx, ictx_lim
 
         integer*8                  :: ncheck, n8
         integer*8                  :: norb_qmckl(qmckl_no_ctx_max)
@@ -585,6 +585,13 @@ module trexio_read_data
 
         !   External file reading
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+
+        if (use_qmckl_jastrow) then
+            ictx_lim = qmckl_no_ctx-1
+        else
+            ictx_lim = qmckl_no_ctx
+        end if
+
         if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
             file_trexio_path = pooldir // file_trexio_new(7:)
         else
@@ -595,7 +602,7 @@ module trexio_read_data
         write(ounit,*) " Updating LCAO orbitals from the file :: ",  trim(file_trexio_path)
         write(ounit,*) '---------------------------------------------------------------------------'
 
-        do ictx = 1 ,qmckl_no_ctx-1
+        do ictx = 1 ,ictx_lim
             ! Destroy the existing QMCkl context first
             write(ounit, *) " QMCkl destroying the old context " , qmckl_ctx(ictx) , " successfully "
             rc = qmckl_context_destroy(qmckl_ctx(ictx))
@@ -625,7 +632,7 @@ module trexio_read_data
         call MPI_Barrier( MPI_COMM_WORLD, ierr )
 
 
-        do ictx = 1 ,qmckl_no_ctx-1
+        do ictx = 1 ,ictx_lim
             ! Create a new QMCkl context with the new trexio file
             qmckl_ctx(ictx) = qmckl_context_create()
             rc = qmckl_trexio_read(qmckl_ctx(ictx), file_trexio_path, 1_8*len(trim(file_trexio_path)))
