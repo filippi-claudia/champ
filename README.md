@@ -139,18 +139,18 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	- To compile the code, first load the required modules:
 		```bash
 		module purge
-		module load 2022
-		module load intel/2022a
-		module load HDF5/1.12.2-iimpi-2022a
+		module load 2025
+		module load iimpi/2025a
 		```
-		then set-up the build:
+		Then set up the build:
 		```bash
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx
 		```
 		Optionally, you may link the trexio library using the following command:
 		```bash
 		cmake -S. -Bbuild  \
-  			-DCMAKE_Fortran_COMPILER=mpiifort  \
+  			-DCMAKE_Fortran_COMPILER=mpiifx  \
+  			-DCMAKE_C_COMPILER=mpiicx  \
   			-DENABLE_TREXIO=ON  \
   			-DTREXIO_LIBRARY=$HOME/lib/libtrexio.so  \
   			-DTREXIO_INCLUDE_DIR=$HOME/include/
@@ -177,45 +177,58 @@ Here are a couple of recipes for commonly used computing facilities, which can b
         #SBATCH --partition genoa        # partition (queue)
         #
         module purge
-        module load 2022
-        module load intel/2022a
-        module load HDF5/1.12.2-iimpi-2022a
+        module load 2025
+        module load iimpi/2025a
         #
         export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
         cd $PWD
 		srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
 		```
 * **CCPhead**:
-	- To build with mpiifort, load the required modules of the Intel Compiler and MPI:
+	- To build with mpiifx, load the required modules of the Intel Compiler and MPI:
 
 		```bash
- 		module load cmake/latest
- 		module load compiler-rt/latest
- 		module load debugger/latest
- 		module load compiler/latest
- 		module load icc/latest
- 		module load mpi/latest
- 		module load hdf5/latest
- 		module load tbb/latest
- 		module load dpl/latest
- 		module load dev-utilities/latest
- 		module load mkl/latest
- 		module load trexio/latest
+		module load compiler-intel-llvm/2025.0.4
+		module load dev-utilities/2025.0.0
+  		module load mpi/2021.14
+		module load mkl/2025.0
  		```
-		Setup the build:
+  
+		Set up the build:
 		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx
 		```
-	- To enable TREXIO library:
+	- To enable the TREXIO library:
 		```
+		module load trexio/latest-icx
+
 		cmake -H. -Bbuild  \
-  			-DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON  \
-  			-DTREXIO_LIBRARY=/software/libraries/trexio/latest/lib/libtrexio.so  \
-			-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest/include/
+  			-DCMAKE_Fortran_COMPILER=mpiifx \
+  			-DCMAKE_C_COMPILER=mpiicx  \
+  			-DENABLE_TREXIO=ON  \
+  			-DTREXIO_LIBRARY=/software/libraries/trexio/latest-icx/lib/libtrexio.so  \
+			-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest-icx/include/
 		```
+  
+  	- To enable the QMCKL library:
+		```
+		module load trexio/latest-icx
+  		module load qmckl/git-hpc
+  	
+		cmake -S. -Bbuild \
+    		-DCMAKE_Fortran_COMPILER=mpiifx \
+  			-DCMAKE_C_COMPILER=mpiicx  \
+			-DENABLE_TREXIO=ON \
+    		-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest-icx/include \
+    		-DTREXIO_LIBRARY=/software/libraries/trexio/latest-icx/lib/libtrexio.so \
+    		-DENABLE_QMCKL=ON \
+  			-DQMCKL_INCLUDE_DIR=/software/libraries/qmckl/git-hpc/include \
+			-DQMCKL_LIBRARY=/software/libraries/qmckl/git-hpc/lib/libqmckl.so
+		```
+
 	- To disable vectorization of the code:
 		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DVECTORIZED=no
+		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx -DVECTORIZED=no
 		```
 
 	- To run the code, you need to submit a job to the queue system:
