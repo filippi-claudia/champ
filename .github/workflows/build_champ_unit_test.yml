@@ -1,4 +1,4 @@
-name: CHAMP Unit Tests
+name: CHAMP-EU CI - Unit tests for CHAMP with GNU using FortUTF
 
 on:
   pull_request:

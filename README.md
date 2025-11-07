@@ -1,15 +1,31 @@
 ![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.jpg?raw=true)
 
-[![CHAMP release build with Intel](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml) [![CHAMP debug build with Intel and GNU](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml) [![CHAMP with QMCkl and TREXIO build with Intel](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio_qmckl.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio_qmckl.yml) [![Build Docker Image](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml) [![Publish Docker image](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml) [![TREXIO python interface](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml)
 
+[![CHAMP-EU CI - Release build - Intel oneAPI hpckit toolchain](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml)
 
-![Github Issues](https://img.shields.io/github/issues/filippi-claudia/champ) ![Github Pull Requests](https://img.shields.io/github/issues-pr/filippi-claudia/champ) ![Github Last Commit](https://img.shields.io/github/last-commit/filippi-claudia/champ) [![Commit Activity](https://img.shields.io/github/commit-activity/w/filippi-claudia/champ)](https://img.shields.io/github/commit-activity/t/filippi-claudia/champ
-)
+[![CHAMP-EU CI - Release build - Intel oneAPI, TREXIO and QMCkl](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio_qmckl.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio_qmckl.yml)
 
-![Last release tag](https://img.shields.io/github/v/tag/filippi-claudia/champ) ![Github forks](https://img.shields.io/github/forks/filippi-claudia/champ) ![Github stars](https://img.shields.io/github/stars/filippi-claudia/champ) ![Repo Size](https://img.shields.io/github/repo-size/filippi-claudia/champ) ![Code Size](https://img.shields.io/github/languages/code-size/filippi-claudia/champ)
+[![CHAMP-EU CI - Debug build - Intel oneAPI and GNU toolchain](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml)
 
-![Github license](https://img.shields.io/github/license/filippi-claudia/champ)
+[![CHAMP-EU CI - Docker image build and tagging for Docker Hub](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml)
 
+[![CHAMP-EU CI - Docker image publish to Docker Hub Registry](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml)
+
+[![CHAMP-EU CI - Unit tests for CHAMP with GNU using FortUTF](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_unit_test.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_unit_test.yml)
+
+[![CHAMP-EU CI - Python tests for the TREXIO tools integration](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml)
+
+[![CHAMP-EU CI - Deploy Doxygen-generated content to Pages](https://github.com/filippi-claudia/champ/actions/workflows/build_documentation_devel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_documentation_devel.yml)
+
+## Repository Statistics
+
+| Category | Badges |
+|----------|--------|
+| **Activity** | ![Github Issues](https://img.shields.io/github/issues/filippi-claudia/champ) ![Github Pull Requests](https://img.shields.io/github/issues-pr/filippi-claudia/champ) ![Github Last Commit](https://img.shields.io/github/last-commit/filippi-claudia/champ) [![Commit Activity](https://img.shields.io/github/commit-activity/w/filippi-claudia/champ)](https://img.shields.io/github/commit-activity/t/filippi-claudia/champ) |
+| **Release** | ![Last release tag](https://img.shields.io/github/v/tag/filippi-claudia/champ) |
+| **Community** | ![Github forks](https://img.shields.io/github/forks/filippi-claudia/champ) ![Github stars](https://img.shields.io/github/stars/filippi-claudia/champ) |
+| **Size** | ![Repo Size](https://img.shields.io/github/repo-size/filippi-claudia/champ) ![Code Size](https://img.shields.io/github/languages/code-size/filippi-claudia/champ) |
+| **License** | ![Github license](https://img.shields.io/github/license/filippi-claudia/champ) |
 
 
 
@@ -139,21 +155,26 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 	- To compile the code, first load the required modules:
 		```bash
 		module purge
-		module load 2025
-		module load iimpi/2025a
+		module load 2024
+		module load iimpi/2024a
+		module load HDF5/1.14.5-iimpi-2024a
+		module load imkl/2024.2.0
 		```
 		Then set up the build:
 		```bash
 		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx
 		```
-		Optionally, you may link the trexio library using the following command:
+		Optionally, you may link the TREXIO and QMCkl library using the following command:
 		```bash
 		cmake -S. -Bbuild  \
   			-DCMAKE_Fortran_COMPILER=mpiifx  \
   			-DCMAKE_C_COMPILER=mpiicx  \
   			-DENABLE_TREXIO=ON  \
-  			-DTREXIO_LIBRARY=$HOME/lib/libtrexio.so  \
-  			-DTREXIO_INCLUDE_DIR=$HOME/include/
+  			-DTREXIO_LIBRARY=/projects/0/nwo20035/ravindra/trexio-git/installdir/lib/libtrexio.so  \
+  			-DTREXIO_INCLUDE_DIR=/projects/0/nwo20035/ravindra/trexio-git/installdir/include/ \
+			-DENABLE_QMCKL=ON \
+			-DQMCKL_INCLUDE_DIR=/projects/0/nwo20035/ravindra/qmckl-git/installdir/include \
+			-DQMCKL_LIBRARY=/projects/0/nwo20035/ravindra/qmckl-git/installdir/lib/libqmckl.so \
 		```
 		and finally build:
 		```bash
@@ -176,11 +197,16 @@ Here are a couple of recipes for commonly used computing facilities, which can b
         #SBATCH --exclusive              # specific requirements about node
         #SBATCH --partition genoa        # partition (queue)
         #
-        module purge
-        module load 2025
-        module load iimpi/2025a
+		module purge
+		module load 2024
+		module load iimpi/2024a
+		module load HDF5/1.14.5-iimpi-2024a
+		module load imkl/2024.2.0
         #
         export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
+		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/0/nwo20035/ravindra/trexio-git/installdir/lib
+		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/0/nwo20035/ravindra/qmckl-git/installdir/lib
+
         cd $PWD
 		srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
 		```
@@ -247,17 +273,11 @@ Here are a couple of recipes for commonly used computing facilities, which can b
 		#SBATCH --ntasks-per-core=1
 		#SBATCH --error=e%j
 
- 		module load compiler-rt/latest
- 		module load debugger/latest
- 		module load compiler/latest
- 		module load icc/latest
- 		module load mpi/latest
- 		module load hdf5/latest
- 		module load tbb/latest
- 		module load dpl/latest
- 		module load dev-utilities/latest
- 		module load mkl/latest
- 		module load trexio/latest
+		module purge
+		module load 2024
+		module load iimpi/2024a
+		module load HDF5/1.14.5-iimpi-2024a
+		module load imkl/2024.2.0
 
 	 	cd $PWD
 		mpirun -np 64 champ/bin/vmc.mov1 -i input.inp -o output.out -e error

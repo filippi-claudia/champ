@@ -1,4 +1,4 @@
-name: CHAMP release build with Intel
+name: CHAMP-EU CI - Release build - Intel oneAPI hpckit toolchain
 
 on:
   push:

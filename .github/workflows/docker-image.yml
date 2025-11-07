@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: CHAMP-EU CI - Docker image build and tagging for Docker Hub
 
 on:
   push:

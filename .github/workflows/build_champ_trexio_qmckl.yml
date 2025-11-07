@@ -1,4 +1,4 @@
-name: CHAMP with QMCkl and TREXIO build
+name: CHAMP-EU CI - Release build - Intel oneAPI, TREXIO and QMCkl
 
 on:
   push:
