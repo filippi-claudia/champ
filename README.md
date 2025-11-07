@@ -107,211 +107,240 @@ CHAMP is available as a container image from Dockerhub. Here are the instruction
 7. [Optional] doxygen (for documentation)
 
 
-To install **Champ** using [cmake](https://cmake.org/) you need to run the following commands:
-```
+To install **CHAMP** using [cmake](https://cmake.org/) you need to run the following commands:
+
+```bash
 cmake -H. -Bbuild
 cmake --build build -- -j4
 ```
-The first command is only required to set up the build directory and needs to be
-executed only once. Compared to the previous Makefiles the dependencies for the
-include files (e.g include/vmc.h) are correctly setup and no `--clean-first` is
-required.
+
+The first command configures the build directory. Dependencies for include files are handled automatically; `--clean-first` is not needed.
 
 #### CMake Options
 
-To select a given compiler, you can type:
-```
+- Select a compiler:
+
+```bash
 cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=mpif90
 ```
-To use LAPACK and BLAS installed locally, include the path to the libraries:
-```
+
+- Use locally installed BLAS/LAPACK:
+
+```bash
 cmake -H. -Bbuild \
 	-DCMAKE_Fortran_COMPILER=mpif90 \
 	-DBLAS_blas_LIBRARY=/home/user/lib/BLAS/blas_LINUX.a \
 	-DLAPACK_lapack_LIBRARY=/home/user/lib/LAPACK/liblapack.a
 ```
-To enable/disable vectorization based on the architecture:
+
+- Enable/disable vectorization:
+
 ```bash
 cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DVECTORIZED=yes/no/auto
 ```
 
-To compile only e.g. VMC serial:
-```
+- Build only the VMC executable:
+
+```bash
 cmake --build build --target vmc.mov1
 ```
-Clean and build:
-```
+
+- Clean and rebuild:
+
+```bash
 cmake --build build --clean-first
 ```
 
 #### CMake Recipe for Snellius
-Here are a couple of recipes for commonly used computing facilities, which can be easily adapted.
-
 
 **Snellius** (snellius.surfa.nl):
-	- To compile the code, first load the required modules:
-		```bash
-		module purge
-		module load 2024
-		module load iimpi/2024a
-		module load HDF5/1.14.5-iimpi-2024a
-		module load imkl/2024.2.0
-		```
-		Then set up the build:
-		```bash
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx
-		```
-		Optionally, you may link the TREXIO and QMCkl library using the following command:
-		```bash
-		cmake -S. -Bbuild  \
-  			-DCMAKE_Fortran_COMPILER=mpiifx  \
-  			-DCMAKE_C_COMPILER=mpiicx  \
-  			-DENABLE_TREXIO=ON  \
-  			-DTREXIO_LIBRARY=/projects/0/nwo20035/ravindra/trexio-git/installdir/lib/libtrexio.so  \
-  			-DTREXIO_INCLUDE_DIR=/projects/0/nwo20035/ravindra/trexio-git/installdir/include/ \
-			-DENABLE_QMCKL=ON \
-			-DQMCKL_INCLUDE_DIR=/projects/0/nwo20035/ravindra/qmckl-git/installdir/include \
-			-DQMCKL_LIBRARY=/projects/0/nwo20035/ravindra/qmckl-git/installdir/lib/libqmckl.so \
-		```
-		and finally build:
-		```bash
-		cmake --build build -j8 --clean-first
-		```
-	- To run the code, you need to submit a job to the queue system:
-		```bash
-		sbatch job.cmd
-		```
-		where `job.cmd` is a SLURM script for `genoa` partition that looks like this:
 
-		```bash
-		#!/bin/bash
-        #SBATCH -t 0-12:00:00            # time in (day-hours:min:sec)
-        #SBATCH -N 1                     # number of nodes (change this number to use more nodes)
-        #SBATCH --ntasks-per-node 192    # tasks per node (Use 192 for genoa and 128 for rome partition)
-        #SBATCH -J vmc                   # name of the job
-        #SBATCH -o vmc.%j.out            # std output file name for slurm
-        #SBATCH -e vmc.%j.err            # std error file name for slurm
-        #SBATCH --exclusive              # specific requirements about node
-        #SBATCH --partition genoa        # partition (queue)
-        #
-		module purge
-		module load 2024
-		module load iimpi/2024a
-		module load HDF5/1.14.5-iimpi-2024a
-		module load imkl/2024.2.0
-        #
-        export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
-		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/0/nwo20035/ravindra/trexio-git/installdir/lib
-		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/0/nwo20035/ravindra/qmckl-git/installdir/lib
+- Load modules:
+	
+```bash
+module purge
+module load 2024
+module load iimpi/2024a
+module load HDF5/1.14.5-iimpi-2024a
+module load imkl/2024.2.0
+```
+		
+- Configure the build:
 
-        cd $PWD
-		srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
-		```
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx
+```
+
+- Enable TREXIO + QMCkl:
+
+```bash
+cmake -S. -Bbuild  \
+	-DCMAKE_Fortran_COMPILER=mpiifx  \
+	-DCMAKE_C_COMPILER=mpiicx  \
+	-DENABLE_TREXIO=ON  \
+	-DTREXIO_LIBRARY=/projects/0/nwo20035/ravindra/trexio-git/installdir/lib/libtrexio.so  \
+	-DTREXIO_INCLUDE_DIR=/projects/0/nwo20035/ravindra/trexio-git/installdir/include/ \
+	-DENABLE_QMCKL=ON \
+	-DQMCKL_INCLUDE_DIR=/projects/0/nwo20035/ravindra/qmckl-git/installdir/include \
+	-DQMCKL_LIBRARY=/projects/0/nwo20035/ravindra/qmckl-git/installdir/lib/libqmckl.so \
+```
+
+- Build:
+
+```bash
+cmake --build build -j8 --clean-first
+```
+
+
+- Example SLURM script for Genoa partition:
+
+```bash
+#!/bin/bash
+#SBATCH -t 0-12:00:00            # time in (day-hours:min:sec)
+#SBATCH -N 1                     # number of nodes (change this number to use more nodes)
+#SBATCH --ntasks-per-node 192    # tasks per node (Use 192 for genoa and 128 for rome partition)
+#SBATCH -J vmc                   # name of the job
+#SBATCH -o vmc.%j.out            # std output file name for slurm
+#SBATCH -e vmc.%j.err            # std error file name for slurm
+#SBATCH --exclusive              # specific requirements about node
+#SBATCH --partition genoa        # partition (queue)
+#
+module purge
+module load 2024
+module load iimpi/2024a
+module load HDF5/1.14.5-iimpi-2024a
+module load imkl/2024.2.0
+#
+export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/0/nwo20035/ravindra/trexio-git/installdir/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/0/nwo20035/ravindra/qmckl-git/installdir/lib
+
+cd $PWD
+srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
+```
+
+---
+
 #### CMake Recipe for CCPHead (UTwente)
-	- To build with mpiifx, load the required modules of the Intel Compiler and MPI:
 
-		```bash
-		module load compiler-intel-llvm/2025.0.4
-		module load dev-utilities/2025.0.0
-  		module load mpi/2021.14
-		module load mkl/2025.0
- 		```
+- Load modules:
+
+```bash
+module load compiler-intel-llvm/2025.0.4
+module load dev-utilities/2025.0.0
+module load mpi/2021.14
+module load mkl/2025.0
+```
+
+- Configure:
+
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx
+```
+
+- Enable TREXIO:
+
+```bash
+module load trexio/latest-icx
+
+cmake -H. -Bbuild  \
+	-DCMAKE_Fortran_COMPILER=mpiifx \
+	-DCMAKE_C_COMPILER=mpiicx  \
+	-DENABLE_TREXIO=ON  \
+	-DTREXIO_LIBRARY=/software/libraries/trexio/latest-icx/lib/libtrexio.so  \
+	-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest-icx/include/
+```
   
-		Set up the build:
-		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx
-		```
-	- To enable the TREXIO library:
-		```
-		module load trexio/latest-icx
+- Enable QMCkl
+		
+```bash
+module load trexio/latest-icx
+module load qmckl/git-hpc
 
-		cmake -H. -Bbuild  \
-  			-DCMAKE_Fortran_COMPILER=mpiifx \
-  			-DCMAKE_C_COMPILER=mpiicx  \
-  			-DENABLE_TREXIO=ON  \
-  			-DTREXIO_LIBRARY=/software/libraries/trexio/latest-icx/lib/libtrexio.so  \
-			-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest-icx/include/
-		```
-  
-  	- To enable the QMCKL library:
-		```
-		module load trexio/latest-icx
-  		module load qmckl/git-hpc
-  	
-		cmake -S. -Bbuild \
-    		-DCMAKE_Fortran_COMPILER=mpiifx \
-  			-DCMAKE_C_COMPILER=mpiicx  \
-			-DENABLE_TREXIO=ON \
-    		-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest-icx/include \
-    		-DTREXIO_LIBRARY=/software/libraries/trexio/latest-icx/lib/libtrexio.so \
-    		-DENABLE_QMCKL=ON \
-  			-DQMCKL_INCLUDE_DIR=/software/libraries/qmckl/git-hpc/include \
-			-DQMCKL_LIBRARY=/software/libraries/qmckl/git-hpc/lib/libqmckl.so
-		```
+cmake -S. -Bbuild \
+	-DCMAKE_Fortran_COMPILER=mpiifx \
+	-DCMAKE_C_COMPILER=mpiicx  \
+	-DENABLE_TREXIO=ON \
+	-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest-icx/include \
+	-DTREXIO_LIBRARY=/software/libraries/trexio/latest-icx/lib/libtrexio.so \
+	-DENABLE_QMCKL=ON \
+	-DQMCKL_INCLUDE_DIR=/software/libraries/qmckl/git-hpc/include \
+	-DQMCKL_LIBRARY=/software/libraries/qmckl/git-hpc/lib/libqmckl.so
+```
 
-	- To disable vectorization of the code:
-		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx -DVECTORIZED=no
-		```
+- Disable vectorization:
 
-	- To run the code, you need to submit a job to the queue system:
-		```bash
-		sbatch job.cmd
-		```
-		where `job.cmd` is a SLURM script for `genoa` partition that looks like this:
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx -DVECTORIZED=no
+```
 
-		```bash
-		#!/bin/bash
-		#SBATCH -t 2-0
-		#SBATCH -p ccp22
-		#SBATCH -N 2 --exclusive --ntasks-per-node 32
-		#SBATCH -J champ
-		#SBATCH --output=o%j
-		#SBATCH --ntasks-per-core=1
-		#SBATCH --error=e%j
+- Example script:
 
-		module purge
-		module load 2024
-		module load iimpi/2024a
-		module load HDF5/1.14.5-iimpi-2024a
-		module load imkl/2024.2.0
+```bash
+#!/bin/bash
+#SBATCH -t 2-0
+#SBATCH -p ccp22
+#SBATCH -N 2 --exclusive --ntasks-per-node 32
+#SBATCH -J champ
+#SBATCH --output=o%j
+#SBATCH --ntasks-per-core=1
+#SBATCH --error=e%j
 
-	 	cd $PWD
-		mpirun -np 64 champ/bin/vmc.mov1 -i input.inp -o output.out -e error
-		```
+module purge
+module load 2024
+module load iimpi/2024a
+module load HDF5/1.14.5-iimpi-2024a
+module load imkl/2024.2.0
 
- 	- To build with gfortran:
+cd $PWD
+mpirun -np 64 champ/bin/vmc.mov1 -i input.inp -o output.out -e error
+```
 
-		Setup the build:
-		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=/usr/bin/mpif90
-		```
-		which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.
-	- To run the code:
-		```
-		mpirun -s all -np "n process" -machinefile "machinefile"
-		```
-#### CMake Recipe for Ubuntu PC
-	- Ubuntu 20+:
-		Install the required packages:
-		```
-		sudo apt install gfortran openmpi-bin libopenmpi-dev gawk libblacs-mpi-dev liblapack-dev
-		```
-		Set up the build:
-		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
-		```
-		Build:
-		```
-		cmake --build build -- -j2
-		```
-		To run in parallel:
-		```
-		mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 -i vmc.inp -o vmc.out -e error
-		```
-	- WSL:
-	The code also compiles on WSL with the above mentioned instructions.
-------------------------------------------------------------------------
+- Build with gfortran:
+
+
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=/usr/bin/mpif90
+```
+
+This will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.
+
+
+- Run the code:
+
+```bash
+mpirun -s all -np "n process" -machinefile "machinefile"
+```
+
+#### CMake Recipe for Ubuntu 20+ PC or WSL
+
+- Install:
+
+```bash
+sudo apt install gfortran openmpi-bin libopenmpi-dev gawk libblacs-mpi-dev liblapack-dev
+```
+
+- Configure:
+
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
+```
+
+- Build:
+
+```bash
+cmake --build build -- -j2
+```
+
+- Run:
+
+```bash
+mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 -i vmc.inp -o vmc.out -e error
+```
+
+---
+
+
 
 ## User's manual and documentation
 The user's manual and documentation is hosted at [https://trex-coe.github.io/champ-user-manual/](https://trex-coe.github.io/champ-user-manual)
