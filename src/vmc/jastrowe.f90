@@ -59,7 +59,7 @@ contains
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
          if (use_qmckl_jastrow) then
 
-           call jastrowe_qmckl(iel, x(:,iel),fjn(1,1,iwf),d2n(iwf),fsumn(iwf),1)
+           call jastrowe_qmckl(iel, x(:,iel),fjn(1,1,iwf),d2n(iwf),fsumn(iwf),iflag)
 
            fsumn(iwf)=fsumn(iwf)+fsumo(iwf)
            d2n(iwf)=d2n(iwf)+d2o(iwf)
