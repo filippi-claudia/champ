@@ -8,17 +8,15 @@ subroutine jastrow_init_qmckl(ictx)
     use jastrow4_mod, only: nterms4
     use precision_kinds, only: dp
     use scale_dist_mod, only: scale_dist2,switch_scale2
-    use system,  only: iwctype,ncent,nelec,nup,nctype
+    use system,  only: iwctype,ncent,nelec,nctype
     use error,   only: fatal_error
     use contrl_file,    only: ounit
-
-
     use qmckl_data
 
     implicit none
     integer :: i
     integer, intent(in) :: ictx
-    integer(qmckl_exit_code) :: rc, rc2
+    integer(qmckl_exit_code) :: rc
     double precision :: scalek_en(nctype)
     integer*8 :: itypes(ncent)
     integer*8 :: dimc, norda_l, nordb_l
@@ -60,7 +58,7 @@ subroutine jastrow_init_qmckl(ictx)
     rc = qmckl_set_jastrow_champ_b_vector (qmckl_ctx(ictx), b(1:(nordb_l+1),1,1), (nordb_l+1)*2_8)
     if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow b vec.')
     
-    if (nordc.gt.1) then
+    if (nordc.gt.0) then
         dimc = nterms4(nordc)
         rc = qmckl_set_jastrow_champ_c_vector (qmckl_ctx(ictx), c(1:dimc,1:nctype,1), dimc*nctype*1_8)
         if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow c vec.')
@@ -89,33 +87,25 @@ end subroutine
     subroutine jastrow_qmckl(x,fjo,d2o,fsumo)
 
     use qmckl_data
-    use multiple_geo, only: iwf
     use jastrow4_mod, only: jastrow_factor4
     use precision_kinds, only: dp
-    use jastrow, only: asymp_jasa,asymp_jasb
-    use system,  only: iwctype,ncent,nelec,nup,nctype
+    use system,  only: ncent,nelec
     use error,   only: fatal_error
     use m_force_analytic, only: iforce_analy
-    use contrl_file, only: ounit
     use da_jastrow, only: da_d2j, da_j, da_vj
 
     implicit none
-    real(dp)  :: x(3,*)
-    real(dp), dimension(3, *) :: fjo
-    real(dp) :: old_x(3,nelec)
+    real(dp)  :: x(3,nelec)
+    real(dp), dimension(3, nelec) :: fjo
     real(dp) :: fsumo, d2o
-    real(dp) :: value
-
     real(dp) :: jen(1), jee(1), jeen(1)
     real(dp) :: jen_gl(4* nelec), jee_gl(4* nelec), jeen_gl(4* nelec)
-
     real(dp) :: da_j_en(3,ncent), da_j_een(3,ncent)
     real(dp) :: da_vj_en(3,nelec,3,ncent), da_vj_een(nelec,3,ncent,3)
     real(dp) :: da_d2j_en(3,ncent), da_d2j_een(ncent,3)
     integer(qmckl_exit_code) :: rc
 
-    integer :: it,i ,j, same, k, ic, l
-    double precision :: xx(10000)
+    integer :: i, k, ic, l
 
     do i = 1, nelec
         fjo(1,i) = 0.0d0
@@ -124,23 +114,8 @@ end subroutine
     enddo
     d2o = 0.0d0
 
-    rc = qmckl_get_point(qmckl_ctx(qmckl_no_ctx), 'N', old_x, 3_8*nelec)
-    if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow x-coords.')
-   
-    same = 1
-    do i = 1, nelec
-        do k = 1, 3
-            if (abs(old_x(k,i) - x(k,i)) > 1e-6) then
-                same = 0
-            end if
-        end do
-        !if (same == 0) exit
-    end do
-
-    ! if (same == 0) then
-        rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', 1_8*nelec, x, 3_8*nelec)
-        if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow x-coords.')
-    ! endif
+    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx), 'N', 1_8*nelec, x, 3_8*nelec)
+    if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow x-coords.')
     
     rc = qmckl_get_jastrow_champ_factor_ee(qmckl_ctx(qmckl_no_ctx), jee, 1_8)
     if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e Jastrow.')
@@ -227,21 +202,15 @@ end subroutine
     use precision_kinds, only: dp
     use system,  only: nelec
     use error,   only: fatal_error
-    use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-    use contrl_file, only: ounit
 
     implicit none
     integer            :: iel, iflag,i
     real(dp)  :: x(3)
     real(dp), dimension(3, *) :: fjn
     real(dp) :: fsumn, d2n
-    real(dp) :: value
-
     real(dp) :: jen(1), jee(1), jeen(1)
     real(dp) :: jen_gl(4,nelec), jee_gl(4,nelec), jeen_gl(4*nelec)
-
     integer(qmckl_exit_code) :: rc
-    character*(1024) :: err_message = ''
 
     do i = 1, nelec
         fjn(1,i) = 0.0d0
@@ -252,8 +221,8 @@ end subroutine
 
     ! iflag
     ! 0 = value only
-    ! 1 = value and gradient 
-    ! 2 = value, gradient and laplacian ! not implemented
+    ! 1 = value, gradient and laplacian
+    ! 2 = value and gradient 
 
  
     rc = qmckl_set_single_point(qmckl_ctx(qmckl_no_ctx), 'N', iel*1_8, x, 3_8)
@@ -304,97 +273,4 @@ end subroutine
 
     end subroutine
 
-!    subroutine jastrow_quad_qmckl(nquad,indices,x,ratio_jn,vjn,da_psij_ratio,iflag)
-!
-!        use qmckl_data
-!        use jastrow4e_mod, only: jastrow4e
-!        use precision_kinds, only: dp
-!        use system,  only: nelec, ncent, ncent_tot
-!        use error,   only: fatal_error
-!        use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo
-!        use contrl_file, only: ounit
-!    
-!        implicit none
-!        integer            :: iflag,i, nq, nquad, indx,k, ic
-!        integer*8 :: indices(nquad)
-!        real(dp)  :: x(3,nquad)
-!        real(dp), dimension(3, nquad) :: vjn
-!        real(dp), dimension(3,ncent_tot,*) :: da_psij_ratio
-!        real(dp), dimension(nquad) :: ratio_jn
-!        real(dp) :: value
-!    
-!        real(dp) :: jen(nquad), jee(nquad), jeen(nquad)
-!        real(dp) :: jen_gl(3,nelec,nquad), jee_gl(3,nelec,nquad), jeen_gl(3,nquad)
-!        real(dp), dimension(3,ncent,nquad) :: da_single_een, da_single_en
-!    
-!        integer(qmckl_exit_code) :: rc
-!        character*(1024) :: err_message = ''
-!    
-!
-!        ! iflag
-!        ! 0 = value only
-!        ! 1 = value and gradient 
-!
-!        do nq = 1, nquad
-!            indices(nq) = indices(nq)-1
-!        end do
-!     
-!        rc = qmckl_set_quad_points(qmckl_ctx(qmckl_no_ctx), 'N', nquad, indices, x, 3_8*nquad)
-!        if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting single point.')
-!    
-!        rc = qmckl_get_jastrow_champ_quad_en(qmckl_ctx(qmckl_no_ctx), jen, 1_8*nquad)
-!        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow.')
-!    
-!        rc = qmckl_get_jastrow_champ_quad_ee(qmckl_ctx(qmckl_no_ctx), jee, 1_8*nquad)
-!        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e Jastrow.')
-!    
-!        rc = qmckl_get_jastrow_champ_quad_een(qmckl_ctx(qmckl_no_ctx), jeen, 1_8*nquad)
-!        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow.')
-!    
-!        do nq = 1, nquad
-!            ratio_jn(nq) =  jen(nq)  + jee(nq) + jeen(nq)
-!        enddo
-!    
-!        if (iflag .ge. 1) then
-!    
-!        rc = qmckl_get_jastrow_champ_quad_ee_gl(qmckl_ctx(qmckl_no_ctx), jee_gl, 1_8*3*nelec*nquad)
-!        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e Jastrow gl.')
-!    
-!        rc = qmckl_get_jastrow_champ_quad_en_gl(qmckl_ctx(qmckl_no_ctx), jen_gl,  1_8*3*nelec*nquad)
-!        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-n Jastrow gl.')
-!    
-!        rc = qmckl_get_jastrow_champ_quad_een_gl(qmckl_ctx(qmckl_no_ctx), jeen_gl,  1_8*3*nquad)
-!        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl e-e-n Jastrow gl.')
-!        do nq = 1, nquad
-!            !fjn(1,i,nq) = jeen_gl(i+nelec*0,nq) + jen_gl(1,i,nq) + jee_gl(1,i,nq)
-!            !fjn(2,i,nq) = jeen_gl(i+nelec*1,nq) + jen_gl(2,i,nq) + jee_gl(2,i,nq)
-!            !fjn(3,i,nq) = jeen_gl(i+nelec*2,nq) + jen_gl(3,i,nq) + jee_gl(3,i,nq)
-!            indx = indices(nq)+1
-!            !print *, 'jeen_gl', jeen_gl(1,1,nq), jeen_gl(2,1,nq), jeen_gl(3,1,nq)
-!            vjn(1,nq) = jeen_gl(1,nq)  + jen_gl(1,indx,nq) + jee_gl(1,indx,nq) + fjo(1,indx,1)
-!            vjn(2,nq) = jeen_gl(2,nq)  + jen_gl(2,indx,nq) + jee_gl(2,indx,nq) + fjo(2,indx,1)
-!            vjn(3,nq) = jeen_gl(3,nq)  + jen_gl(3,indx,nq) + jee_gl(3,indx,nq) + fjo(3,indx,1)
-!            ! vjn(1,nq) = jeen_gl(indx,1,nq) 
-!            ! vjn(2,nq) = jeen_gl(indx,2,nq) 
-!            ! vjn(3,nq) = jeen_gl(indx,3,nq)
-!      
-!        end do
-!
-!        rc = qmckl_get_forces_jastrow_quad_en(qmckl_ctx(qmckl_no_ctx), da_single_en, 3*ncent*nquad)
-!        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single en force.')
-!        rc = qmckl_get_forces_jastrow_quad_een(qmckl_ctx(qmckl_no_ctx), da_single_een, 3*ncent*nquad)
-!        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single een force.')
-!        do nq = 1, nquad
-!            do ic=1,ncent
-!                do k=1,3
-!                    da_psij_ratio(k,ic,nq)=da_single_en(k,ic,nq)+da_single_een(k,ic,nq)
-!                enddo
-!            enddo
-!        enddo
-!    
-!       endif
-!
-!    
-!        end subroutine
-
-    end module
+end module

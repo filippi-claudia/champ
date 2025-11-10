@@ -330,6 +330,11 @@ subroutine parser
   alfstr      = fdf_get('alfstr',4.0d0)
   write_walkalize  = fdf_get('write_walkalize', .false.)
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+  use_qmckl_jastrow = fdf_get('use_qmckl_jastrow', .true.)
+  use_qmckl_orbitals = fdf_get('use_qmckl_orbitals', .true.)
+#endif
+
   ! trexio
   trex_backend = fdf_get('backend', 'hdf5')
 #if defined(TREXIO_FOUND)
@@ -2020,6 +2025,13 @@ subroutine parser
   if(ijastrow_parameter.eq.0) call fatal_error('INPUT: block jastrow_parameter missing')
   if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+  if (.not. fdf_load_defined('trexio') ) then
+    use_qmckl_orbitals = .false.
+    use_qmckl_jastrow = .false.
+  endif
+#endif
+
   call fdf_shutdown()
 
   ! The following portion can be shifted to another subroutine.
@@ -2029,12 +2041,24 @@ subroutine parser
   !qmckl initialization
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-  if (use_qmckl) then
+  if (use_qmckl_orbitals.or.use_qmckl_jastrow) then
 
      if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
 
-     qmckl_no_ctx = 2
-     if(ioptorb.gt.0) qmckl_no_ctx = 3
+     if (nforce.gt.1) then 
+        write(errunit,'(a)') "Warning: QMCKL does not support correlated sampling, so the QMCkl Jastrow will not be used."
+        !use_qmckl_jastrow = .false.
+     end if
+     if (nstates.gt.1) then
+        write(errunit,'(a)') "Warning: QMCKL does not support multi-state calculations, QMCkl will not be used."
+        use_qmckl_jastrow = .false.
+        use_qmckl_orbitals = .false.
+     end if
+     
+     qmckl_no_ctx = 0
+     if (use_qmckl_jastrow) qmckl_no_ctx = qmckl_no_ctx + 1
+     if (use_qmckl_orbitals) qmckl_no_ctx = qmckl_no_ctx + 1
+     if (use_qmckl_orbitals.and.ioptorb.gt.0) qmckl_no_ctx = qmckl_no_ctx + 1
 
      ! Create a new QMCkl context
      do ictx=1,qmckl_no_ctx
@@ -2042,7 +2066,7 @@ subroutine parser
        write(ounit, *) " QMCkl initial context created  " , qmckl_ctx(ictx) , " successfully "
      enddo
 
-     if(ioptorb.gt.0) then
+     if(ioptorb.gt.0.and.use_qmckl_orbitals) then
 
        file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
        if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
@@ -2077,13 +2101,15 @@ subroutine parser
      endif
 
      ! get mo's number should correspond to norb_tot
+     if (use_qmckl_jastrow) then
+       call jastrow_init_qmckl(qmckl_no_ctx)
+     end if
+     if (use_qmckl_orbitals) then
+       call init_context_qmckl(.True.)
+     end if
 
-     call jastrow_init_qmckl(qmckl_no_ctx)
-
-     call init_context_qmckl(.True.)
-
-
-
+  else
+     qmckl_no_ctx = 0
   endif
 #endif
 

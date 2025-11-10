@@ -41,7 +41,7 @@
       use optx_jas_ci, only: optx_jas_ci_sum
       use optx_jas_orb, only: optx_jas_orb_sum
       use optx_orb_ci, only: optx_orb_ci_sum
-      use pathak_mod, only: ipathak, eps_pathak, pold, pnew, pathak
+      use pathak_mod, only: ipathak, eps_pathak, pnew, pathak
       use pcm_cntrl, only: ichpol
       use pcm_mod, only: qpcm_efield
       use pcm_vmc, only: pcm_sum
@@ -49,17 +49,20 @@
       use prop_vmc, only: prop_sum
       use random_mod, only: random_dp
       use strech_mod, only: strech
-      use system,  only: cent,iwctype,ncent,nelec,nup,znuc
+      use system,  only: nelec,nup
       use tmpnode, only: distance_node_sum
       use vmc_mod, only: nwftypejas, stoj
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      use qmckl_data
+#endif
+
       implicit none
 
-      integer :: i, iab, ic, iel, iflag_dn, iflag_up
+      integer :: i, iab, ic, iel, iflag_dn, iflag_up, rc
       integer :: ifr, ii, ipass, irun, istate
       integer :: j, jel, k, iph
-      real(dp) :: ajacob, bot
-      real(dp) :: distance_node, dmin1, dot
+      real(dp) :: ajacob, distance_node, dmin1
       real(dp) :: p, psidg, psig, q
       real(dp) :: rnorm_nodes, vavvt, v2new, v2old, wstro
       real(dp) :: rttau, tau, drift, dfus2o, dfus2n, dfus, dx
@@ -199,6 +202,11 @@
 ! accept new move with probability p
 ! Note when one electron moves the velocity on all electrons change.
       if (random_dp().lt.p) then
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+        if (use_qmckl_jastrow) then
+          rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
+        endif
+#endif
         psi2o(1,1)=psi2n(1)
         do ic=1,3
           xold(ic,i)=xnew(ic,i)

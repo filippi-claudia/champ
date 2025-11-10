@@ -15,7 +15,7 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
     implicit none
 
     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
-    integer :: rc
+    integer :: rc, ictx
     integer*8 :: n8
     real(dp), dimension(3,nelec) :: xqmckl
     real(dp), dimension(3,nelec) :: xelec
@@ -26,15 +26,21 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
     real(dp) :: rnorm
     character*(1024) :: err_message = ''
 
-    integer :: i, iorb, k
+    integer :: i, iorb, k, m
 
     real(dp), dimension(3,*) :: x
     real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
     real(dp), dimension(nelec,ncent_tot) :: r_en
 
+    if (use_qmckl_jastrow) then
+        ictx = qmckl_no_ctx-1
+    else
+        ictx = qmckl_no_ctx
+    end if
+
     
     ! get number MO's
-    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(qmckl_no_ctx-1), n8)
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting mo_num from QMCkl'
         stop
@@ -42,14 +48,14 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
 
     allocate(mo_vgl_qmckl(n8, 5, nelec))
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx-1), 'N', nelec*1_8, x, nelec*3_8)
+    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', nelec*1_8, x, nelec*3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error setting electron coordinates in QMCkl'
         stop
     end if
 
     ! Compute the MOs
-    rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(qmckl_no_ctx-1), mo_vgl_qmckl, n8*nelec*5_8)
+    rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(ictx), mo_vgl_qmckl, n8*nelec*5_8)
 
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting MOs from QMCkl'
@@ -233,8 +239,6 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
         stop
     end if
 
-
-    ! To fix - QMCkl does not give da_orbitals
     if(iforce_analy.gt.0) then
 
         if (ictx .eq. 2) then
@@ -295,11 +299,11 @@ subroutine init_context_qmckl(update_coef)
 
     integer(qmckl_exit_code)   :: rc
     integer*8                  :: n8
-    integer*8                  :: ncheck, ictx
+    integer*8                  :: ncheck, ictx, ictx_lim
     integer*8                  :: norb_qmckl(qmckl_no_ctx_max)
     integer, allocatable       :: keep(:)
     character*(1024)           :: err_message = ''
-    integer                    :: k   
+    integer                    :: k
   
     logical                    :: do_nucl_fitcusp
     real(dp), allocatable      :: nucl_fitcusp_radius(:)
@@ -309,9 +313,13 @@ subroutine init_context_qmckl(update_coef)
     character(len=100)         :: array_format   = '(A, "(",I0,")", T40, ":: ", T42, F25.16)'
     logical                    :: update_coef
 
+    if (use_qmckl_jastrow) then
+        ictx_lim = qmckl_no_ctx-1
+    else
+        ictx_lim = qmckl_no_ctx
+    end if
 
-
-    do ictx = 1, qmckl_no_ctx-1
+    do ictx = 1, ictx_lim
         rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 53) ! 24
         if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
     end do
@@ -319,7 +327,7 @@ subroutine init_context_qmckl(update_coef)
     write(ounit, *) " QMCkl precision set to 53 bits"
 
 
-    do ictx=1,qmckl_no_ctx-1
+    do ictx=1,ictx_lim
         rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
         if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl getting mo_num from trexio file')
 
@@ -342,7 +350,7 @@ subroutine init_context_qmckl(update_coef)
     norb_qmckl(2)=norb+nadorb
     norb_qmckl(2)=min(norb_qmckl(2),norb_tot) ! perhaps done before
 
-    do ictx=1,qmckl_no_ctx-1
+    do ictx=1,ictx_lim
 
       if (n8 > norb_qmckl(ictx)) then
 
@@ -385,7 +393,7 @@ subroutine init_context_qmckl(update_coef)
          endif
         enddo
 
-        do ictx=1,qmckl_no_ctx-1
+        do ictx=1,ictx_lim
           write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx(ictx)
           rc = qmckl_set_mo_basis_r_cusp(qmckl_ctx(ictx),dble(nucl_fitcusp_radius(:)), int(ncent,8))
           write(ounit, *) "Status QMCKl set mo basis r cusp  ", rc

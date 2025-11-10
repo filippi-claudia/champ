@@ -3,8 +3,7 @@
       subroutine deriv_jastrow4(x,fjo,d2o,fsumo,fso,fijo,d2ijo,g,go,d2g,gvalue)
 ! Written by Cyrus Umrigar and Claudia Filippi
       use bparm,   only: nocuspb,nspin2b
-      use contrl_file, only: ounit
-      use cuspmat4, only: d,iwc4
+      use cuspmat4, only: iwc4
       use da_jastrow, only: da_d2j,da_j,da_vj
       use distance_mod, only: r_ee,r_en,rvec_ee,rvec_en
       use ijasnonlin, only: d1d2a,d1d2b,d2d2a,d2d2b
@@ -33,7 +32,7 @@
       integer :: l, l_hi, ll, m, n 
       real(dp) :: bot, bot0, bot2, boti, botii
       real(dp) :: botu, botuu, cd, d2o
-      real(dp) :: dd1, dd2, dd3, dd7, dd8, dd9, dd10, dd11, dd12
+      real(dp) :: dd1, dd2, dd7, dd8, dd9, dd10, dd11, dd12
       real(dp) :: fc, fee, feeu, feeuu
       real(dp) :: fen, feni, fenii, feniii
       real(dp) :: fi, fii, fiii, fiij, fij, fj, fjj, fjji, fjjj, fu, fui, fuii, fuij, fuj, fujj, fuu, fuui, fuuj
@@ -46,7 +45,6 @@
       real(dp) :: ri, rij, rj, s
       real(dp) :: t, top, topi, topii
       real(dp) :: topu, topuu, u2mst, u2pst
-      real(dp) :: value
       real(dp), dimension(3, *) :: x
       real(dp), dimension(-3:nordj) :: uu, ss, tt, rri, rrj
       real(dp) :: fsumo
@@ -149,6 +147,7 @@
       rij=r_ee(ij)
 
       call scale_dist2(rij,uu(1),dd1,dd2)
+      if(uu(1).eq.asymp_r) goto 30
 
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
@@ -264,13 +263,13 @@
         if(iforce_analy.eq.0) then
           call scale_dist2(ri,rri(1),dd7,dd9)
           call scale_dist2(rj,rrj(1),dd8,dd10)
-
+          if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
           call switch_scale2(rri(1),dd7,dd9)
           call switch_scale2(rrj(1),dd8,dd10)
         else
           call scale_dist3(ri,rri(1),dd7,dd9,dd11)
           call scale_dist3(rj,rrj(1),dd8,dd10,dd12)
-
+          if(rri(1).eq.asymp_r .and. rrj(1).eq.asymp_r) cycle
           call switch_scale3(rri(1),dd7,dd9,dd11)
           call switch_scale3(rrj(1),dd8,dd10,dd12)
        endif
@@ -542,6 +541,7 @@
           else
             call scale_dist3(ri,rri(1),dd7,dd9,dd11)
           endif
+          if(rri(1).eq.asymp_r) cycle
 
           top=a4(1,it,iwf)*rri(1)
           topi=a4(1,it,iwf)

@@ -5,22 +5,26 @@ contains
 
       use contrl_file, only: ounit
       use contrl_per, only: iperiodic
+      use cuspmat4, only: nterms
       use derivjas, only: d2g, g, go, gvalue
       use deriv_jastrow4_mod, only: deriv_jastrow4
       use deriv_jastrow1_mod, only: deriv_jastrow1
       use ewald_breakup, only: jastrow_longrange
-      use jastrow, only: ijas, ijas_lr
+      use jastrow, only: ijas, ijas_lr, norda, nordb, nordc
       use jastrow_update, only: d2ijo, d2o, fijo, fjo, fso, fsumo
       use jastrow1_mod, only: jastrow_factor1
       use jastrow4_mod, only: jastrow_factor4
       use multiple_geo, only: iwf, nforce
       use optwf_control, only: ioptjas
+      use optwf_parms, only: nparmj
+      use optwf_nparmj, only: nparmc
       use precision_kinds, only: dp
-      use system, only: nelec
+      use system, only: nelec, nctype
       use vmc_mod, only: nwftypejas
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use jastrow_qmckl_mod, only: jastrow_qmckl
+      use deriv_jastrow_qmckl_mod, only: deriv_jastrow4_qmckl
       use qmckl_data
 #endif
 
@@ -109,10 +113,14 @@ contains
               iwf=jwf
 !UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+            if (use_qmckl_jastrow) then
               call jastrow_qmckl(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf))
-#else
+            else
+#endif
               call jastrow_factor4(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf),fso(1,1,iwf), &
                    fijo(1,1,1,iwf),d2ijo(1,1,iwf))
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+            end if ! use_qmckl_jastrow
 #endif
             enddo
           endif
@@ -128,10 +136,20 @@ contains
            else
             do jwf=1,nwftypejas
               iwf=jwf
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+            if (use_qmckl_jastrow) then
+              call deriv_jastrow4_qmckl(x,fjo(:,:,iwf),d2o(iwf),fsumo(iwf),g(:,:,:,iwf),d2g(:,iwf),gvalue(:,iwf))
+            else
+#endif
               call deriv_jastrow4(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf), &
                    fso(1,1,iwf),fijo(1,1,1,iwf), &
                    d2ijo(1,1,iwf),g(1,1,1,iwf),go(1,1,1,iwf), &
                    d2g(1,iwf),gvalue(1,iwf))
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+            end if ! use_qmckl_jastrow
+#endif
+
             enddo
           endif
         endif

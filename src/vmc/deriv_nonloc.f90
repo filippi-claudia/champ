@@ -14,14 +14,12 @@ contains
       use jastrow_update, only: fso
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl
-      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma,nparmb,nparmc
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use find_pimage, only: find_image_pbc
       use qua, only: nquad
       use system,  only: iwctype,ncent,ncent_tot,nctype,nelec,nup
-      use contrl_file, only: ounit
 
       implicit none
 
@@ -56,9 +54,6 @@ contains
         vjn(k,iq)=0.d0
       enddo
 
-! TMP
-!     do 5 iparm=1,nparmj
-!   5   dpsij_ratio(iparm)=gvalue(iparm)
       do iparm=1,nparmj
         dpsij_ratio(iparm,iq)=0
       enddo
@@ -66,10 +61,8 @@ contains
       if (nelec.lt.2) goto 47
 
       ipara=nparma(1)
-!      write(ounit,*) 'nparmj,nparma(1),', nparmj, nparma(1)
       do it=2,nctype
         ipara=ipara+nparma(it)
-!        write(ounit,*) 'it,nparma(it)', it, nparma(it)
       enddo
 
       do jj=1,nelec
@@ -137,7 +130,6 @@ contains
 
         do jparm=1,nparmb(isb)
           iparm=iparm0+jparm
-!          write(ounit,*) 'jparm,iparm0,iparm,nparmb(isb),isb', jparm,iparm0,iparm,nparmb(isb),isb
           dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(i,j,iparm,iwfjas)
         enddo
 
@@ -171,14 +163,12 @@ contains
          iparm0=npointa(it)
          fsn(iel,iel)=fsn(iel,iel)+ &
               deriv_psianl(r_en_quad(iq,ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
-!          write(ounit,*) 'ic,it,iwctype(ic),iparm0,iparm0+1', ic,it,iwctype(ic),iparm0,iparm0+1
       enddo
       do it=1,nctype
          iparm0=npointa(it)
          do jparm=1,nparma(it)
             iparm=iparm0+jparm
             dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(iel,iel,iparm,iwfjas)
-!     write(ounit,*) 'it,npointa(it),jparm,iparm0,iparm', it,npointa(it),jparm,iparm0,iparm
          enddo
       enddo
 
@@ -209,18 +199,17 @@ contains
 
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm,   only: nocuspb,nspin2b
-      use contrl_file, only: ounit
       use contrl_per, only: iperiodic
       use da_jastrow, only: da_j
       use deriv_nonlpsi, only: deriv_psianl,deriv_psibnl,deriv_psinl
       use derivjas, only: go
+      use error, only: fatal_error
       use find_pimage, only: find_image_pbc
       use jaspointer, only: npoint,npointa
       use jastrow, only: is,nspin2,sspinn,nordc
-      use jastrow_update, only: fso
+      use jastrow_update, only: fso, fjo
       use m_force_analytic, only: iforce_analy
       use nonlpsi, only: dpsianl,dpsibnl,dpsinl
-      use optwf_control, only: ioptjas
       use optwf_nparmj, only: nparma,nparmb,nparmc
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
@@ -228,6 +217,11 @@ contains
       use scale_dist_mod, only: scale_dist,scale_dist1
       use system,  only: iwctype,ncent,ncent_tot,nctype,nelec,nup
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      use qmckl
+      use qmckl_data
+      use deriv_jastrow_qmckl_mod, only: deriv_jastrowe_qmckl
+#endif
       implicit none
 
       integer :: i, ic, iel, ipar, ipara
@@ -254,7 +248,16 @@ contains
       real(dp), dimension(nelec,ncent_tot) :: dd1
       real(dp), dimension(ncent_tot) :: dd1_quad
       real(dp), dimension(3,*) :: vjn
+      real(dp), dimension(3, nelec) :: fjn
+      real(dp), dimension(3, ncent) :: da_single_en, da_single_een
+      real(dp) :: d2n
       real(dp), parameter :: half = .5d0
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      integer(qmckl_exit_code) :: rc
+
+      if(.not.use_qmckl_jastrow) then
+#endif
 
       do ic=1,ncent
         if(iforce_analy.eq.0) then
@@ -268,10 +271,40 @@ contains
         endif
       enddo
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+    endif
+#endif
+      
       do iq=1,nxquad
 
       iel=ielquad(iq)
 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      if (use_qmckl_jastrow) then
+        if (iforce_analy .gt. 0) then
+          call deriv_jastrowe_qmckl(iel,xquad(:,iq),fjn,d2n,fsumn,dpsij_ratio(:,iq),2)   
+
+          rc = qmckl_get_forces_jastrow_single_en(qmckl_ctx(qmckl_no_ctx), da_single_en, 3_8*ncent)
+          if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single en force.')
+          rc = qmckl_get_forces_jastrow_single_een(qmckl_ctx(qmckl_no_ctx), da_single_een, 3_8*ncent)
+          if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl Jastrow single een force.')
+          do ic =1, ncent
+            do k = 1, 3
+              da_psij_ratio(k,ic,iq)=da_single_en(k,ic)+da_single_een(k,ic)
+            enddo
+          enddo
+          do k=1,3
+            vjn(k,iq)=fjn(k,iel)+fjo(k,iel,1)
+          enddo
+
+        else
+          call deriv_jastrowe_qmckl(iel,xquad(:,iq),fjn(:,:),d2n,fsumn,dpsij_ratio(:,iq),0)
+        endif
+
+        psij_ratio(iq) = fsumn
+      else 
+      
+#endif
       if(iforce_analy.eq.0) then
         do ic=1,ncent
           call scale_dist(r_en_quad(iq,ic),rr_en_quad(ic))
@@ -288,9 +321,6 @@ contains
         vjn(k,iq)=0.d0
       enddo
 
-! TMP
-!     do 5 iparm=1,nparmj
-!   5   dpsij_ratio(iparm)=gvalue(iparm)
       do iparm=1,nparmj
         dpsij_ratio(iparm,iq)=0
       enddo
@@ -298,10 +328,9 @@ contains
       if (nelec.lt.2) goto 47
 
       ipara=nparma(1)
-!      write(ounit,*) 'nparmj,nparma(1)', nparmj, nparma(1)
+
       do it=2,nctype
         ipara=ipara+nparma(it)
-!        write(ounit,*) 'it,nparma(it)', it, nparma(it)
       enddo
 
       do jj=1,nelec
@@ -371,7 +400,6 @@ contains
 
         do jparm=1,nparmb(isb)
           iparm=iparm0+jparm
-!          write(ounit,*) 'jparm,iparm0,iparm,nparmb(isb),isb', jparm,iparm0,iparm,nparmb(isb),isb
           dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(i,j,iparm,iwfjas)
         enddo
 
@@ -429,14 +457,12 @@ contains
         iparm0=npointa(it)
         fsn(iel,iel)=fsn(iel,iel)+ &
         deriv_psianl(rr_en_quad(ic),dpsij_ratio(iparm0+1,iq),it,iwfjas)
-!        write(ounit,*) 'ic,it,iwctype(ic),iparm0,iparm0+1', ic,it,iwctype(ic),iparm0,iparm0+1
       enddo
       do it=1,nctype
         iparm0=npointa(it)
         do jparm=1,nparma(it)
           iparm=iparm0+jparm
           dpsij_ratio(iparm,iq)=dpsij_ratio(iparm,iq)-go(iel,iel,iparm,iwfjas)
-!          write(ounit,*) 'it,npointa(it),jparm,iparm0,iparm', it,npointa(it),jparm,iparm0,iparm
         enddo
       enddo
 
@@ -454,9 +480,12 @@ contains
           enddo
         enddo
       endif
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      end if ! use_qmckl_jastrow
+#endif
 
       enddo
-
+      
       return
       end
 end module
