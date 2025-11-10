@@ -2025,6 +2025,12 @@ subroutine parser
   if(ijastrow_parameter.eq.0) call fatal_error('INPUT: block jastrow_parameter missing')
   if(iefield.gt.0.and.icharge_efield.eq.0) call fatal_error('INPUT: block efield missing')
 
+  if (.not. fdf_load_defined('trexio') ) then
+    use_qmckl_orbitals = .false.
+    use_jastrow_orbital = .false.
+  endif
+
+
   call fdf_shutdown()
 
   ! The following portion can be shifted to another subroutine.
@@ -2101,9 +2107,8 @@ subroutine parser
        call init_context_qmckl(.True.)
      end if
 
-
-
-
+  else
+     qmckl_no_ctx = 0
   endif
 #endif
 
