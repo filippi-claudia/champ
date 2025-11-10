@@ -2027,7 +2027,7 @@ subroutine parser
 
   if (.not. fdf_load_defined('trexio') ) then
     use_qmckl_orbitals = .false.
-    use_jastrow_orbital = .false.
+    use_qmckl_jastrow = .false.
   endif
 
 
