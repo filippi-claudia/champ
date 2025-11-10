@@ -13,17 +13,17 @@ module branching
 
     public :: calculate_fratio, calculate_reweight
 contains
-    !> Calculates the ratio |v̄(R)|/|v(R)| used to cutoff the energy. The calculation method depends on the choice of icut_e. \
-    !> icut_e = 0 (default) uses the method of UNR93 to calculate v̄(R) \
+    !> Calculates the ratio |vbar(R)|/|v(R)| used to cutoff the energy. The calculation method depends on the choice of icut_e. \
+    !> icut_e = 0 (default) uses the method of UNR93 to calculate vbar(R) \
     !> icut_e = 1 Doesnt do a thing because fratio is not needed to compute Etrial - Eloc(R) \
     !> icut_e = 2 (needs: ibranching_c) Uses the branching as described in: J. Chem. Phys. 160, 104110 (2024) (without fragments) \
-    !> icut_e = 3 Uses fratio = c |Eest - Eloc| / 0.2√N \
+    !> icut_e = 3 Uses fratio = c |Eest - Eloc| / 0.2 * sqrt(N) \
     !> icut_e =-1 Electron fragments + UNR93 \
     !> icut_e =-2 Electron fragments + c \
-    !> icut_e =-3 Electron fragments + fratio = c |Eest - Eloc| / 0.2√N \
+    !> icut_e =-3 Electron fragments + fratio = c |Eest - Eloc| / 0.2 * sqrt(N) \
     !> icut_e =-4 Fragments + UNR93 \
     !> icut_e =-5 Fragments + c \
-    !> icut_e =-6 Fragments + fratio = c |Eest - Eloc| / 0.2√N
+    !> icut_e =-6 Fragments + fratio = c |Eest - Eloc| / 0.2 * sqrt(N)
     subroutine calculate_fratio(icut_e, adrift, tratio, taunow, sqrt_nelec, x_dmc, v_dmc, eest, e, fratio, eest_i, eloc_i, fratio_i, eestfrag, elocfrag, fratiofrag)
         !> selects the method of cutting off
         integer, intent(in) :: icut_e 
