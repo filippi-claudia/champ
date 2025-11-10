@@ -24,11 +24,12 @@ contains
     !> icut_e =-4 Fragments + UNR93 \
     !> icut_e =-5 Fragments + c \
     !> icut_e =-6 Fragments + fratio = c |Eest - Eloc| / 0.2 * sqrt(N)
-    subroutine calculate_fratio(icut_e, adrift, tratio, taunow, sqrt_nelec, v_dmc, eest, e, fratio, eest_i, eloc_i, fratio_i, eestfrag, elocfrag, fratiofrag)
+    subroutine calculate_fratio(icut_e, adrift, tratio, taunow, sqrt_nelec, x_dmc, v_dmc, eest, e, fratio, eest_i, eloc_i, fratio_i, eestfrag, elocfrag, fratiofrag)
         !> selects the method of cutting off
         integer, intent(in) :: icut_e 
         real(dp), intent(in) :: adrift, tratio, sqrt_nelec, taunow
         real(dp), dimension(3,nelec) :: v_dmc 
+        real(dp), dimension(3,nelec) :: x_dmc 
         real(dp), intent(in) :: eest 
         real(dp), intent(in) :: e 
         real(dp), dimension(nelec), intent(in) :: eest_i, eloc_i
@@ -47,7 +48,7 @@ contains
         select case (icut_e)
 
         case (0)
-            call dmc_eloc_cutoff(v_dmc(:,:), adrift, tratio, vav2sum, v2sum)
+            call dmc_eloc_cutoff(x_dmc(:,:), v_dmc(:,:), adrift, tratio, vav2sum, v2sum)
             fratio = dsqrt(vav2sum/v2sum)
         
         case (1)
@@ -202,23 +203,80 @@ contains
         endif
     end subroutine calculate_reweight
 
-    subroutine dmc_eloc_cutoff(v, adrift, tratio, vav2sum, v2sum)  
-        integer  :: i
-        real(dp) :: adrift, tratio
-        real(dp) :: v2, vavvt, vavvn
+    subroutine dmc_eloc_cutoff(x, v, adrift, tratio, vav2sum, v2sum)  
+
+        use pseudo, only: nloc
+        use system, only: cent, iwctype, znuc, nelec, ncent
+
+        integer  :: i, ic, iwnuc, k
+        real(dp) :: adrift, adriftn, hafzr2, ren2, ren2mn, rmin, tratio
+        real(dp) :: va, vr, v2, vavvt, vavvn
         real(dp) :: vav2sum, v2sum
+
+        real(dp), dimension(3) :: rvmin
         real(dp), dimension(3, nelec) :: v
+        real(dp), dimension(3, nelec) :: x
   
-        vav2sum = 0.d0
-        v2sum = 0.d0
-        do i=1,nelec
-          v2    = v(1,i)**2 + v(2,i)**2 + v(3,i)**2
-          vavvt = (dsqrt(1.d0+2.d0*adrift*v2*tau*tratio)-1.d0)/(adrift*v2)
-          vavvn = vavvt/(tau*tratio)
+        real(dp), parameter :: zero = 0.d0
+        real(dp), parameter :: one = 1.d0
+        real(dp), parameter :: two = 2.d0
+        real(dp), parameter :: half = .5d0
+        real(dp), parameter :: eps = 1.d-10
+        real(dp), parameter :: huge = 1.d+100
+
+        if(nloc.gt.0) then
+
+          vav2sum = 0.d0
+          v2sum = 0.d0
+          do i=1,nelec
+            v2    = v(1,i)**2 + v(2,i)**2 + v(3,i)**2
+            vavvt = (dsqrt(1.d0+2.d0*adrift*v2*tau*tratio)-1.d0)/(adrift*v2)
+            vavvn = vavvt/(tau*tratio)
   
-          vav2sum = vav2sum + vavvn**2 * v2
-          v2sum = v2sum + v2  
-        enddo
+            vav2sum = vav2sum + vavvn**2 * v2
+            v2sum = v2sum + v2  
+          enddo
+
+        else
+
+          vav2sum=0.d0
+          v2sum=0.d0
+          do i=1,nelec
+
+            ren2mn=huge
+            do ic=1,ncent
+              ren2=(x(1,i)-cent(1,ic))**2 &
+                  +(x(2,i)-cent(2,ic))**2 &
+                  +(x(3,i)-cent(3,ic))**2
+              if(ren2.lt.ren2mn) then
+                ren2mn=ren2
+                iwnuc=ic
+              endif
+            enddo
+            rmin=0.d0
+            vr=0.d0
+            v2=0.d0
+            do k=1,3
+              rvmin(k)=x(k,i)-cent(k,iwnuc)
+              rmin=rmin+rvmin(k)**2
+              vr=vr+v(k,i)*rvmin(k)
+              v2=v2+v(k,i)**2
+            enddo
+            rmin=sqrt(rmin)
+            vr=vr/rmin
+            va=sqrt(v2)
+
+            hafzr2=(half*znuc(iwctype(iwnuc))*rmin)**2
+            adriftn=(half*(1+eps+vr/va))+adrift*hafzr2/(1+hafzr2)
+
+            vavvt=(dsqrt(one+2.d0*adriftn*v2*tau)-one)/(adriftn*v2)
+            vavvn=vavvt/(tau*tratio)
+
+            vav2sum=vav2sum+vavvn*vavvn*v2
+            v2sum=v2sum+v2
+          enddo
+
+        endif
   
     endsubroutine
 

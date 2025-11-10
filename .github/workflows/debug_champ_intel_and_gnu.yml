@@ -1,4 +1,4 @@
-name: Debug build CHAMP with Intel and GNU
+name: CHAMP-EU CI - Debug build - Intel oneAPI and GNU toolchain
 
 on:
   push:

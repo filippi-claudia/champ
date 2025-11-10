@@ -1,29 +1,39 @@
-![Logo](https://github.com/filippi-claudia/champ/blob/main//docs/logo_small.jpg?raw=true)
+# Cornell-Holland Ab-initio Materials Package (CHAMP-EU)
 
-[![CHAMP release build with Intel](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml) [![CHAMP debug build with Intel and GNU](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml) [![CHAMP with QMCkl and TREXIO build with Intel](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio_qmckl.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio_qmckl.yml) [![Build Docker Image](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml) [![Publish Docker image](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml/badge.svg?branch=main)](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml) [![TREXIO python interface](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml)
-
-
-![Github Issues](https://img.shields.io/github/issues/filippi-claudia/champ) ![Github Pull Requests](https://img.shields.io/github/issues-pr/filippi-claudia/champ) ![Github Last Commit](https://img.shields.io/github/last-commit/filippi-claudia/champ) [![Commit Activity](https://img.shields.io/github/commit-activity/w/filippi-claudia/champ)](https://img.shields.io/github/commit-activity/t/filippi-claudia/champ
-)
-
-![Last release tag](https://img.shields.io/github/v/tag/filippi-claudia/champ) ![Github forks](https://img.shields.io/github/forks/filippi-claudia/champ) ![Github stars](https://img.shields.io/github/stars/filippi-claudia/champ) ![Repo Size](https://img.shields.io/github/repo-size/filippi-claudia/champ) ![Code Size](https://img.shields.io/github/languages/code-size/filippi-claudia/champ)
-
-![Github license](https://img.shields.io/github/license/filippi-claudia/champ)
+![Logo](https://github.com/filippi-claudia/champ/blob/main/docs/logo_small.jpg?raw=true)
 
 
+## CI/CD Status
 
+| Category | Status |
+|----------|--------|
+| **Build - Release - Intel** | [![CHAMP-EU CI - Release build - Intel oneAPI hpckit toolchain](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml) |
+| **Build - Release - TREX** | [![CHAMP-EU CI - Release build - Intel oneAPI, TREXIO and QMCkl](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio_qmckl.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio_qmckl.yml) |
+| **Build - Debug - Intel + GNU** | [![CHAMP-EU CI - Debug build - Intel oneAPI and GNU toolchain](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml) |
+| **Build - Docker** | [![CHAMP-EU CI - Docker image build and tagging for Docker Hub](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml) |
+| **Publish - Docker** | [![CHAMP-EU CI - Docker image publish to Docker Hub Registry](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml) |
+| **Tests - Unit Tests** | [![CHAMP-EU CI - Unit tests for CHAMP with GNU using FortUTF](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_unit_test.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_unit_test.yml) |
+| **Tests - Interface** | [![CHAMP-EU CI - Python tests for the TREXIO tools integration](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml) |
+| **Documentation - Deployment** | [![CHAMP-EU CI - Deploy Doxygen-generated content to Pages](https://github.com/filippi-claudia/champ/actions/workflows/build_documentation_devel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_documentation_devel.yml) |
 
-The Cornell-Holland Ab-initio Materials Package (CHAMP) is a quantum Monte Carlo suite of programs for electronic structure calculations of atomic and molecular systems. The code is a sister code of the homonymous program originally developed by Cyrus Umrigar and Claudia Filippi of which it retains the accelerated Metropolis method and the efficient diffusion Monte Carlo algorithms.
+## Repository Statistics
+
+| Category | Badges |
+|----------|--------|
+| **Activity** | ![Github Issues](https://img.shields.io/github/issues/filippi-claudia/champ) ![Github Pull Requests](https://img.shields.io/github/issues-pr/filippi-claudia/champ) ![Github Last Commit](https://img.shields.io/github/last-commit/filippi-claudia/champ) [![Commit Activity](https://img.shields.io/github/commit-activity/w/filippi-claudia/champ)](https://img.shields.io/github/commit-activity/t/filippi-claudia/champ) |
+| **Release** | ![Last release tag](https://img.shields.io/github/v/tag/filippi-claudia/champ) |
+| **Community** | ![Github forks](https://img.shields.io/github/forks/filippi-claudia/champ) ![Github stars](https://img.shields.io/github/stars/filippi-claudia/champ) |
+| **Size** | ![Repo Size](https://img.shields.io/github/repo-size/filippi-claudia/champ) ![Code Size](https://img.shields.io/github/languages/code-size/filippi-claudia/champ) |
+| **License** | ![Github license](https://img.shields.io/github/license/filippi-claudia/champ) |
+
+## Overview
+
+The Cornell-Holland Ab-initio Materials Package (CHAMP-EU) is a quantum Monte Carlo suite of programs for electronic structure calculations of atomic and molecular systems. The code is a sister code of the homonymous program originally developed by Cyrus Umrigar and Claudia Filippi of which it retains the accelerated Metropolis method and the efficient diffusion Monte Carlo algorithms.
 
 The European branch of the code is currently developed by Claudia Filippi and Saverio Moroni,
-with significant contributions by Ravindra Shinde, Nicolas Renaud, Victor Azizi, Edgar Landinez, and Stuart Shepard.
+with significant contributions by Ravindra Shinde, Emiel Slootman, Nicolas Renaud, Victor Azizi, Edgar Landinez, and Stuart Shepard.
 
-
-<!-- <a href = "https://github.com/filippi-claudia/champ/graphs/contributors">
-  <img src = "https://contrib.rocks/image?repo=filippi-claudia/champ"/>
-</a> -->
-
-
+## Features
 
 CHAMP has three basic capabilities:
 
@@ -42,18 +52,20 @@ Noteworthy features of CHAMP are:
 
 The code is available for free under the GPL-3.0 license. Developers and contributors are welcome to use and contribute back to the code. If you have used the code for your publications, please cite this source.
 
-**Usual disclaimer**
+**Disclaimer**
 
-The authors make no claims about the correctness of the program suite and people who use it do so at their own risk.
+The authors make no claims about the correctness of the program suite and is provided without warranty under GPL-3.0. 
 
-------------------------------------------------------------------------
+
+
+## Installation
 
 CHAMP utilizes various other program packages:
 
-1. [Parser](https://github.com/neelravi/mpi-libfdf-parser):
+1. [Parser (built-in)](https://github.com/neelravi/mpi-libfdf-parser):
    An easy-to-use and easy-to-extend keyword-value pair-based input file parser written in Fortran 2008.  This parser uses a heavily modified libFDF library and is written by [Ravindra Shinde](https://github.com/neelravi). It can parse keyword-value pairs, blocks of data, and general variables with different physical units in an order-independent manner. Our implementation can handle multiple data types and file formats. The parser is kept as a library in the code, however, it can be easily adapted by any other Fortran-based code.
 
-2. [TREXIO](https://github.com/TREX-CoE/trexio):
+2. [TREXIO (External)](https://github.com/TREX-CoE/trexio):
    TREXIO is an open-source file format and library developed for the storage and manipulation of data produced by quantum chemistry calculations. CHAMP can read the starting wavefunction from a trexio file. The library has interfaces to a lot of quantum chemical programs.
    CHAMP can directly read the contents of this file with a single load statement in the input file. This library is currently optional.
 
@@ -61,15 +73,16 @@ CHAMP utilizes various other program packages:
     <img src="docs/trexio.png" alt="trexio interface" width="150"/>
   </p>
 
-
-3. [TREXIO Tools](https://github.com/TREX-CoE/trexio_tools):
-   We provide a Python package inside the CHAMP's tool directory to extract all the necessary information from a TREXIO file in the hdf5 file format to a human-readable text format. This allows one to bypass the TREXIO library within CHAMP and input the necessary data via the Parser (see Option 2 in Section "Preparing the Input File" below).
-
-4. [QMCKL](https://github.com/TREX-CoE/qmckl):
+3. [QMCKL (External)](https://github.com/TREX-CoE/qmckl):
   This library provides a high-performance implementation of the main kernels of Quantum Monte Carlo methods. This library is currently optional.
 
+4. [TREXIO Tools (External)](https://github.com/TREX-CoE/trexio_tools):
+   We provide a Python package inside the CHAMP's tool directory to extract all the necessary information from a TREXIO file in the hdf5 file format to a human-readable text format. This allows one to bypass the TREXIO library within CHAMP and input the necessary data via the Parser (see Option 2 in Section "Preparing the Input File" below).
+
+
+
 ------------------------------------------------------------------------
-### CHAMP in a container
+### Docker Containers
 
 CHAMP is available as a container image from Dockerhub. Here are the instructions to obtain the images:
 
@@ -83,7 +96,7 @@ CHAMP is available as a container image from Dockerhub. Here are the instruction
    	- `docker pull neelravi/champ:gnu-trexio`
 ------------------------------------------------------------------------
 
-### Compiling CHAMP for the source
+### Compiling CHAMP from source using CMake
 #### Requirements
 1. cmake >= 3.17
 2. gfortran/gcc >= 9.3.0 or Intel Fortran 2020 onwards
@@ -94,202 +107,246 @@ CHAMP is available as a container image from Dockerhub. Here are the instruction
 7. [Optional] doxygen (for documentation)
 
 
-### Installation Using CMake
-To install **Champ** using [cmake](https://cmake.org/) you need to run the following commands:
-```
+To install **CHAMP** using [cmake](https://cmake.org/) you need to run the following commands:
+
+```bash
 cmake -H. -Bbuild
 cmake --build build -- -j4
 ```
-The first command is only required to set up the build directory and needs to be
-executed only once. Compared to the previous Makefiles the dependencies for the
-include files (e.g include/vmc.h) are correctly setup and no `--clean-first` is
-required.
 
-#### CMAKE Options
+The first command configures the build directory. Dependencies for include files are handled automatically; `--clean-first` is not needed.
 
-To select a given compiler, you can type:
-```
+#### CMake Options
+
+- Select a compiler:
+
+```bash
 cmake -H. -Bbuild -D CMAKE_Fortran_COMPILER=mpif90
 ```
-To use LAPACK and BLAS installed locally, include the path to the libraries:
-```
+
+- Use locally installed BLAS/LAPACK:
+
+```bash
 cmake -H. -Bbuild \
 	-DCMAKE_Fortran_COMPILER=mpif90 \
 	-DBLAS_blas_LIBRARY=/home/user/lib/BLAS/blas_LINUX.a \
 	-DLAPACK_lapack_LIBRARY=/home/user/lib/LAPACK/liblapack.a
 ```
-To enable/disable vectorization based on the architecture:
+
+- Enable/disable vectorization:
+
 ```bash
 cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DVECTORIZED=yes/no/auto
 ```
 
-To compile only e.g. VMC serial:
-```
+- Build only the VMC executable:
+
+```bash
 cmake --build build --target vmc.mov1
 ```
-Clean and build:
-```
+
+- Clean and rebuild:
+
+```bash
 cmake --build build --clean-first
 ```
 
-#### CMAKE Recipes
+#### CMake Recipe for Snellius
 
-Here are a couple of recipes for commonly used computing facilities, which can be easily adapted.
-* **Snellius** (snellius.surfa.nl):
-	- To compile the code, first load the required modules:
-		```bash
-		module purge
-		module load 2022
-		module load intel/2022a
-		module load HDF5/1.12.2-iimpi-2022a
-		```
-		then set-up the build:
-		```bash
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-		```
-		Optionally, you may link the trexio library using the following command:
-		```bash
-		cmake -S. -Bbuild  \
-  			-DCMAKE_Fortran_COMPILER=mpiifort  \
-  			-DENABLE_TREXIO=ON  \
-  			-DTREXIO_LIBRARY=$HOME/lib/libtrexio.so  \
-  			-DTREXIO_INCLUDE_DIR=$HOME/include/
-		```
-		and finally build:
-		```bash
-		cmake --build build -j8 --clean-first
-		```
-	- To run the code, you need to submit a job to the queue system:
-		```bash
-		sbatch job.cmd
-		```
-		where `job.cmd` is a SLURM script for `genoa` partition that looks like this:
+**Snellius** (snellius.surfa.nl):
 
-		```bash
-		#!/bin/bash
-        #SBATCH -t 0-12:00:00            # time in (day-hours:min:sec)
-        #SBATCH -N 1                     # number of nodes (change this number to use more nodes)
-        #SBATCH --ntasks-per-node 192    # tasks per node (Use 192 for genoa and 128 for rome partition)
-        #SBATCH -J vmc                   # name of the job
-        #SBATCH -o vmc.%j.out            # std output file name for slurm
-        #SBATCH -e vmc.%j.err            # std error file name for slurm
-        #SBATCH --exclusive              # specific requirements about node
-        #SBATCH --partition genoa        # partition (queue)
-        #
-        module purge
-        module load 2022
-        module load intel/2022a
-        module load HDF5/1.12.2-iimpi-2022a
-        #
-        export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
-        cd $PWD
-		srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
-		```
-* **CCPhead**:
-	- To build with mpiifort, load the required modules of the Intel Compiler and MPI:
+- Load modules:
+	
+```bash
+module purge
+module load 2024
+module load iimpi/2024a
+module load HDF5/1.14.5-iimpi-2024a
+module load imkl/2024.2.0
+```
+		
+- Configure the build:
 
-		```bash
- 		module load cmake/latest
- 		module load compiler-rt/latest
- 		module load debugger/latest
- 		module load compiler/latest
- 		module load icc/latest
- 		module load mpi/latest
- 		module load hdf5/latest
- 		module load tbb/latest
- 		module load dpl/latest
- 		module load dev-utilities/latest
- 		module load mkl/latest
- 		module load trexio/latest
- 		```
-		Setup the build:
-		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-		```
-	- To enable TREXIO library:
-		```
-		cmake -H. -Bbuild  \
-  			-DCMAKE_Fortran_COMPILER=mpiifort -DENABLE_TREXIO=ON  \
-  			-DTREXIO_LIBRARY=/software/libraries/trexio/latest/lib/libtrexio.so  \
-			-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest/include/
-		```
-	- To disable vectorization of the code:
-		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DVECTORIZED=no
-		```
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx
+```
 
-	- To run the code, you need to submit a job to the queue system:
-		```bash
-		sbatch job.cmd
-		```
-		where `job.cmd` is a SLURM script for `genoa` partition that looks like this:
+- Enable TREXIO + QMCkl:
 
-		```bash
-		#!/bin/bash
-		#SBATCH -t 2-0
-		#SBATCH -p ccp22
-		#SBATCH -N 2 --exclusive --ntasks-per-node 32
-		#SBATCH -J champ
-		#SBATCH --output=o%j
-		#SBATCH --ntasks-per-core=1
-		#SBATCH --error=e%j
+```bash
+cmake -S. -Bbuild  \
+	-DCMAKE_Fortran_COMPILER=mpiifx  \
+	-DCMAKE_C_COMPILER=mpiicx  \
+	-DENABLE_TREXIO=ON  \
+	-DTREXIO_LIBRARY=/projects/0/nwo20035/ravindra/trexio-git/installdir/lib/libtrexio.so  \
+	-DTREXIO_INCLUDE_DIR=/projects/0/nwo20035/ravindra/trexio-git/installdir/include/ \
+	-DENABLE_QMCKL=ON \
+	-DQMCKL_INCLUDE_DIR=/projects/0/nwo20035/ravindra/qmckl-git/installdir/include \
+	-DQMCKL_LIBRARY=/projects/0/nwo20035/ravindra/qmckl-git/installdir/lib/libqmckl.so \
+```
 
- 		module load compiler-rt/latest
- 		module load debugger/latest
- 		module load compiler/latest
- 		module load icc/latest
- 		module load mpi/latest
- 		module load hdf5/latest
- 		module load tbb/latest
- 		module load dpl/latest
- 		module load dev-utilities/latest
- 		module load mkl/latest
- 		module load trexio/latest
+- Build:
 
-	 	cd $PWD
-		mpirun -np 64 champ/bin/vmc.mov1 -i input.inp -o output.out -e error
-		```
+```bash
+cmake --build build -j8 --clean-first
+```
 
- 	- To build with gfortran:
 
-		Setup the build:
-		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=/usr/bin/mpif90
-		```
-		which will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.
-	- To run the code:
-		```
-		mpirun -s all -np "n process" -machinefile "machinefile"
-		```
-* **Ubuntu desktop**:
-	- Ubuntu 20:
-		Install the required packages:
-		```
-		sudo apt install gfortran openmpi-bin libopenmpi-dev gawk libblacs-mpi-dev liblapack-dev
-		```
-		Set-up the build:
-		```
-		cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
-		```
-		Build:
-		```
-		cmake --build build -- -j2
-		```
-		To run in parallel:
-		```
-		mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 -i vmc.inp -o vmc.out -e error
-		```
-	- Ubuntu 18:
-	Install the dependencies using conda instead of apt
-	- WSL:
-	The code also compiles on WSL.
-------------------------------------------------------------------------
+- Example SLURM script for Genoa partition:
+
+```bash
+#!/bin/bash
+#SBATCH -t 0-12:00:00            # time in (day-hours:min:sec)
+#SBATCH -N 1                     # number of nodes (change this number to use more nodes)
+#SBATCH --ntasks-per-node 192    # tasks per node (Use 192 for genoa and 128 for rome partition)
+#SBATCH -J vmc                   # name of the job
+#SBATCH -o vmc.%j.out            # std output file name for slurm
+#SBATCH -e vmc.%j.err            # std error file name for slurm
+#SBATCH --exclusive              # specific requirements about node
+#SBATCH --partition genoa        # partition (queue)
+#
+module purge
+module load 2024
+module load iimpi/2024a
+module load HDF5/1.14.5-iimpi-2024a
+module load imkl/2024.2.0
+#
+export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/0/nwo20035/ravindra/trexio-git/installdir/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/0/nwo20035/ravindra/qmckl-git/installdir/lib
+
+cd $PWD
+srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
+```
+
+---
+
+#### CMake Recipe for CCPHead (UTwente)
+
+- Load modules:
+
+```bash
+module load compiler-intel-llvm/2025.0.4
+module load dev-utilities/2025.0.0
+module load mpi/2021.14
+module load mkl/2025.0
+```
+
+- Configure:
+
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx
+```
+
+- Enable TREXIO:
+
+```bash
+module load trexio/latest-icx
+
+cmake -H. -Bbuild  \
+	-DCMAKE_Fortran_COMPILER=mpiifx \
+	-DCMAKE_C_COMPILER=mpiicx  \
+	-DENABLE_TREXIO=ON  \
+	-DTREXIO_LIBRARY=/software/libraries/trexio/latest-icx/lib/libtrexio.so  \
+	-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest-icx/include/
+```
+  
+- Enable QMCkl
+		
+```bash
+module load trexio/latest-icx
+module load qmckl/git-hpc
+
+cmake -S. -Bbuild \
+	-DCMAKE_Fortran_COMPILER=mpiifx \
+	-DCMAKE_C_COMPILER=mpiicx  \
+	-DENABLE_TREXIO=ON \
+	-DTREXIO_INCLUDE_DIR=/software/libraries/trexio/latest-icx/include \
+	-DTREXIO_LIBRARY=/software/libraries/trexio/latest-icx/lib/libtrexio.so \
+	-DENABLE_QMCKL=ON \
+	-DQMCKL_INCLUDE_DIR=/software/libraries/qmckl/git-hpc/include \
+	-DQMCKL_LIBRARY=/software/libraries/qmckl/git-hpc/lib/libqmckl.so
+```
+
+- Disable vectorization:
+
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx -DVECTORIZED=no
+```
+
+- Example script:
+
+```bash
+#!/bin/bash
+#SBATCH -t 2-0
+#SBATCH -p ccp22
+#SBATCH -N 2 --exclusive --ntasks-per-node 32
+#SBATCH -J champ
+#SBATCH --output=o%j
+#SBATCH --ntasks-per-core=1
+#SBATCH --error=e%j
+
+module purge
+module load 2024
+module load iimpi/2024a
+module load HDF5/1.14.5-iimpi-2024a
+module load imkl/2024.2.0
+
+cd $PWD
+mpirun -np 64 champ/bin/vmc.mov1 -i input.inp -o output.out -e error
+```
+
+- Build with gfortran:
+
+
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=/usr/bin/mpif90
+```
+
+This will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them already if none of the Intel MKL variables are set.) Combining gfortran with the Intel MKL is possible but requires special care to work with the compiler flag `-mcmodel=large`.
+
+
+- Run the code:
+
+```bash
+mpirun -s all -np "n process" -machinefile "machinefile"
+```
+
+#### CMake Recipe for Ubuntu 20+ PC or WSL
+
+- Install:
+
+```bash
+sudo apt install gfortran openmpi-bin libopenmpi-dev gawk libblacs-mpi-dev liblapack-dev
+```
+
+- Configure:
+
+```bash
+cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpifort
+```
+
+- Build:
+
+```bash
+cmake --build build -- -j2
+```
+
+- Run:
+
+```bash
+mpirun --stdin all -n 2 path_to_CHAMP/bin/vmc.mov1 -i vmc.inp -o vmc.out -e error
+```
+
+---
+
+
 
 ## User's manual and documentation
 The user's manual and documentation is hosted at [https://trex-coe.github.io/champ-user-manual/](https://trex-coe.github.io/champ-user-manual)
 
 
-# Preparing the input files
+## Input files specifications
 
 CHAMP needs the following input files to describe a system
 1. Geometry
@@ -316,7 +373,7 @@ CHAMP input file itself has a modular structure. For example,
 ```
 
 
-## Option 1 (Using trexio file)
+### Option 1 (Using trexio file)
 
 We can use trexio file (in hdf5 or text backend format) to specify all the inputs (except Jastrow and Jastrow derivatives)
 
@@ -348,7 +405,7 @@ load jastrow         jastrow.jas
 %endmodule
 ```
 
-### Obtaining a trexio file from GAMESS-US output
+#### Obtaining a trexio file from GAMESS-US output
 
 Make sure that the recent version of `trexio_tools` has been installed.
 ```bash
@@ -386,13 +443,13 @@ python3 /home/user/champ/tools/trex_tools/trex2champ.py \
 
 > **NOTE** : Use `python3 trex2champ.py --help` for a verbose list of options.
 
-## Molecular coordinates
+### Molecular coordinates
 
 Molecular coordinates can be provided directly in the vmc or dmc input files using the `%block` structure of the parser.
 
 The following are the valid examples
 
-1. ### Geometry in the (XYZ in Bohr units) format with automatic Zvalence
+1. #### Geometry in the (XYZ in Bohr units) format with automatic Zvalence
 ```perl
 %block molecule
 10
@@ -410,7 +467,7 @@ The following are the valid examples
 %endblock
 ```
 
-2. ### Geometry in the (XYZ in Bohr units) format with explicit Zvalence. This also allows different labels for the same element.
+2. #### Geometry in the (XYZ in Bohr units) format with explicit Zvalence. This also allows different labels for the same element.
 ```perl
 %block molecule
 10
@@ -428,16 +485,16 @@ The following are the valid examples
 %endblock
 ```
 
-3. ### Geometry in the (XYZ in Bohr units) format to be read from a separate .xyz file.
+3. #### Geometry in the (XYZ in Bohr units) format to be read from a separate .xyz file using the blocks.
 
 ` %block molecule < molecule.xyz `
 
-4. ### Geometry in the (XYZ in Bohr units) format to be read from a separate .xyz file.
+4. #### Geometry in the (XYZ in Bohr units) format to be read from a separate .xyz file using a load statement.
 
 ` load molecule  molecule.xyz `
 
 
-## ECP / Pseudopotential files
+### ECP / Pseudopotential files
 
 ECP or pseudopotential files have a fixed format. Most of the BFD ECP files can be found in the `champ/pool/BFD/ECP_champ` folder. The files generated from the trexio file can also be used (except if it is coming from GAMESS. In this case, GAMESS truncates the digits of ECP information in its output, so the trexio file will not have all the digits stored.)
 
@@ -470,7 +527,7 @@ These files are generally kept in the `pool` directory of the calculation folder
 %endmodule
 ```
 
-## Basis set (Basis on the radial grid) files
+### Basis set (Basis on the radial grid) files
 
 Basis files have a fixed format. The files generated from the trex2champ converter can also be used as they are.
 These files are generally kept in the `pool` directory of the calculation folder. You just need to specify the name of the basis file (say, `ccpVTZ`) in the general module of the CHAMP input file under the keyword `basis`. This will read the file `ccpVTZ.basis.Si` for the element `Si`.
@@ -486,7 +543,7 @@ The top few lines of `BFD-T.basis.C` look like
 This means there are 9 radial shells in the basis set of carbon put on a radial grid of 2000 points (up to 20 bohr).
 
 
-## Basis pointers (formerly bfinfo) files
+### Basis pointers (formerly bfinfo) files
 
 The new format of the basis pointers file is given below. This file should be kept in the `pool` directory.
 This file is generated automatically by the `trex2champ.py` converter.
@@ -518,7 +575,7 @@ The third line gives the index of Slm (or real Ylm). The numbers depend on how m
 The fourth line tells which column of the radial grid file to be read for the construction of MO from the AOs.
 
 
-## Molecular Orbitals file
+### Molecular Orbitals file
 
 This file contains the molecular orbital coefficients. These are arranged as [num_ao, num_mo] array. This file is obtained automatically from the `trex2champ.py` converter. Please note that the AOs in this file follow the trexio convention of AO ordering.
 
@@ -545,7 +602,7 @@ end
 
 The number 226 will be the number of AOs, 200 will be the number of orbitals, and 1 will be the number of types of orbitals.
 
-## Determinants and/or CSF file
+### Determinants and/or CSF file
 The determinant file is automatically obtained from the `trex2champ.py` converter. Note that the `trex2champ.py` can also provide CSF and CSF map information if the corresponding GAMESS output file is provided with `--gamess` option.
 
 The below is a typical file.
@@ -661,7 +718,7 @@ csfmap
 end
 ```
 
-## Molecular orbital symmetries file [Optional; useful when doing orbital optimization]
+### Molecular orbital symmetries file [Optional; useful when doing orbital optimization]
 This file is also generated using the `trex2champ.py` converter if the parent .hdf5 file contains the orbital symmetries.
 
 A typical file looks like this:
@@ -675,7 +732,7 @@ end
 
 The numbers in front of irreducible representations are used as correspondence to identify the symmetry type of each orbital. Here in this case there are 226 molecular orbitals with 4 irreps.
 
-## Molecular orbital eigenvalues file [Optional]
+### Molecular orbital eigenvalues file [Optional]
 This file is also generated using the `trex2champ.py` converter if the parent .hdf5 file contains the orbital eigenvalues.
 
 A typical file looks like this:
@@ -692,7 +749,7 @@ end
 The first line contains the keyword `eigenvalues` followed by the number of orbitals. The following line contains
  eigenvalues as they appear in GAMESS or similar output. The file ends with the keyword `end`.
 
-## Jastrow parameters file
+### Jastrow parameters file
 The Jastrow parameters can be provided using this file. It has the following format [Example: water].
 
 ```python
@@ -714,7 +771,7 @@ The set `b` should appear once.
 Three-body Jastrow terms `c` should appear for each unique atom type (in the same order as in the .xyz file)
 
 
-## Jastrow derivatives file
+### Jastrow derivatives file
 The Jastrow derivative parameters can be provided using this file. It has the following format [Example: water].
 
 ```python

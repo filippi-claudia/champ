@@ -1,5 +1,5 @@
 # Simple workflow for generating and deploying static content with Doxygen to GitHub Pages
-name: Deploy Doxygen-generated content to Pages
+name: CHAMP-EU CI - Deploy Doxygen-generated content to Pages
 
 on:
   # Runs on pushes targeting the default branch

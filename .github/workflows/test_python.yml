@@ -1,4 +1,4 @@
-name: TREXIO converter python tests
+name: CHAMP-EU CI - Python tests for the TREXIO tools integration
 
 on:
   push:
