@@ -33,6 +33,9 @@ CTestTestfile.cmake
 # build directory
 build
 
+# generated documentation
+docs/documentation/
+
 # output files
 *.out
 slurm*
