@@ -54,7 +54,7 @@ The code is available for free under the GPL-3.0 license. Developers and contrib
 
 **Disclaimer**
 
-The authors make no claims about the correctness of the program suite and is provided without warranty under GPL-3.0. 
+The authors make no claims about the correctness of the program suite and it is provided without warranty under GPL-3.0. 
 
 
 
@@ -84,16 +84,17 @@ CHAMP utilizes various other program packages:
 ------------------------------------------------------------------------
 ### Docker Containers
 
-CHAMP is available as a container image from Dockerhub. Here are the instructions to obtain the images:
+CHAMP is available as a container image from Docker Hub. Here are the instructions to obtain the images:
 
 1. CHAMP built with Intel oneAPI compilers:
-	- `docker pull neelravi/champ:latest`
- 	- `docker pull neelravi/champ:intel`
-  	- `docker pull neelravi/champ:intel-trexio`
+  - `docker pull neelravi/champ:latest`
+  - `docker pull neelravi/champ:intel`
+  - `docker pull neelravi/champ:intel-trexio`
 2. CHAMP built with GNU compilers
-   	- `docker pull neelravi/champ:2.3.0`
-   	- `docker pull neelravi/champ:gnu`
-   	- `docker pull neelravi/champ:gnu-trexio`
+  - `docker pull neelravi/champ:2.3.0`
+  - `docker pull neelravi/champ:gnu`
+  - `docker pull neelravi/champ:gnu-trexio`
+
 ------------------------------------------------------------------------
 
 ### Compiling CHAMP from source using CMake
@@ -151,9 +152,9 @@ cmake --build build --target vmc.mov1
 cmake --build build --clean-first
 ```
 
-#### CMake Recipe for Snellius
+### CMake Recipe for Snellius
 
-**Snellius** (snellius.surfa.nl):
+**Snellius** (snellius.surf.nl):
 
 - Load modules:
 	
@@ -221,7 +222,7 @@ srun champ/bin/vmc.mov1 -i input.inp -o output.out -e error
 
 ---
 
-#### CMake Recipe for CCPHead (UTwente)
+### CMake Recipe for CCPHead (UTwente)
 
 - Load modules:
 
@@ -312,7 +313,7 @@ This will use LAPACK & BLAS from the Ubuntu repository. (Cmake should find them 
 mpirun -s all -np "n process" -machinefile "machinefile"
 ```
 
-#### CMake Recipe for Ubuntu 20+ PC or WSL
+### CMake Recipe for Ubuntu 20+ PC or WSL
 
 - Install:
 
@@ -746,8 +747,7 @@ end
 
 ```
 
-The first line contains the keyword `eigenvalues` followed by the number of orbitals. The following line contains
- eigenvalues as they appear in GAMESS or similar output. The file ends with the keyword `end`.
+The first line contains the keyword `eigenvalues` followed by the number of orbitals. The following line contains eigenvalues as they appear in GAMESS or similar output. The file ends with the keyword `end`.
 
 ### Jastrow parameters file
 The Jastrow parameters can be provided using this file. It has the following format [Example: water].

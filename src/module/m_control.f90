@@ -1,18 +1,39 @@
-!> Module to control the flow of the program
+!> @brief Module for global program control and execution mode.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module manages the overall execution mode of the program and
+!> output verbosity level. The mode determines whether the program runs VMC,
+!> DMC, optimization, or other calculation types. The verbosity level controls
+!> the amount of diagnostic output.
+!>
+!> Key parameters:
+!> - mode: Execution mode string (e.g., 'vmc', 'dmc')
+!> - ipr: Output verbosity level (higher values = more output)
+!>
+!> @note The mode is typically set during input parsing and remains constant
+!> throughout the calculation.
 module control
 
     implicit none
 
-    !> mode of the program
+    !> Execution mode of the program (e.g., 'vmc', 'dmc')
     character(len=12) :: mode
 
-    !> ipr flag; decides the verbosity of the output
+    !> Output verbosity level: -1=minimal, 0=normal, 1+=verbose with debug info
     integer  :: ipr
 
     private
     public :: mode, ipr, init_control_mode
     save
     contains
+
+    !> Initializes the program execution mode.
+    !>
+    !> @details Sets the mode string that controls which calculation type
+    !> will be executed (VMC, DMC, etc.).
+    !>
+    !> @param[in] str_mode String specifying the execution mode
     subroutine init_control_mode(str_mode)
         implicit None
         character(12), intent(IN) :: str_mode
@@ -21,51 +42,54 @@ module control
 
 end module control
 
-!> Module to control the VMC calculation mode
-!> @var vmc_idump: Whether to store the dump files at the end of the VMC calculation
-!> @var vmc_irstar: Whether to restart the VMC calculation
-!> @var vmc_isite: Whether to read the configuration from a file or generate it
-!> @var vmc_nconf: Number of configurations to generate
-!> @var vmc_nblk: Number of blocks to run
-!> @var vmc_nblk_max: Maximum number of blocks to run
-!> @var vmc_nblkeq: Number of blocks to equilibrate
-!> @var vmc_nconf_new: Number of configurations to generate in the new block
-!> @var vmc_nstep: Number of steps to run in a block
-!> @var vmc_icharged_atom: Index of the charged atom
-!> @var vmc_nblk_ci: Number of blocks to run in the CI calculation
+!> @brief Module for VMC (Variational Monte Carlo) calculation control parameters.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module stores control parameters specific to VMC calculations,
+!> including block structure, configuration management, restart options, and
+!> output control. These parameters determine how the VMC sampling is performed.
+!>
+!> Key parameter groups:
+!> - Block structure: nblk, nblkeq, nstep (equilibration and production)
+!> - Configuration management: nconf, nconf_new, isite (walker setup)
+!> - I/O control: idump, irstar (checkpoint and restart)
+!> - Special modes: icharged_atom, nblk_ci (advanced calculations)
+!>
+!> @note These parameters are typically read from the vmc.inp input file.
 module control_vmc
 
-    !> Whether to store the dump files at the end of the VMC calculation
+    !> Flag to write walker configurations to dump file at end (0=no, 1=yes)
     integer :: vmc_idump
 
-    !> Whether to restart the VMC calculation
+    !> Flag to restart from previous VMC run (0=new run, 1=restart)
     integer :: vmc_irstar
 
-    !> Whether to read the configuration from a file or generate it
+    !> Configuration initialization mode (0=generate, 1=read from file)
     integer :: vmc_isite
 
-    !> Number of configurations to generate
+    !> Total number of walker configurations for VMC sampling
     integer :: vmc_nconf
 
-    !> Number of blocks to run
+    !> Number of production blocks (excluding equilibration)
     integer :: vmc_nblk
 
-    !> Maximum number of blocks to run
+    !> Maximum number of blocks allowed in optimization
     integer :: vmc_nblk_max
 
-    !> Number of blocks to equilibrate
+    !> Number of equilibration blocks (statistics discarded)
     integer :: vmc_nblkeq
 
-    !> Number of configurations to generate in the new block
+    !> Number of new configurations to generate 
     integer :: vmc_nconf_new
 
-    !> Number of steps to run in a block
+    !> Number of Monte Carlo steps per block
     integer :: vmc_nstep
 
-    !> Index of the charged atom
+    !> Index of charged atom for special calculations (e.g., ionization)
     integer :: vmc_icharged_atom
 
-    !> Number of blocks to run in the CI calculation
+    !> Number of blocks for CI (Configuration Interaction) coefficient optimization
     integer :: vmc_nblk_ci
 
     private
@@ -75,40 +99,47 @@ module control_vmc
 end module control_vmc
 
 
-!> Module to control the DMC calculation mode
-!> @var dmc_idump: Whether to store the dump files at the end of the DMC calculation
-!> @var dmc_irstar: Whether to restart the DMC calculation
-!> @var dmc_isite: Whether to read the configuration from a file or generate it
-!> @var dmc_nconf: Number of configurations to generate
-!> @var dmc_nblk: Number of blocks to run
-!> @var dmc_nblkeq: Number of blocks to equilibrate
-!> @var dmc_nconf_new: Number of configurations to generate in the new block
-!> @var dmc_nstep: Number of steps to run in a block
-
+!> @brief Module for DMC (Diffusion Monte Carlo) calculation control parameters.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module stores control parameters specific to DMC calculations,
+!> which provide more accurate ground-state energies than VMC through fixed-node
+!> diffusion quantum Monte Carlo. Parameters control walker population, branching,
+!> equilibration, and output management.
+!>
+!> Key parameter groups:
+!> - Block structure: nblk, nblkeq, nstep (equilibration and sampling)
+!> - Walker population: nconf, nconf_new (dynamic population control)
+!> - I/O control: idump, irstar (checkpoint and restart)
+!> - Configuration source: isite (walker initialization)
+!>
+!> @note These parameters are typically read from the dmc.inp input file.
+!> @note DMC walker populations may fluctuate due to branching/merging.
 module control_dmc
 
-    !> Whether to store the dump files at the end of the DMC calculation
+    !> Flag to write walker configurations to dump file at end (0=no, 1=yes)
     integer :: dmc_idump
 
-    !> Whether to restart the DMC calculation
+    !> Flag to restart from previous DMC run (0=new run, 1=restart)
     integer :: dmc_irstar
 
-    !> Whether to read the configuration from a file or generate it
+    !> Configuration initialization mode (0=from VMC, 1=read from file)
     integer :: dmc_isite
 
-    !> Number of configurations to generate
+    !> Target number of walker configurations (subject to branching)
     integer :: dmc_nconf
 
-    !> Number of blocks to run
+    !> Number of production blocks for DMC statistics
     integer :: dmc_nblk
 
-    !> Number of blocks to equilibrate
+    !> Number of equilibration blocks (allows population stabilization)
     integer :: dmc_nblkeq
 
-    !> Number of configurations to generate in the new block
+    !> Number of new configurations after population equilibration
     integer :: dmc_nconf_new
 
-    !> Number of steps to run in a block
+    !> Number of DMC steps per block
     integer :: dmc_nstep
 
     private
@@ -117,17 +148,28 @@ module control_dmc
     save
 end module control_dmc
 
-!> Module to control the periodic calculations
-!> @var iperiodic: periodic boundary conditions
-!> @var ibasis: the basis set
+!> @brief Module for periodic boundary condition control parameters.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module controls the use of periodic boundary conditions (PBC)
+!> in simulations of extended systems (crystals, solids). The iperiodic flag
+!> enables PBC treatment, while ibasis determines how basis functions handle
+!> periodicity.
+!>
+!> Typical values:
+!> - iperiodic: 0=molecular/finite system, 1=periodic system (crystal)
+!> - ibasis: Basis set type appropriate for PBC
+!>
+!> @note Required for solid-state calculations with periodic symmetry.
 module contrl_per
 
     implicit none
 
-    !> periodic boundary conditions
+    !> Flag for periodic boundary conditions (0=molecular, 1=periodic/crystal)
     integer :: iperiodic
 
-    !> the basis set
+    !> Basis set type for periodic systems
     integer :: ibasis
 
     private
@@ -135,28 +177,75 @@ module contrl_per
     save
 end module contrl_per
 
+!> @brief Module for advanced DMC algorithm control parameters and time step arrays.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module contains detailed control parameters for the DMC algorithm,
+!> including time step management, branching control, acceptance/rejection tracking,
+!> and force calculations. The taueff array allows different effective time steps
+!> for different force components (multiple geometry optimization).
+!>
+!> Key parameter categories:
+!> - Time steps: tau (base), taueff (force-dependent), tautot (total), rttau (sqrt(tau))
+!> - Branching control: ibranching_c, icut_br, icut_e, limit_wt_dmc
+!> - Algorithm flags: idmc (DMC type), ipq, itau_eff
+!> - Statistics: iacc_rej (accept/reject), icross (node crossing), icuspg (cusp)
+!> - Forces: nfprod (force products), idiv_v (velocity divergence)
+!>
+!> @note The taueff array is allocated dynamically based on MFORCE.
 module contrldmc
-    !> Arguments: iacc_rej, icross, icuspg, icut_br, icut_e, idiv_v, idmc, ipq, itau_eff, nfprod, rttau, tau, taueff, tautot
       use multiple_geo, only: MFORCE
       use precision_kinds, only: dp
 
     implicit none
 
+    !> Flag for acceptance/rejection statistics (0=off, 1=collect stats)
     integer :: iacc_rej
+
+    !> Node crossing control flag (affects node avoidance algorithms)
     integer :: icross
+
+    !> Cusp correction flag for Gaussian basis sets?
     integer :: icuspg
+
+    !> Branching cutoff control (limits max weight for walker splitting)
     integer :: icut_br
+
+    !> Energy cutoff flag (removes high-energy walkers)
     integer :: icut_e
+
+    !> Velocity divergence control for velocity Verlet integration?
     integer :: idiv_v
+
+    !> DMC algorithm type 
     integer :: idmc
+
+    !> Population control method?
     integer :: ipq
+
+    !> Effective time step flag
     integer :: itau_eff
+
+    !> Number of force products to compute for multiple geometries
     integer :: nfprod
+
+    !> Maximum walker weight limit to prevent divergence
     integer :: limit_wt_dmc
+
+    !> Branching parameter C for weight w = exp(-C*(E_L - E_ref)*tau)
     real(dp) :: ibranching_c
+
+    !> Square root of time step (for diffusion step variance)
     real(dp) :: rttau
+
+    !> Base DMC time step (a.u., controls diffusion and bias)
     real(dp) :: tau
-    real(dp), dimension(:), allocatable :: taueff !(MFORCE)
+
+    !> Effective time steps for force calculations (MFORCE), allocated dynamically
+    real(dp), dimension(:), allocatable :: taueff
+
+    !> Total accumulated time step for multiple time step algorithms
     real(dp) :: tautot
 
     private
@@ -164,11 +253,15 @@ module contrldmc
     public :: allocate_contrldmc, deallocate_contrldmc
     save
 contains
+    !> @brief Allocate effective time step array
+    !> @details Allocates taueff(MFORCE) for storing effective time steps.
     subroutine allocate_contrldmc()
       use multiple_geo, only: MFORCE
         if (.not. allocated(taueff)) allocate (taueff(MFORCE))
     end subroutine allocate_contrldmc
 
+    !> @brief Deallocate effective time step array.
+    !> @details Frees memory for taueff array.
     subroutine deallocate_contrldmc()
         if (allocated(taueff)) deallocate (taueff)
     end subroutine deallocate_contrldmc
@@ -176,38 +269,55 @@ contains
 end module contrldmc
 
 
-!> Module to control the file handling
+!> @brief Module for file handling, command-line parsing, and I/O unit management.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module manages all file I/O operations for the CHAMP program,
+!> including input/output file names, unit numbers, log files, proc files, and
+!> command-line argument processing. It provides subroutines for initialization,
+!> command-line parsing, and proper file closure.
+!>
+!> Key functionality:
+!> - Command-line parsing: -i (input), -o (output), -e (error)
+!> - MPI-aware I/O: master writes to files, workers redirect to /dev/null
+!> - Log files: output.log (master only), proc files (per-process debug)
+!> - TREXIO backend support: when compiled with TREXIO library
+!>
+!> @note Master process (MPI rank 0) handles output; workers are silenced.
+!> @note Unit 5=stdin, 6=stdout, 45=log file, ounit/errunit=custom files.
 module contrl_file
 #if defined(TREXIO_FOUND)
       use trexio,  only: trexio_back_end_t
 #endif
     implicit none
 
-    !> Name of the log file
+    !> Name of the log file (output.log on master, /dev/null on workers)
     character(20) :: log_filename
 
-    !> Name of the proc file
+    !> Name of the per-process check file (check.XXXXX where XXXXX is MPI rank)
     character(20) :: proc_filename
 
-    !> Name of the input file
+    !> Name of the main input file (from -i, .in/.inp/.dat extension)
     character(80) :: file_input
 
-    !> Name of the output file
+    !> Name of the main output file (from -o, master writes, workers use /dev/null)
     character(80) :: file_output
 
-    !> Name of the error file
+    !> Name of the error log file (from -e error)
     character(80) :: file_error
 
-    !> Unit number for the input file
+    !> Unit number for input file
     integer       :: iunit
 
-    !> Unit number for the output file
+    !> Unit number for output file (dynamically assigned with newunit)
     integer       :: ounit
 
-    !> Unit number for the error file
+    !> Unit number for error file (dynamically assigned with newunit)
     integer       :: errunit
 
 #if defined(TREXIO_FOUND)
+    !> TREXIO backend type for quantum chemistry data I/O
     integer(trexio_back_end_t) :: backend
 #endif
 
@@ -223,7 +333,9 @@ module contrl_file
     save
 contains
 
-    !> Subroutine to close the files
+    !> @brief Close standard input, output, and log files.
+    !> @details Closes units 5 (stdin), 6 (stdout), and 45 (log file on master).
+    !> Called at program termination.
     subroutine close_files()
       use mpiconf, only: wid
         close (5)
@@ -231,7 +343,9 @@ contains
         if (wid) close (45)
     end subroutine close_files
 
-    !> Subroutine to initialize the log file
+    !> @brief Initialize the log file for master process.
+    !> @details Opens output.log on master (wid=true), redirects stdout to /dev/null on workers.
+    !> Ensures only master process generates visible output.
     subroutine init_logfile()
       use mpiconf, only: wid
 
@@ -246,8 +360,22 @@ contains
         endif
     end subroutine init_logfile
 
-    !> Subroutine to initialize the file handling
+    !> @brief Parse command-line arguments and initialize file I/O.
     !> @author Ravindra Shinde
+    !> @details Parses command-line options for input/output/error files, version,
+    !> help, verbose, and debug modes. Sets up file units and redirects worker output.
+    !>
+    !> Recognized options:
+    !> - -i, --input: Input file (.in/.inp/.dat)
+    !> - -o, --output: Output file (master only)
+    !> - -e, --error: Error log file
+    !> - -v, --version: Print version and exit
+    !> - -h, --help: Print help and exit
+    !> - -V, --verbose: Enable verbose output
+    !> - -d, --debug: Enable debug mode
+    !> - -p, --prefix: Add prefix to output files
+    !>
+    !> @note Workers redirect output to /dev/null to avoid cluttered output.
     subroutine initialize()
         use mpiconf, only: wid      ! logical :: true only for mpirank=0
 
@@ -361,7 +489,11 @@ contains
     end subroutine initialize
 
 
-    !> Subroutine to initialize the proc file
+    !> @brief Initialize per-process debug file (proc file).
+    !> @details Creates check.XXXXX file (XXXXX = MPI rank) for per-process debugging
+    !> when verbosity level ipr > 1. Each MPI process writes to its own proc file.
+    !>
+    !> @note Only created when ipr > 1 (verbose debug mode).
     subroutine init_procfile()
         use mpiconf, only: idtask
         use control, only: ipr
@@ -378,10 +510,23 @@ contains
 
 end module contrl_file
 
-!> Module to control the allocation and deallocation of the control modules
+!> @brief Master module for control parameter allocation and deallocation.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module provides top-level allocation and deallocation routines
+!> for all control modules. It coordinates memory management for control parameters
+!> by calling allocation routines from sub-modules.
+!>
+!> Current sub-modules managed:
+!> - contrldmc: DMC control arrays (taueff)
+!>
+!> @note Add new allocation calls here when introducing new control modules.
 module m_control
 contains
-!> Subroutine to allocate the control modules
+!> @brief Allocate all control module arrays.
+!> @details Calls allocation routines for all control sub-modules.
+!> Currently allocates contrldmc arrays (taueff for force-dependent time steps).
 subroutine allocate_m_control()
     use contrldmc, only: allocate_contrldmc
 
@@ -391,7 +536,9 @@ subroutine allocate_m_control()
 
 end subroutine allocate_m_control
 
-!> Subroutine to deallocate the control modules
+!> @brief Deallocate all control module arrays.
+!> @details Calls deallocation routines for all control sub-modules.
+!> Frees memory for contrldmc arrays.
 subroutine deallocate_m_control()
     use contrldmc, only: deallocate_contrldmc
 
