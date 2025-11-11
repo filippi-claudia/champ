@@ -213,7 +213,6 @@ contains
     call allocate_velratio()
     call allocate_da_branch()
     call allocate_pathak()
-    end if
   end subroutine allocate_dmc
 
   !> Deallocates memory for all DMC calculation arrays and data structures.
