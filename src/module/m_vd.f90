@@ -1,3 +1,18 @@
+!> @brief Module for velocity drifts in DMC force calculations
+!> @date 2025
+!> @author Emiel Slootman
+!> @details This module manages arrays and data structures for computing
+!> velocity drifts of the local energy with respect to nuclear
+!> positions in Diffusion Monte Carlo (DMC) calculations. These derivatives
+!> are essential for calculating forces on nuclei.
+!>
+!> The module provides:
+!> - Storage for branching derivatives and their accumulation
+!> - Energy derivative history tracking across walkers and time steps
+!> - Memory management routines for dynamic allocation/deallocation
+!>
+!> @note The arrays are only allocated when dmc_ivd > 0, indicating that
+!> velocity drift calculations are enabled.
 module vd_mod
     use precision_kinds, only: dp
     use system, only: ncent_tot
@@ -7,13 +22,26 @@ module vd_mod
   
     implicit none
   
+    !> Flag to enable/disable velocity drift calculations.
     integer :: dmc_ivd
-    real(dp), dimension(:, :, :), allocatable :: da_branch !(3, MCENT, PTH)
-    real(dp), dimension(:, :, :), allocatable :: da_branch_sum !(3, MCENT, PTH)
-    real(dp), dimension(:, :, :), allocatable :: da_branch_cum !(3, MCENT, PTH)
-    real(dp), dimension(:, :, :, :), allocatable :: esnake !(3, MCENT, MWALK, PTH)
-    real(dp), dimension(:, :, :), allocatable :: deriv_eold !(3, MCENT, MWALK)
-    real(dp), dimension(:, :, :, :, :), allocatable :: ehist !(3, MCENT, MWALK, 0:MFORCE_WT_PRD, PTH)
+    
+    !> Branching derivatives for current DMC step.
+    real(dp), dimension(:, :, :), allocatable :: da_branch
+    
+    !> Sum of branching derivatives over walkers.
+    real(dp), dimension(:, :, :), allocatable :: da_branch_sum
+    
+    !> Cumulative branching derivatives.
+    real(dp), dimension(:, :, :), allocatable :: da_branch_cum
+    
+    !> Energy derivatives for walker ensemble.
+    real(dp), dimension(:, :, :, :), allocatable :: esnake
+    
+    !> Previous step energy derivatives.
+    real(dp), dimension(:, :, :), allocatable :: deriv_eold
+    
+    !> Historical energy derivatives with time weighting.
+    real(dp), dimension(:, :, :, :, :), allocatable :: ehist
     
     private
     public :: dmc_ivd
@@ -21,6 +49,8 @@ module vd_mod
     public :: allocate_da_branch, deallocate_da_branch
   
 contains
+
+    !> Allocates memory for velocity drift arrays.
     subroutine allocate_da_branch()
       if (dmc_ivd.gt.0) then
          if (.not. allocated(da_branch_cum)) allocate (da_branch_cum(3, ncent_tot, PTH))
@@ -32,6 +62,7 @@ contains
       endif
     end subroutine allocate_da_branch
   
+    !> Deallocates memory for velocity drift arrays.
     subroutine deallocate_da_branch()
       use system, only: ncent
       use branch, only: nwalk
