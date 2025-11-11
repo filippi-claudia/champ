@@ -48,7 +48,6 @@ module vmc_mod
     integer, dimension(:), allocatable :: bjxtoj
 
     !> bjxtoj
-    integer, dimension(:), allocatable :: bjxtoj  !(nbjx) allocate later
 
     !> norb_tot :: total number of orbitals
     integer :: norb_tot
