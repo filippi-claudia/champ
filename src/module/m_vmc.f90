@@ -47,13 +47,10 @@ module vmc_mod
     !> Backflow-Jastrow index to Jastrow type mapping array.
     integer, dimension(:), allocatable :: bjxtoj
 
-    !> bjxtoj
-    integer, dimension(:), allocatable :: bjxtoj  !(nbjx) allocate later
-
     !> norb_tot :: total number of orbitals
     integer :: norb_tot
 
-    !> Maximum of 3 and the total number of center types .
+    !> Maximum of 3 and the total number of center types.
     integer :: nctyp3x
 
     !> Dimension of Slater matrix for up-spin electrons (nup*nup).
@@ -95,7 +92,7 @@ module vmc_mod
     !> Three times the total number of centers (3*ncent_tot).
     integer :: ncent3
 
-    !> Max Number of coefficients parameter (fixed at 5).
+    !> Max number of coefficients parameter (fixed at 5).
     integer, parameter :: NCOEF = 5
 
     !> Maximum number of excited states (fixed at 10).
@@ -116,7 +113,7 @@ contains
 
     !> Sets the dimensions for VMC arrays based on system properties.
     subroutine set_vmc_size
-      use system,  only: ncent_tot,nctype_tot,ndn,nelec,nup
+      use system,  only: ncent_tot,nctype_tot,nelec,nup
 
         nmat_dim = nup*nup
         nmat_dim2 = nelec*(nelec - 1)/2
