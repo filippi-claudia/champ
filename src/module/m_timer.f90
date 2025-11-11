@@ -1,20 +1,31 @@
-!> This module provides the walltime (obtained from MPI_Wtime for better precision)
+!> @brief Module for high-precision wall-clock timing using MPI.
 !> @author Ravindra Shinde
-!> @date June 23 2021
+!> @date June 23, 2021
+!>
+!> @details This module provides wall-clock timing functionality using MPI_Wtime
+!> for better precision than standard Fortran timing routines. It tracks execution
+!> time at various checkpoints and can log elapsed time with optional iteration numbers.
+!>
+!> The module maintains multiple time checkpoints:
+!> - Starting time reference
+!> - Multiple checkpoint times for interval measurements
+!> - Final time for total elapsed time calculation
 module mpitimer
 
     use precision_kinds, only: dp
 
-    !> the starting time logged
+    implicit none
+
+    !> Starting wall-clock time reference point.
     real(dp), save  :: time_start
 
-    !> the time at the last check1
+    !> First checkpoint time for interval measurements.
     real(dp), save  :: time_check1
 
-    !> the time at the last check2
+    !> Second checkpoint time for interval measurements.
     real(dp)        :: time_check2
 
-    !> the final time logged
+    !> Final wall-clock time logged.
     real(dp), save  :: time_final
 
     private
@@ -25,22 +36,23 @@ module mpitimer
     public :: time, elapsed_time
 
 contains
-    !> Subroutine that uses MPI_Wtime to get the current time
+
+    !> Returns current wall-clock time using MPI_Wtime.
+    !> @return Current wall-clock time in seconds.
     double precision function time()
         use mpi
         implicit None
         time = MPI_Wtime()
     end function time
 
-    !> Subroutine that logs the elapsed time between two points
+    !> Logs elapsed time between checkpoints with optional message and iteration number.
+    !> @param[in] message Descriptive message to be printed with timing information.
+    !> @param[in] iter Optional iteration number to include in output.
     subroutine elapsed_time(message, iter)
         use contrl_file,    only: ounit
         implicit None
 
-        !> @param message :: the message to be printed
         character(len=*), intent(in)    :: message
-
-        !> @param iter :: the iteration number
         integer, intent(in), optional   :: iter
 
         if (present(iter)) then

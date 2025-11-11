@@ -1,105 +1,101 @@
-!> Module that contains VMC parameters
+!> @brief Module for Variational Monte Carlo (VMC) parameters and array dimensions.
+!> @author CHAMP developers
+!> @date 2025
+!>
+!> @details This module manages dimensions and indexing arrays for VMC calculations.
+!> It handles:
+!> - Orbital and Jastrow wavefunction type mappings
+!> - Matrix dimensions for Slater determinants
+!> - State-to-orbital and state-to-Jastrow index conversions
+!> - Basis set and center type parameters
+!>
+!> @note Slater matrices are dimensioned assuming (nelec/2)^2 for equal numbers
+!> of up and down spins. For spin-polarized calculations, dimensions must be
+!> adjusted accordingly.
+!>
+!> @note For Jastrow4, neqsx=2*(nordj-1) is sufficient.
+!> For Jastrow3, neqsx=2*nordj should be sufficient.
 module vmc_mod
-    !> Arguments:
-      use precision_kinds, only: dp
+    use precision_kinds, only: dp
 
-    ! nelec      = number of electrons
-    ! norb_tot   = number of orbitals read from the orbital file
-    ! nbasis     = number of basis functions
-    ! ndet       = number of determinants
-    ! ncent_tot  = number of centers
-    ! nctype     = number of center types
-    ! nctyp3x    = max(3,MCTYPE)
+    implicit none
 
-    ! Slater matrices are dimensioned (MELEC/2)**2 assuming
-    ! equal numbers of up and down spins. MELEC has to be
-    ! correspondingly larger if spin polarized calculations
-    ! are attempted.
+    !> Number of states per orbital wavefunction type.
+    integer, dimension(:), allocatable :: nstoo
 
-    ! PLT@eScienceCenter(2020) Moved the parameter here:
-    ! "For Jastrow4 neqsx=2*(nordj-1) is sufficient.
-    !  For Jastrow3 neqsx=2*nordj should be sufficient.
-    !  I am setting neqsx=6*nordj simply because that is how it was for
-    !  Jastrow3 for reasons I do not understand."
-    !     parameter(neqsx=2*(nordj-1),MTERMS=55)
+    !> Number of states per Jastrow wavefunction type.
+    integer, dimension(:), allocatable :: nstoj
 
+    !> Jastrow type to state mapping array.
+    integer, dimension(:, :), allocatable :: jtos
 
-    !> nstoo
-    integer, dimension(:), allocatable :: nstoo !(nwftypeorb) allocate later
+    !> Orbital type to state mapping array.
+    integer, dimension(:, :), allocatable :: otos
 
-    !> nstoj
-    integer, dimension(:), allocatable :: nstoj !(nwftypejas) allocate later
+    !> State to Jastrow type mapping array.
+    integer, dimension(:), allocatable :: stoj
 
-    !> jtos
-    integer, dimension(:, :), allocatable :: jtos  !(nwftypejas,entry) allocate later
+    !> State to orbital type mapping array.
+    integer, dimension(:), allocatable :: stoo
 
-    !> otos
-    integer, dimension(:, :), allocatable :: otos  !(nwftypeorb,entry) allocate later
+    !> State to backflow-Jastrow index mapping array.
+    integer, dimension(:), allocatable :: stobjx
 
-    !> stoj
-    integer, dimension(:), allocatable :: stoj  !(nstates) allocate later
+    !> Backflow-Jastrow index to orbital type mapping array.
+    integer, dimension(:), allocatable :: bjxtoo
 
-    !> stoo
-    integer, dimension(:), allocatable :: stoo  !(nstates) allocate later
-
-    !> stobjx
-    integer, dimension(:), allocatable :: stobjx  !(nstates) allocate later
-
-    !> bjxtoo
-    integer, dimension(:), allocatable :: bjxtoo  !(nbjx) allocate later
-
-    !> bjxtoj
-    integer, dimension(:), allocatable :: bjxtoj  !(nbjx) allocate later
+    !> Backflow-Jastrow index to Jastrow type mapping array.
+    integer, dimension(:), allocatable :: bjxtoj
 
     !> norb_tot :: total number of orbitals
     integer :: norb_tot
 
-    !> nctyp3x :: max(3, nctype_tot)
+    !> Maximum of 3 and the total number of center types.
     integer :: nctyp3x
 
-    !> nmat_dim :: nup*nup
+    !> Dimension of Slater matrix for up-spin electrons (nup*nup).
     integer :: nmat_dim
 
-    !> nmat_dim2 :: nelec*(nelec - 1)/2
+    !> Dimension for electron pair indices (nelec*(nelec-1)/2).
     integer :: nmat_dim2
 
-    !> nwftypeorb
+    !> Number of orbital wavefunction types.
     integer :: nwftypeorb
 
-    !> nwftypejas
+    !> Number of Jastrow wavefunction types.
     integer :: nwftypejas
 
-    !> nstojmax
+    !> Maximum number of states per Jastrow type.
     integer :: nstojmax
 
-    !> nstoomax
+    !> Maximum number of states per orbital type.
     integer :: nstoomax
 
-    !> nbjx
+    !> Number of backflow-Jastrow indices.
     integer :: nbjx
 
-    !> nstoo_tot
+    !> Total number of states across all orbital types.
     integer :: nstoo_tot
 
-    !> nstoj_tot
+    !> Total number of states across all Jastrow types.
     integer :: nstoj_tot
 
-    !> extraj
+    !> Extra Jastrow parameter count.
     integer :: extraj
 
-    !> extrao
+    !> Extra orbital parameter count.
     integer :: extrao
 
-    !> mterms
+    !> Number of terms in expansion.
     integer :: mterms
 
-    !> ncent3
+    !> Three times the total number of centers (3*ncent_tot).
     integer :: ncent3
 
-    !> @param NCOEF :: 5
+    !> Max number of coefficients parameter (fixed at 5).
     integer, parameter :: NCOEF = 5
 
-    !> @param MEXCIT :: 10
+    !> Maximum number of excited states (fixed at 10).
     integer, parameter :: MEXCIT = 10
 
     private
@@ -114,9 +110,10 @@ module vmc_mod
 
     save
 contains
-    !> Subroutine that sets the size of the VMC arrays
+
+    !> Sets the dimensions for VMC arrays based on system properties.
     subroutine set_vmc_size
-      use system,  only: ncent_tot,nctype_tot,ndn,nelec,nup
+      use system,  only: ncent_tot,nctype_tot,nelec,nup
 
         nmat_dim = nup*nup
         nmat_dim2 = nelec*(nelec - 1)/2
