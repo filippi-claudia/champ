@@ -113,7 +113,7 @@ contains
 
     !> Sets the dimensions for VMC arrays based on system properties.
     subroutine set_vmc_size
-      use system,  only: ncent_tot,nctype_tot,ndn,nelec,nup
+      use system,  only: ncent_tot,nctype_tot,nelec,nup
 
         nmat_dim = nup*nup
         nmat_dim2 = nelec*(nelec - 1)/2
