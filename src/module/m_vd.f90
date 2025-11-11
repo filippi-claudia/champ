@@ -1,10 +1,9 @@
 !> @brief Module for velocity drifts in DMC force calculations
-!> @date 2025
+!> @date 2023
 !> @author Emiel Slootman
+!> @author Jacopo Cocomello
 !> @details This module manages arrays and data structures for computing
-!> velocity drifts of the local energy with respect to nuclear
-!> positions in Diffusion Monte Carlo (DMC) calculations. These derivatives
-!> are essential for calculating forces on nuclei.
+!> velocity drift-diffusion (VD) forces in Diffusion Monte Carlo (DMC) calculations.
 !>
 !> The module provides:
 !> - Storage for branching derivatives and their accumulation
@@ -13,6 +12,8 @@
 !>
 !> @note The arrays are only allocated when dmc_ivd > 0, indicating that
 !> velocity drift calculations are enabled.
+!>
+!> J. Chem. Theory Comput. 2014, 10, 11, 4823–4829, https://doi.org/10.1021/ct500780r
 module vd_mod
     use precision_kinds, only: dp
     use system, only: ncent_tot
@@ -25,16 +26,16 @@ module vd_mod
     !> Flag to enable/disable velocity drift calculations.
     integer :: dmc_ivd
     
-    !> Branching derivatives for current DMC step.
+    !> Derivative of branching factor for current DMC step.
     real(dp), dimension(:, :, :), allocatable :: da_branch
     
-    !> Sum of branching derivatives over walkers.
+    !> Sum of derivative of branching factor over walkers.
     real(dp), dimension(:, :, :), allocatable :: da_branch_sum
     
-    !> Cumulative branching derivatives.
+    !> Cumulative derivative of branching factor derivatives.
     real(dp), dimension(:, :, :), allocatable :: da_branch_cum
     
-    !> Energy derivatives for walker ensemble.
+    !> Sum of previous k (nwprod) branching factor derivatives.
     real(dp), dimension(:, :, :, :), allocatable :: esnake
     
     !> Previous step energy derivatives.
@@ -50,7 +51,7 @@ module vd_mod
   
 contains
 
-    !> Allocates memory for velocity drift arrays.
+    !> Allocates memory for VD forces arrays.
     subroutine allocate_da_branch()
       if (dmc_ivd.gt.0) then
          if (.not. allocated(da_branch_cum)) allocate (da_branch_cum(3, ncent_tot, PTH))
@@ -62,14 +63,8 @@ contains
       endif
     end subroutine allocate_da_branch
   
-    !> Deallocates memory for velocity drift arrays.
+    !> Deallocates memory for VD forces arrays.
     subroutine deallocate_da_branch()
-      use system, only: ncent
-      use branch, only: nwalk
-      use multiple_geo, only: nwprod
-      
-      integer :: k, ic, iw, ip
-      
       if (dmc_ivd.gt.0) then
          if (allocated(da_branch_cum)) deallocate(da_branch_cum)
          if (allocated(da_branch_sum)) deallocate(da_branch_sum)
