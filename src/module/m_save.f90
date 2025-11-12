@@ -18,13 +18,13 @@ module save_mod
   !> Number of type-c Jastrow parameters.
   integer :: mparmjc
 
-  !> Saved type-a Jastrow parameters (4th-order).
+  !> Saved type-a (e-n) Jastrow parameters (4th-order).
   real(dp), allocatable :: a4_save(:,:,:)
 
-  !> Saved type-b Jastrow parameters.
+  !> Saved type-b (e-e) Jastrow parameters.
   real(dp), allocatable :: b_save(:,:,:)
 
-  !> Saved type-c Jastrow parameters.
+  !> Saved type-c (e-e-n) Jastrow parameters.
   real(dp), allocatable :: c_save(:,:,:)
 
   !> Saved orbital coefficients.

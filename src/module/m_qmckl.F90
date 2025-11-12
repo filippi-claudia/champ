@@ -1,5 +1,7 @@
 !> @brief QMCkl library interface for quantum chemistry kernels.
-!> @author CHAMP developers
+!> @author Edgar Landinez
+!> @author Emiel Slootman
+!> @author Anthony Scemama
 !> @date 2025
 !>
 !> @details This file conditionally includes the QMCkl Fortran interface when the
@@ -22,7 +24,9 @@
 #endif
 
 !> @brief Module for QMCkl context management and configuration.
-!> @author CHAMP developers
+!> @author Edgar Landinez
+!> @author Emiel Slootman
+!> @author Anthony Scemama
 !> @date 2025
 !>
 !> @details This module manages QMCkl computation contexts and configuration flags.
@@ -37,6 +41,9 @@ module qmckl_data
   implicit none
 
   !> Maximum number of QMCkl contexts (fixed at 4).
+  !> First context is used for occupied orbitals
+  !> Second context is used for occupied + virtual for orbital optimization
+  !> Third context is used for Jastrow value
   integer, parameter     :: qmckl_no_ctx_max = 4
 
   !> Array of QMCkl context handles for parallel computation.
