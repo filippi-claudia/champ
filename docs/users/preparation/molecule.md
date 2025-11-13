@@ -1,10 +1,9 @@
 ---
+title: Molecular Geometry
 tags:
     - geometry
     - molecule
 ---
-
-# Molecular coordinates
 
 Molecular coordinates can be provided in the vmc or dmc input files a text file or a separate .xyz file in one of the following ways:
 

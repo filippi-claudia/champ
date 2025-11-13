@@ -1,16 +1,6 @@
 ---
-layout: default
 title: '01. QP and CHAMP : Ground State Calculation'
-nav_order: 1
-has_children: true
-parent: Tutorials
-permalink: /docs/Tutorials/Quantum_Package_and_CHAMP_GS
-authors:
-    - Ravindra Shinde
-    - Claudia Filippi
-    - Anthony Scemama
 tags:
-    - CHAMP
     - tutorial
     - CIPSI
     - ground state

@@ -1,16 +1,10 @@
 ---
-layout: default
 title: MO Eigenvalues
-nav_order: 9
-parent: Input files
-authors:
-    - Ravindra Shinde
 tags:
-    - CHAMP
     - eigenvalues
 ---
 
-# Molecular orbital eigenvalues file [Optional]
+## [Optional]
 This file is also generated using the `trex2champ.py` converter if the parent .hdf5 file contains the orbital eigenvalues.
 
 A typical file looks like this:

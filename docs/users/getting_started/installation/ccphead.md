@@ -1,17 +1,11 @@
 ---
-layout: default
-title: CCPGate
-nav_order: 2
-parent: Installation
-authors:
-    - Ravindra Shinde
+title: CCPHead
 tags:
-    - CHAMP
     - installation
-    - ccpgate
+    - ccphead
 ---
 
-# Installation on **CCPGate** (ccpgate.tnw.utwente.nl) Cluster
+# ccphead.tnw.utwente.nl Cluster
 
 To build with mpiifort, load the required modules of the Intel Compiler and MPI:
 

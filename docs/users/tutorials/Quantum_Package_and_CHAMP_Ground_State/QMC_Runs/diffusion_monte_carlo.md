@@ -1,16 +1,6 @@
 ---
-layout: default
 title: QMC runs (c) Diffusion Monte Carlo
-nav_order: 7
-grand_parent: Tutorials
-parent: '01. QP and CHAMP : Ground State Calculation'
-mathjax: true
-authors:
-    - Ravindra Shinde
-    - Claudia Filippi
-    - Anthony Scemama
 tags:
-    - CHAMP
     - tutorial
     - CIPSI
     - ground state
@@ -99,20 +89,18 @@ grep '( 100) =' dmc*out
 
 In the last column, you have the correlation time.
 
-{: .warning}
-Make sure that you have chosen `dmc_nstep` about two times larger.
+!!! warning
+    Make sure that you have chosen `dmc_nstep` about two times larger.
 
 
 Also perform another calculation with a smaller time step.
 
-{: .warning}
-Make sure that you increase `dmc_nstep` by as much as you have decreased
-$$\tau$$.
+!!! warning
+    Make sure that you increase `dmc_nstep` by as much as you have decreased $\tau$.
 
 
-{: .warning}
-You do not need to regenerate the file `mc_configs` containing the
-walkers.
+!!! warning
+    You do not need to regenerate the file `mc_configs` containing the walkers.
 
 Repeat the optimization and DMC calculation with the DFT orbitals.
 Compare the VMC and DMC energies.

@@ -1,12 +1,6 @@
 ---
-layout: default
 title: Desktop
-nav_order: 1
-parent: Installation
-authors:
-    - Ravindra Shinde
 tags:
-    - CHAMP
     - installation
     - desktop
 ---

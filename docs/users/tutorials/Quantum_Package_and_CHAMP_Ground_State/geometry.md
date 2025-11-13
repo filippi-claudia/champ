@@ -1,15 +1,5 @@
 ---
-layout: default
-title: Geometry
-nav_order: 2
-grand_parent: Tutorials
-parent: '01. QP and CHAMP : Ground State Calculation'
-authors:
-    - Ravindra Shinde
-    - Claudia Filippi
-    - Anthony Scemama
 tags:
-    - CHAMP
     - tutorial
     - CIPSI
     - ground state

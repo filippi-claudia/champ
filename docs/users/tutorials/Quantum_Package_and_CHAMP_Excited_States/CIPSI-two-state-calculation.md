@@ -1,15 +1,6 @@
 ---
-layout: default
 title: CIPSI 2-state calculations
-nav_order: 2
-grand_parent: Tutorials
-parent: '02. QP and CHAMP : Excited State Calculation'
-authors:
-    - Ravindra Shinde
-    - Claudia Filippi
-    - Anthony Scemama
 tags:
-    - CHAMP
     - tutorial
     - CIPSI
     - excited state
@@ -58,11 +49,8 @@ determinant from another symmetry enter in the determinant space.
 determinant of each symmetry.
 
 
-{: .new-title}
-> Tip
->
->The simplest practical solution is to first perform a CIS, and then
-continue with a CIPSI in the FCI space.
+!!! tip
+    The simplest practical solution is to first perform a CIS, and then continue with a CIPSI in the FCI space.
 
 
 By default, at every iteration QP tries to double the size of the wave

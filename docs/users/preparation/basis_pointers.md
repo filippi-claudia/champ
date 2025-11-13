@@ -1,12 +1,6 @@
 ---
-layout: default
 title: Basis pointers
-nav_order: 5
-parent: Input files
-authors:
-    - Ravindra Shinde
 tags:
-    - CHAMP
     - basis info
     - basis pointers
 ---
@@ -43,5 +37,5 @@ The third line gives the index of Slm (or real Ylm). The numbers depend on how m
 The fourth line tells which column of the radial grid file to be read for the construction of MO from the AOs.
 
 
-{: .warning }
-Each unique type of atom will have a corresponding set of basis pointers in the file.
+!!! warning
+    Each unique type of atom will have a corresponding set of basis pointers in the file.

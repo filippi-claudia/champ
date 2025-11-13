@@ -1,12 +1,6 @@
 ---
-layout: default
 title: Fugaku
-nav_order: 5
-parent: Installation
-authors:
-    - Ravindra Shinde
 tags:
-    - CHAMP
     - installation
     - Fugaku
 ---

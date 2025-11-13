@@ -14,6 +14,11 @@ repo_url = "https://github.com/filippi-claudia/champ"
 edit_uri = "edit/main/docs/users/"
 
 
+extra_javascript = [
+    "javascripts/mathjax.js",
+    "https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"
+]
+
 # ----------------------------------------------------------------------------
 # The "nav" section contains the navigation structure of the documentation
 # ----------------------------------------------------------------------------
@@ -54,17 +59,17 @@ nav = [
   ]},
   {"Preparation" = [
     {"Introduction" = "preparation/index.md"},
-    {"TREXIO File Format" = "preparation/using_trexio_file.md"},
+    {"TREXIO File" = "preparation/using_trexio_file.md"},
     {"Molecular Geometry" = "preparation/molecule.md"},
     {"Effective Core Potentials" = "preparation/ecp.md"},
+    {"Jastrow Factors" = "preparation/jastrow.md"},
+    {"Jastrow Derivatives" = "preparation/jastrow_derivatives.md"},
     {"Basis Sets" = "preparation/basis.md"},
     {"Basis Set Pointers" = "preparation/basis_pointers.md"},
     {"Molecular Orbitals" = "preparation/orbitals.md"},
-    {"Determinants & CI Expansions" = "preparation/determinants.md"},
+    {"Determinants & CSFs" = "preparation/determinants.md"},
     {"Symmetries" = "preparation/symmetries.md"},
-    {"Orbital Eigenvalues" = "preparation/eigenvalues.md"},
-    {"Jastrow Factors" = "preparation/jastrow.md"},
-    {"Jastrow Derivatives" = "preparation/jastrow_derivatives.md"}
+    {"Eigenvalues" = "preparation/eigenvalues.md"}
   ]},  
   {"Calculations" = [
     {"Overview" = "calculations/index.md"},

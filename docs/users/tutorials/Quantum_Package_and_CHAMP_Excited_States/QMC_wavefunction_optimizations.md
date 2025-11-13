@@ -1,16 +1,6 @@
 ---
-layout: default
 title: QMC wave function optimizations
-nav_order: 4
-grand_parent: Tutorials
-parent: '02. QP and CHAMP : Excited State Calculation'
-mathjax: true
-authors:
-    - Ravindra Shinde
-    - Claudia Filippi
-    - Anthony Scemama
 tags:
-    - CHAMP
     - tutorial
     - CIPSI
     - excited state
@@ -23,8 +13,8 @@ In this section, we will optimize a Jastrow factor for each state, and
 we will the re-optimize the CI coefficients in the presence of the
 Jastrow. The setup of the CHAMP files is similar to what we have done in the [Setup]({{ site.baseurl }}{% link docs/Tutorials/Quantum_Package_and_CHAMP_GS/basis.md %}#basis-sets-and-pseudopotentials)
 
-{: .warning}
-Here, we have 12 electrons, 6 up and 6 down.
+!!! warning
+    Here, we have 12 electrons, 6 up and 6 down.
 
 
 ## Optimization of the ground state
@@ -121,16 +111,12 @@ Set up a DMC calculation where you use the optimal Jastrow and CI
 coefficients. Adjust the `etrial` to be a bit below the VMC energy.
 Recall that you will have to generate the `mc_configs` file.
 
-{: .new-title}
-> Tip
->
-> You could have also optimized the orbitals but we did not do it
-here to keep the calculations short. If you are setting `optorb=1`, load
-also the symmetry file.
->
->```python
->load symmetry champ_v2_COH2_GS_symmetry.sym
->```
+!!! tip
+    You could have also optimized the orbitals but we did not do it here to keep the calculations short. 
+    If you are setting `optorb=1`, load also the symmetry file.
+    ```python
+    load symmetry champ_v2_COH2_GS_symmetry.sym
+    ```
 
 
 ## Optimization of the excited state
@@ -152,9 +138,9 @@ $$
   E_{\rm GS}+\delta E_{\rm GS}  \text{ and } E_{\rm ES}+\delta E_{\rm ES},
 $$
 
-where $$\delta E$$ is the statistical error, the error on
+where $\delta E$ is the statistical error, the error on
 
-$$\Delta E= E_{\rm ES}-E_{\rm GS}$$
+$\Delta E= E_{\rm ES}-E_{\rm GS}$
 is given by
 
 $$

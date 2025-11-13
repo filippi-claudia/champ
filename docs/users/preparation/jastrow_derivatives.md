@@ -1,16 +1,9 @@
 ---
-layout: default
 title: Jastrow Derivatives
-nav_order: 11
-parent: Input files
-authors:
-    - Ravindra Shinde
 tags:
-    - CHAMP
     - jastrow derivative
 ---
 
-# Jastrow derivatives file
 The Jastrow derivative parameters can be provided using this file. It has the following format [Example: water].
 
 ```python

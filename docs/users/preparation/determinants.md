@@ -1,12 +1,6 @@
 ---
-layout: default
-title: Determinants / CSFs
-nav_order: 7
-parent: Input files
-authors:
-    - Ravindra Shinde
+title: Determinants, Configuration State Functions
 tags:
-    - CHAMP
     - determinant
     - csf
     - csfmap
@@ -15,8 +9,8 @@ tags:
 ## determinants and/or CSF file
 The determinant file is automatically obtained from the `trex2champ.py` converter. Note that the `trex2champ.py` can also provide CSF and CSF map information if the corresponding GAMESS output file is provided with `--gamess` option.
 
-{: .note}
-It is possible to specify only the determinant part in the .det file.
+!!! tip
+    It is possible to specify only the determinant part in the .det file.
 
 
 

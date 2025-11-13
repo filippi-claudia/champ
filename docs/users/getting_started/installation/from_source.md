@@ -1,13 +1,6 @@
 ---
-layout: default
 title: Installation
-nav_order: 3
-has_children: true
-permalink: /docs/installation
-authors:
-    - Ravindra Shinde
 tags:
-    - CHAMP
     - installation
 ---
 

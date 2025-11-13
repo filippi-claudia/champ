@@ -1,15 +1,6 @@
 ---
-layout: default
 title: Export wave functions to CHAMP
-nav_order: 3
-grand_parent: Tutorials
-parent: '02. QP and CHAMP : Excited State Calculation'
-authors:
-    - Ravindra Shinde
-    - Claudia Filippi
-    - Anthony Scemama
 tags:
-    - CHAMP
     - tutorial
     - CIPSI
     - excited state

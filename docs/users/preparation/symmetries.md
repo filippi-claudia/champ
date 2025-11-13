@@ -1,12 +1,6 @@
 ---
-layout: default
 title: MO symmetries
-nav_order: 8
-parent: Input files
-authors:
-    - Ravindra Shinde
 tags:
-    - CHAMP
     - symmetries
 ---
 

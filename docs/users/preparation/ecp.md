@@ -1,17 +1,10 @@
 ---
-layout: default
-title: Pseudopotentials
-nav_order: 3
-parent: Input files
-authors:
-    - Ravindra Shinde
 tags:
-    - CHAMP
     - ECP
     - pseudopotential
 ---
 
-# ECP / Pseudopotential files
+# Effective Core Potential / Pseudopotential
 
 ECP or pseudopotential files have a fixed format. Most of the BFD ECP files can be found in the `champ/pool/BFD/ECP_champ` folder. The files generated from the trexio file can also be used (except if it is coming from GAMESS. In this case, GAMESS truncates the digits of ECP information in its output, so the trexio file will not have all the digits stored.)
 
@@ -45,6 +38,6 @@ These files are generally kept in the `pool` directory of the calculation folder
 %endmodule
 ```
 
-{: .warning }
-Note that GAMESS output file does not contain all the digits of the ECP information. So, the trexio file generated from GAMESS output will not have all the digits stored. This will cause a problem in the calculation. So, it is recommended to supply separately the ECP files if you have a trexio as input file.
+!!! danger
+    Note that GAMESS output file does not contain all the digits of the ECP information. So, the trexio file generated from GAMESS output will not have all the digits stored. This will cause a problem in the calculation. So, it is recommended to supply separately the ECP files if you have a trexio as input file.
 

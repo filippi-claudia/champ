@@ -1,3 +1,7 @@
+---
+title: Home
+---
+
 # Cornell-Holland Ab-initio Materials Package
 
 <figure markdown="span">

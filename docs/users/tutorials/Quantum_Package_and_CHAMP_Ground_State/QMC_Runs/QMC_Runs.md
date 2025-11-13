@@ -1,16 +1,6 @@
 ---
-layout: default
 title: QMC runs (a) Check setup
-nav_order: 5
-grand_parent: Tutorials
-parent: '01. QP and CHAMP : Ground State Calculation'
-mathjax: true
-authors:
-    - Ravindra Shinde
-    - Claudia Filippi
-    - Anthony Scemama
 tags:
-    - CHAMP
     - tutorial
     - CIPSI
     - QP
@@ -42,9 +32,8 @@ setup is OK. You should obtain the energies:
 We will now convert the TREXIO files into input files suitable for
 CHAMP:
 
-{: .important}
-You need the `resultsFile` and `trexio` Python packages. They can be
-installed with pip as described in []().
+!!! success "Important"
+    You need the `resultsFile` and `trexio` Python packages. They can be installed with pip.
 
 
 Create a new directory named `H2O_HF` and copy the TREXIO file

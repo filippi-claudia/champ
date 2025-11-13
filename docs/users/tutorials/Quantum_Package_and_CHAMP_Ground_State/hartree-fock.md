@@ -1,15 +1,5 @@
 ---
-layout: default
-title: Hartree-Fock calculation
-nav_order: 3
-grand_parent: Tutorials
-parent: '01. QP and CHAMP : Ground State Calculation'
-authors:
-    - Ravindra Shinde
-    - Claudia Filippi
-    - Anthony Scemama
 tags:
-    - CHAMP
     - tutorial
     - CIPSI
     - ground state

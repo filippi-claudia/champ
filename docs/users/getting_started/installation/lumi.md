@@ -1,12 +1,6 @@
 ---
-layout: default
 title: LUMI
-nav_order: 4
-parent: Installation
-authors:
-    - Ravindra Shinde
 tags:
-    - CHAMP
     - installation
     - LUMI
 ---

@@ -1,6 +1,5 @@
 ---
-layout: default
-title: Using TREXIO as input
+title: TREXIO file as input
 nav_order: 1
 parent: Input files
 authors:
@@ -10,7 +9,7 @@ tags:
     - TREXIO
 ---
 
-# Using a single trexio file as input
+# Complete system info using a TREXIO file
 
 We can use trexio file (in hdf5 or text backend format) to specify all the inputs (except Jastrow and Jastrow derivatives)
 

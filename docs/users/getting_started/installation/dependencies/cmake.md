@@ -1,13 +1,5 @@
 ---
-layout: default
-title: CMake
-parent: Dependencies
-nav_order: 1
-authors:
-    - Ravindra Shinde
-tags:
-    - CHAMP
-    - CMake
+title: "CMake"
 ---
 
 
@@ -25,7 +17,7 @@ tar -xzvf cmake-3.25.1-linux-x86_64.sh
 export PATH=cmake-3.25.1-linux-x86_64/bin:$PATH
 ```
 
-{: .warning }
-The version of the cmake must be greater than 3.17.
+!!! tip
+    The version of the cmake must be greater than 3.17.
 
 

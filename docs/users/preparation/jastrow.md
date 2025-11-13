@@ -1,16 +1,9 @@
 ---
-layout: default
 title: Jastrow
-nav_order: 10
-parent: Input files
-authors:
-    - Ravindra Shinde
 tags:
-    - CHAMP
     - jastrow
 ---
 
-# Jastrow parameters file
 The Jastrow parameters can be provided using this file. It has the following format [Example: water].
 
 ```python
