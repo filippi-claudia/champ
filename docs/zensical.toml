@@ -1,0 +1,257 @@
+[project]
+docs_dir = "users"
+
+site_name = "CHAMP-EU User's Guide"
+site_description = "The Cornell-Holland Ab-initio Materials Package (CHAMP-EU) is a quantum Monte Carlo suite of programs for electronic structure calculations of atomic and molecular systems."
+site_author = "CHAMP Developers"
+#site_url = "https://www.example.com/"
+
+copyright = """
+Copyright &copy; 2025 Claudia Filippi
+"""
+
+repo_url = "https://github.com/filippi-claudia/champ"
+edit_uri = "edit/main/docs/users/"
+
+
+# ----------------------------------------------------------------------------
+# The "nav" section contains the navigation structure of the documentation
+# ----------------------------------------------------------------------------
+nav = [
+  {"Home" = "index.md"},
+  {"About" = [
+    {"Overview" = "about/index.md"},
+    {"Vision & Goals" = "about/vision.md"},
+    {"Development Team" = "about/team.md"},
+    {"Acknowledgements" = "about/acknowledgements.md"},
+    {"License Information" = "about/license.md"}
+  ]},
+  {"Getting Started" = [
+    {"Introduction" = "getting_started/index.md"},
+    {"Dependencies" = [
+      {"Overview" = "getting_started/installation/dependencies/index.md"},
+      {"CMake" = "getting_started/installation/dependencies/cmake.md"},
+      {"Compilers" = "getting_started/installation/dependencies/compilers.md"},
+      {"Linear Algebra Libraries" = "getting_started/installation/dependencies/blas_lapack.md"},
+      {"TREXIO" = "getting_started/installation/dependencies/trexio.md"},
+      {"QMCkl" = "getting_started/installation/dependencies/qmckl.md"}
+    ]},
+    {"Installation" = [
+      {"Overview" = "getting_started/installation/index.md"},
+      {"From Source" = "getting_started/installation/from_source.md"},
+      {"Using Spack" = "getting_started/installation/using_spack.md"},
+      {"Using Docker" = "getting_started/installation/using_docker.md"},
+      {"Using Singularity" = "getting_started/installation/using_singularity.md"},
+      {"On Desktop Machines" = "getting_started/installation/desktop.md"}
+    ]},
+    {"Supercomputer Recipes" = [
+      {"Overview" = "getting_started/installation/index.md"},
+      {"LUMI" = "getting_started/installation/lumi.md"},
+      {"Fugaku" = "getting_started/installation/fugaku.md"},
+      {"Snellius" = "getting_started/installation/snellius.md"},
+      {"CCPHead" = "getting_started/installation/ccphead.md"}    
+    ]}
+  ]},
+  {"Preparation" = [
+    {"Introduction" = "preparation/index.md"},
+    {"TREXIO File Format" = "preparation/using_trexio_file.md"},
+    {"Molecular Geometry" = "preparation/molecule.md"},
+    {"Effective Core Potentials" = "preparation/ecp.md"},
+    {"Basis Sets" = "preparation/basis.md"},
+    {"Basis Set Pointers" = "preparation/basis_pointers.md"},
+    {"Molecular Orbitals" = "preparation/orbitals.md"},
+    {"Determinants & CI Expansions" = "preparation/determinants.md"},
+    {"Symmetries" = "preparation/symmetries.md"},
+    {"Orbital Eigenvalues" = "preparation/eigenvalues.md"},
+    {"Jastrow Factors" = "preparation/jastrow.md"},
+    {"Jastrow Derivatives" = "preparation/jastrow_derivatives.md"}
+  ]},  
+  {"Calculations" = [
+    {"Overview" = "calculations/index.md"},
+    {"Variational Monte Carlo (VMC)" = [
+      {"VMC Overview" = "calculations/vmc/index.md"},
+      {"Theory" = "calculations/vmc/theory.md"},
+      {"Input Keywords" = "calculations/vmc/input_keywords.md"},
+      {"Output Analysis" = "calculations/vmc/output_analysis.md"}
+    ]},
+    {"Wavefunction Optimization" = [
+      {"Optimization Overview" = "calculations/optimization/index.md"},
+      {"Linear Method" = "calculations/optimization/linear_method.md"},
+      {"Energy Minimization" = "calculations/optimization/energy_minimization.md"},
+      {"Variance Minimization" = "calculations/optimization/variance_minimization.md"}
+    ]},
+    {"Diffusion Monte Carlo (DMC)" = [
+      {"DMC Overview" = "calculations/dmc/index.md"},
+      {"Theory" = "calculations/dmc/theory.md"},
+      {"Input Keywords" = "calculations/dmc/input_keywords.md"},
+      {"Time Step Control" = "calculations/dmc/time_step_control.md"},
+      {"Output Analysis" = "calculations/dmc/output_analysis.md"}
+    ]}
+  ]},
+  {"Workflows" = [
+    {"Overview" = "workflows/index.md"},
+    {"Input Preparation" = [
+      {"Overview" = "workflows/input_preparation/index.md"},
+      {"Geometry Conversion" = "workflows/input_preparation/geometry_conversion.md"},
+      {"Basis & MO Generation" = "workflows/input_preparation/basis_mo_generation.md"},
+      {"Jastrow Tuning" = "workflows/input_preparation/jastrow_tuning.md"}
+    ]},
+    {"Molecular Systems" = [
+      {"Overview" = "workflows/molecular/index.md"},
+      {"VMC Optimization" = "workflows/molecular/vmc_optimization.md"},
+      {"VMC → DMC Workflow" = "workflows/molecular/vmc_dmc.md"},
+      {"DMC Forces" = "workflows/molecular/dmc_forces.md"},
+      {"Excitation Energy" = "workflows/molecular/excitation_energy.md"},
+      {"Open-shell Systems" = "workflows/molecular/open_shell_systems.md"}
+    ]},
+    {"Solid-State Systems" = [
+      {"Overview" = "workflows/solid_state/index.md"},
+      {"Supercell Construction" = "workflows/solid_state/supercell_construction.md"},
+      {"VMC Optimization" = "workflows/solid_state/vmc_optimization.md"},
+      {"DMC Equation of State" = "workflows/solid_state/dmc_equation_of_state.md"},
+      {"Defect Calculation" = "workflows/solid_state/defect_calculation.md"}
+    ]},
+    {"Benchmark & Testing Workflows" = [
+      {"Overview" = "workflows/benchmarks/index.md"},
+      {"H₂ Dimer Test" = "workflows/benchmarks/h2_dimer.md"},
+      {"Benzene Dimer" = "workflows/benchmarks/benzene_dimer.md"},
+      {"LiH Benchmark" = "workflows/benchmarks/lih_benchmark.md"},
+      {"Solid Si Test" = "workflows/benchmarks/solid_si_test.md"}
+    ]}
+  ]},
+  {"Tutorials" = [
+    {"Overview" = "tutorials/index.md"},
+    {"CHAMP and QP" = [
+      {"Ground State" = [
+        {"Overview" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/Quantum_Package_and_CHAMP.md"},
+        {"Molecular Geometry Setup" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/geometry.md"},
+        {"Basis Set Selection" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/basis.md"},
+        {"Hartree-Fock Calculations" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/hartree-fock.md"},
+        {"DFT Calculations" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/dft.md"},
+        {"QMC Runs" = [
+          {"Overview" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/QMC_Runs/QMC_Runs.md"},
+          {"Introducing and Optimizing Jastrow Factors" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/QMC_Runs/introduce_and_optimize_jastrow.md"},
+          {"Diffusion Monte Carlo Simulations" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/QMC_Runs/diffusion_monte_carlo.md"}
+        ]}
+      ]},
+      {"Excited States" = [
+        {"Overview" = "tutorials/Quantum_Package_and_CHAMP_Excited_States/Quantum_Package_and_CHAMP_Excited_States.md"},
+        {"CIPSI Two-State Calculation" = "tutorials/Quantum_Package_and_CHAMP_Excited_States/CIPSI-two-state-calculation.md"},
+        {"Exporting Wavefunctions to CHAMP" = "tutorials/Quantum_Package_and_CHAMP_Excited_States/export_wavefunctions_to_champ.md"},
+        {"QMC Wavefunction Optimizations" = "tutorials/Quantum_Package_and_CHAMP_Excited_States/QMC_wavefunction_optimizations.md"}
+      ]}
+    ]}
+  ]},
+  {"Analysis" = [
+    {"Overview" = "analysis/index.md"},
+    {"Energy Breakdown" = "analysis/energy_breakdown.md"},
+    {"Force Analysis" = "analysis/forces.md"},
+    {"Statistical Analysis" = "analysis/statistical_analysis.md"},
+    {"Plotting Utilities" = "analysis/plotting_utilities.md"}
+  ]},
+  {"Reference" = [
+    {"Overview" = "reference/index.md"},
+    {"Keyword Reference" = "reference/keyword_reference.md"},
+    {"Output File Format" = "reference/output_file_format.md"},
+    {"Error Codes" = "reference/error_codes.md"},
+    {"APIs and Tools" = "reference/api_and_tools.md"}
+  ]},
+  {"Troubleshooting" = [
+    {"Overview" = "troubleshooting/index.md"},
+    {"Common Errors" = "troubleshooting/common_errors.md"},
+    {"Performance Issues" = "troubleshooting/performance_issues.md"},
+    {"FAQ" = "troubleshooting/faq.md"}
+  ]},
+  {"Appendices" = [
+    {"Overview" = "appendices/index.md"},
+    {"Theory Background" = "appendices/theory_background.md"},
+    {"I/O Formats" = "appendices/io_formats.md"},
+    {"Changelog" = "appendices/changelog.md"}
+  ]},
+  {"Contributing" = [
+    { "User guide" = "contributing/zensical.md"},
+    { "Markdown" = "contributing/markdown.md"},
+    { "Tools" = "contributing/tools.md"}    
+  ]}
+]
+
+
+
+# ----------------------------------------------------------------------------
+# Section for configuring theme options
+# ----------------------------------------------------------------------------
+[project.theme]
+
+#favicon = "assets/images/favicon.png"
+language = "en"
+
+features = [
+    "announce.dismiss",
+    "content.action.edit",
+    "content.action.view",
+    "content.code.annotate",
+    "content.code.copy",
+    "content.code.select",
+    "content.footnote.tooltips",
+    "content.tabs.link",
+    "content.tooltips",
+    "header.autohide",
+    "navigation.expand",
+    "navigation.footer",
+    "navigation.indexes",
+    "navigation.instant",
+    "navigation.instant.prefetch",
+    "navigation.instant.progress",
+    "navigation.path",
+    "navigation.prune",
+    "navigation.sections",
+    "navigation.tabs",
+    "navigation.tabs.sticky",
+    "navigation.top",
+    "navigation.tracking",
+    "search.highlight",
+    "toc.follow",
+    #"toc.integrate",
+]
+
+[[project.theme.palette]]
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+#[project.theme.icon]
+#logo = "assets/logo"
+#repo = "assets/logo"
+
+[project.theme.icon]
+edit = "material/pencil"
+view = "material/eye"
+
+# ----------------------------------------------------------------------------
+# The "extra" section contains miscellaneous settings.
+# ----------------------------------------------------------------------------
+[project.extra]
+generator = false
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/filippi-claudia/champ"
+
+[project.extra.consent]
+title = "Cookie consent"
+description = """
+    We use cookies to recognize your repeated visits and preferences, as well
+    as to measure the effectiveness of our documentation and whether users
+    find what they're searching for. With your consent, you're helping us to
+    make our documentation better.
+"""
+actions = [
+    "accept",
+    "reject",
+    "manage" 
+]
