@@ -5,7 +5,7 @@ title: Home
 # Cornell-Holland Ab-initio Materials Package
 
 <figure markdown="span">
-  ![CHAMP logo](https://raw.githubusercontent.com/filippi-claudia/champ/refs/heads/main/docs/logo_small.jpg){ width="300" }
+  ![CHAMP logo](assets/logo.webp){ width="300" }
 </figure>
 
 ## Overview

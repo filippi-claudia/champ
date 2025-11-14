@@ -187,7 +187,8 @@ nav = [
 # ----------------------------------------------------------------------------
 [project.theme]
 
-#favicon = "assets/images/favicon.png"
+favicon = "favicon.ico"
+logo = "assets/logo.svg"
 language = "en"
 
 features = [
@@ -229,11 +230,9 @@ scheme = "slate"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to light mode"
 
-#[project.theme.icon]
-#logo = "assets/logo"
-#repo = "assets/logo"
 
-[project.theme.icon]
+
+# [project.theme.icon]
 edit = "material/pencil"
 view = "material/eye"
 
