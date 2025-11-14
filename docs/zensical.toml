@@ -46,30 +46,31 @@ nav = [
       {"From Source" = "getting_started/installation/from_source.md"},
       {"Using Spack" = "getting_started/installation/using_spack.md"},
       {"Using Docker" = "getting_started/installation/using_docker.md"},
-      {"Using Singularity" = "getting_started/installation/using_singularity.md"},
       {"On Desktop Machines" = "getting_started/installation/desktop.md"}
     ]},
-    {"Supercomputer Recipes" = [
-      {"Overview" = "getting_started/installation/index.md"},
-      {"LUMI" = "getting_started/installation/lumi.md"},
-      {"Fugaku" = "getting_started/installation/fugaku.md"},
-      {"Snellius" = "getting_started/installation/snellius.md"},
-      {"CCPHead" = "getting_started/installation/ccphead.md"}    
+    {"Running CHAMP" = [
+      {"Command line interface" = "getting_started/installation/cli.md"},
+      {"LUMI supercomputer" = "getting_started/installation/lumi.md"},
+      {"Fugaku supercomputer" = "getting_started/installation/fugaku.md"},
+      {"Snellius supercomputer" = "getting_started/installation/snellius.md"},
+      {"CCPHead cluster" = "getting_started/installation/ccphead.md"}    
     ]}
   ]},
   {"Preparation" = [
     {"Introduction" = "preparation/index.md"},
-    {"TREXIO File" = "preparation/using_trexio_file.md"},
-    {"Molecular Geometry" = "preparation/molecule.md"},
-    {"Effective Core Potentials" = "preparation/ecp.md"},
-    {"Jastrow Factors" = "preparation/jastrow.md"},
-    {"Jastrow Derivatives" = "preparation/jastrow_derivatives.md"},
-    {"Basis Sets" = "preparation/basis.md"},
-    {"Basis Set Pointers" = "preparation/basis_pointers.md"},
-    {"Molecular Orbitals" = "preparation/orbitals.md"},
-    {"Determinants & CSFs" = "preparation/determinants.md"},
-    {"Symmetries" = "preparation/symmetries.md"},
-    {"Eigenvalues" = "preparation/eigenvalues.md"}
+    {"Input file preparation" = [
+      {"TREXIO File" = "preparation/using_trexio_file.md"},
+      {"Molecular Geometry" = "preparation/molecule.md"},
+      {"Effective Core Potentials" = "preparation/ecp.md"},
+      {"Jastrow Factors" = "preparation/jastrow.md"},
+      {"Jastrow Derivatives" = "preparation/jastrow_derivatives.md"},
+      {"Basis Sets" = "preparation/basis.md"},
+      {"Basis Set Pointers" = "preparation/basis_pointers.md"},
+      {"Molecular Orbitals" = "preparation/orbitals.md"},
+      {"Determinants & CSFs" = "preparation/determinants.md"},
+      {"Symmetries" = "preparation/symmetries.md"},
+      {"Eigenvalues" = "preparation/eigenvalues.md"}
+    ]}
   ]},  
   {"Calculations" = [
     {"Overview" = "calculations/index.md"},
@@ -259,3 +260,6 @@ actions = [
     "reject",
     "manage" 
 ]
+
+
+[project.markdown_extensions.pymdownx.smartsymbols]

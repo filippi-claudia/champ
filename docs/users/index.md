@@ -30,11 +30,11 @@ Noteworthy features of CHAMP are:
 * Compact formulation for a fast evaluation of multi-determinant expansions and their derivatives (VMC and DMC)
 * Multiscale VMC and DMC calculations in classical point charges (MM), polarizable continuum model (PCM), and polarizable force fields (MMpol)
 
-**Note**
+## Note
 
 The code is available for free under the GPL-3.0 license. Developers and contributors are welcome to use and contribute back to the code. If you have used the code for your publications, please cite this source.
 
-**Disclaimer**
+## Disclaimer
 
 The authors make no claims about the correctness of the program suite and it is provided without warranty under GPL-3.0. 
 
