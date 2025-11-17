@@ -45,6 +45,7 @@ nav = [
       {"Overview" = "getting_started/installation/index.md"},
       {"From Source" = "getting_started/installation/from_source.md"},
       {"Using Spack" = "getting_started/installation/using_spack.md"},
+      {"Using EasyBuild" = "getting_started/installation/using_easybuild.md"},      
       {"Using Docker" = "getting_started/installation/using_docker.md"},
       {"On Desktop Machines" = "getting_started/installation/desktop.md"}
     ]},
