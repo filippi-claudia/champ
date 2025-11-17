@@ -224,14 +224,14 @@ features = [
 
 [[project.theme.palette]]
 scheme = "default"
-primary = "deep orange"
+primary = "purple"
 accent = "teal"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
 
 [[project.theme.palette]]
 scheme = "slate"
-primary = "deep orange"
+primary = "pink"
 accent = "lime"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to light mode"
