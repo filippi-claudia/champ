@@ -70,8 +70,13 @@ When using Intel compilers, CMake automatically selects MKL variants:
 
 You can explicitly specify:
 
-```
+```bash
 cmake -S. -Bbuild -DBLA_VENDOR=Intel10_64lp
+```
+or
+
+```bash
+cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx -DBLAS_LIBRARIES="-qmkl=parallel"
 ```
 
 ### 2. OpenBLAS
@@ -195,6 +200,10 @@ To explicitly select a BLAS/LAPACK vendor:
 
 ```bash
 cmake -S. -Bbuild -DBLA_VENDOR=OpenBLAS
+```
+or
+```bash
+cmake -S. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx -DBLAS_LIBRARIES="-qmkl=parallel"
 ```
 
 Supported vendor names:

@@ -192,6 +192,7 @@ favicon = "favicon.ico"
 logo = "assets/logo.svg"
 language = "en"
 
+
 features = [
     "announce.dismiss",
     "content.action.edit",
@@ -223,11 +224,15 @@ features = [
 
 [[project.theme.palette]]
 scheme = "default"
+primary = "deep orange"
+accent = "teal"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
 
 [[project.theme.palette]]
 scheme = "slate"
+primary = "deep orange"
+accent = "lime"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to light mode"
 
