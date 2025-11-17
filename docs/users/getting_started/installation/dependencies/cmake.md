@@ -2,22 +2,88 @@
 title: "CMake"
 ---
 
+# CMake Installation
 
-## Install or load [cmake](https://cmake.org/)
+!!! note
+
+    CHAMP requires CMake version 3.17 or higher for building.
+
+## Installing CMake
+
+### Using Package Manager
+
+Most modern Linux distributions provide recent versions of CMake through their package managers:
+
+**Ubuntu/Debian:**
+```
+sudo apt-get install -y cmake
+```
+
+**Fedora/RHEL:**
+```
+sudo dnf install cmake
+```
+
+**macOS (Homebrew):**
+```
+brew install cmake
+```
+
+### Installing from Binary Distribution
+
+If your system's package manager provides an older version, you can install the latest CMake from the official releases:
+
+1. Visit the [CMake releases page](https://github.com/Kitware/CMake/releases)
+2. Download the appropriate binary for your system (e.g., `cmake-X.Y.Z-linux-x86_64.sh`)
+3. Extract and add to your PATH:
+
+```
+wget https://github.com/Kitware/CMake/releases/download/vX.Y.Z/cmake-X.Y.Z-linux-x86_64.sh
+chmod +x cmake-X.Y.Z-linux-x86_64.sh
+./cmake-X.Y.Z-linux-x86_64.sh --skip-license --prefix=$HOME/.local
+export PATH=$HOME/.local/bin:$PATH
+```
+
+Replace `X.Y.Z` with the desired version number (3.17 or higher).
+
+### Building from Source
+
+For the latest features or custom installations:
+
+```
+wget https://github.com/Kitware/CMake/releases/download/vX.Y.Z/cmake-X.Y.Z.tar.gz
+tar -xzvf cmake-X.Y.Z.tar.gz
+cd cmake-X.Y.Z
+./bootstrap --prefix=$HOME/.local
+make -j$(nproc)
+make install
+export PATH=$HOME/.local/bin:$PATH
+```
+
+## Verifying Installation
+
+Check your CMake version:
+
+```
+cmake --version
+```
+
+Ensure the version is 3.17 or higher.
+
+## HPC Systems
+
+On HPC systems, CMake is often available through the module system:
 
 ```bash
-sudo apt-get install -y cmake
+module load cmake
 ```
 
 or
 
 ```bash
-wget https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1-linux-x86_64.sh
-tar -xzvf cmake-3.25.1-linux-x86_64.sh
-export PATH=cmake-3.25.1-linux-x86_64/bin:$PATH
+module load CMake
 ```
 
-!!! tip
-    The version of the cmake must be greater than 3.17.
+Check available versions with `module avail cmake`.
 
 
