@@ -193,7 +193,7 @@ cmake -S. -Bbuild
 
 To explicitly select a BLAS/LAPACK vendor:
 
-```
+```bash
 cmake -S. -Bbuild -DBLA_VENDOR=OpenBLAS
 ```
 
@@ -211,7 +211,7 @@ Supported vendor names:
 
 For static linking (recommended for HPC):
 
-```
+```bash
 cmake -S. -Bbuild -DBLA_STATIC=ON
 ```
 
@@ -219,7 +219,7 @@ cmake -S. -Bbuild -DBLA_STATIC=ON
 
 After configuration, CMake will report the detected libraries:
 
-```
+```bash
 -- Using BLAS and LAPACK for the linear algebra calculations!
 -- BLAS and LAPACK LIBRARIES:
                                     :: /path/to/libopenblas.so
@@ -235,7 +235,7 @@ After configuration, CMake will report the detected libraries:
 
 **Threading:** Most modern BLAS libraries support multithreading. Control thread count via:
 
-```
+```bash
 export OMP_NUM_THREADS=8          # OpenBLAS, MKL
 export OPENBLAS_NUM_THREADS=8     # OpenBLAS specific
 export MKL_NUM_THREADS=8          # MKL specific
@@ -243,7 +243,7 @@ export MKL_NUM_THREADS=8          # MKL specific
 
 **MPI + Threading:** When running with MPI, typically use 1 thread per MPI rank or hybrid decomposition:
 
-```
+```bash
 # Pure MPI
 mpirun -np 128 champ/bin/vmc.mov1 -i input.inp -o output.out
 
@@ -256,7 +256,7 @@ mpirun -np 32 champ/bin/vmc.mov1 -i input.inp -o output.out
 
 On HPC systems, optimized BLAS/LAPACK are usually available via modules:
 
-```
+```bash
 module avail mkl
 module avail openblas
 module load mkl

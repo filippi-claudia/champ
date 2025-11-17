@@ -37,7 +37,7 @@ If your system's package manager provides an older version, you can install the 
 2. Download the appropriate binary for your system (e.g., `cmake-X.Y.Z-linux-x86_64.sh`)
 3. Extract and add to your PATH:
 
-```
+```bash
 wget https://github.com/Kitware/CMake/releases/download/vX.Y.Z/cmake-X.Y.Z-linux-x86_64.sh
 chmod +x cmake-X.Y.Z-linux-x86_64.sh
 ./cmake-X.Y.Z-linux-x86_64.sh --skip-license --prefix=$HOME/.local
@@ -50,7 +50,7 @@ Replace `X.Y.Z` with the desired version number (3.17 or higher).
 
 For the latest features or custom installations:
 
-```
+```bash
 wget https://github.com/Kitware/CMake/releases/download/vX.Y.Z/cmake-X.Y.Z.tar.gz
 tar -xzvf cmake-X.Y.Z.tar.gz
 cd cmake-X.Y.Z

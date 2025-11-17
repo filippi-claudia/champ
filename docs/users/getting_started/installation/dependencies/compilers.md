@@ -71,7 +71,7 @@ chmod +x ./l_HPCKit_*.sh
 
 With sudo access:
 
-```
+```bash
 wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
 sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
 sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
@@ -80,11 +80,12 @@ sudo apt-get install intel-oneapi-compiler-fortran intel-oneapi-mkl intel-oneapi
 ```
 
 **Loading the compiler:**
-```
+```bash
 source /opt/intel/oneapi/setvars.sh
 ```
 
 **Compiler flags auto-applied:**
+
 - `-O2` - Optimization level 2
 - `-ipo` - Interprocedural optimization
 - `-fpp` - Fortran preprocessor
@@ -112,7 +113,7 @@ chmod +x ./l_HPCKit_*.sh
 
 With sudo access:
 
-```
+```bash
 wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
 sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
 sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
@@ -121,7 +122,7 @@ sudo apt-get install intel-oneapi-compiler-fortran intel-oneapi-mkl intel-oneapi
 ```
 
 **Loading the compiler:**
-```
+```bash
 source /opt/intel/oneapi/setvars.sh
 ```
 
@@ -194,7 +195,7 @@ CHAMP supports different build types:
 
 Check your compiler version:
 
-```
+```bash
 gfortran --version    # GNU
 ifort --version       # Intel Classic
 ifx --version         # Intel LLVM
@@ -207,7 +208,7 @@ flang --version       # LLVM Flang
 
 On HPC systems, compilers are typically available through module systems:
 
-```
+```bash
 module avail gcc
 module avail intel-compilers
 module load gcc/11.2.0
