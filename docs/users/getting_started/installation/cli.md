@@ -25,7 +25,9 @@ The program supports both serial and MPI-aware execution.
 
 The basic command line structure of CHAMP looks like:
 
-`/path/to/champ/bin/vmc.mov1 -i input.inp -o output.log -e error`
+```bash
+/path/to/champ/bin/vmc.mov1 -i input.inp -o output.log -e error
+```
 
 Only the master MPI rank (rank 0) writes output; worker ranks redirect output to /dev/null for clean parallel runs.
 
@@ -58,7 +60,9 @@ CHAMP recognizes several command-line flags, handled inside the contrl_file modu
 
 ### Example: Get help
 
-`champ/bin/vmc.mov1 -h`
+```bash
+champ/bin/vmc.mov1 -h
+```
 
 ## Execution Modes
 
@@ -83,17 +87,22 @@ Verbosity (`ipr`) controls output level:
 
 ### Run VMC
 
-`champ/bin/vmc.mov1 -i vmc.inp -o vmc.out -e error`
+```bash
+champ/bin/vmc.mov1 -i vmc.inp -o vmc.out -e error
+```
 
 ### Run DMC
 
-`champ/bin/dmc.mov1 -i dmc.inp -o dmc.log -e error`
+```bash
+champ/bin/dmc.mov1 -i dmc.inp -o dmc.log -e error
+```
+
 
 ### Using MPI
 
 For production calculations, you should use MPI. 
 
-```
+```bash
 mpirun -np 1024 champ/bin/vmc.mov1 -i dmc.inp -o dmc.out
 ```
 

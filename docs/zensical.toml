@@ -260,6 +260,3 @@ actions = [
     "reject",
     "manage" 
 ]
-
-
-[project.markdown_extensions.pymdownx.smartsymbols]
