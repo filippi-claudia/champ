@@ -1,6 +1,5 @@
 ---
 title: Input Preparation
-icon: material/file-document-edit
 tags:
     - setup
     - input files
@@ -200,17 +199,17 @@ load eigenvalues     eigenvalues.eig
    - Verify file paths and data loading
 
 ## Input File Sections Reference
-- [TREXIO Files](using_trexio_file.md)
-- [Molecular Geometry](molecule.md)
-- [Effective Core Potentials](ecp.md)
-- [Basis Sets](basis.md)
-- [Basis Set Pointers](basis_pointers.md)
-- [Molecular Orbitals](orbitals.md)
-- [Determinants & CSFs](determinants.md)
-- [Jastrow Factors](jastrow.md)
-- [Jastrow Derivatives](jastrow_derivatives.md)
-- [Orbital Symmetries](symmetries.md)
-- [Orbital Eigenvalues](eigenvalues.md)
+[TREXIO Files](using_trexio_file.md)  
+[Molecular Geometry](molecule.md)  
+[Effective Core Potentials](ecp.md)  
+[Basis Sets](basis.md)  
+[Basis Set Pointers](basis_pointers.md)  
+[Molecular Orbitals](orbitals.md)  
+[Determinants and/or Configuration State Functions](determinants.md)  
+[Jastrow Factors](jastrow.md)  
+[Jastrow Derivatives](jastrow_derivatives.md)  
+[Molecular Orbital Symmetries](symmetries.md)  
+[Molecular Orbital Eigenvalues](eigenvalues.md)  
 
 ## Next Steps
 
