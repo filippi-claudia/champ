@@ -157,24 +157,18 @@ nav = [
     {"Statistical Analysis" = "analysis/statistical_analysis.md"},
     {"Plotting Utilities" = "analysis/plotting_utilities.md"}
   ]},
-  {"Reference" = [
-    {"Overview" = "reference/index.md"},
-    {"Keyword Reference" = "reference/keyword_reference.md"},
-    {"Output File Format" = "reference/output_file_format.md"},
-    {"Error Codes" = "reference/error_codes.md"},
-    {"APIs and Tools" = "reference/api_and_tools.md"}
-  ]},
   {"Troubleshooting" = [
     {"Overview" = "troubleshooting/index.md"},
     {"Common Errors" = "troubleshooting/common_errors.md"},
     {"Performance Issues" = "troubleshooting/performance_issues.md"},
     {"FAQ" = "troubleshooting/faq.md"}
   ]},
-  {"Appendices" = [
-    {"Overview" = "appendices/index.md"},
-    {"Theory Background" = "appendices/theory_background.md"},
-    {"I/O Formats" = "appendices/io_formats.md"},
-    {"Changelog" = "appendices/changelog.md"}
+  {"References" = [
+    {"Overview" = "references/index.md"},
+    {"Keyword Reference" = "references/keyword_reference.md"},
+    {"Output File Format" = "references/output_file_format.md"},
+    {"Error Codes" = "references/error_codes.md"},
+    {"APIs and Tools" = "references/api_and_tools.md"}
   ]},
   {"Contributing" = [
     { "User guide" = "contributing/zensical.md"},
