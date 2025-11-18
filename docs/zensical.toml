@@ -50,11 +50,12 @@ nav = [
       {"On Desktop Machines" = "getting_started/installation/desktop.md"}
     ]},
     {"Running CHAMP" = [
-      {"Command line interface" = "getting_started/installation/cli.md"},
-      {"LUMI supercomputer" = "getting_started/installation/lumi.md"},
-      {"Fugaku supercomputer" = "getting_started/installation/fugaku.md"},
-      {"Snellius supercomputer" = "getting_started/installation/snellius.md"},
-      {"CCPHead cluster" = "getting_started/installation/ccphead.md"}    
+      {"Overview" = "getting_started/installation/supercomputers/index.md"},
+      {"Command line interface" = "getting_started/installation/supercomputers/cli.md"},
+      {"LUMI supercomputer" = "getting_started/installation/supercomputers/lumi.md"},
+      {"Fugaku supercomputer" = "getting_started/installation/supercomputers/fugaku.md"},
+      {"Snellius supercomputer" = "getting_started/installation/supercomputers/snellius.md"},
+      {"CCPHead cluster" = "getting_started/installation/supercomputers/ccphead.md"}    
     ]}
   ]},
   {"Preparation" = [

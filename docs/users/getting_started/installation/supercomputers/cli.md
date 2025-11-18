@@ -1,5 +1,6 @@
 ---
 title: CHAMP CLI
+icon: material/console
 tags:
     - usage
 ---

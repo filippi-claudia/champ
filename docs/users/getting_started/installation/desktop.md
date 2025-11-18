@@ -1,5 +1,6 @@
 ---
 title: Ubuntu Desktop Installation
+icon: material/laptop
 tags:
     - installation
     - desktop

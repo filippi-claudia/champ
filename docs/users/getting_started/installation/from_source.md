@@ -1,5 +1,6 @@
 ---
 title: Building from Source
+icon: material/code-tags
 tags:
     - installation
     - source
@@ -403,7 +404,7 @@ Executables will be in `$HOME/.local/bin/`.
 After successful compilation:
 
 1. [Run tests](testsuite.md) to verify installation
-2. Learn about the [Command-Line Interface](../cli/index.md)
+2. Learn about the [Command-Line Interface](supercomputers/cli.md)
 3. Follow [Tutorials](../../tutorials/index.md) for example calculations
 4. Prepare [Input Files](../../preparation/index.md) for your system
 
@@ -411,8 +412,8 @@ After successful compilation:
 
 For optimized builds on specific supercomputers, see:
 
-- [LUMI](lumi.md)
-- [Fugaku](fugaku.md)
-- [Snellius](snellius.md)
-- [Ubuntu Desktop](desktop.md)
+- [LUMI](supercomputers/lumi.md)
+- [Fugaku](supercomputers/fugaku.md)
+- [Snellius](supercomputers/snellius.md)
+- [Ubuntu Desktop](supercomputers/desktop.md)
 

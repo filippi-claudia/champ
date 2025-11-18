@@ -1,5 +1,6 @@
 ---
 title: Installing with Spack
+icon: material/domain
 tags:
     - installation
     - spack
@@ -517,6 +518,6 @@ After installing CHAMP with Spack:
 
 1. Verify the installation with `vmc.mov1 --version`
 2. Run the test suite if available
-3. Learn about the [Command-Line Interface](../cli/index.md)
+3. Learn about the [Command-Line Interface](supercomputers/cli.md)
 4. Follow the [Tutorials](../../tutorials/index.md) for example calculations
 

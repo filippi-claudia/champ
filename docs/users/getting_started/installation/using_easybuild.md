@@ -1,5 +1,6 @@
 ---
 title: Installing with EasyBuild
+icon: material/domain
 tags:
     - installation
     - easybuild
@@ -573,6 +574,6 @@ After installing CHAMP with EasyBuild:
 1. Load the module: `module load CHAMP/2.4.0-foss-2024a`
 2. Verify with `vmc.mov1 --version`
 3. Run the test suite if available
-4. Learn about the [Command-Line Interface](../cli/index.md)
+4. Learn about the [Command-Line Interface](supercomputers/cli.md)
 5. Follow the [Tutorials](../../tutorials/index.md) for example calculations
 
