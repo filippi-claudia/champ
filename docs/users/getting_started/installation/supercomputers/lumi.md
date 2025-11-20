@@ -1,6 +1,5 @@
 ---
 title: Running on LUMI
-icon: material/server
 tags:
     - LUMI
     - supercomputer

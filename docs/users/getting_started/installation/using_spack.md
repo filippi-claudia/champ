@@ -1,6 +1,5 @@
 ---
 title: Installing with Spack
-icon: material/domain
 tags:
     - installation
     - spack

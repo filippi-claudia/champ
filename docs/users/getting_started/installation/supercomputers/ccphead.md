@@ -1,6 +1,5 @@
 ---
 title: Running on CCPHead
-icon: material/server
 tags:
     - CCPHead
     - University of Twente

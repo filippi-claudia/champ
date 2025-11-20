@@ -1,6 +1,5 @@
 ---
 title: Using TREXIO Files
-icon: material/file-code
 tags:
     - TREXIO
     - HDF5

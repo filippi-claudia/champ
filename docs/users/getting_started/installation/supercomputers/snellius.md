@@ -1,6 +1,5 @@
 ---
 title: Running on Snellius
-icon: material/server
 tags:
     - Snellius
     - supercomputer

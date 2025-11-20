@@ -1,5 +1,4 @@
 ---
-icon: lucide/notebook-text
 tags:
   - contributing
   - documentation

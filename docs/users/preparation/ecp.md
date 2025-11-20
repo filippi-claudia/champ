@@ -1,6 +1,5 @@
 ---
 title: Effective Core Potentials
-icon: material/atom
 tags:
     - ECP
     - pseudopotential

@@ -1,6 +1,5 @@
 ---
 title: Molecular Geometry
-icon: material/molecule-co2
 tags:
     - geometry
     - molecule

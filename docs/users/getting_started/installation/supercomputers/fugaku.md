@@ -1,6 +1,5 @@
 ---
 title: Running on Fugaku
-icon: material/server
 tags:
     - Fugaku
     - supercomputer

@@ -1,6 +1,5 @@
 ---
 title: Jastrow Factors
-icon: material/function-variant
 tags:
     - jastrow
     - correlation

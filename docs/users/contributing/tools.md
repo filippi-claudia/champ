@@ -1,5 +1,4 @@
 ---
-icon: lucide/pencil
 tags:
   - contributing
   - documentation

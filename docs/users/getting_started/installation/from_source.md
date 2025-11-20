@@ -1,6 +1,5 @@
 ---
 title: Building from Source
-icon: material/code-tags
 tags:
     - installation
     - source

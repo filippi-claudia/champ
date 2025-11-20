@@ -1,6 +1,5 @@
 ---
 title: Installing with EasyBuild
-icon: material/domain
 tags:
     - installation
     - easybuild

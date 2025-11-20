@@ -1,6 +1,5 @@
 ---
 title: Installing with Docker
-icon: fontawesome/brands/docker
 tags:
     - installation
     - docker
