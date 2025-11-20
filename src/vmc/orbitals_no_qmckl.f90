@@ -52,7 +52,7 @@ subroutine orbitals_no_qmckl(x,rvec_en,r_en)
 
     ! get basis functions for all electrons
     ider=2
-    if(iforce_analy.eq.1) ider=3
+    if(iforce_analy.eq.1.or.ibackflow.gt.0) ider=3
 
     call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 
@@ -191,20 +191,19 @@ subroutine orbitals_no_qmckl(x,rvec_en,r_en)
     
 #endif
 ! vectorization endif
-
     if (ibackflow.gt.0) then
-        do k = 1, nwftypeorb
+
+        ! do k = 1, nwftypeorb
             do i = 1, nelec
                 auxd2orb = 0.0d0
-                do iorb = 1, norb
-                    do m0=1,n0_nbasis(i)
-                        m=n0_ibasis(m0,i)
-                        auxd2orb(:, :, iorb)=auxd2orb(:, :, iorb)+coef(m,iorb,k)*d2phin_all(:,:,m,i)
+                do iorb = 1, norb+nadorb
+                    do m=1,nbasis
+                        auxd2orb(:, :, iorb)=auxd2orb(:, :, iorb)+coef(m,iorb,iwf)*d2phin_all(:,:,m,i)
                     enddo
                 enddo
-                d2orb(:,:, 1:(norb+nadorb), i, k)=auxd2orb(:,:, 1:(norb+nadorb))
+                d2orb(:,:, 1:(norb+nadorb), i, iwf)=auxd2orb(:,:, 1:(norb+nadorb))
             enddo
-        enddo
+        ! enddo
     endif
 return
 end

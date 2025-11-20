@@ -81,7 +81,7 @@ contains
               call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,dslm(3,1+jk,iab,k),3)
               do kk=1,3
                 do jj=1,3
-              call dcopy(nel,d2orb(kk,jj,jorb,1+ish,k),3*3*norb_tot,d2slm (kk,jj,1+jk,iab,k),9)
+              call dcopy(nel,d2orb(kk,jj,jorb,1+ish,k),3*3*norb_tot,d2slm (kk,jj,1+jk,iab,k),3*3)
                 enddo 
               enddo
             enddo
@@ -105,8 +105,8 @@ contains
                       do ii=1,3
                         do jj=1,3
                     d2dx2(i+ish,k)=d2dx2(i+ish,k)-&
-                    slmi((j-1)*nel + n,iab,k) * dslm(kk,(l-1)*nel +j,iab,k) * &
-                    slmi((m-1)*nel + l,iab,k) * dslm(jj,(n-1)*nel +m,iab,k) * &
+                    slmi((j-1)*nel+l,iab,k) * dslm(kk,(l-1)*nel+m,iab,k) * &
+                    slmi((m-1)*nel+n,iab,k) * dslm(jj,(n-1)*nel+j,iab,k) * &
                     dquasi_dx(ii,i+ish,kk,j+ish) * dquasi_dx(ii,i+ish,jj,m+ish)
                         enddo
                       enddo
@@ -179,7 +179,6 @@ contains
          enddo
       enddo
 
-      print *, ddx(1,1,1), d2dx2(1,1)
 
       if(ipr.ge.4) then
         do k=1,nwftypeorb
