@@ -12,7 +12,7 @@ contains
       use multislatern, only: detn, dorbn, orbn
       use orbval, only: dorb, orb
       use precision_kinds, only: dp
-      use slater, only: fp, slmi
+      use slater, only: slmi
       use slater, only: kref, ndet, norb
       use slatn, only: slmin
       use system, only: ndn, nup, nelec
@@ -73,11 +73,6 @@ contains
            enddo
         endif
 
-        do j=1,nel
-          fp(1,j+ikel,iab,stoo(istate))=dorbn(iworbd(j+ish,kref),1,stoo(istate))
-          fp(2,j+ikel,iab,stoo(istate))=dorbn(iworbd(j+ish,kref),2,stoo(istate))
-          fp(3,j+ikel,iab,stoo(istate))=dorbn(iworbd(j+ish,kref),3,stoo(istate))
-        enddo
         do k=1,ndet
           detiab(k,iab,stoo(istate))=detn(k,stoo(istate))
         enddo

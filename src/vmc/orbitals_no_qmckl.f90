@@ -23,11 +23,12 @@ subroutine orbitals_no_qmckl(x,rvec_en,r_en)
     use multiple_geo, only: iwf
     use m_force_analytic, only: iforce_analy
     use orbval, only: ddorb, dorb, nadorb, orb
-    use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
+    use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis, d2phin_all
     use precision_kinds, only: dp
     use slater, only: norb, coef
     use system, only: ncent_tot, nelec
     use vmc_mod, only: nwftypeorb
+    use m_backflow, only: ibackflow, d2orb
         
     implicit none
         
@@ -43,9 +44,11 @@ subroutine orbitals_no_qmckl(x,rvec_en,r_en)
     real(dp), dimension(:), allocatable :: auxorb !(norb+nadorb)
     real(dp), dimension(:, :), allocatable :: auxdorb !(norb+nadorb)
     real(dp), dimension(:), allocatable :: auxddorb !(norb+nadorb)
+    real(dp), dimension(:,:, :), allocatable :: auxd2orb !(norb+nadorb)
     if (.not. allocated(auxorb)) allocate (auxorb(norb+nadorb))
     if (.not. allocated(auxdorb)) allocate (auxdorb(norb+nadorb,3))
     if (.not. allocated(auxddorb)) allocate (auxddorb(norb+nadorb))
+    if (.not. allocated(auxd2orb)) allocate (auxd2orb(3,3,norb+nadorb))
 
     ! get basis functions for all electrons
     ider=2
@@ -188,6 +191,21 @@ subroutine orbitals_no_qmckl(x,rvec_en,r_en)
     
 #endif
 ! vectorization endif
+
+    if (ibackflow.gt.0) then
+        do k = 1, nwftypeorb
+            do i = 1, nelec
+                auxd2orb = 0.0d0
+                do iorb = 1, norb
+                    do m0=1,n0_nbasis(i)
+                        m=n0_ibasis(m0,i)
+                        auxd2orb(:, :, iorb)=auxd2orb(:, :, iorb)+coef(m,iorb,k)*d2phin_all(:,:,m,i)
+                    enddo
+                enddo
+                d2orb(:,:, 1:(norb+nadorb), i, k)=auxd2orb(:,:, 1:(norb+nadorb))
+            enddo
+        enddo
+    endif
 return
 end
 
