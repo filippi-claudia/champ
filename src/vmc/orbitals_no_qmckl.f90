@@ -511,4 +511,62 @@ subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,i
 return
 end
 
+subroutine orbitals_quad_bf_no_qmckl(xquad,orbn,iwforb)
+
+     use basis_fns_mod, only: basis_fns
+    use coefs,   only: nbasis
+    use multiple_geo, only: iwf
+    use numbas2, only: ibas0,ibas1
+    use m_force_analytic, only: iforce_analy
+    use optwf_control, only: ioptorb
+    use optwf_control, only: method
+    use orbval,  only: nadorb
+    use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
+    use precision_kinds, only: dp
+    use qua,     only: nquad
+    use slater,  only: coef,norb
+    use sr_mod,  only: i_sr_rescale
+    use system,  only: ncent,ncent_tot,nelec
+    use vmc_mod, only: norb_tot, nwftypeorb
+    use contrl_file, only: ounit
+    use m_backflow, only: rvec_en_bf, r_en_bf
+    use backflow_mod, only: backflow
+
+    implicit none
+
+    integer :: ic, ider, iq, i
+    integer :: iorb, k, m, m0, iwforb
+    integer :: nadorb_sav
+
+    real(dp), dimension(3,nelec) :: xquad
+    real(dp), dimension(norb_tot, nelec) :: orbn
+
+    call backflow(xquad)
+
+    nadorb_sav=nadorb
+
+    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
+
+    ! get basis functions for electron iel
+    ider=0
+    if(iforce_analy.gt.0) ider=1
+
+    if(nwftypeorb.gt.1) iwf=1
+    call basis_fns(1,nelec,nelec,rvec_en_bf,r_en_bf,ider)
+    if(nwftypeorb.gt.1) iwf=iwforb
+
+    do i=1,nelec
+        do iorb=1,norb+nadorb
+            orbn(iorb,i)=0.d0
+            do m=1,nbasis
+                orbn(iorb,i)=orbn(iorb,i)+coef(m,iorb,iwf)*phin(m,i)
+            enddo
+        enddo
+    enddo
+
+    nadorb = nadorb_sav
+
+return
+end
+
 end module

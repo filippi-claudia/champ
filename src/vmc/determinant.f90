@@ -126,8 +126,6 @@ contains
                 dslm(kk,(l-1)*nel+j,iab,k) * d2quasi_dx2(kk,i+ish,j+ish)
               enddo
 
-
-
               enddo
             enddo
                 d2dx2(i+ish,k)=d2dx2(i+ish,k)+&

@@ -7,6 +7,7 @@ contains
 !> @details Backflow functions can be selected in the input file using the flag "backflow".
 !> Flag 0: Blackflow disabled
 !> Flag 1: Trivial backflow (no transformation)
+!>
 !> @param[in]  x  Original electron coordinates (3, nelec)
 !> @param[out] none
 !>

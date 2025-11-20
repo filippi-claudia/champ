@@ -6,6 +6,7 @@ module m_backflow
     use precision_kinds, only: dp
     use system, only: nelec, ncent_tot
     use vmc_mod, only: nmat_dim, nwftypeorb, norb_tot
+    use qua, only: nquad
     
     implicit none
 
@@ -33,13 +34,17 @@ module m_backflow
     !> d2orb
     real(dp), dimension(:, :, :, :, :), allocatable :: d2orb
 
+    !> nl_slm (nmat_dim,2)
+    real(dp), dimension(:, :), allocatable :: nl_slm
+
     
     private
     public :: ibackflow
     public :: quasi_x, dquasi_dx, d2quasi_dx2
     public :: rvec_en_bf, r_en_bf
     public :: allocate_m_backflow, deallocate_m_backflow
-    public :: dslm, d2slm, d2orb
+    public :: dslm, d2slm, d2orb, nl_slm
+
 
 contains
     !> Allocates memory for backflow arrays.
@@ -53,6 +58,7 @@ contains
         if (.not. allocated(dslm)) allocate (dslm(3, nmat_dim, 2, nwftypeorb))
         if (.not. allocated(d2slm)) allocate (d2slm(3, 3, nmat_dim, 2, nwftypeorb))
         if (.not. allocated(d2orb)) allocate (d2orb(3,3,norb_tot, nelec, nwftypeorb))
+        if (.not. allocated(nl_slm)) allocate (nl_slm(nmat_dim, 2))
       endif
     end subroutine allocate_m_backflow
   
@@ -67,6 +73,7 @@ contains
         if (allocated(dslm)) deallocate(dslm)
         if (allocated(d2slm)) deallocate(d2slm)
         if (allocated(d2orb)) deallocate(d2orb)
+        if (allocated(nl_slm)) deallocate(nl_slm)
       endif
     end subroutine deallocate_m_backflow
   
