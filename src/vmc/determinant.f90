@@ -45,6 +45,8 @@ contains
       if (ibackflow .gt. 0) then
           call backflow(x)
           call orbitals(quasi_x, rvec_en_bf, r_en_bf)
+          ddx = 0.0d0
+          d2dx2 = 0.0d0
       else
           call orbitals(x,rvec_en,r_en)
       endif
@@ -86,16 +88,15 @@ contains
 
             if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
 
-           ddx(:,:,k)=0.d0
-           d2dx2(:,k)=0.d0
            do i=1,nel
             do j=1,nel
               do l=1,nel
                 do kk=1,3
                   do jj=1,3
-                ddx(kk,i+ish,k)=ddx(kk,i+ish,k)+slmi((j-1+ish)*nel + l+ish,iab,k)&
-                *dslm(kk,(l-1+ish)*nel + j+ish,iab,k) &
-                * dquasi_dx(kk,i+ish,jj,l)
+
+                ddx(kk,i+ish,k)=ddx(kk,i+ish,k)+slmi((j-1)*nel + l,iab,k)&
+                *dslm(kk,(l-1)*nel + j,iab,k) &
+                * dquasi_dx(jj,i+ish,kk,j+ish)
                   enddo
                 enddo
                 do m =1,nel
@@ -104,9 +105,9 @@ contains
                       do ii=1,3
                         do jj=1,3
                     d2dx2(i+ish,k)=d2dx2(i+ish,k)-&
-                    slmi((j-1+ish)*nel + n+ish,iab,k) * dslm(kk,(l-1+ish)*nel +j+ish,iab,k) * &
-                    slmi((m-1+ish)*nel + l+ish,iab,k) * dslm(jj,(n-1+ish)*nel +m+ish,iab,k) *&
-                    dquasi_dx(ii,i+ish,kk,n) * dquasi_dx(ii,i+ish,jj,l)
+                    slmi((j-1)*nel + n,iab,k) * dslm(kk,(l-1)*nel +j,iab,k) * &
+                    slmi((m-1)*nel + l,iab,k) * dslm(jj,(n-1)*nel +m,iab,k) * &
+                    dquasi_dx(ii,i+ish,kk,j+ish) * dquasi_dx(ii,i+ish,jj,m+ish)
                         enddo
                       enddo
                     enddo
@@ -115,12 +116,16 @@ contains
                 do kk=1,3
                   do ii=1,3
                     do jj=1,3
-                d2dx2(i+ish,k)=d2dx2(i+ish,k) + slmi((j-1+ish)*nel + l+ish,iab,k) &
-                *d2slm(ii,jj,(l-1+ish)*nel + j+ish,iab,k) &
-                * dquasi_dx(kk,i+ish,jj,l) * dquasi_dx(kk,i+ish,ii,j)
+                d2dx2(i+ish,k)=d2dx2(i+ish,k) + slmi((j-1)*nel+l,iab,k) * &
+                d2slm(ii,jj,(l-1)*nel+j,iab,k) * dquasi_dx(kk,i+ish,ii,j+ish) * dquasi_dx(kk,i+ish,jj,j+ish)
                   enddo
                 enddo
               enddo
+              do kk=1,3
+                d2dx2(i+ish,k) = d2dx2(i+ish,k) + slmi((j-1)*nel+l,iab,k) * &
+                dslm(kk,(l-1)*nel+j,iab,k) * d2quasi_dx2(kk,i+ish,j+ish)
+              enddo
+
 
 
               enddo
@@ -173,6 +178,8 @@ contains
            endif
          enddo
       enddo
+
+      print *, ddx(1,1,1), d2dx2(1,1)
 
       if(ipr.ge.4) then
         do k=1,nwftypeorb

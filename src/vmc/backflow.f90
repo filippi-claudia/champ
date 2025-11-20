@@ -70,7 +70,7 @@ subroutine trivial_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2)
     real(dp), dimension(3, nelec), intent(in) :: x
     real(dp), dimension(3, nelec), intent(out) :: quasi_x
     real(dp), dimension(3, nelec, 3, nelec), intent(out) :: dquasi_dx
-    real(dp), dimension(3, nelec, 3, 3, nelec), intent(out) :: d2quasi_dx2
+    real(dp), dimension(3, nelec, nelec), intent(out) :: d2quasi_dx2
     integer :: i
 
     ! Quasicoordinates equal to original coordinates
@@ -79,7 +79,6 @@ subroutine trivial_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2)
     ! First derivatives are identity matrices
     dquasi_dx = 0.0d0
     do i = 1, nelec
-        dquasi_dx(:, i, :, i) = 0.0d0
         dquasi_dx(1, i, 1, i) = 1.0d0
         dquasi_dx(2, i, 2, i) = 1.0d0
         dquasi_dx(3, i, 3, i) = 1.0d0
