@@ -26,6 +26,8 @@ contains
       use system,  only: cent,iwctype,ncent,ncent_tot,nelec,nup
       use vmc_mod, only: norb_tot, nwftypeorb, nwftypejas
       use vmc_mod, only: nbjx, bjxtoo, bjxtoj
+      use orbitals_no_qmckl_mod, only: orbitals_quad_bf_no_qmckl
+      use m_backflow, only: ibackflow, quasi_x
 
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
@@ -36,6 +38,7 @@ contains
 ! variables in subroutine call
       integer :: i_vpsp
       real(dp), dimension(3,*) :: x
+      real(dp), dimension(3,nelec) :: x_back
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(2,nbjx) :: vpsp_det
@@ -43,7 +46,7 @@ contains
       real(dp), dimension(ncent_tot,MPS_QUAD,*) :: t_vpsp
 
 ! local variables
-      integer :: i, i1, i2, iab
+      integer :: i, i1, i2, iab, j
       integer :: ic, ict, iel, index
       integer :: iorb, iparm, iq, iqq
       integer :: k, l, nxquad, ndim, iwforb, iwfjas, ibjx, xo, xj
@@ -192,9 +195,25 @@ contains
       allocate(da_orbn(norb,3,nxquad,ncent_tot))
       
       do iwforb=1,nwftypeorb
-        call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,iwforb), &
-                         dorbn(1,1,1,iwforb),da_orbn,iwforb)
-        call nonlocd_quad(nxquad,iequad,orbn(1,1,iwforb),det_ratio(1,iwforb),iwforb)
+        if (ibackflow .gt. 0) then
+          do iq=1,nxquad
+            do j=1,nelec
+            x_back(1,j) = x(1,j)
+            x_back(2,j) = x(2,j)
+            x_back(3,j) = x(3,j)
+            enddo
+            x_back(1,iequad(iq)) = xquad(1,iq)
+            x_back(2,iequad(iq)) = xquad(2,iq)
+            x_back(3,iequad(iq)) = xquad(3,iq)
+            call orbitals_quad_bf_no_qmckl(x_back,orbn(1,1,iwforb),iwforb)
+            call nonlocd_quad_bf(orbn(1,1,iwforb),det_ratio(iq,iwforb),iwforb)
+          enddo
+
+        else
+          call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,iwforb), &
+                          dorbn(1,1,1,iwforb),da_orbn,iwforb)
+          call nonlocd_quad(nxquad,iequad,orbn(1,1,iwforb),det_ratio(1,iwforb),iwforb)
+        endif
       enddo
 
       if(ijas.eq.1) then
@@ -496,6 +515,60 @@ contains
         enddo
 
       endif
+
+      enddo
+
+      return
+      end
+
+      subroutine nonlocd_quad_bf(orb,ratio,iwforb)
+! Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
+
+      use dorb_m,  only: iworbd
+      use precision_kinds, only: dp
+      use slater,  only: kref
+      use system,  only: ndn,nup
+      use slater, only: slmi
+      use vmc_mod, only: norb_tot
+      use system, only: nelec
+      use m_backflow, only: nl_slm
+      use matinv_mod, only: matinv
+      use multislater, only: detiab
+
+      implicit none
+
+      integer :: nxquad, iq, iel, ik, j, iwforb, iab,l
+      integer :: ish, jorb, nel
+      real(dp) :: ratio
+      real(dp), dimension(norb_tot,nelec) :: orb
+      real(dp), dimension(2) :: new_det
+      ratio = 1.0d0
+
+      do iab=1,2
+        if(iab.eq.1) then
+          ish = 0
+          nel = nup
+          else
+          ish = nup
+          nel = ndn
+        end if
+
+        ik=-nel
+        do j=1,nel
+          jorb=iworbd(j+ish,kref)
+          ik=ik+nel
+          call dcopy(nel,orb(jorb,1+ish),norb_tot,nl_slm(1+ik,iab),1)
+        enddo
+
+        call matinv(nl_slm(1,iab),nel,new_det(iab))
+
+        ratio = ratio*new_det(iab)/detiab(kref,iab,iwforb)
+
+        ! do j=1,nel
+        !   do l =1,nel
+        !     ratio=ratio+slmi((j-1)*nel+l,iab,iwforb)*nl_slm((l-1)*nel+j,iab) 
+        !   enddo
+        ! enddo
 
       enddo
 

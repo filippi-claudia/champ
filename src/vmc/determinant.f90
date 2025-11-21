@@ -27,18 +27,29 @@ contains
       use system,  only: ncent_tot,ndn,nelec,nup
       use vmc_mod, only: norb_tot
       use vmc_mod, only: norb_tot, nwftypeorb
+      use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2, ibackflow, rvec_en_bf, r_en_bf
+      use m_backflow, only: dslm, d2slm, d2orb
+      use backflow_mod, only: backflow
 
       implicit none
 
       integer :: i, iab, icheck, ii, ik
-      integer :: index, ipass, ish, j, k
+      integer :: index, ipass, ish, j, k, l, kk, jj, m, n
       integer :: jk, jorb, nel, newref
-      real(dp), dimension(3, *) :: x
+      real(dp) :: tmp
+      real(dp), dimension(3, nelec) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
 
 ! compute orbitals
-      call orbitals(x,rvec_en,r_en)
+      if (ibackflow .gt. 0) then
+          call backflow(x)
+          call orbitals(quasi_x, rvec_en_bf, r_en_bf)
+          ddx = 0.0d0
+          d2dx2 = 0.0d0
+      else
+          call orbitals(x,rvec_en,r_en)
+      endif
 
       kchange=0
       icheck=0
@@ -58,6 +69,73 @@ contains
 
          do k=1,nwftypeorb
            detiab(kref,iab,k)=1.d0
+
+          if (ibackflow.gt.0) then
+            jk=-nel
+            do j=1,nel
+              jorb=iworbd(j+ish,kref)
+              jk=jk+nel
+              call dcopy(nel,orb(1+ish,jorb,k),1,slmi(1+jk,iab,k),1)
+              call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,dslm(1,1+jk,iab,k),3)
+              call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,dslm(2,1+jk,iab,k),3)
+              call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,dslm(3,1+jk,iab,k),3)
+              do kk=1,3
+                do jj=1,3
+              call dcopy(nel,d2orb(kk,jj,jorb,1+ish,k),3*3*norb_tot,d2slm (kk,jj,1+jk,iab,k),3*3)
+                enddo 
+              enddo
+            enddo
+
+            if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
+
+           do i=1,nel
+            do j=1,nel
+              do l=1,nel
+                do kk=1,3
+                  do jj=1,3
+
+                ddx(kk,i+ish,k)=ddx(kk,i+ish,k)+slmi((j-1)*nel + l,iab,k)&
+                *dslm(kk,(l-1)*nel + j,iab,k) &
+                * dquasi_dx(jj,i+ish,kk,j+ish)
+                  enddo
+                enddo
+                do m =1,nel
+                  do n=1,nel
+                    do kk=1,3
+                      do ii=1,3
+                        do jj=1,3
+                    d2dx2(i+ish,k)=d2dx2(i+ish,k)-&
+                    slmi((j-1)*nel+l,iab,k) * dslm(kk,(l-1)*nel+m,iab,k) * &
+                    slmi((m-1)*nel+n,iab,k) * dslm(jj,(n-1)*nel+j,iab,k) * &
+                    dquasi_dx(ii,i+ish,kk,j+ish) * dquasi_dx(ii,i+ish,jj,m+ish)
+                        enddo
+                      enddo
+                    enddo
+                  enddo
+                enddo
+                do kk=1,3
+                  do ii=1,3
+                    do jj=1,3
+                d2dx2(i+ish,k)=d2dx2(i+ish,k) + slmi((j-1)*nel+l,iab,k) * &
+                d2slm(ii,jj,(l-1)*nel+j,iab,k) * dquasi_dx(kk,i+ish,ii,j+ish) * dquasi_dx(kk,i+ish,jj,j+ish)
+                  enddo
+                enddo
+              enddo
+              do kk=1,3
+                d2dx2(i+ish,k) = d2dx2(i+ish,k) + slmi((j-1)*nel+l,iab,k) * &
+                dslm(kk,(l-1)*nel+j,iab,k) * d2quasi_dx2(kk,i+ish,j+ish)
+              enddo
+
+              enddo
+            enddo
+                d2dx2(i+ish,k)=d2dx2(i+ish,k)+&
+                ddx(1,i+ish,k)*ddx(1,i+ish,k)+&
+                ddx(2,i+ish,k)*ddx(2,i+ish,k)+&
+                ddx(3,i+ish,k)*ddx(3,i+ish,k)
+           enddo
+
+
+          else
 
            jk=-nel
            do j=1,nel
@@ -87,6 +165,8 @@ contains
              d2dx2(i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fpp( 1+ik,iab,k),1)
            enddo
 
+          endif
+
            if(ipr.ge.4) then
              ik=-nel
              do i=1,nel
@@ -96,6 +176,7 @@ contains
            endif
          enddo
       enddo
+
 
       if(ipr.ge.4) then
         do k=1,nwftypeorb

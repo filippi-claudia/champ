@@ -10,7 +10,7 @@ module walksav_det_mod
       use multislater, only: detiab
       use orbval,  only: dorb,orb
       use precision_kinds, only: dp
-      use slater,  only: ddx,fp,kref,ndet,norb,slmi
+      use slater,  only: ddx,kref,ndet,norb,slmi
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
       use ycompact, only: ymat
@@ -19,10 +19,6 @@ module walksav_det_mod
       integer, allocatable, save :: krefw(:)
       real(dp), allocatable, save :: slmuiw(:, :)
       real(dp), allocatable, save :: slmdiw(:, :)
-      real(dp), allocatable, save :: fpuw(:, :, :)
-      real(dp), allocatable, save :: fpdw(:, :, :)
-      real(dp), allocatable, save :: fppuw(:, :)
-      real(dp), allocatable, save :: fppdw(:, :)
       real(dp), allocatable, save :: ddxw(:, :, :)
       real(dp), allocatable, save :: d2dx2w(:, :)
       real(dp), allocatable, save :: detuw(:, :)
@@ -56,10 +52,6 @@ contains
       if(.not.allocated(krefw)) allocate(krefw(mwalk), source=0)
       if(.not.allocated(slmuiw)) allocate(slmuiw(nmat_dim,mwalk))
       if(.not.allocated(slmdiw)) allocate(slmdiw(nmat_dim,mwalk))
-      if(.not.allocated(fpuw)) allocate(fpuw(3, nmat_dim,mwalk))
-      if(.not.allocated(fpdw)) allocate(fpdw(3, nmat_dim,mwalk))
-      if(.not.allocated(fppuw)) allocate(fppuw(nmat_dim,mwalk))
-      if(.not.allocated(fppdw)) allocate(fppdw(nmat_dim,mwalk))
       if(.not.allocated(ddxw)) allocate(ddxw(3, nelec,mwalk))
       if(.not.allocated(d2dx2w)) allocate(d2dx2w(nelec,mwalk))
       if(.not.allocated(detuw)) allocate(detuw(ndet,mwalk))
@@ -73,15 +65,9 @@ contains
        krefw(iw)=kref
        do j=1,nup*nup
          slmuiw(j,iw)=slmi(j,1,1)
-         fpuw(1,j,iw)=fp(1,j,1,1)
-         fpuw(2,j,iw)=fp(2,j,1,1)
-         fpuw(3,j,iw)=fp(3,j,1,1)
        enddo
        do j=1,ndn*ndn
          slmdiw(j,iw)=slmi(j,2,1)
-         fpdw(1,j,iw)=fp(1,j,2,1)
-         fpdw(2,j,iw)=fp(2,j,2,1)
-         fpdw(3,j,iw)=fp(3,j,2,1)
        enddo
        do i=1,nelec
          ddxw(1,i,iw)=ddx(1,i,1)
@@ -153,15 +139,9 @@ contains
       kref=krefw(iw)
       do j=1,nup*nup
         slmi(j,1,1)=slmuiw(j,iw)
-        fp(1,j,1,1)=fpuw(1,j,iw)
-        fp(2,j,1,1)=fpuw(2,j,iw)
-        fp(3,j,1,1)=fpuw(3,j,iw)
       enddo
       do j=1,ndn*ndn
         slmi(j,2,1)=slmdiw(j,iw)
-        fp(1,j,2,1)=fpdw(1,j,iw)
-        fp(2,j,2,1)=fpdw(2,j,iw)
-        fp(3,j,2,1)=fpdw(3,j,iw)
       enddo
       do i=1,nelec
         ddx(1,i,1)=ddxw(1,i,iw)
@@ -270,15 +250,10 @@ contains
       krefw(iw2)=krefw(iw)
       do j=1,nup*nup
         slmuiw(j,iw2)=slmuiw(j,iw)
-        fpuw(1,j,iw2)=fpuw(1,j,iw)
-        fpuw(2,j,iw2)=fpuw(2,j,iw)
-        fpuw(3,j,iw2)=fpuw(3,j,iw)
       enddo
       do j=1,ndn*ndn
         slmdiw(j,iw2)=slmdiw(j,iw)
-        fpdw(1,j,iw2)=fpdw(1,j,iw)
-        fpdw(2,j,iw2)=fpdw(2,j,iw)
-        fpdw(3,j,iw2)=fpdw(3,j,iw)
+
       enddo
       do i=1,nelec
         ddxw(1,i,iw2)=ddxw(1,i,iw)
@@ -351,12 +326,8 @@ contains
 
       call mpi_isend(slmuiw(1,nwalk),nup*nup,mpi_double_precision &
         ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
-      call mpi_isend(fpuw(1,1,nwalk),3*nup*nup,mpi_double_precision &
-        ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(slmdiw(1,nwalk),ndn*ndn,mpi_double_precision &
         ,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
-      call mpi_isend(fpdw(1,1,nwalk),3*ndn*ndn,mpi_double_precision &
-        ,irecv,itag+4,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(ddxw(1,1,nwalk),3*nelec,mpi_double_precision &
         ,irecv,itag+5,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(krefw(nwalk),1,mpi_integer &
@@ -415,12 +386,8 @@ contains
 
       call mpi_recv(slmuiw(1,nwalk),nup*nup,mpi_double_precision &
         ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(fpuw(1,1,nwalk),3*nup*nup,mpi_double_precision &
-        ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(slmdiw(1,nwalk),ndn*ndn,mpi_double_precision &
         ,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(fpdw(1,1,nwalk),3*ndn*ndn,mpi_double_precision &
-        ,isend,itag+4,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(ddxw(1,1,nwalk),3*nelec,mpi_double_precision &
         ,isend,itag+5,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(krefw(nwalk),1,mpi_integer &

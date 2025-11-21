@@ -7,6 +7,7 @@ if (MPI_Fortran_FOUND)
     acuest.f90
     acuest_reduce.f90
     acuest_write.f90
+    backflow.f90
     basis_fns.f90
     bxmatrices.f90
     cuspexact4.f90
@@ -221,6 +222,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/gauss.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/sites.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_nonloc.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/backflow.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/splfit.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/fitting.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f90
