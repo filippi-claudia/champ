@@ -34,8 +34,19 @@ module m_backflow
     !> d2orb
     real(dp), dimension(:, :, :, :, :), allocatable :: d2orb
 
+    !> orbn
+    real(dp), dimension(:, :, :), allocatable :: orbn_bf
+    !> dorbn
+    real(dp), dimension(:, :, :, :), allocatable :: dorbn_bf
+    !> slmin
+    real(dp), dimension(:, :, :), allocatable :: slmin_bf
+    !> detn_bf
+    real(dp), dimension(:, :), allocatable :: detn_bf
+
     !> nl_slm (nmat_dim,2)
     real(dp), dimension(:, :), allocatable :: nl_slm
+
+    integer :: nparmbf = 0
 
     
     private
@@ -43,7 +54,8 @@ module m_backflow
     public :: quasi_x, dquasi_dx, d2quasi_dx2
     public :: rvec_en_bf, r_en_bf
     public :: allocate_m_backflow, deallocate_m_backflow
-    public :: dslm, d2slm, d2orb, nl_slm
+    public :: dslm, d2slm, d2orb, nl_slm, nparmbf
+    public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf
 
 
 contains
@@ -59,6 +71,10 @@ contains
         if (.not. allocated(d2slm)) allocate (d2slm(3, 3, nmat_dim, 2, nwftypeorb))
         if (.not. allocated(d2orb)) allocate (d2orb(3,3,norb_tot, nelec, nwftypeorb))
         if (.not. allocated(nl_slm)) allocate (nl_slm(nmat_dim, 2))
+        if (.not. allocated(orbn_bf)) allocate (orbn_bf(nelec, norb_tot, nwftypeorb))
+        if (.not. allocated(dorbn_bf)) allocate (dorbn_bf(norb_tot, nelec, 3, nwftypeorb))
+        if (.not. allocated(slmin_bf)) allocate (slmin_bf(nmat_dim,2,nwftypeorb))
+        if (.not. allocated(detn_bf)) allocate (detn_bf(2, nwftypeorb))
       endif
     end subroutine allocate_m_backflow
   
@@ -74,6 +90,10 @@ contains
         if (allocated(d2slm)) deallocate(d2slm)
         if (allocated(d2orb)) deallocate(d2orb)
         if (allocated(nl_slm)) deallocate(nl_slm)
+        if (allocated(orbn_bf)) deallocate(orbn_bf)
+        if (allocated(dorbn_bf)) deallocate(dorbn_bf)
+        if (allocated(slmin_bf)) deallocate(slmin_bf)
+        if (allocated(detn_bf)) deallocate(detn_bf)
       endif
     end subroutine deallocate_m_backflow
   

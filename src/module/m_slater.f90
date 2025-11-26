@@ -46,8 +46,6 @@ contains
 
     subroutine deallocate_slater()
         if (allocated(slmi)) deallocate(slmi)
-        if (allocated(fpp)) deallocate(fpp)
-        if (allocated(fp)) deallocate(fp)
         if (allocated(ddx)) deallocate(ddx)
         if (allocated(d2dx2)) deallocate(d2dx2)
         if (allocated(cdet)) deallocate (cdet)

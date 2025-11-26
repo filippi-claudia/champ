@@ -27,6 +27,7 @@ contains
       use vmc_mod, only: norb_tot, nwftypeorb, nwftypejas
       use vmc_mod, only: nbjx, bjxtoo, bjxtoj
       use orbitals_no_qmckl_mod, only: orbitals_quad_bf_no_qmckl
+      use orbitals_qmckl_mod, only: orbitals_quad_bf_qmckl
       use m_backflow, only: ibackflow, quasi_x
 
 
@@ -205,7 +206,15 @@ contains
             x_back(1,iequad(iq)) = xquad(1,iq)
             x_back(2,iequad(iq)) = xquad(2,iq)
             x_back(3,iequad(iq)) = xquad(3,iq)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+            if(use_qmckl_orbitals) then
+              call orbitals_quad_bf_qmckl(x_back,orbn(1,1,iwforb),iwforb)
+            else
+#endif
             call orbitals_quad_bf_no_qmckl(x_back,orbn(1,1,iwforb),iwforb)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+            end if
+#endif
             call nonlocd_quad_bf(orbn(1,1,iwforb),det_ratio(iq,iwforb),iwforb)
           enddo
 

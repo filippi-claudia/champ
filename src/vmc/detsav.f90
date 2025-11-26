@@ -19,12 +19,21 @@ contains
       use ycompact, only: ymat
       use ycompactn, only: ymatn
       use vmc_mod, only: stoo
+      use m_backflow, only: ibackflow, orbn_bf, dorbn_bf, detn_bf, slmin_bf
 
       implicit none
 
       integer :: i, iab, iel, iflag, ikel
       integer :: iorb, ish, istate, j
       integer :: k, kk, ndim, nel, ndim2, kcum
+
+      if (ibackflow.gt.0) then
+        orb=orbn_bf
+        dorb = dorbn_bf
+        detiab(1,:,:)=detn_bf(:,:)
+        slmi=slmin_bf
+        return
+      end if
 
       if(iel.le.nup) then
          iab=1

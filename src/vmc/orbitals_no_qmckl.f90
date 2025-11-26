@@ -401,6 +401,64 @@ subroutine orbitalse_no_qmckl(iel,x,rvec_en,r_en,iflag)
 return
 end
 
+subroutine orbitalse_no_qmckl_bf(x,rvec_en,r_en,iflag)
+
+    use basis_fns_mod, only: basis_fns
+    use coefs, only: nbasis
+    use multiple_geo, only: iwf
+    use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
+    use phifun, only: phin
+    use precision_kinds, only: dp
+    use slater, only: norb, coef
+    use system, only: ncent_tot, nelec
+    use vmc_mod, only: nwftypeorb
+    use m_backflow, only: orbn_bf, dorbn_bf
+
+    implicit none
+
+    integer :: iel, ider, iflag, iorb, m
+    integer :: m0, k, j, i
+
+    real(dp), dimension(3,*) :: x
+    real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+    real(dp), dimension(nelec,ncent_tot) :: r_en
+
+    real(dp), dimension(:), allocatable :: auxorb !(norb+nadorb)
+    real(dp), dimension(:, :), allocatable :: auxdorb !(norb+nadorb)
+
+    if (.not. allocated(auxorb)) allocate (auxorb(norb))
+    if (.not. allocated(auxdorb)) allocate (auxdorb(norb,3))
+
+
+    call basis_fns(1,nelec,nelec,rvec_en,r_en,1)
+
+
+
+    do k=1,nwftypeorb
+        do i=1,nelec
+            auxorb=0.d0
+            auxdorb=0.d0
+            do iorb=1,norb
+                orbn_bf(i,iorb,:)=0.d0
+                dorbn_bf(iorb,i,:,:)=0.d0
+                do m=1,nbasis
+                    auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,k)*phin  ( m,i)
+                    auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,k)*dphin (m,i,1)
+                    auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,k)*dphin (m,i,2)
+                    auxdorb (iorb,3)=auxdorb (iorb,3)+coef(m,iorb,k)*dphin (m,i,3)
+                enddo
+            enddo
+            orbn_bf(i,1:norb,k)=auxorb(1:norb)
+            dorbn_bf(1:norb,i,1:3,k)=auxdorb(1:norb,1:3)
+        enddo
+    enddo
+
+    deallocate(auxorb)
+    deallocate(auxdorb)
+  
+return
+end
+
 subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
 
     use basis_fns_mod, only: basis_fns
