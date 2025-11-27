@@ -263,6 +263,7 @@ contains
 ! primary config
 ! set n- and e-coords and n-n potentials before getting wavefn. etc.
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
+
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
 
       do istate=1,nstates

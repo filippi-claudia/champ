@@ -34,7 +34,7 @@
       use periodic, only: np_coul, np_jas, npoly, vcell
       use periodic, only: rlatt, rlatt_inv
       use periodic, only: znuc2_sum, znuc_sum
-      use periodic, only : n_images, ell
+      use periodic, only : n_images, n_images0, ell
       use error, only: fatal_error
       use find_pimage, only: check_lattice
       use matinv_mod, only: matinv
@@ -299,6 +299,7 @@
 !     write(ounit,'(''set_ewald :: pecent='',f12.6)') pecent
 
 ! images for periodic basis functions
+      n_images0=n_images
       if(n_images.ge.1)then
 
          if (ipr.ge.4 ) write(ounit,*) "Initialization periodic images distances"
