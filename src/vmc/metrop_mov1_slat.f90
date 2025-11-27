@@ -69,7 +69,7 @@ contains
 #endif
       implicit none 
 
-      integer :: i, iab, ic, iel, iflag_dn, rc
+      integer :: i, iab, ic, iel, ijas1, iflag_dn, rc
       integer :: iflag_up, iflagb, iflagt, iflagz
       integer :: ifr, igeometrical, ii, ipass
       integer :: irun, istate, ierr
@@ -82,7 +82,7 @@ contains
       real(dp) :: g32dif, g32dif1, g32dif2, g52bot
       real(dp) :: g52dif, g52dif1, g52dif2, g52top
       real(dp) :: g52zer, p, phitry, phizer
-      real(dp) :: psidg, psig, q
+      real(dp) :: psi2g, q
       real(dp) :: r, ratio, raver, ravern
       real(dp) :: rbot, rmax1, rmax2 = 0d0, rnew
       real(dp) :: rnorm, rnorm_nodes, rold, root
@@ -140,13 +140,13 @@ contains
           iflag_dn=2
         endif
 
+! psig is relative to the first state
         if(iguiding.eq.0) then
-          psidg=psido(1)
-          psig=psido(1)*exp(psijo(1))
+          psi2g=1.d0
         else
-          call determinant_psig(psido,psijo,psig)
+          call determinant_psig(psido,psijo,psi2g)
         endif
-        call compute_determinante_grad(i,psig,psido,psijo,vold(1,i),1)
+        call compute_determinante_grad(i,psi2g,psido,psijo,vold(1,i),1)
         fxop=one
         nearo=nearesto(i)
         if(nloc.eq.0) then
@@ -386,33 +386,33 @@ contains
       call psie(iel,xnew,psidn,psijn,ipass,0)
 
       if(iguiding.eq.0) then
-        psidg=psidn(1)
-        psig=psidn(1)*exp(psijn(1))
+        psi2g=1.d0
       else
-        call determinant_psig(psidn,psijn,psig)
+        call determinant_psig(psidn,psijn,psi2g)
       endif
 
-      if(psig.eq.0.d0) then
+      if(psi2g.eq.0.d0) then
         p=zero
         q=one
         goto 208
       endif
 
-      call compute_determinante_grad(iel,psig,psidn,psijn,vnew(1,iel),0)
+      call compute_determinante_grad(iel,psi2g,psidn,psijn,vnew(1,iel),0)
 
       if(ipr.gt.1) then
-        write(ounit,'(''psidn,psig ='',2d12.4)') psidn(1),psig
+        write(ounit,'(''psidn,psi2g ='',2d12.4)') psidn(1),psi2g
       endif
 
-      psi2n(1)=2*(dlog(dabs(psig)))
+      ijas1=stoj(1)
+      psi2n(1)=dlog(dabs(psi2g))+2*(dlog(dabs(psidn(1)))+psijn(ijas1))
 
       if(node_cutoff.ne.0) then
         do jel=1,nup
-          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,psijn,vnew(1,jel),iflag_up)
+          if(jel.ne.iel) call compute_determinante_grad(jel,psi2g,psidn,psijn,vnew(1,jel),iflag_up)
         enddo
 
         do jel=nup+1,nelec
-          if(jel.ne.iel) call compute_determinante_grad(jel,psig,psidn,psijn,vnew(1,jel),iflag_dn)
+          if(jel.ne.iel) call compute_determinante_grad(jel,psi2g,psidn,psijn,vnew(1,jel),iflag_dn)
         enddo
 
         call nodes_distance(vnew,distance_node,0)
@@ -557,7 +557,7 @@ contains
 !lim    endif
 
 ! p is the probability of accepting new move
-      p=rratio**2*exp(psi2n(1)-psi2o(1,1))*dabs((fxnp*areao)/(fxop*arean))
+        p=rratio**2*exp(psi2n(1)-psi2o(1,1))*dabs((fxnp*areao)/(fxop*arean))
 
         if(ipr.ge.1) then
           write(ounit,'(''rminn,rvminn,vnew,vnewr'',9d12.4)') &
@@ -650,36 +650,34 @@ contains
       enddo
 
       if(iguiding.eq.0) then
-        psidg=psido(1)
-        psig=psido(1)*exp(psijo(1))
+        psi2g=1.d0
        else
-        call determinant_psig(psido,psijo,psig)
+        call determinant_psig(psido,psijo,psi2g)
       endif
 
       if(ipr.gt.1) then
-        write(ounit,'(''psid,psig ='',2d12.4)') psido(1),psig
+        write(ounit,'(''psid,psi2g ='',2d12.4)') psido(1),psi2g
       endif
-
 
       rnorm_nodes=1.d0
       if(node_cutoff.gt.0) then
         do jel=1,nelec
-          call compute_determinante_grad(jel,psig,psido(1),psijo,vold(1,jel),1)
+          call compute_determinante_grad(jel,psi2g,psido(1),psijo,vold(1,jel),1)
         enddo
         call nodes_distance(vold,distance_node,1)
         rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
-        psig=psig*rnorm_nodes
+        psi2g=psi2g*rnorm_nodes*rnorm_nodes
         if(ipr.gt.1) then
           write(ounit,'(''distance_node='',d12.4)') distance_node
           write(ounit,'(''rnorm_nodes='',d12.4)') rnorm_nodes
-          write(ounit,'(''psig_ncut='',d12.4)') psidg
+          write(ounit,'(''psi2g_ncut='',d12.4)') psi2g
         endif
         distance_node_sum=distance_node_sum+distance_node
       endif
-
+      
       do istate=1,nstates
         j=stoj(istate)
-        wtg_sqrt(istate)=psido(istate)*exp(psijo(j))/psig
+        wtg_sqrt(istate)=psido(istate)/psido(1)*exp(psijo(j)-psijo(ijas1))/sqrt(psi2g)
         wtg(istate)=wtg_sqrt(istate)*wtg_sqrt(istate)
 
 ! form expected values of e, pe, etc.
@@ -713,7 +711,7 @@ contains
 
       if(irun.eq.1) call optwf_store(ipass,wtg,wtg_sqrt,psido,eold(1,1))
 
-      call efficiency_sample(ipass,psido,psijo,psig)
+      call efficiency_sample(ipass,psido,psijo,psi2g)
 
       call acues1(wtg)
 
@@ -731,7 +729,7 @@ contains
       enddo
 
 ! rewrite psi2o for next metropolis step if you are sampling guiding
-      if(iguiding.gt.0) psi2o(1,1)=2*(dlog(dabs(psig)))
+      if(iguiding.gt.0) psi2o(1,1)=dlog(dabs(psi2g))+2*(dlog(dabs(psido(1)))+psijo(ijas1))
 
       if(node_cutoff.gt.0) then
         psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)

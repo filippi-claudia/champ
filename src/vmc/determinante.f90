@@ -66,7 +66,7 @@ contains
       return
       end
 !-----------------------------------------------------------------------
-      subroutine compute_determinante_grad(iel,psig,psid,psij,vd,iflag_move)
+      subroutine compute_determinante_grad(iel,psi2g,psid,psij,vd,iflag_move)
 
       use csfs,    only: nstates
       use mstates3, only: iweight_g,weights_g
@@ -103,8 +103,8 @@ contains
       implicit none
 
       integer :: i, iab, iel, iflag_move, iorb
-      integer :: istate, kk, k, isorb, isjas
-      real(dp) :: detratio, psi2g, psi2gi, psig
+      integer :: istate, kk, k, isorb, isjas, isjas1
+      real(dp) :: detratio, psi2g, psi2gi, ratio
       real(dp), dimension(*) :: psid
       real(dp), dimension(*) :: psij
       real(dp), dimension(3) :: vd
@@ -130,8 +130,8 @@ contains
         iab=2
       endif
 
-      psi2g=psig*psig
       psi2gi=1.d0/psi2g
+      isjas1=stoj(iweight_g(1))
 
 ! All quantities saved (old) avaliable
       if(iflag_move.eq.1) then
@@ -171,8 +171,10 @@ contains
                aa(1,1,iab,isorb),ymat(1,1,iab,istate),vd_s(1,istate))
 
             do kk=1,3 
-              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(isjas)) &
-             *(vd_s(kk,istate)+vref(kk,isorb)+vj(kk,iel,isjas))/anormo(istate)
+              ratio=psid(istate)/psid(1)*exp(psij(isjas)-psij(isjas1))
+              vd(kk)=vd(kk)+weights_g(i)/anormo(istate)*ratio*ratio &
+              *(vd_s(kk,istate)+vref(kk,isorb)+vj(kk,iel,isjas))
+
             enddo
           enddo
           vd(1)=vd(1)*psi2gi
@@ -221,14 +223,15 @@ contains
                         aan(1,1,isorb),ymatn(1,1,istate),vd_s(1,istate))
 
             do kk=1,3
-              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(isjas)) &
-            *(vd_s(kk,istate)+vref(kk,isorb)+vjn(kk,iel,isjas))/anormo(istate)
+              ratio=psid(istate)/psid(1)*exp(psij(isjas)-psij(isjas1))
+              vd(kk)=vd(kk)+weights_g(i)/anormo(istate)*ratio*ratio &
+              *(vd_s(kk,istate)+vref(kk,isorb)+vjn(kk,iel,isjas))
+
             enddo
           enddo
           vd(1)=vd(1)*psi2gi
           vd(2)=vd(2)*psi2gi
           vd(3)=vd(3)*psi2gi
-
         endif
 
       else
