@@ -68,6 +68,7 @@ subroutine parser
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
       use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat,f_analy_err
+      use m_backflow, only: ibackflow
       use metropolis, only: imetro, vmc_tau
       use metropolis, only: delta,deltai,deltar,deltat,fbias
       use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
@@ -329,6 +330,7 @@ subroutine parser
   istrech     = fdf_get('istrech',0)
   alfstr      = fdf_get('alfstr',4.0d0)
   write_walkalize  = fdf_get('write_walkalize', .false.)
+  ibackflow     = fdf_get('backflow', 0)
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
   use_qmckl_jastrow = fdf_get('use_qmckl_jastrow', .true.)

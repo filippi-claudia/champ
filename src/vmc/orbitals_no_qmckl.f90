@@ -23,11 +23,12 @@ subroutine orbitals_no_qmckl(x,rvec_en,r_en)
     use multiple_geo, only: iwf
     use m_force_analytic, only: iforce_analy
     use orbval, only: ddorb, dorb, nadorb, orb
-    use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
+    use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis, d2phin_all
     use precision_kinds, only: dp
     use slater, only: norb, coef
     use system, only: ncent_tot, nelec
     use vmc_mod, only: nwftypeorb
+    use m_backflow, only: ibackflow, d2orb
         
     implicit none
         
@@ -43,13 +44,15 @@ subroutine orbitals_no_qmckl(x,rvec_en,r_en)
     real(dp), dimension(:), allocatable :: auxorb !(norb+nadorb)
     real(dp), dimension(:, :), allocatable :: auxdorb !(norb+nadorb)
     real(dp), dimension(:), allocatable :: auxddorb !(norb+nadorb)
+    real(dp), dimension(:,:, :), allocatable :: auxd2orb !(norb+nadorb)
     if (.not. allocated(auxorb)) allocate (auxorb(norb+nadorb))
     if (.not. allocated(auxdorb)) allocate (auxdorb(norb+nadorb,3))
     if (.not. allocated(auxddorb)) allocate (auxddorb(norb+nadorb))
+    if (.not. allocated(auxd2orb)) allocate (auxd2orb(3,3,norb+nadorb))
 
     ! get basis functions for all electrons
     ider=2
-    if(iforce_analy.eq.1) ider=3
+    if(iforce_analy.eq.1.or.ibackflow.gt.0) ider=3
 
     call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
 
@@ -188,6 +191,20 @@ subroutine orbitals_no_qmckl(x,rvec_en,r_en)
     
 #endif
 ! vectorization endif
+    if (ibackflow.gt.0) then
+
+        ! do k = 1, nwftypeorb
+            do i = 1, nelec
+                auxd2orb = 0.0d0
+                do iorb = 1, norb+nadorb
+                    do m=1,nbasis
+                        auxd2orb(:, :, iorb)=auxd2orb(:, :, iorb)+coef(m,iorb,iwf)*d2phin_all(:,:,m,i)
+                    enddo
+                enddo
+                d2orb(:,:, 1:(norb+nadorb), i, iwf)=auxd2orb(:,:, 1:(norb+nadorb))
+            enddo
+        ! enddo
+    endif
 return
 end
 
@@ -384,6 +401,64 @@ subroutine orbitalse_no_qmckl(iel,x,rvec_en,r_en,iflag)
 return
 end
 
+subroutine orbitalse_no_qmckl_bf(x,rvec_en,r_en,iflag)
+
+    use basis_fns_mod, only: basis_fns
+    use coefs, only: nbasis
+    use multiple_geo, only: iwf
+    use phifun, only: d2phin, dphin, n0_ibasis, n0_nbasis
+    use phifun, only: phin
+    use precision_kinds, only: dp
+    use slater, only: norb, coef
+    use system, only: ncent_tot, nelec
+    use vmc_mod, only: nwftypeorb
+    use m_backflow, only: orbn_bf, dorbn_bf
+
+    implicit none
+
+    integer :: iel, ider, iflag, iorb, m
+    integer :: m0, k, j, i
+
+    real(dp), dimension(3,*) :: x
+    real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
+    real(dp), dimension(nelec,ncent_tot) :: r_en
+
+    real(dp), dimension(:), allocatable :: auxorb !(norb+nadorb)
+    real(dp), dimension(:, :), allocatable :: auxdorb !(norb+nadorb)
+
+    if (.not. allocated(auxorb)) allocate (auxorb(norb))
+    if (.not. allocated(auxdorb)) allocate (auxdorb(norb,3))
+
+
+    call basis_fns(1,nelec,nelec,rvec_en,r_en,1)
+
+
+
+    do k=1,nwftypeorb
+        do i=1,nelec
+            auxorb=0.d0
+            auxdorb=0.d0
+            do iorb=1,norb
+                orbn_bf(i,iorb,:)=0.d0
+                dorbn_bf(iorb,i,:,:)=0.d0
+                do m=1,nbasis
+                    auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,k)*phin  ( m,i)
+                    auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,k)*dphin (m,i,1)
+                    auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,k)*dphin (m,i,2)
+                    auxdorb (iorb,3)=auxdorb (iorb,3)+coef(m,iorb,k)*dphin (m,i,3)
+                enddo
+            enddo
+            orbn_bf(i,1:norb,k)=auxorb(1:norb)
+            dorbn_bf(1:norb,i,1:3,k)=auxdorb(1:norb,1:3)
+        enddo
+    enddo
+
+    deallocate(auxorb)
+    deallocate(auxdorb)
+  
+return
+end
+
 subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
 
     use basis_fns_mod, only: basis_fns
@@ -488,6 +563,64 @@ subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,i
         ! endiff iforce
     enddo
     ! enddo nxquad
+
+    nadorb = nadorb_sav
+
+return
+end
+
+subroutine orbitals_quad_bf_no_qmckl(xquad,orbn,iwforb)
+
+     use basis_fns_mod, only: basis_fns
+    use coefs,   only: nbasis
+    use multiple_geo, only: iwf
+    use numbas2, only: ibas0,ibas1
+    use m_force_analytic, only: iforce_analy
+    use optwf_control, only: ioptorb
+    use optwf_control, only: method
+    use orbval,  only: nadorb
+    use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
+    use precision_kinds, only: dp
+    use qua,     only: nquad
+    use slater,  only: coef,norb
+    use sr_mod,  only: i_sr_rescale
+    use system,  only: ncent,ncent_tot,nelec
+    use vmc_mod, only: norb_tot, nwftypeorb
+    use contrl_file, only: ounit
+    use m_backflow, only: rvec_en_bf, r_en_bf
+    use backflow_mod, only: backflow
+
+    implicit none
+
+    integer :: ic, ider, iq, i
+    integer :: iorb, k, m, m0, iwforb
+    integer :: nadorb_sav
+
+    real(dp), dimension(3,nelec) :: xquad
+    real(dp), dimension(norb_tot, nelec) :: orbn
+
+    call backflow(xquad)
+
+    nadorb_sav=nadorb
+
+    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
+
+    ! get basis functions for electron iel
+    ider=0
+    if(iforce_analy.gt.0) ider=1
+
+    if(nwftypeorb.gt.1) iwf=1
+    call basis_fns(1,nelec,nelec,rvec_en_bf,r_en_bf,ider)
+    if(nwftypeorb.gt.1) iwf=iwforb
+
+    do i=1,nelec
+        do iorb=1,norb+nadorb
+            orbn(iorb,i)=0.d0
+            do m=1,nbasis
+                orbn(iorb,i)=orbn(iorb,i)+coef(m,iorb,iwf)*phin(m,i)
+            enddo
+        enddo
+    enddo
 
     nadorb = nadorb_sav
 

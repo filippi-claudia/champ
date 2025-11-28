@@ -27,75 +27,170 @@ contains
       use system,  only: ncent_tot,ndn,nelec,nup
       use vmc_mod, only: norb_tot
       use vmc_mod, only: norb_tot, nwftypeorb
+      use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2, ibackflow, rvec_en_bf, r_en_bf
+      use m_backflow, only: dslm, d2slm, d2orb
+      use backflow_mod, only: backflow
 
       implicit none
 
       integer :: i, iab, icheck, ii, ik
-      integer :: index, ipass, ish, j, k
+      integer :: index, ipass, ish, j, k, l, kk, jj, m, n
       integer :: jk, jorb, nel, newref
-      real(dp), dimension(3, *) :: x
+      real(dp) :: tmp
+      real(dp), dimension(3, nelec) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
 
 ! compute orbitals
-      call orbitals(x,rvec_en,r_en)
+      if (ibackflow .gt. 0) then
+          call backflow(x)
+          call orbitals(quasi_x, rvec_en_bf, r_en_bf)
+          ddx = 0.0d0
+          d2dx2 = 0.0d0
+      else
+          call orbitals(x,rvec_en,r_en)
+      endif
 
       kchange=0
       icheck=0
       10 continue
 
+
+
+  if (ibackflow.gt.0) then
+
       do iab=1,2
 
-         if(iab.eq.1) then
-            ish=0
-            nel=nup
-         else
-            ish=nup
-            nel=ndn
-         endif
+        if(iab.eq.1) then
+          ish=0
+          nel=nup
+        else
+          ish=nup
+          nel=ndn
+        endif
 
-         call allocate_multislater() ! properly accessing array elements
+        call allocate_multislater() ! properly accessing array elements
 
-         do k=1,nwftypeorb
-           detiab(kref,iab,k)=1.d0
+        do k=1,nwftypeorb
+          detiab(kref,iab,k)=1.d0
+          jk=-nel
+          do j=1,nel
+            jorb=iworbd(j+ish,kref)
+            jk=jk+nel
+            call dcopy(nel,orb(1+ish,jorb,k),1,slmi(1+jk,iab,k),1)
+            call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,dslm(1,1+jk,iab,k),3)
+            call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,dslm(2,1+jk,iab,k),3)
+            call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,dslm(3,1+jk,iab,k),3)
+            do kk=1,3
+              do jj=1,3
+                call dcopy(nel,d2orb(kk,jj,jorb,1+ish,k),3*3*norb_tot,d2slm (kk,jj,1+jk,iab,k),3*3)
+              enddo 
+            enddo
+          enddo
 
-           jk=-nel
-           do j=1,nel
-             jorb=iworbd(j+ish,kref)
+          if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
 
-             jk=jk+nel
+          do i=1,nelec
+            do j=1,nel
+              do l=1,nel
+                do kk=1,3
+                  do jj=1,3
+                    ddx(kk,i,k)=ddx(kk,i,k)+slmi((j-1)*nel + l,iab,k)&
+                    *dslm(jj,(l-1)*nel + j,iab,k) * dquasi_dx(kk,i,jj,j+ish)
+                  enddo
+                enddo
+                do m =1,nel
+                  do n=1,nel
+                    do kk=1,3
+                      do ii=1,3
+                        do jj=1,3
+                          d2dx2(i,k)=d2dx2(i,k) - &
+                          slmi((j-1)*nel+l,iab,k) * dslm(kk,(l-1)*nel+m,iab,k) * &
+                          slmi((m-1)*nel+n,iab,k) * dslm(jj,(n-1)*nel+j,iab,k) * &
+                          dquasi_dx(ii,i,kk,j+ish) * dquasi_dx(ii,i,jj,m+ish)
+                        enddo
+                      enddo
+                    enddo
+                  enddo
+                enddo
+                do kk=1,3
+                  do ii=1,3
+                    do jj=1,3
+                      d2dx2(i,k)=d2dx2(i,k) + slmi((j-1)*nel+l,iab,k) * &
+                      d2slm(ii,jj,(l-1)*nel+j,iab,k) * dquasi_dx(kk,i,ii,j+ish) * dquasi_dx(kk,i,jj,j+ish)
+                    enddo
+                  enddo
+                enddo
+                do kk=1,3
+                  d2dx2(i,k) = d2dx2(i,k) + slmi((j-1)*nel+l,iab,k) * &
+                  dslm(kk,(l-1)*nel+j,iab,k) * d2quasi_dx2(kk,j+ish,i)
+                enddo
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
 
-             call dcopy(nel,orb(1+ish,jorb,k),1,slmi(1+jk,iab,k),1)
-             call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,fp(1,j,iab,k),nel*3)
-             call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,fp(2,j,iab,k),nel*3)
-             call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,fp(3,j,iab,k),nel*3)
-             call dcopy(nel,ddorb (jorb,1+ish,k),norb_tot,fpp (j,iab,k),nel)
-           enddo
+
+      do k=1,nwftypeorb
+        do i=1,nelec
+          d2dx2(i,k)=d2dx2(i,k)+&
+          ddx(1,i,k)*ddx(1,i,k)+&
+          ddx(2,i,k)*ddx(2,i,k)+&
+          ddx(3,i,k)*ddx(3,i,k)
+        enddo
+      enddo
+
+  else
+      do iab=1,2
+
+        if(iab.eq.1) then
+          ish=0
+          nel=nup
+        else
+          ish=nup
+          nel=ndn
+        endif
+
+        call allocate_multislater() ! properly accessing array elements
+
+        do k=1,nwftypeorb
+          detiab(kref,iab,k)=1.d0
+
+          jk=-nel
+          do j=1,nel
+            jorb=iworbd(j+ish,kref)
+
+            jk=jk+nel
+
+            call dcopy(nel,orb(1+ish,jorb,k),1,slmi(1+jk,iab,k),1)
+            call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,fp(1,j,iab,k),nel*3)
+            call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,fp(2,j,iab,k),nel*3)
+            call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,fp(3,j,iab,k),nel*3)
+            call dcopy(nel,ddorb (jorb,1+ish,k),norb_tot,fpp (j,iab,k),nel)
+          enddo
 
 ! calculate the inverse transpose matrix and its determinant
-           if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
+          if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
 
 ! loop through up/down-spin electrons
 ! take inner product of transpose inverse with derivative vectors
 ! to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
-           ik=-nel
-           do i=1,nel
-             ik=ik+nel
-             ddx(1,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(1,1+ik,iab,k),3)
-             ddx(2,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(2,1+ik,iab,k),3)
-             ddx(3,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(3,1+ik,iab,k),3)
-             d2dx2(i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fpp( 1+ik,iab,k),1)
-           enddo
-
-           if(ipr.ge.4) then
-             ik=-nel
-             do i=1,nel
-               ik=ik+nel
-               write(ounit,*) 'slmi',iab,'M',(slmi(ii+ik,iab,k),ii=1,nel)
-             enddo
-           endif
-         enddo
+          ik=-nel
+          do i=1,nel
+            ik=ik+nel
+            ddx(1,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(1,1+ik,iab,k),3)
+            ddx(2,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(2,1+ik,iab,k),3)
+            ddx(3,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(3,1+ik,iab,k),3)
+            d2dx2(i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fpp( 1+ik,iab,k),1)
+          enddo
+        enddo
       enddo
+
+  endif
+
+          
+
 
       if(ipr.ge.4) then
         do k=1,nwftypeorb

@@ -8,6 +8,7 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
     use precision_kinds, only: dp
     use slater, only: norb
     use system, only: ncent_tot, nelec
+    use m_backflow, only: ibackflow, d2orb
 
     use const
     use qmckl_data
@@ -15,6 +16,7 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
     implicit none
 
     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+    real(dp), allocatable :: mo_hessian_qmckl(:,:,:,:)
     integer :: rc, ictx
     integer*8 :: n8
     real(dp), dimension(3,nelec) :: xqmckl
@@ -73,6 +75,24 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
             ddorb(  iorb,i,k) = mo_vgl_qmckl(iorb,5,i)
         end do
     end do
+
+
+    if (ibackflow.gt.0) then
+        allocate(mo_hessian_qmckl(n8, 3, nelec, 3))
+        rc = qmckl_get_mo_basis_mo_hessian(qmckl_ctx(ictx), mo_hessian_qmckl, n8*nelec*9_8)
+        k=1 ! until state specific orbitals can be used
+        do m=1,3
+            do i=1,nelec
+                do iorb=1,norb+nadorb
+                    d2orb(1,m,iorb,i,k) = mo_hessian_qmckl(iorb,1,i,m)
+                    d2orb(2,m,iorb,i,k) = mo_hessian_qmckl(iorb,2,i,m)
+                    d2orb(3,m,iorb,i,k) = mo_hessian_qmckl(iorb,3,i,m)
+                end do
+            end do
+        end do
+
+        deallocate(mo_hessian_qmckl)
+    endif
 
     deallocate(mo_vgl_qmckl)
 return
@@ -282,6 +302,90 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 return
 end
 
+subroutine orbitals_quad_bf_qmckl(xquad,orbn,iwforb)
+
+
+    use m_force_analytic, only: iforce_analy
+    use multiple_geo, only: iwf
+    use optwf_control, only: ioptorb
+    use optwf_control, only: method
+    use orbval,  only: nadorb
+    use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
+    use precision_kinds, only: dp
+    use qua,     only: nquad
+    use slater,  only: coef,norb
+    use sr_mod,  only: i_sr_rescale
+    use system,  only: iwctype,ncent,ncent_tot,nelec
+    use vmc_mod, only: norb_tot, nwftypeorb
+    use error,   only: fatal_error
+    use contrl_file, only: ounit
+    use backflow_mod, only: backflow
+    use m_backflow, only: quasi_x
+
+    use qmckl_data
+
+    implicit none
+
+    integer :: ic, ider, iq, i, ictx
+    integer :: iorb, k, m, m0, iwforb
+    integer :: nadorb_sav
+
+    real(dp), dimension(3,nelec) :: xquad
+    real(dp), dimension(norb_tot, nelec) :: orbn
+
+    real(dp), allocatable :: mo_qmckl(:,:)
+    integer :: rc
+    integer*8 :: n8
+    character*(1024) :: err_message = ''
+
+
+    call backflow(xquad)
+
+    nadorb_sav=nadorb
+
+    ictx = 2
+
+    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) then
+       ictx=1
+       nadorb = 0
+    end if
+
+
+
+    ! Send electron coordinates to QMCkl to compute the MOs at these positions
+    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', nelec*1_8, quasi_x, nelec*3_8)
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'orbitals quad Error setting electron coordinates in QMCkl'
+        stop
+    end if
+
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'orbitals quad Error getting mo_num from QMCkl'
+        print *, "n8", n8
+        stop
+    end if
+
+
+    allocate(mo_qmckl(n8, nelec))
+
+    ! Compute the MOs
+    rc = qmckl_get_mo_basis_mo_value_inplace(qmckl_ctx(ictx), mo_qmckl, nelec*n8)
+
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'Error orbitals quad getting MOs from QMCkl'
+        stop
+    end if
+
+    orbn(1:norb+nadorb,1:nelec) = mo_qmckl(1:norb+nadorb,1:nelec)
+
+    deallocate(mo_qmckl)
+
+    nadorb = nadorb_sav
+
+return
+end
+
 subroutine init_context_qmckl(update_coef)
 
     use qmckl_data
@@ -405,6 +509,9 @@ subroutine init_context_qmckl(update_coef)
 
 return
 end
+
+
+
 
 
 end module
