@@ -1,9 +1,27 @@
+!> @brief Module for Stochastic Reconfiguration (SR) method parameters.
+!> @author CHAMP developers
+!> @date 2025
+!>
+!> @details This module defines dimension parameters for the SR optimization method,
+!> which is used for wavefunction optimization in quantum Monte Carlo calculations.
 module sr_mod
-    !> Arguments:
+
+    implicit none
+
+    !> Maximum number of parameters to optimize.
     integer :: mparm
+
+    !> mobs
     integer :: mobs
+
+    !> Maximum number of configurations.
     integer :: mconf
-    integer :: i_sr_rescale, izvzb
+
+    !> Flag for SR rescaling method.
+    integer :: i_sr_rescale
+
+    !> Zero-variance zero-bias parameter flag?.
+    integer :: izvzb
 
     private
     public :: mparm, mobs, mconf
@@ -11,11 +29,22 @@ module sr_mod
     save
 end module sr_mod
 
+!> @brief Module for SR indexing counters.
+!> @author CHAMP developers
+!> @date 2025
+!>
+!> @details This module contains index counters for SR calculations.
 module sr_index
-    !> Arguments: jelo, jelo2, jelohfj
 
+    implicit none
+
+    !> jelo
     integer :: jelo
+
+    !> jelo2
     integer :: jelo2
+
+    !> jelohfj
     integer :: jelohfj
 
     private
@@ -23,29 +52,70 @@ module sr_index
     save
 end module sr_index
 
+!> @brief Module for Stochastic Reconfiguration matrices and arrays.
+!> @author CHAMP developers
+!> @date 2025
+!>
+!> @details This module contains the main data structures for SR optimization including
+!> local energies, SR matrices, overlap matrices, and observables for multiple states.
+!> It handles the numerical computation of parameter updates in wavefunction optimization.
 module sr_mat_n
-    !> Arguments: elocal, h_sr, jefj, jfj, jhfj, nconf_n, obs, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot
       use mstates_mod, only: MSTATES
       use precision_kinds, only: dp
       use sr_mod, only: mparm, mobs, mconf
 
-    real(dp), dimension(:, :), allocatable :: elocal !(mconf,MSTATES)
-    real(dp), dimension(:, :), allocatable :: h_sr !(mparm,MSTATES)
-    real(dp), dimension(:, :), allocatable :: h_sr_penalty !(mparm,MSTATES)
-    real(dp), dimension(:), allocatable :: isr_lambda !(MSTATES*(MSTATES-1)/2)
-    real(dp), dimension(:, :), allocatable :: sr_lambda !(MSTATES,MSTATES)
+    implicit none
+
+    !> Local energies for all configurations and states.
+    real(dp), dimension(:, :), allocatable :: elocal
+
+    !> SR Hamiltonian matrix.
+    real(dp), dimension(:, :), allocatable :: h_sr
+
+    !> SR Hamiltonian penalty matrix for constraints.
+    real(dp), dimension(:, :), allocatable :: h_sr_penalty
+
+    !> Lambda parameters for state orthogonalization (flattened).
+    real(dp), dimension(:), allocatable :: isr_lambda
+
+    !> Lambda matrix for state coupling.
+    real(dp), dimension(:, :), allocatable :: sr_lambda
+
+    !> Current state index for SR optimization.
     integer :: sr_state
+
+    !> Orthogonality constraint flag.
     integer :: ortho=0
+
+    !> jefj
     integer :: jefj
+
+    !> jfj
     integer :: jfj
+
+    !> jhfj
     integer :: jhfj
+
+    !> nconf_n
     integer :: nconf_n
-    real(dp), dimension(:, :), allocatable :: s_diag !(mparm,MSTATES)
-    real(dp), dimension(:, :), allocatable :: s_ii_inv !(mparm,MSTATES)
-    real(dp), dimension(:, :), allocatable :: sr_ho !(mparm,mconf)
-    real(dp), dimension(:, :, :), allocatable :: sr_o !(mparm,mconf,MSTATES)
-    real(dp), dimension(:, :), allocatable :: wtg !(mconf,MSTATES)
-    real(dp), dimension(:, :), allocatable :: obs_tot !(mobs,MSTATES)
+
+    !> Diagonal elements of overlap matrix S.
+    real(dp), dimension(:, :), allocatable :: s_diag
+
+    !> Inverse diagonal elements of overlap matrix S.
+    real(dp), dimension(:, :), allocatable :: s_ii_inv
+
+    !> SR overlap matrix times Hamiltonian.
+    real(dp), dimension(:, :), allocatable :: sr_ho
+
+    !> SR overlap matrix for parameters and configurations.
+    real(dp), dimension(:, :, :), allocatable :: sr_o
+
+    !> Configuration weights for all states.
+    real(dp), dimension(:, :), allocatable :: wtg
+
+    !> obs_tot
+    real(dp), dimension(:, :), allocatable :: obs_tot
 
     private
     public :: elocal, h_sr, jefj, jfj, jhfj, nconf_n, s_diag, s_ii_inv, sr_ho, sr_o, wtg, obs_tot, isr_lambda, sr_lambda, sr_state, h_sr_penalty, ortho
@@ -53,6 +123,8 @@ module sr_mat_n
     public :: allocate_sr_mat_n, deallocate_sr_mat_n
     save
 contains
+
+    !> Allocates memory for SR matrices and arrays.
     subroutine allocate_sr_mat_n()
       use mstates_mod, only: MSTATES
       use optwf_func, only: ifunc_omega
@@ -70,6 +142,7 @@ contains
         if (.not. allocated(obs_tot)) allocate (obs_tot(mobs, MSTATES))
     end subroutine allocate_sr_mat_n
 
+    !> Deallocates memory for SR matrices and arrays.
     subroutine deallocate_sr_mat_n()
         if (allocated(obs_tot)) deallocate (obs_tot)
         if (allocated(wtg)) deallocate (wtg)
@@ -86,15 +159,24 @@ contains
 
 end module sr_mat_n
 
+!> @brief Main module for Stochastic Reconfiguration method.
+!> @author CHAMP developers
+!> @date 2025
+!>
+!> @details This module provides a unified interface for allocating and deallocating
+!> all SR-related data structures. The Stochastic Reconfiguration method is an efficient
+!> optimization algorithm for variational parameters in quantum Monte Carlo calculations.
 module m_sr
 contains
+
+!> Allocates all SR method arrays.
 subroutine allocate_m_sr()
       use sr_mat_n, only: allocate_sr_mat_n
 
     call allocate_sr_mat_n()
 end subroutine allocate_m_sr
 
-
+!> Deallocates all SR method arrays.
 subroutine deallocate_m_sr()
       use sr_mat_n, only: deallocate_sr_mat_n
 
