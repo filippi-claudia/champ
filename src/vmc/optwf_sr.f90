@@ -13,7 +13,7 @@
 module optwf_sr_mod
 
     use precision_kinds, only: dp
-    use optwf_control, only: ioptci, ioptjas, ioptorb
+    use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
     use m_force_analytic, only: iforce_analy
 !    use contrl, only: nblk_max
     use control_vmc, only: vmc_nblk_max
@@ -72,7 +72,7 @@ contains
 
         use sr_mod, only: mparm
         use sr_mat_n, only: sr_lambda, h_sr, sr_state, ortho 
-        use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
+        use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf, nparm
         use mstates_mod, only: MSTATES
         use optwf_corsam, only: energy, energy_err, sigma
         use optwf_func, only: ifunc_omega, omega0, omega, n_omegaf, n_omegat, omega_hes

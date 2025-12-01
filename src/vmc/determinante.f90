@@ -18,6 +18,11 @@ contains
       use orbitals_no_qmckl_mod, only: orbitalse_no_qmckl_bf
       use dorb_m,  only: iworbd
       use matinv_mod, only: matinv
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      use orbitals_qmckl_mod, only: orbitalse_qmckl_bf
+      use qmckl_data
+#endif
       implicit none
 
       integer :: i, iab, iel, iflag, ik
@@ -30,8 +35,15 @@ contains
 
       if (ibackflow.gt.0) then
         call backflow(x)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      if (use_qmckl_orbitals) then
+        call orbitalse_qmckl_bf(quasi_x, 0)
+      else
+#endif
         call orbitalse_no_qmckl_bf(quasi_x, rvec_en_bf, r_en_bf, 0)
-
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      end if ! use_qmckl_orbitals
+#endif
         do iab=1,2
           if(iab.eq.1) then
               ish=0
@@ -206,7 +218,7 @@ contains
           call multideterminante_grad(iel,dorb_tmp(1,1,1),norb,detratio,slmi(1,iab,1),aa(1,1,iab,1),ymat(1,1,iab,1),vd)
 
           do kk=1,3
-            vd(kk)=vd(kk)+vref(kk,1)!+vj(kk,iel,1)
+            vd(kk)=vd(kk)+vref(kk,1)+vj(kk,iel,1)
           enddo
         else
           do kk=1,3

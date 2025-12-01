@@ -60,6 +60,7 @@ contains
       call write_lcao(iwf_fit,filetype)
       call write_jastrow(iwf_fit,filetype)
       call write_ci(iwf_fit,filetype)
+      call write_bf(iwf_fit,filetype)
 
       return
       end
@@ -296,6 +297,33 @@ contains
 
       return
       end
+
+      subroutine write_bf(iwf_fit,filetype)
+
+
+      use optwf_control, only: ioptbf
+      use vmc_mod, only: nwftypeorb
+      use m_backflow, only: ibackflow, nparm_bf, parm_bf
+      implicit none
+
+      integer :: i, index, iwf_fit, j, k
+      character(len=40) filename,filetype, temp
+
+      if(ioptbf.eq.0) return
+
+      filename='backflow'//filetype(1:index(filetype,' ')-1)
+      open(2,file=filename,status='unknown')
+      write(2,*) ibackflow, nparm_bf
+
+        do i=1,nparm_bf
+          write(2,*) parm_bf(i)
+        enddo
+
+      write(2,'(''end'')')
+      close(2)
+
+      return
+      end
 !-----------------------------------------------------------------------
       subroutine setup_wf
 
@@ -336,7 +364,6 @@ contains
       if(ioptjas.ne.0) call restore_jastrow(iadiag)
       if(ioptorb.ne.0) call restore_lcao(iadiag)
       if(ioptci.ne.0) call restore_ci(iadiag)
-
       return
       end
 !-----------------------------------------------------------------------
@@ -986,6 +1013,7 @@ contains
 
       call compute_lcao(dparm,iadiag)
       call compute_ci(dparm,iadiag)
+      call compute_bf(dparm,iadiag)
 
       return
       end
@@ -1224,6 +1252,26 @@ contains
 
       return
       end
+
+
+      subroutine compute_bf(dparm,iadiag)
+        use m_backflow, only: ibackflow, nparm_bf, parm_bf
+        use optwf_control, only: ioptbf
+        use precision_kinds, only: dp
+        use optorb_cblock, only: norbterm
+         use optwf_parms, only: nparmj, nparmd
+        implicit none
+        integer :: i, iadiag
+        real(dp), dimension(*) :: dparm
+
+        if(ioptbf.eq.0) return
+
+        do i=1,nparm_bf
+          parm_bf(i)=parm_bf(i)-dparm(i+nparmj+nparmd+norbterm)
+        enddo
+        return
+      end
+
 !-----------------------------------------------------------------------
       subroutine check_parms_jas(k,iflag)
 
@@ -1366,12 +1414,13 @@ contains
 !-----------------------------------------------------------------------
       subroutine set_nparms_tot
 
-      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf, nparm
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
       use optwf_control, only: method
       use contrl_file,    only: ounit
+      use m_backflow, only: nparm_bf
       implicit none
 
       integer :: i0
@@ -1381,7 +1430,7 @@ contains
       if(method.eq.'sr_n') then
 
         nparmd=max(nciterm-1,0)
-        nparm=nparmj+nparmd+norbterm
+        nparm=nparmj+nparmd+norbterm+nparm_bf
 
       elseif(method.eq.'linear'.or.method.eq.'lin_d' .or. method.eq.'mix_n') then
 
@@ -1398,8 +1447,8 @@ contains
 
       endif
 
-      write(ounit,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)') &
-       nparm,nparmj,nciterm,norbterm
+      write(ounit,'(/,''number of parms: total, Jastrow, CI, orbitals, bf= '',5i5)') &
+       nparm,nparmj,nciterm,norbterm,nparm_bf
 
       return
       end
@@ -1411,7 +1460,7 @@ contains
       use optwf_parms, only: nparmj
       use csfs, only: maxcsf,nstates
       use derivjas, only: gvalue
-      use optwf_control, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
       use optwf_func, only: ifunc_omega
       use optwf_parms, only: nparmj
       use sr_mat_n, only: elocal, nconf_n, sr_ho, ortho
@@ -1430,6 +1479,7 @@ contains
       use vmc_mod, only: nwftypeorb, nwftypejas, stoj, stoo
       use contrl_file, only: ounit
       use control_vmc, only: vmc_nstep, vmc_nblk_max
+      use m_backflow, only: nparm_bf, parm_bf, deriv_parm_bf
 
       implicit none
 
@@ -1443,7 +1493,7 @@ contains
 
       if(iforce_analy.gt.0.and.izvzb.eq.1) call force_store(l)
 
-      if((method.ne.'sr_n').and.(method.ne.'lin_d').or.(ioptjas+ioptorb+ioptci.eq.0))return
+      if((method.ne.'sr_n').and.(method.ne.'lin_d').or.(ioptjas+ioptorb+ioptci+ioptbf.eq.0))return
 
       i0=1
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0
@@ -1472,8 +1522,13 @@ contains
           wtg(l,istate)=wt(istate)
 
           ii=ijasci+norbterm
+          if (nparm_bf /= 0) call dcopy(nparm_bf,deriv_parm_bf(1),1,sr_o(ii+1,l,istate),1)
+
+          ii=ijasci+norbterm+nparm_bf
           sr_o(ii+1,l,istate)=psid(istate)
           sr_o(ii+2,l,istate)=wt_sqrt(istate)
+
+
         enddo
       else !for lin_d or sr_n (in mix_n)
         if(nparmj /= 0) call dcopy(nparmj,gvalue(1,1),1,sr_o(1,l,1),1)

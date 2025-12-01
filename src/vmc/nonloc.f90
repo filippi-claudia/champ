@@ -27,12 +27,13 @@ contains
       use vmc_mod, only: norb_tot, nwftypeorb, nwftypejas
       use vmc_mod, only: nbjx, bjxtoo, bjxtoj
       use orbitals_no_qmckl_mod, only: orbitals_quad_bf_no_qmckl
-      use orbitals_qmckl_mod, only: orbitals_quad_bf_qmckl
       use m_backflow, only: ibackflow, quasi_x
+      use backflow_mod, only: backflow
 
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
+      use orbitals_qmckl_mod, only: orbitals_quad_bf_qmckl
 #endif
       implicit none
 
@@ -73,6 +74,8 @@ contains
       real(dp), allocatable :: dorbn(:,:,:,:)
       real(dp), allocatable :: da_orbn(:,:,:,:)
       real(dp), allocatable :: vjn(:,:)
+      real(dp), allocatable :: bf_quadcoords(:,:)
+      real(dp), allocatable :: orbn_bf(:,:,:)
 
       ndim = nquad*nelec*2
 
@@ -194,36 +197,53 @@ contains
 
       if(nxquad.eq.0) return
       allocate(da_orbn(norb,3,nxquad,ncent_tot))
-      
-      do iwforb=1,nwftypeorb
-        if (ibackflow .gt. 0) then
-          do iq=1,nxquad
-            do j=1,nelec
+      if (ibackflow.gt.0) then
+        allocate(bf_quadcoords(3,nxquad*nelec))
+        allocate(orbn_bf(norb_tot,nxquad*nelec,nwftypeorb))
+        do iq=1,nxquad
+          do j=1,nelec
             x_back(1,j) = x(1,j)
             x_back(2,j) = x(2,j)
             x_back(3,j) = x(3,j)
-            enddo
-            x_back(1,iequad(iq)) = xquad(1,iq)
-            x_back(2,iequad(iq)) = xquad(2,iq)
-            x_back(3,iequad(iq)) = xquad(3,iq)
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-            if(use_qmckl_orbitals) then
-              call orbitals_quad_bf_qmckl(x_back,orbn(1,1,iwforb),iwforb)
-            else
-#endif
-            call orbitals_quad_bf_no_qmckl(x_back,orbn(1,1,iwforb),iwforb)
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
-            end if
-#endif
-            call nonlocd_quad_bf(orbn(1,1,iwforb),det_ratio(iq,iwforb),iwforb)
           enddo
+          x_back(1,iequad(iq)) = xquad(1,iq)
+          x_back(2,iequad(iq)) = xquad(2,iq)
+          x_back(3,iequad(iq)) = xquad(3,iq)
+          call backflow(x_back)
+          if (.not. use_qmckl_orbitals) then
+            do iwforb=1,nwftypeorb
+              call orbitals_quad_bf_no_qmckl(orbn_bf(:,((iq-1)*nelec+1):(iq*nelec),iwforb),iwforb)
+            end do
+          end if
+          do j=1,nelec
+            bf_quadcoords(1,(iq-1)*nelec+j)=quasi_x(1,j)
+            bf_quadcoords(2,(iq-1)*nelec+j)=quasi_x(2,j)
+            bf_quadcoords(3,(iq-1)*nelec+j)=quasi_x(3,j)
+          enddo
+        enddo
 
-        else
+        do iwforb=1,nwftypeorb
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+          if(use_qmckl_orbitals) then
+            call orbitals_quad_bf_qmckl(nxquad*nelec,bf_quadcoords,orbn_bf(1,1,iwforb),iwforb)
+          endif
+#endif
+
+          call nonlocd_quad_bf(nxquad, orbn_bf(1,1,iwforb),det_ratio(1,iwforb),iwforb)
+        enddo
+
+        deallocate(bf_quadcoords, orbn_bf)
+
+
+      else  
+      
+        do iwforb=1,nwftypeorb
           call orbitals_quad(nxquad,xquad,rvec_en_quad,r_en_quad,orbn(1,1,iwforb), &
                           dorbn(1,1,1,iwforb),da_orbn,iwforb)
           call nonlocd_quad(nxquad,iequad,orbn(1,1,iwforb),det_ratio(1,iwforb),iwforb)
-        endif
-      enddo
+        enddo
+
+      end if
 
       if(ijas.eq.1) then
 
@@ -530,7 +550,7 @@ contains
       return
       end
 
-      subroutine nonlocd_quad_bf(orb,ratio,iwforb)
+      subroutine nonlocd_quad_bf(nxquad, orb,ratio,iwforb)
 ! Written by Claudia Filippi, modified by Cyrus Umrigar and A. Scemama
 
       use dorb_m,  only: iworbd
@@ -548,37 +568,34 @@ contains
 
       integer :: nxquad, iq, iel, ik, j, iwforb, iab,l
       integer :: ish, jorb, nel
-      real(dp) :: ratio
-      real(dp), dimension(norb_tot,nelec) :: orb
+      real(dp), dimension(nxquad) :: ratio
+      real(dp), dimension(norb_tot,nxquad*nelec) :: orb
       real(dp), dimension(2) :: new_det
       ratio = 1.0d0
 
-      do iab=1,2
-        if(iab.eq.1) then
-          ish = 0
-          nel = nup
-          else
-          ish = nup
-          nel = ndn
-        end if
 
-        ik=-nel
-        do j=1,nel
-          jorb=iworbd(j+ish,kref)
-          ik=ik+nel
-          call dcopy(nel,orb(jorb,1+ish),norb_tot,nl_slm(1+ik,iab),1)
+      do iq=1,nxquad
+        do iab=1,2
+          if(iab.eq.1) then
+            ish = 0
+            nel = nup
+            else
+            ish = nup
+            nel = ndn
+          end if
+
+          ik=-nel
+          do j=1,nel
+            jorb=iworbd(j+ish,kref)
+            ik=ik+nel
+            call dcopy(nel,orb(jorb,1+ish+(iq-1)*nelec),norb_tot,nl_slm(1+ik,iab),1)
+          enddo
+
+          call matinv(nl_slm(1,iab),nel,new_det(iab))
+
+          ratio(iq) = ratio(iq)*new_det(iab)/detiab(kref,iab,iwforb)
+
         enddo
-
-        call matinv(nl_slm(1,iab),nel,new_det(iab))
-
-        ratio = ratio*new_det(iab)/detiab(kref,iab,iwforb)
-
-        ! do j=1,nel
-        !   do l =1,nel
-        !     ratio=ratio+slmi((j-1)*nel+l,iab,iwforb)*nl_slm((l-1)*nel+j,iab) 
-        !   enddo
-        ! enddo
-
       enddo
 
       return

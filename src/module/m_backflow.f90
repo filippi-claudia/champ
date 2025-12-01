@@ -4,7 +4,7 @@
 !> @details This module manages arrays and data structures for backflow calculations
 module m_backflow
     use precision_kinds, only: dp
-    use system, only: nelec, ncent_tot
+    use system, only: nelec, ncent_tot, nup
     use vmc_mod, only: nmat_dim, nwftypeorb, norb_tot
     use qua, only: nquad
     
@@ -19,6 +19,8 @@ module m_backflow
     real(dp), dimension(:, :, :, :), allocatable :: dquasi_dx
     !> Quasicoordinate second derivatives arrays (3, nelec, nelec)
     real(dp), dimension(:, :, :), allocatable :: d2quasi_dx2
+    !> Parameter derivatives of quasicoordinates (3, nelec, nparmbf)
+    real(dp), dimension(:, :, :), allocatable :: dquasi_dp
 
     !> Distance vector (needed if run without qmckl)
     real(dp), dimension(:, :, :), allocatable :: rvec_en_bf
@@ -46,16 +48,18 @@ module m_backflow
     !> nl_slm (nmat_dim,2)
     real(dp), dimension(:, :), allocatable :: nl_slm
 
-    integer :: nparmbf = 0
+    real(dp), dimension(:), allocatable :: parm_bf
+    real(dp), dimension(:), allocatable :: deriv_parm_bf
+    integer :: norda_bf, nordb_bf, nparm_bf
 
     
     private
     public :: ibackflow
-    public :: quasi_x, dquasi_dx, d2quasi_dx2
+    public :: quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp
     public :: rvec_en_bf, r_en_bf
     public :: allocate_m_backflow, deallocate_m_backflow
-    public :: dslm, d2slm, d2orb, nl_slm, nparmbf
-    public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf
+    public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf
+    public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf
 
 
 contains
@@ -67,14 +71,17 @@ contains
         if (.not. allocated(d2quasi_dx2)) allocate (d2quasi_dx2(3, nelec, nelec))
         if (.not. allocated(rvec_en_bf)) allocate (rvec_en_bf(3, nelec, ncent_tot))
         if (.not. allocated(r_en_bf)) allocate (r_en_bf(nelec, ncent_tot))
-        if (.not. allocated(dslm)) allocate (dslm(3, nmat_dim, 2, nwftypeorb))
-        if (.not. allocated(d2slm)) allocate (d2slm(3, 3, nmat_dim, 2, nwftypeorb))
+        if (.not. allocated(dslm)) allocate (dslm(3, nup*nup, 2, nwftypeorb))
+        if (.not. allocated(d2slm)) allocate (d2slm(3, 3, nup*nup, 2, nwftypeorb))
         if (.not. allocated(d2orb)) allocate (d2orb(3,3,norb_tot, nelec, nwftypeorb))
-        if (.not. allocated(nl_slm)) allocate (nl_slm(nmat_dim, 2))
+        if (.not. allocated(nl_slm)) allocate (nl_slm(nup*nup, 2))
         if (.not. allocated(orbn_bf)) allocate (orbn_bf(nelec, norb_tot, nwftypeorb))
         if (.not. allocated(dorbn_bf)) allocate (dorbn_bf(norb_tot, nelec, 3, nwftypeorb))
-        if (.not. allocated(slmin_bf)) allocate (slmin_bf(nmat_dim,2,nwftypeorb))
+        if (.not. allocated(slmin_bf)) allocate (slmin_bf(nup*nup,2,nwftypeorb))
         if (.not. allocated(detn_bf)) allocate (detn_bf(2, nwftypeorb))
+        if (.not. allocated(parm_bf)) allocate (parm_bf(nparm_bf))
+        if (.not. allocated(dquasi_dp)) allocate (dquasi_dp(3, nelec, nparm_bf))
+        if (.not. allocated(deriv_parm_bf)) allocate (deriv_parm_bf(nparm_bf))
       endif
     end subroutine allocate_m_backflow
   
@@ -94,6 +101,9 @@ contains
         if (allocated(dorbn_bf)) deallocate(dorbn_bf)
         if (allocated(slmin_bf)) deallocate(slmin_bf)
         if (allocated(detn_bf)) deallocate(detn_bf)
+        if (allocated(parm_bf)) deallocate(parm_bf)
+        if (allocated(dquasi_dp)) deallocate(dquasi_dp)
+        if (allocated(deriv_parm_bf)) deallocate(deriv_parm_bf)
       endif
     end subroutine deallocate_m_backflow
   

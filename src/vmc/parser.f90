@@ -68,7 +68,8 @@ subroutine parser
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
       use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat,f_analy_err
-      use m_backflow, only: ibackflow
+      use m_backflow, only: ibackflow, nparm_bf, parm_bf
+      use backflow_mod, only: init_backflow
       use metropolis, only: imetro, vmc_tau
       use metropolis, only: delta,deltai,deltar,deltat,fbias
       use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
@@ -100,7 +101,7 @@ subroutine parser
       use optwf_control, only: alin_adiag,alin_eps,dl_alg,dl_mom
       use optwf_control, only: dparm_norm_min,energy_tol,iapprox,ibeta
       use optwf_control, only: idl_flag,ilastvmc,ilbfgs_flag,ilbfgs_m
-      use optwf_control, only: ioptci,ioptjas,ioptorb,ioptwf,iroot_geo
+      use optwf_control, only: ioptci,ioptjas,ioptorb,ioptbf,ioptwf,iroot_geo
       use optwf_control, only: iuse_orbeigv,lin_jdav,method
       use optwf_control, only: micro_iter_sr,multiple_adiag,ncore
       use optwf_control, only: no_active,nopt_iter,nparm,nvec,nvecx
@@ -473,10 +474,13 @@ subroutine parser
   ioptjas       = fdf_get('ioptjas', 0)
   ioptorb       = fdf_get('ioptorb', 0)
   ioptci        = fdf_get('ioptci', 0)
+  ioptbf        = fdf_get('ioptbf', 0)
   nopt_iter     = fdf_get('nopt_iter',6)
   micro_iter_sr = fdf_get('micro_iter_sr', 1)
   isample_cmat  = fdf_get('isample_cmat', 1)
   energy_tol    = fdf_get('energy_tol', 1.d-3)
+
+
 
   if (fdf_defined("optwf")) then
     if ( method .eq. 'linear' ) then
@@ -1277,6 +1281,8 @@ subroutine parser
     if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4,A,2i4)') istate, '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
   enddo
 
+  call init_backflow()
+
   ! Know the number of orbitals for optimization.
   if (ioptorb .ne. 0) call get_norbterm()
 
@@ -1328,11 +1334,11 @@ subroutine parser
      write(ounit,int_format ) " Properties printout flag = ", ipropprt
 !    call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
   endif
-  
-  
+
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
+
 
   ! read fragment indeces
   if ( (nfrag.gt.1).and.(ndet.gt.1) ) call fatal_error('READ_INPUT: Fragments not implemented for multideterminant wavefunctions')

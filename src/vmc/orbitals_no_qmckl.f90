@@ -569,7 +569,7 @@ subroutine orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,i
 return
 end
 
-subroutine orbitals_quad_bf_no_qmckl(xquad,orbn,iwforb)
+subroutine orbitals_quad_bf_no_qmckl(orbn,iwforb)
 
      use basis_fns_mod, only: basis_fns
     use coefs,   only: nbasis
@@ -596,10 +596,7 @@ subroutine orbitals_quad_bf_no_qmckl(xquad,orbn,iwforb)
     integer :: iorb, k, m, m0, iwforb
     integer :: nadorb_sav
 
-    real(dp), dimension(3,nelec) :: xquad
-    real(dp), dimension(norb_tot, nelec) :: orbn
-
-    call backflow(xquad)
+    real(dp), dimension(norb_tot,nelec) :: orbn
 
     nadorb_sav=nadorb
 

@@ -30,7 +30,7 @@ module allocation_mod
       use m_sr,    only: allocate_m_sr,deallocate_m_sr
       use m_state_avrg, only: allocate_m_state_avrg
       use m_state_avrg, only: deallocate_m_state_avrg
-      use m_backflow, only: allocate_m_backflow,deallocate_m_backflow
+      use m_backflow, only: deallocate_m_backflow
 
 implicit none
 public
@@ -83,7 +83,7 @@ contains
     call allocate_m_sampling
     call allocate_m_sr
     call allocate_m_state_avrg
-    call allocate_m_backflow
+
   end subroutine allocate_vmc
 
   !> Subroutines to deallocate memory of specific VMC-related variables.

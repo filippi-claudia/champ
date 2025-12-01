@@ -186,6 +186,79 @@ subroutine orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
 return
 end
 
+subroutine orbitalse_qmckl_bf(x,iflag)
+
+    use precision_kinds, only: dp
+    use slater, only: norb
+    use system, only: ncent_tot, nelec
+    use m_backflow, only: orbn_bf, dorbn_bf
+
+    use qmckl_data
+
+
+    implicit none
+
+    integer :: iflag, iorb, ictx, k, i
+
+    real(dp), dimension(3,*) :: x
+
+    real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+    integer :: rc
+    integer*8 :: n8
+    character*(1024) :: err_message = ''
+
+    if (iflag .eq. 0) then
+        ictx = 1
+    else
+        ictx = 2
+    end if
+
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'Error getting mo_num from QMCkl'
+        stop
+    end if
+
+    ! set one electron coordinates
+    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', nelec*1_8, x, nelec*3_8)
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'Error setting electron coords orbitalse'
+        call qmckl_last_error(qmckl_ctx(ictx),err_message)
+        print *, trim(err_message)
+        call abort()
+    end if
+
+    allocate(mo_vgl_qmckl(n8, 5, nelec))
+
+    ! Compute the MOs
+    rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(ictx), mo_vgl_qmckl, nelec*n8*5_8)
+
+    k=1  ! until state-specific orbitals can use QMCKL
+
+    if(iflag.gt.0) then
+        do i=1,nelec
+            do iorb=1,norb
+                orbn_bf(i,iorb,k)=mo_vgl_qmckl(iorb,1,i)
+                dorbn_bf(iorb,i,1,k)=mo_vgl_qmckl(iorb,2,i)
+                dorbn_bf(iorb,i,2,k)=mo_vgl_qmckl(iorb,3,i)
+                dorbn_bf(iorb,i,3,k)=mo_vgl_qmckl(iorb,4,i)
+            enddo
+        enddo
+    else
+        do i=1,nelec
+            do iorb=1,norb
+                orbn_bf(i,iorb,k)=mo_vgl_qmckl(iorb,1,i)
+                dorbn_bf(iorb,i,1,k)=mo_vgl_qmckl(iorb,2,i)
+                dorbn_bf(iorb,i,2,k)=mo_vgl_qmckl(iorb,3,i)
+                dorbn_bf(iorb,i,3,k)=mo_vgl_qmckl(iorb,4,i)
+            enddo
+        enddo
+    endif
+
+    deallocate(mo_vgl_qmckl)
+return
+end
+
 
 subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
 
@@ -302,7 +375,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 return
 end
 
-subroutine orbitals_quad_bf_qmckl(xquad,orbn,iwforb)
+subroutine orbitals_quad_bf_qmckl(nxquad,xquad,orbn,iwforb)
 
 
     use m_force_analytic, only: iforce_analy
@@ -320,26 +393,22 @@ subroutine orbitals_quad_bf_qmckl(xquad,orbn,iwforb)
     use error,   only: fatal_error
     use contrl_file, only: ounit
     use backflow_mod, only: backflow
-    use m_backflow, only: quasi_x
 
     use qmckl_data
 
     implicit none
 
-    integer :: ic, ider, iq, i, ictx
+    integer :: ic, ider, iq, i, ictx, nxquad
     integer :: iorb, k, m, m0, iwforb
     integer :: nadorb_sav
 
-    real(dp), dimension(3,nelec) :: xquad
-    real(dp), dimension(norb_tot, nelec) :: orbn
+    real(dp), dimension(3,nxquad) :: xquad
+    real(dp), dimension(norb_tot, nxquad) :: orbn
 
     real(dp), allocatable :: mo_qmckl(:,:)
     integer :: rc
     integer*8 :: n8
     character*(1024) :: err_message = ''
-
-
-    call backflow(xquad)
 
     nadorb_sav=nadorb
 
@@ -353,7 +422,7 @@ subroutine orbitals_quad_bf_qmckl(xquad,orbn,iwforb)
 
 
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', nelec*1_8, quasi_x, nelec*3_8)
+    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', nxquad*1_8, xquad, nxquad*3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'orbitals quad Error setting electron coordinates in QMCkl'
         stop
@@ -367,17 +436,17 @@ subroutine orbitals_quad_bf_qmckl(xquad,orbn,iwforb)
     end if
 
 
-    allocate(mo_qmckl(n8, nelec))
+    allocate(mo_qmckl(n8, nxquad))
 
     ! Compute the MOs
-    rc = qmckl_get_mo_basis_mo_value_inplace(qmckl_ctx(ictx), mo_qmckl, nelec*n8)
+    rc = qmckl_get_mo_basis_mo_value_inplace(qmckl_ctx(ictx), mo_qmckl, nxquad*n8)
 
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error orbitals quad getting MOs from QMCkl'
         stop
     end if
 
-    orbn(1:norb+nadorb,1:nelec) = mo_qmckl(1:norb+nadorb,1:nelec)
+    orbn(1:norb+nadorb,1:nxquad) = mo_qmckl(1:norb+nadorb,1:nxquad)
 
     deallocate(mo_qmckl)
 

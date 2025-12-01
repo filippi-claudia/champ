@@ -17,7 +17,7 @@ contains
       use multidet, only: kchange,kref_fixed
       use multislater, only: allocate_multislater,detiab
       use optorb_f_mod, only: optorb_define
-      use optwf_control, only: ioptorb
+      use optwf_control, only: ioptorb, ioptbf
       use optwf_handle_wf, only: dcopy
       use orbitals_mod, only: orbitals
       use orbval,  only: ddorb,dorb,nadorb,orb
@@ -28,12 +28,12 @@ contains
       use vmc_mod, only: norb_tot
       use vmc_mod, only: norb_tot, nwftypeorb
       use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2, ibackflow, rvec_en_bf, r_en_bf
-      use m_backflow, only: dslm, d2slm, d2orb
+      use m_backflow, only: dslm, d2slm, d2orb, deriv_parm_bf, nparm_bf, dquasi_dp
       use backflow_mod, only: backflow
 
       implicit none
 
-      integer :: i, iab, icheck, ii, ik
+      integer :: i, iab, icheck, ii, ik, p
       integer :: index, ipass, ish, j, k, l, kk, jj, m, n
       integer :: jk, jorb, nel, newref
       real(dp) :: tmp
@@ -47,6 +47,9 @@ contains
           call orbitals(quasi_x, rvec_en_bf, r_en_bf)
           ddx = 0.0d0
           d2dx2 = 0.0d0
+          if (ioptbf.gt.0) then
+            deriv_parm_bf = 0.0d0
+          endif
       else
           call orbitals(x,rvec_en,r_en)
       endif
@@ -89,6 +92,20 @@ contains
           enddo
 
           if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
+
+          if (ioptbf.gt.0) then
+            do p =1,nparm_bf
+              do j=1,nel
+                do l=1,nel
+                  do kk=1,3
+                    deriv_parm_bf(p)=deriv_parm_bf(p) + &
+                    slmi((j-1)*nel + l,iab,k) * &
+                    dslm(kk,(l-1)*nel + j,iab,k) * dquasi_dp(kk,j+ish,p)
+                  enddo
+                enddo
+              enddo
+            enddo
+          endif
 
           do i=1,nelec
             do j=1,nel
