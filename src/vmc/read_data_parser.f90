@@ -904,6 +904,69 @@ subroutine read_jastrow_file(file_jastrow)
 
 end subroutine read_jastrow_file
 
+!> This subroutine reads backflow parameters from a text file.
+!>@author Emiel Slootman
+subroutine read_backflow_file(file_backflow)
+      use m_backflow, only: ibackflow, norda_bf, nordb_bf, nordc_bf, nparm_bf, cutoff_scale, parm_bf
+      use contrl_file, only: errunit,ounit
+      use custom_broadcast, only: bcast
+      use mpiconf, only: wid
+      use precision_kinds, only: dp
+      use backflow_mod, only: init_backflow_arrays
+      use system, only: nctype
+
+    implicit none
+
+    !   local use
+    character(len=72), intent(in)   :: file_backflow
+    character(len=40)               :: temp1
+    integer                         :: iunit, iostat, i, ict
+
+    logical                         :: exist
+
+    !   Formatting
+    character(len=100)               :: string_format  = '(A, T60, A)'
+
+    !   External file reading
+    write(ounit,*) '---------------------------------------------------------------------------'
+    write(ounit,string_format)  " Reading backflow parameters from the file :: ",  trim(file_backflow)
+    write(ounit,*) '---------------------------------------------------------------------------'
+
+    if (wid) then
+        inquire(file=file_backflow, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_backflow, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error("Problem in opening the backflow file")
+        else
+            call fatal_error (" Backflow file "// trim(file_backflow) // " does not exist.")
+        endif
+    endif
+
+    if (wid) then
+        read (iunit, *) temp1, ibackflow
+        read (iunit, *) norda_bf, nordb_bf, nordc_bf
+        read (iunit, *) cutoff_scale
+    endif
+    call bcast(ibackflow)
+    call bcast(norda_bf)
+    call bcast(nordb_bf)
+    call bcast(nordc_bf)
+    call bcast(cutoff_scale)
+
+    call init_backflow_arrays()
+
+    if (wid) then
+        do ict = 1, nctype
+            read(iunit, *) (parm_bf((1+nordb_bf) + (ict-1)*(norda_bf+1) + i), i=1,norda_bf+1)
+        end do
+        read(iunit, *) (parm_bf(i), i=1, nordb_bf+1)
+    endif
+    call bcast(parm_bf)
+
+    if (wid) close(iunit)
+
+end subroutine read_backflow_file
+
 !> This subroutine reads the LCAO orbitals from a text file.
 !> @author Ravindra Shinde
 !> @author Stu Shepard

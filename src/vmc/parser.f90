@@ -131,6 +131,7 @@ subroutine parser
       use parser_read_data, only: read_optorb_mixvirt_file
       use parser_read_data, only: read_orbitals_file,read_symmetry_file
       use parser_read_data, only: read_zmatrix_connection_file
+      use parser_read_data, only: read_backflow_file
       use pcm,     only: MCHS
       use pcm_3dgrid, only: PCM_IUNDEFINED,PCM_SHIFT,PCM_UNDEFINED
       use pcm_cntrl, only: ichpol,ipcm,ipcmprt,isurf
@@ -264,6 +265,7 @@ subroutine parser
   character(:), allocatable  :: file_trexio
   character(:), allocatable  :: trex_backend
   character(:), allocatable  :: file_lattice
+  character(:), allocatable  :: file_backflow
 
 ! from process input subroutine
 
@@ -619,6 +621,7 @@ subroutine parser
   file_zmatrix_connection   = fdf_load_filename('zmatrix_connection',   'default.zmcon')
   file_efield             = fdf_load_filename('efield',   'default.efield')
   file_lattice              = fdf_load_filename('lattice',              'lattice.txt')
+  file_backflow             = fdf_load_filename('backflow', 'default.bf')
 
   call header_printing()
 
@@ -1281,7 +1284,14 @@ subroutine parser
     if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4,A,2i4)') istate, '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
   enddo
 
-  call init_backflow()
+
+  if ( fdf_load_defined('backflow') ) then
+    call read_backflow_file(file_backflow)
+  else
+    call init_backflow()
+  endif
+
+  call elapsed_time ("Reading Backflow file : ")
 
   ! Know the number of orbitals for optimization.
   if (ioptorb .ne. 0) call get_norbterm()

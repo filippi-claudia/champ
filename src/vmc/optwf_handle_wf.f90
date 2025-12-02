@@ -303,21 +303,39 @@ contains
 
       use optwf_control, only: ioptbf
       use vmc_mod, only: nwftypeorb
-      use m_backflow, only: ibackflow, nparm_bf, parm_bf
+      use m_backflow, only: ibackflow, nparm_bf, parm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+      use system, only: nctype
       implicit none
 
-      integer :: i, index, iwf_fit, j, k
+      integer :: i, index, iwf_fit, j, k, ict
       character(len=40) filename,filetype, temp
+      character(len=50) fmt
 
       if(ioptbf.eq.0) return
 
       filename='backflow'//filetype(1:index(filetype,' ')-1)
       open(2,file=filename,status='unknown')
-      write(2,*) ibackflow, nparm_bf
 
-        do i=1,nparm_bf
-          write(2,*) parm_bf(i)
-        enddo
+      write(2,'(''backflow'',i4)') ibackflow
+      write(2,'(4i3,a28)') norda_bf,nordb_bf,nordc_bf,nparm_bf, ' norda,nordb,nordc,nparm'
+      write(2,'(1i3,a10)') cutoff_scale,' C'
+
+
+      if(norda_bf.gt.0) then
+        write(fmt,'(''('',i2,''f13.8,a10)'')') norda_bf+1
+      else
+        write(fmt,'(''(a10)'')')
+      endif
+      do ict=1,nctype
+        write(2,fmt) (parm_bf(1+nordb_bf + (ict-1)*(norda_bf+1)+i),i=1,norda_bf+1),' e-n'
+      enddo 
+
+      if(nordb_bf.gt.0) then
+        write(fmt,'(''('',i2,''f13.8,a10)'')') nordb_bf+1
+      else
+        write(fmt,'(''(a10)'')')
+      endif
+      write(2,fmt) (parm_bf(+i),i=1,nordb_bf+1),' e-e'
 
       write(2,'(''end'')')
       close(2)

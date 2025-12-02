@@ -50,7 +50,7 @@ module m_backflow
 
     real(dp), dimension(:), allocatable :: parm_bf
     real(dp), dimension(:), allocatable :: deriv_parm_bf
-    integer :: norda_bf, nordb_bf, nparm_bf
+    integer :: norda_bf, nordb_bf, nordc_bf, nparm_bf, cutoff_scale
 
     
     private
@@ -59,7 +59,7 @@ module m_backflow
     public :: rvec_en_bf, r_en_bf
     public :: allocate_m_backflow, deallocate_m_backflow
     public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf
-    public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf
+    public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
 
 
 contains

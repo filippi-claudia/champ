@@ -31,7 +31,7 @@ subroutine backflow(x)
     else if (ibackflow == 3) then
         call linear_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     else if (ibackflow == 4) then
-        call ee_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
+        call rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     else
         call fatal_error('Backflow type not recognized.')
     end if
@@ -55,11 +55,20 @@ subroutine init_backflow()
         continue
         !call init_linear_backflow()
     else if (ibackflow == 4) then
-        call init_twobody_backflow(8,8)
+        call init_rios_backflow(8,8,0)
     end if
-
-
 end subroutine init_backflow
+
+subroutine init_backflow_arrays()
+    use m_backflow, only: ibackflow
+    implicit none
+
+    if (ibackflow == 0) return
+
+    if (ibackflow == 4) then
+        call init_rios_backflow_arrays()
+    end if
+end subroutine init_backflow_arrays
 
 !> This subroutine computes distances between quasicoordinates and nuclei
 !>
@@ -264,56 +273,84 @@ subroutine linear_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
 
 end subroutine linear_backflow
 
-subroutine init_twobody_backflow(orda, ordb)
+subroutine init_rios_backflow(orda, ordb, ordc)
     use precision_kinds, only: dp
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
     use system, only: nctype
     use m_backflow, only: allocate_m_backflow
     implicit none
-    integer :: i, orda, ordb
+    integer :: i, orda, ordb, ordc, tmpc
+    intrinsic :: ceiling
  
     norda_bf = orda
     nordb_bf = ordb
+    nordc_bf = ordc
 
-    nparm_bf = 0
-    if (norda_bf .gt. 0) then
-        nparm_bf = nparm_bf + (2 + norda_bf) * nctype
-    end if
-    if (nordb_bf .gt. 0) then
-        nparm_bf = nparm_bf + (2 + nordb_bf)
-    end if
-
-    call allocate_m_backflow
+    call init_backflow_arrays()
     
     parm_bf = 0.0d0
     parm_bf(1) = 3.0d0
 
-    if (nordb_bf.gt.0) then
+    if (norda_bf.gt.0) then
         do i = 1, nctype
-            parm_bf(2 + nordb_bf + (2 + norda_bf)*(i-1) + 1) = 3.0d0
+            parm_bf(1 + nordb_bf + (1 + norda_bf)*(i-1) + 1) = 3.0d0
         end do
     end if
-end subroutine init_twobody_backflow
+    if (nordc_bf.gt.0) then
+        do i = 1, 2 * nctype
+            parm_bf(1 + nordb_bf + (1 + norda_bf)*nctype + (tmpc+1) * (i-1) + 1) = 3.0d0
+        end do
+    end if
 
-subroutine ee_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
+    cutoff_scale = 3
+end subroutine init_rios_backflow
+
+subroutine init_rios_backflow_arrays()
+    use m_backflow, only: allocate_m_backflow, ibackflow, norda_bf, nordb_bf, nordc_bf, nparm_bf
+    use system, only: nctype
+    implicit none
+    integer :: i, tmpc
+    intrinsic :: ceiling
+
+    nparm_bf = 0
+    if (norda_bf .gt. 0) then
+        nparm_bf = nparm_bf + (1 + norda_bf) * nctype
+    end if
+    if (nordb_bf .gt. 0) then
+        nparm_bf = nparm_bf + (1 + nordb_bf)
+    end if
+    if (nordc_bf .gt. 0) then
+        tmpc = 0
+        do i = 1, nordc_bf+1
+            tmpc = tmpc + ceiling(real(i)/2)*(nordc_bf + 2 - i)
+        end do
+        nparm_bf = nparm_bf + 2 * tmpc * nctype
+        nparm_bf = nparm_bf + 2 * nctype
+    end if
+
+    call allocate_m_backflow
+
+end subroutine init_rios_backflow_arrays
+
+subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     use precision_kinds, only: dp
     use system, only: nelec, iwctype, ncent, nctype, cent
     use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
     implicit none
     real(dp), dimension(3, nelec), intent(in) :: x
     real(dp), dimension(3, nelec), intent(out) :: quasi_x
     real(dp), dimension(3, nelec, 3, nelec), intent(out) :: dquasi_dx
     real(dp), dimension(3, nelec, nelec), intent(out) :: d2quasi_dx2
     real(dp), dimension(3, nelec, nparm_bf), intent(out) :: dquasi_dp
-    real(dp) :: rij, rr, C, cutoff
+    real(dp) :: rij, rr, C, cutoff, b_one, a_one
     real(dp) :: f, fp(3), fpp(3,3), eta, etap(3), etapp(3,3)
     real(dp) :: delta(3)
     integer :: i, j, k, a, b, offset_ee, offset_en, offset_een
 
     offset_ee = 0
-    offset_en = offset_ee + 1+1+nordb_bf
-    offset_een = offset_en + (1+1+norda_bf)*nctype
+    offset_en = offset_ee + 1+nordb_bf
+    offset_een = offset_en + (1+norda_bf)*nctype
 
     quasi_x = 0.0_dp
     dquasi_dx = 0.0_dp
@@ -321,7 +358,7 @@ subroutine ee_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     dquasi_dp = 0.0_dp
 
     
-    C = 3
+    C = cutoff_scale
 
     do i = 1, nelec
         do a=1,3
@@ -333,8 +370,8 @@ subroutine ee_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     if (nordb_bf .eq. 0) goto 10
     cutoff = parm_bf(offset_ee+1)
 
-    !parm_bf(2) = 0.0d0
-    ! parm_bf(3) = 0.0d0
+    b_one = parm_bf(offset_ee+2) * C / cutoff
+
 
     do i = 1, nelec
         do j = 1, nelec
@@ -349,8 +386,6 @@ subroutine ee_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
             rij = sqrt(delta(1)**2 + delta(2)**2 + delta(3)**2)
             if (rij > cutoff) cycle
 
-            rr = 1.0d0
-
             f = ((cutoff - rij)/cutoff)**C
 
 
@@ -363,17 +398,32 @@ subroutine ee_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
                 end do
             end do
 
-            do k = 0, nordb_bf
-                eta = eta + parm_bf(offset_ee+k+2)*rr
+
+
+
+            eta  = eta + parm_bf(offset_ee+2) + b_one*rij
+            do a = 1, 3
+                dquasi_dp(a,i,offset_ee+2) = dquasi_dp(a,i,offset_ee+2) + delta(a) * f
+                etap(a) = etap(a) + b_one * delta(a)/rij 
+                do b = 1, 3
+                    etapp(a,b) = etapp(a,b) - b_one *  delta(a) * delta(b)/(rij*rij*rij)
+                enddo
+                etapp(a,a) = etapp(a,a) + b_one / rij
+            end do
+
+            rr = rij*rij
+
+            do k = 2, nordb_bf
+                eta = eta + parm_bf(offset_ee+k+1)*rr
                 do a = 1, 3
-                    dquasi_dp(a,i,offset_ee+k+2) = dquasi_dp(a,i,offset_ee+k+2) + rr * delta(a) * f
-                    etap(a) = etap(a) + parm_bf(offset_ee+k+2) * (&
+                    dquasi_dp(a,i,offset_ee+k+1) = dquasi_dp(a,i,offset_ee+k+1) + rr * delta(a) * f
+                    etap(a) = etap(a) + parm_bf(offset_ee+k+1) * (&
                         k * rr * delta(a)/(rij*rij) )
                     do b = 1, 3
-                        etapp(a,b) = etapp(a,b) + parm_bf(offset_ee+k+2) * (&
+                        etapp(a,b) = etapp(a,b) + parm_bf(offset_ee+k+1) * (&
                             k * (k-2) * rr * delta(a) * delta(b)/(rij*rij*rij*rij) )
                     enddo
-                    etapp(a,a) = etapp(a,a) + parm_bf(offset_ee+k+2) * (&
+                    etapp(a,a) = etapp(a,a) + parm_bf(offset_ee+k+1) * (&
                         k * rr/(rij*rij) )
                 enddo
                 rr = rr * rij
@@ -382,7 +432,8 @@ subroutine ee_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
             do a = 1, 3
                 quasi_x(a,i) = quasi_x(a,i) + eta * delta(a) * f
                 ! dquasi_dp(a,i,1) = dquasi_dp(a,i,1) + eta * delta(a) * f * log((cutoff - rij)/cutoff)
-                dquasi_dp(a,i,offset_ee+1) = dquasi_dp(a,i,offset_ee+1) + eta * delta(a) * C * ((cutoff - rij)/cutoff)**(C-1) * (rij/cutoff/cutoff)
+                dquasi_dp(a,i,offset_ee+1) = dquasi_dp(a,i,offset_ee+1) + eta * delta(a) * C * ((cutoff - rij)/cutoff)**(C-1) * (rij/cutoff/cutoff) - &
+                    delta(a) * f * b_one/cutoff * rij
                 do b = 1, 3
                     dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + (&
                         etap(b) * delta(a) * f + eta * delta(a) * fp(b) )
@@ -415,17 +466,11 @@ subroutine ee_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
 
 10  continue
 
-if (norda_bf .eq. 0) return
-
-    ! do k = 1, nctype
-    !    parm_bf(offset_en+(k-1)*(norda_bf+2)+2) = 0.0d0
-    !    parm_bf(offset_en+(k-1)*(norda_bf+2)+3) = 0.0d0
-    ! end do
-
-
+if (norda_bf .eq. 0) goto 20
 
     do j = 1, ncent
-        cutoff = parm_bf(offset_en+(iwctype(j)-1)*(norda_bf+2)+1)
+        cutoff = parm_bf(offset_en+(iwctype(j)-1)*(norda_bf+1)+1)
+        a_one = parm_bf(offset_en+(iwctype(j)-1)*(norda_bf+1)+2) * C / cutoff
 
         do i = 1, nelec
 
@@ -439,8 +484,6 @@ if (norda_bf .eq. 0) return
             etap=0.0d0
             etapp=0.0d0
 
-            rr = 1.0d0
-
             f = ((cutoff - rij)/cutoff)**C
 
             do a = 1, 3
@@ -452,18 +495,31 @@ if (norda_bf .eq. 0) return
                 end do
             end do
 
-            do k = 0, norda_bf
-                eta = eta + parm_bf(offset_en + (iwctype(j)-1)*(norda_bf+2)+ k+2)*rr
+            eta  = eta + parm_bf(offset_en+(iwctype(j)-1)*(norda_bf+1)+2) + a_one*rij
+            do a = 1, 3
+                dquasi_dp(a,i,offset_en + (iwctype(j)-1)*(norda_bf+1)+2) = &
+                     dquasi_dp(a,i,offset_en + (iwctype(j)-1)*(norda_bf+1)+2) + delta(a) * f
+                etap(a) = etap(a) + a_one * delta(a)/rij 
+                do b = 1, 3
+                    etapp(a,b) = etapp(a,b) - a_one *  delta(a) * delta(b)/(rij*rij*rij)
+                enddo
+                etapp(a,a) = etapp(a,a) + a_one / rij
+            end do
+
+            rr = rij*rij
+
+            do k = 2, norda_bf
+                eta = eta + parm_bf(offset_en + (iwctype(j)-1)*(norda_bf+1)+ k+1)*rr
                 do a = 1, 3
-                    dquasi_dp(a,i,offset_en + (iwctype(j)-1)*(norda_bf+2)+ k+2) = &
-                         dquasi_dp(a,i,offset_en + (iwctype(j)-1)*(norda_bf+2)+ k+2) + rr * delta(a) * f
-                    etap(a) = etap(a) + parm_bf(offset_en + (iwctype(j)-1)*(norda_bf+2)+ k+2) * (&
+                    dquasi_dp(a,i,offset_en + (iwctype(j)-1)*(norda_bf+1)+ k+1) = &
+                         dquasi_dp(a,i,offset_en + (iwctype(j)-1)*(norda_bf+1)+ k+1) + rr * delta(a) * f
+                    etap(a) = etap(a) + parm_bf(offset_en + (iwctype(j)-1)*(norda_bf+1)+ k+1) * (&
                         k * rr * delta(a)/(rij*rij) )
                     do b = 1, 3
-                        etapp(a,b) = etapp(a,b) + parm_bf(offset_en + (iwctype(j)-1)*(norda_bf+2)+ k+2) * (&
+                        etapp(a,b) = etapp(a,b) + parm_bf(offset_en + (iwctype(j)-1)*(norda_bf+1)+ k+1) * (&
                             k * (k-2) * rr * delta(a) * delta(b)/(rij*rij*rij*rij) )
                     enddo
-                    etapp(a,a) = etapp(a,a) + parm_bf(offset_en + (iwctype(j)-1)*(norda_bf+2)+ k+2) * (&
+                    etapp(a,a) = etapp(a,a) + parm_bf(offset_en + (iwctype(j)-1)*(norda_bf+1)+ k+1) * (&
                         k * rr/(rij*rij) )
                 enddo
                 rr = rr * rij
@@ -471,8 +527,9 @@ if (norda_bf .eq. 0) return
 
             do a = 1, 3
                 quasi_x(a,i) = quasi_x(a,i) + eta * delta(a) * f
-                dquasi_dp(a,i,offset_en + (iwctype(j)-1)*(norda_bf+2)+1) = dquasi_dp(a,i,offset_en + (iwctype(j)-1)*(norda_bf+2)+1) &
-                    + eta * delta(a) * C * ((cutoff - rij)/cutoff)**(C-1) * (rij/cutoff/cutoff)
+                dquasi_dp(a,i,offset_en + (iwctype(j)-1)*(norda_bf+1)+1) = dquasi_dp(a,i,offset_en + (iwctype(j)-1)*(norda_bf+1)+1) &
+                    + eta * delta(a) * C * ((cutoff - rij)/cutoff)**(C-1) * (rij/cutoff/cutoff) - &
+                    delta(a) * f * a_one/cutoff * rij
                 do b = 1, 3
                     dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + (&
                         etap(b) * delta(a) * f + eta * delta(a) * fp(b) )
@@ -492,8 +549,13 @@ if (norda_bf .eq. 0) return
         end do
     end do
 
+20  continue
+    if (nordc_bf .eq. 0) return
 
-end subroutine ee_backflow
+    
+
+
+end subroutine rios_backflow
 
 
 end module
