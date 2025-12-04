@@ -268,24 +268,24 @@ contains
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
 
 
-      ! do iel=1,nelec
-      !   do k=1,3
-      !     xold(k,iel) = xold(k,iel) + 0.00001
-      !     call hpsi(xold,psidoo,psijo,ekino,eold(1,1),0,1)
-      !     xold(k,iel) = xold(k,iel) - 0.00001
-      !     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-      !     print *, ddx(k,iel,1) , (psidoo(1) - psido(1))/0.00001/psido(1)
-      !     xold(k,iel) = xold(k,iel) - 0.00001
-      !     call hpsi(xold,psidoo2,psijo,ekino,eold(1,1),0,1)
-      !     xold(k,iel) = xold(k,iel) + 0.00001
-      !     ddx_l(k) = (psidoo2(1) + psidoo(1) -2*psido(1))/0.00001/0.00001/psido(1)
-      !   enddo
-      !   call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-      !   print *, ddx_l(1) + ddx_l(2) + ddx_l(3)
-      !   print *, d2dx2(iel,1)
-      !   print *, '-----'
-      ! enddo 
-      ! stop
+      do iel=1,nelec
+        do k=1,3
+          xold(k,iel) = xold(k,iel) + 0.00001
+          call hpsi(xold,psidoo,psijo,ekino,eold(1,1),0,1)
+          xold(k,iel) = xold(k,iel) - 0.00001
+          call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+          print *, ddx(k,iel,1) , (psidoo(1) - psido(1))/0.00001/psido(1)
+          xold(k,iel) = xold(k,iel) - 0.00001
+          call hpsi(xold,psidoo2,psijo,ekino,eold(1,1),0,1)
+          xold(k,iel) = xold(k,iel) + 0.00001
+          ddx_l(k) = (psidoo2(1) + psidoo(1) -2*psido(1))/0.00001/0.00001/psido(1)
+        enddo
+        call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+        print *, ddx_l(1) + ddx_l(2) + ddx_l(3)
+        print *, d2dx2(iel,1)
+        print *, '-----'
+      enddo 
+      stop
       do istate=1,nstates
         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
         if(ipr.gt.1) write(ounit,'(''zerest STATE,psido,psijo,psi2o='',i4,3d12.4)') &

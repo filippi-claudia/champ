@@ -205,7 +205,6 @@ contains
             enddo
           enddo
           if (ibackflow.gt.0) then
-            call backflow(xold)
             call determinante_ref_grad_bf(iel,slmi(1,1,isorb),dslm(1,1,1,isorb),vref(1,isorb))
           else
             call determinante_ref_grad(iel,slmi(1,iab,isorb),dorb_tmp(1,1,isorb),norb,vref(1,isorb))

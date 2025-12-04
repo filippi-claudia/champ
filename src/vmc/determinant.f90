@@ -113,7 +113,7 @@ contains
                 do kk=1,3
                   do jj=1,3
                     ddx(kk,i,k)=ddx(kk,i,k)+slmi((j-1)*nel + l,iab,k)&
-                    *dslm(jj,(l-1)*nel + j,iab,k) * dquasi_dx(kk,i,jj,j+ish)
+                    *dslm(jj,(l-1)*nel + j,iab,k) * dquasi_dx(jj,j+ish,kk,i)
                   enddo
                 enddo
                 do m =1,nel
@@ -124,7 +124,7 @@ contains
                           d2dx2(i,k)=d2dx2(i,k) - &
                           slmi((j-1)*nel+l,iab,k) * dslm(kk,(l-1)*nel+m,iab,k) * &
                           slmi((m-1)*nel+n,iab,k) * dslm(jj,(n-1)*nel+j,iab,k) * &
-                          dquasi_dx(ii,i,kk,j+ish) * dquasi_dx(ii,i,jj,m+ish)
+                          dquasi_dx(kk,j+ish,ii,i) * dquasi_dx(jj,m+ish,ii,i)
                         enddo
                       enddo
                     enddo
@@ -134,7 +134,7 @@ contains
                   do ii=1,3
                     do jj=1,3
                       d2dx2(i,k)=d2dx2(i,k) + slmi((j-1)*nel+l,iab,k) * &
-                      d2slm(ii,jj,(l-1)*nel+j,iab,k) * dquasi_dx(kk,i,ii,j+ish) * dquasi_dx(kk,i,jj,j+ish)
+                      d2slm(ii,jj,(l-1)*nel+j,iab,k) * dquasi_dx(ii,j+ish,kk,i) * dquasi_dx(jj,j+ish,kk,i)
                     enddo
                   enddo
                 enddo
