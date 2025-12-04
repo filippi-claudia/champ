@@ -45,6 +45,9 @@ module m_backflow
     !> detn_bf
     real(dp), dimension(:, :), allocatable :: detn_bf
 
+    real(dp), dimension(:, :, :, :, :), allocatable :: dslm_bf
+    real(dp), dimension(:, :, :, :), allocatable :: slmi_bf
+
     !> nl_slm (nmat_dim,2)
     real(dp), dimension(:, :), allocatable :: nl_slm
 
@@ -60,7 +63,7 @@ module m_backflow
     public :: allocate_m_backflow, deallocate_m_backflow
     public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf
     public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
-
+    public :: dslm_bf, slmi_bf
 
 contains
     !> Allocates memory for backflow arrays.
@@ -82,6 +85,8 @@ contains
         if (.not. allocated(parm_bf)) allocate (parm_bf(nparm_bf))
         if (.not. allocated(dquasi_dp)) allocate (dquasi_dp(3, nelec, nparm_bf))
         if (.not. allocated(deriv_parm_bf)) allocate (deriv_parm_bf(nparm_bf))
+        if (.not. allocated(dslm_bf)) allocate (dslm_bf(nup, nup,3, 2, nwftypeorb))
+        if (.not. allocated(slmi_bf)) allocate (slmi_bf(nup, nup,2, nwftypeorb))
       endif
     end subroutine allocate_m_backflow
   
@@ -104,6 +109,8 @@ contains
         if (allocated(parm_bf)) deallocate(parm_bf)
         if (allocated(dquasi_dp)) deallocate(dquasi_dp)
         if (allocated(deriv_parm_bf)) deallocate(deriv_parm_bf)
+        if (allocated(dslm_bf)) deallocate(dslm_bf)
+        if (allocated(slmi_bf)) deallocate(slmi_bf)
       endif
     end subroutine deallocate_m_backflow
   

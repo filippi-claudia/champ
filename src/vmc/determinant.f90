@@ -28,7 +28,7 @@ contains
       use vmc_mod, only: norb_tot
       use vmc_mod, only: norb_tot, nwftypeorb
       use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2, ibackflow, rvec_en_bf, r_en_bf
-      use m_backflow, only: dslm, d2slm, d2orb, deriv_parm_bf, nparm_bf, dquasi_dp
+      use m_backflow, only: dslm, d2slm, d2orb, deriv_parm_bf, nparm_bf, dquasi_dp, slmi_bf, dslm_bf
       use backflow_mod, only: backflow
 
       implicit none
@@ -40,6 +40,7 @@ contains
       real(dp), dimension(3, nelec) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), allocatable :: tmp1(:,:), tmp2(:,:)
 
 ! compute orbitals
       if (ibackflow .gt. 0) then
@@ -62,6 +63,7 @@ contains
 
   if (ibackflow.gt.0) then
 
+
       do iab=1,2
 
         if(iab.eq.1) then
@@ -71,6 +73,9 @@ contains
           ish=nup
           nel=ndn
         endif
+
+        allocate(tmp1(nel, nel))
+        allocate(tmp2(nel, nel))
 
         call allocate_multislater() ! properly accessing array elements
 
@@ -84,6 +89,9 @@ contains
             call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,dslm(1,1+jk,iab,k),3)
             call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,dslm(2,1+jk,iab,k),3)
             call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,dslm(3,1+jk,iab,k),3)
+            call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,dslm_bf(1,j,1,iab,k), 1)
+            call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,dslm_bf(1,j,2,iab,k), 1)
+            call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,dslm_bf(1,j,3,iab,k), 1)
             do kk=1,3
               do jj=1,3
                 call dcopy(nel,d2orb(kk,jj,jorb,1+ish,k),3*3*norb_tot,d2slm (kk,jj,1+jk,iab,k),3*3)
@@ -91,7 +99,15 @@ contains
             enddo
           enddo
 
+
           if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
+
+          jk=-nel
+          do j =1,nel
+            jk=jk+nel
+            call dcopy(nel,slmi(1+jk,iab,k),1,slmi_bf(1,j,iab,k),1)
+          enddo
+
 
           if (ioptbf.gt.0) then
             do p =1,nparm_bf
@@ -116,20 +132,99 @@ contains
                     *dslm(jj,(l-1)*nel + j,iab,k) * dquasi_dx(jj,j+ish,kk,i)
                   enddo
                 enddo
-                do m =1,nel
-                  do n=1,nel
-                    do kk=1,3
-                      do ii=1,3
-                        do jj=1,3
-                          d2dx2(i,k)=d2dx2(i,k) - &
-                          slmi((j-1)*nel+l,iab,k) * dslm(kk,(l-1)*nel+m,iab,k) * &
-                          slmi((m-1)*nel+n,iab,k) * dslm(jj,(n-1)*nel+j,iab,k) * &
-                          dquasi_dx(kk,j+ish,ii,i) * dquasi_dx(jj,m+ish,ii,i)
-                        enddo
-                      enddo
-                    enddo
-                  enddo
-                enddo
+              enddo
+            enddo
+          enddo
+          ! do i=1,nelec
+          !   do j=1,nel
+          !     do l=1,nel
+          !       do m =1,nel
+          !         do n=1,nel
+          !           do kk=1,3
+          !             do ii=1,3
+          !               do jj=1,3
+          !                 d2dx2(i,k)=d2dx2(i,k) - &
+          !                 slmi((j-1)*nel+l,iab,k) * dslm(kk,(l-1)*nel+m,iab,k) * &
+          !                 slmi((m-1)*nel+n,iab,k) * dslm(jj,(n-1)*nel+j,iab,k) * &
+          !                 dquasi_dx(kk,j+ish,ii,i) * dquasi_dx(jj,m+ish,ii,i)
+          !               enddo
+          !             enddo
+          !           enddo
+          !         enddo
+          !       enddo
+          !     enddo
+          !   enddo
+          ! enddo
+          ! do i=1,nelec
+          !   do kk=1,3
+          !     do ii=1,3
+          !       do jj=1,3
+          !         do j=1,nel
+          !           do l=1,nel
+          !             do m =1,nel
+          !               do n=1,nel
+          !                 d2dx2(i,k)=d2dx2(i,k) - &
+          !                 slmi_bf(j,l,iab,k)*dslm_bf(l,m,kk,iab,k)* &
+          !                 slmi_bf(m,n,iab,k)*dslm_bf(n,j,jj,iab,k)* &
+          !                 dquasi_dx(kk,j+ish,ii,i) * dquasi_dx(jj,m+ish,ii,i)
+          !               enddo
+          !             enddo
+          !           enddo
+          !         enddo
+          !       enddo
+          !     enddo
+          !   enddo
+          ! enddo
+
+
+          do i = 1, nelec
+  do kk = 1,3
+            tmp1=0.0d0
+            ! Step 1: tmp1 = slmi_bf * dslm_bf -> (j,l)*(l,m) = (j,m)
+
+             ! print *, slmi((l-1)*nel+j,iab,k), slmi_bf(j,l,iab,k)
+             ! print *, dslm(kk,(l-1)*nel+j,iab,k), dslm_bf(j,l,kk,iab,k)
+        do l = 1, nel
+          do j = 1, nel
+            do m = 1, nel
+              tmp1(j,m) = tmp1(j,m) + slmi_bf(l,j,iab,k) * dslm_bf(m,l,kk,iab,k)
+              !tmp1(j,m) = tmp1(j,m) + slmi((j-1)*nel+l,iab,k) * dslm(kk,(l-1)*nel+m,iab,k) 
+
+            enddo
+          enddo
+        enddo
+    do ii = 1,3
+      do jj = 1,3
+
+        tmp2=0.0d0
+
+
+
+        ! Step 2: tmp2 = tmp1 * slmi_bf -> (j,m)*(m,n) = (j,n)
+        do m = 1, nel
+          do j = 1, nel
+            do n = 1, nel
+              !tmp2(j,n) = tmp2(j,n)  + tmp1(j,m) * slmi((m-1)*nel+n,iab,k)  * dquasi_dx(kk,j+ish,ii,i) * dquasi_dx(jj,m+ish,ii,i)
+              tmp2(j,n) = tmp2(j,n) + tmp1(j,m) * slmi_bf(n,m,iab,k) * dquasi_dx(kk,j+ish,ii,i) * dquasi_dx(jj,m+ish,ii,i)
+            enddo
+          enddo
+        enddo
+
+        do m = 1, nel
+          do j = 1, nel
+            d2dx2(i,k) = d2dx2(i,k) - tmp2(j,m) * dslm_bf(j,m,jj,iab,k)
+            !d2dx2(i,k) = d2dx2(i,k) - tmp2(j,m) * dslm(jj,(m-1)*nel+j,iab,k)
+          enddo
+        enddo
+
+
+      end do
+    end do
+  end do
+end do
+          do i=1,nelec
+            do j=1,nel
+              do l=1,nel
                 do kk=1,3
                   do ii=1,3
                     do jj=1,3
@@ -146,7 +241,9 @@ contains
             enddo
           enddo
         enddo
+        deallocate(tmp1,tmp2)
       enddo
+
 
 
       do k=1,nwftypeorb
@@ -157,6 +254,8 @@ contains
           ddx(3,i,k)*ddx(3,i,k)
         enddo
       enddo
+
+
 
   else
       do iab=1,2
