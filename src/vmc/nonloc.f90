@@ -206,11 +206,15 @@ contains
         allocate(indices(nxquad*nelec))
         do iq=1,nxquad
           call single_backflow(iequad(iq), x, xquad(:,iq), quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices((iq-1)*nelec+1:(iq*nelec)))
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
           if (.not. use_qmckl_orbitals) then
+#endif
             do iwforb=1,nwftypeorb
               call orbitals_quad_bf_no_qmckl(orbn_bf(:,((iq-1)*nelec+1):(iq*nelec),iwforb),iwforb)
             end do
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
           end if
+#endif
           do j=1,nelec
             bf_quadcoords(1,(iq-1)*nelec+j)=quasi_x_new(1,j)
             bf_quadcoords(2,(iq-1)*nelec+j)=quasi_x_new(2,j)
