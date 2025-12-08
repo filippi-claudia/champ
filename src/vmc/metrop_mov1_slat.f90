@@ -63,6 +63,7 @@ contains
       use mpitimer, only: elapsed_time
       use mpi
       use optwf_control, only: ioptjas
+      use m_backflow, only: ibackflow, quasi_x, dquasi_dx, d2quasi_dx2, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
@@ -595,6 +596,11 @@ contains
           rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
         endif
 #endif
+        if (ibackflow.gt.0) then
+          quasi_x = quasi_x_new
+          dquasi_dx = dquasi_dx_new
+          d2quasi_dx2 = d2quasi_dx2_new
+        endif
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
         psi2o(1,1)=psi2n(1)

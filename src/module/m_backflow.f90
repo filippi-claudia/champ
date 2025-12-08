@@ -22,6 +22,13 @@ module m_backflow
     !> Parameter derivatives of quasicoordinates (3, nelec, nparmbf)
     real(dp), dimension(:, :, :), allocatable :: dquasi_dp
 
+      !> Quasicoordinate arrays (3, nelec)
+    real(dp), dimension(:, :), allocatable :: quasi_x_new
+    !> Quasicoordinate derivatives arrays (3, nelec, 3, nelec)
+    real(dp), dimension(:, :, :, :), allocatable :: dquasi_dx_new
+    !> Quasicoordinate second derivatives arrays (3, nelec, nelec)
+    real(dp), dimension(:, :, :), allocatable :: d2quasi_dx2_new
+
     !> Distance vector (needed if run without qmckl)
     real(dp), dimension(:, :, :), allocatable :: rvec_en_bf
     !> Distances (needed if run without qmckl)
@@ -60,6 +67,7 @@ module m_backflow
     public :: allocate_m_backflow, deallocate_m_backflow
     public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf
     public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+    public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
 
 contains
     !> Allocates memory for backflow arrays.
@@ -81,6 +89,9 @@ contains
         if (.not. allocated(parm_bf)) allocate (parm_bf(nparm_bf))
         if (.not. allocated(dquasi_dp)) allocate (dquasi_dp(3, nelec, nparm_bf))
         if (.not. allocated(deriv_parm_bf)) allocate (deriv_parm_bf(nparm_bf))
+        if (.not. allocated(quasi_x_new)) allocate (quasi_x_new(3, nelec))
+        if (.not. allocated(dquasi_dx_new)) allocate (dquasi_dx_new(3, nelec, 3, nelec))
+        if (.not. allocated(d2quasi_dx2_new)) allocate (d2quasi_dx2_new(3, nelec, nelec))
       endif
     end subroutine allocate_m_backflow
   
@@ -103,6 +114,9 @@ contains
         if (allocated(parm_bf)) deallocate(parm_bf)
         if (allocated(dquasi_dp)) deallocate(dquasi_dp)
         if (allocated(deriv_parm_bf)) deallocate(deriv_parm_bf)
+        if (allocated(quasi_x_new)) deallocate(quasi_x_new)
+        if (allocated(dquasi_dx_new)) deallocate(dquasi_dx_new)
+        if (allocated(d2quasi_dx2_new)) deallocate(d2quasi_dx2_new)
       endif
     end subroutine deallocate_m_backflow
   

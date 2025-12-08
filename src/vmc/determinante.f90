@@ -12,7 +12,7 @@ contains
       use system, only: ndn, nup, nelec, ncent_tot
       use contrl_file, only: ounit
       use vmc_mod, only: nwftypeorb, norb_tot
-      use m_backflow, only: ibackflow, rvec_en_bf, r_en_bf, quasi_x
+      use m_backflow, only: ibackflow, rvec_en_bf, r_en_bf, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
       use backflow_mod, only: single_backflow
       use m_backflow, only: slmin_bf, orbn_bf, detn_bf, dslm, dorbn_bf
       use orbitals_no_qmckl_mod, only: orbitalse_no_qmckl_bf
@@ -32,9 +32,6 @@ contains
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
-      real(dp), dimension(3, nelec) :: quasi_x_new
-      real(dp), dimension(3, nelec, 3, nelec) :: dquasi_dx_new
-      real(dp), dimension(3, nelec, nelec) :: d2quasi_dx2_new
       integer, dimension(nelec):: indices
     
 

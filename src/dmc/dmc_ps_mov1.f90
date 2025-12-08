@@ -74,6 +74,7 @@
       use vmc_mod, only: nbjx
       use walksav_det_mod, only: walksav_det,walkstrdet
       use walksav_jas_mod, only: walksav_jas,walkstrjas
+      use m_backflow, only: ibackflow, quasi_x, dquasi_dx, d2quasi_dx2, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
@@ -239,6 +240,11 @@
                 rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
               endif
 #endif
+            if (ibackflow.gt.0) then
+              quasi_x = quasi_x_new
+              dquasi_dx = dquasi_dx_new
+              d2quasi_dx2 = d2quasi_dx2_new
+            endif
               if(icasula.eq.4) then
                  call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove, t_norm_new,0)
                  p=random_dp()
@@ -260,6 +266,11 @@
                       rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
                     endif
 #endif
+                if (ibackflow.gt.0) then
+                  quasi_x = quasi_x_new
+                  dquasi_dx = dquasi_dx_new
+                  d2quasi_dx2 = d2quasi_dx2_new
+                endif
                  else
                     nmove_casula=nmove_casula+1
                     iage(iw)=0
@@ -418,6 +429,11 @@
               rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
             endif
 #endif
+            if (ibackflow.gt.0) then
+              quasi_x = quasi_x_new
+              dquasi_dx = dquasi_dx_new
+              d2quasi_dx2 = d2quasi_dx2_new
+            endif
             iaccept=1
             nacc=nacc+1
             iacc_elec(i)=1
@@ -735,6 +751,11 @@
               rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
             endif
 #endif
+            if (ibackflow.gt.0) then
+              quasi_x = quasi_x_new
+              dquasi_dx = dquasi_dx_new
+              d2quasi_dx2 = d2quasi_dx2_new
+            endif
             if (icasula.eq.-2) then
                call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,0,1)
 
@@ -765,7 +786,12 @@
                   if (use_qmckl_jastrow) then
                     rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
                   endif
-#endif
+#endif 
+                  if (ibackflow.gt.0) then
+                    quasi_x = quasi_x_new
+                    dquasi_dx = dquasi_dx_new
+                    d2quasi_dx2 = d2quasi_dx2_new
+                  endif
  
                   call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,0,1)
 
