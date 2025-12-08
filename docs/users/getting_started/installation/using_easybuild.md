@@ -498,25 +498,6 @@ Check log files in:
 $EASYBUILD_INSTALLPATH/software/CHAMP/2.4.0-foss-2024a/easybuild/*.log
 ```
 
-## Advantages of Using EasyBuild
-
-- **Standardized toolchains** - Tested compiler and library combinations
-- **Automated module generation** - Easy environment management
-- **Reproducible builds** - Easyconfig files ensure consistency
-- **Wide software support** - Large repository of easyconfigs
-- **HPC-focused** - Designed specifically for supercomputing environments
-- **Multiple versions** - Install and maintain different versions side-by-side
-
-## Best Practices
-
-1. **Use standard toolchains** - Prefer `foss` or `intel` for compatibility
-2. **Keep easyconfigs** - Save custom easyconfigs for reproducibility
-3. **Document toolchain versions** - Record which toolchain was used
-4. **Test installations** - Run test suite after building
-5. **Use robot flag** - Let EasyBuild handle dependencies automatically
-6. **Clean build directories** - Regularly clean `/tmp` build files
-7. **Share easyconfigs** - Contribute working easyconfigs back to the community
-
 ## Creating Easyconfig for Development Version
 
 To build the latest CHAMP from Git:
@@ -561,10 +542,14 @@ moduleclass = 'chem'
 
 ## Additional Resources
 
-- [EasyBuild Documentation](https://easybuild.io/en/latest/)
-- [EasyBuild Tutorial](https://tutorial.easybuild.io/)
-- [EasyBuild GitHub Repository](https://github.com/easybuilders/easybuild)
-- [Easyconfig Repository](https://github.com/easybuilders/easybuild-easyconfigs)
+[:fontawesome-solid-book: EasyBuild Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://easybuild.io/en/latest/)
+
+[:fontawesome-solid-book: EasyBuild Tutorial :fontawesome-solid-arrow-up-right-from-square:](https://tutorial.easybuild.io/)
+
+[:fontawesome-brands-github: EasyBuild GitHub Repository :fontawesome-solid-arrow-up-right-from-square:](https://github.com/easybuilders/easybuild)
+
+[:fontawesome-brands-github: Easyconfig Repository :fontawesome-solid-arrow-up-right-from-square:](https://github.com/easybuilders/easybuild-easyconfigs)
+
 
 ## Next Steps
 

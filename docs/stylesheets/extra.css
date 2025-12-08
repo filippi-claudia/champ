@@ -1,0 +1,21 @@
+/* Custom tag styling */
+.md-typeset .md-tag {
+    border-radius: 4px !important;
+    /* Rounded corners */
+    transform: skewX(-20deg);
+    /* Parallelopiped shape */
+    display: inline-block;
+    /* Required for transform to work */
+    margin-right: 8px;
+    /* Ensure spacing between slanted tags */
+}
+
+
+/* Ensure the hover effect and colors from the theme are preserved 
+   automatically since we are just transforming the element. */
+
+.md-typeset .md-tag:hover {
+    background-color: var(--md-accent-fg-color);
+    color: var(--md-accent-bg-color);
+    transition: background-color 0.2s;
+}

@@ -26,13 +26,16 @@ CHAMP has three basic capabilities:
 Noteworthy features of CHAMP are:
 
 * Efficient wave function optimization also in a state-average and a state-specific fashion for multiple states of the same symmetry (VMC)
-* Efficient computation of analytical interatomic forces (VMC)
+* Efficient computation of analytical interatomic forces (VMC and DMC)
 * Compact formulation for a fast evaluation of multi-determinant expansions and their derivatives (VMC and DMC)
 * Multiscale VMC and DMC calculations in classical point charges (MM), polarizable continuum model (PCM), and polarizable force fields (MMpol)
 
 ## Note
 
 The code is available for free under the GPL-3.0 license. Developers and contributors are welcome to use and contribute back to the code. If you have used the code for your publications, please cite this source.
+
+
+Shinde, R., Landinez Borda, E. J., Shepard, S., Slootman, E., Cuzzocrea, A., Azizi, V., Lopez-Tarifa, P., Renaud, N., Umrigar, C., Moroni, S., & Filippi, C. (2024). Cornell-Holland Ab-initio Materials Package (CHAMP-EU) (v2.3.0). Zenodo. https://doi.org/10.5281/zenodo.11369538
 
 ## Disclaimer
 

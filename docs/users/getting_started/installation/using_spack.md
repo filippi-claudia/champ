@@ -506,10 +506,15 @@ less spack-build-out.txt
 
 ## Additional Resources
 
-- [Spack Documentation](https://spack.readthedocs.io/)
-- [Spack GitHub Repository](https://github.com/spack/spack)
-- [Spack Tutorial](https://spack-tutorial.readthedocs.io/)
-- [CHAMP Spack Package](https://github.com/spack/spack/tree/develop/var/spack/repos/builtin/packages/champ)
+
+[:fontawesome-solid-book: Spack Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://spack.readthedocs.io/)
+
+[:fontawesome-brands-github: Spack GitHub Repository :fontawesome-solid-arrow-up-right-from-square:](https://github.com/spack/spack)
+
+[:fontawesome-solid-globe: Spack Tutorial :fontawesome-solid-arrow-up-right-from-square:](https://spack-tutorial.readthedocs.io/)
+
+
+
 
 ## Next Steps
 

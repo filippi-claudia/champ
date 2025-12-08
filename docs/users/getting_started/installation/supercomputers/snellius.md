@@ -4,6 +4,8 @@ tags:
     - Snellius
     - supercomputer
     - Intel
+    - AMD
+    - x86_64
 ---
 
 # Running CHAMP on Snellius Supercomputer
@@ -357,16 +359,19 @@ export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi2.so
 
 ## Additional Resources
 
-- [Snellius Documentation](https://servicedesk.surf.nl/wiki/display/WIKI/Snellius)
-- [SURF User Support](https://servicedesk.surf.nl/wiki/display/WIKI/SURF+Research+IT+Documentation)
-- [SLURM Documentation](https://slurm.schedmd.com/)
-- [Intel MPI Documentation](https://www.intel.com/content/www/us/en/docs/mpi-library/developer-guide-linux/2021-8/overview.html)
-- [EasyBuild Documentation](https://docs.easybuild.io/)
+[:fontawesome-solid-book: Snellius Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://servicedesk.surf.nl/wiki/display/WIKI/Snellius)
+
+[:fontawesome-solid-book: SURF User Support   :fontawesome-solid-arrow-up-right-from-square:](https://servicedesk.surf.nl/wiki/display/WIKI/SURF+Research+IT+Documentation)
+
+[:fontawesome-solid-book: SLURM Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://slurm.schedmd.com/)
+
+[:fontawesome-solid-book: Intel MPI Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://www.intel.com/content/www/us/en/docs/mpi-library/developer-guide-linux/2021-8/overview.html)
+
+[:fontawesome-solid-book: EasyBuild Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://docs.easybuild.io/)
 
 ## Getting Help
 
 - **Snellius-specific issues**: Contact SURF support via [servicedesk.surf.nl](https://servicedesk.surf.nl/)
-- **CHAMP usage**: Consult the [CHAMP documentation](../../../index.md)
 - **Bug reports**: Open an issue on [GitHub](https://github.com/filippi-claudia/champ)
 
 ## Next Steps

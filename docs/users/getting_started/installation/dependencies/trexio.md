@@ -191,7 +191,9 @@ If not available, install to your home directory following the CMake method abov
 ## Additional Resources
 
 
-[TREXIO Repository](https://github.com/TREX-CoE/trexio){ .md-button .md-button--primary}
 
-[TREXIO User Guide](https://trex-coe.github.io/trexio/trex.html){ .md-button .md-button--primary}
+
+[:fontawesome-brands-github: TREXIO Repository   :fontawesome-solid-arrow-up-right-from-square:](https://github.com/TREX-CoE/trexio)
+
+[:fontawesome-solid-book: TREXIO User Guide :fontawesome-solid-arrow-up-right-from-square:](https://trex-coe.github.io/trexio/trex.html)
 

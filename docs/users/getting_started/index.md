@@ -23,14 +23,9 @@ Complete installation guides for CHAMP covering multiple platforms and configura
     - **[TREXIO](installation/dependencies/trexio.md)** - Optional library for reading wavefunction data (recommended)
     - **[QMCkl](installation/dependencies/qmckl.md)** - Optional high-performance QMC kernel library
 - **[Building from Source](installation/from_source.md)** - Detailed instructions for compiling CHAMP with various compilers (GNU, Intel, LLVM, NVIDIA HPC, Fujitsu) and optional libraries (TREXIO, QMCkl)
-- **Platform-Specific Guides** - Optimized installation instructions for:
-    - **[Ubuntu Desktop](installation/desktop.md)** - Desktop Linux systems
-    - **[LUMI Supercomputer](installation/lumi.md)** - Finland's LUMI system
-    - **[Fugaku Supercomputer](installation/fugaku.md)** - Japan's Fugaku system at RIKEN
-    - **[Snellius Supercomputer](installation/snellius.md)** - Netherlands' Snellius system
-    - **[CCPHead](installation/ccphead.md)** - CCP computing resources
 
-### [Command-Line Interface](cli/index.md)
+
+### [Command-Line Interface](installation/supercomputers/cli.md)
 
 Learn how to use CHAMP from the command line:
 
@@ -38,7 +33,17 @@ Learn how to use CHAMP from the command line:
 - Input and output file specifications
 - Execution modes (VMC and DMC)
 - MPI execution examples
+
 - Common usage patterns
+
+### [Recipes for Supercomputers](installation/supercomputers/index.md)
+
+Specific installation guides and job scripts for major supercomputing centers:
+
+- **[LUMI](installation/supercomputers/lumi.md)** - Recipes for the pre-exascale EuroHPC LUMI supercomputer
+- **[Fugaku](installation/supercomputers/fugaku.md)** - Recipes for the Fugaku supercomputer
+- **[Snellius](installation/supercomputers/snellius.md)** - Recipes for the Dutch national supercomputer
+- **[CCPHead](installation/supercomputers/ccphead.md)** - Recipes for the CCPHead cluster
 
 ## Quick Navigation
 
@@ -46,7 +51,7 @@ Learn how to use CHAMP from the command line:
 
 1. Start with **[Installation → Dependencies](installation/dependencies/index.md)** to install required libraries
 2. Follow **[Installation → Building from Source](installation/from_source.md)** to compile CHAMP
-3. Learn the **[Command-Line Interface](cli/index.md)** to run calculations
+3. Learn the **[Command-Line Interface](installation/supercomputers/cli.md)** to run calculations
 4. Proceed to **[Tutorials](../tutorials/index.md)** for hands-on examples
 
 **If you're on a supercomputer:**

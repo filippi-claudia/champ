@@ -212,7 +212,6 @@ Supported vendor names:
 - `Intel10_64_dyn` (MKL dynamic)
 - `OpenBLAS`
 - `FLAME`
-- `ACML`
 - `AOCL` (CMake > 3.27)
 - `Generic` (Netlib reference)
 

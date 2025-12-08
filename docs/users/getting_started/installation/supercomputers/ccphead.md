@@ -324,14 +324,11 @@ mpirun --bind-to core -np 24 ./bin/vmc.mov1 -i vmc.inp -o vmc.out -e error
 
 ## Additional Resources
 
-- [CCP Infrastructure Page](https://www.utwente.nl/en/tnw/ccp/infrastructure/)
-- [Intel MPI Documentation](https://www.intel.com/content/www/us/en/docs/mpi-library/developer-guide-linux/current/overview.html)
-- [OpenMPI Documentation](https://www.open-mpi.org/doc/)
+[:fontawesome-solid-book: CCP Infrastructure Page   :fontawesome-solid-arrow-up-right-from-square:](https://www.utwente.nl/en/tnw/ccp/infrastructure/)
 
-## Getting Help
+[:fontawesome-solid-book: Intel MPI Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://www.intel.com/content/www/us/en/docs/mpi-library/developer-guide-linux/current/overview.html)
 
-- **CHAMP usage**: Consult the [CHAMP documentation](../../../index.md)
-- **Bug reports**: Open an issue on [GitHub](https://github.com/filippi-claudia/champ)
+[:fontawesome-solid-book: OpenMPI Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://www.open-mpi.org/doc/)
 
 ## Next Steps
 

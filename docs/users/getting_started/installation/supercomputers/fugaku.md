@@ -3,7 +3,9 @@ title: Running on Fugaku
 tags:
     - Fugaku
     - supercomputer
-    - ARM A64FX
+    - ARM 
+    - Fujitsu
+    - A64FX
 ---
 
 # Running CHAMP on Fugaku Supercomputer
@@ -353,15 +355,17 @@ This enables caching for file system operations, reducing I/O overhead.
 
 ## Additional Resources
 
-- [Fugaku User Guide](https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/)
-- [PJM User Guide](https://www.fugaku.r-ccs.riken.jp/doc_root/en/manuals/)
-- [Fujitsu Compiler Manual](https://www.fugaku.r-ccs.riken.jp/doc_root/en/programming_guides/)
-- [Spack Documentation](https://spack.readthedocs.io/)
+[:fontawesome-solid-book: Fugaku User Guide   :fontawesome-solid-arrow-up-right-from-square:](https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/)
+
+[:fontawesome-solid-book: PJM User Guide   :fontawesome-solid-arrow-up-right-from-square:](https://www.fugaku.r-ccs.riken.jp/doc_root/en/manuals/)
+
+[:fontawesome-solid-book: Fujitsu Compiler Manual   :fontawesome-solid-arrow-up-right-from-square:](https://www.fugaku.r-ccs.riken.jp/doc_root/en/programming_guides/)
+
+[:fontawesome-solid-book: Spack Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://spack.readthedocs.io/)
 
 ## Getting Help
 
 - **Fugaku-specific issues**: Contact R-CCS support through the user portal
-- **CHAMP usage**: Consult the [CHAMP documentation](../../../index.md)
 - **Bug reports**: Open an issue on [GitHub](https://github.com/filippi-claudia/champ)
 
 ## Next Steps

@@ -36,6 +36,42 @@ The total Jastrow factor typically includes:
       - Different parameters for each atom type
       - Optional but improves accuracy
 
+
+The Jastrow factor depends on the electronic ($\mathbf{r}$) and nuclear ($\mathbf{R}$) coordinates. Its defined as
+$\exp(J(\mathbf{r},\mathbf{R}))$, where
+
+$$
+ J = f_{en} + f_{ee} + f_{een}
+$$
+
+Electron-nucleus and electron-electron:
+$R={1-e^{-\kappa r} \over \kappa}$
+
+$$
+ f_{en} = \sum_{i=1}^{N_{\rm elec}} \sum_{\alpha=1}^{N_{\rm nuc}}
+ \left( {a_1 R_{i\alpha} \over 1+a_2R_{i\alpha}} + \sum_{p=2}^{N^a_{\rm ord}} a_{p+1} R_{i\alpha}^p \right)
+$$
+
+$$
+ f_{ee} = \sum_{i=2}^{N_{\rm elec}} \sum_{j=1}^{i-1} \left( {b_1 R_{ij} \over 1+b_2R_{ij}} + \sum_{p=2}^{N^b_{\rm ord}} b_{p+1} R_{ij}^p \right)
+$$
+
+Electron-electron-nucleus: $R=\exp\left(-\kappa r \right)$
+
+$$
+ f_{een} = \sum_{i=2}^{N_{\rm elec}} \sum_{j=1}^{i-1} \sum_{\alpha=1}^{N_{\rm nuc}} \sum_{p=2}^{N^c_{\rm ord}} \sum_{k=p-1}^0 \sum_{l=l_{\rm max}}^0 c_n R_{ij}^k (R_{i\alpha}^l+R_{j\alpha}^l) (R_{i\alpha}R_{j\alpha})^m
+$$
+
+where $m={p-k-l \over 2}$
+
+-   Typically $N^a_{\rm ord}=N^b_{\rm ord}=5$. If $f_{een}$ is included,
+    $N^c_{\rm ord}=5$.
+-   Dependence among $\{c_n\} \rightarrow f_{een}$ does not
+    contribute to cusp-conditions
+-   $f_{en}$ and $f_{een}$: different $\{a_n\}$ and $\{c_n\}$ for
+    different atom types
+
+
 ## File Format
 
 Jastrow parameters are provided in a text file that CHAMP reads during initialization.
@@ -67,9 +103,21 @@ The `1` indicates number of types of wavefunctions (typically always 1).
   5  5  0           norda,nordb,nordc
 ```
 
-- `norda` = 5: Order of electron-nucleus expansion (1-body terms)
-- `nordb` = 5: Order of electron-electron expansion (2-body terms)
-- `nordc` = 0: Order of electron-electron-nucleus expansion (3-body terms, 0 = not present)
+- `norda` = 5: $N^a_{\rm ord}$ Order of electron-nucleus expansion (1-body terms)
+
+    if we are using pseudopotentials (no e-n cusps), we always leave
+    $a_1=a_2=0$ and add
+    $a_3 (r_{i\alpha}^2), \ldots, a_6 (r_{i\alpha}^5)$ equal to zero,
+    which we then optimize. We do so for each atom type.
+
+- `nordb` = 5: $N^b_{\rm ord}$ Order of electron-electron expansion (2-body terms)
+
+    We set $b_1=0.5$ (for up-down e-e cusp condition), and add $b_3$
+    ($r_{ij}^2$), $\ldots$, $b_6$ ($r_{ij}^5$) equal to zero, which we
+    then optimize. $b_1$ is modified to 0.25 for up-up and down-down
+    electrons.
+
+- `nordc` = 0: $N^c_{\rm ord}$ Order of electron-electron-nucleus expansion (3-body terms, 0 = not present)
 
 **Line 3**: Scaling parameter
 
@@ -137,7 +185,7 @@ Water molecule
 ```
 
 **Jastrow file** (`jastrow.jas`):
-```python
+```perl
 jastrow_parameter   1
   5  5  0           norda,nordb,nordc
    0.60000000         scalek
@@ -165,7 +213,7 @@ Water molecule
 ```
 
 **Jastrow file** (`jastrow.jas`):
-```python
+```perl
 jastrow_parameter   1
   5  5  5           norda,nordb,nordc
 0.4 0.0  scalek a21
@@ -189,7 +237,7 @@ end
 
 For starting VMC calculations, a minimal Jastrow:
 
-```python
+```perl
 jastrow_parameter   1
   3  3  0           norda,nordb,nordc
    0.60000000         scalek

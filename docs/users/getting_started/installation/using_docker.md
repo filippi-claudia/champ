@@ -559,17 +559,22 @@ docker system df
 
 ## Additional Resources
 
-- [Docker Documentation](https://docs.docker.com/)
-- [Docker Hub - CHAMP Images](https://hub.docker.com/r/neelravi/champ)
-- [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
-- [Singularity Documentation](https://sylabs.io/docs/)
+[:fontawesome-solid-book: Docker Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://docs.docker.com/)
+
+[:fontawesome-brands-docker: Docker Hub - CHAMP Images :fontawesome-solid-arrow-up-right-from-square:](https://hub.docker.com/r/neelravi/champ)
+
+[:fontawesome-solid-book: Docker Best Practices :fontawesome-solid-arrow-up-right-from-square:](https://docs.docker.com/develop/dev-best-practices/)
+
+[:fontawesome-solid-book: Singularity Documentation :fontawesome-solid-arrow-up-right-from-square:](https://sylabs.io/docs/)
+
+
 
 ## Next Steps
 
 After pulling and testing a Docker image:
 
 1. Verify the installation works with a simple test case
-2. Learn about the [Command-Line Interface](../cli/index.md)
+2. Learn about the [Command-Line Interface](supercomputers/cli.md)
 3. Follow the [Tutorials](../../tutorials/index.md) for example calculations
 4. Prepare your [Input Files](../../preparation/index.md)
 

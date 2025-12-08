@@ -41,6 +41,9 @@ module load cray-hdf5-parallel
 
 # Load build tools (includes CMake)
 module load buildtools
+
+# Target LUMI-C partition
+module load craype-x86-rome
 ```
 
 !!! note
@@ -58,6 +61,7 @@ You should see:
 - `LUMI`
 - `cray-hdf5-parallel`
 - `buildtools`
+- `craype-x86-rome`
 
 ## Installing TREXIO and QMCkl
 
@@ -71,8 +75,17 @@ wget https://github.com/TREX-CoE/trexio/releases/download/v2.6.0/trexio-2.6.0.ta
 tar -xzvf trexio-2.6.0.tar.gz
 cd trexio-2.6.0
 
-./configure --prefix=/scratch/projectX/trexio FC=ftn CC=cc
-make -j8
+# Optimization flags
+OPT_FLAGS="-O3 -march=native -flto -fno-trapping-math -fno-math-errno -funroll-loops"
+
+./configure --prefix=/scratch/projectX/trexio \
+    FC=ftn \
+    CC=cc \
+    CFLAGS="${OPT_FLAGS}" \
+    FCFLAGS="${OPT_FLAGS}"
+
+make -j 64
+make check
 make install
 
 export TREXIO_DIR=/scratch/projectX/trexio
@@ -86,8 +99,24 @@ wget https://github.com/TREX-CoE/qmckl/releases/download/v1.0.0/qmckl-1.0.0.tar.
 tar -xzvf qmckl-1.0.0.tar.gz
 cd qmckl-1.0.0
 
-./configure --prefix=/scratch/projectX/qmckl --enable-hdf5 FC=ftn CC=cc
-make -j8
+# Let QMCkl find trexio library
+export TREXIO_DIR=/scratch/projectX/trexio
+export CPPFLAGS="-I${TREXIO_DIR}/include"
+export LDFLAGS="-L${TREXIO_DIR}/lib"
+
+# Note: HDF5 and MPI libraries are handled implicitly by 'cc'/'ftn' wrappers
+export TREXIO_LIBS="-L${TREXIO_DIR}/lib -ltrexio"
+export TREXIO_CFLAGS="-I${TREXIO_DIR}/include"
+
+./configure --prefix=/scratch/projectX/qmckl \
+    --enable-hpc \
+    FC=ftn \
+    CC=cc \
+    CFLAGS="${OPT_FLAGS}" \
+    FCFLAGS="${OPT_FLAGS}" \
+    LDFLAGS="${LDFLAGS} -O3 -flto"
+
+make -j 64
 make install
 
 export QMCKL_DIR=/scratch/projectX/qmckl
@@ -119,29 +148,48 @@ Use Cray compiler wrappers `ftn` (Fortran) and `cc` (C), which automatically han
 **Without TREXIO/QMCkl:**
 
 ```bash
+
+# Optimization Flags (Global)
+OPT_FLAGS="-O3 -march=native -flto -fno-trapping-math -fno-math-errno -funroll-loops"
+
+FORTRAN_FLAGS="${OPT_FLAGS} -fallow-argument-mismatch -Wno-argument-mismatch -w"
+
 cmake -S. -Bbuild \
   -DCMAKE_Fortran_COMPILER=ftn \
   -DCMAKE_C_COMPILER=cc \
-  -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_Fortran_FLAGS="${FORTRAN_FLAGS}" \
+  -DCMAKE_C_FLAGS="${OPT_FLAGS}" \
+  -DCMAKE_EXE_LINKER_FLAGS="-flto"
 ```
 
 **With TREXIO/QMCkl:**
 
 ```bash
+# Optimization Flags (Global)
+OPT_FLAGS="-O3 -march=native -flto -fno-trapping-math -fno-math-errno -funroll-loops"
+
+FORTRAN_FLAGS="${OPT_FLAGS} -fallow-argument-mismatch -Wno-argument-mismatch -w"
+
 cmake -S. -Bbuild \
-  -DCMAKE_Fortran_COMPILER=ftn \
-  -DCMAKE_C_COMPILER=cc \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DENABLE_TREXIO=ON \
-  -DENABLE_QMCKL=ON \
-  -DTREXIO_DIR=$TREXIO_DIR \
-  -DQMCKL_DIR=$QMCKL_DIR
+    -DCMAKE_Fortran_COMPILER=ftn \
+    -DCMAKE_C_COMPILER=cc \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_Fortran_FLAGS="${FORTRAN_FLAGS}" \
+    -DCMAKE_C_FLAGS="${OPT_FLAGS}" \
+    -DCMAKE_EXE_LINKER_FLAGS="-flto" \
+    -DENABLE_TREXIO=ON \
+    -DTREXIO_INCLUDE_DIR="${TREXIO_DIR}/include" \
+    -DTREXIO_LIBRARY="${TREXIO_DIR}/lib/libtrexio.so" \
+    -DENABLE_QMCKL=ON \
+    -DQMCKL_INCLUDE_DIR="${QMCKL_DIR}/include" \
+    -DQMCKL_LIBRARY="${QMCKL_DIR}/lib/libqmckl.so"
 ```
 
 ### Compile CHAMP
 
 ```bash
-cmake --build build -j8 --clean-first
+cmake --build build -j 64 --clean-first
 ```
 
 Executables will be in `bin/`:
@@ -185,8 +233,8 @@ Create `vmc_job.sh`:
 #SBATCH --job-name=champ_vmc      # Job name
 #SBATCH --output=vmc.o%j          # Standard output file
 #SBATCH --error=vmc.e%j           # Standard error file
-#SBATCH --partition=small         # Use small partition
-#SBATCH --nodes=1                 # Number of nodes
+#SBATCH --partition=standard      # Use small/standard partition
+#SBATCH --nodes=10                # Number of nodes
 #SBATCH --ntasks-per-node=128     # MPI tasks per node
 #SBATCH --cpus-per-task=1         # CPUs per task
 #SBATCH --time=00:30:00           # Wall time (HH:MM:SS)
@@ -194,13 +242,12 @@ Create `vmc_job.sh`:
 #SBATCH --mail-type=END,FAIL      # Email notifications
 
 # Load modules (same as compilation)
-module swap PrgEnv-cray PrgEnv-gnu
-module load LUMI
-module load cray-hdf5-parallel
-module load buildtools
-
-# Set environment
-export PMI_NO_PREINITIALIZE=y
+module purge
+module load LUMI/24.03
+module load buildtools/24.03
+module load PrgEnv-gnu/8.5.0
+module load cray-hdf5-parallel/1.12.2.11
+module load craype-x86-rome # Ensure CPU architecture is set to Rome
 
 # Optional: Load TREXIO/QMCkl if compiled with support
 # export TREXIO_DIR=/scratch/projectX/trexio
@@ -238,9 +285,6 @@ module swap PrgEnv-cray PrgEnv-gnu
 module load LUMI
 module load cray-hdf5-parallel
 module load buildtools
-
-# Set environment
-export PMI_NO_PREINITIALIZE=y
 
 # Optional: Load TREXIO/QMCkl
 # export TREXIO_DIR=/scratch/projectX/trexio
@@ -323,13 +367,14 @@ cd $SCRATCH
 
 ## Additional Resources
 
-- [LUMI User Guide](https://docs.lumi-supercomputer.eu/firststeps/)
-- [SLURM Documentation](https://slurm.schedmd.com/)
+[:fontawesome-solid-server: SLURM Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://slurm.schedmd.com/)
+
+[:fontawesome-solid-book: LUMI Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://docs.lumi-supercomputer.eu/firststeps/)
+
 
 ## Getting Help
 
 - **LUMI-specific issues**: Contact LUMI support at [lumi-helpdesk@lumi-supercomputer.eu](mailto:lumi-helpdesk@lumi-supercomputer.eu)
-- **CHAMP usage**: Consult the [CHAMP documentation](../../../index.md)
 - **Bug reports**: Open an issue on [GitHub](https://github.com/filippi-claudia/champ)
 
 ## Next Steps

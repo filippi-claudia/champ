@@ -1,12 +1,12 @@
 ---
 title: Installation
 tags:
-    - installation
+    - Installation
 ---
 
 # Installing CHAMP
 
-CHAMP is a high-performance quantum Monte Carlo code that can be installed on various platforms, from desktop workstations to supercomputers. This section provides comprehensive installation guides for different environments and use cases.
+CHAMP is a high-performance QMC code that can be installed on various platforms, from desktop workstations to supercomputers. This section provides comprehensive installation guides for different environments and use cases.
 
 ## Quick Start
 
@@ -35,10 +35,10 @@ Installation instructions tailored for specific systems:
 - [**Ubuntu Desktop**](desktop.md) - Installation on Ubuntu Linux systems with Intel or GNU compilers
 
 #### Supercomputers
-- [**LUMI**](lumi.md) - Finland's LUMI supercomputer (lumi.csc.fi)
-- [**Fugaku**](fugaku.md) - Japan's Fugaku supercomputer at RIKEN
-- [**Snellius**](snellius.md) - Netherlands' Snellius supercomputer
-- [**CCPHead**](ccphead.md) - University of Twente's CCPHead computing cluster
+- [**LUMI**](supercomputers/lumi.md) - Finland's LUMI supercomputer (lumi.csc.fi)
+- [**Fugaku**](supercomputers/fugaku.md) - Japan's Fugaku supercomputer at RIKEN
+- [**Snellius**](supercomputers/snellius.md) - Netherlands' Snellius supercomputer
+- [**CCPHead**](supercomputers/ccphead.md) - University of Twente's CCPHead computing cluster
 
 Each guide includes:
 

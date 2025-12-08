@@ -199,7 +199,11 @@ If not available, install to your home directory following the instructions abov
 
 ## Additional Resources
 
-- [QMCkl Documentation](https://trex-coe.github.io/qmckl/)
-- [QMCkl GitHub Repository](https://github.com/TREX-CoE/qmckl)
-- [QMCkl API Reference](https://trex-coe.github.io/qmckl/html/)
-- [TREX-CoE Project](https://trex-coe.eu/)
+
+[:fontawesome-solid-book: QMCkl Documentation   :fontawesome-solid-arrow-up-right-from-square:](https://trex-coe.github.io/qmckl/)
+
+[:fontawesome-solid-book: QMCkl API Reference :fontawesome-solid-arrow-up-right-from-square:](https://trex-coe.github.io/qmckl/html/)
+
+[:fontawesome-brands-github: QMCkl GitHub Repository :fontawesome-solid-arrow-up-right-from-square:](https://github.com/TREX-CoE/qmckl)
+
+[:fontawesome-solid-globe: TREX-CoE Project :fontawesome-solid-arrow-up-right-from-square:](https://trex-coe.eu/)
