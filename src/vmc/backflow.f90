@@ -43,6 +43,35 @@ subroutine backflow(x)
 
 end
 
+subroutine single_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
+    use precision_kinds, only: dp
+    use m_backflow, only: ibackflow
+    use system, only: nelec
+    use qmckl_data, only: use_qmckl_orbitals
+    use error, only: fatal_error
+    implicit none
+    integer, intent(in) :: iel
+    real(dp), dimension(3, nelec), intent(in) :: xold
+    real(dp), dimension(3), intent(in) :: xnew
+    real(dp), dimension(3, nelec), intent(out) :: quasi_x_new
+    real(dp), dimension(3, nelec, 3, nelec), intent(out) :: dquasi_dx_new
+    real(dp), dimension(3, nelec, nelec), intent(out) :: d2quasi_dx2_new
+    integer, dimension(nelec), intent(out) :: indices
+    
+    if (ibackflow == 0) return
+
+    if (ibackflow == 4) then
+        call single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
+    else
+        call fatal_error('Single backflow only implemented for Rios backflow.')
+    end if
+
+    ! Only compute if not using QMCkl
+    if (.not. use_qmckl_orbitals) then
+        call bf_distances(quasi_x_new)
+    end if
+end subroutine single_backflow
+
 subroutine init_backflow()
     use m_backflow, only: ibackflow
     implicit none
@@ -408,7 +437,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
             tmp1 = b_one * inv_rij
             tmp2 = b_one * inv_rij * inv_rij * inv_rij
             do a = 1, 3
-                dquasi_dp(a,i,offset_ee+2) = dquasi_dp(a,i,offset_ee+2) + delta(a) * f
+                dquasi_dp(a,i,offset_ee+2) = dquasi_dp(a,i,offset_ee+2) + delta(a) * f * (1 + C * inv_cutoff * rij)
                 etap(a) = etap(a) + tmp1 * delta(a)
                 etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
             end do
@@ -501,7 +530,7 @@ if (norda_bf .eq. 0) goto 20
             tmp1 = a_one * inv_rij
             tmp2 = a_one * inv_rij * inv_rij * inv_rij
             do a = 1, 3
-                dquasi_dp(a,i,offset_en + idx+2) = dquasi_dp(a,i,offset_en + idx+2) + delta(a) * f
+                dquasi_dp(a,i,offset_en + idx+2) = dquasi_dp(a,i,offset_en + idx+2) + delta(a) * f * (1 + C * inv_cutoff * rij)
                 etap(a) = etap(a) + tmp1 * delta(a)
                 etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
             end do
@@ -552,6 +581,360 @@ if (norda_bf .eq. 0) goto 20
 
 
 end subroutine rios_backflow
+
+
+subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
+    use precision_kinds, only: dp
+    use system, only: nelec, iwctype, ncent, nctype, cent
+    use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+    use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2
+    implicit none
+    integer, intent(in) :: iel
+    real(dp), dimension(3, nelec), intent(in) :: xold
+    real(dp), dimension(3), intent(in) :: xnew
+    real(dp), dimension(3, nelec), intent(out) :: quasi_x_new
+    real(dp), dimension(3, nelec, 3, nelec), intent(out) :: dquasi_dx_new
+    real(dp), dimension(3, nelec, nelec), intent(out) :: d2quasi_dx2_new
+    integer, dimension(nelec), intent(out) :: indices
+    real(dp) :: rij, rr, cutoff, b_one, a_one
+    real(dp) :: f, fp(3), fpp(3), eta, etap(3), etapp(3)
+    real(dp) :: delta(3)
+    integer :: i, j, k, a, b, offset_ee, offset_en, offset_een, idx, C
+    real(dp) :: inv_rij, inv_cutoff, tmp1, tmp2
+    real(dp) :: cutoff1, cutoff2
+
+    offset_ee = 0
+    offset_en = offset_ee + 1+nordb_bf
+    offset_een = offset_en + (1+norda_bf)*nctype
+
+    quasi_x_new = quasi_x
+    dquasi_dx_new = dquasi_dx
+    d2quasi_dx2_new = d2quasi_dx2
+
+    indices = 0
+
+    do k = 1, 3
+        quasi_x_new(k, iel) = quasi_x_new(k, iel) - xold(k, iel) + xnew(k)
+    end do
+    indices(iel) = iel
+    
+    C = cutoff_scale
+
+    if (nordb_bf .eq. 0) goto 10
+    cutoff = parm_bf(offset_ee+1)
+    inv_cutoff = 1.0d0 / cutoff
+
+    b_one = parm_bf(offset_ee+2) * C * inv_cutoff
+
+
+    do j = 1, nelec
+        if (j == iel) cycle
+
+        delta(:) = xold(:, iel) - xold(:, j)
+        rij = sqrt(delta(1)**2 + delta(2)**2 + delta(3)**2)
+
+        if (rij < cutoff) then
+            indices(j) = j
+
+            eta=0.0d0
+            etap=0.0d0
+            etapp=0.0d0
+
+            f = ((cutoff - rij)*inv_cutoff)**C
+            inv_rij = 1.0d0 / rij
+
+            cutoff1 = f/((cutoff - rij)*inv_cutoff)
+            cutoff2 = cutoff1/((cutoff - rij)*inv_cutoff)
+
+            tmp1 = -C*inv_cutoff * cutoff1 * inv_rij
+            tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * cutoff2 * inv_rij * inv_rij
+            do a = 1, 3
+                fp(a) = tmp1 * delta(a)
+                fpp(a) = tmp2 * delta(a) * delta(a) + &
+                            tmp1 * ( 1 - delta(a)*delta(a)*inv_rij*inv_rij )
+            end do
+
+
+            eta = eta + parm_bf(offset_ee+2) + b_one*rij
+            tmp1 = b_one * inv_rij
+            tmp2 = b_one * inv_rij * inv_rij * inv_rij
+            do a = 1, 3
+                etap(a) = etap(a) + tmp1 * delta(a)
+                etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
+            end do
+
+
+            rr = rij*rij
+        
+            tmp1 = inv_rij*inv_rij
+            do k = 2, nordb_bf
+                eta = eta + parm_bf(offset_ee+k+1)*rr
+                do a = 1, 3
+                    etap(a) = etap(a) + parm_bf(offset_ee+k+1) * delta(a) * tmp1 * k * rr
+                    etapp(a) = etapp(a) + parm_bf(offset_ee+k+1) * tmp1 * rr * k * (1 + (k-2) * delta(a) * delta(a) * tmp1)
+                enddo
+                rr = rr * rij
+            end do
+
+
+            do a = 1, 3
+                quasi_x_new(a,iel) = quasi_x_new(a,iel) - eta * delta(a) * f 
+                quasi_x_new(a,j) = quasi_x_new(a,j) + eta * delta(a) * f 
+
+                do b = 1, 3
+                    tmp1 = etap(b) * delta(a) * f + eta * delta(a) * fp(b)
+                    dquasi_dx_new(a,iel,b,iel) = dquasi_dx_new(a,iel,b,iel) - tmp1
+                    dquasi_dx_new(a,iel,b,j) = dquasi_dx_new(a,iel,b,j) + tmp1
+                    dquasi_dx_new(a,j,b,iel) = dquasi_dx_new(a,j,b,iel) + tmp1
+                    dquasi_dx_new(a,j,b,j) = dquasi_dx_new(a,j,b,j) - tmp1
+
+                    tmp1 = etapp(b) * delta(a) * f + &
+                            2.0d0 * etap(b) * delta(a) * fp(b) + &
+                            eta * delta(a) * fpp(b)
+
+                    d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - tmp1
+                    d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) - tmp1
+                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) + tmp1
+                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) + tmp1
+                end do
+                tmp1 = eta * f
+                dquasi_dx_new(a,iel,a,iel) = dquasi_dx_new(a,iel,a,iel) - tmp1
+                dquasi_dx_new(a,iel,a,j) = dquasi_dx_new(a,iel,a,j) + tmp1
+                dquasi_dx_new(a,j,a,iel) = dquasi_dx_new(a,j,a,iel) + tmp1
+                dquasi_dx_new(a,j,a,j) = dquasi_dx_new(a,j,a,j) - tmp1
+
+                tmp1 = 2 * (eta * fp(a) + etap(a) * f)
+                d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - tmp1
+                d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) - tmp1
+                d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) + tmp1
+                d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) + tmp1
+            end do
+        endif
+
+        delta(:) = xnew(:) - xold(:, j)
+        rij = sqrt(delta(1)**2 + delta(2)**2 + delta(3)**2)
+
+        if (rij < cutoff) then
+            indices(j) = j
+
+            eta=0.0d0
+            etap=0.0d0
+            etapp=0.0d0
+
+            f = ((cutoff - rij)*inv_cutoff)**C
+            inv_rij = 1.0d0 / rij
+
+            cutoff1 = f/((cutoff - rij)*inv_cutoff)
+            cutoff2 = cutoff1/((cutoff - rij)*inv_cutoff)
+
+            tmp1 = -C*inv_cutoff * cutoff1 * inv_rij
+            tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * cutoff2 * inv_rij * inv_rij
+            do a = 1, 3
+                fp(a) = tmp1 * delta(a)
+                fpp(a) = tmp2 * delta(a) * delta(a) + &
+                            tmp1 * ( 1 - delta(a)*delta(a)*inv_rij*inv_rij )
+            end do
+
+
+            eta = eta + parm_bf(offset_ee+2) + b_one*rij
+            tmp1 = b_one * inv_rij
+            tmp2 = b_one * inv_rij * inv_rij * inv_rij
+            do a = 1, 3
+                etap(a) = etap(a) + tmp1 * delta(a)
+                etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
+            end do
+
+
+            rr = rij*rij
+        
+            tmp1 = inv_rij*inv_rij
+            do k = 2, nordb_bf
+                eta = eta + parm_bf(offset_ee+k+1)*rr
+                do a = 1, 3
+                    etap(a) = etap(a) + parm_bf(offset_ee+k+1) * delta(a) * tmp1 * k * rr
+                    etapp(a) = etapp(a) + parm_bf(offset_ee+k+1) * tmp1 * rr * k * (1 + (k-2) * delta(a) * delta(a) * tmp1)
+                enddo
+                rr = rr * rij
+            end do
+
+
+            do a = 1, 3
+                quasi_x_new(a,iel) = quasi_x_new(a,iel) + eta * delta(a) * f 
+                quasi_x_new(a,j) = quasi_x_new(a,j) - eta * delta(a) * f 
+
+                do b = 1, 3
+                    tmp1 = etap(b) * delta(a) * f + eta * delta(a) * fp(b)
+                    dquasi_dx_new(a,iel,b,iel) = dquasi_dx_new(a,iel,b,iel) + tmp1
+                    dquasi_dx_new(a,iel,b,j) = dquasi_dx_new(a,iel,b,j) - tmp1
+                    dquasi_dx_new(a,j,b,iel) = dquasi_dx_new(a,j,b,iel) - tmp1
+                    dquasi_dx_new(a,j,b,j) = dquasi_dx_new(a,j,b,j) + tmp1
+
+                    tmp1 = etapp(b) * delta(a) * f + &
+                            2.0d0 * etap(b) * delta(a) * fp(b) + &
+                            eta * delta(a) * fpp(b)
+
+                    d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + tmp1
+                    d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) + tmp1
+                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) - tmp1
+                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) - tmp1
+                end do
+                tmp1 = eta * f
+                dquasi_dx_new(a,iel,a,iel) = dquasi_dx_new(a,iel,a,iel) + tmp1
+                dquasi_dx_new(a,iel,a,j) = dquasi_dx_new(a,iel,a,j) - tmp1
+                dquasi_dx_new(a,j,a,iel) = dquasi_dx_new(a,j,a,iel) - tmp1
+                dquasi_dx_new(a,j,a,j) = dquasi_dx_new(a,j,a,j) + tmp1
+
+                tmp1 = 2 * (eta * fp(a) + etap(a) * f)
+                d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + tmp1
+                d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) + tmp1
+                d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) - tmp1
+                d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) - tmp1
+            end do
+        endif
+    
+    end do
+
+
+10  continue
+
+    if (norda_bf .eq. 0) goto 20
+
+    do j = 1, ncent
+        idx = (iwctype(j)-1)*(norda_bf+1)
+        cutoff = parm_bf(offset_en+idx+1)
+        inv_cutoff = 1.0d0 / cutoff
+
+        a_one = parm_bf(offset_en+idx+2) * C * inv_cutoff
+
+
+        delta(:) = xold(:, iel) - cent(:, j)
+        rij = sqrt(delta(1)**2 + delta(2)**2 + delta(3)**2)
+
+        if (rij < cutoff) then
+            indices(iel) = iel
+            inv_rij = 1.0d0 / rij
+
+            eta=0.0d0
+            etap=0.0d0
+            etapp=0.0d0
+
+            f = ((cutoff - rij)*inv_cutoff)**C
+
+            cutoff1 = f/((cutoff - rij)*inv_cutoff)
+            cutoff2 = cutoff1/((cutoff - rij)*inv_cutoff)
+
+            tmp1 = -C*inv_cutoff * cutoff1 * inv_rij
+            tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * cutoff2 * inv_rij * inv_rij
+            do a = 1, 3
+                fp(a) = tmp1 * delta(a)
+                fpp(a) = tmp2 * delta(a) * delta(a) + &
+                            tmp1 * ( 1 - delta(a)*delta(a)*inv_rij*inv_rij )
+            end do
+
+            eta  = eta + parm_bf(offset_en+idx+2) + a_one*rij
+
+            tmp1 = a_one * inv_rij
+            tmp2 = a_one * inv_rij * inv_rij * inv_rij
+            do a = 1, 3
+                etap(a) = etap(a) + tmp1 * delta(a)
+                etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
+            end do
+
+            rr = rij*rij
+
+            tmp1 = inv_rij*inv_rij
+            do k = 2, norda_bf
+                eta = eta + parm_bf(offset_en + idx+ k+1)*rr
+                do a = 1, 3
+                    etap(a) = etap(a) + parm_bf(offset_en + idx+ k+1) * k * rr * delta(a)*tmp1
+                    etapp(a) = etapp(a) + parm_bf(offset_en + idx+ k+1) * k * tmp1 * rr * (1 + (k-2) * delta(a) * delta(a)*tmp1)
+                enddo
+                rr = rr * rij
+            end do
+
+            do a = 1, 3 
+                quasi_x_new(a,iel) = quasi_x_new(a,iel) - eta * delta(a) * f
+                do b = 1, 3
+                    dquasi_dx_new(a,iel,b,iel) = dquasi_dx_new(a,iel,b,iel) - (&
+                        etap(b) * delta(a) * f + eta * delta(a) * fp(b) )
+
+                    d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - (&
+                        etapp(b) * delta(a) * f + &
+                        2.0d0 * etap(b) * delta(a) * fp(b) + &
+                        eta * delta(a) * fpp(b) )
+                end do
+                dquasi_dx_new(a,iel,a,iel) = dquasi_dx_new(a,iel,a,iel) - eta * f
+                d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - 2 * (eta * fp(a) + etap(a) * f)
+            end do
+        endif
+        
+        delta(:) = xnew(:) - cent(:, j)
+        rij = sqrt(delta(1)**2 + delta(2)**2 + delta(3)**2)
+        if (rij < cutoff) then
+            indices(iel) = iel
+            inv_rij = 1.0d0 / rij
+
+            eta=0.0d0
+            etap=0.0d0
+            etapp=0.0d0
+
+            f = ((cutoff - rij)*inv_cutoff)**C
+
+            cutoff1 = f/((cutoff - rij)*inv_cutoff)
+            cutoff2 = cutoff1/((cutoff - rij)*inv_cutoff)
+
+            tmp1 = -C*inv_cutoff * cutoff1 * inv_rij
+            tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * cutoff2 * inv_rij * inv_rij
+            do a = 1, 3
+                fp(a) = tmp1 * delta(a)
+                fpp(a) = tmp2 * delta(a) * delta(a) + &
+                            tmp1 * ( 1 - delta(a)*delta(a)*inv_rij*inv_rij )
+            end do
+
+            eta  = eta + parm_bf(offset_en+idx+2) + a_one*rij
+
+            tmp1 = a_one * inv_rij
+            tmp2 = a_one * inv_rij * inv_rij * inv_rij
+            do a = 1, 3
+                etap(a) = etap(a) + tmp1 * delta(a)
+                etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
+            end do
+
+            rr = rij*rij
+
+            tmp1 = inv_rij*inv_rij
+            do k = 2, norda_bf
+                eta = eta + parm_bf(offset_en + idx+ k+1)*rr
+                do a = 1, 3
+                    etap(a) = etap(a) + parm_bf(offset_en + idx+ k+1) * k * rr * delta(a)*tmp1
+                    etapp(a) = etapp(a) + parm_bf(offset_en + idx+ k+1) * k * tmp1 * rr * (1 + (k-2) * delta(a) * delta(a)*tmp1)
+                enddo
+                rr = rr * rij
+            end do
+
+            do a = 1, 3 
+                quasi_x_new(a,iel) = quasi_x_new(a,iel) + eta * delta(a) * f
+                do b = 1, 3
+                    dquasi_dx_new(a,iel,b,iel) = dquasi_dx_new(a,iel,b,iel) + (&
+                        etap(b) * delta(a) * f + eta * delta(a) * fp(b) )
+
+                    d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + (&
+                        etapp(b) * delta(a) * f + &
+                        2.0d0 * etap(b) * delta(a) * fp(b) + &
+                        eta * delta(a) * fpp(b) )
+                end do
+                dquasi_dx_new(a,iel,a,iel) = dquasi_dx_new(a,iel,a,iel) + eta * f
+                d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + 2 * (eta * fp(a) + etap(a) * f)
+            end do
+        endif
+
+    end do
+
+
+20  continue
+    if (nordc_bf .eq. 0) return
+end subroutine single_rios_backflow
 
 
 end module

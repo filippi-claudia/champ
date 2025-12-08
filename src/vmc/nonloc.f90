@@ -28,7 +28,7 @@ contains
       use vmc_mod, only: nbjx, bjxtoo, bjxtoj
       use orbitals_no_qmckl_mod, only: orbitals_quad_bf_no_qmckl
       use m_backflow, only: ibackflow, quasi_x
-      use backflow_mod, only: backflow
+      use backflow_mod, only: single_backflow
 
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
@@ -40,7 +40,6 @@ contains
 ! variables in subroutine call
       integer :: i_vpsp
       real(dp), dimension(3,*) :: x
-      real(dp), dimension(3,nelec) :: x_back
       real(dp), dimension(nelec,ncent_tot) :: r_en
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(2,nbjx) :: vpsp_det
@@ -76,6 +75,10 @@ contains
       real(dp), allocatable :: vjn(:,:)
       real(dp), allocatable :: bf_quadcoords(:,:)
       real(dp), allocatable :: orbn_bf(:,:,:)
+      real(dp), dimension(3, nelec) :: quasi_x_new
+      real(dp), dimension(3, nelec, 3, nelec) :: dquasi_dx_new
+      real(dp), dimension(3, nelec, nelec) :: d2quasi_dx2_new
+      integer, allocatable :: indices(:)
 
       ndim = nquad*nelec*2
 
@@ -200,39 +203,32 @@ contains
       if (ibackflow.gt.0) then
         allocate(bf_quadcoords(3,nxquad*nelec))
         allocate(orbn_bf(norb_tot,nxquad*nelec,nwftypeorb))
+        allocate(indices(nxquad*nelec))
         do iq=1,nxquad
-          do j=1,nelec
-            x_back(1,j) = x(1,j)
-            x_back(2,j) = x(2,j)
-            x_back(3,j) = x(3,j)
-          enddo
-          x_back(1,iequad(iq)) = xquad(1,iq)
-          x_back(2,iequad(iq)) = xquad(2,iq)
-          x_back(3,iequad(iq)) = xquad(3,iq)
-          call backflow(x_back)
+          call single_backflow(iequad(iq), x, xquad(:,iq), quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices((iq-1)*nelec+1:(iq*nelec)))
           if (.not. use_qmckl_orbitals) then
             do iwforb=1,nwftypeorb
               call orbitals_quad_bf_no_qmckl(orbn_bf(:,((iq-1)*nelec+1):(iq*nelec),iwforb),iwforb)
             end do
           end if
           do j=1,nelec
-            bf_quadcoords(1,(iq-1)*nelec+j)=quasi_x(1,j)
-            bf_quadcoords(2,(iq-1)*nelec+j)=quasi_x(2,j)
-            bf_quadcoords(3,(iq-1)*nelec+j)=quasi_x(3,j)
+            bf_quadcoords(1,(iq-1)*nelec+j)=quasi_x_new(1,j)
+            bf_quadcoords(2,(iq-1)*nelec+j)=quasi_x_new(2,j)
+            bf_quadcoords(3,(iq-1)*nelec+j)=quasi_x_new(3,j)
           enddo
         enddo
 
         do iwforb=1,nwftypeorb
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
           if(use_qmckl_orbitals) then
-            call orbitals_quad_bf_qmckl(nxquad*nelec,bf_quadcoords,orbn_bf(1,1,iwforb),iwforb)
+            call orbitals_quad_bf_qmckl(nxquad*nelec,bf_quadcoords,orbn_bf(1,1,iwforb),iwforb,indices)
           endif
 #endif
 
           call nonlocd_quad_bf(nxquad, orbn_bf(1,1,iwforb),det_ratio(1,iwforb),iwforb)
         enddo
 
-        deallocate(bf_quadcoords, orbn_bf)
+        deallocate(bf_quadcoords, orbn_bf, indices)
 
 
       else  

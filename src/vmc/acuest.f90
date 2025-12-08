@@ -179,13 +179,24 @@ contains
 !-----------------------------------------------------------------------
       subroutine zerest
       use slater,  only: d2dx2, ddx
+      use backflow_mod, only: single_rios_backflow, backflow
+      use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2
+      use system, only: nelec
+      use hpsie,   only: psie
       implicit none
-      integer :: i, ic, ifr, istate, jel, k, iel
+      integer :: i, ic, ifr, istate, jel, k, iel, j, kk, l
       real(dp) :: psidg, rnorm_nodes
       real(dp) :: ajacob, distance_node
       real(dp), dimension(3,nelec) :: xstrech
       real(dp), dimension(3) :: ddx_l
       real(dp), dimension(MSTATES) :: ekino, psidoo, psidoo2
+      real(dp), dimension(3,nelec) :: quasi_x_new
+      real(dp), dimension(3,nelec,3,nelec) :: dquasi_dx_new
+      real(dp), dimension(3,nelec,nelec) :: d2quasi_dx2_new
+      integer, dimension(nelec) :: indices
+      real(dp), dimension(3) :: xnew
+      real(dp), dimension(3,nelec) :: xnew2
+      real(dp), dimension(MSTATES) :: psidnn, psidn
 
 ! entry point to zero out all averages etc.
 ! the initial values of energy psi etc. is also calculated here
@@ -268,24 +279,82 @@ contains
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
 
 
-      do iel=1,nelec
-        do k=1,3
-          xold(k,iel) = xold(k,iel) + 0.00001
-          call hpsi(xold,psidoo,psijo,ekino,eold(1,1),0,1)
-          xold(k,iel) = xold(k,iel) - 0.00001
-          call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-          print *, ddx(k,iel,1) , (psidoo(1) - psido(1))/0.00001/psido(1)
-          xold(k,iel) = xold(k,iel) - 0.00001
-          call hpsi(xold,psidoo2,psijo,ekino,eold(1,1),0,1)
-          xold(k,iel) = xold(k,iel) + 0.00001
-          ddx_l(k) = (psidoo2(1) + psidoo(1) -2*psido(1))/0.00001/0.00001/psido(1)
-        enddo
-        call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-        print *, ddx_l(1) + ddx_l(2) + ddx_l(3)
-        print *, d2dx2(iel,1)
-        print *, '-----'
-      enddo 
-      stop
+      ! call backflow(xold)
+      ! do iel=1,nelec
+      !    do k=1,3
+      !      xnew2 = xold
+      !      xnew2(k,iel) = xnew2(k,iel) + 1.0d0
+      !      call psie(iel,xnew2,psidn,psijo,1,0)
+      !      xold(k,iel) = xold(k,iel) + 1.0d0
+      !      call hpsi(xold,psidnn,psijo,ekino,eold(1,1),0,1)
+      !      if (abs(psidnn(1) - psidn(1)) > 1d-10) then
+      !        print *, ' psidnn=', psidnn(1) , ' psidn=', psidn(1)
+      !        stop
+      !      end if
+      !      xold(k,iel) = xold(k,iel) - 1.0d0
+      !      call hpsi(xold,psidnn,psijo,ekino,eold(1,1),0,1)
+      !    enddo
+      ! enddo
+      ! stop
+
+      ! call backflow(xold)
+      ! do iel=1,nelec
+      !   do k=1,3
+      !     xnew(:) = xold(:,iel)
+      !     xnew(k) = xnew(k) + 1.0d0
+      !     call single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
+      !     xold(k,iel) = xold(k,iel) + 1.0d0
+      !     call backflow(xold)
+      !     xold(k,iel) = xold(k,iel) - 1.0d0
+      !     do i = 1, nelec
+      !       do kk=1,3
+      !         if (abs(quasi_x_new(kk,i) - quasi_x(kk,i)) > 1d-10) then
+      !           print *, 'Error in quasi_x for iel=', iel, ' k=', k, ' i=', i, ' kk=', kk
+      !           print *, ' quasi_x_new=', quasi_x_new(kk,i) , ' quasi_x=', quasi_x(kk,i)
+      !           stop
+      !         end if
+      !         do j = 1, nelec
+      !           if (abs(d2quasi_dx2_new(kk,i,j) - d2quasi_dx2(kk,i,j)) > 1d-10) then
+      !             print *, 'Error in d2quasi_dx2 for iel=', iel, ' k=', k, ' i=', i, ' j=', j, ' kk=', kk
+      !             print *, ' d2quasi_dx2_new=', d2quasi_dx2_new(kk,i,j) , ' d2quasi_dx2=', d2quasi_dx2(kk,i,j)
+      !             stop
+      !           end if
+      !           do l = 1, 3
+      !             if (abs(dquasi_dx_new(kk,i,l,j) - dquasi_dx(kk,i,l,j)) > 1d-10) then
+      !               print *, 'Error in dquasi_dx for iel=', iel, ' k=', k, ' i=', i, ' j=', j, ' l=', l, ' kk=', kk
+      !               stop
+      !             end if
+      !           end do
+      !         end do
+      !       end do
+      !     end do
+      !     !print *, quasi_x_new(k,iel) , quasi_x(k,iel)
+      !     !print *, dquasi_dx_new(k,iel,k,iel) , dquasi_dx(k,iel,k,iel)
+      !     !print *, d2quasi_dx2_new(k,iel,iel) , d2quasi_dx2(k,iel, iel)
+      !     call backflow(xold)
+      !   enddo
+      !   print *, '-----'
+      ! enddo 
+      ! stop
+
+      ! do iel=1,nelec
+      !   do k=1,3
+      !     xold(k,iel) = xold(k,iel) + 0.00001
+      !     call hpsi(xold,psidoo,psijo,ekino,eold(1,1),0,1)
+      !     xold(k,iel) = xold(k,iel) - 0.00001
+      !     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+      !     print *, ddx(k,iel,1) , (psidoo(1) - psido(1))/0.00001/psido(1)
+      !     xold(k,iel) = xold(k,iel) - 0.00001
+      !     call hpsi(xold,psidoo2,psijo,ekino,eold(1,1),0,1)
+      !     xold(k,iel) = xold(k,iel) + 0.00001
+      !     ddx_l(k) = (psidoo2(1) + psidoo(1) -2*psido(1))/0.00001/0.00001/psido(1)
+      !   enddo
+      !   call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+      !   print *, ddx_l(1) + ddx_l(2) + ddx_l(3)
+      !   print *, d2dx2(iel,1)
+      !   print *, '-----'
+      ! enddo 
+      ! stop
       do istate=1,nstates
         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
         if(ipr.gt.1) write(ounit,'(''zerest STATE,psido,psijo,psi2o='',i4,3d12.4)') &

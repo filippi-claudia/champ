@@ -13,11 +13,12 @@ contains
       use contrl_file, only: ounit
       use vmc_mod, only: nwftypeorb, norb_tot
       use m_backflow, only: ibackflow, rvec_en_bf, r_en_bf, quasi_x
-      use backflow_mod, only: backflow
+      use backflow_mod, only: single_backflow
       use m_backflow, only: slmin_bf, orbn_bf, detn_bf, dslm, dorbn_bf
       use orbitals_no_qmckl_mod, only: orbitalse_no_qmckl_bf
       use dorb_m,  only: iworbd
       use matinv_mod, only: matinv
+      use config, only: xold
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use orbitals_qmckl_mod, only: orbitalse_qmckl_bf
@@ -31,16 +32,21 @@ contains
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), dimension(3, nelec) :: quasi_x_new
+      real(dp), dimension(3, nelec, 3, nelec) :: dquasi_dx_new
+      real(dp), dimension(3, nelec, nelec) :: d2quasi_dx2_new
+      integer, dimension(nelec):: indices
+    
 
 
       if (ibackflow.gt.0) then
-        call backflow(x)
+        call single_backflow(iel, xold, x(:,iel), quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       if (use_qmckl_orbitals) then
-        call orbitalse_qmckl_bf(quasi_x, 0)
+        call orbitalse_qmckl_bf(quasi_x_new, indices, 0)
       else
 #endif
-        call orbitalse_no_qmckl_bf(quasi_x, rvec_en_bf, r_en_bf, 0)
+        call orbitalse_no_qmckl_bf(quasi_x_new, rvec_en_bf, r_en_bf, 0)
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       end if ! use_qmckl_orbitals
 #endif

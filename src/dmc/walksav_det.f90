@@ -298,7 +298,7 @@ contains
          do iorb=1,norb
            orbw(i,iorb,iw2)=orbw(i,iorb,iw)
            do kk=1,3
-             dorbw(iorb,i,kk,iw2)=dorbw(kk,i,iorb,iw)
+             dorbw(kk,i,iorb,iw2)=dorbw(kk,i,iorb,iw)
            enddo
          enddo
        enddo
