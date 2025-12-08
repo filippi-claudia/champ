@@ -920,7 +920,7 @@ subroutine read_backflow_file(file_backflow)
     !   local use
     character(len=72), intent(in)   :: file_backflow
     character(len=40)               :: temp1
-    integer                         :: iunit, iostat, i, ict
+    integer                         :: iunit, iostat, i, ict, multb, multa
 
     logical                         :: exist
 
@@ -954,10 +954,14 @@ subroutine read_backflow_file(file_backflow)
     call bcast(cutoff_scale)
 
     call init_backflow_arrays()
+    multb = 0
+    multa = 0
+    if (nordb_bf .gt.0) multb= 1
+    if (norda_bf .gt.0) multa= 1
 
     if (wid) then
         do ict = 1, nctype
-            read(iunit, *) (parm_bf((1+nordb_bf) + (ict-1)*(norda_bf+1) + i), i=1,norda_bf+1)
+            read(iunit, *) (parm_bf((1+nordb_bf)*multb + (ict-1)*(norda_bf+1)*multa + i), i=1,norda_bf+1)
         end do
         read(iunit, *) (parm_bf(i), i=1, nordb_bf+1)
     endif

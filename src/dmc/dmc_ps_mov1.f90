@@ -75,6 +75,7 @@
       use walksav_det_mod, only: walksav_det,walkstrdet
       use walksav_jas_mod, only: walksav_jas,walkstrjas
       use m_backflow, only: ibackflow, quasi_x, dquasi_dx, d2quasi_dx2, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
+      use backflow_mod, only: backflow
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
@@ -208,6 +209,9 @@
         endif
 
         if(icasula.ge.3) then
+          if (ibackflow .gt. 0) then
+            call backflow(xold_dmc(:,:,iw,1))
+          endif
           imove_up=0
           imove_dn=0
           do i=1,nelec
@@ -240,11 +244,11 @@
                 rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
               endif
 #endif
-            if (ibackflow.gt.0) then
-              quasi_x = quasi_x_new
-              dquasi_dx = dquasi_dx_new
-              d2quasi_dx2 = d2quasi_dx2_new
-            endif
+              if (ibackflow.gt.0) then
+                quasi_x = quasi_x_new
+                dquasi_dx = dquasi_dx_new
+                d2quasi_dx2 = d2quasi_dx2_new
+              endif
               if(icasula.eq.4) then
                  call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove, t_norm_new,0)
                  p=random_dp()
@@ -266,11 +270,11 @@
                       rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
                     endif
 #endif
-                if (ibackflow.gt.0) then
-                  quasi_x = quasi_x_new
-                  dquasi_dx = dquasi_dx_new
-                  d2quasi_dx2 = d2quasi_dx2_new
-                endif
+                    if (ibackflow.gt.0) then
+                      quasi_x = quasi_x_new
+                      dquasi_dx = dquasi_dx_new
+                      d2quasi_dx2 = d2quasi_dx2_new
+                    endif
                  else
                     nmove_casula=nmove_casula+1
                     iage(iw)=0

@@ -355,6 +355,7 @@ contains
       !   print *, '-----'
       ! enddo 
       ! stop
+      
       do istate=1,nstates
         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
         if(ipr.gt.1) write(ounit,'(''zerest STATE,psido,psijo,psi2o='',i4,3d12.4)') &

@@ -14,6 +14,7 @@ module walksav_det_mod
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
       use ycompact, only: ymat
+      use m_backflow, only: dslm, ibackflow
       implicit none
 
       integer, allocatable, save :: krefw(:)
@@ -28,6 +29,7 @@ module walksav_det_mod
       real(dp), allocatable, save :: ymatw(:,:,:,:,:)
       real(dp), allocatable, save :: orbw(:,:,:)
       real(dp), allocatable, save :: dorbw(:,:,:,:)
+      real(dp), allocatable, save :: dslmw(:,:,:,:)
 
 contains
       subroutine walksav_det(iw)
@@ -48,6 +50,9 @@ contains
       if(.not.allocated(ymatw)) allocate(ymatw(norb_tot,nelec,mwalk,2,MSTATES))
       if(.not.allocated(orbw)) allocate(orbw(nelec,norb_tot,mwalk))
       if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,norb_tot,mwalk))
+      if (ibackflow .gt. 0) then
+        if(.not.allocated(dslmw)) allocate(dslmw(3, nmat_dim,2,mwalk))
+      endif
 
       if(.not.allocated(krefw)) allocate(krefw(mwalk), source=0)
       if(.not.allocated(slmuiw)) allocate(slmuiw(nmat_dim,mwalk))
@@ -116,6 +121,15 @@ contains
            enddo
          enddo
        enddo
+      if (ibackflow .gt. 0) then
+        do iab = 1, 2
+          do i=1,nup*nup
+            do kk=1,3
+              dslmw(kk,i,iab,iw)=dslm(kk,i,iab,1)
+            enddo
+          enddo
+        enddo
+      endif
 
       end subroutine
 
@@ -190,6 +204,15 @@ contains
            enddo
          enddo
        enddo
+      if (ibackflow .gt. 0) then
+        do iab = 1, 2
+          do i=1,nup*nup
+            do kk=1,3
+              dslm(kk,i,iab,1)=dslmw(kk,i,iab,iw)
+            enddo
+          enddo
+        enddo
+      endif
 
       end subroutine
 
@@ -302,6 +325,15 @@ contains
            enddo
          enddo
        enddo
+      if (ibackflow .gt. 0) then
+        do iab = 1, 2
+          do i=1,nup*nup
+            do kk=1,3
+              dslmw(kk,i,iab,iw2)=dslmw(kk,i,iab,iw)
+            enddo
+          enddo
+        enddo
+      endif
 
       end subroutine
 
@@ -361,7 +393,14 @@ contains
         ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(dorbw(1,1,1,nwalk),3*nelec*norb,mpi_double_precision &
         ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
-      itag=itag+2
+      if (ibackflow .gt. 0) then
+        call mpi_isend(dslmw(1,1,1,nwalk),3*nmat_dim*2,mpi_double_precision &
+          ,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
+        itag=itag+3
+      else
+        itag=itag+2
+      endif
+
 
       end subroutine
 
@@ -421,7 +460,13 @@ contains
         ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(dorbw(1,1,1,nwalk),3*nelec*norb_tot,mpi_double_precision &
         ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
-      itag=itag+2
+      if (ibackflow .gt. 0) then
+        call mpi_recv(dslmw(1,1,1,nwalk),3*nmat_dim*2,mpi_double_precision &
+          ,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
+        itag=itag+3
+      else
+        itag=itag+2
+      endif
 
       return
       end
