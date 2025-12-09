@@ -598,12 +598,9 @@ trexio.to_trexio(mc, 'O2.hdf5')
 
 ## Getting Help
 
-- Always use `trex2champ` for reliable determinant file generation
 - Verify file structure matches specification exactly
-- Check that all determinants have correct electron count
 - Ensure orbital indices correspond to existing MOs
 - Test with known systems before custom determinant lists
-- For CSF issues, verify csfmap consistency
 - Consult [Troubleshooting Guide](../troubleshooting/index.md) for common errors
 
 !!! tip "Simplified Files"
