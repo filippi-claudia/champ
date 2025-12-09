@@ -37,9 +37,9 @@ Molecular orbital files (`.lcao` or `.orb` extension) are stored in the `pool/` 
 
 ```python
 lcao  226 200  1
- -5.234567e-01  4.123456e-02  1.987654e-03  ... (200 coefficients for AO 1)
-  3.456789e-02 -2.345678e-01  5.678901e-02  ... (200 coefficients for AO 2)
-  ... (remaining 224 rows of coefficients)
+ -5.234567e-01  4.123456e-02  1.987654e-03  ... (226 coefficients for MO 1)
+  3.456789e-02 -2.345678e-01  5.678901e-02  ... (226 coefficients for MO 2)
+  ... (remaining 198 rows of coefficients)
 end
 ```
 
@@ -50,29 +50,29 @@ end
 lcao  226 200  1
 ```
 
-Format: `lcao  num_ao  num_mo  notype`
+Format: `lcao  num_ao  num_mo  motype`
 
 - `lcao` = keyword identifying this as an LCAO coefficient file
 - `num_ao` = 226: Number of atomic orbitals (basis functions)
 - `num_mo` = 200: Number of molecular orbitals
-- `notype` = 1: Number of orbital types (1 for spin-restricted, 2 for spin-unrestricted)
+- `motype` = 1
 
-**Coefficient matrix**: One row per atomic orbital
+**Coefficient matrix**: One row per molecular orbital
 
-Each row contains `num_mo` coefficients:
+Each row contains `num_ao` coefficients:
 ```python
-C(1,1)  C(1,2)  C(1,3)  ...  C(1,num_mo)
-C(2,1)  C(2,2)  C(2,3)  ...  C(2,num_mo)
+C(1,1)  C(2,1)  C(3,1)  ...  C(num_ao,1)
+C(1,2)  C(2,2)  C(3,2)  ...  C(num_ao,2)
 ...
-C(num_ao,1)  C(num_ao,2)  ...  C(num_ao,num_mo)
+C(1,num_mo)  C(2,num_mo)  ...  C(num_ao,num_mo)
 ```
 
 where `C(j,i)` is the coefficient of the j-th AO in the i-th MO.
 
-**Matrix dimensions**: `[num_ao × num_mo]`
+**Matrix dimensions**: `[num_mo × num_ao]`
 
-- Rows = atomic orbitals
-- Columns = molecular orbitals
+- Rows = molecular orbitals
+- Columns = atomic orbitals
 - For a molecule with N AOs and M occupied/virtual MOs
 
 **Final line**:
@@ -136,6 +136,7 @@ S₁  S₂  S₃  X₁ Y₁ Z₁  X₂ Y₂ Z₂  XX YY XY XZ YZ ZZ
 ```
 
 Position breakdown:
+
 - AOs 1-3: s-orbitals (3 shells)
 - AOs 4-9: p-orbitals (2 shells × 3 components)
 - AOs 10-15: d-orbitals (1 shell × 6 components)
@@ -145,6 +146,7 @@ Position breakdown:
 ### Example 1: Water Molecule (Simple)
 
 **System**: H₂O with minimal basis
+
 - O: 3s, 2p shells → 9 AOs
 - H: 2s shells → 2 AOs each
 - Total: 9 + 2 + 2 = 13 AOs
@@ -171,14 +173,15 @@ end
 
 **Explanation**:
 
-- 13 rows (AOs): 9 for O (3s + 6p), 4 for H atoms (2s each)
-- 10 columns (MOs): typically 5 doubly-occupied orbitals
-- First MO (column 1): core oxygen orbital (large coefficient on O 1s)
+- 13 columns (AOs): 9 for O (3s + 6p), 4 for H atoms (2s each)
+- 10 rows (MOs): typically 5 doubly-occupied orbitals
+- First MO (row 1): core oxygen orbital (large coefficient on O 1s)
 - Symmetry reflected in zero coefficients for certain combinations
 
 ### Example 2: Carbon Dioxide (Linear Molecule)
 
 **System**: CO₂ (linear)
+
 - C: 4s, 3p, 2d shells → 22 AOs
 - O: 4s, 3p, 2d shells → 22 AOs each
 - Total: 22 + 22 + 22 = 66 AOs
@@ -187,45 +190,11 @@ end
 **Orbital file** (`CO2.lcao`):
 ```python
 lcao  66 50  1
- -9.123456e-01  2.345678e-01 ... (50 coefficients)
-  1.234567e-02 -8.234567e-01 ... (50 coefficients)
-  ... (64 more rows)
+ -9.123456e-01  2.345678e-01 ... (66 coefficients for MO 1)
+  1.234567e-02 -8.234567e-01 ... (66 coefficients for MO 2)
+  ... (48 more rows)
 end
 ```
-
-**Characteristics**:
-
-- Linear molecule has σ and π symmetry
-- Many zero coefficients due to symmetry
-- Degenerate π orbitals (πₓ and πᵧ)
-- Efficient storage despite sparsity
-
-### Example 3: Spin-Unrestricted Calculation
-
-For open-shell systems, separate orbitals for each spin:
-
-**Oxygen atom (triplet ground state)**:
-
-**Alpha orbitals** (`O.alpha.lcao`):
-```python
-lcao  14 14  1
- ... (14×14 coefficient matrix for spin-up electrons)
-end
-```
-
-**Beta orbitals** (`O.beta.lcao`):
-```python
-lcao  14 14  1
- ... (14×14 coefficient matrix for spin-down electrons)
-end
-```
-
-**Explanation**:
-
-- Two separate files for unrestricted calculations
-- Different MO coefficients for different spins
-- Alpha and beta orbitals can have different energies and shapes
-- Allows proper description of open-shell systems
 
 ## Loading Molecular Orbitals in CHAMP
 
@@ -240,7 +209,7 @@ The standard approach loads orbitals from the TREXIO file:
 %endmodule
 
 load trexio   $pool/molecule.hdf5
-load jastrow  $pool/jastrow.jas
+load jastrow  jastrow.jas
 
 %module electrons
     nup    5
@@ -255,14 +224,7 @@ The `load trexio` command extracts orbital coefficients automatically.
 For separate orbital files:
 
 ```perl
-load orbitals  $pool/molecule.lcao
-```
-
-Or for spin-unrestricted:
-
-```perl
-load orbitals  $pool/molecule.alpha.lcao
-load orbitals  $pool/molecule.beta.lcao
+load orbitals orbitals.lcao
 ```
 
 ### Alternative Format (.orb)
@@ -270,43 +232,52 @@ load orbitals  $pool/molecule.beta.lcao
 CHAMP also supports `.orb` format (identical structure):
 
 ```perl
-load orbitals  $pool/molecule.orb
+load orbitals orbitals.orb
 ```
 
 The formats are interchangeable.
 
 ## Generating Orbital Files
 
-### From TREXIO Files
+### From TREXIO file
 
-The `trex2champ` converter extracts orbitals automatically:
+CHAMP can directly read the orbitals from the TREXIO file using the `load trexio` command. This is the recommended approach.
+
+
+### From Quantum Chemistry Codes
+
+The `trex2champ` converter extracts orbitals frßm the TREXIO file:
 
 ```bash
-trex2champ molecule.hdf5
+#!/bin/bash
+python trex2champ.py \
+			--trex molecule.hdf5 \
+			--basis_prefix "cc-VDZ" \
+			--geom \
+			--basis \
+			--lcao
 ```
 
 This creates:
-- Orbital files for each state/spin
+- Orbital files for each state
 - Properly ordered according to TREXIO convention
 - Consistent with basis set and geometry
 
-### From Quantum Chemistry Codes
 
 **Typical workflow**:
 
 1. **Run quantum chemistry calculation**
-   - Hartree-Fock or DFT for single determinant
-   - MCSCF/CASSCF for multideterminant
-   - CCSD for correlated orbitals
+    - Hartree-Fock or DFT for single determinant
+    - MCSCF/CASSCF for multideterminant
+    - CCSD for correlated orbitals
 
 2. **Export to TREXIO format**
-   - Most modern codes support TREXIO
-   - Handles basis set and orbital transformation
+
+    - Many codes now support TREXIO
+    - Handles basis set and orbital transformation
 
 3. **Convert to CHAMP format**
-   ```bash
-   trex2champ molecule.hdf5
-   ```
+    - Use the `trex2champ` converter.
 
 ### Manual Verification
 
@@ -316,12 +287,13 @@ Check orbital file validity:
 import numpy as np
 
 # Read orbital file
+# Read orbital file (rows=MOs, cols=AOs)
 data = np.loadtxt('molecule.lcao', skiprows=1, max_rows=-1)
-num_ao, num_mo = data.shape
+num_mo, num_ao = data.shape
 
 print(f"Number of AOs: {num_ao}")
 print(f"Number of MOs: {num_mo}")
-print(f"Orbital 1 norm: {np.linalg.norm(data[:, 0])}")
+print(f"Orbital 1 norm: {np.linalg.norm(data[0, :])}")
 ```
 
 ## Orbital Properties
@@ -343,12 +315,6 @@ MOs are orthogonal in the AO basis metric:
 
 $$\langle \phi_i | \phi_j \rangle = \sum_{k,l} C_{ki} S_{kl} C_{lj} = \delta_{ij}$$
 
-### Orbital Energies
-
-While the `.lcao` file only contains coefficients, orbital energies are stored in the TREXIO file and used for:
-- Determining occupation
-- Excited state calculations
-- Analysis and visualization
 
 ## Advanced Topics
 
@@ -370,91 +336,27 @@ Alternative representations:
 - **Foster-Boys**: Minimize overlap between orbitals
 
 Useful for:
+
 - Chemical interpretation
 - Reduced correlation effects
 - Fragment-based methods
 
-### Complex Orbitals
-
-For systems with time-reversal symmetry breaking:
-
-- Magnetic fields
-- Complex absorbing potentials
-- Periodic boundary conditions with non-zero k-points
-
-Require extended file format (real and imaginary parts).
 
 ## Best Practices
 
 ### File Organization
 
-- Store orbital files in `pool/` directory
+- Store orbital files in current working directory
 - Use descriptive names indicating method/basis
-- Keep TREXIO source file for reference
-- Document orbital generation procedure
 
 ### Quality Checks
 
-1. **Dimension verification**: Ensure num_ao matches basis set
-2. **Orbital count**: Verify num_mo ≥ num_electrons/2
-3. **Coefficient ranges**: Typical values |C| < 1.0 (not required but common)
-4. **Symmetry**: Check expected zero coefficients for symmetric molecules
-5. **Consistency**: Verify with quantum chemistry code output
+- **Dimension verification**: Ensure num_ao matches basis set
+- **Orbital count**: Verify num_mo ≥ num_electrons/2
+- **Coefficient ranges**: Typical values |C| < 1.0 (not required but common)
+- **Symmetry**: Check expected zero coefficients for symmetric molecules
+- **Consistency**: Verify with quantum chemistry code output
 
-### Common Issues
-
-**Dimension mismatch**:
-```
-ERROR: Number of AOs in orbital file (226) doesn't match basis (213)
-```
-**Solution**: Ensure basis set and orbitals are from the same calculation.
-
-**Missing orbitals**:
-```
-ERROR: Need at least 50 orbitals, found only 45
-```
-**Solution**: Include sufficient virtual orbitals or regenerate with more MOs.
-
-**Ordering inconsistency**:
-```
-WARNING: Orbital energies not monotonic
-```
-**Solution**: Check if orbitals are in energy order; reorder if needed.
-
-**Spin mismatch**:
-```
-ERROR: Expected 2 orbital types for unrestricted, found 1
-```
-**Solution**: Provide separate alpha and beta orbital files for open-shell systems.
-
-## Visualization and Analysis
-
-### Orbital Plotting
-
-Visualize molecular orbitals using:
-
-- **VMD**: Load structure and orbital cube files
-- **Avogadro**: Real-time orbital visualization
-- **Jmol**: Web-based visualization
-- **Molden**: Orbital contours and isosurfaces
-
-### Orbital Analysis
-
-Extract information:
-
-- **Mulliken population**: Atomic contributions to each MO
-- **Symmetry labels**: Assign irreducible representations
-- **Bonding character**: Identify bonding, antibonding, non-bonding
-- **Energy ordering**: HOMO-LUMO gap and virtual orbital spectrum
-
-### Generating Cube Files
-
-For visualization, convert to cube format:
-
-```bash
-# Using quantum chemistry code tools
-qmchem-orbital-export molecule.hdf5 --orbital 5 --format cube
-```
 
 ## Related Topics
 
@@ -466,15 +368,12 @@ qmchem-orbital-export molecule.hdf5 --orbital 5 --format cube
 
 ## Getting Help
 
-- Always use `trex2champ` for reliable orbital file generation
 - Verify dimensions match basis set exactly
 - Check atomic orbital ordering follows TREXIO convention
-- Ensure sufficient virtual orbitals for correlation calculations
-- Test with known systems before using custom orbital sets
 - Consult [Troubleshooting Guide](../troubleshooting/index.md) for orbital-related errors
 
 !!! note "TREXIO Convention"
-    The atomic orbitals in CHAMP orbital files follow the TREXIO alphabetical ordering convention for Cartesian components. This differs from some quantum chemistry codes, but `trex2champ` handles all necessary conversions automatically.
+    The atomic orbitals in CHAMP orbital files follow the TREXIO alphabetical ordering convention for Cartesian components. This differs from some quantum chemistry codes, but `trexio` and `trex2champ` handle all necessary conversions automatically.
 
 !!! warning "Orbital Completeness"
     Ensure the orbital file contains enough molecular orbitals for your calculation. For correlation methods, include virtual orbitals beyond the occupied set. A good rule of thumb: include at least 2× the number of occupied orbitals.

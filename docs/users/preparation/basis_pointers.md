@@ -23,7 +23,7 @@ The basis pointer file acts as an instruction manual for assembling atomic orbit
 
 - **Atomic orbital (AO)**: A single-atom basis function with specific angular character
 - **Radial shell**: A radial basis function from the `.basis` file
-- **Angular momentum index**: Specifies spherical harmonic $Y_l^m$ or real harmonic $S_l^m$
+- **Angular momentum index**: Specifies real solid harmonics $S_l^m$
 - **Column mapping**: Links AOs to specific columns in the radial basis file
 
 ## File Format
@@ -70,24 +70,23 @@ Format: `num_ao_per_center  n(s)  n(p)  n(d)  n(f)  n(g)`
 - `n(f)` = 2: Number of f-type radial shells (l=3)
 - `n(g)` = 0: Number of g-type radial shells (l=4)
 
-Total AOs = n(s)×1 + n(p)×3 + n(d)×5 + n(f)×7 + n(g)×9
-           = 4×1 + 4×3 + 3×5 + 2×7 + 0×9 = 4 + 12 + 15 + 14 + 0 = 45... (wait, example shows 54, likely includes higher terms)
+Total AOs = n(s)×1 + n(p)×3 + n(d)×6 + n(f)×10 + n(g)×15
+           = 4×1 + 4×3 + 3×6 + 2×10 + 0×15 = 54
 
 **Line 2**: Angular momentum indices
 ```python
 1 1 1 1 2 3 4 2 3 4 2 3 4 2 3 4 5 6 7 8 9 10 5 6 7 8 9 10 ...
 ```
 
-Each number is an index for a real spherical harmonic $S_l^m$ (range 1-35):
+The AOs can be expressed using real solid harmonics or polynomials in Cartesian coordinates. In the case of real solid harmonics, the AOs are ordered as ($0, 1, -1, 2, -2, \dots$). In the case of polynomials, the canonical (or alphabetical) ordering is used:
 
-| Index | Angular | Description |
-|-------|---------|-------------|
-| 1 | $S_0^0$ | s orbital |
-| 2-4 | $S_1^{-1,0,1}$ | p orbitals (px, py, pz) |
-| 5-9 | $S_2^{-2,...,2}$ | d orbitals |
-| 10-16 | $S_3^{-3,...,3}$ | f orbitals |
-| 17-25 | $S_4^{-4,...,4}$ | g orbitals |
-| 26-35 | $S_5^{-5,...,5}$ | h orbitals |
+| Index | Orbital | Components |
+|-------|-------------| --- |
+| 1 | s | $1$ |
+| 2-4 | p | $x, y, z$ |
+| 5-10 | d | $x^2, xy, xz, y^2, yz, z^2$ |
+| 11-20 | f | $x^3, x^2y, x^2z, xy^2, xyz, xz^2, y^3, y^2z, yz^2, z^3$ |
+| 21-35 | g | $x^4, x^3y, x^3z, x^2y^2, x^2yz, x^2z^2, xy^3, xy^2z, xyz^2, xz^3, y^4, y^3z, y^2z^2, yz^3, z^4$ |
 
 The sequence maps each AO to its angular component.
 
@@ -114,7 +113,7 @@ end
 **Basis pointer file** (`basis_pointers`):
 ```python
 qmc_bf_info 1
-4 2 1 0 0 0
+5 2 1 0 0 0
 1 1 2 3 4
 1 2 3 3 3
 end
@@ -122,8 +121,8 @@ end
 
 **Explanation**:
 
-- **Line 1**: `4 2 1 0 0 0`
-  - 4 total AOs
+- **Line 1**: `5 2 1 0 0 0`
+  - 5 total AOs
   - 2 s-type shells (1s, 2s)
   - 1 p-type shell (2p)
   - No d, f, or g shells
@@ -137,48 +136,50 @@ end
 - **Line 3**: `1 2 3 3 3`
   - AO 1: uses radial shell 1 (1s)
   - AO 2: uses radial shell 2 (2s)
-  - AOs 3-4: all use radial shell 3 (2p with different angular parts)
+  - AO 3: uses radial shell 3 (2p with different angular parts)
 
-### Example 2: Carbon Atom (BFD-T Basis)
+### Example 2: Carbon Atom (BFD-Da Basis)
 
 **Basis pointer file**:
 ```python
-qmc_bf_info 1
-9 2 2 1 0 0
-1 1 2 3 4 2 3 4 5 6 7 8 9
-1 2 3 3 3 4 4 4 5 5 5 5 5
+qmc_bf_info 1 
+18 3 3 1 0 0 
+1 1 1 2 3 4 2 3 4 2 3 4 5 6 7 8 9 10 
+1 2 3 4 4 4 5 5 5 6 6 6 7 7 7 7 7 7
 end
 ```
 
 **Explanation**:
 
-- **9 atomic orbitals** total
-- **2 s-shells**: 1s and 2s
-- **2 p-shells**: 2p and 3p (or polarization p)
+- **18 atomic orbitals** total
+- **3 s-shells**: 1s, 2s and 3s
+- **3 p-shells**: 2p, 3p and 4p (or polarization p)
 - **1 d-shell**: 3d (polarization)
 
 **Angular momentum breakdown**:
-- 2 s-orbitals (indices 1, 1)
-- 6 p-orbitals (indices 2-4 twice for two p-shells)
-- 5 d-orbitals (indices 5-9)
+
+- 3 s-orbitals (indices 1)
+- 6 p-orbitals (indices 2, 3, 4)
+- 5 d-orbitals (indices 5, 6, 7, 8, 9)
 
 **Radial shell mapping**:
-- Columns 1-2: s-type radials
-- Columns 3-4: p-type radials
-- Column 5: d-type radials
 
-### Example 3: Water Molecule (Multi-atom)
+- Columns 1-3: s-type radials
+- Columns 4-6: p-type radials
+- Column 7: d-type radials
+
+### Example 3: Water Molecule
 
 **Geometry**: O, H, H (two unique atom types)
 
 **Basis pointer file**:
 ```python
-qmc_bf_info 1
-14 3 2 1 0 0
-1 1 1 2 3 4 2 3 4 5 6 7 8 9
-1 2 3 4 4 4 5 5 5 6 6 6 6 6
-5 2 1 0 0 0
-1 1 2 3 4
+qmc_bf_info 1 
+14 2 2 1 0 0 
+1 1 2 3 4 2 3 4 5 6 7 8 9 10 
+1 2 3 3 3 4 4 4 5 5 5 5 5 5 
+5 2 1 0 0 0 
+1 1 2 3 4 
 1 2 3 3 3
 end
 ```
@@ -186,12 +187,14 @@ end
 **Explanation**:
 
 **First atom type (Oxygen)**:
-- 14 AOs: 3 s-shells + 2 p-shells + 1 d-shell
-- s-orbitals use radial columns 1, 2, 3
-- p-orbitals use radial columns 4, 5
-- d-orbitals use radial column 6
+
+- 14 AOs: 2 s-shells + 2 p-shells + 1 d-shell
+- s-orbitals use radial columns 1, 2
+- p-orbitals use radial columns 3, 4
+- d-orbitals use radial column 5
 
 **Second atom type (Hydrogen)**:
+
 - 5 AOs: 2 s-shells + 1 p-shell
 - s-orbitals use radial columns 1, 2
 - p-orbitals use radial column 3
@@ -201,59 +204,56 @@ end
 **Transition metal with extended basis**:
 ```python
 qmc_bf_info 1
-30 3 3 2 1 0
-1 1 1 2 3 4 2 3 4 2 3 4 5 6 7 8 9 5 6 7 8 9 10 11 12 13 14 15 16
-1 2 3 4 4 4 5 5 5 6 6 6 7 7 7 7 7 8 8 8 8 8 9 9 9 9 9 9 9
+35 4 3 2 1 0 
+1 1 1 1 2 3 4 2 3 4 2 3 4 5 6 7 8 9 10 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 
+1 2 3 4 5 5 5 6 6 6 7 7 7 8 8 8 8 8 8 9 9 9 9 9 9 10 10 10 10 10 10 10 10 10 10 
 end
 ```
 
 **Explanation**:
 
-- 30 total AOs
-- 3 s-shells, 3 p-shells, 2 d-shells, 1 f-shell
-- f-orbitals (7 functions) use indices 10-16
-- Radial columns 1-9 used for all shells
+- 35 total AOs
+- 4 s-shells, 3 p-shells, 2 d-shells, 1 f-shell
+- f-orbitals use indices 10-20
+- Radial columns 1-10 used for all shells
 
 ## Angular Momentum Indexing
 
-### Real Spherical Harmonics
+### Cartesian Gaussian Polynomials
 
-CHAMP uses real spherical harmonics $S_l^m$ (linear combinations of $Y_l^m$):
+CHAMP uses Cartesian Gaussian polynomials with canonical (alphabetical) ordering:
 
-**s-orbitals (l=0)**:
-- Index 1: $S_0^0$
+**s-orbitals ($l=0$)**:
+- Index 1: $1$ (s)
 
-**p-orbitals (l=1)**:
-- Index 2: $S_1^{-1}$ (py)
-- Index 3: $S_1^0$ (pz)
-- Index 4: $S_1^{1}$ (px)
+**p-orbitals ($l=1$)**:
+- Indices 2-4: $x, y, z$ (px, py, pz)
 
-**d-orbitals (l=2)**:
-- Index 5: $S_2^{-2}$ (dxy)
-- Index 6: $S_2^{-1}$ (dyz)
-- Index 7: $S_2^0$ (d3z²-r²)
-- Index 8: $S_2^{1}$ (dxz)
-- Index 9: $S_2^{2}$ (dx²-y²)
+**d-orbitals ($l=2$)**:
+- Indices 5-10: $x^2, xy, xz, y^2, yz, z^2$ (dxx, dxy, dxz, dyy, dyz, dzz)
 
-**f-orbitals (l=3)**:
-- Indices 10-16: Seven f-type functions
+**f-orbitals ($l=3$)**:
+- Indices 11-20: $x^3, x^2y, x^2z, xy^2, xyz, xz^2, y^3, y^2z, yz^2, z^3$
 
-**g-orbitals (l=4)**:
-- Indices 17-25: Nine g-type functions
+**g-orbitals ($l=4$)**:
+- Indices 21-35: 15 functions ($x^4$ to $z^4$)
 
 ### Counting Atomic Orbitals
 
-Total AOs per atom:
+Total AOs per atom using Cartesian components:
 
-$$\text{Total AOs} = \sum_{l} n(l) \times (2l + 1)$$
+$$\text{Total AOs} = \sum_{l} n(l) \times \frac{(l+1)(l+2)}{2}$$
 
-where $n(l)$ is the number of radial shells for angular momentum $l$.
+where $n(l)$ is the number of radial shells for angular momentum $l$ and the term $\frac{(l+1)(l+2)}{2}$ represents the number of Cartesian components ($N_{cart}$).
 
-**Example**: 
-- 3 s-shells (l=0): 3 × 1 = 3 AOs
-- 2 p-shells (l=1): 2 × 3 = 6 AOs  
-- 1 d-shell (l=2): 1 × 5 = 5 AOs
-- **Total**: 3 + 6 + 5 = 14 AOs
+| Shell | l | Components ($N_{cart}$) |
+|-------|---|---------------------|
+| s | 0 | 1 |
+| p | 1 | 3 |
+| d | 2 | 6 |
+| f | 3 | 10 |
+| g | 4 | 15 |
+
 
 ## Loading Basis Pointers in CHAMP
 
@@ -286,7 +286,12 @@ load basis_num_info  $pool/basis_pointers
 The `trex2champ` converter creates basis pointer files automatically:
 
 ```bash
-trex2champ molecule.hdf5
+#!/bin/bash
+python trex2champ.py \
+			--trex molecule.hdf5 \
+			--basis_prefix "cc-VDZ" \
+			--geom \
+			--basis
 ```
 
 This generates:
@@ -303,77 +308,20 @@ Check that the basis pointer file:
 3. **Valid angular indices**: All indices in range 1-35
 4. **Valid column indices**: Don't exceed number of radial shells in `.basis` file
 
-## Common Issues
-
-### Incorrect AO Count
-
-**Error**:
-```
-ERROR: Number of AOs (45) doesn't match angular momentum sum (54)
-```
-
-**Solution**: Verify the angular momentum counts n(s), n(p), n(d), n(f), n(g) add up correctly using the formula $\sum n(l) \times (2l+1)$.
-
-### Column Index Out of Range
-
-**Error**:
-```
-ERROR: Column index 15 exceeds basis file columns (9)
-```
-
-**Solution**: Ensure radial shell indices (line 3) don't exceed the number of shells in the corresponding `.basis` file.
-
-### Missing Atom Type
-
-**Error**:
-```
-ERROR: Basis pointers found for 1 atom types, but geometry has 2
-```
-
-**Solution**: Add pointer entries for all unique atom types in your geometry.
-
-### Angular Momentum Mismatch
-
-**Error**:
-```
-WARNING: d-orbitals requested but basis only has s and p shells
-```
-
-**Solution**: Ensure the basis set has sufficient angular momentum. Check that `.basis` file includes required shells.
-
-## Advanced Topics
-
-### Contracted vs. Primitive Functions
-
-- **Primitive functions**: Individual Gaussian or Slater functions
-- **Contracted functions**: Linear combinations of primitives
-
-CHAMP handles contraction internally; basis pointers work at the contracted level.
-
-### Spherical vs. Cartesian
-
-CHAMP uses **spherical harmonics** (5 d-functions, 7 f-functions) rather than Cartesian (6 d-functions, 10 f-functions). This is why d-shells contribute 5 AOs each.
-
-### Ordering Convention
-
-The angular momentum indices follow the CHAMP convention for real spherical harmonics. Different quantum chemistry codes may use different orderings; `trex2champ` handles the conversion.
-
 ## Best Practices
 
 ### File Organization
 
 - Keep `basis_pointers` in the `pool/` directory
-- Use `trex2champ` for reliable generation
-- Verify consistency with basis set files
-- Document any manual modifications
+- Use `trex2champ` for cross checking.
 
 ### Verification Checklist
 
-- [ ] Total AO count matches angular momentum breakdown
-- [ ] Column indices are within range for basis files
-- [ ] Angular momentum indices are valid (1-35)
-- [ ] Number of atom type entries matches geometry
-- [ ] Atom type ordering matches geometry file
+- [x] Total AO count matches angular momentum breakdown
+- [x] Column indices are within range for basis files
+- [x] Angular momentum indices are valid (1-35)
+- [x] Number of atom type entries matches geometry
+- [x] Atom type ordering matches geometry file
 
 ### Debugging Strategy
 
@@ -389,15 +337,6 @@ The angular momentum indices follow the CHAMP convention for real spherical harm
 - [Molecular Orbitals](orbitals.md) - Built from atomic orbitals
 - [TREXIO Files](using_trexio_file.md) - Source of basis set information
 - [Preparation Workflow](index.md) - Complete input preparation
-
-## Getting Help
-
-- Always use `trex2champ` to generate basis pointer files
-- Verify file structure matches specification exactly
-- Check that angular momentum counts are consistent
-- Ensure column indices correspond to existing radial shells
-- Test with known working examples before custom modifications
-- Consult [Troubleshooting Guide](../troubleshooting/index.md) for common errors
 
 !!! warning "Atom Type Consistency"
     Each unique atom type in your geometry must have a corresponding set of three lines in the basis pointer file. The ordering must match the atom type ordering in your geometry and other input files.
