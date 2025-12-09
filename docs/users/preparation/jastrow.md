@@ -143,12 +143,12 @@ The `1` indicates number of types of wavefunctions (typically always 1).
   - For `norda = 0`: nparmja = 2 values
 - Comments in parentheses are optional documentation
 
-**b-parameters (electron-electron)**: Single line
+**b-parameters (electron-electron)**: Single line (if treating up and down spin electrons equally)
 ```perl
    0.50000000   0.36987319   0.06971895   0.00745636  -0.00306208  -0.00246314
 ```
 
-- Only one `b` line for entire system
+- Only one `b` line for entire system (if treating up and down spin electrons equally)
 - Number of values = `nparmjb = 2 + max(0, nordb - 1)`
   - For `nordb = 5`: nparmjb = 2 + 4 = 6 values
   - For `nordb = 3`: nparmjb = 2 + 2 = 4 values
@@ -214,14 +214,15 @@ Water molecule
 
 **Jastrow file** (`jastrow.jas`):
 ```perl
+
 jastrow_parameter   1
   5  5  5           norda,nordb,nordc
-0.4 0.0  scalek a21
-0. 0. -4.730090305534E-02 -0.396897598319 -0.159437822975 9.708712655798E-02 (a(iparmj),iparmj=1,nparma)
-0. 0. -1.799730417040E-02 0.134738007823 -0.112317815798 8.510888256315E-03 (a(iparmj),iparmj=1,nparma)
-0.500000000000 0.946548937514 0.149132774876 -0.132156435317 9.053314515581E-02 -1.728006822161E-02 (b(iparmj),iparmj=1,nparmb)
-1.69202811660 1.24656170850 -1.88213809691 3.91512631662 -0.743838508334 -8.64443822088 -3.45929875267 7.94536776357 -0.617594991576 -7.28154417029 -3.20829812008 10.1065053694 2.84682886326 3.11253608381 -1.82059538913 -4.12168239496 -2.73374637202 7.97866751721 2.63741371261 0.589927732147 -3.22734144476 -3.43776654324 -0.805248495319 (c(iparmj),iparmj=1,nparmc)
--0.184402482938 -2.24997275301 -1.73421689881 0.472513797867 1.54643138671 6.06904433460 3.29714804065 1.00667381009 -3.97339434983 -1.90821969292 2.48432116561 -1.92995303583 -5.13867842975 -1.55965196034 -3.12079269533 4.42562466029 3.87653442445 -4.16458516079 0.111329001065 -3.79462067595 3.68329167488 0.667608476506 1.96643077097 (c(iparmj),iparmj=1,nparmc)
+ 0.40000  0.00000  scalek a21
+ 0.00000  0.00000 -0.04730 -0.39690 -0.15944  0.09709 (a(iparmj),iparmj=1,nparma)
+ 0.00000  0.00000 -0.01800  0.13474 -0.11232  0.00851 (a(iparmj),iparmj=1,nparma)
+ 0.50000  0.94655  0.14913 -0.13216  0.09053 -0.01728 (b(iparmj),iparmj=1,nparmb)
+ 1.69203  1.24656 -1.88214  3.91513 -0.74384 -8.64444 -3.45930  7.94537 -0.61759 -7.28154 -3.20830 10.10651  2.84683  3.11254 -1.82060 -4.12168 -2.73375  7.97867  2.63741  0.58993 -3.22734 -3.43777 -0.80525 (c(iparmj),iparmj=1,nparmc)
+-0.18440 -2.24997 -1.73422  0.47251  1.54643  6.06904  3.29715  1.00667 -3.97339 -1.90822  2.48432 -1.92995 -5.13868 -1.55965 -3.12079  4.42562  3.87653 -4.16459  0.11133 -3.79462  3.68329  0.66761  1.96643 (c(iparmj),iparmj=1,nparmc)
 end
 ```
 
@@ -259,8 +260,8 @@ Specify the Jastrow file using the `load jastrow` command:
 %endmodule
 
 load trexio          $pool/molecule.hdf5
-load jastrow         $pool/jastrow.jas
-load jastrow_der     $pool/jastrow.der  # Optional, for optimization
+load jastrow         jastrow.jas
+load jastrow_der     jastrow.der  # Optional, for optimization
 
 %module electrons
     nup    5
@@ -277,6 +278,7 @@ Most common form in CHAMP:
 $$J = \sum_I \sum_i \frac{a_{I}(r_{iI})}{1 + a_0 r_{iI}} + \sum_{i<j} \frac{b(r_{ij})}{1 + b_0 \cdot \text{scalek} \cdot r_{ij}}$$
 
 where:
+
 - $a_I(r)$ are polynomials in electron-nucleus distance $r_{iI}$
 - $b(r)$ is a polynomial in electron-electron distance $r_{ij}$
 - The denominator ensures proper asymptotic behavior
@@ -296,7 +298,7 @@ Jastrow factors must satisfy:
 - [VMC Calculations](../calculations/vmc/index.md) - Using optimized Jastrows
 - [TREXIO Files](using_trexio_file.md) - Jastrows must be supplied separately
 
-## Getting Help
+## Tips
 
 - Start with simple Jastrow forms before adding complexity
 - Check that atom type ordering matches geometry exactly
