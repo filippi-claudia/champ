@@ -19,3 +19,36 @@
     color: var(--md-accent-bg-color);
     transition: background-color 0.2s;
 }
+
+/* Custom "Back to top" button with Gemini-like gradient border and glow */
+.md-top {
+    /* Transparent center to show theme background (or white/dark depending on theme) */
+    background: var(--md-default-bg-color, #ffffff) !important;
+    color: var(--md-default-fg-color, #333333) !important;
+
+    /* Gradient border using background-clip */
+    border: 2px solid transparent !important;
+    border-radius: 99px !important;
+    background-image: linear-gradient(var(--md-default-bg-color, #ffffff), var(--md-default-bg-color, #ffffff)),
+        linear-gradient(135deg, #4285f4, #9b72cb, #d96570) !important;
+    background-origin: border-box !important;
+    background-clip: padding-box, border-box !important;
+
+    /* Soft gradient glow shadow */
+    box-shadow: 0 0 10px rgba(66, 133, 244, 0.3),
+        0 0 20px rgba(155, 114, 203, 0.2) !important;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.md-top:hover {
+    /* Enhanced glow on hover */
+    box-shadow: 0 0 15px rgba(66, 133, 244, 0.5),
+        0 0 30px rgba(155, 114, 203, 0.4) !important;
+    /* transform: scale(1.05); */
+}
+
+/* Ensure the icon color matches the text or allows theme override */
+.md-top svg {
+    fill: currentColor !important;
+}

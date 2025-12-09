@@ -209,7 +209,7 @@ For `nordb = 5`, there are `nparmjb = 6` parameters:
 Index:  1    2         3         4         5          6
 Value: 0.5  0.48552   0.09925   0.00590  -0.00626   -0.00348
 ```
-Typically optimize indices 2-6 (index 1 often fixed at 0.5).
+Typically optimize indices 2-6 (index 1 is fixed at 0.5).
 
 ### c-parameters
 For `nordc = 5`, there are 23 parameters per atom type. The selection depends on which three-body terms are important for your system.

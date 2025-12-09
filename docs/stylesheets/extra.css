@@ -19,3 +19,19 @@
     color: var(--md-accent-bg-color);
     transition: background-color 0.2s;
 }
+
+/* Custom "Back to top" button with Gemini-like glow */
+.md-top {
+    /* Gradient background */
+    background: linear-gradient(135deg, #4285f4, #9b72cb, #d96570) !important;
+    color: white !important;
+    border: none;
+    /* Glow effect */
+    box-shadow: 0 0 15px rgba(66, 133, 244, 0.6);
+    transition: all 0.3s ease-in-out;
+}
+
+.md-top:hover {
+    box-shadow: 0 0 25px rgba(155, 114, 203, 0.9), 0 0 10px rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}

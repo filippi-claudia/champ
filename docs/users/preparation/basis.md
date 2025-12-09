@@ -52,19 +52,44 @@ Basis files follow the naming pattern:
  ... (additional grid points)
 ```
 
+### Formula
+
+The radial grid $r_i$ is generated based on the `gridtype` parameter. The radial distance $r_i$ for the $i$-th grid point (where $i = 0, \dots, N-1$) is calculated as follows:
+
+**Type 3 (Default)**:
+
+$$r_i = r_0 \times (\alpha^i - 1)$$
+
+**Type 2**:
+
+$$r_i = r_0 \times \alpha^i$$
+
+**Type 1**:
+
+$$r_i = r_0 + i \times \alpha$$
+
+where the standard parameters are:
+
+- $N = 2000$ (`gridpoints`)
+- $\alpha = 1.003$ (`gridarg`)
+- $r_0 = 20.0$ bohr (`gridr0`)
+
+
+
 ### Format Specification
 
 **Line 1**: Header information
+
 ```python
 9 3 2000 1.003000 20.000000 0
 ```
 
 - `9` = Number of radial shells (basis functions with different angular momenta)
-- `3` = Number of basis function types (typically 3: s, p, d or similar)
+- `3` = Grid type
 - `2000` = Number of radial grid points
-- `1.003000` = First grid point radius (in bohr)
-- `20.000000` = Maximum radius of grid (in bohr)
-- `0` = Flag for grid type (0 = logarithmic)
+- `1.003000` = Grid argument
+- `20.000000` = Grid radius (in bohr)
+- `0` = Flag (default 0)
 
 **Lines 2+**: Radial function values
 
@@ -113,7 +138,7 @@ pool/
 
 **Oxygen basis** (`ccpVTZ.basis.O`):
 ```python
-14 4 2000 1.003000 20.000000 0
+14 3 2000 1.003000 20.000000 0
  0.000000000000e+00  1.234567890123e+00  ...  (14 shell values)
  1.508957441883e-04  1.234567890123e+00  ...  (14 shell values)
  ... (remaining grid points)
@@ -121,7 +146,7 @@ pool/
 
 **Hydrogen basis** (`ccpVTZ.basis.H`):
 ```python
-5 2 1500 1.003000 15.000000 0
+5 3 1500 1.003000 15.000000 0
  0.000000000000e+00  9.876543210987e-01  ...  (5 shell values)
  2.011929889229e-04  9.876543210987e-01  ...  (5 shell values)
  ... (remaining grid points)
@@ -191,111 +216,25 @@ This is useful when:
 
 ### From TREXIO Files
 
+Trexio files contain basis sets in a format that is compatible with CHAMP. There is no need to generate basis files from TREXIO files.
+
+### From Quantum Chemistry Calculations
+
 The `trex2champ` converter automatically generates basis files:
 
 ```bash
-trex2champ molecule.hdf5
+#!/bin/bash
+python trex2champ.py 	--trex 		benzene.hdf5 \
+			--basis_prefix  "cc-VDZ" \
+			--geom \
+			--basis
 ```
 
 This creates:
 - Basis files for each element: `<basis_name>.basis.<element>`
 - Properly formatted for CHAMP
-- Consistent with molecular orbitals in TREXIO file
+- Consistent with basis set used in TREXIO file
 
-### From Quantum Chemistry Calculations
-
-Most quantum chemistry codes export to TREXIO format:
-
-**GAMESS/TurboRVB workflow**:
-1. Run quantum chemistry calculation
-2. Convert to TREXIO format
-3. Use `trex2champ` to generate CHAMP input files
-
-**ORCA/QMC=CHEM workflow**:
-1. Run ORCA calculation with appropriate keywords
-2. Use QMC=CHEM tools to generate TREXIO
-3. Convert to CHAMP format
-
-### Manual Construction
-
-For custom basis sets, construct files following the format:
-
-1. Define grid: Choose number of points and maximum radius
-2. Generate logarithmic grid: $r_i = r_0 \times e^{(i-1) \times \text{spacing}}$
-3. Evaluate basis functions at each grid point
-4. Write header and grid data to file
-
-## Grid Specifications
-
-### Logarithmic Grid
-
-The default grid uses logarithmic spacing:
-
-$$r_i = r_{\text{min}} \times e^{\alpha \cdot i}$$
-
-where:
-- $r_{\text{min}}$ ≈ 10⁻³ bohr (first grid point)
-- $\alpha$ determines spacing
-- Chosen to reach $r_{\text{max}}$ in N points
-
-**Advantages**:
-- High resolution near nucleus (important for cusps)
-- Good coverage of valence region
-- Extends to long-range tail
-- Efficient for most systems
-
-### Grid Parameters
-
-Typical values:
-
-| Element Type | Grid Points | Max Radius | Min Radius |
-|-------------|-------------|------------|------------|
-| Light (H, He) | 1500-2000 | 15-20 bohr | 0.001 bohr |
-| First row (C, N, O) | 2000-2500 | 20-25 bohr | 0.001 bohr |
-| Second row (Si, P, S) | 2500-3000 | 25-30 bohr | 0.001 bohr |
-| Transition metals | 3000-4000 | 30-40 bohr | 0.0005 bohr |
-
-### Grid Quality Check
-
-Verify basis quality:
-
-1. **Completeness**: Grid extends beyond significant orbital amplitude
-2. **Resolution**: Sufficient points to resolve oscillations
-3. **Tail behavior**: Orbitals decay to ~10⁻⁸ at $r_{\text{max}}$
-
-## Common Basis Sets
-
-### Gaussian Basis Sets
-
-**Pople-style**: 6-31G, 6-311G
-- Moderate size
-- Good for initial calculations
-- May need augmentation for anions/excited states
-
-**Correlation-consistent**: cc-pVXZ (X = D, T, Q, 5)
-- Systematically improvable
-- cc-pVDZ: Minimal for QMC
-- cc-pVTZ: Standard choice
-- cc-pVQZ: High accuracy
-
-**Augmented**: aug-cc-pVXZ
-- Added diffuse functions
-- Essential for anions, weak interactions
-- Larger memory/time requirements
-
-### Pseudopotential Basis Sets
-
-**BFD (Burkatzki-Filippi-Dolg)**:
-- Optimized for QMC with BFD pseudopotentials
-- Small cores for first/second row elements
-- Excellent accuracy/efficiency balance
-- Recommended for most production calculations
-
-**ccECP**:
-- Correlation-consistent effective core potentials
-- Designed for coupled cluster and QMC
-- Systematic basis set series
-- Good for heavy elements
 
 ## Best Practices
 
@@ -303,14 +242,10 @@ Verify basis quality:
 
 1. **Match pseudopotential**: Use basis sets designed for your ECP
 2. **Balance accuracy/cost**: Larger basis → better accuracy but slower
-3. **System size consideration**: Use smaller basis for large systems
-4. **Property-dependent**: Some properties need specific basis features
 
 ### File Management
 
 - Keep all basis files in `pool/` directory
-- Use consistent naming conventions
-- Document basis set sources and versions
 - Verify basis files match geometry atom types
 
 ### Common Issues
@@ -337,7 +272,6 @@ ERROR: Insufficient angular momentum in basis
 
 - [TREXIO Files](using_trexio_file.md) - Source of basis set data
 - [Pseudopotentials](pseudopotential.md) - Consistent pseudopotential/basis pairs
-- [Molecular Orbitals](orbitals.md) - How basis sets build molecular orbitals
 - [Wavefunction Optimization](../calculations/optimization/index.md) - Impact of basis quality
 
 ## Getting Help
@@ -345,8 +279,6 @@ ERROR: Insufficient angular momentum in basis
 - Verify basis file format matches specification exactly
 - Check that grid extends sufficiently for all orbitals
 - Ensure one basis file exists for each unique atom type
-- Use `trex2champ` for reliable basis file generation
-- Test with standard basis sets before using custom ones
 - Consult [Preparation Guide](index.md) for complete workflow
 
 !!! warning "Required Files"

@@ -188,6 +188,7 @@ nav = [
 # Section for configuring theme options
 # ----------------------------------------------------------------------------
 [project.theme]
+custom_dir = "overrides"
 
 favicon = "favicon.ico"
 logo = "assets/logo.svg"

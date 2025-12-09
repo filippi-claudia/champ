@@ -18,6 +18,7 @@ CHAMP supports the following main calculation types:
 ## General Workflow
 
 A typical workflow involves:
+
 1.  **Preparation**: Generating the initial wavefunction (orbitals, basis sets) using external tools or internal converters.
 2.  **VMC**: Evaluating the quality of the initial wavefunction.
 3.  **Optimization**: Optimizing the Jastrow factor and potentially other parameters.
