@@ -1151,6 +1151,7 @@ subroutine read_orbitals_file(file_orbitals)
         endif
       else
         otos(1,1)=1
+        read (iunit, *, iostat=iostat) temp1
       endif
       do iorb = 1, norb
         !if (wid) then
