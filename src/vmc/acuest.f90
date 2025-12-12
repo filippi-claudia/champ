@@ -355,6 +355,32 @@ contains
       !   print *, '-----'
       ! enddo 
       ! stop
+
+      ! do iel=1,nelec
+      !   do k=1,3
+      !     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+      !     xold(k,iel) = xold(k,iel) + 0.00001
+      !     call hpsi(xold,psidoo,psijo,ekino,eold(1,1),0,1)
+      !     call compute_determinante_grad(iel,psidoo(1),psidoo,psijo,vold(1,iel),1)
+      !     xold(k,iel) = xold(k,iel) - 0.00001
+      !     print *, ddx(k,iel,1) , (psidoo(1) - psido(1))/0.00001/psido(1), vold(k,iel)
+      !   enddo
+      !   print *, '-----'
+      ! enddo 
+      ! stop
+
+      ! do iel=1,nelec
+      !   do k=1,3
+      !     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+      !     xnew2 = xold
+      !     xnew2(k,iel) = xnew2(k,iel) + 0.00001d0
+      !     call psie(iel,xnew2,psidn,psijo,1,0)
+      !     call compute_determinante_grad(iel,psidn(1),psidn,psijo,vold(1,iel),0)
+      !     print *, ddx(k,iel,1) , (psidn(1) - psido(1))/0.00001/psido(1), vold(k,iel)
+      !   enddo
+      !   print *, '-----'
+      ! enddo 
+      ! stop
       
       do istate=1,nstates
         psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))

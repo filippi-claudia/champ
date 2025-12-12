@@ -37,6 +37,8 @@ module m_backflow
 
     !> Backflow derivatives of slater matrix (3, nmat_dim,2,nwftypeorb)
     real(dp), dimension(:, :, :, :), allocatable :: dslm
+      !> Backflow derivatives of slater matrix (3, nmat_dim,2,nwftypeorb)
+    real(dp), dimension(:, :, :, :), allocatable :: dslm_bf
     !> Backflow second derivatives of slater matrix (3,3,nmat_dim,2,nwftypeorb)
     real(dp), dimension(:,:,:, :, :), allocatable :: d2slm
  
@@ -65,7 +67,7 @@ module m_backflow
     public :: quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp
     public :: rvec_en_bf, r_en_bf
     public :: allocate_m_backflow, deallocate_m_backflow
-    public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf
+    public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf, dslm_bf
     public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
     public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
 
@@ -92,6 +94,7 @@ contains
         if (.not. allocated(quasi_x_new)) allocate (quasi_x_new(3, nelec))
         if (.not. allocated(dquasi_dx_new)) allocate (dquasi_dx_new(3, nelec, 3, nelec))
         if (.not. allocated(d2quasi_dx2_new)) allocate (d2quasi_dx2_new(3, nelec, nelec))
+        if (.not. allocated(dslm_bf)) allocate (dslm_bf(3, nup*nup, 2, nwftypeorb))
       endif
     end subroutine allocate_m_backflow
   
@@ -117,6 +120,7 @@ contains
         if (allocated(quasi_x_new)) deallocate(quasi_x_new)
         if (allocated(dquasi_dx_new)) deallocate(dquasi_dx_new)
         if (allocated(d2quasi_dx2_new)) deallocate(d2quasi_dx2_new)
+        if (allocated(dslm_bf)) deallocate(dslm_bf)
       endif
     end subroutine deallocate_m_backflow
   

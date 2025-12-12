@@ -14,7 +14,7 @@ contains
       use vmc_mod, only: nwftypeorb, norb_tot
       use m_backflow, only: ibackflow, rvec_en_bf, r_en_bf, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
       use backflow_mod, only: single_backflow
-      use m_backflow, only: slmin_bf, orbn_bf, detn_bf, dslm, dorbn_bf
+      use m_backflow, only: slmin_bf, orbn_bf, detn_bf, dslm_bf, dorbn_bf
       use orbitals_no_qmckl_mod, only: orbitalse_no_qmckl_bf
       use dorb_m,  only: iworbd
       use matinv_mod, only: matinv
@@ -64,9 +64,9 @@ contains
               jorb=iworbd(j+ish,kref)
               jk=jk+nel
               call dcopy(nel,orbn_bf(1+ish,jorb,k),1,slmin_bf(1+jk,iab,k),1)
-              call dcopy(nel,dorbn_bf(jorb,1+ish,1,k),norb_tot,dslm(1,1+jk,iab,k),3)
-              call dcopy(nel,dorbn_bf(jorb,1+ish,2,k),norb_tot,dslm(2,1+jk,iab,k),3)
-              call dcopy(nel,dorbn_bf(jorb,1+ish,3,k),norb_tot,dslm(3,1+jk,iab,k),3)
+              call dcopy(nel,dorbn_bf(jorb,1+ish,1,k),norb_tot,dslm_bf(1,1+jk,iab,k),3)
+              call dcopy(nel,dorbn_bf(jorb,1+ish,2,k),norb_tot,dslm_bf(2,1+jk,iab,k),3)
+              call dcopy(nel,dorbn_bf(jorb,1+ish,3,k),norb_tot,dslm_bf(3,1+jk,iab,k),3)
             enddo
 
             if(nel.gt.0) call matinv(slmin_bf(1,iab,k),nel,detn_bf(iab,k))
@@ -156,7 +156,7 @@ contains
       use multideterminante_mod, only: multideterminante_grad
       use multideterminant_mod, only: compute_ymat
       use system, only: ndn, nup
-      use m_backflow, only: ibackflow, detn_bf, dslm, slmin_bf
+      use m_backflow, only: ibackflow, detn_bf, dslm, slmin_bf, dslm_bf
       use backflow_mod, only: backflow
       use config,  only: xold
 
@@ -252,7 +252,7 @@ contains
 
         do isorb=1,nwftypeorb
           if (ibackflow.gt.0) then
-            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm(1,1,1,isorb),vref(1,isorb))
+            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),vref(1,isorb))
           else
             call determinante_ref_grad(iel,slmin(1,isorb),dorbn(1,1,isorb),norb_tot,vref(1,isorb))
           endif
@@ -326,7 +326,7 @@ contains
 
 
           if (ibackflow.gt.0) then
-            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm(1,1,1,isorb),vref(1,isorb))
+            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),vref(1,isorb))
           else
             call determinante_ref_grad(iel,slmin,dorb_tmp,norb,vref)
           endif
@@ -342,7 +342,7 @@ contains
           endif
 
           if (ibackflow.gt.0) then
-            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm(1,1,1,isorb),vref(1,isorb))
+            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),vref(1,isorb))
           else
             call determinante_ref_grad(iel,slmi(1,iab,1),dorb_tmp,norb,vref)
           endif
