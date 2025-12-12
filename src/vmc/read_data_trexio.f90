@@ -675,8 +675,6 @@ module trexio_read_data
         rc = qmckl_context_destroy(qmckl_ctx(ictx))
         call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_update_mo', __FILE__, __LINE__)
         write(ounit, '(a)') " QMCkl old context destroyed successfully "
-
-        call MPI_Barrier( MPI_COMM_WORLD, ierr )
     
 
         ! Create a new QMCkl context with the new trexio file

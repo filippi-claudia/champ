@@ -2115,8 +2115,10 @@ subroutine parser
           rc = qmckl_trexio_read(qmckl_ctx(ictx), file_trexio, 1_8*len(trim(file_trexio)))
           write(ounit, *) "Status QMCKl trexio read file_trexio_path", rc
           if (rc /= QMCKL_SUCCESS) call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
-        enddo
-     endif
+        enddo     
+        file_trexio_path = file_trexio
+      endif
+
 
      ! get mo's number should correspond to norb_tot
      if (use_qmckl_jastrow) then
