@@ -1575,6 +1575,22 @@ subroutine parser
     endif
   endif
 
+
+! (10) optorb_mixvirt information of orbitals (either block or from a file)
+
+  if ( fdf_load_defined('optorb_mixvirt') ) then
+    call read_optorb_mixvirt_file(file_optorb_mixvirt)
+  elseif ( fdf_block('optorb_mixvirt', bfdf)) then
+  ! call fdf_read_optorb_mixvirt_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    write(errunit,'(a)') "Warning:: No information about optorb_mixvirt provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+  endif
+
+
 ! Contents from flagcheck. Moved here because ndet and norb should be defined by now
 ! CF: norb is set to max # occupied orb in WF in optorb_define/verify_orbitals
   if(ioptorb.eq.0) then
@@ -1899,20 +1915,6 @@ subroutine parser
 
 ! Processing of data read from the parsed files or setting them with defaults
 
-
-! (10) optorb_mixvirt information of orbitals (either block or from a file)
-
-  if ( fdf_load_defined('optorb_mixvirt') ) then
-    call read_optorb_mixvirt_file(file_optorb_mixvirt)
-  elseif ( fdf_block('optorb_mixvirt', bfdf)) then
-  ! call fdf_read_optorb_mixvirt_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    write(errunit,'(a)') "Warning:: No information about optorb_mixvirt provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-  endif
 
 
 ! (18) cavity_spheres information (either block or from a file)
