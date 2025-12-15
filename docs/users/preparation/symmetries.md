@@ -71,7 +71,7 @@ Format: `index1 label1  index2 label2  ...  indexN labelN`
 - One index per molecular orbital
 - Index refers to irrep number from definition line
 - Order matches molecular orbital ordering in `.lcao` file
-- Length equals `norbitals`
+- Length equals `norb`
 
 **Example interpretation**:
 ```python
@@ -86,60 +86,6 @@ Orbital 4: symmetry 1 (AG)
 ```
 end
 ```
-
-## Common Point Groups
-
-### Abelian Groups
-
-**C₁** (No symmetry):
-- 1 irrep: A
-- All orbitals have same symmetry
-
-**Cᵢ** (Inversion center):
-- 2 irreps: Ag, Au
-- g = gerade (even), u = ungerade (odd)
-
-**Cs** (Mirror plane):
-- 2 irreps: A', A"
-- ' = symmetric, " = antisymmetric
-
-**C₂** (180° rotation):
-- 2 irreps: A, B
-- A = symmetric, B = antisymmetric
-
-**C₂ᵥ** (Two perpendicular mirrors):
-- 4 irreps: A₁, A₂, B₁, B₂
-- Common for bent molecules (H₂O, NO₂)
-
-**C₂ₕ** (Rotation + mirror):
-- 4 irreps: Ag, Au, Bg, Bu
-- Common for planar molecules with inversion
-
-**D₂ₕ** (Three perpendicular C₂ axes):
-- 8 irreps: Ag, B1g, B2g, B3g, Au, B1u, B2u, B3u
-- Common for molecules like ethylene, naphthalene
-
-### Non-Abelian Groups
-
-**C∞ᵥ** (Linear molecules without inversion):
-- Irreps: Σ⁺, Σ⁻, Π, Δ, ...
-- Examples: HCl, CO
-
-**D∞ₕ** (Linear molecules with inversion):
-- Irreps: Σg⁺, Σg⁻, Σu⁺, Σu⁻, Πg, Πu, Δg, Δu, ...
-- Examples: N₂, CO₂, acetylene
-
-**D₃ₕ** (Trigonal planar):
-- Irreps: A₁', A₂', E', A₁", A₂", E"
-- Examples: BF₃, benzene (simplified)
-
-**Tᵈ** (Tetrahedral):
-- Irreps: A₁, A₂, E, T₁, T₂
-- Examples: CH₄, CCl₄
-
-**Oₕ** (Octahedral):
-- Irreps: A₁g, A₂g, Eg, T₁g, T₂g, A₁u, A₂u, Eu, T₁u, T₂u
-- Examples: SF₆, metal complexes
 
 ## Examples
 
@@ -165,83 +111,12 @@ end
 - Orbitals 4-5: A₁, B₁ (oxygen p orbitals)
 - Higher orbitals: virtual orbitals with various symmetries
 
-**Symmetry constraints**:
-- A₁ orbitals can only mix with other A₁ orbitals
-- B₁ and B₂ orbitals cannot mix due to different symmetries
-
-### Example 2: Nitrogen Molecule (D∞ₕ Symmetry)
-
-**System**: N₂ with 40 molecular orbitals
-
-**Symmetry file** (`N2.sym`):
-```python
-sym_labels 8 40
- 1 SGP 2 SGM 3 SUP 4 SUM 5 PIG 6 PIU 7 DLG 8 DLU
-1 1 3 5 5 6 6 1 3 5 5 6 6 1 3 7 7 8 8 5 5 6 6 1 3 7 7 8 8 5 5 6 6 1 3 7 7 8 8 1
-end
-```
-
-**Explanation**:
-
-- D∞ₕ point group (linear molecule with inversion)
-- 8 irreps: Σg⁺, Σg⁻, Σu⁺, Σu⁻, Πg, Πu, Δg, Δu
-- Abbreviated as: SGP, SGM, SUP, SUM, PIG, PIU, DLG, DLU
-- Orbitals 1-2: σg bonding (SGP)
-- Orbital 3: σu bonding (SUP)
-- Orbitals 4-5: πg bonding (PIG, degenerate pair)
-- Orbitals 6-7: πu antibonding (PIU, degenerate pair)
-- Higher orbitals include δ and virtual orbitals
-
-**Degeneracy**:
-- Π orbitals come in degenerate pairs (5 5, 6 6)
-- Δ orbitals also degenerate (7 7, 8 8)
-- CHAMP handles degeneracy through symmetry labels
-
-### Example 3: Benzene (D₆ₕ Symmetry)
-
-**System**: C₆H₆ with 120 molecular orbitals
-
-**Symmetry file** (`benzene.sym`):
-```python
-sym_labels 12 120
- 1 A1G 2 A2G 3 B1G 4 B2G 5 E1G 6 E2G 7 A1U 8 A2U 9 B1U 10 B2U 11 E1U 12 E2U
-1 5 5 11 11 2 1 5 5 11 11 1 6 6 12 12 ... (120 symmetry indices)
-end
-```
-
-**Explanation**:
-
-- D₆ₕ point group (hexagonal with inversion)
-- 12 irreps including doubly degenerate E representations
-- Aromatic π system has specific symmetry pattern
-- Bonding π orbitals: A₂u, E₁g
-- Antibonding π*: E₂u, B₂g
-- E irreps are doubly degenerate
-
-### Example 4: Methane (Tᵈ Symmetry)
-
-**System**: CH₄ with 18 molecular orbitals
-
-**Symmetry file** (`methane.sym`):
-```python
-sym_labels 5 18
- 1 A1 2 A2 3 E 4 T1 5 T2
-1 5 5 5 3 3 1 5 5 5 3 3 1 4 4 4 5 5
-end
-```
-
-**Explanation**:
-
-- Tᵈ point group (tetrahedral)
-- 5 irreps: A₁, A₂, E (doubly degenerate), T₁, T₂ (triply degenerate)
-- Orbital 1: A₁ (totally symmetric, C-H bonding combination)
-- Orbitals 2-4: T₂ (triply degenerate bonding set)
-- Orbitals 5-6: E (doubly degenerate)
-- T representations appear as triplets: (5 5 5), (4 4 4)
 
 ## Loading Symmetry Files in CHAMP
 
-### Standard Loading
+!!! success "TREXIO contains symmetry information"
+    Note that TREXIO file might contain orbital symmetry information, so you don't need to provide a symmetry file. If it does not, you can use the `trex2champ` tool to generate a symmetry file.
+
 
 Specify the symmetry file in the CHAMP input:
 
@@ -252,320 +127,54 @@ Specify the symmetry file in the CHAMP input:
 %endmodule
 
 load trexio      $pool/molecule.hdf5
-load symmetries  $pool/molecule.sym
+load symmetry    $pool/molecule.sym
 load jastrow     $pool/jastrow.jas
 
 %module optwf
-    nopt_iter        20
-    optimize_orbs    .true.    # Orbital optimization
-    use_symmetry     .true.    # Apply symmetry constraints
-%endmodule
-```
-
-### Orbital Optimization with Symmetry
-
-When optimizing orbitals, symmetry constraints ensure physical correctness:
-
-```perl
-%module optwf
-    method           'lin_d'
-    optimize_orbs    .true.
-    use_symmetry     .true.    # Only allow symmetry-preserving rotations
-    nopt_iter        30
+    ioptwf        1 
+    ioptci        0 
+    ioptjas       0 
+    ioptorb       1 
+    method        'sr_n'
+    multiple_adiag 0
+    ncore         0
+    nextorb       250 
+    nblk_max      4000 
+    no_active     0
+    nopt_iter     5 
+    sr_tau        0.05
+    sr_eps        0.001
+    sr_adiag      0.01
+    isample_cmat  0
+    energy_tol    0.0
 %endmodule
 ```
 
 **Effect**:
+
 - Orbitals within same irrep can mix
 - Orbitals of different irreps remain orthogonal
 - Maintains molecular symmetry throughout optimization
 
-### Optional Usage
+## Generate Symmetry File
 
-Symmetry files are optional but highly recommended for:
-
-- Molecules with non-trivial symmetry (C₂ᵥ and higher)
-- Orbital optimization calculations
-- Large basis sets where accidental symmetry breaking is possible
-- Studies requiring symmetry-pure states
-
-## Generating Symmetry Files
-
-### From TREXIO Files
-
-The `trex2champ` converter extracts symmetry information:
+You can generate a symmetry file using the `trex2champ` tool:
 
 ```bash
-trex2champ molecule.hdf5
+#!/bin/bash
+python trex2champ.py 	\
+            --trex molecule.hdf5 \
+            --motype "RHF" \
+            --backend "HDF5" \
+            --basis_prefix "cc-VDZ" \
+            --lcao \
+            --geom \
+            --basis \
+            --ecp \
+            --sym       # Flag to generate symmetry file
 ```
 
-**Requirements**:
-- TREXIO file must contain symmetry information
-- Quantum chemistry code must have exported symmetry data
-- Point group must be recognized
 
-### From Quantum Chemistry Codes
-
-**GAMESS**: Automatically includes symmetry
-```bash
-# GAMESS calculates symmetry automatically
-# Export to TREXIO includes symmetry labels
-trex2champ molecule.hdf5
-```
-
-**Molpro**: Use symmetry in input
-```
-basis=cc-pvtz
-symmetry,nosym  ! Or specify point group: symmetry,c2v
-
-{hf; wf,10,1,0}  ! nelec, symmetry irrep, spin
-```
-
-**ORCA**: Specify symmetry usage
-```
-! RHF cc-pVTZ UseSym
-
-* xyz 0 1
-O  0.0  0.0  0.0
-H  0.0  0.0  1.0
-H  0.0  1.0  0.0
-*
-```
-
-**PySCF**: Enable symmetry
-```python
-from pyscf import gto, scf
-
-mol = gto.M(
-    atom='O 0 0 0; H 0 0 1; H 0 1 0',
-    basis='cc-pvtz',
-    symmetry='C2v'  # Specify point group
-)
-mf = scf.RHF(mol)
-mf.kernel()
-```
-
-### Manual Construction
-
-For custom cases, create symmetry file manually:
-
-1. **Determine point group**: Use molecular geometry
-2. **Identify irreps**: From character table
-3. **Classify orbitals**: By visual inspection or code
-4. **Write file**: Following format specification
-
-**Tools for symmetry determination**:
-- libmsym: Automatic point group detection
-- Avogadro: Visualize and detect symmetry
-- Gaussian: SYMM keyword analyzes geometry
-
-## Symmetry in Orbital Optimization
-
-### Why Symmetry Matters
-
-Without symmetry constraints:
-
-- Orbitals can artificially break symmetry during optimization
-- Non-physical mixing between different irreps
-- Loss of computational efficiency
-- Difficulty interpreting results
-
-With symmetry constraints:
-
-- Physical correctness maintained
-- Faster convergence (smaller search space)
-- Clearer interpretation of optimized orbitals
-- Prevents spurious local minima
-
-### Orbital Rotation Constraints
-
-For orbitals φᵢ and φⱼ, rotation matrix element:
-
-$$U_{ij} = \begin{cases}
-\text{optimizable} & \text{if } \text{sym}(\phi_i) = \text{sym}(\phi_j) \\
-0 & \text{if } \text{sym}(\phi_i) \neq \text{sym}(\phi_j)
-\end{cases}$$
-
-**Example** (C₂ᵥ symmetry):
-- A₁ orbital can rotate with other A₁ orbitals
-- A₁ and B₁ orbitals cannot mix
-- Reduces rotation matrix dimensionality significantly
-
-### Optimization Example
-
-**Without symmetry** (water, 13 orbitals):
-- Rotation parameters: 13×12/2 = 78 degrees of freedom
-
-**With C₂ᵥ symmetry** (6 A₁ + 3 A₂ + 2 B₁ + 2 B₂):
-- A₁ block: 6×5/2 = 15 parameters
-- A₂ block: 3×2/2 = 3 parameters
-- B₁ block: 2×1/2 = 1 parameter
-- B₂ block: 2×1/2 = 1 parameter
-- Total: 15 + 3 + 1 + 1 = 20 parameters (74% reduction!)
-
-## Common Issues
-
-### Point Group Mismatch
-
-**Error**:
-```
-ERROR: Symmetry file specifies C2v, but geometry has no symmetry
-```
-
-**Solution**: 
-- Verify molecular geometry is actually symmetric
-- Check atomic coordinates for numerical precision
-- Symmetrize geometry if needed (typical tolerance: 10⁻⁵ bohr)
-
-### Orbital Count Mismatch
-
-**Error**:
-```
-ERROR: Symmetry file has 226 orbitals, but .lcao file has 200
-```
-
-**Solution**: Ensure symmetry file matches the orbital file exactly. Regenerate both from same TREXIO source.
-
-### Unknown Irrep Label
-
-**Warning**:
-```
-WARNING: Irreducible representation 'Eg' not recognized
-```
-
-**Solution**: Check spelling and capitalization of irrep labels. CHAMP may have specific naming conventions.
-
-### Degenerate Orbital Issues
-
-**Error**:
-```
-ERROR: Degenerate orbitals 15-16 have different symmetry labels
-```
-
-**Solution**: Degenerate orbitals (E, T irreps) must have same label. Check quantum chemistry output for proper degeneracy handling.
-
-### Symmetry Breaking During Optimization
-
-**Warning**:
-```
-WARNING: Orbital 5 changed from A1 to B2 during optimization
-```
-
-**Solution**: This shouldn't happen with proper symmetry constraints. Verify:
-- `use_symmetry .true.` is set
-- Symmetry file is loaded correctly
-- No bugs in optimization code
-
-## Advanced Topics
-
-### Subgroup Symmetry
-
-For molecules with approximate higher symmetry:
-
-- Use highest available symmetry point group
-- Can help prevent artificial lowering during optimization
-- Example: Nearly linear molecule → Use C∞ᵥ or D∞ₕ
-
-### Symmetry-Adapted Jastrow
-
-Jastrow factors can also respect symmetry:
-
-- Electron-nucleus terms: different for each atom type (already symmetric)
-- Electron-electron terms: single set for all pairs (automatically symmetric)
-- Three-body terms: can be symmetry-adapted by atom type
-
-### Excited States
-
-Different electronic states have different spatial symmetries:
-
-```python
-# Ground state: A₁ symmetry (C₂ᵥ)
-# First excited state: B₁ symmetry
-
-load symmetries  $pool/molecule_ground.sym  # For ground state
-# or
-load symmetries  $pool/molecule_excited.sym  # For excited state
-```
-
-### Complex Molecules
-
-For large molecules with low symmetry:
-
-- C₁ or Cs symmetry still helps (computational bookkeeping)
-- Even two irreps reduce optimization complexity
-- Consider using subsystem symmetry for fragments
-
-## Verification and Testing
-
-### Check Symmetry Assignment
-
-Verify orbital symmetries are correct:
-
-1. **Visualize orbitals**: Use molecular visualization software
-2. **Character table**: Apply symmetry operations manually
-3. **Compare codes**: Check consistency between different QC codes
-4. **Energy ordering**: Symmetry should match expected pattern
-
-### Test Symmetry Constraints
-
-During optimization:
-
-```perl
-%module output
-    print_level  2  # Verbose output
-%endmodule
-```
-
-Monitor:
-- No cross-block rotations
-- Symmetry labels remain constant
-- Energy lowering is physical
-
-### Common Pitfalls
-
-- **Numerical noise**: Geometry not exactly symmetric
-- **Basis set effects**: Insufficient basis breaks symmetry
-- **Linear dependencies**: Cause artificial mixing
-- **Pseudopotentials**: May not respect full molecular symmetry
-
-## Best Practices
-
-### File Organization
-
-- Store symmetry files in `pool/` directory
-- Use consistent naming: `molecule.sym`
-- Document point group in comments
-- Keep synchronized with orbital files
-
-### Verification Checklist
-
-- [ ] Point group correctly identified
-- [ ] Number of irreps matches point group
-- [ ] All irrep labels spelled correctly
-- [ ] Orbital count matches `.lcao` file
-- [ ] Degenerate orbitals properly grouped
-- [ ] Symmetry maintained during optimization
-
-### When to Use Symmetry
-
-**Always recommended for**:
-- Orbital optimization
-- Molecules with C₂ or higher symmetry
-- Large basis sets
-- Systematic studies requiring consistency
-
-**Less critical for**:
-- Single-determinant VMC without optimization
-- Very small molecules with minimal basis
-- Already optimized fixed orbitals
-
-### Documentation
-
-Keep records of:
-- Point group and irreps used
-- Source of symmetry information
-- Any manual modifications
-- Verification results
 
 ## Related Topics
 

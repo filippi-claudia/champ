@@ -12,31 +12,13 @@ Molecular orbital eigenvalue files contain the energies of molecular orbitals ob
 
 ## Overview
 
-Orbital eigenvalues (orbital energies) represent the energy of an electron in a specific molecular orbital according to the mean-field approximation:
-
-$$\epsilon_i = \langle \phi_i | \hat{f} | \phi_i \rangle$$
-
-where:
-- $\epsilon_i$ is the eigenvalue of orbital $i$
-- $\phi_i$ is the molecular orbital
-- $\hat{f}$ is the Fock operator (Hartree-Fock) or Kohn-Sham operator (DFT)
+Orbital eigenvalues (orbital energies) represent the energy of an electron in a specific molecular orbital.
 
 ### Key Concepts
 
 - **Occupied orbitals**: Negative eigenvalues (typically) for filled orbitals
 - **Virtual orbitals**: Positive eigenvalues for unoccupied orbitals
 - **HOMO-LUMO gap**: Energy difference between highest occupied and lowest unoccupied orbitals
-- **Ionization potential**: Related to HOMO energy (Koopmans' theorem)
-
-### Uses in QMC
-
-While QMC doesn't directly use orbital energies in the calculation, they are valuable for:
-
-- **Orbital identification**: Understanding which orbitals are occupied
-- **Analysis**: Interpreting molecular electronic structure
-- **Verification**: Checking consistency with quantum chemistry calculations
-- **Excited states**: Selecting orbital promotions
-- **Visualization**: Ordering orbitals for plotting
 
 ## File Format
 
@@ -45,156 +27,43 @@ Eigenvalue files are stored in the `pool/` directory and are automatically gener
 ### File Structure
 
 ```python
-# File created using the trex2champ converter https://github.com/TREX-CoE/trexio_tools
-# Eigenvalues correspond to the RHF orbitals
 eigenvalues 64
--1.3659 -0.7150 -0.5814 -0.5081 0.1201 0.1798 0.4846 0.5148 0.5767 0.6085 0.7153 0.7820 0.8691 0.8699 0.9642 1.2029 1.4091 1.4388 1.6082 1.6342 2.0787 2.1179 2.1776 2.2739 2.4123 2.5591 2.8217 3.3480 3.3840 3.4544 3.4607 3.6199 3.6237 3.9628 3.9661 4.0439 4.0481 4.2212 4.3500 4.4225 4.4577 4.5747 4.7271 4.8382 5.0086 5.5800 5.8020 6.0317 6.3754 6.5827 6.6970 6.7474 6.9245 7.0790 7.1820 7.2121 7.3257 7.3865 7.8607 8.4146 8.4733 9.0201 16.4980 27.1462
+-1.3659 -0.7150 -0.5814 -0.5081 0.1201 0.1798 0.4846 0.5148 0.5767 0.6085 0.7153 0.7820 0.8691 0.8699 0.9642 1.2029 ...
 end
 ```
 
 ### Format Specification
 
-**Header line**: Number of orbitals
+**Header line**: Keyword and number of orbitals
 ```python
 eigenvalues 64
 ```
 
-Format: `eigenvalues  norbitals`
+Format: `keyword  norb`
 
-- `eigenvalues` = keyword identifying this as an eigenvalue file
-- `norbitals` = 64: Number of molecular orbital energies
+- `keyword`: Can be either `eigenvalues` or `energies`.
+- `norb`: Total number of molecular orbitals. This must match the orbital count in the other input files.
 
 **Energy values**: Orbital energies in atomic units (Hartree)
 ```python
 -1.3659 -0.7150 -0.5814 -0.5081 0.1201 0.1798 ...
 ```
 
-- One value per molecular orbital
-- Values in Hartree (atomic units of energy)
-- Typically ordered from lowest to highest energy
-- Can span multiple lines
-- Number of values must equal `norbitals`
-
-**Units**: Atomic units (Hartree)
-- 1 Hartree = 27.2114 eV
-- 1 Hartree = 627.509 kcal/mol
-- 1 Hartree = 2625.50 kJ/mol
+- List of floating point numbers.
+- One value per molecular orbital.
+- Values in Hartree (atomic units of energy).
+- Number of values must equal `norb`.
 
 **Final line**:
 ```
 end
 ```
 
-### Energy Ranges
-
-**Typical ranges** for different orbital types:
-
-| Orbital Type | Energy (Hartree) | Energy (eV) | Description |
-|--------------|------------------|-------------|-------------|
-| Core (1s) | -20 to -1000 | -544 to -27211 | Tightly bound core electrons |
-| Inner valence | -2 to -10 | -54 to -272 | Inner valence shells |
-| Valence | -0.2 to -2 | -5 to -54 | Bonding/non-bonding orbitals |
-| HOMO | -0.2 to -0.5 | -5 to -14 | Highest occupied (typical) |
-| LUMO | 0.0 to 0.2 | 0 to 5 | Lowest unoccupied (typical) |
-| Virtual | 0.0 to 10+ | 0 to 272+ | Higher unoccupied orbitals |
-
-## Examples
-
-### Example 1: Water Molecule (HF/cc-pVTZ)
-
-**System**: H₂O, 10 electrons, 46 orbitals
-
-**Eigenvalue file** (`water.eig`):
-```python
-eigenvalues 46
--20.5524 -1.3335 -0.6948 -0.5676 -0.4993 0.1453 0.2089 0.5527 0.6049 0.6746 0.7894 0.8213 0.9912 1.0336 1.1245 1.1652 1.2891 1.4123 1.5234 1.8912 2.0445 2.2156 2.4589 2.6734 2.9123 3.1456 3.4567 3.8901 4.2345 4.5678 5.0123 5.4567 5.8901 6.3456 6.7890 7.2345 7.6789 8.1234 8.5678 9.0123 9.4567 9.8901 10.3456 10.7890 15.2345 25.6789
-end
-```
-
-**Analysis**:
-
-- **Orbital 1** (-20.5524 Ha): Oxygen 1s core orbital
-- **Orbitals 2-5** (-1.3335 to -0.4993 Ha): Valence orbitals (occupied)
-  - Orbital 2: O-H bonding (A₁)
-  - Orbital 3: O-H bonding (A₁)
-  - Orbital 4: Oxygen lone pair (B₁)
-  - Orbital 5: Oxygen lone pair (A₁) - HOMO
-- **Orbital 6** (0.1453 Ha): LUMO (first virtual orbital)
-- **HOMO-LUMO gap**: 0.1453 - (-0.4993) = 0.6446 Ha = 17.5 eV
-- **Orbitals 6-46**: Virtual orbitals for correlation
-
-### Example 2: Nitrogen Molecule (RHF/cc-pVTZ)
-
-**System**: N₂, 14 electrons, 60 orbitals
-
-**Eigenvalue file** (`N2.eig`):
-```python
-eigenvalues 60
--15.6843 -15.6842 -1.4782 -0.7821 -0.6234 -0.6234 -0.6111 0.1567 0.1567 0.2345 0.6123 0.6789 0.7456 0.7456 0.8234 0.9012 1.0123 1.1234 1.1234 1.2345 1.4567 1.5678 1.6789 1.6789 1.8901 2.0123 2.1234 2.2345 2.2345 2.4567 2.6789 2.8901 3.0123 3.1234 3.1234 3.3456 3.5678 3.7890 3.9012 4.1234 4.3456 4.5678 4.7890 5.0123 5.2345 5.4567 5.6789 5.8901 6.1123 6.3456 6.5789 6.8012 7.0234 7.2567 7.4890 7.7123 7.9456 18.2345 18.2346 28.5678
-end
-```
-
-**Analysis**:
-
-- **Orbitals 1-2** (-15.68 Ha): N 1s core orbitals (nearly degenerate)
-- **Orbital 3** (-1.4782 Ha): σg bonding
-- **Orbital 4** (-0.7821 Ha): σu bonding
-- **Orbitals 5-6** (-0.6234 Ha): πu bonding (degenerate pair)
-- **Orbital 7** (-0.6111 Ha): σg bonding - HOMO
-- **Orbitals 8-9** (0.1567 Ha): πg antibonding (degenerate) - LUMO
-- **HOMO-LUMO gap**: 0.1567 - (-0.6111) = 0.7678 Ha = 20.9 eV
-- **Degeneracies**: π and π* orbitals come in pairs (linear molecule)
-
-### Example 3: Benzene (RHF/6-31G)
-
-**System**: C₆H₆, 42 electrons, 72 orbitals
-
-**Eigenvalue file** (`benzene.eig`):
-```python
-eigenvalues 72
--11.2345 -11.2345 -11.2344 -11.2344 -11.2343 -11.2343 -1.0234 -0.8456 -0.7123 -0.6789 -0.6789 -0.5234 -0.5234 -0.4567 -0.4567 -0.3901 -0.3456 -0.3123 -0.2890 -0.2567 -0.2234 0.0567 0.0567 0.1234 0.1890 0.2456 0.3123 0.3789 0.4456 0.5123 0.5789 0.6456 0.7123 0.7789 0.8456 0.9123 0.9789 1.0456 1.1123 1.1789 1.2456 1.3123 1.3789 1.4456 1.5123 1.5789 1.6456 1.7123 1.7789 1.8456 1.9123 1.9789 2.0456 2.1123 2.1789 2.2456 2.3123 2.3789 2.4456 2.5123 2.5789 2.6456 2.7123 2.7789 2.8456 2.9123 2.9789 3.0456 3.1123 3.1789 15.4567 15.4568
-end
-```
-
-**Analysis**:
-
-- **Orbitals 1-6** (-11.23 Ha): Carbon 1s core orbitals (6 carbons)
-- **Orbitals 7-21** (-1.02 to -0.22 Ha): σ bonding orbitals (C-C and C-H)
-- **Orbital 21** (-0.2234 Ha): Highest occupied π orbital - HOMO
-- **Orbitals 22-23** (0.0567 Ha): Lowest unoccupied π* orbitals - LUMO (degenerate)
-- **HOMO-LUMO gap**: 0.0567 - (-0.2234) = 0.2801 Ha = 7.62 eV
-- **Aromatic system**: Small gap characteristic of conjugated system
-
-### Example 4: Spin-Unrestricted Calculation
-
-**System**: Oxygen atom (triplet), 8 electrons
-
-**Alpha eigenvalues** (`O_alpha.eig`):
-```python
-eigenvalues 20
--20.6789 -1.2567 -0.5234 -0.5234 -0.4567 0.2345 0.3456 0.4567 0.5678 0.6789 0.7890 0.8901 1.0123 1.1234 1.2345 1.3456 1.4567 1.5678 1.6789 1.7890
-end
-```
-
-**Beta eigenvalues** (`O_beta.eig`):
-```python
-eigenvalues 20
--20.6234 -1.1890 -0.4678 -0.4678 -0.3901 0.2890 0.3890 0.4890 0.5890 0.6890 0.7890 0.8890 1.0123 1.1234 1.2345 1.3456 1.4567 1.5678 1.6789 1.7890
-end
-```
-
-**Analysis**:
-
-- Spin-unrestricted: different eigenvalues for α and β spins
-- α orbitals more bound (lower energy) for atoms with unpaired electrons
-- Ground state: 1s² 2s² 2p⁴ configuration
-- Two unpaired electrons in 2p orbitals (triplet state)
-
 ## Loading Eigenvalue Files in CHAMP
 
 ### Standard Loading
 
-Eigenvalue files are loaded automatically when present:
+Specify the eigenvalue file in the CHAMP input:
 
 ```perl
 %module general
@@ -203,366 +72,36 @@ Eigenvalue files are loaded automatically when present:
 %endmodule
 
 load trexio       $pool/molecule.hdf5
-load eigenvalues  $pool/molecule.eig  # Optional
+load eigenvalues  $pool/molecule.eig
 ```
 
 ### From TREXIO File
 
-If eigenvalues are in the TREXIO file:
+If the `load trexio` command is used and the TREXIO file contains eigenvalue information, the eigenvalues are read directly from it. You can override this or provide eigenvalues explicitly if not using TREXIO by using `load eigenvalues`.
 
-```perl
-load trexio  $pool/molecule.hdf5  # Includes eigenvalues
-```
+!!! success "TREXIO contains eigenvalue information"
+    Note that TREXIO file might contain orbital eigenvalue information, so you don't need to provide a separate eigenvalue file. If it does not, you can use the `trex2champ` tool to generate one.
 
-The `trex2champ` converter extracts them automatically.
+## Generate Eigenvalues File
 
-### Spin-Unrestricted Cases
-
-For open-shell systems with separate α and β orbitals:
-
-```perl
-load eigenvalues  $pool/molecule_alpha.eig
-load eigenvalues  $pool/molecule_beta.eig
-```
-
-## Generating Eigenvalue Files
-
-### From TREXIO Files
-
-The `trex2champ` converter extracts eigenvalues automatically:
+You can generate an eigenvalue file using the `trex2champ` tool from a TREXIO file (which itself can be converted from other formats like GAMESS, PySCF, etc., using `trexio-tools`).
 
 ```bash
-trex2champ molecule.hdf5
+#!/bin/bash
+python trex2champ.py 	\
+            --trex molecule.hdf5 \
+            --motype "RHF" \
+            --backend "HDF5" \
+            --basis_prefix "cc-VDZ" \
+            --lcao \
+            --geom \
+            --basis \
+            --ecp \
+            --eig       # Flag to generate eigenvalues file
 ```
-
-This creates:
-- Eigenvalue file if present in TREXIO
-- Properly formatted for CHAMP
-- Consistent with orbital ordering
-
-### From Quantum Chemistry Codes
-
-**GAMESS**: Output file contains eigenvalues
-```
- EIGENVECTORS
-              1          2          3          4          5
-       -20.5524   -1.3335   -0.6948   -0.5676   -0.4993
-```
-
-**ORCA**: .out file lists orbital energies
-```
-ORBITAL ENERGIES
-  NO   OCC          E(Eh)            E(eV) 
-   0   2.0000     -20.552389      -559.3201
-   1   2.0000      -1.333513       -36.2895
-```
-
-**Gaussian**: Output and checkpoint files
-```
- Orbital energies:
-        Occupied     -20.5524  -1.3335  -0.6948  -0.5676  -0.4993
-        Virtual        0.1453   0.2089   0.5527   0.6049   0.6746
-```
-
-**PySCF**: Access through Python
-```python
-from pyscf import gto, scf
-
-mol = gto.M(atom='O 0 0 0; H 0 0 1; H 0 1 0', basis='cc-pvtz')
-mf = scf.RHF(mol).run()
-
-# Orbital energies
-print("Eigenvalues (Ha):", mf.mo_energy)
-```
-
-### Manual Construction
-
-Create eigenvalue file with text editor:
-
-1. Write header: `eigenvalues N`
-2. List N eigenvalues (space or newline separated)
-3. End with `end`
-
-**Example**:
-```python
-eigenvalues 5
--20.5524 -1.3335 -0.6948 -0.5676 -0.4993
-end
-```
-
-## Analysis and Interpretation
-
-### HOMO-LUMO Gap
-
-The gap between highest occupied and lowest unoccupied orbitals:
-
-$$\Delta E_{\text{gap}} = \epsilon_{\text{LUMO}} - \epsilon_{\text{HOMO}}$$
-
-**Significance**:
-- **Large gap** (> 5 eV): Stable, insulating, unreactive
-- **Medium gap** (2-5 eV): Semiconducting
-- **Small gap** (< 2 eV): Conducting, reactive
-- **Zero gap**: Metallic or open-shell system
-
-### Ionization Potential and Electron Affinity
-
-**Koopmans' Theorem** (approximate):
-
-$$IP \approx -\epsilon_{\text{HOMO}}$$
-$$EA \approx -\epsilon_{\text{LUMO}}$$
-
-**Limitations**:
-- Neglects electronic relaxation
-- Better for qualitative trends
-- Exact in exact DFT (not practical DFT)
-
-### Orbital Character from Energies
-
-**Energy ranges suggest orbital type**:
-
-- **Very negative** (< -10 Ha): Core orbitals
-- **Moderately negative** (-2 to -10 Ha): Inner valence
-- **Weakly negative** (-0.2 to -2 Ha): Valence bonding
-- **Near zero**: Non-bonding or weakly bonding
-- **Positive**: Antibonding/virtual
-
-### Degeneracy Detection
-
-**Nearly equal eigenvalues** indicate degeneracy:
-
-```python
-# Example: degenerate π orbitals
-0.1567 0.1567  # Difference < 10⁻⁴ Ha → degenerate
-```
-
-Useful for:
-- Verifying molecular symmetry
-- Identifying π systems
-- Understanding electronic structure
-
-## Common Issues
-
-### Missing Eigenvalue File
-
-**Warning**:
-```
-WARNING: Eigenvalue file not found, continuing without orbital energies
-```
-
-**Solution**: This is optional. QMC calculations proceed normally without eigenvalues.
-
-### Eigenvalue Count Mismatch
-
-**Error**:
-```
-ERROR: Eigenvalue file has 64 values, but orbital file has 60 orbitals
-```
-
-**Solution**: Ensure eigenvalue file matches orbital file exactly. Regenerate both from same TREXIO source.
-
-### Units Confusion
-
-**Issue**: Eigenvalues in wrong units (eV instead of Hartree)
-
-**Solution**: 
-- CHAMP expects Hartree (atomic units)
-- Convert if needed: E(Ha) = E(eV) / 27.2114
-- Check quantum chemistry output units
-
-### Ordering Issues
-
-**Warning**:
-```
-WARNING: Eigenvalues not in ascending order
-```
-
-**Solution**: 
-- Usually eigenvalues should increase
-- Exception: spin-unrestricted with orbital reordering
-- Verify against quantum chemistry output
-
-### Unrealistic Values
-
-**Issue**: Eigenvalues seem wrong (e.g., all positive)
-
-**Causes**:
-- Wrong energy reference (removed core electrons)
-- Pseudopotential calculation (valence-only)
-- Incorrect units
-- Corrupted file
-
-## Advanced Topics
-
-### Natural Orbital Occupations
-
-For multireference calculations, "eigenvalues" may actually be:
-
-**Natural orbital occupations**:
-- Range from 0 to 2
-- Sum equals number of electrons
-- Indicate fractional occupation
-
-**File format** (same):
-```python
-eigenvalues 30
-1.9876 1.9654 1.8234 1.7890 1.2345 0.8901 0.2345 0.0567 0.0234 0.0123 ...
-end
-```
-
-### Pseudopotential Calculations
-
-With pseudopotentials:
-
-- Core orbitals removed
-- Eigenvalues only for valence
-- Energy reference shifted
-- Values differ from all-electron
-
-**Example** (Carbon with BFD pseudopotential):
-```python
-eigenvalues 9
--0.4567 -0.2345 -0.2345 -0.2345 0.1234 0.2456 0.3567 0.4678 0.5789
-end
-```
-
-Core 1s orbital absent; valence starts at lower magnitude.
-
-### Excited State Eigenvalues
-
-Different electronic states have different eigenvalues:
-
-```python
-# Ground state
-eigenvalues 20
--20.5524 -1.3335 -0.6948 -0.5676 -0.4993 ...
-end
-
-# First excited state (different occupation)
-eigenvalues 20
--20.5234 -1.3012 -0.6734 -0.5234 -0.3456 ...
-end
-```
-
-Eigenvalues reflect different orbital occupations.
-
-### Temperature Effects
-
-At finite temperature (rare in QMC):
-
-- Fractional occupations via Fermi-Dirac distribution
-- "Eigenvalues" include entropy contributions
-- Typically not relevant for standard QMC
-
-## Visualization and Analysis
-
-### Plotting Orbital Diagrams
-
-Create energy level diagrams:
-
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-
-# Read eigenvalues
-eigs = np.loadtxt('molecule.eig', skiprows=1, max_rows=1)
-
-# Plot
-fig, ax = plt.subplots(figsize=(6, 8))
-for i, e in enumerate(eigs[:15]):  # First 15 orbitals
-    color = 'blue' if i < 5 else 'red'  # Occupied vs virtual
-    ax.hlines(e, 0, 1, color=color, linewidth=2)
-    ax.text(1.1, e, f'{i+1}', va='center')
-
-ax.set_ylabel('Energy (Ha)')
-ax.set_xlim(-0.5, 2)
-ax.set_xticks([])
-ax.axhline(0, color='gray', linestyle='--', alpha=0.5)
-plt.show()
-```
-
-### Comparing Methods
-
-Compare eigenvalues from different methods:
-
-| Orbital | HF | DFT(B3LYP) | MP2 | Expt. IP |
-|---------|-----|-----------|-----|----------|
-| HOMO | -0.499 | -0.321 | -0.478 | 0.463 |
-| LUMO | 0.145 | 0.089 | 0.231 | - |
-| Gap | 0.644 | 0.410 | 0.709 | - |
-
-(Values in Ha; experimental IP from photoelectron spectroscopy)
-
-### Analysis Scripts
-
-Extract information:
-
-```bash
-# Find HOMO-LUMO gap
-# For 10-electron system (5 occupied orbitals)
-awk 'NR==2 {print "HOMO =", $5; print "LUMO =", $6; print "Gap =", $6-$5}' molecule.eig
-```
-
-## Best Practices
-
-### File Organization
-
-- Store eigenvalue files in `pool/` directory
-- Use consistent naming: `molecule.eig`
-- Keep synchronized with orbital files
-- Document method/basis in comments
-
-### Verification Checklist
-
-- [ ] Number of eigenvalues matches orbital count
-- [ ] Values in Hartree (not eV)
-- [ ] Generally ascending order
-- [ ] HOMO negative, LUMO positive (typical)
-- [ ] Core orbitals most negative
-- [ ] Consistent with quantum chemistry output
-
-### When Eigenvalues are Useful
-
-**Highly recommended for**:
-- Excited state calculations (orbital selection)
-- Analyzing electronic structure
-- Verifying quantum chemistry consistency
-- Publication/documentation
-
-**Less critical for**:
-- Standard ground state VMC
-- Quick test calculations
-- Systems where orbitals are well-understood
-
-### Documentation
-
-Record:
-- Quantum chemistry method used (HF, DFT, CASSCF)
-- Basis set
-- Any special conditions (pseudopotentials, etc.)
-- Date of quantum chemistry calculation
 
 ## Related Topics
 
 - [Molecular Orbitals](orbitals.md) - Orbitals corresponding to eigenvalues
 - [Symmetries](symmetries.md) - Orbital symmetry classifications
 - [TREXIO Files](using_trexio_file.md) - Source of eigenvalue data
-- [Excited States](../calculations/excited_states.md) - Using eigenvalues for orbital selection
-
-## Getting Help
-
-- Eigenvalue files are optional; QMC works without them
-- Always use `trex2champ` for reliable file generation
-- Verify values match quantum chemistry output
-- Check units (Hartree vs eV)
-- Ensure consistency with orbital file count
-- Use for analysis and verification, not required for calculations
-- Consult [Troubleshooting Guide](../troubleshooting/index.md) if issues arise
-
-!!! note "Optional File"
-    Eigenvalue files are **optional** in CHAMP. QMC calculations do not require orbital energies to run. However, they are valuable for analysis, interpretation, and verifying consistency with quantum chemistry calculations.
-
-!!! tip "Automatic Generation"
-    The easiest way to obtain eigenvalue files is using `trex2champ` on TREXIO files that contain eigenvalue information from quantum chemistry calculations. Manual construction is straightforward for simple cases.
-
-!!! warning "Units Matter"
-    CHAMP expects eigenvalues in Hartree (atomic units). If your quantum chemistry code outputs energies in eV or other units, convert them before creating the eigenvalue file: 1 Hartree = 27.2114 eV.
