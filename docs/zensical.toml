@@ -152,6 +152,23 @@ nav = [
         {"Exporting Wavefunctions to CHAMP" = "tutorials/Quantum_Package_and_CHAMP_Excited_States/export_wavefunctions_to_champ.md"},
         {"QMC Wavefunction Optimizations" = "tutorials/Quantum_Package_and_CHAMP_Excited_States/QMC_wavefunction_optimizations.md"}
       ]}
+    ]},
+    {"Validation Examples" = [
+      {"Overview" = "tutorials/examples/index.md"},
+      {"H2 Verification" = "tutorials/examples/h2_verification/index.md"},
+      {"Butadiene DMC" = "tutorials/examples/butadiene_dmc_500/index.md"},
+      {"Water DMC (TREXIO)" = "tutorials/examples/water_trexio_dmc/index.md"},
+      {"Butadiene SDT" = "tutorials/examples/butadiene_vmc_sdt/index.md"},
+      {"Butadiene Scaling" = "tutorials/examples/butadiene_vmc_scaling/index.md"},
+      {"Water 3-Body Jastrow" = "tutorials/examples/water_3body_jastrow/index.md"},
+      {"Water Optimization" = "tutorials/examples/water_dft_opt/index.md"},
+      {"HNO State-Specific" = "tutorials/examples/hno_state_specific/index.md"},
+      {"Ethanol Orbital Opt" = "tutorials/examples/ethanol_orb_opt/index.md"},
+      {"Butadiene CSF Opt" = "tutorials/examples/butadiene_csf_opt/index.md"},
+      {"PSB Multi-State" = "tutorials/examples/psb_multistate/index.md"},
+      {"Geometry Optimization" = "tutorials/examples/butadiene_geo_opt/index.md"},
+      {"TREXIO Backends" = "tutorials/examples/trexio_backend_comparison/index.md"},
+      {"Periodic Forces" = "tutorials/examples/periodic_forces/index.md"}
     ]}
   ]},
   {"Analysis" = [
