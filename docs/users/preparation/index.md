@@ -34,7 +34,7 @@ The modern approach uses [TREXIO files](https://trex-coe.github.io/trexio/) (HDF
 ```perl
 %module general
     title           'VMC calculation using TREXIO'
-    mode            'vmc'
+    mode            'vmc_one_mpi'
 %endmodule
 
 load trexio          butadiene.hdf5
@@ -64,7 +64,7 @@ The traditional approach uses separate files for each component:
     pool         'pool/'
     pseudopot    'BFD'
     basis        'BFD-T'
-    mode         'vmc'
+    mode         'vmc_one_mpi'
 %endmodule
 
 load molecule        $pool/champ_v3_butadiene.xyz

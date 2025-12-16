@@ -45,7 +45,7 @@ A minimal CHAMP input file using TREXIO looks like:
 ```perl
 %module general
     title           'VMC calculation with TREXIO'
-    mode            'vmc'
+    mode            'vmc_one_mpi'
 %endmodule
 
 load trexio          molecule.hdf5

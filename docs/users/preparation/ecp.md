@@ -139,7 +139,7 @@ ECPs are specified in the `%module general` section with the `pseudopot` keyword
 %module general
     title           'VMC with BFD ECP'
     pool            './pool/'
-    mode            'vmc'
+    mode            'vmc_one_mpi'
     pseudopot       BFD
     basis           cc-pVTZ
 %endmodule
