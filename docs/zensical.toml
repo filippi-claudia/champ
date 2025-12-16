@@ -7,7 +7,7 @@ site_author = "CHAMP Developers"
 #site_url = "https://www.example.com/"
 
 copyright = """
-Copyright &copy; 2025 Claudia Filippi
+Copyright &copy; 2026 Claudia Filippi
 """
 
 repo_url = "https://github.com/filippi-claudia/champ"
@@ -135,17 +135,16 @@ nav = [
   {"Tutorials" = [
     {"Tutorials Overview" = "tutorials/index.md"},
     {"CHAMP and QP" = [
+      {"Overview" = "tutorials/champ_and_qp.md"},
       {"Ground State" = [
         {"Ground State Overview" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/Quantum_Package_and_CHAMP.md"},
         {"Molecular Geometry Setup" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/geometry.md"},
         {"Basis Set Selection" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/basis.md"},
         {"Hartree-Fock Calculations" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/hartree-fock.md"},
         {"DFT Calculations" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/dft.md"},
-        {"QMC Runs" = [
-          {"QMC Runs Overview" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/QMC_Runs/QMC_Runs.md"},
-          {"Introducing and Optimizing Jastrow Factors" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/QMC_Runs/introduce_and_optimize_jastrow.md"},
-          {"Diffusion Monte Carlo Simulations" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/QMC_Runs/diffusion_monte_carlo.md"}
-        ]}
+        {"QMC Runs Overview" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/QMC_Runs.md"},
+        {"Introducing and Optimizing Jastrow Factors" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/introduce_and_optimize_jastrow.md"},
+        {"Diffusion Monte Carlo Simulations" = "tutorials/Quantum_Package_and_CHAMP_Ground_State/diffusion_monte_carlo.md"}
       ]},
       {"Excited States" = [
         {"Excited States Overview" = "tutorials/Quantum_Package_and_CHAMP_Excited_States/Quantum_Package_and_CHAMP_Excited_States.md"},
@@ -267,4 +266,3 @@ actions = [
     "reject",
     "manage" 
 ]
-

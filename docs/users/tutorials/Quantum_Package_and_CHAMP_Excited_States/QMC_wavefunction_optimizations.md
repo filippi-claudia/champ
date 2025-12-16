@@ -7,38 +7,23 @@ tags:
     - QP
 ---
 
-# QMC wave function optimizations
+# QMC Wavefunction Optimizations
 
-In this section, we will optimize a Jastrow factor for each state, and
-we will the re-optimize the CI coefficients in the presence of the
-Jastrow. The setup of the CHAMP files is similar to what we have done in the [Setup]({{ site.baseurl }}{% link docs/Tutorials/Quantum_Package_and_CHAMP_GS/basis.md %}#basis-sets-and-pseudopotentials)
+We will optimize the Jastrow factor and then the Coupled Cluster (CI) coefficients for both the Ground State (GS) and Excited State (ES).
 
-!!! warning
-    Here, we have 12 electrons, 6 up and 6 down.
+## 1. Ground State Optimization
 
-
-## Optimization of the ground state
-
-Create a new directory, and copy the `COH2_GS.trexio` TREXIO file inside
-it. Convert the TREXIO file into CHAMP files:
+Create a directory for the Ground State calculation and link the TREXIO file:
 
 ```bash
-python3 /path/champ/tools/trex-tools/trex2champ.py \
-                        --trex          "COH2_GS.trexio" \
-                        --motype        "Canonical" \
-                        --backend       "HDF5" \
-                        --basis_prefix  "BFD-aug-cc-pVDZ" \
-                        --lcao \
-                        --geom \
-                        --basis \
-                        --ecp \
-                        --sym \
-                        --det
+mkdir GS_Calc
+cd GS_Calc
+ln -s ../COH2_GS.trexio .
 ```
 
-$$COH_2$$ has three different atom types, so the Jastrow factor file will
-be slightly different from the file for water with one extra line for
-$a$ parameters. You can start by creating a file called `jastrow.start`:
+### Initial Jastrow
+
+Create a `jastrow.start` file suitable for $COH_2$ (C, O, H atoms):
 
 ```python
 jastrow_parameter   1
@@ -54,95 +39,101 @@ jastrow_parameter   1
 end
 ```
 
-Start by optimizing the Jastrow factor and perform a \"quick\"
-optimization. The following champ input file (`vmc_quick.inp`) contains
-the parameters for such a \"quick\" optimization.
+Prepare a `jastrow.der` file matching this structure (see previous tutorials).
+
+### Optimization Input
+
+Create `vmc_opt_gs.inp`:
 
 ```python
+%module general
+    title           'GS Optimization'
+    mode            'vmc_one_mpi1'
+%endmodule
+
+load trexio         COH2_GS.trexio
+load jastrow        jastrow.start
+load jastrow_der    jastrow.der
+
+%module electrons
+    nup           6
+    nelec         12
+%endmodule
+
 %module optwf
     ioptwf        1
-    ioptci        0
+    ioptci        0      # Optimize Jastrow first
     ioptjas       1
     ioptorb       0
     method        'sr_n'
-
-    ncore         0
-    nextorb       600
-    nblk_max      5000
-
     nopt_iter     10
+    nblk_max      5000
+    ncore         0
+    nextorb       600    # Ensure large enough for virtuals
     sr_tau        0.05
     sr_eps        0.01
     sr_adiag      0.01
 %endmodule
 
-
 %module blocking_vmc
     vmc_nstep     20
-    vmc_nblk      20
+    vmc_nblk      100
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule
 ```
 
-Move the `jastrow_optimal.1.iter10` file to `jastrow_optimal.rough_GS`
-and load this optimized Jastrow factor. You can now optimize also the CI
-coefficients together with the Jastrow factor by setting:
+Run CHAMP. Save the resulting optimized Jastrow (e.g., `cp jastrow_optimal.1.iter10 jastrow_gs.opt`).
+
+### Optimize CI Coefficients
+
+Create a new input or modify the existing one to optimize CI coefficients as well:
 
 ```python
-ioptci        1
+    ioptci        1      # Enable CI optimization
+    load jastrow  jastrow_gs.opt
 ```
 
-Use some more Monte Carlo steps to perform a more strict optimization.
+Run CHAMP again to get the fully optimized GS wavefunction.
+
+## 2. Excited State Optimization
+
+Create a directory for the Excited State calculation:
+
+```bash
+cd ..
+mkdir ES_Calc
+cd ES_Calc
+ln -s ../COH2_ES.trexio .
+```
+
+### reuse GS Jastrow
+
+We can use the optimized Jastrow from the Ground State as a good starting point for the Excited State.
+
+```bash
+cp ../GS_Calc/jastrow_gs.opt jastrow.start
+cp ../GS_Calc/jastrow.der .
+```
+
+### ES Optimization Input
+
+Create `vmc_opt_es.inp`. Use the same settings as GS, but load the ES TREXIO file.
 
 ```python
-%module blocking_vmc
-    vmc_nstep     20
-    vmc_nblk      500
-    vmc_nblkeq    1
-    vmc_nconf_new 0
-%endmodule
+load trexio         COH2_ES.trexio
+load jastrow        jastrow.start
+load jastrow_der    jastrow.der
 ```
 
-In your directory, you will now have `jastrow_optimal.1.iterX` and
-`det_optimal.1.iterX` files.
+Run the optimization (Jastrow first, then Jastrow+CI).
 
-Set up a DMC calculation where you use the optimal Jastrow and CI
-coefficients. Adjust the `etrial` to be a bit below the VMC energy.
-Recall that you will have to generate the `mc_configs` file.
+## 3. Calculate Excitation Energy
 
-!!! tip
-    You could have also optimized the orbitals but we did not do it here to keep the calculations short. 
-    If you are setting `optorb=1`, load also the symmetry file.
-    ```python
-    load symmetry champ_v2_COH2_GS_symmetry.sym
-    ```
+Run DMC calculations for both optimized GS and ES wavefunctions (see Ground State tutorial for DMC setup).
 
+The excitation energy is:
+$$ \Delta E = E_{\text{DMC}}^{\text{ES}} - E_{\text{DMC}}^{\text{GS}} $$
 
-## Optimization of the excited state
-
-
-Create a new directory, and copy the `COH2_ES.trexio` TREXIO file inside
-it. Apply the same procedure as for the ground state.
-
-Repeat what you have done for the ground state. Start to perform a quick
-optimization of the Jastrow factor but do not start from zero\'s: start
-from the Jastrow factor you have for the ground state, namely,
-`jastrow_optimal.rough_GS`.
-
-Do all step until when you obtain the DMC energy.
-
-Compute the VMC and DMC excitation energies. Recall that if your
-energies are
-$$
-  E_{\rm GS}+\delta E_{\rm GS}  \text{ and } E_{\rm ES}+\delta E_{\rm ES},
-$$
-
-where $\delta E$ is the statistical error, the error on
-
-$\Delta E= E_{\rm ES}-E_{\rm GS}$
-is given by
-
-$$
-  \sqrt{\delta E_{\text{GS}}^2+\delta E_{\text{ES}}^2}.
-$$
+Compute the error bars using standard error propagation:
+$$ \delta (\Delta E) = \sqrt{\delta E_{\text{GS}}^2 + \delta E_{\text{ES}}^2} $$

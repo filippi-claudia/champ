@@ -8,21 +8,13 @@ tags:
 
 # Basis Sets and Pseudopotentials
 
-For QMC calculations, we need to use pseudopotentials optimized
-specifically for QMC, and basis sets optimized to be used with these
-pseudopotentials. Here, we use the
-[Burkatzki-Filippi-Dolg](http://burkatzki.com/pseudos/index.2.html)
-(BFD) ones except for hydrogen (the hydrogen pseudo on the website is
-too soft and not sufficiently accurate).
+For QMC calculations with CHAMP, we use pseudopotentials optimized for QMC (BFD) and corresponding basis sets. We will construct these files for use with Quantum Package (QP).
 
-QP can read basis sets and pseudopotentials from files in GAMESS format,
-if the files exist in the current directory. Otherwise, it will try to
-look into its own database of basis sets and pseudopotentials.
+QP typically reads basis sets and pseudopotentials in GAMESS format.
 
-### BFD Pseudopotential
+### BFD Pseudopotential for H and O
 
-
-Store the pseudopotential parameters in a file named `PSEUDO`:
+Create a file named `PSEUDO`:
 
 ```python
 H GEN 0 0
@@ -40,10 +32,9 @@ O GEN 2 1
 38.41914135 2 8.71924452
 ```
 
-### Double-Zeta basis set
+### Double-Zeta Basis Set
 
-
-Store the basis set parameters in a file named `BASIS`:
+Create a file named `BASIS`:
 
 ```python
 HYDROGEN

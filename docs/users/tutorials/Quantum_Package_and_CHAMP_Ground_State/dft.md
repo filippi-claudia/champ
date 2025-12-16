@@ -8,37 +8,34 @@ tags:
 
 # DFT calculation
 
-Create the EZFIO directory with the geometry, basis and pseudopotential
-parameters:
+Create a new EZFIO directory for the DFT calculation:
 
 ```bash
 qp create_ezfio --pseudo=PSEUDO --basis=BASIS h2o.xyz --output=h2o_dft
 ```
 
-Specify that you want to use the PBE functional.
+Set the calculation to use the PBE exchange-correlation functional:
 
 ```bash
 qp set dft_keywords exchange_functional pbe
 qp set dft_keywords correlation_functional pbe
 ```
 
-The default DFT grid is very fine. We can specify we want a coarser grid
-to accelerate the calculations:
+Set a coarser grid to accelerate the calculation (default is very fine):
 
 ```bash
 qp set becke_numerical_grid grid_type_sgn 1
 ```
 
-Run the Kohn-Sham calculation
+Run the Kohn-Sham DFT calculation:
 
 ```bash
 qp run ks_scf | tee h2o_dft.out
 ```
 
-Export the wave function into TREXIO format
+Export the results to a TREXIO file (`h2o_dft.trexio`):
 
 ```bash
 qp set trexio trexio_file h2o_dft.trexio
 qp run export_trexio
 ```
-

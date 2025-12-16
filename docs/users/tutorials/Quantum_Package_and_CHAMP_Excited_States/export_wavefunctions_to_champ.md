@@ -7,23 +7,22 @@ tags:
     - QP
 ---
 
-# Export wave functions to CHAMP
+# Export Wavefunctions to CHAMP
 
-The excited states are of different symmetries, so we will generate two
-different setups in CHAMP, one for each state. To do that, we will save
-two different files, one for each state, and containing only the
-non-zero determinants.
+Since the ground and excited states have different symmetries, we handle them separately in CHAMP. We need to create two separate TREXIO files, one for each state.
 
-First, copy the `COH2` directory into `COH2_GS` and `COH2_ES`, one
-directory for each state:
+## Prepare State Directories
+
+Copy the QP data directory `COH2` for each state:
 
 ```bash
 cp -r COH2 COH2_GS
 cp -r COH2 COH2_ES
 ```
 
-Then, we will use `qp_edit` to extract one state in each EZFIO
-directory:
+## Extract States
+
+Use `qp_edit` to isolate state 1 (Ground State) and state 2 (Excited State) in their respective directories:
 
 ```bash
 qp set_file COH2_GS
@@ -33,41 +32,36 @@ qp set_file COH2_ES
 qp edit --state=2
 ```
 
-The states have been extracted, but the EZFIO databases still contain
-the determinants with almost zero coefficients. We can remove them by
-running
+## Truncate Negligible Determinants
+
+Remove determinants with very small coefficients to keep the QMC calculation efficient:
 
 ```bash
 qp set_file COH2_GS
-qp run truncate_wf
-```
+qp run truncate_wf  # Answer 1.d-10
 
-This last program is interactive and asks for the minimum weight of the
-kept configurations. Answer `1.d-10` to this question.
-
-Similarly, remove the negligible determinants from the excited state:
-
-```bash
 qp set_file COH2_ES
-qp run truncate_wf
+qp run truncate_wf  # Answer 1.d-10
 ```
 
-We can now export the wave functions in two different TREXIO files. To
-do that, for each state we copy the initial TREXIO file and add the
-determinants information:
+## Export to TREXIO
 
+Now create specific TREXIO files for each state. We start by copying the original file (to keep basis/geometry) and then update the determinants.
+
+**Ground State:**
 ```bash
 cp COH2.trexio COH2_GS.trexio
 qp set_file COH2_GS
-qp set trexio trexio_file  COH2_GS.trexio
+qp set trexio trexio_file COH2_GS.trexio
 qp run export_trexio
 ```
 
+**Excited State:**
 ```bash
 cp COH2.trexio COH2_ES.trexio
 qp set_file COH2_ES
-qp set trexio trexio_file  COH2_ES.trexio
+qp set trexio trexio_file COH2_ES.trexio
 qp run export_trexio
 ```
 
-Now, we are ready to run the QMC calculations for each state.
+We now have `COH2_GS.trexio` and `COH2_ES.trexio` ready for CHAMP.

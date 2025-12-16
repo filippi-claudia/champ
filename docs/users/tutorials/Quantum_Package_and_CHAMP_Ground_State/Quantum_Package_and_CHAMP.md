@@ -1,5 +1,5 @@
 ---
-title: '01. QP and CHAMP : Ground State Calculation'
+title: 'Ground State Calculation'
 tags:
     - tutorial
     - CIPSI
@@ -7,11 +7,12 @@ tags:
     - QP
 ---
 
-# Quantum Package and CHAMP
-We will first use Quantum Package (QP) to generate two
-single-determinant wave functions for the water molecule. A first one
-with Hartree-Fock orbitals, and a second one with PBE Kohn-Sham
-orbitals. Then, we will export these wave functions into the
-[TREXIO](https://github.com/trex-coe/trexio) format, which is a general
-format for storing arbitrary wave functions.
+# Ground State Calculation
 
+This tutorial guides you through the process of calculating the ground state of a water molecule using Quantum Package (QP) for wavefunction generation and CHAMP for Quantum Monte Carlo calculations.
+
+We will:
+
+1.  Use Quantum Package to generate single-determinant wavefunctions (Hartree-Fock and DFT-PBE).
+2.  Export these wavefunctions to the [TREXIO](https://github.com/trex-coe/trexio) format.
+3.  Perform VMC and DMC calculations in CHAMP using the TREXIO file directly.
