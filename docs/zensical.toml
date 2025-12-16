@@ -65,7 +65,7 @@ nav = [
   ]},
   {"Preparation" = [
     {"Preparation Overview" = "preparation/index.md"},
-    {"Input file preparation" = [
+    {"Input File Preparation" = [
       {"TREXIO File" = "preparation/trexio.md"},
       {"Molecular Geometry" = "preparation/molecule.md"},
       {"Effective Core Potentials" = "preparation/ecp.md"},
@@ -76,12 +76,15 @@ nav = [
       {"Molecular Orbitals" = "preparation/orbitals.md"},
       {"Determinants & CSFs" = "preparation/determinants.md"},
       {"Symmetries" = "preparation/symmetries.md"},
-      {"Eigenvalues" = "preparation/eigenvalues.md"}
+      {"Eigenvalues" = "preparation/eigenvalues.md"},
+    ]},
+    {"Input File Examples" = [
+      {"Input Files Overview" = "preparation/input/index.md"},
     ]}
   ]},  
   {"Calculations" = [
     {"Calculations Overview" = "calculations/index.md"},
-    {"Variational Monte Carlo (VMC)" = [
+    {"Variational Monte Carlo" = [
       {"VMC Overview" = "calculations/vmc/index.md"},
       {"Theory" = "calculations/vmc/theory.md"},
       {"Input Keywords" = "calculations/vmc/input_keywords.md"},
@@ -93,7 +96,7 @@ nav = [
       {"Energy Minimization" = "calculations/optimization/energy_minimization.md"},
       {"Variance Minimization" = "calculations/optimization/variance_minimization.md"}
     ]},
-    {"Diffusion Monte Carlo (DMC)" = [
+    {"Diffusion Monte Carlo" = [
       {"DMC Overview" = "calculations/dmc/index.md"},
       {"Theory" = "calculations/dmc/theory.md"},
       {"Input Keywords" = "calculations/dmc/input_keywords.md"},
