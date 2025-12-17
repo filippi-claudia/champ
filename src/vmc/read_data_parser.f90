@@ -920,7 +920,7 @@ subroutine read_backflow_file(file_backflow)
     !   local use
     character(len=72), intent(in)   :: file_backflow
     character(len=40)               :: temp1
-    integer                         :: iunit, iostat, i, ict, multb, multa
+    integer                         :: iunit, iostat, i, ict, multb, multa, multc, l, m, n, tmpc
 
     logical                         :: exist
 
@@ -956,14 +956,33 @@ subroutine read_backflow_file(file_backflow)
     call init_backflow_arrays()
     multb = 0
     multa = 0
+    multc = 0   
     if (nordb_bf .gt.0) multb= 1
     if (norda_bf .gt.0) multa= 1
+    if (nordc_bf .gt.0) multc= 1
 
     if (wid) then
         do ict = 1, nctype
             read(iunit, *) (parm_bf((1+nordb_bf)*multb + (ict-1)*(norda_bf+1)*multa + i), i=1,norda_bf+1)
         end do
         read(iunit, *) (parm_bf(i), i=1, nordb_bf+1)
+        if (nordc_bf .gt. 0) then
+            do l = 0, nordc_bf
+                do m = 0, nordc_bf - l
+                    do n = 0, nordc_bf - l - m
+                        tmpc = tmpc + 1
+                    end do
+                end do
+            end do
+            do ict = 1, nctype
+                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+1)*multa + multc*(ict-1)*(tmpc+1) + i), i=1,tmpc+1)
+            end do
+            do ict = 1, nctype
+                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+1)*multa + multc*nctype*(tmpc+1) + &
+                (ict-1)*tmpc*multc + i), i=1,tmpc)
+            end do
+        endif
+
     endif
     call bcast(parm_bf)
 

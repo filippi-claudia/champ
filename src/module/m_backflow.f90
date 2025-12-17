@@ -4,7 +4,7 @@
 !> @details This module manages arrays and data structures for backflow calculations
 module m_backflow
     use precision_kinds, only: dp
-    use system, only: nelec, ncent_tot, nup
+    use system, only: nelec, ncent_tot, nup, nctype
     use vmc_mod, only: nmat_dim, nwftypeorb, norb_tot
     use qua, only: nquad
     
@@ -54,12 +54,21 @@ module m_backflow
     !> detn_bf
     real(dp), dimension(:, :), allocatable :: detn_bf
 
+    real(dp), dimension(:, :, :), allocatable :: r_ee
+    real(dp), dimension(:, :, :, :), allocatable :: r_ee_gl
+    real(dp), dimension(:, :, :), allocatable :: rvec_ee
+    real(dp), dimension(:, :, :, :), allocatable :: r_en
+    real(dp), dimension(:, :, :, :, :), allocatable :: r_en_gl
+    real(dp), dimension(:, :, :), allocatable :: rvec_en
+    real(dp), dimension(:, :, :, :), allocatable :: p
+    real(dp), dimension(:, :, :, :, :), allocatable :: dp
+
     !> nl_slm (nmat_dim,2)
     real(dp), dimension(:, :), allocatable :: nl_slm
 
     real(dp), dimension(:), allocatable :: parm_bf
     real(dp), dimension(:), allocatable :: deriv_parm_bf
-    integer :: norda_bf, nordb_bf, nordc_bf, nparm_bf, cutoff_scale
+    integer :: norda_bf, nordb_bf, nordc_bf, nparm_bf, cutoff_scale, maxord
 
     
     private
@@ -69,7 +78,8 @@ module m_backflow
     public :: allocate_m_backflow, deallocate_m_backflow
     public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf, dslm_bf
     public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
-    public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
+    public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, maxord
+    public :: r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl, p, dp
 
 contains
     !> Allocates memory for backflow arrays.
@@ -95,6 +105,14 @@ contains
         if (.not. allocated(dquasi_dx_new)) allocate (dquasi_dx_new(3, nelec, 3, nelec))
         if (.not. allocated(d2quasi_dx2_new)) allocate (d2quasi_dx2_new(3, nelec, nelec))
         if (.not. allocated(dslm_bf)) allocate (dslm_bf(3, nup*nup, 2, nwftypeorb))
+        if (.not. allocated(r_ee)) allocate (r_ee(nelec, nelec, 0:maxord))
+        if (.not. allocated(rvec_ee)) allocate (rvec_ee(3, nelec, nelec))
+        if (.not. allocated(r_en)) allocate (r_en(nelec, ncent_tot, 0:maxord, 2))
+        if (.not. allocated(rvec_en)) allocate (rvec_en(3, nelec, ncent_tot))
+        if (.not. allocated(r_ee_gl)) allocate (r_ee_gl(nelec, 4, nelec, 0:maxord))
+        if (.not. allocated(r_en_gl)) allocate (r_en_gl(nelec, 4, ncent_tot, 0:maxord, 2))
+        if (.not. allocated(p)) allocate (p(nelec, ncent_tot, nordc_bf, nordc_bf))
+        if (.not. allocated(dp)) allocate (dp(nelec, 4, ncent_tot, nordc_bf, nordc_bf))
       endif
     end subroutine allocate_m_backflow
   
@@ -121,6 +139,14 @@ contains
         if (allocated(dquasi_dx_new)) deallocate(dquasi_dx_new)
         if (allocated(d2quasi_dx2_new)) deallocate(d2quasi_dx2_new)
         if (allocated(dslm_bf)) deallocate(dslm_bf)
+        if (allocated(r_ee)) deallocate(r_ee)
+        if (allocated(rvec_ee)) deallocate(rvec_ee)
+        if (allocated(r_en)) deallocate(r_en)
+        if (allocated(rvec_en)) deallocate(rvec_en)
+        if (allocated(r_ee_gl)) deallocate(r_ee_gl)
+        if (allocated(r_en_gl)) deallocate(r_en_gl)
+        if (allocated(p)) deallocate(p)
+        if (allocated(dp)) deallocate(dp)
       endif
     end subroutine deallocate_m_backflow
   

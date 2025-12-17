@@ -307,7 +307,7 @@ contains
       use system, only: nctype
       implicit none
 
-      integer :: i, index, iwf_fit, j, k, ict
+      integer :: i, index, iwf_fit, j, k, ict, l, m, n, tmpc
       character(len=40) filename,filetype, temp
       character(len=50) fmt
 
@@ -336,6 +336,29 @@ contains
         write(fmt,'(''(a10)'')')
       endif
       write(2,fmt) (parm_bf(+i),i=1,nordb_bf+1),' e-e'
+
+      tmpc = 0
+      if (nordc_bf.gt.0) then
+        do l = 0, nordc_bf
+            do m = 0, nordc_bf - l
+                do n = 0, nordc_bf - l - m
+                    tmpc = tmpc + 1
+                end do
+            end do
+        end do
+        write(fmt,'(''('',i2,''f13.8,a10)'')') tmpc+1
+      else
+        write(fmt,'(''(a10)'')')
+      endif
+      do ict=1,nctype
+        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+1)+(ict-1)*(tmpc+1) + i),i=1,tmpc+1),' E-e-n'
+      enddo 
+      if (nordc_bf.gt.0) then
+        write(fmt,'(''('',i2,''f13.8,a10)'')') tmpc
+      endif
+      do ict=1,nctype
+        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+1)+nctype*(tmpc+1) + (ict-1)*tmpc + i),i=1,tmpc),' e-e-N'
+      enddo 
 
       write(2,'(''end'')')
       close(2)
