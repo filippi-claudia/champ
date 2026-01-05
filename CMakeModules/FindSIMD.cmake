@@ -8,7 +8,25 @@ endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 string( TOLOWER "${VECTORIZED}" VECTORIZED )
 message(STATUS "Vectorization status  " ${VECTORIZED} )
 
-if(VECTORIZED STREQUAL "yes")
+
+if(VECTORIZED STREQUAL "portable-avx2")
+    message(STATUS "Vectorization: Forcing portable AVX2 (CI/Release mode)")
+    
+    if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+        # 'haswell' is the safest baseline for AVX2/FMA on Linux
+        list(APPEND Fortran_FLAGS "-march=haswell")
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+        list(APPEND Fortran_FLAGS "-march=core-avx2")
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Flang")
+        list(APPEND Fortran_FLAGS "-march=x86-64-v3")
+    else()
+        list(APPEND Fortran_FLAGS "-axCORE-AVX2")
+    endif()
+    
+    set(TARGET_ARCHITECTURE "avx2")
+    add_definitions(-DVECTORIZATION="avx2")
+
+elseif(VECTORIZED STREQUAL "yes")
 	message(STATUS "Vectorization switched ON by user  " )
 
         if(_cpu_flags MATCHES "avx512")
