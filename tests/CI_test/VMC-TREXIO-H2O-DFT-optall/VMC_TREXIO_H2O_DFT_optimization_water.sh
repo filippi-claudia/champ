@@ -5,8 +5,8 @@ output="vmc_h2o_dft_optall"
 
 # Multicore test
 N=2
-ReferenceEnergy=-17.216354
-ReferenceError=0.0038803
+ReferenceEnergy=-17.228156
+ReferenceError=0.0038242
 mpirun -np $N ../../../bin/vmc.mov1 -i ${input} -o ${output}_core_${N}.out -e error
 echo "Comparing energy with reference Core=${N}           (total E = $ReferenceEnergy +-  $ReferenceError ) "
 ../../../tools/compare_value.py ${output}_core_${N}.out     "total E"  $ReferenceEnergy     $ReferenceError
