@@ -33,8 +33,9 @@ CTestTestfile.cmake
 # build directory
 build
 
-# generated documentation for developers
+# generated documentation for developers and users
 docs/developers/
+docs/site/
 
 # output files
 *.out
