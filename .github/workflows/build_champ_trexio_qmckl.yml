@@ -1,4 +1,4 @@
-name: CHAMP-EU CI - Release build - Intel oneAPI, TREXIO and QMCkl
+name: CHAMP-EU CI - Release build - GNU with TREXIO and QMCkl
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         toolchain: ['GNU']
-    name: Build CHAMP and TREXIO with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
+    name: Build CHAMP and TREXIO with ${{ matrix.toolchain }} GitHub-hosted runner
     runs-on: ubuntu-22.04
     timeout-minutes: 200
     defaults:
