@@ -1,38 +1,42 @@
-!> Module that contains the basis set information.
-!> @var zex Screening constants for each basis function.
-!> @var betaq
-!> @var ns Number of s functions at each center.
-!> @var np Number of px functions of each type at each center.
-!> @var nd Number of d functions at each center.
-!> @var nf Number of f functions at each center.
-!> @var ng Number of g functions at each center.
-!> @subroutine allocate_basis Allocates memory for the basis set.
-!> @subroutine deallocate_basis Deallocates memory for the basis set.
-!> @author Ravindra Shinde
+!> @brief Module for analytical basis set information.
+!> @author CHAMP developers
+!> @date 2020
+!>
+!> @details This module stores the fundamental basis set parameters including
+!> exponents (screening constants) and the number of basis functions per angular
+!> momentum type for each atomic center. It provides the foundation for constructing
+!> Gaussian basis sets used in wavefunction calculations.
+!>
+!> Key data structures:
+!> - zex: Basis function exponents (screening constants)
+!> - ns, np, nd, nf, ng: Number of basis functions per angular momentum (s, p, d, f, g)
+!> - betaq: Beta parameter for basis function scaling
+!>
+!> @note This module is primarily used with analytical Gaussian basis sets.
 module basis
     use precision_kinds, only: dp
 
     implicit none
 
-    !> Screening constants for each basis function.
+    !> Screening constants (exponents) for each basis function, dimension (nbasis, nctype_tot)
     real(dp), dimension(:, :), allocatable :: zex
 
-    !> Beta coefficient parameter.
+    !> Beta coefficient parameter for basis function scaling
     real(dp) :: betaq
 
-    !> Number of s functions at each center.
+    !> Number of s-type basis functions at each center type, dimension (nctype_tot)
     integer, dimension(:), allocatable :: ns
 
-    !> Number of px functions at each center.
+    !> Number of p-type basis functions at each center type, dimension (nctype_tot)
     integer, dimension(:), allocatable :: np
 
-    !> Number of d functions at each center.
+    !> Number of d-type basis functions at each center type, dimension (nctype_tot)
     integer, dimension(:), allocatable :: nd
 
-    !> Number of f functions at each center.
+    !> Number of f-type basis functions at each center type, dimension (nctype_tot)
     integer, dimension(:), allocatable :: nf
 
-    !> Number of g functions at each center.
+    !> Number of g-type basis functions at each center type, dimension (nctype_tot)
     integer, dimension(:), allocatable :: ng
 
     private
@@ -41,15 +45,25 @@ module basis
     public :: allocate_basis, deallocate_basis
     save
 contains
-    !> Allocates memory for the basis set.
-    !> @note deprecated
+    !> Allocates memory for analytical basis set arrays.
+    !>
+    !> @details This subroutine is deprecated. Memory allocation for basis set
+    !> parameters is now performed during input file parsing when basis set
+    !> information is read directly.
+    !>
+    !> @note Deprecated - allocation occurs during basis set input reading.
     subroutine allocate_basis()
         ! Allocate basis is called while reading the basis set from the input file.
     end subroutine allocate_basis
 
-    !> Deallocates memory for the basis set.
-    !> This subroutine deallocates memory for the basis set parameters
-    !> to avoid memory leaks after calculations are finished.
+    !> Deallocates memory for analytical basis set arrays.
+    !>
+    !> @details This subroutine frees dynamically allocated arrays used for
+    !> storing basis set parameters. It releases memory for:
+    !> - ng, nf, nd, np, ns: Angular momentum basis function counts
+    !> - zex: Basis function exponents (screening constants)
+    !>
+    !> @note Called at program termination to prevent memory leaks.
     subroutine deallocate_basis()
 
         if (allocated(ng)) deallocate (ng)
@@ -62,17 +76,27 @@ contains
 
 end module basis
 
-!> Module defining constants for numerical basis representation.
-!> Provides parameters used in various numerical modules for managing basis sets.
+!> @brief Module defining array dimension constants for numerical basis representation.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module provides compile-time constants that define maximum array
+!> dimensions for numerical basis set representations. These parameters are used
+!> throughout the code to allocate arrays for storing radial wavefunctions on grids.
+!>
+!> Constants:
+!> - MRWF_PTS: Maximum grid points for radial wavefunction representation
+!> - MRWF: Maximum number of radial basis functions per center type
+!>
+!> @note These are fixed parameters that may need adjustment for very large basis sets.
 module numbas_mod
-    !> Arguments: MRWF_PTS, MRWF
 
     implicit none
 
-    !> Maximum number of wavefunction points.
+    !> Maximum number of radial grid points for numerical wavefunction representation
     integer, parameter :: MRWF_PTS = 4000
 
-    !> Maximum number of wavefunctions.
+    !> Maximum number of radial basis functions (shells) per center type
     integer, parameter :: MRWF = 200
 
     private
@@ -81,7 +105,19 @@ module numbas_mod
 
 end module numbas_mod
 
-!> Module numexp
+!> @brief Module for numerical basis function exponent and coefficient storage.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module stores coefficients for numerical representation of basis
+!> functions across multiple geometries. It manages exponent parameters (ae) and
+!> expansion coefficients (ce) needed for evaluating numerical basis functions.
+!>
+!> Key arrays:
+!> - ae: Exponent parameters for numerical basis functions
+!> - ce: Expansion coefficients for linear combinations
+!>
+!> @note Used primarily for force calculations with multiple geometries.
 module numexp
 
       use multiple_geo, only: MFORCE
@@ -91,18 +127,26 @@ module numexp
 
     implicit none
 
-    !> Array for storing the ae coefficients.
-    real(dp), dimension(:, :, :, :), allocatable :: ae !(2,MRWF,MCTYPE,MFORCE)
+    !> Exponent parameters for numerical basis functions, dimension (2, MRWF, nctype_tot, MFORCE)
+    real(dp), dimension(:, :, :, :), allocatable :: ae
 
-    !> Array for storing the ce coefficients.
-    real(dp), dimension(:, :, :, :), allocatable :: ce !(NCOEF,MRWF,MCTYPE,MFORCE)
+    !> Expansion coefficients for numerical basis functions, dimension (NCOEF, MRWF, nctype_tot, MFORCE)
+    real(dp), dimension(:, :, :, :), allocatable :: ce
 
     private
     public :: ae, ce
     public :: allocate_numexp, deallocate_numexp
     save
 contains
-    !> Allocates memory for the ae and ce arrays.
+    !> Allocates memory for numerical basis function coefficient arrays.
+    !>
+    !> @details This subroutine allocates arrays for storing exponent parameters
+    !> and expansion coefficients for numerical basis functions across multiple
+    !> center types and force calculations. Allocates:
+    !> - ae(2, MRWF, nctype_tot, MFORCE): Exponent parameters
+    !> - ce(NCOEF, MRWF, nctype_tot, MFORCE): Expansion coefficients
+    !>
+    !> @note Called during basis set initialization for numerical representations.
     subroutine allocate_numexp()
       use multiple_geo, only: MFORCE
       use numbas_mod, only: MRWF
@@ -112,7 +156,9 @@ contains
         if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, nctype_tot, MFORCE))
     end subroutine allocate_numexp
 
-    !> Deallocates memory for the ae and ce arrays.
+    !> Deallocates memory for numerical basis function coefficient arrays.
+    !>
+    !> @details Frees memory for ce (expansion coefficients) and ae (exponents).
     subroutine deallocate_numexp()
         if (allocated(ce)) deallocate (ce)
         if (allocated(ae)) deallocate (ae)
@@ -120,51 +166,78 @@ contains
 
 end module numexp
 
-!> Module numbas for numerical basis information
+!> @brief Module for numerical radial basis functions on grids.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module stores radial basis functions and their derivatives evaluated
+!> on numerical grids. It manages the grid parameters, radial function values, and
+!> indexing information needed for numerical wavefunction evaluation.
+!>
+!> Key data structures:
+!> - rwf, d2rwf: Radial wavefunctions and their second derivatives on grids
+!> - arg, r0, nr: Grid parameters (arguments, starting point, number of points)
+!> - igrid, iwrwf: Grid and wavefunction indexing arrays
+!> - nrbas, rmaxwf: Basis function counts and maximum radii
+!>
+!> @note Used for numerical basis set representations and all-electron calculations.
 module numbas
-    !> Arguments: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf
 
       use numbas_mod, only: MRWF,MRWF_PTS
       use precision_kinds, only: dp
 
     implicit none
 
-    !> Array of basis function arguments.
-    real(dp), dimension(:), allocatable :: arg !(MCTYPE)
+    !> Grid argument parameter for each center type, dimension (nctype_tot)
+    real(dp), dimension(:), allocatable :: arg
 
-    !> Array of second derivatives of the wavefunctions.
-    real(dp), dimension(:, :, :, :), allocatable :: d2rwf !(MRWF_PTS,MRWF,MCTYPE,MWF)
+    !> Second derivatives of radial wavefunctions on grid, dimension (MRWF_PTS, MRWF, nctype_tot, nwftype)
+    real(dp), dimension(:, :, :, :), allocatable :: d2rwf
 
-    !> Array of grid indices.
-    integer, dimension(:), allocatable :: igrid !(MCTYPE)
+    !> Grid type index for each center type, dimension (nctype_tot)
+    integer, dimension(:), allocatable :: igrid
 
-    !> Array of wavefunction indices.
-    integer, dimension(:, :), allocatable :: iwrwf !(MBASIS,MCTYPE)
+    !> Wavefunction index mapping to radial functions, dimension (nbasis, nctype_tot)
+    integer, dimension(:, :), allocatable :: iwrwf
 
-    !> Array of number of radial points.
-    integer, dimension(:), allocatable :: nr !(MCTYPE)
+    !> Number of radial grid points for each center type, dimension (nctype_tot)
+    integer, dimension(:), allocatable :: nr
 
-    !> Array of number of shells in basis functions.
-    integer, dimension(:), allocatable :: nrbas !(MCTYPE)
+    !> Number of radial basis functions (shells) per center type, dimension (nctype_tot)
+    integer, dimension(:), allocatable :: nrbas
 
-    !> Number of radial points.
+    !> Total number of radial grid points used
     integer :: numr
 
-    !> Array r0
-    real(dp), dimension(:), allocatable :: r0 !(MCTYPE)
+    !> Starting radius for radial grid per center type, dimension (nctype_tot)
+    real(dp), dimension(:), allocatable :: r0
 
-    !> Array of wavefunction maximum radii for each basis function.
-    real(dp), dimension(:,:), allocatable :: rmaxwf !(nrbas, MCTYPE)
+    !> Maximum radius for each radial basis function, dimension (MRWF, nctype_tot)
+    real(dp), dimension(:,:), allocatable :: rmaxwf
 
-    !> Array of wavefunctions.
-    real(dp), dimension(:, :, :, :), allocatable :: rwf !(MRWF_PTS,MRWF,MCTYPE,MWF)
+    !> Radial wavefunctions evaluated on grid, dimension (MRWF_PTS, MRWF, nctype_tot, nwftype)
+    real(dp), dimension(:, :, :, :), allocatable :: rwf
 
     private
     public :: arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rwf, rmaxwf
     public :: allocate_numbas, deallocate_numbas
     save
 contains
-    !> Allocates memory for the numerical basis arrays.
+    !> Allocates memory for numerical radial basis function arrays.
+    !>
+    !> @details This subroutine allocates arrays for storing radial wavefunctions
+    !> and their properties on numerical grids. It allocates:
+    !> - arg(nctype_tot): Grid argument parameters
+    !> - d2rwf(MRWF_PTS, MRWF, nctype_tot, nwftype): Second derivatives
+    !> - igrid(nctype_tot): Grid type indices (initialized to 0)
+    !> - iwrwf(nbasis, nctype_tot): Wavefunction index mapping (initialized to 0)
+    !> - nr(nctype_tot): Number of radial points (initialized to 0)
+    !> - nrbas(nctype_tot): Number of radial basis functions (initialized to 0)
+    !> - r0(nctype_tot): Starting radii
+    !> - rmaxwf(MRWF, nctype_tot): Maximum radii (initialized to 0.0)
+    !> - rwf(MRWF_PTS, MRWF, nctype_tot, nwftype): Radial wavefunctions
+    !>
+    !> @note Called during numerical basis set initialization.
     subroutine allocate_numbas()
       use coefs,   only: nbasis
       use multiple_geo, only: nwftype
@@ -177,11 +250,13 @@ contains
         if (.not. allocated(nr)) allocate (nr(nctype_tot), source=0)
         if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot), source=0)
         if (.not. allocated(r0)) allocate (r0(nctype_tot))
-        if (.not. allocated(rmaxwf)) allocate (rmaxwf(MRWF,nctype_tot), source=0.0d0) ! This source is needed.
+        if (.not. allocated(rmaxwf)) allocate (rmaxwf(MRWF,nctype_tot), source=0.0d0)
         if (.not. allocated(rwf)) allocate (rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
     end subroutine allocate_numbas
 
-    !> Deallocates memory for the numerical basis arrays.
+    !> Deallocates memory for numerical radial basis function arrays.
+    !>
+    !> @details Frees all arrays used for numerical radial basis function storage.
     subroutine deallocate_numbas()
         if (allocated(rmaxwf)) deallocate (rmaxwf)
         if (allocated(rwf)) deallocate (rwf)
@@ -196,24 +271,41 @@ contains
 
 end module numbas
 
-!> Module numbas1 for numerical basis information
+!> @brief Module for numerical basis function angular momentum indexing.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module manages the mapping between basis functions and their
+!> angular momentum quantum numbers for numerical basis sets. It stores indices
+!> that relate basis functions to their angular momentum types.
+!>
+!> Key arrays:
+!> - iwlbas: Angular momentum (l) indices for each basis function
+!> - nbastyp: Number of basis function types per center
+!>
+!> @note Used for organizing numerical basis functions by angular momentum.
 module numbas1
-    !> Arguments: iwlbas, nbastyp
 
     implicit none
 
-    !> Array of basis function indices.
-    integer, dimension(:, :), allocatable :: iwlbas !(MBASIS,MCTYPE)
+    !> Angular momentum (l) quantum number for each basis function, dimension (nbasis, nctype_tot)
+    integer, dimension(:, :), allocatable :: iwlbas
 
-    !> Array of basis function types.
-    integer, dimension(:), allocatable :: nbastyp !(MCTYPE)
+    !> Number of basis function types per center type, dimension (nctype_tot)
+    integer, dimension(:), allocatable :: nbastyp
 
     private
     public :: iwlbas, nbastyp
     public :: allocate_numbas1, deallocate_numbas1
     save
 contains
-    !> Allocates memory for the numerical basis arrays.
+    !> Allocates memory for angular momentum indexing arrays.
+    !>
+    !> @details This subroutine allocates arrays for mapping basis functions to
+    !> their angular momentum quantum numbers. Currently allocates:
+    !> - iwlbas(nbasis, nctype_tot): Angular momentum indices (initialized to 0)
+    !>
+    !> @note nbastyp allocation is commented out and handled elsewhere.
     subroutine allocate_numbas1()
       use coefs,   only: nbasis
       use system,  only: nctype_tot
@@ -221,7 +313,9 @@ contains
         ! if (.not. allocated(nbastyp)) allocate (nbastyp(nctype_tot))
     end subroutine allocate_numbas1
 
-    !> Deallocates memory for the numerical basis arrays.
+    !> Deallocates memory for angular momentum indexing arrays.
+    !>
+    !> @details Frees nbastyp and iwlbas arrays.
     subroutine deallocate_numbas1()
         if (allocated(nbastyp)) deallocate (nbastyp)
         if (allocated(iwlbas)) deallocate (iwlbas)
@@ -229,31 +323,51 @@ contains
 
 end module numbas1
 
-!> Module numbas2 for numerical basis information
+!> @brief Module for basis function range indexing per atomic center.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module stores the starting and ending indices of basis functions
+!> associated with each atomic center. This indexing allows efficient access to
+!> basis functions belonging to specific atoms.
+!>
+!> Key arrays:
+!> - ibas0: Starting basis function index for each center
+!> - ibas1: Ending basis function index for each center
+!>
+!> @note Used for partitioning basis functions by atomic center.
 module numbas2
-    !> Arguments: ibas0, ibas1
 
     implicit none
 
-    !> Array of basis function indices.
-    integer, dimension(:), allocatable :: ibas0 !(MCENT)
+    !> Starting basis function index for each atomic center, dimension (ncent_tot)
+    integer, dimension(:), allocatable :: ibas0
 
-    !> Array of basis function indices.
-    integer, dimension(:), allocatable :: ibas1 !(MCENT)
+    !> Ending basis function index for each atomic center, dimension (ncent_tot)
+    integer, dimension(:), allocatable :: ibas1
 
     private
     public :: ibas0, ibas1
     public :: allocate_numbas2, deallocate_numbas2
     save
 contains
-    !> Allocates memory for the numerical basis arrays.
+    !> Allocates memory for basis function range indexing arrays.
+    !>
+    !> @details This subroutine allocates arrays for storing the starting and
+    !> ending indices of basis functions for each atomic center. Allocates:
+    !> - ibas0(ncent_tot): Starting indices (initialized to 0)
+    !> - ibas1(ncent_tot): Ending indices (initialized to 0)
+    !>
+    !> @note Used for partitioning basis functions by atomic center.
     subroutine allocate_numbas2()
       use system,  only: ncent_tot
         if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot), source=0)
         if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot), source=0)
     end subroutine allocate_numbas2
 
-    !> Deallocates memory for the numerical basis arrays.
+    !> Deallocates memory for basis function range indexing arrays.
+    !>
+    !> @details Frees ibas1 and ibas0 arrays.
     subroutine deallocate_numbas2()
         if (allocated(ibas1)) deallocate (ibas1)
         if (allocated(ibas0)) deallocate (ibas0)
@@ -261,10 +375,34 @@ contains
 
 end module numbas2
 
-!> Module m_basis for basis set information.
+!> @brief Master module for coordinated basis set memory management.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module provides unified allocation and deallocation interfaces
+!> for all basis set related modules. It orchestrates memory management across
+!> analytical basis (basis), numerical basis (numbas, numbas1, numbas2), and
+!> numerical expansion (numexp) modules.
+!>
+!> Manages allocation for:
+!> - numexp: Numerical basis exponents and coefficients
+!> - numbas: Radial wavefunctions on grids
+!> - numbas1: Angular momentum indexing
+!> - numbas2: Basis function range per center
+!>
+!> @note This is the primary interface for basis set memory management.
 module m_basis
 contains
-!> Subroutine to allocate memory for the basis set.
+!> Allocates memory for all basis set modules.
+!>
+!> @details This subroutine calls allocation routines from all basis-related
+!> modules in the proper order:
+!> - allocate_numexp(): Numerical expansion coefficients
+!> - allocate_numbas(): Radial wavefunctions and grid data
+!> - allocate_numbas1(): Angular momentum indices
+!> - allocate_numbas2(): Basis function range indices per center
+!>
+!> @note Called from allocate_vmc() after system parameters are initialized.
 subroutine allocate_m_basis()
       use numbas,  only: allocate_numbas
       use numbas1, only: allocate_numbas1
@@ -279,7 +417,17 @@ subroutine allocate_m_basis()
     call allocate_numbas2()
 end subroutine allocate_m_basis
 
-!> Subroutine to deallocate memory for the basis set.
+!> Deallocates memory for all basis set modules.
+!>
+!> @details This subroutine calls deallocation routines from all basis-related
+!> modules:
+!> - deallocate_basis(): Analytical basis parameters
+!> - deallocate_numexp(): Numerical expansion coefficients
+!> - deallocate_numbas(): Radial wavefunctions
+!> - deallocate_numbas1(): Angular momentum indices
+!> - deallocate_numbas2(): Basis function range indices
+!>
+!> @note Called from deallocate_vmc() at program termination.
 subroutine deallocate_m_basis()
       use basis,   only: deallocate_basis
       use numbas,  only: deallocate_numbas
@@ -297,31 +445,45 @@ subroutine deallocate_m_basis()
 end subroutine deallocate_m_basis
 end module
 
-!> Module trexio basis for recreating basis grid from trexio file.
+!> @brief Module for TREXIO basis set import and reconstruction.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module manages basis set information imported from TREXIO files.
+!> It stores shell structure, angular momentum information, and indexing arrays
+!> needed to reconstruct basis functions from TREXIO format.
+!>
+!> Key data structures:
+!> - Shell information (basis_num_shell, basis_shell_ang_mom)
+!> - Spherical harmonic indexing (index_slm, slm_per_l)
+!> - Radial function mapping (ao_radial_index)
+!> - Per-center basis function counts (num_rad_per_cent, num_ao_per_cent)
+!>
+!> @note Used when reading basis sets from TREXIO format files.
 module m_trexio_basis
       use coefs,   only: nbasis
     implicit none
 
-    !> Fixed array of slm per angular momentum.
-    integer, dimension(5)       :: slm_per_l = (/1, 3, 6, 10, 15/) !s,p,d,f,g
+    !> Number of spherical harmonics per angular momentum: s=1, p=3, d=6, f=10, g=15
+    integer, dimension(5)       :: slm_per_l = (/1, 3, 6, 10, 15/)
 
-    !> Total number of shells in the basis set.
+    !> Total number of shells (contracted basis functions) in the basis set
     integer                     :: basis_num_shell
 
-    !> Array of indices for the spherical harmonics.
-    integer, allocatable        :: index_slm(:)             !(nbasis)
+    !> Spherical harmonic (lm) index for each atomic orbital basis function, dimension (nbasis)
+    integer, allocatable        :: index_slm(:)
 
-    !> Array of indices for the radial ao basis functions.
-    integer, allocatable        :: ao_radial_index(:)       !(nbasis)
+    !> Radial function index for each atomic orbital basis function, dimension (nbasis)
+    integer, allocatable        :: ao_radial_index(:)
 
-    !> Array of number of radial basis functions per center.
-    integer, allocatable        :: num_rad_per_cent(:)      !(ncent_tot)
+    !> Number of radial basis functions per atomic center, dimension (ncent_tot)
+    integer, allocatable        :: num_rad_per_cent(:)
 
-    !> Array of number of ao basis functions per center.
-    integer, allocatable        :: num_ao_per_cent(:)       !(ncent_tot)
+    !> Number of atomic orbital basis functions per atomic center, dimension (ncent_tot)
+    integer, allocatable        :: num_ao_per_cent(:)
 
-    !> Array of angular momentum for each shell.
-    integer, allocatable        :: basis_shell_ang_mom(:)   !(nshell)
+    !> Angular momentum quantum number (l) for each shell, dimension (basis_num_shell)
+    integer, allocatable        :: basis_shell_ang_mom(:)
 
     private
     public :: slm_per_l, index_slm, num_rad_per_cent, num_ao_per_cent
@@ -331,14 +493,31 @@ module m_trexio_basis
 
     contains
 
-    !> Function to calculate the normalization constant for the basis functions.
+    !> Calculates normalization constant for Gaussian basis functions.
+    !>
+    !> @details This function computes the normalization constant for Gaussian
+    !> basis functions of the form r^l * exp(-alpha*r^2), ensuring proper
+    !> normalization in the radial part. The normalization depends on both
+    !> the exponent (alpha) and angular momentum quantum number (l).
+    !>
+    !> Formulas:
+    !> - l=0 (s): N = (2*alpha)^(3/4) * 2 / pi^(1/4)
+    !> - l=1 (p): N = (2*alpha)^(5/4) * sqrt(8/3) / pi^(1/4)
+    !> - l=2 (d): N = (2*alpha)^(7/4) * sqrt(16/15) / pi^(1/4)
+    !> - l=3 (f): N = (2*alpha)^(9/4) * sqrt(32/105) / pi^(1/4)
+    !> - l=4 (g): N = (2*alpha)^(11/4) * sqrt(64/945) / pi^(1/4)
+    !>
+    !> @param[in] exponent Gaussian exponent (alpha)
+    !> @param[in] l Angular momentum quantum number (0=s, 1=p, 2=d, 3=f, 4=g)
+    !> @return Normalization constant for the Gaussian basis function
+    !>
+    !> @note Returns 1.0 for unsupported angular momentum values (l > 4).
     double precision function gnorm(exponent, l)
         use precision_kinds,    only: dp
         implicit none
         real(dp), intent (in)       :: exponent
         integer, intent (in)    :: l
         real(dp), parameter     :: pi = 4.0d0*atan(1.0d0)
-        !real(dp), parameter     :: pi = 3.1415926535897932
 
         gnorm = 1.0d0
 
