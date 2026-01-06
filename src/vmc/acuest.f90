@@ -65,7 +65,7 @@ contains
 
       integer :: i, ic, ierr, ifr, istate, jel, k
       real(dp) :: ajacob, distance_node, eave
-      real(dp) :: psidg, rnorm_nodes
+      real(dp) :: psi2g, rnorm_nodes
       real(dp) :: penow, tpbnow
       real(dp), dimension(3,nelec) :: xstrech
 
@@ -179,8 +179,8 @@ contains
 !-----------------------------------------------------------------------
       subroutine zerest
       implicit none
-      integer :: i, ic, ifr, istate, jel, k
-      real(dp) :: psidg, rnorm_nodes
+      integer :: i, ic, ifr, ijas1, istate, jel, k
+      real(dp) :: psi2g, rnorm_nodes
       real(dp) :: ajacob, distance_node
       real(dp), dimension(3,nelec) :: xstrech
       real(dp), dimension(MSTATES) :: ekino
@@ -263,6 +263,7 @@ contains
 ! primary config
 ! set n- and e-coords and n-n potentials before getting wavefn. etc.
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
+
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
 
       do istate=1,nstates
@@ -272,11 +273,11 @@ contains
       enddo
 
       if(iguiding.gt.0) then
-        call determinant_psig(psido,psijo,psidg)
+        call determinant_psig(psido,psijo,psi2g)
 ! rewrite psi2o if you are sampling guiding
-        psi2o(1,1)=2*(dlog(dabs(psidg)))
-!        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo(1))
-        if(ipr.gt.1) write(ounit,'(''zerest after guiding: psig,psi2o='',2d12.4)') psidg/exp(psijo(1)),psi2o(1,1)
+        ijas1=stoj(1)
+        psi2o(1,1)=dlog(dabs(psi2g))+2*(dlog(dabs(psido(1)))+psijo(ijas1))
+        if(ipr.gt.1) write(ounit,'(''zerest after guiding: psi2g,psi2o='',2d12.4)') psi2g,psi2o(1,1)
       endif
 
       if(index(mode,'all').ne.0.or.node_cutoff.gt.0) then

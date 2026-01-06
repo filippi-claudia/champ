@@ -1,6 +1,6 @@
 module determinant_psig_mod
 contains
-      subroutine determinant_psig(psid,psij,psig)
+      subroutine determinant_psig(psid,psij,psi2g)
 
       use csfs, only: nstates, anormo
       use mstates3, only: iweight_g, weights_g
@@ -9,18 +9,20 @@ contains
       use contrl_file, only: ounit
       implicit none
 
-      integer :: i, istate
-      real(dp) :: psig
+      integer :: i, ijas1, istate
+      real(dp) :: psi2g, ratio
       real(dp), dimension(*) :: psid
       real(dp), dimension(*) :: psij
 
-      psig=0
-      do i=1,nstates
-        istate=iweight_g(i)
-        psig=psig+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(stoj(istate)))/anormo(istate)
-      enddo
+! psig computed with respect to state 1
+      ijas1=stoj(iweight_g(1))
 
-      psig=dsqrt(psig)
+      psi2g=weights_g(1)/anormo(1)
+      do i=2,nstates
+        istate=iweight_g(i)
+        ratio=psid(istate)/psid(1)*exp(psij(stoj(istate))-psij(ijas1))
+        psi2g=psi2g+weights_g(i)/anormo(i)*ratio*ratio
+      enddo
 
       return
       end

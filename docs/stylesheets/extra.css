@@ -1,0 +1,119 @@
+/* Custom tag styling */
+.md-typeset .md-tag {
+    border-radius: 4px !important;
+    transform: skewX(-20deg);
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.md-typeset .md-tag:hover {
+    background-color: var(--md-accent-fg-color);
+    color: var(--md-accent-bg-color);
+    transition: background-color 0.2s;
+}
+
+/* Custom "Back to top" button */
+.md-top {
+    background: linear-gradient(135deg, #4285f4, #9b72cb, #d96570) !important;
+    color: white !important;
+    border: none;
+    box-shadow: 0 0 15px rgba(66, 133, 244, 0.6);
+    transition: all 0.3s ease-in-out;
+}
+
+.md-top:hover {
+    box-shadow: 0 0 25px rgba(155, 114, 203, 0.9), 0 0 10px rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+/* 
+   -------------------------------------------------------
+   Single Column Grid Layout Override
+   -------------------------------------------------------
+*/
+/* Using a simpler selector to minimize conflicts, relying on !important */
+.md-typeset .grid.single-col>ul {
+    grid-template-columns: 1fr !important;
+    display: grid !important;
+    gap: 1.5rem !important;
+    /* Increased gap for glow space */
+}
+
+/* 
+   -------------------------------------------------------
+   Gemini-Style Glow Effect 
+   -------------------------------------------------------
+*/
+
+/* 1. Card Container (LI) */
+/* We must ensure overflow is visible so the negative-margin glow isn't clipped */
+.md-typeset .grid.single-col>ul>li {
+    position: relative !important;
+    z-index: 1;
+    isolation: isolate;
+    /* Creates a new stacking context */
+    overflow: visible !important;
+    /* CRITICAL for glow visibility */
+
+    /* Reset theme styles */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    /* Vertical spacing */
+    margin-bottom: 8px !important;
+}
+
+/* Animation */
+@keyframes gemini-gradient-move {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* 2. The Glowing Border/Backdrop (::before) */
+.md-typeset .grid.single-col>ul>li::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    /* Extend outward */
+    z-index: -2;
+    /* Behind everything in this context */
+    border-radius: 0.6rem;
+
+    /* The Gradient */
+    background: linear-gradient(60deg, #4285f4, #9b72cb, #d96570, #4285f4);
+    background-size: 300% 300%;
+
+    /* Animation */
+    animation: gemini-gradient-move 3s linear infinite;
+
+    opacity: 0.6;
+    transition: opacity 0.3s, filter 0.3s;
+}
+
+/* 3. The Content Background (::after) */
+.md-typeset .grid.single-col>ul>li::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    /* Above glow, behind text */
+    background: var(--md-default-bg-color);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+/* Hover Effects */
+.md-typeset .grid.single-col>ul>li:hover::before {
+    opacity: 1;
+    filter: blur(6px);
+}

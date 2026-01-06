@@ -324,7 +324,7 @@ contains
               if(istate.eq.1) tmp1 = tmp
               anormo(istate) = obs_tot(jwtg, istate) + obs_norm_tot(jwfj, istate)&
                       + obs_norm_tot(jsqfj, istate)
-              write(ounit, '(''NORMS'',i3,10f25.20)') istate, obs_tot(jwtg,istate)/passes, anormo(istate)/passes,&
+              write(ounit, '(''NORMS'',i3,10e25.14)') istate, obs_tot(jwtg,istate)/passes, anormo(istate)/passes,&
                                  obs_tot(jwtg, istate)/obs_tot(jwtg, 1), anormo(istate)/anormo(1),tmp/tmp1
            enddo
            do istate = 2, nstates

@@ -66,7 +66,7 @@ contains
 
       real(dp) :: ajacob, deltarx
       real(dp) :: deltatx, deltax, dist, distance_node
-      real(dp) :: pecx, psidg, rnorm_nodes
+      real(dp) :: pecx, psi2g, rnorm_nodes
       real(dp), dimension(nbasis,norb_tot) :: coefx
       real(dp), dimension(nbasis) :: zexx
       real(dp), dimension(3,ncent_tot) :: centx
@@ -123,7 +123,7 @@ contains
       !> \brief Restarts the data from a file
       subroutine startr_more
       implicit none
-      integer :: i, ib, ic, ifr, istate
+      integer :: i, ib, ic, ifr, ijas1, istate
       integer :: j, jel, k, nbasx
       integer :: ncentx, nctypex, ndetx, ndnx
       integer :: newghostypex, nghostcentx, norbx, nstepx
@@ -131,7 +131,7 @@ contains
 
       real(dp) :: ajacob, deltarx
       real(dp) :: deltatx, deltax, dist, distance_node
-      real(dp) :: pecx, psidg, rnorm_nodes
+      real(dp) :: pecx, psi2g, rnorm_nodes
       real(dp), dimension(nbasis,norb_tot) :: coefx
       real(dp), dimension(nbasis) :: zexx
       real(dp), dimension(3,ncent_tot) :: centx
@@ -239,9 +239,10 @@ contains
       enddo
 
       if(iguiding.gt.0) then
-        call determinant_psig(psido,psijo,psidg)
+        call determinant_psig(psido,psijo,psi2g)
 ! rewrite psi2o if you are sampling guiding
-        psi2o(1,1)=2*(dlog(dabs(psidg)))
+        ijas1=stoj(1)
+        psi2o(1,1)=dlog(dabs(psi2g))+2*(dlog(dabs(psido(1))+psijo(ijas1)))
       endif
 
       if(node_cutoff.gt.0) then

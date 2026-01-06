@@ -2,7 +2,7 @@ module multiple_states
       use error,   only: fatal_error
 contains
 !----------------------------------------------------------------------
-      subroutine efficiency_sample(ipass,determ_s,psij,determ_psig)
+      subroutine efficiency_sample(ipass,determ_s,psij,psi2g)
 
       use mstates2, only: effcm2,effcum
       use mstates_ctrl, only: iefficiency,nstates_psig
@@ -10,22 +10,23 @@ contains
       use vmc_mod, only: stoj
       implicit none
 
-      integer :: ipass, j
-      real(dp) :: determ_psig, determ_psigi, ratio, wi
+      integer :: ipass, j, istoj1
+      real(dp) :: psi2g, psi2gi, ratio, wi
       real(dp), dimension(*) :: determ_s
       real(dp), dimension(*) :: psij
 
-
-
-
       if(iefficiency.eq.0) return
 
-      determ_psigi=1.d0/determ_psig
-!     write(ounit,*) ((determ_s(j)*determ_psigi)**2,j=1,nstates_psig)
+      psi2gi=1.d0/psi2g
 
-      do j=1,nstates_psig
-        ratio=determ_s(j)*exp(psij(stoj(j)))*determ_psigi
-        wi=ratio*ratio
+      istoj1=stoj(1)
+      wi=psi2gi
+      effcum(1)=effcum(1)+wi
+      effcm2(1)=effcm2(1)+wi*wi
+
+      do j=2,nstates_psig
+        ratio=determ_s(j)/determ_s(1)*exp(psij(stoj(j))-psij(istoj1))
+        wi=ratio*ratio*psi2gi
         effcum(j)=effcum(j)+wi
         effcm2(j)=effcm2(j)+wi*wi
       enddo

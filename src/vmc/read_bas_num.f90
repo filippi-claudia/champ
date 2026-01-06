@@ -12,15 +12,17 @@ contains
 
       use coefs,   only: nbasis
       use contrl_file, only: errunit,ounit
+      use contrl_per, only: iperiodic
       use control, only: ipr
       use custom_broadcast, only: bcast
       use fitting_methods, only: exp_fit
       use general, only: bas_id,filename,filenames_bas_num,pooldir
-     use mpiconf, only: wid
+      use mpiconf, only: wid
       use numbas,  only: allocate_numbas,arg,d2rwf,igrid,nr,nrbas,r0
       use numbas,  only: rwf, rmaxwf
       use numbas_mod, only: MRWF,MRWF_PTS
       use numexp,  only: ae,allocate_numexp,ce
+      use periodic, only: cutr,n_images,n_images0
       use precision_kinds, only: dp
       use pseudo,  only: nloc
       use spline2_mod, only: spline2
@@ -123,8 +125,6 @@ contains
 
         if (.not. allocated(rmaxwf)) allocate (rmaxwf(nrbas(ic), nctype_tot))
 
-
-
         if(igrid(ic).eq.2.and.arg(ic).le.1.d0) arg(ic)=x(2)/x(1)
         if(igrid(ic).eq.3) r0(ic)=r0(ic)/(arg(ic)**(nr(ic)-1)-1.d0)
         call bcast(arg)
@@ -208,7 +208,7 @@ contains
         if (wid) write(45,'(a,i0,a,i0,a,g0)') "Initial rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
 
 ! Nonzero basis at the boundary : Do exponential fitting.
-        if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
+        if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10.and.iperiodic.eq.0) then
           call exp_fit(x(nr(ic)-9), rwf(nr(ic)-9,irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
           if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
@@ -232,6 +232,12 @@ contains
         endif
         if (wid) write(45,*) 'dwf1,dwfn',dwf1,dwfn
 
+        if(iperiodic.ne.0)then
+         temp=2*cutr*(0.5+n_images0)
+         if(wid)write(45,*)'L/2 ',cutr,' cutr ',temp,' n_images0 ',n_images0
+         call smooth(x(:),rwf(:,irb,ic,iwf),nr(ic),temp,dwfn,rmaxwf(irb, ic))
+        endif
+
         call spline2(x(:),rwf(:,irb,ic,iwf),nr(ic),dwf1,dwfn,d2rwf(:,irb,ic,iwf),work)
 
         enddo
@@ -239,6 +245,93 @@ contains
 
       return
       end subroutine read_bas_num
+
+      subroutine smooth(x,rwf,nr,rcut,dwfn,rmaxwf)
+! replace rwf with (a+b*r+c*r**2)*(r-rcut)**3 in [0.8*rcut,rcut]
+      use contrl_file, only: ounit
+      use mpiconf, only: wid
+      use precision_kinds, only: dp
+      implicit none
+      integer nr,n_images,i,icut,imatch
+      real(dp) x(nr),rwf(nr),rcut,dwfn,rmaxwf
+      real(dp) rm,rc,f,df,ddf,dfm,dfp,a,b,c,r,factor
+      real(dp) dr,dr2,dr3,deti
+      real(dp) a1,a2,a3,a4,a5,a6,a7,a8,a9
+      real(dp) m1,m2,m3,m4,m5,m6,m7,m8,m9
+      if(rcut.ge.rmaxwf)return
+      factor=0.8d0   ! this factor can be turned into an input parameter
+      rm=factor*rcut ! matching distance
+      icut=nr
+      do while (x(icut).gt.rcut)
+       icut=icut-1
+      enddo
+      if(icut.eq.nr)return
+      write(ounit,*)'icut ',icut
+      rc=x(icut)     ! cutoff distance on a point of the grid
+      imatch=nr
+      do while (x(imatch).gt.rm)
+       imatch=imatch-1
+      enddo
+      write(ounit,*)'imatch ',imatch
+      rm=x(imatch)   ! matching distance on a point of the grid
+! f,f',f" at rm (by finite increments)
+      f=rwf(imatch)
+      dfm=(rwf(imatch)-rwf(imatch-1))/(x(imatch)-x(imatch-1))
+      dfp=(rwf(imatch)-rwf(imatch+1))/(x(imatch)-x(imatch+1))
+      df=0.5d0*(dfp+dfm)
+      ddf=(dfp-dfm)*(0.5d0/(x(imatch)-x(imatch-1))+0.5d0/(x(imatch+1)-x(imatch)))
+! continuity conditions at rm: A(a,b,c)=(f,df,ddf)
+      dr=rm-rc
+      dr2=dr*dr
+      dr3=dr2*dr
+      a1=dr3                   ! matrix A
+      a2=dr3*rm
+      a3=dr3*rm**2
+      a4=3.d0*dr2
+      a5=3.d0*dr2*rm+dr3
+      a6=3.d0*dr2*rm**2+2*dr3*rm
+      a7=6.d0*dr
+      a8=6.d0*dr*rm+6.d0*dr2
+      a9=6.d0*dr*rm**2+12.d0*dr2*rm+2.d0*dr3
+      m1=a5*a9-a6*a8           ! cofactors
+      m2=a6*a7-a4*a9
+      m3=a4*a8-a5*a7
+      m4=a3*a8-a2*a9
+      m5=a1*a9-a3*a7
+      m6=a2*a7-a1*a8
+      m7=a2*a6-a3*a5
+      m8=a3*a4-a1*a6
+      m9=a1*a5-a2*a4
+      deti=1.d0/(a1*m1+a2*m2+a3*m3)
+      a1=m1*deti               ! inverse
+      a2=m4*deti
+      a3=m7*deti
+      a4=m2*deti
+      a5=m5*deti
+      a6=m8*deti
+      a7=m3*deti
+      a8=m6*deti
+      a9=m9*deti
+      a=a1*f+a2*df+a3*ddf      ! solve for a,b,c
+      b=a4*f+a5*df+a6*ddf
+      c=a7*f+a8*df+a9*ddf
+      do i=imatch,icut         ! replace rwf in [rm,rc]
+       r=x(i)
+       rwf(i)=(a+b*r+c*r**2)*(r-rc)**3
+      enddo
+      dwfn=0.d0                ! zero derivative for the spline
+!     nr=icut                  ! cut range of rwf
+      rmaxwf=x(icut)
+      do i=icut+1,nr
+       rwf(i)=0.d0
+      enddo
+      if (wid) then
+       do i=imatch,icut
+        write(45,*)x(i),rwf(i)
+       enddo
+      endif
+      return
+      end subroutine smooth
 
 !  This is a temporary shift of the following subroutine
 

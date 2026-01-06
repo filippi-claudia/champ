@@ -1,6 +1,8 @@
 # Cornell-Holland Ab-initio Materials Package (CHAMP-EU)
 
-![Logo](https://github.com/filippi-claudia/champ/blob/main/docs/logo_small.jpg?raw=true)
+<p align="left">
+  <img src="docs/assets/logo.webp" alt="CHAMP-EU logo" width=600/>
+</p>
 
 
 ## CI/CD Status
