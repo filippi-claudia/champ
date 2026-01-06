@@ -1,19 +1,18 @@
 # Variance Minimization
 
-Variance minimization aims to minimize the variance of the local energy:
+Quantum Monte Carlo methods are some of the most accurate and efficient methods for treating many-body systems. The success of these methods differs largely on the flexibility of the trial wave functions and the capability to efficiently optimize their parameters for both Variational Monte Carlo (VMC) and Diffusion Monte Carlo (DMC).
+
+The **variance minimization** method has become a frequently used method for optimizing many-body wave functions because it is often more efficient than straightforward energy minimization.
+
+Mathematically, it aims to minimize the variance of the local energy:
 
 $$ \sigma^2 = \frac{\int |\Psi_T|^2 (E_L - E_T)^2 d\mathbf{R}}{\int |\Psi_T|^2 d\mathbf{R}} $$
 
-## Overview
+## Why use Variance Minimization?
 
-Historically, variance minimization was widely used because it is more stable than energy minimization for simple algorithms. However, energy minimization (via SR or Linear Method) is now often preferred as it directly optimizes the quantity of interest.
+For a sufficiently flexible variational wave function, straightforward energy minimization on a finite set of Monte Carlo (MC) configurations can be problematic. It is possible to lower the energy on the finite sample on which the optimization is performed, while in fact raising the true expectation value of the energy.
 
-Variance minimization is still useful for:
-- Generating initial parameters.
-- Optimizing Jastrow factors when energy optimization is difficult.
+On the other hand, if the **variance** of the local energy is minimized, each term in the sum over MC configurations is bounded from below by zero. This makes the optimization problem far less severe and numerically more stable.
 
-## Implementation
+## Implementation in CHAMP
 
-In CHAMP, variance minimization can be achieved by specific settings in the optimization module, often by using the Linear Method with a target function that emphasizes variance.
-
-(Note: Specific keywords for pure variance minimization in CHAMP should be checked in the latest source code, as energy minimization is the default).

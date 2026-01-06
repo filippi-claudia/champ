@@ -1,4 +1,4 @@
-name: Documentation
+name: User Documentation
 on:
   push:
     branches:

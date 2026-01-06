@@ -87,7 +87,7 @@ This defines a trivial Jastrow factor ($e^J = 1$) effectively running VMC with t
 Submit the job using your system's scheduler or run locally:
 
 ```bash
-champ -i vmc_h2o_hf.inp
+/path/bin/vmc.mov1 -i vmc_h2o_hf.inp -o vmc_h2o_hf.out -e error
 ```
 
 Compare the resulting total energy with the QP reference. They should match closely (within statistical error), confirming the interface works correctly.

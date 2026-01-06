@@ -15,6 +15,7 @@ The Jastrow factor accounts for dynamic electron correlation. We will now introd
 ## Jastrow Factor Definition
 
 The Jastrow factor contains three types of terms:
+
 - **Electron-Nucleus ($f_{en}$)**: Describes correlation between electrons and nuclei (1-body).
 - **Electron-Electron ($f_{ee}$)**: Describes correlation between electrons (2-body).
 - **Electron-Electron-Nucleus ($f_{een}$)**: Describes 3-body correlations.

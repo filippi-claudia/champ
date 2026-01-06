@@ -23,3 +23,13 @@ Stochastic Reconfiguration (SR) is a robust energy minimization method similar t
 %endmodule
 ```
 
+## Comparison with Variance Minimization
+
+While variance minimization is robust, there are strong motivations for optimizing the energy directly:
+
+1.  **Primary Goal**: One typically seeks the lowest energy in a VMC or DMC calculation, rather than the lowest variance.
+2.  **Parameters**: Variance minimization is highly effective for **Jastrow coefficients**. However, for **determinantal coefficients** (coefficients of determinants, orbital expansions, csf coefficients), it can take many iterations and get stuck in local minima. Most authors use variance minimization primarily for Jastrow parameters.
+3.  **Observables**: For a given trial wave function form, energy-minimized wave functions on average yield more accurate values of other expectation values.
+4.  **Forces**: The Hellmann-Feynman theorem can be better exploited with energy-minimized wave functions to compute forces on nuclei.
+
+Despite these points, variance minimization remains a cornerstone technique, particularly for the stable optimization of Jastrow factors.

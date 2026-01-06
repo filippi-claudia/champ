@@ -80,6 +80,7 @@ nav = [
     ]},
     {"Input File Examples" = [
       {"Input Files Overview" = "preparation/input/index.md"},
+      {"General Keywords" = "preparation/input/general_keywords.md"}
     ]}
   ]},  
   {"Calculations" = [
@@ -174,26 +175,26 @@ nav = [
       {"Periodic Forces" = "tutorials/examples/periodic_forces/index.md"}
     ]}
   ]},
-  {"Analysis" = [
-    {"Analysis Overview" = "analysis/index.md"},
-    {"Energy Breakdown" = "analysis/energy_breakdown.md"},
-    {"Force Analysis" = "analysis/forces.md"},
-    {"Statistical Analysis" = "analysis/statistical_analysis.md"},
-    {"Plotting Utilities" = "analysis/plotting_utilities.md"}
-  ]},
-  {"Troubleshooting" = [
-    {"Troubleshooting Overview" = "troubleshooting/index.md"},
-    {"Common Errors" = "troubleshooting/common_errors.md"},
-    {"Performance Issues" = "troubleshooting/performance_issues.md"},
-    {"FAQ" = "troubleshooting/faq.md"}
-  ]},
-  {"References" = [
-    {"References Overview" = "references/index.md"},
-    {"Keyword Reference" = "references/keyword_reference.md"},
-    {"Output File Format" = "references/output_file_format.md"},
-    {"Error Codes" = "references/error_codes.md"},
-    {"APIs and Tools" = "references/api_and_tools.md"}
-  ]},
+#  {"Analysis" = [
+#    {"Analysis Overview" = "analysis/index.md"},
+#    {"Energy Breakdown" = "analysis/energy_breakdown.md"},
+#    {"Force Analysis" = "analysis/forces.md"},
+#    {"Statistical Analysis" = "analysis/statistical_analysis.md"},
+#    {"Plotting Utilities" = "analysis/plotting_utilities.md"}
+#  ]},
+#  {"Troubleshooting" = [
+#    {"Troubleshooting Overview" = "troubleshooting/index.md"},
+#    {"Common Errors" = "troubleshooting/common_errors.md"},
+#    {"Performance Issues" = "troubleshooting/performance_issues.md"},
+#    {"FAQ" = "troubleshooting/faq.md"}
+#  ]},
+#  {"References" = [
+#    {"References Overview" = "references/index.md"},
+#    {"Keyword Reference" = "references/keyword_reference.md"},
+#    {"Output File Format" = "references/output_file_format.md"},
+#    {"Error Codes" = "references/error_codes.md"},
+#    {"APIs and Tools" = "references/api_and_tools.md"}
+#  ]},
   {"Contributing" = [
     { "User guide" = "contributing/zensical.md"},
     { "Markdown" = "contributing/markdown.md"},

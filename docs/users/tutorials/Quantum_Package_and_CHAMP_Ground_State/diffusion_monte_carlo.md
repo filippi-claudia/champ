@@ -83,7 +83,7 @@ load jastrow        jastrow_optimal.1.iter20
 Run the DMC calculation:
 
 ```bash
-champ -i dmc_h2o.inp
+/bin/dmc.mov1 -i dmc_h2o.inp -o dmc_ß2o.out -e error
 ```
 
 ## 3. Analyze Results

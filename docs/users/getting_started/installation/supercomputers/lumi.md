@@ -43,7 +43,7 @@ module load cray-hdf5-parallel
 module load buildtools
 
 # Target LUMI-C partition
-module load craype-x86-rome
+module load craype-x86-milan
 ```
 
 !!! note
@@ -61,7 +61,7 @@ You should see:
 - `LUMI`
 - `cray-hdf5-parallel`
 - `buildtools`
-- `craype-x86-rome`
+- `craype-x86-milan`
 
 ## Installing TREXIO and QMCkl
 
@@ -247,7 +247,7 @@ module load LUMI/24.03
 module load buildtools/24.03
 module load PrgEnv-gnu/8.5.0
 module load cray-hdf5-parallel/1.12.2.11
-module load craype-x86-rome # Ensure CPU architecture is set to Rome
+module load craype-x86-milan # Ensure CPU architecture is set to Milan
 
 # Optional: Load TREXIO/QMCkl if compiled with support
 # export TREXIO_DIR=/scratch/projectX/trexio
