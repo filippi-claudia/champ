@@ -68,6 +68,12 @@ config/
 #local testing of workflow
 .github/workflows/test_locally.yml
 
+# Generated documentation in html
+.DS_Store
+docs/.DS_Store
+docs/.python-version
+docs/site/
+
 #dont ignore source files
 !.f90$
 !.f$
