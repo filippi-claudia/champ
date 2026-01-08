@@ -1,4 +1,4 @@
-name: CHAMP-EU CI - Release build - Intel oneAPI, TREXIO and QMCkl
+name: CHAMP-EU CI - Release build - GNU with TREXIO and QMCkl
 
 on:
   push:
@@ -19,8 +19,8 @@ jobs:
     strategy:
       matrix:
         toolchain: ['GNU']
-    name: Build CHAMP and TREXIO with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
-    runs-on: ubuntu-latest
+    name: Build CHAMP and TREXIO with ${{ matrix.toolchain }} GitHub-hosted runner
+    runs-on: ubuntu-22.04
     timeout-minutes: 200
     defaults:
       run:
@@ -82,6 +82,7 @@ jobs:
         run: |
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 \
+            -DVECTORIZED="portable-avx2" \
             -DCMAKE_C_COMPILER=mpicc \
             -DENABLE_TREXIO=ON \
             -DTREXIO_INCLUDE_DIR=$HOME/include \
@@ -100,6 +101,7 @@ jobs:
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           cmake -H. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpif90 \
+            -DVECTORIZED="portable-avx2" \
             -DCMAKE_C_COMPILER=mpicc \
             -DENABLE_TREXIO=ON \
             -DTREXIO_INCLUDE_DIR=$HOME/include \
@@ -115,6 +117,7 @@ jobs:
             export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
             cmake -H. -Bbuild \
               -DCMAKE_Fortran_COMPILER=mpif90 \
+              -DVECTORIZED="portable-avx2" \
               -DCMAKE_C_COMPILER=mpicc \
               -DENABLE_TREXIO=ON \
               -DTREXIO_INCLUDE_DIR=$HOME/include \

@@ -121,9 +121,9 @@ contains
 ! write out configuration for optimization/dmc/gfmc here
           if (mod(l,ngfmc).eq.0 .or. ngfmc.eq.1) then
             if(3*nelec.lt.100) then
-              write(fmt,'(a1,i2,a21)')'(',3*nelec,'f13.8,i3,d12.4,f12.5)'
+              write(fmt,'(a1,i2,a21)')'(',3*nelec,'e18.8,i3,d12.4,f12.5)'
             else
-              write(fmt,'(a1,i3,a21)')'(',3*nelec,'f13.8,i3,d12.4,f12.5)'
+              write(fmt,'(a1,i3,a21)')'(',3*nelec,'e18.8,i3,d12.4,f12.5)'
             endif
             write(7,fmt) ((xold(ii,jj),ii=1,3),jj=1,nelec), &
             int(sign(1.d0,psido(1))),log(dabs(psido(1)))+psijo,eold(1,1)
