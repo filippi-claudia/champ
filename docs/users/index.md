@@ -15,7 +15,7 @@ The Cornell-Holland Ab-initio Materials Package (CHAMP-EU) is a quantum Monte Ca
 The European branch of the code is currently developed by Claudia Filippi and Saverio Moroni,
 with significant contributions by Ravindra Shinde, Emiel Slootman, Nicolas Renaud, Victor Azizi, Edgar Landinez, and Stuart Shepard.
 
-## Features
+## Key Features
 
 CHAMP has three basic capabilities:
 
@@ -26,19 +26,41 @@ CHAMP has three basic capabilities:
 Noteworthy features of CHAMP are:
 
 * Efficient wave function optimization also in a state-average and a state-specific fashion for multiple states of the same symmetry (VMC)
-* Efficient computation of analytical interatomic forces (VMC and DMC)
+* Efficient computation of analytical interatomic forces (VMC)
 * Compact formulation for a fast evaluation of multi-determinant expansions and their derivatives (VMC and DMC)
 * Multiscale VMC and DMC calculations in classical point charges (MM), polarizable continuum model (PCM), and polarizable force fields (MMpol)
 
-## Note
+## Documentation
 
-The code is available for free under the GPL-3.0 license. Developers and contributors are welcome to use and contribute back to the code. If you have used the code for your publications, please cite this source.
+For full documentation, including detailed installation guides and tutorials, visit the [Online User's Documentation](https://filippi-claudia.github.io/champ/). 
+
+## Citation
+
+If you use CHAMP-EU in your research, please cite this source:
+
+Shinde, R., Landinez Borda, E. J., Shepard, S., Slootman, E., Cuzzocrea, A., Azizi, V., Lopez-Tarifa, P., Renaud, N., Umrigar, C., Moroni, S., & Filippi, C. (2024). Cornell-Holland Ab-initio Materials Package (CHAMP-EU) v2.3.0. Zenodo. [https://doi.org/10.5281/zenodo.11369538](https://doi.org/10.5281/zenodo.11369538)
 
 
-Shinde, R., Landinez Borda, E. J., Shepard, S., Slootman, E., Cuzzocrea, A., Azizi, V., Lopez-Tarifa, P., Renaud, N., Umrigar, C., Moroni, S., & Filippi, C. (2024). Cornell-Holland Ab-initio Materials Package (CHAMP-EU) (v2.3.0). Zenodo. https://doi.org/10.5281/zenodo.11369538
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](https://github.com/filippi-claudia/champ/blob/main/CONTRIBUTING.md) for details.
+
+## License
+
+Distributed under the GPL-3.0 License. See [LICENSE](https://github.com/filippi-claudia/champ/blob/main/LICENSE) for more information.
+
+## Support
+
+For support, please contact the PI [Claudia Filippi](mailto:c.filippi@utwente.nl) or the developer [Ravindra Shinde](mailto:r.l.shinde@utwente.nl).
+
+## Discussion
+
+For discussions or FAQs, please use the [GitHub Discussions](https://github.com/filippi-claudia/champ/discussions) page.
 
 ## Disclaimer
 
 The authors make no claims about the correctness of the program suite and it is provided without warranty under GPL-3.0. 
+
+
 
 

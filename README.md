@@ -1,7 +1,7 @@
-# Cornell-Holland Ab-initio Materials Package (CHAMP-EU)
+# Cornell-Holland Ab-initio Materials Package (CHAMP)
 
-<p align="left">
-  <img src="docs/assets/logo.webp" alt="CHAMP-EU logo" width=600/>
+<p align="center">
+  <img src="docs/assets/logo.webp" alt="CHAMP logo" width=600/>
 </p>
 
 
@@ -9,16 +9,16 @@
 
 | Category | Status |
 |----------|--------|
-| **Build - Release - Intel** | [![CHAMP-EU CI - Release build - Intel oneAPI hpckit toolchain](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml) |
-| **Build - Release - TREX (QMCkl)** | [![CHAMP-EU CI - Release build - GNU with QMCkl (QMCKL Tests)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_qmckl.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_qmckl.yml) |
-| **Build - Release - TREX (VMC/DMC)** | [![CHAMP-EU CI - Release build - GNU without TREX (VMC/DMC Tests)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_vmc_dmc.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_vmc_dmc.yml) |
+| **Build - Release - Intel oneAPI** | [![CHAMP-EU CI - Release build - Intel oneAPI hpckit toolchain](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_intel.yml) |
+| **Build - Release - (VMC/DMC)** | [![CHAMP-EU CI - Release build - GNU without TREX (VMC/DMC Tests)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_vmc_dmc.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_vmc_dmc.yml) |
 | **Build - Release - TREX (TREXIO)** | [![CHAMP-EU CI - Release build - GNU with TREXIO (TREXIO Tests)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_trexio.yml) |
+| **Build - Release - TREX (QMCkl)** | [![CHAMP-EU CI - Release build - GNU with QMCkl (QMCKL Tests)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_qmckl.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_qmckl.yml) |
 | **Build - Debug - Intel + GNU** | [![CHAMP-EU CI - Debug build - Intel oneAPI and GNU toolchain](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/debug_champ_intel_and_gnu.yml) |
-| **Build - Docker** | [![CHAMP-EU CI - Docker image build and tagging for Docker Hub](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml) |
-| **Publish - Docker** | [![CHAMP-EU CI - Docker image publish to Docker Hub Registry](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml) |
+| **Build - Docker Container** | [![CHAMP-EU CI - Docker image build and tagging for Docker Hub](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-image.yml) |
+| **Publish - Docker Container** | [![CHAMP-EU CI - Docker image publish to Docker Hub Registry](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/docker-publish.yml) |
 | **Tests - Unit Tests** | [![CHAMP-EU CI - Unit tests for CHAMP with GNU using FortUTF](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_unit_test.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_champ_unit_test.yml) |
-| **Tests - Interface** | [![CHAMP-EU CI - Python tests for the TREXIO tools integration](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml) |
-| **Documentation - Deployment** | [![CHAMP-EU CI - Deploy Doxygen-generated content to Pages](https://github.com/filippi-claudia/champ/actions/workflows/build_documentation_devel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_documentation_devel.yml) |
+| **Tests - Python Interface** | [![CHAMP-EU CI - Python tests for the TREXIO tools integration](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/test_python.yml) |
+| **Deployment - User Guide** | [![CHAMP-EU CI - Deploy Doxygen-generated content to Pages](https://github.com/filippi-claudia/champ/actions/workflows/build_documentation_devel.yml/badge.svg)](https://github.com/filippi-claudia/champ/actions/workflows/build_documentation_devel.yml) |
 
 ## Repository Statistics
 
@@ -37,7 +37,7 @@ The Cornell-Holland Ab-initio Materials Package (CHAMP-EU) is a quantum Monte Ca
 The European branch of the code is currently developed by Claudia Filippi and Saverio Moroni,
 with significant contributions by Ravindra Shinde, Emiel Slootman, Nicolas Renaud, Victor Azizi, Edgar Landinez, and Stuart Shepard.
 
-## Features
+## Key Features
 
 CHAMP has three basic capabilities:
 
@@ -52,15 +52,35 @@ Noteworthy features of CHAMP are:
 * Compact formulation for a fast evaluation of multi-determinant expansions and their derivatives (VMC and DMC)
 * Multiscale VMC and DMC calculations in classical point charges (MM), polarizable continuum model (PCM), and polarizable force fields (MMpol)
 
-**Note**
+## Documentation
 
-The code is available for free under the GPL-3.0 license. Developers and contributors are welcome to use and contribute back to the code. If you have used the code for your publications, please cite this source.
+For full documentation, including detailed installation guides and tutorials, visit the [Online User's Documentation](https://filippi-claudia.github.io/champ/). 
 
-**Disclaimer**
+## Citation
+
+If you use CHAMP-EU in your research, please cite this source:
+
+Shinde, R., Landinez Borda, E. J., Shepard, S., Slootman, E., Cuzzocrea, A., Azizi, V., Lopez-Tarifa, P., Renaud, N., Umrigar, C., Moroni, S., & Filippi, C. (2024). Cornell-Holland Ab-initio Materials Package (CHAMP-EU) v2.3.0. Zenodo. [https://doi.org/10.5281/zenodo.11369538](https://doi.org/10.5281/zenodo.11369538)
+
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## License
+
+Distributed under the GPL-3.0 License. See [LICENSE](LICENSE) for more information.
+
+## Support
+
+For support, please contact the PI [Claudia Filippi](mailto:c.filippi@utwente.nl) or the developer [Ravindra Shinde](mailto:r.l.shinde@utwente.nl).
+
+## Discussion
+
+For discussions or FAQs, please use the [GitHub Discussions](https://github.com/filippi-claudia/champ/discussions) page.
+
+## Disclaimer
 
 The authors make no claims about the correctness of the program suite and it is provided without warranty under GPL-3.0. 
 
-## User Guide
-
-Please refer to the [Online User's Documentation](https://filippi-claudia.github.io/champ/) for a detailed guide on how to install and use CHAMP. 
 
