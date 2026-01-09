@@ -1,0 +1,80 @@
+name: CHAMP-EU CI - Release build - GNU without TREX (VMC/DMC Tests)
+
+on:
+  push:
+    branches:
+      - 'releases/**'
+      - main
+    tags:
+      - v2.*.*
+      - v3.*.*
+  pull_request:
+    branches:
+      - 'releases/**'
+      - main
+  workflow_dispatch:
+
+jobs:
+  build_champ_vmc_dmc:
+    strategy:
+      matrix:
+        toolchain: ['GNU']
+    name: Build CHAMP/TREXIO with ${{ matrix.toolchain }} (VMC/DMC Tests)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 200
+    defaults:
+      run:
+        shell: bash --noprofile --norc {0}
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y emacs cmake git wget gawk libtool autoconf automake gfortran gcc
+          sudo apt install -y openmpi-bin libopenmpi-dev libhdf5-openmpi-dev
+          sudo apt install -y libblas-dev liblapack-dev
+          sudo apt install -y python3
+          ln -sf /usr/bin/python3 /usr/bin/python
+          which python
+          python --version
+
+      - name: Build HDF5 from source
+        run: |
+          wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_2.tar.gz
+          tar -xzf hdf5-1_14_2.tar.gz
+          cd hdf5-hdf5-1_14_2
+          ./configure FC=mpif90 CC=mpicc FCFLAGS=-O2 CFLAGS=-O2 CXX=mpic++ --enable-parallel --enable-static --enable-shared --enable-fortran --prefix=$HOME
+          make -j$(nproc)
+          make install
+
+      - name: Clone and Install TREXIO-v2.5.0
+        run: |
+          wget https://github.com/TREX-CoE/trexio/releases/download/v2.5.0/trexio-2.5.0.tar.gz
+          tar -xzf trexio-2.5.0.tar.gz
+          cd trexio-2.5.0
+          export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
+          cmake -S. -Bbuild \
+            -DCMAKE_Fortran_COMPILER=mpif90 \
+            -DCMAKE_C_COMPILER=mpicc \
+            -DCMAKE_INSTALL_PREFIX=$HOME
+          cmake --build build -- -j$(nproc)
+          cd build
+          ctest --output-on-failure
+          make install
+
+      - name: Clone the CHAMP code from GitHub
+        uses: actions/checkout@v4
+
+      - name: Compile the CHAMP code with TREXIO using GNU compilers and run the VMC/DMC tests
+        run: |
+          export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
+          cmake -H. -Bbuild \
+            -DCMAKE_Fortran_COMPILER=mpif90 \
+            -DVECTORIZED="portable-avx2" \
+            -DCMAKE_C_COMPILER=mpicc \
+            -DENABLE_TREXIO=ON \
+            -DTREXIO_INCLUDE_DIR=$HOME/include \
+            -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so \
+            -DENABLE_QMCKL=OFF
+          cmake --build build -- -j$(nproc)
+          cd build
+          ctest --output-on-failure --verbose -L "VMC|DMC" -LE "QMCKL|TREXIO"

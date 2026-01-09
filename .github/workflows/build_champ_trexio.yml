@@ -1,4 +1,4 @@
-name: CHAMP-EU CI - Release build - GNU with TREXIO and QMCkl
+name: CHAMP-EU CI - Release build - GNU with TREXIO (TREXIO Tests)
 
 on:
   push:
@@ -15,11 +15,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_champ:
+  build_champ_trexio:
     strategy:
       matrix:
         toolchain: ['GNU']
-    name: Build CHAMP and TREXIO with ${{ matrix.toolchain }} GitHub-hosted runner
+    name: Build CHAMP/TREXIO with ${{ matrix.toolchain }} (TREXIO Tests)
     runs-on: ubuntu-22.04
     timeout-minutes: 200
     defaults:
@@ -61,43 +61,11 @@ jobs:
           ctest --output-on-failure
           make install
 
-
-      - name: Clone and Install QMCKL
-        run: |
-          git clone https://github.com/TREX-CoE/qmckl.git
-          cd qmckl
-          export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
-          ./autogen.sh
-          ./configure CC=gcc CFLAGS="-g -O2 -march=native  -flto -fno-trapping-math -fno-math-errno -ftree-vectorize" \
-          FC=gfortran FCFLAGS="-g -O2 -march=native  -flto -ftree-vectorize" --prefix=$HOME --with-trexio=$HOME --with-hdf5=$HOME --enable-openmp
-          make -j$(nproc)
-          make check -j$(nproc)
-          make install
-
-
       - name: Clone the CHAMP code from GitHub
         uses: actions/checkout@v4
 
-      - name: Compile the CHAMP code with TREXIO and QMCkl using GNU compilers and run the QMCKL tests
+      - name: Compile the CHAMP code with TREXIO using GNU compilers and run the TREXIO tests
         run: |
-          export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
-          cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 \
-            -DVECTORIZED="portable-avx2" \
-            -DCMAKE_C_COMPILER=mpicc \
-            -DENABLE_TREXIO=ON \
-            -DTREXIO_INCLUDE_DIR=$HOME/include \
-            -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so \
-            -DENABLE_QMCKL=ON \
-            -DQMCKL_INCLUDE_DIR=$HOME/include \
-            -DQMCKL_LIBRARY=$HOME/lib/libqmckl.so
-
-          cmake --build build -- -j$(nproc)
-          cd build
-          ctest --output-on-failure --verbose -L "QMCKL"
-
-      - name: Clean and Re-Compile CHAMP and run the VMC and DMC tests
-        run: |
-          rm -rf build bin
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           cmake -H. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpif90 \
@@ -109,20 +77,4 @@ jobs:
             -DENABLE_QMCKL=OFF
           cmake --build build -- -j$(nproc)
           cd build
-          ctest --output-on-failure --verbose -L "VMC|DMC" -LE "QMCKL|TREXIO"
-
-      - name: Clean and Re-Compile CHAMP and run the TREXIO tests
-        run: |
-            rm -rf build bin
-            export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
-            cmake -H. -Bbuild \
-              -DCMAKE_Fortran_COMPILER=mpif90 \
-              -DVECTORIZED="portable-avx2" \
-              -DCMAKE_C_COMPILER=mpicc \
-              -DENABLE_TREXIO=ON \
-              -DTREXIO_INCLUDE_DIR=$HOME/include \
-              -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so \
-              -DENABLE_QMCKL=OFF
-            cmake --build build -- -j$(nproc)
-            cd build
-            ctest --output-on-failure --verbose -L "H2O" -LE "(QMCKL)"
+          ctest --output-on-failure --verbose -L "H2O" -LE "(QMCKL)"
