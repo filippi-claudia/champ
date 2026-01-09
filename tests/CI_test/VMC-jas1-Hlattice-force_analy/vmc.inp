@@ -19,10 +19,14 @@
     n_images         2
 %endmodule
 
-load lattice         box.txt
+%block lattice
+  7.67421   0.0   0.0  
+   0.0  7.67421   0.0  
+   0.0   0.0  7.67421  
+%endblock
+
 load molecule        geo
 
-# These two files are taken from the original gamess2qmc converter
 load basis_num_info  $pool/basis_pointers.bfinfo
 
 load determinants    determinant.det
