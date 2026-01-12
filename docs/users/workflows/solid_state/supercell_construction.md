@@ -11,15 +11,16 @@ A supercell is a multiple of the primitive unit cell. For example, a $2 \times 2
 The lattice vectors and atomic positions are defined in the input.
 
 ```python
-load molecule
-    ... (atomic positions in the supercell) ...
-end
+load lattice box.txt
+```
+OR
 
-%module cell
-    a1  10.0  0.0  0.0
-    a2   0.0 10.0  0.0
-    a3   0.0  0.0 10.0
-%endmodule
+```python
+%block lattice
+  10.0  0.0   0.0
+  0.0  10.0   0.0
+  0.0   0.0  10.0
+%endblock
 ```
 
 ## Tools

@@ -236,11 +236,40 @@ CHAMP uses `load` commands to import data from external files. These commands ar
 
     ---
 
-    Reads lattice vectors for periodic systems.
+    Reads lattice vectors for periodic systems. This can be done by loading an external file or determining periodic cell parameters in a block in the input file.
 
+    **Option 1: External File**
     ```perl
     load lattice box.txt
     ```
+
+    **Option 2: Input Block**
+    You can specify the lattice parameters directly in the input file using a `%block lattice` structure. This supports both cubic (single value) and general (3 vectors) cells, with optional unit specifications.
+
+    **Cubic Cell Example**:
+
+    ```text
+    %block lattice
+      10.26
+    %endblock
+    ```
+
+    ```text
+    %block lattice
+      10.26  Bohr
+    %endblock
+    ```
+
+    **General Cell Example**:
+    ```text
+    %block lattice
+      10.0   0.0   0.0  Ang
+       0.0  10.0   0.0  Ang
+       0.0   0.0  10.0  Ang
+    %endblock
+    ```
+
+    *Supported units include `Bohr` (default), `Ang` (Angstrom), `m`, `nm`, etc.*
 
 </div>
 

@@ -1302,7 +1302,9 @@ subroutine parser
      call allocate_periodic()
      call allocate_ewald_test()
   ! for periodic calculations
-     if ( fdf_load_defined('lattice') ) then
+     if ( fdf_block('lattice', bfdf)) then
+        call fdf_read_lattice_block(bfdf)
+     elseif ( fdf_load_defined('lattice') ) then
         call read_lattice_file(file_lattice)
      endif
      call set_ewald
@@ -2229,6 +2231,109 @@ subroutine parser
       if (wid) close(iunit)
 
 end subroutine read_lattice_file
+
+  subroutine fdf_read_lattice_block(bfdf)
+    use periodic, only: alattice, rlatt
+    use custom_broadcast, only: bcast
+    use contrl_file, only: ounit
+    use precision_kinds, only: dp
+    use mpiconf, only: wid
+    use fdf, only: fdf_convfac
+
+    implicit none
+    type(block_fdf)                 :: bfdf
+    type(parsed_line), pointer      :: pline
+    integer                         :: i, j, k, count
+    logical                         :: cubic
+    real(dp)                        :: scale
+    character(len=20)               :: unit_str
+    integer                         :: n_vals
+
+    write(ounit,*) '-----------------------------------------------------------------------'
+    write(ounit,*) " Reading Lattice Parameters from the block"
+    write(ounit,*)
+
+    rlatt = 0.0_dp
+    cubic = .false.
+    count = 0
+    i = 1
+
+    do while(fdf_bline(bfdf, pline))
+       count = count + 1
+       
+       ! Parse line for values and units
+       n_vals = 0
+       unit_str = 'Bohr' ! Default unit
+       scale = 1.0_dp
+
+       do k = 1, pline%ntokens
+          if (pline%id(k) == 'r' .or. pline%id(k) == 'i') then
+              n_vals = n_vals + 1
+          elseif (pline%id(k) == 'n') then
+             ! Assume the first name found is the unit
+             ! Access first name in line list. Note: fdf_bnames index is 1-based index among NAME tokens.
+             ! Since we restart the search for every line, and we take the first name, index 1 is correct.
+             unit_str = fdf_bnames(pline, 1)
+             scale = fdf_convfac(unit_str, 'Bohr')
+          endif
+       enddo
+
+       ! If we have 1 value, but it's the ONLY token (ntokens=1), it is definitely cubic 
+       ! and likely 'r' or 'i'. If ntokens > 1, check if the others are units.
+       
+       if (n_vals == 1 .and. count == 1) then
+           ! fdf_bvalues(pline, 1) gets the 1st value (real or int) from the line
+           alattice = fdf_bvalues(pline, 1) * scale
+           cubic = .true.
+           write(ounit,*) " Lattice constant unit detected: ", trim(unit_str)
+       elseif (n_vals == 3) then
+           if (cubic) call fatal_error("Lattice block: mixed cubic (1 val) and vector (3 vals) format")
+           if (i > 3) call fatal_error("Lattice block: too many lines (max 3 vectors)")
+           
+           do j = 1, 3
+              rlatt(i, j) = fdf_bvalues(pline, j) * scale
+           enddo
+           
+           if (scale .ne. 1.0_dp) then
+               write(ounit,*) " Lattice vector ", i, " unit detected: ", trim(unit_str)
+           endif
+           
+           i = i + 1
+       else
+           call fatal_error("Lattice block: line must have 1 (cubic) or 3 (vector) values")
+       endif
+    enddo
+
+    if (cubic) then
+         if (count /= 1) call fatal_error("Cubic lattice block should have only 1 line")
+         write(ounit,*) 'This is a cubic cell'
+         write(ounit,'(a,f12.6)') ' The lattice constant is', alattice
+
+         rlatt(1,1) = alattice
+         rlatt(2,2) = alattice
+         rlatt(3,3) = alattice
+    else
+         if (i /= 4) call fatal_error("Lattice block must define 3 vectors")
+         
+         write(ounit,*) "The simulation cell is:"
+         write(ounit,*) "a", rlatt(1,1), rlatt(1,2), rlatt(1,3)
+         write(ounit,*) "b", rlatt(2,1), rlatt(2,2), rlatt(2,3)
+         write(ounit,*) "c", rlatt(3,1), rlatt(3,2), rlatt(3,3)
+
+         rlatt = TRANSPOSE(rlatt)
+         
+         alattice=rlatt(1,1)
+         do i = 2, 3
+            if(rlatt(i,i).lt.alattice) alattice=rlatt(i,i)
+         enddo
+         
+         if(alattice .le. 0.0_dp) call fatal_error("Wrong lattice parameter")
+    endif
+
+    call bcast(rlatt)
+    write(ounit,*) '-----------------------------------------------------------------------'
+
+  end subroutine fdf_read_lattice_block
 
   subroutine fdf_read_molecule_block(bfdf)
     implicit none
