@@ -43,7 +43,7 @@ Shinde, R., Landinez Borda, E. J., Shepard, S., Slootman, E., Cuzzocrea, A., Azi
 
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](https://github.com/filippi-claudia/champ/blob/main/CONTRIBUTING.md) for details.
+We welcome contributions! Please see [Contributing Guidelines](https://github.com/filippi-claudia/champ/blob/main/Contributing.md) for details.
 
 ## License
 
