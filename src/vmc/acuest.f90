@@ -297,45 +297,46 @@ contains
       ! enddo
       ! stop
 
-      ! call backflow(xold)
-      ! do iel=1,nelec
-      !   do k=1,3
-      !     xnew(:) = xold(:,iel)
-      !     xnew(k) = xnew(k) + 1.0d0
-      !     call single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
-      !     xold(k,iel) = xold(k,iel) + 1.0d0
-      !     call backflow(xold)
-      !     xold(k,iel) = xold(k,iel) - 1.0d0
-      !     do i = 1, nelec
-      !       do kk=1,3
-      !         if (abs(quasi_x_new(kk,i) - quasi_x(kk,i)) > 1d-10) then
-      !           print *, 'Error in quasi_x for iel=', iel, ' k=', k, ' i=', i, ' kk=', kk
-      !           print *, ' quasi_x_new=', quasi_x_new(kk,i) , ' quasi_x=', quasi_x(kk,i)
-      !           stop
-      !         end if
-      !         do j = 1, nelec
-      !           if (abs(d2quasi_dx2_new(kk,i,j) - d2quasi_dx2(kk,i,j)) > 1d-10) then
-      !             print *, 'Error in d2quasi_dx2 for iel=', iel, ' k=', k, ' i=', i, ' j=', j, ' kk=', kk
-      !             print *, ' d2quasi_dx2_new=', d2quasi_dx2_new(kk,i,j) , ' d2quasi_dx2=', d2quasi_dx2(kk,i,j)
-      !             stop
-      !           end if
-      !           do l = 1, 3
-      !             if (abs(dquasi_dx_new(kk,i,l,j) - dquasi_dx(kk,i,l,j)) > 1d-10) then
-      !               print *, 'Error in dquasi_dx for iel=', iel, ' k=', k, ' i=', i, ' j=', j, ' l=', l, ' kk=', kk
-      !               stop
-      !             end if
-      !           end do
-      !         end do
-      !       end do
-      !     end do
-      !     !print *, quasi_x_new(k,iel) , quasi_x(k,iel)
-      !     !print *, dquasi_dx_new(k,iel,k,iel) , dquasi_dx(k,iel,k,iel)
-      !     !print *, d2quasi_dx2_new(k,iel,iel) , d2quasi_dx2(k,iel, iel)
-      !     call backflow(xold)
-      !   enddo
-      !   print *, '-----'
-      ! enddo 
-      ! stop
+      call backflow(xold)
+      do iel=1,nelec
+        do k=1,3
+          xnew(:) = xold(:,iel)
+          xnew(k) = xnew(k) + 1.0d0
+          call single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
+          xold(k,iel) = xold(k,iel) + 1.0d0
+          call backflow(xold)
+          xold(k,iel) = xold(k,iel) - 1.0d0
+          do i = 1, nelec
+            do kk=1,3
+              if (abs(quasi_x_new(kk,i) - quasi_x(kk,i)) > 1d-10) then
+                print *, 'Error in quasi_x for iel=', iel, ' k=', k, ' i=', i, ' kk=', kk
+                print *, ' quasi_x_new=', quasi_x_new(kk,i) , ' quasi_x=', quasi_x(kk,i)
+                stop
+              end if
+              do j = 1, nelec
+                if (abs(d2quasi_dx2_new(kk,i,j) - d2quasi_dx2(kk,i,j)) > 1d-10) then
+                  print *, 'Error in d2quasi_dx2 for iel=', iel, ' k=', k, ' i=', i, ' j=', j, ' kk=', kk
+                  print *, ' d2quasi_dx2_new=', d2quasi_dx2_new(kk,i,j) , ' d2quasi_dx2=', d2quasi_dx2(kk,i,j)
+                  stop
+                end if
+                do l = 1, 3
+                  if (abs(dquasi_dx_new(kk,i,l,j) - dquasi_dx(kk,i,l,j)) > 1d-10) then
+                    print *, 'Error in dquasi_dx for iel=', iel, ' k=', k, ' i=', i, ' j=', j, ' l=', l, ' kk=', kk
+                    print *, ' dquasi_dx_new=', dquasi_dx_new(kk,i,l,j) , ' dquasi_dx=', dquasi_dx(kk,i,l,j)
+                    stop
+                  end if
+                end do
+              end do
+            end do
+          end do
+          !print *, quasi_x_new(k,iel) , quasi_x(k,iel)
+          !print *, dquasi_dx_new(k,iel,k,iel) , dquasi_dx(k,iel,k,iel)
+          !print *, d2quasi_dx2_new(k,iel,iel) , d2quasi_dx2(k,iel, iel)
+          call backflow(xold)
+        enddo
+        print *, '-----'
+      enddo 
+      stop
 
       ! do iel=1,nelec
       !   do k=1,3

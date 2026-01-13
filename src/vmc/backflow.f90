@@ -683,7 +683,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     cutoff = parm_bf(offset_ee+1)
     inv_cutoff = 1.0d0 / cutoff
 
-    b_one = parm_bf(offset_ee+2) * C * inv_cutoff
+    b_one = parm_bf(offset_ee+2) * cutoff/C
 
 
     do i = 1, nelec
@@ -712,18 +712,15 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
                   + C * (C-1) * inv_cutoff * inv_cutoff * cutoff2 
 
 
-            eta  = eta + parm_bf(offset_ee+2) + b_one*rij
-            tmp1 = b_one * inv_rij
+            eta  = eta + b_one
             do a = 1, 3
                 dquasi_dp(a,i,offset_ee+2) = dquasi_dp(a,i,offset_ee+2) + delta(a) * f * (1 + C * inv_cutoff * rij)
-                etap(a) = etap(a) + tmp1 * delta(a)
             end do
-            etapp = etapp + 2.0d0 * tmp1
 
-            rr = rij*rij
+            rr = rij
             
             tmp2 = inv_rij*inv_rij
-            do k = 2, nordb_bf
+            do k = 1, nordb_bf
                 eta = eta + parm_bf(offset_ee+k+1)*rr
                 do a = 1, 3
                     dquasi_dp(a,i,offset_ee+k+1) = dquasi_dp(a,i,offset_ee+k+1) + rr * delta(a) * f
@@ -737,8 +734,8 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
             do a = 1, 3
                 quasi_x(a,i) = quasi_x(a,i) + eta * delta(a) * f
                 ! dquasi_dp(a,i,1) = dquasi_dp(a,i,1) + eta * delta(a) * f * log((cutoff - rij)/cutoff)
-                dquasi_dp(a,i,offset_ee+1) = dquasi_dp(a,i,offset_ee+1) + delta(a) * tmp2 - &
-                    delta(a) * f * b_one * inv_cutoff * rij
+                dquasi_dp(a,i,offset_ee+1) = dquasi_dp(a,i,offset_ee+1) + delta(a) * tmp2 + &
+                    delta(a) * f * b_one * inv_cutoff
                 do b = 1, 3
                     tmp1 = etap(b) * delta(a) * f + eta * delta(a) * fp(b)
                     dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + tmp1
@@ -776,7 +773,7 @@ if (norda_bf .eq. 0) goto 20
         cutoff = parm_bf(offset_en+idx+1)
         inv_cutoff = 1.0d0 / cutoff
 
-        a_one = parm_bf(offset_en+idx+2) * C * inv_cutoff
+        a_one = parm_bf(offset_en+idx+2) * cutoff/C
 
         do i = 1, nelec
 
@@ -802,18 +799,15 @@ if (norda_bf .eq. 0) goto 20
             fpp = -2.0d0 * C * inv_cutoff * inv_rij * cutoff1 + &
                   + C * (C-1) * inv_cutoff * inv_cutoff * cutoff2 
 
-            eta  = eta + parm_bf(offset_en+idx+2) + a_one*rij
-            tmp1 = a_one * inv_rij
+            eta  = eta + a_one
             do a = 1, 3
                 dquasi_dp(a,i,offset_en + idx+2) = dquasi_dp(a,i,offset_en + idx+2) + delta(a) * f * (1 + C * inv_cutoff * rij)
-                etap(a) = etap(a) + tmp1 * delta(a)
             end do
-            etapp = etapp + 2.0d0 * tmp1
 
-            rr = rij*rij
+            rr = rij
 
             tmp1 = inv_rij*inv_rij
-            do k = 2, norda_bf
+            do k = 1, norda_bf
                 eta = eta + parm_bf(offset_en + idx+ k+1)*rr
                 do a = 1, 3
                     dquasi_dp(a,i,offset_en + idx+ k+1) = dquasi_dp(a,i,offset_en + idx+ k+1) + rr * delta(a) * f
@@ -828,8 +822,8 @@ if (norda_bf .eq. 0) goto 20
             do a = 1, 3 
                 quasi_x(a,i) = quasi_x(a,i) + eta * delta(a) * f
                 dquasi_dp(a,i,offset_en + idx+1) = dquasi_dp(a,i,offset_en + idx+1) + &
-                    delta(a) * tmp1 - &
-                    delta(a) * f * a_one*inv_cutoff * rij
+                    delta(a) * tmp1 + &
+                    delta(a) * f * a_one*inv_cutoff
                 do b = 1, 3
                     dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + (&
                         etap(b) * delta(a) * f + eta * delta(a) * fp(b) )
@@ -984,7 +978,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     real(dp), dimension(3, nelec, nelec), intent(out) :: d2quasi_dx2_new
     integer, dimension(nelec), intent(out) :: indices
     real(dp) :: rij, rr, cutoff, b_one, a_one
-    real(dp) :: f, fp(3), fpp(3), eta, etap(3), etapp(3)
+    real(dp) :: f, fp(3), fpp, eta, etap(3), etapp
     real(dp) :: delta(3)
     integer :: i, j, k, a, b, offset_ee, offset_en, offset_een, idx, C
     integer :: nc, l, m, n, tmpc, idx_phi, idx_theta, kk
@@ -1024,7 +1018,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     cutoff = parm_bf(offset_ee+1)
     inv_cutoff = 1.0d0 / cutoff
 
-    b_one = parm_bf(offset_ee+2) * C * inv_cutoff
+    b_one = parm_bf(offset_ee+2) * cutoff/C
 
 
     do j = 1, nelec
@@ -1047,32 +1041,24 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
             cutoff2 = cutoff1/((cutoff - rij)*inv_cutoff)
 
             tmp1 = -C*inv_cutoff * cutoff1 * inv_rij
-            tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * cutoff2 * inv_rij * inv_rij
             do a = 1, 3
                 fp(a) = tmp1 * delta(a)
-                fpp(a) = tmp2 * delta(a) * delta(a) + &
-                            tmp1 * ( 1 - delta(a)*delta(a)*inv_rij*inv_rij )
             end do
+            fpp = -2.0d0 * C * inv_cutoff * inv_rij * cutoff1 + &
+                  + C * (C-1) * inv_cutoff * inv_cutoff * cutoff2 
 
 
-            eta = eta + parm_bf(offset_ee+2) + b_one*rij
-            tmp1 = b_one * inv_rij
-            tmp2 = b_one * inv_rij * inv_rij * inv_rij
-            do a = 1, 3
-                etap(a) = etap(a) + tmp1 * delta(a)
-                etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
-            end do
+            eta = eta + b_one
 
-
-            rr = rij*rij
+            rr = rij
         
             tmp1 = inv_rij*inv_rij
-            do k = 2, nordb_bf
+            do k = 1, nordb_bf
                 eta = eta + parm_bf(offset_ee+k+1)*rr
                 do a = 1, 3
                     etap(a) = etap(a) + parm_bf(offset_ee+k+1) * delta(a) * tmp1 * k * rr
-                    etapp(a) = etapp(a) + parm_bf(offset_ee+k+1) * tmp1 * rr * k * (1 + (k-2) * delta(a) * delta(a) * tmp1)
                 enddo
+                etapp = etapp + parm_bf(offset_ee+k+1) * k * rr * tmp1 * (k+1)
                 rr = rr * rij
             end do
 
@@ -1088,10 +1074,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                     dquasi_dx_new(a,j,b,iel) = dquasi_dx_new(a,j,b,iel) + tmp1
                     dquasi_dx_new(a,j,b,j) = dquasi_dx_new(a,j,b,j) - tmp1
 
-                    tmp1 = etapp(b) * delta(a) * f + &
-                            2.0d0 * etap(b) * delta(a) * fp(b) + &
-                            eta * delta(a) * fpp(b)
-
+                    tmp1 = 2.0d0 * etap(b) * delta(a) * fp(b)
                     d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - tmp1
                     d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) - tmp1
                     d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) + tmp1
@@ -1102,6 +1085,12 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                 dquasi_dx_new(a,iel,a,j) = dquasi_dx_new(a,iel,a,j) + tmp1
                 dquasi_dx_new(a,j,a,iel) = dquasi_dx_new(a,j,a,iel) + tmp1
                 dquasi_dx_new(a,j,a,j) = dquasi_dx_new(a,j,a,j) - tmp1
+
+                tmp1 = etapp * delta(a) * f + eta * delta(a) * fpp
+                d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - tmp1
+                d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) - tmp1
+                d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) + tmp1
+                d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) + tmp1
 
                 tmp1 = 2 * (eta * fp(a) + etap(a) * f)
                 d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - tmp1
@@ -1128,32 +1117,24 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
             cutoff2 = cutoff1/((cutoff - rij)*inv_cutoff)
 
             tmp1 = -C*inv_cutoff * cutoff1 * inv_rij
-            tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * cutoff2 * inv_rij * inv_rij
             do a = 1, 3
                 fp(a) = tmp1 * delta(a)
-                fpp(a) = tmp2 * delta(a) * delta(a) + &
-                            tmp1 * ( 1 - delta(a)*delta(a)*inv_rij*inv_rij )
             end do
+            fpp = -2.0d0 * C * inv_cutoff * inv_rij * cutoff1 + &
+                  + C * (C-1) * inv_cutoff * inv_cutoff * cutoff2 
 
 
-            eta = eta + parm_bf(offset_ee+2) + b_one*rij
-            tmp1 = b_one * inv_rij
-            tmp2 = b_one * inv_rij * inv_rij * inv_rij
-            do a = 1, 3
-                etap(a) = etap(a) + tmp1 * delta(a)
-                etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
-            end do
+            eta = eta + b_one
 
-
-            rr = rij*rij
+            rr = rij
         
             tmp1 = inv_rij*inv_rij
-            do k = 2, nordb_bf
+            do k = 1, nordb_bf
                 eta = eta + parm_bf(offset_ee+k+1)*rr
                 do a = 1, 3
                     etap(a) = etap(a) + parm_bf(offset_ee+k+1) * delta(a) * tmp1 * k * rr
-                    etapp(a) = etapp(a) + parm_bf(offset_ee+k+1) * tmp1 * rr * k * (1 + (k-2) * delta(a) * delta(a) * tmp1)
                 enddo
+                etapp = etapp + parm_bf(offset_ee+k+1) * k * rr * tmp1 * (k+1)
                 rr = rr * rij
             end do
 
@@ -1169,10 +1150,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                     dquasi_dx_new(a,j,b,iel) = dquasi_dx_new(a,j,b,iel) - tmp1
                     dquasi_dx_new(a,j,b,j) = dquasi_dx_new(a,j,b,j) + tmp1
 
-                    tmp1 = etapp(b) * delta(a) * f + &
-                            2.0d0 * etap(b) * delta(a) * fp(b) + &
-                            eta * delta(a) * fpp(b)
-
+                    tmp1 = 2.0d0 * etap(b) * delta(a) * fp(b)
                     d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + tmp1
                     d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) + tmp1
                     d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) - tmp1
@@ -1183,6 +1161,12 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                 dquasi_dx_new(a,iel,a,j) = dquasi_dx_new(a,iel,a,j) - tmp1
                 dquasi_dx_new(a,j,a,iel) = dquasi_dx_new(a,j,a,iel) - tmp1
                 dquasi_dx_new(a,j,a,j) = dquasi_dx_new(a,j,a,j) + tmp1
+
+                tmp1 = etapp * delta(a) * f + eta * delta(a) * fpp
+                d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + tmp1
+                d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) + tmp1
+                d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) - tmp1
+                d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) - tmp1
 
                 tmp1 = 2 * (eta * fp(a) + etap(a) * f)
                 d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + tmp1
@@ -1204,7 +1188,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
         cutoff = parm_bf(offset_en+idx+1)
         inv_cutoff = 1.0d0 / cutoff
 
-        a_one = parm_bf(offset_en+idx+2) * C * inv_cutoff
+        a_one = parm_bf(offset_en+idx+2) * cutoff/C
 
 
         delta(:) = xold(:, iel) - cent(:, j)
@@ -1224,31 +1208,23 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
             cutoff2 = cutoff1/((cutoff - rij)*inv_cutoff)
 
             tmp1 = -C*inv_cutoff * cutoff1 * inv_rij
-            tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * cutoff2 * inv_rij * inv_rij
             do a = 1, 3
                 fp(a) = tmp1 * delta(a)
-                fpp(a) = tmp2 * delta(a) * delta(a) + &
-                            tmp1 * ( 1 - delta(a)*delta(a)*inv_rij*inv_rij )
             end do
+            fpp = -2.0d0 * C * inv_cutoff * inv_rij * cutoff1 + &
+                  + C * (C-1) * inv_cutoff * inv_cutoff * cutoff2 
 
-            eta  = eta + parm_bf(offset_en+idx+2) + a_one*rij
+            eta  = eta + a_one
 
-            tmp1 = a_one * inv_rij
-            tmp2 = a_one * inv_rij * inv_rij * inv_rij
-            do a = 1, 3
-                etap(a) = etap(a) + tmp1 * delta(a)
-                etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
-            end do
-
-            rr = rij*rij
+            rr = rij
 
             tmp1 = inv_rij*inv_rij
-            do k = 2, norda_bf
+            do k = 1, norda_bf
                 eta = eta + parm_bf(offset_en + idx+ k+1)*rr
                 do a = 1, 3
                     etap(a) = etap(a) + parm_bf(offset_en + idx+ k+1) * k * rr * delta(a)*tmp1
-                    etapp(a) = etapp(a) + parm_bf(offset_en + idx+ k+1) * k * tmp1 * rr * (1 + (k-2) * delta(a) * delta(a)*tmp1)
                 enddo
+                etapp = etapp + parm_bf(offset_en + idx+ k+1) * k * rr * tmp1 * (k+1)
                 rr = rr * rij
             end do
 
@@ -1259,11 +1235,10 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                         etap(b) * delta(a) * f + eta * delta(a) * fp(b) )
 
                     d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - (&
-                        etapp(b) * delta(a) * f + &
-                        2.0d0 * etap(b) * delta(a) * fp(b) + &
-                        eta * delta(a) * fpp(b) )
+                         2.0d0 * etap(b) * delta(a) * fp(b)  )
                 end do
                 dquasi_dx_new(a,iel,a,iel) = dquasi_dx_new(a,iel,a,iel) - eta * f
+                d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - etapp * delta(a) * f - eta * delta(a) * fpp
                 d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - 2 * (eta * fp(a) + etap(a) * f)
             end do
         endif
@@ -1284,31 +1259,23 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
             cutoff2 = cutoff1/((cutoff - rij)*inv_cutoff)
 
             tmp1 = -C*inv_cutoff * cutoff1 * inv_rij
-            tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * cutoff2 * inv_rij * inv_rij
             do a = 1, 3
                 fp(a) = tmp1 * delta(a)
-                fpp(a) = tmp2 * delta(a) * delta(a) + &
-                            tmp1 * ( 1 - delta(a)*delta(a)*inv_rij*inv_rij )
             end do
+            fpp = -2.0d0 * C * inv_cutoff * inv_rij * cutoff1 + &
+                  + C * (C-1) * inv_cutoff * inv_cutoff * cutoff2 
 
-            eta  = eta + parm_bf(offset_en+idx+2) + a_one*rij
+            eta  = eta + a_one
 
-            tmp1 = a_one * inv_rij
-            tmp2 = a_one * inv_rij * inv_rij * inv_rij
-            do a = 1, 3
-                etap(a) = etap(a) + tmp1 * delta(a)
-                etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
-            end do
-
-            rr = rij*rij
+            rr = rij
 
             tmp1 = inv_rij*inv_rij
-            do k = 2, norda_bf
+            do k = 1, norda_bf
                 eta = eta + parm_bf(offset_en + idx+ k+1)*rr
                 do a = 1, 3
                     etap(a) = etap(a) + parm_bf(offset_en + idx+ k+1) * k * rr * delta(a)*tmp1
-                    etapp(a) = etapp(a) + parm_bf(offset_en + idx+ k+1) * k * tmp1 * rr * (1 + (k-2) * delta(a) * delta(a)*tmp1)
                 enddo
+                etapp = etapp + parm_bf(offset_en + idx+ k+1) * k * rr * tmp1 * (k+1)
                 rr = rr * rij
             end do
 
@@ -1319,11 +1286,10 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                         etap(b) * delta(a) * f + eta * delta(a) * fp(b) )
 
                     d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + (&
-                        etapp(b) * delta(a) * f + &
-                        2.0d0 * etap(b) * delta(a) * fp(b) + &
-                        eta * delta(a) * fpp(b) )
+                        2.0d0 * etap(b) * delta(a) * fp(b)  )
                 end do
                 dquasi_dx_new(a,iel,a,iel) = dquasi_dx_new(a,iel,a,iel) + eta * f
+                d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + etapp * delta(a) * f + eta * delta(a) * fpp
                 d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + 2 * (eta * fp(a) + etap(a) * f)
             end do
         endif
@@ -1421,28 +1387,99 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                 end do
                 do a = 1, 3 
                     quasi_x_new(a,iel) = quasi_x_new(a,iel) - phi * rvec_ee(a,iel,j) - theta * rvec_en(a,iel,nc)
-                    quasi_x_new(a,j) = quasi_x_new(a,j) - phi * rvec_ee(a,j,iel) - theta * rvec_en(a,j,nc)
 
                     do b = 1, 3
                         dquasi_dx_new(a,iel,b,iel) = dquasi_dx_new(a,iel,b,iel) - phipi(b) * rvec_ee(a,iel,j) - thetapi(b) * rvec_en(a,iel,nc)                        
                         dquasi_dx_new(a,iel,b,j) = dquasi_dx_new(a,iel,b,j) - phipj(b) * rvec_ee(a,iel,j) - thetapj(b) * rvec_en(a,iel,nc)
-                        dquasi_dx_new(a,j,b,iel) = dquasi_dx_new(a,j,b,iel) - phipi(b) * rvec_ee(a,j,iel) - thetapi(b) * rvec_en(a,j,nc)
-                        dquasi_dx_new(a,j,b,j) = dquasi_dx_new(a,j,b,j) - phipj(b) * rvec_ee(a,j,iel) - thetapj(b) * rvec_en(a,j,nc)
                     end do
                     dquasi_dx_new(a,iel,a,iel) = dquasi_dx_new(a,iel,a,iel) - phi - theta 
                     dquasi_dx_new(a,iel,a,j) = dquasi_dx_new(a,iel,a,j) + phi 
-                    dquasi_dx_new(a,j,a,iel) = dquasi_dx_new(a,j,a,iel) + phi
-                    dquasi_dx_new(a,j,a,j) = dquasi_dx_new(a,j,a,j) - phi - theta
   
                     d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - phippi * rvec_ee(a,iel,j) - thetappi * rvec_en(a,iel,nc)
                     d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) - phippj * rvec_ee(a,iel,j) - thetappj * rvec_en(a,iel,nc)
-                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) - phippi * rvec_ee(a,j,iel) - thetappi * rvec_en(a,j,nc)
-                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) - phippj * rvec_ee(a,j,iel) - thetappj * rvec_en(a,j,nc)
 
                     d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - 2.0d0 * phipi(a) - 2.0d0 * thetapi(a)
                     d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) + 2.0d0 * phipj(a)
-                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) + 2.0d0 * phipi(a)
-                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) - 2.0d0 * phipj(a) - 2.0d0 * thetapj(a)
+                end do
+
+                ! Now account for the contribution where j is the central electron
+                phi = 0.0d0
+                phipi = 0.0d0
+                phipj = 0.0d0
+                phippi = 0.0d0
+                phippj = 0.0d0
+                theta = 0.0d0
+                thetapi = 0.0d0
+                thetapj = 0.0d0
+                thetappi = 0.0d0
+                thetappj = 0.0d0
+
+                k = idx_phi+2
+                kk = idx_theta+1
+                do l = 0, nordc_bf
+                    do m = 0, nordc_bf - l
+                        do n = 0, nordc_bf - l - m
+                            phi = phi + parm_bf(k) * r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n) 
+                            theta = theta + parm_bf(kk) * r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n) 
+                            do a = 1, 3
+                                tmp1 = r_en_gl(j,a,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n)
+                                phipi(a) = phipi(a) + parm_bf(k) * tmp1
+                                thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
+
+                                tmp1 = r_en(j,nc,l,2) * r_en_gl(iel,a,nc,m,2) * r_ee(j,iel,n)
+                                phipj(a) = phipj(a) + parm_bf(k) * tmp1
+                                thetapj(a) = thetapj(a) + parm_bf(kk) * tmp1
+
+                                tmp1 = r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee_gl(j,a,iel,n) 
+                                phipi(a) = phipi(a) + parm_bf(k) * tmp1
+                                phipj(a) = phipj(a) - parm_bf(k) * tmp1
+                                thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
+                                thetapj(a) = thetapj(a) - parm_bf(kk) * tmp1
+
+                                tmp1 = 2.0d0 * r_en_gl(j,a,nc,l,2) * r_en(iel,nc,m,2) * r_ee_gl(j,a,iel,n)
+                                phippi = phippi + parm_bf(k) * tmp1
+                                thetappi = thetappi + parm_bf(kk) * tmp1
+
+                                tmp1 = 2.0d0 * r_en(j,nc,l,2) * r_en_gl(iel,a,nc,m,2) * r_ee_gl(j,a,iel,n)
+                                phippj = phippj - parm_bf(k) * tmp1
+                                thetappj = thetappj - parm_bf(kk) * tmp1
+                            enddo
+
+                            tmp1 = r_en_gl(j,4,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n)
+                            phippi = phippi + parm_bf(k) * tmp1
+                            thetappi = thetappi + parm_bf(kk) * tmp1
+
+                            tmp1 = r_en(j,nc,l,2) * r_en_gl(iel,4,nc,m,2) * r_ee(j,iel,n) 
+                            phippj = phippj + parm_bf(k) * tmp1
+                            thetappj = thetappj + parm_bf(kk) * tmp1
+
+                            tmp1 = r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee_gl(j,4,iel,n)
+                            phippi = phippi + parm_bf(k) * tmp1
+                            thetappi = thetappi + parm_bf(kk) * tmp1
+                            phippj = phippj + parm_bf(k) * tmp1
+                            thetappj = thetappj + parm_bf(kk) * tmp1
+
+                            k = k + 1
+                            kk = kk + 1
+                        end do
+                    end do
+                end do
+
+                do a = 1, 3 
+                    quasi_x_new(a,j) = quasi_x_new(a,j) - phi * rvec_ee(a,j,iel) - theta * rvec_en(a,j,nc)
+
+                    do b = 1, 3
+                        dquasi_dx_new(a,j,b,j) = dquasi_dx_new(a,j,b,j) - phipi(b) * rvec_ee(a,j,iel) - thetapi(b) * rvec_en(a,j,nc)                        
+                        dquasi_dx_new(a,j,b,iel) = dquasi_dx_new(a,j,b,iel) - phipj(b) * rvec_ee(a,j,iel) - thetapj(b) * rvec_en(a,j,nc)
+                    end do
+                    dquasi_dx_new(a,j,a,j) = dquasi_dx_new(a,j,a,j) - phi - theta 
+                    dquasi_dx_new(a,j,a,iel) = dquasi_dx_new(a,j,a,iel) + phi
+
+                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) - phippi * rvec_ee(a,j,iel) - thetappi * rvec_en(a,j,nc)
+                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) - phippj * rvec_ee(a,j,iel) - thetappj * rvec_en(a,j,nc)
+
+                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) - 2.0d0 * phipi(a) - 2.0d0 * thetapi(a)
+                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) + 2.0d0 * phipj(a)
                 end do
             end if
         end do
@@ -1531,28 +1568,99 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                 end do
                 do a = 1, 3 
                     quasi_x_new(a,iel) = quasi_x_new(a,iel) + phi * rvec_ee(a,iel,j) + theta * rvec_en(a,iel,nc)
-                    quasi_x_new(a,j) = quasi_x_new(a,j) + phi * rvec_ee(a,j,iel) + theta * rvec_en(a,j,nc)
 
                     do b = 1, 3
                         dquasi_dx_new(a,iel,b,iel) = dquasi_dx_new(a,iel,b,iel) + phipi(b) * rvec_ee(a,iel,j) + thetapi(b) * rvec_en(a,iel,nc)                        
                         dquasi_dx_new(a,iel,b,j) = dquasi_dx_new(a,iel,b,j) + phipj(b) * rvec_ee(a,iel,j) + thetapj(b) * rvec_en(a,iel,nc)
-                        dquasi_dx_new(a,j,b,iel) = dquasi_dx_new(a,j,b,iel) + phipi(b) * rvec_ee(a,j,iel) + thetapi(b) * rvec_en(a,j,nc)
-                        dquasi_dx_new(a,j,b,j) = dquasi_dx_new(a,j,b,j) + phipj(b) * rvec_ee(a,j,iel) + thetapj(b) * rvec_en(a,j,nc)
                     end do
                     dquasi_dx_new(a,iel,a,iel) = dquasi_dx_new(a,iel,a,iel) + phi + theta 
                     dquasi_dx_new(a,iel,a,j) = dquasi_dx_new(a,iel,a,j) - phi 
-                    dquasi_dx_new(a,j,a,iel) = dquasi_dx_new(a,j,a,iel) - phi
-                    dquasi_dx_new(a,j,a,j) = dquasi_dx_new(a,j,a,j) + phi + theta
 
                     d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + phippi * rvec_ee(a,iel,j) + thetappi * rvec_en(a,iel,nc)
                     d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) + phippj * rvec_ee(a,iel,j) + thetappj * rvec_en(a,iel,nc)
-                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) + phippi * rvec_ee(a,j,iel) + thetappi * rvec_en(a,j,nc)
-                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) + phippj * rvec_ee(a,j,iel) + thetappj * rvec_en(a,j,nc)
 
                     d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + 2.0d0 * phipi(a) + 2.0d0 * thetapi(a)
                     d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) - 2.0d0 * phipj(a)
-                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) - 2.0d0 * phipi(a)
-                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) + 2.0d0 * phipj(a) + 2.0d0 * thetapj(a)
+                end do
+
+                ! Contribution with j as the central electron (new configuration)
+                phi = 0.0d0
+                phipi = 0.0d0
+                phipj = 0.0d0
+                phippi = 0.0d0
+                phippj = 0.0d0
+                theta = 0.0d0
+                thetapi = 0.0d0
+                thetapj = 0.0d0
+                thetappi = 0.0d0
+                thetappj = 0.0d0
+
+                k = idx_phi+2
+                kk = idx_theta+1
+                do l = 0, nordc_bf
+                    do m = 0, nordc_bf - l
+                        do n = 0, nordc_bf - l - m
+                            phi = phi + parm_bf(k) * r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n) 
+                            theta = theta + parm_bf(kk) * r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n) 
+                            do a = 1, 3
+                                tmp1 = r_en_gl(j,a,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n)
+                                phipi(a) = phipi(a) + parm_bf(k) * tmp1
+                                thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
+
+                                tmp1 = r_en(j,nc,l,2) * r_en_gl(iel,a,nc,m,2) * r_ee(j,iel,n)
+                                phipj(a) = phipj(a) + parm_bf(k) * tmp1
+                                thetapj(a) = thetapj(a) + parm_bf(kk) * tmp1
+
+                                tmp1 = r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee_gl(j,a,iel,n) 
+                                phipi(a) = phipi(a) + parm_bf(k) * tmp1
+                                phipj(a) = phipj(a) - parm_bf(k) * tmp1
+                                thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
+                                thetapj(a) = thetapj(a) - parm_bf(kk) * tmp1
+
+                                tmp1 = 2.0d0 * r_en_gl(j,a,nc,l,2) * r_en(iel,nc,m,2) * r_ee_gl(j,a,iel,n)
+                                phippi = phippi + parm_bf(k) * tmp1
+                                thetappi = thetappi + parm_bf(kk) * tmp1
+
+                                tmp1 = 2.0d0 * r_en(j,nc,l,2) * r_en_gl(iel,a,nc,m,2) * r_ee_gl(j,a,iel,n)
+                                phippj = phippj - parm_bf(k) * tmp1
+                                thetappj = thetappj - parm_bf(kk) * tmp1
+                            enddo
+
+                            tmp1 = r_en_gl(j,4,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n)
+                            phippi = phippi + parm_bf(k) * tmp1
+                            thetappi = thetappi + parm_bf(kk) * tmp1
+
+                            tmp1 = r_en(j,nc,l,2) * r_en_gl(iel,4,nc,m,2) * r_ee(j,iel,n) 
+                            phippj = phippj + parm_bf(k) * tmp1
+                            thetappj = thetappj + parm_bf(kk) * tmp1
+
+                            tmp1 = r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee_gl(j,4,iel,n)
+                            phippi = phippi + parm_bf(k) * tmp1
+                            thetappi = thetappi + parm_bf(kk) * tmp1
+                            phippj = phippj + parm_bf(k) * tmp1
+                            thetappj = thetappj + parm_bf(kk) * tmp1
+
+                            k = k + 1
+                            kk = kk + 1
+                        end do
+                    end do
+                end do
+
+                do a = 1, 3 
+                    quasi_x_new(a,j) = quasi_x_new(a,j) + phi * rvec_ee(a,j,iel) + theta * rvec_en(a,j,nc)
+
+                    do b = 1, 3
+                        dquasi_dx_new(a,j,b,j) = dquasi_dx_new(a,j,b,j) + phipi(b) * rvec_ee(a,j,iel) + thetapi(b) * rvec_en(a,j,nc)                        
+                        dquasi_dx_new(a,j,b,iel) = dquasi_dx_new(a,j,b,iel) + phipj(b) * rvec_ee(a,j,iel) + thetapj(b) * rvec_en(a,j,nc)
+                    end do
+                    dquasi_dx_new(a,j,a,j) = dquasi_dx_new(a,j,a,j) + phi + theta 
+                    dquasi_dx_new(a,j,a,iel) = dquasi_dx_new(a,j,a,iel) - phi
+
+                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) + phippi * rvec_ee(a,j,iel) + thetappi * rvec_en(a,j,nc)
+                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) + phippj * rvec_ee(a,j,iel) + thetappj * rvec_en(a,j,nc)
+
+                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) + 2.0d0 * phipi(a) + 2.0d0 * thetapi(a)
+                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) - 2.0d0 * phipj(a)
                 end do
             end if
         end do
