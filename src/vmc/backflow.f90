@@ -84,7 +84,7 @@ subroutine init_backflow()
         continue
         !call init_linear_backflow()
     else if (ibackflow == 4) then
-        call init_rios_backflow(8,8,8)
+        call init_rios_backflow(5,5,5)
     end if
 end subroutine init_backflow
 
@@ -317,7 +317,7 @@ subroutine init_rios_backflow(orda, ordb, ordc)
 
     call init_backflow_arrays()
     
-    parm_bf = 0.001d0
+    parm_bf = 0.0d0
     parm_bf(1) = 3.0d0
 
     if (norda_bf.gt.0) then
@@ -369,7 +369,7 @@ subroutine init_rios_backflow_arrays()
         nparm_bf = nparm_bf + (tmpc + 1) * nctype + (tmpc) * nctype
     end if
 
-    max_ord = max(norda_bf, nordb_bf, nordc_bf)
+    maxord = max(norda_bf, nordb_bf, nordc_bf)
 
     call allocate_m_backflow
 
@@ -378,9 +378,9 @@ end subroutine init_rios_backflow_arrays
 
 subroutine rios_distances(x)
     use precision_kinds, only: dp
-    use system, only: nelec, ncent, cent, 
+    use system, only: nelec, ncent, cent, iwctype, nctype
     use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
-    use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, maxord
+    use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, maxord, cutoff_deriv
     implicit none
     real(dp), dimension(3, nelec), intent(in) :: x
     real(dp) :: r, inv_r, r_cutoff, inv_r_cutoff, cutoff, inv_cutoff
@@ -399,6 +399,13 @@ subroutine rios_distances(x)
             end do
         end do
     end do
+    
+    r_en = 0.0d0
+    r_ee = 0.0d0
+    rvec_en = 0.0d0
+    rvec_ee = 0.0d0
+    r_ee_gl = 0.0d0
+    r_en_gl = 0.0d0
 
     do cc = 1, 2
         do nc = 1, ncent
@@ -407,6 +414,7 @@ subroutine rios_distances(x)
             else
                 r_cutoff = parm_bf((1+nordb_bf) + (1+norda_bf)*nctype + (tmpc+1)*(iwctype(nc)-1) + 1)
             end if
+
             inv_r_cutoff = 1.0d0 / r_cutoff  
 
             do i = 1, nelec
@@ -414,37 +422,44 @@ subroutine rios_distances(x)
                     rvec_en(k, i, nc) = x(k, i) - cent(k, nc)
                 end do
                 r = sqrt( rvec_en(1,i,nc)**2 + rvec_en(2,i,nc)**2 + rvec_en(3,i,nc)**2 )
+
                 inv_r = 1.0d0 / r 
                 
                 cutoff= ((r_cutoff - r) * inv_r_cutoff)**cutoff_scale
                 inv_cutoff = 1/((r_cutoff - r) * inv_r_cutoff)
 
                 r_en(i, nc, 0, cc) = cutoff
+                if (r > r_cutoff) cycle
 
-                r_en_gl(i, 1, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * inv_r * rvec_en(1, i, nc) * cutoff * inv_r_cutoff
-                r_en_gl(i, 2, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * inv_r * rvec_en(2, i, nc) * cutoff * inv_r_cutoff
-                r_en_gl(i, 3, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * inv_r * rvec_en(3, i, nc) * cutoff * inv_r_cutoff
-                r_en_gl(i, 4, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * 2.0d0 * inv_r * cutoff * inv_r_cutoff + &
+                cutoff_deriv(i, nc) = cutoff_scale * r/(r_cutoff * (r_cutoff - r))
+
+
+                r_en_gl(i, 1, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * inv_r * rvec_en(1, i, nc) * cutoff * inv_cutoff
+                r_en_gl(i, 2, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * inv_r * rvec_en(2, i, nc) * cutoff * inv_cutoff
+                r_en_gl(i, 3, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * inv_r * rvec_en(3, i, nc) * cutoff * inv_cutoff
+                r_en_gl(i, 4, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * 2.0d0 * inv_r * cutoff * inv_cutoff + &
                                             cutoff_scale * (cutoff_scale - 1) * inv_r_cutoff * inv_r_cutoff * inv_cutoff* inv_cutoff * cutoff 
-
 
                 do no = 1, maxord
                     r_en(i, nc, no, cc) = r_en(i, nc, no-1, cc) * r 
                     r_en_gl(i, 1, nc, no, cc) = no * r_en(i, nc, no-1, cc) * inv_r * rvec_en(1, i, nc) - &
-                                                cutoff_scale * inv_r_cutoff * inv_r * rvec_en(1, i, nc) * inv_cutoff
+                                                cutoff_scale * inv_r_cutoff * inv_r * rvec_en(1, i, nc) * inv_cutoff * r_en(i, nc, no, cc)
                     r_en_gl(i, 2, nc, no, cc) = no * r_en(i, nc, no-1, cc) * inv_r * rvec_en(2, i, nc) - &
-                                                cutoff_scale * inv_r_cutoff * inv_r * rvec_en(2, i, nc) * inv_cutoff
+                                                cutoff_scale * inv_r_cutoff * inv_r * rvec_en(2, i, nc) * inv_cutoff * r_en(i, nc, no, cc)
                     r_en_gl(i, 3, nc, no, cc) = no * r_en(i, nc, no-1, cc) * inv_r * rvec_en(3, i, nc) - &
-                                                cutoff_scale * inv_r_cutoff * inv_r * rvec_en(3, i, nc) * inv_cutoff
-                    r_en_gl(i, 4, nc, no, cc) = r_en(i, nc, no-1, cc) * no * 2.0d0 * (&
-                                                inv_r - cutoff_scale * inv_r_cutoff * inv_cutoff) + &
-                                                r_en(i, nc, no, cc) * cutoff_scale * inv_r_cutoff * inv_cutoff * (&
-                                                (cutoff_scale - 1) * inv_r_cutoff * inv_cutoff - &
-                                                2.0d0 * inv_r)
+                                                cutoff_scale * inv_r_cutoff * inv_r * rvec_en(3, i, nc) * inv_cutoff * r_en(i, nc, no, cc)
+                    !r_en_gl(i, 4, nc, no, cc) = r_en(i, nc, no-1, cc) * no * 2.0d0 * (&
+                    !                            inv_r - cutoff_scale * inv_r_cutoff * inv_cutoff) + &
+                    !                            r_en(i, nc, no, cc) * cutoff_scale * inv_r_cutoff * inv_cutoff * (&
+                    !                            (cutoff_scale - 1) * inv_r_cutoff * inv_cutoff - &
+                    !                            2.0d0 * inv_r)
+                    r_en_gl(i, 4, nc, no, cc) = - cutoff_scale * inv_r_cutoff * (no+1) * 2.0d0 * r_en(i, nc, no-1, cc) * inv_cutoff +&
+                                                no * (no+1) * r_en(i, nc, no-1, cc) * inv_r + &
+                                                cutoff_scale * (cutoff_scale - 1) * inv_r_cutoff * inv_r_cutoff * inv_cutoff * inv_cutoff * r_en(i, nc, no, cc) 
                 end do
-                do no = 2, maxord
-                    r_en_gl(i, 4, nc, no, cc) = r_en_gl(i, 4, nc, no, cc) + no * (no - 1) * r_en(i, nc, no-2, cc)
-                end do
+                !do no = 2, maxord
+                !    r_en_gl(i, 4, nc, no, cc) = r_en_gl(i, 4, nc, no, cc) + no * (no - 1) * r_en(i, nc, no-2, cc)
+                !end do
             end do
         end do
     end do
@@ -459,7 +474,10 @@ subroutine rios_distances(x)
             inv_r = 1.0d0 / r
 
             r_ee(i, j, 0) = 1.0d0
-            r_ee_gl(i, :, j, 0) = 0.0d0
+            r_ee_gl(i, 1, j, 0) = 0.0d0
+            r_ee_gl(i, 2, j, 0) = 0.0d0
+            r_ee_gl(i, 3, j, 0) = 0.0d0
+            r_ee_gl(i, 4, j, 0) = 0.0d0
 
             do no = 1, maxord
                 r_ee(i, j, no) = r_ee(i, j, no-1) * r
@@ -475,11 +493,123 @@ subroutine rios_distances(x)
     end do
 end subroutine rios_distances
 
+subroutine single_rios_distances(x, xnew, iel)
+    use precision_kinds, only: dp
+    use system, only: nelec, ncent, cent, iwctype, nctype
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+    use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, maxord
+    implicit none
+    real(dp), dimension(3, nelec), intent(in) :: x
+    real(dp), dimension(3), intent(in) :: xnew
+    integer, intent(in) :: iel
+    real(dp) :: r, inv_r, r_cutoff, inv_r_cutoff, cutoff, inv_cutoff
+    integer :: i, j, nc, k, no, multb, multa, tmpc, l, m ,n, cc
+
+    multb = 0
+    if (nordb_bf .gt. 0) multb = 1
+    multa = 0
+    if (norda_bf .gt. 0) multa = 1
+
+    tmpc = 0
+    do l = 0, nordc_bf
+        do m = 0, nordc_bf - l
+            do n = 0, nordc_bf - l - m
+                tmpc = tmpc + 1
+            end do
+        end do
+    end do
+    
+
+    do cc = 1, 2
+        do nc = 1, ncent
+            if (cc == 1) then
+                r_cutoff = parm_bf((1+nordb_bf) + (iwctype(nc)-1)*(1+norda_bf) + 1)
+            else
+                r_cutoff = parm_bf((1+nordb_bf) + (1+norda_bf)*nctype + (tmpc+1)*(iwctype(nc)-1) + 1)
+            end if
+
+            inv_r_cutoff = 1.0d0 / r_cutoff  
+
+    
+            do k = 1, 3
+                rvec_en(k, iel, nc) = xnew(k) - cent(k, nc)
+            end do
+            r = sqrt( rvec_en(1,iel,nc)**2 + rvec_en(2,iel,nc)**2 + rvec_en(3,iel,nc)**2 )
+
+            inv_r = 1.0d0 / r 
+            
+            cutoff= ((r_cutoff - r) * inv_r_cutoff)**cutoff_scale
+            inv_cutoff = 1/((r_cutoff - r) * inv_r_cutoff)
+
+            r_en(iel, nc, 0, cc) = cutoff
+            if (r > r_cutoff) cycle
+
+
+            r_en_gl(iel, 1, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * inv_r * rvec_en(1, iel, nc) * cutoff * inv_cutoff
+            r_en_gl(iel, 2, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * inv_r * rvec_en(2, iel, nc) * cutoff * inv_cutoff
+            r_en_gl(iel, 3, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * inv_r * rvec_en(3, iel, nc) * cutoff * inv_cutoff
+            r_en_gl(iel, 4, nc, 0, cc) = -cutoff_scale * inv_r_cutoff * 2.0d0 * inv_r * cutoff * inv_cutoff + &
+                                        cutoff_scale * (cutoff_scale - 1) * inv_r_cutoff * inv_r_cutoff * inv_cutoff* inv_cutoff * cutoff 
+
+            do no = 1, maxord
+                r_en(iel, nc, no, cc) = r_en(iel, nc, no-1, cc) * r 
+                r_en_gl(iel, 1, nc, no, cc) = no * r_en(iel, nc, no-1, cc) * inv_r * rvec_en(1, iel, nc) - &
+                                            cutoff_scale * inv_r_cutoff * inv_r * rvec_en(1, iel, nc) * inv_cutoff * r_en(iel, nc, no, cc)
+                r_en_gl(iel, 2, nc, no, cc) = no * r_en(iel, nc, no-1, cc) * inv_r * rvec_en(2, iel, nc) - &
+                                            cutoff_scale * inv_r_cutoff * inv_r * rvec_en(2, iel, nc) * inv_cutoff * r_en(iel, nc, no, cc)
+                r_en_gl(iel, 3, nc, no, cc) = no * r_en(iel, nc, no-1, cc) * inv_r * rvec_en(3, iel, nc) - &
+                                            cutoff_scale * inv_r_cutoff * inv_r * rvec_en(3, iel, nc) * inv_cutoff * r_en(iel, nc, no, cc)
+                r_en_gl(iel, 4, nc, no, cc) = - cutoff_scale * inv_r_cutoff * (no+1) * 2.0d0 * r_en(iel, nc, no-1, cc) * inv_cutoff +&
+                                            no * (no+1) * r_en(iel, nc, no-1, cc) * inv_r + &
+                                            cutoff_scale * (cutoff_scale - 1) * inv_r_cutoff * inv_r_cutoff * inv_cutoff * inv_cutoff * r_en(iel, nc, no, cc) 
+            end do
+        end do
+    end do
+
+    do j = 1, nelec
+        if (iel == j) cycle
+        do k = 1, 3
+            rvec_ee(k, iel, j) = xnew(k) - x(k, j)
+            rvec_ee(k, j, iel) = -rvec_ee(k, iel, j)
+        end do
+        r = sqrt( rvec_ee(1,iel,j)**2 + rvec_ee(2,iel,j)**2 + rvec_ee(3,iel,j)**2 )
+        inv_r = 1.0d0 / r
+
+        r_ee(iel, j, 0) = 1.0d0
+        r_ee_gl(iel, 1, j, 0) = 0.0d0
+        r_ee_gl(iel, 2, j, 0) = 0.0d0
+        r_ee_gl(iel, 3, j, 0) = 0.0d0
+        r_ee_gl(iel, 4, j, 0) = 0.0d0
+
+        r_ee(j, iel, 0) = 1.0d0
+        r_ee_gl(j, 1, iel, 0) = 0.0d0
+        r_ee_gl(j, 2, iel, 0) = 0.0d0
+        r_ee_gl(j, 3, iel, 0) = 0.0d0
+        r_ee_gl(j, 4, iel, 0) = 0.0d0
+
+        do no = 1, maxord
+            r_ee(iel, j, no) = r_ee(iel, j, no-1) * r
+            r_ee(j, iel, no) = r_ee(iel, j, no)  
+            r_ee_gl(iel, 1, j, no) = no * r_ee(iel, j, no-1) * inv_r * rvec_ee(1, iel, j)
+            r_ee_gl(iel, 2, j, no) = no * r_ee(iel, j, no-1) * inv_r * rvec_ee(2, iel, j)
+            r_ee_gl(iel, 3, j, no) = no * r_ee(iel, j, no-1) * inv_r * rvec_ee(3, iel, j)
+            r_ee_gl(iel, 4, j, no) = no * r_ee(iel, j, no-1) * 2.0d0 * inv_r
+            r_ee_gl(j, 1, iel, no) = -r_ee_gl(iel, 1, j, no)
+            r_ee_gl(j, 2, iel, no) = -r_ee_gl(iel, 2, j, no)
+            r_ee_gl(j, 3, iel, no) = -r_ee_gl(iel, 3, j, no)
+        end do
+        do no = 2, maxord
+            r_ee_gl(iel, 4, j, no) = r_ee_gl(iel, 4, j, no) + no * (no - 1) * r_ee(iel, j, no-2)
+            r_ee_gl(j, 4, iel, no) = r_ee_gl(iel, 4, j, no)
+        end do
+    end do
+end subroutine single_rios_distances
+
 subroutine rios_p()
     use precision_kinds, only: dp
-    use system, only: nelec, ncent,, nctype
+    use system, only: nelec, ncent, nctype
     use m_backflow, only: nordb_bf, nordc_bf
-    use m_backflow, only: r_en, r_ee, r_ee_gl, p, dp
+    use m_backflow, only: r_en, r_ee, r_ee_gl, p, d_p
     implicit none
     integer :: l, m, nc, i, j, k
 
@@ -490,7 +620,7 @@ subroutine rios_p()
                     do j = 1, nelec
                         p(i, nc, m, l) = r_en(j, nc, m, 2) * r_ee(j, i, l)
                         do k = 1, 4
-                            dp(i, k, nc, m, l) = r_en(j, nc, m, 2) * r_ee_gl(j, k, i, l)
+                            d_p(i, k, nc, m, l) = r_en(j, nc, m, 2) * r_ee_gl(j, k, i, l)
                         end do
                     end do
                 end do
@@ -505,7 +635,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     use system, only: nelec, iwctype, ncent, nctype, cent
     use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
     use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
-    use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, p, dp
+    use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
     implicit none
     real(dp), dimension(3, nelec), intent(in) :: x
     real(dp), dimension(3, nelec), intent(out) :: quasi_x
@@ -513,18 +643,26 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     real(dp), dimension(3, nelec, nelec), intent(out) :: d2quasi_dx2
     real(dp), dimension(3, nelec, nparm_bf), intent(out) :: dquasi_dp
     real(dp) :: rij, rr, cutoff, b_one, a_one
-    real(dp) :: f, fp(3), fpp(3), eta, etap(3), etapp(3)
+    real(dp) :: f, fp(3), fpp, eta, etap(3), etapp
     real(dp) :: delta(3), delta_ril(3), delta_rjl(3)
     integer :: i, j, k, a, b, offset_ee, offset_en, offset_een, idx, C
     integer :: nc, l, m, n, tmpc, idx_phi, idx_theta, kk
     real(dp) :: ril, rjl, inv_ril, inv_rjl
     real(dp) :: inv_rij, inv_cutoff, tmp1, tmp2, cutoff1, cutoff2
     real(dp) :: fi, fpi(3), fppi(3), fj, fpj(3), fppj(3)
-    real(dp) :: phi, theta, phipi(3), thetapi(3), phipj(3), thetapj(3), phipp(3), thetapp(3)
+    real(dp) :: phi, theta, phipi(3), thetapi(3), phipj(3), thetapj(3), phippi, thetappi, phippj, thetappj
 
     offset_ee = 0
-    offset_en = offset_ee + 1+nordb_bf
-    offset_een = offset_en + (1+norda_bf)*nctype
+    if (nordb_bf .gt. 0) then
+        offset_en = offset_ee + 1+nordb_bf
+    else
+        offset_en = offset_ee
+    end if
+    if (norda_bf .gt. 0) then
+        offset_een = offset_en + (1+norda_bf)*nctype
+    else
+        offset_een = offset_en
+    end if
 
     quasi_x = 0.0_dp
     dquasi_dx = 0.0_dp
@@ -567,24 +705,20 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
             cutoff2 = cutoff1/((cutoff - rij)*inv_cutoff)
 
             tmp1 = -C*inv_cutoff * cutoff1 * inv_rij
-            tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * cutoff2 * inv_rij * inv_rij
             do a = 1, 3
                 fp(a) = tmp1 * delta(a)
-                fpp(a) = tmp2 * delta(a) * delta(a) + &
-                         tmp1 * ( 1 - delta(a)*delta(a)*inv_rij*inv_rij )
             end do
-
-
+            fpp = -2.0d0 * C * inv_cutoff * inv_rij * cutoff1 + &
+                  + C * (C-1) * inv_cutoff * inv_cutoff * cutoff2 
 
 
             eta  = eta + parm_bf(offset_ee+2) + b_one*rij
             tmp1 = b_one * inv_rij
-            tmp2 = b_one * inv_rij * inv_rij * inv_rij
             do a = 1, 3
                 dquasi_dp(a,i,offset_ee+2) = dquasi_dp(a,i,offset_ee+2) + delta(a) * f * (1 + C * inv_cutoff * rij)
                 etap(a) = etap(a) + tmp1 * delta(a)
-                etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
             end do
+            etapp = etapp + 2.0d0 * tmp1
 
             rr = rij*rij
             
@@ -594,11 +728,10 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
                 do a = 1, 3
                     dquasi_dp(a,i,offset_ee+k+1) = dquasi_dp(a,i,offset_ee+k+1) + rr * delta(a) * f
                     etap(a) = etap(a) + parm_bf(offset_ee+k+1) * delta(a) * tmp2 * k * rr
-                    etapp(a) = etapp(a) + parm_bf(offset_ee+k+1) * tmp2 * rr * k * (1 + (k-2) * delta(a) * delta(a) * tmp2)
                 enddo
+                etapp = etapp + parm_bf(offset_ee+k+1) * k * rr * tmp2 * (k+1)
                 rr = rr * rij
             end do
-
 
             tmp2 = eta * C * cutoff1 * (rij*inv_cutoff*inv_cutoff)
             do a = 1, 3
@@ -611,17 +744,17 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
                     dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + tmp1
                     dquasi_dx(a,i,b,j) = dquasi_dx(a,i,b,j) - tmp1
 
-                    tmp1 = etapp(b) * delta(a) * f + &
-                           2.0d0 * etap(b) * delta(a) * fp(b) + &
-                           eta * delta(a) * fpp(b)
-
+                    tmp1 = 2.0d0 * etap(b) * delta(a) * fp(b)
                     d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + tmp1
-
                     d2quasi_dx2(a,i,j) = d2quasi_dx2(a,i,j) + tmp1
                 end do
                 tmp1 = eta * f
                 dquasi_dx(a,i,a,i) = dquasi_dx(a,i,a,i) + tmp1
                 dquasi_dx(a,i,a,j) = dquasi_dx(a,i,a,j) - tmp1
+
+                tmp1 = etapp * delta(a) * f + eta * delta(a) * fpp
+                d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + tmp1
+                d2quasi_dx2(a,i,j) = d2quasi_dx2(a,i,j) + tmp1
 
                 tmp1 = 2 * (eta * fp(a) + etap(a) * f)
                 d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + tmp1
@@ -663,21 +796,19 @@ if (norda_bf .eq. 0) goto 20
             cutoff2 = cutoff1/((cutoff - rij)*inv_cutoff)
 
             tmp1 = -C*inv_cutoff * cutoff1 * inv_rij
-            tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * cutoff2 * inv_rij * inv_rij
             do a = 1, 3
                 fp(a) = tmp1 * delta(a)
-                fpp(a) = tmp2 * delta(a) * delta(a) + &
-                         tmp1 * ( 1 - delta(a)*delta(a)*inv_rij*inv_rij )
             end do
+            fpp = -2.0d0 * C * inv_cutoff * inv_rij * cutoff1 + &
+                  + C * (C-1) * inv_cutoff * inv_cutoff * cutoff2 
 
             eta  = eta + parm_bf(offset_en+idx+2) + a_one*rij
             tmp1 = a_one * inv_rij
-            tmp2 = a_one * inv_rij * inv_rij * inv_rij
             do a = 1, 3
                 dquasi_dp(a,i,offset_en + idx+2) = dquasi_dp(a,i,offset_en + idx+2) + delta(a) * f * (1 + C * inv_cutoff * rij)
                 etap(a) = etap(a) + tmp1 * delta(a)
-                etapp(a) = etapp(a) + tmp1 - tmp2 *  delta(a) * delta(a)
             end do
+            etapp = etapp + 2.0d0 * tmp1
 
             rr = rij*rij
 
@@ -687,8 +818,8 @@ if (norda_bf .eq. 0) goto 20
                 do a = 1, 3
                     dquasi_dp(a,i,offset_en + idx+ k+1) = dquasi_dp(a,i,offset_en + idx+ k+1) + rr * delta(a) * f
                     etap(a) = etap(a) + parm_bf(offset_en + idx+ k+1) * k * rr * delta(a)*tmp1
-                    etapp(a) = etapp(a) + parm_bf(offset_en + idx+ k+1) * k * tmp1 * rr * (1 + (k-2) * delta(a) * delta(a)*tmp1)
                 enddo
+                etapp = etapp + parm_bf(offset_en + idx+ k+1) * k * rr * tmp1 * (k+1)
                 rr = rr * rij
             end do
 
@@ -703,13 +834,12 @@ if (norda_bf .eq. 0) goto 20
                     dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + (&
                         etap(b) * delta(a) * f + eta * delta(a) * fp(b) )
 
-                    d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + (&
-                        etapp(b) * delta(a) * f + &
-                        2.0d0 * etap(b) * delta(a) * fp(b) + &
-                        eta * delta(a) * fpp(b) )
+                    d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + 2.0d0 * etap(b) * delta(a) * fp(b) 
 
                 end do
                 dquasi_dx(a,i,a,i) = dquasi_dx(a,i,a,i) + eta * f
+
+                d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + etapp * delta(a) * f + eta * delta(a) * fpp
 
                 d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + 2 * (eta * fp(a) + etap(a) * f)
 
@@ -731,99 +861,80 @@ if (norda_bf .eq. 0) goto 20
     end do
 
     call rios_distances(x)
-    call rios_p()
 
      do i = 1, nelec
         do j = 1, nelec
             if (i == j) cycle
-            do nc = 1, nctype
+            do nc = 1, ncent
                 idx_phi = (iwctype(nc)-1)*(tmpc + 1) + offset_een
-                idx_theta = idx_phi + (tmpc) * nctype
+                idx_theta = (tmpc + 1)*nctype + (iwctype(nc)-1)*(tmpc) + offset_een
 
                 cutoff = parm_bf(idx_phi+1)
                 inv_cutoff = 1.0d0 / cutoff
 
-                delta_ril(:) = x(:, i) - cent(:, nc)
-                delta_rjl(:) = x(:, j) - cent(:, nc)
-                delta(:) = x(:, i) - x(:, j)
-                ril = sqrt(delta_ril(1)**2 + delta_ril(2)**2 + delta_ril(3)**2)
-                rjl = sqrt(delta_rjl(1)**2 + delta_rjl(2)**2 + delta_rjl(3)**2)
-                rij = sqrt(delta(1)**2 + delta(2)**2 + delta(3)**2)
-                if (ril > cutoff .or. rjl > cutoff) cycle
+                if (r_en(i,nc,0,2) < 0 .or. r_en(j,nc,0,2) < 0) cycle
 
                 phi = 0.00d0
                 phipi = 0.0d0
                 phipj = 0.0d0
-                phipp = 0.0d0
+                phippi = 0.0d0
+                phippj = 0.0d0
                 theta = 0.00d0
                 thetapi = 0.0d0
                 thetapj = 0.0d0
-                thetapp = 0.0d0
+                thetappi = 0.0d0
+                thetappj = 0.0d0
 
-                inv_rij = 1.0d0 / rij
-                inv_ril = 1.0d0 / ril
-                inv_rjl = 1.0d0 / rjl
-
-                fi = ((cutoff - ril)*inv_cutoff)**C
-                fj = ((cutoff - rjl)*inv_cutoff)**C
-
-                
-                tmp1 = -C*inv_cutoff * ((cutoff - ril)*inv_cutoff)**(C-1) * inv_ril
-                tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * ((cutoff - ril)*inv_cutoff)**(C-2) * inv_ril * inv_ril
-                do a = 1, 3
-                    fpi(a) = tmp1 * delta_ril(a)
-                    fppi(a) = tmp2 * delta_ril(a) * delta_ril(a) + &
-                            tmp1 * ( 1 - delta_ril(a)*delta_ril(a)*inv_ril*inv_ril )
-                end do
-                tmp1 = -C*inv_cutoff * ((cutoff - rjl)*inv_cutoff)**(C-1) * inv_rjl
-                tmp2 = -C*inv_cutoff * ( - (C-1)*inv_cutoff ) * ((cutoff - rjl)*inv_cutoff)**(C-2) * inv_rjl * inv_rjl
-                do a = 1, 3
-                    fpj(a) = tmp1 * delta_rjl(a)
-                    fppj(a) = tmp2 * delta_rjl(a) * delta_rjl(a) + &
-                            tmp1 * ( 1 - delta_rjl(a)*delta_rjl(a)*inv_rjl*inv_rjl )
-                end do
 
                 k = idx_phi+2
                 kk = idx_theta+1
                 do l = 0, nordc_bf
                     do m = 0, nordc_bf - l
                         do n = 0, nordc_bf - l - m
-                            phi = phi + parm_bf(k) * ril**l * rjl**m * rij**n
-                            theta = theta + parm_bf(kk) * ril**l * rjl**m * rij**n
+                            phi = phi + parm_bf(k) * r_en(i,nc,l,2) * r_en(j,nc,m,2) * r_ee(i,j,n) 
+                            theta = theta + parm_bf(kk) * r_en(i,nc,l,2) * r_en(j,nc,m,2) * r_ee(i,j,n) 
                             do a = 1, 3
-                                dquasi_dp(a,i,k) = dquasi_dp(a,i,k) + ril**l * rjl**m * rij**n * delta(a) * fi * fj
-                                dquasi_dp(a,i,kk) = dquasi_dp(a,i,kk) + ril**l * rjl**m * rij**n * delta_ril(a) * fi * fj
-                                if (l.gt.0) then
-                                    phipi(a) = phipi(a) + parm_bf(k) * l * ril**(l-1) * rjl**m * rij**n * inv_ril * delta_ril(a)
-                                    phipp(a) = phipp(a) + parm_bf(kk) * l * ril**(l-1) * rjl**m * rij**n * inv_ril * (1 + delta_ril(a)*delta_ril(a)*inv_ril*inv_ril)
-                                    thetapi(a) = thetapi(a) + parm_bf(kk) * l * ril**(l-1) * rjl**m * rij**n * inv_ril * delta_ril(a)
-                                    thetapp(a) = thetapp(a) + parm_bf(kk) * l * ril**(l-1) * rjl**m * rij**n * inv_ril * (1 + delta_ril(a)*delta_ril(a)*inv_ril*inv_ril)
-                                end if
-                                if (m.gt.0) then
-                                    phipj(a) = phipj(a) + parm_bf(k) * m * ril**l * rjl**(m-1) * rij**n * inv_rjl * delta_rjl(a)
-                                    thetapj(a) = thetapj(a) + parm_bf(kk) * m * ril**l * rjl**(m-1) * rij**n * inv_rjl * delta_rjl(a)
-                                end if
-                                if (l.gt.1) then
-                                    phipp(a) = phipp(a) + parm_bf(k) * l * (l-1) * ril**(l-2) * rjl**m * rij**n * inv_ril * inv_ril * delta_ril(a) * delta_ril(a)
-                                    thetapp(a) = thetapp(a) + parm_bf(kk) * l * (l-1) * ril**(l-2) * rjl**m * rij**n * inv_ril * inv_ril * delta_ril(a) * delta_ril(a)
-                                end if
-                                if (n.gt.0) then
-                                    phipi(a) = phipi(a) + parm_bf(k) * n * ril**l * rjl**m * rij**(n-1) * inv_rij * delta(a)
-                                    phipj(a) = phipj(a) - parm_bf(k) * n * ril**l * rjl**m * rij**(n-1) * inv_rij * delta(a)
-                                    phipp(a) = phipp(a) + parm_bf(k) * n * ril**l * rjl**m * rij**(n-1) * inv_rij * (1 + delta(a)*delta(a)*inv_rij*inv_rij)
-                                    thetapi(a) = thetapi(a) + parm_bf(kk) * n * ril**l * rjl**m * rij**(n-1) * inv_rij * delta(a)
-                                    thetapj(a) = thetapj(a) - parm_bf(kk) * n * ril**l * rjl**m * rij**(n-1) * inv_rij * delta(a)
-                                    thetapp(a) = thetapp(a) + parm_bf(kk) * n * ril**l * rjl**m * rij**(n-1) * inv_rij * (1 + delta(a)*delta(a)*inv_rij*inv_rij)
-                                end if
-                                if(n.gt.1) then
-                                    phipp(a) = phipp(a) + parm_bf(k) * n * (n-1) * ril**l * rjl**m * rij**(n-2) * inv_rij * inv_rij * delta(a) * delta(a)
-                                    thetapp(a) = thetapp(a) + parm_bf(kk) * n * (n-1) * ril**l * rjl**m * rij**(n-2) * inv_rij * inv_rij * delta(a) * delta(a)
-                                end if
-                                if (l.gt.0 .and. n.gt.0) then
-                                    phipp(a) = phipp(a) + parm_bf(k) * 2 * l * n * ril**(l-1) * rjl**m * rij**(n-1) * inv_ril * inv_rij * delta_ril(a) * delta(a)
-                                    thetapp(a) = thetapp(a) + parm_bf(kk) * 2 * l * n * ril**(l-1) * rjl**m * rij**(n-1) * inv_ril * inv_rij * delta_ril(a) * delta(a)
-                                end if
+                                tmp1 = r_en(i,nc,l,2) * r_en(j,nc,m,2) * r_ee(i,j,n) 
+                                dquasi_dp(a,i,k) = dquasi_dp(a,i,k) + tmp1 * rvec_ee(a,i,j)
+                                dquasi_dp(a,i,kk) = dquasi_dp(a,i,kk) + tmp1 * rvec_en(a,i,nc)
+
+                                tmp1 = r_en_gl(i,a,nc,l,2) * r_en(j,nc,m,2) * r_ee(i,j,n)
+                                phipi(a) = phipi(a) + parm_bf(k) * tmp1
+                                thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
+
+                                tmp1 = r_en(i,nc,l,2) * r_en_gl(j,a,nc,m,2) * r_ee(i,j,n)
+                                phipj(a) = phipj(a) + parm_bf(k) * tmp1
+                                thetapj(a) = thetapj(a) + parm_bf(kk) * tmp1
+
+                                tmp1 = r_en(i,nc,l,2) * r_en(j,nc,m,2) * r_ee_gl(i,a,j,n) 
+                                phipi(a) = phipi(a) + parm_bf(k) * tmp1
+                                phipj(a) = phipj(a) - parm_bf(k) * tmp1
+                                thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
+                                thetapj(a) = thetapj(a) - parm_bf(kk) * tmp1
+
+                                tmp1 = 2.0d0 * r_en_gl(i,a,nc,l,2) * r_en(j,nc,m,2) * r_ee_gl(i,a,j,n)
+                                phippi = phippi + parm_bf(k) * tmp1
+                                thetappi = thetappi + parm_bf(kk) * tmp1
+
+                                tmp1 = 2.0d0 * r_en(i,nc,l,2) * r_en_gl(j,a,nc,m,2) * r_ee_gl(i,a,j,n)
+                                phippj = phippj - parm_bf(k) * tmp1
+                                thetappj = thetappj - parm_bf(kk) * tmp1
                             enddo
+
+                            tmp1 = r_en_gl(i,4,nc,l,2) * r_en(j,nc,m,2) * r_ee(i,j,n)
+                            phippi = phippi + parm_bf(k) * tmp1
+                            thetappi = thetappi + parm_bf(kk) * tmp1
+
+                            tmp1 = r_en(i,nc,l,2) * r_en_gl(j,4,nc,m,2) * r_ee(i,j,n) 
+                            phippj = phippj + parm_bf(k) * tmp1
+                            thetappj = thetappj + parm_bf(kk) * tmp1
+
+                            tmp1 = r_en(i,nc,l,2) * r_en(j,nc,m,2) * r_ee_gl(i,4,j,n)
+                            phippi = phippi + parm_bf(k) * tmp1
+                            thetappi = thetappi + parm_bf(kk) * tmp1
+                            phippj = phippj + parm_bf(k) * tmp1
+                            thetappj = thetappj + parm_bf(kk) * tmp1
+
                             k = k + 1
                             kk = kk + 1
                         end do
@@ -832,50 +943,22 @@ if (norda_bf .eq. 0) goto 20
 
  
                 do a = 1, 3 
-                    quasi_x(a,i) = quasi_x(a,i) + phi * delta(a) * fi * fj
-                    quasi_x(a,i) = quasi_x(a,i) + theta * delta_ril(a) * fi * fj
-                    dquasi_dp(a,i,idx_phi+1) = dquasi_dp(a,i,idx_phi+1) + &
-                        delta(a) * phi * fj * C *  ((cutoff - ril)*inv_cutoff)**(C-1) * (ril*inv_cutoff*inv_cutoff) + &
-                        delta(a) * phi * fi * C *  ((cutoff - rjl)*inv_cutoff)**(C-1) * (rjl*inv_cutoff*inv_cutoff) + &
-                        delta_ril(a) * theta * fj * C *  ((cutoff - ril)*inv_cutoff)**(C-1) * (ril*inv_cutoff*inv_cutoff) + &
-                        delta_ril(a) * theta * fi * C *  ((cutoff - rjl)*inv_cutoff)**(C-1) * (rjl*inv_cutoff*inv_cutoff) 
+                    quasi_x(a,i) = quasi_x(a,i) + phi * rvec_ee(a,i,j) + theta * rvec_en(a,i,nc)
+                    dquasi_dp(a,i,idx_phi+1) = dquasi_dp(a,i,idx_phi+1) !+ phi * rvec_ee(a,i,j) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc)) &
+                                                                        !+ theta * rvec_en(a,i,nc) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc))
 
                     do b = 1, 3
-                        dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + &
-                            phipi(b) * delta(a) * fi * fj + phi * delta(a) * fpi(b) * fj + &
-                            thetapi(b) * delta_ril(a) * fi * fj + theta * delta_ril(a) * fpi(b) * fj
-
-                        
-                        dquasi_dx(a,i,b,j) = dquasi_dx(a,i,b,j) + &
-                            phipj(b) * delta(a) * fi * fj + phi * delta(a) * fi * fpj(b) + &
-                            thetapj(b) * delta_ril(a) * fi * fj + theta * delta_ril(a) * fi * fpj(b)
-
-
-                        d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + (&
-                            phipp(b) * delta(a) * fi * fj + &
-                            2.0d0 * phipi(b) * delta(a) * fpi(b) * fj + &
-                            phi * delta(a) * fppi(b) * fj ) + (&
-                            thetapp(b) * delta_ril(a) * fi * fj + &
-                            2.0d0 * thetapi(b) * delta_ril(a) * fpi(b) * fj + &
-                            theta * delta_ril(a) * fppi(b) * fj )
-
-                        d2quasi_dx2(a,j,j) = d2quasi_dx2(a,j,j) + (&
-                            phipp(b) * delta(a) * fi * fj + &
-                            2.0d0 * phipj(b) * delta(a) * fi * fpj(b) + &
-                            phi * delta(a) * fi * fppj(b) ) + (&
-                            thetapp(b) * delta_ril(a) * fi * fj + &
-                            2.0d0 * thetapj(b) * delta_ril(a) * fi * fpj(b) + &
-                            theta * delta_ril(a) * fi * fppj(b) )
+                        dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + phipi(b) * rvec_ee(a,i,j) + thetapi(b) * rvec_en(a,i,nc)                        
+                        dquasi_dx(a,i,b,j) = dquasi_dx(a,i,b,j) + phipj(b) * rvec_ee(a,i,j) + thetapj(b) * rvec_en(a,i,nc)
                     end do
-                    dquasi_dx(a,i,a,i) = dquasi_dx(a,i,a,i) + phi * fi * fj + theta * fi * fj
-                    dquasi_dx(a,i,a,j) = dquasi_dx(a,i,a,j) - phi * fi * fj
+                    dquasi_dx(a,i,a,i) = dquasi_dx(a,i,a,i) + phi + theta 
+                    dquasi_dx(a,i,a,j) = dquasi_dx(a,i,a,j) - phi 
 
-                    d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + 2.0d0 * (phi * fpi(a) * fj + phipi(a) * fi * fj) + &
-                                            2.0d0 * (theta * fpi(a) * fj + thetapi(a) * fi * fj)
+                    d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + phippi * rvec_ee(a,i,j) + thetappi * rvec_en(a,i,nc)
+                    d2quasi_dx2(a,i,j) = d2quasi_dx2(a,i,j) + phippj * rvec_ee(a,i,j) + thetappj * rvec_en(a,i,nc)
 
-                    d2quasi_dx2(a,j,j) = d2quasi_dx2(a,j,j) + 2.0d0 * (phi * fi * fpj(a) + phipj(a) * fi * fj)
-
-
+                    d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) + 2.0d0 * phipi(a) + 2.0d0 * thetapi(a)
+                    d2quasi_dx2(a,i,j) = d2quasi_dx2(a,i,j) - 2.0d0 * phipj(a)
                 end do
             end do
         end do
@@ -891,7 +974,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     use system, only: nelec, iwctype, ncent, nctype, cent
     use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
     use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
-    use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2
+    use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2, r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl
     implicit none
     integer, intent(in) :: iel
     real(dp), dimension(3, nelec), intent(in) :: xold
@@ -904,12 +987,25 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     real(dp) :: f, fp(3), fpp(3), eta, etap(3), etapp(3)
     real(dp) :: delta(3)
     integer :: i, j, k, a, b, offset_ee, offset_en, offset_een, idx, C
+    integer :: nc, l, m, n, tmpc, idx_phi, idx_theta, kk
     real(dp) :: inv_rij, inv_cutoff, tmp1, tmp2
     real(dp) :: cutoff1, cutoff2
+    real(dp) :: fi, fpi(3), fppi(3), fj, fpj(3), fppj(3)
+    real(dp) :: phi, theta, phipi(3), thetapi(3), phipj(3), thetapj(3), phippi, thetappi, phippj, thetappj
+    real(dp) :: xtemp(3, nelec)
+
 
     offset_ee = 0
-    offset_en = offset_ee + 1+nordb_bf
-    offset_een = offset_en + (1+norda_bf)*nctype
+    if (nordb_bf .gt. 0) then
+        offset_en = offset_ee + 1+nordb_bf
+    else
+        offset_en = offset_ee
+    end if
+    if (norda_bf .gt. 0) then
+        offset_een = offset_en + (1+norda_bf)*nctype
+    else
+        offset_een = offset_en
+    end if
 
     quasi_x_new = quasi_x
     dquasi_dx_new = dquasi_dx
@@ -1237,6 +1333,230 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
 
 20  continue
     if (nordc_bf .eq. 0) return
+
+    tmpc = 0
+    do l = 0, nordc_bf
+        do m = 0, nordc_bf - l
+            do n = 0, nordc_bf - l - m
+                tmpc = tmpc + 1
+            end do
+        end do
+    end do
+
+    !call single_rios_distances(xold, xold(:, iel), iel)
+     call rios_distances(xold)
+    do j = 1, nelec
+        if (iel == j) cycle
+        do nc = 1, ncent
+            idx_phi = (iwctype(nc)-1)*(tmpc + 1) + offset_een
+            idx_theta =  (tmpc + 1)*nctype + (iwctype(nc)-1)*(tmpc) + offset_een
+
+            cutoff = parm_bf(idx_phi+1)
+            inv_cutoff = 1.0d0 / cutoff
+
+            if (r_en(iel,nc,0,2) > 0 .and. r_en(j,nc,0,2) > 0) then
+
+                indices(j) = j
+
+                phi = 0.00d0
+                phipi = 0.0d0
+                phipj = 0.0d0
+                phippi = 0.0d0
+                phippj = 0.0d0
+                theta = 0.00d0
+                thetapi = 0.0d0
+                thetapj = 0.0d0
+                thetappi = 0.0d0
+                thetappj = 0.0d0
+
+                k = idx_phi+2
+                kk = idx_theta+1
+                do l = 0, nordc_bf
+                    do m = 0, nordc_bf - l
+                        do n = 0, nordc_bf - l - m
+                            phi = phi + parm_bf(k) * r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n) 
+                            theta = theta + parm_bf(kk) * r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n) 
+                            do a = 1, 3
+                                tmp1 = r_en_gl(iel,a,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n)
+                                phipi(a) = phipi(a) + parm_bf(k) * tmp1
+                                thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
+
+                                tmp1 = r_en(iel,nc,l,2) * r_en_gl(j,a,nc,m,2) * r_ee(iel,j,n)
+                                phipj(a) = phipj(a) + parm_bf(k) * tmp1
+                                thetapj(a) = thetapj(a) + parm_bf(kk) * tmp1
+
+                                tmp1 = r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee_gl(iel,a,j,n) 
+                                phipi(a) = phipi(a) + parm_bf(k) * tmp1
+                                phipj(a) = phipj(a) - parm_bf(k) * tmp1
+                                thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
+                                thetapj(a) = thetapj(a) - parm_bf(kk) * tmp1
+
+                                tmp1 = 2.0d0 * r_en_gl(iel,a,nc,l,2) * r_en(j,nc,m,2) * r_ee_gl(iel,a,j,n)
+                                phippi = phippi + parm_bf(k) * tmp1
+                                thetappi = thetappi + parm_bf(kk) * tmp1
+
+                                tmp1 = 2.0d0 * r_en(iel,nc,l,2) * r_en_gl(j,a,nc,m,2) * r_ee_gl(iel,a,j,n)
+                                phippj = phippj - parm_bf(k) * tmp1
+                                thetappj = thetappj - parm_bf(kk) * tmp1
+                            enddo
+
+                            tmp1 = r_en_gl(iel,4,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n)
+                            phippi = phippi + parm_bf(k) * tmp1
+                            thetappi = thetappi + parm_bf(kk) * tmp1
+
+                            tmp1 = r_en(iel,nc,l,2) * r_en_gl(j,4,nc,m,2) * r_ee(iel,j,n) 
+                            phippj = phippj + parm_bf(k) * tmp1
+                            thetappj = thetappj + parm_bf(kk) * tmp1
+
+                            tmp1 = r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee_gl(iel,4,j,n)
+                            phippi = phippi + parm_bf(k) * tmp1
+                            thetappi = thetappi + parm_bf(kk) * tmp1
+                            phippj = phippj + parm_bf(k) * tmp1
+                            thetappj = thetappj + parm_bf(kk) * tmp1
+
+                            k = k + 1
+                            kk = kk + 1
+                        end do
+                    end do
+                end do
+                do a = 1, 3 
+                    quasi_x_new(a,iel) = quasi_x_new(a,iel) - phi * rvec_ee(a,iel,j) - theta * rvec_en(a,iel,nc)
+                    quasi_x_new(a,j) = quasi_x_new(a,j) - phi * rvec_ee(a,j,iel) - theta * rvec_en(a,j,nc)
+
+                    do b = 1, 3
+                        dquasi_dx_new(a,iel,b,iel) = dquasi_dx_new(a,iel,b,iel) - phipi(b) * rvec_ee(a,iel,j) - thetapi(b) * rvec_en(a,iel,nc)                        
+                        dquasi_dx_new(a,iel,b,j) = dquasi_dx_new(a,iel,b,j) - phipj(b) * rvec_ee(a,iel,j) - thetapj(b) * rvec_en(a,iel,nc)
+                        dquasi_dx_new(a,j,b,iel) = dquasi_dx_new(a,j,b,iel) - phipi(b) * rvec_ee(a,j,iel) - thetapi(b) * rvec_en(a,j,nc)
+                        dquasi_dx_new(a,j,b,j) = dquasi_dx_new(a,j,b,j) - phipj(b) * rvec_ee(a,j,iel) - thetapj(b) * rvec_en(a,j,nc)
+                    end do
+                    dquasi_dx_new(a,iel,a,iel) = dquasi_dx_new(a,iel,a,iel) - phi - theta 
+                    dquasi_dx_new(a,iel,a,j) = dquasi_dx_new(a,iel,a,j) + phi 
+                    dquasi_dx_new(a,j,a,iel) = dquasi_dx_new(a,j,a,iel) + phi
+                    dquasi_dx_new(a,j,a,j) = dquasi_dx_new(a,j,a,j) - phi - theta
+  
+                    d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - phippi * rvec_ee(a,iel,j) - thetappi * rvec_en(a,iel,nc)
+                    d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) - phippj * rvec_ee(a,iel,j) - thetappj * rvec_en(a,iel,nc)
+                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) - phippi * rvec_ee(a,j,iel) - thetappi * rvec_en(a,j,nc)
+                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) - phippj * rvec_ee(a,j,iel) - thetappj * rvec_en(a,j,nc)
+
+                    d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) - 2.0d0 * phipi(a) - 2.0d0 * thetapi(a)
+                    d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) + 2.0d0 * phipj(a)
+                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) + 2.0d0 * phipi(a)
+                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) - 2.0d0 * phipj(a) - 2.0d0 * thetapj(a)
+                end do
+            end if
+        end do
+    end do
+
+    
+    !call single_rios_distances(xold, xnew, iel)
+    xtemp = xold
+    xtemp(:, iel) = xnew
+    call rios_distances(xtemp)
+
+
+    do j = 1, nelec
+        if (iel == j) cycle
+        do nc = 1, ncent
+            idx_phi = (iwctype(nc)-1)*(tmpc + 1) + offset_een
+            idx_theta = (tmpc + 1)*nctype + (iwctype(nc)-1)*(tmpc) + offset_een
+
+            cutoff = parm_bf(idx_phi+1)
+            inv_cutoff = 1.0d0 / cutoff
+
+            if (r_en(iel,nc,0,2) > 0 .and. r_en(j,nc,0,2) > 0) then
+
+                indices(j) = j
+
+                phi = 0.00d0
+                phipi = 0.0d0
+                phipj = 0.0d0
+                phippi = 0.0d0
+                phippj = 0.0d0
+                theta = 0.00d0
+                thetapi = 0.0d0
+                thetapj = 0.0d0
+                thetappi = 0.0d0
+                thetappj = 0.0d0
+
+                k = idx_phi+2
+                kk = idx_theta+1
+                do l = 0, nordc_bf
+                    do m = 0, nordc_bf - l
+                        do n = 0, nordc_bf - l - m
+                            phi = phi + parm_bf(k) * r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n) 
+                            theta = theta + parm_bf(kk) * r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n) 
+                            do a = 1, 3
+                                tmp1 = r_en_gl(iel,a,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n)
+                                phipi(a) = phipi(a) + parm_bf(k) * tmp1
+                                thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
+
+                                tmp1 = r_en(iel,nc,l,2) * r_en_gl(j,a,nc,m,2) * r_ee(iel,j,n)
+                                phipj(a) = phipj(a) + parm_bf(k) * tmp1
+                                thetapj(a) = thetapj(a) + parm_bf(kk) * tmp1
+
+                                tmp1 = r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee_gl(iel,a,j,n) 
+                                phipi(a) = phipi(a) + parm_bf(k) * tmp1
+                                phipj(a) = phipj(a) - parm_bf(k) * tmp1
+                                thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
+                                thetapj(a) = thetapj(a) - parm_bf(kk) * tmp1
+
+                                tmp1 = 2.0d0 * r_en_gl(iel,a,nc,l,2) * r_en(j,nc,m,2) * r_ee_gl(iel,a,j,n)
+                                phippi = phippi + parm_bf(k) * tmp1
+                                thetappi = thetappi + parm_bf(kk) * tmp1
+
+                                tmp1 = 2.0d0 * r_en(iel,nc,l,2) * r_en_gl(j,a,nc,m,2) * r_ee_gl(iel,a,j,n)
+                                phippj = phippj - parm_bf(k) * tmp1
+                                thetappj = thetappj - parm_bf(kk) * tmp1
+                            enddo
+
+                            tmp1 = r_en_gl(iel,4,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n)
+                            phippi = phippi + parm_bf(k) * tmp1
+                            thetappi = thetappi + parm_bf(kk) * tmp1
+
+                            tmp1 = r_en(iel,nc,l,2) * r_en_gl(j,4,nc,m,2) * r_ee(iel,j,n) 
+                            phippj = phippj + parm_bf(k) * tmp1
+                            thetappj = thetappj + parm_bf(kk) * tmp1
+
+                            tmp1 = r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee_gl(iel,4,j,n)
+                            phippi = phippi + parm_bf(k) * tmp1
+                            thetappi = thetappi + parm_bf(kk) * tmp1
+                            phippj = phippj + parm_bf(k) * tmp1
+                            thetappj = thetappj + parm_bf(kk) * tmp1
+
+                            k = k + 1
+                            kk = kk + 1
+                        end do
+                    end do
+                end do
+                do a = 1, 3 
+                    quasi_x_new(a,iel) = quasi_x_new(a,iel) + phi * rvec_ee(a,iel,j) + theta * rvec_en(a,iel,nc)
+                    quasi_x_new(a,j) = quasi_x_new(a,j) + phi * rvec_ee(a,j,iel) + theta * rvec_en(a,j,nc)
+
+                    do b = 1, 3
+                        dquasi_dx_new(a,iel,b,iel) = dquasi_dx_new(a,iel,b,iel) + phipi(b) * rvec_ee(a,iel,j) + thetapi(b) * rvec_en(a,iel,nc)                        
+                        dquasi_dx_new(a,iel,b,j) = dquasi_dx_new(a,iel,b,j) + phipj(b) * rvec_ee(a,iel,j) + thetapj(b) * rvec_en(a,iel,nc)
+                        dquasi_dx_new(a,j,b,iel) = dquasi_dx_new(a,j,b,iel) + phipi(b) * rvec_ee(a,j,iel) + thetapi(b) * rvec_en(a,j,nc)
+                        dquasi_dx_new(a,j,b,j) = dquasi_dx_new(a,j,b,j) + phipj(b) * rvec_ee(a,j,iel) + thetapj(b) * rvec_en(a,j,nc)
+                    end do
+                    dquasi_dx_new(a,iel,a,iel) = dquasi_dx_new(a,iel,a,iel) + phi + theta 
+                    dquasi_dx_new(a,iel,a,j) = dquasi_dx_new(a,iel,a,j) - phi 
+                    dquasi_dx_new(a,j,a,iel) = dquasi_dx_new(a,j,a,iel) - phi
+                    dquasi_dx_new(a,j,a,j) = dquasi_dx_new(a,j,a,j) + phi + theta
+
+                    d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + phippi * rvec_ee(a,iel,j) + thetappi * rvec_en(a,iel,nc)
+                    d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) + phippj * rvec_ee(a,iel,j) + thetappj * rvec_en(a,iel,nc)
+                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) + phippi * rvec_ee(a,j,iel) + thetappi * rvec_en(a,j,nc)
+                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) + phippj * rvec_ee(a,j,iel) + thetappj * rvec_en(a,j,nc)
+
+                    d2quasi_dx2_new(a,iel,iel) = d2quasi_dx2_new(a,iel,iel) + 2.0d0 * phipi(a) + 2.0d0 * thetapi(a)
+                    d2quasi_dx2_new(a,iel,j) = d2quasi_dx2_new(a,iel,j) - 2.0d0 * phipj(a)
+                    d2quasi_dx2_new(a,j,iel) = d2quasi_dx2_new(a,j,iel) - 2.0d0 * phipi(a)
+                    d2quasi_dx2_new(a,j,j) = d2quasi_dx2_new(a,j,j) + 2.0d0 * phipj(a) + 2.0d0 * thetapj(a)
+                end do
+            end if
+        end do
+    end do
 end subroutine single_rios_backflow
 
 

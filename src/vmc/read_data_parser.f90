@@ -967,6 +967,7 @@ subroutine read_backflow_file(file_backflow)
         end do
         read(iunit, *) (parm_bf(i), i=1, nordb_bf+1)
         if (nordc_bf .gt. 0) then
+            tmpc = 0
             do l = 0, nordc_bf
                 do m = 0, nordc_bf - l
                     do n = 0, nordc_bf - l - m

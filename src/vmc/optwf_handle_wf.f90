@@ -317,7 +317,7 @@ contains
       open(2,file=filename,status='unknown')
 
       write(2,'(''backflow'',i4)') ibackflow
-      write(2,'(4i3,a28)') norda_bf,nordb_bf,nordc_bf,nparm_bf, ' norda,nordb,nordc,nparm'
+      write(2,'(4i5,a28)') norda_bf,nordb_bf,nordc_bf,nparm_bf, ' norda,nordb,nordc,nparm'
       write(2,'(1i3,a10)') cutoff_scale,' C'
 
 
@@ -346,7 +346,7 @@ contains
                 end do
             end do
         end do
-        write(fmt,'(''('',i2,''f13.8,a10)'')') tmpc+1
+        write(fmt,'(''('',i5,''f13.8,a10)'')') tmpc+1
       else
         write(fmt,'(''(a10)'')')
       endif
@@ -354,7 +354,7 @@ contains
         write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+1)+(ict-1)*(tmpc+1) + i),i=1,tmpc+1),' E-e-n'
       enddo 
       if (nordc_bf.gt.0) then
-        write(fmt,'(''('',i2,''f13.8,a10)'')') tmpc
+        write(fmt,'(''('',i5,''f13.8,a10)'')') tmpc
       endif
       do ict=1,nctype
         write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+1)+nctype*(tmpc+1) + (ict-1)*tmpc + i),i=1,tmpc),' e-e-N'

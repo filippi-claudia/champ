@@ -185,7 +185,7 @@ contains
       use hpsie,   only: psie
       implicit none
       integer :: i, ic, ifr, istate, jel, k, iel, j, kk, l
-      real(dp) :: psidg, rnorm_nodes
+      real(dp) :: psidg, rnorm_nodes, tmp, tmp2
       real(dp) :: ajacob, distance_node
       real(dp), dimension(3,nelec) :: xstrech
       real(dp), dimension(3) :: ddx_l
@@ -333,6 +333,48 @@ contains
       !     !print *, d2quasi_dx2_new(k,iel,iel) , d2quasi_dx2(k,iel, iel)
       !     call backflow(xold)
       !   enddo
+      !   print *, '-----'
+      ! enddo 
+      ! stop
+
+      ! do iel=1,nelec
+      !   do k=1,3
+      !     xold(k,iel) = xold(k,iel) + 0.0001
+      !     call hpsi(xold,psidoo,psijo,ekino,eold(1,1),0,1)
+      !     tmp = quasi_x(1,iel)
+      !     xold(k,iel) = xold(k,iel) - 0.0001
+      !     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+      !     tmp2 = quasi_x(1,iel)
+      !     print *, (tmp-tmp2)/0.0001, dquasi_dx(1,iel,k,iel)
+      !     xold(k,iel) = xold(k,iel) - 0.0001
+      !     call hpsi(xold,psidoo2,psijo,ekino,eold(1,1),0,1)
+      !     xold(k,iel) = xold(k,iel) + 0.0001
+      !     ddx_l(k) = (tmp + quasi_x(1,iel) -2*tmp2)/0.0001/0.0001
+      !   enddo
+      !   print *, ddx_l(1) + ddx_l(2) + ddx_l(3)
+      !   print *, d2quasi_dx2(1,iel,iel)
+      !   print *, '-----'
+      ! enddo 
+      ! stop
+
+
+
+      ! do iel=1,nelec
+      !   do k=1,3
+      !     xold(k,iel) = xold(k,iel) + 0.00001
+      !     call hpsi(xold,psidoo,psijo,ekino,eold(1,1),0,1)
+      !     tmp = r_en(iel,4,0,2)
+      !     xold(k,iel) = xold(k,iel) - 0.00001
+      !     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+      !     tmp2 = r_en(iel,4,0,2)
+      !     print *, (tmp-tmp2)/0.00001, r_en_gl(iel,k,4,0,2)
+      !     xold(k,iel) = xold(k,iel) - 0.00001
+      !     call hpsi(xold,psidoo2,psijo,ekino,eold(1,1),0,1)
+      !     xold(k,iel) = xold(k,iel) + 0.00001
+      !     ddx_l(k) = (tmp + r_en(iel,4,0,2) -2*tmp2)/0.00001/0.00001
+      !   enddo
+      !   print *, ddx_l(1) + ddx_l(2) + ddx_l(3)
+      !   print *, r_en_gl(iel,4,4,0,2)
       !   print *, '-----'
       ! enddo 
       ! stop

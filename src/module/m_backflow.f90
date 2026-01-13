@@ -60,8 +60,9 @@ module m_backflow
     real(dp), dimension(:, :, :, :), allocatable :: r_en
     real(dp), dimension(:, :, :, :, :), allocatable :: r_en_gl
     real(dp), dimension(:, :, :), allocatable :: rvec_en
+    real(dp), dimension(:, :), allocatable :: cutoff_deriv
     real(dp), dimension(:, :, :, :), allocatable :: p
-    real(dp), dimension(:, :, :, :, :), allocatable :: dp
+    real(dp), dimension(:, :, :, :, :), allocatable :: d_p
 
     !> nl_slm (nmat_dim,2)
     real(dp), dimension(:, :), allocatable :: nl_slm
@@ -79,7 +80,7 @@ module m_backflow
     public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf, dslm_bf
     public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
     public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, maxord
-    public :: r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl, p, dp
+    public :: r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
 
 contains
     !> Allocates memory for backflow arrays.
@@ -112,7 +113,8 @@ contains
         if (.not. allocated(r_ee_gl)) allocate (r_ee_gl(nelec, 4, nelec, 0:maxord))
         if (.not. allocated(r_en_gl)) allocate (r_en_gl(nelec, 4, ncent_tot, 0:maxord, 2))
         if (.not. allocated(p)) allocate (p(nelec, ncent_tot, nordc_bf, nordc_bf))
-        if (.not. allocated(dp)) allocate (dp(nelec, 4, ncent_tot, nordc_bf, nordc_bf))
+        if (.not. allocated(d_p)) allocate (d_p(nelec, 4, ncent_tot, nordc_bf, nordc_bf))
+        if (.not. allocated(cutoff_deriv)) allocate (cutoff_deriv(nelec, ncent_tot))
       endif
     end subroutine allocate_m_backflow
   
@@ -146,7 +148,8 @@ contains
         if (allocated(r_ee_gl)) deallocate(r_ee_gl)
         if (allocated(r_en_gl)) deallocate(r_en_gl)
         if (allocated(p)) deallocate(p)
-        if (allocated(dp)) deallocate(dp)
+        if (allocated(d_p)) deallocate(d_p)
+        if (allocated(cutoff_deriv)) deallocate(cutoff_deriv)
       endif
     end subroutine deallocate_m_backflow
   
