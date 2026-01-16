@@ -52,7 +52,7 @@ module acuest_mod
       use rotqua_mod, only: gesqua
       use slater,  only: kref
       use strech_mod, only: strech
-      use system,  only: cent,iwctype,ncent,nelec,znuc
+      use system,  only: cent,iwctype,ncent,nelec,znuc,nup
       use vmc_mod, only: nwftypeorb, stoj
       use pathak_mod, only: init_eps_pathak, ipathak
 
@@ -197,6 +197,9 @@ contains
       real(dp), dimension(3) :: xnew
       real(dp), dimension(3,nelec) :: xnew2
       real(dp), dimension(MSTATES) :: psidnn, psidn
+      real(dp) :: delta, dist, val_j_1, val_d_1, val_j_2, val_d_2, div_j, div_d, epsilon
+      real(dp), dimension(3) :: rvec
+      real(dp), dimension(3,nelec) :: x_orig
 
 ! entry point to zero out all averages etc.
 ! the initial values of energy psi etc. is also calculated here
@@ -278,6 +281,115 @@ contains
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
 
+      ! Cusp check block
+      if (.false.) then
+         write(ounit,*) '--- Cusp Check (Spherical Average) ---'
+         delta = 0.00001d0
+         epsilon = 0.00000d0 ! Avoid exactly 0
+         
+         x_orig = xold
+         
+         ! Electron-Nucleus
+         do ic = 1, ncent
+            do i = 1, nelec
+               div_j = 0.0d0
+               div_d = 0.0d0
+               
+               ! Integrate over 6 directions (+x,-x,+y,-y,+z,-z)
+               do k = 1, 3
+                  do l = -1, 1, 2 ! -1 and +1
+                     rvec = 0.0d0
+                     rvec(k) = dble(l)
+                     
+                     ! 1. Point at epsilon
+                     xold(:,i) = cent(:,ic) + epsilon * rvec
+                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+                     val_j_1 = psijo(1)
+                     val_d_1 = psido(1)
+                     
+                     ! 2. Point at epsilon + delta
+                     xold(:,i) = cent(:,ic) + (epsilon + delta) * rvec
+                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+                     val_j_2 = psijo(1)
+                     val_d_2 = psido(1)
+                     
+                     div_j = div_j + (val_j_2 - val_j_1)/delta
+                     div_d = div_d + (val_d_2 - val_d_1)/delta/val_d_1
+                  end do
+               end do
+               
+               ! Restore coordinate
+               xold(:,i) = x_orig(:,i)
+               
+               div_j = div_j / 6.0d0
+               div_d = div_d / 6.0d0
+               
+               write(ounit,'(A,I3,I3,A,F12.6,A,F12.6,A,F12.6)', advance='no') &
+                    'e-n: ', i, ic, ' r: ', epsilon, ' dJ: ', div_j, ' dD: ', div_d
+               
+               if (abs(div_j) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0'
+               if (abs(div_d) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: D!=0'
+               write(ounit,*) ''
+
+            end do
+         end do
+         
+         ! Electron-Electron (Spherical Average)
+         epsilon = 0.00001d0 
+         do i = 1, nelec
+            do j = i+1, nelec
+               div_j = 0.0d0
+               div_d = 0.0d0
+               
+               do k = 1, 3
+                  do l = -1, 1, 2
+                     rvec = 0.0d0
+                     rvec(k) = dble(l)
+                     
+                     ! Keep j fixed, move i relative to j
+                     
+                     ! 1. Point at epsilon
+                     xold(:,i) = xold(:,j) + epsilon * rvec
+                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+                     val_j_1 = psijo(1)
+                     
+                     ! 2. Point at epsilon + delta
+                     xold(:,i) = xold(:,j) + (epsilon + delta) * rvec
+                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+                     val_j_2 = psijo(1)
+                     
+                     div_j = div_j + (val_j_2 - val_j_1)/delta
+                  end do
+               end do
+               
+               ! Restore coordinate
+               xold(:,i) = x_orig(:,i)
+               
+               div_j = div_j / 6.0d0
+               
+               if ( (i .le. nup .and. j .le. nup) .or. (i .gt. nup .and. j .gt. nup) ) then
+                   ! Parallel
+                   write(ounit,'(A,I3,I3,A,F12.6,A,F12.6)', advance='no') &
+                        'e-e(P): ', i, j, ' r: ', epsilon, ' dJ: ', div_j
+                   if (abs(div_j - 0.25d0) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0.25'
+               else
+                   ! Anti-Parallel
+                   write(ounit,'(A,I3,I3,A,F12.6,A,F12.6)', advance='no') &
+                        'e-e(A): ', i, j, ' r: ', epsilon, ' dJ: ', div_j
+                   if (abs(div_j - 0.5d0) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0.5'
+               end if
+               write(ounit,*) ''
+            end do
+         end do
+         
+         ! Final restore of all coordinates to be safe
+         xold = x_orig
+         call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+         
+         stop
+      end if
+
+
 
       ! call backflow(xold)
       ! do iel=1,nelec
@@ -297,46 +409,46 @@ contains
       ! enddo
       ! stop
 
-      call backflow(xold)
-      do iel=1,nelec
-        do k=1,3
-          xnew(:) = xold(:,iel)
-          xnew(k) = xnew(k) + 1.0d0
-          call single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
-          xold(k,iel) = xold(k,iel) + 1.0d0
-          call backflow(xold)
-          xold(k,iel) = xold(k,iel) - 1.0d0
-          do i = 1, nelec
-            do kk=1,3
-              if (abs(quasi_x_new(kk,i) - quasi_x(kk,i)) > 1d-10) then
-                print *, 'Error in quasi_x for iel=', iel, ' k=', k, ' i=', i, ' kk=', kk
-                print *, ' quasi_x_new=', quasi_x_new(kk,i) , ' quasi_x=', quasi_x(kk,i)
-                stop
-              end if
-              do j = 1, nelec
-                if (abs(d2quasi_dx2_new(kk,i,j) - d2quasi_dx2(kk,i,j)) > 1d-10) then
-                  print *, 'Error in d2quasi_dx2 for iel=', iel, ' k=', k, ' i=', i, ' j=', j, ' kk=', kk
-                  print *, ' d2quasi_dx2_new=', d2quasi_dx2_new(kk,i,j) , ' d2quasi_dx2=', d2quasi_dx2(kk,i,j)
-                  stop
-                end if
-                do l = 1, 3
-                  if (abs(dquasi_dx_new(kk,i,l,j) - dquasi_dx(kk,i,l,j)) > 1d-10) then
-                    print *, 'Error in dquasi_dx for iel=', iel, ' k=', k, ' i=', i, ' j=', j, ' l=', l, ' kk=', kk
-                    print *, ' dquasi_dx_new=', dquasi_dx_new(kk,i,l,j) , ' dquasi_dx=', dquasi_dx(kk,i,l,j)
-                    stop
-                  end if
-                end do
-              end do
-            end do
-          end do
-          !print *, quasi_x_new(k,iel) , quasi_x(k,iel)
-          !print *, dquasi_dx_new(k,iel,k,iel) , dquasi_dx(k,iel,k,iel)
-          !print *, d2quasi_dx2_new(k,iel,iel) , d2quasi_dx2(k,iel, iel)
-          call backflow(xold)
-        enddo
-        print *, '-----'
-      enddo 
-      stop
+      ! call backflow(xold)
+      ! do iel=1,nelec
+      !   do k=1,3
+      !     xnew(:) = xold(:,iel)
+      !     xnew(k) = xnew(k) + 1.0d0
+      !     call single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
+      !     xold(k,iel) = xold(k,iel) + 1.0d0
+      !     call backflow(xold)
+      !     xold(k,iel) = xold(k,iel) - 1.0d0
+      !     do i = 1, nelec
+      !       do kk=1,3
+      !         if (abs(quasi_x_new(kk,i) - quasi_x(kk,i)) > 1d-10) then
+      !           print *, 'Error in quasi_x for iel=', iel, ' k=', k, ' i=', i, ' kk=', kk
+      !           print *, ' quasi_x_new=', quasi_x_new(kk,i) , ' quasi_x=', quasi_x(kk,i)
+      !           stop
+      !         end if
+      !         do j = 1, nelec
+      !           if (abs(d2quasi_dx2_new(kk,i,j) - d2quasi_dx2(kk,i,j)) > 1d-10) then
+      !             print *, 'Error in d2quasi_dx2 for iel=', iel, ' k=', k, ' i=', i, ' j=', j, ' kk=', kk
+      !             print *, ' d2quasi_dx2_new=', d2quasi_dx2_new(kk,i,j) , ' d2quasi_dx2=', d2quasi_dx2(kk,i,j)
+      !             stop
+      !           end if
+      !           do l = 1, 3
+      !             if (abs(dquasi_dx_new(kk,i,l,j) - dquasi_dx(kk,i,l,j)) > 1d-10) then
+      !               print *, 'Error in dquasi_dx for iel=', iel, ' k=', k, ' i=', i, ' j=', j, ' l=', l, ' kk=', kk
+      !               print *, ' dquasi_dx_new=', dquasi_dx_new(kk,i,l,j) , ' dquasi_dx=', dquasi_dx(kk,i,l,j)
+      !               stop
+      !             end if
+      !           end do
+      !         end do
+      !       end do
+      !     end do
+      !     !print *, quasi_x_new(k,iel) , quasi_x(k,iel)
+      !     !print *, dquasi_dx_new(k,iel,k,iel) , dquasi_dx(k,iel,k,iel)
+      !     !print *, d2quasi_dx2_new(k,iel,iel) , d2quasi_dx2(k,iel, iel)
+      !     call backflow(xold)
+      !   enddo
+      !   print *, '-----'
+      ! enddo 
+      ! stop
 
       ! do iel=1,nelec
       !   do k=1,3

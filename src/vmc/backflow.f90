@@ -72,19 +72,21 @@ subroutine single_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_
     end if
 end subroutine single_backflow
 
-subroutine init_backflow()
+subroutine init_backflow(iflag)
     use m_backflow, only: ibackflow
     implicit none
+    integer, intent(in) :: iflag
+
 
     if (ibackflow == 0) return
 
     if (ibackflow == 2) then
-        call init_gaussian_backflow()
+        call init_gaussian_backflow(iflag)
     else if (ibackflow == 3) then
         continue
         !call init_linear_backflow()
     else if (ibackflow == 4) then
-        call init_rios_backflow(5,5,5)
+        call init_rios_backflow(iflag,5,5,5)
     end if
 end subroutine init_backflow
 
@@ -153,11 +155,12 @@ subroutine trivial_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2)
     d2quasi_dx2 = 0.0d0
 end
 
-subroutine init_gaussian_backflow()
+subroutine init_gaussian_backflow(iflag)
     use precision_kinds, only: dp
     use m_backflow, only: parm_bf, nparm_bf
     use m_backflow, only: allocate_m_backflow
     implicit none
+    integer, intent(in) :: iflag
 
     nparm_bf = 3
     call allocate_m_backflow
@@ -302,51 +305,51 @@ subroutine linear_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
 
 end subroutine linear_backflow
 
-subroutine init_rios_backflow(orda, ordb, ordc)
+subroutine init_rios_backflow(iflag, orda, ordb, ordc)
     use precision_kinds, only: dp
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
     use system, only: nctype
     use m_backflow, only: allocate_m_backflow
     implicit none
-    integer :: i, orda, ordb, ordc, tmpc, l, m, n
+    integer, intent(in) :: iflag
+    integer :: i, orda, ordb, ordc, l, m, n
     intrinsic :: ceiling
  
-    norda_bf = orda
-    nordb_bf = ordb
-    nordc_bf = ordc
+    if (iflag.eq.0) then
+        norda_bf = orda
+        nordb_bf = ordb
+        nordc_bf = ordc
+    endif
 
     call init_backflow_arrays()
-    
-    parm_bf = 0.0d0
-    parm_bf(1) = 3.0d0
 
-    if (norda_bf.gt.0) then
-        do i = 1, nctype
-            parm_bf(1 + nordb_bf + (1 + norda_bf)*(i-1) + 1) = 3.0d0
-        end do
-    end if
-    if (nordc_bf.gt.0) then
-        tmpc = 0
-        do l = 0, nordc_bf
-            do m = 0, nordc_bf - l
-                do n = 0, nordc_bf - l - m
-                    tmpc = tmpc + 1
-                end do
+    if (iflag.eq.0) then
+        
+        parm_bf = 0.0d0
+        parm_bf(1) = 3.0d0
+
+        if (norda_bf.gt.0) then
+            do i = 1, nctype
+                parm_bf(1 + nordb_bf + (1 + norda_bf)*(i-1) + 1) = 3.0d0
             end do
-        end do
+        end if
+        if (nordc_bf.gt.0) then
+            do i = 1, 2 * nctype
+                parm_bf(1 + nordb_bf + (1 + norda_bf)*nctype + (ncparm_bf+1) * (i-1) + 1) = 3.0d0
+            end do
+        end if
+        cutoff_scale = 3
 
-        do i = 1, 2 * nctype
-            parm_bf(1 + nordb_bf + (1 + norda_bf)*nctype + (tmpc+1) * (i-1) + 1) = 3.0d0
-        end do
-    end if
-    cutoff_scale = 3
+        call init_cusp()
+        call fix_cusp()
+    endif
 end subroutine init_rios_backflow
 
 subroutine init_rios_backflow_arrays()
-    use m_backflow, only: allocate_m_backflow, ibackflow, norda_bf, nordb_bf, nordc_bf, nparm_bf, maxord
+    use m_backflow, only: allocate_m_backflow, ibackflow, norda_bf, nordb_bf, nordc_bf, nparm_bf, maxord, ncparm_bf, c_cuspconst
     use system, only: nctype
     implicit none
-    integer :: i, tmpc, l, m, n
+    integer :: i, l, m, n, idx, alpha
     intrinsic :: ceiling
 
     nparm_bf = 0
@@ -357,16 +360,9 @@ subroutine init_rios_backflow_arrays()
         nparm_bf = nparm_bf + (1 + nordb_bf)
     end if
     if (nordc_bf .gt. 0) then
-        tmpc = 0
-        do l = 0, nordc_bf
-            do m = 0, nordc_bf - l
-                do n = 0, nordc_bf - l - m
-                    tmpc = tmpc + 1
-                end do
-            end do
-        end do
-
-        nparm_bf = nparm_bf + (tmpc + 1) * nctype + (tmpc) * nctype
+        ncparm_bf = (nordc_bf+1)*(nordc_bf+2)*(nordc_bf+3)/6
+        c_cuspconst = 5 * nordc_bf + 5
+        nparm_bf = nparm_bf + (ncparm_bf + 1) * nctype + (ncparm_bf) * nctype
     end if
 
     maxord = max(norda_bf, nordb_bf, nordc_bf)
@@ -375,30 +371,335 @@ subroutine init_rios_backflow_arrays()
 
 end subroutine init_rios_backflow_arrays
 
+subroutine init_cusp()
+    use precision_kinds, only: dp
+    use m_backflow, only: parm_bf, c_cuspconst, nparm_bf, norda_bf, nordb_bf, nordc_bf, ncparm_bf, cutoff_scale
+    use m_backflow, only: B, cusp_parameters, cusp_indices, inv_cusp_indices, inv_cusp_parameters, basis_klm
+    use system, only: nctype
+    use control, only: ipr
+    use contrl_file,    only: ounit
+    implicit none
+    integer :: k, l, m, n, alpha, idx, info, offset, idx_phi, idx_theta, i, j, linefound, eq_idx
+    integer :: pr, max_row, idx_pivot, cnt
+    integer, dimension(c_cuspconst) :: ipiv
+    real(dp) :: cutoff, pivot, max_val, factor, tmp
+
+    ! Initialize cusp dependency matrix B to zero
+    B = 0.0d0
+
+    basis_klm = 0
+    idx = 1
+    do k = 0, nordc_bf
+        do l = 0, nordc_bf - k
+            do m = 0, nordc_bf - k - l
+                
+                basis_klm(idx, 1) = k
+                basis_klm(idx, 2) = l
+                basis_klm(idx, 3) = m
+                idx = idx + 1
+            end do
+        end do
+    end do
+
+    offset = 0
+    if (nordb_bf .gt. 0) offset = offset + (1 + nordb_bf)
+    if (norda_bf .gt. 0) offset = offset + (1 + norda_bf) * nctype
+
+    cusp_parameters = 0.0d0
+    cusp_indices = 0
+    inv_cusp_parameters = 0.0d0
+    inv_cusp_indices = 0
+
+    eq_idx = 1
+
+    do n = 1, nctype
+        idx_phi = offset + (ncparm_bf + 1) * (n - 1)
+        idx_theta = offset + (ncparm_bf + 1) * nctype + (ncparm_bf) * (n - 1)
+        cutoff = parm_bf(idx_phi+1)
+
+        do alpha=0,nordc_bf
+            idx = 1
+            do k=0,nordc_bf
+                do l=0,nordc_bf - k
+                    do m=0,nordc_bf-k-l
+                        if (k .eq. 0 .and. (l+m).eq.alpha) then
+                            B(alpha+1, idx, n) = -cutoff_scale/cutoff
+                        endif
+                        if (k .eq. 1 .and. (l+m).eq.alpha .and. (k+l+m).le.nordc_bf) then
+                            B(alpha+1, idx, n) = 1.0d0
+                        endif
+                        if (l .eq. 0 .and. (k+m).eq.alpha) then
+                            B(alpha+nordc_bf+1+1, idx, n) = -cutoff_scale/cutoff
+                            B(alpha+1, idx, n+nctype) = -cutoff_scale/cutoff
+                        endif
+                        if (l .eq. 1 .and. (k+m).eq.alpha .and. (k+l+m).le.nordc_bf) then
+                            B(alpha+nordc_bf+1+1, idx, n) = 1.0d0
+                            B(alpha+1, idx, n+nctype) = 1.0d0
+                        endif
+                        if (m .eq. 1 .and. (k+l).eq.alpha .and. (k+l+m).le.nordc_bf) then
+                            B(alpha+(nordc_bf+1)*2+1, idx, n) = 1.0d0
+                            B(alpha+nordc_bf+1+1, idx, n+nctype) = 1.0d0
+                        endif
+
+                        idx = idx + 1
+                    enddo
+                enddo
+            enddo
+        enddo
+
+        ! do alpha = 1, 10
+        !     print *, B(alpha,:,n)
+        !     print *, '---'
+        ! enddo
+        ! stop
+
+        ! Solve Phi terms (B(:,:,n)) using Gaussian Elimination to RREF
+        pr = 0
+        do j = 1, ncparm_bf ! Loop over variables (columns)
+             if (pr >= c_cuspconst) exit
+             
+             ! -- Partial Pivoting --
+             ! Find the row with the largest absolute value in the current column j
+             ! starting from the current pivot row pr + 1
+             max_val = 0.0d0
+             max_row = -1
+             do i = pr + 1, c_cuspconst
+                 if (abs(B(i,j,n)) > max_val) then
+                     max_val = abs(B(i,j,n))
+                     max_row = i
+                 end if
+             end do
+             
+             ! If column is zero (or near zero), skip it -> this variable is a free variable
+             if (max_val < 1.0d-12) cycle
+             
+             pr = pr + 1 ! We found a pivot for this column, move to next row
+             
+             ! Swap rows to bring the pivot to position (pr, j)
+             if (max_row /= pr) then
+                 do k = 1, ncparm_bf
+                     tmp = B(pr, k, n)
+                     B(pr, k, n) = B(max_row, k, n)
+                     B(max_row, k, n) = tmp
+                 end do
+             end if
+             
+             ! Normalize the pivot row so the leading coefficient is 1.0
+             pivot = B(pr, j, n)
+             do k = j, ncparm_bf
+                 B(pr, k, n) = B(pr, k, n) / pivot
+             end do
+             
+             ! Eliminate entries in this column for all other rows (above and below)
+             ! This converts the matrix to Reduced Row Echelon Form (RREF)
+             do i = 1, c_cuspconst
+                 if (i == pr) cycle
+                 factor = B(i, j, n)
+                 if (abs(factor) < 1.0d-12) cycle
+                 do k = j, ncparm_bf
+                     B(i, k, n) = B(i, k, n) - factor * B(pr, k, n)
+                 end do
+             end do
+        end do
+        
+        ! Extract dependencies from RREF matrix
+        do i = 1, pr ! Loop over the pivot rows
+             ! Find the pivot column for this row (first non-zero entry)
+             idx_pivot = -1
+             do j = 1, ncparm_bf
+                 if (abs(B(i, j, n)) > 1.0d-12) then
+                     idx_pivot = j
+                     exit
+                 end if
+             end do
+             
+             if (idx_pivot == -1) cycle ! Should not happen if pr logic is correct
+             
+             ! The variable corresponding to idx_pivot is a DEPENDENT variable
+             cusp_indices(eq_idx, 1) = idx_phi + 1 + idx_pivot
+             cusp_parameters(eq_idx, 1) = 1.0d0
+             
+             ! All other non-zero entries in this row correspond to FREE variables
+             ! (or their linear combination) that the dependent variable depends on.
+             ! Because of RREF, there is only one pivot per row, so this relationship is unique.
+             cnt = 1
+             do k = idx_pivot + 1, ncparm_bf
+                 if (abs(B(i, k, n)) > 1.0d-12) then
+                     cnt = cnt + 1
+                     cusp_indices(eq_idx, cnt) = idx_phi + 1 + k
+                     ! Move terms to RHS: x_dep + c * x_free = 0  =>  x_dep = -c * x_free
+                     cusp_parameters(eq_idx, cnt) = -B(i, k, n)
+                     
+                     ! Store inverse mapping for derivatives: 
+                     ! When optimizing x_free, we must also update the derivative wrt x_dep
+                     inv_cusp_indices(idx_phi + 1 + k, 1) = idx_phi + 1 + k
+                     do l = 2, ncparm_bf
+                          if (inv_cusp_indices(idx_phi + 1 + k, l) .eq. 0) then
+                              inv_cusp_indices(idx_phi + 1 + k, l) = cusp_indices(eq_idx, 1)
+                              inv_cusp_parameters(idx_phi + 1 + k, l) = cusp_parameters(eq_idx, cnt)
+                              exit
+                          endif
+                     end do
+                 end if
+             end do
+             eq_idx = eq_idx + 1
+        end do
+
+        ! Solve Theta terms (B(:,:,n+nctype)) using Gaussian Elimination to RREF
+        pr = 0
+        do j = 1, ncparm_bf ! Loop over variables (columns)
+             if (pr >= c_cuspconst) exit
+             
+             ! -- Partial Pivoting --
+             ! Find the row with the largest absolute value in the current column j
+             ! starting from the current pivot row pr + 1
+             max_val = 0.0d0
+             max_row = -1
+             do i = pr + 1, c_cuspconst
+                 if (abs(B(i,j,n+nctype)) > max_val) then
+                     max_val = abs(B(i,j,n+nctype))
+                     max_row = i
+                 end if
+             end do
+             
+             ! If column is zero (or near zero), skip it -> this variable is a free variable
+             if (max_val < 1.0d-12) cycle
+             
+             pr = pr + 1 ! We found a pivot for this column, move to next row
+             
+             ! Swap rows to bring the pivot to position (pr, j)
+             if (max_row /= pr) then
+                 do k = 1, ncparm_bf
+                     tmp = B(pr, k, n+nctype)
+                     B(pr, k, n+nctype) = B(max_row, k, n+nctype)
+                     B(max_row, k, n+nctype) = tmp
+                 end do
+             end if
+             
+             ! Normalize the pivot row so the leading coefficient is 1.0
+             pivot = B(pr, j, n+nctype)
+             do k = j, ncparm_bf
+                 B(pr, k, n+nctype) = B(pr, k, n+nctype) / pivot
+             end do
+             
+             ! Eliminate entries in this column for all other rows (above and below)
+             ! This converts the matrix to Reduced Row Echelon Form (RREF)
+             do i = 1, c_cuspconst
+                 if (i == pr) cycle
+                 factor = B(i, j, n+nctype)
+                 if (abs(factor) < 1.0d-12) cycle
+                 do k = j, ncparm_bf
+                     B(i, k, n+nctype) = B(i, k, n+nctype) - factor * B(pr, k, n+nctype)
+                 end do
+             end do
+        end do
+        
+        ! Extract dependencies from RREF matrix
+        do i = 1, pr ! Loop over the pivot rows
+             ! Find the pivot column for this row (first non-zero entry)
+             idx_pivot = -1
+             do j = 1, ncparm_bf
+                 if (abs(B(i, j, n+nctype)) > 1.0d-12) then
+                     idx_pivot = j
+                     exit
+                 end if
+             end do
+             
+             if (idx_pivot == -1) cycle ! Should not happen if pr logic is correct
+             
+             ! The variable corresponding to idx_pivot is a DEPENDENT variable
+             cusp_indices(eq_idx, 1) = idx_theta + idx_pivot
+             cusp_parameters(eq_idx, 1) = 1.0d0
+             
+             ! All other non-zero entries in this row correspond to FREE variables
+             ! (or their linear combination) that the dependent variable depends on.
+             ! Because of RREF, there is only one pivot per row, so this relationship is unique.
+             cnt = 1
+             do k = idx_pivot + 1, ncparm_bf
+                 if (abs(B(i, k, n+nctype)) > 1.0d-12) then
+                     cnt = cnt + 1
+                     cusp_indices(eq_idx, cnt) = idx_theta + k
+                     ! Move terms to RHS: x_dep + c * x_free = 0  =>  x_dep = -c * x_free
+                     cusp_parameters(eq_idx, cnt) = -B(i, k, n+nctype)
+                     
+                     ! Store inverse mapping for derivatives: 
+                     ! When optimizing x_free, we must also update the derivative wrt x_dep
+                     inv_cusp_indices(idx_theta + k, 1) = idx_theta + k
+                     do l = 2, ncparm_bf
+                          if (inv_cusp_indices(idx_theta + k, l) .eq. 0) then
+                              inv_cusp_indices(idx_theta + k, l) = cusp_indices(eq_idx, 1)
+                              inv_cusp_parameters(idx_theta + k, l) = cusp_parameters(eq_idx, cnt)
+                              exit
+                          endif
+                     end do
+                 end if
+             end do
+             eq_idx = eq_idx + 1
+        end do
+
+    enddo
+
+    if (ipr.gt.2) then
+        write(ounit, *) "Cusp conditions for Rios backflow:"
+        idx = 0
+        do i=1, c_cuspconst*nctype
+            if (cusp_indices(i,1) .eq. 0) cycle
+            idx = idx + 1
+
+            do j = 1, ncparm_bf
+                if (cusp_indices(i,j) .eq. 0) exit
+                write(ounit, '(4I8, F20.12)') basis_klm(j,1),basis_klm(j,2),basis_klm(j,3), cusp_indices(i,j), cusp_parameters(i,j)
+            end do
+            write(ounit, *) "---------------------"
+        end do
+
+        write(ounit, *) idx
+    endif
+
+end subroutine init_cusp
+
+subroutine fix_cusp()
+    use precision_kinds, only: dp
+    use system, only: nctype
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
+    use m_backflow, only: cusp_parameters, cusp_indices, c_cuspconst
+    implicit none
+
+    integer :: k, kk
+
+
+    ! Loop over cusp constraint equations
+    do k = 1, c_cuspconst*nctype
+        if (cusp_indices(k,1) .gt. 0) then
+            ! First delete the old value
+            parm_bf(cusp_indices(k,1)) = 0.0d0
+            do kk = 2, ncparm_bf
+                if (cusp_indices(k,kk) .eq. 0) exit
+                ! Calculate the new value
+                parm_bf(cusp_indices(k,1)) = parm_bf(cusp_indices(k,1)) + &
+                    cusp_parameters(k,kk) * parm_bf(cusp_indices(k,kk))
+            enddo
+        end if
+    end do
+
+end subroutine fix_cusp
+
 
 subroutine rios_distances(x)
     use precision_kinds, only: dp
     use system, only: nelec, ncent, cent, iwctype, nctype
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
     use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, maxord, cutoff_deriv
     implicit none
     real(dp), dimension(3, nelec), intent(in) :: x
     real(dp) :: r, inv_r, r_cutoff, inv_r_cutoff, cutoff, inv_cutoff
-    integer :: i, j, nc, k, no, multb, multa, tmpc, l, m ,n, cc
+    integer :: i, j, nc, k, no, multb, multa, l, m ,n, cc
 
     multb = 0
     if (nordb_bf .gt. 0) multb = 1
     multa = 0
     if (norda_bf .gt. 0) multa = 1
 
-    tmpc = 0
-    do l = 0, nordc_bf
-        do m = 0, nordc_bf - l
-            do n = 0, nordc_bf - l - m
-                tmpc = tmpc + 1
-            end do
-        end do
-    end do
     
     r_en = 0.0d0
     r_ee = 0.0d0
@@ -412,7 +713,7 @@ subroutine rios_distances(x)
             if (cc == 1) then
                 r_cutoff = parm_bf((1+nordb_bf) + (iwctype(nc)-1)*(1+norda_bf) + 1)
             else
-                r_cutoff = parm_bf((1+nordb_bf) + (1+norda_bf)*nctype + (tmpc+1)*(iwctype(nc)-1) + 1)
+                r_cutoff = parm_bf((1+nordb_bf) + (1+norda_bf)*nctype + (ncparm_bf+1)*(iwctype(nc)-1) + 1)
             end if
 
             inv_r_cutoff = 1.0d0 / r_cutoff  
@@ -496,36 +797,27 @@ end subroutine rios_distances
 subroutine single_rios_distances(x, xnew, iel)
     use precision_kinds, only: dp
     use system, only: nelec, ncent, cent, iwctype, nctype
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
     use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, maxord
     implicit none
     real(dp), dimension(3, nelec), intent(in) :: x
     real(dp), dimension(3), intent(in) :: xnew
     integer, intent(in) :: iel
     real(dp) :: r, inv_r, r_cutoff, inv_r_cutoff, cutoff, inv_cutoff
-    integer :: i, j, nc, k, no, multb, multa, tmpc, l, m ,n, cc
+    integer :: i, j, nc, k, no, multb, multa, l, m ,n, cc
 
     multb = 0
     if (nordb_bf .gt. 0) multb = 1
     multa = 0
     if (norda_bf .gt. 0) multa = 1
 
-    tmpc = 0
-    do l = 0, nordc_bf
-        do m = 0, nordc_bf - l
-            do n = 0, nordc_bf - l - m
-                tmpc = tmpc + 1
-            end do
-        end do
-    end do
     
-
     do cc = 1, 2
         do nc = 1, ncent
             if (cc == 1) then
                 r_cutoff = parm_bf((1+nordb_bf) + (iwctype(nc)-1)*(1+norda_bf) + 1)
             else
-                r_cutoff = parm_bf((1+nordb_bf) + (1+norda_bf)*nctype + (tmpc+1)*(iwctype(nc)-1) + 1)
+                r_cutoff = parm_bf((1+nordb_bf) + (1+norda_bf)*nctype + (ncparm_bf+1)*(iwctype(nc)-1) + 1)
             end if
 
             inv_r_cutoff = 1.0d0 / r_cutoff  
@@ -636,6 +928,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
     use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
     use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
+    use m_backflow, only: inv_cusp_indices, inv_cusp_parameters, cusp_indices, c_cuspconst, ncparm_bf
     implicit none
     real(dp), dimension(3, nelec), intent(in) :: x
     real(dp), dimension(3, nelec), intent(out) :: quasi_x
@@ -646,7 +939,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     real(dp) :: f, fp(3), fpp, eta, etap(3), etapp
     real(dp) :: delta(3), delta_ril(3), delta_rjl(3)
     integer :: i, j, k, a, b, offset_ee, offset_en, offset_een, idx, C
-    integer :: nc, l, m, n, tmpc, idx_phi, idx_theta, kk
+    integer :: nc, l, m, n, idx_phi, idx_theta, kk
     real(dp) :: ril, rjl, inv_ril, inv_rjl
     real(dp) :: inv_rij, inv_cutoff, tmp1, tmp2, cutoff1, cutoff2
     real(dp) :: fi, fpi(3), fppi(3), fj, fpj(3), fppj(3)
@@ -845,14 +1138,6 @@ if (norda_bf .eq. 0) goto 20
 20  continue
     if (nordc_bf .eq. 0) return
 
-    tmpc = 0
-    do l = 0, nordc_bf
-        do m = 0, nordc_bf - l
-            do n = 0, nordc_bf - l - m
-                tmpc = tmpc + 1
-            end do
-        end do
-    end do
 
     call rios_distances(x)
 
@@ -860,8 +1145,8 @@ if (norda_bf .eq. 0) goto 20
         do j = 1, nelec
             if (i == j) cycle
             do nc = 1, ncent
-                idx_phi = (iwctype(nc)-1)*(tmpc + 1) + offset_een
-                idx_theta = (tmpc + 1)*nctype + (iwctype(nc)-1)*(tmpc) + offset_een
+                idx_phi = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een
+                idx_theta = (ncparm_bf + 1)*nctype + (iwctype(nc)-1)*(ncparm_bf) + offset_een
 
                 cutoff = parm_bf(idx_phi+1)
                 inv_cutoff = 1.0d0 / cutoff
@@ -938,8 +1223,8 @@ if (norda_bf .eq. 0) goto 20
  
                 do a = 1, 3 
                     quasi_x(a,i) = quasi_x(a,i) + phi * rvec_ee(a,i,j) + theta * rvec_en(a,i,nc)
-                    dquasi_dp(a,i,idx_phi+1) = dquasi_dp(a,i,idx_phi+1) !+ phi * rvec_ee(a,i,j) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc)) &
-                                                                        !+ theta * rvec_en(a,i,nc) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc))
+                    dquasi_dp(a,i,idx_phi+1) = dquasi_dp(a,i,idx_phi+1) + phi * rvec_ee(a,i,j) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc)) &
+                                                                        + theta * rvec_en(a,i,nc) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc))
 
                     do b = 1, 3
                         dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + phipi(b) * rvec_ee(a,i,j) + thetapi(b) * rvec_en(a,i,nc)                        
@@ -956,6 +1241,27 @@ if (norda_bf .eq. 0) goto 20
                 end do
             end do
         end do
+
+
+        if (ioptbf .gt. 0) then
+            ! Here we first add the derivatives due to the cusp condition, and then zero the fixed variables.
+            ! Ideally, we would not even have the fixed variables in the parameter list, but this is more complicated to implement.
+            do a = 1, 3
+                do k = 1, nparm_bf
+                    if (inv_cusp_indices(k,1) .gt. 0) then
+                        do kk = 1, ncparm_bf
+                            if (inv_cusp_indices(k, kk) .eq. 0) exit
+                            dquasi_dp(a,i,k) = dquasi_dp(a,i,k) + inv_cusp_parameters(k,kk) * dquasi_dp(a,i,inv_cusp_indices(k,kk))
+                        end do
+                    end if
+                end do
+                do k = 1, c_cuspconst*nctype
+                    if (cusp_indices(k,1) .gt. 0) then
+                        dquasi_dp(a,i,cusp_indices(k,1)) = 0.0d0
+                    end if
+                end do
+            end do
+        endif
     end do
 
 
@@ -963,11 +1269,12 @@ if (norda_bf .eq. 0) goto 20
 end subroutine rios_backflow
 
 
+
 subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
     use precision_kinds, only: dp
     use system, only: nelec, iwctype, ncent, nctype, cent
     use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
     use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2, r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl
     implicit none
     integer, intent(in) :: iel
@@ -981,7 +1288,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     real(dp) :: f, fp(3), fpp, eta, etap(3), etapp
     real(dp) :: delta(3)
     integer :: i, j, k, a, b, offset_ee, offset_en, offset_een, idx, C
-    integer :: nc, l, m, n, tmpc, idx_phi, idx_theta, kk
+    integer :: nc, l, m, n, idx_phi, idx_theta, kk
     real(dp) :: inv_rij, inv_cutoff, tmp1, tmp2
     real(dp) :: cutoff1, cutoff2
     real(dp) :: fi, fpi(3), fppi(3), fj, fpj(3), fppj(3)
@@ -1300,22 +1607,14 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
 20  continue
     if (nordc_bf .eq. 0) return
 
-    tmpc = 0
-    do l = 0, nordc_bf
-        do m = 0, nordc_bf - l
-            do n = 0, nordc_bf - l - m
-                tmpc = tmpc + 1
-            end do
-        end do
-    end do
 
     !call single_rios_distances(xold, xold(:, iel), iel)
      call rios_distances(xold)
     do j = 1, nelec
         if (iel == j) cycle
         do nc = 1, ncent
-            idx_phi = (iwctype(nc)-1)*(tmpc + 1) + offset_een
-            idx_theta =  (tmpc + 1)*nctype + (iwctype(nc)-1)*(tmpc) + offset_een
+            idx_phi = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een
+            idx_theta =  (ncparm_bf + 1)*nctype + (iwctype(nc)-1)*(ncparm_bf) + offset_een
 
             cutoff = parm_bf(idx_phi+1)
             inv_cutoff = 1.0d0 / cutoff
@@ -1495,8 +1794,8 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     do j = 1, nelec
         if (iel == j) cycle
         do nc = 1, ncent
-            idx_phi = (iwctype(nc)-1)*(tmpc + 1) + offset_een
-            idx_theta = (tmpc + 1)*nctype + (iwctype(nc)-1)*(tmpc) + offset_een
+            idx_phi = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een
+            idx_theta = (ncparm_bf + 1)*nctype + (iwctype(nc)-1)*(ncparm_bf) + offset_een
 
             cutoff = parm_bf(idx_phi+1)
             inv_cutoff = 1.0d0 / cutoff

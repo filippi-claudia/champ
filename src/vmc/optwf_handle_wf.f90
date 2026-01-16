@@ -1297,6 +1297,7 @@ contains
 
       subroutine compute_bf(dparm,iadiag)
         use m_backflow, only: ibackflow, nparm_bf, parm_bf
+        use backflow_mod, only: fix_cusp
         use optwf_control, only: ioptbf
         use precision_kinds, only: dp
         use optorb_cblock, only: norbterm
@@ -1310,6 +1311,8 @@ contains
         do i=1,nparm_bf
           parm_bf(i)=parm_bf(i)-dparm(i+nparmj+nparmd+norbterm)
         enddo
+
+        call fix_cusp()
         return
       end
 

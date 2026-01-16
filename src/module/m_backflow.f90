@@ -67,9 +67,16 @@ module m_backflow
     !> nl_slm (nmat_dim,2)
     real(dp), dimension(:, :), allocatable :: nl_slm
 
+    ! Array for cusp dependency (phi, theta)
+    real(dp), dimension(:, :, :), allocatable :: B
+    real(dp), dimension(:, :), allocatable :: cusp_parameters, inv_cusp_parameters
+    integer, dimension(:, :), allocatable :: cusp_indices, inv_cusp_indices
+    ! Store (k, l, m) indices for each basis function column
+    integer, dimension(:, :), allocatable :: basis_klm
+
     real(dp), dimension(:), allocatable :: parm_bf
     real(dp), dimension(:), allocatable :: deriv_parm_bf
-    integer :: norda_bf, nordb_bf, nordc_bf, nparm_bf, cutoff_scale, maxord
+    integer :: norda_bf, nordb_bf, nordc_bf, nparm_bf, cutoff_scale, maxord, ncparm_bf, c_cuspconst
 
     
     private
@@ -78,9 +85,10 @@ module m_backflow
     public :: rvec_en_bf, r_en_bf
     public :: allocate_m_backflow, deallocate_m_backflow
     public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf, dslm_bf
-    public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+    public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf, c_cuspconst
     public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, maxord
     public :: r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
+    public :: B, cusp_parameters, cusp_indices, inv_cusp_parameters, inv_cusp_indices, basis_klm
 
 contains
     !> Allocates memory for backflow arrays.
@@ -115,6 +123,12 @@ contains
         if (.not. allocated(p)) allocate (p(nelec, ncent_tot, nordc_bf, nordc_bf))
         if (.not. allocated(d_p)) allocate (d_p(nelec, 4, ncent_tot, nordc_bf, nordc_bf))
         if (.not. allocated(cutoff_deriv)) allocate (cutoff_deriv(nelec, ncent_tot))
+        if (.not. allocated(B)) allocate (B(c_cuspconst, ncparm_bf,2*nctype))
+        if (.not. allocated(cusp_parameters)) allocate (cusp_parameters(c_cuspconst*nctype, ncparm_bf))
+        if (.not. allocated(cusp_indices)) allocate (cusp_indices(c_cuspconst*nctype, ncparm_bf))
+        if (.not. allocated(inv_cusp_parameters)) allocate (inv_cusp_parameters(nparm_bf, ncparm_bf))
+        if (.not. allocated(inv_cusp_indices)) allocate (inv_cusp_indices(nparm_bf, ncparm_bf))
+        if (.not. allocated(basis_klm)) allocate (basis_klm(ncparm_bf, 3))
       endif
     end subroutine allocate_m_backflow
   
@@ -150,6 +164,12 @@ contains
         if (allocated(p)) deallocate(p)
         if (allocated(d_p)) deallocate(d_p)
         if (allocated(cutoff_deriv)) deallocate(cutoff_deriv)
+        if (allocated(B)) deallocate(B)
+        if (allocated(cusp_parameters)) deallocate(cusp_parameters)
+        if (allocated(cusp_indices)) deallocate(cusp_indices)
+        if (allocated(inv_cusp_parameters)) deallocate(inv_cusp_parameters)
+        if (allocated(inv_cusp_indices)) deallocate(inv_cusp_indices)
+        if (allocated(basis_klm)) deallocate(basis_klm)
       endif
     end subroutine deallocate_m_backflow
   

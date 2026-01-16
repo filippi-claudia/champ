@@ -1288,7 +1288,7 @@ subroutine parser
   if ( fdf_load_defined('backflow') ) then
     call read_backflow_file(file_backflow)
   else
-    call init_backflow()
+    call init_backflow(0)
   endif
 
   call elapsed_time ("Reading Backflow file : ")

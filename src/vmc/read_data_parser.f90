@@ -907,12 +907,12 @@ end subroutine read_jastrow_file
 !> This subroutine reads backflow parameters from a text file.
 !>@author Emiel Slootman
 subroutine read_backflow_file(file_backflow)
-      use m_backflow, only: ibackflow, norda_bf, nordb_bf, nordc_bf, nparm_bf, cutoff_scale, parm_bf
+      use m_backflow, only: ibackflow, norda_bf, nordb_bf, nordc_bf, nparm_bf, cutoff_scale, parm_bf, ncparm_bf
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use mpiconf, only: wid
       use precision_kinds, only: dp
-      use backflow_mod, only: init_backflow_arrays
+      use backflow_mod, only: init_backflow, init_cusp, fix_cusp
       use system, only: nctype
 
     implicit none
@@ -920,8 +920,7 @@ subroutine read_backflow_file(file_backflow)
     !   local use
     character(len=72), intent(in)   :: file_backflow
     character(len=40)               :: temp1
-    integer                         :: iunit, iostat, i, ict, multb, multa, multc, l, m, n, tmpc
-
+    integer                         :: iunit, iostat, i, ict, multb, multa, multc, l, m, n
     logical                         :: exist
 
     !   Formatting
@@ -953,7 +952,7 @@ subroutine read_backflow_file(file_backflow)
     call bcast(nordc_bf)
     call bcast(cutoff_scale)
 
-    call init_backflow_arrays()
+    call init_backflow(1)
     multb = 0
     multa = 0
     multc = 0   
@@ -967,25 +966,20 @@ subroutine read_backflow_file(file_backflow)
         end do
         read(iunit, *) (parm_bf(i), i=1, nordb_bf+1)
         if (nordc_bf .gt. 0) then
-            tmpc = 0
-            do l = 0, nordc_bf
-                do m = 0, nordc_bf - l
-                    do n = 0, nordc_bf - l - m
-                        tmpc = tmpc + 1
-                    end do
-                end do
+            do ict = 1, nctype
+                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+1)*multa + multc*(ict-1)*(ncparm_bf+1) + i), i=1,ncparm_bf+1)
             end do
             do ict = 1, nctype
-                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+1)*multa + multc*(ict-1)*(tmpc+1) + i), i=1,tmpc+1)
-            end do
-            do ict = 1, nctype
-                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+1)*multa + multc*nctype*(tmpc+1) + &
-                (ict-1)*tmpc*multc + i), i=1,tmpc)
+                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+1)*multa + multc*nctype*(ncparm_bf+1) + &
+                (ict-1)*ncparm_bf*multc + i), i=1,ncparm_bf)
             end do
         endif
 
     endif
     call bcast(parm_bf)
+
+    call init_cusp()
+    call fix_cusp()
 
     if (wid) close(iunit)
 
