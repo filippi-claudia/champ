@@ -386,6 +386,11 @@ contains
          stop
       end if
 
+      ! Finite difference test for dquasi_dp (backflow parameter derivatives)
+      if (.false.) then
+         call test_dquasi_dp_finite_diff(xold)
+         stop
+      end if
 
 
       ! call backflow(xold)
@@ -620,4 +625,128 @@ contains
 
       return
       end
-end module
+
+      !-----------------------------------------------------------------------
+      ! Finite difference test for dquasi_dp (backflow parameter derivatives)
+      !-----------------------------------------------------------------------
+      subroutine test_dquasi_dp_finite_diff(x)
+      use precision_kinds, only: dp
+      use system, only: nelec, nctype
+      use contrl_file, only: ounit
+      use m_backflow, only: parm_bf, nparm_bf, dquasi_dp, quasi_x, ibackflow
+      use m_backflow, only: cusp_indices, c_cuspconst
+      use backflow_mod, only: backflow
+      use backflow_mod, only: fix_cusp, init_cusp
+      implicit none
+      
+      real(dp), dimension(3, nelec), intent(in) :: x
+      real(dp), dimension(3, nelec) :: quasi_x_plus, quasi_x_minus
+      real(dp), dimension(3, nelec) :: dquasi_dp_analytic
+      real(dp) :: delta, fd_deriv, analytic_deriv, rel_error, parm_orig
+      real(dp) :: max_rel_error_parm, max_fd_parm, max_anal_parm
+      integer :: iparm, iel, a, k
+      logical :: is_dependent, parm_has_error
+      integer :: max_errors
+      real(dp) :: tol
+      
+      if (ibackflow == 0) then
+         write(ounit,*) 'test_dquasi_dp_finite_diff: backflow not enabled'
+         return
+      endif
+      
+      write(ounit,*) ''
+      write(ounit,*) '============================================================'
+      write(ounit,*) 'Finite Difference Test for dquasi_dp (parameter derivatives)'
+      write(ounit,*) '============================================================'
+      
+      delta = 1.0d-6
+      tol = 1.0d-4
+      max_errors = 0
+      
+      write(ounit,'(A,I6)') 'Number of backflow parameters: ', nparm_bf
+      write(ounit,'(A,E12.4)') 'Finite difference delta: ', delta
+      write(ounit,'(A,E12.4)') 'Tolerance for relative error: ', tol
+      write(ounit,*) ''
+      
+      ! Loop over all parameters
+      do iparm = 1, nparm_bf
+         
+         ! Check if this is a dependent (cusp-constrained) parameter
+         is_dependent = .false.
+         do k = 1, c_cuspconst * nctype
+            if (cusp_indices(k,1) == iparm) then
+               is_dependent = .true.
+               exit
+            endif
+         enddo
+         
+         ! Store original parameter value
+         parm_orig = parm_bf(iparm)
+         
+         ! Compute quasi_x with parameter + delta
+         parm_bf(iparm) = parm_orig + delta
+         call init_cusp()
+         call fix_cusp()
+         call backflow(x)
+         quasi_x_plus = quasi_x
+         
+         ! Compute quasi_x with parameter - delta
+         parm_bf(iparm) = parm_orig - delta
+         call init_cusp()
+         call fix_cusp()
+         call backflow(x)
+         quasi_x_minus = quasi_x
+         
+         ! Restore original parameter
+         parm_bf(iparm) = parm_orig
+         call init_cusp()
+         call fix_cusp()
+         call backflow(x)
+         
+         ! Compare finite difference with analytical derivative
+         ! Track max error for this parameter to print only once per parameter
+         max_rel_error_parm = 0.0d0
+         max_fd_parm = 0.0d0
+         max_anal_parm = 0.0d0
+         parm_has_error = .false.
+         
+         do iel = 1, nelec
+            do a = 1, 3
+               fd_deriv = (quasi_x_plus(a, iel) - quasi_x_minus(a, iel)) / (2.0d0 * delta)
+               analytic_deriv = dquasi_dp(a, iel, iparm)
+               
+                rel_error = abs(fd_deriv - analytic_deriv)
+               
+               if (rel_error > tol .and. (abs(fd_deriv) > 1.0d-10 .or. abs(analytic_deriv) > 1.0d-10)) then
+                  max_errors = max_errors + 1
+                  parm_has_error = .true.
+                  if (rel_error > max_rel_error_parm) then
+                     max_rel_error_parm = rel_error
+                     max_fd_parm = fd_deriv
+                     max_anal_parm = analytic_deriv
+                  endif
+               endif
+            enddo
+         enddo
+         
+         ! Print once per parameter with worst error
+         if (parm_has_error) then
+            write(ounit,'(A,I4,A,L1,A,E14.6,A,E14.6,A,E10.2)') &
+               'MISMATCH parm=', iparm, ' dep=', is_dependent, &
+               ' FD=', max_fd_parm, ' Anal=', max_anal_parm, ' MaxRelErr=', max_rel_error_parm
+         endif
+      enddo
+      
+      write(ounit,*) ''
+      if (max_errors == 0) then
+         write(ounit,*) 'SUCCESS: All parameter derivatives match within tolerance!'
+      else
+         write(ounit,'(A,I6,A)') 'FAILURE: ', max_errors, ' mismatches found!'
+      endif
+      write(ounit,*) '============================================================'
+      write(ounit,*) ''
+      
+      return
+      end subroutine test_dquasi_dp_finite_diff
+
+    end module

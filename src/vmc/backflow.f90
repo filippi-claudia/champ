@@ -501,9 +501,10 @@ subroutine init_cusp()
              ! For derivative: d(B/pivot)/dL = dB/dL / pivot - B * dpivot/dL / pivot^2
              !                               = (dB/dL * pivot - B * dpivot/dL) / pivot^2
              pivot = B(pr, j, n)
+             dtmp = dB_dcutoff(pr, j, n)  ! Save dpivot/dL before loop modifies it
              do k = j, ncparm_bf
                  ! First update derivative before updating B
-                 dB_dcutoff(pr, k, n) = (dB_dcutoff(pr, k, n) * pivot - B(pr, k, n) * dB_dcutoff(pr, j, n)) / (pivot * pivot)
+                 dB_dcutoff(pr, k, n) = (dB_dcutoff(pr, k, n) * pivot - B(pr, k, n) * dtmp) / (pivot * pivot)
                  B(pr, k, n) = B(pr, k, n) / pivot
              end do
              
@@ -513,17 +514,18 @@ subroutine init_cusp()
              do i = 1, c_cuspconst
                  if (i == pr) cycle
                  factor = B(i, j, n)
+                 dtmp = dB_dcutoff(i, j, n)  ! Save dfactor/dL before loop modifies it
                  if (abs(factor) < 1.0d-12) then
                      ! Still apply derivative elimination even if factor is small
                      ! because dfactor/dL might not be small
                      do k = j, ncparm_bf
-                         dB_dcutoff(i, k, n) = dB_dcutoff(i, k, n) - dB_dcutoff(i, j, n) * B(pr, k, n) &
+                         dB_dcutoff(i, k, n) = dB_dcutoff(i, k, n) - dtmp * B(pr, k, n) &
                                               - factor * dB_dcutoff(pr, k, n)
                      end do
                      cycle
                  end if
                  do k = j, ncparm_bf
-                     dB_dcutoff(i, k, n) = dB_dcutoff(i, k, n) - dB_dcutoff(i, j, n) * B(pr, k, n) &
+                     dB_dcutoff(i, k, n) = dB_dcutoff(i, k, n) - dtmp * B(pr, k, n) &
                                           - factor * dB_dcutoff(pr, k, n)
                      B(i, k, n) = B(i, k, n) - factor * B(pr, k, n)
                  end do
@@ -617,9 +619,10 @@ subroutine init_cusp()
              ! For derivative: d(B/pivot)/dL = dB/dL / pivot - B * dpivot/dL / pivot^2
              !                               = (dB/dL * pivot - B * dpivot/dL) / pivot^2
              pivot = B(pr, j, n+nctype)
+             dtmp = dB_dcutoff(pr, j, n+nctype)  ! Save dpivot/dL before loop modifies it
              do k = j, ncparm_bf
                  ! First update derivative before updating B
-                 dB_dcutoff(pr, k, n+nctype) = (dB_dcutoff(pr, k, n+nctype) * pivot - B(pr, k, n+nctype) * dB_dcutoff(pr, j, n+nctype)) / (pivot * pivot)
+                 dB_dcutoff(pr, k, n+nctype) = (dB_dcutoff(pr, k, n+nctype) * pivot - B(pr, k, n+nctype) * dtmp) / (pivot * pivot)
                  B(pr, k, n+nctype) = B(pr, k, n+nctype) / pivot
              end do
              
@@ -629,17 +632,18 @@ subroutine init_cusp()
              do i = 1, c_cuspconst
                  if (i == pr) cycle
                  factor = B(i, j, n+nctype)
+                 dtmp = dB_dcutoff(i, j, n+nctype)  ! Save dfactor/dL before loop modifies it
                  if (abs(factor) < 1.0d-12) then
                      ! Still apply derivative elimination even if factor is small
                      ! because dfactor/dL might not be small
                      do k = j, ncparm_bf
-                         dB_dcutoff(i, k, n+nctype) = dB_dcutoff(i, k, n+nctype) - dB_dcutoff(i, j, n+nctype) * B(pr, k, n+nctype) &
+                         dB_dcutoff(i, k, n+nctype) = dB_dcutoff(i, k, n+nctype) - dtmp * B(pr, k, n+nctype) &
                                               - factor * dB_dcutoff(pr, k, n+nctype)
                      end do
                      cycle
                  end if
                  do k = j, ncparm_bf
-                     dB_dcutoff(i, k, n+nctype) = dB_dcutoff(i, k, n+nctype) - dB_dcutoff(i, j, n+nctype) * B(pr, k, n+nctype) &
+                     dB_dcutoff(i, k, n+nctype) = dB_dcutoff(i, k, n+nctype) - dtmp * B(pr, k, n+nctype) &
                                           - factor * dB_dcutoff(pr, k, n+nctype)
                      B(i, k, n+nctype) = B(i, k, n+nctype) - factor * B(pr, k, n+nctype)
                  end do
@@ -762,6 +766,7 @@ subroutine rios_distances(x)
     rvec_ee = 0.0d0
     r_ee_gl = 0.0d0
     r_en_gl = 0.0d0
+    cutoff_deriv = 0.0d0
 
     do cc = 1, 2
         do nc = 1, ncent
@@ -1054,7 +1059,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
 
             eta  = eta + b_one
             do a = 1, 3
-                dquasi_dp(a,i,offset_ee+2) = dquasi_dp(a,i,offset_ee+2) + delta(a) * f * (1 + C * inv_cutoff * rij)
+                dquasi_dp(a,i,offset_ee+2) = dquasi_dp(a,i,offset_ee+2) + delta(a) * f * cutoff / C
             end do
 
             rr = rij
@@ -1141,7 +1146,7 @@ if (norda_bf .eq. 0) goto 20
 
             eta  = eta + a_one
             do a = 1, 3
-                dquasi_dp(a,i,offset_en + idx+2) = dquasi_dp(a,i,offset_en + idx+2) + delta(a) * f * (1 + C * inv_cutoff * rij)
+                dquasi_dp(a,i,offset_en + idx+2) = dquasi_dp(a,i,offset_en + idx+2) + delta(a) * f * cutoff / C
             end do
 
             rr = rij
