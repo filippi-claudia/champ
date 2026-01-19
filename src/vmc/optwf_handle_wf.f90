@@ -1289,7 +1289,7 @@ contains
 
       subroutine compute_bf(dparm,iadiag)
         use m_backflow, only: ibackflow, nparm_bf, parm_bf
-        use backflow_mod, only: fix_cusp
+        use backflow_mod, only: fix_cusp, init_cusp
         use optwf_control, only: ioptbf
         use precision_kinds, only: dp
         use optorb_cblock, only: norbterm
@@ -1304,6 +1304,8 @@ contains
           parm_bf(i)=parm_bf(i)-dparm(i+nparmj+nparmd+norbterm)
         enddo
 
+        ! Rebuild cusp constraint matrix since cutoff may have changed
+        call init_cusp()
         call fix_cusp()
         return
       end
