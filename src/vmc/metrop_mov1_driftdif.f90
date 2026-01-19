@@ -52,7 +52,8 @@
       use system,  only: nelec,nup
       use tmpnode, only: distance_node_sum
       use vmc_mod, only: nwftypejas, stoj
-      use m_backflow, only: ibackflow, quasi_x, dquasi_dx, d2quasi_dx2, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
+      use m_backflow, only: ibackflow
+      use backflow_mod, only: backflow_accept
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
@@ -209,9 +210,7 @@
         endif
 #endif
         if (ibackflow.gt.0) then
-          quasi_x = quasi_x_new
-          dquasi_dx = dquasi_dx_new
-          d2quasi_dx2 = d2quasi_dx2_new
+          call backflow_accept(i)
         endif
         psi2o(1,1)=psi2n(1)
         do ic=1,3

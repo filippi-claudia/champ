@@ -74,8 +74,8 @@
       use vmc_mod, only: nbjx
       use walksav_det_mod, only: walksav_det,walkstrdet
       use walksav_jas_mod, only: walksav_jas,walkstrjas
-      use m_backflow, only: ibackflow, quasi_x, dquasi_dx, d2quasi_dx2, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
-      use backflow_mod, only: backflow
+      use m_backflow, only: ibackflow
+      use backflow_mod, only: backflow, backflow_accept
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
@@ -245,9 +245,7 @@
               endif
 #endif
               if (ibackflow.gt.0) then
-                quasi_x = quasi_x_new
-                dquasi_dx = dquasi_dx_new
-                d2quasi_dx2 = d2quasi_dx2_new
+                call backflow_accept(i)
               endif
               if(icasula.eq.4) then
                  call nonloc_grid(i,iw,xnew,psido_dmc(iw,1),imove, t_norm_new,0)
@@ -271,9 +269,7 @@
                     endif
 #endif
                     if (ibackflow.gt.0) then
-                      quasi_x = quasi_x_new
-                      dquasi_dx = dquasi_dx_new
-                      d2quasi_dx2 = d2quasi_dx2_new
+                      call backflow_accept(i)
                     endif
                  else
                     nmove_casula=nmove_casula+1
@@ -434,9 +430,7 @@
             endif
 #endif
             if (ibackflow.gt.0) then
-              quasi_x = quasi_x_new
-              dquasi_dx = dquasi_dx_new
-              d2quasi_dx2 = d2quasi_dx2_new
+              call backflow_accept(i)
             endif
             iaccept=1
             nacc=nacc+1
@@ -756,9 +750,7 @@
             endif
 #endif
             if (ibackflow.gt.0) then
-              quasi_x = quasi_x_new
-              dquasi_dx = dquasi_dx_new
-              d2quasi_dx2 = d2quasi_dx2_new
+              call backflow_accept(iel)
             endif
             if (icasula.eq.-2) then
                call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,0,1)
@@ -792,9 +784,7 @@
                   endif
 #endif 
                   if (ibackflow.gt.0) then
-                    quasi_x = quasi_x_new
-                    dquasi_dx = dquasi_dx_new
-                    d2quasi_dx2 = d2quasi_dx2_new
+                    call backflow_accept(iel)
                   endif
  
                   call nonloc_pot(xold_dmc(1,1,iw,1),rvec_en,r_en,pe,vpsp_det,dvpsp_dj,t_vpsp,0,1)

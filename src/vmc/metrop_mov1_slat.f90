@@ -63,7 +63,8 @@ contains
       use mpitimer, only: elapsed_time
       use mpi
       use optwf_control, only: ioptjas
-      use m_backflow, only: ibackflow, quasi_x, dquasi_dx, d2quasi_dx2, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
+      use m_backflow, only: ibackflow
+      use backflow_mod, only: backflow_accept
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
@@ -597,9 +598,7 @@ contains
         endif
 #endif
         if (ibackflow.gt.0) then
-          quasi_x = quasi_x_new
-          dquasi_dx = dquasi_dx_new
-          d2quasi_dx2 = d2quasi_dx2_new
+          call backflow_accept(i)
         endif
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)

@@ -63,6 +63,12 @@ module m_backflow
     real(dp), dimension(:, :), allocatable :: cutoff_deriv
     real(dp), dimension(:, :, :, :), allocatable :: p
     real(dp), dimension(:, :, :, :, :), allocatable :: d_p
+    real(dp), dimension(:, :), allocatable :: single_r_ee
+    real(dp), dimension(:, :, :), allocatable :: single_r_ee_gl
+    real(dp), dimension(:, :), allocatable :: single_rvec_ee
+    real(dp), dimension(:, :, :), allocatable :: single_r_en
+    real(dp), dimension(:, :, :, :), allocatable :: single_r_en_gl
+    real(dp), dimension(:, :), allocatable :: single_rvec_en
 
     !> nl_slm (nmat_dim,2)
     real(dp), dimension(:, :), allocatable :: nl_slm
@@ -88,7 +94,9 @@ module m_backflow
     public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf, c_cuspconst
     public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, maxord
     public :: r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
+    public :: single_r_ee, single_r_ee_gl, single_rvec_ee, single_r_en, single_r_en_gl, single_rvec_en
     public :: B, cusp_parameters, cusp_indices, inv_cusp_parameters, inv_cusp_indices, basis_klm
+
 
 contains
     !> Allocates memory for backflow arrays.
@@ -120,6 +128,12 @@ contains
         if (.not. allocated(rvec_en)) allocate (rvec_en(3, nelec, ncent_tot))
         if (.not. allocated(r_ee_gl)) allocate (r_ee_gl(nelec, 4, nelec, 0:maxord))
         if (.not. allocated(r_en_gl)) allocate (r_en_gl(nelec, 4, ncent_tot, 0:maxord, 2))
+        if (.not. allocated(single_r_ee)) allocate (single_r_ee(nelec, 0:maxord))
+        if (.not. allocated(single_rvec_ee)) allocate (single_rvec_ee(3, nelec))
+        if (.not. allocated(single_r_en)) allocate (single_r_en(ncent_tot, 0:maxord, 2))
+        if (.not. allocated(single_rvec_en)) allocate (single_rvec_en(3, ncent_tot))
+        if (.not. allocated(single_r_ee_gl)) allocate (single_r_ee_gl(4, nelec, 0:maxord))
+        if (.not. allocated(single_r_en_gl)) allocate (single_r_en_gl(4, ncent_tot, 0:maxord, 2))
         if (.not. allocated(p)) allocate (p(nelec, ncent_tot, nordc_bf, nordc_bf))
         if (.not. allocated(d_p)) allocate (d_p(nelec, 4, ncent_tot, nordc_bf, nordc_bf))
         if (.not. allocated(cutoff_deriv)) allocate (cutoff_deriv(nelec, ncent_tot))
@@ -161,6 +175,12 @@ contains
         if (allocated(rvec_en)) deallocate(rvec_en)
         if (allocated(r_ee_gl)) deallocate(r_ee_gl)
         if (allocated(r_en_gl)) deallocate(r_en_gl)
+        if (allocated(single_r_ee)) deallocate(single_r_ee)
+        if (allocated(single_rvec_ee)) deallocate(single_rvec_ee)
+        if (allocated(single_r_en)) deallocate(single_r_en)
+        if (allocated(single_rvec_en)) deallocate(single_rvec_en)
+        if (allocated(single_r_ee_gl)) deallocate(single_r_ee_gl)
+        if (allocated(single_r_en_gl)) deallocate(single_r_en_gl)
         if (allocated(p)) deallocate(p)
         if (allocated(d_p)) deallocate(d_p)
         if (allocated(cutoff_deriv)) deallocate(cutoff_deriv)
