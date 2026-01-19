@@ -75,7 +75,11 @@ module m_backflow
 
     ! Array for cusp dependency (phi, theta)
     real(dp), dimension(:, :, :), allocatable :: B
+    !> Derivative of B matrix with respect to cutoff (for chain rule)
+    real(dp), dimension(:, :, :), allocatable :: dB_dcutoff
     real(dp), dimension(:, :), allocatable :: cusp_parameters, inv_cusp_parameters
+    !> Derivative coefficients for how dependent parameters change with cutoff
+    real(dp), dimension(:, :), allocatable :: cusp_cutoff_deriv
     integer, dimension(:, :), allocatable :: cusp_indices, inv_cusp_indices
     ! Store (k, l, m) indices for each basis function column
     integer, dimension(:, :), allocatable :: basis_klm
@@ -95,7 +99,8 @@ module m_backflow
     public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, maxord
     public :: r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
     public :: single_r_ee, single_r_ee_gl, single_rvec_ee, single_r_en, single_r_en_gl, single_rvec_en
-    public :: B, cusp_parameters, cusp_indices, inv_cusp_parameters, inv_cusp_indices, basis_klm
+    public :: B, dB_dcutoff, cusp_parameters, cusp_indices, inv_cusp_parameters, inv_cusp_indices, basis_klm
+    public :: cusp_cutoff_deriv
 
 
 contains
@@ -138,8 +143,10 @@ contains
         if (.not. allocated(d_p)) allocate (d_p(nelec, 4, ncent_tot, nordc_bf, nordc_bf))
         if (.not. allocated(cutoff_deriv)) allocate (cutoff_deriv(nelec, ncent_tot))
         if (.not. allocated(B)) allocate (B(c_cuspconst, ncparm_bf,2*nctype))
+        if (.not. allocated(dB_dcutoff)) allocate (dB_dcutoff(c_cuspconst, ncparm_bf,2*nctype))
         if (.not. allocated(cusp_parameters)) allocate (cusp_parameters(c_cuspconst*nctype, ncparm_bf))
         if (.not. allocated(cusp_indices)) allocate (cusp_indices(c_cuspconst*nctype, ncparm_bf))
+        if (.not. allocated(cusp_cutoff_deriv)) allocate (cusp_cutoff_deriv(c_cuspconst*nctype, ncparm_bf))
         if (.not. allocated(inv_cusp_parameters)) allocate (inv_cusp_parameters(nparm_bf, ncparm_bf))
         if (.not. allocated(inv_cusp_indices)) allocate (inv_cusp_indices(nparm_bf, ncparm_bf))
         if (.not. allocated(basis_klm)) allocate (basis_klm(ncparm_bf, 3))
@@ -185,8 +192,10 @@ contains
         if (allocated(d_p)) deallocate(d_p)
         if (allocated(cutoff_deriv)) deallocate(cutoff_deriv)
         if (allocated(B)) deallocate(B)
+        if (allocated(dB_dcutoff)) deallocate(dB_dcutoff)
         if (allocated(cusp_parameters)) deallocate(cusp_parameters)
         if (allocated(cusp_indices)) deallocate(cusp_indices)
+        if (allocated(cusp_cutoff_deriv)) deallocate(cusp_cutoff_deriv)
         if (allocated(inv_cusp_parameters)) deallocate(inv_cusp_parameters)
         if (allocated(inv_cusp_indices)) deallocate(inv_cusp_indices)
         if (allocated(basis_klm)) deallocate(basis_klm)

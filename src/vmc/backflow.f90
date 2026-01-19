@@ -374,7 +374,8 @@ end subroutine init_rios_backflow_arrays
 subroutine init_cusp()
     use precision_kinds, only: dp
     use m_backflow, only: parm_bf, c_cuspconst, nparm_bf, norda_bf, nordb_bf, nordc_bf, ncparm_bf, cutoff_scale
-    use m_backflow, only: B, cusp_parameters, cusp_indices, inv_cusp_indices, inv_cusp_parameters, basis_klm
+    use m_backflow, only: B, dB_dcutoff, cusp_parameters, cusp_indices, inv_cusp_indices, inv_cusp_parameters, basis_klm
+    use m_backflow, only: cusp_cutoff_deriv
     use system, only: nctype
     use control, only: ipr
     use contrl_file,    only: ounit
@@ -382,10 +383,12 @@ subroutine init_cusp()
     integer :: k, l, m, n, alpha, idx, info, offset, idx_phi, idx_theta, i, j, linefound, eq_idx
     integer :: pr, max_row, idx_pivot, cnt
     integer, dimension(c_cuspconst) :: ipiv
-    real(dp) :: cutoff, pivot, max_val, factor, tmp
+    real(dp) :: cutoff, pivot, max_val, factor, tmp, dtmp
 
-    ! Initialize cusp dependency matrix B to zero
+    ! Initialize cusp dependency matrix B and its cutoff derivative to zero
     B = 0.0d0
+    dB_dcutoff = 0.0d0
+    cusp_cutoff_deriv = 0.0d0
 
     basis_klm = 0
     idx = 1
@@ -424,13 +427,18 @@ subroutine init_cusp()
                     do m=0,nordc_bf-k-l
                         if (k .eq. 0 .and. (l+m).eq.alpha) then
                             B(alpha+1, idx, n) = -cutoff_scale/cutoff
+                            ! d/d(cutoff) of -cutoff_scale/cutoff = cutoff_scale/cutoff^2
+                            dB_dcutoff(alpha+1, idx, n) = cutoff_scale/(cutoff*cutoff)
                         endif
                         if (k .eq. 1 .and. (l+m).eq.alpha .and. (k+l+m).le.nordc_bf) then
                             B(alpha+1, idx, n) = 1.0d0
+                            ! Constant term has zero derivative
                         endif
                         if (l .eq. 0 .and. (k+m).eq.alpha) then
                             B(alpha+nordc_bf+1+1, idx, n) = -cutoff_scale/cutoff
                             B(alpha+1, idx, n+nctype) = -cutoff_scale/cutoff
+                            dB_dcutoff(alpha+nordc_bf+1+1, idx, n) = cutoff_scale/(cutoff*cutoff)
+                            dB_dcutoff(alpha+1, idx, n+nctype) = cutoff_scale/(cutoff*cutoff)
                         endif
                         if (l .eq. 1 .and. (k+m).eq.alpha .and. (k+l+m).le.nordc_bf) then
                             B(alpha+nordc_bf+1+1, idx, n) = 1.0d0
@@ -454,6 +462,7 @@ subroutine init_cusp()
         ! stop
 
         ! Solve Phi terms (B(:,:,n)) using Gaussian Elimination to RREF
+        ! Apply same operations to dB_dcutoff to get derivative of RREF result
         pr = 0
         do j = 1, ncparm_bf ! Loop over variables (columns)
              if (pr >= c_cuspconst) exit
@@ -476,27 +485,46 @@ subroutine init_cusp()
              pr = pr + 1 ! We found a pivot for this column, move to next row
              
              ! Swap rows to bring the pivot to position (pr, j)
+             ! Apply same swap to dB_dcutoff
              if (max_row /= pr) then
                  do k = 1, ncparm_bf
                      tmp = B(pr, k, n)
                      B(pr, k, n) = B(max_row, k, n)
                      B(max_row, k, n) = tmp
+                     dtmp = dB_dcutoff(pr, k, n)
+                     dB_dcutoff(pr, k, n) = dB_dcutoff(max_row, k, n)
+                     dB_dcutoff(max_row, k, n) = dtmp
                  end do
              end if
              
              ! Normalize the pivot row so the leading coefficient is 1.0
+             ! For derivative: d(B/pivot)/dL = dB/dL / pivot - B * dpivot/dL / pivot^2
+             !                               = (dB/dL * pivot - B * dpivot/dL) / pivot^2
              pivot = B(pr, j, n)
              do k = j, ncparm_bf
+                 ! First update derivative before updating B
+                 dB_dcutoff(pr, k, n) = (dB_dcutoff(pr, k, n) * pivot - B(pr, k, n) * dB_dcutoff(pr, j, n)) / (pivot * pivot)
                  B(pr, k, n) = B(pr, k, n) / pivot
              end do
              
              ! Eliminate entries in this column for all other rows (above and below)
              ! This converts the matrix to Reduced Row Echelon Form (RREF)
+             ! For derivative: d(B - factor*B_pr)/dL = dB/dL - dfactor/dL * B_pr - factor * dB_pr/dL
              do i = 1, c_cuspconst
                  if (i == pr) cycle
                  factor = B(i, j, n)
-                 if (abs(factor) < 1.0d-12) cycle
+                 if (abs(factor) < 1.0d-12) then
+                     ! Still apply derivative elimination even if factor is small
+                     ! because dfactor/dL might not be small
+                     do k = j, ncparm_bf
+                         dB_dcutoff(i, k, n) = dB_dcutoff(i, k, n) - dB_dcutoff(i, j, n) * B(pr, k, n) &
+                                              - factor * dB_dcutoff(pr, k, n)
+                     end do
+                     cycle
+                 end if
                  do k = j, ncparm_bf
+                     dB_dcutoff(i, k, n) = dB_dcutoff(i, k, n) - dB_dcutoff(i, j, n) * B(pr, k, n) &
+                                          - factor * dB_dcutoff(pr, k, n)
                      B(i, k, n) = B(i, k, n) - factor * B(pr, k, n)
                  end do
              end do
@@ -518,17 +546,21 @@ subroutine init_cusp()
              ! The variable corresponding to idx_pivot is a DEPENDENT variable
              cusp_indices(eq_idx, 1) = idx_phi + 1 + idx_pivot
              cusp_parameters(eq_idx, 1) = 1.0d0
+             ! Cutoff derivative of dependent parameter coefficient is from dB_dcutoff
+             cusp_cutoff_deriv(eq_idx, 1) = 0.0d0  ! Coefficient of dependent var is always 1, so derivative is 0
              
              ! All other non-zero entries in this row correspond to FREE variables
              ! (or their linear combination) that the dependent variable depends on.
              ! Because of RREF, there is only one pivot per row, so this relationship is unique.
              cnt = 1
              do k = idx_pivot + 1, ncparm_bf
-                 if (abs(B(i, k, n)) > 1.0d-12) then
+                 if (abs(B(i, k, n)) > 1.0d-12 .or. abs(dB_dcutoff(i, k, n)) > 1.0d-12) then
                      cnt = cnt + 1
                      cusp_indices(eq_idx, cnt) = idx_phi + 1 + k
                      ! Move terms to RHS: x_dep + c * x_free = 0  =>  x_dep = -c * x_free
                      cusp_parameters(eq_idx, cnt) = -B(i, k, n)
+                     ! Derivative: d(-B)/dL = -dB/dL
+                     cusp_cutoff_deriv(eq_idx, cnt) = -dB_dcutoff(i, k, n)
                      
                      ! Store inverse mapping for derivatives: 
                      ! When optimizing x_free, we must also update the derivative wrt x_dep
@@ -546,6 +578,7 @@ subroutine init_cusp()
         end do
 
         ! Solve Theta terms (B(:,:,n+nctype)) using Gaussian Elimination to RREF
+        ! Apply same operations to dB_dcutoff to get derivative of RREF result
         pr = 0
         do j = 1, ncparm_bf ! Loop over variables (columns)
              if (pr >= c_cuspconst) exit
@@ -568,27 +601,46 @@ subroutine init_cusp()
              pr = pr + 1 ! We found a pivot for this column, move to next row
              
              ! Swap rows to bring the pivot to position (pr, j)
+             ! Apply same swap to dB_dcutoff
              if (max_row /= pr) then
                  do k = 1, ncparm_bf
                      tmp = B(pr, k, n+nctype)
                      B(pr, k, n+nctype) = B(max_row, k, n+nctype)
                      B(max_row, k, n+nctype) = tmp
+                     dtmp = dB_dcutoff(pr, k, n+nctype)
+                     dB_dcutoff(pr, k, n+nctype) = dB_dcutoff(max_row, k, n+nctype)
+                     dB_dcutoff(max_row, k, n+nctype) = dtmp
                  end do
              end if
              
              ! Normalize the pivot row so the leading coefficient is 1.0
+             ! For derivative: d(B/pivot)/dL = dB/dL / pivot - B * dpivot/dL / pivot^2
+             !                               = (dB/dL * pivot - B * dpivot/dL) / pivot^2
              pivot = B(pr, j, n+nctype)
              do k = j, ncparm_bf
+                 ! First update derivative before updating B
+                 dB_dcutoff(pr, k, n+nctype) = (dB_dcutoff(pr, k, n+nctype) * pivot - B(pr, k, n+nctype) * dB_dcutoff(pr, j, n+nctype)) / (pivot * pivot)
                  B(pr, k, n+nctype) = B(pr, k, n+nctype) / pivot
              end do
              
              ! Eliminate entries in this column for all other rows (above and below)
              ! This converts the matrix to Reduced Row Echelon Form (RREF)
+             ! For derivative: d(B - factor*B_pr)/dL = dB/dL - dfactor/dL * B_pr - factor * dB_pr/dL
              do i = 1, c_cuspconst
                  if (i == pr) cycle
                  factor = B(i, j, n+nctype)
-                 if (abs(factor) < 1.0d-12) cycle
+                 if (abs(factor) < 1.0d-12) then
+                     ! Still apply derivative elimination even if factor is small
+                     ! because dfactor/dL might not be small
+                     do k = j, ncparm_bf
+                         dB_dcutoff(i, k, n+nctype) = dB_dcutoff(i, k, n+nctype) - dB_dcutoff(i, j, n+nctype) * B(pr, k, n+nctype) &
+                                              - factor * dB_dcutoff(pr, k, n+nctype)
+                     end do
+                     cycle
+                 end if
                  do k = j, ncparm_bf
+                     dB_dcutoff(i, k, n+nctype) = dB_dcutoff(i, k, n+nctype) - dB_dcutoff(i, j, n+nctype) * B(pr, k, n+nctype) &
+                                          - factor * dB_dcutoff(pr, k, n+nctype)
                      B(i, k, n+nctype) = B(i, k, n+nctype) - factor * B(pr, k, n+nctype)
                  end do
              end do
@@ -610,17 +662,20 @@ subroutine init_cusp()
              ! The variable corresponding to idx_pivot is a DEPENDENT variable
              cusp_indices(eq_idx, 1) = idx_theta + idx_pivot
              cusp_parameters(eq_idx, 1) = 1.0d0
+             cusp_cutoff_deriv(eq_idx, 1) = 0.0d0  ! Coefficient of dependent var is always 1, so derivative is 0
              
              ! All other non-zero entries in this row correspond to FREE variables
              ! (or their linear combination) that the dependent variable depends on.
              ! Because of RREF, there is only one pivot per row, so this relationship is unique.
              cnt = 1
              do k = idx_pivot + 1, ncparm_bf
-                 if (abs(B(i, k, n+nctype)) > 1.0d-12) then
+                 if (abs(B(i, k, n+nctype)) > 1.0d-12 .or. abs(dB_dcutoff(i, k, n+nctype)) > 1.0d-12) then
                      cnt = cnt + 1
                      cusp_indices(eq_idx, cnt) = idx_theta + k
                      ! Move terms to RHS: x_dep + c * x_free = 0  =>  x_dep = -c * x_free
                      cusp_parameters(eq_idx, cnt) = -B(i, k, n+nctype)
+                     ! Derivative: d(-B)/dL = -dB/dL
+                     cusp_cutoff_deriv(eq_idx, cnt) = -dB_dcutoff(i, k, n+nctype)
                      
                      ! Store inverse mapping for derivatives: 
                      ! When optimizing x_free, we must also update the derivative wrt x_dep
@@ -919,6 +974,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
     use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
     use m_backflow, only: inv_cusp_indices, inv_cusp_parameters, cusp_indices, c_cuspconst, ncparm_bf
+    use m_backflow, only: cusp_cutoff_deriv, cusp_parameters
     implicit none
     real(dp), dimension(3, nelec), intent(in) :: x
     real(dp), dimension(3, nelec), intent(out) :: quasi_x
@@ -933,6 +989,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     real(dp) :: ril, rjl, inv_ril, inv_rjl
     real(dp) :: inv_rij, inv_cutoff, tmp1, tmp2, cutoff1, cutoff2
     real(dp) :: fi, fpi(3), fppi(3), fj, fpj(3), fppj(3)
+    real(dp) :: dp_dep_dcutoff
     real(dp) :: phi, theta, phipi(3), thetapi(3), phipj(3), thetapj(3), phippi, thetappi, phippj, thetappj
 
     offset_ee = 0
@@ -1245,6 +1302,37 @@ if (norda_bf .eq. 0) goto 20
                         end do
                     end if
                 end do
+                
+                ! Add chain rule contribution for cutoff derivative:
+                ! The cusp constraint is: p_dep = sum(cusp_parameters(k,kk) * p_free)
+                ! When cutoff changes, the coefficients change:
+                ! d(p_dep)/d(cutoff) = sum(cusp_cutoff_deriv(k,kk) * p_free)
+                ! This contributes to dquasi/d(cutoff) via:
+                ! dquasi/d(cutoff) += dquasi/d(p_dep) * d(p_dep)/d(cutoff)
+                do k = 1, c_cuspconst*nctype
+                    if (cusp_indices(k,1) .gt. 0) then
+                        ! Compute d(p_dependent)/d(cutoff) = sum(cusp_cutoff_deriv * p_free)
+                        dp_dep_dcutoff = 0.0d0
+                        do kk = 2, ncparm_bf
+                            if (cusp_indices(k,kk) .eq. 0) exit
+                            dp_dep_dcutoff = dp_dep_dcutoff + cusp_cutoff_deriv(k,kk) * parm_bf(cusp_indices(k,kk))
+                        end do
+                        
+                        ! Find which cutoff parameter this constraint belongs to
+                        ! The cutoff is at idx_phi+1 for each atom type
+                        ! cusp_indices(k,1) is the dependent parameter index
+                        ! We need to find the corresponding cutoff index
+                        if (cusp_indices(k,1)-offset_een .gt.(ncparm_bf+1)*nctype) then
+                            idx_phi = ((cusp_indices(k,1) - offset_een - (ncparm_bf + 1)*nctype) / ncparm_bf) * (ncparm_bf+1)  + offset_een
+                        else
+                            idx_phi = ((cusp_indices(k,1) - offset_een ) / (ncparm_bf + 1)) * (ncparm_bf + 1) + offset_een
+                        endif
+                        
+                        ! Add chain rule contribution: dquasi/d(cutoff) += dquasi/d(p_dep) * dp_dep/d(cutoff)
+                        dquasi_dp(a,i,idx_phi+1) = dquasi_dp(a,i,idx_phi+1) + dquasi_dp(a,i,cusp_indices(k,1)) * dp_dep_dcutoff
+                    end if
+                end do
+                
                 do k = 1, c_cuspconst*nctype
                     if (cusp_indices(k,1) .gt. 0) then
                         dquasi_dp(a,i,cusp_indices(k,1)) = 0.0d0
