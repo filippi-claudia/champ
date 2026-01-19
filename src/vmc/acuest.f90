@@ -279,112 +279,112 @@ contains
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
 
       ! Cusp check block
-      ! if (.false.) then
-      !    write(ounit,*) '--- Cusp Check (Spherical Average) ---'
-      !    delta = 0.00001d0
-      !    epsilon = 0.00000d0 ! Avoid exactly 0
+      if (.false.) then
+         write(ounit,*) '--- Cusp Check (Spherical Average) ---'
+         delta = 0.00001d0
+         epsilon = 0.00000d0 ! Avoid exactly 0
          
-      !    x_orig = xold
+         x_orig = xold
          
-      !    ! Electron-Nucleus
-      !    do ic = 1, ncent
-      !       do i = 1, nelec
-      !          div_j = 0.0d0
-      !          div_d = 0.0d0
+         ! Electron-Nucleus
+         do ic = 1, ncent
+            do i = 1, nelec
+               div_j = 0.0d0
+               div_d = 0.0d0
                
-      !          ! Integrate over 6 directions (+x,-x,+y,-y,+z,-z)
-      !          do k = 1, 3
-      !             do l = -1, 1, 2 ! -1 and +1
-      !                rvec = 0.0d0
-      !                rvec(k) = dble(l)
+               ! Integrate over 6 directions (+x,-x,+y,-y,+z,-z)
+               do k = 1, 3
+                  do l = -1, 1, 2 ! -1 and +1
+                     rvec = 0.0d0
+                     rvec(k) = dble(l)
                      
-      !                ! 1. Point at epsilon
-      !                xold(:,i) = cent(:,ic) + epsilon * rvec
-      !                call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-      !                val_j_1 = psijo(1)
-      !                val_d_1 = psido(1)
+                     ! 1. Point at epsilon
+                     xold(:,i) = cent(:,ic) + epsilon * rvec
+                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+                     val_j_1 = psijo(1)
+                     val_d_1 = psido(1)
                      
-      !                ! 2. Point at epsilon + delta
-      !                xold(:,i) = cent(:,ic) + (epsilon + delta) * rvec
-      !                call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-      !                val_j_2 = psijo(1)
-      !                val_d_2 = psido(1)
+                     ! 2. Point at epsilon + delta
+                     xold(:,i) = cent(:,ic) + (epsilon + delta) * rvec
+                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+                     val_j_2 = psijo(1)
+                     val_d_2 = psido(1)
                      
-      !                div_j = div_j + (val_j_2 - val_j_1)/delta
-      !                div_d = div_d + (val_d_2 - val_d_1)/delta/val_d_1
-      !             end do
-      !          end do
+                     div_j = div_j + (val_j_2 - val_j_1)/delta
+                     div_d = div_d + (val_d_2 - val_d_1)/delta/val_d_1
+                  end do
+               end do
                
-      !          ! Restore coordinate
-      !          xold(:,i) = x_orig(:,i)
+               ! Restore coordinate
+               xold(:,i) = x_orig(:,i)
                
-      !          div_j = div_j / 6.0d0
-      !          div_d = div_d / 6.0d0
+               div_j = div_j / 6.0d0
+               div_d = div_d / 6.0d0
                
-      !          write(ounit,'(A,I3,I3,A,F12.6,A,F12.6,A,F12.6)', advance='no') &
-      !               'e-n: ', i, ic, ' r: ', epsilon, ' dJ: ', div_j, ' dD: ', div_d
+               write(ounit,'(A,I3,I3,A,F12.6,A,F12.6,A,F12.6)', advance='no') &
+                    'e-n: ', i, ic, ' r: ', epsilon, ' dJ: ', div_j, ' dD: ', div_d
                
-      !          if (abs(div_j) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0'
-      !          if (abs(div_d) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: D!=0'
-      !          write(ounit,*) ''
+               if (abs(div_j) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0'
+               if (abs(div_d) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: D!=0'
+               write(ounit,*) ''
 
-      !       end do
-      !    end do
+            end do
+         end do
          
-      !    ! Electron-Electron (Spherical Average)
-      !    epsilon = 0.00001d0 
-      !    do i = 1, nelec
-      !       do j = i+1, nelec
-      !          div_j = 0.0d0
-      !          div_d = 0.0d0
+         ! Electron-Electron (Spherical Average)
+         epsilon = 0.00001d0 
+         do i = 1, nelec
+            do j = i+1, nelec
+               div_j = 0.0d0
+               div_d = 0.0d0
                
-      !          do k = 1, 3
-      !             do l = -1, 1, 2
-      !                rvec = 0.0d0
-      !                rvec(k) = dble(l)
+               do k = 1, 3
+                  do l = -1, 1, 2
+                     rvec = 0.0d0
+                     rvec(k) = dble(l)
                      
-      !                ! Keep j fixed, move i relative to j
+                     ! Keep j fixed, move i relative to j
                      
-      !                ! 1. Point at epsilon
-      !                xold(:,i) = xold(:,j) + epsilon * rvec
-      !                call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-      !                val_j_1 = psijo(1)
+                     ! 1. Point at epsilon
+                     xold(:,i) = xold(:,j) + epsilon * rvec
+                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+                     val_j_1 = psijo(1)
                      
-      !                ! 2. Point at epsilon + delta
-      !                xold(:,i) = xold(:,j) + (epsilon + delta) * rvec
-      !                call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-      !                val_j_2 = psijo(1)
+                     ! 2. Point at epsilon + delta
+                     xold(:,i) = xold(:,j) + (epsilon + delta) * rvec
+                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+                     val_j_2 = psijo(1)
                      
-      !                div_j = div_j + (val_j_2 - val_j_1)/delta
-      !             end do
-      !          end do
+                     div_j = div_j + (val_j_2 - val_j_1)/delta
+                  end do
+               end do
                
-      !          ! Restore coordinate
-      !          xold(:,i) = x_orig(:,i)
+               ! Restore coordinate
+               xold(:,i) = x_orig(:,i)
                
-      !          div_j = div_j / 6.0d0
+               div_j = div_j / 6.0d0
                
-      !          if ( (i .le. nup .and. j .le. nup) .or. (i .gt. nup .and. j .gt. nup) ) then
-      !              ! Parallel
-      !              write(ounit,'(A,I3,I3,A,F12.6,A,F12.6)', advance='no') &
-      !                   'e-e(P): ', i, j, ' r: ', epsilon, ' dJ: ', div_j
-      !              if (abs(div_j - 0.25d0) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0.25'
-      !          else
-      !              ! Anti-Parallel
-      !              write(ounit,'(A,I3,I3,A,F12.6,A,F12.6)', advance='no') &
-      !                   'e-e(A): ', i, j, ' r: ', epsilon, ' dJ: ', div_j
-      !              if (abs(div_j - 0.5d0) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0.5'
-      !          end if
-      !          write(ounit,*) ''
-      !       end do
-      !    end do
+               if ( (i .le. nup .and. j .le. nup) .or. (i .gt. nup .and. j .gt. nup) ) then
+                   ! Parallel
+                   write(ounit,'(A,I3,I3,A,F12.6,A,F12.6)', advance='no') &
+                        'e-e(P): ', i, j, ' r: ', epsilon, ' dJ: ', div_j
+                   if (abs(div_j - 0.25d0) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0.25'
+               else
+                   ! Anti-Parallel
+                   write(ounit,'(A,I3,I3,A,F12.6,A,F12.6)', advance='no') &
+                        'e-e(A): ', i, j, ' r: ', epsilon, ' dJ: ', div_j
+                   if (abs(div_j - 0.5d0) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0.5'
+               end if
+               write(ounit,*) ''
+            end do
+         end do
          
-      !    ! Final restore of all coordinates to be safe
-      !    xold = x_orig
-      !    call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+         ! Final restore of all coordinates to be safe
+         xold = x_orig
+         call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
          
-      !    stop
-      ! end if
+         stop
+      end if
 
 
 

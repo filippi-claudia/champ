@@ -1239,7 +1239,7 @@ if (norda_bf .eq. 0) goto 20
             do a = 1, 3
                 do k = 1, nparm_bf
                     if (inv_cusp_indices(k,1) .gt. 0) then
-                        do kk = 1, ncparm_bf
+                        do kk = 2, ncparm_bf
                             if (inv_cusp_indices(k, kk) .eq. 0) exit
                             dquasi_dp(a,i,k) = dquasi_dp(a,i,k) + inv_cusp_parameters(k,kk) * dquasi_dp(a,i,inv_cusp_indices(k,kk))
                         end do

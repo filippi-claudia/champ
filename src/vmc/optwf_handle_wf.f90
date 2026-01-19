@@ -303,11 +303,11 @@ contains
 
       use optwf_control, only: ioptbf
       use vmc_mod, only: nwftypeorb
-      use m_backflow, only: ibackflow, nparm_bf, parm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+      use m_backflow, only: ibackflow, nparm_bf, parm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
       use system, only: nctype
       implicit none
 
-      integer :: i, index, iwf_fit, j, k, ict, l, m, n, tmpc
+      integer :: i, index, iwf_fit, j, k, ict, l, m, n
       character(len=40) filename,filetype, temp
       character(len=50) fmt
 
@@ -337,27 +337,19 @@ contains
       endif
       write(2,fmt) (parm_bf(+i),i=1,nordb_bf+1),' e-e'
 
-      tmpc = 0
       if (nordc_bf.gt.0) then
-        do l = 0, nordc_bf
-            do m = 0, nordc_bf - l
-                do n = 0, nordc_bf - l - m
-                    tmpc = tmpc + 1
-                end do
-            end do
-        end do
-        write(fmt,'(''('',i5,''f13.8,a10)'')') tmpc+1
+        write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf+1
       else
         write(fmt,'(''(a10)'')')
       endif
       do ict=1,nctype
-        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+1)+(ict-1)*(tmpc+1) + i),i=1,tmpc+1),' E-e-n'
+        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+1)+(ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n'
       enddo 
       if (nordc_bf.gt.0) then
-        write(fmt,'(''('',i5,''f13.8,a10)'')') tmpc
+        write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf
       endif
       do ict=1,nctype
-        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+1)+nctype*(tmpc+1) + (ict-1)*tmpc + i),i=1,tmpc),' e-e-N'
+        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+1)+nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
       enddo 
 
       write(2,'(''end'')')
