@@ -1517,7 +1517,7 @@ module trexio_read_data
         call bcast(trexio_has_group_ecp)
         call bcast(ecp_num)
         allocate (flat_ecp_ang_mom(ecp_num))
-        allocate (idx_array(ecp_num))
+        ! idx_array removed as it is not used in the optimized loop
         allocate (flat_ecp_nucleus_index(ecp_num))
         allocate (flat_ecp_max_ang_mom_plus_1(ncent_tot))
         allocate (flat_ecp_power(ecp_num))
@@ -1599,47 +1599,48 @@ module trexio_read_data
 
             if(lpot(ic).gt.MPS_L) call fatal_error('READPS_GAUSS: increase MPS_L')
 
-            if (.not. allocated(nterms_per_component)) allocate(nterms_per_component(lpot(ic)))
-            if (.not. allocated(term_index_component)) allocate(term_index_component(lpot(ic)))
-
-
-            count_term = 0
-            do i = lower_comp, upper_comp
-                if(flat_ecp_ang_mom(i) .eq. lpot(ic)-1) then
-                    idx_array(i) = lpot(ic)
-                    else
-                    count_term = count_term + 1
-                    idx_array(i) = count_term
-                endif
-            enddo
-
-
             counter_comp = 0;
             do l = 1, lpot(ic)
-                atom_index = 0
-                call unique_elements(components_per_atom(unique_atom_index(ic)), flat_ecp_ang_mom(lower_comp:upper_comp), atom_index, count, nterms_per_component, term_index_component)
+                ! Check bounds
+                if (lower_comp + counter_comp > upper_comp) then
+                     call fatal_error('READ_TREXIO_ECP_FILE: Not enough terms in ECP data')
+                endif
 
-                write(ounit,*) "nterms_per_component", nterms_per_component
+                ! Identify the angular momentum of the current block
+                j = flat_ecp_ang_mom(lower_comp + counter_comp)
+
+                ! Set target index based on ang_mom (L) found in file
+                ! CHAMP convention: idx = L + 1
+                ! (e.g. L=0 -> idx=1, L=1 -> idx=2, L=2(Local) -> idx=3)
+                idx = j + 1
+
+                ! Count terms in this block (consecutive entries with same ang mom)
+                count_term = 0
+                do i = lower_comp + counter_comp, upper_comp
+                    if (flat_ecp_ang_mom(i) == j) then
+                        count_term = count_term + 1
+                    else
+                        exit
+                    endif
+                enddo
+                necp_term(idx,ic) = count_term
 
                 write(ounit,*)
-                write(ounit,'(a,2i6)') '    component, #terms ', l, nterms_per_component(l)
+                write(ounit,'(a,2i6)') '    component, #terms ', l, necp_term(idx,ic)
 
-                do i=1,nterms_per_component(l)
-                    idx=idx_array(lower_comp+counter_comp)
-                    necp_term(idx,ic) = nterms_per_component(l)
-
+                do i=1,necp_term(idx,ic)
+                    
                     ecp_coef(i,idx,ic) = flat_ecp_coefficient(lower_comp + counter_comp)
                     necp_power(i,idx,ic) = flat_ecp_power(lower_comp + counter_comp) + 2
                     ecp_exponent(i,idx,ic) = flat_ecp_exponent(lower_comp + counter_comp)
-                    counter_comp = counter_comp + 1
-
+                    
                     write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic), &
                     necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
 
+                    counter_comp = counter_comp + 1
                 enddo
             enddo  ! loop on l upto lpot(ic)
-            if (allocated(nterms_per_component)) deallocate(nterms_per_component)
-            if (allocated(term_index_component)) deallocate(term_index_component)
+
             write(ounit,*) '-----------------------------------------------------------------------'
             write(ounit,*)
         enddo
