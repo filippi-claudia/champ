@@ -29,19 +29,13 @@ contains
       real(dp) :: rnd
 
       character(len=25) fmt
-      character(len=20) filename
+      character(len=64) filename
+      character(len=32) :: cnum
 
 
       if(write_walkalize) then
-        if(idtask.le.9) then
-          write(filename,'(''walkalize.'',i1)') idtask
-         elseif(idtask.le.99) then
-          write(filename,'(''walkalize.'',i2)') idtask
-         elseif(idtask.le.999) then
-          write(filename,'(''walkalize.'',i3)') idtask
-         else
-          call fatal_error('DMC: idtask > 999')
-        endif
+          write(cnum,*) idtask
+          filename='walkalize.'//trim(adjustl(cnum))
       endif
 
 ! set the random number seed, setrn already called in read_input
@@ -93,16 +87,8 @@ contains
         ngfmc=2*dmc_nstep*dmc_nblk
        else
         ngfmc=(dmc_nstep*dmc_nblk+dmc_nconf_new-1)*dmc_nconf/dmc_nconf_new
-        if(idtask.lt.10) then
-          write(filename,'(i1)') idtask
-         elseif(idtask.lt.100) then
-          write(filename,'(i2)') idtask
-         elseif(idtask.lt.1000) then
-          write(filename,'(i3)') idtask
-         else
-          write(filename,'(i4)') idtask
-        endif
-        filename='mc_configs_new'//filename(1:index(filename,' ')-1)
+        write(cnum,*) idtask
+        filename='mc_configs_new'//trim(adjustl(cnum))
         open(unit=7,form='formatted',file=filename)
         rewind 7
       endif
