@@ -40,7 +40,8 @@ contains
       integer, dimension(MPI_STATUS_SIZE) :: istatus
       integer, dimension(8) :: irn_temp
       real(dp) :: err, rnd
-      character(len=20) filename
+      character(len=64) filename
+      character(len=32) :: cnum
 
 ! set the random number seed differently on each processor
 ! call to setrn must be in read_input since irn local there
@@ -113,16 +114,8 @@ contains
 ! configuration to produce nconf_new configurations. If nconf_new = 0
 ! then set up so no configurations are written.
       if (vmc_nconf_new.gt.0) then
-        if(idtask.lt.10) then
-          write(filename,'(i1)') idtask
-         elseif(idtask.lt.100) then
-          write(filename,'(i2)') idtask
-         elseif(idtask.lt.1000) then
-          write(filename,'(i3)') idtask
-         else
-          write(filename,'(i4)') idtask
-        endif
-        filename='mc_configs_new'//filename(1:index(filename,' ')-1)
+        write(cnum,*) idtask
+        filename='mc_configs_new'//trim(adjustl(cnum))
         open(unit=7,form='formatted',file=filename)
         rewind 7
       endif

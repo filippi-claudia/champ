@@ -86,7 +86,8 @@ contains
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: small = 1.e-6
 
-      character(len=13) filename
+      character(len=64) filename
+      character(len=32) :: cnum
 
       if(mode.eq.'dmc_one_mpi2') then
         call startr_gpop
@@ -268,15 +269,8 @@ contains
       call mmpol_init(1)
 
       if(write_walkalize) then
-        if(idtask.le.9) then
-          write(filename,'(''walkalize.'',i1)') idtask
-         elseif(idtask.le.99) then
-          write(filename,'(''walkalize.'',i2)') idtask
-         elseif(idtask.le.999) then
-          write(filename,'(''walkalize.'',i3)') idtask
-         else
-          call fatal_error('STARTR: idtask > 999')
-        endif
+        write(cnum,*) idtask
+        filename='walkalize.'//trim(adjustl(cnum))
         open(unit=11,file=filename,status='old')
         do i=1,2000000000
           read(11,fmt=*,end=100)
