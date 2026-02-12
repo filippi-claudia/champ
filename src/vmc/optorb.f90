@@ -1034,7 +1034,7 @@ contains
             endif
           enddo
         enddo
-        if(iprint.eq.0) write(ounit,'(a16,i4,a8,i4,i5,a15,i4)') 'new variation: ',noporb,' pair ',io,jo,' spin ',ideriv_iab(noporb)
+        if(iprint.eq.0) write(ounit,'(a16,i8,a8,i4,i5,a15,i4)') 'new variation: ',noporb,' pair ',io,jo,' spin ',ideriv_iab(noporb)
 
       50  continue
        enddo

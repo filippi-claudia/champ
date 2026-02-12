@@ -188,7 +188,6 @@ contains
       real(dp) :: psidg, rnorm_nodes, tmp, tmp2
       real(dp) :: ajacob, distance_node
       real(dp), dimension(3,nelec) :: xstrech
-      real(dp), dimension(3) :: ddx_l
       real(dp), dimension(MSTATES) :: ekino, psidoo, psidoo2
       integer, dimension(nelec) :: indices
       real(dp), dimension(3) :: xnew
@@ -197,6 +196,8 @@ contains
       real(dp) :: delta, dist, val_j_1, val_d_1, val_j_2, val_d_2, div_j, div_d, epsilon
       real(dp), dimension(3) :: rvec
       real(dp), dimension(3,nelec) :: x_orig
+      real(dp), dimension(3,nelec) :: quasi_plus, quasi_base, quasi_minus, d2quasi_fd
+      real(dp) :: eps_diff
 
 ! entry point to zero out all averages etc.
 ! the initial values of energy psi etc. is also calculated here
@@ -332,7 +333,7 @@ contains
          end do
          
          ! Electron-Electron (Spherical Average)
-         epsilon = 0.00001d0 
+         epsilon = 0.0001d0 
          do i = 1, nelec
             do j = i+1, nelec
                div_j = 0.0d0
@@ -349,13 +350,17 @@ contains
                      xold(:,i) = xold(:,j) + epsilon * rvec
                      call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
                      val_j_1 = psijo(1)
+                     val_d_1 = psido(1)
                      
                      ! 2. Point at epsilon + delta
                      xold(:,i) = xold(:,j) + (epsilon + delta) * rvec
                      call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
                      val_j_2 = psijo(1)
+                     val_d_2 = psido(1)
                      
                      div_j = div_j + (val_j_2 - val_j_1)/delta
+                     div_d = div_d + (val_d_2 - val_d_1)/delta/val_d_1*epsilon
+                     print *, val_d_1, val_d_2
                   end do
                end do
                
@@ -363,17 +368,21 @@ contains
                xold(:,i) = x_orig(:,i)
                
                div_j = div_j / 6.0d0
+               div_d = div_d / 6.0d0
                
                if ( (i .le. nup .and. j .le. nup) .or. (i .gt. nup .and. j .gt. nup) ) then
                    ! Parallel
-                   write(ounit,'(A,I3,I3,A,F12.6,A,F12.6)', advance='no') &
-                        'e-e(P): ', i, j, ' r: ', epsilon, ' dJ: ', div_j
+                   write(ounit,'(A,I3,I3,A,F12.6,A,F12.6,A,F12.6)', advance='no') &
+                        'e-e(P): ', i, j, ' r: ', epsilon, ' dJ: ', div_j, ' dD: ', div_d
                    if (abs(div_j - 0.25d0) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0.25'
+                   if (abs(div_d) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: D!=0'
                else
                    ! Anti-Parallel
-                   write(ounit,'(A,I3,I3,A,F12.6,A,F12.6)', advance='no') &
-                        'e-e(A): ', i, j, ' r: ', epsilon, ' dJ: ', div_j
+                   write(ounit,'(A,I3,I3,A,F12.6,A,F12.6,A,F12.6)', advance='no') &
+                        'e-e(A): ', i, j, ' r: ', epsilon, ' dJ: ', div_j, ' dD: ', div_d
                    if (abs(div_j - 0.5d0) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0.5'
+                   if (abs(div_d) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: D!=0'
+
                end if
                write(ounit,*) ''
             end do
@@ -474,22 +483,48 @@ contains
       ! end do
       ! stop
 
+      ! eps_diff = 1.0d-5
+
       ! do iel=1,nelec
+      !   d2quasi_fd = 0.0d0
       !   do k=1,3
-      !     xold(k,iel) = xold(k,iel) + 0.0001
+      !     xold(k,iel) = xold(k,iel) + 0.0001d0
       !     call hpsi(xold,psidoo,psijo,ekino,eold(1,1),0,1)
-      !     tmp = quasi_x(1,iel)
-      !     xold(k,iel) = xold(k,iel) - 0.0001
+      !     quasi_plus = quasi_x
+
+      !     xold(k,iel) = xold(k,iel) - 0.0001d0
       !     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-      !     tmp2 = quasi_x(1,iel)
-      !     print *, (tmp-tmp2)/0.0001, dquasi_dx(1,iel,k,iel)
-      !     xold(k,iel) = xold(k,iel) - 0.0001
+      !     quasi_base = quasi_x
+
+      !     do i = 1, nelec
+      !       do kk = 1, 3
+      !         if (abs((quasi_plus(kk,i) - quasi_base(kk,i))/0.0001d0 - dquasi_dx(kk,i,k,iel)) > eps_diff) then
+      !           print *, 'dquasi_dx diff move/dir/target/comp=', iel, k, i, kk, &
+      !                    (quasi_plus(kk,i) - quasi_base(kk,i))/0.0001d0, dquasi_dx(kk,i,k,iel)
+      !         end if
+      !       end do
+      !     end do
+
+      !     xold(k,iel) = xold(k,iel) - 0.0001d0
       !     call hpsi(xold,psidoo2,psijo,ekino,eold(1,1),0,1)
-      !     xold(k,iel) = xold(k,iel) + 0.0001
-      !     ddx_l(k) = (tmp + quasi_x(1,iel) -2*tmp2)/0.0001/0.0001
+      !     quasi_minus = quasi_x
+      !     xold(k,iel) = xold(k,iel) + 0.0001d0
+
+      !     do i = 1, nelec
+      !       do kk = 1, 3
+      !         d2quasi_fd(kk,i) = d2quasi_fd(kk,i) + (quasi_plus(kk,i) + quasi_minus(kk,i) - 2.0d0*quasi_base(kk,i)) / (0.0001d0*0.0001d0)
+      !       end do
+      !     end do
       !   enddo
-      !   print *, ddx_l(1) + ddx_l(2) + ddx_l(3)
-      !   print *, d2quasi_dx2(1,iel,iel)
+
+      !   call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+      !   do i = 1, nelec
+      !     do kk = 1, 3
+      !       if (abs(d2quasi_fd(kk,i) - d2quasi_dx2(kk,i,iel)) > eps_diff) then
+      !         print *, 'd2quasi_dx2 diff move/target/comp=', iel, i, kk, d2quasi_fd(kk,i), d2quasi_dx2(kk,i,iel)
+      !       end if
+      !     end do
+      !   end do
       !   print *, '-----'
       ! enddo 
       ! stop
