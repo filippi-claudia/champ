@@ -34,7 +34,7 @@
       use periodic, only: np_coul, np_jas, npoly, vcell
       use periodic, only: rlatt, rlatt_inv
       use periodic, only: znuc2_sum, znuc_sum
-      use periodic, only : n_images, n_images0, ell
+      use periodic, only: n_images, n_images0, ell
       use error, only: fatal_error
       use find_pimage, only: check_lattice
       use matinv_mod, only: matinv
@@ -301,7 +301,6 @@
 ! images for periodic basis functions
       n_images0=n_images
       if(n_images.ge.1)then
-
          if (ipr.ge.4 ) write(ounit,*) "Initialization periodic images distances"
 !     assuming same number of images in each direction
          nix=n_images
@@ -310,12 +309,10 @@
 
          n_images=(2*nix+1)
          n_images=n_images*n_images*n_images
-!     decreasing number of images by 1 temporally reagarding the ao's implementation at basis_fns
-         n_images=n_images-1
          if (ipr.ge.4 ) write(ounit,*) "Total number of periodic images set", n_images
-
+         
          deallocate (ell)
-         allocate (ell(3, n_images))
+         allocate (ell(3,n_images))
          ell=0.d0
 
 ! assuming cubic boxes
@@ -324,19 +321,15 @@
          do iz=-niz,niz,1
             do iy=-niy,niy,1
                do ix=-nix,nix,1
-                  nisum=abs(ix)+abs(iy)+abs(iz)
-                  if (nisum.gt.0) then
-!                     print*,ix,iy,iz
-                     imcount=imcount+1
-                     if(ix.ne.0) ell(1,imcount)=1.d0*ix*rlatt(1,1)
-                     if(iy.ne.0) ell(2,imcount)=1.d0*iy*rlatt(2,2)
-                     if(iz.ne.0) ell(3,imcount)=1.d0*iz*rlatt(3,3)
-                  endif
+                    imcount=imcount+1
+                    if(ix.ne.0) ell(1,imcount)=1.d0*ix*rlatt(1,1)
+                    if(iy.ne.0) ell(2,imcount)=1.d0*iy*rlatt(2,2)
+                    if(iz.ne.0) ell(3,imcount)=1.d0*iz*rlatt(3,3)
                enddo
             enddo
          enddo
          if (ipr.ge.4) write(ounit,*) "Total number of peridic images counted: ",imcount
-
+      
       endif
 
       return

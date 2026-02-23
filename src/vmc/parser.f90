@@ -1297,6 +1297,8 @@ subroutine parser
     ! or we force a fatal error.
   endif
 
+
+
   ! allocate ewald module and initialize the module
   if (iperiodic.gt.0) then
      call allocate_periodic()
@@ -1309,6 +1311,9 @@ subroutine parser
      endif
      call set_ewald
      call deallocate_ewald_test()
+  else
+        allocate (ell(3, n_images))
+        ell=0.d0
   endif
 
 ! Additional Properties

@@ -9,10 +9,9 @@ subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
     use multiple_geo, only: iwf
     use orbval, only: ddorb, dorb, nadorb, orb
     use precision_kinds, only: dp
-    use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis
-    use periodic, only : n_images, ell
+    use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis 
     use slater, only: norb, coef
-    use system, only: ncent_tot, nelec
+    use system, only: ncent_tot, nelec, ell, n_images
     use vmc_mod, only: nwftypeorb
 
     use const
@@ -292,11 +291,11 @@ subroutine orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
     use find_pimage, only: find_image_pbc
     use multiple_geo, only: iwf
     use multislatern, only: ddorbn, dorbn, orbn
-    use periodic, only : n_images, ell
+    use periodic, only : n_images
     use precision_kinds, only: dp
     use phifun,  only: d2phin, dphin, phin
     use slater, only: norb, coef
-    use system, only: ncent_tot, nelec
+    use system, only: ncent_tot, nelec, ell
     use vmc_mod, only: nwftypeorb
 
     use qmckl_data
@@ -509,12 +508,12 @@ subroutine orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_
     use optwf_control, only: method
     use orbval,  only: nadorb
     use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
-    use periodic, only : n_images, ell
+    use periodic, only : n_images
     use precision_kinds, only: dp
     use qua,     only: nquad
     use slater,  only: coef,norb
     use sr_mod,  only: i_sr_rescale
-    use system,  only: ncent,ncent_tot,nelec
+    use system,  only: ncent,ncent_tot,nelec,ell
     use vmc_mod, only: norb_tot, nwftypeorb
 
     use qmckl_data
