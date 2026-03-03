@@ -221,7 +221,7 @@ subroutine orbitalse_no_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
                 rvec_en_image(1, iel, :) = rvec_en(1, iel, :) - ell(1,i_image)
                 rvec_en_image(2, iel, :) = rvec_en(2, iel, :) - ell(2,i_image)
                 rvec_en_image(3, iel, :) = rvec_en(3, iel, :) - ell(3,i_image)
-                r_en_image(:,:) = sqrt(rvec_en_image(1,:,:)**2 + rvec_en_image(2,:,:)**2 + rvec_en_image(3,:,:)**2)
+                r_en_image(iel,:) = sqrt(rvec_en_image(1,iel,:)**2 + rvec_en_image(2,iel,:)**2 + rvec_en_image(3,iel,:)**2)
                 call basis_fns(iel,iel,nelec,rvec_en_image,r_en_image,ider)
                 do k=1,nwftypeorb
                     do iorb=1,norb
@@ -240,7 +240,7 @@ subroutine orbitalse_no_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
                 rvec_en_image(1, iel, :) = rvec_en(1, iel, :) - ell(1,i_image)
                 rvec_en_image(2, iel, :) = rvec_en(2, iel, :) - ell(2,i_image)
                 rvec_en_image(3, iel, :) = rvec_en(3, iel, :) - ell(3,i_image)
-                r_en_image(:,:) = sqrt(rvec_en_image(1,:,:)**2 + rvec_en_image(2,:,:)**2 + rvec_en_image(3,:,:)**2)
+                r_en_image(iel,:) = sqrt(rvec_en_image(1,iel,:)**2 + rvec_en_image(2,iel,:)**2 + rvec_en_image(3,iel,:)**2)
                 call basis_fns(iel,iel,nelec,rvec_en_image,r_en_image,ider)
                 do iorb=1,norb
                     do m=1,nbasis
@@ -260,7 +260,7 @@ subroutine orbitalse_no_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
                 rvec_en_image(1, iel, :) = rvec_en(1, iel, :) - ell(1,i_image)
                 rvec_en_image(2, iel, :) = rvec_en(2, iel, :) - ell(2,i_image)
                 rvec_en_image(3, iel, :) = rvec_en(3, iel, :) - ell(3,i_image)
-                r_en_image(:,:) = sqrt(rvec_en_image(1,:,:)**2 + rvec_en_image(2,:,:)**2 + rvec_en_image(3,:,:)**2)
+                r_en_image(iel,:) = sqrt(rvec_en_image(1,iel,:)**2 + rvec_en_image(2,iel,:)**2 + rvec_en_image(3,iel,:)**2)
                 call basis_fns(iel,iel,nelec,rvec_en_image,r_en_image,ider)
                 do k=1,nwftypeorb
                     do iorb=1,norb
@@ -278,7 +278,7 @@ subroutine orbitalse_no_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
                 rvec_en_image(1, iel, :) = rvec_en(1, iel, :) - ell(1,i_image)
                 rvec_en_image(2, iel, :) = rvec_en(2, iel, :) - ell(2,i_image)
                 rvec_en_image(3, iel, :) = rvec_en(3, iel, :) - ell(3,i_image)
-                r_en_image(:,:) = sqrt(rvec_en_image(1,:,:)**2 + rvec_en_image(2,:,:)**2 + rvec_en_image(3,:,:)**2)
+                r_en_image(iel,:) = sqrt(rvec_en_image(1,iel,:)**2 + rvec_en_image(2,iel,:)**2 + rvec_en_image(3,iel,:)**2)
                 call basis_fns(iel,iel,nelec,rvec_en_image,r_en_image,ider)
                 do iorb=1,norb
                     do m=1,nbasis
@@ -304,7 +304,7 @@ subroutine orbitalse_no_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
                 rvec_en_image(1, iel, :) = rvec_en(1, iel, :) - ell(1,i_image)
                 rvec_en_image(2, iel, :) = rvec_en(2, iel, :) - ell(2,i_image)
                 rvec_en_image(3, iel, :) = rvec_en(3, iel, :) - ell(3,i_image)
-                r_en_image(:,:) = sqrt(rvec_en_image(1,:,:)**2 + rvec_en_image(2,:,:)**2 + rvec_en_image(3,:,:)**2)
+                r_en_image(iel,:) = sqrt(rvec_en_image(1,iel,:)**2 + rvec_en_image(2,iel,:)**2 + rvec_en_image(3,iel,:)**2)
                 call basis_fns(iel,iel,nelec,rvec_en_image,r_en_image,ider)
                 do k=1,nwftypeorb
                     do iorb=1,norb
@@ -324,7 +324,7 @@ subroutine orbitalse_no_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
                 rvec_en_image(1, iel, :) = rvec_en(1, iel, :) - ell(1,i_image)
                 rvec_en_image(2, iel, :) = rvec_en(2, iel, :) - ell(2,i_image)
                 rvec_en_image(3, iel, :) = rvec_en(3, iel, :) - ell(3,i_image)
-                r_en_image(:,:) = sqrt(rvec_en_image(1,:,:)**2 + rvec_en_image(2,:,:)**2 + rvec_en_image(3,:,:)**2)
+                r_en_image(iel,:) = sqrt(rvec_en_image(1,iel,:)**2 + rvec_en_image(2,iel,:)**2 + rvec_en_image(3,iel,:)**2)
                 call basis_fns(iel,iel,nelec,rvec_en_image,r_en_image,ider)
                 do iorb=1,norb
                     do m0=1,n0_nbasis(iel)
@@ -347,7 +347,7 @@ subroutine orbitalse_no_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
                 rvec_en_image(1, iel, :) = rvec_en(1, iel, :) - ell(1,i_image)
                 rvec_en_image(2, iel, :) = rvec_en(2, iel, :) - ell(2,i_image)
                 rvec_en_image(3, iel, :) = rvec_en(3, iel, :) - ell(3,i_image)
-                r_en_image(:,:) = sqrt(rvec_en_image(1,:,:)**2 + rvec_en_image(2,:,:)**2 + rvec_en_image(3,:,:)**2)
+                r_en_image(iel,:) = sqrt(rvec_en_image(1,iel,:)**2 + rvec_en_image(2,iel,:)**2 + rvec_en_image(3,iel,:)**2)
                 call basis_fns(iel,iel,nelec,rvec_en_image,r_en_image,ider)
                 do k=1,nwftypeorb
                     do iorb=1,norb
@@ -366,7 +366,7 @@ subroutine orbitalse_no_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
                 rvec_en_image(1, iel, :) = rvec_en(1, iel, :) - ell(1,i_image)
                 rvec_en_image(2, iel, :) = rvec_en(2, iel, :) - ell(2,i_image)
                 rvec_en_image(3, iel, :) = rvec_en(3, iel, :) - ell(3,i_image)
-                r_en_image(:,:) = sqrt(rvec_en_image(1,:,:)**2 + rvec_en_image(2,:,:)**2 + rvec_en_image(3,:,:)**2)
+                r_en_image(iel,:) = sqrt(rvec_en_image(1,iel,:)**2 + rvec_en_image(2,iel,:)**2 + rvec_en_image(3,iel,:)**2)
                 call basis_fns(iel,iel,nelec,rvec_en_image,r_en_image,ider)
                 do iorb=1,norb
                     do m0=1,n0_nbasis(iel)
