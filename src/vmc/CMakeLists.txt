@@ -82,6 +82,7 @@ if (MPI_Fortran_FOUND)
     optx_jas_orb_reduce.f90
     optx_orb_ci.f90
     optx_orb_ci_reduce.f90
+    orbitals_no_qmckl_periodic.f90
     orbitals_no_qmckl.f90
     orbitals_qmckl_periodic.f90
     orbitals_qmckl.f90
@@ -244,6 +245,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/ortho_orbitals.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/matinv.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/scale_dist.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_no_qmckl_periodic.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_no_qmckl.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/orbitals.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/readps_gauss.f90

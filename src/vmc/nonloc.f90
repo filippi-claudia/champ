@@ -412,6 +412,7 @@ contains
 
       use contrl_per, only: iperiodic
       use orbitals_no_qmckl_mod, only: orbitals_quad_no_qmckl
+      use orbitals_no_qmckl_periodic_mod, only: orbitals_quad_no_qmckl_periodic
       use precision_kinds, only: dp
       use qua,     only: nquad
       use system,  only: ncent_tot,nelec
@@ -446,8 +447,12 @@ contains
         endif
       else
 #endif
-      call orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+        if(iperiodic.eq.0) then
+          call orbitals_quad_no_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
+        else
+          call orbitals_quad_no_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
+        endif
+        #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       end if ! use_qmckl_orbitals
 #endif
 

@@ -24,6 +24,7 @@ contains
       use contrl_file, only: ounit
       use m_force_analytic, only: iforce_analy
       use orbitals_no_qmckl_mod, only: orbitals_no_qmckl
+      use orbitals_no_qmckl_periodic_mod, only: orbitals_no_qmckl_periodic
       use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
       use slater, only: norb, coef
@@ -53,7 +54,11 @@ contains
         endif
       else
 #endif
-      call orbitals_no_qmckl(x,rvec_en,r_en)
+        if (iperiodic.eq.0) then
+          call orbitals_no_qmckl(x,rvec_en,r_en)
+        else
+          call orbitals_no_qmckl_periodic(x,rvec_en,r_en)
+        endif
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       end if ! use_qmckl_orbitals
 #endif
@@ -194,6 +199,7 @@ contains
 
       use contrl_per, only: iperiodic
       use orbitals_no_qmckl_mod, only: orbitalse_no_qmckl
+      use orbitals_no_qmckl_periodic_mod, only: orbitalse_no_qmckl_periodic
       use precision_kinds, only: dp
       use system, only: ncent_tot, nelec
 
@@ -220,7 +226,11 @@ contains
         endif
       else
 #endif
-      call orbitalse_no_qmckl(iel,x,rvec_en,r_en,iflag)
+      if (iperiodic.eq.0) then
+            call orbitalse_no_qmckl(iel,x,rvec_en,r_en,iflag)
+      else
+            call orbitalse_no_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
+      endif
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       end if ! use_qmckl_orbitals
 #endif
