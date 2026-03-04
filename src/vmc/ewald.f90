@@ -300,37 +300,37 @@
 
 ! images for periodic basis functions
       n_images0=n_images
-      if(n_images.ge.1)then
-         if (ipr.ge.4 ) write(ounit,*) "Initialization periodic images distances"
+  ! if(n_images.ge.1)then
+      if (ipr.ge.4 ) write(ounit,*) "Initialization periodic images distances"
 !     assuming same number of images in each direction
-         nix=n_images
-         niy=n_images
-         niz=n_images
+      nix=n_images
+      niy=n_images
+      niz=n_images
 
-         n_images=(2*nix+1)
-         n_images=n_images*n_images*n_images
-         if (ipr.ge.4 ) write(ounit,*) "Total number of periodic images set", n_images
-         
-         deallocate (ell)
-         allocate (ell(3,n_images))
-         ell=0.d0
+      n_images=(2*nix+1)
+      n_images=n_images*n_images*n_images
+      if (ipr.ge.4 ) write(ounit,*) "Total number of periodic images set", n_images
+      
+      deallocate (ell)
+      allocate (ell(3,n_images))
+      ell=0.d0
 
 ! assuming cubic boxes
 ! set images counter to zero
-         imcount=0
-         do iz=-niz,niz,1
-            do iy=-niy,niy,1
-               do ix=-nix,nix,1
-                    imcount=imcount+1
-                    if(ix.ne.0) ell(1,imcount)=1.d0*ix*rlatt(1,1)
-                    if(iy.ne.0) ell(2,imcount)=1.d0*iy*rlatt(2,2)
-                    if(iz.ne.0) ell(3,imcount)=1.d0*iz*rlatt(3,3)
-               enddo
+      imcount=0
+      do iz=-niz,niz,1
+        do iy=-niy,niy,1
+            do ix=-nix,nix,1
+                imcount=imcount+1
+                if(ix.ne.0) ell(1,imcount)=1.d0*ix*rlatt(1,1)
+                if(iy.ne.0) ell(2,imcount)=1.d0*iy*rlatt(2,2)
+                if(iz.ne.0) ell(3,imcount)=1.d0*iz*rlatt(3,3)
             enddo
-         enddo
-         if (ipr.ge.4) write(ounit,*) "Total number of peridic images counted: ",imcount
-      
-      endif
+        enddo
+      enddo
+      if (ipr.ge.4) write(ounit,*) "Total number of peridic images counted: ",imcount
+  
+      ! endif
 
       return
       end
