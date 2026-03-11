@@ -1,20 +1,23 @@
 #!/bin/bash
-# Install trexio with hdf5
-# Install qmckl linked to trexio
-# Set the library paths according to your installation
 
-compiler=''             # 'mpiifort' or 'mpiifx'
-trexio_dir=''           # Root directory of TREXIO library
-qmckl_dir=''            # Root directory of QMCkl library
+compiler='mpif90'
+trexio_dir='/Users/r.l.shinde'
+qmckl_dir='/Users/r.l.shinde'
+
+# Clean previous cache to ensure fresh library detection
+rm -rf build
 
 cmake -S. -Bbuild \
     -DCMAKE_Fortran_COMPILER=${compiler} \
     -DENABLE_TREXIO=ON \
     -DTREXIO_INCLUDE_DIR=${trexio_dir}/include \
-    -DTREXIO_LIBRARY=${trexio_dir}/lib/libtrexio.so \
+    -DTREXIO_LIBRARY=${trexio_dir}/lib/libtrexio.dylib \
     -DENABLE_QMCKL=ON \
     -DQMCKL_INCLUDE_DIR=${qmckl_dir}/include \
-    -DQMCKL_LIBRARY=${qmckl_dir}/lib/libqmckl.so \
+    -DQMCKL_LIBRARY=${qmckl_dir}/lib/libqmckl.dylib \
+    -DBLA_VENDOR=Apple \
+    -DCMAKE_EXE_LINKER_FLAGS="-framework Accelerate" \
+    -DCMAKE_OSX_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+
 
 cmake --build build -j
-

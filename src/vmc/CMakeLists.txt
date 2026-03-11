@@ -252,6 +252,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/cuspinit4.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/mmpol.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/basis_fns.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/determinant_psig.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/determinant_psit.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/determinant.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/determinante.f90
@@ -346,11 +347,6 @@ if (MPI_Fortran_FOUND)
       HDF5_FOUND=\"${HDF5_FOUND}\"
     )
 
-    set_source_files_properties(
-      ${CMAKE_CURRENT_SOURCE_DIR}/vmc_store_hdf5.f90
-      ${CMAKE_CURRENT_SOURCE_DIR}/vmc_restore_hdf5.f90
-      APPEND PROPERTY COMPILE_FLAGS "-lhdf5_fortran -lhdf5"
-    )
   endif(HDF5_FOUND)
 
   add_library(shared_objects OBJECT ${SHARED_OBJECTS})
@@ -466,6 +462,9 @@ ENDIF()
       MPI::MPI_Fortran)
     if(HDF5_FOUND)
       target_link_libraries(vmc.mov1 PRIVATE HDF5::HDF5)
+      if(TARGET HDF5::HDF5_Fortran)
+        target_link_libraries(vmc.mov1 PRIVATE HDF5::HDF5_Fortran)
+      endif()
     endif()
   else()
     target_link_libraries(vmc.mov1
@@ -477,6 +476,9 @@ ENDIF()
       MPI::MPI_Fortran)
     if(HDF5_FOUND)
       target_link_libraries(vmc.mov1 PRIVATE HDF5::HDF5)
+      if(TARGET HDF5::HDF5_Fortran)
+        target_link_libraries(vmc.mov1 PRIVATE HDF5::HDF5_Fortran)
+      endif()
     endif()
   endif()
 

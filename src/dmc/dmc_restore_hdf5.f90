@@ -146,12 +146,13 @@ module dmc_restore_hdf5_mod
 
 
         integer :: i, iage_id, ib, ic, id
-        integer :: ie, ifr, ioldest_id, ioldestmx_id
+        integer :: ie, ierr, ifr, ioldest_id, ioldestmx_id
         integer :: iw, j, k, n1_id
         integer :: n2_id, nbasx, ncentx, nctypex
         integer :: ndetx, ndnx, nelecx, newghostypex
-        integer :: nghostcentx, nprock, nq_id, num
+        integer :: nghostcentx, nprock, nproco, nq_id, num
         integer :: nupx, nwalk_id
+        character(len=20) :: s
         integer, dimension(4, 0:nproc) :: irn_tmp
         integer, dimension(nctype)      :: nsx,npx,ndx,nfx,ngx
         real(dp) :: different, eest_id
@@ -386,8 +387,8 @@ module dmc_restore_hdf5_mod
 
         call hdf5_read(file_id, group_id, "fgcum", fgcum(1:nforce))
         call hdf5_read(file_id, group_id, "fgcm2", fgcm2(1:nforce))
-        call hdf5_read(file_id, group_id, "derivcum", derivcum(1:3,1:nforce))
-        call hdf5_read(file_id, group_id, "derivcm2", derivcm2(1:nforce))
+        call hdf5_read(file_id, group_id, "derivcum", derivcum)
+        call hdf5_read(file_id, group_id, "derivcm2", derivcm2)
         call hdf5_read(file_id, group_id, "derivtotave_num_old", derivtotave_num_old(1:nforce))
 
         call hdf5_read(file_id, group_id, "rprobbynproc", rprob(1:nrad))
@@ -481,9 +482,7 @@ module dmc_restore_hdf5_mod
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
         tausum(ifr)=zero
-        do k=1,3
-          derivsum(k,ifr)=zero
-        enddo
+        derivsum(:,:,:,ifr)=zero
       enddo
 
       call prop_init(1)
@@ -512,6 +511,8 @@ module dmc_restore_hdf5_mod
         
         call bcast(irn_tmp)
         ! etc wait, we handle BCASTs manually like before?
-        
+
+        endif ! master thread (wid)
+
         end subroutine dmc_restore_hdf5
 end module dmc_restore_hdf5_mod

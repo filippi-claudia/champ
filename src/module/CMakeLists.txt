@@ -51,6 +51,8 @@ if (MPI_Fortran_FOUND)
     m_estimators.f90
     m_deriv.f90
     m_mixderiv.f90
+    m_step.f90
+    m_denupdn.f90
     m_input.f90
     m_grdnt.f90
     m_allocation.f90

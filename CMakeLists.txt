@@ -84,7 +84,7 @@ link_libraries(${LINEAR_ALGEBRA})
 
 # Find HDF5 library
 if (ENABLE_TREXIO)
-find_package(HDF5 QUIET)
+find_package(HDF5 QUIET COMPONENTS Fortran)
 if (HDF5_FOUND)
   message(STATUS "Is HDF5 library found            :: " ${HDF5_VERSION})
   message(STATUS "Is HDF5 library parallel         :: " ${HDF5_IS_PARALLEL})
@@ -209,7 +209,7 @@ endif()
 
 # List of Fortran flags for GNU compiler begins here
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O2" "-cpp" "" "-ffree-line-length-none")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-ffree-line-length-none")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")

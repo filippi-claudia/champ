@@ -550,8 +550,12 @@ module derivest
     !> Total averaged forces per center and path, dimension (3, ncent_tot, PTH)
     real(dp), dimension(:,:,:), allocatable :: derivtotave
 
+    !> Total averaged force derivative numerator at previous step, dimension (MFORCE)
+    real(dp), dimension(:), allocatable :: derivtotave_num_old
+
     private
     public :: derivcm2, derivcum, derivsum, derivtotave
+    public :: derivtotave_num_old
     public :: allocate_derivest, deallocate_derivest
     save
 

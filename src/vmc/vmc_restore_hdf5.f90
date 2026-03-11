@@ -18,7 +18,6 @@ module vmc_restore_hdf5_mod
         use control_vmc, only: vmc_idump, vmc_irstar, vmc_isite, vmc_nconf, vmc_nblk, vmc_nblk_max
         use control_vmc, only: vmc_nblkeq, vmc_nconf_new, vmc_nstep, vmc_icharged_atom, vmc_nblk_ci
         use csfs,    only: ncsf, nstates, ccsf
-        use denupdn, only: rprobdn,rprobup
         use determinant_psig_mod, only: determinant_psig
         use determinante_mod, only: compute_determinante_grad
         use error,   only: fatal_error
@@ -140,7 +139,7 @@ module vmc_restore_hdf5_mod
         integer :: irequest, iw
         real(dp) :: rnd
         real(dp), dimension(3, nelec) :: x_id
-        real(dp), dimension(nquad) :: wq_id, x_id, xq_id, yq_id, zq_id
+        real(dp), dimension(nquad) :: wq_id, xq_id, yq_id, zq_id
 
         integer :: jel, nbasx
         integer :: ncentx, nctypex, ndetx, ndnx
@@ -407,8 +406,6 @@ module vmc_restore_hdf5_mod
         call hdf5_read(file_id, group_id, "suc", suc(1:nrad))
         call hdf5_read(file_id, group_id, "trunfb", trunfb(1:nrad))
         call hdf5_read(file_id, group_id, "rprob", rprob(1:nrad))
-        call hdf5_read(file_id, group_id, "rprobup", rprobup(1:nrad))
-        call hdf5_read(file_id, group_id, "rprobdn", rprobdn(1:nrad))
         call hdf5_read(file_id, group_id, "ekin", ekin(1:nrad))
         call hdf5_read(file_id, group_id, "ekin2", ekin2(1:nrad))
         call hdf5_read(file_id, group_id, "rejmax", rejmax)
@@ -479,9 +476,9 @@ module vmc_restore_hdf5_mod
         ! Force Analytical
         if (iforce_analy.ne.0) then
                 call hdf5_group_open(file_id, "Force Analytical", group_id)
-                call hdf5_read(file_id, group_id, "da_energy_cum", da_energy_cum(1:3,1:ncent))
-                call hdf5_read(file_id, group_id, "da_psi_cum", da_psi_cum(1:3,1:ncent))
-                call hdf5_read(file_id, group_id, "da_energy_cm2", da_energy_cm2(1:3,1:ncent))
+                call hdf5_read(file_id, group_id, "da_energy_cum", da_energy_cum)
+                call hdf5_read(file_id, group_id, "da_psi_cum", da_psi_cum)
+                call hdf5_read(file_id, group_id, "da_energy_cm2", da_energy_cm2)
                 call hdf5_group_close(group_id)
                 write(ounit, *) " HDF5 Group read :: Force Analytical "
         endif
@@ -636,6 +633,7 @@ module vmc_restore_hdf5_mod
         enddo
         r2sum=0
 
+        endif ! master thread (wid)
 
         end subroutine vmc_restore_hdf5
 end module vmc_restore_hdf5_mod

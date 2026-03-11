@@ -77,6 +77,7 @@
         integer :: i, ib, ic, id, ierr
         integer :: ifr, irequest, iw, j
         integer :: k, nscounts
+        character(len=20) :: s
         integer, dimension(4, 0:nproc) :: irn
         integer, dimension(MPI_STATUS_SIZE) :: istatus
         integer, dimension(4, 0:nproc) :: irn_tmp
@@ -339,8 +340,8 @@
 
         call hdf5_write(file_id, group_id, "fgcum", fgcum(1:nforce))
         call hdf5_write(file_id, group_id, "fgcm2", fgcm2(1:nforce))
-        call hdf5_write(file_id, group_id, "derivcum", derivcum(1:3,1:nforce))
-        call hdf5_write(file_id, group_id, "derivcm2", derivcm2(1:nforce))
+        call hdf5_write(file_id, group_id, "derivcum", derivcum)
+        call hdf5_write(file_id, group_id, "derivcm2", derivcm2)
         call hdf5_write(file_id, group_id, "derivtotave_num_old", derivtotave_num_old(1:nforce))
 
         call hdf5_write(file_id, group_id, "rprobbynproc", rprob(1:nrad))
