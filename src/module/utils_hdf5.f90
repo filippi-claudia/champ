@@ -96,7 +96,7 @@ module hdf5_utils
         end if
 
         ! create hdf5 file safely
-        call h5fcreate_f(filename, H5F_ACC_MPI_F .or. H5F_ACC_TRUNC_F, file_id, ierr)
+        call h5fcreate_f(filename, H5F_ACC_TRUNC_F, file_id, ierr)
         if (ierr /= 0) then
             write(errunit,*) "Error: HDF5 file could not be created."
             stop
@@ -123,7 +123,7 @@ module hdf5_utils
         end if
 
         ! open file for reading and writing
-        call h5fopen_f(filename, H5F_ACC_MPI_F .or. H5F_ACC_RDWR_F, file_id, ierr)
+        call h5fopen_f(filename, H5F_ACC_RDWR_F, file_id, ierr)
         if (ierr /= 0) then
             write(errunit,*) "Error: HDF5 file could not be opened."
             stop
@@ -169,7 +169,7 @@ module hdf5_utils
         integer                             :: ierr
 
         ! create group
-        call h5gcreate_f(file_id, group_name, group_id, H5G_CREATE_MODE_EXCLUSIVE_F, ierr)
+        call h5gcreate_f(file_id, group_name, group_id, ierr)
         if (ierr /= 0) then
             write(errunit,*) "Error: HDF5 group could not be created."
             stop
@@ -191,7 +191,7 @@ module hdf5_utils
         integer                             :: ierr
 
         ! open group
-        call h5gopen_f(file_id, group_name, group_id, H5G_OPEN_MODE_EXCLUSIVE_F, ierr)
+        call h5gopen_f(file_id, group_name, group_id, ierr)
         if (ierr /= 0) then
             write(errunit,*) "Error: HDF5 group could not be opened."
             stop
@@ -334,7 +334,7 @@ module hdf5_utils
         ! close dataspace
         call h5sclose_f(dataspace_id, ierr)
         if (ierr /= 0) then
-            write(errunit,*), "Error: HDF5 dataspace could not be closed."
+            write(errunit,*) "Error: HDF5 dataspace could not be closed."
             stop
         end if
 
