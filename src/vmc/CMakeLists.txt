@@ -322,14 +322,55 @@ if (MPI_Fortran_FOUND)
   endif()
 
 
+  # if HDF5 is found compile with HDF5 support
+  if (HDF5_FOUND)
+    list(APPEND SHARED_OBJECTS
+      ${CMAKE_CURRENT_SOURCE_DIR}/vmc_store_hdf5.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/vmc_restore_hdf5.f90)
+
+    set_property(
+      SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/vmc_store_hdf5.f90
+      APPEND
+      PROPERTY COMPILE_DEFINITIONS
+      COMPILER=\"${CMAKE_Fortran_COMPILER}\"
+      COMPILER_VERSION=\"${CMAKE_Fortran_COMPILER_VERSION}\"
+      GIT_HEAD_BRANCH=\"${GIT_HEAD_BRANCH}\"
+      GIT_REVISION_HASH=\"${GIT_REVISION_HASH}\"
+      HDF5_VERSION=\"${HDF5_VERSION}\"
+    )
+
+    set_property(
+      SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/vmc.f90
+      APPEND
+      PROPERTY COMPILE_DEFINITIONS
+      HDF5_FOUND=\"${HDF5_FOUND}\"
+    )
+
+    set_source_files_properties(
+      ${CMAKE_CURRENT_SOURCE_DIR}/vmc_store_hdf5.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/vmc_restore_hdf5.f90
+      APPEND PROPERTY COMPILE_FLAGS "-lhdf5_fortran -lhdf5"
+    )
+  endif(HDF5_FOUND)
+
   add_library(shared_objects OBJECT ${SHARED_OBJECTS})
 
   #  Add headers
-  target_include_directories(shared_objects
-  PUBLIC
-  ${CMAKE_BINARY_DIR}/src/module
-  ${CMAKE_BINARY_DIR}/src/parser
-  )
+  if (HDF5_FOUND)
+    target_include_directories(shared_objects
+    PUBLIC
+    ${CMAKE_BINARY_DIR}/src/module
+    ${CMAKE_BINARY_DIR}/src/parser
+    ${HDF5_INCLUDE_DIRS}
+    )
+    target_link_libraries(shared_objects ${HDF5_LIBRARIES})
+  else()
+    target_include_directories(shared_objects
+    PUBLIC
+    ${CMAKE_BINARY_DIR}/src/module
+    ${CMAKE_BINARY_DIR}/src/parser
+    )
+  endif()
 
   target_compile_options(shared_objects
     PRIVATE
@@ -387,10 +428,18 @@ IF(UNIT_TESTS)
 ENDIF()
 
   #  Add headers
-  target_include_directories(vmc.mov1
-  PUBLIC
-  ${CMAKE_BINARY_DIR}/src/module
-  )
+  if(HDF5_FOUND)
+    target_include_directories(vmc.mov1
+    PUBLIC
+    ${CMAKE_BINARY_DIR}/src/module
+    ${HDF5_INCLUDE_DIRS}
+    )
+  else()
+    target_include_directories(vmc.mov1
+    PUBLIC
+    ${CMAKE_BINARY_DIR}/src/module
+    )
+  endif()
 
   # compilation
   target_compile_options(vmc.mov1
@@ -415,6 +464,9 @@ ENDIF()
       ${LINEAR_ALGEBRA}
       ${TREXIO_LIBRARY}
       MPI::MPI_Fortran)
+    if(HDF5_FOUND)
+      target_link_libraries(vmc.mov1 PRIVATE HDF5::HDF5)
+    endif()
   else()
     target_link_libraries(vmc.mov1
       PRIVATE
@@ -423,6 +475,9 @@ ENDIF()
       ${LINEAR_ALGEBRA}
       ${CUDA_LIBRARIES}
       MPI::MPI_Fortran)
+    if(HDF5_FOUND)
+      target_link_libraries(vmc.mov1 PRIVATE HDF5::HDF5)
+    endif()
   endif()
 
 
