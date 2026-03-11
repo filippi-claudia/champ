@@ -131,7 +131,7 @@ contains
       endif
 
       psi2gi=1.d0/psi2g
-      isjas1=stoj(iweight_g(1))
+      if(iguiding.gt.0) isjas1=stoj(iweight_g(1))
 
 ! All quantities saved (old) avaliable
       if(iflag_move.eq.1) then
