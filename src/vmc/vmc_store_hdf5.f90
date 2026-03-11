@@ -166,7 +166,7 @@ module vmc_store_hdf5_mod
         if (wid) then
                 ! Open the HDF5 file
                 write(ounit, *) " HDF5 Restart file name:: ", restart_filename
-                ! call hdf5_file_create("sample.hdf5", file_id)
+                call hdf5_file_create(restart_filename, file_id)
 
                 call hdf5_group_create(file_id, "MPIGroup", group_id)
                 call hdf5_group_open(file_id, "MPIGroup", group_id)

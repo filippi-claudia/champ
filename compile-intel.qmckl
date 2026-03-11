@@ -15,6 +15,7 @@ cmake -S. -Bbuild \
     -DENABLE_QMCKL=ON \
     -DQMCKL_INCLUDE_DIR=${qmckl_dir}/include \
     -DQMCKL_LIBRARY=${qmckl_dir}/lib/libqmckl.dylib \
+    -DHDF5_ROOT=${trexio_dir} \
     -DBLA_VENDOR=Apple \
     -DCMAKE_EXE_LINKER_FLAGS="-framework Accelerate" \
     -DCMAKE_OSX_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
