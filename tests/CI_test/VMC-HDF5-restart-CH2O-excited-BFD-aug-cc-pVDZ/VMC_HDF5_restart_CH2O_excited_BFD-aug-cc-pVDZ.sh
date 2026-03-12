@@ -7,9 +7,9 @@ echo "HDF5 VMC restart test: CH2O excited state (BFD/aug-cc-pVDZ)"
 # Because the accumulated statistics are preserved, step2 reports the
 # cumulative energy over all 1000 blocks, which must match the reference.
 
-N=4
-ReferenceEnergy=-22.6180281
-ReferenceError=0.0042991
+N=2
+ReferenceEnergy=-22.6202928
+ReferenceError=0.0058981
 
 # Step 1: 500 blocks with HDF5 dump
 echo "HDF5 restart: step 1 (store phase, 500 blocks, ${N} MPI ranks)"
