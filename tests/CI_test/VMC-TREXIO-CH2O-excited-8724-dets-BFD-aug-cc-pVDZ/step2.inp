@@ -1,0 +1,27 @@
+%module general
+    title           'COH2 Formaldehyde VMC optimization calculation first excited state'
+    pool            './pool/'
+    mode            'vmc_one_mpi'
+    ipr -1
+%endmodule
+
+# Use a single trexio file to fetch all the required data.
+load trexio          COH2_ES.trexio
+
+
+load jastrow         jastrow.start
+load jastrow_der     jastrow.der
+
+%module electrons
+    nup           6
+    nelec         12
+%endmodule
+
+%module blocking_vmc
+    vmc_irstar    1
+    vmc_idump     0
+    vmc_nstep     20
+    vmc_nblk      500
+    vmc_nblkeq    0
+    vmc_nconf_new 0
+%endmodule
