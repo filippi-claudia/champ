@@ -1,13 +1,11 @@
 %module general
-    title           'COH2 Formaldehyde VMC optimization calculation first excited state'
+    title           'COH2 Formaldehyde VMC excited state - HDF5 restart test (store phase)'
     pool            './pool/'
     mode            'vmc_one_mpi'
     ipr -1
 %endmodule
 
-# Use a single trexio file to fetch all the required data.
 load trexio          COH2_ES.trexio
-
 
 load jastrow         jastrow.start
 load jastrow_der     jastrow.der

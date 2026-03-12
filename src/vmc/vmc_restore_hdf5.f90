@@ -148,7 +148,7 @@ module vmc_restore_hdf5_mod
         integer :: nupx
         integer :: nproc_stored, nblk_stored, nstep_stored, nblkeq_stored
         integer :: nblk_max_stored, nconf_stored, nconf_new_stored
-        character(len=20) :: mode_stored
+        character(len=20) :: mode_stored = ' '
 
         real(dp) :: ajacob, deltarx
         real(dp) :: deltatx, deltax, dist, distance_node
