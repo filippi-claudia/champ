@@ -152,7 +152,6 @@ module vmc_store_hdf5_mod
 
         call savern(irn(1,idtask))
 
-        write(*,*) "irn direct ", idtask, " = ",  irn(:,idtask)
 
         call mpi_gatherv(irn(1,idtask),nscounts,mpi_integer,irn_tmp,ircounts,idispls,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
@@ -161,7 +160,6 @@ module vmc_store_hdf5_mod
         ! call mpi_gatherv(zq(1:nquad),nscounts,mpi_double_precision,temp_zq,ircounts,idispls,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
         ! call mpi_gatherv(wq(1:nquad),nscounts,mpi_double_precision,temp_wq,ircounts,idispls,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        write(*,*) "idtasks ", idtask, nproc, wid, "filename ", restart_filename
 
         if (wid) then
                 ! Open the HDF5 file
