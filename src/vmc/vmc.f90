@@ -45,6 +45,7 @@ contains
       real(dp) ::err
       character(len=8)  :: date
       character(len=10) :: time
+      integer           :: hdf5_restart_funit, hdf5_restart_ios
 
       character(len=25) fmt
 
@@ -122,7 +123,6 @@ contains
         current_block = current_block + 1
         do j=1,vmc_nstep
           l=l+1
-!   write(ounit, *) i, nblk, j, nstep
           if (nloc.gt.0) call rotqua
           if(imetro.eq.1) then
             if(mode.eq.'vmc_one_mpi') call metrop1(l,1)
@@ -165,6 +165,14 @@ contains
         call bcast(date)
         call bcast(time)
         call vmc_store_hdf5("restart_vmc_"//date(1:4)//'-'//date(5:6)//'-'//date(7:8)//"-"//time(1:6)//".hdf5")
+        ! Delete then recreate the fixed-name file so vmc_restore_hdf5 always finds the latest restart.
+        ! HDF5 cannot truncate a previously-written filename while other HDF5 files are open,
+        ! so we delete it via Fortran I/O first to bypass HDF5's name-tracking.
+        if (wid) then
+          open(newunit=hdf5_restart_funit, file='restart_vmc.hdf5', status='old', iostat=hdf5_restart_ios)
+          if (hdf5_restart_ios == 0) close(hdf5_restart_funit, status='delete')
+        endif
+        call vmc_store_hdf5("restart_vmc.hdf5")
 #else
         open(10,form='unformatted',file='restart_vmc')
         rewind 10

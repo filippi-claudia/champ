@@ -139,12 +139,16 @@ module vmc_restore_hdf5_mod
         integer :: irequest, iw
         real(dp) :: rnd
         real(dp), dimension(3, nelec) :: x_id
+        real(dp), allocatable :: xold_buf(:,:,:)  ! (3, nelec, 0:nproc-1) for scatter
         real(dp), dimension(nquad) :: wq_id, xq_id, yq_id, zq_id
 
         integer :: jel, nbasx
         integer :: ncentx, nctypex, ndetx, ndnx
         integer :: newghostypex, nghostcentx, norbx, nstepx
         integer :: nupx
+        integer :: nproc_stored, nblk_stored, nstep_stored, nblkeq_stored
+        integer :: nblk_max_stored, nconf_stored, nconf_new_stored
+        character(len=20) :: mode_stored
 
         real(dp) :: ajacob, deltarx
         real(dp) :: deltatx, deltax, dist, distance_node
@@ -162,6 +166,10 @@ module vmc_restore_hdf5_mod
         ! optorb
         integer :: matdim
 
+
+        ! Allocate walker buffer on all ranks (needed for MPI_Scatter)
+        allocate(xold_buf(3, nelec, 0:nproc-1))
+        xold_buf = 0.0_dp
 
         ! Only the master process will read the data to the HDF5 file
         if (wid) then
@@ -213,10 +221,10 @@ module vmc_restore_hdf5_mod
 
 
         if(idtask.le.nproco-1) then
-          ! split it into main thread and other threads
-          ! Only master thread
-          if (id .eq. 0) then
+          ! Read rank 0's walker into xold and xold_buf(:,:,0)
+          if (idtask .eq. 0) then
             call hdf5_read(file_id, group_id, "xold_proc_0", xold)
+            xold_buf(:,:,0) = xold
             if (nloc .gt. 0) then
                call hdf5_read(file_id, group_id, "nquad_proc_0", nqx)
                call hdf5_read(file_id, group_id, "xq_proc_0", xq(1:nqx))
@@ -227,54 +235,66 @@ module vmc_restore_hdf5_mod
           endif
           ! Other threads but upto nproc-1
           do id=1,idtask
-            write (unit=s,fmt=*) id
-            call hdf5_read(file_id, group_id, "xold_proc_"//s, xold)
+            write (unit=s,fmt="(i0)") id
+            call hdf5_read(file_id, group_id, "xold_proc_"//trim(s), xold)
+            xold_buf(:,:,id) = xold
             if (nloc .gt. 0) then
-                call hdf5_read(file_id, group_id, "nquad_proc_"//s, nqx)
-                call hdf5_read(file_id, group_id, "xq_proc_"//s, xq(1:nqx))
-                call hdf5_read(file_id, group_id, "yq_proc_"//s, yq(1:nqx))
-                call hdf5_read(file_id, group_id, "zq_proc_"//s, zq(1:nqx))
-                call hdf5_read(file_id, group_id, "wq_proc_"//s, wq(1:nqx))
+                call hdf5_read(file_id, group_id, "nquad_proc_"//trim(s), nqx)
+                call hdf5_read(file_id, group_id, "xq_proc_"//trim(s), xq(1:nqx))
+                call hdf5_read(file_id, group_id, "yq_proc_"//trim(s), yq(1:nqx))
+                call hdf5_read(file_id, group_id, "zq_proc_"//trim(s), zq(1:nqx))
+                call hdf5_read(file_id, group_id, "wq_proc_"//trim(s), wq(1:nqx))
             endif
           enddo
-          if(nqx.ne.nquad) call fatal_error('HDF5 Restart : nquad does not match with the restart file')
+          ! Restore rank 0's xold (may have been overwritten in loop above)
+          xold = xold_buf(:,:,0)
+          if(nloc .gt. 0 .and. nqx.ne.nquad) call fatal_error('HDF5 Restart : nquad does not match with the restart file')
 
-          ! Other threads from idtask+1 upto nproc_old -1
-          do id=idtask+1,nproco-1
-            write (unit=s,fmt=*) id
-            call hdf5_read(file_id, group_id, "xold_proc_"//s, x_id)
+          ! Read walkers for ranks idtask+1 to min(nproco-1, nproc-1) into xold_buf.
+          ! When nproco > nproc, only load walkers for the ranks we actually have.
+          do id=idtask+1,min(nproco-1, nproc-1)
+            write (unit=s,fmt="(i0)") id
+            call hdf5_read(file_id, group_id, "xold_proc_"//trim(s), xold_buf(:,:,id))
             if (nloc .gt. 0) then
-                call hdf5_read(file_id, group_id, "nquad_proc_"//s, nq_id)
-                call hdf5_read(file_id, group_id, "xq_proc_"//s, xq_id(1:nqd_id))
-                call hdf5_read(file_id, group_id, "yq_proc_"//s, yq_id(1:nqd_id))
-                call hdf5_read(file_id, group_id, "zq_proc_"//s, zq_id(1:nqd_id))
-                call hdf5_read(file_id, group_id, "wq_proc_"//s, wq_id(1:nqd_id))
+                call hdf5_read(file_id, group_id, "nquad_proc_"//trim(s), nq_id)
+                call hdf5_read(file_id, group_id, "xq_proc_"//trim(s), xq_id(1:nq_id))
+                call hdf5_read(file_id, group_id, "yq_proc_"//trim(s), yq_id(1:nq_id))
+                call hdf5_read(file_id, group_id, "zq_proc_"//trim(s), zq_id(1:nq_id))
+                call hdf5_read(file_id, group_id, "wq_proc_"//trim(s), wq_id(1:nq_id))
             endif
+          enddo
+          ! Extra ranks beyond what was saved: use rank 0's walker as fallback
+          do id=nproco,nproc-1
+            xold_buf(:,:,id) = xold_buf(:,:,0)
           enddo
          else
-          ! split it into main thread and other threads
-          ! Only master thread
-          if (id .eq. 0) then
-            call hdf5_read(file_id, group_id, "xold_proc_0", x_id)
+          ! nproco = 0: shouldn't happen, but read proc 0 walker into xold_buf(:,:,0)
+          if (idtask .eq. 0) then
+            call hdf5_read(file_id, group_id, "xold_proc_0", xold_buf(:,:,0))
+            xold = xold_buf(:,:,0)
             if (nloc .gt. 0) then
                call hdf5_read(file_id, group_id, "nquad_proc_0", nq_id)
-               call hdf5_read(file_id, group_id, "xq_proc_0", xq_id(1:nqd_id))
-               call hdf5_read(file_id, group_id, "yq_proc_0", yq_id(1:nqd_id))
-               call hdf5_read(file_id, group_id, "zq_proc_0", zq_id(1:nqd_id))
-               call hdf5_read(file_id, group_id, "wq_proc_0", wq_id(1:nqd_id))
+               call hdf5_read(file_id, group_id, "xq_proc_0", xq_id(1:nq_id))
+               call hdf5_read(file_id, group_id, "yq_proc_0", yq_id(1:nq_id))
+               call hdf5_read(file_id, group_id, "zq_proc_0", zq_id(1:nq_id))
+               call hdf5_read(file_id, group_id, "wq_proc_0", wq_id(1:nq_id))
             endif
           endif
           ! Other threads but upto nproco-1
           do id=1,nproco-1
-            write (unit=s,fmt=*) id
-            call hdf5_read(file_id, group_id, "xold_proc_"//s, x_id)
+            write (unit=s,fmt="(i0)") id
+            call hdf5_read(file_id, group_id, "xold_proc_"//trim(s), xold_buf(:,:,id))
             if (nloc .gt. 0) then
-                call hdf5_read(file_id, group_id, "nquad_proc_"//s, nq_id)
-                call hdf5_read(file_id, group_id, "xq_proc_"//s, xq_id(1:nqd_id))
-                call hdf5_read(file_id, group_id, "yq_proc_"//s, yq_id(1:nqd_id))
-                call hdf5_read(file_id, group_id, "zq_proc_"//s, zq_id(1:nqd_id))
-                call hdf5_read(file_id, group_id, "wq_proc_"//s, wq_id(1:nqd_id))
+                call hdf5_read(file_id, group_id, "nquad_proc_"//trim(s), nq_id)
+                call hdf5_read(file_id, group_id, "xq_proc_"//trim(s), xq_id(1:nq_id))
+                call hdf5_read(file_id, group_id, "yq_proc_"//trim(s), yq_id(1:nq_id))
+                call hdf5_read(file_id, group_id, "zq_proc_"//trim(s), zq_id(1:nq_id))
+                call hdf5_read(file_id, group_id, "wq_proc_"//trim(s), wq_id(1:nq_id))
             endif
+          enddo
+          ! Extra ranks beyond what was saved: use rank 0's walker as fallback
+          do id=nproco,nproc-1
+            xold_buf(:,:,id) = xold_buf(:,:,0)
           enddo
         endif
 
@@ -311,10 +331,7 @@ module vmc_restore_hdf5_mod
         call hdf5_read(file_id, group_id, "Zex", zex)
         if (nloc .gt. 0) then
             call hdf5_read(file_id, group_id, "nquad", nquad)
-            call hdf5_read(file_id, group_id, "xq", xq(1:nquad))
-            call hdf5_read(file_id, group_id, "yq", yq(1:nquad))
-            call hdf5_read(file_id, group_id, "zq", zq(1:nquad))
-            call hdf5_read(file_id, group_id, "wq", wq(1:nquad))
+            ! xq/yq/zq/wq are stored per-rank in MPIGroup, not in Basis
         endif
         call hdf5_group_close(group_id)
         write(ounit, *) " HDF5 Group read :: Basis "
@@ -362,18 +379,31 @@ module vmc_restore_hdf5_mod
         write(ounit, *) " HDF5 Group read :: Periodic "
 
         call hdf5_group_open(file_id, "QMC", group_id)
-        call hdf5_read(file_id, group_id, "Mode", mode)
-        call hdf5_read(file_id, group_id, "Number of Processors", nproc)
+        call hdf5_read(file_id, group_id, "Mode", mode_stored)
+        call hdf5_read(file_id, group_id, "Number of Processors", nproc_stored)
         call hdf5_group_close(group_id)
+        if (mode_stored .ne. mode) &
+            write(ounit, '(a,a,a,a,a)') "Warning: HDF5 restart mode '", trim(mode_stored), &
+                "' differs from current mode '", trim(mode), "' -- using current mode"
+        if (nproc_stored .ne. nproc) &
+            write(ounit, '(a,i4,a,i4,a)') "Warning: HDF5 restart nproc = ", nproc_stored, &
+                " differs from current nproc = ", nproc, " -- using current nproc"
         write(ounit, *) " HDF5 Group read :: QMC "
 
         call hdf5_group_open(file_id, "VMC", group_id)
-        call hdf5_read(file_id, group_id, "Number of VMC Blocks", vmc_nblk)
-        call hdf5_read(file_id, group_id, "Number of Equilibration VMC Blocks", vmc_nblkeq)
-        call hdf5_read(file_id, group_id, "Maximum Number of VMC Blocks", vmc_nblk_max)
-        call hdf5_read(file_id, group_id, "Number of VMC Steps per Block", vmc_nstep)
-        call hdf5_read(file_id, group_id, "Number of VMC Configurations", vmc_nconf)
-        call hdf5_read(file_id, group_id, "Number of New VMC Configurations", vmc_nconf_new)
+        call hdf5_read(file_id, group_id, "Number of VMC Blocks", nblk_stored)
+        call hdf5_read(file_id, group_id, "Number of Equilibration VMC Blocks", nblkeq_stored)
+        call hdf5_read(file_id, group_id, "Maximum Number of VMC Blocks", nblk_max_stored)
+        call hdf5_read(file_id, group_id, "Number of VMC Steps per Block", nstep_stored)
+        call hdf5_read(file_id, group_id, "Number of VMC Configurations", nconf_stored)
+        call hdf5_read(file_id, group_id, "Number of New VMC Configurations", nconf_new_stored)
+        ! Informational checks: warn if restart input differs from stored run
+        if (nblk_stored .ne. vmc_nblk) &
+            write(ounit, '(a,i6,a,i6,a)') "Info: HDF5 stored vmc_nblk=", nblk_stored, &
+                "; using current vmc_nblk=", vmc_nblk, " from restart input"
+        if (nstep_stored .ne. vmc_nstep) &
+            write(ounit, '(a,i6,a,i6,a)') "Info: HDF5 stored vmc_nstep=", nstep_stored, &
+                "; using current vmc_nstep=", vmc_nstep, " from restart input"
         call hdf5_read(file_id, group_id, "iblk", iblk)
         call hdf5_read(file_id, group_id, "Delta", delta)
         call hdf5_read(file_id, group_id, "Deltar", deltar)
@@ -542,8 +572,6 @@ module vmc_restore_hdf5_mod
         endif
 
         call hdf5_file_close(file_id)
-        ! Close the HDF5 file
-
 
         ! Perform the remaining tasks
         write(ounit, *) ' HDF5 file read successfully :: ', restart_filename
@@ -634,6 +662,114 @@ module vmc_restore_hdf5_mod
         r2sum=0
 
         endif ! master thread (wid)
+
+        ! Broadcast nproco to all ranks so they know how many walkers were saved
+        call MPI_Bcast(nproco, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+
+        ! Scatter walker positions: rank 0 distributes xold_buf(:,:,id) to each rank id
+        call MPI_Scatter(xold_buf, 3*nelec, MPI_DOUBLE_PRECISION, &
+                         xold,     3*nelec, MPI_DOUBLE_PRECISION, &
+                         0, MPI_COMM_WORLD, ierr)
+        deallocate(xold_buf)
+
+        ! Broadcast random number states and seed each rank's RNG
+        call MPI_Bcast(irn, 8*(nproc+1), MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+        if (.not. wid .and. idtask .le. nproco-1) call setrn(irn(1,idtask))
+
+        ! Broadcast quadrature points (xq/yq/zq/wq) from rank 0 to all ranks
+        ! Ranks 1..nproc-1 do not load these from HDF5, so they need rank 0's values
+        ! for the initialization hpsi call below to give correct psido/psijo.
+        if (nloc .gt. 0) then
+          call bcast(xq)
+          call bcast(yq)
+          call bcast(zq)
+          call bcast(wq)
+        endif
+
+        ! Broadcast step sizes from rank 0 to all ranks
+        call bcast(delta)
+        call bcast(deltar)
+        call bcast(deltat)
+
+        ! Broadcast nuclear-nuclear repulsion pecent from rank 0 to all ranks.
+        ! In the non-restart path, pecent is computed by pot_nn inside zerest (called for all ranks).
+        ! For restarts, zerest is skipped, and only rank 0 reads pecent from HDF5 — so we must broadcast.
+        call bcast(pecent)
+
+        ! Initialize wavefunction state on non-master ranks for their restored walker.
+        ! Rank 0 already called hpsi and set up psi2o/rmino/rvmino inside if(wid) above.
+        ! Ranks 1..nproc-1 received their walker via MPI_Scatter but still need this setup.
+        if (.not. wid) then
+          if(nforce.gt.1) then
+            call setup_force
+          else
+            nwftype=1
+            iwftype(1)=1
+          endif
+
+          do ifr=2,nforce
+            call strech(xold,xstrech,ajacob,ifr,1)
+            call hpsi(xstrech,psido,psijo,ekino,eold(1,ifr),0,ifr)
+            do istate=1,nforce
+              psi2o(istate,ifr)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))+dlog(ajacob)
+            enddo
+          enddo
+
+          if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
+          call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+          do istate=1,nforce
+            psi2o(istate,1)=2*(dlog(dabs(psido(istate)))+psijo(stoj(istate)))
+          enddo
+
+          if(iguiding.gt.0) then
+            call determinant_psig(psido,psijo,psidg)
+            psi2o(1,1)=2*(dlog(dabs(psidg)))
+          endif
+
+          if(node_cutoff.gt.0) then
+            do jel=1,nelec
+              call compute_determinante_grad(jel,psido(1),psido,psijo,vold(1,jel),1)
+            enddo
+            call nodes_distance(vold,distance_node,1)
+            rnorm_nodes=rnorm_nodes_num(distance_node,eps_node_cutoff)/distance_node
+            psi2o(1,1)=psi2o(1,1)+2*dlog(rnorm_nodes)
+          endif
+
+          do i=1,nelec
+            do k=1,3
+              xnew(k,i)=xold(k,i)
+            enddo
+          enddo
+
+          do i=1,nelec
+            rmino(i)=99.d9
+            do j=1,ncent
+              dist=0
+              do k=1,3
+                dist=dist+(xold(k,i)-cent(k,j))**2
+              enddo
+              if(dist.lt.rmino(i)) then
+                rmino(i)=dist
+                nearesto(i)=j
+              endif
+            enddo
+            rmino(i)=dsqrt(rmino(i))
+            do k=1,3
+              rvmino(k,i)=xold(k,i)-cent(k,nearesto(i))
+            enddo
+          enddo
+
+          do istate=1,nstates
+            do ifr=1,nforce
+              esum(istate,ifr)=0
+              wsum(istate,ifr)=0
+            enddo
+            pesum(istate)=0
+            tpbsum(istate)=0
+            tjfsum(istate)=0
+          enddo
+          r2sum=0
+        endif ! .not. wid
 
         end subroutine vmc_restore_hdf5
 end module vmc_restore_hdf5_mod

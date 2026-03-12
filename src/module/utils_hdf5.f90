@@ -88,7 +88,7 @@ module hdf5_utils
         integer(hid_t), intent(out)         :: file_id
         integer                             :: ierr
 
-        ! Initilize HDF5 Fortran
+        ! Initialize HDF5 Fortran module (initializes predefined type constants)
         call h5open_f(ierr)
         if (ierr /= 0) then
             write(errunit,*) "Error: HDF5 library could not be initialized."
@@ -98,7 +98,7 @@ module hdf5_utils
         ! create hdf5 file safely
         call h5fcreate_f(filename, H5F_ACC_TRUNC_F, file_id, ierr)
         if (ierr /= 0) then
-            write(errunit,*) "Error: HDF5 file could not be created."
+            write(errunit,*) "Error: HDF5 file could not be created: ", trim(filename)
             stop
         end if
 
@@ -110,12 +110,13 @@ module hdf5_utils
         !> @param file_id  File id of the opened file
         !> @author  Ravindra Shinde
         !> @email   r.l.shinde@utwente.nl
-
+        use hdf5
+        implicit none
         character(len=*), intent(in)        :: filename
         integer(hid_t), intent(out)         :: file_id
         integer                             :: ierr
 
-        ! Initilize HDF5 Fortran
+        ! Initialize HDF5 Fortran module (initializes predefined type constants)
         call h5open_f(ierr)
         if (ierr /= 0) then
             write(errunit,*) "Error: HDF5 library could not be initialized."
@@ -125,7 +126,7 @@ module hdf5_utils
         ! open file for reading and writing
         call h5fopen_f(filename, H5F_ACC_RDWR_F, file_id, ierr)
         if (ierr /= 0) then
-            write(errunit,*) "Error: HDF5 file could not be opened."
+            write(errunit,*) "Error: HDF5 file could not be opened: ", trim(filename)
             stop
         end if
 
@@ -145,13 +146,10 @@ module hdf5_utils
             write(errunit,*) "Error: HDF5 file could not be closed."
             stop
         end if
-
-        ! close HDF5 Fortran
-        call h5close_f(ierr)
-        if (ierr /= 0) then
-            write(errunit,*) "Error: HDF5 library could not be closed."
-            stop
-        end if
+        ! Note: h5close_f is intentionally NOT called here.
+        ! Calling H5close() while TREXIO or other subsystems have open HDF5 files
+        ! would invalidate their file IDs. The HDF5 library lifetime is managed
+        ! at the program level.
 
     end subroutine hdf5_file_close
 
