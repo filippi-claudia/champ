@@ -1065,7 +1065,7 @@ subroutine parser
 
   ! allocation after determinants and basis
   if (fdf_defined("optwf")) then
-    if ( method .eq. 'linear' ) then
+    if ( method .eq. 'linear' .and. multiple_adiag .gt. 0 ) then
       nwftype = 3
       nforce = 3
     endif
@@ -2045,14 +2045,25 @@ subroutine parser
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
   if (use_qmckl_orbitals.or.use_qmckl_jastrow) then
 
-     if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
+     if (nwftypeorb.gt.1.or.nwftypejas.gt.1) call fatal_error('Error: QMCKL does not yet support multi-wf calculations')
 
      if (nforce.gt.1) then 
-        write(errunit,'(a)') "Warning: QMCKL does not support correlated sampling, so the QMCkl Jastrow will not be used."
-        !use_qmckl_jastrow = .false.
+        if(ioptjas.eq.0.and.ioptorb.eq.0) then
+          write(errunit,'(a)') "Warning: QMCKL does not support correlated sampling, QMCkl will not be used"
+          use_qmckl_jastrow = .false.
+          use_qmckl_orbitals = .false.
+        endif 
+        if(ioptjas.gt.0) then
+          use_qmckl_jastrow = .false.
+          write(errunit,'(a)') "Warning: QMCKL does not support opt with correlated sampling, QMCkl will not be used for Jastrow"
+        endif
+        if(ioptorb.gt.0) then
+          use_qmckl_orbitals = .false.
+          write(errunit,'(a)') "Warning: QMCKL does not support opt with correlated sampling, QMCkl will not be used for orbitals"
+        endif
      end if
      if (nstates.gt.1) then
-        write(errunit,'(a)') "Warning: QMCKL does not support multi-state calculations, QMCkl will not be used."
+        write(errunit,'(a)') "Warning: QMCKL does not support multi-state calculations, QMCkl will not be used"
         use_qmckl_jastrow = .false.
         use_qmckl_orbitals = .false.
      end if
