@@ -189,7 +189,7 @@ subroutine parser
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
       use jastrow_qmckl_mod, only: jastrow_init_qmckl
-      use orbitals_qmckl_mod, only: init_context_qmckl
+      use orbitals_qmckl_mod, only: orbitals_init_qmckl
 #endif
 
   use, intrinsic :: iso_fortran_env, only : iostat_end
@@ -290,11 +290,6 @@ subroutine parser
   integer*8                  :: norb_qmckl(qmckl_no_ctx_max)
   integer, allocatable       :: keep(:)
   character*(1024)           :: err_message = ''
-
-  logical                    :: do_nucl_fitcusp
-  real(dp), allocatable      :: nucl_fitcusp_radius(:)
-  real(dp), parameter        :: a_cusp = 1.74891d0
-  real(dp), parameter        :: b_cusp = 0.126057d0
 #endif
 
 ! Initialize # get the filenames from the commandline arguments
@@ -2118,7 +2113,7 @@ subroutine parser
        call jastrow_init_qmckl(qmckl_no_ctx)
      end if
      if (use_qmckl_orbitals) then
-       call init_context_qmckl(.True.)
+       call orbitals_init_qmckl(.True.)
      end if
 
   else

@@ -282,7 +282,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 return
 end
 
-subroutine init_context_qmckl(update_coef)
+subroutine orbitals_init_qmckl(update_coef)
 
     use qmckl_data
     use slater,  only: norb, coef

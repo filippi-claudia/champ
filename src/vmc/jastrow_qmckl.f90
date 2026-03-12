@@ -4,6 +4,7 @@ contains
 
 subroutine jastrow_init_qmckl(ictx)
 
+    use bparm,   only: nocuspb,nspin2b
     use jastrow, only: norda,nordb,nordc,a4,b,c,scalek
     use jastrow4_mod, only: nterms4
     use precision_kinds, only: dp
@@ -17,9 +18,9 @@ subroutine jastrow_init_qmckl(ictx)
     integer :: i
     integer, intent(in) :: ictx
     integer(qmckl_exit_code) :: rc
-    double precision :: scalek_en(nctype)
     integer*8 :: itypes(ncent)
     integer*8 :: dimc, norda_l, nordb_l
+    real(dp) :: scalek_en(nctype)
     real(dp) :: x(3, nelec)
 
     do i=1,nelec
@@ -27,6 +28,16 @@ subroutine jastrow_init_qmckl(ictx)
         x(2,i) = 0.0d0
         x(3,i) = 0.0d0
     end do
+
+    if(nspin2b.eq.0) then
+      rc = qmckl_set_jastrow_champ_spin_independent(qmckl_ctx(ictx), 0)
+      if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow spin.')
+     elseif(nspin2b.eq.1) then
+      rc = qmckl_set_jastrow_champ_spin_independent(qmckl_ctx(ictx),1)
+      if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow same cusp parallel/antiparallel.')
+     elseif(nspin2b.eq.2) then
+      call fatal_error('QMCkl cannot handle npsin2.eq.2 ')
+    endif
 
     rc = qmckl_set_electron_coord(qmckl_ctx(ictx), 'N', 1_8, x, nelec*3_8)
     if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow x-coords.')
@@ -70,9 +81,6 @@ subroutine jastrow_init_qmckl(ictx)
     scalek_en(:) = scalek(1)
     rc = qmckl_set_jastrow_champ_rescale_factor_en (qmckl_ctx(ictx),scalek_en, nctype*1_8)
     if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow rescale en.')
-
-    rc = qmckl_set_jastrow_champ_spin_independent(qmckl_ctx(ictx), 0)
-    if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow spin.')
 
     rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 53) ! 24
     if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
