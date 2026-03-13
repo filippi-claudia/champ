@@ -214,7 +214,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
-        "-g" "-Wall" "-Wextra"
+        "-g" "-Wall" "-Wextra" "-fPIC"
         "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
         "-Wno-character-truncation" "-Wno-compare-reals"
         "-Wno-function-elimination"
