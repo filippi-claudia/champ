@@ -289,7 +289,6 @@ subroutine parser
   integer*8                  :: ncheck, ictx
   integer*8                  :: norb_qmckl(qmckl_no_ctx_max)
   integer, allocatable       :: keep(:)
-  integer                    :: len_trexio
   character*(1024)           :: err_message = ''
 #endif
 
@@ -583,30 +582,31 @@ subroutine parser
 ! attention please. The following line moved here because next_max was not defined yet.
   nadorb        = fdf_get('nextorb', -1)  ! the default should be next_max
 
+
   ! Filenames parsing
-  file_trexio               = fdf_load_filename('trexio',   'default.hdf5')
-  file_basis                = fdf_load_filename('basis',   'default.bas')
-  file_molecule             = fdf_load_filename('molecule',   'default.xyz')
-  file_determinants         = fdf_load_filename('determinants',  'default.det')
-  file_symmetry             = fdf_load_filename('symmetry',   'default.sym')
-  file_jastrow              = fdf_load_filename('jastrow',   'default.jas')
-  file_jastrow_der          = fdf_load_filename('jastrow_der',   'default.jasder')
-  file_orbitals             = fdf_load_filename('orbitals',   'default.orb')
-  file_exponents            = fdf_load_filename('exponents',   'exponents.exp')
-  file_pseudo               = fdf_load_filename('pseudo',   'default.psp')
+  file_trexio            = fdf_load_filename('trexio',   'default.hdf5')
+  file_basis             = fdf_load_filename('basis',   'default.bas')
+  file_molecule          = fdf_load_filename('molecule',   'default.xyz')
+  file_determinants      = fdf_load_filename('determinants',  'default.det')
+  file_symmetry          = fdf_load_filename('symmetry',   'default.sym')
+  file_jastrow           = fdf_load_filename('jastrow',   'default.jas')
+  file_jastrow_der       = fdf_load_filename('jastrow_der',   'default.jasder')
+  file_orbitals          = fdf_load_filename('orbitals',   'default.orb')
+  file_exponents         = fdf_load_filename('exponents',   'exponents.exp')
+  file_pseudo       = fdf_load_filename('pseudo',   'default.psp')
   file_optorb_mixvirt       = fdf_load_filename('optorb_mixvirt',  'default.mix')
   file_multideterminants    = fdf_load_filename('multideterminants',    'default.mdet')
-  file_forces               = fdf_load_filename('forces',   'default.for')
-  file_eigenvalues          = fdf_load_filename('eigenvalues',   'default.eig')
+  file_forces            = fdf_load_filename('forces',   'default.for')
+  file_eigenvalues     = fdf_load_filename('eigenvalues',   'default.eig')
   file_basis_num_info       = fdf_load_filename('basis_num_info',  'default.bni')
-  file_dmatrix              = fdf_load_filename('dmatrix',   'default.dmat')
+  file_dmatrix      = fdf_load_filename('dmatrix',   'default.dmat')
   file_cavity_spheres       = fdf_load_filename('cavity_spheres',  'default.cav')
   file_gradients_zmatrix    = fdf_load_filename('gradients_zmatrix',    'default.gzmat')
   file_gradients_cartesian  = fdf_load_filename('gradients_cartesian',  'default.gcart')
   file_modify_zmatrix       = fdf_load_filename('modify_zmatrix',  'default.mzmat')
   file_hessian_zmatrix      = fdf_load_filename('hessian_zmatrix',  'default.hzmat')
   file_zmatrix_connection   = fdf_load_filename('zmatrix_connection',   'default.zmcon')
-  file_efield               = fdf_load_filename('efield',   'default.efield')
+  file_efield             = fdf_load_filename('efield',   'default.efield')
   file_lattice              = fdf_load_filename('lattice',              'lattice.txt')
 
   call header_printing()
@@ -672,16 +672,6 @@ subroutine parser
   call elapsed_time ( "Parsing input file and printing headers : " )
   ! Printing header information and common calculation parameters ends here
 
-  if ( fdf_load_defined('trexio') ) then
-#if defined(TREXIO_FOUND)
-    len_trexio=len_trim(file_trexio)
-    if(file_trexio(len_trexio-4:len_trexio).ne.'.hdf5') call fatal_error('INPUT: TREXIO file must terminate in .hdf5')
-#else
-  write(errunit,'(a)') "Error:: Not compiled with TREXIO support but trexio file is present in input file"
-  error stop
-#endif
-  endif
-
 ! Molecular geometry file in .xyz format [#####]
   write(ounit,*)
   write(ounit,'(a)') " System Information :: Geometry : "
@@ -696,6 +686,9 @@ subroutine parser
   elseif ( fdf_load_defined('trexio') ) then
 #if defined(TREXIO_FOUND)
     call read_trexio_molecule_file(file_trexio)
+#else
+  write(errunit,'(a)') "Error:: Not compiled with TREXIO support but trexio file is present in input file"
+  error stop
 #endif
   else
     write(errunit,'(a)') "Error:: No information about molecular coordiates provided."
