@@ -255,6 +255,12 @@ module stats
     !> Unaccepted diffusion coefficient squared.
     real(dp) :: dfus2un
 
+    !> Accepted square displacement.
+    real(dp) :: dr2ac
+
+    !> Unaccepted square displacement.
+    real(dp) :: dr2un
+
     !> Number of accepted moves.
     integer  :: nacc
 
@@ -269,7 +275,7 @@ module stats
 
     private
     public :: rejmax
-    public :: acc, dfus2ac, dfus2un, nacc, nbrnch, nodecr, trymove
+    public :: acc, dfus2ac, dfus2un, dr2ac, dr2un, nacc, nbrnch, nodecr, trymove
     save
 end module stats
 

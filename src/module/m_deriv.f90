@@ -535,6 +535,7 @@ module derivest
    use precision_kinds, only: dp
    use system,  only: ncent_tot
    use force_pth, only: PTH
+   use multiple_geo, only: nforce
 
    implicit none
 
@@ -550,8 +551,12 @@ module derivest
     !> Total averaged forces per center and path, dimension (3, ncent_tot, PTH)
     real(dp), dimension(:,:,:), allocatable :: derivtotave
 
+    !> Total averaged force derivative numerator at previous step, dimension (MFORCE)
+    real(dp), dimension(:), allocatable :: derivtotave_num_old
+
     private
     public :: derivcm2, derivcum, derivsum, derivtotave
+    public :: derivtotave_num_old
     public :: allocate_derivest, deallocate_derivest
     save
 
@@ -565,6 +570,10 @@ contains
         if (.not. allocated(derivcum)) allocate(derivcum(3,3,ncent_tot, PTH))
         if (.not. allocated(derivsum)) allocate(derivsum(3,3,ncent_tot, PTH))
         if (.not. allocated(derivtotave)) allocate(derivtotave(3,ncent_tot, PTH))
+        if (.not. allocated(derivtotave_num_old)) then
+            allocate(derivtotave_num_old(nforce))
+            derivtotave_num_old = 0.0_dp
+        end if
     end subroutine allocate_derivest
 
     !> Deallocates memory for DMC derivative estimator arrays.
@@ -573,6 +582,7 @@ contains
         if (allocated(derivcum)) deallocate(derivcum)
         if (allocated(derivsum)) deallocate(derivsum)
         if (allocated(derivtotave)) deallocate(derivtotave)
+        if (allocated(derivtotave_num_old)) deallocate(derivtotave_num_old)
     end subroutine deallocate_derivest
  end module derivest
 

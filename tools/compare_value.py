@@ -4,8 +4,7 @@ import argparse
 import math
 
 def read_file(filename):
-    f = open(filename)
-    # data = itertools.ifilter(predicate, f)
+    f = open(filename, errors='replace')
     data = f.readlines()
     f.close()
     return data

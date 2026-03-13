@@ -84,7 +84,7 @@ link_libraries(${LINEAR_ALGEBRA})
 
 # Find HDF5 library
 if (ENABLE_TREXIO)
-find_package(HDF5 QUIET)
+find_package(HDF5 QUIET COMPONENTS Fortran)
 if (HDF5_FOUND)
   message(STATUS "Is HDF5 library found            :: " ${HDF5_VERSION})
   message(STATUS "Is HDF5 library parallel         :: " ${HDF5_IS_PARALLEL})
@@ -198,7 +198,7 @@ endif()
 # List of Fortran flags for Fujitsu compiler begins here
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
   message(STATUS "Fujitsu compiler detected :: ")
-  list(APPEND Fortran_FLAGS "-O3" "-Cpp" "-Nalloc_assign" "-Fwide" "-fs" "-Kopenmp" "-Kparallel" "-Kfast" "-mcmodel=large" )
+  list(APPEND Fortran_FLAGS "-O3" "-Cpp" "-Nalloc_assign" "-Fwide" "-fs" "-Kopenmp" "-Kparallel" "-Kfast" "" )
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if (TREXIO_FOUND)
@@ -209,12 +209,12 @@ endif()
 
 # List of Fortran flags for GNU compiler begins here
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-none")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-ffree-line-length-none")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
     list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
-        "-g" "-Wall" "-Wextra"
+        "-g" "-Wall" "-Wextra" "-fPIC"
         "-Wno-unused" "-Wno-conversion" "-Wno-unused-dummy-argument"
         "-Wno-character-truncation" "-Wno-compare-reals"
         "-Wno-function-elimination"
@@ -280,7 +280,7 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "IntelLLVM")
 #List of Fortran flags for LLVM "classic" Flang based compiler begins here
 	#This include flang and aocc-flang and shouldn't be confused with flang-new (LLVMFlang in cmake)
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Flang")
-  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "")
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if (TREXIO_FOUND)
