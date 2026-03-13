@@ -273,7 +273,7 @@ subroutine parser
   real(dp), allocatable       :: anorm(:) ! dimensions = nbasis
 
 ! local counter variables
-  integer                    :: i,j,k, n, iostat
+  integer                    :: i,j,k, n, iostat, dot_pos
   integer                    :: ic, iwft, istate, imax
   type(atom_t)               :: atoms
   real(dp)                   :: acsfmax,acsfnow
@@ -2076,8 +2076,16 @@ subroutine parser
 
      if(ioptorb.gt.0.and.use_qmckl_orbitals) then
 
-       file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
-       if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
+       ! Find the last '.' in the filename to identify the extension
+       dot_pos = scan(file_trexio, '.', back=.true.)
+
+       if (dot_pos > 0) then
+           file_trexio_new = file_trexio(1:dot_pos-1) // '_orbchanged' // file_trexio(dot_pos:)
+       else
+           file_trexio_new = trim(file_trexio) // '_orbchanged'
+       endif
+
+       if ((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
            file_trexio_path = pooldir // file_trexio_new(7:)
        else
            file_trexio_path = file_trexio_new
