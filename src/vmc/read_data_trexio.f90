@@ -286,8 +286,10 @@ module trexio_read_data
         if (wid) then
             trex_orbitals_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
-            rc = trexio_read_mo_num(trex_orbitals_file, norb_tot)
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num', __FILE__, __LINE__)
+            if (.not. build_only_basis) then
+                rc = trexio_read_mo_num(trex_orbitals_file, norb_tot)
+                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num', __FILE__, __LINE__)
+            endif
             rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_num(trex_orbitals_file, basis_num_shell)
@@ -339,11 +341,13 @@ module trexio_read_data
         endif
 
         ! Make a copy of orbital coeffs for multiple states
-        if( (method == 'sr_n') .and. (nstates .gt. 1)) then
-            do i=2,nstates
-              coef(:,:,i)=coef(:,:,1)
-            enddo
-        endif
+        if (.not. build_only_basis) then
+            if( (method == 'sr_n') .and. (nstates .gt. 1)) then
+                do i=2,nstates
+                    coef(:,:,i)=coef(:,:,1)
+                enddo
+            endif
+        endif    
 
 !   Generate the basis information (which radial to be read for which Slm)
         if (wid) then
