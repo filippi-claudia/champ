@@ -77,6 +77,8 @@ contains
   !>
   !> @note Called from vmc/main.f90 after reading input files and before VMC equilibration.
   subroutine allocate_vmc()
+    use denupdn, only: allocate_denupdn
+    use step,    only: allocate_step
     call allocate_m_common()
     call allocate_m_basis
     call allocate_m_control
@@ -100,6 +102,8 @@ contains
     call allocate_m_sampling
     call allocate_m_sr
     call allocate_m_state_avrg
+    call allocate_step()
+    call allocate_denupdn()
   end subroutine allocate_vmc
 
   !> Deallocates memory for all VMC calculation arrays and data structures.
@@ -133,6 +137,8 @@ contains
   !>
   !> @note Called at the end of VMC run in vmc/main.f90 or before switching to DMC mode.
   subroutine deallocate_vmc()
+    use denupdn, only: deallocate_denupdn
+    use step,    only: deallocate_step
     call deallocate_m_common
     call deallocate_m_basis
     call deallocate_m_control
@@ -157,6 +163,8 @@ contains
     call deallocate_m_sampling
     call deallocate_m_sr
     call deallocate_m_state_avrg
+    call deallocate_step()
+    call deallocate_denupdn()
   end subroutine deallocate_vmc
 
   !> Allocates memory for DMC (Diffusion Monte Carlo) calculation arrays and data structures.
@@ -187,12 +195,14 @@ contains
     use c_averages_index, only: allocate_c_averages_index
     use config,  only: allocate_config_dmc
     use contrldmc, only: allocate_contrldmc
+    use denupdn, only: allocate_denupdn
     use derivest, only: allocate_derivest
     use est2cm,  only: allocate_est2cm_dmc
     use estcum,  only: allocate_estcum_dmc
     use estsum,  only: allocate_estsum_dmc
     use fragments, only: allocate_fragments, nfrag
     use jacobsave, only: allocate_jacobsave
+    use step,    only: allocate_step
     use velratio, only: allocate_velratio
     use vd_mod, only: allocate_da_branch
     use pathak_mod, only: allocate_pathak
@@ -206,6 +216,8 @@ contains
     call allocate_estcum_dmc()
     call allocate_est2cm_dmc()
     call allocate_derivest()
+    call allocate_step()
+    call allocate_denupdn()
     call allocate_branch()
     call allocate_c_averages()
     call allocate_c_averages_index()
@@ -245,12 +257,14 @@ contains
     use c_averages_index, only: deallocate_c_averages_index
     use config,  only: deallocate_config_dmc
     use contrldmc, only: deallocate_contrldmc
+    use denupdn, only: deallocate_denupdn
     use derivest, only: deallocate_derivest
     use est2cm,  only: deallocate_est2cm_dmc
     use estcum,  only: deallocate_estcum_dmc
     use estsum,  only: deallocate_estsum_dmc
     use fragments,  only: deallocate_fragments
     use jacobsave, only: deallocate_jacobsave
+    use step,    only: deallocate_step
     use velratio, only: deallocate_velratio
     use vd_mod, only: deallocate_da_branch
     use pathak_mod, only: deallocate_pathak
@@ -262,6 +276,8 @@ contains
     call deallocate_estcum_dmc()
     call deallocate_est2cm_dmc()
     call deallocate_derivest()
+    call deallocate_step()
+    call deallocate_denupdn()
     call deallocate_branch()
     call deallocate_c_averages()
     call deallocate_c_averages_index()

@@ -432,12 +432,14 @@ module vmc_restore_hdf5_mod
         call hdf5_read(file_id, group_id, "ecum1s", ecum1s(1:nstates))
         call hdf5_read(file_id, group_id, "ecm21s", ecm21s(1:nstates))
 
-        call hdf5_read(file_id, group_id, "try", try(1:nrad))
-        call hdf5_read(file_id, group_id, "suc", suc(1:nrad))
-        call hdf5_read(file_id, group_id, "trunfb", trunfb(1:nrad))
-        call hdf5_read(file_id, group_id, "rprob", rprob(1:nrad))
-        call hdf5_read(file_id, group_id, "ekin", ekin(1:nrad))
-        call hdf5_read(file_id, group_id, "ekin2", ekin2(1:nrad))
+        if (nrad > 0 .and. allocated(rprob)) then
+            call hdf5_read(file_id, group_id, "try", try(1:nrad))
+            call hdf5_read(file_id, group_id, "suc", suc(1:nrad))
+            call hdf5_read(file_id, group_id, "trunfb", trunfb(1:nrad))
+            call hdf5_read(file_id, group_id, "rprob", rprob(1:nrad))
+            call hdf5_read(file_id, group_id, "ekin", ekin(1:nrad))
+            call hdf5_read(file_id, group_id, "ekin2", ekin2(1:nrad))
+        end if
         call hdf5_read(file_id, group_id, "rejmax", rejmax)
         call hdf5_group_close(group_id)
         write(ounit, *) " HDF5 Group read :: VMC "

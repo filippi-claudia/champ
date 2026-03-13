@@ -342,11 +342,14 @@
         call hdf5_write(file_id, group_id, "fgcm2", fgcm2(1:nforce))
         call hdf5_write(file_id, group_id, "derivcum", derivcum)
         call hdf5_write(file_id, group_id, "derivcm2", derivcm2)
-        call hdf5_write(file_id, group_id, "derivtotave_num_old", derivtotave_num_old(1:nforce))
+        if (allocated(derivtotave_num_old)) &
+            call hdf5_write(file_id, group_id, "derivtotave_num_old", derivtotave_num_old(1:nforce))
 
-        call hdf5_write(file_id, group_id, "rprobbynproc", rprob(1:nrad))
-        call hdf5_write(file_id, group_id, "rprobup", rprobup(1:nrad))
-        call hdf5_write(file_id, group_id, "rprobdn", rprobdn(1:nrad))
+        if (nrad > 0 .and. allocated(rprob)) then
+            call hdf5_write(file_id, group_id, "rprobbynproc", rprob(1:nrad))
+            call hdf5_write(file_id, group_id, "rprobup", rprobup(1:nrad))
+            call hdf5_write(file_id, group_id, "rprobdn", rprobdn(1:nrad))
+        end if
         call hdf5_write(file_id, group_id, "dfus2ac", dfus2ac)
         call hdf5_write(file_id, group_id, "dfus2un", dfus2un)
         call hdf5_write(file_id, group_id, "dr2ac", dr2ac)
