@@ -315,6 +315,8 @@ module trexio_read_data
                nstoo(i)=1
                otos(i,1)=i
             enddo
+            if(nwftypeorb.eq.1) extrao = 0
+
         else
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
         endif
