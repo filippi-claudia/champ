@@ -22,6 +22,7 @@ jobs:
 
     - name: Install Cmake and HDF5
       run: |
+        sudo apt-get update
         sudo apt install -y cmake
         sudo apt install -y libhdf5-serial-dev
 
