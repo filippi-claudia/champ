@@ -1750,6 +1750,8 @@ subroutine parser
     if (.not. allocated(isr_lambda)) allocate (isr_lambda(MSTATES*(MSTATES-1)/2))
     if (.not. allocated(sr_lambda)) allocate (sr_lambda(MSTATES,MSTATES))
 
+    sr_lambda = 0.0d0       ! To prevent garbage filled initial values
+
     if ( fdf_islreal('sr_lambda') .and. fdf_islist('sr_lambda') &
         .and. (.not. fdf_islinteger('sr_lambda')) ) then
       i = -1

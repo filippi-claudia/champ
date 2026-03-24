@@ -209,7 +209,11 @@ endif()
 
 # List of Fortran flags for GNU compiler begins here
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-none")
+  if(APPLE AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64")
+    list(APPEND Fortran_FLAGS "-O2" "-cpp" "-ffree-line-length-none")
+  else()
+    list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-none")
+  endif()
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
