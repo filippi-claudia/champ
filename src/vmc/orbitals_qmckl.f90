@@ -282,7 +282,7 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
 return
 end
 
-subroutine init_context_qmckl(update_coef)
+subroutine orbitals_init_qmckl(update_coef)
 
     use qmckl_data
     use slater,  only: norb, coef
@@ -334,12 +334,12 @@ subroutine init_context_qmckl(update_coef)
         write(ounit,int_format) "QMCkl number mo found", n8
         if(n8.ne.norb_tot) call fatal_error('INPUT: QMCkl getting wrong number of orbitals')
         
+! overwrite coef if loaded from a file (otherwise, the same trexio coef are passed to QMCkl)
        if (update_coef) then
           rc = qmckl_set_mo_basis_coefficient(qmckl_ctx(ictx), coef(:,:, 1), nbasis*norb_tot*1_8)
           if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl setting orbital coefficients')
        end if
     enddo
-
 
     n8 = norb_tot*1_8
 

@@ -87,6 +87,7 @@ module trexio_read_data
 
         !   External file reading
 
+        if (allocated(file_trexio_path)) deallocate(file_trexio_path)
         if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
             file_trexio_path = pooldir // file_trexio(7:)
         else
@@ -125,7 +126,7 @@ module trexio_read_data
         if (wid) then
         rc = trexio_read_nucleus_coord(trex_molecule_file, cent)
         call trexio_assert(rc, TREXIO_SUCCESS)
-        rc = trexio_read_nucleus_label(trex_molecule_file, symbol, 3)
+        rc = trexio_read_nucleus_label(trex_molecule_file, symbol, 2)
         call trexio_assert(rc, TREXIO_SUCCESS)
         rc = trexio_close(trex_molecule_file)
         call trexio_assert(rc, TREXIO_SUCCESS)
@@ -138,13 +139,13 @@ module trexio_read_data
         write(ounit,*)
 
         ! Count unique type of elements
-        nctype = 1
-        unique(1) = symbol(1)
-        do j= 2, ncent
-            if (any(unique == symbol(j) ))  cycle
-            nctype = nctype + 1
-            unique(nctype) = symbol(j)
-        enddo
+        nctype = 0
+        do j = 1, ncent
+            if (.not. any(symbol(1:j-1) == symbol(j))) then
+                nctype = nctype + 1
+                unique(nctype) = symbol(j)
+            end if
+        end do
 
         write(ounit,fmt=int_format) " Number of distinct types of elements (nctype) :: ", nctype
         write(ounit,*)
@@ -286,8 +287,10 @@ module trexio_read_data
         if (wid) then
             trex_orbitals_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
-            rc = trexio_read_mo_num(trex_orbitals_file, norb_tot)
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num', __FILE__, __LINE__)
+            if (.not. build_only_basis) then
+                rc = trexio_read_mo_num(trex_orbitals_file, norb_tot)
+                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num', __FILE__, __LINE__)
+            endif
             rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_num(trex_orbitals_file, basis_num_shell)
@@ -315,6 +318,7 @@ module trexio_read_data
                nstoo(i)=1
                otos(i,1)=i
             enddo
+            if(nwftypeorb.eq.1) extrao = 0
         else
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
         endif
@@ -339,10 +343,12 @@ module trexio_read_data
         endif
 
         ! Make a copy of orbital coeffs for multiple states
-        if( (method == 'sr_n') .and. (nstates .gt. 1)) then
-            do i=2,nstates
-              coef(:,:,i)=coef(:,:,1)
-            enddo
+        if (.not. build_only_basis) then
+            if( (method == 'sr_n') .and. (nstates .gt. 1)) then
+                do i=2,nstates
+                  coef(:,:,i)=coef(:,:,1)
+                enddo
+            endif
         endif
 
 !   Generate the basis information (which radial to be read for which Slm)
@@ -925,17 +931,15 @@ module trexio_read_data
         if (.not. allocated(unique_atom_index)) allocate(unique_atom_index(nctype_tot))
 
 
-        tcount1 = 1; tcount2 = 1
-        unique_atom_index(1) = 1
-        unique(1) = symbol(1)
-        do j= 2, ncent_tot
-            if (any(unique == symbol(j) ))  then
-                cycle
-            endif
-            tcount1 = tcount1 + 1
-            unique_atom_index(tcount1) = j
-            unique(tcount1) = symbol(j)
-        enddo
+        tcount1 = 0
+        tcount2 = 1
+        do j = 1, ncent_tot
+            if (.not. any(symbol(1:j-1) == symbol(j))) then
+                tcount1 = tcount1 + 1
+                unique_atom_index(tcount1) = j
+                unique(tcount1) = symbol(j)
+            end if
+        end do
 
         ! start putting in the information in the arrays and variables
         gridtype=3
@@ -1554,17 +1558,14 @@ module trexio_read_data
         if (.not. allocated(unique_atom_index)) allocate(unique_atom_index(nctype_tot))
 
 
-        tcount1 = 1
-        unique_atom_index(1) = 1
-        unique(1) = symbol(1)
-        do j= 2, ncent_tot
-            if (any(unique == symbol(j) ))  then
-                cycle
-            endif
-            tcount1 = tcount1 + 1
-            unique_atom_index(tcount1) = j
-            unique(tcount1) = symbol(j)
-        enddo
+        tcount1 = 0
+        do j = 1, ncent_tot
+            if (.not. any(symbol(1:j-1) == symbol(j))) then
+                tcount1 = tcount1 + 1
+                unique_atom_index(tcount1) = j
+                unique(tcount1) = symbol(j)
+            end if
+        end do
 
         if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
         call allocate_gauss_ecp()

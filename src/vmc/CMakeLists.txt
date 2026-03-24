@@ -421,6 +421,23 @@ IF(UNIT_TESTS)
     "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
     )
 
+  if (TREXIO_FOUND)
+    target_link_libraries(vmc
+      PRIVATE
+      pspline
+      parser
+      ${LINEAR_ALGEBRA}
+      ${TREXIO_LIBRARY}
+      MPI::MPI_Fortran)
+  else()
+    target_link_libraries(vmc
+      PRIVATE
+      pspline
+      parser
+      ${LINEAR_ALGEBRA}
+      ${CUDA_LIBRARIES}
+      MPI::MPI_Fortran)
+  endif()
 ENDIF()
 
   #  Add headers

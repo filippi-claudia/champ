@@ -189,7 +189,7 @@ subroutine parser
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
       use jastrow_qmckl_mod, only: jastrow_init_qmckl
-      use orbitals_qmckl_mod, only: init_context_qmckl
+      use orbitals_qmckl_mod, only: orbitals_init_qmckl
 #endif
 
   use, intrinsic :: iso_fortran_env, only : iostat_end
@@ -273,7 +273,7 @@ subroutine parser
   real(dp), allocatable       :: anorm(:) ! dimensions = nbasis
 
 ! local counter variables
-  integer                    :: i,j,k, n, iostat
+  integer                    :: i,j,k, n, iostat, dot_pos
   integer                    :: ic, iwft, istate, imax
   type(atom_t)               :: atoms
   real(dp)                   :: acsfmax,acsfnow
@@ -290,11 +290,6 @@ subroutine parser
   integer*8                  :: norb_qmckl(qmckl_no_ctx_max)
   integer, allocatable       :: keep(:)
   character*(1024)           :: err_message = ''
-
-  logical                    :: do_nucl_fitcusp
-  real(dp), allocatable      :: nucl_fitcusp_radius(:)
-  real(dp), parameter        :: a_cusp = 1.74891d0
-  real(dp), parameter        :: b_cusp = 0.126057d0
 #endif
 
 ! Initialize # get the filenames from the commandline arguments
@@ -1065,7 +1060,7 @@ subroutine parser
 
   ! allocation after determinants and basis
   if (fdf_defined("optwf")) then
-    if ( method .eq. 'linear' ) then
+    if ( method .eq. 'linear' .and. multiple_adiag .gt. 0 ) then
       nwftype = 3
       nforce = 3
     endif
@@ -1755,6 +1750,8 @@ subroutine parser
     if (.not. allocated(isr_lambda)) allocate (isr_lambda(MSTATES*(MSTATES-1)/2))
     if (.not. allocated(sr_lambda)) allocate (sr_lambda(MSTATES,MSTATES))
 
+    sr_lambda = 0.0d0       ! To prevent garbage filled initial values
+
     if ( fdf_islreal('sr_lambda') .and. fdf_islist('sr_lambda') &
         .and. (.not. fdf_islinteger('sr_lambda')) ) then
       i = -1
@@ -2045,14 +2042,25 @@ subroutine parser
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
   if (use_qmckl_orbitals.or.use_qmckl_jastrow) then
 
-     if (nwftypeorb.gt.1) call fatal_error('Error: QMCKL does not yet support multi-orbital calculations. ')
+     if (nwftypeorb.gt.1.or.nwftypejas.gt.1) call fatal_error('Error: QMCKL does not yet support multi-wf calculations')
 
      if (nforce.gt.1) then 
-        write(errunit,'(a)') "Warning: QMCKL does not support correlated sampling, so the QMCkl Jastrow will not be used."
-        !use_qmckl_jastrow = .false.
+        if(ioptjas.eq.0.and.ioptorb.eq.0) then
+          write(errunit,'(a)') "Warning: QMCKL does not support correlated sampling, QMCkl will not be used"
+          use_qmckl_jastrow = .false.
+          use_qmckl_orbitals = .false.
+        endif 
+        if(ioptjas.gt.0) then
+          use_qmckl_jastrow = .false.
+          write(errunit,'(a)') "Warning: QMCKL does not support opt with correlated sampling, QMCkl will not be used for Jastrow"
+        endif
+        if(ioptorb.gt.0) then
+          use_qmckl_orbitals = .false.
+          write(errunit,'(a)') "Warning: QMCKL does not support opt with correlated sampling, QMCkl will not be used for orbitals"
+        endif
      end if
      if (nstates.gt.1) then
-        write(errunit,'(a)') "Warning: QMCKL does not support multi-state calculations, QMCkl will not be used."
+        write(errunit,'(a)') "Warning: QMCKL does not support multi-state calculations, QMCkl will not be used"
         use_qmckl_jastrow = .false.
         use_qmckl_orbitals = .false.
      end if
@@ -2070,8 +2078,16 @@ subroutine parser
 
      if(ioptorb.gt.0.and.use_qmckl_orbitals) then
 
-       file_trexio_new = file_trexio(1:index(file_trexio,'.hdf5')-1)//'_orbchanged.hdf5'
-       if((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
+       ! Find the last '.' in the filename to identify the extension
+       dot_pos = scan(file_trexio, '.', back=.true.)
+
+       if (dot_pos > 0) then
+           file_trexio_new = file_trexio(1:dot_pos-1) // '_orbchanged' // file_trexio(dot_pos:)
+       else
+           file_trexio_new = trim(file_trexio) // '_orbchanged'
+       endif
+
+       if ((file_trexio_new(1:6) == '$pool/') .or. (file_trexio_new(1:6) == '$POOL/')) then
            file_trexio_path = pooldir // file_trexio_new(7:)
        else
            file_trexio_path = file_trexio_new
@@ -2107,7 +2123,7 @@ subroutine parser
        call jastrow_init_qmckl(qmckl_no_ctx)
      end if
      if (use_qmckl_orbitals) then
-       call init_context_qmckl(.True.)
+       call orbitals_init_qmckl(.True.)
      end if
 
   else

@@ -24,7 +24,7 @@ contains
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
       use trexio_read_data, only: update_trexio_orbitals, jastrow_update_qmckl
-      use orbitals_qmckl_mod, only: init_context_qmckl
+      use orbitals_qmckl_mod, only: orbitals_init_qmckl
       use jastrow_qmckl_mod, only: jastrow_init_qmckl
 #endif
 
@@ -36,7 +36,7 @@ contains
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       if(ioptorb.ne.0.and.use_qmckl_orbitals) then
         call update_trexio_orbitals
-        call init_context_qmckl(.False.)
+        call orbitals_init_qmckl(.False.)
       endif
       if(ioptjas.ne.0.and.use_qmckl_jastrow) then
         call jastrow_update_qmckl(qmckl_no_ctx)
