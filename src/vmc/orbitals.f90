@@ -57,7 +57,7 @@ contains
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       end if ! use_qmckl_orbitals
 #endif
-
+      
       if(iforce_analy.eq.1) call da_orbitals
 
       if(ipr.ge.0) then
@@ -105,9 +105,9 @@ contains
       integer :: ibasis, i, ic, ielec, j, k
       integer :: l, m, n
 
-      real(dp), dimension(3*nelec,nbasis) :: tphin
-      real(dp), dimension(3*3*nelec,nbasis) :: t2phin_all
-      real(dp), dimension(3*nelec,nbasis) :: t3phin
+      real(dp), allocatable :: tphin(:,:)
+      real(dp), allocatable :: t2phin_all(:,:)
+      real(dp), allocatable :: t3phin(:,:)
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
 
@@ -157,7 +157,9 @@ contains
 
       else
 #endif
-      
+     allocate(tphin(3*nelec, nbasis))
+     allocate(t2phin_all(9*nelec, nbasis))
+     allocate(t3phin(3*nelec, nbasis))
 
       do ibasis=1,nbasis
        i=0
@@ -183,6 +185,8 @@ contains
         call dgemm('n','n',  n,norb,k,-1.d0,t3phin(1,j)    ,  m,coef(j,1,iwf),nbasis,0.d0,da_d2orb(1,1,1,ic) ,  m)
         call dgemm('n','n',3*n,norb,k,-1.d0,t2phin_all(1,j),3*m,coef(j,1,iwf),nbasis,0.d0,da_dorb(1,1,1,1,ic),3*m)
       enddo
+
+      deallocate(tphin, t2phin_all, t3phin)
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       end if ! use_qmckl_orbitals
 #endif
