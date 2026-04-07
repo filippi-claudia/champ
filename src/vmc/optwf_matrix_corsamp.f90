@@ -181,7 +181,7 @@ contains
          write(ounit,'(''old energy'',2f12.5)') energy_sav,energy_err_sav
          write(ounit,'(''new energy'',2f12.5)') energy(1),energy_err(1)
          write(ounit,'(/,''Energy is worse, increase adiag to'',1pd11.4)') add_diag(1)
-         call restore_wf(1)
+         call restore_wf(1,1)
          call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(1),energy_sav,energy_err_sav)
          call compute_parameters(grad,iflag,1)
@@ -234,7 +234,7 @@ contains
       call compute_parameters(grad,iflag,1)
       if(iflag.ne.0) then
         write(ounit,'(''Warning: add_diag_1 has problems with a2 and/or b2'')')
-        call restore_wf(1)
+        call restore_wf(1,1)
         add_diag(1)=10*add_diag(1)
         write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
         go to 6
@@ -251,7 +251,7 @@ contains
 ! add_diag=add_diag*10
         add_diag(iadiag)=10**(iadiag-1)*add_diag(1)
 
-        call restore_wf(iadiag)
+        call restore_wf(iadiag,1)
         write(ounit,'(/,''Compute parameters '',i1,/)') iadiag
       10   call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(iadiag),energy_sav,energy_err_sav)
@@ -316,7 +316,7 @@ contains
          write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
          write(ounit,'(''generate again parameters for correlated sampling'')')
 
-         call restore_wf(1)
+         call restore_wf(1,1)
 ! In case starting config is very bad, reset configuration by calling sites
          vmc_isite=1
          call reset_configs_start
@@ -354,7 +354,7 @@ contains
          write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
          write(ounit,'(''generate again parameters for correlated sampling'')')
 
-         call restore_wf(1)
+         call restore_wf(1,1)
 ! In case starting config is very bad, reset configuration by calling sites
          vmc_isite=1
          call reset_configs_start
@@ -367,7 +367,7 @@ contains
 ! Find optimal a_diag
        call quad_min
 
-       call restore_wf(1)
+       call restore_wf(1,1)
 
       7  call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(1),energy_sav,energy_err_sav)
@@ -377,7 +377,7 @@ contains
         write(ounit,'(''Warning: adiag_optimal has dparm_norm>1'')')
         add_diag(1)=200*add_diag(1)
         write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
-        call restore_wf(1)
+        call restore_wf(1,1)
         go to 7
        endif
 
@@ -391,7 +391,7 @@ contains
          write(ounit,'(''Warning: adiag_optimal has problems'')')
          add_diag(1)=200*add_diag(1)
          write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
-         call restore_wf(1)
+         call restore_wf(1,1)
          go to 7
        endif
 
@@ -453,7 +453,7 @@ contains
 
             call set_nparms
 
-            call restore_wf(1)
+            call restore_wf(1,1)
             call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(1),energy_sav,energy_err_sav)
             call compute_parameters(grad,iflag,1)

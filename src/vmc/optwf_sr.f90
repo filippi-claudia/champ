@@ -12,29 +12,29 @@
 
 module optwf_sr_mod
 
-    use precision_kinds, only: dp
-    use optwf_control, only: ioptci, ioptjas, ioptorb
-    use m_force_analytic, only: iforce_analy
-!    use contrl, only: nblk_max
     use control_vmc, only: vmc_nblk_max
+    use contrl_file, only: ounit
+    use error, only: fatal_error
+    use mpitimer, only: elapsed_time
+    use m_force_analytic, only: iforce_analy
+    use m_force_analytic, only: allocate_force_fin, deallocate_force_fin
+    use optgeo_lib, only: write_geometry, compute_positions
+    use optwf_control, only: ioptci, ioptjas, ioptorb, iroot_geo
     use optwf_control, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
     use optwf_control, only: sr_tau , sr_adiag, sr_eps
-    use orbval, only: nadorb
-    use contrl_file,    only: ounit
-    use mpitimer,    only: elapsed_time
-    use error, only: fatal_error
     use optwf_handle_wf, only : set_nparms_tot, save_nparms, test_solution_parm
-    use optwf_handle_wf, only : compute_parameters, write_wf, save_wf
-    use optwf_handle_wf, only : set_nparms
-    use optgeo_lib, only: write_geometry, compute_positions
+    use optwf_handle_wf, only : compute_parameters, restore_wf, write_wf, save_wf
+    use optwf_handle_wf, only : copy_jastrow, select_ci_root, set_nparms
+    use orbval, only: nadorb
+    use precision_kinds, only: dp
     use sr_mod, only: izvzb, i_sr_rescale
 
-    real(dp) :: omega0
-    integer :: n_omegaf, n_omegat
-    integer ::  i_func_omega
     real(dp) :: sr_adiag_sav
+    real(dp) :: omega0
+    integer ::  i_func_omega, n_omegaf, n_omegat
 
-    integer :: ioptjas_sav, ioptorb_sav, ioptci_sav, iforce_analy_sav
+    integer :: iforce_analy_sav, iguiding_sav
+    integer :: ioptjas_sav, ioptorb_sav, ioptci_sav
     real(dp), dimension(:,:), allocatable :: deltap
 
     private
@@ -70,39 +70,64 @@ contains
 
     subroutine optwf_sr
 
-        use sr_mod, only: mparm
-        use sr_mat_n, only: sr_lambda, h_sr, sr_state, ortho 
-        use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
-        use mstates_mod, only: MSTATES
-        use optwf_corsam, only: energy, energy_err, sigma
-        use optwf_func, only: ifunc_omega, omega0, omega, n_omegaf, n_omegat, omega_hes
-        !use contrl, only: nblk
-        use control_vmc, only: vmc_nblk
-        use m_force_analytic, only: alfgeo
-        use optwf_control, only: nparm
-        use optwf_control, only: method
-        use orbval, only: nadorb
         use control, only: mode
         use control_dmc, only: dmc_nblk
-        use contrl_file,    only: ounit
-
+        use control_vmc, only: vmc_nblk
         use csfs, only: nstates
+        use inputflags, only: node_cutoff
+        use m_force_analytic, only: alfgeo
+        use mstates_ctrl, only: iguiding, iefficiency
+        use mstates_mod, only: MSTATES
+        use optwf_func, only: ifunc_omega, omega0, omega, n_omegaf, n_omegat, omega_hes
+        use optwf_control, only: method, nparm
+        use optwf_control, only: ioptci, ioptjas, ioptorb
+        use optwf_corsam, only: energy, energy_err, sigma
+        use vmc_mod, only: stoo, stoj, stobjx, nbjx, nwftypeorb, nwftypejas, bjxtoo, bjxtoj
+        use sr_mod, only: mparm
+        use sr_mat_n, only: sr_lambda, h_sr, sr_state, ortho 
 
         implicit none
 
         real(dp) :: adiag, denergy, alpha_omega, denergy_err, dparm_norm
-        real(dp) :: energy_sav, energy_err_sav, sigma_sav, nadorb_sav
-        integer :: i, iflag, iter, miter, istate, jstate
-        integer :: iflagin
+        real(dp) :: energy_sav, energy_err_sav, sigma_sav, sr_adiag_sav
+        integer :: i, iefficiency_sav, iforce_analy_sav, iflag, ioptjas_sav, ioptorb_sav, ioptci_sav
+        integer :: iter, miter, nbjx_sav, nwftypeorb_sav, nwftypejas_sav, node_cutoff_sav, istate, jstate
+        integer :: stoo_sav, stoj_sav, stobjx_sav, bjxtoo_sav, bjxtoj_sav
+        integer :: iflagin, nadorb_sav, nblk_sav, nstates_sav
+
+        if (method .ne. 'sr_n') return
+
+        allocate (deltap(mparm,MSTATES))
 
         sigma_sav = 0.0
         energy_sav= 0.0
-        !allocate (deltap(mparm*MSTATES))
-        allocate (deltap(mparm,MSTATES))
 
+! for geo optimization
+        sr_adiag_sav=sr_adiag
+        nblk_sav=vmc_nblk
+
+        nstates_sav=nstates
+        nbjx_sav=nbjx
+        nwftypeorb_sav=nwftypeorb
+        nwftypejas_sav=nwftypejas
+        stoj_sav=stoj(1)
+        stoo_sav=stoo(1)
+        stobjx_sav=stobjx(1)
+        bjxtoo_sav=bjxtoo(1)
+        bjxtoj_sav=bjxtoj(1)
+
+        iguiding_sav=iguiding
+        iefficiency_sav=iefficiency
+
+        iforce_analy_sav=iforce_analy
+        node_cutoff_sav=node_cutoff
+
+        ioptjas_sav=ioptjas
+        ioptorb_sav=ioptorb
+        ioptci_sav=ioptci
+
+! from before
         nadorb_sav = nadorb
-
-        if (method .ne. 'sr_n') return
 
         call set_nparms_tot
 
@@ -132,11 +157,15 @@ contains
 
         call write_geometry(0)
 
+! from mix - unclear why there was a save_ci_best
+        call save_wf
+
         ! do iteration
         do iter = 1, nopt_iter
             write (ounit, '(/,''Optimization iteration'',i5,'' of'',i5)') iter, nopt_iter
 
             iforce_analy = 0
+            if(nstates.gt.1.and.iguiding.gt.0) node_cutoff = 0 
 
             if (ifunc_omega .gt. 0) then
                 omega_hes = energy_sav
@@ -157,7 +186,11 @@ contains
 
                 if (micro_iter_sr .gt. 1) write (ounit, '(/,''Micro iteration'',i5,'' of'',i5)') miter, micro_iter_sr
 
-                if (miter .eq. micro_iter_sr) iforce_analy = iforce_analy_sav
+! Does it still work?
+                if (nstates.eq.1.and.miter.eq.micro_iter_sr) then
+                   iforce_analy = iforce_analy_sav
+                   if(node_cutoff_sav.gt.0) node_cutoff = node_cutoff_sav
+                endif
 
                 call qmc
 
@@ -183,6 +216,7 @@ contains
                     write (ounit, '(''Norm of parm variation '',d12.5)') dparm_norm
                     if (iflag .ne. 0) iflagin = 1
                 enddo
+                call elapsed_time("CG micro iteration", miter)
 
                 !call print_gradients(nparm, deltap)
 
@@ -203,18 +237,18 @@ contains
                   call compute_parameters(deltap(:,sr_state), iflag, 1)
                   if(iflag.ne.0) call fatal_error('OPTWF: jastrow opt has problems')
                 enddo
+
                 call write_wf(1, iter)
 
                 call save_wf
 
-                if (iforce_analy .gt. 0) then
-
+                if (nstates.eq.1 .and. iforce_analy .gt. 0) then
+                    
                     if (izvzb .gt. 0) call forces_zvzb(nparm)
 
                     call compute_positions
                     call write_geometry(iter)
                 endif
-                call elapsed_time("CG micro iteration", miter)
             enddo
             ! enddo micro_iteration
 
@@ -243,7 +277,65 @@ contains
             energy_sav = energy(1)
             energy_err_sav = energy_err(1)
             sigma_sav = sigma
-            call elapsed_time( "CG iteration ", iter )
+
+            if(nstates.gt.1 .and. iforce_analy_sav.eq.1) then
+              write (ounit, '(''Compute force for root '',i2)') iroot_geo
+
+! vmc_nblk might have changed: force "block" quantities have a vmc_nblk-sized index
+              call deallocate_force_fin()
+              call allocate_force_fin()
+
+              call select_ci_root(iroot_geo)
+
+              iforce_analy=iforce_analy_sav
+              node_cutoff = node_cutoff_sav
+
+              nstates=1
+              nwftypeorb=1
+              nwftypejas=1
+              nbjx=1
+              stoj(1)=1
+              stoo(1)=1
+              stobjx(1)=1
+              bjxtoo(1)=1
+              bjxtoj(1)=1
+
+              iguiding=0
+              iefficiency = 0
+
+              ioptjas=0
+              ioptorb=0
+              ioptci=0
+
+              call set_nparms
+
+              call qmc
+
+              call compute_positions
+              call write_geometry(iter)
+
+              nstates=nstates_sav
+              nwftypejas=nwftypejas_sav
+              nwftypeorb=nwftypeorb_sav
+              nbjx=nbjx_sav
+              stoj(1)=stoj_sav
+              stoo(1)=stoo_sav
+              stobjx(1)=stobjx_sav
+              bjxtoo(1)=bjxtoo_sav
+              bjxtoj(1)=bjxtoj_sav
+
+              iguiding=iguiding_sav
+              iefficiency=iefficiency_sav
+
+              ioptjas=ioptjas_sav
+              ioptorb=ioptorb_sav
+              ioptci=ioptci_sav
+
+              call set_nparms
+              call restore_wf(1,1)
+            endif
+            ! endif multiple states and update geometry
+            call elapsed_time( "Full iteration ", iter )
         enddo
         ! enddo iteration
 
@@ -253,6 +345,8 @@ contains
         ioptorb = 0
         ioptci = 0
         iforce_analy = 0
+
+        if(nstates.gt.1.and.iguiding.gt.0) node_cutoff = 0 
 
         call set_nparms
 

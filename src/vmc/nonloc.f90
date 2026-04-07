@@ -151,7 +151,10 @@ contains
 ! loop quadrature points
             do iq=1,nquad
 
+
               nxquad=nxquad+1
+              if(nxquad.gt.ndim) call fatal_error('NONLOC: nxquad larger than ndim')
+
               iequad(nxquad)=i
               icquad(nxquad)=ic
               iqquad(nxquad)=iq
