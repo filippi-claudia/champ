@@ -1,5 +1,6 @@
 module optwf_lin_dav_extra
       use sr_more, only: ddot
+      use optwf_handle_wf, only: copy_jastrow, copy_lcao
 contains
       subroutine h_psi_energymin(ndim,nvec,psi,hpsi )
 
@@ -768,25 +769,5 @@ contains
       return
       end
 !cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine select_ci_root(iroot)
-
-      use csfs,    only: ccsf,ncsf
-      use slater,  only: cdet,ndet
-
-      implicit none
-
-      integer :: i, iadiag, icsf, iroot
-
-
-      do i=1,ndet
-        cdet(i,1,1)=cdet(i,iroot,1)
-      enddo
-
-      do icsf=1,ncsf
-        ccsf(icsf,1,iadiag)=ccsf(icsf,iroot,1)
-      enddo
-
-      return
-      end
-!cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 end module
+

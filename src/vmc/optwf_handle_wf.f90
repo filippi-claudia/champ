@@ -16,6 +16,7 @@ contains
 
       use mpi
       use mpiconf, only: idtask
+      use contrl_file, only: ounit
       use optwf_control,      only: ioptorb, ioptjas
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
@@ -304,9 +305,9 @@ contains
       integer :: k
 
       do k=2,3
-        call copy_jastrow(k)
-        call copy_lcao(k)
-        call copy_ci(k)
+        call copy_jastrow(k,1)
+        call copy_lcao(k,1)
+        call copy_ci(k,1)
       enddo
 
       return
@@ -325,17 +326,17 @@ contains
       return
       end
 !-----------------------------------------------------------------------
-      subroutine restore_wf(iadiag)
+      subroutine restore_wf(ito,ifrom)
 
       use optwf_control, only: ioptci,ioptjas,ioptorb
 
       implicit none
 
-      integer :: iadiag
+      integer :: ifrom, ito
 
-      if(ioptjas.ne.0) call restore_jastrow(iadiag)
-      if(ioptorb.ne.0) call restore_lcao(iadiag)
-      if(ioptci.ne.0) call restore_ci(iadiag)
+      if(ioptjas.ne.0) call restore_jastrow(ito,ifrom)
+      if(ioptorb.ne.0) call restore_lcao(ito,ifrom)
+      if(ioptci.ne.0) call restore_ci(ito)
 
       return
       end
@@ -430,7 +431,7 @@ contains
       endif
       end subroutine
 !-----------------------------------------------------------------------
-      subroutine restore_jastrow(iadiag)
+      subroutine restore_jastrow(ito,ifrom)
       use bparm, only: nspin2b
       use jastrow, only: b, c, a4, norda, nordb, nordc, nordj1
       use scale_dist_mod, only: set_scale_dist
@@ -440,25 +441,25 @@ contains
 
       implicit none
 
-      integer :: i, isp, iadiag, ict
+      integer :: i, isp, ito, ifrom, ict
 
       do ict=1,nctype
         do i=1,mparmja
-          a4(i,ict,iadiag)=a4_save(i,ict,1)
+          a4(i,ict,ito)=a4_save(i,ict,ifrom)
         enddo
       enddo
       do isp=1,nspin2b
         do i=1,mparmjb
-          b(i,isp,iadiag)=b_save(i,isp,1)
+          b(i,isp,ito)=b_save(i,isp,ifrom)
         enddo
       enddo
       do ict=1,nctype
         do i=1,mparmjc
-          c(i,ict,iadiag)=c_save(i,ict,1)
+          c(i,ict,ito)=c_save(i,ict,ifrom)
         enddo
       enddo
 
-      call set_scale_dist(iadiag,0)
+      call set_scale_dist(ito,0)
 
       return
       end
@@ -501,16 +502,16 @@ contains
 
       end subroutine
 !-----------------------------------------------------------------------
-      subroutine restore_lcao(iadiag)
+      subroutine restore_lcao(ito,ifrom)
       use coefs, only: nbasis
       use save_mod, only: coef_save
       use slater, only: norb, coef
       implicit none
-      integer :: i, iadiag, j
+      integer :: i, ifrom, ito, j
 
       do i=1,norb
         do j=1,nbasis
-          coef(j,i,iadiag)=coef_save(j,i,1)
+          coef(j,i,ito)=coef_save(j,i,ifrom)
         enddo
       enddo
 
@@ -547,14 +548,14 @@ contains
 
       end subroutine
 !-----------------------------------------------------------------------
-      subroutine restore_ci(iadiag)
+      subroutine restore_ci(ito)
       use csfs,    only: ccsf,cxdet,iadet,ibdet,icxdet,ncsf,nstates
       use mstates_mod, only: MSTATES
       use save_mod, only: cdet_save, ccsf_save
       use set_input_data, only: multideterminants_define
       use slater,  only: cdet,ndet
       implicit none
-      integer :: i, iadiag, icsf, j, k
+      integer :: i, icsf, ito, j, k
       integer :: kx
 
       if(.not. allocated(cdet_save)) allocate(cdet_save(ndet,MSTATES))
@@ -562,13 +563,13 @@ contains
 
       do j=1,nstates
         do i=1,ndet
-          cdet(i,j,iadiag)=cdet_save(i,j)
+          cdet(i,j,ito)=cdet_save(i,j)
         enddo
       enddo
 
       do j=1,nstates
        do icsf=1,ncsf
-        ccsf(icsf,j,iadiag)=ccsf_save(icsf,j)
+        ccsf(icsf,j,ito)=ccsf_save(icsf,j)
        enddo
       enddo
 
@@ -576,12 +577,12 @@ contains
       if(ncsf.gt.0) then
         do j=1,nstates
           do k=1,ndet
-            cdet(k,j,iadiag)=0
+            cdet(k,j,ito)=0
           enddo
           do icsf=1,ncsf
             do k=iadet(icsf),ibdet(icsf)
               kx=icxdet(k)
-              cdet(kx,j,iadiag)=cdet(kx,j,iadiag)+ccsf(icsf,j,iadiag)*cxdet(k)
+              cdet(kx,j,ito)=cdet(kx,j,ito)+ccsf(icsf,j,ito)*cxdet(k)
             enddo
           enddo
         enddo
@@ -594,7 +595,7 @@ contains
       return
       end
 !-----------------------------------------------------------------------
-      subroutine copy_jastrow(iadiag)
+      subroutine copy_jastrow(ito,ifrom)
 
       use bparm, only: nspin2b
       use jastrow, only: b, c, scalek, a4, ijas, norda, nordb, nordc
@@ -603,49 +604,49 @@ contains
 
       implicit none
 
-      integer :: i, isp, iadiag, ict, mparmja, mparmjb, mparmjc
+      integer :: i, isp, ito, ifrom, ict, mparmja, mparmjb, mparmjc
 
       if(ijas.eq.1) then
         mparmja=norda
         mparmjb=nordb
 
         do ict=1,nctype
-          a4(mparmja+1,ict,iadiag)=a4(mparmja+1,ict,1)
+          a4(mparmja+1,ict,ito)=a4(mparmja+1,ict,ifrom)
         enddo
         do isp=1,nspin2b
-          b(mparmjb+1,isp,iadiag)=b(mparmjb+1,isp,1)
+          b(mparmjb+1,isp,ito)=b(mparmjb+1,isp,ifrom)
         enddo
       else
         mparmja=2+max(0,norda-1)
         mparmjb=2+max(0,nordb-1)
-        scalek(iadiag)=scalek(1)
+        scalek(ito)=scalek(ifrom)
       endif
 
       mparmjc=nterms4(nordc)
 
       do ict=1,nctype
         do i=1,mparmja
-          a4(i,ict,iadiag)=a4(i,ict,1)
+          a4(i,ict,ito)=a4(i,ict,ifrom)
         enddo
       enddo
       do isp=1,nspin2b
         do i=1,mparmjb
-          b(i,isp,iadiag)=b(i,isp,1)
+          b(i,isp,ito)=b(i,isp,ifrom)
         enddo
       enddo
       do ict=1,nctype
         do i=1,mparmjc
-          c(i,ict,iadiag)=c(i,ict,1)
+          c(i,ict,ito)=c(i,ict,ifrom)
         enddo
       enddo
 
-      call set_scale_dist(iadiag,0)
+      call set_scale_dist(ito,0)
 
       return
       end
 
 !-----------------------------------------------------------------------
-      subroutine copy_lcao(iadiag)
+      subroutine copy_lcao(ito,ifrom)
 
       use coefs, only: nbasis
       use slater, only: norb, coef
@@ -653,42 +654,42 @@ contains
 
       implicit none
 
-      integer :: i, iadiag, j
+      integer :: i, ito, ifrom, j
 
       do i=1,norb+nadorb
         do j=1,nbasis
-          coef(j,i,iadiag)=coef(j,i,1)
+          coef(j,i,ito)=coef(j,i,ifrom)
         enddo
       enddo
 
       return
       end
 !-----------------------------------------------------------------------
-      subroutine copy_ci(iadiag)
+      subroutine copy_ci(ito,ifrom)
 
       use csfs,    only: ccsf,ncsf,nstates
       use slater,  only: cdet,ndet
 
       implicit none
 
-      integer :: i, iadiag, icsf, j
+      integer :: i, iadiag, icsf, ito, ifrom, j
 
       do j=1,nstates
         do i=1,ndet
-          cdet(i,j,iadiag)=cdet(i,j,1)
+          cdet(i,j,ito)=cdet(i,j,ifrom)
         enddo
       enddo
 
       do j=1,nstates
        do icsf=1,ncsf
-        ccsf(icsf,j,iadiag)=ccsf(icsf,j,1)
+        ccsf(icsf,j,ito)=ccsf(icsf,j,ifrom)
        enddo
       enddo
 
       return
       end
 !-----------------------------------------------------------------------
-      subroutine copy_bas_num(iadiag)
+      subroutine copy_bas_num(ito)
 
       use system,  only: nctype,newghostype
       use numbas,  only: rwf, d2rwf,nr,nrbas
@@ -696,31 +697,31 @@ contains
 
       implicit none
 
-      integer :: i, iadiag, ic, irb
+      integer :: i, iadiag, ito, ifrom, ic, irb
 
       do ic=1,nctype+newghostype
         do irb=1,nrbas(ic)
-          rwf(1:nr(ic),irb,ic,iadiag)=rwf(1:nr(ic),irb,ic,1)
-          d2rwf(1:nr(ic),irb,ic,iadiag)=d2rwf(1:nr(ic),irb,ic,1)
-          ce(1:5,irb,ic,iadiag)=ce(1:5,irb,ic,1)
-          ae(1:2,irb,ic,iadiag)=ae(1:2,irb,ic,1)
+          rwf(1:nr(ic),irb,ic,ito)=rwf(1:nr(ic),irb,ic,1)
+          d2rwf(1:nr(ic),irb,ic,ito)=d2rwf(1:nr(ic),irb,ic,1)
+          ce(1:5,irb,ic,ito)=ce(1:5,irb,ic,1)
+          ae(1:2,irb,ic,ito)=ae(1:2,irb,ic,1)
         enddo
       enddo
           
       return
       end
 !-----------------------------------------------------------------------
-      subroutine copy_zex(iadiag)
+      subroutine copy_zex(ito)
 
       use basis,   only: zex
       use coefs,   only: nbasis
 
       implicit none
 
-      integer :: i, iadiag
+      integer :: i, ito, ifrom
 
       do i=1,nbasis
-        zex(i,iadiag)=zex(i,1)
+        zex(i,ito)=zex(i,1)
       enddo
 
       return
@@ -732,18 +733,16 @@ contains
       use jastrow, only: ijas, norda,nordb,nordc
       use jastrow, only: a4,b,c,nordj1
       use multiple_geo, only: nwftype
+      use optwf_control, only: method
       use precision_kinds, only: dp
       use save_mod, only: a4_best, b_best, c_best
       use save_mod, only:  mparmja_best, mparmjb_best, mparmjc_best
       use system,  only: nctype,nctype_tot
+      use vmc_mod, only: nwftypejas
 
       implicit none
 
-      integer :: i, isp, ict
-
-      if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
-      if(.not.allocated(b_best))  allocate(b_best(nordj1,2,nwftype))
-      if(.not.allocated(c_best))  allocate(c_best(83,nctype_tot,nwftype))
+      integer :: i, isp, ict, k
 
 ! Save parameters corresponding to run generating hessian
 
@@ -757,22 +756,52 @@ contains
 
       mparmjc_best=nterms4(nordc)
 
-      do ict=1,nctype
-        do i=1,mparmja_best
-          a4_best(i,ict,1)=a4(i,ict,1)
-        enddo
-      enddo
-      do isp=1,nspin2b
-        do i=1,mparmjb_best
-          b_best(i,isp,1)=b(i,isp,1)
-        enddo
-      enddo
-      do ict=1,nctype
-        do i=1,mparmjc_best
-          c_best(i,ict,1)=c(i,ict,1)
-        enddo
-      enddo
+      if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
+        if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftypejas))
+        if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftypejas))
+        if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftypejas))
+        do k=1,nwftypejas
 
+          do ict=1,nctype
+            do i=1,mparmja_best
+              a4_best(i,ict,k)=a4(i,ict,k)
+            enddo
+          enddo
+          do isp=1,nspin2b
+            do i=1,mparmjb_best
+              b_best(i,isp,k)=b(i,isp,k)
+            enddo
+          enddo
+          do ict=1,nctype
+            do i=1,mparmjc_best
+              c_best(i,ict,k)=c(i,ict,k)
+            enddo
+          enddo
+       enddo
+      else
+       if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
+       if(.not.allocated(b_best))  allocate(b_best(nordj1,2,nwftype))
+       if(.not.allocated(c_best))  allocate(c_best(83,nctype_tot,nwftype))
+
+       do ict=1,nctype
+         do i=1,mparmja_best
+           a4_best(i,ict,1)=a4(i,ict,1)
+         enddo
+       enddo
+       do isp=1,nspin2b
+         do i=1,mparmjb_best
+           b_best(i,isp,1)=b(i,isp,1)
+         enddo
+       enddo
+       do ict=1,nctype
+         do i=1,mparmjc_best
+           c_best(i,ict,1)=c(i,ict,1)
+         enddo
+       enddo
+
+      endif
+   
+      return
       end subroutine
 !-----------------------------------------------------------------------
       subroutine restore_jastrow_best
@@ -780,37 +809,66 @@ contains
       use bparm,   only: nspin2b
       use jastrow, only: a4,b,c,nordj1
       use multiple_geo, only: nwftype
+      use optwf_control, only: method
       use scale_dist_mod, only: set_scale_dist
       use save_mod, only: a4_best, b_best, c_best
       use save_mod, only:  mparmja_best, mparmjb_best, mparmjc_best
       use system,  only: nctype,nctype_tot
+      use vmc_mod, only: nwftypejas
 
       implicit none
 
-      integer :: i, isp, ict
-
-      if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
-      if(.not.allocated(b_best))  allocate(b_best(nordj1,2,nwftype))
-      if(.not.allocated(c_best))  allocate(c_best(83,nctype_tot,nwftype))
+      integer :: i, isp, ict, k
 
 ! Restore parameters corresponding to run generating hessian
-      do ict=1,nctype
-        do i=1,mparmja_best
-          a4(i,ict,1)=a4_best(i,ict,1)
-        enddo
-      enddo
-      do isp=1,nspin2b
-        do i=1,mparmjb_best
-          b(i,isp,1)=b_best(i,isp,1)
-        enddo
-      enddo
-      do ict=1,nctype
-        do i=1,mparmjc_best
-          c(i,ict,1)=c_best(i,ict,1)
-        enddo
-      enddo
+      if (method.eq.'sr_n'.and.nwftypejas.gt.1) then
+        if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftypejas))
+        if(.not.allocated(b_best)) allocate(b_best(nordj1,2,nwftypejas))
+        if(.not.allocated(c_best)) allocate(c_best(83,nctype_tot,nwftypejas))
+        do k=1,nwftypejas
+          do ict=1,nctype
+            do i=1,mparmja_best
+              a4(i,ict,k)=a4_best(i,ict,k)
+            enddo
+          enddo
+          do isp=1,nspin2b
+            do i=1,mparmjb_best
+              b(i,isp,k)=b_best(i,isp,k)
+            enddo
+          enddo
+          do ict=1,nctype
+            do i=1,mparmjc_best
+              c(i,ict,k)=c_best(i,ict,k)
+            enddo
+          enddo
 
-      call set_scale_dist(1,0)
+          call set_scale_dist(k,0)
+        enddo
+
+       else
+        if(.not.allocated(a4_best)) allocate(a4_best(nordj1,nctype_tot,nwftype))
+        if(.not.allocated(b_best))  allocate(b_best(nordj1,2,nwftype))
+        if(.not.allocated(c_best))  allocate(c_best(83,nctype_tot,nwftype))
+
+        do ict=1,nctype
+          do i=1,mparmja_best
+            a4(i,ict,1)=a4_best(i,ict,1)
+          enddo
+        enddo
+        do isp=1,nspin2b
+          do i=1,mparmjb_best
+            b(i,isp,1)=b_best(i,isp,1)
+          enddo
+        enddo
+        do ict=1,nctype
+          do i=1,mparmjc_best
+            c(i,ict,1)=c_best(i,ict,1)
+          enddo
+        enddo
+
+        call set_scale_dist(1,0)
+
+      endif
 
       return
       end
@@ -1508,5 +1566,38 @@ contains
 
       return
       end
+!-----------------------------------------------------------------------
+      subroutine select_ci_root(iroot)
+
+      use csfs,    only: ccsf,ncsf
+      use optwf_control, only: method
+      use slater,  only: cdet,ndet
+      use vmc_mod, only: stoj, stoo
+
+      implicit none
+
+      integer :: i, iadiag, icsf, iroot
+
+      do i=1,ndet
+        cdet(i,1,1)=cdet(i,iroot,1)
+      enddo
+
+      do icsf=1,ncsf
+        ccsf(icsf,1,1)=ccsf(icsf,iroot,1)
+      enddo
+
+      if(method.ne.'lin_d') then
+! Not in last micro-iteration of the sa_mix approach
+
+        i=stoj(iroot)
+        call copy_jastrow(1,i)
+        i=stoo(iroot)
+        call copy_lcao(1,i)
+
+      endif
+
+      return
+      end
+
 !-----------------------------------------------------------------------
 end module

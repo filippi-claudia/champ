@@ -12,7 +12,7 @@ contains
       real(dp) :: denergy, psid
       real(dp), dimension(3, ncent_tot) :: da_psi_ref
 
-!     ! multistate indices were not added
+! multistate indices were not added
       call compute_da_psi(psid,da_psi_ref)
       call compute_da_energy(psid,denergy)
       do ic=1,ncent
@@ -237,7 +237,7 @@ contains
       use da_energy_sumcum, only: da_energy_sum,da_psi_cum,da_psi_sum
       use m_force_analytic, only: iforce_analy
       use m_force_analytic, only: wcum_block
-      use m_force_analytic, only: da_energy_psi_block, da_psi_block
+      use m_force_analytic, only: da_energy_psi_block, da_psi_block, f_analy_err
       use system,  only: ncent
       use vd_mod, only: dmc_ivd, da_branch_sum, da_branch_cum
       use force_pth, only: PTH
@@ -245,7 +245,7 @@ contains
 
       implicit none
 
-      integer :: ic, iflag, k, iph, iblk
+      integer :: ic, iflag, k, iph, ib
 
       if(iforce_analy.eq.0) return
 
@@ -268,12 +268,14 @@ contains
             da_psi_cum(k,ic,iph)=0.0d0
             da_energy_cum(k,ic,iph)=0.0d0
             da_energy_cm2(k,ic,iph)=0.0d0
-            do iblk=1,vmc_nblk
-              da_energy_psi_block(iblk,k,ic,iph)=0.0d0
-              da_psi_block(iblk,k,ic,iph)=0.0d0
-              wcum_block(iblk)=0.d0
-            enddo
             if (dmc_ivd.gt.0) da_branch_cum(k,ic,iph)=0.d0
+            if (f_analy_err.gt.0) then
+              do ib=1,vmc_nblk
+                da_energy_psi_block(ib,k,ic,iph)=0.0d0
+                da_psi_block(ib,k,ic,iph)=0.0d0
+                wcum_block(ib)=0.d0
+              enddo
+            endif
           enddo
         enddo
       enddo
@@ -451,7 +453,7 @@ contains
       use da_energy_sumcum, only: da_energy_cm2,da_energy_cum,da_energy_psi_sum
       use da_energy_sumcum, only: da_energy_sum,da_psi_cum,da_psi_sum
       use force_pth, only: PTH
-      use m_force_analytic, only: iforce_analy
+      use m_force_analytic, only: iforce_analy, f_analy_err
       use m_force_analytic, only: da_energy_psi_block, da_psi_block, wcum_block, current_block
       use precision_kinds, only: dp
       use system,  only: ncent
@@ -467,45 +469,44 @@ contains
 
       do iph=1,PTH
         do ic=1,ncent
-           do k=1,3
-              if (dmc_ivd.gt.0) then
-                da_energy_now(k,ic,iph)=(da_energy_sum(k,ic,iph) &
-                              -2*eave*da_psi_sum(k,ic,iph) -eave*da_branch_sum(k,ic,iph))/wsum
-                da_energy_cm2(k,ic,iph)=da_energy_cm2(k,ic,iph)+wsum*da_energy_now(k,ic,iph)**2
+          do k=1,3
+            da_energy_now(k,ic,iph)=(da_energy_sum(k,ic,iph)-2*eave*da_psi_sum(k,ic,iph))/wsum
 
-                da_branch_cum(k,ic,iph)=da_branch_cum(k,ic,iph)+da_branch_sum(k,ic,iph)
-                da_psi_cum(k,ic,iph)=da_psi_cum(k,ic,iph)+da_psi_sum(k,ic,iph)
-                da_energy_cum(k,ic,iph)=da_energy_cum(k,ic,iph)+da_energy_sum(k,ic,iph)
+            if (dmc_ivd.gt.0) then
+              da_energy_now(k,ic,iph)=da_energy_now(k,ic,iph)-eave*da_branch_sum(k,ic,iph)/wsum
+              da_branch_cum(k,ic,iph)=da_branch_cum(k,ic,iph)+da_branch_sum(k,ic,iph)
+            endif
+            da_psi_cum(k,ic,iph)=da_psi_cum(k,ic,iph)+da_psi_sum(k,ic,iph)
+            da_energy_cum(k,ic,iph)=da_energy_cum(k,ic,iph)+da_energy_sum(k,ic,iph)
+            da_energy_cm2(k,ic,iph)=da_energy_cm2(k,ic,iph)+wsum*da_energy_now(k,ic,iph)**2
+
+            if(f_analy_err.gt.0) then
+              if (current_block.gt.1) then
+                da_psi_block(current_block,k,ic,iph)=da_psi_block(current_block-1,k,ic,iph)+da_psi_sum(k,ic,iph)
+                da_energy_psi_block(current_block,k,ic,iph)=da_energy_psi_block(current_block-1,k,ic,iph)+da_energy_psi_sum(k,ic,iph)
               else
-                da_energy_now(k,ic,iph)=(da_energy_sum(k,ic,iph)-2*eave*da_psi_sum(k,ic,iph))/wsum
-                da_energy_cm2(k,ic,iph)=da_energy_cm2(k,ic,iph)+wsum*da_energy_now(k,ic,iph)**2
-
-                if (current_block.gt.1) then
-                  da_psi_block(current_block,k,ic,iph)=da_psi_block(current_block-1,k,ic,iph)+da_psi_sum(k,ic,iph)
-                  da_energy_psi_block(current_block,k,ic,iph)=da_energy_psi_block(current_block-1,k,ic,iph)+da_energy_psi_sum(k,ic,iph)
-                else
-                  da_psi_block(current_block,k,ic,iph)=da_psi_sum(k,ic,iph)
-                  da_energy_psi_block(current_block,k,ic,iph)=da_energy_psi_sum(k,ic,iph)
-                endif
-
-                da_psi_cum(k,ic,iph)=da_psi_cum(k,ic,iph)+da_psi_sum(k,ic,iph)
-                da_energy_cum(k,ic,iph)=da_energy_cum(k,ic,iph)+da_energy_sum(k,ic,iph)
-
+                da_psi_block(current_block,k,ic,iph)=da_psi_sum(k,ic,iph)
+                da_energy_psi_block(current_block,k,ic,iph)=da_energy_psi_sum(k,ic,iph)
               endif
-            enddo
+            endif
           enddo
         enddo
+      enddo
 
+      if(f_analy_err.gt.0) then
         if (current_block.gt.1) then
           wcum_block(current_block) = wcum_block(current_block-1) + wsum
-        else
+         else
           wcum_block(current_block) = wsum
         endif
+      endif
+
       return
       end
 !-----------------------------------------------------------------------
       subroutine force_analy_fin(wcum,iblk_eff,eave)
 
+      use contrl_file, only: ounit
       use da_energy_sumcum, only: da_energy_cm2,da_energy_cum,da_psi_cum
       use force_pth, only: PTH
       use m_force_analytic, only: da_energy_ave, iforce_analy
@@ -520,7 +521,7 @@ contains
       implicit none
 
       real(dp) :: iblk_eff
-      integer :: ic, k, iph, iblk
+      integer :: ic, k, iph, ib
       real(dp) :: eave, rtpass, wcum, x
       real(dp) :: x2
       real(dp), dimension(3) :: da_energy_err
@@ -541,12 +542,12 @@ contains
                     - 2 * eave * da_psi_block(1,:,:,:))/wcum_block(1)
         fancy_f_cum2 = fancy_f_cum**2
 
-        do iblk=2,vmc_nblk
-          fancy_f = dble(iblk) * (da_energy_psi_block(iblk,:,:,:) &
-                   -2*eave*da_psi_block(iblk,:,:,:))/wcum_block(iblk)
+        do ib=2,vmc_nblk
+          fancy_f = dble(ib) * (da_energy_psi_block(ib,:,:,:) &
+                   -2*eave*da_psi_block(ib,:,:,:))/wcum_block(ib)
 
-          fancy_f_prev = dble(iblk-1) * (da_energy_psi_block(iblk-1,:,:,:) &
-            -2*eave*da_psi_block(iblk-1,:,:,:))/wcum_block(iblk-1)
+          fancy_f_prev = dble(ib-1) * (da_energy_psi_block(ib-1,:,:,:) &
+            -2*eave*da_psi_block(ib-1,:,:,:))/wcum_block(ib-1)
 
           fancy_f = fancy_f - fancy_f_prev
           fancy_f_cum = fancy_f_cum + fancy_f
@@ -558,17 +559,12 @@ contains
       do iph=1,PTH
         do ic=1,ncent
           do k=1,3
-            if (dmc_ivd.gt.0) then
-              da_energy_ave(k,ic,iph)=(da_energy_cum(k,ic,iph)-2*eave*da_psi_cum(k,ic,iph)-eave*da_branch_cum(k,ic,iph))/wcum
-            else
-              if (f_analy_err.eq.1) then
-                da_energy_ave(k,ic,iph) = fancy_f_cum(k,ic,iph)/vmc_nblk
-              else
-                da_energy_ave(k,ic,iph)=(da_energy_cum(k,ic,iph)-2*eave*da_psi_block(vmc_nblk,k,ic,iph))/wcum_block(vmc_nblk)
-              endif
-            endif
+            da_energy_ave(k,ic,iph)=(da_energy_cum(k,ic,iph)-2*eave*da_psi_cum(k,ic,iph))/wcum
+            if (dmc_ivd.gt.0) da_energy_ave(k,ic,iph)=da_energy_ave(k,ic,iph)-eave*da_branch_cum(k,ic,iph)/wcum
 
             if (f_analy_err.eq.1) then
+! The estimate below should be equivalent to what already calculated
+              da_energy_ave(k,ic,iph) = fancy_f_cum(k,ic,iph)/vmc_nblk
               x = fancy_f_cum(k,ic,iph) / vmc_nblk
               x2 = fancy_f_cum2(k,ic,iph)
               da_energy_err(k)=dsqrt(abs(x2/vmc_nblk - x**2)/vmc_nblk)

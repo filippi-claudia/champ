@@ -1554,6 +1554,7 @@ subroutine parser
       write(ounit,'(a)' ) " Geometry optimization with analytic gradients"
       if(iuse_zmat.gt.0) write(ounit,'(a)' ) " Using internal coordinates "
       write(ounit,'(a,t36,f12.6)') " starting alfgeo = ", alfgeo
+      if(nstates.gt.1) write(ounit,'(a,i3)' ) " Following state ",iroot_geo
     endif
   endif
 
@@ -1667,7 +1668,11 @@ subroutine parser
 ! Multiple states/efficiency/guiding flags
     ! Use guiding wave function constructed from mstates
     if(iguiding.gt.0) then
-      if(node_cutoff.gt.0)  call fatal_error('INPUT: guiding wave function AND node_cutoff > 0')
+      if(iforce_analy.eq.0) then
+        if(node_cutoff.gt.0)  call fatal_error('INPUT: guiding wave function AND node_cutoff > 0')
+       else
+        write(ounit, *) "Node_cutoff used in sampling forces step"
+      endif
 
       write(ounit, *) "Guiding function: square root of sum of squares"
 

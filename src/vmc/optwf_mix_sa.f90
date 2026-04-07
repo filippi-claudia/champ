@@ -27,9 +27,8 @@ contains
       use optwf_handle_wf,only: save_nparms, write_wf, restore_wf
       use optwf_handle_wf,only: set_nparms, save_wf, compute_parameters
       use optwf_handle_wf,only: test_solution_parm, save_ci_best
-      use optwf_handle_wf,only: restore_ci_best, set_nparms_tot
+      use optwf_handle_wf,only: restore_ci_best, select_ci_root, set_nparms_tot
       use optgeo_lib, only: write_geometry, compute_positions
-      use optwf_lin_dav_extra, only: select_ci_root
       use optwf_lin_dav_more, only: lin_d
       use optwf_sr_mod, only: sr
       use orbval,  only: nadorb
@@ -256,7 +255,7 @@ contains
           ioptorb=ioptorb_sav
           ioptci=ioptci_sav
 
-          call restore_wf(1)
+          call restore_wf(1,1)
         endif
 
         if(iter.ge.2) then
