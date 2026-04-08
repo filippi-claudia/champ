@@ -452,7 +452,7 @@ contains
         else
           call orbitals_quad_no_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
         endif
-        #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       end if ! use_qmckl_orbitals
 #endif
 

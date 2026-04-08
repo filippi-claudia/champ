@@ -699,13 +699,14 @@ module trexio_read_data
         use mpiconf,            only: wid
         use periodic_table,     only: atom_t, element
         use contrl_file,        only: ounit, errunit
+        use contrl_per,         only: iperiodic
         use general,            only: pooldir
 
         ! The following to be used to store the information
         use numbas_mod,         only: MRWF, MRWF_PTS
         use system,               only: znuc, nctype, nctype_tot, ncent_tot
         use system,               only: symbol, atomtyp
-        use vmc_mod,            only: NCOEF
+        use vmc_mod,            only: NCOEF,norb_tot
         use system,          only: newghostype
         use control,            only: ipr
         use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
@@ -714,7 +715,9 @@ module trexio_read_data
         use numexp,             only: ae, ce, allocate_numexp
         use pseudo,             only: nloc
         use general,            only: filename, filenames_bas_num
-
+        use slater,             only: coef
+        use multiple_geo,       only: nwftype
+        use periodic, only: cutr,n_images,n_images0
         ! For processing the stored information
         use system,             only: atomtyp
         use general,            only: pooldir, bas_id
@@ -726,7 +729,9 @@ module trexio_read_data
         use contrl_file,        only: backend
         use error,              only: trexio_error
         use m_trexio_basis,     only: gnorm
-
+        #if  defined(QMCKL_FOUND) 
+            use qmckl_data
+        #endif
         implicit none
 
         !for local use.  To be read from trexio file
@@ -739,6 +744,7 @@ module trexio_read_data
         real(dp), allocatable           :: basis_exponent(:)
         real(dp), allocatable           :: basis_coefficient(:)
         real(dp), allocatable           :: basis_prim_factor(:)
+        real(dp), allocatable           :: ao_norm_champ(:)
 
         integer                         :: ao_num
         integer,allocatable             :: ao_shell(:)
@@ -779,13 +785,29 @@ module trexio_read_data
         real(dp), dimension(ncoef*ncoef)    ::  dmatr
         real(dp), dimension(nbasis)         ::  l
         integer, dimension(ncoef)           :: ipiv
-        integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
+        integer         :: ic, ir, irb, ii, jj, ll, icoef, iff, iao, ibasis, iorb, ang_mom, shell_index, prim_index
         integer         :: iwf = 1
         integer         :: info
-        real(dp)        :: val, dwf1, wfm, dwfn, dwfm, temp
+        real(dp)        :: val, dwf1, wfm, dwfn, dwfm, temp, prim_factor, gnorm_prim
 
         ! rmax cutoff
         real(dp)                            :: cutoff_rmax = 1.0d-12
+        ! normalization constants for a Ylm function up to g orbitals
+        ! copied from slm.f90 and used to determine champ AO normalization 
+
+        real(dp), parameter :: cs = 0.28209479177387814d0      ! 1/sqrt(4*pi)
+        real(dp), parameter :: cp = 0.48860251190291992d0      ! sqrt(3/(4*pi))
+        real(dp), parameter :: cd1 = 0.630783130505040d0       ! sqrt(5/(4*pi))
+        real(dp), parameter :: cd2 = 1.092548430592079d0       ! sqrt(15/(4*pi))
+
+        real(dp), parameter :: cf = 0.74635266518023078d0      ! sqrt(7/(4*pi))
+        real(dp), parameter :: cf2 = 1.66889529453113635d0     ! sqrt(35/(4*pi))
+        real(dp), parameter :: cf3 = 2.89061144264055405d0     ! sqrt(105/(4*pi))
+
+        real(dp), parameter :: cg = 0.8462843753216345d0       ! sqrt(9/(4*pi))
+        real(dp), parameter :: cg2 = 2.2390579955406924d0      ! sqrt(63/(4*pi))
+        real(dp), parameter :: cg3 = 2.890611442640554d0       ! sqrt(105/(4*pi))
+        real(dp), parameter :: cg4 = 5.006685883593409d0       ! sqrt(315/(4*pi))
 
         trex_basis_file = 0
 
@@ -892,7 +914,65 @@ module trexio_read_data
         ! The shells per atom can be obtained by accessing the shell_index_atom
         ! for a given atom index by the slice of size frequency.
 
+        ! This convert the TREXIO normalization convention to the CHAMP normalization convention. 
+        ! Using that the product MO_coeff * AO_normalization * shell_factor * prim_factor should be the same 
+        ! in both conventions. We rescale the MO coefficients by the shell factor and the normalization factor to achieve the
+        ! conversion.
 
+        if (.not. use_qmckl_orbitals) then
+        if (.not. allocated(ao_norm_champ)) allocate(ao_norm_champ(ao_num))
+    
+        ! Build CHAMP AO normalization in canonical/alphabetical Cartesian order
+        iao = 1
+        do while (iao <= ao_num)
+            ang_mom = basis_shell_ang_mom(ao_shell(iao))
+
+            select case (ang_mom)
+            case (0)   ! s
+                ao_norm_champ(iao) = cs
+                iao = iao + 1
+
+            case (1)   ! p: x y z
+                if (iao + 2 > ao_num) call fatal_error('TREXIO basis read: p-shell AO indexing overflow')
+                ao_norm_champ(iao:iao+2) = [cp, cp, cp]
+                iao = iao + 3
+
+            case (2)   ! d: xx xy xz yy yz zz
+                if (iao + 5 > ao_num) call fatal_error('TREXIO basis read: d-shell AO indexing overflow')
+                ao_norm_champ(iao:iao+5) = [cd1, cd2, cd2, cd1, cd2, cd1]
+                iao = iao + 6
+
+            case (3)   ! f: xxx xxy xxz xyy xyz xzz yyy yyz yzz zzz
+                if (iao + 9 > ao_num) call fatal_error('TREXIO basis read: f-shell AO indexing overflow')
+                ao_norm_champ(iao:iao+9) = [cf, cf2, cf2, cf2, cf3, cf2, cf, cf2, cf2, cf]
+                iao = iao + 10
+
+            case (4)   ! g: xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz yyyy yyyz yyzz yzzz zzzz
+                if (iao + 14 > ao_num) call fatal_error('TREXIO basis read: g-shell AO indexing overflow')
+                ao_norm_champ(iao:iao+14) = [cg, cg2, cg2, cg3, cg4, cg3, cg2, cg4, cg4, cg2, cg, cg2, cg3, cg2, cg]
+                iao = iao + 15
+
+            case default
+                call fatal_error('TREXIO basis read: angular momentum > g not implemented for CHAMP normalization')
+            end select
+        enddo
+
+        ! Rescale MO coefficients by the shell factor and the normalization factor to convert from TREXIO convention to CHAMP convention.
+
+        do ibasis = 1, nbasis
+            shell_index = ao_shell(ibasis)
+            ang_mom = basis_shell_ang_mom(shell_index)
+    
+            do iorb = 1, norb_tot
+                do k = 1, nwftype
+                    coef(ibasis, iorb, k) = coef(ibasis, iorb, k) *basis_shell_factor(shell_index) *&
+                                            ao_normalization(ibasis)/ao_norm_champ(ibasis)
+                enddo
+            enddo
+        enddo
+        endif
+
+        
         ! Now get the number of primitives per atom and their indices
         ! also obtain the number of primitives per shell for all the atoms
         allocate(nprims_per_atom(ncent_tot), source=0)
@@ -1002,6 +1082,7 @@ module trexio_read_data
 
             ! select the shells corresponding to the unique atoms only
             ! j is the running shell index for the unique atom i
+            ! evaluate the radial part of the basis function on the numerical grid for each shell and store it in rwf   
             do i = 1, nr(ic)
                 r = rgrid(i)
                 r2 = r*r
@@ -1012,7 +1093,7 @@ module trexio_read_data
                     ! loop on primitives in the given shell
                     val = 0.0d0
                     do k = counter, counter + shell_prim_correspondence(j) -1
-                        val = val + gnorm(basis_exponent(k), basis_shell_ang_mom(j)) &
+                        val = val + basis_prim_factor(k) &
                                   * basis_coefficient(k) * dexp(-basis_exponent(k)*r2)
                     enddo
                     counter = counter + shell_prim_correspondence(j)
@@ -1101,7 +1182,7 @@ module trexio_read_data
                 if (wid) write(45,'(a,i0,a,i0,a,g0)') "Initial rmax for center = ",ic, " basis = ",irb, " is ", rmaxwf(irb, ic)
 
 ! Nonzero basis at the boundary : Do exponential fitting.
-                if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
+                if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10.and.iperiodic.eq.0) then
                     call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
                     if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
@@ -1126,6 +1207,12 @@ module trexio_read_data
                 endif
                 if (wid) write(45,*) 'dwf1,dwfn',dwf1,dwfn
 
+                if(iperiodic.ne.0) then
+                  temp=2*cutr*(0.5+n_images0)
+                  if(wid) write(45,*)'L/2 ',cutr,' cutr ',temp,' n_images0 ',n_images0 
+                  call smooth(x, rwf(1,irb,ic,iwf),nr(ic),temp,dwfn,rmaxwf(irb,ic))
+                endif
+                  
                 call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
 
             enddo ! loop on irb : number of radial shells
@@ -1152,8 +1239,96 @@ module trexio_read_data
         if (allocated(basis_prim_factor))      deallocate(basis_prim_factor)
         if (allocated(ao_shell))               deallocate(ao_shell)
         if (allocated(ao_normalization))       deallocate(ao_normalization)
+        if (allocated(ao_norm_champ))          deallocate(ao_norm_champ)
 
     end subroutine read_trexio_basis_file
+
+     subroutine smooth(x,rwf,nr,rcut,dwfn,rmaxwf)
+! replace rwf with (a+b*r+c*r**2)*(r-rcut)**3 in [0.8*rcut,rcut]
+      use contrl_file, only: ounit
+      use mpiconf, only: wid
+      use precision_kinds, only: dp
+      implicit none
+      integer nr,n_images,i,icut,imatch
+      real(dp) x(nr),rwf(nr),rcut,dwfn,rmaxwf
+      real(dp) rm,rc,f,df,ddf,dfm,dfp,a,b,c,r,factor
+      real(dp) dr,dr2,dr3,deti
+      real(dp) a1,a2,a3,a4,a5,a6,a7,a8,a9
+      real(dp) m1,m2,m3,m4,m5,m6,m7,m8,m9
+      if(rcut.ge.rmaxwf)return
+      factor=0.8d0   ! this factor can be turned into an input parameter
+      rm=factor*rcut ! matching distance
+      icut=nr
+      do while (x(icut).gt.rcut)
+       icut=icut-1
+      enddo
+      if(icut.eq.nr)return
+      write(ounit,*)'icut ',icut
+      rc=x(icut)     ! cutoff distance on a point of the grid
+      imatch=nr
+      do while (x(imatch).gt.rm)
+       imatch=imatch-1
+      enddo
+      write(ounit,*)'imatch ',imatch
+      rm=x(imatch)   ! matching distance on a point of the grid
+! f,f',f" at rm (by finite increments)
+      f=rwf(imatch)
+      dfm=(rwf(imatch)-rwf(imatch-1))/(x(imatch)-x(imatch-1))
+      dfp=(rwf(imatch)-rwf(imatch+1))/(x(imatch)-x(imatch+1))
+      df=0.5d0*(dfp+dfm)
+      ddf=(dfp-dfm)*(0.5d0/(x(imatch)-x(imatch-1))+0.5d0/(x(imatch+1)-x(imatch)))
+! continuity conditions at rm: A(a,b,c)=(f,df,ddf)
+      dr=rm-rc
+      dr2=dr*dr
+      dr3=dr2*dr
+      a1=dr3                   ! matrix A
+      a2=dr3*rm
+      a3=dr3*rm**2
+      a4=3.d0*dr2
+      a5=3.d0*dr2*rm+dr3
+      a6=3.d0*dr2*rm**2+2*dr3*rm
+      a7=6.d0*dr
+      a8=6.d0*dr*rm+6.d0*dr2
+      a9=6.d0*dr*rm**2+12.d0*dr2*rm+2.d0*dr3
+      m1=a5*a9-a6*a8           ! cofactors
+      m2=a6*a7-a4*a9
+      m3=a4*a8-a5*a7
+      m4=a3*a8-a2*a9
+      m5=a1*a9-a3*a7
+      m6=a2*a7-a1*a8
+      m7=a2*a6-a3*a5
+      m8=a3*a4-a1*a6
+      m9=a1*a5-a2*a4
+      deti=1.d0/(a1*m1+a2*m2+a3*m3)
+      a1=m1*deti               ! inverse
+      a2=m4*deti
+      a3=m7*deti
+      a4=m2*deti
+      a5=m5*deti
+      a6=m8*deti
+      a7=m3*deti
+      a8=m6*deti
+      a9=m9*deti
+      a=a1*f+a2*df+a3*ddf      ! solve for a,b,c
+      b=a4*f+a5*df+a6*ddf
+      c=a7*f+a8*df+a9*ddf
+      do i=imatch,icut         ! replace rwf in [rm,rc]
+       r=x(i)
+       rwf(i)=(a+b*r+c*r**2)*(r-rc)**3
+      enddo
+      dwfn=0.d0                ! zero derivative for the spline
+!     nr=icut                  ! cut range of rwf
+      rmaxwf=x(icut)
+      do i=icut+1,nr
+       rwf(i)=0.d0
+      enddo
+      if (wid) then
+       do i=imatch,icut
+        write(45,*)x(i),rwf(i)
+       enddo
+      endif
+      return
+      end subroutine smooth
 
 
 

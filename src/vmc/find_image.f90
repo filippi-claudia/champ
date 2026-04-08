@@ -122,5 +122,38 @@
 
       return
       end
+
+      subroutine find_image_pbc_no_norm(r)
+
+      use periodic, only: rlatt, rlatt_inv
+      use precision_kinds, only: dp
+      implicit none
+
+      integer :: i, k
+      real(dp), dimension(3) :: s
+      real(dp), dimension(3) :: r
+
+!     minimum image in relative coordiantes space (a cube of length 1)
+!     rlatt or rlatt is assumend to be rlatt=(a,b,c)
+!     (a,b,c) the box vectors (the input should be always consistent with this )
+
+      do k=1,3
+        s(k)=0.d0
+        do i=1,3
+          s(k)=s(k)+rlatt_inv(k,i)*r(i)
+        enddo
+        s(k)=s(k)-nint(s(k))
+      enddo
+
+! resotring coordinates in real space
+      do k=1,3
+        r(k)=0.d0
+        do i=1,3
+          r(k)=r(k)+rlatt(k,i)*s(i)
+       enddo
+      enddo
+
+      return
+      end
 !-----------------------------------------------------------------------
       end module

@@ -4,15 +4,12 @@ contains
 
 subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
 
-    use coefs, only: nbasis
-    use find_pimage, only: find_image_pbc
-    use multiple_geo, only: iwf
     use orbval, only: ddorb, dorb, nadorb, orb
     use precision_kinds, only: dp
-    use phifun, only: phin, dphin, d2phin, n0_ibasis, n0_nbasis 
-    use slater, only: norb, coef
-    use system, only: ncent_tot, nelec, ell, n_images
-    use vmc_mod, only: nwftypeorb
+    use slater, only: norb
+    use system, only: ncent_tot, nelec
+    use periodic, only : n_images, ell
+    use find_pimage, only: find_image_pbc_no_norm
 
     use const
     use qmckl_data
@@ -20,304 +17,110 @@ subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
     implicit none
 
     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
-    integer :: rc
+    integer :: rc, ictx
     integer*8 :: n8
-    real(dp), dimension(3,nelec) :: xqmckl
-    real(dp), dimension(3,nelec) :: xelec
+    real(dp), dimension(3,nelec) :: ximage, ximage0
     real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
     real(dp), allocatable :: ao_qmckl(:,:,:)
     integer*8 :: na8, i_image, ivgl, i_basis, i_elec
-    real(dp), dimension(3) :: r_image
-    real(dp) :: rnorm
     character*(1024) :: err_message = ''
 
     integer :: i, iorb, k, m
-    integer :: m0, j
 
     real(dp), dimension(3,*) :: x
     real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
     real(dp), dimension(nelec,ncent_tot) :: r_en
-    real(dp), dimension(:), allocatable :: auxorb !(norb+nadorb)
-    real(dp), dimension(:, :), allocatable :: auxdorb !(norb+nadorb)
-    real(dp), dimension(:), allocatable :: auxddorb !(norb+nadorb)
-    if (.not. allocated(auxorb)) allocate (auxorb(norb+nadorb))
-    if (.not. allocated(auxdorb)) allocate (auxdorb(norb+nadorb,3))
-    if (.not. allocated(auxddorb)) allocate (auxddorb(norb+nadorb))
 
-    ! get number of atomic orbitals
-    rc = qmckl_get_ao_basis_ao_num(qmckl_ctx(qmckl_no_ctx-1), na8)
+    if (use_qmckl_jastrow) then
+        ictx = qmckl_no_ctx-1
+    else
+        ictx = qmckl_no_ctx
+    end if
+
+    
+    ! get number MO's
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting mo_num from QMCkl'
         stop
     end if
 
-    if (nbasis.ne.na8) then
-        print *, 'Error getting ao_num from QMCkl'
-        stop
-    end if
+    k=1 ! until state specific orbitals can be used
+    orb(1:nelec,1:norb+nadorb,k) = 0.d0
+    dorb(1:norb+nadorb,1:nelec,:,k) = 0.d0
+    ddorb(1:norb+nadorb,1:nelec,k) = 0.d0
+    allocate(mo_vgl_qmckl(n8, 5, nelec))
 
-    ! first image zero
-
-    ! allocate ao_vlg array
-    allocate(ao_qmckl(nbasis, 5, nelec))
-    ao_qmckl=0.d0
-
-    ! set initial coordinates for electrons zero image
-    xelec=x(1:3,1:nelec)
-
-    !setting pbc conditions
-    do i_elec=1, nelec
-    call find_image_pbc(xelec(1:3,i_elec),rnorm)
+    ! Apply PBC and translate coordinates to the central image
+    ximage0 = x(:,1:nelec)
+    do i=1,nelec
+       call find_image_pbc_no_norm(ximage0(:,i))
     enddo
 
-    ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx-1), 'N', nelec*1_8, xelec, nelec*3_8)
-    if (rc /= QMCKL_SUCCESS) then
-        print *, 'Error setting electron coordinates in QMCkl'
-        stop
-    end if
 
-    ! computing aos zero image
-    rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(qmckl_no_ctx-1), ao_qmckl, nbasis*5_8*nelec)
-    if (rc /= QMCKL_SUCCESS) then
-        print *, 'Error getting AOs from QMCkl zero image'
-    endif
 
-    ! computing images distance for iel
-    if(n_images.gt.0) then
-    ! allocate ao_vgl array for all images
-        allocate(ao_vgl_qmckl(nbasis, 5, nelec))
+    do i_image=1,n_images          
+        !get electron coordinates of the image  
+           ximage(1,:) = ximage0(1,:) - ell(1,i_image)
+           ximage(2,:) = ximage0(2,:) - ell(2,i_image)
+           ximage(3,:) = ximage0(3,:) - ell(3,i_image)
 
-        do i_image=1, n_images
-            ! set electron images distances
-            xqmckl=0.d0
-            r_image=ell(1:3,i_image)
-            do i_elec=1, nelec
-                xqmckl(1:3,i_elec)=xelec(1:3,i_elec)-r_image(1:3)
-            enddo
+        ! Send electron coordinates to QMCkl to compute the MOs at these positions
+        rc = qmckl_set_point(qmckl_ctx(ictx), 'N', nelec*1_8, ximage, nelec*3_8)
+        if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error setting electron coordinates in QMCkl'
+            stop
+        end if
 
-            ! send electron images coordinates
-            rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx-1), 'N', 1_8*nelec, xqmckl, 3_8*nelec)
-            if (rc /= QMCKL_SUCCESS) then
-                print *, 'Error setting electron coords orbitalse'
-                call qmckl_last_error(qmckl_ctx(qmckl_no_ctx-1),err_message)
-                print *, trim(err_message)
-                call abort()
-            end if
+        ! Compute the MOs
+        rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(ictx), mo_vgl_qmckl, n8*nelec*5_8)
 
-            ao_vgl_qmckl=0.d0
-            ! computing aos for the given image
-            rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(qmckl_no_ctx-1), ao_vgl_qmckl, nbasis*5_8*nelec)
-            if (rc /= QMCKL_SUCCESS) then
-                print *, 'Error getting AOs from QMCkl zero image'
-            endif
+        if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error getting MOs from QMCkl'
+            stop
+        end if
 
-            ! adding contribution of the given image
-            do i_elec=1, nelec
-                do ivgl=1, 5
-                    do i_basis=1, nbasis
-                        ao_qmckl(i_basis,ivgl, i_elec)=ao_qmckl(i_basis,ivgl,i_elec)+ao_vgl_qmckl(i_basis,ivgl,i_elec)
-                    enddo
-                enddo
-            enddo
-
-        enddo
-        ! enddo loop images
-
-    endif
-    ! endif images
-
-    ! pass QMCkl ao's to champ
-    do i_elec=1, nelec
-        do i_basis=1, nbasis
-            phin(i_basis,i_elec)=ao_qmckl(i_basis,1,i_elec)
-            dphin(i_basis,i_elec,1)=ao_qmckl(i_basis,2,i_elec)
-            dphin(i_basis,i_elec,2)=ao_qmckl(i_basis,3,i_elec)
-            dphin(i_basis,i_elec,3)=ao_qmckl(i_basis,4,i_elec)
-            d2phin(i_basis,i_elec)=ao_qmckl(i_basis,5,i_elec)
-        enddo
-    enddo
-
-    ! deallocate QMCkl champ arrays
-    if(allocated(ao_qmckl)) deallocate(ao_qmckl)
-    if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl)
-
-! Vectorization dependent code selection
-#ifdef VECTORIZATION
-
-    ! Following loop changed for better vectorization AVX512/AVX2
-    if(nwftypeorb.gt.1) then
-        do k=1,nwftypeorb
-            do i=1,nelec
-                auxorb=0.d0
-                auxdorb=0.d0
-                auxddorb=0.d0
-                do iorb=1,norb+nadorb
-                    orb(i,iorb,k)=0.d0
-                    dorb(iorb,i,1,k)=0.d0
-                    dorb(iorb,i,2,k)=0.d0
-                    dorb(iorb,i,3,k)=0.d0
-                    ddorb(iorb,i,k)=0.d0
-                    do m=1,nbasis
-!     orb  (  i,iorb,k)=orb  (  i,iorb,k)+coef(m,iorb,k)*phin  ( m,i)
-!     dorb (iorb,i,1,k)=dorb (iorb,i,1,k)+coef(m,iorb,k)*dphin (m,i,1)
-!     dorb (iorb,i,2,k)=dorb (iorb,i,2,k)+coef(m,iorb,k)*dphin (m,i,2)
-!     dorb (iorb,i,3,k)=dorb (iorb,i,3,k)+coef(m,iorb,k)*dphin (m,i,3)
-!     ddorb(  iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,k)*d2phin( m,i)
-                        auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,k)*phin  ( m,i)
-                        auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,k)*dphin (m,i,1)
-                        auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,k)*dphin (m,i,2)
-                        auxdorb (iorb,3)=auxdorb (iorb,3)+coef(m,iorb,k)*dphin (m,i,3)
-                        auxddorb(  iorb)=auxddorb(iorb)+coef(m,iorb,k)*d2phin( m,i)
-                    enddo
-                enddo
-                orb(i,1:(norb+nadorb),k)=auxorb(1:(norb+nadorb))
-                dorb(1:(norb+nadorb),i,1:3,k)=auxdorb(1:(norb+nadorb),1:3)
-                ddorb(1:(norb+nadorb),i,k)=auxddorb(1:(norb+nadorb))
-            enddo
-        enddo
-
-    else
-
+        ! pass computed qmckl orbitals back to champ
         do i=1,nelec
-            auxorb=0.d0
-            auxdorb=0.d0
-            auxddorb=0.d0
             do iorb=1,norb+nadorb
-                orb(i,iorb,1)=0.d0
-                dorb(iorb,i,1,1)=0.d0
-                dorb(iorb,i,2,1)=0.d0
-                dorb(iorb,i,3,1)=0.d0
-                ddorb(iorb,i,1)=0.d0
-                do m=1,nbasis
-!     orb  (  i,iorb,1)=orb  (  i,iorb,1)+coef(m,iorb,iwf)*phin  ( m,i)
-!     dorb (iorb,i,1,1)=dorb (iorb,i,1,1)+coef(m,iorb,iwf)*dphin (m,i,1)
-!     dorb (iorb,i,2,1)=dorb (iorb,i,2,1)+coef(m,iorb,iwf)*dphin (m,i,2)
-!     dorb (iorb,i,3,1)=dorb (iorb,i,3,1)+coef(m,iorb,iwf)*dphin (m,i,3)
-!     ddorb(  iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin( m,i)
-                    auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,iwf)*phin  ( m,i)
-                    auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,iwf)*dphin (m,i,1)
-                    auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,iwf)*dphin (m,i,2)
-                    auxdorb (iorb,3)=auxdorb (iorb,3)+coef(m,iorb,iwf)*dphin (m,i,3)
-                    auxddorb(  iorb)=auxddorb(iorb)+coef(m,iorb,iwf)*d2phin( m,i)
-                enddo
-            enddo
-            orb(i,1:(norb+nadorb),1)=auxorb(1:(norb+nadorb))
-            dorb(1:(norb+nadorb),i,1:3,1)=auxdorb(1:(norb+nadorb),1:3)
-            ddorb(1:(norb+nadorb),i,1)=auxddorb(1:(norb+nadorb))
-        enddo
-
-    endif
-    ! nwftype endif
-
-#else
-! keep the old localization code if no vectorization instructions available
-
-    if(nwftypeorb.gt.1) then
-
-        do k=1,nwftypeorb
-            do i=1,nelec
-                auxorb=0.d0
-                auxdorb=0.d0
-                auxddorb=0.d0
-                do iorb=1,norb+nadorb
-                    orb(i,iorb,k)=0.d0
-                    dorb(iorb,i,1,k)=0.d0
-                    dorb(iorb,i,2,k)=0.d0
-                    dorb(iorb,i,3,k)=0.d0
-                    ddorb(iorb,i,k)=0.d0
-                    do m0=1,n0_nbasis(i)
-                        m=n0_ibasis(m0,i)
-!     orb  (  i,iorb,k)=orb  (  i,iorb,k)+coef(m,iorb,k)*phin  ( m,i)
-!     dorb (iorb,i,1,k)=dorb (iorb,i,1,k)+coef(m,iorb,k)*dphin (m,i,1)
-!     dorb (iorb,i,2,k)=dorb (iorb,i,2,k)+coef(m,iorb,k)*dphin (m,i,2)
-!     dorb (iorb,i,3,k)=dorb (iorb,i,3,k)+coef(m,iorb,k)*dphin (m,i,3)
-!     ddorb(iorb,i,k)=ddorb(iorb,i,k)+coef(m,iorb,k)*d2phin( m,i)
-                        auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,k)*phin  ( m,i)
-                        auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,k)*dphin (m,i,1)
-                        auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,k)*dphin (m,i,2)
-                        auxdorb (iorb,3)=auxdorb (iorb,3)+coef(m,iorb,k)*dphin (m,i,3)
-                        auxddorb(  iorb)=auxddorb(iorb)+coef(m,iorb,k)*d2phin( m,i)
-                    enddo
-                enddo
-                orb(i,1:(norb+nadorb),k)=auxorb(1:(norb+nadorb))
-                dorb(1:(norb+nadorb),i,1:3,k)=auxdorb(1:(norb+nadorb),1:3)
-                ddorb(1:(norb+nadorb),i,k)=auxddorb(1:(norb+nadorb))
-            enddo
-        enddo
-
-    else
-
-        do i=1,nelec
-            auxorb=0.d0
-            auxdorb=0.d0
-            auxddorb=0.d0
-            do iorb=1,norb+nadorb
-                orb(i,iorb,1)=0.d0
-                dorb(iorb,i,1,1)=0.d0
-                dorb(iorb,i,2,1)=0.d0
-                dorb(iorb,i,3,1)=0.d0
-                ddorb(iorb,i,1)=0.d0
-                do m0=1,n0_nbasis(i)
-                    m=n0_ibasis(m0,i)
-!     orb  (  i,iorb,1)=orb  (  i,iorb,1)+coef(m,iorb,iwf)*phin  ( m,i)
-!     dorb (iorb,i,1,1)=dorb (iorb,i,1,1)+coef(m,iorb,iwf)*dphin (m,i,1)
-!     dorb (iorb,i,2,1)=dorb (iorb,i,2,1)+coef(m,iorb,iwf)*dphin (m,i,2)
-!     dorb (iorb,i,3,1)=dorb (iorb,i,3,1)+coef(m,iorb,iwf)*dphin (m,i,3)
-!     ddorb(iorb,i,1)=ddorb(iorb,i,1)+coef(m,iorb,iwf)*d2phin( m,i)
-                    auxorb  (iorb)=auxorb  (iorb)+coef(m,iorb,iwf)*phin  ( m,i)
-                    auxdorb (iorb,1)=auxdorb (iorb,1)+coef(m,iorb,iwf)*dphin (m,i,1)
-                    auxdorb (iorb,2)=auxdorb (iorb,2)+coef(m,iorb,iwf)*dphin (m,i,2)
-                    auxdorb (iorb,3)=auxdorb (iorb,3)+coef(m,iorb,iwf)*dphin (m,i,3)
-                    auxddorb(  iorb)=auxddorb(iorb)+coef(m,iorb,iwf)*d2phin( m,i)
-                enddo
-            enddo
-            orb(i,1:(norb+nadorb),1)=auxorb(1:(norb+nadorb))
-            dorb(1:(norb+nadorb),i,1:3,1)=auxdorb(1:(norb+nadorb),1:3)
-            ddorb(1:(norb+nadorb),i,1)=auxddorb(1:(norb+nadorb))
-        enddo
-
-    endif
-    ! nwftype endif
-
-#endif
-! vectorization endif
+                orb  (  i,iorb,k) = orb  (  i,iorb,k) + mo_vgl_qmckl(iorb,1,i)
+                dorb (iorb,i,1,k) = dorb (iorb,i,1,k) + mo_vgl_qmckl(iorb,2,i)
+                dorb (iorb,i,2,k) = dorb (iorb,i,2,k) + mo_vgl_qmckl(iorb,3,i)
+                dorb (iorb,i,3,k) = dorb (iorb,i,3,k) + mo_vgl_qmckl(iorb,4,i)
+                ddorb(  iorb,i,k) = ddorb(  iorb,i,k) + mo_vgl_qmckl(iorb,5,i)
+            end do
+        end do
+    end do
+    deallocate(mo_vgl_qmckl)
+    
 return
 end
 
 subroutine orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
 
-    use coefs, only: nbasis
-    use find_pimage, only: find_image_pbc
-    use multiple_geo, only: iwf
     use multislatern, only: ddorbn, dorbn, orbn
-    use periodic, only : n_images
     use precision_kinds, only: dp
-    use phifun,  only: d2phin, dphin, phin
-    use slater, only: norb, coef
-    use system, only: ncent_tot, nelec, ell
-    use vmc_mod, only: nwftypeorb
+    use slater, only: norb
+    use system, only: ncent_tot, nelec
+    use periodic, only : n_images, ell
+    use find_pimage, only: find_image_pbc_no_norm
 
     use qmckl_data
 
+
     implicit none
 
-    integer :: iel, iflag, iorb, m
-    integer :: k, j, ictx
+    integer :: iel, iflag, iorb, ictx, k
 
     real(dp), dimension(3,*) :: x
     real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
     real(dp), dimension(nelec,ncent_tot) :: r_en
 
     real(dp), allocatable :: mo_vgl_qmckl(:,:)
-    integer :: rc
-    integer*8 :: n8, na8, i_image, ivgl, i_basis
+    integer :: rc, i_image
+    integer*8 :: n8
     character*(1024) :: err_message = ''
-    real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
-    real(dp), allocatable :: ao_qmckl(:,:)
-    real(dp), dimension(3) :: xiel
-    real(dp), dimension(3,n_images) :: xqmckl
-    real(dp) :: rnorm
+    real(dp), dimension(3) :: ximage, ximage0
 
     if (iflag .eq. 0) then
         ictx = 1
@@ -325,57 +128,30 @@ subroutine orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
         ictx = 2
     end if
 
-    ! get number of atomic orbitals
-    rc = qmckl_get_ao_basis_ao_num(qmckl_ctx(ictx), na8)
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
     if (rc /= QMCKL_SUCCESS) then
-       print *, 'Error getting mo_num from QMCkl'
-       stop
+        print *, 'Error getting mo_num from QMCkl'
+        stop
     end if
+    
+    allocate(mo_vgl_qmckl(n8, 5))
+    
+    k=1  ! until state-specific orbitals can use QMCKL
+    orbn(1:norb, k) = 0.d0
+    dorbn(1:norb, 1:3, k) = 0.d0
+    if(iflag.gt.0) ddorbn(1:norb, k) = 0.d0
+    ! Apply PBC and translate coordinates to the central image
+    ximage0 = x(:,iel)
+    call find_image_pbc_no_norm(ximage0)
 
+    do i_image=1, n_images
+        !get electron coordinates of the image
+        ximage(1) = ximage0(1) - ell(1,i_image)
+        ximage(2) = ximage0(2) - ell(2,i_image)
+        ximage(3) = ximage0(3) - ell(3,i_image)
 
-    if (nbasis.ne.na8) then
-       print *, 'Error getting ao_num from QMCkl'
-       stop
-    end if
-
-    ! allocate ao_vlg array
-    allocate(ao_qmckl(nbasis, 5))
-    ao_qmckl=0.d0
-
-    xiel=x(1:3,iel)
-    ! applying pbc (wrapping inside the box)
-    call find_image_pbc(xiel,rnorm)
-
-    ! set one electron coordinates
-    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', 1_8, xiel, 3_8)
-    if (rc /= QMCKL_SUCCESS) then
-       print *, 'Error setting electron coords orbitalse'
-       call qmckl_last_error(qmckl_ctx(ictx),err_message)
-       print *, trim(err_message)
-       call abort()
-    end if
-
-    ! computing aos zero image
-    rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(ictx), ao_qmckl, nbasis*5_8)
-    if (rc /= QMCKL_SUCCESS) then
-        print *, 'Error getting AOs from QMCkl zero image'
-    endif
-
-    ! intialize before computation just in case garbage appears
-    xqmckl=0.d0
-    ! computing images distance for iel
-    if(n_images.gt.0) then
-
-        ! allocate ao_vgl array for all images
-        allocate(ao_vgl_qmckl(nbasis, 5, n_images))
-        ao_vgl_qmckl=0.d0
-
-        do i_image=1, n_images
-            xqmckl(1:3,i_image)=xiel(1:3)-ell(1:3,i_image)
-        enddo
-
-        ! send coordinates
-        rc = qmckl_set_point(qmckl_ctx(ictx), 'N', 1_8*n_images, xqmckl, 3_8*n_images)
+        ! set one electron coordinates
+        rc = qmckl_set_point(qmckl_ctx(ictx), 'N', 1_8, ximage, 3_8)
         if (rc /= QMCKL_SUCCESS) then
             print *, 'Error setting electron coords orbitalse'
             call qmckl_last_error(qmckl_ctx(ictx),err_message)
@@ -383,145 +159,46 @@ subroutine orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
             call abort()
         end if
 
-        rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(ictx), ao_vgl_qmckl, nbasis*n_images*5_8)
-        if (rc /= QMCKL_SUCCESS) then
-            print *, 'Error getting AOs from QMCkl'
-        endif
+        ! Compute the MOs
+        rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(ictx), mo_vgl_qmckl, n8*5_8)
 
-
-        ! summing it all over the image0
-        do i_image=1, n_images
-            do ivgl=1, 5
-                do i_basis=1, nbasis
-                    ao_qmckl(i_basis,ivgl)=ao_qmckl(i_basis,ivgl)+ao_vgl_qmckl(i_basis,ivgl,i_image)
-                enddo
-            enddo
+        do iorb=1,norb
+            orbn(iorb,k)= orbn(iorb,k) + mo_vgl_qmckl(iorb,1)
+            dorbn(iorb,1,k)= dorbn(iorb,1,k) + mo_vgl_qmckl(iorb,2)
+            dorbn(iorb,2,k)= dorbn(iorb,2,k) + mo_vgl_qmckl(iorb,3)
+            dorbn(iorb,3,k)= dorbn(iorb,3,k) + mo_vgl_qmckl(iorb,4)
+            if(iflag.gt.0) ddorbn(iorb,k)= ddorbn(iorb,k) + mo_vgl_qmckl(iorb,5)
         enddo
-
-    endif
-
-    ! copying QMCkl ao's back to champ
-    do i_basis=1, nbasis
-        phin(i_basis,iel)=ao_qmckl(i_basis,1)
-        dphin(i_basis,iel,1)=ao_qmckl(i_basis,2)
-        dphin(i_basis,iel,2)=ao_qmckl(i_basis,3)
-        dphin(i_basis,iel,3)=ao_qmckl(i_basis,4)
-        d2phin(i_basis,iel)=ao_qmckl(i_basis,5)
     enddo
-
-    if(allocated(ao_qmckl)) deallocate(ao_qmckl)
-    if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl)
-
-    if(iflag.gt.0) then
-
-        if(nwftypeorb.gt.1) then
-
-            do k=1,nwftypeorb
-                do iorb=1,norb
-                    orbn(iorb,k)=0.d0
-                    dorbn(iorb,1,k)=0.d0
-                    dorbn(iorb,2,k)=0.d0
-                    dorbn(iorb,3,k)=0.d0
-                    ddorbn(iorb,k)=0.d0
-                    do m=1,nbasis
-                        orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
-                        dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
-                        dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
-                        dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
-                        ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,k)*d2phin(m,iel)
-                    enddo
-                enddo
-            enddo
-
-        else
-
-            do iorb=1,norb
-                orbn(iorb,1)=0.d0
-                dorbn(iorb,1,1)=0.d0
-                dorbn(iorb,2,1)=0.d0
-                dorbn(iorb,3,1)=0.d0
-                ddorbn(iorb,1)=0.d0
-                do m=1,nbasis
-                    orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-                    dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                    dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                    dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
-                    ddorbn(iorb,1)=ddorbn(iorb,1)+coef(m,iorb,iwf)*d2phin(m,iel)
-                enddo
-            enddo
-
-
-        endif
-        ! endif nwftype
-    else
-    ! else iflag
-
-        if(nwftypeorb.gt.1) then
-
-            do k=1,nwftypeorb
-                do iorb=1,norb
-                    orbn(iorb,k)=0.d0
-                    dorbn(iorb,1,k)=0.d0
-                    dorbn(iorb,2,k)=0.d0
-                    dorbn(iorb,3,k)=0.d0
-                    do m=1,nbasis
-                    orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,k)*phin(m,iel)
-                    dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,k)*dphin(m,iel,1)
-                    dorbn(iorb,2,k)=dorbn(iorb,2,k)+coef(m,iorb,k)*dphin(m,iel,2)
-                    dorbn(iorb,3,k)=dorbn(iorb,3,k)+coef(m,iorb,k)*dphin(m,iel,3)
-                    enddo
-                enddo
-            enddo
-
-        else
-
-            do iorb=1,norb
-                orbn(iorb,1)=0.d0
-                dorbn(iorb,1,1)=0.d0
-                dorbn(iorb,2,1)=0.d0
-                dorbn(iorb,3,1)=0.d0
-                do m=1,nbasis
-                    orbn(iorb,1)=orbn(iorb,1)+coef(m,iorb,iwf)*phin(m,iel)
-                    dorbn(iorb,1,1)=dorbn(iorb,1,1)+coef(m,iorb,iwf)*dphin(m,iel,1)
-                    dorbn(iorb,2,1)=dorbn(iorb,2,1)+coef(m,iorb,iwf)*dphin(m,iel,2)
-                    dorbn(iorb,3,1)=dorbn(iorb,3,1)+coef(m,iorb,iwf)*dphin(m,iel,3)
-                enddo
-            enddo
-
-        endif
-        ! endif nwftype
-
-    endif
-    ! endif iflag
-
+    deallocate(mo_vgl_qmckl)
 return
 end
 
 subroutine orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwforb)
 
-    use coefs, only: nbasis
-    use find_pimage, only: find_image_pbc
     use m_force_analytic, only: iforce_analy
     use multiple_geo, only: iwf
-    use numbas2, only: ibas0,ibas1
     use optwf_control, only: ioptorb
     use optwf_control, only: method
     use orbval,  only: nadorb
     use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
-    use periodic, only : n_images
     use precision_kinds, only: dp
     use qua,     only: nquad
     use slater,  only: coef,norb
     use sr_mod,  only: i_sr_rescale
-    use system,  only: ncent,ncent_tot,nelec,ell
+    use system,  only: iwctype,ncent,ncent_tot,nelec
     use vmc_mod, only: norb_tot, nwftypeorb
-
+    use error,   only: fatal_error
+    use contrl_file, only: ounit
+    use periodic, only : n_images, ell, rlatt, rlatt_inv
+    use find_pimage, only: find_image_pbc_no_norm
+    
     use qmckl_data
 
     implicit none
 
-    integer :: ic, iq
-    integer :: iorb, k, m, m0, nxquad, iwforb
+    integer :: ic, iq, ictx, i, j
+    integer :: iorb, k, nxquad, iwforb
     integer :: nadorb_sav
 
     real(dp), dimension(3,*) :: xquad
@@ -530,191 +207,218 @@ subroutine orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_
     real(dp), dimension(norb_tot, *) :: orbn
     real(dp), dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
     real(dp), dimension(norb,3,nxquad,ncent_tot) :: da_orbn
-    real(dp), dimension(3) :: dtmp
-    real(dp) :: ddtmp
 
     real(dp), allocatable :: mo_qmckl(:,:)
-    integer :: rc
-    real(dp), allocatable :: ao_qmckl(:,:,:)
-    real(dp), allocatable :: ao_vgl_qmckl(:,:,:)
-    integer*8 :: n8, na8, i_image, ivgl, i_basis
-    character*(1024) :: err_message = ''
-    real(dp), allocatable :: xqmckl(:,:)
-    real(dp), allocatable :: xqmckl_i(:,:)
-    real(dp) :: rnorm
-    real(dp), dimension(3) :: r_image
+    integer :: rc, i_image
+    integer*8 :: n8
+    real(dp), dimension(3, nxquad) :: ximage, ximage0
+    real(dp), dimension(3, nxquad) :: xquad_work
+    real(dp), dimension(3) :: s_frac
 
     nadorb_sav=nadorb
 
-    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
+    ictx = 2
 
-    if(nwftypeorb.gt.1) iwf=1
-
-    ! get number of atomic orbitals
-    rc = qmckl_get_ao_basis_ao_num(qmckl_ctx(1), na8)
-    if (rc /= QMCKL_SUCCESS) then
-        print *, 'Error getting mo_num from QMCkl'
-        stop
+    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) then
+       ictx=1
+       nadorb = 0
     end if
     
-    
-    if (nbasis.ne.na8) then
-        print *, 'Error getting ao_num from QMCkl'
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'orbitals quad Error getting mo_num from QMCkl'
+        print *, "n8", n8
         stop
     end if
-    
-    ! Image zero calculation
-    allocate(ao_qmckl(nbasis, 5, nxquad))
-    ao_qmckl=0.d0
 
-    allocate(xqmckl(3,nxquad))
-    xqmckl=xquad(1:3,1:nxquad)
-    ! apply pbc (wraping inside the box)
-    do iq=1,nxquad
-        call find_image_pbc(xqmckl(1:3,iq),rnorm)
-    enddo
-    
-    ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(1), 'N', nxquad*1_8, xqmckl, nxquad*3_8)
-    if (rc /= QMCKL_SUCCESS) then
-        print *, 'Error setting electron coordinates QMCkl orbitals_quad'
-        stop
-    end if
-    
-    ! computing ao's zero image
-    rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(1), ao_qmckl, nxquad*5_8*nbasis)
-    if (rc /= QMCKL_SUCCESS) then
-        print *, 'Error getting AOs from QMCkl zero image'
-    endif
-    
-    ! computing images distance for nxquad points
-    if(n_images.gt.0) then
-    
-        ! allocate ao_vgl array for all images
-        allocate(ao_vgl_qmckl(nbasis, 5, nxquad))
-        allocate(xqmckl_i(3,nxquad))
+    allocate(mo_qmckl(n8, nxquad))
+    orbn(1:norb+nadorb,1:nxquad) = 0.d0
+    dorbn(1:norb,1:nxquad,1:3) = 0.d0
 
-        do i_image=1, n_images
-            ! initilialize xqmckl_i
-            ao_vgl_qmckl=0.d0
-            xqmckl_i=0.d0
-
-            r_image=ell(1:3,i_image)
-            do iq=1, nxquad
-            xqmckl_i(1:3,iq)=xqmckl(1:3,iq)-r_image(1:3)
-            enddo
-    
-            ! send coordinates of xquad image
-            rc = qmckl_set_point(qmckl_ctx(1), 'N', 1_8*nxquad, xqmckl_i, 3_8*nxquad)
-            if (rc /= QMCKL_SUCCESS) then
-                print *, 'Error electron coords orbitals quad'
-                call qmckl_last_error(qmckl_ctx(1),err_message)
-                print *, trim(err_message)
-                call abort()
-            end if
-    
-            ! computing aos for the given image
-            rc = qmckl_get_ao_basis_ao_vgl_inplace(qmckl_ctx(1),ao_vgl_qmckl, nxquad*5_8*nbasis)
-            if (rc /= QMCKL_SUCCESS) then
-                print *, 'Error getting AOs from QMCkl zero image'
-            endif
-    
-    
-            ! add contribution of the given image
-            do iq=1, nxquad
-                do ivgl=1, 5
-                    do i_basis=1, nbasis
-                        ao_qmckl(i_basis,ivgl, iq)=ao_qmckl(i_basis,ivgl,iq)+ao_vgl_qmckl(i_basis,ivgl,iq)
-                    enddo
-                enddo
-            enddo
-
-        enddo
-        !enddo images    
-    
-    endif
-    ! endif periodic images
-    
-    ! passing the qmckl ao's back to champ
-    do iq=1, nxquad
-        do i_basis=1, nbasis
-            phin(i_basis,iq)=ao_qmckl(i_basis,1,iq)
-            dphin(i_basis,iq,1)=ao_qmckl(i_basis,2,iq)
-            dphin(i_basis,iq,2)=ao_qmckl(i_basis,3,iq)
-            dphin(i_basis,iq,3)=ao_qmckl(i_basis,4,iq)
-        enddo
+    !transform quadrature points to the central image 
+    ximage0 = xquad(:,1:nxquad)
+    do i=1,nxquad
+       call find_image_pbc_no_norm(ximage0(:,i))
     enddo
 
-    if(allocated(ao_qmckl)) deallocate(ao_qmckl)
-    if(allocated(ao_vgl_qmckl)) deallocate(ao_vgl_qmckl)
-    if(allocated(xqmckl)) deallocate(xqmckl)
-    if(allocated(xqmckl_i)) deallocate(xqmckl_i)
+    do i_image=1,n_images
+        !get image quadrature points coordinates
+        ximage(1,:) = ximage0(1,:) - ell(1,i_image)
+        ximage(2,:) = ximage0(2,:) - ell(2,i_image)
+        ximage(3,:) = ximage0(3,:) - ell(3,i_image)
 
-    if(nwftypeorb.gt.1) iwf=iwforb
+        ! Send electron coordinates to QMCkl to compute the MOs at these positions
+        rc = qmckl_set_point(qmckl_ctx(ictx), 'N', nxquad*1_8, ximage, nxquad*3_8)
+        if (rc /= QMCKL_SUCCESS) then
+            print *, 'orbitals quad Error setting electron coordinates in QMCkl'
+            print *, "nxquad", nxquad
+            stop
+        end if
 
-    do iq=1,nxquad
-    
-! Vectorization dependent code selection
-#ifdef VECTORIZATION
-    ! The following loop changed for better vectorization AVX512/AVX2
-        do iorb=1,norb+nadorb
-            orbn(iorb,iq)=0.d0
-            do m=1,nbasis
-                orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
-            enddo
-        enddo
-#else
-        do iorb=1,norb+nadorb
-            orbn(iorb,iq)=0.d0
-            do m0=1,n0_nbasis(iq)
-                m=n0_ibasis(m0,iq)
-                orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
-            enddo
-        enddo
-#endif
-    
         if(iforce_analy.gt.0) then
-            do iorb=1,norb
-                do ic=1,ncent
-                    do k=1,3
-                        da_orbn(iorb,k,iq,ic)=0.d0
-                    enddo
-                enddo
-#ifdef VECTORIZATION
-                do ic=1,ncent
-                    do k=1,3
-                        do m=ibas0(ic),ibas1(ic)
-                            da_orbn(iorb,k,iq,ic)=da_orbn(iorb,k,iq,ic)-coef(m,iorb,iwf)*dphin(m,iq,k)
+
+            if (ictx .eq. 2) then
+                rc = qmckl_set_point(qmckl_ctx(1), 'N', nxquad*1_8, ximage, nxquad*3_8)
+                if (rc /= QMCKL_SUCCESS) then
+                    stop
+                end if
+            end if
+
+            rc = qmckl_get_forces_mo_value_inplace(qmckl_ctx(1), da_orbn, nxquad*norb*3_8*ncent_tot)
+            if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCkl MO forces.')
+
+            do ic=1,ncent
+                do iq=1,nxquad
+                    do k =1,3
+                        do iorb=1,norb
+                            dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(iorb,k,iq,ic)
                         enddo
                     enddo
                 enddo
-#else
-                do m0=1,n0_nbasis(iq)
-                    m=n0_ibasis(m0,iq)
-                    ic=n0_ic(m0,iq)
-                    do k=1,3
-                        da_orbn(iorb,k,iq,ic)=da_orbn(iorb,k,iq,ic)-coef(m,iorb,iwf)*dphin(m,iq,k)
-                    enddo
-                enddo
-#endif
-                do k=1,3
-                    dorbn(iorb,iq,k)=0.d0
-                enddo
-                do ic=1,ncent
-                    do k=1,3
-                        dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(iorb,k,iq,ic)
-                    enddo
-                enddo
             enddo
-    
         endif
 
-    enddo
-    ! enddo nxquad
+
+        ! Compute the MOs
+        rc = qmckl_get_mo_basis_mo_value_inplace(qmckl_ctx(ictx), mo_qmckl, nxquad*n8)
+
+        if (rc /= QMCKL_SUCCESS) then
+            print *, 'Error orbitals quad getting MOs from QMCkl'
+            stop
+        end if
+
+        orbn(1:norb+nadorb,1:nxquad) = orbn(1:norb+nadorb,1:nxquad) + mo_qmckl(1:norb+nadorb,1:nxquad)
+    end do
+
+    deallocate(mo_qmckl)
 
     nadorb = nadorb_sav
+return
+end
+
+subroutine init_context_qmckl(update_coef)
+
+    use qmckl_data
+    use slater,  only: norb, coef
+    use system,  only: ncent, znuc, iwctype
+    use orbval,  only: nadorb
+    use vmc_mod, only: norb_tot
+    use precision_kinds, only: dp
+    use coefs,   only: nbasis
+    use pseudo,  only: nloc
+    use contrl_file, only: ounit
+    use error,   only: fatal_error
+
+    implicit none
+
+    integer(qmckl_exit_code)   :: rc
+    integer*8                  :: n8
+    integer*8                  :: ncheck, ictx, ictx_lim
+    integer*8                  :: norb_qmckl(qmckl_no_ctx_max)
+    integer, allocatable       :: keep(:)
+    character*(1024)           :: err_message = ''
+    integer                    :: k
+  
+    logical                    :: do_nucl_fitcusp
+    real(dp), allocatable      :: nucl_fitcusp_radius(:)
+    real(dp), parameter        :: a_cusp = 1.74891d0
+    real(dp), parameter        :: b_cusp = 0.126057d0
+    character(len=100)         :: int_format     = '(A, T40, ":: ", T50, I0)'
+    character(len=100)         :: array_format   = '(A, "(",I0,")", T40, ":: ", T42, F25.16)'
+    logical                    :: update_coef
+
+    if (use_qmckl_jastrow) then
+        ictx_lim = qmckl_no_ctx-1
+    else
+        ictx_lim = qmckl_no_ctx
+    end if
+
+    do ictx = 1, ictx_lim
+        rc = qmckl_set_numprec_precision(qmckl_ctx(ictx), 53) ! 24
+        if (rc .ne. QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl error: Unable to set precision')
+    end do
+
+    write(ounit, *) " QMCkl precision set to 53 bits"
+
+
+    do ictx=1,ictx_lim
+        rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl getting mo_num from trexio file')
+
+        write(ounit,int_format) "QMCkl number mo found", n8
+        if(n8.ne.norb_tot) call fatal_error('INPUT: QMCkl getting wrong number of orbitals')
+        
+       if (update_coef) then
+          rc = qmckl_set_mo_basis_coefficient(qmckl_ctx(ictx), coef(:,:, 1), nbasis*norb_tot*1_8)
+          if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl setting orbital coefficients')
+       end if
+    enddo
+
+
+    n8 = norb_tot*1_8
+
+    allocate(keep(n8))
+
+    ! maximum mo's number to occupied in determinants and for optimization
+    norb_qmckl(1)=norb
+    norb_qmckl(2)=norb+nadorb
+    norb_qmckl(2)=min(norb_qmckl(2),norb_tot) ! perhaps done before
+
+    do ictx=1,ictx_lim
+
+      if (n8 > norb_qmckl(ictx)) then
+
+       ! selecting range of orbitals to compute qith QMCkl
+       keep(1:norb_qmckl(ictx)) = 1
+       keep((norb_qmckl(ictx)+1):n8) = 0
+
+       rc = qmckl_mo_basis_select_mo(qmckl_ctx(ictx), keep, n8)
+       if (rc /= QMCKL_SUCCESS) write(ounit,*) 'Error 01 selecting MOs in verify orbitals'
+
+       ! getting new number of orbitals to be computed
+       rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), ncheck)
+       if (rc /= QMCKL_SUCCESS) call fatal_error('INPUT: QMCkl mo_num from verify orbitals')
+       write(ounit,int_format) "QMCkl number of orbitals after mo's selec", ncheck
+       write(ounit,int_format) "QMCkl norb_qmckl after mo's selec", norb_qmckl(ictx)
+
+       if (ncheck /= norb_qmckl(ictx)) call fatal_error('INPUT: Problem in MO selection in QMCkl verify orb')
+      endif
+
+    enddo
+    ! deallocate keep
+    deallocate(keep)
+
+    if(nloc.eq.0) then
+      allocate(nucl_fitcusp_radius(ncent))
+      do_nucl_fitcusp = .true.
+
+      if(.not. do_nucl_fitcusp) then
+         nucl_fitcusp_radius = 0.d0
+       else
+        do k=1,ncent
+          nucl_fitcusp_radius(k) = 1.d0/(a_cusp*znuc(iwctype(k))+b_cusp)
+          write(ounit, array_format) "Radius fit cusps for atom", k, nucl_fitcusp_radius(k)
+        enddo
+
+        ! Avoid dummy atoms
+        do k=1,ncent
+         if (znuc(iwctype(k)) < 5.d-1) then
+           nucl_fitcusp_radius(k) = 0.d0
+         endif
+        enddo
+
+        do ictx=1,ictx_lim
+          write(ounit, *) "Context for QMCKl set mo basis r cusp  ", qmckl_ctx(ictx)
+          rc = qmckl_set_mo_basis_r_cusp(qmckl_ctx(ictx),dble(nucl_fitcusp_radius(:)), int(ncent,8))
+          write(ounit, *) "Status QMCKl set mo basis r cusp  ", rc
+
+          if (rc /= QMCKL_SUCCESS) call fatal_error('PARSER: QMCkl error: Unable to set cusp parameters')
+        enddo
+      endif
+    endif
 
 return
 end
+
 
 end module
