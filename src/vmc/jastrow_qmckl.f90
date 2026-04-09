@@ -29,13 +29,14 @@ subroutine jastrow_init_qmckl(ictx)
         x(3,i) = 0.0d0
     end do
 
-    if(nspin2b.eq.0) then
+    if(nocuspb.eq.0) then
       rc = qmckl_set_jastrow_champ_spin_independent(qmckl_ctx(ictx), 0)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow spin.')
-     elseif(nspin2b.eq.1) then
+    elseif(nocuspb.eq.1) then
       rc = qmckl_set_jastrow_champ_spin_independent(qmckl_ctx(ictx),1)
       if (rc /= QMCKL_SUCCESS) call fatal_error('Error setting QMCkl Jastrow same cusp parallel/antiparallel.')
-     elseif(nspin2b.eq.2) then
+    endif     
+    if(nspin2b.eq.2) then
       call fatal_error('QMCkl cannot handle npsin2.eq.2 ')
     endif
 
