@@ -73,6 +73,9 @@ module trexio_read_data
         logical                         :: exist
         type(atom_t)                    :: atoms
         character(len=2), allocatable   :: unique(:)
+        real(dp), allocatable           :: nucleus_charge_trexio(:)
+        logical                         :: has_trexio_nuclear_charge
+        real(dp)                        :: znuc_from_periodic_table
 
         ! trexio
         integer(8)                      :: trex_molecule_file
@@ -122,17 +125,30 @@ module trexio_read_data
         if (.not. allocated(symbol))  allocate(symbol(ncent))
         if (.not. allocated(iwctype)) allocate(iwctype(ncent))
         if (.not. allocated(unique))  allocate(unique(ncent))
+        if (.not. allocated(nucleus_charge_trexio)) allocate(nucleus_charge_trexio(ncent))
+        has_trexio_nuclear_charge = .false.
 
         if (wid) then
         rc = trexio_read_nucleus_coord(trex_molecule_file, cent)
         call trexio_assert(rc, TREXIO_SUCCESS)
         rc = trexio_read_nucleus_label(trex_molecule_file, symbol, 2)
         call trexio_assert(rc, TREXIO_SUCCESS)
+
+        ! Try to read nuclear charges from the trexio file
+        if (trexio_has_nucleus_charge(trex_molecule_file) == 0) then
+            rc = trexio_read_nucleus_charge(trex_molecule_file, nucleus_charge_trexio)
+            if (rc == TREXIO_SUCCESS) then
+                has_trexio_nuclear_charge = .true.
+            endif
+        endif
+
         rc = trexio_close(trex_molecule_file)
         call trexio_assert(rc, TREXIO_SUCCESS)
         endif
         call bcast(cent)
         call bcast(symbol)
+        call bcast(has_trexio_nuclear_charge)
+        call bcast(nucleus_charge_trexio)
 
 
         write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
@@ -168,14 +184,44 @@ module trexio_read_data
         if (allocated(unique)) deallocate(unique)
 
         ! Get the znuc for each unique atom
-        do j = 1, nctype
-            atoms = element(atomtyp(j))
-            if (nloc == 0) then
-                znuc(j) = atoms%znuclear
-            else
-                znuc(j) = atoms%znuclear - atoms%core
-            endif
-        enddo
+        if (has_trexio_nuclear_charge) then
+            write(ounit,*) '-----------------------------------------------------------------------'
+            write(ounit,*) ' WARNING: Reading nuclear charges from the trexio file'
+            write(ounit,*) '-----------------------------------------------------------------------'
+
+            ! Assign znuc from the trexio charge of the first atom of each type
+            do j = 1, ncent
+                znuc(iwctype(j)) = nucleus_charge_trexio(j)
+            enddo
+
+            ! Cross-check against the periodic table values
+            write(ounit,*)
+            write(ounit,'(A4, 2x, A20, 2x, A20, 2x, A20)') 'Type', 'Trexio Nuclear Charge', 'Periodic Table Nuclear Charge', 'Difference'
+            write(ounit,*) '-----------------------------------------------------------------------'
+            do j = 1, nctype
+                atoms = element(atomtyp(j))
+                if (nloc == 0) then
+                    znuc_from_periodic_table = atoms%znuclear
+                else
+                    znuc_from_periodic_table = atoms%znuclear - atoms%core
+                endif
+                write(ounit,'(A4, 2x, F20.10, 2x, F20.10, 2x, F20.10)') &
+                    atomtyp(j), znuc(j), znuc_from_periodic_table, znuc(j) - znuc_from_periodic_table
+            enddo
+            write(ounit,*) '-----------------------------------------------------------------------'
+        else
+            ! Fallback: derive znuc from the periodic table
+            do j = 1, nctype
+                atoms = element(atomtyp(j))
+                if (nloc == 0) then
+                    znuc(j) = atoms%znuclear
+                else
+                    znuc(j) = atoms%znuclear - atoms%core
+                endif
+            enddo
+        endif
+
+        if (allocated(nucleus_charge_trexio)) deallocate(nucleus_charge_trexio)
 
         ncent_tot = ncent + nghostcent
         nctype_tot = nctype + newghostype
