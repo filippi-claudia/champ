@@ -184,7 +184,7 @@ module trexio_read_data
         if (allocated(unique)) deallocate(unique)
 
         ! Get the znuc for each unique atom
-        if (has_trexio_charge) then
+        if (has_trexio_nuclear_charge) then
             write(ounit,*) '-----------------------------------------------------------------------'
             write(ounit,*) ' WARNING: Reading nuclear charges from the trexio file'
             write(ounit,*) '-----------------------------------------------------------------------'
