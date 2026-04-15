@@ -593,36 +593,135 @@ contains
 !-----------------------------------------------------------------------
       subroutine force_analy_dump(iu)
 
+      use branch, only: nwalk
       use da_energy_sumcum, only: da_energy_cm2,da_energy_cum,da_psi_cum
+      use derivest, only: derivcm2, derivcum
       use force_pth, only: PTH
       use m_force_analytic, only: iforce_analy
+      use mpiconf, only: idtask,nproc,wid
+      use mpi
+      use multiple_geo, only: nwprod
+      use precision_kinds, only: dp
+      use pathak_mod, only: ipathak, pold
+      use vd_mod, only: dmc_ivd, da_branch_cum
+      use vd_mod, only: deriv_eold, esnake, ehist
       use system,  only: ncent
 
       implicit none
 
-      integer :: ic, iu, k, iph
+      integer :: ic, iu, k, iph, id, iw, ierr, iw2, k2, nwalk2
+      integer, dimension(MPI_STATUS_SIZE) :: istatus
 
       if(iforce_analy.eq.0) return
 
+      if (.not.wid) then
+        if (dmc_ivd.gt.0) then
+          call mpi_send(nwalk, 1, mpi_integer, 0, 1, MPI_COMM_WORLD, ierr)
+          call mpi_send(deriv_eold(:,:,1:nwalk), 3*ncent*nwalk, mpi_double_precision, 0, 2, MPI_COMM_WORLD, ierr)
+          call mpi_send(esnake(:,:,1:nwalk,:), 3*ncent*nwalk*PTH, mpi_double_precision, 0, 3, MPI_COMM_WORLD, ierr)
+          call mpi_send(ehist(:,:,1:nwalk,0:nwprod-1,:), 3*ncent*nwalk*nwprod*PTH, mpi_double_precision, 0, 4, MPI_COMM_WORLD, ierr)
+          if (ipathak.gt.0) then
+            call mpi_send(pold(1:nwalk,:), nwalk*PTH, mpi_double_precision, 0, 5, MPI_COMM_WORLD, ierr)
+          endif
+        endif
+        return
+      endif
+
       write(iu) (((da_energy_cum(k,ic,iph),da_psi_cum(k,ic,iph),da_energy_cm2(k,ic,iph),k=1,3),ic=1,ncent),iph=1,PTH)
+      if (dmc_ivd.gt.0) then
+        write(iu) (((da_branch_cum(k,ic,iph),k=1,3),ic=1,ncent),iph=1,PTH)
+        write(iu) nwalk
+        write(iu) (((deriv_eold(k,ic,iw),k=1,3),ic=1,ncent),iw=1,nwalk)
+        write(iu) ((((esnake(k,ic,iw,iph),k=1,3),ic=1,ncent),iw=1,nwalk),iph=1,PTH)
+        write(iu) (((((ehist(k,ic,iw,iw2,iph),k=1,3),ic=1,ncent),iw=1,nwalk),iw2=0,nwprod-1),iph=1,PTH)
+        if (ipathak.gt.0) then
+          write(iu) ((pold(iw,iph),iw=1,nwalk),iph=1,PTH)
+        endif
+        do id=1,nproc-1
+          call mpi_recv(nwalk2, 1, mpi_integer, id, 1, MPI_COMM_WORLD, istatus, ierr)
+          call mpi_recv(deriv_eold(:,:,1:nwalk2), 3*ncent*nwalk2, mpi_double_precision, id, 2, MPI_COMM_WORLD, istatus, ierr)
+          call mpi_recv(esnake(:,:,1:nwalk2,:), 3*ncent*nwalk2*PTH, mpi_double_precision, id, 3, MPI_COMM_WORLD, istatus, ierr)
+          call mpi_recv(ehist(:,:,1:nwalk2,0:nwprod-1,:), 3*ncent*nwalk2*nwprod*PTH, mpi_double_precision, id, 4, MPI_COMM_WORLD, istatus, ierr)
+          if (ipathak.gt.0) then
+            call mpi_recv(pold(1:nwalk2,:), nwalk2*PTH, mpi_double_precision, id, 5, MPI_COMM_WORLD, istatus, ierr)
+          endif
+          write(iu) nwalk2
+          write(iu) (((deriv_eold(k,ic,iw),k=1,3),ic=1,ncent),iw=1,nwalk2)
+          write(iu) ((((esnake(k,ic,iw,iph),k=1,3),ic=1,ncent),iw=1,nwalk2),iph=1,PTH)
+          write(iu) (((((ehist(k,ic,iw,iw2,iph),k=1,3),ic=1,ncent),iw=1,nwalk2),iw2=0,nwprod-1),iph=1,PTH)
+          if (ipathak.gt.0) then
+            write(iu) ((pold(iw,iph),iw=1,nwalk2),iph=1,PTH)
+          endif
+        enddo
+      endif
+      write(iu) ((((derivcum(k,k2,ic,iph),k=1,3),k2=1,3),ic=1,ncent),iph=1,PTH)
+      write(iu) (((derivcm2(k,ic,iph),k=1,3),ic=1,ncent),iph=1,PTH)
 
       return
       end
 !-----------------------------------------------------------------------
       subroutine force_analy_rstrt(iu)
 
+      use branch, only: nwalk
       use da_energy_sumcum, only: da_energy_cm2,da_energy_cum,da_psi_cum
+      use derivest, only: derivcm2, derivcum
+      use error, only: fatal_error
       use force_pth, only: PTH
       use m_force_analytic, only: iforce_analy
+      use mpiconf, only: idtask,nproc,wid
+      use multiple_geo, only: nwprod
+      use precision_kinds, only: dp
+      use pathak_mod, only: ipathak, pold
+      use vd_mod, only: dmc_ivd, da_branch_cum
+      use vd_mod, only: deriv_eold, esnake, ehist
       use system,  only: ncent
 
       implicit none
 
-      integer :: ic, iu, k, iph
+      integer :: ic, iu, k, iph, id, iw, iw2, k2, nwalk2
+      real(dp) :: trash
 
       if(iforce_analy.eq.0) return
 
-      read(iu) (((da_energy_cum(k,ic,iph),da_psi_cum(k,ic,iph),da_energy_cm2(k,ic,iph),k=1,3),ic=1,ncent),iph=1,PTH)
+      if (wid) then
+         read(iu) (((da_energy_cum(k,ic,iph),da_psi_cum(k,ic,iph),da_energy_cm2(k,ic,iph),k=1,3),ic=1,ncent),iph=1,PTH)
+      else
+         read(iu) (((trash, trash ,trash,k=1,3),ic=1,ncent),iph=1,PTH)
+      endif
+      if (dmc_ivd.gt.0) then
+        if (wid) then
+           read(iu) (((da_branch_cum(k,ic,iph),k=1,3),ic=1,ncent),iph=1,PTH)
+        else
+           read(iu) (((trash,k=1,3),ic=1,ncent),iph=1,PTH)
+        endif
+        do id=0,nproc-1
+          read(iu) nwalk2
+          if (id.eq.idtask) then
+            if (nwalk2.ne.nwalk) call fatal_error('force_analy_rstrt: nwalk mismatch')
+            read(iu) (((deriv_eold(k,ic,iw),k=1,3),ic=1,ncent),iw=1,nwalk2)
+            read(iu) ((((esnake(k,ic,iw,iph),k=1,3),ic=1,ncent),iw=1,nwalk2),iph=1,PTH)
+            read(iu) (((((ehist(k,ic,iw,iw2,iph),k=1,3),ic=1,ncent),iw=1,nwalk2),iw2=0,nwprod-1),iph=1,PTH)
+            if (ipathak.gt.0) then
+              read(iu) ((pold(iw,iph),iw=1,nwalk2),iph=1,PTH)
+            endif
+          else
+            read(iu) (((trash,k=1,3),ic=1,ncent),iw=1,nwalk2)
+            read(iu) ((((trash,k=1,3),ic=1,ncent),iw=1,nwalk2),iph=1,PTH)
+            read(iu) (((((trash,k=1,3),ic=1,ncent),iw=1,nwalk2),iw2=0,nwprod-1),iph=1,PTH)
+            if (ipathak.gt.0) then
+              read(iu) ((trash,iw=1,nwalk2),iph=1,PTH)
+            endif
+          endif
+        enddo
+      endif
+      if (wid) then
+         read(iu) ((((derivcum(k,k2,ic,iph),k=1,3),k2=1,3),ic=1,ncent),iph=1,PTH)
+         read(iu) (((derivcm2(k,ic,iph),k=1,3),ic=1,ncent),iph=1,PTH)
+      else
+         read(iu) ((((trash,k2=1,3),k=1,3),ic=1,ncent),iph=1,PTH)
+         read(iu) (((trash,k=1,3),ic=1,ncent),iph=1,PTH)
+      endif
+
 
       return
       end

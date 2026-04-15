@@ -111,7 +111,7 @@ subroutine parser
       use orbval,  only: ddorb,dorb,nadorb,ndetorb,orb
       use mpi
       use pathak_mod, only: ipathak, eps_max, deps
-      use pathak_mod, only: init_pathak
+      use pathak_mod, only: init_pathak, init_eps_pathak
       use parser_read_data, only: header_printing
       use parser_read_data, only: read_basis_num_info_file,read_csf_file
       use parser_read_data, only: read_csfmap_file
@@ -1555,6 +1555,8 @@ subroutine parser
     endif
   endif
 
+  if (ipathak.gt.0) call init_eps_pathak()
+
 ! Contents from flagcheck. Moved here because ndet and norb should be defined by now
 ! CF: norb is set to max # occupied orb in WF in optorb_define/verify_orbitals
   if(ioptorb.eq.0) then
@@ -2019,8 +2021,8 @@ subroutine parser
 
 ! Done reading all the files
 
-! ! Not sure if this line should be here or not.
-! call pot_nn(cent,znuc,iwctype,ncent,pecent)
+! Required for restart forces
+  call pot_nn(cent,znuc,iwctype,ncent,pecent)
 
 ! Make sure that all the blocks are read. Use inputflags here to check
 

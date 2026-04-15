@@ -604,6 +604,8 @@
                 fratio_aux = max(fration*taunow, 1e-9)
                 call force_analy_vd(enew(1), sqrt_pi_o2 * derf(fratio_aux)/(fratio_aux), taunow, iw, iwmod)
               else
+                ecuto=min(e_cutoff, dabs(eest - eold(iw,ifr)))
+                ecutn=min(e_cutoff, dabs(eest - enew(1)))
                 call force_analy_vd(ecutn, ecuto, e_cutoff, iw, iwmod)
               endif
             endif

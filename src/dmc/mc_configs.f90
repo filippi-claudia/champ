@@ -97,6 +97,7 @@ contains
 
 !-----------------------------------------------------------------------
       subroutine mc_configs_write(iblk,ipass)
+      use control_dmc, only: dmc_nconf_new
       implicit none
       integer :: i, iblk, ic, id, ii
       integer :: index, ipass, iwalk, j
@@ -107,6 +108,7 @@ contains
       character(len=25) fmt
       character(len=20) filename
 
+      if (dmc_nconf_new.eq.0) then
 ! Write out configuration for optimization/dmc/gfmc here
           if (iblk.gt.2*dmc_nblkeq .and. (mod(ipass,ngfmc).eq.1 .or.  ngfmc.eq.1)) then
             if(3*nelec.lt.100) then
@@ -119,7 +121,7 @@ contains
               int(sign(1.d0,psido_dmc(iwalk,1))),log(dabs(psido_dmc(iwalk,1)))+psijo_dmc(iwalk,1),eold(iwalk,1)
             enddo
           endif
-
+        endif
       return
       end
 end module

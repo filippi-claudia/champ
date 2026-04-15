@@ -50,7 +50,7 @@ contains
       implicit none
 
       integer :: i, ib, ic, id, ierr
-      integer :: ifr, irequest, iw, j
+      integer :: ifr, irequest, iw, j, nwalk_recv
       integer :: k
       integer, dimension(8, 0:nproc) :: irn
       integer, dimension(MPI_STATUS_SIZE) :: istatus
@@ -100,33 +100,35 @@ contains
 !    &  ,((pwt(i,j),i=1,nwalk),j=1,nforce)
 !    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         do id=1,nproc-1
-          call mpi_recv(nwalk,1,mpi_integer,id,1,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(xold_dmc,3*nelec*nwalk,mpi_double_precision,id,2,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(wt,nwalk,mpi_double_precision,id,3,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(nwalk_recv,1,mpi_integer,id,1,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(xold_dmc,3*nelec*nwalk_recv,mpi_double_precision,id,2,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(wt,nwalk_recv,mpi_double_precision,id,3,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(ff(0),nfprod,mpi_double_precision,id,4,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(fprod,1,mpi_double_precision,id,5,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(fratio,MWALK*nforce,mpi_double_precision,id,6,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(eigv,1,mpi_double_precision,id,7,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(eest,1,mpi_double_precision,id,8,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(wdsumo,1,mpi_double_precision,id,9,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(iage,nwalk,mpi_integer,id,10,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(iage,nwalk_recv,mpi_integer,id,10,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(ioldest,1,mpi_integer,id,11,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(ioldestmx,1,mpi_integer,id,12,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(xq,nquad,mpi_double_precision,id,13,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(yq,nquad,mpi_double_precision,id,14,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(zq,nquad,mpi_double_precision,id,15,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(irn(:, id), 8, mpi_integer, id,16,MPI_COMM_WORLD,istatus,ierr)
-          write(10) nwalk
-          write(10) (((xold_dmc(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk)
-          write(10) nfprod,(ff(i),i=0,nfprod),(wt(i),i=1,nwalk),fprod,eigv,eest,wdsumo
-          write(10) (iage(i),i=1,nwalk),ioldest,ioldestmx
-          write(10) nforce,((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
+          write(10) nwalk_recv
+          write(10) (((xold_dmc(ic,i,iw,1),ic=1,3),i=1,nelec),iw=1,nwalk_recv)
+          write(10) nfprod,(ff(i),i=0,nfprod),(wt(i),i=1,nwalk_recv),fprod,eigv,eest,wdsumo
+          write(10) (iage(i),i=1,nwalk_recv),ioldest,ioldestmx
+          write(10) nforce,((fratio(iw,ifr),iw=1,nwalk_recv),ifr=1,nforce)
           if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
 !         if(nforce.gt.1) write(10) nwprod
 !    &    ,((pwt(i,j),i=1,nwalk),j=1,nforce)
 !    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         enddo
       endif
+
+      call force_analy_dump(10)
 
       if(.not.wid) return
 
@@ -149,7 +151,6 @@ contains
       call prop_dump(10)
       call pcm_dump(10)
       call mmpol_dump(10)
-      call force_analy_dump(10)
       write(10) ((coef(ib,i,1),ib=1,nbasis),i=1,norb)
       write(10) nbasis
       write(10) (zex(ib,1),ib=1,nbasis)

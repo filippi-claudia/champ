@@ -68,7 +68,7 @@ contains
       integer :: n2_id, nbasx, ncentx, nctypex
       integer :: ndetx, ndnx, nelecx, newghostypex
       integer :: nghostcentx, nprock, nq_id, num
-      integer :: nupx, nwalk_id
+      integer :: nupx, nwalk_id, nforcex
       integer, dimension(8, 0:nproc) :: irn
       integer, dimension(nctype)      :: nsx,npx,ndx,nfx,ngx
       real(dp) :: different, eest_id
@@ -127,6 +127,9 @@ contains
 !     if(nforce.gt.1) read(10) nwprod
 !    &,((pwt(i,j),i=1,nwalk),j=1,nforce)
 !    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
+
+      call force_analy_rstrt(10)
+
       read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i), &
       wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),taucum(i), &
       i=1,nforce)
@@ -134,10 +137,11 @@ contains
       call setrn(irn(1,idtask))
       read(10) hbx
       read(10) taux,rttau,idmc
-      read(10) nelecx,dmc_nconf
+      read(10) nelecx,dmc_nconf,nforcex
       if (dabs(hbx-hb).gt.small) call fatal_error('STARTR: hb')
       if (dabs(taux-tau).gt.small) call fatal_error('STARTR: tau')
       if (nelecx.ne.nelec) call fatal_error('STARTR: nelec')
+      if (nforcex.ne.nforce) call fatal_error('STARTR: nforce')
       read(10) (wtgen(i),i=0,nfprod),wgdsumo
       read(10) wcum_dmc,wfcum,wcum1,wfcum1,(wgcum1(i),i=1,nforce),ecum_dmc,efcum, &
                ecum1_dmc,efcum1,(egcum1(i),i=1,nforce)
@@ -155,7 +159,6 @@ contains
       call prop_rstrt(10)
       call pcm_rstrt(10)
       call mmpol_rstrt(10)
-      call force_analy_rstrt(10)
       read(10) ((coefx(ib,i),ib=1,nbasis),i=1,norb)
       read(10) nbasx
       do j=1,norb

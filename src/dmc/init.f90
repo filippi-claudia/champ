@@ -46,9 +46,7 @@ contains
       use walksav_det_mod, only: walksav_det
       use walksav_jas_mod, only: walksav_jas
       use zerest_mod, only: zerest
-      use pathak_mod, only: init_eps_pathak, pathak
-      use pathak_mod, only: ipathak, eps_pathak, pold
-!      use contrl, only: nconf
+      use pathak_mod, only: pathak, ipathak, eps_pathak, pold
 
       implicit none
 
@@ -146,7 +144,6 @@ contains
             if(iforce_analy.eq.1) then
               call force_analy_save
               if(ipathak.gt.0) then
-                if (iw.eq.1) call init_eps_pathak()
                 call nodes_distance(vold_dmc(1,1,iw,ifr), distance_node, 1)
               endif
               if(dmc_ivd.gt.0) then
