@@ -108,7 +108,7 @@ contains
       character(len=25) fmt
       character(len=20) filename
 
-      if (dmc_nconf_new.eq.0) then
+      if (dmc_nconf_new.gt.0) then
 ! Write out configuration for optimization/dmc/gfmc here
           if (iblk.gt.2*dmc_nblkeq .and. (mod(ipass,ngfmc).eq.1 .or.  ngfmc.eq.1)) then
             if(3*nelec.lt.100) then
