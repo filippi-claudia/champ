@@ -2021,8 +2021,10 @@ subroutine parser
 
 ! Done reading all the files
 
-! Required for restart forces
-  call pot_nn(cent,znuc,iwctype,ncent,pecent)
+! Required for restart forces (more work for periodic needed)
+  if (iperiodic.eq.0) then
+     call pot_nn(cent,znuc,iwctype,ncent,pecent)
+  endif
 
 ! Make sure that all the blocks are read. Use inputflags here to check
 
