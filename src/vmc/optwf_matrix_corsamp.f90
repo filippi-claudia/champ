@@ -72,20 +72,22 @@ contains
       vmc_irstar=0
       vmc_idump=0
 
+      if(multiple_adiag.gt.0) then
 ! Set up basis functions for test run
-      do iwft=2,3
-        iwftype(iwft)=iwft
-      enddo
-      if(numr.gt.0) then
         do iwft=2,3
-          call copy_bas_num(iwft)
+          iwftype(iwft)=iwft
         enddo
-       else
-        do iwft=2,3
-          call copy_zex(iwft)
-        enddo
+        if(numr.gt.0) then
+          do iwft=2,3
+            call copy_bas_num(iwft)
+          enddo
+        else
+          do iwft=2,3
+            call copy_zex(iwft)
+          enddo
+        endif
+        call set_displace_zero(3)
       endif
-      call set_displace_zero(3)
 
 ! Number of iterations
       write(ounit,'(/,''Number of iterations'',i3)') nopt_iter
