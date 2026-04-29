@@ -18,6 +18,9 @@ contains
       use mpiconf, only: idtask
       use contrl_file, only: ounit
       use optwf_control,      only: ioptorb, ioptjas
+#if defined(HDF5_FOUND)
+      use vmc_store_hdf5_mod, only: vmc_store_hdf5
+#endif
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
@@ -29,7 +32,7 @@ contains
       implicit none
 
       integer :: index, iter, iwf_fit
-      character(len=40) filetype,wf,itn
+      character(len=80) filetype,wf,itn
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       if(ioptorb.ne.0.and.use_qmckl_orbitals) then
@@ -41,8 +44,6 @@ contains
         call jastrow_init_qmckl(qmckl_no_ctx)
       endif
 #endif
-
-      if(idtask.ne.0) return
 
       if(iter.lt.0) then
         filetype='_optimal.'//wf(1:index(wf,' ')-1)
@@ -57,6 +58,12 @@ contains
         endif
         filetype='_optimal.'//wf(1:index(wf,' ')-1)//'.iter'//itn(1:index(itn,' ')-1)
       endif
+
+#if defined(HDF5_FOUND)
+      call vmc_store_hdf5('restart_vmc'//filetype(1:index(filetype,' ')-1)//'.hdf5')
+#endif
+
+      if(idtask.ne.0) return
 
       call write_lcao(iwf_fit,filetype)
       call write_jastrow(iwf_fit,filetype)

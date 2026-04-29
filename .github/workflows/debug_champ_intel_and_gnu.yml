@@ -47,6 +47,7 @@ jobs:
     - name: Install GNU compilers and libraries
       if: matrix.toolchain == 'gnu'
       run: |
+           sudo apt-get update
            sudo apt install -y gfortran
            sudo apt install -y openmpi-bin
            sudo apt install -y libopenmpi-dev
@@ -60,6 +61,7 @@ jobs:
     - name: install Intel oneapi components
       if: matrix.toolchain == 'intel'
       run: |
+        sudo apt-get update
         sudo apt-get install -y intel-oneapi-common-vars
         sudo apt-get install -y intel-oneapi-compiler-fortran-2021.3.0
         sudo apt-get install -y intel-oneapi-mkl-2021.3.0
