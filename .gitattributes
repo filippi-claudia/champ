@@ -1,0 +1,6 @@
+*.f90 linguist-language=Fortran
+*.F90 linguist-language=Fortran
+*.f linguist-language=Fortran
+*.F linguist-language=Fortran
+docs/** linguist-documentation
+tools/** linguist-vendored
