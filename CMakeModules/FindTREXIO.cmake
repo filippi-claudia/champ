@@ -33,41 +33,41 @@
 #===========================================
 
 set(TREXIO_SEARCH_PATHS
-	/software/trexio
-	~/Library/Frameworks
-	/Library/Frameworks
-	/usr/local
-	/usr
-	/sw # Fink
-	/opt/local # DarwinPorts
-	/opt/csw # Blastwave
-	/opt
+  /software/trexio
+  ~/Library/Frameworks
+  /Library/Frameworks
+  /usr/local
+  /usr
+  /sw # Fink
+  /opt/local # DarwinPorts
+  /opt/csw # Blastwave
+  /opt
 )
 
 find_path(TREXIO_INCLUDE_DIR
-	  NAMES trexio.h
-	  HINTS $ENV{TREXIO_DIR}
-	  PATH_SUFFIXES include/trexio include
-	  PATHS ${TREXIO_SEARCH_PATHS}
-	  )
+  NAMES trexio.h
+  HINTS $ENV{TREXIO_DIR}
+  PATH_SUFFIXES include/trexio include
+  PATHS ${TREXIO_SEARCH_PATHS}
+)
 
 
 # No need to specify platform-specific prefix (e.g. libtrexio on Unix) or
 # suffix (e.g. .so on Unix or .dylib on MacOS) in NAMES. CMake takes care of that.
 find_library(TREXIO_LIBRARY
-             NAMES trexio
-	     HINTS $ENV{TREXIO_DIR}
-	     PATH_SUFFIXES lib64 lib
-	     PATHS ${TREXIO_SEARCH_PATHS}
-	     )
+  NAMES trexio
+  HINTS $ENV{TREXIO_DIR}
+  PATH_SUFFIXES lib64 lib
+  PATHS ${TREXIO_SEARCH_PATHS}
+)
 
 # Handle the QUIETLY and REQUIRED arguments and set TREXIO_FOUND to TRUE if
 # all listed variables are TRUE.
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(TREXIO DEFAULT_MSG TREXIO_LIBRARY TREXIO_INCLUDE_DIR )
-MARK_AS_ADVANCED(TREXIO_INCLUDE_DIR TREXIO_LIBRARY)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(TREXIO DEFAULT_MSG TREXIO_LIBRARY TREXIO_INCLUDE_DIR)
+mark_as_advanced(TREXIO_INCLUDE_DIR TREXIO_LIBRARY)
 
-# Mot setting _INCLUDE_DIR and _LIBRARIES is considered a bug,
+# Not setting _INCLUDE_DIR and _LIBRARIES is considered a bug,
 # see https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/How-To-Find-Libraries
 set(TREXIO_LIBRARIES ${TREXIO_LIBRARY})
 set(TREXIO_INCLUDE_DIRS ${TREXIO_INCLUDE_DIR})

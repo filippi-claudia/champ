@@ -224,9 +224,9 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
         "-Wno-function-elimination"
         "-fno-check-array-temporaries"
         "-std=f2018"
-	#"-Wintrinsics-std"
-	"-std=legacy"
-	#"-Werror"
+        #"-Wintrinsics-std"
+        "-std=legacy"
+        #"-Werror"
         # "-ffpe-trap=invalid,zero,overflow"
         )
   endif()
@@ -249,7 +249,7 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
   list(APPEND Fortran_FLAGS "-implicitnone")
   list(APPEND Fortran_FLAGS "-ipo")
   list(APPEND Fortran_FLAGS "-finline" "-ip" "-align" "array64byte" "-fma" "-ftz" "-fomit-frame-pointer")
-	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
+  list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
@@ -268,7 +268,7 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "IntelLLVM")
   list(APPEND Fortran_FLAGS "-fPIC")
   list(APPEND Fortran_FLAGS "-implicitnone")
   list(APPEND Fortran_FLAGS "-finline" "-align" "array64byte" "-fma" "-ftz" "-fomit-frame-pointer")
-	list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
+  list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
   list(APPEND Fortran_FLAGS "-D_MPI_")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
@@ -281,8 +281,8 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "IntelLLVM")
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-free")
   # List of Fortran flags for Intel's LLVM based compiler ends here
 
-#List of Fortran flags for LLVM "classic" Flang based compiler begins here
-	#This include flang and aocc-flang and shouldn't be confused with flang-new (LLVMFlang in cmake)
+# List of Fortran flags for LLVM "classic" Flang based compiler begins here
+# This includes flang and aocc-flang and shouldn't be confused with flang-new (LLVMFlang in CMake)
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Flang")
   list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large")
   list(APPEND Fortran_FLAGS "-D_MPI_")
@@ -293,7 +293,7 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Flang")
 
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132")
 
-#List of Fortran flags for LLVM Flang based compiler ends here
+# List of Fortran flags for LLVM Flang based compiler ends here
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
   list(APPEND CMAKE_Fortran_FLAGS "-Mfreeform -Mdclchk -Mstandard -Mallocatable=03")
@@ -317,7 +317,7 @@ message(STATUS "Tests are enabled :: cd build; ctest")
 enable_testing()
 add_subdirectory(tests)
 
-#Packaging
+# Packaging
 set(CPACK_ARCHIVE_COMPONENT_INSTALL 1)
 set(CPACK_ARCHIVE_GENERATOR "TBZ2")
 set(CPACK_SOURCE_GENERATOR "ZIP")

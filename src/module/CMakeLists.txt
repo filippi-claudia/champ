@@ -1,4 +1,4 @@
-if (MPI_Fortran_FOUND)
+if(MPI_Fortran_FOUND)
 
   # --------------------------------------------------------------------
   # Create two libraries to share objects between the two binaries,
@@ -63,21 +63,21 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_PARSER_DIR}/prec.F90
     ${CMAKE_PARSER_DIR}/utils.F90)
 
-    if (TREXIO_FOUND)
-      list(APPEND SHARED_MODULES m_trexio.F90)
-    endif()
+  if(TREXIO_FOUND)
+    list(APPEND SHARED_MODULES m_trexio.F90)
+  endif()
 
-    #if (QMCKL_FOUND)
-    #   list(APPEND SHARED_MODULES m_qmckl.F90)
-    #endif()
+  #if(QMCKL_FOUND)
+  #  list(APPEND SHARED_MODULES m_qmckl.F90)
+  #endif()
 
-    add_library(shared_modules OBJECT ${SHARED_MODULES})
-    target_compile_definitions(shared_modules
-      PRIVATE
-      CHAMP_VERSION="v${PROJECT_VERSION}")
-    target_compile_options(shared_modules
-      PRIVATE
-      ${Fortran_FLAGS}
-      "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>")
+  add_library(shared_modules OBJECT ${SHARED_MODULES})
+  target_compile_definitions(shared_modules
+    PRIVATE
+    CHAMP_VERSION="v${PROJECT_VERSION}")
+  target_compile_options(shared_modules
+    PRIVATE
+    ${Fortran_FLAGS}
+    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>")
 
 endif()

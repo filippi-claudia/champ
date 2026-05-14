@@ -185,11 +185,11 @@ if (MPI_Fortran_FOUND)
   endif()
 
   if (NOT QMCKL_FOUND)
-	  list(REMOVE_ITEM VMC90_SOURCE
-         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
-         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
-         ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90
-	 ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow_qmckl.f90)
+    list(REMOVE_ITEM VMC90_SOURCE
+      ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow_qmckl.f90)
   endif()
 
 
@@ -311,7 +311,7 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow_qmckl.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
-	 )
+    )
   endif()
 
   if (ENABLE_QMMM)
@@ -328,7 +328,7 @@ if (MPI_Fortran_FOUND)
 
   add_library(shared_objects OBJECT ${SHARED_OBJECTS})
 
-  #  Add headers
+  # Add headers
   target_include_directories(shared_objects
   PUBLIC
   ${CMAKE_BINARY_DIR}/src/module
@@ -407,10 +407,10 @@ if(UNIT_TESTS)
   endif()
 endif()
 
-  #  Add headers
+  # Add headers
   target_include_directories(vmc.mov1
-  PUBLIC
-  ${CMAKE_BINARY_DIR}/src/module
+    PUBLIC
+    ${CMAKE_BINARY_DIR}/src/module
   )
 
   # compilation
@@ -418,17 +418,17 @@ endif()
     PRIVATE
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
-    )
+  )
 
   if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
-     target_link_options(vmc.mov1
-       PRIVATE
-       ${Fortran_FLAGS}
-       "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
-       )
+    target_link_options(vmc.mov1
+      PRIVATE
+      ${Fortran_FLAGS}
+      "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
+    )
   endif()
 
-  if (TREXIO_FOUND)
+  if(TREXIO_FOUND)
     target_link_libraries(vmc.mov1
       PRIVATE
       pspline

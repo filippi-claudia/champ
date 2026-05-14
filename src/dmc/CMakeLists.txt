@@ -47,29 +47,29 @@ add_executable(dmc.mov1
   # DMC source code
   ${DMC_SOURCE})
 
-#  Add headers
+# Add headers
 target_include_directories(dmc.mov1
   PUBLIC
   ${CMAKE_BINARY_DIR}/src/vmc
   ${CMAKE_BINARY_DIR}/src/module
-  )
+)
 
 # compilation
 target_compile_options(dmc.mov1
   PRIVATE
   ${Fortran_FLAGS}
   "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
+)
+
+if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
+  target_link_options(dmc.mov1
+    PRIVATE
+    ${Fortran_FLAGS}
+    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
   )
+endif()
 
-  if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
-  	target_link_options(dmc.mov1
-	  PRIVATE
-	  ${Fortran_FLAGS}
-	  "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
-	  )
-  endif()
-
-if (TREXIO_FOUND)
+if(TREXIO_FOUND)
   target_link_libraries(dmc.mov1
     PRIVATE
     pspline
