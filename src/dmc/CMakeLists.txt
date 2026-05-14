@@ -58,14 +58,14 @@ target_include_directories(dmc.mov1
 target_compile_options(dmc.mov1
   PRIVATE
   ${Fortran_FLAGS}
-  "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+  "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
   )
 
   if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
   	target_link_options(dmc.mov1
 	  PRIVATE
 	  ${Fortran_FLAGS}
-	  "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+	  "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
 	  )
   endif()
 
@@ -88,4 +88,4 @@ else()
 endif()
 
 
-set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
+set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the DMC source files")

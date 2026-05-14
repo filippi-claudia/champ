@@ -383,7 +383,10 @@ contains
 
 
         implicit none
-        character(len=40), parameter            :: VERSION = 'v2.5.0'
+#ifndef CHAMP_VERSION
+#define CHAMP_VERSION "unknown"
+#endif
+        character(len=*), parameter             :: VERSION = CHAMP_VERSION
         character(len=80), allocatable          :: arg(:)
         integer                                 :: i, j, iostat, argcount
         character(len=10), dimension(12)        :: extensions

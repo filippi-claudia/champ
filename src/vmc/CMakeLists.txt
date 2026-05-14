@@ -157,7 +157,11 @@ if (MPI_Fortran_FOUND)
 
 
   set(ENABLE_GPU ${ENABLE_GPU} PARENT_SCOPE)
-  message (STATUS "GPU IS ENABLED")
+  if (ENABLE_GPU)
+    message(STATUS "GPU is enabled")
+  else()
+    message(STATUS "GPU is NOT enabled")
+  endif()
 
   set(ENABLE_TREXIO ${ENABLE_TREXIO} PARENT_SCOPE)
   set(ENABLE_QMCKL  ${ENABLE_QMCKL} PARENT_SCOPE)
@@ -334,7 +338,7 @@ if (MPI_Fortran_FOUND)
   target_compile_options(shared_objects
     PRIVATE
     ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
+    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>")
 
   # add_dependencies(shared_objects parser)
   add_dependencies(shared_objects shared_modules)
@@ -381,7 +385,7 @@ IF(UNIT_TESTS)
   target_compile_options(vmc
     PRIVATE
     ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
     )
 
   if (TREXIO_FOUND)
@@ -413,14 +417,14 @@ ENDIF()
   target_compile_options(vmc.mov1
     PRIVATE
     ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
     )
 
   if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
      target_link_options(vmc.mov1
        PRIVATE
        ${Fortran_FLAGS}
-       "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
+       "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
        )
   endif()
 

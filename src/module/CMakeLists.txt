@@ -72,9 +72,12 @@ if (MPI_Fortran_FOUND)
     #endif()
 
     add_library(shared_modules OBJECT ${SHARED_MODULES})
+    target_compile_definitions(shared_modules
+      PRIVATE
+      CHAMP_VERSION="v${PROJECT_VERSION}")
     target_compile_options(shared_modules
       PRIVATE
       ${Fortran_FLAGS}
-      "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
+      "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>")
 
 endif()
