@@ -2,13 +2,13 @@
 
 project(vmc)
 
-OPTION( UNIT_TESTS "Build Project Unit tests" OFF )
+option(UNIT_TESTS "Build Project Unit tests" OFF)
 message(STATUS "Build Unit Tests: ${UNIT_TESTS}")
 
 set(N_Fortran_FLAGS "${Fortran_FLAGS}")
 list(REMOVE_ITEM N_Fortran_FLAGS "-Werror")
 
-IF(UNIT_TESTS)
+if(UNIT_TESTS)
   string(REPLACE ";" " " CMAKE_Fortran_FLAGS "${N_Fortran_FLAGS}") #optional, to set compile flags
   if(NOT CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
     message(FATAL_ERROR "if UNIT_TESTS is specified, CMAKE_BUILD_TYPE must be Debug")

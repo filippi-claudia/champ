@@ -375,7 +375,7 @@ if (MPI_Fortran_FOUND)
     )
 
 
-IF(UNIT_TESTS)
+if(UNIT_TESTS)
   add_library(vmc SHARED
     $<TARGET_OBJECTS:shared_modules>
     $<TARGET_OBJECTS:shared_objects>
@@ -405,7 +405,7 @@ IF(UNIT_TESTS)
       ${CUDA_LIBRARIES}
       MPI::MPI_Fortran)
   endif()
-ENDIF()
+endif()
 
   #  Add headers
   target_include_directories(vmc.mov1

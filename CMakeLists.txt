@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 project(CHAMP VERSION 2.5.0 LANGUAGES Fortran C)
 
 
-# Needed for something which we don't know
+# Allow targets to link to targets defined in other directories.
 cmake_policy(SET CMP0079 NEW)
 cmake_policy(SET CMP0076 NEW)
 
@@ -53,7 +53,6 @@ option(ENABLE_TREXIO "enable_trexio" off)
 option(ENABLE_QMCKL  "enable_qmckl" off)
 option(ENABLE_GPU  "enable_gpu" off)
 
-# Include function to Load MKL
 message("")
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
@@ -62,7 +61,6 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   else()
     set(BLA_VENDOR Intel10_64_dyn)
   endif()
-# write elseif part here for non-intel compilers
 endif()
 
 find_package(BLAS COMPONENTS Fortran REQUIRED QUIET)
@@ -315,7 +313,7 @@ add_subdirectory(tools)
 add_subdirectory(lib)
 
 ## Testing
-MESSAGE(STATUS " Tests are enabled ::  cd build; ctest")
+message(STATUS "Tests are enabled :: cd build; ctest")
 enable_testing()
 add_subdirectory(tests)
 
