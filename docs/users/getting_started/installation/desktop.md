@@ -138,9 +138,9 @@ cd champ
 Or download a specific release:
 
 ```bash
-wget https://github.com/filippi-claudia/champ/archive/refs/tags/v2.3.0.tar.gz
-tar -xzvf v2.3.0.tar.gz
-cd champ-2.3.0
+wget https://github.com/filippi-claudia/champ/archive/refs/tags/v2.5.0.tar.gz
+tar -xzvf v2.5.0.tar.gz
+cd champ-2.5.0
 ```
 
 ### Step 7: Configure CHAMP

@@ -383,7 +383,7 @@ contains
 
 
         implicit none
-        character(len=40), parameter            :: VERSION = 'v2.0.0'
+        character(len=40), parameter            :: VERSION = 'v2.5.0'
         character(len=80), allocatable          :: arg(:)
         integer                                 :: i, j, iostat, argcount
         character(len=10), dimension(12)        :: extensions
