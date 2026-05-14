@@ -2,7 +2,6 @@
 
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
-# Project's name
 project(CHAMP VERSION 2.5.0 LANGUAGES Fortran C)
 
 
@@ -12,18 +11,13 @@ cmake_policy(SET CMP0076 NEW)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
-# ## Build type
-# if(NOT CMAKE_BUILD_TYPE)
-#   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
-# endif()
-
 # CMake modules/macros are in a subdirectory to keep this file cleaner
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 # Print the header text art
 find_package(Banner)
 
-# useful info
+# Build summary
 message(STATUS "Compiling                        :: " ${CMAKE_PROJECT_NAME})
 message(STATUS "Fortran compiler                 :: " ${CMAKE_Fortran_COMPILER} )
 message(STATUS "Fortran compiler version         :: " ${CMAKE_Fortran_COMPILER_VERSION} )
@@ -37,18 +31,10 @@ set(CMAKE_PARSER_DIR ${CMAKE_SOURCE_DIR}/src/parser)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
-## User options
-# documentation
+# User options
 option(BUILD_DOC "build_doc" off)
-
-# MPI
 option(ENABLE_MPI "enable_mpi" on)
-
-
-# QMMM option
 option(ENABLE_QMMM "enable_qmmm" off)
-
-## External packages
 option(ENABLE_TREXIO "enable_trexio" off)
 option(ENABLE_QMCKL  "enable_qmckl" off)
 option(ENABLE_GPU  "enable_gpu" off)
@@ -93,7 +79,6 @@ if(ENABLE_TREXIO)
       message("                                    :: " ${lib})
     endforeach()
     message(STATUS "                                    ")
-    # add_definitions(-DHDF5_VERSION=\"${HDF5_VERSION}\")
   endif()
 
   # Find TREXIO
@@ -129,7 +114,6 @@ if(QMCKL_FOUND)
   include_directories(${QMCKL_INCLUDE_DIRS})
 endif()
 
-#
 set(NVFORTRAN_PATH "" CACHE PATH "Path to CUDA executable nvfortran and nvcc")
 if(ENABLE_GPU)
   find_package(CUDA)
@@ -143,7 +127,6 @@ if(CUDA_FOUND)
   message(STATUS "CUDA toolkit directory          :: " ${CUDA_TOOLKIT_ROOT_DIR})
 endif()
 
-#  documentation requirements
 if(BUILD_DOC)
   find_package(DOXYGEN)
 endif()
@@ -187,8 +170,6 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")
   list(APPEND Fortran_FLAGS "-traceback")
   list(APPEND Fortran_FLAGS "-Mextend")
   list(APPEND Fortran_FLAGS "-Mnoframe")
-
-  #CUDALIB= -L$(CUDA_LIB) -lcufft -lcublasLt -lcublas -lcudart
   if(MKL_FOUND)
     list(APPEND Fortran_FLAGS "-m64")
   endif()
@@ -224,20 +205,14 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
         "-Wno-function-elimination"
         "-fno-check-array-temporaries"
         "-std=f2018"
-        #"-Wintrinsics-std"
         "-std=legacy"
-        #"-Werror"
         # "-ffpe-trap=invalid,zero,overflow"
         )
   endif()
-#  if(TREXIO_FOUND)
-#    list(APPEND Fortran_FLAGS "-ltrexio")
-#  endif()
 
   set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
 
   if(MKL_FOUND)
-    #list(APPEND Fortran_FLAGS "-fdefault-integer-8")
     list(APPEND Fortran_FLAGS "-m64")
   endif()
   # List of Fortran flags for GNU compiler ends here
@@ -254,7 +229,6 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
     list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
-  else()
   endif()
   if(TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
@@ -273,7 +247,6 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "IntelLLVM")
   list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
     list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
-  else()
   endif()
   if(TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
@@ -306,13 +279,12 @@ foreach(flag ${Fortran_FLAGS})
 endforeach()
 
 
-## Subdirectories
-# Include the following subdirectories
+# Subdirectories
 add_subdirectory(src)
 add_subdirectory(tools)
 add_subdirectory(lib)
 
-## Testing
+# Testing
 message(STATUS "Tests are enabled :: cd build; ctest")
 enable_testing()
 add_subdirectory(tests)

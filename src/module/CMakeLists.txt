@@ -67,10 +67,6 @@ if(MPI_Fortran_FOUND)
     list(APPEND SHARED_MODULES m_trexio.F90)
   endif()
 
-  #if(QMCKL_FOUND)
-  #  list(APPEND SHARED_MODULES m_qmckl.F90)
-  #endif()
-
   add_library(shared_modules OBJECT ${SHARED_MODULES})
   target_compile_definitions(shared_modules
     PRIVATE

@@ -230,7 +230,7 @@ if(MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow1.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90   # This file should be refactored and eliminated.
+    ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/efield.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nodes_distance.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/hpsie.f90
@@ -330,9 +330,9 @@ if(MPI_Fortran_FOUND)
 
   # Add headers
   target_include_directories(shared_objects
-  PUBLIC
-  ${CMAKE_BINARY_DIR}/src/module
-  ${CMAKE_BINARY_DIR}/src/parser
+    PUBLIC
+    ${CMAKE_BINARY_DIR}/src/module
+    ${CMAKE_BINARY_DIR}/src/parser
   )
 
   target_compile_options(shared_objects
@@ -340,7 +340,6 @@ if(MPI_Fortran_FOUND)
     ${Fortran_FLAGS}
     "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>")
 
-  # add_dependencies(shared_objects parser)
   add_dependencies(shared_objects shared_modules)
   add_dependencies(shared_objects parser)
 
