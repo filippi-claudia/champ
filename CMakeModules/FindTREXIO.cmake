@@ -20,14 +20,14 @@
 # list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 
 # find_package(TREXIO)
-# if (TREXIO_FOUND)
+# if(TREXIO_FOUND)
 #   include_directories(${TREXIO_INCLUDE_DIRS})
 #   target_link_libraries(your_target ${TREXIO_LIBRARIES})
 # endif()
 
 #===========================================
 
-# This file is distirbuted under the BSD 3-Clause License.
+# This file is distributed under the BSD 3-Clause License.
 # Copyright (c) 2021, TREX Center of Excellence
 
 #===========================================

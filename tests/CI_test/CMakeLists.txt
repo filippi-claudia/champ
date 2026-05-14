@@ -57,4 +57,4 @@ file(GLOB_RECURSE tests_script LIST_DIRECTORIES false "*.sh")
 
       set_tests_properties("${test_src}" PROPERTIES LABELS "${tags}")
 
-  endforeach(test_src)
+  endforeach()

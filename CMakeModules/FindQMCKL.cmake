@@ -1,6 +1,6 @@
 #===========================================
 
-# This file is distirbuted under the BSD 3-Clause License.
+# This file is distributed under the BSD 3-Clause License.
 # Copyright (c) 2021, TREX Center of Excellence
 
 #===========================================

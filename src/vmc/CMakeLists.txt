@@ -1,4 +1,4 @@
-if (MPI_Fortran_FOUND)
+if(MPI_Fortran_FOUND)
 
   # Source files
   file(GLOB VMC90_SOURCE
@@ -157,7 +157,7 @@ if (MPI_Fortran_FOUND)
 
 
   set(ENABLE_GPU ${ENABLE_GPU} PARENT_SCOPE)
-  if (ENABLE_GPU)
+  if(ENABLE_GPU)
     message(STATUS "GPU is enabled")
   else()
     message(STATUS "GPU is NOT enabled")
@@ -167,10 +167,10 @@ if (MPI_Fortran_FOUND)
   set(ENABLE_QMCKL  ${ENABLE_QMCKL} PARENT_SCOPE)
 
   # --------------------------------------------------------------------
-  # Set files according to CMAKE options:
+  # Set files according to CMake options:
   # --------------------------------------------------------------------
 
-  if (NOT ENABLE_QMMM)
+  if(NOT ENABLE_QMMM)
     message(STATUS "QMMM is NOT enabled!")
     list(REMOVE_ITEM VMC90_SOURCE
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_bspline.f90
@@ -184,7 +184,7 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90)
   endif()
 
-  if (NOT QMCKL_FOUND)
+  if(NOT QMCKL_FOUND)
     list(REMOVE_ITEM VMC90_SOURCE
       ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
@@ -303,9 +303,9 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f90)
 
   # --------------------------------------------------------------------
-  # Remove objects to share depending on CMAKE options:
+  # Remove objects to share depending on CMake options:
   # --------------------------------------------------------------------
-  if (QMCKL_FOUND)
+  if(QMCKL_FOUND)
     list(APPEND SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow_qmckl.f90
@@ -314,7 +314,7 @@ if (MPI_Fortran_FOUND)
     )
   endif()
 
-  if (ENABLE_QMMM)
+  if(ENABLE_QMMM)
     list(REMOVE_ITEM SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90)
     list(APPEND SHARED_OBJECTS
@@ -350,10 +350,10 @@ if (MPI_Fortran_FOUND)
 
   foreach(s ${SHARED_OBJECTS})
     list(REMOVE_ITEM VMC90_SOURCE ${s})
-  endforeach(s)
+  endforeach()
   foreach(s ${SHARED_MODULES})
     list(REMOVE_ITEM VMC90_SOURCE ${s})
-  endforeach(s)
+  endforeach()
 
   # --------------------------------------------------------------------
   # Compile and link executable:
@@ -388,7 +388,7 @@ if(UNIT_TESTS)
     "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
     )
 
-  if (TREXIO_FOUND)
+  if(TREXIO_FOUND)
     target_link_libraries(vmc
       PRIVATE
       pspline
