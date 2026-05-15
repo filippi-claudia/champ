@@ -3,7 +3,7 @@
 # (c) TREX-CoE (https://trex-coe.eu)
 
 # Note:: How to use this ctest:
-# 1. after a successful compilation, "cd build" and run "ctest"
+# 1. After a successful compilation, "cd build" and run "ctest"
 # 2. To add more tests, just create a folder under CI_tests and have
 #    a local bash script in that folder. Capitalize the words in the script name to convert them into ctest labels.
 #    For example, if you have a script called "VMC_H2O_TREXIO.sh" in the folder "CI_tests/test_1", then the ctest will create labels "VMC"
