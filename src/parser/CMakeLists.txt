@@ -15,5 +15,3 @@ list(REMOVE_ITEM N_Fortran_FLAGS "-Werror")
 target_compile_options(parser
   PRIVATE
   ${N_Fortran_FLAGS})
-
-link_libraries(parser)

@@ -115,7 +115,6 @@ endif()
 set(NVFORTRAN_PATH "" CACHE PATH "Path to CUDA executable nvfortran and nvcc")
 if(ENABLE_GPU)
   find_package(CUDA)
-  find_package(CUDAToolkit)
 endif()
 
 if(CUDA_FOUND)
@@ -208,8 +207,6 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
         )
   endif()
 
-  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132 -fno-automatic")
-
   if(MKL_FOUND)
     list(APPEND Fortran_FLAGS "-m64")
   endif()
@@ -231,7 +228,6 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
   if(TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
-  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-free")
   # List of Fortran flags for Intel's ifort compiler ends here
 
 # List of Fortran flags for Intel's LLVM based compiler begins here
@@ -249,7 +245,6 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "IntelLLVM")
   if(TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
-  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-free")
   # List of Fortran flags for Intel's LLVM based compiler ends here
 
 # List of Fortran flags for LLVM "classic" Flang based compiler begins here
@@ -261,8 +256,6 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Flang")
   if(TREXIO_FOUND)
     list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
-
-  set(CMAKE_Fortran_FORMAT_FIXED_FLAG "-ffixed-form -ffixed-line-length-132")
 
 # List of Fortran flags for LLVM Flang based compiler ends here
 

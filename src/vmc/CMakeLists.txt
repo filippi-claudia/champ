@@ -156,15 +156,11 @@ if(MPI_Fortran_FOUND)
   )
 
 
-  set(ENABLE_GPU ${ENABLE_GPU} PARENT_SCOPE)
   if(ENABLE_GPU)
     message(STATUS "GPU is enabled")
   else()
     message(STATUS "GPU is NOT enabled")
   endif()
-
-  set(ENABLE_TREXIO ${ENABLE_TREXIO} PARENT_SCOPE)
-  set(ENABLE_QMCKL  ${ENABLE_QMCKL} PARENT_SCOPE)
 
   # --------------------------------------------------------------------
   # Set files according to CMake options:
