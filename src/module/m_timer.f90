@@ -33,17 +33,17 @@ module mpitimer
     public :: time_check1
     public :: time_check2
     public :: time_final
-    public :: time, elapsed_time
+    public :: mpi_time, elapsed_time
 
 contains
 
     !> Returns current wall-clock time using MPI_Wtime.
     !> @return Current wall-clock time in seconds.
-    double precision function time()
+    double precision function mpi_time()
         use mpi
         implicit None
-        time = MPI_Wtime()
-    end function time
+        mpi_time = MPI_Wtime()
+    end function mpi_time
 
     !> Logs elapsed time between checkpoints with optional message and iteration number.
     !> @param[in] message Descriptive message to be printed with timing information.
@@ -56,11 +56,11 @@ contains
         integer, intent(in), optional   :: iter
 
         if (present(iter)) then
-            time_check2 = time()
+            time_check2 = mpi_time()
             write(ounit, '(a,i4,a,t60,f12.3,a,f12.3,a)') "REAL TIME ELAPSED [",iter,"] :: " // trim(message), time_check2 - time_start, " (sec)", time_check2 - time_check1, " (sec)"
             time_check1 = time_check2
         else
-            time_check2 = time()
+            time_check2 = mpi_time()
             write(ounit, '(a,t60, f12.3, a, f12.3, a)') "REAL TIME ELAPSED :: " // trim(message), time_check2 - time_start, " (sec)", time_check2 - time_check1, " (sec)"
             time_check1 = time_check2
         end if

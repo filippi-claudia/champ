@@ -26,6 +26,8 @@
 
       rlenmax=0
       rlenmin=9.d99
+      imax=0
+      imin=0
       do i=1,3
         rlen=0
         do k=1,3
@@ -40,6 +42,7 @@
           imin=i
         endif
       enddo
+      if(imax.eq.0.or.imin.eq.0) call fatal_error ('imax or imin eq 0')
       rlenmax=sqrt(rlenmax)
       rlenmin=sqrt(rlenmin)
       cutr=rlenmin/2

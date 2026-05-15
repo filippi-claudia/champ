@@ -153,14 +153,14 @@ contains
             enddo
           endif
         endif
-	do jwf=1,nwftypejas
+        do jwf=1,nwftypejas
           psij(jwf)=fsumo(jwf)+psij_per
           d2j(jwf)=d2o(jwf)+d2_per
-	   do i=1,nelec
-	     v(1,i,jwf)=fjo(1,i,jwf)+v_per(1,i)
-	     v(2,i,jwf)=fjo(2,i,jwf)+v_per(2,i)
-	     v(3,i,jwf)=fjo(3,i,jwf)+v_per(3,i)
-	  enddo
+          do i=1,nelec
+            v(1,i,jwf)=fjo(1,i,jwf)+v_per(1,i)
+            v(2,i,jwf)=fjo(2,i,jwf)+v_per(2,i)
+            v(3,i,jwf)=fjo(3,i,jwf)+v_per(3,i)
+          enddo
         enddo
 
 ! endif nforce
