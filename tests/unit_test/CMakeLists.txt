@@ -19,7 +19,12 @@ if(UNIT_TESTS)
   set(FORTUTF_PROJECT_SRC_LIBRARY "vmc;pspline;parser")
   set(FORTUTF_PROJECT_MOD_DIR "${CMAKE_BINARY_DIR}/src/module;${CMAKE_BINARY_DIR}/src/vmc")
 
-  set(FORTUTF_ROOT ../FortUTF)
+  set(FORTUTF_ROOT ${CMAKE_CURRENT_LIST_DIR}/../FortUTF)
+  if(NOT EXISTS ${FORTUTF_ROOT}/cmake/fortutf.cmake)
+    message(FATAL_ERROR
+      "FortUTF is required when UNIT_TESTS=ON. "
+      "Initialize the submodule with: git submodule update --init tests/FortUTF")
+  endif()
   include(${FORTUTF_ROOT}/cmake/fortutf.cmake)
   FortUTF_Find_Tests()
 endif()

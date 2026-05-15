@@ -260,7 +260,6 @@ cmake --build build -j$(nproc)
 | `CMAKE_Fortran_COMPILER` | compiler path | MPI-wrapped Fortran compiler |
 | `CMAKE_C_COMPILER` | compiler path | MPI-wrapped C compiler |
 | `CMAKE_BUILD_TYPE` | `Release`, `Debug` | Build type (default: Release) |
-| `ENABLE_MPI` | `ON`, `OFF` | Enable MPI support (default: ON) |
 
 ### BLAS/LAPACK Options
 
@@ -415,4 +414,3 @@ For optimized builds on specific supercomputers, see:
 - [Fugaku](supercomputers/fugaku.md)
 - [Snellius](supercomputers/snellius.md)
 - [Ubuntu Desktop](supercomputers/desktop.md)
-

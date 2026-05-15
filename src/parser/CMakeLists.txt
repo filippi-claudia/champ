@@ -15,3 +15,8 @@ list(REMOVE_ITEM N_Fortran_FLAGS "-Werror")
 target_compile_options(parser
   PRIVATE
   ${N_Fortran_FLAGS})
+target_apply_common_compile_definitions(parser)
+
+target_link_libraries(parser
+  PUBLIC
+  MPI::MPI_Fortran)

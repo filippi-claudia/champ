@@ -10,6 +10,7 @@ cmake_policy(SET CMP0079 NEW)
 cmake_policy(SET CMP0076 NEW)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
+set(Fortran_FLAGS_DEBUG "")
 
 # CMake modules/macros are in a subdirectory to keep this file cleaner
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
@@ -30,8 +31,6 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 # User options
-option(BUILD_DOC "build_doc" off)
-option(ENABLE_MPI "enable_mpi" on)
 option(ENABLE_QMMM "enable_qmmm" off)
 option(ENABLE_TREXIO "enable_trexio" off)
 option(ENABLE_QMCKL  "enable_qmckl" off)
@@ -60,7 +59,31 @@ if(BLAS_FOUND AND LAPACK_FOUND)
 endif()
 
 set(LINEAR_ALGEBRA ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
-link_libraries(${LINEAR_ALGEBRA})
+set(LINEAR_ALGEBRA_LINK_LIBRARIES ${LINEAR_ALGEBRA})
+set(LINEAR_ALGEBRA_LINK_OPTIONS "")
+
+if(APPLE)
+  set(LINEAR_ALGEBRA_LINK_LIBRARIES "")
+  foreach(lib ${LINEAR_ALGEBRA})
+    if(lib MATCHES "\\.framework$")
+      get_filename_component(framework_name "${lib}" NAME_WE)
+      list(APPEND LINEAR_ALGEBRA_LINK_OPTIONS "SHELL:-framework ${framework_name}")
+    else()
+      list(APPEND LINEAR_ALGEBRA_LINK_LIBRARIES "${lib}")
+    endif()
+  endforeach()
+  list(REMOVE_DUPLICATES LINEAR_ALGEBRA_LINK_LIBRARIES)
+  list(REMOVE_DUPLICATES LINEAR_ALGEBRA_LINK_OPTIONS)
+endif()
+
+function(target_link_linear_algebra target)
+  target_link_libraries(${target}
+    PRIVATE
+    ${LINEAR_ALGEBRA_LINK_LIBRARIES})
+  target_link_options(${target}
+    PRIVATE
+    ${LINEAR_ALGEBRA_LINK_OPTIONS})
+endfunction()
 
 # LibFDF is built-in in the src/parser folder
 
@@ -89,9 +112,6 @@ if(ENABLE_TREXIO)
     message(STATUS "TREXIO Library include dirs      :: " ${TREXIO_INCLUDE_DIR})
     message(STATUS "TREXIO library                   :: " ${TREXIO_LIBRARY})
     message(STATUS "                                    ")
-    add_definitions(-DTREXIO_FOUND=\"${TREXIO_FOUND}\")
-    link_libraries(${TREXIO_LIBRARIES})
-    include_directories(${TREXIO_INCLUDE_DIRS})
   endif()
 endif()
 
@@ -107,10 +127,48 @@ if(QMCKL_FOUND)
   message(STATUS "QMCkl include dirs               :: " ${QMCKL_INCLUDE_DIR})
   message(STATUS "QMCkl library                    :: " ${QMCKL_LIBRARY})
   message("                                    ")
-  add_definitions(-DQMCKL_FOUND=\"${QMCKL_FOUND}\")
-  link_libraries(${QMCKL_LIBRARIES})
-  include_directories(${QMCKL_INCLUDE_DIRS})
 endif()
+
+function(target_link_optional_libraries target)
+  if(TREXIO_FOUND)
+    target_compile_definitions(${target}
+      PRIVATE
+      TREXIO_FOUND="${TREXIO_FOUND}")
+    target_include_directories(${target}
+      PRIVATE
+      ${TREXIO_INCLUDE_DIRS})
+    target_link_libraries(${target}
+      PRIVATE
+      ${TREXIO_LIBRARIES})
+  endif()
+
+  if(QMCKL_FOUND)
+    target_compile_definitions(${target}
+      PRIVATE
+      QMCKL_FOUND="${QMCKL_FOUND}")
+    target_include_directories(${target}
+      PRIVATE
+      ${QMCKL_INCLUDE_DIRS})
+    target_link_libraries(${target}
+      PRIVATE
+      ${QMCKL_LIBRARIES})
+  endif()
+endfunction()
+
+function(target_link_champ_runtime target)
+  target_link_libraries(${target}
+    PRIVATE
+    pspline
+    parser
+    MPI::MPI_Fortran)
+  if(NOT TREXIO_FOUND)
+    target_link_libraries(${target}
+      PRIVATE
+      ${CUDA_LIBRARIES})
+  endif()
+  target_link_linear_algebra(${target})
+  target_link_optional_libraries(${target})
+endfunction()
 
 set(NVFORTRAN_PATH "" CACHE PATH "Path to CUDA executable nvfortran and nvcc")
 if(ENABLE_GPU)
@@ -123,9 +181,11 @@ if(CUDA_FOUND)
   message(STATUS "CUDA version                    :: " ${CUDA_VERSION})
   message(STATUS "CUDA toolkit directory          :: " ${CUDA_TOOLKIT_ROOT_DIR})
 endif()
-
-if(BUILD_DOC)
-  find_package(DOXYGEN)
+if(NOT DEFINED CUDA_LIBRARIES)
+  set(CUDA_LIBRARIES "")
+endif()
+if(NOT DEFINED HDF5_VERSION)
+  set(HDF5_VERSION "")
 endif()
 
 if(ENABLE_GPU)
@@ -133,14 +193,35 @@ if(ENABLE_GPU)
 endif()
 
 # Find MPI
-if(ENABLE_MPI)
-  find_package(MPI COMPONENTS Fortran REQUIRED)
-else()
-  message(STATUS "MPI is disabled; vmc.mov1 and dmc.mov1 targets will not be built")
-endif()
+find_package(MPI COMPONENTS Fortran REQUIRED)
 
 # SIMD instructions
 find_package(SIMD)
+
+function(target_apply_common_compile_definitions target)
+  if(CHAMP_COMPILE_DEFINITIONS)
+    target_compile_definitions(${target}
+      PRIVATE
+      ${CHAMP_COMPILE_DEFINITIONS})
+  endif()
+endfunction()
+
+function(target_apply_champ_fortran_compile_options target)
+  target_compile_options(${target}
+    PRIVATE
+    ${Fortran_FLAGS}
+    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>")
+  target_apply_common_compile_definitions(${target})
+endfunction()
+
+function(target_apply_champ_fortran_link_options target)
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
+    target_link_options(${target}
+      PRIVATE
+      ${Fortran_FLAGS}
+      "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>")
+  endif()
+endfunction()
 
 # system information
 find_package(SystemInfo)
@@ -149,11 +230,11 @@ find_package(SystemInfo)
 find_package(GitInfo)
 gitinfo(${CMAKE_SOURCE_DIR})
 
+list(APPEND Fortran_FLAGS "-D_MPI_" "-DCLUSTER")
+
 # List of Fortran flags for Nvidia's NVHPC compiler begins here
 if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC")
   list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=medium")
-  list(APPEND Fortran_FLAGS "-D_MPI_")
-  list(APPEND Fortran_FLAGS "-DCLUSTER")
   list(APPEND Fortran_FLAGS "-DPGI")
   list(APPEND Fortran_FLAGS "-DOPENACC")
   list(APPEND Fortran_FLAGS "-Mfree")
@@ -177,11 +258,6 @@ endif()
 if(CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
   message(STATUS "Fujitsu compiler detected :: ")
   list(APPEND Fortran_FLAGS "-O3" "-Cpp" "-Nalloc_assign" "-Fwide" "-fs" "-Kopenmp" "-Kparallel" "-Kfast" "-mcmodel=large" )
-  list(APPEND Fortran_FLAGS "-D_MPI_")
-  list(APPEND Fortran_FLAGS "-DCLUSTER")
-  if(TREXIO_FOUND)
-    list(APPEND Fortran_FLAGS "-L${TREXIO_LIBRARY} -ltrexio -I${TREXIO_INCLUDE_DIR}")
-  endif()
 endif()
 # List of Fortran flags for Fujitsu compiler ends here
 
@@ -192,8 +268,6 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   else()
     list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-none")
   endif()
-  list(APPEND Fortran_FLAGS "-D_MPI_")
-  list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
     list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
         "-g" "-Wall" "-Wextra"
@@ -220,13 +294,8 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
   list(APPEND Fortran_FLAGS "-ipo")
   list(APPEND Fortran_FLAGS "-finline" "-ip" "-align" "array64byte" "-fma" "-ftz" "-fomit-frame-pointer")
   list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
-  list(APPEND Fortran_FLAGS "-D_MPI_")
-  list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
     list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
-  endif()
-  if(TREXIO_FOUND)
-    list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
   # List of Fortran flags for Intel's ifort compiler ends here
 
@@ -237,13 +306,8 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "IntelLLVM")
   list(APPEND Fortran_FLAGS "-implicitnone")
   list(APPEND Fortran_FLAGS "-finline" "-align" "array64byte" "-fma" "-ftz" "-fomit-frame-pointer")
   list(APPEND Fortran_FLAGS "-fpp" "-mcmodel=small" "-shared-intel" "-dyncom=grid3d_data,orbital_num_spl,orbital_num_lag,orbital_num_spl2,grid3d_data" )
-  list(APPEND Fortran_FLAGS "-D_MPI_")
-  list(APPEND Fortran_FLAGS "-DCLUSTER")
   if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
     list(APPEND Fortran_FLAGS "-O0" "-diag-enable=all" "-traceback" "-g" "-check" "all" )
-  endif()
-  if(TREXIO_FOUND)
-    list(APPEND Fortran_FLAGS "-ltrexio")
   endif()
   # List of Fortran flags for Intel's LLVM based compiler ends here
 
@@ -251,12 +315,6 @@ elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "IntelLLVM")
 # This includes flang and aocc-flang and shouldn't be confused with flang-new (LLVMFlang in CMake)
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "Flang")
   list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large")
-  list(APPEND Fortran_FLAGS "-D_MPI_")
-  list(APPEND Fortran_FLAGS "-DCLUSTER")
-  if(TREXIO_FOUND)
-    list(APPEND Fortran_FLAGS "-ltrexio")
-  endif()
-
 # List of Fortran flags for LLVM Flang based compiler ends here
 
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI")

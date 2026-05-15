@@ -256,7 +256,6 @@ dependencies = [
 ]
 
 configopts = '-DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_C_COMPILER=mpicc '
-configopts += '-DENABLE_MPI=ON '
 
 sanity_check_paths = {
     'files': ['bin/vmc.mov1', 'bin/dmc.mov1'],
@@ -530,7 +529,7 @@ dependencies = [
 ]
 
 configopts = '-DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_C_COMPILER=mpicc '
-configopts += '-DENABLE_MPI=ON -DENABLE_TREXIO=ON '
+configopts += '-DENABLE_TREXIO=ON '
 
 sanity_check_paths = {
     'files': ['bin/vmc.mov1', 'bin/dmc.mov1'],
@@ -560,4 +559,3 @@ After installing CHAMP with EasyBuild:
 3. Run the test suite if available
 4. Learn about the [Command-Line Interface](supercomputers/cli.md)
 5. Follow the [Tutorials](../../tutorials/index.md) for example calculations
-

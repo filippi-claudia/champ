@@ -55,34 +55,7 @@ target_include_directories(dmc.mov1
 )
 
 # Compile options
-target_compile_options(dmc.mov1
-  PRIVATE
-  ${Fortran_FLAGS}
-  "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
-)
+target_apply_champ_fortran_compile_options(dmc.mov1)
+target_apply_champ_fortran_link_options(dmc.mov1)
 
-if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
-  target_link_options(dmc.mov1
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
-  )
-endif()
-
-if(TREXIO_FOUND)
-  target_link_libraries(dmc.mov1
-    PRIVATE
-    pspline
-    parser
-    ${LINEAR_ALGEBRA}
-    ${TREXIO_LIBRARY}
-    MPI::MPI_Fortran)
-else()
-  target_link_libraries(dmc.mov1
-    PRIVATE
-    pspline
-    parser
-    ${LINEAR_ALGEBRA}
-    ${CUDA_LIBRARIES}
-    MPI::MPI_Fortran)
-endif()
+target_link_champ_runtime(dmc.mov1)

@@ -1,7 +1,5 @@
-if(MPI_Fortran_FOUND)
-
-  # Source files
-  file(GLOB VMC90_SOURCE
+# Source files
+file(GLOB VMC90_SOURCE
     3dgrid.f90
     3dgrid_orbitals.f90
     acuest.f90
@@ -325,10 +323,12 @@ if(MPI_Fortran_FOUND)
     ${CMAKE_BINARY_DIR}/src/parser
   )
 
-  target_compile_options(shared_objects
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>")
+  target_apply_champ_fortran_compile_options(shared_objects)
+
+  target_link_libraries(shared_objects
+    PUBLIC
+    MPI::MPI_Fortran)
+  target_link_optional_libraries(shared_objects)
 
   add_dependencies(shared_objects shared_modules)
   add_dependencies(shared_objects parser)
@@ -338,9 +338,6 @@ if(MPI_Fortran_FOUND)
   # --------------------------------------------------------------------
 
   foreach(s ${SHARED_OBJECTS})
-    list(REMOVE_ITEM VMC90_SOURCE ${s})
-  endforeach()
-  foreach(s ${SHARED_MODULES})
     list(REMOVE_ITEM VMC90_SOURCE ${s})
   endforeach()
 
@@ -353,6 +350,7 @@ if(MPI_Fortran_FOUND)
   target_compile_options(rng
     PUBLIC
     "-O3")
+  target_apply_common_compile_definitions(rng)
 
 
   add_executable(vmc.mov1
@@ -371,29 +369,9 @@ if(UNIT_TESTS)
     $<TARGET_OBJECTS:rng>
     $<TARGET_OBJECTS:vmc.mov1>)
 
-  target_compile_options(vmc
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
-    )
+  target_apply_champ_fortran_compile_options(vmc)
 
-  if(TREXIO_FOUND)
-    target_link_libraries(vmc
-      PRIVATE
-      pspline
-      parser
-      ${LINEAR_ALGEBRA}
-      ${TREXIO_LIBRARY}
-      MPI::MPI_Fortran)
-  else()
-    target_link_libraries(vmc
-      PRIVATE
-      pspline
-      parser
-      ${LINEAR_ALGEBRA}
-      ${CUDA_LIBRARIES}
-      MPI::MPI_Fortran)
-  endif()
+  target_link_champ_runtime(vmc)
 endif()
 
   # Add headers
@@ -403,37 +381,7 @@ endif()
   )
 
   # Compile options
-  target_compile_options(vmc.mov1
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
-  )
+  target_apply_champ_fortran_compile_options(vmc.mov1)
+  target_apply_champ_fortran_link_options(vmc.mov1)
 
-  if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
-    target_link_options(vmc.mov1
-      PRIVATE
-      ${Fortran_FLAGS}
-      "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>"
-    )
-  endif()
-
-  if(TREXIO_FOUND)
-    target_link_libraries(vmc.mov1
-      PRIVATE
-      pspline
-      parser
-      ${LINEAR_ALGEBRA}
-      ${TREXIO_LIBRARY}
-      MPI::MPI_Fortran)
-  else()
-    target_link_libraries(vmc.mov1
-      PRIVATE
-      pspline
-      parser
-      ${LINEAR_ALGEBRA}
-      ${CUDA_LIBRARIES}
-      MPI::MPI_Fortran)
-  endif()
-
-
-endif()
+  target_link_champ_runtime(vmc.mov1)

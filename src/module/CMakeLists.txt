@@ -1,11 +1,9 @@
-if(MPI_Fortran_FOUND)
-
-  # --------------------------------------------------------------------
-  # Create object libraries shared by vmc.mov1 and dmc.mov1:
-  # - shared_modules: all .f90 modules that must be compiled first.
-  # - shared_objects: rest of shared objects (.f90/.f).
-  # --------------------------------------------------------------------
-  set(SHARED_MODULES
+# --------------------------------------------------------------------
+# Create object libraries shared by vmc.mov1 and dmc.mov1:
+# - shared_modules: all .f90 modules that must be compiled first.
+# - shared_objects: rest of shared objects (.f90/.f).
+# --------------------------------------------------------------------
+set(SHARED_MODULES
     m_kinds.f90
     m_metropolis.f90
     m_slater.f90
@@ -67,9 +65,9 @@ if(MPI_Fortran_FOUND)
   target_compile_definitions(shared_modules
     PRIVATE
     CHAMP_VERSION="v${PROJECT_VERSION}")
-  target_compile_options(shared_modules
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortran_FLAGS_DEBUG}>")
+target_apply_champ_fortran_compile_options(shared_modules)
 
-endif()
+target_link_libraries(shared_modules
+  PUBLIC
+  MPI::MPI_Fortran)
+target_link_optional_libraries(shared_modules)

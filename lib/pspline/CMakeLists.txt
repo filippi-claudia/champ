@@ -16,3 +16,4 @@ target_compile_options(pspline
   PRIVATE
   ${N_Fortran_FLAGS} )
 endif()
+target_apply_common_compile_definitions(pspline)
