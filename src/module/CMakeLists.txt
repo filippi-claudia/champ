@@ -1,8 +1,7 @@
 if(MPI_Fortran_FOUND)
 
   # --------------------------------------------------------------------
-  # Create two libraries to share objects between the two binaries,
-  # vmc.mov1 and dmc.mov1:
+  # Create object libraries shared by vmc.mov1 and dmc.mov1:
   # - shared_modules: all .f90 modules that must be compiled first.
   # - shared_objects: rest of shared objects (.f90/.f).
   # --------------------------------------------------------------------
@@ -22,7 +21,6 @@ if(MPI_Fortran_FOUND)
     m_multiple_geo.f90
     m_force_pth.f90
     m_force_analytic.f90
-    m_slater.f90
     m_force.f90
     m_mstates.f90
     m_mpi.f90
@@ -30,8 +28,6 @@ if(MPI_Fortran_FOUND)
     m_pseudo.f90
     m_sampling.f90
     m_sr.f90
-    m_slater.f90
-    m_metropolis.f90
     m_dmc.f90
     m_vmc.f90
     m_vd.f90

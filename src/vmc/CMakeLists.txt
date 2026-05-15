@@ -192,14 +192,8 @@ if(MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow_qmckl.f90)
   endif()
 
-
-
-  find_package(FortranFormat)
-  formatFortran("${VMC_SOURCE}") # Set Fixed format property
-
   # --------------------------------------------------------------------
-  # Create two libraries to share objects between the two binaries,
-  # vmc.mov1 and dmc.mov1:
+  # Create two object libraries shared by vmc.mov1 and dmc.mov1:
   # - shared_modules: all .f90 modules that must be compiled first.
   # - shared_objects: rest of shared objects (.f90/.f).
   # --------------------------------------------------------------------
@@ -344,7 +338,7 @@ if(MPI_Fortran_FOUND)
   add_dependencies(shared_objects parser)
 
   # --------------------------------------------------------------------
-  # Remove code that has been already compiled:
+  # Remove sources already compiled into object libraries:
   # --------------------------------------------------------------------
 
   foreach(s ${SHARED_OBJECTS})
@@ -369,7 +363,7 @@ if(MPI_Fortran_FOUND)
     $<TARGET_OBJECTS:shared_modules>
     $<TARGET_OBJECTS:shared_objects>
     $<TARGET_OBJECTS:rng>
-    # source that is not already included in the objects
+    # Sources not already included in the object libraries.
     ${VMC90_SOURCE}
     )
 
@@ -412,7 +406,7 @@ endif()
     ${CMAKE_BINARY_DIR}/src/module
   )
 
-  # compilation
+  # Compile options
   target_compile_options(vmc.mov1
     PRIVATE
     ${Fortran_FLAGS}

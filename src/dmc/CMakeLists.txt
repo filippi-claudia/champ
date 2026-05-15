@@ -39,12 +39,12 @@ file(GLOB DMC_SOURCE
 
 # --------------------------------------------------------------------
 
-# executable dependencies
+# DMC executable
 add_executable(dmc.mov1
   $<TARGET_OBJECTS:shared_modules>
   $<TARGET_OBJECTS:shared_objects>
   $<TARGET_OBJECTS:rng>
-  # DMC source code
+  # DMC sources
   ${DMC_SOURCE})
 
 # Add headers
@@ -54,7 +54,7 @@ target_include_directories(dmc.mov1
   ${CMAKE_BINARY_DIR}/src/module
 )
 
-# compilation
+# Compile options
 target_compile_options(dmc.mov1
   PRIVATE
   ${Fortran_FLAGS}
@@ -86,6 +86,3 @@ else()
     ${CUDA_LIBRARIES}
     MPI::MPI_Fortran)
 endif()
-
-
-set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the DMC source files")
