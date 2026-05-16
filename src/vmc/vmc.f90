@@ -9,10 +9,9 @@ contains
 
       use acuest_mod, only: acuest,zerest
       use config,  only: eold,psido,psijo,xold
-      use contrl_file, only: ounit
       use control, only: mode
       use control_vmc, only: vmc_idump,vmc_irstar,vmc_nblk,vmc_nblkeq
-      use control_vmc, only: vmc_nconf,vmc_nconf_new,vmc_nstep
+      use control_vmc, only: vmc_nconf_new,vmc_nstep
       use dumper_mod, only: dumper,startr
       use error, only: fatal_error
       use finwrt_mod, only: finwrt
@@ -24,7 +23,6 @@ contains
       use metropolis, only: imetro
       use mpitimer, only: elapsed_time
       use multiple_geo, only: iwftype,nforce,nwftype
-      use precision_kinds, only: dp
       use pseudo,  only: nloc
       use rotqua_mod, only: rotqua
       use strech_mod, only: setup_force
@@ -42,7 +40,6 @@ contains
 
       integer :: i, ii, j, jj, l
       integer :: ngfmc
-      real(dp) ::err
       character(len=8)  :: date
       character(len=10) :: time
       integer           :: hdf5_restart_funit, hdf5_restart_ios

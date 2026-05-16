@@ -3,7 +3,6 @@ contains
       subroutine fin_reduce
 ! MPI version written by Claudia Filippi
 
-      use control_vmc, only: vmc_nstep
       use csfs,    only: nstates
       use custom_broadcast, only: bcast
       use est2cm,  only: ecm21
@@ -15,7 +14,7 @@ contains
       use mmpol_reduce_mod, only: mmpol_reduce
       use mmpol_vmc, only: mmpol_fin
       use mpi
-      use mpiconf, only: nproc,wid
+      use mpiconf, only: wid
       use mstates_mod, only: MSTATES
       use multiple_geo, only: nforce
       use optci_mod, only: optci_fin
@@ -37,9 +36,8 @@ contains
 
       implicit none
 
-      integer :: i, id, ierr, istate
-      integer, dimension(MPI_STATUS_SIZE) :: istatus
-      real(dp) :: dble, efin, passes
+      integer :: ierr, istate
+      real(dp) :: efin
       real(dp), dimension(MSTATES) :: collect
 
       call mpi_reduce(ecum1,collect,nstates,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
@@ -76,22 +74,7 @@ contains
 
       call bcast(ecum1)
       call bcast(wcum)
-!       if(wid) then
-!         do 60 id=1,nproc-1
-!           call mpi_send(ecum1,nstates,mpi_double_precision,id
-!      &    ,1,MPI_COMM_WORLD,ierr)
-! c    &    ,1,MPI_COMM_WORLD,irequest,ierr)
-!    60     call mpi_send(wcum,nstates*nforce,mpi_double_precision,id
-!      &    ,2,MPI_COMM_WORLD,ierr)
-! c    &    ,2,MPI_COMM_WORLD,irequest,ierr)
-!        else
-!         call mpi_recv(ecum1,nstates,mpi_double_precision,0
-!      &  ,1,MPI_COMM_WORLD,istatus,ierr)
-!         call mpi_recv(wcum,nstates*nforce,mpi_double_precision,0
-!      &  ,2,MPI_COMM_WORLD,istatus,ierr)
-!       endif
 
-      passes=dble(iblk)*dble(vmc_nstep)
       efin=ecum1(1)/wcum(1,1)
 
       call optjas_fin(wcum(1,1),ecum1)
@@ -107,9 +90,6 @@ contains
 
         call optx_orb_ci_fin(wcum(1,1),efin)
       endif
-
-!     call efficiency_prt(passes)
-
 ! reduce pcm properties
       call pcm_reduce
 
