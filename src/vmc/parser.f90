@@ -13,7 +13,6 @@ subroutine parser
       use fdf               ! modified libfdf
       use allocation_mod, only: allocate_dmc,allocate_vmc
       use basis,   only: zex
-      use bparm,   only: nocuspb,nspin2b
       use casula,  only: i_vpsp,icasula
       use ci000,   only: iciprt,nciprim,nciterm
       use coefs,   only: nbasis
@@ -36,40 +35,37 @@ subroutine parser
       use custom_broadcast, only: bcast
       use dets,    only: nmap
       use dmc_mod, only: mwalk,set_mwalk
-      use dorb_m,  only: iworbd
       use efield,  only: iefield,ncharges
       use efield_f_mod, only: efield_compute_extint
       use fragments, only: nfrag, ifragcent, ibranching_cfrag, etrialfrag
-      use general, only: bas_id,filenames_bas_num,pooldir,pp_id,write_walkalize
+      use general, only: bas_id,pooldir,pp_id,write_walkalize
       use get_norbterm_mod, only: get_norbterm
       use gradjerrb, only: ngrad_jas_blocks
       use grdntspar, only: delgrdba,delgrdbl,delgrdda,delgrdxyz,igrdtype
       use grdntspar, only: ngradnts
       use grid3d,  only: setup_grid
       use grid3d_orbitals, only: setup_3dlagorb,setup_3dsplorb
-      use grid3d_param, only: endpt,nstep3d,origin,step3d
       use grid3dflag, only: i3ddensity,i3dgrid,i3dlagorb,i3dsplorb
       use header,  only: title
       use inputflags, only: dmc_eps_node_cutoff,dmc_node_cutoff
       use inputflags, only: eps_node_cutoff,icharge_efield
-      use inputflags, only: ici_def,icsfs,ideterminants,iexponents
+      use inputflags, only: ici_def,ideterminants,iexponents
       use inputflags, only: iforces,igeometry,igradients,ihessian_zmat
-      use inputflags, only: ijastrow_parameter,ilattice,ilcao
+      use inputflags, only: ijastrow_parameter,ilcao
       use inputflags, only: imodify_zmat,imultideterminants,ioptorb_def
-      use inputflags, only: ioptorb_mixvirt,iqmmm,izmatrix_check,iznuc
+      use inputflags, only: ioptorb_mixvirt,izmatrix_check,iznuc
       use inputflags, only: node_cutoff,scalecoef
       use jastrow, only: norda,nordb,nordc
       use jastrow, only: asymp_r
-      use jastrow, only: a4,allocate_jasasymp,asymp_jasa,asymp_jasb,b,c
-      use jastrow, only: ijas,ijas_lr,is,isc,neqsx,nordj,nordj1
+      use jastrow, only: allocate_jasasymp
+      use jastrow, only: ijas,ijas_lr,isc,neqsx,nordj,nordj1
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
       use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat,f_analy_err
       use metropolis, only: imetro, vmc_tau
-      use metropolis, only: delta,deltai,deltar,deltat,fbias
+      use metropolis, only: delta,deltar,deltat,fbias
       use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
       use misc_grdnts, only: inpwrt_zmatrix
-      use mmpol_mod, only: mmpolfile_chmm,mmpolfile_sites
       use mpiconf, only: wid, idtask
       use mpitimer, only: elapsed_time
       use mstates3, only: iweight_g,weights_g
@@ -102,7 +98,7 @@ subroutine parser
       use optwf_func, only: ifunc_omega,n_omegaf,n_omegat,omega0
       use optwf_handle_wf, only: set_nparms_tot
       use optwf_parms, only: nparmj
-      use orbval,  only: ddorb,dorb,nadorb,ndetorb,orb
+      use orbval,  only: nadorb
       use mpi
       use pathak_mod, only: ipathak, eps_max, deps
       use pathak_mod, only: init_pathak, init_eps_pathak
@@ -123,14 +119,13 @@ subroutine parser
       use parser_read_data, only: read_optorb_mixvirt_file
       use parser_read_data, only: read_orbitals_file,read_symmetry_file
       use parser_read_data, only: read_zmatrix_connection_file
-      use pcm_unit, only: pcmfile_cavity,pcmfile_chs,pcmfile_chv
-      use periodic, only: ngnorm, ngvec
+      use periodic, only: ngvec
       use periodic_table, only: atom_t,element
       use pot,     only: pot_nn
       use precision_kinds, only: dp
       use prp000,  only: iprop,ipropprt,nprop
       use pseudo,  only: nloc
-      use qua,     only: nquad,wq,xq,yq,zq
+      use qua,     only: nquad
       use random_mod, only: setrn, jumprn
       use read_bas_num_mod, only: read_bas_num,readps_gauss
       use sa_weights, only: iweight,nweight,weights
@@ -151,7 +146,6 @@ subroutine parser
       use vmc_mod, only: nwftypejas,stoj,jtos,nstoj_tot,nstojmax,extraj
       use vmc_mod, only: nwftypeorb,stoo,otos,nstoo_tot,nstoomax,extrao
       use vmc_mod, only: nbjx,stobjx,bjxtoj,bjxtoo,nstoj_tot,nstoo_tot
-      use write_orb_loc_mod, only: write_orb_loc
       use zmatrix, only: izmatrix
 #if defined(TREXIO_FOUND)
       use trexio_read_data, only: read_trexio_basis_file
@@ -173,12 +167,11 @@ subroutine parser
 #endif
 
   !! Allocate_periodic
-  use periodic,         only: npoly,np_coul, np_jas,cutg, cutg_big, alattice
-  use periodic,         only: rlatt, rlatt_inv, n_images, ell
+  use periodic,         only: npoly,np_coul, np_jas,cutg, cutg_big
+  use periodic,         only: n_images
   use ewald_breakup,    only: set_ewald
   use periodic,         only: allocate_periodic
   use ewald_test,       only: allocate_ewald_test, deallocate_ewald_test
-  use m_pseudo,         only: allocate_m_pseudo
 
 ! CHAMP modules
 
@@ -206,11 +199,8 @@ subroutine parser
   character(len=100)         :: real_format    = '(A, T40, ":: ", T42, F25.16)'
   character(len=100)         :: int_format     = '(A, T40, ":: ", T50, I0)'
   character(len=100)         :: string_format  = '(A, T40, ":: ", T50, A)'
-  character(len=100)         :: array_format   = '(A, "(",I0,")", T40, ":: ", T42, F25.16)'
-
 !------------------------------------------------------------------------- BEGIN
 
-  character(:), allocatable  :: optwf, blocking_vmc, blocking_dmc
   character(:), allocatable  :: file_basis
   character(:), allocatable  :: file_molecule
   character(:), allocatable  :: file_determinants
@@ -226,7 +216,7 @@ subroutine parser
   character(:), allocatable  :: file_eigenvalues
   character(:), allocatable  :: file_basis_num_info
   character(:), allocatable  :: file_dmatrix
-  character(:), allocatable  :: file_cavity_spheres
+  ! character(:), allocatable  :: file_cavity_spheres
   character(:), allocatable  :: file_modify_zmatrix
   character(:), allocatable  :: file_hessian_zmatrix
   character(:), allocatable  :: file_gradients_zmatrix
@@ -244,7 +234,7 @@ subroutine parser
   integer                    :: irn(8), nefpterm
 
 ! local counter variables
-  integer                    :: i,j,k, n, iostat, dot_pos
+  integer                    :: i,j,k, n, dot_pos
   integer                    :: ic, iwft, istate, imax
   type(atom_t)               :: atoms
   real(dp)                   :: acsfmax,acsfnow
@@ -256,11 +246,7 @@ subroutine parser
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
   integer(qmckl_exit_code)   :: rc
-  integer*8                  :: n8
-  integer*8                  :: ncheck, ictx
-  integer*8                  :: norb_qmckl(qmckl_no_ctx_max)
-  integer, allocatable       :: keep(:)
-  character*(1024)           :: err_message = ''
+  integer*8                  :: ictx
 #endif
 
 ! Initialize # get the filenames from the commandline arguments
@@ -568,7 +554,7 @@ subroutine parser
   file_eigenvalues     = fdf_load_filename('eigenvalues',   'default.eig')
   file_basis_num_info       = fdf_load_filename('basis_num_info',  'default.bni')
   file_dmatrix      = fdf_load_filename('dmatrix',   'default.dmat')
-  file_cavity_spheres       = fdf_load_filename('cavity_spheres',  'default.cav')
+  ! file_cavity_spheres       = fdf_load_filename('cavity_spheres',  'default.cav')
   file_gradients_zmatrix    = fdf_load_filename('gradients_zmatrix',    'default.gzmat')
   file_gradients_cartesian  = fdf_load_filename('gradients_cartesian',  'default.gcart')
   file_modify_zmatrix       = fdf_load_filename('modify_zmatrix',  'default.mzmat')
@@ -2331,7 +2317,7 @@ end subroutine read_lattice_file
     type(block_fdf)                 :: bfdf
     type(parsed_line), pointer      :: pline
     double precision, allocatable   :: nval(:)
-    integer                         :: count = 0
+    integer                         :: count
     ! %block molecule
     ! 4
     ! some comment (symbol, x,y,z)
@@ -2351,12 +2337,9 @@ end subroutine read_lattice_file
     ! H2    3.706633 -2.326423  0   1.0
     ! %endblock
 
-    ! Keep compiler happy
-    if (.not.allocated(nval)) allocate(nval(1))
-    nval = 0._8
-
     write(ounit,*) ' Molecular Coordinates from molecule block '
 
+    count = 0
    j = 1 !local counter
     do while((fdf_bline(bfdf, pline)))
 !     get the integer from the first line
@@ -2369,11 +2352,14 @@ end subroutine read_lattice_file
       if (.not. allocated(symbol)) allocate(symbol(ncent))
       if (.not. allocated(iwctype)) allocate(iwctype(ncent))
       if (.not. allocated(unique)) allocate(unique(ncent))
-      if (.not. allocated(nval)) allocate(nval(ncent))
+      if (.not. allocated(nval)) then
+        allocate(nval(ncent))
+        nval = 0._8
+      endif
 
-      count = pline%ntokens
       ! get the coordinates: 4 tokens per line; first char (n) and three (r)reals or (i)ints.
       if ((pline%ntokens==4).and.((pline%id(1).eq."n").and.((any(pline%id(2:4).eq."r")) .or. (any(pline%id(2:4).eq.("i"))) ))) then
+        count = pline%ntokens
         symbol(j) = fdf_bnames(pline, 1)
         do i= 1, 3
           cent(i,j) = fdf_bvalues(pline, i)
@@ -2381,6 +2367,7 @@ end subroutine read_lattice_file
         j = j + 1
       ! get the coordinates: 5 tokens per line; first char (n) and three (r)reals or (i)ints for coords and 4th for nvalence/znuc
       elseif ((pline%ntokens==5).and.((pline%id(1).eq."n").and.((any(pline%id(2:4).eq."r")) .or. (any(pline%id(2:4).eq.("i"))) ))) then
+        count = pline%ntokens
         symbol(j) = fdf_bnames(pline, 1)
         do i= 1, 3
           cent(i,j) = fdf_bvalues(pline, i)
@@ -2398,7 +2385,7 @@ end subroutine read_lattice_file
     unique(1) = symbol(1)
 
     do j= 2, ncent
-        if (any(unique == symbol(j) ))  cycle
+        if (any(unique(1:nctype) == symbol(j) ))  cycle
         nctype = nctype + 1
         unique(nctype) = symbol(j)
     enddo
