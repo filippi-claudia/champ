@@ -1877,13 +1877,13 @@ endif ! (rank==0)
 
 !--------------------------------------------------------------- Local Variables
       logical                    :: dump, found_elem
-      logical, pointer           :: found_loc(:)
+      logical, allocatable       :: found_loc(:)
       character(80)              :: msg
       character(len=MAX_LENGTH*2):: line
       character(len=MAX_LENGTH)  :: label, inc_file
       integer(ip)                :: i, ierr, ntok, ind_less, nlstart
       integer(ip)                :: elem, nelem_loc
-      integer(ip), pointer       :: found_index(:)
+      integer(ip), allocatable   :: found_index(:)
       type(parsed_line), pointer :: pline
 
 !------------------------------------------------------------------------- BEGIN
@@ -2120,10 +2120,10 @@ endif ! (rank==0)
                   enddo
                 endif
 
-                DEALLOCATE(found_index)
+                DEALLOCATE(found_loc)
               endif
 
-              DEALLOCATE(found_loc)
+              DEALLOCATE(found_index)
               call destroy(pline)
             endif
 
@@ -3192,6 +3192,8 @@ endif ! (rank==0)
 
 !------------------------------------------------------------------------- BEGIN
 !     Prevents using FDF routines without initialize
+      fdf_boolean = default
+
       if (.not. fdf_started) then
         call die('FDF module: fdf_boolean', 'FDF subsystem not initialized', &
                  THIS_FILE, __LINE__, fdf_err)
@@ -3298,6 +3300,8 @@ endif ! (rank==0)
 
 !------------------------------------------------------------------------- BEGIN
 !     Prevents using FDF routines without initialize
+      fdf_bboolean = .TRUE.
+
       if (.not. fdf_started) then
         call die('FDF module: fdf_bboolean', 'FDF subsystem not initialized', &
                  THIS_FILE, __LINE__, fdf_err)
