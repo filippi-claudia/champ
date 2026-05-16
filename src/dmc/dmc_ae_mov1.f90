@@ -5,7 +5,6 @@
 
       use age,     only: iage,ioldest,ioldestmx
       use assignment_mod, only: assign_elecs
-      use averages, only: average
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
       use branching, only: calculate_fratio, calculate_reweight

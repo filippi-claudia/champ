@@ -125,6 +125,7 @@ contains
 ! 3) Generalize to molecules. This requires geometric rejections.
 
       deltri=one/deltar
+      ijas1=stoj(1)
 
       call check_orbitals
 
@@ -403,7 +404,6 @@ contains
         write(ounit,'(''psidn,psi2g ='',2d12.4)') psidn(1),psi2g
       endif
 
-      ijas1=stoj(1)
       psi2n(1)=dlog(dabs(psi2g))+2*(dlog(dabs(psidn(1)))+psijn(ijas1))
 
       if(node_cutoff.ne.0) then

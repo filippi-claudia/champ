@@ -213,43 +213,6 @@ contains
 
       end subroutine
 
-      subroutine walkcheckdet(iw)
-      implicit none
-
-      integer :: i, iab, ierr, iorb, irecv
-      integer :: irequest, irequest_array, isend, istate
-      integer :: istatus, itag, iw, iw2
-      integer :: j, k, kcum, kk
-      integer :: ndim, nel, ndim2
-
-      dimension istatus(MPI_STATUS_SIZE)
-      dimension irequest_array(MPI_STATUS_SIZE)
-
-      do k=1,ndet
-        write(ounit,*) 'detiab1',detiab(k,1,1)
-        write(ounit,*) 'detiab2',detiab(k,2,1)
-      enddo
-
-      !write(ounit,*) 'slm1'(slmi(j,1,1),j=1,nup*nup)
-
-       do iab=1,2
-         nel=nup
-         if(iab.eq.2) nel=ndn
-          write(ounit,*) 'aa iab',iab, ((aa(i,j,iab,1),i=1,nel),j=ivirt(iab),norb)
-          write(ounit,*) 'ymat iab',iab, ((ymat(j,i,iab,istate),j=ivirt(iab),norb),i=1,nel)
-       enddo
-
-       do iab=1,2
-         do k=2,ndet
-           ndim=numrep_det(k,iab)
-           ndim2=ndim*ndim
-           write(ounit,*) 'wfmat iab numrep_det',iab, numrep_det(k,iab),(wfmat(k,j,iab,1),j=1,ndim2)
-         enddo
-       enddo
-
-
-      end subroutine
-
       subroutine splitjdet(iw,iw2)
       implicit none
 

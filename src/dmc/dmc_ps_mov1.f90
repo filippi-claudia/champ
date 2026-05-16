@@ -5,7 +5,6 @@
 
       use age,     only: iage,ioldest,ioldestmx
       use assignment_mod, only: assign_elecs
-      use averages, only: average
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
       use branching, only: calculate_fratio, calculate_reweight
@@ -793,7 +792,6 @@
              endif
           endif 
         endif
-      ! call average(1)
       enddo
 
       if(ipr.gt.5.and.wsum1(1).gt.1.1d0*dmc_nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,fprod/ff(ipmod2),wsum1(1),wgdsumo
