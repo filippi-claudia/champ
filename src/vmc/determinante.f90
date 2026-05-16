@@ -131,7 +131,6 @@ contains
       endif
 
       psi2gi=1.d0/psi2g
-      if(iguiding.gt.0) isjas1=stoj(iweight_g(1))
 
 ! All quantities saved (old) avaliable
       if(iflag_move.eq.1) then
@@ -156,6 +155,7 @@ contains
             vd(kk)=vd(kk)+vref(kk,1)+vj(kk,iel,1)
           enddo
         else
+          isjas1=stoj(iweight_g(1))
           do kk=1,3
             vd(kk)=0.d0
           enddo
@@ -204,6 +204,7 @@ contains
 
          else
 
+          isjas1=stoj(iweight_g(1))
           do kk=1,3
             vd(kk)=0.d0
           enddo
