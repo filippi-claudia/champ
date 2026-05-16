@@ -12,16 +12,14 @@ subroutine parser
 
       use fdf               ! modified libfdf
       use allocation_mod, only: allocate_dmc,allocate_vmc
-      use array_resize_utils, only: resize_tensor
       use basis,   only: zex
       use bparm,   only: nocuspb,nspin2b
       use casula,  only: i_vpsp,icasula
       use ci000,   only: iciprt,nciprim,nciterm
-      use coefs,   only: nbasis,next_max
+      use coefs,   only: nbasis
       use const,   only: etrial, esigmatrial
-      use constants, only: hb,pi
-      use contrl_file, only: errunit,file_error,file_input
-      use contrl_file, only: file_output,iunit,ounit
+      use constants, only: hb
+      use contrl_file, only: errunit,file_input,ounit
       use contrl_per, only: ibasis,iperiodic
       use contrldmc, only: iacc_rej,icross,icuspg,icut_br,icut_e,idiv_v, ibranching_c
       use contrldmc, only: idmc,ipq,itau_eff,nfprod,rttau,tau,limit_wt_dmc
@@ -51,10 +49,9 @@ subroutine parser
       use grid3d_orbitals, only: setup_3dlagorb,setup_3dsplorb
       use grid3d_param, only: endpt,nstep3d,origin,step3d
       use grid3dflag, only: i3ddensity,i3dgrid,i3dlagorb,i3dsplorb
-      use grid_mod, only: IUNDEFINED,UNDEFINED
       use header,  only: title
       use inputflags, only: dmc_eps_node_cutoff,dmc_node_cutoff
-      use inputflags, only: eps_node_cutoff,ibasis_num,icharge_efield
+      use inputflags, only: eps_node_cutoff,icharge_efield
       use inputflags, only: ici_def,icsfs,ideterminants,iexponents
       use inputflags, only: iforces,igeometry,igradients,ihessian_zmat
       use inputflags, only: ijastrow_parameter,ilattice,ilcao
@@ -72,10 +69,7 @@ subroutine parser
       use metropolis, only: delta,deltai,deltar,deltat,fbias
       use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
       use misc_grdnts, only: inpwrt_zmatrix
-      use mmpol_cntrl, only: ich_mmpol,immpol,immpolprt,isites_mmpol
-      use mmpol_fdc, only: a_cutoff,rcolm
       use mmpol_mod, only: mmpolfile_chmm,mmpolfile_sites
-      use mmpol_parms, only: chmm
       use mpiconf, only: wid, idtask
       use mpitimer, only: elapsed_time
       use mstates3, only: iweight_g,weights_g
@@ -103,7 +97,7 @@ subroutine parser
       use optwf_control, only: iuse_orbeigv,lin_jdav,method
       use optwf_control, only: micro_iter_sr,multiple_adiag,ncore
       use optwf_control, only: no_active,nopt_iter,nparm,nvec,nvecx
-      use optwf_control, only: orbitals_ortho,ratio_j,sr_adiag,sr_eps,sr_tau
+      use optwf_control, only: orbitals_ortho,sr_adiag,sr_eps,sr_tau
       use optwf_corsam, only: add_diag
       use optwf_func, only: ifunc_omega,n_omegaf,n_omegat,omega0
       use optwf_handle_wf, only: set_nparms_tot
@@ -129,24 +123,13 @@ subroutine parser
       use parser_read_data, only: read_optorb_mixvirt_file
       use parser_read_data, only: read_orbitals_file,read_symmetry_file
       use parser_read_data, only: read_zmatrix_connection_file
-      use pcm,     only: MCHS
-      use pcm_3dgrid, only: PCM_IUNDEFINED,PCM_SHIFT,PCM_UNDEFINED
-      use pcm_cntrl, only: ichpol,ipcm,ipcmprt,isurf
-      use pcm_fdc, only: qfree,rcolv
-      use pcm_grid3d_contrl, only: ipcm_3dgrid
-      use pcm_grid3d_param, only: allocate_pcm_grid3d_param,ipcm_nstep3d
-      use pcm_grid3d_param, only: pcm_endpt,pcm_origin,pcm_step3d
-      use pcm_parms, only: eps_solv,iscov,ncopcm,nscv,nvopcm
       use pcm_unit, only: pcmfile_cavity,pcmfile_chs,pcmfile_chv
       use periodic, only: ngnorm, ngvec
       use periodic_table, only: atom_t,element
       use pot,     only: pot_nn
       use precision_kinds, only: dp
-      use properties_mod, only: prop_cc_nuc
       use prp000,  only: iprop,ipropprt,nprop
-      use prp003,  only: cc_nuc
       use pseudo,  only: nloc
-      use pseudo_mod, only: MPS_QUAD
       use qua,     only: nquad,wq,xq,yq,zq
       use random_mod, only: setrn, jumprn
       use read_bas_num_mod, only: read_bas_num,readps_gauss
@@ -179,9 +162,6 @@ subroutine parser
       use trexio_read_data, only: read_trexio_symmetry_file
       use trexio_read_data, only: write_trexio_basis_num_info_file
       use trexio_read_data, only: file_trexio_path, file_trexio_new
-      use verify_orbitals_mod, only: verify_orbitals
-      use write_orb_loc_mod, only: write_orb_loc
-      use zmatrix, only: izmatrix
       use contrl_file,       only: backend
       use trexio            ! trexio library for reading and writing hdf5 files
 #endif
@@ -191,8 +171,6 @@ subroutine parser
       use jastrow_qmckl_mod, only: jastrow_init_qmckl
       use orbitals_qmckl_mod, only: orbitals_init_qmckl
 #endif
-
-  use, intrinsic :: iso_fortran_env, only : iostat_end
 
   !! Allocate_periodic
   use periodic,         only: npoly,np_coul, np_jas,cutg, cutg_big, alattice
@@ -217,12 +195,8 @@ subroutine parser
   implicit none
 
 !--------------------------------------------------------------- Local Variables
-  integer, parameter         :: maxa = 100
-  logical                    :: doit, debug
-
-  character(len=72)          :: fname, key
   character(len=20)          :: temp
-  integer                    :: ierr, ratio, isavebl
+  integer                    :: ierr, isavebl
 
   real(dp)                   :: wsum
 
@@ -265,12 +239,9 @@ subroutine parser
 
 ! from process input subroutine
 
-  character(len=20)          :: fmt
-  character(len=32)          :: keyname
   character(len=10)          :: eunit
   character(len=32)          :: cseed
-  integer                    :: irn(8), cent_tmp(3), nefpterm, nstates_g
-  real(dp), allocatable       :: anorm(:) ! dimensions = nbasis
+  integer                    :: irn(8), nefpterm
 
 ! local counter variables
   integer                    :: i,j,k, n, iostat, dot_pos
@@ -379,8 +350,6 @@ subroutine parser
 
 ! %module gradients
   delgrdxyz   = fdf_get('delgrdxyz', 0.001d0)
-  igrdtype    = fdf_get('igrdtype', 1)
-  ngradnts    = fdf_get('ngradnts', 0)
   delgrdbl    = fdf_get('delgrdbl', 0.001d0)
   delgrdba    = fdf_get('delgrdba', 0.01d0)
   delgrdda    = fdf_get('delgrdda', 0.01d0)
@@ -475,7 +444,7 @@ subroutine parser
     if ( method .eq. 'linear' ) then
       MFORCE = 3  ! Only set MFORCE here. nwftype=3 is set just before the allocation
     endif
-    if ( method .eq. 'sr_n' .or. method .eq. 'lin_dav' .or. method .eq. 'mix_n') then
+    if ( method .eq. 'sr_n' .or. method .eq. 'lin_d' .or. method .eq. 'mix_n') then
       isample_cmat=0
       energy_tol=0.d0
     endif
@@ -492,7 +461,6 @@ subroutine parser
   ilbfgs_m      = fdf_get('ilbfgs_m', 5)
 
   ibeta         = fdf_get('ibeta', -1)
-  ratio         = fdf_get('ratio', ratio_j)
   iapprox       = fdf_get('iapprox', 0)
   iuse_orbeigv  = fdf_get('iuse_orbeigv', 0)
 
@@ -1250,18 +1218,15 @@ subroutine parser
     enddo
     allocate(bjxtoo(nbjx))
     allocate(bjxtoj(nbjx))
-    do istate=1,nstates
-      if (istate.eq.1) then
-        imax=stobjx(istate)
-        bjxtoo(1)=stoo(1)
-        bjxtoj(1)=stoj(1)
-      else
-        if (stobjx(istate).gt.imax) then
-          bjxtoo(stobjx(istate))=stoo(istate)
-          bjxtoj(stobjx(istate))=stoj(istate)
-        endif
-        imax=max(imax,stobjx(istate))
+    imax=stobjx(1)
+    bjxtoo(1)=stoo(1)
+    bjxtoj(1)=stoj(1)
+    do istate=2,nstates
+      if (stobjx(istate).gt.imax) then
+        bjxtoo(stobjx(istate))=stoo(istate)
+        bjxtoj(stobjx(istate))=stoj(istate)
       endif
+      imax=max(imax,stobjx(istate))
     enddo
   endif
 
