@@ -126,7 +126,7 @@ file(GLOB VMC90_SOURCE
     optgeo_convcartzmat.f90
     optgeo_coords_int.f90
     optgeo_hessian.f90
-    optwf.f90 optwf_dl.f90
+    vmc_driver.f90 optwf_dl.f90
     optwf_sr.f90
     ortho_orbitals.f90
     parser.f90
