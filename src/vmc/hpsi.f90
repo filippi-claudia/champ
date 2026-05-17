@@ -70,16 +70,15 @@ contains
     eloc_i = 0.d0
     elocfrag = potnnfrag
 
-    ! pe_ee is computed in distances.
-    ! pe_en(loc) is computed in distances when nloc=0 or iperiodic/=0.
-    ! pe_en(loc) is computed in nonloc_pot when nloc/=0 and iperiodic=0.
-    ! pe_en(nonloc) is computed in nonloc_pot when nloc/=0.
+    ! distances computes interparticle distances used by local potentials.
+    ! pot_local computes electron-electron and Coulomb electron-nucleus terms.
+    ! nonloc_pot adds local and nonlocal pseudopotential corrections when nloc /= 0.
 
     ! Distances needed for Jastrow, determinants, and potential energy.
     call distances(0, coord)
 
     ! Local potential contributions.
-    call pot_local(coord, pe_local)
+    call pot_local(coord, pe_local, ifr)
     call add_external_potential_contributions(coord, pe_local)
 
     if (ipr .ge. 3) write(ounit,'(''pe_loc before nonloc_pot'',9f12.5)') pe_local

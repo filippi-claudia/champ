@@ -169,6 +169,7 @@ subroutine parser
   !! Allocate_periodic
   use periodic,         only: npoly,np_coul, np_jas,cutg, cutg_big
   use periodic,         only: n_images
+  use ewald,            only: cos_n_sum, sin_n_sum
   use ewald_breakup,    only: set_ewald
   use periodic,         only: allocate_periodic
   use ewald_test,       only: allocate_ewald_test, deallocate_ewald_test
@@ -249,7 +250,7 @@ subroutine parser
   call flaginit_new()
   !! Number of input variables found so far :: 171
 
-! %module general (complete)
+! General input options
   mode        = fdf_get('mode', 'vmc_one_mpi')
   title       = adjustl(fdf_get('title', 'Untitled'))
   pooldir     = fdf_get('pool', './')
@@ -281,36 +282,36 @@ subroutine parser
   use_qmckl_orbitals = fdf_get('use_qmckl_orbitals', .true.)
 #endif
 
-  ! trexio
+  ! TREXIO backend options
   trex_backend = fdf_get('backend', 'hdf5')
 #if defined(TREXIO_FOUND)
   if (trex_backend == "hdf5") backend = TREXIO_HDF5
   if (trex_backend == "text") backend = TREXIO_TEXT
 #endif
 
-  ! Ewald module for periodic
-  ! npoly, order polynimial split ewald-breakup
+  ! Periodic Ewald parameters
+  ! npoly: polynomial order for the Ewald breakup
   npoly  = fdf_get('npoly', 8)
-  ! polynomial order of the cuttoff better even value
+  ! np_coul/np_jas: cutoff polynomial orders, preferably even
   np_coul= fdf_get('np_coul', 2)
   np_jas = fdf_get('np_jas', 3)
-  ! cutoffs in reciprocal space
+  ! reciprocal-space cutoffs
   cutg   = fdf_get('cutg', 1.0d0)
   cutg_big   = fdf_get('cutg_big', 1.d0)
-  ! number of images for ao's evaluation in PBC
+  ! number of periodic images for AO evaluation
   n_images  = fdf_get('n_images', 1)
   !alattice = fdf_get('alattice', 1.0d0)
 
-! %module electrons (complete)
+! Electron counts
   nelec       = fdf_get('nelec', 1)
   nup         = fdf_get('nup', 1)
   ndn         = nelec-nup
 
-! %module atoms (complete)
+! Atom and ghost-center options
   newghostype = fdf_get('newghostype', 0)
   nghostcent  = fdf_get('nghostcent', 0)
 
-! %module jastrow (complete)
+! Jastrow options
   ijas        = fdf_get('ijas', 4)
   isc         = fdf_get('isc', 2)
   nspin1      = fdf_get('nspin1', 1)
@@ -318,7 +319,7 @@ subroutine parser
 
   ijas_lr     = fdf_get('ijas_lr', 0)
 
-! %module optgeo (complete)
+! Geometry optimization and force options
   iforce_analy= fdf_get('iforce_analy', 0)
   f_analy_err = fdf_get('f_analy_err', 1)
   iuse_zmat   = fdf_get('iuse_zmat', 0)
@@ -328,7 +329,7 @@ subroutine parser
   endif
   iroot_geo   = fdf_get('iroot_geo', 0)
 
-! %module gradients
+! Numerical gradient options
   delgrdxyz   = fdf_get('delgrdxyz', 0.001d0)
   delgrdbl    = fdf_get('delgrdbl', 0.001d0)
   delgrdba    = fdf_get('delgrdba', 0.01d0)
@@ -336,14 +337,14 @@ subroutine parser
   igrdtype    = fdf_get('igrdtype', 2)
   ngradnts    = fdf_get('ngradnts', 0)
 
-! %module iguiding (complete)
+! Guiding-function options
   iguiding    = fdf_get('iguiding',0)
   iefficiency = fdf_get('iefficiency',0)
 
-! %module efield (complete)
+! External electric-field options
   iefield     = fdf_get('iefield', 0)
 
-! module vmc (complete)
+! VMC move parameters
   imetro      = fdf_get('imetro', 6)
   node_cutoff = fdf_get('node_cutoff', 0)
   eps_node_cutoff = fdf_get('enode_cutoff', 1.0d-7)
@@ -353,7 +354,7 @@ subroutine parser
   fbias       = fdf_get('fbias', 1.0d0)
   vmc_tau      = fdf_get('vmc_tau', 0.5d0)
 
-! %module vmc / blocking_vmc (complete)
+! VMC blocking and restart parameters
   vmc_nstep     = fdf_get('vmc_nstep', 1)
   vmc_nblk      = fdf_get('vmc_nblk', 1)
   vmc_nblkeq    = fdf_get('vmc_nblkeq', 2)
@@ -368,7 +369,7 @@ subroutine parser
 
   kref_fixed    = fdf_get('kref_fixed', 1)
 
-!module dmc (complete)
+! DMC propagation parameters
   idmc        = fdf_get('idmc', 2)
   ipq         = fdf_get('ipq', 1)
   itau_eff    = fdf_get('itau_eff', 1)
@@ -396,7 +397,7 @@ subroutine parser
   eps_max     = fdf_get('eps_max', 0.d0)
   deps        = fdf_get('deps', 0.d0)
 
-! %module dmc / blocking_dmc (complete)
+! DMC blocking and restart parameters
   dmc_nstep     = fdf_get('dmc_nstep', 1)
   dmc_nblk      = fdf_get('dmc_nblk', 1)
   dmc_nblkeq    = fdf_get('dmc_nblkeq', 2)
@@ -407,8 +408,7 @@ subroutine parser
   dmc_isite     = fdf_get('dmc_isite', 1)
 
 
-!optimization flags vmc/dmc
-! %module optwf
+! Wave-function optimization options
 
   ioptwf        = fdf_get('ioptwf', 0)
   method        = fdf_get('method', 'sr_n')
@@ -474,10 +474,10 @@ subroutine parser
   nefp_blocks   = fdf_get('force_blocks',1)
   iorbsample    = fdf_get('iorbsample',1)
 
-! %module ci (complete)
+! CI output options
   iciprt        = fdf_get('iciprt',0)
 
-!%module pcm (complete)
+! PCM options currently parsed elsewhere; keep this block as a reference.
 
 !   ipcm          = fdf_get('ipcm',0)
 !   ipcmprt       = fdf_get('ipcmprt',0)
@@ -508,7 +508,7 @@ subroutine parser
   ! pcm_endpt(3)   = fdf_get('zn_pcm',PCM_UNDEFINED)
   ! PCM_SHIFT      = fdf_get('shift',4.d0)
 
-! %module mmpol (complete)
+! MMPOL options currently parsed elsewhere; keep this block as a reference.
   ! immpol        = fdf_get('immpol',0)
   ! immpolprt     = fdf_get('immpolprt',0)
   ! mmpolfile_sites = fdf_get('file_sites','mmpol000.dat')
@@ -516,14 +516,14 @@ subroutine parser
   ! a_cutoff      = fdf_get('a_cutoff',2.5874d0)
   ! rcolm         = fdf_get('rcolm',0.04d0)
 
-! %module properties (complete)
+! Property sampling options
   iprop         = fdf_get('sample',0)
   ipropprt      = fdf_get('print',0)
 
-! %module pseudo (complete)
+! Pseudopotential options
   nloc          = fdf_get('nloc',4)  ! for pseudo in Gauss format
   nquad         = fdf_get('nquad',6)
-! %module qmmm (complete)
+! QMMM options currently parsed elsewhere.
 !  iqmm          = fdf_get('iqmm',0)
 
   ! next_max is not available yet, so keep the current fallback for nextorb.
@@ -617,7 +617,7 @@ subroutine parser
   call elapsed_time ( "Parsing input file and printing headers : " )
   ! Printing header information and common calculation parameters ends here
 
-! Molecular geometry file in .xyz format [#####]
+! Molecular geometry
   write(ounit,*)
   write(ounit,'(a)') " System Information :: Geometry : "
   write(ounit,*) '____________________________________________________________________'
@@ -842,7 +842,7 @@ subroutine parser
 
   call elapsed_time ("Reading molecular coefficients file : ")
 
-! (9) Symmetry information of orbitals (either block or from a file)
+! Orbital symmetry information
 
   if ( fdf_load_defined('symmetry') ) then
     call read_symmetry_file(file_symmetry)
@@ -1013,7 +1013,7 @@ subroutine parser
 
   call elapsed_time ("Reading determinants only from a file : ")
 
-! (3) CSF only
+! CSF expansion information
 
   if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
     call read_csf_file(file_determinants)
@@ -1057,7 +1057,7 @@ subroutine parser
       maxcsf(1:nstates)=1
    endif
 
-! (4) CSFMAP [#####]
+! Determinant-to-CSF map
 
   if ( fdf_load_defined('determinants') .and. ndet .gt. 1 ) then
     call read_csfmap_file(file_determinants)
@@ -1333,7 +1333,7 @@ subroutine parser
     endif
   endif
 
-! (17) multideterminants information (either block or from a file)
+! Multideterminant expansion information
 
   if ( fdf_load_defined('multideterminants') ) then
     call read_multideterminants_file(file_multideterminants)
@@ -1351,7 +1351,7 @@ subroutine parser
   imultideterminants = 1
 
 
-! (7) exponents
+! Basis exponent information
 
   if ( fdf_load_defined('exponents') ) then
     call read_exponents_file(file_exponents)
@@ -1372,7 +1372,7 @@ subroutine parser
 
 
 
-! (11) Eigenvalues information of orbitals (either block or from a file)
+! Orbital eigenvalue information
 
   if ( fdf_load_defined('eigenvalues') ) then
     call read_eigenvalues_file(file_eigenvalues)
@@ -1755,7 +1755,7 @@ subroutine parser
 !   call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
 ! endif
 
-! (13) Forces information (either block or from a file) [#####]
+! Force-displacement information
 
   if (fdf_block('forces', bfdf)) then
     call fdf_read_forces_block(bfdf)
@@ -1768,7 +1768,7 @@ subroutine parser
     endif
   endif
 
-! (14) Dmatrix information (either block or from a file)
+! Density-matrix information
 
   if ( fdf_load_defined('dmatrix') ) then
     call read_dmatrix_file(file_dmatrix)
@@ -1784,7 +1784,7 @@ subroutine parser
   endif
 
 
-! Part which handles the weights. needs modifications for guiding
+! State weights. Guiding-function weights still need a separate cleanup.
 
   if (.not. allocated(weights)) allocate (weights(MSTATES))
   if (.not. allocated(iweight)) allocate (iweight(MSTATES))
@@ -1828,10 +1828,10 @@ subroutine parser
 ! The above part should be moved to get_weights subroutine
 
 
-! Processing of data read from the parsed files or setting them with defaults
+! Process parsed data and set defaults.
 
 
-! (10) optorb_mixvirt information of orbitals (either block or from a file)
+! Orbital-optimization virtual mixing information
 
   if ( fdf_load_defined('optorb_mixvirt') ) then
     call read_optorb_mixvirt_file(file_optorb_mixvirt)
@@ -1846,7 +1846,7 @@ subroutine parser
   endif
 
 
-! (18) cavity_spheres information (either block or from a file)
+! Cavity-sphere input, currently disabled.
 
 !   if ( fdf_load_defined('cavity_spheres') ) then
 !     call read_cavity_spheres_file(file_cavity_spheres)
@@ -1862,8 +1862,7 @@ subroutine parser
 !   endif
 
 
-! ZMATRIX begins here
-! gradients_zmatrix information (either block or from a file)
+! Z-matrix gradient information
 
   if ( fdf_load_defined('gradients_zmatrix') ) then
     call read_gradients_zmatrix_file(file_gradients_zmatrix)
@@ -1878,7 +1877,7 @@ subroutine parser
 !    error stop
   endif
 
-! gradients_cartesian information (either block or from a file)
+! Cartesian gradient information
 
   if ( fdf_load_defined('gradients_cartesian') ) then
     call read_gradients_cartesian_file(file_gradients_cartesian)
@@ -1893,7 +1892,7 @@ subroutine parser
 !    error stop
   endif
 
-! modify_zmatrix information (either block or from a file)
+! Z-matrix modification information
 
   if(iforce_analy.gt.0) then
     if ( fdf_load_defined('modify_zmatrix') ) then
@@ -1908,7 +1907,7 @@ subroutine parser
     endif
   endif
 
-! hessian_zmatrix information (either block or from a file)
+! Z-matrix Hessian information
   if(iforce_analy.gt.0) then
     if ( fdf_load_defined('hessian_zmatrix') ) then
       call read_hessian_zmatrix_file(file_hessian_zmatrix)
@@ -1922,7 +1921,7 @@ subroutine parser
     endif
   endif
 
-! zmatrix_connection information (either block or from a file)
+! Z-matrix connection information
 
   if ( fdf_load_defined('zmatrix_connection') ) then
     call read_zmatrix_connection_file(file_zmatrix_connection)
@@ -1937,17 +1936,16 @@ subroutine parser
     if(iuse_zmat.gt.0.and.izmatrix_check.eq.0) call fatal_error('INPUT: block connectionzmatrix missing')
   endif
 
-! Some checks on Z Matrixs.
-! Write out information about calculation of energy gradients and Z matrix
+! Check and print energy-gradient/Z-matrix setup.
   write(ounit,*)
   if(ngradnts.gt.0 .and. igrdtype.eq.1) call inpwrt_grdnts_cart()
   if(ngradnts.gt.0 .and. igrdtype.eq.2) call inpwrt_grdnts_zmat()
   if(izmatrix.eq.1) call inpwrt_zmatrix()
   write(ounit,*)
 
-! ZMATRIX section ends here
+! End Z-matrix setup.
 
-! (24) efield information (either block or from a file)
+! Electric-field input
 
   if ( fdf_load_defined('efield') ) then
     call read_efield_file(file_efield)
@@ -1964,9 +1962,11 @@ subroutine parser
 
 ! Done reading all the files
 
-! Required for restart forces (more work for periodic needed)
+! Set nuclear repulsion and, for periodic systems, nuclear Ewald sums.
   if (iperiodic.eq.0) then
      call pot_nn(cent,znuc,iwctype,ncent,pecent)
+  else
+     call pot_nn(cent,znuc,iwctype,ncent,pecent,cos_n_sum(1,1),sin_n_sum(1,1))
   endif
 
 ! Make sure that all the blocks are read. Use inputflags here to check
