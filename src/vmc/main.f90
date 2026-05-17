@@ -24,21 +24,19 @@ subroutine initialize_main
     implicit none
     integer :: ierr
 
-
     call mpi_init(ierr)
     call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
     call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
-
 
     time_start = mpi_time()
     time_check1 = time_start
     !> init our own mpi vars
     call mpiconf_init()
 
-    !> Mode gets reset in metrop_mov1...but loses mpi info
-    !call init_control_mode('vmc_one_mpi ')           ! commented by ravindra. Not needed
+    !> Mode is set later by the Metropolis driver.
+    ! call init_control_mode('vmc_one_mpi ')
 
-    !> Initiaize output.log file.
+    !> Initialize output.log file.
     call init_logfile()
     call initialize()
 
@@ -47,7 +45,7 @@ subroutine initialize_main
     call parser()
     call elapsed_time("Parsing all the files : ")
 
-    !> Initiaize log check.XXX files. It needs ipr flag value.
+    !> Initialize log check.XXX files. It needs ipr flag value.
     call init_procfile()
 
     call elapsed_time("Before VMC driver : ")
@@ -73,7 +71,6 @@ subroutine finalize_main()
 end subroutine
 
 end module
-
 
 program main
     !> Main program of CHAMP

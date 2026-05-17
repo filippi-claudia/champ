@@ -217,9 +217,8 @@
 ! e-e interactions (simulation cell) (we can reuse vbare_coul)
 ! put in uniform background by setting k=0 term to zero
 
-! TMP
+! Jastrow range-separation parameter.
       f=1.d0
-! TMP
       vbare_jas(1)=0.d0
       do k=2,ngnorm_big
 ! Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
@@ -254,9 +253,9 @@
 
       write(ounit,'(''b_jas = '',20d12.4)') (b_jas(k),k=1,ncoef_per)
 
-! debug e-e Jastrow
-! Since Jastrow has singlularity at 0, cannot match there, so evaluate
-! rms error only for latter 3/4 of interval
+! Verbose e-e Jastrow diagnostics.
+! Since Jastrow has a singularity at 0, cannot match there, so evaluate
+! rms error only for the last 3/4 of the interval.
       if(ipr.ge.4) then
          write(ounit,'(/,''Debugging e-e Jastrow separation'')')
          write(ounit,'(''      r       "true"       test      test-true -1/r*(1-exp(-r/f) d_true d_test'')')
@@ -264,6 +263,8 @@
          npts=101
          dx=cutr/(npts-1)
          rms=0.d0
+         true_s=0.d0
+         test_s=0.d0
          do i=1,npts
             r_tmp(1)=(i-1)*dx+1.d-20
             r_tmp(2)=0.d0
@@ -310,7 +311,7 @@
 
          n_images=(2*nix+1)
          n_images=n_images*n_images*n_images
-!     decreasing number of images by 1 temporally reagarding the ao's implementation at basis_fns
+!     Exclude the reference cell from the periodic image count used by basis_fns.
          n_images=n_images-1
          if (ipr.ge.4 ) write(ounit,*) "Total number of periodic images set", n_images
 
@@ -319,7 +320,7 @@
          ell=0.d0
 
 ! Periodic orbital images currently assume a diagonal/orthorhombic cell.
-! set images counter to zero
+! Set images counter to zero.
          imcount=0
          do iz=-niz,niz,1
             do iy=-niy,niy,1
@@ -335,7 +336,7 @@
                enddo
             enddo
          enddo
-         if (ipr.ge.4) write(ounit,*) "Total number of peridic images counted: ",imcount
+         if (ipr.ge.4) write(ounit,*) "Total number of periodic images counted: ",imcount
 
       endif
 

@@ -783,7 +783,7 @@ subroutine parser
     icasula=0
   endif
 
-  ! Inizialized to zero for call to hpsi in vmc or dmc with no casula or/and in acuest
+  ! Initialized to zero for hpsi calls without Casula terms and in acuest.
   i_vpsp=0
 
   ! Reduce printing in case of a large calculation

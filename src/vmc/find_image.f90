@@ -83,7 +83,7 @@
       subroutine find_image_pbc(r,rnorm)
 ! Written by Edgar Landinez
 ! Simple algorithm for PBC minimum image convention
-! to get the minimum distnace between two particles and it's norm
+! to get the minimum distance between two particles and its norm
 
 
       use periodic, only: rlatt, rlatt_inv
@@ -95,8 +95,8 @@
       real(dp), dimension(3) :: s
       real(dp), dimension(3) :: r
 
-!     minimum image in relative coordiantes space (a cube of length 1)
-!     rlatt or rlatt is assumend to be rlatt=(a,b,c)
+!     minimum image in relative coordinates space (a cube of length 1)
+!     rlatt is assumed to be rlatt=(a,b,c)
 !     (a,b,c) the box vectors (the input should be always consistent with this )
 
       do k=1,3
@@ -107,7 +107,7 @@
         s(k)=s(k)-nint(s(k))
       enddo
 
-! resotring coordinates in real space
+! restoring coordinates in real space
       do k=1,3
         r(k)=0.d0
         do i=1,3
