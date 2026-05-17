@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "TREXIO water optimization"
 
 input="vmc_h2o_dft_optall.inp"

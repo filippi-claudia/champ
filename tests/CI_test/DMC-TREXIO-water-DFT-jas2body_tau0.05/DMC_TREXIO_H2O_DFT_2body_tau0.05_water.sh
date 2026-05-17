@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "TREXIO DMC water 2body jastrow tau=0.05  "
 
 input="vmc_h2o_dft_jas2body.inp"

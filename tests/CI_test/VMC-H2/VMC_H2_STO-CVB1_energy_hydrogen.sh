@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "H2 energy with sr_n method"
 
 input="revised_vmc.inp"

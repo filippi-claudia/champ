@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "TREXIO backend comparison : TEXT"
 input="vmc_opt_ci1010_pVTZ_1522_text.inp"
 output="vmc_opt_ci1010_pVTZ_1522_text"

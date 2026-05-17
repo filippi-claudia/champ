@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "Butadiene optimization 65000 determinants "
 
 input="vmc_opt_ras1022_pVQZ_65000.inp"

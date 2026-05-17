@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "Butadiene DMC 500 dets "
 
 input="dmc.inp"

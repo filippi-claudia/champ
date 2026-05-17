@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "PSB2 with mix_n method"
 
 input="revised_psb2_mix_n.inp"
