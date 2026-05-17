@@ -44,7 +44,7 @@ module inputflags
     integer :: node_cutoff, dmc_node_cutoff
     real(dp) :: eps_node_cutoff, dmc_eps_node_cutoff
     real(dp) :: scalecoef
-    integer :: iqmmm
+    integer :: iqmmm = 0
  ! dmc specifics:
     real(dp) :: enode_cutoff
     integer :: icircular
