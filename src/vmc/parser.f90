@@ -10,6 +10,10 @@ subroutine parser
   !> @date   11-08-2021
   !> @version 1.2
 
+! CF TMP
+      use optorb_cblock, only: nreduced
+
+
       use fdf               ! modified libfdf
       use allocation_mod, only: allocate_dmc,allocate_vmc
       use array_resize_utils, only: resize_tensor
@@ -1323,7 +1327,6 @@ subroutine parser
      write(ounit,int_format ) " Properties printout flag = ", ipropprt
 !    call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
   endif
-  
   
   call compute_mat_size_new()
   call allocate_vmc()

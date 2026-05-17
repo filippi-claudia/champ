@@ -790,51 +790,6 @@ contains
 
       end
 !-----------------------------------------------------------------------
-      subroutine detratio_col(nel,orb,icol,sinvt,ratio,isltnew)
-
-      use precision_kinds, only: dp
-
-      implicit none
-
-      integer :: icol, ie, isltnew, jcol, je
-      integer :: nel
-      real(dp) :: ratio, sum
-      real(dp), dimension(nel) :: orb
-      real(dp), dimension(nel, nel) :: sinvt
-
-! values of new orbital
-! inverse transposed slater matrix (first index electron, 2nd orbital)
-! compute ratio of new and old determinant, if isltnew is
-! not zero, update inverse slater matrix as well
-! the new determinant differs from the old by replacing column icol
-! with the orbital values in orb
-
-      ratio=0.d0
-      do ie=1,nel
-       ratio=ratio+sinvt(icol,ie)*orb(ie)
-      enddo
-      if(isltnew.gt.0) then
-! matrix except replaced column
-       do jcol=1,nel
-        if(jcol.ne.icol) then
-         sum=0.d0
-         do je=1,nel
-          sum=sum+orb(je)*sinvt(jcol,je)
-         enddo
-         sum=sum/ratio
-         do je=1,nel
-          sinvt(jcol,je)=sinvt(jcol,je)-sum*sinvt(icol,je)
-         enddo
-        endif
-       enddo
-! replaced column
-       do ie=1,nel
-        sinvt(icol,ie)=sinvt(icol,ie)/ratio
-       enddo
-      endif
-
-      end
-!-----------------------------------------------------------------------
       subroutine optorb_define(iprint)
 
       use coefs,   only: next_max
@@ -1046,7 +1001,6 @@ contains
 
 ! if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
       if(method.eq.'linear') then
-
         if(mxreduced.ne.norbterm) call fatal_error('READ_INPUT: mxreduced .ne. norbterm')
         nreduced=norbterm
        elseif(method.eq.'sr_n'.or.method.eq.'lin_d'.or.method.eq.'mix_n') then

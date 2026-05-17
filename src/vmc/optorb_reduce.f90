@@ -4,7 +4,7 @@ contains
 
       use csfs,    only: nstates
       use mpi
-      use optorb_cblock, only: norbterm
+      use optorb_cblock, only: norbterm, nreduced, isample_cmat
       use optorb_mod, only: nmatdim
       use optwf_control, only: ioptorb,method
       use orb_mat_003, only: orb_o_cum
@@ -18,8 +18,8 @@ contains
 
       implicit none
 
-      integer :: i, iefpsample, ierr, isample_cmat, istate
-      integer :: matdim, norb_f_bcum, norb_f_collect, nreduced
+      integer :: i, ierr, istate
+      integer :: matdim, norb_f_bcum, norb_f_collect
       real(dp), dimension(norbterm+nmatdim) :: collect
 
       if(ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
@@ -85,25 +85,23 @@ contains
         enddo
       enddo
 
-      if(iefpsample.ne.1) then
-        call mpi_reduce(orb_wcum,collect,nstates &
-             ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-        call mpi_bcast(collect,nstates &
-              ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(orb_wcum,collect,nstates &
+           ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(collect,nstates &
+            ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do istate=1,nstates
-          orb_wcum(istate)=collect(istate)
-        enddo
+      do istate=1,nstates
+        orb_wcum(istate)=collect(istate)
+      enddo
 
-        call mpi_reduce(orb_ecum,collect,nstates &
-             ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-        call mpi_bcast(collect,nstates &
-              ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(orb_ecum,collect,nstates &
+           ,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_bcast(collect,nstates &
+            ,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
-        do istate=1,nstates
-          orb_ecum(istate)=collect(istate)
-        enddo
-      endif
+      do istate=1,nstates
+        orb_ecum(istate)=collect(istate)
+      enddo
 
       if(isample_cmat.eq.0) return
 

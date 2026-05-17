@@ -85,12 +85,14 @@ subroutine get_norbterm
 1   format('Det ',i4,' column ',i4,' orb index ',i4,' norb ',i4)
 
 !   Number of external orbitals for orbital optimization
+!   write(ounit, '(a, t40, i0)') 'BEFORE nadorb', local_nadorb
+
     local_next_max  = local_norb  - local_ndetorb
-    if(nadorb.gt.next_max) local_nadorb = local_next_max
-    ! write(ounit, '(a, t40, i0)' ) 'norb', local_norb
-    ! write(ounit, '(a, t40, i0)') 'nadorb', local_nadorb
-    ! write(ounit, '(a, t40, i0)') 'ndet_orb', local_ndetorb
-    ! write(ounit, '(a, t40, i0)') 'next_max', local_next_max
+    if(nadorb.gt.local_next_max) local_nadorb = local_next_max
+    write(ounit, '(a, t40, i0)' ) 'norb', local_norb
+    write(ounit, '(a, t40, i0)') 'nadorb', local_nadorb
+    write(ounit, '(a, t40, i0)') 'ndet_orb', local_ndetorb
+    write(ounit, '(a, t40, i0)') 'next_max', local_next_max
 
     ! if(iprt.gt.0) then
     !  write(ounit,'(''Determinantal orbitals in orbital optimization: '',i0)') local_ndetorb
@@ -209,7 +211,6 @@ subroutine get_norbterm
     enddo
 
     local_norbterm=local_noporb
-!    write(ounit,'(''number of orbital variations: '',i0)') local_norbterm
 
 !   if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
     if(method.eq.'linear') then
