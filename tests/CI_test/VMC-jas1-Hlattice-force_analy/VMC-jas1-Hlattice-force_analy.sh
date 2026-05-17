@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "periodic H lattice Jastrow 1"
 
 input="vmc.inp"

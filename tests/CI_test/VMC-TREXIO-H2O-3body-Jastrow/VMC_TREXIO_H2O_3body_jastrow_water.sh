@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "TREXIO water 3body Jastrow"
 
 input="vmc.inp"

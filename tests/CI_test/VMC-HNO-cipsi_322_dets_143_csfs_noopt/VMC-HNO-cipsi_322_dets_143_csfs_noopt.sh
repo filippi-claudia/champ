@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "VMC nitroxyl cipsi 322 dets energy only"
 
 input="vmc.inp"

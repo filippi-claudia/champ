@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "TREXIO formaldehyde excited state energy"
 
 input="trexio_vmc_COH2_excited_state.inp"
