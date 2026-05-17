@@ -318,7 +318,7 @@
          allocate (ell(3, n_images))
          ell=0.d0
 
-! assuming cubic boxes
+! Periodic orbital images currently assume a diagonal/orthorhombic cell.
 ! set images counter to zero
          imcount=0
          do iz=-niz,niz,1

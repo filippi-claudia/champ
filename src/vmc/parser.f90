@@ -179,12 +179,6 @@ subroutine parser
 
 ! variables from process input
 
-! Note the additions: Ravindra
-! Note the additions: Ravindra
-
-! Note the following modules are new additions
-
-!
   implicit none
 
 !--------------------------------------------------------------- Local Variables
@@ -455,7 +449,6 @@ subroutine parser
   orbitals_ortho = fdf_get('orbitals_ortho', .false.)
 
   multiple_adiag = fdf_get('multiple_adiag',0)
-! attention needed here.
   if (.not. allocated(add_diag)) allocate (add_diag(MFORCE))
   add_diag(1)   = fdf_get('add_diag',1.d-6)
 
@@ -533,40 +526,38 @@ subroutine parser
 ! %module qmmm (complete)
 !  iqmm          = fdf_get('iqmm',0)
 
-! attention please. The following line moved here because next_max was not defined yet.
+  ! next_max is not available yet, so keep the current fallback for nextorb.
   nadorb        = fdf_get('nextorb', -1)  ! the default should be next_max
 
-
   ! Filenames parsing
-  file_trexio            = fdf_load_filename('trexio',   'default.hdf5')
-  file_basis             = fdf_load_filename('basis',   'default.bas')
-  file_molecule          = fdf_load_filename('molecule',   'default.xyz')
-  file_determinants      = fdf_load_filename('determinants',  'default.det')
-  file_symmetry          = fdf_load_filename('symmetry',   'default.sym')
-  file_jastrow           = fdf_load_filename('jastrow',   'default.jas')
-  file_jastrow_der       = fdf_load_filename('jastrow_der',   'default.jasder')
-  file_orbitals          = fdf_load_filename('orbitals',   'default.orb')
-  file_exponents         = fdf_load_filename('exponents',   'exponents.exp')
-  file_pseudo       = fdf_load_filename('pseudo',   'default.psp')
-  file_optorb_mixvirt       = fdf_load_filename('optorb_mixvirt',  'default.mix')
-  file_multideterminants    = fdf_load_filename('multideterminants',    'default.mdet')
-  file_forces            = fdf_load_filename('forces',   'default.for')
-  file_eigenvalues     = fdf_load_filename('eigenvalues',   'default.eig')
-  file_basis_num_info       = fdf_load_filename('basis_num_info',  'default.bni')
-  file_dmatrix      = fdf_load_filename('dmatrix',   'default.dmat')
-  ! file_cavity_spheres       = fdf_load_filename('cavity_spheres',  'default.cav')
-  file_gradients_zmatrix    = fdf_load_filename('gradients_zmatrix',    'default.gzmat')
-  file_gradients_cartesian  = fdf_load_filename('gradients_cartesian',  'default.gcart')
-  file_modify_zmatrix       = fdf_load_filename('modify_zmatrix',  'default.mzmat')
-  file_hessian_zmatrix      = fdf_load_filename('hessian_zmatrix',  'default.hzmat')
-  file_zmatrix_connection   = fdf_load_filename('zmatrix_connection',   'default.zmcon')
-  file_efield             = fdf_load_filename('efield',   'default.efield')
-  file_lattice              = fdf_load_filename('lattice',              'lattice.txt')
+  file_trexio              = fdf_load_filename('trexio', 'default.hdf5')
+  file_basis               = fdf_load_filename('basis', 'default.bas')
+  file_molecule            = fdf_load_filename('molecule', 'default.xyz')
+  file_determinants        = fdf_load_filename('determinants', 'default.det')
+  file_symmetry            = fdf_load_filename('symmetry', 'default.sym')
+  file_jastrow             = fdf_load_filename('jastrow', 'default.jas')
+  file_jastrow_der         = fdf_load_filename('jastrow_der', 'default.jasder')
+  file_orbitals            = fdf_load_filename('orbitals', 'default.orb')
+  file_exponents           = fdf_load_filename('exponents', 'exponents.exp')
+  file_pseudo              = fdf_load_filename('pseudo', 'default.psp')
+  file_optorb_mixvirt      = fdf_load_filename('optorb_mixvirt', 'default.mix')
+  file_multideterminants   = fdf_load_filename('multideterminants', 'default.mdet')
+  file_forces              = fdf_load_filename('forces', 'default.for')
+  file_eigenvalues         = fdf_load_filename('eigenvalues', 'default.eig')
+  file_basis_num_info      = fdf_load_filename('basis_num_info', 'default.bni')
+  file_dmatrix             = fdf_load_filename('dmatrix', 'default.dmat')
+  ! file_cavity_spheres    = fdf_load_filename('cavity_spheres', 'default.cav')
+  file_gradients_zmatrix   = fdf_load_filename('gradients_zmatrix', 'default.gzmat')
+  file_gradients_cartesian = fdf_load_filename('gradients_cartesian', 'default.gcart')
+  file_modify_zmatrix      = fdf_load_filename('modify_zmatrix', 'default.mzmat')
+  file_hessian_zmatrix     = fdf_load_filename('hessian_zmatrix', 'default.hzmat')
+  file_zmatrix_connection  = fdf_load_filename('zmatrix_connection', 'default.zmcon')
+  file_efield              = fdf_load_filename('efield', 'default.efield')
+  file_lattice             = fdf_load_filename('lattice', 'lattice.txt')
 
   call header_printing()
 
-! to be moved in a separate subroutine
-! printing some information about calculation setup.
+  ! Print calculation setup.
 
   write(ounit,*) '____________________________________________________________________'
   write(ounit,*)
@@ -1218,7 +1209,8 @@ subroutine parser
 
   do istate=1,nstates
     if (mode(1:3) == 'vmc') write(ounit,'(A)') "State  -->  Mixed Quantity #  <--  Jastrow #, Orbital set"
-    if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4,A,2i4)') istate, '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
+    if (mode(1:3) == 'vmc') write(ounit,'(i4,A,i4,A,2i4)') istate, &
+        '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
   enddo
 
   ! Know the number of orbitals for optimization.
@@ -1298,7 +1290,9 @@ subroutine parser
       !write(ounit, '(a, <ncent>i)') 'Fragmentation indices : ', (ifragcent(i), i=1,ncent)
       write(ounit, temp) 'Fragmentation indices : ', (ifragcent(i), i=1,ncent) ! GNU version
 
-      if (maxval(ifragcent) .ne. nfrag) call fatal_error("READ_INPUT: The number of fragments (nfrag) must match the maximal fragment index in ifragcent")
+      if (maxval(ifragcent) .ne. nfrag) call fatal_error( &
+          "READ_INPUT: The number of fragments (nfrag) must match the " // &
+          "maximal fragment index in ifragcent")
     else
       call fatal_error("READ_INPUT: ifragcent must be defined if nfrag is used")
     endif
@@ -1372,7 +1366,7 @@ subroutine parser
     else
       if (.not. allocated(zex)) allocate (zex(nbasis, nwftype))
     endif
-    zex = 1   ! debug check condition about numr == 0
+    zex = 1
   endif
   iexponents = iexponents + 1
 
@@ -1415,7 +1409,6 @@ subroutine parser
         do iwft=1,nwftype
           call read_bas_num(iwft)
         enddo
-        ! See if this is really allocated at this point
         if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
         if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
         ibas0(1)=1
@@ -1430,22 +1423,21 @@ subroutine parser
 #if defined(TREXIO_FOUND)
     elseif ( fdf_load_defined('trexio') ) then
       call read_trexio_basis_file(file_trexio)
-      ! See if this is really allocated at this point
-     if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
-     if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
-       ibas0(1)=1
-       ibas1(1)=nbastyp(iwctype(1))
-       do ic=2,ncent
-         ibas0(ic)=ibas1(ic-1)+1
-         ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
-       enddo
+      if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
+      if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
+      ibas0(1)=1
+      ibas1(1)=nbastyp(iwctype(1))
+      do ic=2,ncent
+        ibas0(ic)=ibas1(ic-1)+1
+        ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
+      enddo
 #endif
     else
       write(errunit,'(a)') "Error:: No information about basis provided in the block."
       write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
       error stop
     endif
- endif
+  endif
 
   call elapsed_time ("Reading basis file : ")
 
@@ -1598,8 +1590,8 @@ subroutine parser
       if(ncsf.gt.0) then
         nciterm=ncsf
       else
-  ! TMP due to changing kref -> also for ncsf=0, we need to have cxdet(i) carrying the phase
-  !     if(kref_fix.eq.0) call fatal_error('ncsf.eq.0 - further changes needed due to kref')
+        ! For ncsf=0, cxdet(i) must carry the phase after the kref changes.
+        ! if(kref_fix.eq.0) call fatal_error('ncsf.eq.0 - further changes needed due to kref')
         nciterm=nciprim
       endif
     else
@@ -1609,7 +1601,7 @@ subroutine parser
 
     ! write(ounit,int_format)  " CI number of coefficients ", nciterm
     ! write(ounit,int_format)  " nciprim ", nciprim
-    mxciterm = nciprim  ! validate this change debug ravindra
+    mxciterm = nciprim
 
     if((ncsf.eq.0) .and. (nciprim.gt.mxciterm) ) call fatal_error('INPUT: nciprim gt mxciterm')
     if(nciterm.gt.mxciterm) call fatal_error('INPUT: nciterm gt mxciterm')
@@ -1733,7 +1725,7 @@ subroutine parser
         if(j.gt.i) then
           sr_lambda(j,i) = isr_lambda((i-1)*nstates-i*(i-1)/2+j-i)
 
-! TMP -> to change optwf_sr/compute_grad
+          ! TODO: revisit when optwf_sr/compute_grad supports the symmetric entry.
           sr_lambda(i,j) = 0.d0
         endif
       enddo
@@ -2105,108 +2097,102 @@ subroutine parser
   !!   'e' is matched by a list with integers or reals
   !!   'd' is reserved for future dictionaries...
 
-!! for periodic assuming square cell still
-    subroutine read_lattice_file(file_lattice)
+  !! Read either a cubic lattice constant or three lattice vectors.
+  subroutine read_lattice_file(file_lattice)
 
-      use contrl_file, only: errunit,ounit
-      use m_string_operations, only: wordcount
-      use custom_broadcast, only: bcast
-      use mpiconf, only: wid
-      use periodic, only: alattice
-      use periodic, only: rlatt, rlatt_inv
-      use precision_kinds, only: dp
+    use contrl_file, only: ounit
+    use custom_broadcast, only: bcast
+    use mpiconf, only: wid
+    use periodic, only: alattice
+    use periodic, only: rlatt, rlatt_inv
 
-      implicit none
+    implicit none
 
-      character(len=72), intent(in)   :: file_lattice
-      character(len=90)               :: file_lattice_path, line
-      real(dp) :: latt
-      integer                         :: iunit, iostat, count
-      logical                         :: exist
-      integer :: i,k
+    character(len=72), intent(in) :: file_lattice
+    character(len=90)             :: file_lattice_path
+    integer                       :: i, iunit, iostat, count
+    logical                       :: exist
 
-      !   External file reading
+    ! External file reading
+    if ((file_lattice(1:6) == '$pool/') .or. (file_lattice(1:6) == '$POOL/')) then
+      file_lattice_path = pooldir // file_lattice(7:)
+    else
+      file_lattice_path = file_lattice
+    endif
 
-      if((file_lattice(1:6) == '$pool/') .or. (file_lattice(1:6) == '$POOL/')) then
-         file_lattice_path = pooldir // file_lattice(7:)
+    write(ounit,*) '-----------------------------------------------------------------------'
+    write(ounit,string_format) " Reading Lattice Parameters from the file :: ", trim(file_lattice_path)
+    write(ounit,*)
+
+    if (wid) then
+      inquire(file=file_lattice_path, exist=exist)
+      if (exist) then
+        open(newunit=iunit, file=file_lattice_path, iostat=iostat, action='read')
+        if (iostat .ne. 0) call fatal_error("Problem opening the Super-cell file")
       else
-         file_lattice_path = file_lattice
+        call fatal_error(" Super-cell file "// trim(file_lattice) // " does not exist.")
+      endif
+    endif
+
+    ! Initialization to avoid garbage
+    rlatt = 0.d0
+    rlatt_inv = 0.d0
+    count = 0
+
+    if (wid) then
+      do i = 1, 3
+        !! Reading each row as a vector of the box
+        read(iunit,*, iostat=iostat) rlatt(i,1), rlatt(i,2), rlatt(i,3)
+        if (iostat .ne. 0 .and. count .eq. 0) then
+          if (rlatt(1,1) .gt. 0.d0) then
+            alattice = rlatt(1,1)
+            count = count + 1
+            exit
+          else
+            write(ounit, *) rlatt(i,1), rlatt(i,2), rlatt(i,3)
+            call fatal_error("Error in reading lattice parameters file")
+          endif
+        endif
+        count = count + 1
+        if (iostat .ne. 0 .and. count .ne. 1) then
+          write(ounit, *) rlatt(i,1), rlatt(i,2), rlatt(i,3)
+          call fatal_error("Error in reading lattice parameters file")
+        endif
+      enddo
+
+      if (count .eq. 1) then
+        write(ounit,*) 'This is a cubic cell'
+        write(ounit,*) 'The lattice constant is', alattice
+
+        rlatt(1,1) = alattice
+        rlatt(2,2) = alattice
+        rlatt(3,3) = alattice
+      else if (count .eq. 3) then
+        write(ounit,*) "The simulation cell is:"
+
+        write(ounit,*) "a", rlatt(1,1), rlatt(1,2), rlatt(1,3)
+        write(ounit,*) "b", rlatt(2,1), rlatt(2,2), rlatt(2,3)
+        write(ounit,*) "c", rlatt(3,1), rlatt(3,2), rlatt(3,3)
+
+        !! assuming still rectangular box
+        alattice = rlatt(1,1)
+        do i = 2, 3
+          if (rlatt(i,i) .lt. alattice) alattice = rlatt(i,i)
+        enddo
+
+        if (alattice .le. 0.d0) call fatal_error("Wrong lattice parameter")
+      else
+        call fatal_error("Error reading lattice file")
       endif
 
-      write(ounit,*) '-----------------------------------------------------------------------'
-      write(ounit,string_format)  " Reading Lattice Parameters from the file :: ",  trim(file_lattice_path)
-      write(ounit,*)
+      ! Regarding Ewald Breakup assume column not row vectors for the lattice
+      rlatt = transpose(rlatt)
+    endif
 
-      if (wid) then
-         inquire(file=file_lattice_path, exist=exist)
-         if (exist) then
-            open (newunit=iunit,file=file_lattice_path, iostat=iostat, action='read' )
-            if (iostat .ne. 0) call fatal_error("Problem opening the Super-cell file")
-         else
-            call fatal_error (" Super-cell file "// trim(file_lattice) // " does not exist.")
-         endif
-      endif
+    call bcast(rlatt)
+    if (wid) close(iunit)
 
-      !Initialization to avoid garbage
-
-      rlatt = 0.d0
-      rlatt_inv = 0.d0
-      count=0
-
-      if (wid) then
-         do i = 1, 3
-            !! Reading each row as a vector of the box
-            read(iunit,*, iostat=iostat) rlatt(i,1), rlatt(i,2), rlatt(i,3)
-            if(iostat.ne.0.and.count.eq.0) then
-               if(rlatt(1,1).gt.0.d0) then
-                  alattice=rlatt(1,1)
-                  count=count+1
-                  exit
-               else
-                  write(ounit, *) rlatt(i,1), rlatt(i,2), rlatt(i,3)
-                  call fatal_error("Error in reading lattice parameters file")
-               endif
-            endif
-            count=count+1
-            if(iostat.ne.0.and.count.ne.1) then
-               write(ounit, *) rlatt(i,1), rlatt(i,2), rlatt(i,3)
-               call fatal_error("Error in reading lattice parameters file")
-            endif
-         enddo
-
-         if(count.eq.1) then
-            write(ounit,*) 'This is a cubic cell'
-            write(ounit,*) 'The lattice constant is', alattice
-
-            rlatt(1,1) = alattice
-            rlatt(2,2) = alattice
-            rlatt(3,3) = alattice
-         else if(count.eq.3) then
-            write(ounit,*) "The simulation cell is:"
-
-            write(ounit,*) "a", rlatt(1,1), rlatt(1,2), rlatt(1,3)
-            write(ounit,*) "b", rlatt(2,1), rlatt(2,2), rlatt(2,3)
-            write(ounit,*) "c", rlatt(3,1), rlatt(3,2), rlatt(3,3)
-
-            !! assuming still rectangular box
-            alattice=rlatt(1,1)
-            do i = 2, 3
-               if(rlatt(i,i).lt.alattice) alattice=rlatt(i,i)
-            enddo
-
-            if(alattice.le.0.d0) call fatal_error("Wrong lattice parameter")
-         else
-            call fatal_error("Error reading lattice file")
-         endif
-
-         !   regarding Ewald Breakup assume column not row vectors for the lattice
-         rlatt=TRANSPOSE(rlatt)
-      endif
-
-      call bcast(rlatt)
-      if (wid) close(iunit)
-
-end subroutine read_lattice_file
+  end subroutine read_lattice_file
 
   subroutine fdf_read_lattice_block(bfdf)
     use periodic, only: alattice, rlatt
@@ -2340,10 +2326,10 @@ end subroutine read_lattice_file
     write(ounit,*) ' Molecular Coordinates from molecule block '
 
     count = 0
-   j = 1 !local counter
-    do while((fdf_bline(bfdf, pline)))
-!     get the integer from the first line
-      if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then  ! check if it is the only integer present in a line
+    j = 1
+    do while (fdf_bline(bfdf, pline))
+      ! Get the atom count from the first line.
+      if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then
         ncent = fdf_bintegers(pline, 1)
         write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
       endif
@@ -2357,19 +2343,21 @@ end subroutine read_lattice_file
         nval = 0._8
       endif
 
-      ! get the coordinates: 4 tokens per line; first char (n) and three (r)reals or (i)ints.
-      if ((pline%ntokens==4).and.((pline%id(1).eq."n").and.((any(pline%id(2:4).eq."r")) .or. (any(pline%id(2:4).eq.("i"))) ))) then
+      ! Get the coordinates: 4 tokens per line; first char (n) and three (r)reals or (i)ints.
+      if ((pline%ntokens == 4) .and. (pline%id(1) .eq. "n") .and. &
+          ((any(pline%id(2:4) .eq. "r")) .or. (any(pline%id(2:4) .eq. "i")))) then
         count = pline%ntokens
         symbol(j) = fdf_bnames(pline, 1)
-        do i= 1, 3
+        do i = 1, 3
           cent(i,j) = fdf_bvalues(pline, i)
         enddo
         j = j + 1
-      ! get the coordinates: 5 tokens per line; first char (n) and three (r)reals or (i)ints for coords and 4th for nvalence/znuc
-      elseif ((pline%ntokens==5).and.((pline%id(1).eq."n").and.((any(pline%id(2:4).eq."r")) .or. (any(pline%id(2:4).eq.("i"))) ))) then
+      ! Get the coordinates: 5 tokens per line, with the 4th value for nvalence/znuc.
+      elseif ((pline%ntokens == 5) .and. (pline%id(1) .eq. "n") .and. &
+              ((any(pline%id(2:4) .eq. "r")) .or. (any(pline%id(2:4) .eq. "i")))) then
         count = pline%ntokens
         symbol(j) = fdf_bnames(pline, 1)
-        do i= 1, 3
+        do i = 1, 3
           cent(i,j) = fdf_bvalues(pline, i)
         enddo
         nval(j) = fdf_bvalues(pline, 4)
@@ -2377,17 +2365,16 @@ end subroutine read_lattice_file
       endif
     enddo
 
-
     ncent_tot = ncent + nghostcent
 
     ! Count unique type of elements
     nctype = 1
     unique(1) = symbol(1)
 
-    do j= 2, ncent
-        if (any(unique(1:nctype) == symbol(j) ))  cycle
-        nctype = nctype + 1
-        unique(nctype) = symbol(j)
+    do j = 2, ncent
+      if (any(unique(1:nctype) == symbol(j) )) cycle
+      nctype = nctype + 1
+      unique(nctype) = symbol(j)
     enddo
 
     write(ounit,*) " Number of distinct types of elements (nctype) :: ", nctype
@@ -2396,27 +2383,27 @@ end subroutine read_lattice_file
     if (.not. allocated(atomtyp)) allocate(atomtyp(nctype))
     if (.not. allocated(znuc)) allocate(znuc(nctype))
 
-    ! get the correspondence for each atom according to the rule defined for atomtypes
+    ! Get the correspondence for each atom according to the rule defined for atomtypes
     do j = 1, ncent
-        do k = 1, nctype
-            if (symbol(j) == unique(k))  then
-              iwctype(j) = k
-              if (count .gt. 4) znuc(k) = nval(j)
-          endif
-        enddo
+      do k = 1, nctype
+        if (symbol(j) == unique(k)) then
+          iwctype(j) = k
+          if (count .gt. 4) znuc(k) = nval(j)
+        endif
+      enddo
     enddo
 
     ! Get the correspondence rule
     do k = 1, nctype
-        atomtyp(k) = unique(k)
+      atomtyp(k) = unique(k)
     enddo
     if (allocated(unique)) deallocate(unique)
 
     if (count == 4) then
       ! Get the znuc for each unique atom
       do j = 1, nctype
-          atoms = element(atomtyp(j))
-          znuc(j) = atoms%nvalence
+        atoms = element(atomtyp(j))
+        znuc(j) = atoms%nvalence
       enddo
     endif
 
