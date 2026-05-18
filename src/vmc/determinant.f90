@@ -70,7 +70,7 @@ contains
              call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,fp(1,j,iab,k),nel*3)
              call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,fp(2,j,iab,k),nel*3)
              call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,fp(3,j,iab,k),nel*3)
-             call dcopy(nel,ddorb (jorb,1+ish,k),norb_tot,fpp (j,iab,k),nel)
+             call dcopy(nel,ddorb(jorb,1+ish,k),norb_tot,fpp(j,iab,k),nel)
            enddo
 
 ! Invert the reference Slater matrix in place and save its determinant.
@@ -137,7 +137,6 @@ contains
 
       endif
 
-      return
       end subroutine determinant
 !-----------------------------------------------------------------------
       subroutine check_detref(ipass,icheck,spin_to_change)
@@ -190,7 +189,6 @@ contains
          kchange = kchange + 1
       endif
 
-      return
       end subroutine check_detref
 !-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
@@ -216,7 +214,7 @@ contains
       integer :: i, ic, iorb, iparm, l, k, xo, xj
 
 
-! resize ddor and dorb if necessary
+! resize ddorb and dorb if necessary
 ! call resize_matrix(ddorb, norb+nadorb, 2)
 ! call resize_matrix(b, norb+nadorb, 1)
 ! call resize_tensor(dorb, norb+nadorb, 3)
@@ -289,6 +287,5 @@ contains
 !    &          +da_vj(l,2,i,ic)*dorb(iorb,i,2)
 !    &          +da_vj(l,3,i,ic)*dorb(iorb,i,3))
 
-      return
       end subroutine compute_bmatrices_kin
-end module
+end module determinant_mod
