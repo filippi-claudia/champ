@@ -15,7 +15,7 @@ module walksav_det_mod
       use ycompact, only: ymat
       implicit none
 
-      integer, allocatable, save :: krefw(:)
+      integer,  allocatable, save :: krefw(:)
       real(dp), allocatable, save :: slmuiw(:, :)
       real(dp), allocatable, save :: slmdiw(:, :)
       real(dp), allocatable, save :: ddxw(:, :, :)
@@ -37,18 +37,18 @@ contains
       integer :: k, kcum
       integer :: ndim, nel, ndim2
 
-      if(.not.allocated(aaw)) allocate(aaw(nelec,norb_tot,mwalk,2))
+      if(.not.allocated(aaw))    allocate(aaw(nelec,norb_tot,mwalk,2))
       if(.not.allocated(wfmatw)) allocate(wfmatw(ndet,MEXCIT**2,mwalk,2))
-      if(.not.allocated(ymatw)) allocate(ymatw(norb_tot,nelec,mwalk,2,MSTATES))
-      if(.not.allocated(orbw)) allocate(orbw(nelec,norb_tot,mwalk))
-      if(.not.allocated(dorbw)) allocate(dorbw(norb,nelec,3,mwalk))
+      if(.not.allocated(ymatw))  allocate(ymatw(norb_tot,nelec,mwalk,2,MSTATES))
+      if(.not.allocated(orbw))   allocate(orbw(nelec,norb_tot,mwalk))
+      if(.not.allocated(dorbw))  allocate(dorbw(norb,nelec,3,mwalk))
 
-      if(.not.allocated(krefw)) allocate(krefw(mwalk), source=0)
+      if(.not.allocated(krefw))  allocate(krefw(mwalk))
       if(.not.allocated(slmuiw)) allocate(slmuiw(nmat_dim,mwalk))
       if(.not.allocated(slmdiw)) allocate(slmdiw(nmat_dim,mwalk))
-      if(.not.allocated(ddxw)) allocate(ddxw(3, nelec,mwalk))
-      if(.not.allocated(detuw)) allocate(detuw(ndet,mwalk))
-      if(.not.allocated(detdw)) allocate(detdw(ndet,mwalk))
+      if(.not.allocated(ddxw))   allocate(ddxw(3, nelec,mwalk))
+      if(.not.allocated(detuw))  allocate(detuw(ndet,mwalk))
+      if(.not.allocated(detdw))  allocate(detdw(ndet,mwalk))
 
        detuw(1:ndet,iw)=detiab(1:ndet,1,1)
        detdw(1:ndet,iw)=detiab(1:ndet,2,1)
