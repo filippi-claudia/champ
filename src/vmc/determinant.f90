@@ -39,7 +39,7 @@ contains
       real(dp), dimension(3, nmat_dim, 2, nwftypeorb) :: fp
       real(dp), dimension(nmat_dim, 2, nwftypeorb) :: fpp
 
-! compute orbitals
+! Compute orbital values and derivatives.
       call orbitals(x,rvec_en,r_en)
 
       kchange=0
@@ -66,6 +66,7 @@ contains
 
              jk=jk+nel
 
+! Build the reference Slater matrix and derivative buffers.
              call dcopy(nel,orb(1+ish,jorb,k),1,slmi(1+jk,iab,k),1)
              call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,fp(1,j,iab,k),nel*3)
              call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,fp(2,j,iab,k),nel*3)
@@ -77,15 +78,15 @@ contains
 ! After matinv, slmi holds the inverse matrix for this spin/orbital set.
            if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
 
-! Contract each inverse-matrix column with the orbital derivative vectors
-! to get grad(det)/det and laplacian(det)/det for each electron.
+! Contract the inverse matrix with the orbital derivative buffers to get
+! grad(det)/det and laplacian(det)/det for each electron.
            ik=-nel
            do i=1,nel
              ik=ik+nel
              ddx(1,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(1,1+ik,iab,k),3)
              ddx(2,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(2,1+ik,iab,k),3)
              ddx(3,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(3,1+ik,iab,k),3)
-             d2dx2(i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fpp( 1+ik,iab,k),1)
+             d2dx2(i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fpp(1+ik,iab,k),1)
            enddo
 
            if(ipr.ge.4) then
@@ -105,14 +106,14 @@ contains
         enddo
       endif
 
-! for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
+! DMC would need per-walker determinant kref before allowing kref changes.
       if(index(mode,'dmc').eq.0 .and. kref_fixed.eq.0) then ! allow if kref is allowed to vary
          icheck=icheck+1
          if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.max_ref_checks) then
             call check_detref(ipass,icheck,spin_to_change)
             if(spin_to_change.gt.0) goto 10
 
-! reshuffling determinants just if the new kref was accepted
+! Reshuffle determinants only if the new kref was accepted.
             if(spin_to_change.eq.0 .and. kchange.gt.0) then
                call multideterminants_define(kchange)
                if (ioptorb.ne.0) then
@@ -124,7 +125,7 @@ contains
 
          endif
 
-! reshuffling determinants if the maximum number of iterations looking for kref was exhausted
+! Reshuffle determinants if the maximum number of reference checks was exhausted.
          if (kchange.eq.max_ref_checks) then
             call multideterminants_define(kchange)
             if (ioptorb.ne.0) then
