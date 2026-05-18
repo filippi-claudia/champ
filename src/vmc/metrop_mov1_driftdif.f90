@@ -224,7 +224,7 @@
         enddo
         acc=acc+one
         call jassav(i,0)
-        call detsav(i,0)
+        call detsav(i)
         if(ipr.ge.1) write(ounit,*)'METROP ACCEPT'
        else
         if(ipr.ge.1) write(ounit,*)'METROP REJECT'

@@ -10,7 +10,6 @@ contains
       use slater, only: slmi, kref
       use slatn, only: slmin
       use system, only: ndn, nup, nelec, ncent_tot
-      use contrl_file, only: ounit
       use vmc_mod, only: nwftypeorb
       implicit none
 
@@ -68,7 +67,7 @@ contains
 !-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psi2g,psid,psij,vd,iflag_move)
 
-      use csfs,    only: nstates
+      use csfs, only: anormo,nstates
       use mstates3, only: iweight_g,weights_g
       use mstates_ctrl, only: iguiding
       use multideterminant_mod, only: compute_ymat
@@ -79,26 +78,13 @@ contains
       use multislatern, only: detn,dorbn
       use orbval,  only: dorb
       use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot, nwftypeorb, stoo, stoj
-      use csfs, only: nstates, anormo
-      use system, only: nup, nelec
+      use slater, only: kref,norb,slmi
       use slatn, only: slmin
+      use system, only: nup, nelec
+      use velocity_jastrow, only: vj,vjn
+      use vmc_mod, only: norb_tot,nwftypeorb,stoj,stoo
       use ycompact, only: ymat
       use ycompactn, only: ymatn
-      use slater, only: norb
-      use multimat, only: aa, wfmat
-      use multimatn, only: aan
-      use velocity_jastrow, only: vj, vjn
-      use mstates_ctrl, only: iguiding
-      use mstates3, only: iweight_g, weights_g
-      use multislatern, only: detn, dorbn
-      use contrl_file, only: ounit
-
-      use orbval, only: dorb
-      use slater, only: slmi, kref
-      use multislater, only: detiab
-      use multideterminante_mod, only: multideterminante_grad
-      use multideterminant_mod, only: compute_ymat
 
       implicit none
 
@@ -287,11 +273,9 @@ contains
 
       use dorb_m,  only: iworbd
       use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim
       use system, only: ndn, nup
       use slater, only: kref
-      use dorb_m, only: iworbd
 
       implicit none
 

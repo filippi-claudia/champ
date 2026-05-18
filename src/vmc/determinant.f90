@@ -23,9 +23,9 @@ contains
       use orbval,  only: ddorb,dorb,nadorb,orb
       use precision_kinds, only: dp
       use set_input_data, only: multideterminants_define
-      use slater,  only: d2dx2,ddx,fp,fpp,kref,ndet,norb,slmi
+      use slater,  only: d2dx2,ddx,kref,ndet,norb,slmi
       use system,  only: ncent_tot,ndn,nelec,nup
-      use vmc_mod, only: norb_tot, nwftypeorb
+      use vmc_mod, only: nmat_dim, norb_tot, nwftypeorb
 
       implicit none
 
@@ -36,6 +36,8 @@ contains
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), dimension(3, nmat_dim, 2, nwftypeorb) :: fp
+      real(dp), dimension(nmat_dim, 2, nwftypeorb) :: fpp
 
 ! compute orbitals
       call orbitals(x,rvec_en,r_en)
@@ -71,12 +73,12 @@ contains
              call dcopy(nel,ddorb (jorb,1+ish,k),norb_tot,fpp (j,iab,k),nel)
            enddo
 
-! calculate the inverse transpose matrix and its determinant
+! Invert the reference Slater matrix in place and save its determinant.
+! After matinv, slmi holds the inverse matrix for this spin/orbital set.
            if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
 
-! loop through up/down-spin electrons
-! take inner product of transpose inverse with derivative vectors
-! to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
+! Contract each inverse-matrix column with the orbital derivative vectors
+! to get grad(det)/det and laplacian(det)/det for each electron.
            ik=-nel
            do i=1,nel
              ik=ik+nel

@@ -537,7 +537,7 @@
             psido_dmc(iw,1)=psidn(1)
             psijo_dmc(iw,1)=psijn(1)
             call jassav(i,0)
-            call detsav(i,0)
+            call detsav(i)
 
            else
             if(ipq.le.0) p=zero

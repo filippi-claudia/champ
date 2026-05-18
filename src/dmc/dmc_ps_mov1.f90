@@ -232,7 +232,7 @@
               psido_dmc(iw,1)=psidn(1)
               psijo_dmc(iw,1)=psijn(1)
               call jassav(i,0)
-              call detsav(i,0)
+              call detsav(i)
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
               if (use_qmckl_jastrow) then
                 rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
@@ -250,7 +250,7 @@
                     psido_dmc(iw,1)=psidn(1)
                     psijo_dmc(iw,1)=psijn(1)
                     call jassav(i,0)
-                    call detsav(i,0)
+                    call detsav(i)
 
                     imove_up = imove_up - 1
                     imove_dn = imove_dn - 1
@@ -430,7 +430,7 @@
             psido_dmc(iw,1)=psidn(1)
             psijo_dmc(iw,1)=psijn(1)
             call jassav(i,0)
-            call detsav(i,0)
+            call detsav(i)
 
            else
             if(ipq.le.0) p=zero
@@ -724,7 +724,7 @@
             psido_dmc(iw,1)=psidn(1)
             psijo_dmc(iw,1)=psijn(1)
             call jassav(iel,0)
-            call detsav(iel,0)
+            call detsav(iel)
 
             if(iel.le.nup) call update_ymat(nup)
             if(iel.gt.nup) call update_ymat(nelec)
@@ -754,7 +754,7 @@
                   psido_dmc(iw,1)=psidn(1)
                   psijo_dmc(iw,1)=psijn(1)
                   call jassav(iel,0)
-                  call detsav(iel,0)
+                  call detsav(iel)
 
                   if(iel.le.nup) call update_ymat(nup)
                   if(iel.gt.nup) call update_ymat(nelec)
