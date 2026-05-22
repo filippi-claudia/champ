@@ -98,17 +98,14 @@ contains
       real(dp), dimension(3, nstates) :: vd_s
       real(dp), dimension(norb, 3, nstates) :: dorb_tmp
 
-! NR : ymat_tmp was not saved ....
-! it has the save keywoprd in the dev branch ...
+! ymat_tmp must persist between calls in the iflag_move=3 path.
 ! real(dp), dimension(norb_tot, nelec) :: ymat_tmp
 
       real(dp), allocatable, save :: ymat_tmp(:,:,:)
       if (.not. allocated(ymat_tmp)) then
-        ! CF : ymat_tmp(norb_tot,nelec) max value of # orb
+        ! ymat_tmp(norb_tot,nelec) max value of # orb
         allocate(ymat_tmp(norb_tot,nelec,nwftypeorb))
       endif
-
-! save ymat_tmp
 
       if(iel.le.nup) then
         iab=1
@@ -118,7 +115,7 @@ contains
 
       psi2gi=1.d0/psi2g
 
-! All quantities saved (old) avaliable
+! All old quantities are available.
       if(iflag_move.eq.1) then
 
         do istate=1,nstates
@@ -142,9 +139,7 @@ contains
           enddo
         else
           isjas1=stoj(iweight_g(1))
-          do kk=1,3
-            vd(kk)=0.d0
-          enddo
+          vd=0.d0
           do i=1,nstates 
 
             istate=iweight_g(i)
@@ -163,9 +158,7 @@ contains
 
             enddo
           enddo
-          vd(1)=vd(1)*psi2gi
-          vd(2)=vd(2)*psi2gi
-          vd(3)=vd(3)*psi2gi
+          vd=vd*psi2gi
         endif
 
 ! Within single-electron move - quantities of electron iel not saved
@@ -191,9 +184,7 @@ contains
          else
 
           isjas1=stoj(iweight_g(1))
-          do kk=1,3
-            vd(kk)=0.d0
-          enddo
+          vd=0.d0
 
           do i=1,nstates
             istate=iweight_g(i)
@@ -216,9 +207,7 @@ contains
 
             enddo
           enddo
-          vd(1)=vd(1)*psi2gi
-          vd(2)=vd(2)*psi2gi
-          vd(3)=vd(3)*psi2gi
+          vd=vd*psi2gi
         endif
 
       else
@@ -261,9 +250,7 @@ contains
                     detratio,slmi(1,iab,1),aa(1,1,iab,1),ymat_tmp,vd)
         endif
 
-        vd(1)=vjn(1,iel,1)+vd(1)+vref(1,1)
-        vd(2)=vjn(2,iel,1)+vd(2)+vref(2,1)
-        vd(3)=vjn(3,iel,1)+vd(3)+vref(3,1)
+        vd=vjn(1:3,iel,1)+vd+vref(1:3,1)
       endif
 
       return
