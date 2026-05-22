@@ -22,9 +22,6 @@ contains
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
-      !     real(dp), dimension(nelec,nbasis) :: bhin
-      !     real(dp), dimension(3*nelec,nbasis) :: dbhin
-      !     real(dp), dimension(nelec,nbasis) :: d2bhin
       real(dp), dimension(norb+nadorb) :: auxorb
       real(dp), dimension(norb+nadorb,3) :: auxdorb
       real(dp), dimension(norb+nadorb) :: auxddorb
@@ -34,22 +31,6 @@ contains
       if(iforce_analy.eq.1) ider=3
 
       call basis_fns(1,nelec,nelec,rvec_en,r_en,ider)
-
-      !     Alternative dense-matrix implementation kept for reference.
-      !     do jbasis=1,nbasis
-      !     i=0
-      !     do ielec=1,nelec
-      !     bhin(ielec,jbasis)=phin(jbasis,ielec)
-      !     do l=1,3
-      !     i=i+1
-      !     dbhin(i,jbasis)=dphin(jbasis,ielec,l)
-      !     enddo
-      !     d2bhin(ielec,jbasis)=d2phin(jbasis,ielec)
-      !     enddo
-      !     enddo
-      !     call dgemm('n','n',  nelec,norb,nbasis,1.d0,bhin,   nelec,  coef(1,1,iwf),nbasis,0.d0,orb,   nelec)
-      !     call dgemm('n','n',3*nelec,norb,nbasis,1.d0,dbhin,3*nelec,  coef(1,1,iwf),nbasis,0.d0,dorb,3*nelec)
-      !     call dgemm('n','n',  nelec,norb,nbasis,1.d0,d2bhin, nelec,  coef(1,1,iwf),nbasis,0.d0,ddorb, nelec)
 
       ! Vectorization dependent code selection
 #ifdef VECTORIZATION
@@ -106,7 +87,6 @@ contains
       ! endif vectorization
       end subroutine orbitals_no_qmckl
 
-
       subroutine orbitalse_no_qmckl(iel,x,rvec_en,r_en,iflag)
 
       use basis_fns_mod, only: basis_fns
@@ -127,7 +107,6 @@ contains
       real(dp), dimension(3,*) :: x
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
-
 
       ider=1
       if(iflag.gt.0) ider=2
