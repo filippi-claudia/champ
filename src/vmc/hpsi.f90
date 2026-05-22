@@ -51,7 +51,7 @@ contains
 
     implicit none
 
-    integer :: i, iab, ifr, ii, iparm, ipass, iorb, irep, ish
+    integer :: i, iab, ifr, ii, ipass, irep, ish
     integer :: istate, j, jrep, nel, o, x
     real(dp) :: e_other, ekin_other, pe_local
     real(dp) :: tmp
@@ -88,7 +88,8 @@ contains
 
     call jastrow_factor(coord, vj, d2j, psij, ifr)
 
-    ! TODO: clarify why multi-Jastrow calculations reset iwf here.
+    ! jastrow_factor can reuse iwf while looping over Jastrow/state types.
+    ! Keep the historical reset until geometry and state indexing are separated.
     if (nwftypejas .gt. 1) iwf = 1
 
     if (ipr .ge. 3) then
@@ -101,26 +102,15 @@ contains
     call determinant(ipass, coord, rvec_en, r_en)
     call compute_bmatrices_kin
 
-    ! Compute pseudo-potential contribution.
+    ! Compute pseudopotential contribution.
     ! nonloc_pot must be called after determinant because slater matrices are needed.
     if (nloc .gt. 0) then
       call nonloc_pot(coord, rvec_en, r_en, pe_local, vpsp_det, dvpsp_dj, &
           t_vpsp, i_vpsp, ifr)
     else
-      do x = 1, nbjx
-        vpsp_det(1, x) = 0.d0
-        vpsp_det(2, x) = 0.d0
-        do iparm = 1, nparmj
-          dvpsp_dj(iparm, x) = 0.d0
-        enddo
-      enddo
-      do i = 1, nelec
-        do x = 1, nbjx
-          do iorb = 1, norb + nadorb
-            b(iorb, i, x) = bkin(iorb, i, x)
-          enddo
-        enddo
-      enddo
+      vpsp_det(1:2, 1:nbjx) = 0.d0
+      dvpsp_dj(1:nparmj, 1:nbjx) = 0.d0
+      b(1:norb+nadorb, 1:nelec, 1:nbjx) = bkin(1:norb+nadorb, 1:nelec, 1:nbjx)
     endif
 
     if (ipr .ge. 3) then
