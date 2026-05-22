@@ -273,7 +273,7 @@ contains
 
       integer :: i, iab, iorb, irep, istate
       integer :: j, jorb, jrep, k, kun, kw
-      integer :: kk, ndim, ndim2, kcum, iwf_save
+      integer :: kk, ndim, ndim2, kcum, kcdet
       real(dp) :: detall, detrefi
       real(dp), dimension(ndet) :: detu
       real(dp), dimension(ndet) :: detd
@@ -292,14 +292,14 @@ contains
       cdet_equiv=0.0d0
       dcdet_equiv=0.0d0
 
-      iwf_save=iwf
-      if(nwftypeorb.gt.1) iwf=1
+      kcdet=iwf
+      if(nwftypeorb.gt.1) kcdet=1
 
 ! unroling determinants different to kref
       do kk=1,ndetiab2(iab)
          k=k_det2(kk,iab)
          kw=k_aux2(kk,iab)
-         detall=detrefi*detu(k)*detd(k)*cdet(k,istate,iwf)
+         detall=detrefi*detu(k)*detd(k)*cdet(k,istate,kcdet)
          cdet_equiv(kw)=cdet_equiv(kw)+detall
          dcdet_equiv(kw)=dcdet_equiv(kw)+detall*(denergy_det(k,1,stobjx(istate))+denergy_det(k,2,stobjx(istate))) 
       enddo

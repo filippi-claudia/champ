@@ -196,7 +196,7 @@ contains
 
       integer :: ic, ider, iq
       integer :: iorb, k, m, m0, nxquad, iwforb
-      integer :: norb_eval
+      integer :: kcoef, norb_eval
 
       real(dp), dimension(3,*) :: xquad
       real(dp), dimension(nquad*nelec*2, ncent_tot) :: r_en
@@ -212,9 +212,10 @@ contains
       ider=0
       if(iforce_analy.gt.0) ider=1
 
-      if(nwftypeorb.gt.1) iwf=1
+      kcoef=iwforb
+      if(nwftypeorb.eq.1) kcoef=iwf
+
       call basis_fns(1,nxquad,nquad*nelec*2,rvec_en,r_en,ider)
-      if(nwftypeorb.gt.1) iwf=iwforb
 
       do iq=1,nxquad
 
@@ -224,7 +225,7 @@ contains
         orbn(1:norb_eval,iq)=0.d0
         do iorb=1,norb_eval
           do m=1,nbasis
-            orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
+            orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,kcoef)*phin(m,iq)
           enddo
         enddo
 #else
@@ -232,7 +233,7 @@ contains
         do iorb=1,norb_eval
           do m0=1,n0_nbasis(iq)
             m=n0_ibasis(m0,iq)
-            orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
+            orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,kcoef)*phin(m,iq)
           enddo
         enddo
 #endif
@@ -246,7 +247,7 @@ contains
             do ic=1,ncent
               do k=1,3
                 do m=ibas0(ic),ibas1(ic)
-                  da_orbn(iorb,k,iq,ic)=da_orbn(iorb,k,iq,ic)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                  da_orbn(iorb,k,iq,ic)=da_orbn(iorb,k,iq,ic)-coef(m,iorb,kcoef)*dphin(m,iq,k)
                 enddo
               enddo
             enddo
@@ -255,7 +256,7 @@ contains
               m=n0_ibasis(m0,iq)
               ic=n0_ic(m0,iq)
               do k=1,3
-                da_orbn(iorb,k,iq,ic)=da_orbn(iorb,k,iq,ic)-coef(m,iorb,iwf)*dphin(m,iq,k)
+                da_orbn(iorb,k,iq,ic)=da_orbn(iorb,k,iq,ic)-coef(m,iorb,kcoef)*dphin(m,iq,k)
               enddo
             enddo
 #endif
