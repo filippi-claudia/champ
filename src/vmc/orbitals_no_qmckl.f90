@@ -217,7 +217,7 @@ contains
 
       integer :: ic, ider, iq
       integer :: iorb, k, m, m0, nxquad, iwforb
-      integer :: nadorb_sav
+      integer :: norb_eval
 
       real(dp), dimension(3,*) :: xquad
       real(dp), dimension(nquad*nelec*2, ncent_tot) :: r_en
@@ -226,9 +226,8 @@ contains
       real(dp), dimension(norb_tot, nquad*nelec*2, 3) :: dorbn
       real(dp), dimension(norb,3,nxquad,ncent_tot) :: da_orbn
 
-      nadorb_sav=nadorb
-
-      if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) nadorb=0
+      norb_eval=norb+nadorb
+      if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) norb_eval=norb
 
       ! get basis functions for quadrature points
       ider=0
@@ -243,15 +242,15 @@ contains
       ! Vectorization dependent code selection
 #ifdef VECTORIZATION
       ! The following loop changed for better vectorization AVX512/AVX2
-        do iorb=1,norb+nadorb
-          orbn(iorb,iq)=0.d0
+        orbn(1:norb_eval,iq)=0.d0
+        do iorb=1,norb_eval
           do m=1,nbasis
             orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
           enddo
         enddo
 #else
-        do iorb=1,norb+nadorb
-          orbn(iorb,iq)=0.d0
+        orbn(1:norb_eval,iq)=0.d0
+        do iorb=1,norb_eval
           do m0=1,n0_nbasis(iq)
             m=n0_ibasis(m0,iq)
             orbn(iorb,iq)=orbn(iorb,iq)+coef(m,iorb,iwf)*phin(m,iq)
@@ -262,9 +261,7 @@ contains
         if(iforce_analy.gt.0) then
           do iorb=1,norb
             do ic=1,ncent
-              do k=1,3
-                da_orbn(iorb,k,iq,ic)=0.d0
-              enddo
+              da_orbn(iorb,1:3,iq,ic)=0.d0
             enddo
 #ifdef VECTORIZATION
             do ic=1,ncent
@@ -283,21 +280,15 @@ contains
               enddo
             enddo
 #endif
-            do k=1,3
-              dorbn(iorb,iq,k)=0.d0
-            enddo
+            dorbn(iorb,iq,1:3)=0.d0
             do ic=1,ncent
-              do k=1,3
-                dorbn(iorb,iq,k)=dorbn(iorb,iq,k)-da_orbn(iorb,k,iq,ic)
-              enddo
+              dorbn(iorb,iq,1:3)=dorbn(iorb,iq,1:3)-da_orbn(iorb,1:3,iq,ic)
             enddo
           enddo
         endif
         ! endif iforce
       enddo
       ! enddo nxquad
-
-      nadorb = nadorb_sav
 
       end subroutine orbitals_quad_no_qmckl
 
