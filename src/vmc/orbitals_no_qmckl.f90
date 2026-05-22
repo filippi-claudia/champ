@@ -140,11 +140,11 @@ contains
       do k=1,nwftypeorb
         kcoef=k
         if(nwftypeorb.eq.1) kcoef=iwf
+        orbn(1:norb,k)=0.d0
+        dorbn(1:norb,1,k)=0.d0
+        dorbn(1:norb,2,k)=0.d0
+        dorbn(1:norb,3,k)=0.d0
         do iorb=1,norb
-          orbn(iorb,k)=0.d0
-          dorbn(iorb,1,k)=0.d0
-          dorbn(iorb,2,k)=0.d0
-          dorbn(iorb,3,k)=0.d0
           do m=1,nbasis
             orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,kcoef)*phin(m,iel)
             dorbn(iorb,1,k)=dorbn(iorb,1,k)+coef(m,iorb,kcoef)*dphin(m,iel,1)
@@ -153,8 +153,8 @@ contains
           enddo
         enddo
         if(iflag.gt.0) then
+          ddorbn(1:norb,k)=0.d0
           do iorb=1,norb
-            ddorbn(iorb,k)=0.d0
             do m=1,nbasis
               ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,kcoef)*d2phin(m,iel)
             enddo
@@ -168,11 +168,11 @@ contains
       do k=1,nwftypeorb
         kcoef=k
         if(nwftypeorb.eq.1) kcoef=iwf
+        orbn(1:norb,k)=0.d0
+        dorbn(1:norb,1,k)=0.d0
+        dorbn(1:norb,2,k)=0.d0
+        dorbn(1:norb,3,k)=0.d0
         do iorb=1,norb
-          orbn(iorb,k)=0.d0
-          dorbn(iorb,1,k)=0.d0
-          dorbn(iorb,2,k)=0.d0
-          dorbn(iorb,3,k)=0.d0
           do m0=1,n0_nbasis(iel)
             m=n0_ibasis(m0,iel)
             orbn(iorb,k)=orbn(iorb,k)+coef(m,iorb,kcoef)*phin(m,iel)
@@ -182,8 +182,8 @@ contains
           enddo
         enddo
         if(iflag.gt.0) then
+          ddorbn(1:norb,k)=0.d0
           do iorb=1,norb
-            ddorbn(iorb,k)=0.d0
             do m0=1,n0_nbasis(iel)
               m=n0_ibasis(m0,iel)
               ddorbn(iorb,k)=ddorbn(iorb,k)+coef(m,iorb,kcoef)*d2phin(m,iel)
