@@ -70,7 +70,7 @@ contains
 !     d2_per=0.d0
 !     v_per=0.d0
 
-! keep an option for ifr 1 and ioptjas 0 so we don't play with iwf
+! For multiple geometries, evaluate the geometry-selected Jastrow only.
       if (nforce.gt.1) then
 
          if(ifr.gt.1.or.ioptjas.eq.0) then
@@ -98,7 +98,7 @@ contains
            v(3,i,1)=fjo(3,i,1)+v_per(3,i)
          enddo
 
-! nforce.eq.1 -> iwf not used in relation to nforce, maybe used for multiple jastrow
+! For a single geometry, iwf is used as the Jastrow-state selector.
        else
 
         if(ioptjas.eq.0) then
@@ -111,7 +111,6 @@ contains
            else
             do jwf=1,nwftypejas
               iwf=jwf
-!UNDO
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
             if (use_qmckl_jastrow) then
               call jastrow_qmckl(x,fjo(1,1,iwf),d2o(iwf),fsumo(iwf))
