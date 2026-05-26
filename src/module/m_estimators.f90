@@ -13,6 +13,11 @@ module estcum
      real(dp), dimension(:), allocatable :: tjfcum !(MSTATES)
      real(dp), dimension(:), allocatable :: tpbcum !(MSTATES)
 
+     !> r2 and radial integral estimators:
+     real(dp) :: r2cum
+     real(dp) :: r2cum_dmc
+     real(dp) :: ricum
+
      !> DMC variables:
      real(dp) :: ecum1_dmc
      real(dp) :: ecum_dmc
@@ -21,6 +26,8 @@ module estcum
      real(dp), dimension(:), allocatable :: egcum  !(MFORCE)
      real(dp), dimension(:), allocatable :: egcum1 !(MFORCE)
      real(dp) :: ei1cum
+     real(dp) :: ei2cum
+     real(dp) :: ei3cum
      real(dp), dimension(:), allocatable :: pecum_dmc !(MFORCE)
      real(dp), dimension(:), allocatable :: taucum !(MFORCE)
      real(dp), dimension(:), allocatable :: tjfcum_dmc !(MFORCE)
@@ -42,10 +49,12 @@ module estcum
 
      private
      public :: ecum, ecum1, iblk, pecum, tjfcum, tpbcum
+     public :: r2cum, r2cum_dmc, ricum
 
      public :: allocate_estcum, deallocate_estcum
      !> DMC variables:
      public :: ecum1_dmc, ecum_dmc, efcum, efcum1, egcum, egcum1, ei1cum
+     public :: ei2cum, ei3cum
      public :: pecum_dmc, taucum, tjfcum_dmc, tpbcum_dmc
      public :: w_acc_cum, w_acc_cum1, wcum1, wcum_dmc, wdcum, wdcum1, wfcum, wfcum1
      public :: wg_acc_cum, wg_acc_cum1, wgcum, wgcum1
@@ -171,8 +180,14 @@ module estcum
      real(dp), dimension(:), allocatable :: wsum1 !(MFORCE)
      real(dp) :: wsum_dmc
 
+     !> r2 and radial integral estimators:
+     real(dp) :: r2sum
+     real(dp) :: risum
+     real(dp) :: ei2sum
+
      private
      public :: acc, esum, esum1, pesum, tjfsum, tpbsum
+     public :: r2sum, risum, ei2sum
      public :: allocate_estsum, deallocate_estsum
      public :: efsum, efsum1, egsum, egsum1, ei1sum, esum1_dmc, esum_dmc
      public :: pesum_dmc, tausum, tjfsum_dmc, tpbsum_dmc, w_acc_sum
@@ -288,6 +303,11 @@ module estcum
      real(dp), dimension(:), allocatable :: egcm2  !(MFORCE)
      real(dp), dimension(:), allocatable :: egcm21 !(MFORCE)
      real(dp) :: ei1cm2
+     real(dp) :: ei2cm2
+     real(dp) :: ei3cm2
+     real(dp) :: ricm2
+     real(dp) :: r2cm2
+     real(dp) :: r2cm2_dmc
      real(dp), dimension(:), allocatable :: pecm2_dmc !(MFORCE)
      real(dp), dimension(:), allocatable :: tjfcm_dmc  !(MFORCE)
      real(dp), dimension(:), allocatable :: tpbcm2_dmc !(MFORCE)
@@ -303,8 +323,10 @@ module estcum
 
      private
      public :: ecm2, ecm21, pecm2, tjfcm2, tpbcm2
+     public :: r2cm2, r2cm2_dmc, ricm2
      public :: allocate_est2cm, deallocate_est2cm
      public :: ecm21_dmc, ecm2_dmc, efcm2, efcm21, egcm2, egcm21, ei1cm2
+     public :: ei2cm2, ei3cm2
      public :: pecm2_dmc, tjfcm_dmc, tpbcm2_dmc
      public :: wcm2, wcm21, wdcm2, wdcm21
      public :: wfcm2, wfcm21, wgcm2, wgcm21, wgdcm2

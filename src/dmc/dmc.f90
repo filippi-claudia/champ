@@ -27,9 +27,14 @@ contains
       use init_mod, only: init
       use mc_configs_mod, only: mc_configs,mc_configs_write
       use mpitimer, only: elapsed_time
-      use mpiconf, only: nproc
+      use mpiconf, only: nproc, wid
+      use custom_broadcast, only: bcast
       use mpi
       use multiple_geo, only: iwftype,nforce,nwftype,nwprod
+
+#if defined(HDF5_FOUND)
+      use dmc_store_hdf5_mod, only: dmc_store_hdf5
+#endif
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
       use pseudo,  only: nloc
@@ -46,6 +51,8 @@ contains
       real(dp), parameter :: four = 4.d0
       real(dp) :: etrialcollect
       real(dp), dimension(:), allocatable :: etrialfragcollect
+      character(len=8)  :: date
+      character(len=10) :: time
 
       if(nforce.gt.1) then
         call setup_force
@@ -116,7 +123,15 @@ contains
       call finwrt
       call elapsed_time("DMC : all CP : ")
 
-      if (dmc_idump.eq.1) call dumper
+      if (dmc_idump.eq.1) then
+        call dumper
+#if defined(HDF5_FOUND)
+        if (wid) call date_and_time(date=date, time=time)
+        call bcast(date)
+        call bcast(time)
+        call dmc_store_hdf5("restart_dmc_"//date(1:4)//'-'//date(5:6)//'-'//date(7:8)//"-"//time(1:6)//".hdf5")
+#endif
+      endif
       close (unit=9)
       if (dmc_nconf.ne.0) close (unit=7)
       call elapsed_time("dumping restart files : ")

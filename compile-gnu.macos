@@ -1,5 +1,6 @@
 #!/bin/bash
-# Compile CHAMP with Intel MPI Fortran compiler + TREXIO + QMCkl + HDF5
+# Compile CHAMP on macOS with GNU/gfortran MPI + TREXIO + QMCkl + HDF5
+# using Apple's Accelerate framework for BLAS/LAPACK.
 #
 # Prerequisites: set these environment variables before running this script:
 #   TREXIO_DIR  - prefix where TREXIO is installed (headers in $TREXIO_DIR/include,
@@ -8,12 +9,12 @@
 #   HDF5_DIR    - prefix where HDF5 is installed    (same layout)
 #
 # Example:
-#   export TREXIO_DIR=/opt/trexio
-#   export QMCKL_DIR=/opt/qmckl
-#   export HDF5_DIR=/opt/hdf5
-#   ./compile-intel.qmckl
+#   export TREXIO_DIR=$HOME/opt
+#   export QMCKL_DIR=$HOME/opt
+#   export HDF5_DIR=$HOME/opt
+#   ./compile-gnu.macos
 
-compiler='mpiifort'    # OR 'mpiifx' for Intel's LLVM-based compiler
+compiler='mpif90'
 
 rm -rf build
 
@@ -21,10 +22,13 @@ cmake -S. -Bbuild \
     -DCMAKE_Fortran_COMPILER=${compiler} \
     -DENABLE_TREXIO=ON \
     -DTREXIO_INCLUDE_DIR=${TREXIO_DIR}/include \
-    -DTREXIO_LIBRARY=${TREXIO_DIR}/lib/libtrexio.so \
+    -DTREXIO_LIBRARY=${TREXIO_DIR}/lib/libtrexio.dylib \
     -DENABLE_QMCKL=ON \
     -DQMCKL_INCLUDE_DIR=${QMCKL_DIR}/include \
-    -DQMCKL_LIBRARY=${QMCKL_DIR}/lib/libqmckl.so \
-    -DHDF5_ROOT=${HDF5_DIR}
+    -DQMCKL_LIBRARY=${QMCKL_DIR}/lib/libqmckl.dylib \
+    -DHDF5_ROOT=${HDF5_DIR} \
+    -DBLA_VENDOR=Apple \
+    -DCMAKE_EXE_LINKER_FLAGS="-framework Accelerate" \
+    -DCMAKE_OSX_SYSROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
 cmake --build build -j
