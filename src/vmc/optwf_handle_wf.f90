@@ -1463,8 +1463,14 @@ contains
 
       endif
 
-      write(ounit,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)') &
-       nparm,nparmj,nciterm,norbterm
+      write(ounit,'(/,1x,a)')            'Number of parameters'
+      write(ounit,'(1x,a)')              '------------------------------'
+      write(ounit,'(3x,a,t18,a,i11)')    'Jastrow',  ':', nparmj
+      write(ounit,'(3x,a,t18,a,i11)')    'CI',       ':', nciterm
+      write(ounit,'(3x,a,t18,a,i11)')    'Orbitals', ':', norbterm
+      write(ounit,'(1x,a)')              '------------------------------'
+      write(ounit,'(3x,a,t18,a,i11)')    'Total',    ':', nparm
+      write(ounit,'(1x,a)')              '------------------------------'
 
       return
       end
