@@ -1,14 +1,14 @@
-module optwf_mod
+module vmc_driver_mod
     implicit None
-    public :: optwf
+    public :: run_vmc_driver
     PRIVATE
     save
 
 contains
 
-    subroutine optwf()
+    subroutine run_vmc_driver()
 
-        !> Main switch for optimization
+        !> Choose between a plain VMC run and a wave-function optimization.
       use optwf_control, only: idl_flag,ilbfgs_flag,ioptwf,method
       use optwf_dl_mod, only: optwf_dl
       use optwf_lin_dav, only: optwf_lin_d
@@ -38,6 +38,6 @@ contains
             call vmc
         endif
 
-    end subroutine optwf
+    end subroutine run_vmc_driver
 
-end module optwf_mod
+end module vmc_driver_mod

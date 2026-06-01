@@ -2,10 +2,9 @@ module multideterminante_mod
 contains
       subroutine multideterminante(iel)
 
-      use contrl_file,    only: ounit
       use csfs, only: nstates
       use matinv_mod, only: matinv
-      use multidet, only: irepcol_det, ireporb_det, ivirt, numrep_det, k_det, ndetiab, ndet_req
+      use multidet, only: irepcol_det, ireporb_det, ivirt, numrep_det, ndetiab, ndet_req
       use multidet, only: k_aux2, k_det2, ndetiab2, ndetsingle, ndetdouble
       use multideterminant_mod, only: compute_ymat
       use multimatn, only: aan, wfmatn
@@ -13,23 +12,19 @@ contains
       use multislatern, only: detn, orbn
       use orbval, only: orb
       use precision_kinds, only: dp
-      use slater, only: iwundet, kref, ndet, norb
+      use slater, only: kref, ndet, norb
       use slatn, only: slmin
-      use system, only: ndn, nup, nelec
-      use vmc_mod, only: norb_tot, MEXCIT, stoo
+      use system, only: ndn, nup
+      use vmc_mod, only: stoo
       use ycompactn, only: ymatn
       implicit none
 
-      integer :: i, iab, iel, index_det, iorb
+      integer :: i, iab, iel, iorb
       integer :: irep, ish, istate, jj
-      integer :: jorb, jrep, k, ndim, ndim2, kun, kw, kk, kcum
+      integer :: jorb, jrep, k, ndim, ndim2, kw, kk, kcum
       integer :: nel, o
-      real(dp) :: det, dum1, deti, auxdet
-      real(dp), dimension(nelec, norb_tot, 3) :: gmat
-      real(dp), dimension(MEXCIT**2, 3) :: gmatn
-      real(dp), dimension(norb_tot, 3) :: b
-      real(dp), dimension(3) :: ddx_mdet
-      real(dp), dimension(norb_tot) :: orb_sav
+      real(dp) :: dum1, deti, auxdet
+      real(dp), dimension(norb) :: orb_sav
       real(dp), dimension(ndet_req) :: ddetn
 
       if(ndet.eq.1) return
@@ -45,7 +40,7 @@ contains
           ish=nup
         endif
 
-! temporarely copy orbn to orb
+! Temporarily copy orbn to orb.
         do iorb=1,norb
           orb_sav(iorb)=orb(iel,iorb,o)
           orb(iel,iorb,o)=orbn(iorb,o)
@@ -65,7 +60,7 @@ contains
 ! compute wave function
 ! loop inequivalent determinants
 !
-! loop over single exitations
+! Loop over single excitations.
         if(ndetsingle(iab).ge.1) then
           do k=1,ndetsingle(iab)
             jorb=ireporb_det(1,k,iab)
@@ -78,7 +73,7 @@ contains
 
         kcum=ndetsingle(iab)+ndetdouble(iab)
 
-! loop over double exitations
+! Loop over double excitations.
         if(ndetdouble(iab).ge.1)then
           do k=ndetsingle(iab)+1,kcum
             jorb=ireporb_det(1,k,iab)
@@ -103,7 +98,7 @@ contains
           enddo
         endif
 
-! loop over multiple exitations      
+! Loop over multiple excitations.
         if(kcum.lt.ndetiab(iab))then
           do k=kcum+1,ndetiab(iab)
 
@@ -123,7 +118,7 @@ contains
           enddo
         endif 
 
-! unrolling determinats different from kref
+! Unroll determinants different from kref.
         detn(:,o)=detn(kref,o)
         do kk=1,ndetiab2(iab)
           k=k_det2(kk,iab)
@@ -148,22 +143,17 @@ contains
 !-----------------------------------------------------------------------
       subroutine multideterminante_grad(iel,b,norbs,detratio,slmi,aa,ymat,velocity)
 
-      use dorb_m,  only: iworbd
-      use multidet, only: iactv,ivirt
-      use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot, nmat_dim, MEXCIT
-      use slater, only: ndet
-      use system, only: ndn, nup, nelec
-      use multidet, only: iactv, ivirt
-      use slater, only: kref
-      use slater, only: norb
       use dorb_m, only: iworbd
-      use contrl_file, only: ounit
+      use multidet, only: iactv, ivirt
+      use precision_kinds, only: dp
+      use vmc_mod, only: norb_tot, nmat_dim
+      use slater, only: kref, ndet, norb
+      use system, only: ndn, nup, nelec
 
       implicit none
 
-      integer :: iab, iel, iorb, irep, ish, norbs
-      integer :: j, jel, jrep, k
+      integer :: iab, iel, irep, ish, norbs
+      integer :: j, jel, jrep
       integer :: kk, nel
       real(dp) :: detratio, dum
       real(dp), dimension(nelec,norb_tot) :: aa
@@ -173,9 +163,7 @@ contains
       real(dp), dimension(3) :: velocity
       real(dp), dimension(nmat_dim) :: slmi
 
-      do k=1,3
-        velocity(k)=0.d0
-      enddo
+      velocity=0.d0
       if(ndet.eq.1) return
 
       if(iel.le.nup) then

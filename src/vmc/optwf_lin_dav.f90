@@ -50,6 +50,7 @@ contains
 
       if(ifunc_omega.gt.0) then
        if(n_omegaf+n_omegat.gt.nopt_iter) call fatal_error('OPTWF_LIN_D: n_omegaf+n_omegat > nopt_iter')
+       if(n_omegaf.lt.nopt_iter.and.n_omegat.le.0) call fatal_error('OPTWF_LIN_D: n_omegat must be positive')
        omega=omega0
        write(ounit,'(/,''LIN_D ifunc_omega: '',i3)') ifunc_omega
        write(ounit,'(''LIN_D omega: '',f10.5)') omega
@@ -77,6 +78,9 @@ contains
       ioptorb_sav=ioptorb
       ioptci_sav=ioptci
       call save_nparms
+      energy_sav=0.d0
+      energy_err_sav=0.d0
+      sigma_sav=0.d0
 
       call write_geometry(0)
 
@@ -162,7 +166,6 @@ contains
         energy_sav=energy(1)
         energy_err_sav=energy_err(1)
         sigma_sav=sigma
-        ! sigma_sav=0 ! sigma is not initialized and never changed ...
       enddo
 ! enddo iteration
 

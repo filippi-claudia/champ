@@ -10,7 +10,7 @@ contains
       implicit none
 
       integer :: iblk, icmmpol_err, idmmpol_err
-      real(dp) :: cmmpol_ave, cmmpol_err, cmmpol_merr, dmmpol_ave, dmmpol_err
+      real(dp) :: cmmpol_ave, cmmpol_err, dmmpol_ave, dmmpol_err
       real(dp) :: qmmpol_ave, qmmpol_err, rtpass
       real(dp) :: wcum
 
@@ -36,7 +36,7 @@ contains
       rtpass=dsqrt(wcum)
       if(immpol.eq.2)then
         write(ounit,'(''mmpol dE (induced dipoles) ='',t17,f12.7,'' +-'',f11.7,f9.5)') dmmpol_ave,dmmpol_err,dmmpol_err*rtpass
-        write(ounit,'(''mmpol dE  (fixed charges)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') cmmpol_ave,cmmpol_err,cmmpol_merr*rtpass
+        write(ounit,'(''mmpol dE  (fixed charges)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') cmmpol_ave,cmmpol_err,cmmpol_err*rtpass
         write(ounit,'(''<H(QM/MM)>'',t17,f12.7,'' +-'',f11.7,f9.5)') dmmpol_ave+cmmpol_ave
       endif
       if(immpol.eq.3)then
@@ -69,7 +69,7 @@ contains
       implicit none
 
       integer :: i, iblk, icmmpol_err, idmmpol_err
-      real(dp) :: cekcal, cmmpol_ave, cmmpol_err, cmmpol_kcal, cmmpol_merr
+      real(dp) :: cekcal, cmmpol_ave, cmmpol_err, cmmpol_kcal
       real(dp) :: dckcal, dekcal, dmmpol_ave, dmmpol_err
       real(dp) :: dmmpol_kcal, hatokc, qmmpol_ave
       real(dp) :: qmmpol_err, rtpass, wcum
@@ -102,7 +102,7 @@ contains
       if(immpol.eq.2)then
         write(ounit,*)
         write(ounit,'(''mmpol dE (induced dipoles) ='',t17,f12.7,'' +-'',f11.7,f9.5)') dmmpol_ave,dmmpol_err,dmmpol_err*rtpass
-        write(ounit,'(''mmpol dE  (fixed charges)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') cmmpol_ave,cmmpol_err,cmmpol_merr*rtpass
+        write(ounit,'(''mmpol dE  (fixed charges)  ='',t17,f12.7,'' +-'',f11.7,f9.5)') cmmpol_ave,cmmpol_err,cmmpol_err*rtpass
       endif
 
       if(immpol.eq.3)then
@@ -156,24 +156,18 @@ contains
       end
 !-----------------------------------------------------------------------
       subroutine mmpol_save
+      use mmpol_hpsi, only: eek_pol,peQMdp,peQMq
       use mmpol_cntrl, only: immpol
-      use mmpol_hpsi, only: eek_pol
       use mmpol_parms, only: nchmm
       use mmpolo,  only: cmmpolo,dmmpolo,eeko
-      use precision_kinds, only: dp
       implicit none
 
       integer :: i
-      real(dp) :: QMdp, QMq
-
-
-
-
 
 
       if(immpol.eq.0) return
-      dmmpolo=QMdp
-      cmmpolo=QMq
+      dmmpolo=peQMdp
+      cmmpolo=peQMq
 
       do i=1,nchmm
         eeko(1,i)=eek_pol(1,i)
@@ -188,7 +182,7 @@ contains
 
       use mmpol_averages, only: cmmpol_sum,dmmpol_sum,eek_sum
       use mmpol_cntrl, only: immpol
-      use mmpol_hpsi, only: eek_pol
+      use mmpol_hpsi, only: eek_pol,peQMdp,peQMq
       use mmpol_parms, only: nchmm
       use mmpolo,  only: cmmpolo,dmmpolo,eeko
       use precision_kinds, only: dp
@@ -196,12 +190,12 @@ contains
       implicit none
 
       integer :: i
-      real(dp) :: QMdp, QMq, p, q
+      real(dp) :: p, q
 
 
       if(immpol.eq.0) return
-      dmmpol_sum=dmmpol_sum+p*QMdp+q*dmmpolo
-      cmmpol_sum=cmmpol_sum+p*QMq+q*cmmpolo
+      dmmpol_sum=dmmpol_sum+p*peQMdp+q*dmmpolo
+      cmmpol_sum=cmmpol_sum+p*peQMq+q*cmmpolo
 
       do i=1,nchmm
         eek_sum(1,i)= eek_sum(1,i)+p*eek_pol(1,i)+q*eeko(1,i)

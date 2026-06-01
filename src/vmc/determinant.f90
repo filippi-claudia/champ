@@ -23,26 +23,29 @@ contains
       use orbval,  only: ddorb,dorb,nadorb,orb
       use precision_kinds, only: dp
       use set_input_data, only: multideterminants_define
-      use slater,  only: d2dx2,ddx,fp,fpp,kref,ndet,norb,slmi
+      use slater,  only: d2dx2,ddx,kref,ndet,norb,slmi
       use system,  only: ncent_tot,ndn,nelec,nup
-      use vmc_mod, only: norb_tot
-      use vmc_mod, only: norb_tot, nwftypeorb
+      use vmc_mod, only: nmat_dim, norb_tot, nwftypeorb
 
       implicit none
 
+      integer, parameter :: max_ref_checks = 10
       integer :: i, iab, icheck, ii, ik
       integer :: index, ipass, ish, j, k
-      integer :: jk, jorb, nel, newref
+      integer :: jk, jorb, nel, spin_to_change
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
+      real(dp), dimension(3, nmat_dim, 2, nwftypeorb) :: fp
+      real(dp), dimension(nmat_dim, 2, nwftypeorb) :: fpp
 
-! compute orbitals
+! Compute orbital values and derivatives.
       call orbitals(x,rvec_en,r_en)
 
       kchange=0
       icheck=0
       10 continue
+      call allocate_multislater()
 
       do iab=1,2
 
@@ -54,8 +57,6 @@ contains
             nel=ndn
          endif
 
-         call allocate_multislater() ! properly accessing array elements
-
          do k=1,nwftypeorb
            detiab(kref,iab,k)=1.d0
 
@@ -65,26 +66,27 @@ contains
 
              jk=jk+nel
 
+! Build the reference Slater matrix and derivative buffers.
              call dcopy(nel,orb(1+ish,jorb,k),1,slmi(1+jk,iab,k),1)
              call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,fp(1,j,iab,k),nel*3)
              call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,fp(2,j,iab,k),nel*3)
              call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,fp(3,j,iab,k),nel*3)
-             call dcopy(nel,ddorb (jorb,1+ish,k),norb_tot,fpp (j,iab,k),nel)
+             call dcopy(nel,ddorb(jorb,1+ish,k),norb_tot,fpp(j,iab,k),nel)
            enddo
 
-! calculate the inverse transpose matrix and its determinant
+! Invert the reference Slater matrix in place and save its determinant.
+! After matinv, slmi holds the inverse matrix for this spin/orbital set.
            if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
 
-! loop through up/down-spin electrons
-! take inner product of transpose inverse with derivative vectors
-! to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
+! Contract the inverse matrix with the orbital derivative buffers to get
+! grad(det)/det and laplacian(det)/det for each electron.
            ik=-nel
            do i=1,nel
              ik=ik+nel
              ddx(1,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(1,1+ik,iab,k),3)
              ddx(2,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(2,1+ik,iab,k),3)
              ddx(3,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(3,1+ik,iab,k),3)
-             d2dx2(i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fpp( 1+ik,iab,k),1)
+             d2dx2(i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fpp(1+ik,iab,k),1)
            enddo
 
            if(ipr.ge.4) then
@@ -104,15 +106,15 @@ contains
         enddo
       endif
 
-! for dmc must be implemented: for each iw, must save not only kref,kref_old but also cdet etc.
+! DMC would need per-walker determinant kref before allowing kref changes.
       if(index(mode,'dmc').eq.0 .and. kref_fixed.eq.0) then ! allow if kref is allowed to vary
          icheck=icheck+1
-         if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.10) then
-            call check_detref(ipass,icheck,newref)
-            if(newref.gt.0) goto 10
+         if(ndet.gt.1.and.kref.lt.ndet.and.icheck.le.max_ref_checks) then
+            call check_detref(ipass,icheck,spin_to_change)
+            if(spin_to_change.gt.0) goto 10
 
-! reshuffling determinants just if the new kref was accepted
-            if(newref.eq.0 .and. kchange.gt.0) then
+! Reshuffle determinants only if the new kref was accepted.
+            if(spin_to_change.eq.0 .and. kchange.gt.0) then
                call multideterminants_define(kchange)
                if (ioptorb.ne.0) then
                   norb=norb+nadorb
@@ -123,8 +125,8 @@ contains
 
          endif
 
-! reshuffling determinants if the maximum number of iterations looking for kref was exhausted
-         if (kchange.eq.10) then
+! Reshuffle determinants if the maximum number of reference checks was exhausted.
+         if (kchange.eq.max_ref_checks) then
             call multideterminants_define(kchange)
             if (ioptorb.ne.0) then
                norb=norb+nadorb
@@ -136,28 +138,26 @@ contains
 
       endif
 
-      return
-      end
+      end subroutine determinant
 !-----------------------------------------------------------------------
-      subroutine check_detref(ipass,icheck,iflag)
+      subroutine check_detref(ipass,icheck,spin_to_change)
 
       use control, only: ipr
       use error, only: fatal_error
       use estpsi, only: detref
       use contrl_file, only: ounit
-      use mpiconf, only: idtask
-      use multidet, only: k_aux,kchange,kref_fixed,kref_old,ndetiab
+      use multidet, only: k_aux,kchange,kref_old,ndetiab
       use multideterminant_mod, only: idiff
-      use multislater, only: detiab, allocate_multislater
       use multislater, only: allocate_multislater,detiab
       use precision_kinds, only: dp
-      use slater,  only: kref,ndet
+      use slater,  only: kref
       implicit none
 
-      integer :: iab, icheck, iflag, ipass
+      real(dp), parameter :: detref_log10_threshold = 6.d0
+      integer :: iab, icheck, ipass, spin_to_change
       real(dp) :: dcheck, dlogdet
 
-      iflag=0
+      spin_to_change=0
 
       if(ipass.le.2) return
 
@@ -166,68 +166,56 @@ contains
       do iab=1,2
         dlogdet=dlog10(dabs(detiab(kref,iab,1)))
         dcheck=detref(iab,1)/ipass-dlogdet
-        if(iab.eq.1.and.dcheck.gt.6) iflag=1
-        if(iab.eq.2.and.dcheck.gt.6) iflag=2
+        if(iab.eq.1.and.dcheck.gt.detref_log10_threshold) spin_to_change=1
+        if(iab.eq.2.and.dcheck.gt.detref_log10_threshold) spin_to_change=2
         if(ipr.ge.2) write(ounit,*) 'check',dlogdet,detref(iab,1)/ipass
       enddo
 
-      if(ipr.ge.2) write(ounit,*) 'check detref',iflag
+      if(ipr.ge.2) write(ounit,*) 'check detref',spin_to_change
 
 ! to change kref if required
-      if(iflag.gt.0) then
+      if(spin_to_change.gt.0) then
 
          if (kref .gt. 1 .and. icheck .eq. 1) then
             kref = 1
          endif
 
-         if (idiff(kref_old, kref, iflag) .eq. 0) then
-            if (icheck .gt. ndetiab(iflag)) &
+         if (idiff(kref_old, kref, spin_to_change) .eq. 0) then
+            if (icheck .gt. ndetiab(spin_to_change)) &
                 call fatal_error('MULTIDET_DEFINE: kref > ndet')
-            kref=k_aux(icheck,iflag)
+            kref=k_aux(icheck,spin_to_change)
          endif
 
          kref_old = kref
          kchange = kchange + 1
       endif
 
-      return
-      end
+      end subroutine check_detref
 !-----------------------------------------------------------------------
       subroutine compute_bmatrices_kin
 
-      use system, only: ncent, nelec
-      use Bloc,    only: bkin,b_da,b_dj
+      use Bloc, only: b_da, b_dj, bkin
       use constants, only: hb
       use da_jastrow, only: da_vj
       use da_orbval, only: da_d2orb,da_dorb
       use derivjas, only: g
-      use optwf_control, only: ioptjas
-      use optwf_parms, only: nparmj
-      use Bloc, only: b_da
-      use Bloc, only: b_dj
-      use slater, only: norb
-      use Bloc, only: b
       use m_force_analytic, only: iforce_analy
-      use velocity_jastrow, only: vj
-      use orbval, only: ddorb, dorb, nadorb
-      use precision_kinds, only: dp
+      use optwf_control, only: ioptjas
       use optwf_handle_wf, only: dcopy
       use optwf_parms, only: nparmj
       use orbval,  only: ddorb,dorb,nadorb
       use precision_kinds, only: dp
       use slater,  only: norb
       use sr_more, only: daxpy
-      use vmc_mod, only: stoo, stoj, stobjx, nbjx, nwftypeorb, nwftypejas, bjxtoo, bjxtoj
-      use contrl_file, only: ounit
+      use system, only: ncent, nelec
+      use velocity_jastrow, only: vj
+      use vmc_mod, only: bjxtoj, bjxtoo, nbjx
       implicit none
 
       integer :: i, ic, iorb, iparm, l, k, xo, xj
 
-      real(dp), parameter :: one = 1.d0
-      real(dp), parameter :: half = 0.5d0
 
-
-! resize ddor and dorb if necessary
+! resize ddorb and dorb if necessary
 ! call resize_matrix(ddorb, norb+nadorb, 2)
 ! call resize_matrix(b, norb+nadorb, 1)
 ! call resize_tensor(dorb, norb+nadorb, 3)
@@ -300,6 +288,5 @@ contains
 !    &          +da_vj(l,2,i,ic)*dorb(iorb,i,2)
 !    &          +da_vj(l,3,i,ic)*dorb(iorb,i,3))
 
-      return
-      end
-end module
+      end subroutine compute_bmatrices_kin
+end module determinant_mod

@@ -11,7 +11,6 @@ contains
       use acuest_mod, only: acuest
       use branch, only: eest
       use const, only: etrial
-      ! use averages, only: average,average_write,init_averages_index
       use constants, only: pi
       use contrl_file, only: ounit
       use contrldmc, only: idmc
@@ -72,9 +71,7 @@ contains
       call elapsed_time("DMC : Reading initial walker configuration : ")
 
 ! initialize sums and averages
-      ! call init_averages_index
       if(dmc_irstar.ne.1) call init
-      ! if(dmc_irstar.ne.1) call average(0)
 
 ! forces implemented only for certain dmc control options
       if(nforce.gt.1) write(ounit,'(''Possible Warning: force implemented for certain dmc control options'')')
@@ -89,7 +86,6 @@ contains
           call elapsed_time("DMC : equilibrium CP : ")
 
           call zerest
-          ! call average(0)
           call elapsed_time("DMC : zero out estimators and averages : ")
         endif
         do j=1,dmc_nstep
@@ -113,8 +109,6 @@ contains
           call mc_configs_write(i,ipass)
           call acues1
         enddo
-        ! call average(2)
-        ! call average_write
         call acuest
       enddo
 

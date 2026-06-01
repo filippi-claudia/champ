@@ -1,30 +1,28 @@
 module detsav_mod
 contains
-      subroutine detsav(iel,iflag)
+      subroutine detsav(iel)
 ! Written by Claudia Filippi
 
       use csfs, only: nstates
-      use dorb_m, only: iworbd
       use multidet, only: ivirt, ndetiab, numrep_det, ndetsingle, ndetdouble
       use multimat, only: aa, wfmat
       use multimatn, only: aan, wfmatn
       use multislater, only: detiab
       use multislatern, only: detn, dorbn, orbn
       use orbval, only: dorb, orb
-      use precision_kinds, only: dp
-      use slater, only: fp, slmi
-      use slater, only: kref, ndet, norb
+      use slater, only: slmi
+      use slater, only: ndet, norb
       use slatn, only: slmin
-      use system, only: ndn, nup, nelec
+      use system, only: ndn, nup
       use ycompact, only: ymat
       use ycompactn, only: ymatn
       use vmc_mod, only: stoo
 
       implicit none
 
-      integer :: i, iab, iel, iflag, ikel
+      integer :: i, iab, iel
       integer :: iorb, ish, istate, j
-      integer :: k, kk, ndim, nel, ndim2, kcum
+      integer :: k, ndim, nel, ndim2, kcum
 
       if(iel.le.nup) then
          iab=1
@@ -36,7 +34,6 @@ contains
          ish=nup
       endif
 
-      ikel=nel*(iel-ish-1)
       do istate=1,nstates
         do j=1,nel*nel
           slmi(j,iab,stoo(istate))=slmin(j,stoo(istate))
@@ -73,11 +70,6 @@ contains
            enddo
         endif
 
-        do j=1,nel
-          fp(1,j+ikel,iab,stoo(istate))=dorbn(iworbd(j+ish,kref),1,stoo(istate))
-          fp(2,j+ikel,iab,stoo(istate))=dorbn(iworbd(j+ish,kref),2,stoo(istate))
-          fp(3,j+ikel,iab,stoo(istate))=dorbn(iworbd(j+ish,kref),3,stoo(istate))
-        enddo
         do k=1,ndet
           detiab(k,iab,stoo(istate))=detn(k,stoo(istate))
         enddo

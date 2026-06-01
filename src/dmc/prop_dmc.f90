@@ -67,7 +67,7 @@ contains
           rtevalg_eff1=dsqrt(evalg_eff-1)
           if(i.le.6) then
               write(ounit,'(''property '',a3,t17,f12.7,'' +-'' &
-             ,f11.7,f9.5)') pnames(i),pav(i),perr(i),perr(i)*rtevalg_eff1
+             &,f11.7,f9.5)') pnames(i),pav(i),perr(i),perr(i)*rtevalg_eff1
            elseif(i.le.(6+ngvec-1)) then
              call gnormf(3,gvec(1,i-5), norm_aux)
               write(ounit,'(''s(k)     '',t17,f12.7,f12.7,'' +-'' &
@@ -76,11 +76,11 @@ contains
            elseif(i.le.(6+2*(ngvec-1))) then
              call gnormf(3,gvec(1,i-5-ngvec+1), norm_aux)
               write(ounit,'(''cos(kr)  '',t17,f12.7,f12.7,'' +-'' &
-              ,f12.7,f12.7)') norm_aux,pav(i),perr(i),perr(i)*rtevalg_eff1
+              &,f12.7,f12.7)') norm_aux,pav(i),perr(i),perr(i)*rtevalg_eff1
            else
              call gnormf(3,gvec(1,i-5-2*(ngvec-1)), norm_aux)
               write(ounit,'(''sin(kr)  '',t17,f12.7,f12.7,'' +-'' &
-              ,f12.7,f12.7)') norm_aux,pav(i),perr(i),perr(i)*rtevalg_eff1
+              &,f12.7,f12.7)') norm_aux,pav(i),perr(i),perr(i)*rtevalg_eff1
           endif
         endif
       enddo

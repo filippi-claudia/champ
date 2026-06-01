@@ -1,7 +1,7 @@
 module optwf_control
     !> Arguments: ioptci, ioptjas, ioptorb, idl_flag, ilbfgs_flag, ilbfgs_m, nparm,
     !>            nopt_iter, micro_iter_sr, energy_tol,
-    !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j,
+    !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav, ibeta,
     !>            iapprox, ncore, iuse_orbeigv, no_active, multiple_adiag, iroot_geo,
     !>            ilastvmc, sr_tau, sr_adig, sr_adiag, sr_eps, orbitals_ortho
 
@@ -26,7 +26,6 @@ module optwf_control
     real(dp) :: alin_eps
     integer :: lin_jdav
     integer :: ibeta
-    integer :: ratio_j
     integer :: iapprox
     integer :: ncore
     integer :: iuse_orbeigv
@@ -47,7 +46,7 @@ module optwf_control
     public :: ioptci, ioptjas, ioptorb, nparm
     public :: nopt_iter, micro_iter_sr, energy_tol, dparm_norm_min
     public :: nvec, nvecx, alin_adiag, alin_eps, lin_jdav
-    public :: ibeta, ratio_j
+    public :: ibeta
     public :: iapprox, ncore, iuse_orbeigv, no_active
     public :: multiple_adiag
     public :: iroot_geo
