@@ -814,8 +814,14 @@ contains
 
       175  nparm=nparmj+nciterm+nreduced-i0
 
-       write(ounit,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)') &
-       nparm,nparmj,nciterm,nreduced
+       write(ounit,'(/,1x,a)')            'Number of parameters'
+       write(ounit,'(1x,a)')              '------------------------------'
+       write(ounit,'(3x,a,t18,a,i11)')    'Jastrow',  ':', nparmj
+       write(ounit,'(3x,a,t18,a,i11)')    'CI',       ':', nciterm
+       write(ounit,'(3x,a,t18,a,i11)')    'Orbitals', ':', nreduced
+       write(ounit,'(1x,a)')              '------------------------------'
+       write(ounit,'(3x,a,t18,a,i11)')    'Total',    ':', nparm
+       write(ounit,'(1x,a)')              '------------------------------'
 
 !      do 180 i=1,nparm+1
 ! 180    write(ounit,'(''h= '',1000d12.5)') (h(i,j),j=1,nparm+1)

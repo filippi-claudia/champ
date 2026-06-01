@@ -813,6 +813,8 @@ contains
       integer :: iprint, io, iocc, iterm
       integer :: j, jo, k, n0
       integer :: n1, noporb
+      integer :: ip, iq, iorun, ispin, jstart, nstart
+      character(len=12) :: cvar, corb
       integer, dimension(2, ndet) :: iodet
       integer, dimension(2, ndet) :: iopos
       integer, dimension(2, norb_tot) :: iflag
@@ -989,7 +991,6 @@ contains
             endif
           enddo
         enddo
-        if(iprint.eq.0) write(ounit,'(a16,i4,a8,i4,i5,a15,i4)') 'new variation: ',noporb,' pair ',io,jo,' spin ',ideriv_iab(noporb)
 
       50  continue
        enddo
@@ -997,6 +998,39 @@ contains
       enddo
 
       norbterm=noporb
+
+! Print the orbital pair list compactly: consecutive variations that share the
+! same orbital and spin with contiguous targets are collapsed into one range.
+! The variation index and target are built as strings and right-justified in a
+! fixed width so every column stays aligned regardless of single/range entries.
+      if(iprint.eq.0) then
+        ip=1
+        do while(ip.le.norbterm)
+          iorun=ideriv(1,ip)
+          ispin=ideriv_iab(ip)
+          jstart=ideriv(2,ip)
+          nstart=ip
+          iq=ip
+          do while(iq.lt.norbterm)
+            if(ideriv(1,iq+1).ne.iorun) exit
+            if(ideriv_iab(iq+1).ne.ispin) exit
+            if(ideriv(2,iq+1).ne.ideriv(2,iq)+1) exit
+            iq=iq+1
+          enddo
+          if(iq.eq.ip) then
+            write(cvar,'(i0)')      nstart
+            write(corb,'(i0)')      jstart
+          else
+            write(cvar,'(i0,a,i0)') nstart, '-', iq
+            write(corb,'(i0,a,i0)') jstart, '-', ideriv(2,iq)
+          endif
+          write(ounit,'(1x,a,1x,a20,a,i4,a,a12,a,i3)') &
+            'new variation', adjustr(cvar), ' :  orbital', iorun, &
+            '  ->', adjustr(corb), '   spin', ispin
+          ip=iq+1
+        enddo
+      endif
+
       write(ounit,'(''number of orbital variations: '',2i8)') norbterm
 
 ! if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
