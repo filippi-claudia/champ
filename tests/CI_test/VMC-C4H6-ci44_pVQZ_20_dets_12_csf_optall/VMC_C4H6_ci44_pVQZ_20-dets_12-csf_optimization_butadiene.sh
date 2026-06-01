@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "VMC butadiene ci44 pVQZ all optimizations "
 
 input="vmc_optall_ci44.inp"

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "H2 energy with corsamp method"
 
 input="revised_vmc_corsamp.inp"

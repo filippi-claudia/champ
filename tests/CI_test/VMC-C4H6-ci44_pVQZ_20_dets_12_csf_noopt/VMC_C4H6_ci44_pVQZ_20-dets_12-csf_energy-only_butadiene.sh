@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "VMC butadiene ci44 pVQZ energy only"
 
 input="vmc_noopt_ci44.inp"

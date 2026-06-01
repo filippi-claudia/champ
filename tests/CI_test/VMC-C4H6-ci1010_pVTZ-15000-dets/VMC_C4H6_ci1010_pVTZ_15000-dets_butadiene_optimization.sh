@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "VMC butadiene ci1010 pVTZ 15000 determinants"
 
 input="vmc_optimization_15000.inp"

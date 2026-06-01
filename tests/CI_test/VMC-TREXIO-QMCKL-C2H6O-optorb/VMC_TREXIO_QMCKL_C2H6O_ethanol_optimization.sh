@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "QMCKL + TREXIO VMC ethanol orbital optimization "
 
 input="vmc_ethanol_opt.inp"
