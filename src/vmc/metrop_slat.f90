@@ -287,8 +287,9 @@ contains
         rminn(i)=99.d9
         do 85 j=1,ncent
           dist=zero
-          do 84 ic=1,3
-   84       dist=dist+(xnew(ic,i)-cent(ic,j))**2
+          do ic=1,3
+            dist=dist+(xnew(ic,i)-cent(ic,j))**2
+          enddo
           if(dist.lt.rminn(i)) then
             rminn(i)=dist
             nearestn(i)=j
@@ -299,11 +300,12 @@ contains
 
         rminon(i)=zero
         dot=zero
-        do 86  ic=1,3
+        do ic=1,3
           rvminn(ic,i)=xnew(ic,i)-cent(ic,nearestn(i))
           rvminon(ic,i)=xold(ic,i)-cent(ic,nearestn(i))
           rminon(i)=rminon(i)+rvminon(ic,i)**2
-   86     dot=dot+rvminn(ic,i)*rvminon(ic,i)
+          dot=dot+rvminn(ic,i)*rvminon(ic,i)
+        enddo
         rminon(i)=dsqrt(rminon(i))
         dot=dot/(rminn(i)*rminon(i))
         costht(i)=dot
