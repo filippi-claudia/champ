@@ -118,7 +118,7 @@ contains
          
 ! loop inequivalent determinants
 !
-! determinants with single exitations
+! Determinants with single excitations.
           if(ndetsingle(iab).ge.1)then
             do k=1,ndetsingle(iab)
               iorb=irepcol_det(1,k,iab)
@@ -131,7 +131,7 @@ contains
 
           kcum=ndetsingle(iab)+ndetdouble(iab)
          
-! determinants double exitations
+! Determinants with double excitations.
           if(ndetdouble(iab).ge.1)then
             do k=ndetsingle(iab)+1,kcum
            
@@ -192,7 +192,7 @@ contains
           endif
 
           if(kcum.lt.ndetiab(iab))then
-! determinants multiple exitations
+! Determinants with multiple excitations.
             do k=kcum+1,ndetiab(iab)
            
               ndim=numrep_det(k,iab)
@@ -273,7 +273,7 @@ contains
 
       integer :: i, iab, iorb, irep, istate
       integer :: j, jorb, jrep, k, kun, kw
-      integer :: kk, ndim, ndim2, kcum, iwf_save
+      integer :: kk, ndim, ndim2, kcum, kcdet
       real(dp) :: detall, detrefi
       real(dp), dimension(ndet) :: detu
       real(dp), dimension(ndet) :: detd
@@ -292,19 +292,19 @@ contains
       cdet_equiv=0.0d0
       dcdet_equiv=0.0d0
 
-      iwf_save=iwf
-      if(nwftypeorb.gt.1) iwf=1
+      kcdet=iwf
+      if(nwftypeorb.gt.1) kcdet=1
 
-! unroling determinants different to kref
+! Unroll determinants different from kref.
       do kk=1,ndetiab2(iab)
          k=k_det2(kk,iab)
          kw=k_aux2(kk,iab)
-         detall=detrefi*detu(k)*detd(k)*cdet(k,istate,iwf)
+         detall=detrefi*detu(k)*detd(k)*cdet(k,istate,kcdet)
          cdet_equiv(kw)=cdet_equiv(kw)+detall
          dcdet_equiv(kw)=dcdet_equiv(kw)+detall*(denergy_det(k,1,stobjx(istate))+denergy_det(k,2,stobjx(istate))) 
       enddo
 
-! loop over single exitations
+! Loop over single excitations.
       if(ndetsingle(iab).ge.1)then
          do kk=1,ndetsingle(iab)
             iorb=irepcol_det(1,kk,iab)
@@ -366,13 +366,10 @@ contains
       use vmc_mod, only: norb_tot, MEXCIT, stoo, stobjx
       use system, only: nelec
       use multidet, only: irepcol_det, ireporb_det, numrep_det, ndetiab, ndetsingle, ndetdouble
-      use slater, only: iwundet, kref, norb, ndet, cdet_equiv, dcdet_equiv
+      use slater, only: cdet_equiv, dcdet_equiv
       use Bloc, only: tildem
       use multimat, only: wfmat
       use precision_kinds, only: dp
-      use slater,  only: cdet_equiv,dcdet_equiv,iwundet,kref,ndet,norb
-      use system,  only: nelec
-      use vmc_mod, only: MEXCIT,norb_tot
 
 
       implicit none
@@ -388,7 +385,7 @@ contains
       dymat=0.0d0
       o=stoo(istate)
       x=stobjx(istate)
-! loop over single exitations      
+! Loop over single excitations.
       if(ndetsingle(iab).ge.1) then
          do kk=1,ndetsingle(iab)
             iorb=ireporb_det(1,kk,iab)
@@ -499,9 +496,6 @@ contains
       use system, only: nelec, ndn, nup
 
       use precision_kinds, only: dp
-      use slater,  only: norb,slmi
-      use system,  only: ndn,nelec,nup
-      use vmc_mod, only: norb_tot
 
       implicit none
 

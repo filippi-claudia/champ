@@ -460,9 +460,7 @@
       ri=1.d0/r
       ri2=ri*ri
 
-! can use iwf and loop over nwftypejas, since iwf is passed, this
-! will only be called with 1 jas I believe, using iwf's original
-! purpose
+! iwf is the active Jastrow/geometry index selected by the caller.
 
       do k=1,3
         da_j(k,i,i,ic)=da_j(k,i,i,ic)-rvec_en(k)*ri*feni*dd1

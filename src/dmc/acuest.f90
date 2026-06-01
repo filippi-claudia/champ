@@ -293,13 +293,13 @@ contains
         if (iblk.eq.1.and.ifr.eq.1) then
           if(nforce.gt.1) then
             write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32 &
-              ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66 &
-              ,''fgave'',t79,''(fgerr)'',t93,''npass'',t102,''wgsum'',t112   &
-              ,''ioldest'')')
+              &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66 &
+              &,''fgave'',t79,''(fgerr)'',t93,''npass'',t102,''wgsum'',t112   &
+              &,''ioldest'')')
           else
             write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32&
-              ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t67&
-              ,''npass'',t77,''wgsum'',t85,''ioldest'')')
+              &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t67&
+              &,''npass'',t77,''wgsum'',t85,''ioldest'')')
           endif
         endif
 

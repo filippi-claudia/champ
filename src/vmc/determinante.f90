@@ -10,7 +10,6 @@ contains
       use slater, only: slmi, kref
       use slatn, only: slmin
       use system, only: ndn, nup, nelec, ncent_tot
-      use contrl_file, only: ounit
       use vmc_mod, only: nwftypeorb
       implicit none
 
@@ -68,7 +67,7 @@ contains
 !-----------------------------------------------------------------------
       subroutine compute_determinante_grad(iel,psi2g,psid,psij,vd,iflag_move)
 
-      use csfs,    only: nstates
+      use csfs, only: anormo,nstates
       use mstates3, only: iweight_g,weights_g
       use mstates_ctrl, only: iguiding
       use multideterminant_mod, only: compute_ymat
@@ -79,26 +78,13 @@ contains
       use multislatern, only: detn,dorbn
       use orbval,  only: dorb
       use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot, nwftypeorb, stoo, stoj
-      use csfs, only: nstates, anormo
-      use system, only: nup, nelec
+      use slater, only: kref,norb,slmi
       use slatn, only: slmin
+      use system, only: nup, nelec
+      use velocity_jastrow, only: vj,vjn
+      use vmc_mod, only: norb_tot,nwftypeorb,stoj,stoo
       use ycompact, only: ymat
       use ycompactn, only: ymatn
-      use slater, only: norb
-      use multimat, only: aa, wfmat
-      use multimatn, only: aan
-      use velocity_jastrow, only: vj, vjn
-      use mstates_ctrl, only: iguiding
-      use mstates3, only: iweight_g, weights_g
-      use multislatern, only: detn, dorbn
-      use contrl_file, only: ounit
-
-      use orbval, only: dorb
-      use slater, only: slmi, kref
-      use multislater, only: detiab
-      use multideterminante_mod, only: multideterminante_grad
-      use multideterminant_mod, only: compute_ymat
 
       implicit none
 
@@ -112,17 +98,14 @@ contains
       real(dp), dimension(3, nstates) :: vd_s
       real(dp), dimension(norb, 3, nstates) :: dorb_tmp
 
-! NR : ymat_tmp was not saved ....
-! it has the save keywoprd in the dev branch ...
+! ymat_tmp must persist between calls in the iflag_move=3 path.
 ! real(dp), dimension(norb_tot, nelec) :: ymat_tmp
 
       real(dp), allocatable, save :: ymat_tmp(:,:,:)
       if (.not. allocated(ymat_tmp)) then
-        ! CF : ymat_tmp(norb_tot,nelec) max value of # orb
+        ! ymat_tmp(norb_tot,nelec) max value of # orb
         allocate(ymat_tmp(norb_tot,nelec,nwftypeorb))
       endif
-
-! save ymat_tmp
 
       if(iel.le.nup) then
         iab=1
@@ -131,9 +114,8 @@ contains
       endif
 
       psi2gi=1.d0/psi2g
-      if(iguiding.gt.0) isjas1=stoj(iweight_g(1))
 
-! All quantities saved (old) avaliable
+! All old quantities are available.
       if(iflag_move.eq.1) then
 
         do istate=1,nstates
@@ -156,9 +138,8 @@ contains
             vd(kk)=vd(kk)+vref(kk,1)+vj(kk,iel,1)
           enddo
         else
-          do kk=1,3
-            vd(kk)=0.d0
-          enddo
+          isjas1=stoj(iweight_g(1))
+          vd=0.d0
           do i=1,nstates 
 
             istate=iweight_g(i)
@@ -177,9 +158,7 @@ contains
 
             enddo
           enddo
-          vd(1)=vd(1)*psi2gi
-          vd(2)=vd(2)*psi2gi
-          vd(3)=vd(3)*psi2gi
+          vd=vd*psi2gi
         endif
 
 ! Within single-electron move - quantities of electron iel not saved
@@ -204,9 +183,8 @@ contains
 
          else
 
-          do kk=1,3
-            vd(kk)=0.d0
-          enddo
+          isjas1=stoj(iweight_g(1))
+          vd=0.d0
 
           do i=1,nstates
             istate=iweight_g(i)
@@ -229,9 +207,7 @@ contains
 
             enddo
           enddo
-          vd(1)=vd(1)*psi2gi
-          vd(2)=vd(2)*psi2gi
-          vd(3)=vd(3)*psi2gi
+          vd=vd*psi2gi
         endif
 
       else
@@ -274,9 +250,7 @@ contains
                     detratio,slmi(1,iab,1),aa(1,1,iab,1),ymat_tmp,vd)
         endif
 
-        vd(1)=vjn(1,iel,1)+vd(1)+vref(1,1)
-        vd(2)=vjn(2,iel,1)+vd(2)+vref(2,1)
-        vd(3)=vjn(3,iel,1)+vd(3)+vref(3,1)
+        vd=vjn(1:3,iel,1)+vd+vref(1:3,1)
       endif
 
       return
@@ -286,11 +260,9 @@ contains
 
       use dorb_m,  only: iworbd
       use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim
       use system, only: ndn, nup
       use slater, only: kref
-      use dorb_m, only: iworbd
 
       implicit none
 

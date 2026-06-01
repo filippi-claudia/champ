@@ -137,6 +137,7 @@ contains
 
         if (ifunc_omega .gt. 0) then
             if (n_omegaf + n_omegat .gt. nopt_iter) call fatal_error('SR_OPTWF: n_omegaf+n_omegat > nopt_iter')
+            if (n_omegaf .lt. nopt_iter .and. n_omegat .le. 0) call fatal_error('SR_OPTWF: n_omegat must be positive')
             omega = omega0
             write (ounit, '(/,''SR ifunc_omega: '',i3)') ifunc_omega
             write (ounit, '(''SR omega: '',f10.5)') omega

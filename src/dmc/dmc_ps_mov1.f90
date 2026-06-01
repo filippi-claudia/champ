@@ -5,7 +5,6 @@
 
       use age,     only: iage,ioldest,ioldestmx
       use assignment_mod, only: assign_elecs
-      use averages, only: average
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
       use branching, only: calculate_fratio, calculate_reweight
@@ -233,7 +232,7 @@
               psido_dmc(iw,1)=psidn(1)
               psijo_dmc(iw,1)=psijn(1)
               call jassav(i,0)
-              call detsav(i,0)
+              call detsav(i)
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
               if (use_qmckl_jastrow) then
                 rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
@@ -251,7 +250,7 @@
                     psido_dmc(iw,1)=psidn(1)
                     psijo_dmc(iw,1)=psijn(1)
                     call jassav(i,0)
-                    call detsav(i,0)
+                    call detsav(i)
 
                     imove_up = imove_up - 1
                     imove_dn = imove_dn - 1
@@ -431,7 +430,7 @@
             psido_dmc(iw,1)=psidn(1)
             psijo_dmc(iw,1)=psijn(1)
             call jassav(i,0)
-            call detsav(i,0)
+            call detsav(i)
 
            else
             if(ipq.le.0) p=zero
@@ -725,7 +724,7 @@
             psido_dmc(iw,1)=psidn(1)
             psijo_dmc(iw,1)=psijn(1)
             call jassav(iel,0)
-            call detsav(iel,0)
+            call detsav(iel)
 
             if(iel.le.nup) call update_ymat(nup)
             if(iel.gt.nup) call update_ymat(nelec)
@@ -755,7 +754,7 @@
                   psido_dmc(iw,1)=psidn(1)
                   psijo_dmc(iw,1)=psijn(1)
                   call jassav(iel,0)
-                  call detsav(iel,0)
+                  call detsav(iel)
 
                   if(iel.le.nup) call update_ymat(nup)
                   if(iel.gt.nup) call update_ymat(nelec)
@@ -793,7 +792,6 @@
              endif
           endif 
         endif
-      ! call average(1)
       enddo
 
       if(ipr.gt.5.and.wsum1(1).gt.1.1d0*dmc_nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,fprod/ff(ipmod2),wsum1(1),wgdsumo

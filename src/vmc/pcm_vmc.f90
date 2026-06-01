@@ -162,16 +162,13 @@ contains
       subroutine pcm_save
 
       use pcm_cntrl, only: ipcm
-      use pcm_hpsi, only: enfpcm,qopcm
+      use pcm_hpsi, only: enfpcm,pcms,pcmv,qopcm
       use pcm_parms, only: nchs
       use pcmo,    only: enfpcmo,qopcmo,spcmo,vpcmo
-      use precision_kinds, only: dp
 
       implicit none
 
       integer :: i
-      real(dp) :: pcms, pcmv
-
 
       if(ipcm.eq.0) return
       spcmo=pcms
@@ -188,7 +185,7 @@ contains
       subroutine pcm_sum(p,q)
       use pcm_averages, only: enfpcm_sum,qopcm_sum,spcmsum,vpcmsum
       use pcm_cntrl, only: ipcm
-      use pcm_hpsi, only: enfpcm,qopcm
+      use pcm_hpsi, only: enfpcm,pcms,pcmv,qopcm
       use pcm_parms, only: nchs
       use pcmo,    only: enfpcmo,qopcmo,spcmo,vpcmo
       use precision_kinds, only: dp
@@ -196,7 +193,7 @@ contains
       implicit none
 
       integer :: i
-      real(dp) :: p, pcms = 0, pcmv = 0, q
+      real(dp) :: p, q
 
 
       if(ipcm.eq.0) return

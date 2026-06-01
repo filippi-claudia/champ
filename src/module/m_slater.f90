@@ -1,5 +1,5 @@
 module slater
-    !> Arguments: d2dx2, ddx, fp, fpp, slmi
+    !> Arguments: d2dx2, ddx, slmi
 
       use precision_kinds, only: dp
       use vmc_mod, only: nmat_dim
@@ -8,8 +8,6 @@ module slater
 
     real(dp), dimension(:, :), allocatable :: d2dx2 !(MELEC, nwftypeorb)
     real(dp), dimension(:, :, :), allocatable :: ddx !(3,MELEC, nwftypeorb)
-    real(dp), dimension(:, :, :, :), allocatable :: fp !(3,nmat_dim,2, nwftypeorb)
-    real(dp), dimension(:, :, :), allocatable :: fpp !(nmat_dim,2, nwftypeorb)
     real(dp), dimension(:, :, :), allocatable :: slmi !(nmat_dim,2, nwftypeorb)
     !> DMC extra variables:
     real(dp), dimension(:,:), allocatable :: fpd !(3,nmat_dim)
@@ -37,8 +35,6 @@ contains
 
         if (.not. allocated(d2dx2)) allocate(d2dx2(nelec, nwftypeorb))
         if (.not. allocated(ddx)) allocate(ddx(3, nelec, nwftypeorb))
-        if (.not. allocated(fp)) allocate(fp(3, nmat_dim, 2, nwftypeorb))
-        if (.not. allocated(fpp)) allocate(fpp(nmat_dim, 2, nwftypeorb))
         if (.not. allocated(slmi)) allocate(slmi(nmat_dim, 2, nwftypeorb))
         if (.not. allocated(fpd))  allocate(fpd(3,nmat_dim))
         if (.not. allocated(fppd)) allocate(fppd(nmat_dim))
@@ -54,8 +50,6 @@ contains
 
     subroutine deallocate_slater()
         if (allocated(slmi)) deallocate(slmi)
-        if (allocated(fpp)) deallocate(fpp)
-        if (allocated(fp)) deallocate(fp)
         if (allocated(ddx)) deallocate(ddx)
         if (allocated(d2dx2)) deallocate(d2dx2)
         if (allocated(fpd))  deallocate(fpd)

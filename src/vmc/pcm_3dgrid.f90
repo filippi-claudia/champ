@@ -358,15 +358,16 @@ contains
       subroutine pcm_3dgrid_dump(iu)
 
       use pcm_cntrl, only: ipcm
+      use pcm_grid3d_contrl, only: ipcm_3dgrid
       use pcm_grid3d_array, only: pcm_cart_from_int
       use pcm_grid3d_param, only: ipcm_nstep3d,pcm_endpt,pcm_origin
       use pcm_grid3d_param, only: pcm_step3d
 
       implicit none
 
-      integer :: iu, i, j, ipcm_grid
+      integer :: iu, i, j
 
-      if (ipcm.eq.0.or.ipcm_grid.eq.0) return
+      if (ipcm.eq.0.or.ipcm_3dgrid.eq.0) return
 
       write (iu) (pcm_origin(i), i=1,3)
       write (iu) (pcm_endpt(i), i=1,3)
@@ -381,15 +382,16 @@ contains
       subroutine pcm_3dgrid_rstrt(iu)
 
       use pcm_cntrl, only: ipcm
+      use pcm_grid3d_contrl, only: ipcm_3dgrid
       use pcm_grid3d_array, only: pcm_cart_from_int
       use pcm_grid3d_param, only: ipcm_nstep3d,pcm_endpt,pcm_origin
       use pcm_grid3d_param, only: pcm_step3d
 
       implicit none
 
-      integer :: iu, i, j, ipcm_grid
+      integer :: iu, i, j
 
-      if (ipcm.eq.0.or.ipcm_grid.eq.0) return
+      if (ipcm.eq.0.or.ipcm_3dgrid.eq.0) return
 
       read (iu) (pcm_origin(i), i=1,3)
       read (iu) (pcm_endpt(i), i=1,3)

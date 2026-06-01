@@ -235,12 +235,12 @@ contains
       do i=6+ngvec,6+2*(ngvec-1)
         call gnormf(3,gvec(1,i-5-ngvec+1), norm_aux)
         write(iu,'(''cos(kr)  '',t17,f12.7,f12.7,'' +-'' &
-        ,f12.7)') norm_aux,pav(i),perr(i)
+        &,f12.7)') norm_aux,pav(i),perr(i)
       enddo
       do i=6+2*(ngvec-1)+1,nprop
         call gnormf(3,gvec(1,i-5-2*(ngvec-1)), norm_aux)
         write(iu,'(''sin(kr)  '',t17,f12.7,f12.7,'' +-'' &
-        ,f12.7)') norm_aux,pav(i),perr(i)
+        &,f12.7)') norm_aux,pav(i),perr(i)
       enddo
 
       10 format('-------- property operator averages  ----------')

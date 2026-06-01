@@ -1,17 +1,13 @@
 module orbitals_mod
       interface !LAPACK interface
         SUBROUTINE dgemm(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)
-! *  -- Reference BLAS level3 routine --
-! *  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-! *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+      ! *  -- Reference BLAS level3 routine --
+      ! *  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+      ! *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
           DOUBLE PRECISION ALPHA,BETA
           INTEGER K,LDA,LDB,LDC,M,N
           CHARACTER TRANSA,TRANSB
           DOUBLE PRECISION A(LDA,*),B(LDB,*),C(LDC,*)
-        END SUBROUTINE
-        SUBROUTINE dcopy(N,DX,INCX,DY,INCY)
-          INTEGER INCX,INCY,N
-          DOUBLE PRECISION DX(*),DY(*)
         END SUBROUTINE
       end interface
 contains
@@ -26,11 +22,11 @@ contains
       use orbitals_no_qmckl_mod, only: orbitals_no_qmckl
       use orbval, only: ddorb, dorb, nadorb, orb
       use precision_kinds, only: dp
-      use slater, only: norb, coef
+      use slater, only: norb
       use system, only: ncent_tot, nelec
       use vmc_mod, only: nwftypeorb
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
       use orbitals_qmckl_periodic_mod, only: orbitals_qmckl_periodic
       use orbitals_qmckl_mod, only: orbitals_qmckl
@@ -44,7 +40,7 @@ contains
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       if (use_qmckl_orbitals) then
         if (iperiodic.eq.0) then
           call orbitals_qmckl(x,rvec_en,r_en)
@@ -54,30 +50,29 @@ contains
       else
 #endif
       call orbitals_no_qmckl(x,rvec_en,r_en)
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       end if ! use_qmckl_orbitals
 #endif
-      
+
       if(iforce_analy.eq.1) call da_orbitals
 
       if(ipr.ge.0) then
-         do j=1,nwftypeorb
+        do j=1,nwftypeorb
+          do iorb=1,norb+nadorb
+            write(ounit,'(''orb set,iorb,orb='',2i4,1000f15.11)') j,iorb,(orb(i,iorb,j),i=1,nelec)
+          enddo
+          do iorb=1,norb+nadorb
+            write(ounit,'(''orb set,iorb,d2orb='',2i4,1000f15.11)') j,iorb,(ddorb(iorb,i,j),i=1,nelec)
+          enddo
+          do k=1,3
             do iorb=1,norb+nadorb
-               write(ounit,'(''orb set,iorb,orb='',2i4,1000f15.11)') j,iorb,(orb(i,iorb,j),i=1,nelec)
+              write(ounit,'(''orb set,dir,iorb,dorb='',3i4,1000f12.8)') j,k,iorb,(dorb(iorb,i,k,j),i=1,nelec)
             enddo
-            do iorb=1,norb+nadorb
-               write(ounit,'(''orb set,iorb,d2orb='',2i4,1000f15.11)') j,iorb,(ddorb(iorb,i,j),i=1,nelec)
-            enddo
-            do k=1,3
-               do iorb=1,norb+nadorb
-                  write(ounit,'(''orb set,dir,iorb,dorb='',3i4,1000f12.8)') j,k,iorb,(dorb(iorb,i,k,j),i=1,nelec)
-               enddo
-            enddo
-         enddo
+          enddo
+        enddo
       endif
 
-      return
-      end
+      end subroutine orbitals
 !------------------------------------------------------------------------------------
 
       subroutine da_orbitals
@@ -90,10 +85,7 @@ contains
       use coefs, only: nbasis
       use slater, only: norb, coef
       use precision_kinds, only: dp
-      use slater,  only: coef,norb
-      use system,  only: ncent,nelec
-      use contrl_file, only: ounit
-      use error,   only: fatal_error
+      use error, only: fatal_error
 
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
@@ -118,63 +110,59 @@ contains
       real(dp), dimension(:,:,:,:,:),allocatable :: da_dorb_two
       real(dp), dimension(:,:,:,:),allocatable :: da_d2orb_two
 
-      double precision, parameter :: alpha = 1.0d0, beta = 0.0d0
-      double precision :: identity(3,3)
-
       if (use_qmckl_orbitals) then
 
-      allocate (da_dorb_two(norb,3,  nelec, 3, ncent))
-      allocate (da_orb_two(norb,3,nelec,ncent))
-      allocate (da_d2orb_two(norb,nelec,3,ncent))
+        allocate(da_dorb_two(norb, 3, nelec, 3, ncent))
+        allocate(da_orb_two(norb, 3, nelec, ncent))
+        allocate(da_d2orb_two(norb, nelec, 3, ncent))
 
-      rc = qmckl_get_forces_mo_value_inplace(qmckl_ctx(1), da_orb_two, nelec*norb*3_8*ncent)
-      if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO values.')
+        rc = qmckl_get_forces_mo_value_inplace(qmckl_ctx(1), da_orb_two, nelec*norb*3_8*ncent)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO values.')
 
-      rc = qmckl_get_forces_mo_g_inplace(qmckl_ctx(1), da_dorb_two, 3*nelec*norb*3_8*ncent)
-      if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO gradients/')
+        rc = qmckl_get_forces_mo_g_inplace(qmckl_ctx(1), da_dorb_two, 3*nelec*norb*3_8*ncent)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO gradients/')
 
-      rc = qmckl_get_forces_mo_l(qmckl_ctx(1), da_d2orb_two, nelec*norb*3_8*ncent)
-      if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO laplacian.')
+        rc = qmckl_get_forces_mo_l(qmckl_ctx(1), da_d2orb_two, nelec*norb*3_8*ncent)
+        if (rc /= QMCKL_SUCCESS) call fatal_error('Error getting QMCKL forces of MO laplacian.')
 
-
-      do ic = 1, ncent
-            do k = 1,3
-                  do i = 1, nelec
-                        do j = 1, norb
-                              da_orb(k, i, j, ic) = da_orb_two(j, k, i, ic)
-                              da_d2orb(k, i, j, ic) = da_d2orb_two(j, i, k, ic)
-                        enddo
-                        do l = 1, 3
-                              do j = 1, norb
-                              da_dorb(k, l, i, j, ic) = da_dorb_two(j, l, i, k, ic)
-                              enddo
-                       enddo
-                  enddo
+        do ic = 1, ncent
+          do k = 1,3
+            do i = 1, nelec
+              do j = 1, norb
+                da_orb(k, i, j, ic) = da_orb_two(j, k, i, ic)
+                da_d2orb(k, i, j, ic) = da_d2orb_two(j, i, k, ic)
+              enddo
+              do l = 1, 3
+                do j = 1, norb
+                  da_dorb(k, l, i, j, ic) = da_dorb_two(j, l, i, k, ic)
+                enddo
+              enddo
             enddo
-      enddo
+          enddo
+        enddo
 
-      deallocate(da_orb_two,da_dorb_two,da_d2orb_two)
+        deallocate(da_orb_two, da_dorb_two, da_d2orb_two)
 
       else
 #endif
-     allocate(tphin(3*nelec, nbasis))
-     allocate(t2phin_all(9*nelec, nbasis))
-     allocate(t3phin(3*nelec, nbasis))
+      allocate(tphin(3*nelec, nbasis))
+      allocate(t2phin_all(9*nelec, nbasis))
+      allocate(t3phin(3*nelec, nbasis))
 
       do ibasis=1,nbasis
-       i=0
-       j=0
-       do ielec=1,nelec
-        do l=1,3
-         i=i+1
-         tphin(i,ibasis)=dphin(ibasis,ielec,l)
-         t3phin(i,ibasis)=d3phin(l,ibasis,ielec)
-         do k=1,3
-          j=j+1
-          t2phin_all(j,ibasis)=d2phin_all(k,l,ibasis,ielec)
-         enddo
+        i=0
+        j=0
+        do ielec=1,nelec
+          do l=1,3
+            i=i+1
+            tphin(i,ibasis)=dphin(ibasis,ielec,l)
+            t3phin(i,ibasis)=d3phin(l,ibasis,ielec)
+            do k=1,3
+              j=j+1
+              t2phin_all(j,ibasis)=d2phin_all(k,l,ibasis,ielec)
+            enddo
+          enddo
         enddo
-       enddo
       enddo
       n=3*nelec
       m=3*nelec
@@ -191,8 +179,7 @@ contains
       end if ! use_qmckl_orbitals
 #endif
 
-      return
-      end
+      end subroutine da_orbitals
 !------------------------------------------------------------------------------------
       subroutine orbitalse(iel,x,rvec_en,r_en,iflag)
 
@@ -201,7 +188,7 @@ contains
       use precision_kinds, only: dp
       use system, only: ncent_tot, nelec
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
       use orbitals_qmckl_periodic_mod, only: orbitalse_qmckl_periodic
       use orbitals_qmckl_mod, only: orbitalse_qmckl
@@ -215,7 +202,7 @@ contains
       real(dp), dimension(3,nelec,ncent_tot) :: rvec_en
       real(dp), dimension(nelec,ncent_tot) :: r_en
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       if (use_qmckl_orbitals) then
         if (iperiodic.eq.0) then
           call orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
@@ -229,7 +216,6 @@ contains
       end if ! use_qmckl_orbitals
 #endif
 
-      return
-      end
+      end subroutine orbitalse
 !------------------------------------------------------------------------------------
-end module
+end module orbitals_mod

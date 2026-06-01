@@ -20,10 +20,7 @@ contains
 ! Written by Claudia Filippi
       implicit none
 
-      integer :: i, ierr, irecv, irequest, isend
-      integer :: itag, iw, iw2, j
-      integer :: kk
-      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      integer :: i, iw
 
       if(.not.allocated(fsow)) allocate(fsow(nelec, nelec, MWALK))
       if(.not.allocated(fijow)) allocate(fijow(3, nelec, nelec, MWALK))
@@ -42,132 +39,76 @@ contains
 
       fsumow(iw)=fsumo(1)
 
-      do i=1,nelec
-        fjow(1,i,iw)=fjo(1,i,1)
-        fjow(2,i,iw)=fjo(2,i,1)
-        fjow(3,i,iw)=fjo(3,i,1)
-      enddo
+      fjow(1:3,1:nelec,iw)=fjo(1:3,1:nelec,1)
 
       do i=2,nelec
-        do j=1,i-1
-        fsow(i,j,iw)=fso(i,j,1)
-        fijow(1,i,j,iw)=fijo(1,i,j,1)
-        fijow(2,i,j,iw)=fijo(2,i,j,1)
-        fijow(3,i,j,iw)=fijo(3,i,j,1)
-        fijow(1,j,i,iw)=fijo(1,j,i,1)
-        fijow(2,j,i,iw)=fijo(2,j,i,1)
-        fijow(3,j,i,iw)=fijo(3,j,i,1)
-        enddo
+        fsow(i,1:i-1,iw)=fso(i,1:i-1,1)
+        fijow(1:3,i,1:i-1,iw)=fijo(1:3,i,1:i-1,1)
+        fijow(1:3,1:i-1,i,iw)=fijo(1:3,1:i-1,i,1)
       enddo
 
       do i=1,nelec
         fsow(i,i,iw)=fso(i,i,1)
-        fijow(1,i,i,iw)=fijo(1,i,i,1)
-        fijow(2,i,i,iw)=fijo(2,i,i,1)
-        fijow(3,i,i,iw)=fijo(3,i,i,1)
+        fijow(1:3,i,i,iw)=fijo(1:3,i,i,1)
       enddo
 
-      do i=1,nelec
-        do kk=1,3
-          vjw(kk,i,iw)=vj(kk,i,1)
-        enddo
-      enddo
+      vjw(1:3,1:nelec,iw)=vj(1:3,1:nelec,1)
 
-      end subroutine
+      end subroutine walksav_jas
 
       subroutine walkstrjas(iw)
       implicit none
 
-      integer :: i, ierr, irecv, irequest, isend
-      integer :: itag, iw, iw2, j
-      integer :: kk
-      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      integer :: i, iw
 
       fsumo(1)=fsumow(iw)
 
-      do i=1,nelec
-        fjo(1,i,1)=fjow(1,i,iw)
-        fjo(2,i,1)=fjow(2,i,iw)
-        fjo(3,i,1)=fjow(3,i,iw)
-      enddo
+      fjo(1:3,1:nelec,1)=fjow(1:3,1:nelec,iw)
 
       do i=2,nelec
-        do j=1,i-1
-        fso(i,j,1)=fsow(i,j,iw)
-        fijo(1,i,j,1)=fijow(1,i,j,iw)
-        fijo(2,i,j,1)=fijow(2,i,j,iw)
-        fijo(3,i,j,1)=fijow(3,i,j,iw)
-        fijo(1,j,i,1)=fijow(1,j,i,iw)
-        fijo(2,j,i,1)=fijow(2,j,i,iw)
-        fijo(3,j,i,1)=fijow(3,j,i,iw)
-        enddo
+        fso(i,1:i-1,1)=fsow(i,1:i-1,iw)
+        fijo(1:3,i,1:i-1,1)=fijow(1:3,i,1:i-1,iw)
+        fijo(1:3,1:i-1,i,1)=fijow(1:3,1:i-1,i,iw)
       enddo
 
       do i=1,nelec
         fso(i,i,1)=fsow(i,i,iw)
-        fijo(1,i,i,1)=fijow(1,i,i,iw)
-        fijo(2,i,i,1)=fijow(2,i,i,iw)
-        fijo(3,i,i,1)=fijow(3,i,i,iw)
+        fijo(1:3,i,i,1)=fijow(1:3,i,i,iw)
       enddo
 
-      do i=1,nelec
-        do kk=1,3
-          vj(kk,i,1)=vjw(kk,i,iw)
-        enddo
-      enddo
+      vj(1:3,1:nelec,1)=vjw(1:3,1:nelec,iw)
 
-      end subroutine
+      end subroutine walkstrjas
 
       subroutine splitjjas(iw,iw2)
       implicit none
 
-      integer :: i, ierr, irecv, irequest, isend
-      integer :: itag, iw, iw2, j
-      integer :: kk
-      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      integer :: i, iw, iw2
 
       fsumow(iw2)=fsumow(iw)
 
-      do i=1,nelec
-        fjow(1,i,iw2)=fjow(1,i,iw)
-        fjow(2,i,iw2)=fjow(2,i,iw)
-        fjow(3,i,iw2)=fjow(3,i,iw)
-      enddo
+      fjow(1:3,1:nelec,iw2)=fjow(1:3,1:nelec,iw)
 
       do i=2,nelec
-        do j=1,i-1
-        fsow(i,j,iw2)=fsow(i,j,iw)
-        fijow(1,i,j,iw2)=fijow(1,i,j,iw)
-        fijow(2,i,j,iw2)=fijow(2,i,j,iw)
-        fijow(3,i,j,iw2)=fijow(3,i,j,iw)
-        fijow(1,j,i,iw2)=fijow(1,j,i,iw)
-        fijow(2,j,i,iw2)=fijow(2,j,i,iw)
-        fijow(3,j,i,iw2)=fijow(3,j,i,iw)
-        enddo
+        fsow(i,1:i-1,iw2)=fsow(i,1:i-1,iw)
+        fijow(1:3,i,1:i-1,iw2)=fijow(1:3,i,1:i-1,iw)
+        fijow(1:3,1:i-1,i,iw2)=fijow(1:3,1:i-1,i,iw)
       enddo
 
       do i=1,nelec
         fsow(i,i,iw2)=fsow(i,i,iw)
-        fijow(1,i,i,iw2)=fijow(1,i,i,iw)
-        fijow(2,i,i,iw2)=fijow(2,i,i,iw)
-        fijow(3,i,i,iw2)=fijow(3,i,i,iw)
+        fijow(1:3,i,i,iw2)=fijow(1:3,i,i,iw)
       enddo
 
-      do i=1,nelec
-        do kk=1,3
-          vjw(kk,i,iw2)=vjw(kk,i,iw)
-        enddo
-      enddo
+      vjw(1:3,1:nelec,iw2)=vjw(1:3,1:nelec,iw)
 
-      end subroutine
+      end subroutine splitjjas
 
       subroutine send_jas(irecv)
       implicit none
 
-      integer :: i, ierr, irecv, irequest, isend
-      integer :: itag, iw, iw2, j
-      integer :: kk
-      integer, dimension(MPI_STATUS_SIZE) :: istatus
+      integer :: ierr, irecv, irequest
+      integer :: itag
 
       itag=0
       call mpi_isend(fsumow(nwalk),1,mpi_double_precision,irecv &
@@ -182,14 +123,13 @@ contains
       call mpi_isend(vjw(1,1,nwalk),3*nelec,mpi_double_precision,irecv &
       ,itag+5,MPI_COMM_WORLD,irequest,ierr)
 
-      end subroutine
+      end subroutine send_jas
 
       subroutine recv_jas(isend)
       implicit none
 
-      integer :: i, ierr, irecv, irequest, isend
-      integer :: itag, iw, iw2, j
-      integer :: kk
+      integer :: ierr, isend
+      integer :: itag
       integer, dimension(MPI_STATUS_SIZE) :: istatus
 
       itag=0
@@ -205,5 +145,5 @@ contains
       call mpi_recv(vjw(1,1,nwalk),3*nelec,mpi_double_precision,isend &
       ,itag+5,MPI_COMM_WORLD,istatus,ierr)
 
-      end subroutine
-end module
+      end subroutine recv_jas
+end module walksav_jas_mod

@@ -7,7 +7,7 @@
       use error,   only: fatal_error
       use mpi
       use mpiconf, only: idtask,mpiconf_init,nproc,wid
-      use mpitimer, only: elapsed_time,time,time_check1,time_final
+      use mpitimer, only: elapsed_time,mpi_time,time_check1,time_final
       use mpitimer, only: time_start
       use optwf_control, only: ioptwf, method
       use optwf_matrix_corsamp_mod, only: optwf_matrix_corsamp
@@ -23,7 +23,7 @@
       call mpi_comm_rank(MPI_COMM_WORLD, idtask, ierr)
       call mpi_comm_size(MPI_COMM_WORLD, nproc, ierr)
 
-      time_start = time()
+      time_start = mpi_time()
       time_check1 = time_start
       call mpiconf_init()
 
@@ -51,7 +51,7 @@
         call dmc
       endif
 
-      time_final = time()
+      time_final = mpi_time()
       write(ounit,'(a,g16.6,a)') " REAL TIME (Total) of computation ::  ", time_final - time_start, " seconds "
 
       call close_files()
