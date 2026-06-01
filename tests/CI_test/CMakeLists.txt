@@ -2,14 +2,14 @@
 # Ravindra Shinde (2021)
 # (c) TREX-CoE (https://trex-coe.eu)
 
-# Note:: How to use this ctest:
-# 1. after a successful compilation, "cd build" and run "ctest"
+# How to use these CTest tests:
+# 1. After a successful build, "cd build" and run "ctest"
 # 2. To add more tests, just create a folder under CI_tests and have
-#    a local bash scripts in that folder. Capitalize the words in the script name to convert them into ctest labels.
+#    a local bash script in that folder. Capitalize the words in the script name to convert them into ctest labels.
 #    For example, if you have a script called "VMC_H2O_TREXIO.sh" in the folder "CI_tests/test_1", then the ctest will create labels "VMC"
 #    and "H2O" and "TREXIO" for that test. The script name should be unique.
-# 3. The following cmake ctest will automatically run all the tests
-# 4. To just list the tests, run "ctest -N"
+# 3. CTest will automatically run all the tests
+# 4. To list the tests, run "ctest -N"
 
 
 if(NOT WIN32)
@@ -57,4 +57,4 @@ file(GLOB_RECURSE tests_script LIST_DIRECTORIES false "*.sh")
 
       set_tests_properties("${test_src}" PROPERTIES LABELS "${tags}")
 
-  endforeach(test_src)
+  endforeach()
