@@ -12,24 +12,24 @@ contains
       use vmc_mod, only: stoo, nwftypeorb
       implicit none
 
-      integer :: iel, istate, k, iwf_save, o
-      real(dp) :: det, determ
+      integer :: iel, istate, iab_other, k, kcdet, o
+      real(dp) :: determ
 
       o=stoo(istate)
-      iwf_save=iwf
 
-      if(nwftypeorb.gt.1) iwf=1
-      determ=0.d0
+      kcdet=iwf
+      if(nwftypeorb.gt.1) kcdet=1
+
       if(iel.le.nup) then
-       do k=1,ndet
-          determ=determ+detn(k,o)*detiab(k,2,o)*cdet(k,istate,iwf)
-       enddo
+        iab_other=2
       else
-         do k=1,ndet
-            determ=determ+detn(k,o)*detiab(k,1,o)*cdet(k,istate,iwf)
-         enddo
+        iab_other=1
       endif
-      iwf=iwf_save
+
+      determ=0.d0
+      do k=1,ndet
+         determ=determ+detn(k,o)*detiab(k,iab_other,o)*cdet(k,istate,kcdet)
+      enddo
 
       return
       end
