@@ -39,15 +39,16 @@ file(GLOB DMC_SOURCE
 
 # --------------------------------------------------------------------
 
-# executable dependencies
+# DMC executable
 add_executable(dmc.mov1
   $<TARGET_OBJECTS:shared_modules>
   $<TARGET_OBJECTS:shared_objects>
   $<TARGET_OBJECTS:rng>
-  # DMC source code
+  # DMC sources
   ${DMC_SOURCE})
 
-if (HDF5_FOUND)
+# if HDF5 is found compile with HDF5 support
+if(HDF5_FOUND)
   target_sources(dmc.mov1 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/dmc_store_hdf5.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/dmc_restore_hdf5.f90)
@@ -77,66 +78,15 @@ if (HDF5_FOUND)
   )
 endif()
 
-#  Add headers
-if(HDF5_FOUND)
-  target_include_directories(dmc.mov1
-    PUBLIC
-    ${CMAKE_BINARY_DIR}/src/vmc
-    ${CMAKE_BINARY_DIR}/src/module
-    ${HDF5_INCLUDE_DIRS}
-    )
-else()
-  target_include_directories(dmc.mov1
-    PUBLIC
-    ${CMAKE_BINARY_DIR}/src/vmc
-    ${CMAKE_BINARY_DIR}/src/module
-    )
-endif()
+# Add headers
+target_include_directories(dmc.mov1
+  PUBLIC
+  ${CMAKE_BINARY_DIR}/src/vmc
+  ${CMAKE_BINARY_DIR}/src/module
+)
 
-# compilation
-target_compile_options(dmc.mov1
-  PRIVATE
-  ${Fortran_FLAGS}
-  "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-  )
+# Compile options
+target_apply_champ_fortran_compile_options(dmc.mov1)
+target_apply_champ_fortran_link_options(dmc.mov1)
 
-  if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
-  	target_link_options(dmc.mov1
-	  PRIVATE
-	  ${Fortran_FLAGS}
-	  "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-	  )
-  endif()
-
-if (TREXIO_FOUND)
-  target_link_libraries(dmc.mov1
-    PRIVATE
-    pspline
-    parser
-    ${LINEAR_ALGEBRA}
-    ${TREXIO_LIBRARY}
-    MPI::MPI_Fortran)
-  if(HDF5_FOUND)
-    target_link_libraries(dmc.mov1 PRIVATE HDF5::HDF5)
-    if(TARGET HDF5::HDF5_Fortran)
-      target_link_libraries(dmc.mov1 PRIVATE HDF5::HDF5_Fortran)
-    endif()
-  endif()
-else()
-  target_link_libraries(dmc.mov1
-    PRIVATE
-    pspline
-    parser
-    ${LINEAR_ALGEBRA}
-    ${CUDA_LIBRARIES}
-    MPI::MPI_Fortran)
-  if(HDF5_FOUND)
-    target_link_libraries(dmc.mov1 PRIVATE HDF5::HDF5)
-    if(TARGET HDF5::HDF5_Fortran)
-      target_link_libraries(dmc.mov1 PRIVATE HDF5::HDF5_Fortran)
-    endif()
-  endif()
-endif()
-
-
-set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
+target_link_champ_runtime(dmc.mov1)

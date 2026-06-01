@@ -1,7 +1,5 @@
-if (MPI_Fortran_FOUND)
-
-  # Source files
-  file(GLOB VMC90_SOURCE
+# Source files
+file(GLOB VMC90_SOURCE
     3dgrid.f90
     3dgrid_orbitals.f90
     acuest.f90
@@ -156,17 +154,17 @@ if (MPI_Fortran_FOUND)
   )
 
 
-  set(ENABLE_GPU ${ENABLE_GPU} PARENT_SCOPE)
-  message (STATUS "GPU IS ENABLED")
-
-  set(ENABLE_TREXIO ${ENABLE_TREXIO} PARENT_SCOPE)
-  set(ENABLE_QMCKL  ${ENABLE_QMCKL} PARENT_SCOPE)
+  if(ENABLE_GPU)
+    message(STATUS "GPU is enabled")
+  else()
+    message(STATUS "GPU is NOT enabled")
+  endif()
 
   # --------------------------------------------------------------------
-  # Set files according to CMAKE options:
+  # Set files according to CMake options:
   # --------------------------------------------------------------------
 
-  if (NOT ENABLE_QMMM)
+  if(NOT ENABLE_QMMM)
     message(STATUS "QMMM is NOT enabled!")
     list(REMOVE_ITEM VMC90_SOURCE
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_bspline.f90
@@ -180,22 +178,16 @@ if (MPI_Fortran_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90)
   endif()
 
-  if (NOT QMCKL_FOUND)
-	  list(REMOVE_ITEM VMC90_SOURCE
-         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
-         ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
-         ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90
-	 ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow_qmckl.f90)
+  if(NOT QMCKL_FOUND)
+    list(REMOVE_ITEM VMC90_SOURCE
+      ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90
+      ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow_qmckl.f90)
   endif()
 
-
-
-  find_package(FortranFormat)
-  formatFortran("${VMC_SOURCE}") # Set Fixed format property
-
   # --------------------------------------------------------------------
-  # Create two libraries to share objects between the two binaries,
-  # vmc.mov1 and dmc.mov1:
+  # Create two object libraries shared by vmc.mov1 and dmc.mov1:
   # - shared_modules: all .f90 modules that must be compiled first.
   # - shared_objects: rest of shared objects (.f90/.f).
   # --------------------------------------------------------------------
@@ -226,7 +218,7 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/nonloc.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow1.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow4.f90
-    ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90   # This file should be refactored and eliminated.
+    ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/efield.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/nodes_distance.f90
     ${CMAKE_CURRENT_SOURCE_DIR}/hpsie.f90
@@ -300,18 +292,18 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/finwrt_more.f90)
 
   # --------------------------------------------------------------------
-  # Remove objects to share depending on CMAKE options:
+  # Remove objects to share depending on CMake options:
   # --------------------------------------------------------------------
-  if (QMCKL_FOUND)
+  if(QMCKL_FOUND)
     list(APPEND SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/jastrow_qmckl.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/deriv_jastrow_qmckl.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/orbitals_qmckl_periodic.f90
-	 )
+    )
   endif()
 
-  if (ENABLE_QMMM)
+  if(ENABLE_QMMM)
     list(REMOVE_ITEM SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/qmmm_placeholder.f90)
     list(APPEND SHARED_OBJECTS
@@ -324,7 +316,7 @@ if (MPI_Fortran_FOUND)
 
 
   # if HDF5 is found compile with HDF5 support
-  if (HDF5_FOUND)
+  if(HDF5_FOUND)
     list(APPEND SHARED_OBJECTS
       ${CMAKE_CURRENT_SOURCE_DIR}/vmc_store_hdf5.f90
       ${CMAKE_CURRENT_SOURCE_DIR}/vmc_restore_hdf5.f90)
@@ -346,47 +338,35 @@ if (MPI_Fortran_FOUND)
       PROPERTY COMPILE_DEFINITIONS
       HDF5_FOUND=\"${HDF5_FOUND}\"
     )
+  endif()
 
-  endif(HDF5_FOUND)
 
   add_library(shared_objects OBJECT ${SHARED_OBJECTS})
 
-  #  Add headers
-  if (HDF5_FOUND)
-    target_include_directories(shared_objects
+  # Add headers
+  target_include_directories(shared_objects
     PUBLIC
     ${CMAKE_BINARY_DIR}/src/module
     ${CMAKE_BINARY_DIR}/src/parser
-    ${HDF5_INCLUDE_DIRS}
-    )
-    target_link_libraries(shared_objects ${HDF5_LIBRARIES})
-  else()
-    target_include_directories(shared_objects
+  )
+
+  target_apply_champ_fortran_compile_options(shared_objects)
+
+  target_link_libraries(shared_objects
     PUBLIC
-    ${CMAKE_BINARY_DIR}/src/module
-    ${CMAKE_BINARY_DIR}/src/parser
-    )
-  endif()
+    MPI::MPI_Fortran)
+  target_link_optional_libraries(shared_objects)
 
-  target_compile_options(shared_objects
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
-
-  # add_dependencies(shared_objects parser)
   add_dependencies(shared_objects shared_modules)
   add_dependencies(shared_objects parser)
 
   # --------------------------------------------------------------------
-  # Remove code that has been already compiled:
+  # Remove sources already compiled into object libraries:
   # --------------------------------------------------------------------
 
   foreach(s ${SHARED_OBJECTS})
     list(REMOVE_ITEM VMC90_SOURCE ${s})
-  endforeach(s)
-  foreach(s ${SHARED_MODULES})
-    list(REMOVE_ITEM VMC90_SOURCE ${s})
-  endforeach(s)
+  endforeach()
 
   # --------------------------------------------------------------------
   # Compile and link executable:
@@ -397,107 +377,38 @@ if (MPI_Fortran_FOUND)
   target_compile_options(rng
     PUBLIC
     "-O3")
+  target_apply_common_compile_definitions(rng)
 
 
   add_executable(vmc.mov1
     $<TARGET_OBJECTS:shared_modules>
     $<TARGET_OBJECTS:shared_objects>
     $<TARGET_OBJECTS:rng>
-    # source that is not already included in the objects
+    # Sources not already included in the object libraries.
     ${VMC90_SOURCE}
     )
 
 
-IF(UNIT_TESTS)
+if(UNIT_TESTS)
   add_library(vmc SHARED
     $<TARGET_OBJECTS:shared_modules>
     $<TARGET_OBJECTS:shared_objects>
     $<TARGET_OBJECTS:rng>
     $<TARGET_OBJECTS:vmc.mov1>)
 
-  target_compile_options(vmc
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-    )
+  target_apply_champ_fortran_compile_options(vmc)
 
-  if (TREXIO_FOUND)
-    target_link_libraries(vmc
-      PRIVATE
-      pspline
-      parser
-      ${LINEAR_ALGEBRA}
-      ${TREXIO_LIBRARY}
-      MPI::MPI_Fortran)
-  else()
-    target_link_libraries(vmc
-      PRIVATE
-      pspline
-      parser
-      ${LINEAR_ALGEBRA}
-      ${CUDA_LIBRARIES}
-      MPI::MPI_Fortran)
-  endif()
-ENDIF()
-
-  #  Add headers
-  if(HDF5_FOUND)
-    target_include_directories(vmc.mov1
-    PUBLIC
-    ${CMAKE_BINARY_DIR}/src/module
-    ${HDF5_INCLUDE_DIRS}
-    )
-  else()
-    target_include_directories(vmc.mov1
-    PUBLIC
-    ${CMAKE_BINARY_DIR}/src/module
-    )
-  endif()
-
-  # compilation
-  target_compile_options(vmc.mov1
-    PRIVATE
-    ${Fortran_FLAGS}
-    "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-    )
-
-  if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
-     target_link_options(vmc.mov1
-       PRIVATE
-       ${Fortran_FLAGS}
-       "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-       )
-  endif()
-
-  if (TREXIO_FOUND)
-    target_link_libraries(vmc.mov1
-      PRIVATE
-      pspline
-      parser
-      ${LINEAR_ALGEBRA}
-      ${TREXIO_LIBRARY}
-      MPI::MPI_Fortran)
-    if(HDF5_FOUND)
-      target_link_libraries(vmc.mov1 PRIVATE HDF5::HDF5)
-      if(TARGET HDF5::HDF5_Fortran)
-        target_link_libraries(vmc.mov1 PRIVATE HDF5::HDF5_Fortran)
-      endif()
-    endif()
-  else()
-    target_link_libraries(vmc.mov1
-      PRIVATE
-      pspline
-      parser
-      ${LINEAR_ALGEBRA}
-      ${CUDA_LIBRARIES}
-      MPI::MPI_Fortran)
-    if(HDF5_FOUND)
-      target_link_libraries(vmc.mov1 PRIVATE HDF5::HDF5)
-      if(TARGET HDF5::HDF5_Fortran)
-        target_link_libraries(vmc.mov1 PRIVATE HDF5::HDF5_Fortran)
-      endif()
-    endif()
-  endif()
-
-
+  target_link_champ_runtime(vmc)
 endif()
+
+  # Add headers
+  target_include_directories(vmc.mov1
+    PUBLIC
+    ${CMAKE_BINARY_DIR}/src/module
+  )
+
+  # Compile options
+  target_apply_champ_fortran_compile_options(vmc.mov1)
+  target_apply_champ_fortran_link_options(vmc.mov1)
+
+  target_link_champ_runtime(vmc.mov1)
