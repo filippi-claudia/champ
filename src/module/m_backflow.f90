@@ -149,7 +149,7 @@ contains
         if (.not. allocated(cusp_cutoff_deriv)) allocate (cusp_cutoff_deriv(c_cuspconst*nctype, ncparm_bf))
         if (.not. allocated(inv_cusp_parameters)) allocate (inv_cusp_parameters(nparm_bf, ncparm_bf))
         if (.not. allocated(inv_cusp_indices)) allocate (inv_cusp_indices(nparm_bf, ncparm_bf))
-        if (.not. allocated(basis_klm)) allocate (basis_klm(ncparm_bf, 3))
+        if (.not. allocated(basis_klm)) allocate (basis_klm(ncparm_bf*nctype + nctype, 3))
       endif
     end subroutine allocate_m_backflow
   

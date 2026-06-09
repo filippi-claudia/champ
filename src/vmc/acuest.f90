@@ -185,6 +185,7 @@ contains
       use hpsie,   only: psie
       implicit none
       integer :: i, ic, ifr, istate, jel, k, iel, j, kk, l
+      integer :: ir, nr_scan
       real(dp) :: psidg, rnorm_nodes, tmp, tmp2
       real(dp) :: ajacob, distance_node
       real(dp), dimension(3,nelec) :: xstrech
@@ -194,10 +195,15 @@ contains
       real(dp), dimension(3,nelec) :: xnew2
       real(dp), dimension(MSTATES) :: psidnn, psidn
       real(dp) :: delta, dist, val_j_1, val_d_1, val_j_2, val_d_2, div_j, div_d, epsilon
+      real(dp) :: e_val
+      real(dp), dimension(6) :: r_scan
       real(dp), dimension(3) :: rvec
       real(dp), dimension(3,nelec) :: x_orig
       real(dp), dimension(3,nelec) :: quasi_plus, quasi_base, quasi_minus, d2quasi_fd
       real(dp) :: eps_diff
+      logical, parameter :: do_cusp_deriv_check = .false.
+      logical, parameter :: do_cusp_energy_check = .true.
+      logical, parameter :: print_all_ddx_d2dx2_fd = .true.
 
 ! entry point to zero out all averages etc.
 ! the initial values of energy psi etc. is also calculated here
@@ -279,120 +285,161 @@ contains
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
 
-      ! Cusp check block
-      if (.false.) then
+      ! Cusp check blocks (enable one at a time)
+      if (do_cusp_deriv_check) then
          write(ounit,*) '--- Cusp Check (Spherical Average) ---'
          delta = 0.00001d0
-         epsilon = 0.00000d0 ! Avoid exactly 0
-         
+         epsilon = 0.00000d0
+
          x_orig = xold
-         
+
          ! Electron-Nucleus
          do ic = 1, ncent
             do i = 1, nelec
                div_j = 0.0d0
                div_d = 0.0d0
-               
-               ! Integrate over 6 directions (+x,-x,+y,-y,+z,-z)
-               do k = 1, 3
-                  do l = -1, 1, 2 ! -1 and +1
-                     rvec = 0.0d0
-                     rvec(k) = dble(l)
-                     
-                     ! 1. Point at epsilon
-                     xold(:,i) = cent(:,ic) + epsilon * rvec
-                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-                     val_j_1 = psijo(1)
-                     val_d_1 = psido(1)
-                     
-                     ! 2. Point at epsilon + delta
-                     xold(:,i) = cent(:,ic) + (epsilon + delta) * rvec
-                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-                     val_j_2 = psijo(1)
-                     val_d_2 = psido(1)
-                     
-                     div_j = div_j + (val_j_2 - val_j_1)/delta
-                     div_d = div_d + (val_d_2 - val_d_1)/delta/val_d_1
-                  end do
-               end do
-               
-               ! Restore coordinate
-               xold(:,i) = x_orig(:,i)
-               
-               div_j = div_j / 6.0d0
-               div_d = div_d / 6.0d0
-               
-               write(ounit,'(A,I3,I3,A,F12.6,A,F12.6,A,F12.6)', advance='no') &
-                    'e-n: ', i, ic, ' r: ', epsilon, ' dJ: ', div_j, ' dD: ', div_d
-               
-               if (abs(div_j) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0'
-               if (abs(div_d) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: D!=0'
-               write(ounit,*) ''
 
-            end do
-         end do
-         
-         ! Electron-Electron (Spherical Average)
-         epsilon = 0.0001d0 
-         do i = 1, nelec
-            do j = i+1, nelec
-               div_j = 0.0d0
-               div_d = 0.0d0
-               
                do k = 1, 3
                   do l = -1, 1, 2
                      rvec = 0.0d0
                      rvec(k) = dble(l)
-                     
-                     ! Keep j fixed, move i relative to j
-                     
-                     ! 1. Point at epsilon
+
+                     xold(:,i) = cent(:,ic) + epsilon * rvec
+                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+                     val_j_1 = psijo(1)
+                     val_d_1 = psido(1)
+
+                     xold(:,i) = cent(:,ic) + (epsilon + delta) * rvec
+                     call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+                     val_j_2 = psijo(1)
+                     val_d_2 = psido(1)
+
+                     div_j = div_j + (val_j_2 - val_j_1)/delta
+                     div_d = div_d + (val_d_2 - val_d_1)/delta/val_d_1
+                  end do
+               end do
+
+               xold(:,i) = x_orig(:,i)
+
+               div_j = div_j / 6.0d0
+               div_d = div_d / 6.0d0
+
+               write(ounit,'(A,I3,I3,A,F12.6,A,F12.6,A,F12.6)', advance='no') &
+                    'e-n: ', i, ic, ' r: ', epsilon, ' dJ: ', div_j, ' dD: ', div_d
+
+               if (abs(div_j) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0'
+               if (abs(div_d) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: D!=0'
+               write(ounit,*) ''
+            end do
+         end do
+
+         ! Electron-Electron
+         epsilon = 0.0001d0
+         do i = 1, nelec
+            do j = i+1, nelec
+               div_j = 0.0d0
+               div_d = 0.0d0
+
+               do k = 1, 3
+                  do l = -1, 1, 2
+                     rvec = 0.0d0
+                     rvec(k) = dble(l)
+
                      xold(:,i) = xold(:,j) + epsilon * rvec
                      call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
                      val_j_1 = psijo(1)
                      val_d_1 = psido(1)
-                     
-                     ! 2. Point at epsilon + delta
+
                      xold(:,i) = xold(:,j) + (epsilon + delta) * rvec
                      call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
                      val_j_2 = psijo(1)
                      val_d_2 = psido(1)
-                     
+
                      div_j = div_j + (val_j_2 - val_j_1)/delta
                      div_d = div_d + (val_d_2 - val_d_1)/delta/val_d_1*epsilon
-                     print *, val_d_1, val_d_2
                   end do
                end do
-               
-               ! Restore coordinate
+
                xold(:,i) = x_orig(:,i)
-               
+
                div_j = div_j / 6.0d0
                div_d = div_d / 6.0d0
-               
+
                if ( (i .le. nup .and. j .le. nup) .or. (i .gt. nup .and. j .gt. nup) ) then
-                   ! Parallel
                    write(ounit,'(A,I3,I3,A,F12.6,A,F12.6,A,F12.6)', advance='no') &
                         'e-e(P): ', i, j, ' r: ', epsilon, ' dJ: ', div_j, ' dD: ', div_d
                    if (abs(div_j - 0.25d0) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0.25'
                    if (abs(div_d) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: D!=0'
                else
-                   ! Anti-Parallel
                    write(ounit,'(A,I3,I3,A,F12.6,A,F12.6,A,F12.6)', advance='no') &
                         'e-e(A): ', i, j, ' r: ', epsilon, ' dJ: ', div_j, ' dD: ', div_d
                    if (abs(div_j - 0.5d0) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: J!=0.5'
                    if (abs(div_d) > 0.001) write(ounit,'(A)', advance='yes') ' WARN: D!=0'
-
                end if
                write(ounit,*) ''
             end do
          end do
-         
-         ! Final restore of all coordinates to be safe
+
          xold = x_orig
          call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
-         
          stop
+      end if
+
+      if (do_cusp_energy_check) then
+        write(ounit,*) '--- Cusp Check (Local Energy) ---'
+        nr_scan = 6
+        r_scan = (/1.0d-3, 1.0d-4, 1.0d-5, 1.0d-6, 1.0d-7, 1.0d-8/)
+
+        x_orig = xold
+
+        ! Electron-Nucleus local-energy scan (single +x direction)
+        do ic = 1, 5
+          do i = 1, 5
+            write(ounit,'(A,I3,A,I3)') 'e-n local energy scan: e=', i, ' c=', ic
+            do ir = 1, nr_scan
+              epsilon = r_scan(ir)
+              xold = x_orig
+              rvec = 0.0d0
+              rvec(1) = 1.0d0
+              xold(:,i) = cent(:,ic) + epsilon * rvec
+              call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+              e_val = eold(1,1)
+
+              write(ounit,'(A,1PE10.3,A,1PE16.8,A,1PE16.8,A,1PE16.8)') &
+                '  r=', epsilon, ' E_L=', e_val, ' E_kin*r=', ekino(1)*epsilon, ' psid/r=', psido(1)/epsilon
+            end do
+            write(ounit,*) ''
+          end do
+        end do
+
+        ! Electron-Electron local-energy scan (single +x direction)
+        do i = 1, 1
+          do j = i+1, 3
+            if ( (i .le. nup .and. j .le. nup) .or. (i .gt. nup .and. j .gt. nup) ) then
+              write(ounit,'(A,I3,A,I3)') 'e-e(P) local energy scan: i=', i, ' j=', j
+            else
+              write(ounit,'(A,I3,A,I3)') 'e-e(A) local energy scan: i=', i, ' j=', j
+            end if
+
+            do ir = 1, nr_scan
+              epsilon = r_scan(ir)
+              xold = x_orig
+              rvec = 0.0d0
+              rvec(1) = 1.0d0
+              xold(:,i) = x_orig(:,j) + epsilon * rvec
+              call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+              e_val = eold(1,1)
+
+              write(ounit,'(A,1PE10.3,A,1PE16.8,A,1PE16.8,A,1PE16.8)') &
+                '  r=', epsilon, ' E_L=', e_val, ' E_kin*r=', ekino(1)*epsilon, ' psid/r=', psido(1)/epsilon
+            end do
+            write(ounit,*) ''
+          end do
+        end do
+
+        xold = x_orig
+        call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
+        stop
       end if
 
       ! Finite difference test for dquasi_dp (backflow parameter derivatives)
@@ -400,6 +447,20 @@ contains
          call test_dquasi_dp_finite_diff(xold)
          stop
       end if
+
+      ! Finite difference test for dquasi_dx and d2quasi_dx2
+      if (.false.) then
+        call test_dquasi_x_finite_diff(xold)
+        stop
+      end if
+
+      ! Finite difference test for ddx and d2dx2
+      if (.false.) then
+        call test_ddx_d2dx2_finite_diff(xold, print_all_ddx_d2dx2_fd)
+        stop
+      end if
+
+      
 
 
       ! call backflow(xold)
@@ -783,5 +844,331 @@ contains
       
       return
       end subroutine test_dquasi_dp_finite_diff
+
+
+      !-----------------------------------------------------------------------
+      ! Finite difference test for dquasi_dx and d2quasi_dx2
+      !-----------------------------------------------------------------------
+      subroutine test_dquasi_x_finite_diff(x)
+      use precision_kinds, only: dp
+      use system, only: nelec
+      use contrl_file, only: ounit
+      use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2, ibackflow
+      use backflow_mod, only: backflow
+      implicit none
+
+      real(dp), dimension(3, nelec), intent(in) :: x
+      real(dp), dimension(3, nelec) :: x_pp, x_p, x_m, x_mm
+      real(dp), dimension(3, nelec) :: q_base, q_pp, q_p, q_m, q_mm, lap_fd
+      real(dp), dimension(3, nelec, 3, nelec) :: dquasi_dx_ref
+      real(dp), dimension(3, nelec, nelec) :: d2quasi_dx2_ref
+      real(dp) :: delta, tol_d1, tol_d2, fd1, err1, err2
+      real(dp) :: max_err1, max_err2, fd1_max, d1_max, fd2_max, d2_max
+      integer :: iel, jel, a, k
+      integer :: nerr_d1, nerr_d2
+      integer :: iel_d1, jel_d1, a_d1, k_d1
+      integer :: iel_d2, jel_d2, a_d2
+
+      if (ibackflow == 0) then
+        write(ounit,*) 'test_dquasi_x_finite_diff: backflow not enabled'
+        return
+      endif
+
+      write(ounit,*) ''
+      write(ounit,*) '============================================================'
+      write(ounit,*) 'Finite Difference Test for dquasi_dx and d2quasi_dx2'
+      write(ounit,*) '============================================================'
+
+      delta = 1.0d-3
+      tol_d1 = 1.0d-6
+      tol_d2 = 1.0d-6
+
+      nerr_d1 = 0
+      nerr_d2 = 0
+      max_err1 = 0.0d0
+      max_err2 = 0.0d0
+      fd1_max = 0.0d0
+      d1_max = 0.0d0
+      fd2_max = 0.0d0
+      d2_max = 0.0d0
+      iel_d1 = 1
+      jel_d1 = 1
+      a_d1 = 1
+      k_d1 = 1
+      iel_d2 = 1
+      jel_d2 = 1
+      a_d2 = 1
+
+      write(ounit,'(A,E12.4)') 'Finite difference delta: ', delta
+      write(ounit,'(A,E12.4)') 'Tolerance for dquasi_dx: ', tol_d1
+      write(ounit,'(A,E12.4)') 'Tolerance for d2quasi_dx2: ', tol_d2
+
+      call backflow(x)
+      q_base = quasi_x
+      dquasi_dx_ref = dquasi_dx
+      d2quasi_dx2_ref = d2quasi_dx2
+
+      do iel = 1, nelec
+        lap_fd = 0.0d0
+
+        do k = 1, 3
+          x_pp = x
+          x_p = x
+          x_m = x
+          x_mm = x
+          x_pp(k, iel) = x_pp(k, iel) + 2.0d0*delta
+          x_p(k, iel) = x_p(k, iel) + delta
+          x_m(k, iel) = x_m(k, iel) - delta
+          x_mm(k, iel) = x_mm(k, iel) - 2.0d0*delta
+
+          call backflow(x_pp)
+          q_pp = quasi_x
+          call backflow(x_p)
+          q_p = quasi_x
+          call backflow(x_m)
+          q_m = quasi_x
+          call backflow(x_mm)
+          q_mm = quasi_x
+
+          do jel = 1, nelec
+            do a = 1, 3
+              fd1 = (-q_pp(a, jel) + 8.0d0*q_p(a, jel) - 8.0d0*q_m(a, jel) + q_mm(a, jel)) / (12.0d0 * delta)
+              err1 = abs(fd1 - dquasi_dx_ref(a, jel, k, iel))
+
+              if (err1 > max_err1) then
+                max_err1 = err1
+                fd1_max = fd1
+                d1_max = dquasi_dx_ref(a, jel, k, iel)
+                iel_d1 = iel
+                jel_d1 = jel
+                a_d1 = a
+                k_d1 = k
+              endif
+
+              if (err1 > tol_d1 .and. (abs(fd1) > 1.0d-10 .or. abs(dquasi_dx_ref(a, jel, k, iel)) > 1.0d-10)) then
+                nerr_d1 = nerr_d1 + 1
+              endif
+
+              lap_fd(a, jel) = lap_fd(a, jel) + ( -q_pp(a, jel) + 16.0d0*q_p(a, jel) - 30.0d0*q_base(a, jel) + 16.0d0*q_m(a, jel) - q_mm(a, jel) ) / (12.0d0 * delta * delta)
+            enddo
+          enddo
+        enddo
+
+        do jel = 1, nelec
+          do a = 1, 3
+            err2 = abs(lap_fd(a, jel) - d2quasi_dx2_ref(a, jel, iel))
+
+            if (err2 > max_err2) then
+              max_err2 = err2
+              fd2_max = lap_fd(a, jel)
+              d2_max = d2quasi_dx2_ref(a, jel, iel)
+              iel_d2 = iel
+              jel_d2 = jel
+              a_d2 = a
+            endif
+
+            if (err2 > tol_d2 .and. (abs(lap_fd(a, jel)) > 1.0d-10 .or. abs(d2quasi_dx2_ref(a, jel, iel)) > 1.0d-10)) then
+              nerr_d2 = nerr_d2 + 1
+            endif
+          enddo
+        enddo
+      enddo
+
+      ! Restore base state
+      call backflow(x)
+
+      if (nerr_d1 == 0) then
+        write(ounit,*) 'SUCCESS dquasi_dx: all checks within tolerance'
+      else
+        write(ounit,'(A,I8)') 'FAILURE dquasi_dx mismatches: ', nerr_d1
+      endif
+      write(ounit,'(A,4I6,A,E14.6,A,E14.6,A,E10.2)') &
+        'MAXERR dquasi_dx @ (a,jel,k,iel)=', a_d1, jel_d1, k_d1, iel_d1, &
+        ' FD=', fd1_max, ' Anal=', d1_max, ' AbsErr=', max_err1
+
+      if (nerr_d2 == 0) then
+        write(ounit,*) 'SUCCESS d2quasi_dx2: all checks within tolerance'
+      else
+        write(ounit,'(A,I8)') 'FAILURE d2quasi_dx2 mismatches: ', nerr_d2
+      endif
+      write(ounit,'(A,3I6,A,E14.6,A,E14.6,A,E10.2)') &
+        'MAXERR d2quasi_dx2 @ (a,jel,iel)=', a_d2, jel_d2, iel_d2, &
+        ' FD=', fd2_max, ' Anal=', d2_max, ' AbsErr=', max_err2
+
+      write(ounit,*) '============================================================'
+      write(ounit,*) ''
+
+      return
+      end subroutine test_dquasi_x_finite_diff
+
+
+      !-----------------------------------------------------------------------
+      ! Finite difference test for ddx and d2dx2
+      !-----------------------------------------------------------------------
+      subroutine test_ddx_d2dx2_finite_diff(x, print_all_components)
+      use precision_kinds, only: dp
+      use system, only: nelec
+      use mstates_mod, only: MSTATES
+      use vmc_mod, only: nwftypejas
+      use slater, only: ddx, d2dx2
+      use hpsi_mod, only: hpsi
+      use contrl_file, only: ounit
+      implicit none
+
+      real(dp), dimension(3, nelec), intent(in) :: x
+      logical, optional, intent(in) :: print_all_components
+      real(dp), dimension(3, nelec) :: x_pp, x_p, x_m, x_mm
+      real(dp), dimension(3, nelec) :: ddx_ref
+      real(dp), dimension(nelec) :: d2dx2_ref, lap_fd
+      real(dp), dimension(MSTATES) :: psid_tmp, ekin_tmp, energy_tmp
+      real(dp), dimension(nwftypejas) :: psij_tmp
+      real(dp) :: delta, tol_d1, tol_d2
+      real(dp) :: psi0, psi_pp, psi_p, psi_m, psi_mm
+      real(dp) :: fd1, sec1, err1, err2
+      real(dp) :: max_err1, max_err2, fd1_max, d1_max, fd2_max, d2_max
+      integer :: iel, k
+      integer :: nerr_d1, nerr_d2, nskip
+      integer :: iel_d1, k_d1, iel_d2
+      logical :: do_print_all
+
+      write(ounit,*) ''
+      write(ounit,*) '============================================================'
+      write(ounit,*) 'Finite Difference Test for ddx and d2dx2'
+      write(ounit,*) '============================================================'
+
+      do_print_all = .false.
+      if (present(print_all_components)) do_print_all = print_all_components
+
+      delta = 1.0d-3
+      tol_d1 = 1.0d-6
+      tol_d2 = 1.0d-6
+
+      nerr_d1 = 0
+      nerr_d2 = 0
+      nskip = 0
+      max_err1 = 0.0d0
+      max_err2 = 0.0d0
+      fd1_max = 0.0d0
+      d1_max = 0.0d0
+      fd2_max = 0.0d0
+      d2_max = 0.0d0
+      iel_d1 = 1
+      k_d1 = 1
+      iel_d2 = 1
+
+      write(ounit,'(A,E12.4)') 'Finite difference delta: ', delta
+      write(ounit,'(A,E12.4)') 'Tolerance for ddx: ', tol_d1
+      write(ounit,'(A,E12.4)') 'Tolerance for d2dx2: ', tol_d2
+      write(ounit,'(A,L1)') 'Print all FD vs analytic values: ', do_print_all
+
+      if (do_print_all) then
+        write(ounit,*) 'Per-component ddx values:'
+      endif
+
+      ! Base point and analytical references
+      call hpsi(x,psid_tmp,psij_tmp,ekin_tmp,energy_tmp,0,1)
+      psi0 = psid_tmp(1)
+      ddx_ref = ddx(:,:,1)
+      d2dx2_ref = d2dx2(:,1)
+
+      do iel = 1, nelec
+        lap_fd(iel) = 0.0d0
+
+        ! if (abs(psi0) < 1.0d-12) then
+        !   nskip = nskip + 1
+        !   if (do_print_all) then
+        !     write(ounit,'(A,I6,A)') '  iel=', iel, ' skipped (near node at reference point)'
+        !   endif
+        !   cycle
+        ! endif
+
+        do k = 1, 3
+          x_pp = x
+          x_p = x
+          x_m = x
+          x_mm = x
+          x_pp(k, iel) = x_pp(k, iel) + 2.0d0*delta
+          x_p(k, iel) = x_p(k, iel) + delta
+          x_m(k, iel) = x_m(k, iel) - delta
+          x_mm(k, iel) = x_mm(k, iel) - 2.0d0*delta
+
+          call hpsi(x_pp,psid_tmp,psij_tmp,ekin_tmp,energy_tmp,0,1)
+          psi_pp = psid_tmp(1)
+          call hpsi(x_p,psid_tmp,psij_tmp,ekin_tmp,energy_tmp,0,1)
+          psi_p = psid_tmp(1)
+          call hpsi(x_m,psid_tmp,psij_tmp,ekin_tmp,energy_tmp,0,1)
+          psi_m = psid_tmp(1)
+          call hpsi(x_mm,psid_tmp,psij_tmp,ekin_tmp,energy_tmp,0,1)
+          psi_mm = psid_tmp(1)
+
+          fd1 = (-psi_pp + 8.0d0*psi_p - 8.0d0*psi_m + psi_mm) / (12.0d0*delta*psi0)
+          err1 = abs(fd1 - ddx_ref(k, iel))
+
+          if (err1 > max_err1) then
+            max_err1 = err1
+            fd1_max = fd1
+            d1_max = ddx_ref(k, iel)
+            iel_d1 = iel
+            k_d1 = k
+          endif
+
+          if (err1 > tol_d1 .and. (abs(fd1) > 1.0d-10 .or. abs(ddx_ref(k, iel)) > 1.0d-10)) then
+            nerr_d1 = nerr_d1 + 1
+          endif
+
+          if (do_print_all) then
+            write(ounit,'(A,I6,A,I2,A,E20.12,A,E20.12,A,E12.4)') &
+              '  ddx iel=', iel, ' k=', k, ' FD=', fd1, ' Anal=', ddx_ref(k, iel), ' AbsErr=', err1
+          endif
+
+          sec1 = (-psi_pp + 16.0d0*psi_p - 30.0d0*psi0 + 16.0d0*psi_m - psi_mm) / (12.0d0*delta*delta*psi0)
+          lap_fd(iel) = lap_fd(iel) + sec1
+        enddo
+
+        err2 = abs(lap_fd(iel) - d2dx2_ref(iel))
+        if (err2 > max_err2) then
+          max_err2 = err2
+          fd2_max = lap_fd(iel)
+          d2_max = d2dx2_ref(iel)
+          iel_d2 = iel
+        endif
+        if (err2 > tol_d2 .and. (abs(lap_fd(iel)) > 1.0d-10 .or. abs(d2dx2_ref(iel)) > 1.0d-10)) then
+          nerr_d2 = nerr_d2 + 1
+        endif
+
+        if (do_print_all) then
+          write(ounit,'(A,I6,A,E20.12,A,E20.12,A,E12.4)') &
+            '  d2dx2 iel=', iel, ' FD=', lap_fd(iel), ' Anal=', d2dx2_ref(iel), ' AbsErr=', err2
+        endif
+      enddo
+
+      ! Restore base state
+      call hpsi(x,psid_tmp,psij_tmp,ekin_tmp,energy_tmp,0,1)
+
+      if (nskip > 0) then
+        write(ounit,'(A,I6)') 'Skipped near-node electrons: ', nskip
+      endif
+
+      if (nerr_d1 == 0) then
+        write(ounit,*) 'SUCCESS ddx: all checks within tolerance'
+      else
+        write(ounit,'(A,I8)') 'FAILURE ddx mismatches: ', nerr_d1
+      endif
+      write(ounit,'(A,2I6,A,E14.6,A,E14.6,A,E10.2)') &
+        'MAXERR ddx @ (k,iel)=', k_d1, iel_d1, ' FD=', fd1_max, ' Anal=', d1_max, ' AbsErr=', max_err1
+
+      if (nerr_d2 == 0) then
+        write(ounit,*) 'SUCCESS d2dx2: all checks within tolerance'
+      else
+        write(ounit,'(A,I8)') 'FAILURE d2dx2 mismatches: ', nerr_d2
+      endif
+      write(ounit,'(A,I6,A,E14.6,A,E14.6,A,E10.2)') &
+        'MAXERR d2dx2 @ iel=', iel_d2, ' FD=', fd2_max, ' Anal=', d2_max, ' AbsErr=', max_err2
+
+      write(ounit,*) '============================================================'
+      write(ounit,*) ''
+
+      return
+      end subroutine test_ddx_d2dx2_finite_diff
 
     end module

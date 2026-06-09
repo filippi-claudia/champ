@@ -40,7 +40,7 @@ contains
       real(dp), dimension(3, nelec) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
-      real(dp), allocatable :: tmp1(:,:,:), tmp2(:,:,:,:)
+      real(dp), allocatable :: tmp1(:,:,:), tmp2_diag(:,:,:)
 
 ! compute orbitals
       if (ibackflow .gt. 0) then
@@ -75,7 +75,7 @@ contains
         endif
 
         allocate(tmp1(nel, nel,3))
-        allocate(tmp2(nel, nel,3,3))
+        allocate(tmp2_diag(nel,3,3))
         
         call allocate_multislater() ! properly accessing array elements
 
@@ -101,11 +101,12 @@ contains
 
 
           tmp1=0.0d0
-          tmp2=0.0d0
+          tmp2_diag=0.0d0
           do kk = 1,3
             do l = 1, nel
               do j = 1, nel
                 do m = 1, nel
+                  ! B7 in Kwon
                   tmp1(j,m,kk) = tmp1(j,m,kk) + slmi((j-1)*nel+l,iab,k) * dslm(kk,(l-1)*nel+m,iab,k) 
                 enddo
               enddo
@@ -115,9 +116,8 @@ contains
             do kk = 1,3
               do l = 1, nel
                 do j = 1, nel
-                  do m = 1, nel
-                    tmp2(j,m,kk,jj) = tmp2(j,m,kk,jj) + slmi((j-1)*nel+l,iab,k) * d2slm(kk,jj,(l-1)*nel+m,iab,k) 
-                  enddo
+                  ! Only the diagonal tmp2(j,j,kk,jj) contributes downstream
+                  tmp2_diag(j,kk,jj) = tmp2_diag(j,kk,jj) + slmi((j-1)*nel+l,iab,k) * d2slm(kk,jj,(l-1)*nel+j,iab,k)
                 enddo
               enddo
             enddo
@@ -150,7 +150,7 @@ contains
                 do jj = 1,3
                   do m = 1, nel
                     do j = 1, nel
-                      d2dx2(i,k) = d2dx2(i,k) - tmp1(j,m,kk) * tmp1(m,j,jj) * dquasi_dx(kk,j+ish,ii,i) * dquasi_dx(jj,m+ish,ii,i)
+                      d2dx2(i,k) = d2dx2(i,k) - tmp1(j,m,kk) * tmp1(m,j,jj) * dquasi_dx(kk,m+ish,ii,i) * dquasi_dx(jj,j+ish,ii,i)
                     enddo
                   enddo
                 end do
@@ -162,7 +162,7 @@ contains
               do kk=1,3
                 do ii=1,3
                   do jj=1,3
-                    d2dx2(i,k)=d2dx2(i,k) + tmp2(j,j,ii,jj) * dquasi_dx(ii,j+ish,kk,i) * dquasi_dx(jj,j+ish,kk,i)
+                    d2dx2(i,k)=d2dx2(i,k) + tmp2_diag(j,ii,jj) * dquasi_dx(ii,j+ish,kk,i) * dquasi_dx(jj,j+ish,kk,i)
                   enddo
                 enddo
               enddo
@@ -176,7 +176,7 @@ contains
             enddo
           enddo
         enddo
-        deallocate(tmp1,tmp2)
+        deallocate(tmp1,tmp2_diag)
       enddo
 
 

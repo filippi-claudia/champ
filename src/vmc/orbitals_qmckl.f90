@@ -411,7 +411,7 @@ subroutine orbitals_quad_bf_qmckl(nxquad,xquad,orbn,iwforb,indices)
 
     real(dp), dimension(3,nxquad) :: xquad
     real(dp), dimension(norb_tot, nxquad) :: orbn
-    integer, dimension(nxquad*nelec) :: indices
+    integer, dimension(nxquad) :: indices
     real(dp), allocatable :: mo_qmckl(:,:), new_coords(:,:)
     integer :: rc, points
     integer*8 :: n8

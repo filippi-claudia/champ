@@ -952,6 +952,8 @@ subroutine read_backflow_file(file_backflow)
     call bcast(nordc_bf)
     call bcast(cutoff_scale)
 
+    write(ounit,'(A,i2,A,i2,A,i2,A)') " Found ", norda_bf, " a order, ", nordb_bf, " b order, ", nordc_bf, " c order for backflow. "
+
     call init_backflow(1)
     multb = 0
     multa = 0

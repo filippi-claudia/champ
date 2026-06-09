@@ -361,7 +361,8 @@ subroutine init_rios_backflow_arrays()
     end if
     if (nordc_bf .gt. 0) then
         ncparm_bf = (nordc_bf+1)*(nordc_bf+2)*(nordc_bf+3)/6
-        c_cuspconst = 5 * nordc_bf + 5
+        ! c_cuspconst = 5 * nordc_bf + 5
+        c_cuspconst = 10 * (nordc_bf + 1)  
         nparm_bf = nparm_bf + (ncparm_bf + 1) * nctype + (ncparm_bf) * nctype
     end if
 
@@ -392,14 +393,28 @@ subroutine init_cusp()
 
     basis_klm = 0
     idx = 1
-    do k = 0, nordc_bf
-        do l = 0, nordc_bf - k
-            do m = 0, nordc_bf - k - l
-                
-                basis_klm(idx, 1) = k
-                basis_klm(idx, 2) = l
-                basis_klm(idx, 3) = m
-                idx = idx + 1
+    do n = 1, nctype
+        idx = idx + 1
+        do k = 0, nordc_bf
+            do l = 0, nordc_bf - k
+                do m = 0, nordc_bf - k - l
+                    basis_klm(idx, 1) = k
+                    basis_klm(idx, 2) = l
+                    basis_klm(idx, 3) = m
+                    idx = idx + 1
+                end do
+            end do
+        end do
+    end do
+    do n = 1, nctype
+        do k = 0, nordc_bf
+            do l = 0, nordc_bf - k
+                do m = 0, nordc_bf - k - l   
+                    basis_klm(idx, 1) = k
+                    basis_klm(idx, 2) = l
+                    basis_klm(idx, 3) = m
+                    idx = idx + 1
+                end do
             end do
         end do
     end do
@@ -446,7 +461,7 @@ subroutine init_cusp()
                         endif
                         if (m .eq. 1 .and. (k+l).eq.alpha .and. (k+l+m).le.nordc_bf) then
                             B(alpha+(nordc_bf+1)*2+1, idx, n) = 1.0d0
-                            B(alpha+nordc_bf+1+1, idx, n+nctype) = 1.0d0
+                            B(alpha+(nordc_bf+1)  +1, idx, n+nctype) = 1.0d0
                         endif
 
                         idx = idx + 1
@@ -707,7 +722,8 @@ subroutine init_cusp()
 
             do j = 1, ncparm_bf
                 if (cusp_indices(i,j) .eq. 0) exit
-                write(ounit, '(4I8, F20.12)') basis_klm(j,1),basis_klm(j,2),basis_klm(j,3), cusp_indices(i,j), cusp_parameters(i,j)
+
+                write(ounit, '(4I8, F20.12)') basis_klm(cusp_indices(i,j),1),basis_klm(cusp_indices(i,j),2),basis_klm(cusp_indices(i,j),3), cusp_indices(i,j), cusp_parameters(i,j)
             end do
             write(ounit, *) "---------------------"
         end do
@@ -771,9 +787,9 @@ subroutine rios_distances(x)
     do cc = 1, 2
         do nc = 1, ncent
             if (cc == 1) then
-                r_cutoff = parm_bf((1+nordb_bf) + (iwctype(nc)-1)*(1+norda_bf) + 1)
+                r_cutoff = parm_bf((1+nordb_bf)*multb + (iwctype(nc)-1)*(1+norda_bf)*multa + 1)
             else
-                r_cutoff = parm_bf((1+nordb_bf) + (1+norda_bf)*nctype + (ncparm_bf+1)*(iwctype(nc)-1) + 1)
+                r_cutoff = parm_bf((1+nordb_bf)*multb + (1+norda_bf)*nctype*multa + (ncparm_bf+1)*(iwctype(nc)-1) + 1)
             end if
 
             inv_r_cutoff = 1.0d0 / r_cutoff  
@@ -1109,15 +1125,14 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
 
     end do
 
-10  continue
-
-if (norda_bf .eq. 0) goto 20
+10  if (norda_bf .eq. 0) goto 20
 
     do j = 1, ncent
         idx = (iwctype(j)-1)*(norda_bf+1)
         cutoff = parm_bf(offset_en+idx+1)
         inv_cutoff = 1.0d0 / cutoff
 
+        ! TODO make free parameter
         a_one = parm_bf(offset_en+idx+2) * cutoff/C
 
         do i = 1, nelec
@@ -1187,9 +1202,7 @@ if (norda_bf .eq. 0) goto 20
         end do
     end do
 
-20  continue
-    if (nordc_bf .eq. 0) return
-
+20  if (nordc_bf .eq. 0) return
 
     call rios_distances(x)
 
@@ -1203,6 +1216,7 @@ if (norda_bf .eq. 0) goto 20
                 cutoff = parm_bf(idx_phi+1)
                 inv_cutoff = 1.0d0 / cutoff
 
+                ! TODO change all these cutoff checks, as they only work for odd C values.
                 if (r_en(i,nc,0,2) < 0 .or. r_en(j,nc,0,2) < 0) cycle
 
                 phi = 0.00d0
@@ -1347,6 +1361,14 @@ if (norda_bf .eq. 0) goto 20
         endif
     end do
 
+    ! rij = sqrt((x(1,1)-x(1,3))**2 + (x(2,1)-x(2,3))**2 + (x(3,1)-x(3,3))**2)
+    ! do a=1,3
+    !         print *, 'X:', (quasi_x(a,1)  - (quasi_x(a,3) ))/(rij)
+    !         ! print *, 'd2X:', d2quasi_dx2(a,1,1), d2quasi_dx2(a,3,3)
+    ! end do
+    !     print *, 'done'
+
+
 
 
 end subroutine rios_backflow
@@ -1405,7 +1427,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     
     C = cutoff_scale
 
-    if (nordb_bf .eq. 0) goto 10
+    if (nordb_bf .eq. 0) goto 30
     cutoff = parm_bf(offset_ee+1)
     inv_cutoff = 1.0d0 / cutoff
 
@@ -1570,9 +1592,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     end do
 
 
-10  continue
-
-    if (norda_bf .eq. 0) goto 20
+30  if (norda_bf .eq. 0) goto 40
 
     do j = 1, ncent
         idx = (iwctype(j)-1)*(norda_bf+1)
@@ -1688,8 +1708,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     end do
 
 
-20  continue
-    if (nordc_bf .eq. 0) return
+40  if (nordc_bf .eq. 0) return
 
 
     !call single_rios_distances(xold, xold(:, iel), iel)
