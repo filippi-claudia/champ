@@ -31,6 +31,7 @@
       real(dp) :: ten
       real(dp), dimension(nsub, nsub) :: a
       real(dp), dimension(nelec) :: work
+      real(dp), dimension(nsub, nsub) :: a_save
 
       real(dp), dimension(2) :: det
       real(dp), parameter :: eps = 10.d0**(-40)
@@ -54,10 +55,59 @@
         a(1,2)=-a(1,2)*deti
        else
 
+        ! Save a copy of the matrix before dgetrf overwrites it
+        a_save = a
+
         call dgetrf(nsub,nsub,a,nsub,ipvt,info)
 
         if(info.gt.0) then
-          write(ounit,'(''MATINV: u(k,k)=0 with k= '',i5)') info
+          open(101, file='matinv_err.log', position='append', action='write')
+          write(101,'(a)')       '================================================='
+          write(101,'(a)')       'MATINV: dgetrf returned singular matrix'
+          write(101,'(a,i5)')    'MATINV: u(k,k)=0 at k = ', info
+          write(101,'(a,i5)')    'MATINV: matrix size nsub = ', nsub
+          write(101,'(a)')       'MATINV: Input matrix (before factorization):'
+          do ii=1,nsub
+            write(101,'(100(ES14.6,1x))') (a_save(ii,jj), jj=1,nsub)
+          end do
+          write(101,'(a)')       'MATINV: Checking for identical rows:'
+          do ii=1,nsub
+            do jj=ii+1,nsub
+              if(maxval(abs(a_save(ii,:)-a_save(jj,:))) .lt. 1.d-12) then
+                write(101,'(a,i4,a,i4,a,ES14.6)') '  Rows ', ii, ' and ', jj, &
+                  ' are identical (maxdiff=', maxval(abs(a_save(ii,:)-a_save(jj,:))), ')'
+              end if
+            end do
+          end do
+          write(101,'(a)')       'MATINV: Checking for identical columns:'
+          do ii=1,nsub
+            do jj=ii+1,nsub
+              if(maxval(abs(a_save(:,ii)-a_save(:,jj))) .lt. 1.d-12) then
+                write(101,'(a,i4,a,i4,a,ES14.6)') '  Cols ', ii, ' and ', jj, &
+                  ' are identical (maxdiff=', maxval(abs(a_save(:,ii)-a_save(:,jj))), ')'
+              end if
+            end do
+          end do
+          write(101,'(a)')       'MATINV: Checking for zero rows/columns:'
+          do ii=1,nsub
+            if(maxval(abs(a_save(ii,:))) .lt. 1.d-20) then
+              write(101,'(a,i4,a,ES14.6)') '  Row ', ii, ' is zero (max=', maxval(abs(a_save(ii,:))), ')'
+            end if
+            if(maxval(abs(a_save(:,ii))) .lt. 1.d-20) then
+              write(101,'(a,i4,a,ES14.6)') '  Col ', ii, ' is zero (max=', maxval(abs(a_save(:,ii))), ')'
+            end if
+          end do
+          write(101,'(a)')       'MATINV: Checking for NaN entries:'
+          do ii=1,nsub
+            do jj=1,nsub
+              if(a_save(ii,jj) .ne. a_save(ii,jj)) then
+                write(101,'(a,i4,a,i4)') '  NaN at row ', ii, ' col ', jj
+              end if
+            end do
+          end do
+          write(101,'(a)')       '================================================='
+          call flush(101)
+          close(101)
           call fatal_error('MATINV: info ne 0 in dgetrf')
 
         endif

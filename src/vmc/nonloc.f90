@@ -563,11 +563,13 @@ contains
       use m_backflow, only: nl_slm
       use matinv_mod, only: matinv
       use multislater, only: detiab
+      use mpiconf, only: idtask
 
       implicit none
 
       integer :: nxquad, iq, iel, ik, j, iwforb, iab,l
       integer :: ish, jorb, nel
+      character(len=64) :: dbgfile
       real(dp), dimension(nxquad) :: ratio
       real(dp), dimension(norb_tot,nxquad*nelec) :: orb
       real(dp), dimension(2) :: new_det
@@ -590,6 +592,23 @@ contains
             ik=ik+nel
             call dcopy(nel,orb(jorb,1+ish+(iq-1)*nelec),norb_tot,nl_slm(1+ik,iab),1)
           enddo
+
+          ! Debug: check for zero rows before matinv
+          do l=1,nel
+            if(maxval(abs(nl_slm((l-1)*nel+1:l*nel,iab))).lt.1.d-20) then
+              write(dbgfile,'(a,i5.5,a)') 'debug_matinv_nloc.',idtask,'.log'
+              open(101,file=dbgfile,position='append')
+              write(101,'(a)')       '=== NONLOCD_QUAD_BF: zero column detected ==='
+              write(101,'(a,i4,a,i4,a,i4,a,i4)') &
+                '  iq=', iq, ' iab=', iab, ' iwforb=', iwforb, ' zero col j=', l
+              write(101,'(a,i4,a)')  '  orb column ', iworbd(l+ish,kref), ':'
+              do j=1,nel
+                write(101,'(a,i4,a,ES14.6)') '    row ', j, ' = ', &
+                  orb(iworbd(l+ish,kref), j+ish+(iq-1)*nelec)
+              end do
+              close(101)
+            end if
+          end do
 
           call matinv(nl_slm(1,iab),nel,new_det(iab))
 
