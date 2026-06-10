@@ -6,7 +6,7 @@ contains
 !>
 !> @details Backflow functions can be selected in the input file using the flag "backflow".
 !> Flag 0: Blackflow disabled
-!> Flag 1: Trivial backflow (no transformation)
+!> Flag 1: Rios backflow
 !>
 !> @param[in]  x  Original electron coordinates (3, nelec)
 !> @param[out] none
@@ -25,12 +25,6 @@ subroutine backflow(x)
     if (ibackflow == 0) return
 
     if (ibackflow == 1) then
-        call trivial_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2)
-    else if (ibackflow == 2) then
-        call gaussian_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
-    else if (ibackflow == 3) then
-        call linear_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
-    else if (ibackflow == 4) then
         call rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     else
         call fatal_error('Backflow type not recognized.')
@@ -60,7 +54,7 @@ subroutine single_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_
     
     if (ibackflow == 0) return
 
-    if (ibackflow == 4) then
+    if (ibackflow == 1) then
         call single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
     else
         call fatal_error('Single backflow only implemented for Rios backflow.')
@@ -80,12 +74,7 @@ subroutine init_backflow(iflag)
 
     if (ibackflow == 0) return
 
-    if (ibackflow == 2) then
-        call init_gaussian_backflow(iflag)
-    else if (ibackflow == 3) then
-        continue
-        !call init_linear_backflow()
-    else if (ibackflow == 4) then
+    if (ibackflow == 1) then
         call init_rios_backflow(iflag,5,5,5)
     end if
 end subroutine init_backflow
@@ -96,7 +85,7 @@ subroutine init_backflow_arrays()
 
     if (ibackflow == 0) return
 
-    if (ibackflow == 4) then
+    if (ibackflow == 1) then
         call init_rios_backflow_arrays()
     end if
 end subroutine init_backflow_arrays
@@ -129,181 +118,6 @@ subroutine bf_distances(quasi_x)
 
 end
 
-
-subroutine trivial_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2)
-    use precision_kinds, only: dp
-    use system, only: nelec
-    implicit none
-    real(dp), dimension(3, nelec), intent(in) :: x
-    real(dp), dimension(3, nelec), intent(out) :: quasi_x
-    real(dp), dimension(3, nelec, 3, nelec), intent(out) :: dquasi_dx
-    real(dp), dimension(3, nelec, nelec), intent(out) :: d2quasi_dx2
-    integer :: i
-
-    ! Quasicoordinates equal to original coordinates
-    quasi_x = x
-
-    ! First derivatives are identity matrices
-    dquasi_dx = 0.0d0
-    do i = 1, nelec
-        dquasi_dx(1, i, 1, i) = 1.0d0
-        dquasi_dx(2, i, 2, i) = 1.0d0
-        dquasi_dx(3, i, 3, i) = 1.0d0
-    end do
-
-    ! Second derivatives are zero
-    d2quasi_dx2 = 0.0d0
-end
-
-subroutine init_gaussian_backflow(iflag)
-    use precision_kinds, only: dp
-    use m_backflow, only: parm_bf, nparm_bf
-    use m_backflow, only: allocate_m_backflow
-    implicit none
-    integer, intent(in) :: iflag
-
-    nparm_bf = 3
-    call allocate_m_backflow
-
-    parm_bf(1) = 0.0d0  ! lambda
-    parm_bf(2) = 0.0d0  ! mean
-    parm_bf(3) = 1.0d0  ! sigma
-
-end subroutine init_gaussian_backflow
-
-subroutine gaussian_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
-    use precision_kinds, only: dp
-    use system, only: nelec
-    use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
-    use m_backflow, only: parm_bf, nparm_bf
-    implicit none
-    real(dp), dimension(3, nelec), intent(in) :: x
-    real(dp), dimension(3, nelec), intent(out) :: quasi_x
-    real(dp), dimension(3, nelec, 3, nelec), intent(out) :: dquasi_dx
-    real(dp), dimension(3, nelec, nelec), intent(out) :: d2quasi_dx2
-    real(dp), dimension(3, nelec, nparm_bf), intent(out) :: dquasi_dp
-    real(dp) :: sigma, mean, rij, G, dGdr, d2Gdr2, lambda
-    real(dp) :: delta(3)
-    integer :: i, j, k, a, b
-
-    sigma=parm_bf(3)
-    mean=parm_bf(2)
-    lambda = parm_bf(1)
-
-
-    quasi_x = 0.0_dp
-    dquasi_dx = 0.0_dp
-    d2quasi_dx2 = 0.0_dp
-    dquasi_dp = 0.0_dp
-
-    ! Main loop
-    do i = 1, nelec
-
-
-        do a=1,3
-            quasi_x(a,i) = x(a,i)
-            dquasi_dx(a,i,a,i) = 1.0d0
-        enddo
-
-        do j = 1, nelec
-            if (i == j) cycle
-
-            ! delta_ij = r_i - r_j
-            delta(:) = x(:, i) - x(:, j)
-
-            rij = sqrt(delta(1)**2 + delta(2)**2 + delta(3)**2)
-
-            ! Gaussian
-            G = lambda * exp(-((rij-mean)/sigma)**2)
-
-            ! dG/dr
-            dGdr = G * ( - 2.0d0 * (rij-mean) / sigma**2 )
-
-            ! d2G/dr2
-            d2Gdr2 = G * ( (4.0d0*(rij-mean)**2)/sigma**4 - 2.0d0/sigma**2 - 4.0d0*(rij-mean)/sigma**2/rij)
-
-            ! Update quasi_x
-            do a = 1, 3
-                quasi_x(a, i) = quasi_x(a, i) + G * delta(a)
-                do b = 1, 3
-                    dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + dGdr * delta(b)/rij * delta(a) 
-                    dquasi_dx(a,i,b,j) = dquasi_dx(a,i,b,j) - dGdr * delta(b)/rij * delta(a) 
-                enddo
-                dquasi_dx(a,i,a,i) = dquasi_dx(a,i,a,i) + G
-                dquasi_dx(a,i,a,j) = dquasi_dx(a,i,a,j) - G
-                dquasi_dp(a,i,1) = dquasi_dp(a,i,1) + exp(-((rij-mean)/sigma)**2) * delta(a)
-                dquasi_dp(a,i,2) = dquasi_dp(a,i,2) + G * 2.0d0 * (rij-mean) / sigma**2 * delta(a)
-                dquasi_dp(a,i,3) = dquasi_dp(a,i,3) + G * 2.0d0 * (rij-mean)**2 / sigma**3 * delta(a)
-            enddo
-
-
-            do a = 1, 3
-                d2quasi_dx2(a,i,i) = d2quasi_dx2(a,i,i) &
-                    + delta(a) * d2Gdr2 &
-                    + 2.0d0 * dGdr * delta(a)/rij
-                d2quasi_dx2(a,i,j) = d2quasi_dx2(a,i,j) &
-                    + delta(a) * d2Gdr2 &
-                    + 2.0d0 * dGdr * delta(a)/rij
-            end do
-
-        end do
-    end do
-
-
-end subroutine gaussian_backflow
-
-
-
-subroutine linear_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
-    use precision_kinds, only: dp
-    use system, only: nelec
-    use m_backflow, only: parm_bf, nparm_bf
-    implicit none
-    real(dp), dimension(3, nelec), intent(in) :: x
-    real(dp), dimension(3, nelec), intent(out) :: quasi_x
-    real(dp), dimension(3, nelec, 3, nelec), intent(out) :: dquasi_dx
-    real(dp), dimension(3, nelec, nelec), intent(out) :: d2quasi_dx2
-    real(dp), dimension(3, nelec, 3), intent(out) :: dquasi_dp
-    real(dp) :: sigma, mean, rij, G, dGdr, d2Gdr2, lambda
-    real(dp) :: delta(3)
-    integer :: i, j, k, a, b
-
-    lambda = parm_bf(1)
-
-
-    quasi_x = 0.0_dp
-    dquasi_dx = 0.0_dp
-    d2quasi_dx2 = 0.0_dp
-
-    ! Main loop
-    do i = 1, nelec
-
-        ! Start with q_i = r_i
-        
-        do a=1,3
-            quasi_x(a, i) = x(a, i)
-
-            dquasi_dx(a,i,a,i) = 1.0d0
-        enddo
-
-        do j = 1, nelec
-            if (i == j) cycle
-
-            do a = 1, 3
-                delta(a) = x(a, i) - x(a, j)
-
-                quasi_x(a, i) = quasi_x(a, i) + lambda * delta(a)
-                dquasi_dx(a,i,a,i) = dquasi_dx(a,i,a,i) + lambda
-                dquasi_dx(a,i,a,j) = dquasi_dx(a,i,a,j) - lambda
-                dquasi_dp(a,i,1) = dquasi_dp(a,i,1) + delta(a)
-                    
-            end do
-
-        end do
-    end do
-
-
-end subroutine linear_backflow
 
 subroutine init_rios_backflow(iflag, orda, ordb, ordc)
     use precision_kinds, only: dp
@@ -381,7 +195,7 @@ end subroutine init_rios_backflow_arrays
 subroutine init_cusp()
     use precision_kinds, only: dp
     use m_backflow, only: parm_bf, c_cuspconst, nparm_bf, norda_bf, nordb_bf, nordc_bf, ncparm_bf, cutoff_scale
-    use m_backflow, only: B, dB_dcutoff, cusp_parameters, cusp_indices, inv_cusp_indices, inv_cusp_parameters, basis_klm, basis_klmn
+    use m_backflow, only: B, dB_dcutoff, cusp_parameters, cusp_indices, inv_cusp_indices, inv_cusp_parameters
     use m_backflow, only: cusp_cutoff_deriv, basis_klmn
     use system, only: nctype
     use control, only: ipr
@@ -730,8 +544,7 @@ subroutine init_cusp()
 
             do j = 1, ncparm_bf
                 if (cusp_indices(i,j) .eq. 0) exit
-                print *, 'TODO'
-                !write(ounit, '(4I8, F20.12)') basis_klm(cusp_indices(i,j),1),basis_klm(cusp_indices(i,j),2),basis_klm(cusp_indices(i,j),3), cusp_indices(i,j), cusp_parameters(i,j)
+                write(ounit, '(I8, F20.12)') cusp_indices(i,j), cusp_parameters(i,j)
             end do
             write(ounit, *) "---------------------"
         end do
@@ -2036,17 +1849,17 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                                 phipj(a) = phipj(a) + parm_bf(k) * tmp1
                                 thetapj(a) = thetapj(a) + parm_bf(kk) * tmp1
 
-                                tmp1 = -r_en(j,nc,l,2) * single_r_en(nc,m,2) * single_r_ee_gl(j,a,n) 
+                                tmp1 = -r_en(j,nc,l,2) * single_r_en(nc,m,2) * single_r_ee_gl(a,j,n) 
                                 phipi(a) = phipi(a) + parm_bf(k) * tmp1
                                 phipj(a) = phipj(a) - parm_bf(k) * tmp1
                                 thetapi(a) = thetapi(a) + parm_bf(kk) * tmp1
                                 thetapj(a) = thetapj(a) - parm_bf(kk) * tmp1
 
-                                ! tmp1 = -2.0d0 * r_en_gl(j,a,nc,l,2) * single_r_en(nc,m,2) * single_r_ee_gl(j,a,n)
+                                ! tmp1 = -2.0d0 * r_en_gl(j,a,nc,l,2) * single_r_en(nc,m,2) * single_r_ee_gl(a,j,n)
                                 ! phippi = phippi + parm_bf(k) * tmp1
                                 ! thetappi = thetappi + parm_bf(kk) * tmp1
 
-                                ! tmp1 = -2.0d0 * r_en(j,nc,l,2) * single_r_en_gl(a,nc,m,2) * single_r_ee_gl(j,a,n)
+                                ! tmp1 = -2.0d0 * r_en(j,nc,l,2) * single_r_en_gl(a,nc,m,2) * single_r_ee_gl(a,j,n)
                                 ! phippj = phippj - parm_bf(k) * tmp1
                                 ! thetappj = thetappj - parm_bf(kk) * tmp1
                             enddo
@@ -2059,7 +1872,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                             ! phippj = phippj + parm_bf(k) * tmp1
                             ! thetappj = thetappj + parm_bf(kk) * tmp1
 
-                            ! tmp1 = r_en(j,nc,l,2) * single_r_en(nc,m,2) * single_r_ee_gl(j,4,n)
+                            ! tmp1 = r_en(j,nc,l,2) * single_r_en(nc,m,2) * single_r_ee_gl(4,j,n)
                             ! phippi = phippi + parm_bf(k) * tmp1
                             ! thetappi = thetappi + parm_bf(kk) * tmp1
                             ! phippj = phippj + parm_bf(k) * tmp1
@@ -2103,7 +1916,7 @@ subroutine backflow_accept(iel)
 
     quasi_x = quasi_x_new
     dquasi_dx = dquasi_dx_new
-    !d2quasi_dx2 = d2quasi_dx2_new  ! Not needed during single-electron loop
+    !d2quasi_dx2 = d2quasi_dx2_new  ! Not needed during single-electron loop, maybe for forces later
 
     do cc = 1, 2
         do nc = 1, ncent

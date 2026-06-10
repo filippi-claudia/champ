@@ -455,7 +455,7 @@ contains
       end if
 
       ! Finite difference test for ddx and d2dx2
-      if (.true.) then
+      if (.false.) then
         call test_ddx_d2dx2_finite_diff(xold, print_all_ddx_d2dx2_fd)
         stop
       end if
