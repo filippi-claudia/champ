@@ -190,7 +190,7 @@ contains
       use multideterminante_mod, only: multideterminante_grad
       use multideterminant_mod, only: compute_ymat
       use system, only: ndn, nup
-      use m_backflow, only: ibackflow, detn_bf, dslm, slmin_bf, dslm_bf
+      use m_backflow, only: ibackflow, detn_bf, dslm, slmin_bf, dslm_bf, dquasi_dx, dquasi_dx_new
       use backflow_mod, only: backflow
       use config,  only: xold
 
@@ -242,7 +242,7 @@ contains
             enddo
           enddo
           if (ibackflow.gt.0) then
-            call determinante_ref_grad_bf(iel,slmi(1,1,isorb),dslm(1,1,1,isorb),vref(1,isorb))
+            call determinante_ref_grad_bf(iel,slmi(1,1,isorb),dslm(1,1,1,isorb),dquasi_dx,vref(1,isorb))
           else
             call determinante_ref_grad(iel,slmi(1,iab,isorb),dorb_tmp(1,1,isorb),norb,vref(1,isorb))
           endif
@@ -286,7 +286,7 @@ contains
 
         do isorb=1,nwftypeorb
           if (ibackflow.gt.0) then
-            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),vref(1,isorb))
+            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),dquasi_dx_new,vref(1,isorb))
           else
             call determinante_ref_grad(iel,slmin(1,isorb),dorbn(1,1,isorb),norb_tot,vref(1,isorb))
           endif
@@ -360,7 +360,7 @@ contains
 
 
           if (ibackflow.gt.0) then
-            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),vref(1,isorb))
+            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),dquasi_dx_new,vref(1,isorb))
           else
             call determinante_ref_grad(iel,slmin,dorb_tmp,norb,vref)
           endif
@@ -376,7 +376,7 @@ contains
           endif
 
           if (ibackflow.gt.0) then
-            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),vref(1,isorb))
+            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),dquasi_dx_new,vref(1,isorb))
           else
             call determinante_ref_grad(iel,slmi(1,iab,1),dorb_tmp,norb,vref)
           endif
@@ -446,7 +446,7 @@ contains
       return
       end
 
-      subroutine determinante_ref_grad_bf(iel,slmi,dslm,ddx_ref)
+      subroutine determinante_ref_grad_bf(iel,slmi,dslm,dquasi_dx_in,ddx_ref)
 
       use dorb_m,  only: iworbd
       use precision_kinds, only: dp
@@ -456,7 +456,6 @@ contains
       use slater, only: kref
       use dorb_m, only: iworbd
       use system, only: nelec
-      use m_backflow, only: dquasi_dx
       implicit none
 
       integer :: iel, ik, ish, j, jel, norbs
@@ -464,6 +463,7 @@ contains
 
       real(dp), dimension(nmat_dim,2) :: slmi
       real(dp), dimension(3, nmat_dim,2) :: dslm
+      real(dp), dimension(3, nelec, 3, nelec), intent(in) :: dquasi_dx_in
       real(dp), dimension(3) :: ddx_ref
 
 
@@ -485,7 +485,7 @@ contains
                 do jj=1,3
                   ddx_ref(kk)=ddx_ref(kk)+slmi((j-1)*nel + l,iab)&
                   *dslm(jj,(l-1)*nel + j,iab) &
-                  * dquasi_dx(kk,iel,jj,j+ish)
+                  * dquasi_dx_in(jj,j+ish,kk,iel)
 
                 enddo
               enddo
