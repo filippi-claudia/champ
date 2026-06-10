@@ -202,7 +202,7 @@ contains
       real(dp), dimension(3,nelec) :: quasi_plus, quasi_base, quasi_minus, d2quasi_fd
       real(dp) :: eps_diff
       logical, parameter :: do_cusp_deriv_check = .false.
-      logical, parameter :: do_cusp_energy_check = .true.
+      logical, parameter :: do_cusp_energy_check = .false.
       logical, parameter :: print_all_ddx_d2dx2_fd = .true.
 
 ! entry point to zero out all averages etc.
@@ -393,8 +393,8 @@ contains
         x_orig = xold
 
         ! Electron-Nucleus local-energy scan (single +x direction)
-        do ic = 1, 5
-          do i = 1, 5
+        do ic = 1, ncent
+          do i = 1, nelec
             write(ounit,'(A,I3,A,I3)') 'e-n local energy scan: e=', i, ' c=', ic
             do ir = 1, nr_scan
               epsilon = r_scan(ir)
@@ -413,8 +413,8 @@ contains
         end do
 
         ! Electron-Electron local-energy scan (single +x direction)
-        do i = 1, 1
-          do j = i+1, 3
+        do i = 1, nelec
+          do j = i+1, nelec
             if ( (i .le. nup .and. j .le. nup) .or. (i .gt. nup .and. j .gt. nup) ) then
               write(ounit,'(A,I3,A,I3)') 'e-e(P) local energy scan: i=', i, ' j=', j
             else
@@ -455,7 +455,7 @@ contains
       end if
 
       ! Finite difference test for ddx and d2dx2
-      if (.false.) then
+      if (.true.) then
         call test_ddx_d2dx2_finite_diff(xold, print_all_ddx_d2dx2_fd)
         stop
       end if

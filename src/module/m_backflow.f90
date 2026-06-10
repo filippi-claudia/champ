@@ -83,6 +83,7 @@ module m_backflow
     integer, dimension(:, :), allocatable :: cusp_indices, inv_cusp_indices
     ! Store (k, l, m) indices for each basis function column
     integer, dimension(:, :), allocatable :: basis_klm
+    integer, dimension(:, :, :, :, :), allocatable :: basis_klmn
 
     real(dp), dimension(:), allocatable :: parm_bf
     real(dp), dimension(:), allocatable :: deriv_parm_bf
@@ -99,7 +100,7 @@ module m_backflow
     public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, maxord
     public :: r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
     public :: single_r_ee, single_r_ee_gl, single_rvec_ee, single_r_en, single_r_en_gl, single_rvec_en
-    public :: B, dB_dcutoff, cusp_parameters, cusp_indices, inv_cusp_parameters, inv_cusp_indices, basis_klm
+    public :: B, dB_dcutoff, cusp_parameters, cusp_indices, inv_cusp_parameters, inv_cusp_indices, basis_klm, basis_klmn
     public :: cusp_cutoff_deriv
 
 
@@ -150,6 +151,7 @@ contains
         if (.not. allocated(inv_cusp_parameters)) allocate (inv_cusp_parameters(nparm_bf, ncparm_bf))
         if (.not. allocated(inv_cusp_indices)) allocate (inv_cusp_indices(nparm_bf, ncparm_bf))
         if (.not. allocated(basis_klm)) allocate (basis_klm(ncparm_bf*nctype + nctype, 3))
+        if (.not. allocated(basis_klmn)) allocate (basis_klmn(0:nordc_bf, 0:nordc_bf, 0:nordc_bf, nctype, 2))
       endif
     end subroutine allocate_m_backflow
   
@@ -199,6 +201,7 @@ contains
         if (allocated(inv_cusp_parameters)) deallocate(inv_cusp_parameters)
         if (allocated(inv_cusp_indices)) deallocate(inv_cusp_indices)
         if (allocated(basis_klm)) deallocate(basis_klm)
+        if (allocated(basis_klmn)) deallocate(basis_klmn)
       endif
     end subroutine deallocate_m_backflow
   
