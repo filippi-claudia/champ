@@ -19,7 +19,6 @@ contains
       use dorb_m,  only: iworbd
       use matinv_mod, only: matinv
       use config, only: xold
-      use mpiconf, only: idtask
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use orbitals_qmckl_mod, only: orbitalse_qmckl_bf
@@ -34,7 +33,6 @@ contains
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
       integer, dimension(nelec):: indices
-      character(len=64) :: dbgfile
     
 
 
@@ -71,39 +69,7 @@ contains
               call dcopy(nel,dorbn_bf(jorb,1+ish,3,k),norb_tot,dslm_bf(3,1+jk,iab,k),3)
             enddo
 
-            if(nel.gt.0) then
-              ! Debug: check for zero rows before matinv
-              do i=1,nel
-                sum=0.d0
-                do j=1,nel
-                  sum=sum+abs(slmin_bf((j-1)*nel+i,iab,k))
-                end do
-                if(sum.lt.1.d-20) then
-                  write(dbgfile,'(a,i5.5,a)') 'debug_matinv_dete.',idtask,'.log'
-                  open(101,file=dbgfile,position='append')
-                  write(101,'(a)')       '=== DETERMINANTE: zero row detected ==='
-                  write(101,'(a,i4,a,i4,a,i4,a,i4)') &
-                    '  iel=', iel, ' iab=', iab, ' k=', k, ' zero row i=', i
-                  write(101,'(a,20i4)')  '  indices=', indices(1:nelec)
-                  write(101,'(a)')       '  orbn_bf values for this row:'
-                  do j=1,nel
-                    jorb=iworbd(j+ish,kref)
-                    write(101,'(a,i4,a,i4,a,ES14.6,a,i4)') &
-                      '    elec=', i+ish, ' orb=', jorb, &
-                      ' orbn_bf=', orbn_bf(i+ish,jorb,k), &
-                      ' indices=', indices(i+ish)
-                  end do
-                  write(101,'(a)')       '  quasi_x_new for this electron:'
-                  write(101,'(a,3ES14.6)') '    ', quasi_x_new(:,i+ish)
-                  write(101,'(a)')       '  xold for this electron:'
-                  write(101,'(a,3ES14.6)') '    ', xold(:,i+ish)
-                  write(101,'(a)')       '  x(:,iel):'
-                  write(101,'(a,3ES14.6)') '    ', x(:,iel)
-                  close(101)
-                end if
-              end do
-              call matinv(slmin_bf(1,iab,k),nel,detn_bf(iab,k))
-            end if
+            if(nel.gt.0) call matinv(slmin_bf(1,iab,k),nel,detn_bf(iab,k))
           enddo
         enddo
 
