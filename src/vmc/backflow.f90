@@ -174,13 +174,14 @@ subroutine init_rios_backflow_arrays()
         nparm_bf = nparm_bf + (1 + nordb_bf)
     end if
     if (nordc_bf .gt. 0) then
-        if (mod(nordc_bf, 2) .eq. 0) then
-            q = nordc_bf/2
-            ncparm_bf = (q+1)*(q+2)*(4*q+3)/6
-        else
-            q = (nordc_bf-1)/2
-            ncparm_bf = (q+1)*(q+2)*(4*q+9)/6
-        endif
+        ! if (mod(nordc_bf, 2) .eq. 0) then
+        !     q = nordc_bf/2
+        !     ncparm_bf = (q+1)*(q+2)*(4*q+3)/6
+        ! else
+        !     q = (nordc_bf-1)/2
+        !     ncparm_bf = (q+1)*(q+2)*(4*q+9)/6
+        ! endif
+        ncparm_bf = (nordc_bf+1)*(nordc_bf+2)*(nordc_bf+3)/6  
         ! c_cuspconst = 5 * nordc_bf + 5
         c_cuspconst = 10 * (nordc_bf + 1)  
         nparm_bf = nparm_bf + (ncparm_bf + 1) * nctype + (ncparm_bf) * nctype
@@ -222,7 +223,7 @@ subroutine init_cusp()
         do k = 0, nordc_bf
             do l = 0, nordc_bf - k
                 do m = 0, nordc_bf - k - l
-                    if (k > l) cycle
+                    ! if (k > l) cycle
                     basis_klmn(k,l,m,n,1) = idx + offset
                     idx = idx + 1
                 end do
@@ -233,7 +234,7 @@ subroutine init_cusp()
         do k = 0, nordc_bf
             do l = 0, nordc_bf - k
                 do m = 0, nordc_bf - k - l   
-                    if (k > l) cycle
+                    ! if (k > l) cycle
                     basis_klmn(k,l,m,n,2) = idx + offset
                     idx = idx + 1
                 end do
@@ -257,13 +258,13 @@ subroutine init_cusp()
             do k=0,nordc_bf
                 do l=0,nordc_bf - k
                     do m=0,nordc_bf-k-l
-                        if (k > l) then
+                        ! if (k > l) then
                             idx1 = basis_klmn(l,k,m,n,1) - (idx_phi + 1)
                             idx2 = basis_klmn(l,k,m,n,2) - idx_theta
-                        else
-                            idx1 = basis_klmn(k,l,m,n,1) - (idx_phi + 1)
-                            idx2 = basis_klmn(k,l,m,n,2) - idx_theta
-                        endif
+                        ! else
+                        !     idx1 = basis_klmn(k,l,m,n,1) - (idx_phi + 1)
+                        !     idx2 = basis_klmn(k,l,m,n,2) - idx_theta
+                        ! endif
                         if (k .eq. 0 .and. (l+m).eq.alpha) then
                             B(alpha+1, idx1, n) = B(alpha+1, idx1, n) - cutoff_scale/cutoff
                             ! d/d(cutoff) of -cutoff_scale/cutoff = cutoff_scale/cutoff^2
@@ -291,12 +292,6 @@ subroutine init_cusp()
                 enddo
             enddo
         enddo
-
-        ! do alpha = 1, 10
-        !     print *, B(alpha,:,n)
-        !     print *, '---'
-        ! enddo
-        ! stop
 
         ! Solve Phi terms (B(:,:,n)) using Gaussian Elimination to RREF
         ! Apply same operations to dB_dcutoff to get derivative of RREF result
@@ -1054,13 +1049,13 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
                 do l = 0, nordc_bf
                     do m = 0, nordc_bf - l
                         do n = 0, nordc_bf - l - m
-                            if (l > m) then
+                            ! if (l > m) then
                                 k = basis_klmn(m,l,n,iwctype(nc),1)
                                 kk = basis_klmn(m,l,n,iwctype(nc),2)
-                            else
-                                k = basis_klmn(l,m,n,iwctype(nc),1)
-                                kk = basis_klmn(l,m,n,iwctype(nc),2)
-                            end if
+                            ! else
+                            !     k = basis_klmn(l,m,n,iwctype(nc),1)
+                            !     kk = basis_klmn(l,m,n,iwctype(nc),2)
+                            ! end if
                             phi = phi + parm_bf(k) * r_en(i,nc,l,2) * r_en(j,nc,m,2) * r_ee(i,j,n) 
                             theta = theta + parm_bf(kk) * r_en(i,nc,l,2) * r_en(j,nc,m,2) * r_ee(i,j,n) 
                             do a = 1, 3
@@ -1565,13 +1560,13 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                 do l = 0, nordc_bf
                     do m = 0, nordc_bf - l
                         do n = 0, nordc_bf - l - m
-                            if (l > m) then
+                            ! if (l > m) then
                                 k = basis_klmn(m,l,n,iwctype(nc),1)
                                 kk = basis_klmn(m,l,n,iwctype(nc),2)
-                            else
-                                k = basis_klmn(l,m,n,iwctype(nc),1)
-                                kk = basis_klmn(l,m,n,iwctype(nc),2)
-                            end if
+                            ! else
+                            !     k = basis_klmn(l,m,n,iwctype(nc),1)
+                            !     kk = basis_klmn(l,m,n,iwctype(nc),2)
+                            ! end if
                             phi = phi + parm_bf(k) * r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n) 
                             theta = theta + parm_bf(kk) * r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n) 
                             do a = 1, 3
@@ -1646,13 +1641,13 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                 do l = 0, nordc_bf
                     do m = 0, nordc_bf - l
                         do n = 0, nordc_bf - l - m
-                            if (l > m) then
+                            ! if (l > m) then
                                 k = basis_klmn(m,l,n,iwctype(nc),1)
                                 kk = basis_klmn(m,l,n,iwctype(nc),2)
-                            else
-                                k = basis_klmn(l,m,n,iwctype(nc),1)
-                                kk = basis_klmn(l,m,n,iwctype(nc),2)
-                            end if
+                            ! else
+                            !     k = basis_klmn(l,m,n,iwctype(nc),1)
+                            !     kk = basis_klmn(l,m,n,iwctype(nc),2)
+                            ! end if
                             phi = phi + parm_bf(k) * r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n) 
                             theta = theta + parm_bf(kk) * r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n) 
                             do a = 1, 3
@@ -1750,13 +1745,13 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                 do l = 0, nordc_bf
                     do m = 0, nordc_bf - l
                         do n = 0, nordc_bf - l - m
-                            if (l > m) then
+                            ! if (l > m) then
                                 k = basis_klmn(m,l,n,iwctype(nc),1)
                                 kk = basis_klmn(m,l,n,iwctype(nc),2)
-                            else
-                                k = basis_klmn(l,m,n,iwctype(nc),1)
-                                kk = basis_klmn(l,m,n,iwctype(nc),2)
-                            end if
+                            ! else
+                            !     k = basis_klmn(l,m,n,iwctype(nc),1)
+                            !     kk = basis_klmn(l,m,n,iwctype(nc),2)
+                            ! end if
                             phi = phi + parm_bf(k) * single_r_en(nc,l,2) * r_en(j,nc,m,2) * single_r_ee(j,n) 
                             theta = theta + parm_bf(kk) * single_r_en(nc,l,2) * r_en(j,nc,m,2) * single_r_ee(j,n) 
                             do a = 1, 3
@@ -1831,13 +1826,13 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                 do l = 0, nordc_bf
                     do m = 0, nordc_bf - l
                         do n = 0, nordc_bf - l - m
-                            if (l > m) then
+                            ! if (l > m) then
                                 k = basis_klmn(m,l,n,iwctype(nc),1)
                                 kk = basis_klmn(m,l,n,iwctype(nc),2)
-                            else
-                                k = basis_klmn(l,m,n,iwctype(nc),1)
-                                kk = basis_klmn(l,m,n,iwctype(nc),2)
-                            end if
+                            ! else
+                            !     k = basis_klmn(l,m,n,iwctype(nc),1)
+                            !     kk = basis_klmn(l,m,n,iwctype(nc),2)
+                            ! end if
                             phi = phi + parm_bf(k) * r_en(j,nc,l,2) * single_r_en(nc,m,2) * single_r_ee(j,n) 
                             theta = theta + parm_bf(kk) * r_en(j,nc,l,2) * single_r_en(nc,m,2) * single_r_ee(j,n) 
                             do a = 1, 3
