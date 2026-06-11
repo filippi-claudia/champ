@@ -1,0 +1,36 @@
+{
+  "description": "Water VMC full optimization starting from a DFT wave function (TREXIO)",
+  "labels": [
+    "VMC",
+    "TREXIO",
+    "H2O",
+    "water",
+    "DFT",
+    "optimization"
+  ],
+  "requires": [
+    "trexio"
+  ],
+  "cases": [
+    {
+      "name": "np2",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "vmc_h2o_dft_optall.inp",
+          "output": "vmc_h2o_dft_optall_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "vmc_h2o_dft_optall_core_2.out",
+          "match": "total E",
+          "value": -17.228156,
+          "error": 0.0038242
+        }
+      ]
+    }
+  ]
+}

@@ -91,4 +91,4 @@ jobs:
 
           cmake --build build -- -j$(nproc)
           cd build
-          ctest --output-on-failure --verbose -L "QMCKL"
+          ctest --output-on-failure -j "$(nproc)" -L "QMCKL"

@@ -1,0 +1,73 @@
+{
+  "description": "Nitroxyl (HNO) two-state CIPSI wave function, energy only (322 determinants / 143 CSFs)",
+  "labels": [
+    "VMC",
+    "HNO",
+    "cipsi",
+    "excited"
+  ],
+  "cases": [
+    {
+      "name": "np1",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "vmc.inp",
+          "output": "vmc_core_1.out",
+          "nproc": 1
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "vmc_core_1.out",
+          "match": "total E",
+          "value": -26.4897187,
+          "error": 0.0029363,
+          "occurrence": 1,
+          "comment": "state 1 energy"
+        },
+        {
+          "type": "value",
+          "file": "vmc_core_1.out",
+          "match": "total E",
+          "value": -26.3314821,
+          "error": 0.0032612,
+          "occurrence": -1,
+          "comment": "state 2 energy"
+        }
+      ]
+    },
+    {
+      "name": "np2",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "vmc.inp",
+          "output": "vmc_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "vmc_core_2.out",
+          "match": "total E",
+          "value": -26.4897228,
+          "error": 0.00208,
+          "occurrence": 1,
+          "comment": "state 1 energy"
+        },
+        {
+          "type": "value",
+          "file": "vmc_core_2.out",
+          "match": "total E",
+          "value": -26.3247255,
+          "error": 0.0022513,
+          "occurrence": -1,
+          "comment": "state 2 energy"
+        }
+      ]
+    }
+  ]
+}

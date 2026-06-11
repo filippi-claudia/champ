@@ -1,0 +1,49 @@
+{
+  "description": "HDF5 checkpoint/restart for VMC: step1 runs 500 blocks and dumps the full state, step2 restores and runs 500 more; the cumulative energy over all 1000 blocks must match the reference",
+  "labels": [
+    "VMC",
+    "HDF5",
+    "restart",
+    "CH2O",
+    "excited"
+  ],
+  "requires": [
+    "trexio"
+  ],
+  "cases": [
+    {
+      "name": "np2",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "step1.inp",
+          "output": "step1_core_2.out",
+          "nproc": 2,
+          "error_output": "error_step1"
+        },
+        {
+          "program": "vmc",
+          "input": "step2.inp",
+          "output": "step2_core_2.out",
+          "nproc": 2,
+          "error_output": "error_step2"
+        }
+      ],
+      "checks": [
+        {
+          "type": "file_exists",
+          "file": "restart_vmc.hdf5",
+          "comment": "checkpoint written by step1"
+        },
+        {
+          "type": "value",
+          "file": "step2_core_2.out",
+          "match": "total E",
+          "value": -22.6202928,
+          "error": 0.0058981,
+          "comment": "cumulative energy over 1000 blocks"
+        }
+      ]
+    }
+  ]
+}

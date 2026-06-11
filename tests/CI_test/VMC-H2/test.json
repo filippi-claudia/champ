@@ -1,0 +1,95 @@
+{
+  "description": "H2 total energy with the sr_n and corsamp methods (STO CVB1 basis)",
+  "labels": [
+    "VMC",
+    "H2",
+    "STO-CVB1",
+    "hydrogen"
+  ],
+  "cases": [
+    {
+      "name": "energy-np1",
+      "comment": "H2 energy with sr_n method",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "revised_vmc.inp",
+          "output": "revised_vmc_energy_core_1.out",
+          "nproc": 1
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "revised_vmc_energy_core_1.out",
+          "match": "total E",
+          "value": -1.0046458,
+          "error": 0.0084583
+        }
+      ]
+    },
+    {
+      "name": "energy-np2",
+      "comment": "H2 energy with sr_n method",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "revised_vmc.inp",
+          "output": "revised_vmc_energy_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "revised_vmc_energy_core_2.out",
+          "match": "total E",
+          "value": -1.0090406,
+          "error": 0.0054465
+        }
+      ]
+    },
+    {
+      "name": "corsamp-np1",
+      "comment": "H2 energy with corsamp method",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "revised_vmc_corsamp.inp",
+          "output": "revised_vmc_corsamp_core_1.out",
+          "nproc": 1
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "revised_vmc_corsamp_core_1.out",
+          "match": "total E",
+          "value": -0.9923642,
+          "error": 0.0102988
+        }
+      ]
+    },
+    {
+      "name": "corsamp-np2",
+      "comment": "H2 energy with corsamp method",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "revised_vmc_corsamp.inp",
+          "output": "revised_vmc_corsamp_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "revised_vmc_corsamp_core_2.out",
+          "match": "total E",
+          "value": -1.0005539,
+          "error": 0.007121
+        }
+      ]
+    }
+  ]
+}

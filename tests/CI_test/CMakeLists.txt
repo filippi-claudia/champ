@@ -1,60 +1,141 @@
-# PLT@NLeSC(2020)
-# Ravindra Shinde (2021)
-# (c) TREX-CoE (https://trex-coe.eu)
+# CHAMP CI integration tests
+# Ravindra Shinde (2026)
+#
+# Every test folder in this directory carries a declarative `test.json`
+# manifest: which program to run (vmc/dmc), on how many MPI ranks, and
+# which quantities to compare against reference values with statistical
+# error bars.  The manifests are validated, staged and executed by
+# champ_test_runner.py; this file only registers one ctest per case.
+#
+# Usage (from the build directory):
+#   ctest -N                      list all tests
+#   ctest -j 4                    run everything, 4 cores in parallel
+#   ctest -L VMC                  run tests labelled VMC
+#   ctest -R VMC-H2               run tests whose name matches VMC-H2
+#   ctest --print-labels          show all labels
+#
+# Adding a new test: copy a test folder, edit test.json, re-run cmake.
+# See README.md in this directory for the manifest reference.
 
-# How to use these CTest tests:
-# 1. After a successful build, "cd build" and run "ctest"
-# 2. To add more tests, just create a folder under CI_tests and have
-#    a local bash script in that folder. Capitalize the words in the script name to convert them into ctest labels.
-#    For example, if you have a script called "VMC_H2O_TREXIO.sh" in the folder "CI_tests/test_1", then the ctest will create labels "VMC"
-#    and "H2O" and "TREXIO" for that test. The script name should be unique.
-# 3. CTest will automatically run all the tests
-# 4. To list the tests, run "ctest -N"
-
-
-if(NOT WIN32)
-  string(ASCII 27 Esc)
-  set(ColourReset "${Esc}[m")
-  set(ColourBold  "${Esc}[1m")
-  set(Red         "${Esc}[31m")
-  set(Green       "${Esc}[32m")
-  set(Yellow      "${Esc}[33m")
-  set(Blue        "${Esc}[34m")
-  set(Magenta     "${Esc}[35m")
-  set(Cyan        "${Esc}[36m")
-  set(White       "${Esc}[37m")
-  set(BoldRed     "${Esc}[1;31m")
-  set(BoldGreen   "${Esc}[1;32m")
-  set(BoldYellow  "${Esc}[1;33m")
-  set(BoldBlue    "${Esc}[1;34m")
-  set(BoldMagenta "${Esc}[1;35m")
-  set(BoldCyan    "${Esc}[1;36m")
-  set(BoldWhite   "${Esc}[1;37m")
+find_package(Python3 COMPONENTS Interpreter)
+if(NOT Python3_Interpreter_FOUND)
+  message(WARNING "Python3 interpreter not found -- CHAMP CI tests are disabled")
+  return()
 endif()
 
+set(CHAMP_TEST_RUNNER "${CMAKE_CURRENT_SOURCE_DIR}/champ_test_runner.py")
 
-file(GLOB_RECURSE tests_script LIST_DIRECTORIES false "*.sh")
-  foreach(test_src ${tests_script})
-      get_filename_component(dir ${test_src} PATH)
-      get_filename_component(scriptname ${test_src} NAME)
+# The MPI launcher comes from FindMPI (already required at the top level)
+# but can be overridden, e.g. for srun or to add --oversubscribe.
+set(CHAMP_TEST_MPIEXEC "${MPIEXEC_EXECUTABLE}" CACHE STRING
+    "MPI launcher used to run the CI tests")
+set(CHAMP_TEST_NUMPROC_FLAG "${MPIEXEC_NUMPROC_FLAG}" CACHE STRING
+    "Flag of CHAMP_TEST_MPIEXEC that sets the number of ranks")
+set(CHAMP_TEST_MPIEXEC_PREFLAGS "${MPIEXEC_PREFLAGS}" CACHE STRING
+    "Extra launcher flags placed before the executable (e.g. --oversubscribe)")
 
-      # Get filename and dir components as tags for the test
-      string(REPLACE ".sh" "" fname_no_sh "${scriptname}")
-      string(REPLACE "_" ";" tags "${fname_no_sh}")
-      string(REPLACE "/" ";" dirs "${dir}")
-      list(GET dirs -1 dir_tag)
-      list(APPEND tags "${dir_tag}")
+# A quick sanity test of the runner itself (no CHAMP binaries needed).
+add_test(NAME runner-selftest
+         COMMAND ${Python3_EXECUTABLE} ${CHAMP_TEST_RUNNER} selftest)
+set_tests_properties(runner-selftest PROPERTIES LABELS "selftest" TIMEOUT 120)
 
-      # print the tags
-      message("${BoldBlue} Adding test ${test_src} ${ColourReset}")
-      message("   ${Blue}${tags}${ColourReset}")
+# Enumerate and validate all manifests in one configure-time call.
+file(GLOB _champ_manifests CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*/test.json")
+list(SORT _champ_manifests)
+if(NOT _champ_manifests)
+  message(WARNING "No test.json manifests found under ${CMAKE_CURRENT_SOURCE_DIR}")
+  return()
+endif()
 
+# Re-run the configure step when a manifest (or the runner) is edited, so
+# label/timeout/case changes are picked up by the next build automatically.
+set_property(DIRECTORY APPEND PROPERTY
+             CMAKE_CONFIGURE_DEPENDS ${_champ_manifests} ${CHAMP_TEST_RUNNER})
 
-      add_test(NAME ${test_src}
-               WORKING_DIRECTORY ${dir}
-               COMMAND "${scriptname}"
-              )
+execute_process(
+  COMMAND ${Python3_EXECUTABLE} ${CHAMP_TEST_RUNNER} list ${_champ_manifests}
+  OUTPUT_VARIABLE _champ_cases
+  ERROR_VARIABLE _champ_notes
+  RESULT_VARIABLE _champ_rc)
+if(NOT _champ_rc EQUAL 0)
+  message(FATAL_ERROR "CI test manifest validation failed:\n${_champ_notes}")
+endif()
 
-      set_tests_properties("${test_src}" PROPERTIES LABELS "${tags}")
+set(_n_added 0)
+set(_n_skipped 0)
+set(_skipped "")
 
+string(REPLACE "\n" ";" _champ_case_lines "${_champ_cases}")
+foreach(_line IN LISTS _champ_case_lines)
+  if(_line STREQUAL "")
+    continue()
+  endif()
+  string(REPLACE "\t" ";" _fields "${_line}")
+  list(LENGTH _fields _nfields)
+  if(NOT _nfields EQUAL 7)
+    message(FATAL_ERROR "Malformed runner output line: ${_line}")
+  endif()
+  list(GET _fields 0 _manifest)
+  list(GET _fields 1 _folder)
+  list(GET _fields 2 _case)
+  list(GET _fields 3 _nproc)
+  list(GET _fields 4 _timeout)
+  list(GET _fields 5 _requires)
+  list(GET _fields 6 _labels)
+
+  # Skip tests whose required features are not part of this build.
+  set(_unmet "")
+  if(NOT _requires STREQUAL "-")
+    string(REPLACE "," ";" _reqlist "${_requires}")
+    foreach(_req IN LISTS _reqlist)
+      if(_req STREQUAL "trexio" AND NOT TREXIO_FOUND)
+        set(_unmet "${_req}")
+      elseif(_req STREQUAL "qmckl" AND NOT QMCKL_FOUND)
+        set(_unmet "${_req}")
+      endif()
+    endforeach()
+  endif()
+  if(NOT _unmet STREQUAL "")
+    math(EXPR _n_skipped "${_n_skipped}+1")
+    list(APPEND _skipped "${_folder}/${_case} (needs ${_unmet})")
+    continue()
+  endif()
+
+  string(REPLACE "," ";" _labellist "${_labels}")
+  add_test(NAME "${_folder}/${_case}"
+           COMMAND ${Python3_EXECUTABLE} ${CHAMP_TEST_RUNNER} run
+                   --manifest "${_manifest}"
+                   --case "${_case}"
+                   --scratch "${CMAKE_CURRENT_BINARY_DIR}/scratch/${_folder}/${_case}"
+                   --vmc "$<TARGET_FILE:vmc.mov1>"
+                   --dmc "$<TARGET_FILE:dmc.mov1>"
+                   --mpiexec "${CHAMP_TEST_MPIEXEC}"
+                   "--numproc-flag=${CHAMP_TEST_NUMPROC_FLAG}"
+                   "--mpiexec-preflags=${CHAMP_TEST_MPIEXEC_PREFLAGS}"
+           WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+  set_tests_properties("${_folder}/${_case}" PROPERTIES
+    LABELS "${_labellist}"
+    PROCESSORS "${_nproc}"
+    TIMEOUT "${_timeout}")
+  math(EXPR _n_added "${_n_added}+1")
+endforeach()
+
+# Disabled manifests are reported by the runner on stderr as "DISABLED <folder>".
+set(_disabled "")
+string(REPLACE "\n" ";" _champ_note_lines "${_champ_notes}")
+foreach(_line IN LISTS _champ_note_lines)
+  if(_line MATCHES "^DISABLED\t(.+)$")
+    list(APPEND _disabled "${CMAKE_MATCH_1}")
+  endif()
+endforeach()
+
+message(STATUS "CHAMP CI tests                   :: ${_n_added} cases registered")
+if(_n_skipped GREATER 0)
+  message(STATUS "CHAMP CI tests skipped           :: ${_n_skipped} (missing features in this build)")
+  foreach(_entry IN LISTS _skipped)
+    message(STATUS "   skipped :: ${_entry}")
   endforeach()
+endif()
+foreach(_entry IN LISTS _disabled)
+  message(STATUS "   disabled in manifest :: ${_entry}")
+endforeach()
