@@ -8,7 +8,7 @@ Interactive wizard (just run it) or fully scriptable via flags:
         --program vmc --input vmc.inp --nproc 1 2 --labels VMC H2O
 
 The generated manifest contains placeholder reference values (0.0); run
-the test once and let the runner measure them for you:
+the test once, then fill them in from the measured results:
 
     cd build && cmake . && ctest -R VMC-H2O-my-test
     tests/CI_test/champ_test_runner.py suggest --manifest <...>/test.json \
@@ -169,7 +169,7 @@ Next steps:
        tests/CI_test/champ_test_runner.py suggest \\
            --manifest %s --case %s
      and paste the printed "checks" block into test.json
-  4. re-run until happy:
+  4. re-run:
        tests/CI_test/champ_test_runner.py %s
      (ctest registers the test automatically at the next cmake run)
 

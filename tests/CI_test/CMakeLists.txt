@@ -1,21 +1,10 @@
 # CHAMP CI integration tests
 # Ravindra Shinde (2026)
 #
-# Every test folder in this directory carries a declarative `test.json`
-# manifest: which program to run (vmc/dmc), on how many MPI ranks, and
-# which quantities to compare against reference values with statistical
-# error bars.  The manifests are validated, staged and executed by
-# champ_test_runner.py; this file only registers one ctest per case.
-#
-# Usage (from the build directory):
-#   ctest -N                      list all tests
-#   ctest -j 4                    run everything, 4 cores in parallel
-#   ctest -L VMC                  run tests labelled VMC
-#   ctest -R VMC-H2               run tests whose name matches VMC-H2
-#   ctest --print-labels          show all labels
-#
-# Adding a new test: copy a test folder, edit test.json, re-run cmake.
-# See README.md in this directory for the manifest reference.
+# Each test folder carries a declarative `test.json` manifest; the
+# manifests are validated, staged and executed by champ_test_runner.py.
+# This file registers one ctest per case.  See README.md in this
+# directory for usage and the manifest reference.
 
 find_package(Python3 COMPONENTS Interpreter)
 if(NOT Python3_Interpreter_FOUND)
@@ -34,11 +23,8 @@ set(CHAMP_TEST_NUMPROC_FLAG "${MPIEXEC_NUMPROC_FLAG}" CACHE STRING
 set(CHAMP_TEST_MPIEXEC_PREFLAGS "${MPIEXEC_PREFLAGS}" CACHE STRING
     "Extra launcher flags placed before the executable (e.g. --oversubscribe)")
 
-# By default every test runs the binaries this build produces.  Point these
-# at any other vmc.mov1/dmc.mov1 (e.g. a DEBUG build from a sibling build
-# directory, or an installed binary) to test that one instead -- note that
-# all CHAMP builds emit their executables into <source>/bin, so two build
-# directories of different CMAKE_BUILD_TYPE overwrite each other there.
+# Tests run the binaries this build produces unless pointed elsewhere
+# (e.g. at a different build mode; all builds emit into <source>/bin).
 set(CHAMP_TEST_VMC_BINARY "$<TARGET_FILE:vmc.mov1>" CACHE STRING
     "vmc.mov1 binary exercised by the CI tests (default: this build's)")
 set(CHAMP_TEST_DMC_BINARY "$<TARGET_FILE:dmc.mov1>" CACHE STRING

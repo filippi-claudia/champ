@@ -111,11 +111,8 @@ jobs:
         cmake --build build -- -j2
         ulimit -s unlimited
 
-    # The quick tests (H2 sr_n / corsamp / lin_d, 1 and 2 ranks) are defined
-    # declaratively in tests/CI_test/VMC-H2/test.json and carry the label
-    # "quick".  The binaries exercised are the ones this matrix job just
-    # built (gnu/intel x ${{ matrix.mode }}): each build directory registers
-    # its own tests against its own executables.
+    # Tests labelled "quick" (defined in tests/CI_test/*/test.json) run
+    # against the binaries this matrix job built.
     - name: Run the quick CI tests with ctest
       run: |
         ulimit -s unlimited

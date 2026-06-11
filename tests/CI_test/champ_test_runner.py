@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """CHAMP CI test runner.
 
-Quick usage -- run a test folder exactly like the old bash scripts:
+Usage:
 
     tests/CI_test/champ_test_runner.py VMC-H2            # all cases
     tests/CI_test/champ_test_runner.py VMC-H2 --case np2 # one case
@@ -10,16 +10,15 @@ Quick usage -- run a test folder exactly like the old bash scripts:
                                                          # elsewhere: list
                                                          # available tests
 
-No CMake or flags needed: the binaries default to bin/vmc.mov1 and
-bin/dmc.mov1 at the repository root (exactly what the old scripts used),
-the MPI launcher to mpirun/mpiexec from PATH, and all outputs go to
+Defaults: binaries bin/vmc.mov1 and bin/dmc.mov1 at the repository root,
+MPI launcher mpirun/mpiexec from PATH, outputs in
 tests/CI_test/scratch/<test>/<case>/.  Overrides: --vmc/--dmc/--mpiexec
 or the environment variables CHAMP_VMC, CHAMP_DMC, CHAMP_MPIRUN.
 
 Each test folder carries a declarative ``test.json`` manifest describing
 one or more *cases* (an MPI run -- or a pipeline of runs -- followed by
-*checks* against reference values with statistical error bars).  This one
-script is also the engine behind ctest; the plumbing subcommands are:
+*checks* against reference values with statistical error bars).  ctest
+uses the plumbing subcommands:
 
   list     enumerate and validate manifests at configure time; prints one
            tab-separated registration line per enabled case
@@ -29,16 +28,13 @@ script is also the engine behind ctest; the plumbing subcommands are:
            with the values measured in the scratch directory
   selftest exercise the parsing/comparison logic without CHAMP binaries
 
-Pass criterion for stochastic values (same rule the historical bash
-scripts used via tools/compare_value.py):
+Pass criterion for stochastic values:
 
     |obtained - reference| <= nsigma * sqrt(err_ref^2 + err_obtained^2)
 
 with nsigma = 2 by default.  Both the reference error bar and the error
-bar reported by the run itself enter the combined uncertainty.  Reference
-values are snapshots from a particular toolchain: a different compiler or
-different flags samples differently, which is precisely why every
-reference carries an error bar.
+bar reported by the run enter the combined uncertainty; references are
+toolchain-dependent samples of a distribution, not bit patterns.
 """
 
 from __future__ import print_function
@@ -653,7 +649,7 @@ def stage(source, scratch):
 
 
 # ----------------------------------------------------------------------
-# File operations (declarative replacements for rm/cat in the old scripts)
+# Declarative file operations between runs
 # ----------------------------------------------------------------------
 
 def apply_ops(scratch, ops, phase):
@@ -683,7 +679,7 @@ def apply_ops(scratch, ops, phase):
 
 
 # ----------------------------------------------------------------------
-# Defaults for interactive use (mirroring what the old bash scripts did)
+# Defaults for interactive use
 # ----------------------------------------------------------------------
 
 RUNNER_DIR = os.path.dirname(os.path.abspath(__file__))      # tests/CI_test
@@ -692,8 +688,8 @@ DEFAULT_SCRATCH_ROOT = os.path.join(RUNNER_DIR, "scratch")   # gitignored
 
 
 def default_binary(program):
-    """bin/vmc.mov1 or bin/dmc.mov1 at the repository root, like the old
-    scripts' ../../../bin/vmc.mov1; CHAMP_VMC/CHAMP_DMC override."""
+    """bin/vmc.mov1 or bin/dmc.mov1 at the repository root;
+    CHAMP_VMC/CHAMP_DMC override."""
     env = os.environ.get("CHAMP_" + program.upper())
     return env or os.path.join(REPO_ROOT, "bin", program + ".mov1")
 
@@ -803,11 +799,9 @@ def run_case(args):
         cmd = build_command(run, args)
         print("[run %d/%d] %s" % (i, len(case["runs"]), " ".join(cmd)))
         sys.stdout.flush()
-        # CHAMP writes several HDF5 restart dumps in quick succession; on
-        # fast filesystems (macOS especially) the HDF5 file lock of the
-        # previous dump may not be released yet and h5fcreate_f fails.
-        # Single-writer test runs do not need locking.  Respect an
-        # explicit user setting.
+        # Sub-second runs can hit the still-held HDF5 file lock of the
+        # previous restart dump (h5fcreate_f fails); single-writer test
+        # runs do not need locking.  An explicit user setting wins.
         env = dict(os.environ)
         env.setdefault("HDF5_USE_FILE_LOCKING", "FALSE")
         t0 = time.time()
@@ -1147,8 +1141,7 @@ def selftest(_args):
 
 def run_tests(args):
     """Interactive mode: run all (or selected) cases of one or more test
-    folders with sensible defaults -- the moral equivalent of executing
-    the old per-folder bash scripts."""
+    folders with default binaries, launcher and scratch locations."""
     if not args.tests:
         # bare invocation: run the test folder we are standing in, if any
         if os.path.isfile(os.path.join(os.getcwd(), MANIFEST_NAME)):
@@ -1223,15 +1216,13 @@ def run_tests(args):
 USAGE = """\
 Run CHAMP integration tests (see tests/CI_test/README.md).
 
-Quick usage -- what the old per-folder bash scripts used to do:
-
     %(prog)s VMC-H2                    run every case of that test
     %(prog)s VMC-H2 DMC-C4H6-...      several tests in a row
     %(prog)s VMC-H2 --case energy-np2  a single case
     %(prog)s                           inside a test folder: run it;
                                        elsewhere: list available tests
 
-Outputs land in tests/CI_test/scratch/<test>/<case>/ (wiped per run).
+Outputs go to tests/CI_test/scratch/<test>/<case>/ (wiped per run).
 
 Defaults (each can be overridden by a flag or environment variable):
     vmc/dmc binaries   bin/vmc.mov1, bin/dmc.mov1 at the repository root
@@ -1239,7 +1230,7 @@ Defaults (each can be overridden by a flag or environment variable):
     MPI launcher       mpirun or mpiexec from PATH
                        (--mpiexec, $CHAMP_MPIRUN)
 
-Plumbing subcommands (each has its own --help; ctest uses `run`):
+Subcommands (each has its own --help; ctest uses `run`):
     list / run / suggest / selftest
 """
 
