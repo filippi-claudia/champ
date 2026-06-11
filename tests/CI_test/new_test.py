@@ -156,30 +156,27 @@ def build_manifest(description, labels, requires, timeout, program,
 
 def next_steps(folder, manifest_path, first_case):
     rel = os.path.relpath
-    scratch = os.path.join("build", "tests", "CI_test", "scratch",
-                           os.path.basename(folder), first_case)
+    name = os.path.basename(folder)
     return """
 Wrote %s (schema-valid).
 
 Next steps:
   1. commit the input files in %s
      (only git-tracked files are staged when the test runs)
-  2. re-run cmake once so ctest picks the test up:
-       cd build && cmake .
-  3. run it (it FAILS now: the reference values are placeholders):
-       ctest -R %s --output-on-failure
-  4. fill in the measured reference values and error bars:
+  2. run it (it FAILS now: the reference values are placeholders):
+       tests/CI_test/champ_test_runner.py %s
+  3. fill in the measured reference values and error bars:
        tests/CI_test/champ_test_runner.py suggest \\
-           --manifest %s \\
-           --case %s \\
-           --scratch %s
+           --manifest %s --case %s
      and paste the printed "checks" block into test.json
-  5. re-run: ctest -R %s
+  4. re-run until happy:
+       tests/CI_test/champ_test_runner.py %s
+     (ctest registers the test automatically at the next cmake run)
 
 For multi-run pipelines, forces/difference/file_exists/values_equal
 checks, warn-only policies or file ops, see tests/CI_test/README.md.
-""" % (rel(manifest_path), rel(folder), os.path.basename(folder),
-       rel(manifest_path), first_case, scratch, os.path.basename(folder))
+""" % (rel(manifest_path), rel(folder), name,
+       rel(manifest_path), first_case, name)
 
 
 def main(argv=None):

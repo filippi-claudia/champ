@@ -12,12 +12,39 @@ tree, launches the MPI runs, extracts the results and applies the checks.
 CMake discovers the manifests automatically and registers one `ctest`
 entry per case.
 
-## Running tests
+## Running a test quickly (no CMake needed)
+
+What the old per-folder bash scripts did — point the runner at a test
+folder and it runs every case in it, with sensible defaults:
+
+```bash
+tests/CI_test/champ_test_runner.py VMC-H2          # run all H2 cases
+tests/CI_test/champ_test_runner.py VMC-H2 --case energy-np2
+tests/CI_test/champ_test_runner.py                 # list available tests
+cd tests/CI_test/VMC-H2 && ../champ_test_runner.py # or run from inside
+```
+
+Defaults: the binaries are `bin/vmc.mov1` / `bin/dmc.mov1` at the
+repository root (exactly what the bash scripts used), the MPI launcher is
+`mpirun`/`mpiexec` from `PATH`, and outputs go to
+`tests/CI_test/scratch/<test>/<case>/` (gitignored). Override with
+`--vmc/--dmc/--mpiexec` or the environment variables `CHAMP_VMC`,
+`CHAMP_DMC`, `CHAMP_MPIRUN` — handy for comparing a DEBUG against a
+RELEASE binary:
+
+```bash
+tests/CI_test/champ_test_runner.py VMC-H2 --vmc /path/to/debug/vmc.mov1
+```
+
+`champ_test_runner.py --help` shows everything.
+
+## Running the suite with ctest
 
 ```bash
 cd build
 ctest -N                     # list every test
 ctest -j 4                   # run everything, 4 cores in parallel
+ctest -L quick               # the fast smoke subset
 ctest -L VMC                 # only tests labelled VMC
 ctest -L DMC -j 4            # only DMC tests
 ctest -LE "TREXIO|QMCKL"     # everything except TREXIO/QMCKL tests
@@ -25,6 +52,15 @@ ctest -R VMC-H2              # tests whose name matches a regex
 ctest --print-labels         # show the label vocabulary
 ctest --rerun-failed --output-on-failure
 ```
+
+ctest always exercises the binaries of the build directory it runs in, so
+a `-DCMAKE_BUILD_TYPE=Debug` build tests the Debug executables. To point
+the registered tests at some other binary (an installed one, or a
+different build mode), configure with
+`-DCHAMP_TEST_VMC_BINARY=/path/to/vmc.mov1` (and `CHAMP_TEST_DMC_BINARY`).
+Note that all CHAMP builds place their executables in `<source>/bin`, so
+two build directories of different build type overwrite each other there
+— build and test one mode at a time, or use the override.
 
 Each case advertises how many cores it needs (the `PROCESSORS` property),
 so `ctest -j N` schedules tests without oversubscribing the machine.
@@ -83,10 +119,10 @@ inflating the reference error bar).
    flags, see `--help`) to skip the questions entirely. Editing the JSON
    by hand is only needed for the advanced features described below
    (multi-run pipelines, forces checks, file ops, ...).
-3. Re-run `cmake` once so the new test is registered, then run it:
+3. Run it directly (no CMake needed):
 
    ```bash
-   cd build && cmake . && ctest -R my-new-test
+   tests/CI_test/champ_test_runner.py My-New-Test
    ```
 
    The check fails (the references are placeholders) but the output
@@ -95,16 +131,17 @@ inflating the reference error bar).
 
    ```bash
    tests/CI_test/champ_test_runner.py suggest \
-       --manifest tests/CI_test/My-New-Test/test.json \
-       --case np2 \
-       --scratch build/tests/CI_test/scratch/My-New-Test/np2
+       --manifest tests/CI_test/My-New-Test/test.json --case np2
    ```
 
    Paste the printed `checks` block into the manifest. Ideally the
    reference comes from an independent long run (smaller error bar than
    the test run), but the suggested values are statistically consistent
-   by construction.
-5. Validate and re-run: `ctest -R my-new-test --output-on-failure`.
+   by construction. Remember that references are toolchain snapshots: a
+   different compiler or different flags samples differently, which the
+   error bars and the 2-sigma criterion are there to absorb.
+5. Re-run `tests/CI_test/champ_test_runner.py My-New-Test` until happy;
+   ctest picks the test up automatically after the next `cmake` run.
 
 A note on reproducibility: the reference is a *distribution*, not a bit
 pattern. The same test compiled with a different compiler or run with a
@@ -209,9 +246,11 @@ the TREXIO text vs HDF5 backend comparison):
 
 Labels drive test selection (`ctest -L`) locally and in the GitHub
 workflows. Conventions: the method (`VMC`, `DMC`), the system (`H2O`,
-`C4H6`, ...), the wave-function source (`TREXIO`, `QMCKL`), and the kind
-of test (`energy`, `optimization`, `forces`, `restart`, ...). Keep using
-existing labels where they fit — `ctest --print-labels` shows the
+`C4H6`, ...), the wave-function source (`TREXIO`, `QMCKL`), the kind
+of test (`energy`, `optimization`, `forces`, `restart`, ...), and `quick`
+for sub-minute smoke tests (the toolchain-matrix workflow runs
+`ctest -L quick` against every compiler/build-mode combination). Keep
+using existing labels where they fit — `ctest --print-labels` shows the
 current vocabulary.
 
 ### Validating manifests

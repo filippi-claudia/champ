@@ -80,3 +80,6 @@ docs/site/
 !.f$
 !hf_cc-VDZ.out
 !cas129_b3lyp_BFD-dan-normf0.out
+
+# CI test scratch area (champ_test_runner.py interactive runs)
+tests/CI_test/scratch/

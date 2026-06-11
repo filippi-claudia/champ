@@ -1,22 +1,31 @@
 #!/usr/bin/env python3
 """CHAMP CI test runner.
 
-A single-file, dependency-free (stdlib only, Python >= 3.6) driver for the
-CHAMP integration tests.  Each test folder under tests/CI_test/ contains a
-declarative ``test.json`` manifest describing one or more *cases* (an MPI
-run -- or a pipeline of runs -- followed by *checks* against reference
-values with statistical error bars).
+Quick usage -- run a test folder exactly like the old bash scripts:
 
-The CMake machinery calls this script in two modes:
+    tests/CI_test/champ_test_runner.py VMC-H2            # all cases
+    tests/CI_test/champ_test_runner.py VMC-H2 --case np2 # one case
+    tests/CI_test/champ_test_runner.py                   # inside a test
+                                                         # folder: run it;
+                                                         # elsewhere: list
+                                                         # available tests
+
+No CMake or flags needed: the binaries default to bin/vmc.mov1 and
+bin/dmc.mov1 at the repository root (exactly what the old scripts used),
+the MPI launcher to mpirun/mpiexec from PATH, and all outputs go to
+tests/CI_test/scratch/<test>/<case>/.  Overrides: --vmc/--dmc/--mpiexec
+or the environment variables CHAMP_VMC, CHAMP_DMC, CHAMP_MPIRUN.
+
+Each test folder carries a declarative ``test.json`` manifest describing
+one or more *cases* (an MPI run -- or a pipeline of runs -- followed by
+*checks* against reference values with statistical error bars).  This one
+script is also the engine behind ctest; the plumbing subcommands are:
 
   list     enumerate and validate manifests at configure time; prints one
            tab-separated registration line per enabled case
-  run      execute a single case inside a scratch directory in the build
-           tree (used as the ctest COMMAND)
-
-Additional developer conveniences:
-
-  suggest  after a ``run``, print a ready-to-paste "checks" JSON snippet
+  run      execute a single case inside a given scratch directory
+           (used as the ctest COMMAND)
+  suggest  after a run, print a ready-to-paste "checks" JSON snippet
            with the values measured in the scratch directory
   selftest exercise the parsing/comparison logic without CHAMP binaries
 
@@ -26,7 +35,10 @@ scripts used via tools/compare_value.py):
     |obtained - reference| <= nsigma * sqrt(err_ref^2 + err_obtained^2)
 
 with nsigma = 2 by default.  Both the reference error bar and the error
-bar reported by the run itself enter the combined uncertainty.
+bar reported by the run itself enter the combined uncertainty.  Reference
+values are snapshots from a particular toolchain: a different compiler or
+different flags samples differently, which is precisely why every
+reference carries an error bar.
 """
 
 from __future__ import print_function
@@ -671,6 +683,62 @@ def apply_ops(scratch, ops, phase):
 
 
 # ----------------------------------------------------------------------
+# Defaults for interactive use (mirroring what the old bash scripts did)
+# ----------------------------------------------------------------------
+
+RUNNER_DIR = os.path.dirname(os.path.abspath(__file__))      # tests/CI_test
+REPO_ROOT = os.path.dirname(os.path.dirname(RUNNER_DIR))
+DEFAULT_SCRATCH_ROOT = os.path.join(RUNNER_DIR, "scratch")   # gitignored
+
+
+def default_binary(program):
+    """bin/vmc.mov1 or bin/dmc.mov1 at the repository root, like the old
+    scripts' ../../../bin/vmc.mov1; CHAMP_VMC/CHAMP_DMC override."""
+    env = os.environ.get("CHAMP_" + program.upper())
+    return env or os.path.join(REPO_ROOT, "bin", program + ".mov1")
+
+
+def default_mpiexec():
+    return (os.environ.get("CHAMP_MPIRUN")
+            or shutil.which("mpirun") or shutil.which("mpiexec"))
+
+
+def available_tests(base=None):
+    """Sorted folder names under tests/CI_test that carry a manifest."""
+    base = base or RUNNER_DIR
+    found = []
+    try:
+        entries = sorted(os.listdir(base))
+    except OSError:
+        return found
+    for name in entries:
+        if os.path.isfile(os.path.join(base, name, MANIFEST_NAME)):
+            found.append(name)
+    return found
+
+
+def resolve_test_dir(token, base=None):
+    """Map a command-line token to a test folder: an explicit path, or a
+    folder name under tests/CI_test."""
+    base = base or RUNNER_DIR
+    candidates = [token, os.path.join(base, token)]
+    for cand in candidates:
+        if os.path.isfile(os.path.join(cand, MANIFEST_NAME)):
+            return os.path.abspath(cand)
+    import difflib
+    names = available_tests(base)
+    close = difflib.get_close_matches(os.path.basename(token.rstrip("/\\")),
+                                      names, n=3, cutoff=0.4)
+    hint = ("; did you mean: " + ", ".join(close)) if close else \
+           ("; available: " + ", ".join(names) if names else "")
+    raise RuntimeError("no %s found for '%s'%s" % (MANIFEST_NAME, token, hint))
+
+
+def default_scratch(folder_name, case_name):
+    return os.path.join(DEFAULT_SCRATCH_ROOT, folder_name, case_name)
+
+
+# ----------------------------------------------------------------------
 # Running
 # ----------------------------------------------------------------------
 
@@ -735,9 +803,16 @@ def run_case(args):
         cmd = build_command(run, args)
         print("[run %d/%d] %s" % (i, len(case["runs"]), " ".join(cmd)))
         sys.stdout.flush()
+        # CHAMP writes several HDF5 restart dumps in quick succession; on
+        # fast filesystems (macOS especially) the HDF5 file lock of the
+        # previous dump may not be released yet and h5fcreate_f fails.
+        # Single-writer test runs do not need locking.  Respect an
+        # explicit user setting.
+        env = dict(os.environ)
+        env.setdefault("HDF5_USE_FILE_LOCKING", "FALSE")
         t0 = time.time()
         try:
-            proc = subprocess.run(cmd, cwd=scratch)
+            proc = subprocess.run(cmd, cwd=scratch, env=env)
         except OSError as exc:
             print("[run %d/%d] FAILED to launch: %s" % (i, len(case["runs"]), exc))
             return 1
@@ -1024,9 +1099,43 @@ def selftest(_args):
             with self.assertRaises(ManifestError):
                 self._load(bad)
 
+    class InteractiveDefaults(unittest.TestCase):
+        def setUp(self):
+            self.base = tempfile.mkdtemp()
+            os.makedirs(os.path.join(self.base, "VMC-Fake"))
+            with open(os.path.join(self.base, "VMC-Fake", MANIFEST_NAME), "w") as fh:
+                fh.write("{}")
+
+        def tearDown(self):
+            shutil.rmtree(self.base)
+
+        def test_resolve_by_name_and_path(self):
+            expect = os.path.join(self.base, "VMC-Fake")
+            self.assertEqual(resolve_test_dir("VMC-Fake", self.base), expect)
+            self.assertEqual(resolve_test_dir(expect, self.base), expect)
+
+        def test_resolve_suggests_close_match(self):
+            try:
+                resolve_test_dir("VMC-Fak", self.base)
+            except RuntimeError as exc:
+                self.assertIn("VMC-Fake", str(exc))
+            else:
+                self.fail("expected RuntimeError")
+
+        def test_available_and_binary_defaults(self):
+            self.assertEqual(available_tests(self.base), ["VMC-Fake"])
+            self.assertTrue(default_binary("vmc").endswith(
+                os.path.join("bin", "vmc.mov1")))
+            os.environ["CHAMP_VMC"] = "/custom/vmc"
+            try:
+                self.assertEqual(default_binary("vmc"), "/custom/vmc")
+            finally:
+                del os.environ["CHAMP_VMC"]
+
     suite = unittest.TestSuite()
     loader = unittest.TestLoader()
-    for cls in (Extraction, ValueCheck, ForcesCheck, Ops, Schema):
+    for cls in (Extraction, ValueCheck, ForcesCheck, Ops, Schema,
+                InteractiveDefaults):
         suite.addTests(loader.loadTestsFromTestCase(cls))
     runner = unittest.TextTestRunner(verbosity=2)
     return 0 if runner.run(suite).wasSuccessful() else 1
@@ -1036,17 +1145,137 @@ def selftest(_args):
 # CLI
 # ----------------------------------------------------------------------
 
-def main(argv=None):
+def run_tests(args):
+    """Interactive mode: run all (or selected) cases of one or more test
+    folders with sensible defaults -- the moral equivalent of executing
+    the old per-folder bash scripts."""
+    if not args.tests:
+        # bare invocation: run the test folder we are standing in, if any
+        if os.path.isfile(os.path.join(os.getcwd(), MANIFEST_NAME)):
+            args.tests = [os.getcwd()]
+        else:
+            names = available_tests()
+            print("Available tests (tests/CI_test):\n")
+            for name in names:
+                print("    %s" % name)
+            print("\nRun one with:    %s <name>" % os.path.basename(sys.argv[0]))
+            print("More options:    %s --help" % os.path.basename(sys.argv[0]))
+            return 0
+
+    wanted_cases = []
+    for spec in args.case or []:
+        wanted_cases.extend(c for c in spec.split(",") if c)
+
+    mpiexec = args.mpiexec or default_mpiexec()
+    results = []                      # (folder, case, status-string, ok)
+    for token in args.tests:
+        source = resolve_test_dir(token)
+        folder = os.path.basename(source)
+        manifest = load_manifest(os.path.join(source, MANIFEST_NAME))
+        if not manifest.get("enabled", True):
+            print("note: '%s' is disabled in its manifest (parked test); "
+                  "running anyway because it was named explicitly" % folder)
+        for req in manifest.get("requires", []):
+            print("note: %s requires a binary built with %s support"
+                  % (folder, req.upper()))
+
+        case_names = [c["name"] for c in manifest["cases"]]
+        selected = case_names if not wanted_cases else \
+            [c for c in case_names if c in wanted_cases]
+        unknown = [c for c in wanted_cases
+                   if c not in case_names and len(args.tests) == 1]
+        if unknown:
+            raise RuntimeError("no case named %s in %s (available: %s)"
+                               % (", ".join(unknown), folder,
+                                  ", ".join(case_names)))
+
+        for case_name in selected:
+            run_args = argparse.Namespace(
+                manifest=os.path.join(source, MANIFEST_NAME),
+                case=case_name,
+                scratch=default_scratch(folder, case_name),
+                vmc=args.vmc or default_binary("vmc"),
+                dmc=args.dmc or default_binary("dmc"),
+                mpiexec=mpiexec,
+                numproc_flag=args.numproc_flag,
+                mpiexec_preflags=args.mpiexec_preflags.split())
+            status = run_case(run_args)
+            results.append((folder, case_name, status == 0))
+            if status != 0:
+                print("hint: outputs kept in %s" % run_args.scratch)
+                print("hint: to refresh the reference values:  "
+                      "%s suggest --manifest %s --case %s"
+                      % (sys.argv[0], os.path.relpath(run_args.manifest),
+                         case_name))
+            print()
+
+    if len(results) > 1:
+        print("=" * 72)
+        print("Summary")
+        for folder, case_name, ok in results:
+            print("    %-50s %s" % (folder + "/" + case_name,
+                                    "PASS" if ok else "FAIL"))
+        npass = sum(1 for r in results if r[2])
+        print("    %d/%d cases passed" % (npass, len(results)))
+    return 0 if all(r[2] for r in results) else 1
+
+
+USAGE = """\
+Run CHAMP integration tests (see tests/CI_test/README.md).
+
+Quick usage -- what the old per-folder bash scripts used to do:
+
+    %(prog)s VMC-H2                    run every case of that test
+    %(prog)s VMC-H2 DMC-C4H6-...      several tests in a row
+    %(prog)s VMC-H2 --case energy-np2  a single case
+    %(prog)s                           inside a test folder: run it;
+                                       elsewhere: list available tests
+
+Outputs land in tests/CI_test/scratch/<test>/<case>/ (wiped per run).
+
+Defaults (each can be overridden by a flag or environment variable):
+    vmc/dmc binaries   bin/vmc.mov1, bin/dmc.mov1 at the repository root
+                       (--vmc/--dmc, $CHAMP_VMC/$CHAMP_DMC)
+    MPI launcher       mpirun or mpiexec from PATH
+                       (--mpiexec, $CHAMP_MPIRUN)
+
+Plumbing subcommands (each has its own --help; ctest uses `run`):
+    list / run / suggest / selftest
+"""
+
+
+def build_cli():
     parser = argparse.ArgumentParser(
         prog="champ_test_runner.py",
-        description="Declarative CI test runner for CHAMP (see "
-                    "tests/CI_test/README.md)")
-    sub = parser.add_subparsers(dest="mode")
+        usage=argparse.SUPPRESS,
+        description=USAGE % {"prog": "champ_test_runner.py"},
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = parser.add_subparsers(dest="mode", metavar="")
+
+    p_test = sub.add_parser("test", help="run test folders (default mode)")
+    p_test.add_argument("tests", nargs="*", metavar="TEST",
+                        help="test folder name (under tests/CI_test) or path")
+    p_test.add_argument("--case", action="append", metavar="NAME",
+                        help="run only this case (repeatable, or comma-"
+                             "separated); default: all cases")
+    p_test.add_argument("--vmc", default=None,
+                        help="vmc.mov1 to test (default: repo bin/vmc.mov1 "
+                             "or $CHAMP_VMC)")
+    p_test.add_argument("--dmc", default=None,
+                        help="dmc.mov1 to test (default: repo bin/dmc.mov1 "
+                             "or $CHAMP_DMC)")
+    p_test.add_argument("--mpiexec", default=None,
+                        help="MPI launcher (default: mpirun/mpiexec from "
+                             "PATH or $CHAMP_MPIRUN)")
+    p_test.add_argument("--numproc-flag", default="-n",
+                        help="launcher flag for the rank count (default -n)")
+    p_test.add_argument("--mpiexec-preflags", default="",
+                        help="extra launcher flags, e.g. --oversubscribe")
 
     p_list = sub.add_parser("list", help="validate manifests and list cases")
     p_list.add_argument("manifests", nargs="+")
 
-    p_run = sub.add_parser("run", help="run one test case")
+    p_run = sub.add_parser("run", help="run one case (ctest plumbing)")
     p_run.add_argument("--manifest", required=True)
     p_run.add_argument("--case", required=True)
     p_run.add_argument("--scratch", required=True,
@@ -1062,18 +1291,34 @@ def main(argv=None):
                            help="print checks filled with measured values")
     p_sug.add_argument("--manifest", required=True)
     p_sug.add_argument("--case", required=True)
-    p_sug.add_argument("--scratch", required=True)
+    p_sug.add_argument("--scratch", default=None,
+                       help="scratch dir of the run to read (default: the "
+                            "interactive default for this test/case)")
 
     sub.add_parser("selftest", help="run the runner's own unit tests")
+    return parser
 
+
+def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    # Anything that is not a recognised subcommand means "run tests":
+    # `champ_test_runner.py VMC-H2` works without ceremony.
+    known = ("test", "list", "run", "suggest", "selftest")
+    if not argv or (argv[0] not in known
+                    and argv[0] not in ("-h", "--help")):
+        argv.insert(0, "test")
+
+    parser = build_cli()
     args = parser.parse_args(argv)
-    if args.mode is None:
-        parser.print_help()
-        return 2
     if args.mode == "run":
         args.mpiexec_preflags = args.mpiexec_preflags.split()
+    if args.mode == "suggest" and args.scratch is None:
+        folder = os.path.basename(os.path.dirname(os.path.abspath(args.manifest)))
+        args.scratch = default_scratch(folder, args.case)
 
     try:
+        if args.mode == "test":
+            return run_tests(args)
         if args.mode == "list":
             return list_cases(args)
         if args.mode == "run":
@@ -1092,4 +1337,8 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        print("\ninterrupted")
+        sys.exit(130)

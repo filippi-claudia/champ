@@ -34,6 +34,16 @@ set(CHAMP_TEST_NUMPROC_FLAG "${MPIEXEC_NUMPROC_FLAG}" CACHE STRING
 set(CHAMP_TEST_MPIEXEC_PREFLAGS "${MPIEXEC_PREFLAGS}" CACHE STRING
     "Extra launcher flags placed before the executable (e.g. --oversubscribe)")
 
+# By default every test runs the binaries this build produces.  Point these
+# at any other vmc.mov1/dmc.mov1 (e.g. a DEBUG build from a sibling build
+# directory, or an installed binary) to test that one instead -- note that
+# all CHAMP builds emit their executables into <source>/bin, so two build
+# directories of different CMAKE_BUILD_TYPE overwrite each other there.
+set(CHAMP_TEST_VMC_BINARY "$<TARGET_FILE:vmc.mov1>" CACHE STRING
+    "vmc.mov1 binary exercised by the CI tests (default: this build's)")
+set(CHAMP_TEST_DMC_BINARY "$<TARGET_FILE:dmc.mov1>" CACHE STRING
+    "dmc.mov1 binary exercised by the CI tests (default: this build's)")
+
 # A quick sanity test of the runner itself (no CHAMP binaries needed).
 add_test(NAME runner-selftest
          COMMAND ${Python3_EXECUTABLE} ${CHAMP_TEST_RUNNER} selftest)
@@ -107,8 +117,8 @@ foreach(_line IN LISTS _champ_case_lines)
                    --manifest "${_manifest}"
                    --case "${_case}"
                    --scratch "${CMAKE_CURRENT_BINARY_DIR}/scratch/${_folder}/${_case}"
-                   --vmc "$<TARGET_FILE:vmc.mov1>"
-                   --dmc "$<TARGET_FILE:dmc.mov1>"
+                   --vmc "${CHAMP_TEST_VMC_BINARY}"
+                   --dmc "${CHAMP_TEST_DMC_BINARY}"
                    --mpiexec "${CHAMP_TEST_MPIEXEC}"
                    "--numproc-flag=${CHAMP_TEST_NUMPROC_FLAG}"
                    "--mpiexec-preflags=${CHAMP_TEST_MPIEXEC_PREFLAGS}"

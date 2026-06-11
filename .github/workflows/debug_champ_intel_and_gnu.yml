@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
     inputs:
       tags:
-        description: 'Test tags (default: short)'
-        default: "short"
+        description: 'ctest label selector (-L), e.g. quick, VMC, H2O'
+        default: "quick"
 
 jobs:
   debug_build_test_champ:
@@ -111,85 +111,16 @@ jobs:
         cmake --build build -- -j2
         ulimit -s unlimited
 
-    - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
-      run: |
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0059842 +-  0.0070988) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_single.out "total E" -1.0059842   0.0070988
-
-    - name: "Test 02 (H2) sto basis optimize jastrow sr_n method on 2 processors"
+    # The quick tests (H2 sr_n / corsamp / lin_d, 1 and 2 ranks) are defined
+    # declaratively in tests/CI_test/VMC-H2/test.json and carry the label
+    # "quick".  The binaries exercised are the ones this matrix job just
+    # built (gnu/intel x ${{ matrix.mode }}): each build directory registers
+    # its own tests against its own executables.
+    - name: Run the quick CI tests with ctest
       run: |
         ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0108635 +-  0.0054667) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_double.out "total E" -1.0108635  0.0054667
-
-
-    - name: "Test 03 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
-      continue-on-error: true
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0608157 +-  0.0026295) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0608157  0.0026295
-
-    - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
-      continue-on-error: true
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0578796 +-  0.0018813) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0578796  0.0018813
-
-    - name: "Test 05 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
-
-        echo "Comparing the energy with the reference one (Current energy = -0.9926131 +- 0.0120065  ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -0.9926131 0.0120065
-
-        #echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0018"
-        #$HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0018 0.0114836
-
-    - name: "Test 06 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
-
-        echo "Comparing the energy with the reference one (Current energy = -1.0135052 +- 0.0069582 ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0135052 0.0069582
-
-        #echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0008"
-        #$HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0008 0.0085151
+        ctest --test-dir build --output-on-failure -j "$(nproc)" \
+          -L "${{ github.event.inputs.tags || 'quick' }}"
 
 
 

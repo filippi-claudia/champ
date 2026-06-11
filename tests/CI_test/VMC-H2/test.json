@@ -4,7 +4,8 @@
     "VMC",
     "H2",
     "STO-CVB1",
-    "hydrogen"
+    "hydrogen",
+    "quick"
   ],
   "cases": [
     {
@@ -67,6 +68,14 @@
           "match": "total E",
           "value": -0.9923642,
           "error": 0.0102988
+        },
+        {
+          "type": "value",
+          "file": "revised_vmc_corsamp_core_1.out",
+          "match": "Current energy",
+          "value": -0.9926131,
+          "error": 0.0120065,
+          "comment": "optimizer state line; reference from the toolchain-matrix workflow"
         }
       ]
     },
@@ -88,6 +97,58 @@
           "match": "total E",
           "value": -1.0005539,
           "error": 0.007121
+        },
+        {
+          "type": "value",
+          "file": "revised_vmc_corsamp_core_2.out",
+          "match": "Current energy",
+          "value": -1.0135052,
+          "error": 0.0069582,
+          "comment": "optimizer state line; reference from the toolchain-matrix workflow"
+        }
+      ]
+    },
+    {
+      "name": "lin-np1",
+      "comment": "H2 optimize wf+jastrow with the lin_d method, nopt_iter=20; statistically noisy, so warn-only (was continue-on-error on CI)",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "revised_vmc_lin.inp",
+          "output": "revised_vmc_lin_core_1.out",
+          "nproc": 1
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "revised_vmc_lin_core_1.out",
+          "match": "total E",
+          "value": -1.0608157,
+          "error": 0.0026295,
+          "policy": "warn"
+        }
+      ]
+    },
+    {
+      "name": "lin-np2",
+      "comment": "H2 optimize wf+jastrow with the lin_d method, nopt_iter=20; statistically noisy, so warn-only (was continue-on-error on CI)",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "revised_vmc_lin.inp",
+          "output": "revised_vmc_lin_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "revised_vmc_lin_core_2.out",
+          "match": "total E",
+          "value": -1.0578796,
+          "error": 0.0018813,
+          "policy": "warn"
         }
       ]
     }
