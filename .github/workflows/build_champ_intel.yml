@@ -60,4 +60,4 @@ jobs:
           cmake --build build -- -j2
           cd build
           export PATH="/usr/bin:$PATH"
-          ctest --output-on-failure -j "$(nproc)" -LE "(TREXIO|QMCKL)"
+          ctest --output-on-failure --no-tests=error -j "$(nproc)" -LE "(TREXIO|QMCKL)"

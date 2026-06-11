@@ -77,4 +77,4 @@ jobs:
             -DENABLE_QMCKL=OFF
           cmake --build build -- -j$(nproc)
           cd build
-          ctest --output-on-failure -j "$(nproc)" -L "H2O" -LE "(QMCKL)"
+          ctest --output-on-failure --no-tests=error -j "$(nproc)" -L "H2O" -LE "(QMCKL)"

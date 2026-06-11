@@ -119,7 +119,7 @@ jobs:
     - name: Run the quick CI tests with ctest
       run: |
         ulimit -s unlimited
-        ctest --test-dir build --output-on-failure -j "$(nproc)" \
+        ctest --test-dir build --output-on-failure --no-tests=error -j "$(nproc)" \
           -L "${{ github.event.inputs.tags || 'quick' }}"
 
 
