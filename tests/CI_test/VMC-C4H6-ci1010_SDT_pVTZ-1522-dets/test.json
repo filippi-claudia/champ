@@ -1,5 +1,5 @@
 {
-  "description": "Butadiene VMC optimization with 1522 determinants (ci1010 SDT/pVTZ) (parked: script was marked .update_this_test; references need a refresh)",
+  "description": "Butadiene VMC optimization with 1522 determinants (ci1010 SDT/pVTZ)",
   "labels": [
     "VMC",
     "C4H6",
@@ -8,7 +8,7 @@
     "pVTZ",
     "optimization"
   ],
-  "enabled": false,
+  "enabled": true,
   "cases": [
     {
       "name": "np1",
@@ -26,8 +26,7 @@
           "file": "vmc_optimization_1522_core_1.out",
           "match": "total E",
           "value": -26.1726779,
-          "error": 0.0260576,
-          "policy": "warn"
+          "error": 0.0260576
         }
       ]
     },
@@ -47,8 +46,7 @@
           "file": "vmc_optimization_1522_core_2.out",
           "match": "total E",
           "value": -26.2056298,
-          "error": 0.0143578,
-          "policy": "warn"
+          "error": 0.0143578
         }
       ]
     }

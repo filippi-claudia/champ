@@ -9,7 +9,7 @@
   "requires": [
     "trexio"
   ],
-  "enabled": false,
+  "enabled": true,
   "cases": [
     {
       "name": "np2",
