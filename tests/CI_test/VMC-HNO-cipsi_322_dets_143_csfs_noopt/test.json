@@ -1,5 +1,5 @@
 {
-  "description": "Nitroxyl (HNO) two-state CIPSI wave function, energy only (322 determinants / 143 CSFs)",
+  "description": "Nitroxyl (HNO) two-state CIPSI wave function, energy only (322 determinants / 143 CSFs); checks both state energies and the S1-S0 excitation gap",
   "labels": [
     "VMC",
     "HNO",
@@ -36,6 +36,17 @@
           "occurrence": -1,
           "comment": "state 2 energy; deviates by ~2.4 sigma with ifx; reported but not failing",
           "policy": "warn"
+        },
+        {
+          "type": "difference",
+          "file": "vmc_core_1.out",
+          "match": "total E",
+          "minuend": -1,
+          "subtrahend": 1,
+          "scale": 27.2114,
+          "value": 4.983425,
+          "error": 0.4879874,
+          "comment": "S1-S0 excitation energy in eV, experimental reference"
         }
       ]
     },
@@ -67,6 +78,17 @@
           "error": 0.0022513,
           "occurrence": -1,
           "comment": "state 2 energy"
+        },
+        {
+          "type": "difference",
+          "file": "vmc_core_2.out",
+          "match": "total E",
+          "minuend": -1,
+          "subtrahend": 1,
+          "scale": 27.2114,
+          "value": 4.983425,
+          "error": 0.4879874,
+          "comment": "S1-S0 excitation energy in eV, experimental reference"
         }
       ]
     }
