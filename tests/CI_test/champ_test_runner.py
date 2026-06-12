@@ -3,8 +3,9 @@
 
 Usage:
 
-    tests/CI_test/champ_test_runner.py VMC-H2            # all cases
+    tests/CI_test/champ_test_runner.py VMC-H2            # one test folder
     tests/CI_test/champ_test_runner.py VMC-H2 --case np2 # one case
+    tests/CI_test/champ_test_runner.py all               # every test
     tests/CI_test/champ_test_runner.py                   # inside a test
                                                          # folder: run it;
                                                          # elsewhere: list
@@ -732,6 +733,25 @@ def default_scratch(folder_name, case_name):
     return os.path.join(DEFAULT_SCRATCH_ROOT, folder_name, case_name)
 
 
+def expand_test_tokens(tokens, base=None):
+    """Replace the special token 'all' with every test folder name.
+    Returns (ordered unique tokens, set of names that came from 'all');
+    disabled manifests are skipped only when pulled in via 'all'."""
+    base = base or RUNNER_DIR
+    out = []
+    from_all = set()
+    for token in tokens:
+        if token == "all" and not os.path.isfile(
+                os.path.join(base, "all", MANIFEST_NAME)):
+            for name in available_tests(base):
+                if name not in out:
+                    out.append(name)
+                    from_all.add(name)
+        elif token not in out:
+            out.append(token)
+    return out, from_all
+
+
 # ----------------------------------------------------------------------
 # Running
 # ----------------------------------------------------------------------
@@ -1114,6 +1134,15 @@ def selftest(_args):
             else:
                 self.fail("expected RuntimeError")
 
+        def test_all_token_expansion(self):
+            tokens, from_all = expand_test_tokens(["all"], self.base)
+            self.assertEqual(tokens, ["VMC-Fake"])
+            self.assertEqual(from_all, {"VMC-Fake"})
+            # explicit names are kept and deduplicated against 'all'
+            tokens, from_all = expand_test_tokens(["VMC-Fake", "all"], self.base)
+            self.assertEqual(tokens, ["VMC-Fake"])
+            self.assertEqual(from_all, set())
+
         def test_available_and_binary_defaults(self):
             self.assertEqual(available_tests(self.base), ["VMC-Fake"])
             self.assertTrue(default_binary("vmc").endswith(
@@ -1146,24 +1175,30 @@ def run_tests(args):
             args.tests = [os.getcwd()]
         else:
             names = available_tests()
+            prog = os.path.basename(sys.argv[0])
             print("Available tests (tests/CI_test):\n")
             for name in names:
                 print("    %s" % name)
-            print("\nRun one with:    %s <name>" % os.path.basename(sys.argv[0]))
-            print("More options:    %s --help" % os.path.basename(sys.argv[0]))
+            print("\nRun one with:    %s <name>" % prog)
+            print("Run all with:    %s all" % prog)
+            print("More options:    %s --help" % prog)
             return 0
 
     wanted_cases = []
     for spec in args.case or []:
         wanted_cases.extend(c for c in spec.split(",") if c)
 
+    tokens, from_all = expand_test_tokens(args.tests)
     mpiexec = args.mpiexec or default_mpiexec()
     results = []                      # (folder, case, status-string, ok)
-    for token in args.tests:
+    for token in tokens:
         source = resolve_test_dir(token)
         folder = os.path.basename(source)
         manifest = load_manifest(os.path.join(source, MANIFEST_NAME))
         if not manifest.get("enabled", True):
+            if token in from_all:
+                print("note: skipping '%s' (disabled in its manifest)" % folder)
+                continue
             print("note: '%s' is disabled in its manifest (parked test); "
                   "running anyway because it was named explicitly" % folder)
         for req in manifest.get("requires", []):
@@ -1174,7 +1209,7 @@ def run_tests(args):
         selected = case_names if not wanted_cases else \
             [c for c in case_names if c in wanted_cases]
         unknown = [c for c in wanted_cases
-                   if c not in case_names and len(args.tests) == 1]
+                   if c not in case_names and len(tokens) == 1]
         if unknown:
             raise RuntimeError("no case named %s in %s (available: %s)"
                                % (", ".join(unknown), folder,
@@ -1200,6 +1235,11 @@ def run_tests(args):
                          case_name))
             print()
 
+    if not results:
+        if wanted_cases:
+            raise RuntimeError("no case named %s in the selected tests"
+                               % ", ".join(wanted_cases))
+        raise RuntimeError("nothing to run")
     if len(results) > 1:
         print("=" * 72)
         print("Summary")
@@ -1217,6 +1257,7 @@ Run CHAMP integration tests (see tests/CI_test/README.md).
     %(prog)s VMC-H2                    run every case of that test
     %(prog)s VMC-H2 DMC-C4H6-...      several tests in a row
     %(prog)s VMC-H2 --case energy-np2  a single case
+    %(prog)s all                       run every integration test
     %(prog)s                           inside a test folder: run it;
                                        elsewhere: list available tests
 
@@ -1243,7 +1284,8 @@ def build_cli():
 
     p_test = sub.add_parser("test", help="run test folders (default mode)")
     p_test.add_argument("tests", nargs="*", metavar="TEST",
-                        help="test folder name (under tests/CI_test) or path")
+                        help="test folder name (under tests/CI_test), a "
+                             "path, or 'all' for every test")
     p_test.add_argument("--case", action="append", metavar="NAME",
                         help="run only this case (repeatable, or comma-"
                              "separated); default: all cases")

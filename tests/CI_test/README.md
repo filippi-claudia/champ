@@ -15,9 +15,13 @@ registers one ctest entry per case.
 ```bash
 tests/CI_test/champ_test_runner.py VMC-H2          # run all H2 cases
 tests/CI_test/champ_test_runner.py VMC-H2 --case energy-np2
+tests/CI_test/champ_test_runner.py all             # run every test
 tests/CI_test/champ_test_runner.py                 # list available tests
 cd tests/CI_test/VMC-H2 && ../champ_test_runner.py # run from inside
 ```
+
+`all` runs the cases sequentially; for parallel execution of the full
+suite use `ctest -j N` (below).
 
 Defaults: binaries `bin/vmc.mov1` / `bin/dmc.mov1` at the repository
 root, MPI launcher `mpirun`/`mpiexec` from `PATH`, outputs in
