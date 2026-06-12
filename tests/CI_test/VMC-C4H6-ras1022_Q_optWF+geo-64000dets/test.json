@@ -47,7 +47,9 @@
           "file": "vmc_opt_ras1022_pVQZ_65000_core_2.out",
           "match": "total E",
           "value": -26.1118369,
-          "error": 0.0138856
+          "error": 0.0138856,
+          "nsigma": 3.0,
+          "comment": "tight reference: 2.2 sigma deviation observed with ifx"
         }
       ]
     }

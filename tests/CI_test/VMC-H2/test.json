@@ -67,7 +67,9 @@
           "file": "revised_vmc_corsamp_core_1.out",
           "match": "total E",
           "value": -0.9923642,
-          "error": 0.0102988
+          "error": 0.0102988,
+          "nsigma": 3.0,
+          "comment": "tight reference: 2.1-2.2 sigma deviations observed across toolchains"
         },
         {
           "type": "value",
