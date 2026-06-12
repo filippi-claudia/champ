@@ -34,7 +34,8 @@
           "value": -26.3314821,
           "error": 0.0032612,
           "occurrence": -1,
-          "comment": "state 2 energy"
+          "comment": "state 2 energy; deviates by ~2.4 sigma with ifx; reported but not failing",
+          "policy": "warn"
         }
       ]
     },

@@ -82,10 +82,11 @@ passes when
 ```
 
 where `error_ref` is the error bar stored in the manifest,
-`error_obtained` is the error bar reported by the run, and `nsigma`
-defaults to 2 (≈5% false-failure rate per check under ideal statistics;
-raise `nsigma` for noisy quantities rather than inflating the reference
-error bar).
+`error_obtained` is the error bar reported by the run, and `nsigma` is
+2 (≈5% false-failure rate per check under ideal statistics). The window
+is fixed: checks known to fluctuate beyond it on some toolchains are
+marked `policy: "warn"` so the deviation is reported without failing
+the test.
 
 The reference is a distribution, not a bit pattern: a different
 compiler, different flags or a different rank count samples differently.
@@ -182,8 +183,8 @@ check, case and run accepts one).
 - `occurrence`: which matching line; `"last"` (default, i.e. the final
   optimization iteration), `"first"`, or an integer (`1` = first,
   `-1` = last, `-2` = second to last — used for multi-state outputs).
-- `nsigma` (default 2.0): acceptance window.
-- `policy: "warn"`: report a mismatch without failing the test.
+- `policy: "warn"`: report a mismatch without failing the test
+  (the per-test equivalent of continue-on-error).
 
 **`difference`** — derived quantity from two occurrences of the same
 scalar, e.g. an excitation energy in eV:

@@ -32,8 +32,8 @@ Pass criterion for stochastic values:
 
     |obtained - reference| <= nsigma * sqrt(err_ref^2 + err_obtained^2)
 
-with nsigma = 2 by default.  Both the reference error bar and the error
-bar reported by the run enter the combined uncertainty; references are
+with nsigma = 2.  Both the reference error bar and the error bar
+reported by the run enter the combined uncertainty; references are
 toolchain-dependent samples of a distribution, not bit patterns.
 """
 
@@ -93,11 +93,11 @@ CHECK_KEYS_COMMON = {
 }
 CHECK_KEYS = {
     "value": {"file": str, "match": str, "value": float, "error": float,
-              "nsigma": float, "occurrence": (str, int)},
+              "occurrence": (str, int)},
     "difference": {"file": str, "match": str, "minuend": int,
                    "subtrahend": int, "scale": float, "value": float,
-                   "error": float, "nsigma": float},
-    "forces": {"file": str, "reference": str, "nsigma": float},
+                   "error": float},
+    "forces": {"file": str, "reference": str},
     "file_exists": {"file": str},
     "values_equal": {"files": list, "match": str, "occurrence": (str, int)},
 }
@@ -231,8 +231,6 @@ def _validate_check(check, where):
             _fail(where, "'files' must be a list of exactly two output files")
         for f in files:
             _safe_relpath(f, where)
-    if "nsigma" in check and float(check["nsigma"]) <= 0:
-        _fail(where, "'nsigma' must be > 0")
 
 
 def _validate_run(run, where):
@@ -436,7 +434,7 @@ def _fmt(x):
 
 def check_value(scratch, check):
     policy = check.get("policy", "fail")
-    nsigma = float(check.get("nsigma", DEFAULT_NSIGMA))
+    nsigma = DEFAULT_NSIGMA
     occurrence = check.get("occurrence", "last")
     title = "value '%s' (%s) in %s" % (check["match"], occurrence, check["file"])
     ref_value = float(check["value"])
@@ -466,7 +464,7 @@ def check_difference(scratch, check):
     The run-side error bar is the two extracted error bars added in
     quadrature, scaled by |scale|."""
     policy = check.get("policy", "fail")
-    nsigma = float(check.get("nsigma", DEFAULT_NSIGMA))
+    nsigma = DEFAULT_NSIGMA
     scale = float(check.get("scale", 1.0))
     title = "difference of '%s' (occurrence %d minus %d, scale %g) in %s" % (
         check["match"], check["minuend"], check["subtrahend"], scale, check["file"])
@@ -498,7 +496,7 @@ def check_difference(scratch, check):
 
 def check_forces(scratch, check):
     policy = check.get("policy", "fail")
-    nsigma = float(check.get("nsigma", DEFAULT_NSIGMA))
+    nsigma = DEFAULT_NSIGMA
     title = "forces %s vs reference %s" % (check["file"], check["reference"])
     try:
         obtained = read_forces_table(os.path.join(scratch, check["file"]))
