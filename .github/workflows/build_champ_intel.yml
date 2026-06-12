@@ -37,7 +37,7 @@ jobs:
         run: |
           set -e
           wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
-            | sudo gpg --dearmor -o /usr/share/keyrings/oneapi-archive-keyring.gpg
+            | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/oneapi-archive-keyring.gpg
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
             | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
