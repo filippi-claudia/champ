@@ -45,5 +45,6 @@ load jastrow_der     jastrow.der
     vmc_nblk      400
     vmc_nblkeq    1
     vmc_nconf_new 0
+    vmc_idump     0
 %endmodule
 
