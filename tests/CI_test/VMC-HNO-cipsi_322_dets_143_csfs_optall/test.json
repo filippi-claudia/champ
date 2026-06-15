@@ -1,0 +1,96 @@
+{
+  "description": "Nitroxyl (HNO) two-state CIPSI wave function, full optimization; checks both state energies and the S1-S0 excitation gap",
+  "labels": [
+    "VMC",
+    "HNO",
+    "cipsi",
+    "excited",
+    "optimization"
+  ],
+  "cases": [
+    {
+      "name": "np1",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "vmc.inp",
+          "output": "vmc_core_1.out",
+          "nproc": 1
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "vmc_core_1.out",
+          "match": "total E",
+          "value": -26.4758227,
+          "error": 0.0108153,
+          "occurrence": -2,
+          "comment": "state 1 energy, final iteration"
+        },
+        {
+          "type": "value",
+          "file": "vmc_core_1.out",
+          "match": "total E",
+          "value": -26.3369649,
+          "error": 0.0124782,
+          "occurrence": -1,
+          "comment": "state 2 energy, final iteration"
+        },
+        {
+          "type": "difference",
+          "file": "vmc_core_1.out",
+          "match": "total E",
+          "minuend": -1,
+          "subtrahend": -2,
+          "scale": 27.2114,
+          "value": 3.7785151,
+          "error": 0.4492765,
+          "comment": "S1-S0 excitation energy in eV"
+        }
+      ]
+    },
+    {
+      "name": "np2",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "vmc.inp",
+          "output": "vmc_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "vmc_core_2.out",
+          "match": "total E",
+          "value": -26.4970628,
+          "error": 0.0083161,
+          "occurrence": -2,
+          "comment": "state 1 energy, final iteration"
+        },
+        {
+          "type": "value",
+          "file": "vmc_core_2.out",
+          "match": "total E",
+          "value": -26.3313189,
+          "error": 0.0093368,
+          "occurrence": -1,
+          "comment": "state 2 energy, final iteration"
+        },
+        {
+          "type": "difference",
+          "file": "vmc_core_2.out",
+          "match": "total E",
+          "minuend": -1,
+          "subtrahend": -2,
+          "scale": 27.2114,
+          "value": 4.5101235,
+          "error": 0.3400853,
+          "comment": "S1-S0 excitation energy in eV"
+        }
+      ]
+    }
+  ]
+}

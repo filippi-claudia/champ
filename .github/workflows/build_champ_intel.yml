@@ -31,6 +31,18 @@ jobs:
         with:
           components: basekit, hpckit
 
+      # The fast setup provides the C/C++ toolchain only; without ifx the
+      # mpiifx wrapper fails ("ifx: command not found").
+      - name: Install the Intel oneAPI Fortran compiler
+        run: |
+          set -e
+          wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+            | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/oneapi-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
+            | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt-get update
+          sudo apt-get install -y intel-oneapi-compiler-fortran
+
       - name: Get the CHAMP code
         uses: actions/checkout@v4
 
@@ -45,6 +57,7 @@ jobs:
       - name: Compile the CHAMP code using Intel and run all tests
         run: |
           source /opt/intel/oneapi/setvars.sh
+          set -e
           cmake --version
           ifx --version
           icx --version
@@ -60,4 +73,4 @@ jobs:
           cmake --build build -- -j2
           cd build
           export PATH="/usr/bin:$PATH"
-          ctest --output-on-failure --verbose -LE "(TREXIO|QMCKL)"
+          ctest --output-on-failure --no-tests=error -j "$(nproc)" -LE "(TREXIO|QMCKL)"

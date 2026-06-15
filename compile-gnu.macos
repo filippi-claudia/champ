@@ -9,9 +9,9 @@
 #   HDF5_DIR    - prefix where HDF5 is installed    (same layout)
 #
 # Example:
-#   export TREXIO_DIR=$HOME/opt
-#   export QMCKL_DIR=$HOME/opt
-#   export HDF5_DIR=$HOME/opt
+export TREXIO_DIR=$HOME
+export QMCKL_DIR=$HOME
+export HDF5_DIR=$HOME
 #   ./compile-gnu.macos
 
 compiler='mpif90'

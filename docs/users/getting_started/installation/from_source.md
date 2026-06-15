@@ -328,10 +328,17 @@ cd build
 ctest
 ```
 
-Or with verbose output:
+Useful variations:
 ```
-ctest --verbose
+ctest -j 4                 # run tests in parallel on 4 cores
+ctest -L VMC               # only tests with the VMC label
+ctest -R VMC-H2            # only tests matching a name regex
+ctest --output-on-failure  # print the full log of failing tests
 ```
+
+Each test compares stochastic results against reference values within
+statistical error bars; see `tests/CI_test/README.md` for how the tests
+are defined and how to add new ones.
 
 ### Check Compiled Executables
 

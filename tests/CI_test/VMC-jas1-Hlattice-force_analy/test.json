@@ -1,0 +1,38 @@
+{
+  "description": "Periodic hydrogen lattice with Jastrow 1: total energy plus analytic forces against a reference force file",
+  "labels": [
+    "VMC",
+    "periodic",
+    "Hlattice",
+    "jas1",
+    "forces"
+  ],
+  "cases": [
+    {
+      "name": "np2",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "vmc.inp",
+          "output": "vmc.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "vmc.out",
+          "match": "total E",
+          "value": -4.2118242,
+          "error": 0.0073473
+        },
+        {
+          "type": "forces",
+          "file": "force_analytic",
+          "reference": "force_reference",
+          "comment": "analytic forces within 2 sigma of reference"
+        }
+      ]
+    }
+  ]
+}
