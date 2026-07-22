@@ -698,7 +698,7 @@ contains
 ! use 'new' not 'old' value
       call pcm_sum(wtg(1),0.d0)
       call mmpol_sum(wtg(1),0.d0)
-      call prop_sum(wtg(1),0.d0)
+      call prop_sum(wtg)
       call force_analy_sum(wtg(1),0.d0,eold(1,1),0.0d0)
 
       call optjas_sum(wtg,zero_array,eold(1,1),eold(1,1),0)

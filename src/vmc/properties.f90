@@ -10,20 +10,21 @@ contains
 !     <x> <y> <z> <x**2> <y**2> <z**2>
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine prop_compute(coord)
+      use contrl_per, only: iperiodic
+      use csfs,    only: nstates
       use precision_kinds, only: dp
-      use prp000,  only: iprop,nprop
+      use prp000,  only: iprop,nprop,npropps
       use prp001,  only: vprop
       use system,  only: nelec
       use periodic, only: ngnorm,ngvec
       implicit none
 
-      integer :: i, jprop, m
+      integer :: i, istate, jprop, m
 
       real(dp), dimension(3,*) :: coord
 
-!     electron coordinates
-
       if(iprop.eq.0) return
+
       do i=1,nprop
        vprop(i)=0.d0
       enddo
@@ -35,13 +36,21 @@ contains
        enddo
       enddo
 
+      do istate=2,nstates
+        do m=1,3
+          vprop(m+npropps*(istate-1))=vprop(m)
+          vprop(3+m+npropps*(istate-1))=vprop(3+m)
+        enddo
+      enddo
+
       jprop=6
 
-      call sofk(jprop)
+      if(iperiodic.gt.0) then
+        call sofk(jprop)
+        jprop=6+(ngvec-1)
 
-      jprop=6+(ngvec-1)
-
-      call rhok(jprop)
+        call rhok(jprop)
+      endif
 
       end
 
@@ -69,48 +78,61 @@ contains
       end
 
 !-----------------------------------------------------------------------
-      subroutine prop_cum(w)
+      subroutine prop_cum
       use precision_kinds, only: dp
-      use prp000,  only: iprop,nprop
+      use csfs,    only: nstates
+      use forcewt, only: wsum
+      use prp000,  only: iprop,npropps
       use prp003,  only: vprop_cm2,vprop_cum,vprop_sum
 
       implicit none
 
-      integer :: i
-      real(dp) :: vprop_now, w
+      integer :: i,i0,istate
+      real(dp) :: vprop_now
 
       if(iprop.eq.0) return
-      do i=1,nprop
-       vprop_now = vprop_sum(i)/w
-       vprop_cm2(i)=vprop_cm2(i)+ vprop_sum(i)*vprop_now
-       vprop_cum(i)=vprop_cum(i)+ vprop_sum(i)
+      do istate=1,nstates
+       i0=(istate-1)*npropps
+       do i=i0+1,i0+npropps
+        vprop_now = vprop_sum(i)/wsum(istate,1)
+        vprop_cm2(i)=vprop_cm2(i)+ vprop_sum(i)*vprop_now
+        vprop_cum(i)=vprop_cum(i)+ vprop_sum(i)
+       enddo
       enddo
       end
 
 !-----------------------------------------------------------------------
-      subroutine prop_avrg(wcum,iblk,pav,perr)
+      subroutine prop_avrg(iblk,pav,perr)
       use precision_kinds, only: dp
-      use prp000,  only: iprop,nprop
-      use prp003,  only: vprop_cm2,vprop_cum
+      use csfs,     only: nstates
+      use forcewt,  only: wcum
+      use prp000,   only: iprop,nprop,npropps
+      use prp003,   only: vprop_cm2,vprop_cum
+      use periodic, only: ngvec
 
       implicit none
 
-      integer :: i, iblk
-      real(dp) :: wcum, x, x2
+      integer :: i, i0, iblk, istate, igvec
+      real(dp) :: x, x2
       real(dp), dimension(nprop) :: pav
       real(dp), dimension(nprop) :: perr
 
       if(iprop.eq.0) return
-      do i=1,nprop
-       perr(i)=err(vprop_cum(i),vprop_cm2(i))
-       pav(i)=vprop_cum(i)/wcum
+      do istate=1,nstates
+       i0=(istate-1)*npropps
+       do i=i0+1,i0+npropps
+        perr(i)=err(vprop_cum(i),vprop_cm2(i),wcum(istate,1),iblk)
+        pav(i)=vprop_cum(i)/wcum(istate,1)
+       enddo
       enddo
+
 contains
-        elemental pure function err(x,x2)
+        elemental pure function err(x,x2,w,i)
         implicit none
+        integer, intent(in) :: i
         real(dp) err
-        real(dp), intent(in) :: x, x2
-        err = dsqrt(abs(x2/wcum-(x/wcum)**2)/iblk)
+        real(dp), intent(in) :: x, x2,w
+        err = dsqrt(abs(x2/w-(x/w)**2)/i)
         end function
       end
 !-----------------------------------------------------------------------
@@ -121,8 +143,6 @@ contains
       implicit none
 
       integer :: i, iu
-
-
 
       if(iprop.eq.0) return
       write(iu) nprop
@@ -143,38 +163,41 @@ contains
       read(iu) (vprop_cum(i),vprop_cm2(i),i=1,nprop)
       end
 !-----------------------------------------------------------------------
-      subroutine prop_fin(passes,iblk,efin,eerr)
+      subroutine prop_fin(iblk,efin,eerr)
+
       use contrl_file, only: ounit
       use precision_kinds, only: dp
       use prp000,  only: iprop,ipropprt
       implicit none
 
       integer :: iblk, ipropprt_sav
-      real(dp) :: eerr, efin, passes
+      real(dp) :: eerr, efin
 
 
       if(iprop.eq.0) return
       write(ounit,'(''--- additional properties ---'')')
       ipropprt_sav=ipropprt
       ipropprt=-1
-      call prop_prt(passes,iblk,ounit)
+      call prop_prt(iblk,ounit)
       ipropprt=ipropprt_sav
 
       end
 !-----------------------------------------------------------------------
-      subroutine prop_prt(w,iblk,iu)
+      subroutine prop_prt(iblk,iu)
+
       use m_icount, only: icount_prop
       use periodic, only: ngnorm, gvec, ngvec
       use precision_kinds, only: dp
-      use prp000,  only: iprop,ipropprt,nprop
+      use prp000,  only: iprop,ipropprt,nprop,npropps
       use prp003,  only: cc_nuc
       use system,  only: nelec
+      use csfs,    only: nstates
 
       implicit none
 
-      integer :: i, iblk, iu
+      integer :: i, iblk, iu, i0, igvec, istate
       real(dp) :: dble, dip, diperr, dipx
-      real(dp) :: dipy, dipz, norm_aux, w
+      real(dp) :: dipy, dipz, norm_aux
       real(dp), dimension(nprop) :: pav
       real(dp), dimension(nprop) :: perr
 
@@ -194,53 +217,59 @@ contains
 
       icount_prop=1
 
-      call prop_avrg(w,iblk,pav(1),perr(1))
+!     call prop_avrg(w,iblk,pav(1),perr(1))
+      call prop_avrg(iblk,pav(1),perr(1))
 
-
-      write(iu,10)
-      write(iu,20) 'X  ',pav(1),perr(1),pav(1)/dble(nelec),perr(1) &
-           /dble(nelec)
-      write(iu,20) 'Y  ',pav(2),perr(2),pav(2)/dble(nelec),perr(2) &
-           /dble(nelec)
-      write(iu,20) 'Z  ',pav(3),perr(3),pav(3)/dble(nelec),perr(3) &
-           /dble(nelec)
-      write(iu,20) 'XX ',pav(4),perr(4),pav(4)/dble(nelec),perr(4) &
-           /dble(nelec)
-      write(iu,20) 'YY ',pav(5),perr(5),pav(5)/dble(nelec),perr(5) &
-           /dble(nelec)
-      write(iu,20) 'ZZ ',pav(6),perr(6),pav(6)/dble(nelec),perr(6) &
-           /dble(nelec)
+      do istate=1,nstates
+       write(iu,*)'state ',istate
+       i0=(istate-1)*npropps
+       write(iu,10)
+       write(iu,20) 'X  ',pav(i0+1),perr(i0+1),pav(i0+1)/dble(nelec),perr(i0+1) &
+            /dble(nelec)
+       write(iu,20) 'Y  ',pav(i0+2),perr(i0+2),pav(i0+2)/dble(nelec),perr(i0+2) &
+            /dble(nelec)
+       write(iu,20) 'Z  ',pav(i0+3),perr(i0+3),pav(i0+3)/dble(nelec),perr(i0+3) &
+            /dble(nelec)
+       write(iu,20) 'XX ',pav(i0+4),perr(i0+4),pav(i0+4)/dble(nelec),perr(i0+4) &
+            /dble(nelec)
+       write(iu,20) 'YY ',pav(i0+5),perr(i0+5),pav(i0+5)/dble(nelec),perr(i0+5) &
+            /dble(nelec)
+       write(iu,20) 'ZZ ',pav(i0+6),perr(i0+6),pav(i0+6)/dble(nelec),perr(i0+6) &
+            /dble(nelec)
 
 !....dipole
-      write(iu,50) 'center of nuclear charge: ',cc_nuc
-      write(iu,30)
-      dipx=cc_nuc(1)*nelec*2.5417 - pav(1) *2.5417
-      dipy=cc_nuc(2)*nelec*2.5417 - pav(2) *2.5417
-      dipz=cc_nuc(3)*nelec*2.5417 - pav(3) *2.5417
-      dip=dsqrt(dipx**2+dipy**2+dipz**2)
-      diperr=dabs (perr(1)*2.5417 * dipx / dip) + &
-             dabs (perr(2)*2.5417 * dipy / dip) + &
-             dabs (perr(3)*2.5417 * dipz / dip)
-      write(iu,40) 'Dip X ',dipx,perr(1)*2.5417
-      write(iu,40) 'Dip Y ',dipy,perr(2)*2.5417
-      write(iu,40) 'Dip Z ',dipz,perr(3)*2.5417
-      write(iu,40) 'Dip   ',dip,diperr
-
-      do i=6+1,6+ngvec-1
-        call gnormf(3,gvec(1,i-5), norm_aux)
-        write(iu,'(''s(k)     '',t17,f12.7,f12.7,'' +-'' &
-        ,f12.7,f12.7)') norm_aux,pav(i),perr(i), &
-        pav(i)-(pav(i+ngvec-1)**2)-(pav(i+2*(ngvec-1))**2)
+       write(iu,50) 'center of nuclear charge: ',cc_nuc
+       write(iu,30)
+       dipx=cc_nuc(1)*nelec*2.5417 - pav(i0+1) *2.5417
+       dipy=cc_nuc(2)*nelec*2.5417 - pav(i0+2) *2.5417
+       dipz=cc_nuc(3)*nelec*2.5417 - pav(i0+3) *2.5417
+       dip=dsqrt(dipx**2+dipy**2+dipz**2)
+       diperr=dabs (perr(i0+1)*2.5417 * dipx / dip) + &
+              dabs (perr(i0+2)*2.5417 * dipy / dip) + &
+              dabs (perr(i0+3)*2.5417 * dipz / dip)
+       write(iu,40) 'Dip X ',dipx,perr(i0+1)*2.5417
+       write(iu,40) 'Dip Y ',dipy,perr(i0+2)*2.5417
+       write(iu,40) 'Dip Z ',dipz,perr(i0+3)*2.5417
+       write(iu,40) 'Dip   ',dip,diperr
       enddo
-      do i=6+ngvec,6+2*(ngvec-1)
-        call gnormf(3,gvec(1,i-5-ngvec+1), norm_aux)
-        write(iu,'(''cos(kr)  '',t17,f12.7,f12.7,'' +-'' &
-        &,f12.7)') norm_aux,pav(i),perr(i)
-      enddo
-      do i=6+2*(ngvec-1)+1,nprop
-        call gnormf(3,gvec(1,i-5-2*(ngvec-1)), norm_aux)
-        write(iu,'(''sin(kr)  '',t17,f12.7,f12.7,'' +-'' &
-        &,f12.7)') norm_aux,pav(i),perr(i)
+ 
+      do istate=1,nstates
+       write(iu,*)
+       i0=(istate-1)*npropps
+       do igvec=2,ngvec
+         i=i0+6+igvec-1
+         call gnormf(3,gvec(1,igvec), norm_aux)
+         write(iu,'('' s(k) s'',i1,t17                                      &
+         ,f12.7,f12.7,'' +-'',f12.7,f12.7                                   &
+         ,'' cos(kr) ''                                                     &
+         ,f12.7,'' +-'',f12.7                                               &
+         ,'' sin(kr) ''                                                     &
+         ,f12.7,'' +-'',f12.7,i6)')                                         &
+         ,istate,norm_aux                                                   &
+         ,pav(i),perr(i),pav(i)-(pav(i+ngvec-1)**2)-(pav(i+2*(ngvec-1))**2) &
+         ,pav(i+ngvec-1),perr(i+ngvec-1)                                    &
+         ,pav(i+2*(ngvec-1)),perr(i+2*(ngvec-1)),i
+       enddo
       enddo
 
       10 format('-------- property operator averages  ----------')
@@ -252,54 +281,53 @@ contains
       end
 
 !*********************************************************************
-        subroutine prop_cc_nuc(znuc,cent,iwctype,mctype,mcent, &
-        ncent,cc_nuc)
+      subroutine prop_cc_nuc(znuc,cent,iwctype,mctype,mcent, &
+      ncent,cc_nuc)
 !*********************************************************************
-
 
       implicit none
 
-        integer  mctype,mcent,ncent
-        integer  iwctype(mcent)
-        real(8) znuc(mctype),cent(3,mcent)
-        real(8) cc_nuc(3), tmp
-        integer i,id
+      integer  mctype,mcent,ncent
+      integer  iwctype(mcent)
+      real(8) znuc(mctype),cent(3,mcent)
+      real(8) cc_nuc(3), tmp
+      integer i,id
 
-        cc_nuc(1)=0.d0
-        cc_nuc(2)=0.d0
-        cc_nuc(3)=0.d0
-        tmp=0.d0
-        do i=1,ncent
-          id=znuc(iwctype(i))
-          if(znuc(iwctype(i)).gt.2) id=znuc(iwctype(i))+2
-          cc_nuc(1)=cc_nuc(1)+znuc(iwctype(i))*cent(1,i)
-          cc_nuc(2)=cc_nuc(2)+znuc(iwctype(i))*cent(2,i)
-          cc_nuc(3)=cc_nuc(3)+znuc(iwctype(i))*cent(3,i)
-          tmp=tmp+znuc(iwctype(i))
-        enddo
-        cc_nuc(1)=cc_nuc(1)/tmp
-        cc_nuc(2)=cc_nuc(2)/tmp
-        cc_nuc(3)=cc_nuc(3)/tmp
-!        write (*,*) 'Center of nuclear charge:', cc_nuc(:),tmp
+      cc_nuc(1)=0.d0
+      cc_nuc(2)=0.d0
+      cc_nuc(3)=0.d0
+      tmp=0.d0
+      do i=1,ncent
+        id=znuc(iwctype(i))
+        if(znuc(iwctype(i)).gt.2) id=znuc(iwctype(i))+2
+        cc_nuc(1)=cc_nuc(1)+znuc(iwctype(i))*cent(1,i)
+        cc_nuc(2)=cc_nuc(2)+znuc(iwctype(i))*cent(2,i)
+        cc_nuc(3)=cc_nuc(3)+znuc(iwctype(i))*cent(3,i)
+        tmp=tmp+znuc(iwctype(i))
+      enddo
+      cc_nuc(1)=cc_nuc(1)/tmp
+      cc_nuc(2)=cc_nuc(2)/tmp
+      cc_nuc(3)=cc_nuc(3)/tmp
+!     write (*,*) 'Center of nuclear charge:', cc_nuc(:),tmp
 
-
-        return
-        end
+      return
+      end
 
 !-----------------------------------------------------------------------
-
       subroutine sofk(ip)
 ! Written by Edgar Landinez and Saverio Moroni
 
+      use csfs,     only: nstates
+      use prp000,   only: npropps
       use prp001,   only: vprop
       use ewald,    only: cos_e_sum, sin_e_sum
-      use periodic, only: igmult, ngnorm, ngvec
+      use periodic, only: gnorm, igmult, ngnorm, ngvec
+
       use system, only: nelec
       use precision_kinds, only: dp
       implicit none
 
-      integer :: im, ip, ivec, k,ik
-      real(dp) :: skcum
+      integer :: im, ip, ivec, k,ik, istate,i0
       real(dp), dimension(ngvec) :: cos1_sum
       real(dp), dimension(ngvec) :: cos2_sum
       real(dp), dimension(ngvec) :: sin1_sum
@@ -310,20 +338,6 @@ contains
       sin1_sum=sin_e_sum(1:ngvec)
       sin2_sum=sin_e_sum(1:ngvec)
 
-!     print*,"sofk, ngnorm", ngnorm
-
-      !vprop(ip+1)=(cos1_sum(1)*cos2_sum(1)+sin1_sum(1)*sin2_sum(1))/nelec
-
-!      ivec=1
-!      do k=2,ngnorm
-!         skcum=0.d0
-!         do im=1,igmult(k)
-!            ivec=ivec+1
-!            skcum=skcum+(cos1_sum(ivec)*cos2_sum(ivec)+sin1_sum(ivec)*sin2_sum(ivec))
-!         enddo
-!         vprop(ip+k-1)=skcum/(nelec*igmult(k))
-!      enddo
-
       ivec=1
 
       ik=0
@@ -332,11 +346,13 @@ contains
             ik=ik+1
             ivec=ivec+1
             vprop(ip+ik)=(cos1_sum(ivec)*cos2_sum(ivec)+sin1_sum(ivec)*sin2_sum(ivec))
+            do istate=2,nstates
+             i0=(istate-1)*npropps
+             vprop(i0+ip+ik)=vprop(ip+ik)
+            enddo
          enddo
       enddo
 
-
-      
       return
       end
 
@@ -344,29 +360,35 @@ contains
       subroutine rhok(ip)
 ! Written by Edgar Landinez and Saverio Moroni
 
+      use csfs,     only: nstates
+      use prp000,   only: npropps
       use prp001,   only: vprop
       use ewald,    only: cos_e_sum, sin_e_sum
       use periodic, only: igmult, ngnorm, ngvec
+
       use system, only: nelec
       use precision_kinds, only: dp
       implicit none
 
-      integer :: im, ip, ivec, k, ik 
-      real(dp) :: skcum
-
-!     print*,"sofk, ngnorm", ngnorm
-
-      !vprop(ip+1)=(cos1_sum(1)*cos2_sum(1)+sin1_sum(1)*sin2_sum(1))/nelec
+      integer :: im, ip, ivec, k, ik, istate,i0
 
       ivec=1
       ik=2
       do k=2,ngvec
          vprop(ip+ik-1)=cos_e_sum(k)
+         do istate=2,nstates
+          i0=(istate-1)*npropps
+          vprop(i0+ip+ik-1)=vprop(ip+ik-1)
+         enddo
          ik=ik+1
       enddo
 
       do k=2,ngvec
          vprop(ip+ik-1)=sin_e_sum(k)
+         do istate=2,nstates
+          i0=(istate-1)*npropps
+          vprop(i0+ip+ik-1)=vprop(ip+ik-1)
+         enddo
          ik=ik+1
       enddo
       return

@@ -37,7 +37,7 @@ contains
       use optx_orb_ci, only: optx_orb_ci_sum
       use pcm_vmc, only: pcm_sum, pcm_save
       use precision_kinds, only: dp
-      use prop_vmc, only: prop_sum, prop_save
+      use prop_vmc, only: prop_sum_moveall, prop_save
       use pseudo,  only: nloc
       use random_mod, only: random_dp
       use stats,   only: rejmax
@@ -534,7 +534,7 @@ contains
       tpbsum(1)=tpbsum(1)+p*ekinn(1)+q*ekino(1)
 
       call pcm_sum(p,q)
-      call prop_sum(p,q)
+      call prop_sum_moveall(p,q)
 
       p_dum(1)=p
       q_dum(1)=q

@@ -1,12 +1,15 @@
 module prp000
-    !> Arguments: ipropprt, iprop, nprop
+! begin rewate
+    !> Arguments: ipropprt, iprop, nprop, npropps
 
     integer :: iprop
     integer :: ipropprt
     integer :: nprop
+    integer :: npropps
 
     private
-    public :: ipropprt, iprop, nprop
+    public :: ipropprt, iprop, nprop, npropps
+! end rewate
     save
 end module prp000
 

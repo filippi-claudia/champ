@@ -123,7 +123,7 @@ subroutine parser
       use periodic_table, only: atom_t,element
       use pot,     only: pot_nn
       use precision_kinds, only: dp
-      use prp000,  only: iprop,ipropprt,nprop
+      use prp000,  only: iprop,ipropprt,nprop,npropps
       use pseudo,  only: nloc
       use qua,     only: nquad
       use random_mod, only: setrn, jumprn
@@ -1253,21 +1253,21 @@ subroutine parser
 ! properties will be sampled iprop
 ! properties will be printed ipropprt
   nprop=1
+  npropps=1
   if(iprop.ne.0) then
      if (iperiodic.gt.0) then
-        !        nprop=5+ngnorm
-        nprop=6+(ngvec-1)+2*(ngvec-1)
-     else
-        nprop=5
+       npropps=6+(ngvec-1)+2*(ngvec-1)
+      else
+       npropps=6
      endif
+     nprop=npropps*nstates
 
      write(ounit,'(a)' ) " Properties will be sampled "
-     write(ounit,*) " NPROP ", nprop
+     write(ounit,*) " NPROP ", nprop," NPROPPS ",npropps
      write(ounit,int_format ) " Properties printout flag = ", ipropprt
-!    call prop_cc_nuc(znuc,cent,iwctype,nctype_tot,ncent_tot,ncent,cc_nuc)
+
   endif
-  
-  
+
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()

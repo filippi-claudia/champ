@@ -104,12 +104,12 @@ contains
       enddo
 
 ! only called for ifr=1
+      call mmpol_cum(wsum(1,1))
       call optjas_cum(wsum(1,1),enow(1,1))
       call optorb_cum(wsum(1,1),esum(1,1))
       call optci_cum(wsum(1,1))
-      call prop_cum(wsum(1,1))
       call pcm_cum(wsum(1,1))
-      call mmpol_cum(wsum(1,1))
+      call prop_cum
 
       if(wid) eave=ecum(1,1)/wcum(1,1)
       call MPI_BCAST(eave,1,MPI_REAL8,0,MPI_COMM_WORLD,ierr)

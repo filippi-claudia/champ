@@ -127,6 +127,24 @@ contains
         end function
       end
 !----------------------------------------------------------------------
+      subroutine prop_cum_dmc(w)
+      use precision_kinds, only: dp
+      use prp000,  only: iprop,nprop
+      use prp003,  only: vprop_cm2,vprop_cum,vprop_sum
+
+      implicit none
+
+      integer :: i
+      real(dp) :: vprop_now, w
+
+      if(iprop.eq.0) return
+      do i=1,nprop
+       vprop_now = vprop_sum(i)/w
+       vprop_cm2(i)=vprop_cm2(i)+ vprop_sum(i)*vprop_now
+       vprop_cum(i)=vprop_cum(i)+ vprop_sum(i)
+      enddo
+      end
+!-----------------------------------------------------------------------
       subroutine prop_save_dmc(iw)
 
       use prp000,  only: iprop,nprop

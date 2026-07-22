@@ -28,9 +28,9 @@ contains
       use pcm_mod, only: pcm_init
       use pcm_reduce_mod, only: pcm_reduce
       use precision_kinds, only: dp
-      use prop_dmc, only: prop_prt_dmc
+      use prop_dmc, only: prop_cum_dmc, prop_prt_dmc
       use prop_reduce_mod, only: prop_reduce
-      use properties_mod, only: prop_cum,prop_init
+      use properties_mod, only: prop_init
 
       implicit none
 
@@ -143,7 +143,7 @@ contains
           endif
           egave1=egcum(1)/wgcum(1)
          else
-          call prop_cum(wgsum(ifr))
+          call prop_cum_dmc(wgsum(ifr))
           call pcm_cum(wgsum(ifr))
           call mmpol_cum(wgsum(ifr))
         endif

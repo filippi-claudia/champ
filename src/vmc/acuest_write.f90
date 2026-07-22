@@ -91,9 +91,8 @@ contains
                 enow(1,1),eave,ieerr,peave,ipeerr,tpbave,itpber,accept,iblk*vmc_nstep
               endif
 
-              call prop_prt(wcum(1,ifr),iblk,ounit)
+              call prop_prt(iblk,ounit)
               call optci_prt(wcum(1,ifr),iblk,ounit)
-!             call optorb_prt(wcum(1,ifr),eave,6)
 ! different meaning of last argument: 0 acuest, 1 finwrt
               call pcm_prt(wcum(1,ifr),iblk)
 
@@ -103,10 +102,10 @@ contains
             endif
 
           else
-            fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))!/abs(deltot(ifr))
+           fave=(ecum(istate,1)/wcum(istate,1)-ecum(istate,ifr)/wcum(istate,ifr))!/abs(deltot(ifr))
             ferr=err(fcum(istate,ifr),fcm2(istate,ifr),istate,1)!/abs(deltot(ifr))
             iferr=nint(1.0d9*ferr)
-            write(ounit,'(f10.5,f10.5,''('',i5,'')'',33x,f14.9,''('',i9,'')'')') enow(istate,ifr),eave,ieerr,fave,iferr
+            write(ounit,'(f10.5,f10.5,''('',i5,'')'',51x,f14.9,''('',i9,'')'')') enow(istate,ifr),eave,ieerr,fave,iferr
           endif
 ! endif for ifr.eq.1
         enddo
