@@ -16,12 +16,16 @@ contains
       use prp000,  only: iprop,nprop,npropps
       use prp001,  only: vprop
       use system,  only: nelec
-      use periodic, only: ngnorm,ngvec
+      use periodic, only: rlatt,ngnorm,ngvec
       implicit none
 
-      integer :: i, istate, jprop, m
+      integer :: i, ish, istate, jstate, jprop, m
 
+      real(dp) :: pi
+      real(dp), dimension(3) :: twopi_l
       real(dp), dimension(3,*) :: coord
+
+      data pi/3.14159265359d0/
 
       if(iprop.eq.0) return
 
@@ -29,25 +33,73 @@ contains
        vprop(i)=0.d0
       enddo
 
-      do i=1,nelec
-       do m=1,3
-        vprop(m)  = vprop(m)+coord(m,i)
-        vprop(3+m)= vprop(3+m) + coord(m,i)**2
-       enddo
-      enddo
+      if(iperiodic.eq.0) then
 
-      do istate=2,nstates
-        do m=1,3
-          vprop(m+npropps*(istate-1))=vprop(m)
-          vprop(3+m+npropps*(istate-1))=vprop(3+m)
+        do i=1,nelec
+          do m=1,3
+            vprop(m) = vprop(m)+coord(m,i)
+         enddo
         enddo
-      enddo
 
-      jprop=6
+! State 1, first diagonal and then off-diagonal r_1j
+        do jstate=2,nstates
+          ish=3*(jstate-1)
+          do m=1,3
+            vprop(ish+m)=vprop(m)
+          enddo
+        enddo
 
-      if(iperiodic.gt.0) then
+! State istate > 1, elements istate,jstate 
+        do istate=2,nstates
+          do jstate=1,nstates
+            ish=3*(jstate-1)+npropps*(istate-1)
+            do m=1,3
+              vprop(ish+m)=vprop(m)
+            enddo
+          enddo
+        enddo
+
+        jprop=3*nstates
+
+      else
+! Assuming a cubic cell for periodic
+        twopi_l(1)=2*pi/rlatt(1,1)
+        twopi_l(2)=2*pi/rlatt(2,2)
+        twopi_l(3)=2*pi/rlatt(3,3)
+
+        do i=1,nelec
+          do m=1,3
+            vprop(m)  = vprop(m) + coord(m,i)
+         enddo
+        enddo
+      
+        do m=1,3
+          vprop(3+m) = dsin(twopi_l(m)*vprop(m))
+          vprop(m)   = dcos(twopi_l(m)*vprop(m))
+        enddo
+
+        do jstate=2,nstates
+          ish=6*(jstate-1)
+          do m=1,3
+            vprop(ish+m)   = vprop(m)
+            vprop(ish+3+m) = vprop(3+m)
+          enddo
+        enddo
+
+        do istate=2,nstates
+          do jstate=1,nstates
+            ish=6*(jstate-1)+npropps*(istate-1)
+             do m=1,3
+               vprop(ish+m)   = vprop(m)
+               vprop(ish+3+m) = vprop(3+m)
+             enddo
+          enddo
+        enddo
+
+        jprop=6*nstates
+
         call sofk(jprop)
-        jprop=6+(ngvec-1)
+        jprop=6*nstates+(ngvec-1)
 
         call rhok(jprop)
       endif
@@ -156,8 +208,6 @@ contains
 
       integer :: i, iu
 
-
-
       if(iprop.eq.0) return
       read(iu) nprop
       read(iu) (vprop_cum(i),vprop_cm2(i),i=1,nprop)
@@ -173,7 +223,6 @@ contains
       integer :: iblk, ipropprt_sav
       real(dp) :: eerr, efin
 
-
       if(iprop.eq.0) return
       write(ounit,'(''--- additional properties ---'')')
       ipropprt_sav=ipropprt
@@ -185,8 +234,9 @@ contains
 !-----------------------------------------------------------------------
       subroutine prop_prt(iblk,iu)
 
+      use contrl_per, only: iperiodic
       use m_icount, only: icount_prop
-      use periodic, only: ngnorm, gvec, ngvec
+      use periodic, only: rlatt, ngnorm, gvec, ngvec
       use precision_kinds, only: dp
       use prp000,  only: iprop,ipropprt,nprop,npropps
       use prp003,  only: cc_nuc
@@ -195,11 +245,15 @@ contains
 
       implicit none
 
-      integer :: i, iblk, iu, i0, igvec, istate
+      integer :: i, iblk, iu, i0, igvec, istate, jstate
       real(dp) :: dble, dip, diperr, dipx
       real(dp) :: dipy, dipz, norm_aux
+      real(dp) :: pi
+      real(dp), dimension(3) :: l_twopi
       real(dp), dimension(nprop) :: pav
       real(dp), dimension(nprop) :: perr
+
+      data pi/3.14159265359d0/
 
 ! compute averages and print then out
 
@@ -220,9 +274,11 @@ contains
 !     call prop_avrg(w,iblk,pav(1),perr(1))
       call prop_avrg(iblk,pav(1),perr(1))
 
+      if(iperiodic.eq.0) then
+
       do istate=1,nstates
        write(iu,*)'state ',istate
-       i0=(istate-1)*npropps
+       i0=(istate-1)*npropps+3*(istate-1)
        write(iu,10)
        write(iu,20) 'X  ',pav(i0+1),perr(i0+1),pav(i0+1)/dble(nelec),perr(i0+1) &
             /dble(nelec)
@@ -230,12 +286,12 @@ contains
             /dble(nelec)
        write(iu,20) 'Z  ',pav(i0+3),perr(i0+3),pav(i0+3)/dble(nelec),perr(i0+3) &
             /dble(nelec)
-       write(iu,20) 'XX ',pav(i0+4),perr(i0+4),pav(i0+4)/dble(nelec),perr(i0+4) &
-            /dble(nelec)
-       write(iu,20) 'YY ',pav(i0+5),perr(i0+5),pav(i0+5)/dble(nelec),perr(i0+5) &
-            /dble(nelec)
-       write(iu,20) 'ZZ ',pav(i0+6),perr(i0+6),pav(i0+6)/dble(nelec),perr(i0+6) &
-            /dble(nelec)
+!      write(iu,20) 'XX ',pav(i0+4),perr(i0+4),pav(i0+4)/dble(nelec),perr(i0+4) &
+!           /dble(nelec)
+!      write(iu,20) 'YY ',pav(i0+5),perr(i0+5),pav(i0+5)/dble(nelec),perr(i0+5) &
+!           /dble(nelec)
+!      write(iu,20) 'ZZ ',pav(i0+6),perr(i0+6),pav(i0+6)/dble(nelec),perr(i0+6) &
+!           /dble(nelec)
 
 !....dipole
        write(iu,50) 'center of nuclear charge: ',cc_nuc
@@ -254,10 +310,48 @@ contains
       enddo
  
       do istate=1,nstates
+        do jstate=2,nstates
+          if(jstate.gt.istate) then
+            write(iu,*)'state i,j',istate,jstate
+            i0=(istate-1)*npropps+3*(jstate-1)
+            write(iu,40) 'TDM X ', pav(i0+1),perr(i0+1)
+            write(iu,40) 'TDM Y ', pav(i0+2),perr(i0+2)
+            write(iu,40) 'TDM Z ', pav(i0+3),perr(i0+3)
+          endif
+        enddo
+      enddo
+
+      else
+! Assuming a cubic cell for periodic
+      l_twopi(1)=rlatt(1,1)/(2*pi)
+      l_twopi(2)=rlatt(2,2)/(2*pi)
+      l_twopi(3)=rlatt(3,3)/(2*pi)
+
+      do istate=1,nstates
+       write(iu,*)'state ',istate
+       i0=(istate-1)*npropps+6*(istate-1)
+       write(iu,*) 'Dip_elec X ', -l_twopi(1)*dimag(log(dcmplx(pav(i0+1),pav(i0+4))))
+       write(iu,*) 'Dip_elec Y ', -l_twopi(2)*dimag(log(dcmplx(pav(i0+2),pav(i0+5))))
+       write(iu,*) 'Dip_elec Z ', -l_twopi(3)*dimag(log(dcmplx(pav(i0+3),pav(i0+6))))
+      enddo
+
+      do istate=1,nstates
+        do jstate=2,nstates
+          if(jstate.gt.istate) then
+            write(iu,*)'state i,j',istate,jstate
+            i0=(istate-1)*npropps+6*(jstate-1)
+            write(iu,*) 'TDM X ', -l_twopi(1)*dimag(log(dcmplx(pav(i0+1),pav(i0+4))))
+            write(iu,*) 'TDM Y ', -l_twopi(2)*dimag(log(dcmplx(pav(i0+2),pav(i0+5))))
+            write(iu,*) 'TDM Z ', -l_twopi(3)*dimag(log(dcmplx(pav(i0+3),pav(i0+6))))
+          endif
+        enddo
+      enddo
+
+      do istate=1,nstates
        write(iu,*)
        i0=(istate-1)*npropps
        do igvec=2,ngvec
-         i=i0+6+igvec-1
+         i=i0+6*nstates+igvec-1
          call gnormf(3,gvec(1,igvec), norm_aux)
          write(iu,'('' s(k) s'',i1,t17                                      &
          ,f12.7,f12.7,'' +-'',f12.7,f12.7                                   &
@@ -271,6 +365,8 @@ contains
          ,pav(i+2*(ngvec-1)),perr(i+2*(ngvec-1)),i
        enddo
       enddo
+
+      endif
 
       10 format('-------- property operator averages  ----------')
       20 format(a3,'   ',f16.8,' +- ',f16.8,' ( ',f16.8,' +- ',f16.8,' )')
