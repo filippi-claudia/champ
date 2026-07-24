@@ -321,7 +321,7 @@
 ! use 'new' not 'old' value
       call pcm_sum(wtg(1),0.d0)
       call mmpol_sum(wtg(1),0.d0)
-      call prop_sum(wtg)
+      call prop_sum(wtg,wtg_sqrt)
 
       call force_analy_sum(wtg(1),0.d0,eold(1,1),0.0d0)
 
