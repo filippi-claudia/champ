@@ -322,12 +322,12 @@ contains
 
 
       if(norda_bf.gt.0) then
-        write(fmt,'(''('',i2,''f13.8,a10)'')') norda_bf+1
+        write(fmt,'(''('',i2,''f13.8,a10)'')') norda_bf+2
       else
         write(fmt,'(''(a10)'')')
       endif
       do ict=1,nctype
-        write(2,fmt) (parm_bf(1+nordb_bf + (ict-1)*(norda_bf+1)+i),i=1,norda_bf+1),' e-n'
+        write(2,fmt) (parm_bf(1+nordb_bf + (ict-1)*(norda_bf+2)+i),i=1,norda_bf+2),' e-n'
       enddo 
 
       if(nordb_bf.gt.0) then
@@ -343,13 +343,13 @@ contains
         write(fmt,'(''(a10)'')')
       endif
       do ict=1,nctype
-        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+1)+(ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n'
+        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+2)+(ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n'
       enddo 
       if (nordc_bf.gt.0) then
         write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf
       endif
       do ict=1,nctype
-        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+1)+nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
+        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+2)+nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
       enddo 
 
       write(2,'(''end'')')

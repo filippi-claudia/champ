@@ -393,7 +393,7 @@ contains
         x_orig = xold
 
         ! Electron-Nucleus local-energy scan (single +x direction)
-        do ic = 1, ncent
+        do ic = 1, 3
           do i = 1, nelec
             write(ounit,'(A,I3,A,I3)') 'e-n local energy scan: e=', i, ' c=', ic
             do ir = 1, nr_scan
@@ -756,7 +756,7 @@ contains
       write(ounit,*) '============================================================'
       
       delta = 1.0d-6
-      tol = 1.0d-4
+      tol = 1.0d-5
       max_errors = 0
       
       write(ounit,'(A,I6)') 'Number of backflow parameters: ', nparm_bf

@@ -964,15 +964,15 @@ subroutine read_backflow_file(file_backflow)
 
     if (wid) then
         do ict = 1, nctype
-            read(iunit, *) (parm_bf((1+nordb_bf)*multb + (ict-1)*(norda_bf+1)*multa + i), i=1,norda_bf+1)
+            read(iunit, *) (parm_bf((1+nordb_bf)*multb + (ict-1)*(norda_bf+2)*multa + i), i=1,norda_bf+2)
         end do
         read(iunit, *) (parm_bf(i), i=1, nordb_bf+1)
         if (nordc_bf .gt. 0) then
             do ict = 1, nctype
-                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+1)*multa + multc*(ict-1)*(ncparm_bf+1) + i), i=1,ncparm_bf+1)
+                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+2)*multa + multc*(ict-1)*(ncparm_bf+1) + i), i=1,ncparm_bf+1)
             end do
             do ict = 1, nctype
-                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+1)*multa + multc*nctype*(ncparm_bf+1) + &
+                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+2)*multa + multc*nctype*(ncparm_bf+1) + &
                 (ict-1)*ncparm_bf*multc + i), i=1,ncparm_bf)
             end do
         endif
