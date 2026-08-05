@@ -307,7 +307,10 @@ contains
       use system, only: nctype
       implicit none
 
-      integer :: i, index, iwf_fit, j, k, ict, l, m, n, ee_block_size, c_block_size, ee_spin, c_offset
+      integer :: i, index, iwf_fit, j, k, ict, l, m, n
+      integer :: multb, multa, multc, cutoff_count, cut_b_offset, cut_a_offset, cut_c_offset
+      integer :: coeff_start, offset_ee, offset_en, offset_een, ee_coeff_block, en_coeff_block
+      integer :: c_block_size, ee_spin, c_offset
       character(len=40) filename,filetype, temp
       character(len=50) fmt
 
@@ -320,44 +323,72 @@ contains
       write(2,'(5i5,a39)') norda_bf,nordb_bf,nordc_bf,nparm_bf,nspin_bf_ee, ' norda,nordb,nordc,nparm,nspin_bf_ee'
       write(2,'(1i3,a10)') cutoff_scale,' C'
 
-      ee_block_size = 0
-      if (nordb_bf.gt.0) ee_block_size = nspin_bf_ee * (2+nordb_bf)
-      c_block_size = nctype * (2*ncparm_bf + 1)
+      multb = 0
+      if (nordb_bf.gt.0) multb = 1
+      multa = 0
+      if (norda_bf.gt.0) multa = 1
+      multc = 0
+      if (nordc_bf.gt.0) multc = 1
+
+      cut_b_offset = 1
+      cut_a_offset = cut_b_offset + multb
+      cut_c_offset = cut_a_offset + multa*nctype
+      cutoff_count = multb + multa*nctype + multc*nctype
+
+      coeff_start = cutoff_count + 1
+      offset_ee = coeff_start - 1
+      ee_coeff_block = 1 + nordb_bf
+      offset_en = offset_ee + nspin_bf_ee*ee_coeff_block*multb
+      en_coeff_block = 1 + norda_bf
+      offset_een = offset_en + nctype*en_coeff_block*multa
+      c_block_size = nctype * (2*ncparm_bf)
+
+      if (nordb_bf.gt.0) then
+        write(2,'(f13.8,a10)') parm_bf(cut_b_offset),' cutoff-b'
+      endif
+      if (norda_bf.gt.0) then
+        write(fmt,'(''('',i5,''f13.8,a10)'')') nctype
+        write(2,fmt) (parm_bf(cut_a_offset + i - 1),i=1,nctype),' cutoff-a'
+      endif
+      if (nordc_bf.gt.0) then
+        write(fmt,'(''('',i5,''f13.8,a10)'')') nctype
+        write(2,fmt) (parm_bf(cut_c_offset + i - 1),i=1,nctype),' cutoff-c'
+      endif
 
 
       if(norda_bf.gt.0) then
-        write(fmt,'(''('',i2,''f13.8,a10)'')') norda_bf+2
+        write(fmt,'(''('',i2,''f13.8,a10)'')') norda_bf+1
       else
         write(fmt,'(''(a10)'')')
       endif
       do ict=1,nctype
-        write(2,fmt) (parm_bf(ee_block_size + (ict-1)*(norda_bf+2)+i),i=1,norda_bf+2),' e-n'
+        write(2,fmt) (parm_bf(offset_en + (ict-1)*(norda_bf+1)+i),i=1,norda_bf+1),' e-n'
       enddo 
 
       if(nordb_bf.gt.0) then
-        write(fmt,'(''('',i2,''f13.8,a10)'')') nordb_bf+2
+        write(fmt,'(''('',i2,''f13.8,a10)'')') nordb_bf+1
       else
         write(fmt,'(''(a10)'')')
       endif
-      write(2,fmt) (parm_bf(i),i=1,nordb_bf+2),' e-e(par)'
+      write(2,fmt) (parm_bf(offset_ee+i),i=1,nordb_bf+1),' e-e(par)'
       if (nspin_bf_ee.eq.2) then
-        write(2,fmt) (parm_bf((2+nordb_bf)+i),i=1,nordb_bf+2),' e-e(anti)'
+        write(2,fmt) (parm_bf(offset_ee+ee_coeff_block+i),i=1,nordb_bf+1),' e-e(anti)'
       endif
 
       if (nordc_bf.gt.0) then
-        write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf+1
+        write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf
       else
         write(fmt,'(''(a10)'')')
       endif
       do ee_spin = 1, nspin_bf_ee
-        c_offset = ee_block_size + nctype*(norda_bf+2) + (ee_spin-1)*c_block_size
+        c_offset = offset_een + (ee_spin-1)*c_block_size
         do ict=1,nctype
           if (nspin_bf_ee.eq.2 .and. ee_spin.eq.1) then
-            write(2,fmt) (parm_bf(c_offset + (ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n(par)'
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' E-e-n(par)'
           elseif (nspin_bf_ee.eq.2 .and. ee_spin.eq.2) then
-            write(2,fmt) (parm_bf(c_offset + (ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n(anti)'
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' E-e-n(anti)'
           else
-            write(2,fmt) (parm_bf(c_offset + (ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n'
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' E-e-n'
           endif
         enddo
       enddo
@@ -365,14 +396,14 @@ contains
         write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf
       endif
       do ee_spin = 1, nspin_bf_ee
-        c_offset = ee_block_size + nctype*(norda_bf+2) + (ee_spin-1)*c_block_size
+        c_offset = offset_een + (ee_spin-1)*c_block_size
         do ict=1,nctype
           if (nspin_bf_ee.eq.2 .and. ee_spin.eq.1) then
-            write(2,fmt) (parm_bf(c_offset + nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(par)'
+            write(2,fmt) (parm_bf(c_offset + nctype*ncparm_bf + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(par)'
           elseif (nspin_bf_ee.eq.2 .and. ee_spin.eq.2) then
-            write(2,fmt) (parm_bf(c_offset + nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(anti)'
+            write(2,fmt) (parm_bf(c_offset + nctype*ncparm_bf + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(anti)'
           else
-            write(2,fmt) (parm_bf(c_offset + nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
+            write(2,fmt) (parm_bf(c_offset + nctype*ncparm_bf + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
           endif
         enddo
       enddo
