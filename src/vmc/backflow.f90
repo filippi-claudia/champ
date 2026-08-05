@@ -121,35 +121,49 @@ end
 
 subroutine init_rios_backflow(iflag, orda, ordb, ordc)
     use precision_kinds, only: dp
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale, ncparm_bf
     use system, only: nctype
     use m_backflow, only: allocate_m_backflow
     implicit none
     integer, intent(in) :: iflag
-    integer :: i, orda, ordb, ordc, l, m, n
+    integer :: i, orda, ordb, ordc, l, m, n, ee_offset
     intrinsic :: ceiling
  
     if (iflag.eq.0) then
         norda_bf = orda
         nordb_bf = ordb
         nordc_bf = ordc
+        if (nordb_bf.gt.0) then
+            if (nspin_bf_ee.ne.1 .and. nspin_bf_ee.ne.2) nspin_bf_ee = 2
+        else
+            nspin_bf_ee = 1
+        endif
     endif
 
     call init_backflow_arrays()
 
+    ee_offset = 0
+    if (nordb_bf.gt.0) ee_offset = nspin_bf_ee*(1+nordb_bf)
+
     if (iflag.eq.0) then
         
         parm_bf = 0.0d0
-        parm_bf(1) = 3.0d0
+        if (nordb_bf.gt.0) then
+            do i = 1, nspin_bf_ee
+                parm_bf(1 + (i-1)*(2+nordb_bf)) = 3.0d0
+            end do
+        else
+            parm_bf(1) = 3.0d0
+        endif
 
         if (norda_bf.gt.0) then
             do i = 1, nctype
-                parm_bf(1 + nordb_bf + (2 + norda_bf)*(i-1) + 1) = 3.0d0
+                parm_bf(ee_offset + (2 + norda_bf)*(i-1) + 1) = 3.0d0
             end do
         end if
         if (nordc_bf.gt.0) then
             do i = 1, 2 * nctype
-                parm_bf(1 + nordb_bf + (2 + norda_bf)*nctype + (ncparm_bf+1) * (i-1) + 1) = 3.0d0
+                parm_bf(ee_offset + (2 + norda_bf)*nctype + (ncparm_bf+1) * (i-1) + 1) = 3.0d0
             end do
         end if
         cutoff_scale = 3
@@ -160,7 +174,7 @@ subroutine init_rios_backflow(iflag, orda, ordb, ordc)
 end subroutine init_rios_backflow
 
 subroutine init_rios_backflow_arrays()
-    use m_backflow, only: allocate_m_backflow, ibackflow, norda_bf, nordb_bf, nordc_bf, nparm_bf, maxord, ncparm_bf, c_cuspconst
+    use m_backflow, only: allocate_m_backflow, ibackflow, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, nparm_bf, maxord, ncparm_bf, c_cuspconst
     use system, only: nctype
     implicit none
     integer :: q
@@ -171,7 +185,7 @@ subroutine init_rios_backflow_arrays()
         nparm_bf = nparm_bf + (2 + norda_bf) * nctype
     end if
     if (nordb_bf .gt. 0) then
-        nparm_bf = nparm_bf + (1 + nordb_bf)
+        nparm_bf = nparm_bf + nspin_bf_ee * (2 + nordb_bf)
     end if
     if (nordc_bf .gt. 0) then
         ! if (mod(nordc_bf, 2) .eq. 0) then
@@ -195,7 +209,7 @@ end subroutine init_rios_backflow_arrays
 
 subroutine init_cusp()
     use precision_kinds, only: dp
-    use m_backflow, only: parm_bf, c_cuspconst, nparm_bf, norda_bf, nordb_bf, nordc_bf, ncparm_bf, cutoff_scale
+    use m_backflow, only: parm_bf, c_cuspconst, nparm_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, ncparm_bf, cutoff_scale
     use m_backflow, only: B, dB_dcutoff, cusp_parameters, cusp_indices, inv_cusp_indices, inv_cusp_parameters
     use m_backflow, only: cusp_cutoff_deriv, basis_klmn
     use system, only: nctype
@@ -213,7 +227,7 @@ subroutine init_cusp()
     cusp_cutoff_deriv = 0.0d0
 
     offset = 0
-    if (nordb_bf .gt. 0) offset = offset + (1 + nordb_bf)
+    if (nordb_bf .gt. 0) offset = offset + nspin_bf_ee * (1 + nordb_bf)
     if (norda_bf .gt. 0) offset = offset + (2 + norda_bf) * nctype
 
     basis_klmn = 0
@@ -597,17 +611,18 @@ end subroutine fix_cusp
 subroutine rios_distances(x)
     use precision_kinds, only: dp
     use system, only: nelec, ncent, cent, iwctype, nctype
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale, ncparm_bf
     use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, maxord, cutoff_deriv
     implicit none
     real(dp), dimension(3, nelec), intent(in) :: x
     real(dp) :: r, inv_r, r_cutoff, inv_r_cutoff, cutoff, inv_cutoff
-    integer :: i, j, nc, k, no, multb, multa, l, m ,n, cc
+    integer :: i, j, nc, k, no, multb, multa, l, m ,n, cc, ee_block_size
 
     multb = 0
     if (nordb_bf .gt. 0) multb = 1
     multa = 0
     if (norda_bf .gt. 0) multa = 1
+    ee_block_size = nspin_bf_ee * (2 + nordb_bf)
 
     
     r_en = 0.0d0
@@ -621,9 +636,9 @@ subroutine rios_distances(x)
     do cc = 1, 2
         do nc = 1, ncent
             if (cc == 1) then
-                r_cutoff = parm_bf((1+nordb_bf)*multb + (iwctype(nc)-1)*(2+norda_bf)*multa + 1)
+                r_cutoff = parm_bf(ee_block_size*multb + (iwctype(nc)-1)*(2+norda_bf)*multa + 1)
             else
-                r_cutoff = parm_bf((1+nordb_bf)*multb + (2+norda_bf)*nctype*multa + (ncparm_bf+1)*(iwctype(nc)-1) + 1)
+                r_cutoff = parm_bf(ee_block_size*multb + (2+norda_bf)*nctype*multa + (ncparm_bf+1)*(iwctype(nc)-1) + 1)
             end if
 
             inv_r_cutoff = 1.0d0 / r_cutoff  
@@ -707,7 +722,7 @@ end subroutine rios_distances
 subroutine single_rios_distances(x, xnew, iel)
     use precision_kinds, only: dp
     use system, only: nelec, ncent, cent, iwctype, nctype
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale, ncparm_bf
     use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, maxord
     use m_backflow, only: single_r_en, single_rvec_en, single_r_ee, single_rvec_ee, single_r_ee_gl, single_r_en_gl
     implicit none
@@ -715,20 +730,21 @@ subroutine single_rios_distances(x, xnew, iel)
     real(dp), dimension(3), intent(in) :: xnew
     integer, intent(in) :: iel
     real(dp) :: r, inv_r, r_cutoff, inv_r_cutoff, cutoff, inv_cutoff
-    integer :: i, j, nc, k, no, multb, multa, l, m ,n, cc
+    integer :: i, j, nc, k, no, multb, multa, l, m ,n, cc, ee_block_size
 
     multb = 0
     if (nordb_bf .gt. 0) multb = 1
     multa = 0
     if (norda_bf .gt. 0) multa = 1
+    ee_block_size = nspin_bf_ee * (2 + nordb_bf)
 
     
     do cc = 1, 2
         do nc = 1, ncent
             if (cc == 1) then
-                r_cutoff = parm_bf((1+nordb_bf) + (iwctype(nc)-1)*(2+norda_bf) + 1)
+                r_cutoff = parm_bf(ee_block_size*multb + (iwctype(nc)-1)*(2+norda_bf)*multa + 1)
             else
-                r_cutoff = parm_bf((1+nordb_bf) + (2+norda_bf)*nctype + (ncparm_bf+1)*(iwctype(nc)-1) + 1)
+                r_cutoff = parm_bf(ee_block_size*multb + (2+norda_bf)*nctype*multa + (ncparm_bf+1)*(iwctype(nc)-1) + 1)
             end if
 
             inv_r_cutoff = 1.0d0 / r_cutoff  
@@ -824,9 +840,9 @@ end subroutine rios_p
 
 subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     use precision_kinds, only: dp
-    use system, only: nelec, iwctype, ncent, nctype, cent
+    use system, only: nelec, nup, iwctype, ncent, nctype, cent
     use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale
     use m_backflow, only: r_en, rvec_en, r_ee, rvec_ee, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
     use m_backflow, only: inv_cusp_indices, inv_cusp_parameters, cusp_indices, c_cuspconst, ncparm_bf
     use m_backflow, only: cusp_cutoff_deriv, cusp_parameters, basis_klmn
@@ -840,6 +856,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     real(dp) :: f, fp(3), fpp, eta, etap(3), etapp
     real(dp) :: delta(3), delta_ril(3), delta_rjl(3)
     integer :: i, j, k, a, b, offset_ee, offset_en, offset_een, idx, C
+    integer :: ee_block_size, ee_spin, offset_ee_ch
     integer :: nc, l, m, n, idx_phi, idx_theta, kk
     real(dp) :: ril, rjl, inv_ril, inv_rjl
     real(dp) :: inv_rij, inv_cutoff, tmp1, tmp2, cutoff1, cutoff2
@@ -848,8 +865,10 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     real(dp) :: phi, theta, phipi(3), thetapi(3), phipj(3), thetapj(3), phippi, thetappi, phippj, thetappj
 
     offset_ee = 0
+    ee_block_size = 0
+    if (nordb_bf .gt. 0) ee_block_size = nspin_bf_ee * (2 + nordb_bf)
     if (nordb_bf .gt. 0) then
-        offset_en = offset_ee + 1+nordb_bf
+        offset_en = offset_ee + ee_block_size
     else
         offset_en = offset_ee
     end if
@@ -875,15 +894,33 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     end do
 
     if (nordb_bf .eq. 0) goto 10
-    cutoff = parm_bf(offset_ee+1)
-    inv_cutoff = 1.0d0 / cutoff
-
-    b_one = parm_bf(offset_ee+2) * cutoff/C
-
 
     do i = 1, nelec
         do j = 1, nelec
             if (i == j) cycle
+
+            if (nspin_bf_ee.eq.1) then
+                ee_spin = 1
+            else
+                if ((i.le.nup .and. j.le.nup) .or. (i.gt.nup .and. j.gt.nup)) then
+                    ee_spin = 1
+                else
+                    ee_spin = 2
+                endif
+            endif
+            offset_ee_ch = offset_ee + (ee_spin-1)*(2+nordb_bf)
+
+            cutoff = parm_bf(offset_ee_ch+1)
+            inv_cutoff = 1.0d0 / cutoff
+            if (ee_spin .eq. 1) then
+                b_one = parm_bf(offset_ee_ch+3) * cutoff/C
+                parm_bf(offset_ee_ch+2) = b_one
+            else
+                b_one = parm_bf(offset_ee_ch+2)
+            endif
+
+
+
             eta=0.0d0
             etap=0.0d0
             etapp=0.0d0
@@ -906,22 +943,23 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
             fpp = -2.0d0 * C * inv_cutoff * inv_rij * cutoff1 + &
                   + C * (C-1) * inv_cutoff * inv_cutoff * cutoff2 
 
-
             eta  = eta + b_one
-            do a = 1, 3
-                dquasi_dp(a,i,offset_ee+2) = dquasi_dp(a,i,offset_ee+2) + delta(a) * f * cutoff / C
-            end do
+            if (ee_spin .eq. 1) then
+                do a = 1, 3
+                    dquasi_dp(a,i,offset_ee_ch+3) = dquasi_dp(a,i,offset_ee_ch+3) + delta(a) * f * cutoff / C
+                end do
+            end if
 
             rr = rij
             
             tmp2 = inv_rij*inv_rij
             do k = 1, nordb_bf
-                eta = eta + parm_bf(offset_ee+k+1)*rr
+                eta = eta + parm_bf(offset_ee_ch+k+2)*rr
                 do a = 1, 3
-                    dquasi_dp(a,i,offset_ee+k+1) = dquasi_dp(a,i,offset_ee+k+1) + rr * delta(a) * f
-                    etap(a) = etap(a) + parm_bf(offset_ee+k+1) * delta(a) * tmp2 * k * rr
+                    dquasi_dp(a,i,offset_ee_ch+k+2) = dquasi_dp(a,i,offset_ee_ch+k+2) + rr * delta(a) * f
+                    etap(a) = etap(a) + parm_bf(offset_ee_ch+k+2) * delta(a) * tmp2 * k * rr
                 enddo
-                etapp = etapp + parm_bf(offset_ee+k+1) * k * rr * tmp2 * (k+1)
+                etapp = etapp + parm_bf(offset_ee_ch+k+2) * k * rr * tmp2 * (k+1)
                 rr = rr * rij
             end do
 
@@ -929,7 +967,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
             do a = 1, 3
                 quasi_x(a,i) = quasi_x(a,i) + eta * delta(a) * f
                 ! dquasi_dp(a,i,1) = dquasi_dp(a,i,1) + eta * delta(a) * f * log((cutoff - rij)/cutoff)
-                dquasi_dp(a,i,offset_ee+1) = dquasi_dp(a,i,offset_ee+1) + delta(a) * tmp2 + &
+                dquasi_dp(a,i,offset_ee_ch+1) = dquasi_dp(a,i,offset_ee_ch+1) + delta(a) * tmp2 + &
                     delta(a) * f * b_one * inv_cutoff
                 do b = 1, 3
                     tmp1 = etap(b) * delta(a) * f + eta * delta(a) * fp(b)
@@ -1214,9 +1252,9 @@ end subroutine rios_backflow
 
 subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
     use precision_kinds, only: dp
-    use system, only: nelec, iwctype, ncent, nctype, cent
+    use system, only: nelec, nup, iwctype, ncent, nctype, cent
     use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf, basis_klmn
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale, ncparm_bf, basis_klmn
     use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2, r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl
     use m_backflow, only: single_r_ee, single_rvec_ee, single_r_en, single_rvec_en, single_r_ee_gl, single_r_en_gl
     implicit none
@@ -1231,6 +1269,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     real(dp) :: f, fp(3), fpp, eta, etap(3), etapp
     real(dp) :: delta(3)
     integer :: i, j, k, a, b, offset_ee, offset_en, offset_een, idx, C
+    integer :: ee_block_size, ee_spin, offset_ee_ch
     integer :: nc, l, m, n, idx_phi, idx_theta, kk
     real(dp) :: inv_rij, inv_cutoff, tmp1, tmp2
     real(dp) :: cutoff1, cutoff2
@@ -1240,8 +1279,10 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
 
 
     offset_ee = 0
+    ee_block_size = 0
+    if (nordb_bf .gt. 0) ee_block_size = nspin_bf_ee * (2 + nordb_bf)
     if (nordb_bf .gt. 0) then
-        offset_en = offset_ee + 1+nordb_bf
+        offset_en = offset_ee + ee_block_size
     else
         offset_en = offset_ee
     end if
@@ -1265,14 +1306,29 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     C = cutoff_scale
 
     if (nordb_bf .eq. 0) goto 30
-    cutoff = parm_bf(offset_ee+1)
-    inv_cutoff = 1.0d0 / cutoff
-
-    b_one = parm_bf(offset_ee+2) * cutoff/C
-
 
     do j = 1, nelec
         if (j == iel) cycle
+
+        if (nspin_bf_ee.eq.1) then
+            ee_spin = 1
+        else
+            if ((iel.le.nup .and. j.le.nup) .or. (iel.gt.nup .and. j.gt.nup)) then
+                ee_spin = 1
+            else
+                ee_spin = 2
+            endif
+        endif
+        offset_ee_ch = offset_ee + (ee_spin-1)*(2+nordb_bf)
+
+        cutoff = parm_bf(offset_ee_ch+1)
+        inv_cutoff = 1.0d0 / cutoff
+
+        if (ee_spin .eq. 1) then
+            b_one = parm_bf(offset_ee_ch+3) * cutoff/C
+        else
+            b_one = parm_bf(offset_ee_ch+2)
+        endif
 
         delta(:) = xold(:, iel) - xold(:, j)
         rij = sqrt(delta(1)**2 + delta(2)**2 + delta(3)**2)
@@ -1304,9 +1360,9 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
         
             tmp1 = inv_rij*inv_rij
             do k = 1, nordb_bf
-                eta = eta + parm_bf(offset_ee+k+1)*rr
+                eta = eta + parm_bf(offset_ee_ch+k+2)*rr
                 do a = 1, 3
-                    etap(a) = etap(a) + parm_bf(offset_ee+k+1) * delta(a) * tmp1 * k * rr
+                    etap(a) = etap(a) + parm_bf(offset_ee_ch+k+2) * delta(a) * tmp1 * k * rr
                 enddo
                 ! etapp = etapp + parm_bf(offset_ee+k+1) * k * rr * tmp1 * (k+1)
                 rr = rr * rij
@@ -1380,9 +1436,9 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
         
             tmp1 = inv_rij*inv_rij
             do k = 1, nordb_bf
-                eta = eta + parm_bf(offset_ee+k+1)*rr
+                eta = eta + parm_bf(offset_ee_ch+k+2)*rr
                 do a = 1, 3
-                    etap(a) = etap(a) + parm_bf(offset_ee+k+1) * delta(a) * tmp1 * k * rr
+                    etap(a) = etap(a) + parm_bf(offset_ee_ch+k+2) * delta(a) * tmp1 * k * rr
                 enddo
                 ! etapp = etapp + parm_bf(offset_ee+k+1) * k * rr * tmp1 * (k+1)
                 rr = rr * rij

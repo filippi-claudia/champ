@@ -907,7 +907,7 @@ end subroutine read_jastrow_file
 !> This subroutine reads backflow parameters from a text file.
 !>@author Emiel Slootman
 subroutine read_backflow_file(file_backflow)
-      use m_backflow, only: ibackflow, norda_bf, nordb_bf, nordc_bf, nparm_bf, cutoff_scale, parm_bf, ncparm_bf
+    use m_backflow, only: ibackflow, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, nparm_bf, cutoff_scale, parm_bf, ncparm_bf
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use mpiconf, only: wid
@@ -920,7 +920,9 @@ subroutine read_backflow_file(file_backflow)
     !   local use
     character(len=72), intent(in)   :: file_backflow
     character(len=40)               :: temp1
+    character(len=256)              :: bf_order_line
     integer                         :: iunit, iostat, i, ict, multb, multa, multc, l, m, n
+    integer                         :: nspin_file, nparm_file, ee_block_size
     logical                         :: exist
 
     !   Formatting
@@ -943,14 +945,31 @@ subroutine read_backflow_file(file_backflow)
 
     if (wid) then
         read (iunit, *) temp1, ibackflow
-        read (iunit, *) norda_bf, nordb_bf, nordc_bf
+        read (iunit, '(A)') bf_order_line
+        nspin_file = 1
+        nparm_file = 0
+        read (bf_order_line, *, iostat=iostat) norda_bf, nordb_bf, nordc_bf, nparm_file, nspin_file
+        if (iostat /= 0) then
+            read (bf_order_line, *, iostat=iostat) norda_bf, nordb_bf, nordc_bf, nparm_file
+            if (iostat /= 0) then
+                read (bf_order_line, *) norda_bf, nordb_bf, nordc_bf
+            endif
+        endif
+        if (nspin_file /= 2) nspin_file = 1
         read (iunit, *) cutoff_scale
     endif
     call bcast(ibackflow)
     call bcast(norda_bf)
     call bcast(nordb_bf)
     call bcast(nordc_bf)
+    call bcast(nspin_file)
     call bcast(cutoff_scale)
+
+    if (nordb_bf.gt.0) then
+        nspin_bf_ee = nspin_file
+    else
+        nspin_bf_ee = 1
+    endif
 
     write(ounit,'(A,i2,A,i2,A,i2,A)') " Found ", norda_bf, " a order, ", nordb_bf, " b order, ", nordc_bf, " c order for backflow. "
 
@@ -961,18 +980,28 @@ subroutine read_backflow_file(file_backflow)
     if (nordb_bf .gt.0) multb= 1
     if (norda_bf .gt.0) multa= 1
     if (nordc_bf .gt.0) multc= 1
+    ee_block_size = nspin_bf_ee * (2+nordb_bf)
 
     if (wid) then
         do ict = 1, nctype
-            read(iunit, *) (parm_bf((1+nordb_bf)*multb + (ict-1)*(norda_bf+2)*multa + i), i=1,norda_bf+2)
+            read(iunit, *) (parm_bf(ee_block_size*multb + (ict-1)*(norda_bf+2)*multa + i), i=1,norda_bf+2)
         end do
         read(iunit, *) (parm_bf(i), i=1, nordb_bf+1)
+        if (nordb_bf.gt.0 .and. nspin_bf_ee.eq.2) then
+            if (nspin_file.eq.2) then
+                read(iunit, *) (parm_bf((2+nordb_bf) + i), i=1, nordb_bf+1)
+            else
+                do i = 1, nordb_bf+1
+                    parm_bf((2+nordb_bf) + i) = parm_bf(i)
+                end do
+            endif
+        endif
         if (nordc_bf .gt. 0) then
             do ict = 1, nctype
-                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+2)*multa + multc*(ict-1)*(ncparm_bf+1) + i), i=1,ncparm_bf+1)
+                read(iunit, *) (parm_bf(ee_block_size*multb + nctype*(norda_bf+2)*multa + multc*(ict-1)*(ncparm_bf+1) + i), i=1,ncparm_bf+1)
             end do
             do ict = 1, nctype
-                read(iunit, *) (parm_bf((1+nordb_bf)*multb + nctype*(norda_bf+2)*multa + multc*nctype*(ncparm_bf+1) + &
+                read(iunit, *) (parm_bf(ee_block_size*multb + nctype*(norda_bf+2)*multa + multc*nctype*(ncparm_bf+1) + &
                 (ict-1)*ncparm_bf*multc + i), i=1,ncparm_bf)
             end do
         endif

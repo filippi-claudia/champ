@@ -303,11 +303,11 @@ contains
 
       use optwf_control, only: ioptbf
       use vmc_mod, only: nwftypeorb
-      use m_backflow, only: ibackflow, nparm_bf, parm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
+      use m_backflow, only: ibackflow, nparm_bf, parm_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale, ncparm_bf
       use system, only: nctype
       implicit none
 
-      integer :: i, index, iwf_fit, j, k, ict, l, m, n
+      integer :: i, index, iwf_fit, j, k, ict, l, m, n, ee_block_size
       character(len=40) filename,filetype, temp
       character(len=50) fmt
 
@@ -317,8 +317,11 @@ contains
       open(2,file=filename,status='unknown')
 
       write(2,'(''backflow'',i4)') ibackflow
-      write(2,'(4i5,a28)') norda_bf,nordb_bf,nordc_bf,nparm_bf, ' norda,nordb,nordc,nparm'
+      write(2,'(5i5,a39)') norda_bf,nordb_bf,nordc_bf,nparm_bf,nspin_bf_ee, ' norda,nordb,nordc,nparm,nspin_bf_ee'
       write(2,'(1i3,a10)') cutoff_scale,' C'
+
+      ee_block_size = 0
+      if (nordb_bf.gt.0) ee_block_size = nspin_bf_ee * (2+nordb_bf)
 
 
       if(norda_bf.gt.0) then
@@ -327,15 +330,18 @@ contains
         write(fmt,'(''(a10)'')')
       endif
       do ict=1,nctype
-        write(2,fmt) (parm_bf(1+nordb_bf + (ict-1)*(norda_bf+2)+i),i=1,norda_bf+2),' e-n'
+        write(2,fmt) (parm_bf(ee_block_size + (ict-1)*(norda_bf+2)+i),i=1,norda_bf+2),' e-n'
       enddo 
 
       if(nordb_bf.gt.0) then
-        write(fmt,'(''('',i2,''f13.8,a10)'')') nordb_bf+1
+        write(fmt,'(''('',i2,''f13.8,a10)'')') nordb_bf+2
       else
         write(fmt,'(''(a10)'')')
       endif
-      write(2,fmt) (parm_bf(+i),i=1,nordb_bf+1),' e-e'
+      write(2,fmt) (parm_bf(i),i=1,nordb_bf+2),' e-e(par)'
+      if (nspin_bf_ee.eq.2) then
+        write(2,fmt) (parm_bf((2+nordb_bf)+i),i=1,nordb_bf+2),' e-e(anti)'
+      endif
 
       if (nordc_bf.gt.0) then
         write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf+1
@@ -343,13 +349,13 @@ contains
         write(fmt,'(''(a10)'')')
       endif
       do ict=1,nctype
-        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+2)+(ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n'
+        write(2,fmt) (parm_bf(ee_block_size + nctype*(norda_bf+2)+(ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n'
       enddo 
       if (nordc_bf.gt.0) then
         write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf
       endif
       do ict=1,nctype
-        write(2,fmt) (parm_bf(1+nordb_bf + nctype*(norda_bf+2)+nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
+        write(2,fmt) (parm_bf(ee_block_size + nctype*(norda_bf+2)+nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
       enddo 
 
       write(2,'(''end'')')

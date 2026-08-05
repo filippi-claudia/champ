@@ -11,7 +11,7 @@ module m_backflow
     implicit none
 
     !> Input parameter flag to enable backflow (default: 0 = disabled)
-    integer :: ibackflow
+    integer :: ibackflow = 0
 
     !> Quasicoordinate arrays (3, nelec)
     real(dp), dimension(:, :), allocatable :: quasi_x
@@ -86,7 +86,15 @@ module m_backflow
 
     real(dp), dimension(:), allocatable :: parm_bf
     real(dp), dimension(:), allocatable :: deriv_parm_bf
-    integer :: norda_bf, nordb_bf, nordc_bf, nparm_bf, cutoff_scale, maxord, ncparm_bf, c_cuspconst
+    integer :: norda_bf = 0
+    integer :: nordb_bf = 0
+    integer :: nspin_bf_ee = 2
+    integer :: nordc_bf = 0
+    integer :: nparm_bf = 0
+    integer :: cutoff_scale = 0
+    integer :: maxord = 0
+    integer :: ncparm_bf = 0
+    integer :: c_cuspconst = 0
 
     
     private
@@ -95,7 +103,7 @@ module m_backflow
     public :: rvec_en_bf, r_en_bf
     public :: allocate_m_backflow, deallocate_m_backflow
     public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf, dslm_bf
-    public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf, c_cuspconst
+    public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale, ncparm_bf, c_cuspconst
     public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, maxord
     public :: r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
     public :: single_r_ee, single_r_ee_gl, single_rvec_ee, single_r_en, single_r_en_gl, single_rvec_en

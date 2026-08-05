@@ -315,6 +315,9 @@ contains
           enddo
         enddo
 
+! This branch uses the single-state/single-determinant path (index 1).
+        isorb=stoo(1)
+
 ! iel has same spin as electron moved
         if(iflag_move.eq.2) then
  
