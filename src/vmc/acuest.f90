@@ -202,7 +202,7 @@ contains
       real(dp), dimension(3,nelec) :: quasi_plus, quasi_base, quasi_minus, d2quasi_fd
       real(dp) :: eps_diff
       logical, parameter :: do_cusp_deriv_check = .false.
-      logical, parameter :: do_cusp_energy_check = .true.
+      logical, parameter :: do_cusp_energy_check = .false.
       logical, parameter :: print_all_ddx_d2dx2_fd = .true.
 
 ! entry point to zero out all averages etc.

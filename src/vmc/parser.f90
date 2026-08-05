@@ -477,7 +477,6 @@ subroutine parser
   ioptorb       = fdf_get('ioptorb', 0)
   ioptci        = fdf_get('ioptci', 0)
   ioptbf        = fdf_get('ioptbf', 0)
-  if (ibackflow.eq.0) ioptbf = 0
   nopt_iter     = fdf_get('nopt_iter',6)
   micro_iter_sr = fdf_get('micro_iter_sr', 1)
   isample_cmat  = fdf_get('isample_cmat', 1)

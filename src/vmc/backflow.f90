@@ -948,6 +948,10 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
                 do a = 1, 3
                     dquasi_dp(a,i,offset_ee_ch+3) = dquasi_dp(a,i,offset_ee_ch+3) + delta(a) * f * cutoff / C
                 end do
+            else
+                do a = 1, 3
+                    dquasi_dp(a,i,offset_ee_ch+2) = dquasi_dp(a,i,offset_ee_ch+2) + f * delta(a)
+                end do
             end if
 
             rr = rij
