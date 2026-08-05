@@ -126,7 +126,7 @@ subroutine init_rios_backflow(iflag, orda, ordb, ordc)
     use m_backflow, only: allocate_m_backflow
     implicit none
     integer, intent(in) :: iflag
-    integer :: i, orda, ordb, ordc, l, m, n, ee_offset
+    integer :: i, orda, ordb, ordc, l, m, n, ee_offset, ee_spin, c_offset
     intrinsic :: ceiling
  
     if (iflag.eq.0) then
@@ -162,8 +162,12 @@ subroutine init_rios_backflow(iflag, orda, ordb, ordc)
             end do
         end if
         if (nordc_bf.gt.0) then
-            do i = 1, 2 * nctype
-                parm_bf(ee_offset + (2 + norda_bf)*nctype + (ncparm_bf+1) * (i-1) + 1) = 3.0d0
+            do ee_spin = 1, nspin_bf_ee
+                c_offset = ee_offset + (2 + norda_bf)*nctype + (ee_spin-1)*nctype*(2*ncparm_bf+1)
+                do i = 1, nctype
+                    parm_bf(c_offset + (ncparm_bf+1)*(i-1) + 1) = 3.0d0
+                    parm_bf(c_offset + (ncparm_bf+1)*nctype + ncparm_bf*(i-1) + 1) = 3.0d0
+                end do
             end do
         end if
         cutoff_scale = 3
@@ -198,7 +202,7 @@ subroutine init_rios_backflow_arrays()
         ncparm_bf = (nordc_bf+1)*(nordc_bf+2)*(nordc_bf+3)/6  
         ! c_cuspconst = 5 * nordc_bf + 5
         c_cuspconst = 10 * (nordc_bf + 1)  
-        nparm_bf = nparm_bf + (ncparm_bf + 1) * nctype + (ncparm_bf) * nctype
+        nparm_bf = nparm_bf + nspin_bf_ee * ((ncparm_bf + 1) * nctype + (ncparm_bf) * nctype)
     end if
 
     maxord = max(norda_bf, nordb_bf, nordc_bf)
@@ -217,6 +221,7 @@ subroutine init_cusp()
     use contrl_file,    only: ounit
     implicit none
     integer :: k, l, m, n, alpha, idx, idx1, idx2, info, offset, idx_phi, idx_theta, i, j, linefound, eq_idx
+    integer :: ee_spin, c_offset, c_block_size, dep_idx, inv_idx
     integer :: pr, max_row, idx_pivot, cnt
     integer, dimension(c_cuspconst) :: ipiv
     real(dp) :: cutoff, pivot, max_val, factor, tmp, dtmp
@@ -562,6 +567,25 @@ subroutine init_cusp()
 
     enddo
 
+    c_offset = offset
+    c_block_size = nctype * (2*ncparm_bf + 1)
+
+    if (nspin_bf_ee .gt. 1 .and. nordc_bf .gt. 0) then
+        do ee_spin = 2, nspin_bf_ee
+            do dep_idx = c_offset + 1, c_offset + c_block_size
+                inv_idx = dep_idx + (ee_spin-1)*c_block_size
+                if (inv_cusp_indices(dep_idx,1) .gt. 0) then
+                    inv_cusp_indices(inv_idx,1) = inv_cusp_indices(dep_idx,1) + (ee_spin-1)*c_block_size
+                    do l = 2, ncparm_bf
+                        if (inv_cusp_indices(dep_idx,l) .eq. 0) exit
+                        inv_cusp_indices(inv_idx,l) = inv_cusp_indices(dep_idx,l) + (ee_spin-1)*c_block_size
+                        inv_cusp_parameters(inv_idx,l) = inv_cusp_parameters(dep_idx,l)
+                    end do
+                end if
+            end do
+        end do
+    end if
+
     if (ipr.gt.2) then
         write(ounit, *) "Cusp conditions for Rios backflow:"
         idx = 0
@@ -584,26 +608,43 @@ end subroutine init_cusp
 subroutine fix_cusp()
     use precision_kinds, only: dp
     use system, only: nctype
-    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf
+    use m_backflow, only: parm_bf, nparm_bf, norda_bf, nordb_bf, nordc_bf, cutoff_scale, ncparm_bf, nspin_bf_ee
     use m_backflow, only: cusp_parameters, cusp_indices, c_cuspconst
     implicit none
 
-    integer :: k, kk
+    integer :: k, kk, ee_spin, ee_offset, en_offset, c_offset, c_block_size, spin_shift, ict, base_cutoff_idx, spin_cutoff_idx
 
 
-    ! Loop over cusp constraint equations
-    do k = 1, c_cuspconst*nctype
-        if (cusp_indices(k,1) .gt. 0) then
-            ! First delete the old value
-            parm_bf(cusp_indices(k,1)) = 0.0d0
-            do kk = 2, ncparm_bf
-                if (cusp_indices(k,kk) .eq. 0) exit
-                ! Calculate the new value
-                parm_bf(cusp_indices(k,1)) = parm_bf(cusp_indices(k,1)) + &
-                    cusp_parameters(k,kk) * parm_bf(cusp_indices(k,kk))
-            enddo
-        end if
+    ee_offset = 0
+    if (nordb_bf .gt. 0) ee_offset = nspin_bf_ee * (2 + nordb_bf)
+    en_offset = ee_offset
+    if (norda_bf .gt. 0) en_offset = en_offset + (2 + norda_bf) * nctype
+    c_offset = en_offset
+    c_block_size = nctype * (2*ncparm_bf + 1)
+
+    do ee_spin = 1, nspin_bf_ee
+        spin_shift = (ee_spin-1) * c_block_size
+        do k = 1, c_cuspconst*nctype
+            if (cusp_indices(k,1) .gt. 0) then
+                parm_bf(cusp_indices(k,1) + spin_shift) = 0.0d0
+                do kk = 2, ncparm_bf
+                    if (cusp_indices(k,kk) .eq. 0) exit
+                    parm_bf(cusp_indices(k,1) + spin_shift) = parm_bf(cusp_indices(k,1) + spin_shift) + &
+                        cusp_parameters(k,kk) * parm_bf(cusp_indices(k,kk) + spin_shift)
+                enddo
+            end if
+        end do
     end do
+
+    if (nspin_bf_ee .gt. 1 .and. nordc_bf .gt. 0) then
+        do ee_spin = 2, nspin_bf_ee
+            do ict = 1, nctype
+                base_cutoff_idx = c_offset + (ict-1)*(ncparm_bf+1) + 1
+                spin_cutoff_idx = base_cutoff_idx + (ee_spin-1)*c_block_size
+                parm_bf(spin_cutoff_idx) = parm_bf(base_cutoff_idx)
+            end do
+        end do
+    end if
 
 end subroutine fix_cusp
 
@@ -856,7 +897,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     real(dp) :: f, fp(3), fpp, eta, etap(3), etapp
     real(dp) :: delta(3), delta_ril(3), delta_rjl(3)
     integer :: i, j, k, a, b, offset_ee, offset_en, offset_een, idx, C
-    integer :: ee_block_size, ee_spin, offset_ee_ch
+    integer :: ee_block_size, ee_spin, offset_ee_ch, een_block_size, offset_een_ch
     integer :: nc, l, m, n, idx_phi, idx_theta, kk
     real(dp) :: ril, rjl, inv_ril, inv_rjl
     real(dp) :: inv_rij, inv_cutoff, tmp1, tmp2, cutoff1, cutoff2
@@ -877,6 +918,7 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
     else
         offset_een = offset_en
     end if
+    een_block_size = nctype * (2*ncparm_bf + 1)
 
     quasi_x = 0.0_dp
     dquasi_dx = 0.0_dp
@@ -1086,9 +1128,19 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
      do i = 1, nelec
         do j = 1, nelec
             if (i == j) cycle
+            if (nspin_bf_ee.eq.1) then
+                ee_spin = 1
+            else
+                if ((i.le.nup .and. j.le.nup) .or. (i.gt.nup .and. j.gt.nup)) then
+                    ee_spin = 1
+                else
+                    ee_spin = 2
+                endif
+            endif
+            offset_een_ch = offset_een + (ee_spin-1)*een_block_size
             do nc = 1, ncent
-                idx_phi = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een
-                idx_theta = (ncparm_bf + 1)*nctype + (iwctype(nc)-1)*(ncparm_bf) + offset_een
+                idx_phi = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een_ch
+                idx_theta = (ncparm_bf + 1)*nctype + (iwctype(nc)-1)*(ncparm_bf) + offset_een_ch
 
                 cutoff = parm_bf(idx_phi+1)
                 inv_cutoff = 1.0d0 / cutoff
@@ -1114,8 +1166,8 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
                                 ! k = basis_klmn(m,l,n,iwctype(nc),1)
                                 ! kk = basis_klmn(m,l,n,iwctype(nc),2)
                             ! else
-                                k = basis_klmn(l,m,n,iwctype(nc),1)
-                                kk = basis_klmn(l,m,n,iwctype(nc),2)
+                                k = basis_klmn(l,m,n,iwctype(nc),1) + (ee_spin-1)*een_block_size
+                                kk = basis_klmn(l,m,n,iwctype(nc),2) + (ee_spin-1)*een_block_size
                             ! end if
                             phi = phi + parm_bf(k) * r_en(i,nc,l,2) * r_en(j,nc,m,2) * r_ee(i,j,n) 
                             theta = theta + parm_bf(kk) * r_en(i,nc,l,2) * r_en(j,nc,m,2) * r_ee(i,j,n) 
@@ -1170,8 +1222,9 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
  
                 do a = 1, 3 
                     quasi_x(a,i) = quasi_x(a,i) + phi * rvec_ee(a,i,j) + theta * rvec_en(a,i,nc)
-                    dquasi_dp(a,i,idx_phi+1) = dquasi_dp(a,i,idx_phi+1) + phi * rvec_ee(a,i,j) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc)) &
-                                                                        + theta * rvec_en(a,i,nc) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc))
+                    idx = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een
+                    dquasi_dp(a,i,idx+1) = dquasi_dp(a,i,idx+1) + phi * rvec_ee(a,i,j) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc)) &
+                                                                  + theta * rvec_en(a,i,nc) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc))
 
                     do b = 1, 3
                         dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + phipi(b) * rvec_ee(a,i,j) + thetapi(b) * rvec_en(a,i,nc)                        
@@ -1209,34 +1262,32 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
                 ! d(p_dep)/d(cutoff) = sum(cusp_cutoff_deriv(k,kk) * p_free)
                 ! This contributes to dquasi/d(cutoff) via:
                 ! dquasi/d(cutoff) += dquasi/d(p_dep) * d(p_dep)/d(cutoff)
-                do k = 1, c_cuspconst*nctype
-                    if (cusp_indices(k,1) .gt. 0) then
-                        ! Compute d(p_dependent)/d(cutoff) = sum(cusp_cutoff_deriv * p_free)
-                        dp_dep_dcutoff = 0.0d0
-                        do kk = 2, ncparm_bf
-                            if (cusp_indices(k,kk) .eq. 0) exit
-                            dp_dep_dcutoff = dp_dep_dcutoff + cusp_cutoff_deriv(k,kk) * parm_bf(cusp_indices(k,kk))
-                        end do
-                        
-                        ! Find which cutoff parameter this constraint belongs to
-                        ! The cutoff is at idx_phi+1 for each atom type
-                        ! cusp_indices(k,1) is the dependent parameter index
-                        ! We need to find the corresponding cutoff index
-                        if (cusp_indices(k,1)-offset_een .gt.(ncparm_bf+1)*nctype) then
-                            idx_phi = ((cusp_indices(k,1) - offset_een - (ncparm_bf + 1)*nctype) / ncparm_bf) * (ncparm_bf+1)  + offset_een
-                        else
-                            idx_phi = ((cusp_indices(k,1) - offset_een ) / (ncparm_bf + 1)) * (ncparm_bf + 1) + offset_een
-                        endif
-                        
-                        ! Add chain rule contribution: dquasi/d(cutoff) += dquasi/d(p_dep) * dp_dep/d(cutoff)
-                        dquasi_dp(a,i,idx_phi+1) = dquasi_dp(a,i,idx_phi+1) + dquasi_dp(a,i,cusp_indices(k,1)) * dp_dep_dcutoff
-                    end if
-                end do
-                
-                do k = 1, c_cuspconst*nctype
-                    if (cusp_indices(k,1) .gt. 0) then
-                        dquasi_dp(a,i,cusp_indices(k,1)) = 0.0d0
-                    end if
+                do ee_spin = 1, nspin_bf_ee
+                    offset_een_ch = offset_een + (ee_spin-1)*een_block_size
+                    do k = 1, c_cuspconst*nctype
+                        if (cusp_indices(k,1) .gt. 0) then
+                            dp_dep_dcutoff = 0.0d0
+                            do kk = 2, ncparm_bf
+                                if (cusp_indices(k,kk) .eq. 0) exit
+                                dp_dep_dcutoff = dp_dep_dcutoff + cusp_cutoff_deriv(k,kk) * parm_bf(cusp_indices(k,kk) + (ee_spin-1)*een_block_size)
+                            end do
+
+                            if (cusp_indices(k,1)-offset_een .gt.(ncparm_bf+1)*nctype) then
+                                idx_phi = ((cusp_indices(k,1) - offset_een - (ncparm_bf + 1)*nctype) / ncparm_bf) * (ncparm_bf+1)  + offset_een
+                            else
+                                idx_phi = ((cusp_indices(k,1) - offset_een ) / (ncparm_bf + 1)) * (ncparm_bf + 1) + offset_een
+                            endif
+
+                            dquasi_dp(a,i,idx_phi+1) = dquasi_dp(a,i,idx_phi+1) + &
+                                dquasi_dp(a,i,cusp_indices(k,1) + (ee_spin-1)*een_block_size) * dp_dep_dcutoff
+                        end if
+                    end do
+
+                    do k = 1, c_cuspconst*nctype
+                        if (cusp_indices(k,1) .gt. 0) then
+                            dquasi_dp(a,i,cusp_indices(k,1) + (ee_spin-1)*een_block_size) = 0.0d0
+                        end if
+                    end do
                 end do
             end do
         endif
@@ -1275,7 +1326,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     real(dp) :: f, fp(3), fpp, eta, etap(3), etapp
     real(dp) :: delta(3)
     integer :: i, j, k, a, b, offset_ee, offset_en, offset_een, idx, C
-    integer :: ee_block_size, ee_spin, offset_ee_ch
+    integer :: ee_block_size, ee_spin, offset_ee_ch, een_block_size, offset_een_ch
     integer :: nc, l, m, n, idx_phi, idx_theta, kk
     real(dp) :: inv_rij, inv_cutoff, tmp1, tmp2
     real(dp) :: cutoff1, cutoff2
@@ -1297,6 +1348,7 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     else
         offset_een = offset_en
     end if
+    een_block_size = nctype * (2*ncparm_bf + 1)
 
     quasi_x_new = quasi_x
     dquasi_dx_new = dquasi_dx
@@ -1614,9 +1666,19 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
     !call rios_distances(xold)
     do j = 1, nelec
         if (iel == j) cycle
+        if (nspin_bf_ee.eq.1) then
+            ee_spin = 1
+        else
+            if ((iel.le.nup .and. j.le.nup) .or. (iel.gt.nup .and. j.gt.nup)) then
+                ee_spin = 1
+            else
+                ee_spin = 2
+            endif
+        endif
+        offset_een_ch = offset_een + (ee_spin-1)*een_block_size
         do nc = 1, ncent
-            idx_phi = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een
-            idx_theta =  (ncparm_bf + 1)*nctype + (iwctype(nc)-1)*(ncparm_bf) + offset_een
+            idx_phi = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een_ch
+            idx_theta =  (ncparm_bf + 1)*nctype + (iwctype(nc)-1)*(ncparm_bf) + offset_een_ch
 
             cutoff = parm_bf(idx_phi+1)
             inv_cutoff = 1.0d0 / cutoff
@@ -1643,8 +1705,8 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                                 ! k = basis_klmn(m,l,n,iwctype(nc),1)
                                 ! kk = basis_klmn(m,l,n,iwctype(nc),2)
                             ! else
-                                k = basis_klmn(l,m,n,iwctype(nc),1)
-                                kk = basis_klmn(l,m,n,iwctype(nc),2)
+                                k = basis_klmn(l,m,n,iwctype(nc),1) + (ee_spin-1)*een_block_size
+                                kk = basis_klmn(l,m,n,iwctype(nc),2) + (ee_spin-1)*een_block_size
                             ! end if
                             phi = phi + parm_bf(k) * r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n) 
                             theta = theta + parm_bf(kk) * r_en(iel,nc,l,2) * r_en(j,nc,m,2) * r_ee(iel,j,n) 
@@ -1724,8 +1786,8 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                                 ! k = basis_klmn(m,l,n,iwctype(nc),1)
                                 ! kk = basis_klmn(m,l,n,iwctype(nc),2)
                             ! else
-                                k = basis_klmn(l,m,n,iwctype(nc),1)
-                                kk = basis_klmn(l,m,n,iwctype(nc),2)
+                                k = basis_klmn(l,m,n,iwctype(nc),1) + (ee_spin-1)*een_block_size
+                                kk = basis_klmn(l,m,n,iwctype(nc),2) + (ee_spin-1)*een_block_size
                             ! end if
                             phi = phi + parm_bf(k) * r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n) 
                             theta = theta + parm_bf(kk) * r_en(j,nc,l,2) * r_en(iel,nc,m,2) * r_ee(j,iel,n) 
@@ -1799,9 +1861,19 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
 
     do j = 1, nelec
         if (iel == j) cycle
+        if (nspin_bf_ee.eq.1) then
+            ee_spin = 1
+        else
+            if ((iel.le.nup .and. j.le.nup) .or. (iel.gt.nup .and. j.gt.nup)) then
+                ee_spin = 1
+            else
+                ee_spin = 2
+            endif
+        endif
+        offset_een_ch = offset_een + (ee_spin-1)*een_block_size
         do nc = 1, ncent
-            idx_phi = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een
-            idx_theta = (ncparm_bf + 1)*nctype + (iwctype(nc)-1)*(ncparm_bf) + offset_een
+            idx_phi = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een_ch
+            idx_theta = (ncparm_bf + 1)*nctype + (iwctype(nc)-1)*(ncparm_bf) + offset_een_ch
 
             cutoff = parm_bf(idx_phi+1)
             inv_cutoff = 1.0d0 / cutoff
@@ -1828,8 +1900,8 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                                 ! k = basis_klmn(m,l,n,iwctype(nc),1)
                                 ! kk = basis_klmn(m,l,n,iwctype(nc),2)
                             ! else
-                                k = basis_klmn(l,m,n,iwctype(nc),1)
-                                kk = basis_klmn(l,m,n,iwctype(nc),2)
+                                k = basis_klmn(l,m,n,iwctype(nc),1) + (ee_spin-1)*een_block_size
+                                kk = basis_klmn(l,m,n,iwctype(nc),2) + (ee_spin-1)*een_block_size
                             ! end if
                             phi = phi + parm_bf(k) * single_r_en(nc,l,2) * r_en(j,nc,m,2) * single_r_ee(j,n) 
                             theta = theta + parm_bf(kk) * single_r_en(nc,l,2) * r_en(j,nc,m,2) * single_r_ee(j,n) 
@@ -1909,8 +1981,8 @@ subroutine single_rios_backflow(iel, xold, xnew, quasi_x_new, dquasi_dx_new, d2q
                                 ! k = basis_klmn(m,l,n,iwctype(nc),1)
                                 ! kk = basis_klmn(m,l,n,iwctype(nc),2)
                             ! else
-                                k = basis_klmn(l,m,n,iwctype(nc),1)
-                                kk = basis_klmn(l,m,n,iwctype(nc),2)
+                                k = basis_klmn(l,m,n,iwctype(nc),1) + (ee_spin-1)*een_block_size
+                                kk = basis_klmn(l,m,n,iwctype(nc),2) + (ee_spin-1)*een_block_size
                             ! end if
                             phi = phi + parm_bf(k) * r_en(j,nc,l,2) * single_r_en(nc,m,2) * single_r_ee(j,n) 
                             theta = theta + parm_bf(kk) * r_en(j,nc,l,2) * single_r_en(nc,m,2) * single_r_ee(j,n) 

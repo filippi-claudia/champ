@@ -922,7 +922,7 @@ subroutine read_backflow_file(file_backflow)
     character(len=40)               :: temp1
     character(len=256)              :: bf_order_line
     integer                         :: iunit, iostat, i, ict, multb, multa, multc, l, m, n
-    integer                         :: nspin_file, nparm_file, ee_block_size
+    integer                         :: nspin_file, nparm_file, ee_block_size, c_block_size, ee_spin, c_offset
     logical                         :: exist
 
     !   Formatting
@@ -981,6 +981,7 @@ subroutine read_backflow_file(file_backflow)
     if (norda_bf .gt.0) multa= 1
     if (nordc_bf .gt.0) multc= 1
     ee_block_size = nspin_bf_ee * (2+nordb_bf)
+    c_block_size = nctype * (2*ncparm_bf + 1)
 
     if (wid) then
         do ict = 1, nctype
@@ -997,12 +998,17 @@ subroutine read_backflow_file(file_backflow)
             endif
         endif
         if (nordc_bf .gt. 0) then
-            do ict = 1, nctype
-                read(iunit, *) (parm_bf(ee_block_size*multb + nctype*(norda_bf+2)*multa + multc*(ict-1)*(ncparm_bf+1) + i), i=1,ncparm_bf+1)
+            do ee_spin = 1, nspin_bf_ee
+                c_offset = ee_block_size*multb + nctype*(norda_bf+2)*multa + (ee_spin-1)*c_block_size
+                do ict = 1, nctype
+                    read(iunit, *) (parm_bf(c_offset + (ict-1)*(ncparm_bf+1) + i), i=1,ncparm_bf+1)
+                end do
             end do
-            do ict = 1, nctype
-                read(iunit, *) (parm_bf(ee_block_size*multb + nctype*(norda_bf+2)*multa + multc*nctype*(ncparm_bf+1) + &
-                (ict-1)*ncparm_bf*multc + i), i=1,ncparm_bf)
+            do ee_spin = 1, nspin_bf_ee
+                c_offset = ee_block_size*multb + nctype*(norda_bf+2)*multa + (ee_spin-1)*c_block_size
+                do ict = 1, nctype
+                    read(iunit, *) (parm_bf(c_offset + nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i), i=1,ncparm_bf)
+                end do
             end do
         endif
 

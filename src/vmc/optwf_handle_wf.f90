@@ -307,7 +307,7 @@ contains
       use system, only: nctype
       implicit none
 
-      integer :: i, index, iwf_fit, j, k, ict, l, m, n, ee_block_size
+      integer :: i, index, iwf_fit, j, k, ict, l, m, n, ee_block_size, c_block_size, ee_spin, c_offset
       character(len=40) filename,filetype, temp
       character(len=50) fmt
 
@@ -322,6 +322,7 @@ contains
 
       ee_block_size = 0
       if (nordb_bf.gt.0) ee_block_size = nspin_bf_ee * (2+nordb_bf)
+      c_block_size = nctype * (2*ncparm_bf + 1)
 
 
       if(norda_bf.gt.0) then
@@ -348,15 +349,33 @@ contains
       else
         write(fmt,'(''(a10)'')')
       endif
-      do ict=1,nctype
-        write(2,fmt) (parm_bf(ee_block_size + nctype*(norda_bf+2)+(ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n'
-      enddo 
+      do ee_spin = 1, nspin_bf_ee
+        c_offset = ee_block_size + nctype*(norda_bf+2) + (ee_spin-1)*c_block_size
+        do ict=1,nctype
+          if (nspin_bf_ee.eq.2 .and. ee_spin.eq.1) then
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n(par)'
+          elseif (nspin_bf_ee.eq.2 .and. ee_spin.eq.2) then
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n(anti)'
+          else
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*(ncparm_bf+1) + i),i=1,ncparm_bf+1),' E-e-n'
+          endif
+        enddo
+      enddo
       if (nordc_bf.gt.0) then
         write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf
       endif
-      do ict=1,nctype
-        write(2,fmt) (parm_bf(ee_block_size + nctype*(norda_bf+2)+nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
-      enddo 
+      do ee_spin = 1, nspin_bf_ee
+        c_offset = ee_block_size + nctype*(norda_bf+2) + (ee_spin-1)*c_block_size
+        do ict=1,nctype
+          if (nspin_bf_ee.eq.2 .and. ee_spin.eq.1) then
+            write(2,fmt) (parm_bf(c_offset + nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(par)'
+          elseif (nspin_bf_ee.eq.2 .and. ee_spin.eq.2) then
+            write(2,fmt) (parm_bf(c_offset + nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(anti)'
+          else
+            write(2,fmt) (parm_bf(c_offset + nctype*(ncparm_bf+1) + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
+          endif
+        enddo
+      enddo
 
       write(2,'(''end'')')
       close(2)
