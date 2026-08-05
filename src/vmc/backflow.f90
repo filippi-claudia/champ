@@ -1013,10 +1013,10 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
             do a = 1, 3
                 quasi_x(a,i) = quasi_x(a,i) + eta * delta(a) * f
                 ! dquasi_dp(a,i,1) = dquasi_dp(a,i,1) + eta * delta(a) * f * log((cutoff - rij)/cutoff)
-                dquasi_dp(a,i,offset_ee_ch+1) = dquasi_dp(a,i,offset_ee_ch+1) + delta(a) * tmp2 
-                if (ee_spin .eq. 1) then
-                    dquasi_dp(a,i,offset_ee_ch+1) = dquasi_dp(a,i,offset_ee_ch+1)+delta(a) * f * b_one * inv_cutoff
-                endif
+                !dquasi_dp(a,i,offset_ee_ch+1) = dquasi_dp(a,i,offset_ee_ch+1) + delta(a) * tmp2 
+                !if (ee_spin .eq. 1) then
+                !    dquasi_dp(a,i,offset_ee_ch+1) = dquasi_dp(a,i,offset_ee_ch+1)+delta(a) * f * b_one * inv_cutoff
+                !endif
                 do b = 1, 3
                     tmp1 = etap(b) * delta(a) * f + eta * delta(a) * fp(b)
                     dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + tmp1
@@ -1101,8 +1101,8 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
             tmp1 = eta * C * cutoff1 * (rij*inv_cutoff*inv_cutoff)
             do a = 1, 3 
                 quasi_x(a,i) = quasi_x(a,i) + eta * delta(a) * f
-                dquasi_dp(a,i,offset_en + idx+1) = dquasi_dp(a,i,offset_en + idx+1) + &
-                    delta(a) * tmp1
+                !dquasi_dp(a,i,offset_en + idx+1) = dquasi_dp(a,i,offset_en + idx+1) + &
+                !    delta(a) * tmp1
                 do b = 1, 3
                     dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + (&
                         etap(b) * delta(a) * f + eta * delta(a) * fp(b) )
@@ -1223,8 +1223,8 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
                 do a = 1, 3 
                     quasi_x(a,i) = quasi_x(a,i) + phi * rvec_ee(a,i,j) + theta * rvec_en(a,i,nc)
                     idx = (iwctype(nc)-1)*(ncparm_bf + 1) + offset_een
-                    dquasi_dp(a,i,idx+1) = dquasi_dp(a,i,idx+1) + phi * rvec_ee(a,i,j) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc)) &
-                                                                  + theta * rvec_en(a,i,nc) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc))
+                    !dquasi_dp(a,i,idx+1) = dquasi_dp(a,i,idx+1) + phi * rvec_ee(a,i,j) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc)) &
+                    !                                              + theta * rvec_en(a,i,nc) * (cutoff_deriv(i,nc) + cutoff_deriv(j,nc))
 
                     do b = 1, 3
                         dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + phipi(b) * rvec_ee(a,i,j) + thetapi(b) * rvec_en(a,i,nc)                        
@@ -1278,8 +1278,8 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
                                 idx_phi = ((cusp_indices(k,1) - offset_een ) / (ncparm_bf + 1)) * (ncparm_bf + 1) + offset_een
                             endif
 
-                            dquasi_dp(a,i,idx_phi+1) = dquasi_dp(a,i,idx_phi+1) + &
-                                dquasi_dp(a,i,cusp_indices(k,1) + (ee_spin-1)*een_block_size) * dp_dep_dcutoff
+                            !dquasi_dp(a,i,idx_phi+1) = dquasi_dp(a,i,idx_phi+1) + &
+                            !    dquasi_dp(a,i,cusp_indices(k,1) + (ee_spin-1)*een_block_size) * dp_dep_dcutoff
                         end if
                     end do
 
