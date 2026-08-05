@@ -986,12 +986,12 @@ subroutine read_backflow_file(file_backflow)
         do ict = 1, nctype
             read(iunit, *) (parm_bf(ee_block_size*multb + (ict-1)*(norda_bf+2)*multa + i), i=1,norda_bf+2)
         end do
-        read(iunit, *) (parm_bf(i), i=1, nordb_bf+1)
+        read(iunit, *) (parm_bf(i), i=1, nordb_bf+2)
         if (nordb_bf.gt.0 .and. nspin_bf_ee.eq.2) then
             if (nspin_file.eq.2) then
-                read(iunit, *) (parm_bf((2+nordb_bf) + i), i=1, nordb_bf+1)
+                read(iunit, *) (parm_bf((2+nordb_bf) + i), i=1, nordb_bf+2)
             else
-                do i = 1, nordb_bf+1
+                do i = 1, nordb_bf+2
                     parm_bf((2+nordb_bf) + i) = parm_bf(i)
                 end do
             endif

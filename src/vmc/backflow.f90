@@ -143,7 +143,7 @@ subroutine init_rios_backflow(iflag, orda, ordb, ordc)
     call init_backflow_arrays()
 
     ee_offset = 0
-    if (nordb_bf.gt.0) ee_offset = nspin_bf_ee*(1+nordb_bf)
+    if (nordb_bf.gt.0) ee_offset = nspin_bf_ee*(2+nordb_bf)
 
     if (iflag.eq.0) then
         
@@ -227,7 +227,7 @@ subroutine init_cusp()
     cusp_cutoff_deriv = 0.0d0
 
     offset = 0
-    if (nordb_bf .gt. 0) offset = offset + nspin_bf_ee * (1 + nordb_bf)
+    if (nordb_bf .gt. 0) offset = offset + nspin_bf_ee * (2 + nordb_bf)
     if (norda_bf .gt. 0) offset = offset + (2 + norda_bf) * nctype
 
     basis_klmn = 0
@@ -967,8 +967,10 @@ subroutine rios_backflow(x, quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp)
             do a = 1, 3
                 quasi_x(a,i) = quasi_x(a,i) + eta * delta(a) * f
                 ! dquasi_dp(a,i,1) = dquasi_dp(a,i,1) + eta * delta(a) * f * log((cutoff - rij)/cutoff)
-                dquasi_dp(a,i,offset_ee_ch+1) = dquasi_dp(a,i,offset_ee_ch+1) + delta(a) * tmp2 + &
-                    delta(a) * f * b_one * inv_cutoff
+                dquasi_dp(a,i,offset_ee_ch+1) = dquasi_dp(a,i,offset_ee_ch+1) + delta(a) * tmp2 
+                if (ee_spin .eq. 1) then
+                    dquasi_dp(a,i,offset_ee_ch+1) = dquasi_dp(a,i,offset_ee_ch+1)+delta(a) * f * b_one * inv_cutoff
+                endif
                 do b = 1, 3
                     tmp1 = etap(b) * delta(a) * f + eta * delta(a) * fp(b)
                     dquasi_dx(a,i,b,i) = dquasi_dx(a,i,b,i) + tmp1
