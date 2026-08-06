@@ -73,16 +73,20 @@ module m_backflow
     !> nl_slm (nmat_dim,2)
     real(dp), dimension(:, :), allocatable :: nl_slm
 
-    ! Array for cusp dependency (phi, theta)
+    !> Cusp-constraint matrices, indexed by equation, coefficient, and EEN channel.
+    !> EEN channel order is phi(par), phi(anti), theta(par), theta(anti).
     real(dp), dimension(:, :, :), allocatable :: B
-    !> Derivative of B matrix with respect to cutoff (for chain rule)
+    !> Cutoff derivative of the spin-resolved cusp-constraint matrices.
     real(dp), dimension(:, :, :), allocatable :: dB_dcutoff
+    !> Direct and inverse maps for each solved cusp constraint; rows are spin-resolved.
     real(dp), dimension(:, :), allocatable :: cusp_parameters, inv_cusp_parameters
-    !> Derivative coefficients for how dependent parameters change with cutoff
+    !> Cutoff derivative of each spin-resolved dependent-parameter relation
     real(dp), dimension(:, :), allocatable :: cusp_cutoff_deriv
     integer, dimension(:, :), allocatable :: cusp_indices, inv_cusp_indices
     ! Store (k, l, m) indices for each basis function column
-    integer, dimension(:, :, :, :, :), allocatable :: basis_klmn
+    !> EEN coefficient index for (k, l, m, nuclear type, component, spin).
+    !> component 1 is phi and component 2 is theta; spin 1 is parallel and 2 antiparallel.
+    integer, dimension(:, :, :, :, :, :), allocatable :: basis_klmn
 
     real(dp), dimension(:), allocatable :: parm_bf
     real(dp), dimension(:), allocatable :: deriv_parm_bf
@@ -91,10 +95,46 @@ module m_backflow
     integer :: nspin_bf_ee = 2
     integer :: nordc_bf = 0
     integer :: nparm_bf = 0
+    !> Number of backflow parameters exposed to the optimizer.
+    !> When cutoff optimization is disabled, this excludes the leading cutoffs.
+    integer :: nparm_bf_opt = 0
     integer :: cutoff_scale = 0
     integer :: maxord = 0
     integer :: ncparm_bf = 0
     integer :: c_cuspconst = 0
+
+    !> Cached layout of parm_bf. Cutoff parameters always precede coefficients.
+    !> Cutoff offsets are 1-based parm_bf indices; coefficient offsets count the
+    !> parameters before a section, so its first coefficient is parm_bf(offset + 1).
+
+    !> First electron-electron cutoff; present only when nordb_bf > 0.
+    integer :: cutoff_b_offset = 1
+    !> First electron-nucleus cutoff, one value for each nuclear type.
+    integer :: cutoff_a_offset = 1
+    !> First electron-electron-nucleus cutoff, one value for each nuclear type.
+    integer :: cutoff_c_offset = 1
+    !> Number of cutoff entries at the front of parm_bf.
+    integer :: cutoff_count = 0
+
+    !> Number of parameters before the electron-electron coefficient section.
+    integer :: ee_coeff_offset = 0
+    !> Number of parameters before the electron-nucleus coefficient section.
+    integer :: en_coeff_offset = 0
+    !> Number of parameters before the electron-electron-nucleus section.
+    integer :: een_coeff_offset = 0
+
+    !> Number of electron-electron coefficients for one spin channel.
+    integer :: ee_coeff_block_size = 1
+    !> Number of electron-nucleus coefficients for one nuclear type.
+    integer :: en_coeff_block_size = 1
+    !> Number of EEN coefficients for one component (phi or theta) and spin channel.
+    !> EEN sections are stored as phi(par), phi(anti), theta(par), theta(anti).
+    integer :: een_component_block_size = 0
+
+    !> 0 or 1: whether the electron-electron, electron-nucleus, or EEN section exists.
+    integer :: ee_coeff_active = 0
+    integer :: en_coeff_active = 0
+    integer :: een_coeff_active = 0
 
     
     private
@@ -102,16 +142,49 @@ module m_backflow
     public :: quasi_x, dquasi_dx, d2quasi_dx2, dquasi_dp
     public :: rvec_en_bf, r_en_bf
     public :: allocate_m_backflow, deallocate_m_backflow
-    public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, parm_bf, deriv_parm_bf, dslm_bf
+    public :: dslm, d2slm, d2orb, nl_slm, nparm_bf, nparm_bf_opt, parm_bf, deriv_parm_bf, dslm_bf
     public :: orbn_bf, dorbn_bf, slmin_bf, detn_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale, ncparm_bf, c_cuspconst
     public :: quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, maxord
     public :: r_ee, rvec_ee, r_en, rvec_en, r_ee_gl, r_en_gl, p, d_p, cutoff_deriv
     public :: single_r_ee, single_r_ee_gl, single_rvec_ee, single_r_en, single_r_en_gl, single_rvec_en
     public :: B, dB_dcutoff, cusp_parameters, cusp_indices, inv_cusp_parameters, inv_cusp_indices, basis_klmn
     public :: cusp_cutoff_deriv
+    public :: set_backflow_parameter_layout
+    public :: cutoff_b_offset, cutoff_a_offset, cutoff_c_offset, cutoff_count
+    public :: ee_coeff_offset, en_coeff_offset, een_coeff_offset
+    public :: ee_coeff_block_size, en_coeff_block_size, een_component_block_size
+    public :: ee_coeff_active, en_coeff_active, een_coeff_active
 
 
 contains
+    !> Cache the parameter sections shared by backflow input, output, and evaluation.
+    !> Call this after the orders and ncparm_bf have been finalized, before allocating parm_bf.
+    subroutine set_backflow_parameter_layout()
+      use optwf_control, only: ibf_opt_cutoff
+      ee_coeff_active = 0
+      if (nordb_bf > 0) ee_coeff_active = 1
+      en_coeff_active = 0
+      if (norda_bf > 0) en_coeff_active = 1
+      een_coeff_active = 0
+      if (nordc_bf > 0) een_coeff_active = 1
+
+      cutoff_b_offset = 1
+      cutoff_a_offset = cutoff_b_offset + ee_coeff_active
+      cutoff_c_offset = cutoff_a_offset + en_coeff_active*nctype
+      cutoff_count = ee_coeff_active + en_coeff_active*nctype + een_coeff_active*nctype
+
+      ee_coeff_block_size = nordb_bf + 1
+      en_coeff_block_size = norda_bf + 1
+      een_component_block_size = ncparm_bf*nctype
+
+      ee_coeff_offset = cutoff_count
+      en_coeff_offset = ee_coeff_offset + nspin_bf_ee*ee_coeff_block_size*ee_coeff_active
+      een_coeff_offset = en_coeff_offset + nctype*en_coeff_block_size*en_coeff_active
+      nparm_bf = een_coeff_offset + 2*nspin_bf_ee*een_component_block_size*een_coeff_active
+      nparm_bf_opt = nparm_bf
+      if (.not. ibf_opt_cutoff) nparm_bf_opt = nparm_bf - cutoff_count
+    end subroutine set_backflow_parameter_layout
+
     !> Allocates memory for backflow arrays.
     subroutine allocate_m_backflow()
       if (ibackflow.gt.0) then
@@ -150,14 +223,14 @@ contains
         if (.not. allocated(p)) allocate (p(nelec, ncent_tot, nordc_bf, nordc_bf))
         if (.not. allocated(d_p)) allocate (d_p(nelec, 4, ncent_tot, nordc_bf, nordc_bf))
         if (.not. allocated(cutoff_deriv)) allocate (cutoff_deriv(nelec, ncent_tot))
-        if (.not. allocated(B)) allocate (B(c_cuspconst, ncparm_bf,2*nctype))
-        if (.not. allocated(dB_dcutoff)) allocate (dB_dcutoff(c_cuspconst, ncparm_bf,2*nctype))
-        if (.not. allocated(cusp_parameters)) allocate (cusp_parameters(c_cuspconst*nctype, ncparm_bf))
-        if (.not. allocated(cusp_indices)) allocate (cusp_indices(c_cuspconst*nctype, ncparm_bf))
-        if (.not. allocated(cusp_cutoff_deriv)) allocate (cusp_cutoff_deriv(c_cuspconst*nctype, ncparm_bf))
+        if (.not. allocated(B)) allocate (B(c_cuspconst, ncparm_bf, 2*nctype*nspin_bf_ee))
+        if (.not. allocated(dB_dcutoff)) allocate (dB_dcutoff(c_cuspconst, ncparm_bf, 2*nctype*nspin_bf_ee))
+        if (.not. allocated(cusp_parameters)) allocate (cusp_parameters(c_cuspconst*nctype*nspin_bf_ee, ncparm_bf))
+        if (.not. allocated(cusp_indices)) allocate (cusp_indices(c_cuspconst*nctype*nspin_bf_ee, ncparm_bf))
+        if (.not. allocated(cusp_cutoff_deriv)) allocate (cusp_cutoff_deriv(c_cuspconst*nctype*nspin_bf_ee, ncparm_bf))
         if (.not. allocated(inv_cusp_parameters)) allocate (inv_cusp_parameters(nparm_bf, ncparm_bf))
         if (.not. allocated(inv_cusp_indices)) allocate (inv_cusp_indices(nparm_bf, ncparm_bf))
-        if (.not. allocated(basis_klmn)) allocate (basis_klmn(0:nordc_bf, 0:nordc_bf, 0:nordc_bf, nctype, 2))
+        if (.not. allocated(basis_klmn)) allocate (basis_klmn(0:nordc_bf, 0:nordc_bf, 0:nordc_bf, nctype, 2, nspin_bf_ee))
       endif
     end subroutine allocate_m_backflow
   

@@ -303,14 +303,12 @@ contains
 
       use optwf_control, only: ioptbf
       use vmc_mod, only: nwftypeorb
-      use m_backflow, only: ibackflow, nparm_bf, parm_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale, ncparm_bf
+      use m_backflow, only: ibackflow, nparm_bf, parm_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale, ncparm_bf, cutoff_b_offset, cutoff_a_offset, cutoff_c_offset, ee_coeff_offset, en_coeff_offset, een_coeff_offset, ee_coeff_block_size, en_coeff_block_size, een_component_block_size
       use system, only: nctype
       implicit none
 
       integer :: i, index, iwf_fit, j, k, ict, l, m, n
-      integer :: multb, multa, multc, cutoff_count, cut_b_offset, cut_a_offset, cut_c_offset
-      integer :: coeff_start, offset_ee, offset_en, offset_een, ee_coeff_block, en_coeff_block
-      integer :: c_block_size, ee_spin, c_offset
+      integer :: ee_spin, c_offset
       character(len=40) filename,filetype, temp
       character(len=50) fmt
 
@@ -323,36 +321,16 @@ contains
       write(2,'(5i5,a39)') norda_bf,nordb_bf,nordc_bf,nparm_bf,nspin_bf_ee, ' norda,nordb,nordc,nparm,nspin_bf_ee'
       write(2,'(1i3,a10)') cutoff_scale,' C'
 
-      multb = 0
-      if (nordb_bf.gt.0) multb = 1
-      multa = 0
-      if (norda_bf.gt.0) multa = 1
-      multc = 0
-      if (nordc_bf.gt.0) multc = 1
-
-      cut_b_offset = 1
-      cut_a_offset = cut_b_offset + multb
-      cut_c_offset = cut_a_offset + multa*nctype
-      cutoff_count = multb + multa*nctype + multc*nctype
-
-      coeff_start = cutoff_count + 1
-      offset_ee = coeff_start - 1
-      ee_coeff_block = 1 + nordb_bf
-      offset_en = offset_ee + nspin_bf_ee*ee_coeff_block*multb
-      en_coeff_block = 1 + norda_bf
-      offset_een = offset_en + nctype*en_coeff_block*multa
-      c_block_size = nctype * (2*ncparm_bf)
-
-      if (nordb_bf.gt.0) then
-        write(2,'(f13.8,a10)') parm_bf(cut_b_offset),' cutoff-b'
-      endif
       if (norda_bf.gt.0) then
         write(fmt,'(''('',i5,''f13.8,a10)'')') nctype
-        write(2,fmt) (parm_bf(cut_a_offset + i - 1),i=1,nctype),' cutoff-a'
+        write(2,fmt) (parm_bf(cutoff_a_offset + i - 1),i=1,nctype),' cutoff-a'
+      endif
+      if (nordb_bf.gt.0) then
+        write(2,'(f13.8,a10)') parm_bf(cutoff_b_offset),' cutoff-b'
       endif
       if (nordc_bf.gt.0) then
         write(fmt,'(''('',i5,''f13.8,a10)'')') nctype
-        write(2,fmt) (parm_bf(cut_c_offset + i - 1),i=1,nctype),' cutoff-c'
+        write(2,fmt) (parm_bf(cutoff_c_offset + i - 1),i=1,nctype),' cutoff-c'
       endif
 
 
@@ -362,7 +340,7 @@ contains
         write(fmt,'(''(a10)'')')
       endif
       do ict=1,nctype
-        write(2,fmt) (parm_bf(offset_en + (ict-1)*(norda_bf+1)+i),i=1,norda_bf+1),' e-n'
+        write(2,fmt) (parm_bf(en_coeff_offset + (ict-1)*(norda_bf+1)+i),i=1,norda_bf+1),' e-n'
       enddo 
 
       if(nordb_bf.gt.0) then
@@ -370,9 +348,9 @@ contains
       else
         write(fmt,'(''(a10)'')')
       endif
-      write(2,fmt) (parm_bf(offset_ee+i),i=1,nordb_bf+1),' e-e(par)'
+      write(2,fmt) (parm_bf(ee_coeff_offset+i),i=1,nordb_bf+1),' e-e(par)'
       if (nspin_bf_ee.eq.2) then
-        write(2,fmt) (parm_bf(offset_ee+ee_coeff_block+i),i=1,nordb_bf+1),' e-e(anti)'
+        write(2,fmt) (parm_bf(ee_coeff_offset+ee_coeff_block_size+i),i=1,nordb_bf+1),' e-e(anti)'
       endif
 
       if (nordc_bf.gt.0) then
@@ -381,7 +359,7 @@ contains
         write(fmt,'(''(a10)'')')
       endif
       do ee_spin = 1, nspin_bf_ee
-        c_offset = offset_een + (ee_spin-1)*c_block_size
+        c_offset = een_coeff_offset + (ee_spin-1)*een_component_block_size
         do ict=1,nctype
           if (nspin_bf_ee.eq.2 .and. ee_spin.eq.1) then
             write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' E-e-n(par)'
@@ -396,14 +374,14 @@ contains
         write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf
       endif
       do ee_spin = 1, nspin_bf_ee
-        c_offset = offset_een + (ee_spin-1)*c_block_size
+        c_offset = een_coeff_offset + nspin_bf_ee*een_component_block_size + (ee_spin-1)*een_component_block_size
         do ict=1,nctype
           if (nspin_bf_ee.eq.2 .and. ee_spin.eq.1) then
-            write(2,fmt) (parm_bf(c_offset + nctype*ncparm_bf + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(par)'
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(par)'
           elseif (nspin_bf_ee.eq.2 .and. ee_spin.eq.2) then
-            write(2,fmt) (parm_bf(c_offset + nctype*ncparm_bf + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(anti)'
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(anti)'
           else
-            write(2,fmt) (parm_bf(c_offset + nctype*ncparm_bf + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
           endif
         enddo
       enddo
@@ -1344,20 +1322,22 @@ contains
 
 
       subroutine compute_bf(dparm,iadiag)
-        use m_backflow, only: ibackflow, nparm_bf, parm_bf
+        use m_backflow, only: ibackflow, nparm_bf, parm_bf, cutoff_count
         use backflow_mod, only: fix_cusp, init_cusp
-        use optwf_control, only: ioptbf
+        use optwf_control, only: ioptbf, ibf_opt_cutoff
         use precision_kinds, only: dp
         use optorb_cblock, only: norbterm
          use optwf_parms, only: nparmj, nparmd
         implicit none
-        integer :: i, iadiag
+        integer :: i, iadiag, bf_first
         real(dp), dimension(*) :: dparm
 
         if(ioptbf.eq.0) return
 
-        do i=1,nparm_bf
-          parm_bf(i)=parm_bf(i)-dparm(i+nparmj+nparmd+norbterm)
+        bf_first = 1
+        if (.not. ibf_opt_cutoff) bf_first = cutoff_count + 1
+        do i=bf_first,nparm_bf
+          parm_bf(i)=parm_bf(i)-dparm(i-bf_first+1+nparmj+nparmd+norbterm)
         enddo
 
         ! Rebuild cusp constraint matrix since cutoff may have changed
@@ -1514,7 +1494,7 @@ contains
       use ci000, only: nciterm
       use optwf_control, only: method
       use contrl_file,    only: ounit
-      use m_backflow, only: nparm_bf
+      use m_backflow, only: nparm_bf_opt
       implicit none
 
       integer :: i0
@@ -1524,7 +1504,7 @@ contains
       if(method.eq.'sr_n') then
 
         nparmd=max(nciterm-1,0)
-        nparm=nparmj+nparmd+norbterm+nparm_bf
+        nparm=nparmj+nparmd+norbterm+nparm_bf_opt
 
       elseif(method.eq.'linear'.or.method.eq.'lin_d' .or. method.eq.'mix_n') then
 
@@ -1542,7 +1522,7 @@ contains
       endif
 
       write(ounit,'(/,''number of parms: total, Jastrow, CI, orbitals, bf= '',5i5)') &
-       nparm,nparmj,nciterm,norbterm,nparm_bf
+       nparm,nparmj,nciterm,norbterm,nparm_bf_opt
 
       return
       end
@@ -1554,7 +1534,7 @@ contains
       use optwf_parms, only: nparmj
       use csfs, only: maxcsf,nstates
       use derivjas, only: gvalue
-      use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
+      use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf, ibf_opt_cutoff
       use optwf_func, only: ifunc_omega
       use optwf_parms, only: nparmj
       use sr_mat_n, only: elocal, nconf_n, sr_ho, ortho
@@ -1573,7 +1553,7 @@ contains
       use vmc_mod, only: nwftypeorb, nwftypejas, stoj, stoo
       use contrl_file, only: ounit
       use control_vmc, only: vmc_nstep, vmc_nblk_max
-      use m_backflow, only: nparm_bf, parm_bf, deriv_parm_bf
+      use m_backflow, only: nparm_bf_opt, cutoff_count, deriv_parm_bf
 
       implicit none
 
@@ -1616,9 +1596,15 @@ contains
           wtg(l,istate)=wt(istate)
 
           ii=ijasci+norbterm
-          if (nparm_bf /= 0) call dcopy(nparm_bf,deriv_parm_bf(1),1,sr_o(ii+1,l,istate),1)
+          if (nparm_bf_opt /= 0) then
+            if (ibf_opt_cutoff) then
+              call dcopy(nparm_bf_opt,deriv_parm_bf(1),1,sr_o(ii+1,l,istate),1)
+            else
+              call dcopy(nparm_bf_opt,deriv_parm_bf(cutoff_count+1),1,sr_o(ii+1,l,istate),1)
+            endif
+          endif
 
-          ii=ijasci+norbterm+nparm_bf
+          ii=ijasci+norbterm+nparm_bf_opt
           sr_o(ii+1,l,istate)=psid(istate)
           sr_o(ii+2,l,istate)=wt_sqrt(istate)
 

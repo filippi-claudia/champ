@@ -730,9 +730,10 @@ contains
       use system, only: nelec, nctype
       use contrl_file, only: ounit
       use m_backflow, only: parm_bf, nparm_bf, dquasi_dp, quasi_x, ibackflow
-      use m_backflow, only: cusp_indices, c_cuspconst
+      use m_backflow, only: cusp_indices, c_cuspconst, nspin_bf_ee
       use backflow_mod, only: backflow
       use backflow_mod, only: fix_cusp, init_cusp
+      use optwf_control, only: ioptbf
       implicit none
       
       real(dp), dimension(3, nelec), intent(in) :: x
@@ -740,7 +741,7 @@ contains
       real(dp), dimension(3, nelec) :: dquasi_dp_analytic
       real(dp) :: delta, fd_deriv, analytic_deriv, rel_error, parm_orig
       real(dp) :: max_rel_error_parm, max_fd_parm, max_anal_parm
-      integer :: iparm, iel, a, k
+      integer :: iparm, iel, a, k, ioptbf_saved
       logical :: is_dependent, parm_has_error
       integer :: max_errors
       real(dp) :: tol
@@ -749,7 +750,12 @@ contains
          write(ounit,*) 'test_dquasi_dp_finite_diff: backflow not enabled'
          return
       endif
-      
+
+      ! The finite-difference perturbations always enforce cusp constraints.
+      ! Enable the matching analytic chain rule only for this diagnostic.
+      ioptbf_saved = ioptbf
+      ioptbf = 1
+
       write(ounit,*) ''
       write(ounit,*) '============================================================'
       write(ounit,*) 'Finite Difference Test for dquasi_dp (parameter derivatives)'
@@ -769,7 +775,7 @@ contains
          
          ! Check if this is a dependent (cusp-constrained) parameter
          is_dependent = .false.
-         do k = 1, c_cuspconst * nctype
+         do k = 1, c_cuspconst * nctype * nspin_bf_ee
             if (cusp_indices(k,1) == iparm) then
                is_dependent = .true.
                exit
@@ -842,6 +848,7 @@ contains
       write(ounit,*) '============================================================'
       write(ounit,*) ''
       
+      ioptbf = ioptbf_saved
       return
       end subroutine test_dquasi_dp_finite_diff
 

@@ -101,7 +101,7 @@ subroutine parser
       use optwf_control, only: alin_adiag,alin_eps,dl_alg,dl_mom
       use optwf_control, only: dparm_norm_min,energy_tol,iapprox,ibeta
       use optwf_control, only: idl_flag,ilastvmc,ilbfgs_flag,ilbfgs_m
-      use optwf_control, only: ioptci,ioptjas,ioptorb,ioptbf,ioptwf,iroot_geo
+      use optwf_control, only: ioptci,ioptjas,ioptorb,ioptbf,ibf_opt_cutoff,ioptwf,iroot_geo
       use optwf_control, only: iuse_orbeigv,lin_jdav,method
       use optwf_control, only: micro_iter_sr,multiple_adiag,ncore
       use optwf_control, only: no_active,nopt_iter,nparm,nvec,nvecx
@@ -477,6 +477,7 @@ subroutine parser
   ioptorb       = fdf_get('ioptorb', 0)
   ioptci        = fdf_get('ioptci', 0)
   ioptbf        = fdf_get('ioptbf', 0)
+  ibf_opt_cutoff = fdf_get('ibf_opt_cutoff', .true.)
   nopt_iter     = fdf_get('nopt_iter',6)
   micro_iter_sr = fdf_get('micro_iter_sr', 1)
   isample_cmat  = fdf_get('isample_cmat', 1)

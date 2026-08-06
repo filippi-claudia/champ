@@ -1,5 +1,5 @@
 module optwf_control
-    !> Arguments: ioptci, ioptjas, ioptorb, ioptbf, idl_flag, ilbfgs_flag, ilbfgs_m, nparm,
+    !> Arguments: ioptci, ioptjas, ioptorb, ioptbf, ibf_opt_cutoff, idl_flag, ilbfgs_flag, ilbfgs_m, nparm,
     !>            nopt_iter, micro_iter_sr, energy_tol,
     !>            dparm_norm_min, nvec, nvecx, alin_adiag, alin_eps, lin_jdav ibeta, ratio_j,
     !>            iapprox, ncore, iuse_orbeigv, no_active, multiple_adiag, iroot_geo,
@@ -13,6 +13,8 @@ module optwf_control
     integer :: ioptjas
     integer :: ioptorb
     integer :: ioptbf
+    !> Whether backflow cutoff lengths are included in the optimizer parameter vector.
+    logical :: ibf_opt_cutoff = .true.
     integer :: idl_flag
     integer :: ilbfgs_flag
     integer :: ilbfgs_m
@@ -45,7 +47,7 @@ module optwf_control
     private
     public :: ioptwf
     public :: idl_flag, ilbfgs_flag, ilbfgs_m
-    public :: ioptci, ioptjas, ioptorb, ioptbf, nparm
+    public :: ioptci, ioptjas, ioptorb, ioptbf, ibf_opt_cutoff, nparm
     public :: nopt_iter, micro_iter_sr, energy_tol, dparm_norm_min
     public :: nvec, nvecx, alin_adiag, alin_eps, lin_jdav
     public :: ibeta, ratio_j

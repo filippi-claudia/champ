@@ -907,7 +907,7 @@ end subroutine read_jastrow_file
 !> This subroutine reads backflow parameters from a text file.
 !>@author Emiel Slootman
 subroutine read_backflow_file(file_backflow)
-    use m_backflow, only: ibackflow, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, nparm_bf, cutoff_scale, parm_bf, ncparm_bf
+    use m_backflow, only: ibackflow, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, nparm_bf, cutoff_scale, parm_bf, ncparm_bf, cutoff_b_offset, cutoff_a_offset, cutoff_c_offset, ee_coeff_offset, en_coeff_offset, een_coeff_offset, ee_coeff_block_size, en_coeff_block_size, een_component_block_size, en_coeff_active
       use contrl_file, only: errunit,ounit
       use custom_broadcast, only: bcast
       use mpiconf, only: wid
@@ -921,10 +921,10 @@ subroutine read_backflow_file(file_backflow)
     character(len=72), intent(in)   :: file_backflow
     character(len=40)               :: temp1
     character(len=256)              :: bf_order_line
+    character(len=256)              :: bf_cutoff_line
     integer                         :: iunit, iostat, i, ict, l, m, n
     integer                         :: nspin_file, nparm_file, ee_spin
-    integer                         :: multb, multa, multc, cutoff_count, cut_b_offset, cut_a_offset, cut_c_offset
-    integer                         :: coeff_start, offset_ee, offset_en, offset_een, ee_coeff_block, en_coeff_block, c_block_size, c_offset
+    integer                         :: c_offset
     logical                         :: exist
 
     !   Formatting
@@ -976,61 +976,54 @@ subroutine read_backflow_file(file_backflow)
     write(ounit,'(A,i2,A,i2,A,i2,A)') " Found ", norda_bf, " a order, ", nordb_bf, " b order, ", nordc_bf, " c order for backflow. "
 
     call init_backflow(1)
-    multb = 0
-    if (nordb_bf .gt.0) multb= 1
-    multa = 0
-    if (norda_bf .gt.0) multa= 1
-    multc = 0
-    if (nordc_bf .gt.0) multc= 1
-
-    cut_b_offset = 1
-    cut_a_offset = cut_b_offset + multb
-    cut_c_offset = cut_a_offset + multa*nctype
-    cutoff_count = multb + multa*nctype + multc*nctype
-
-    coeff_start = cutoff_count + 1
-    offset_ee = coeff_start - 1
-    ee_coeff_block = 1 + nordb_bf
-    offset_en = offset_ee + nspin_bf_ee*ee_coeff_block*multb
-    en_coeff_block = 1 + norda_bf
-    offset_een = offset_en + nctype*en_coeff_block*multa
-    c_block_size = nctype * (2*ncparm_bf)
 
     if (wid) then
-        if (nordb_bf.gt.0) then
-            read(iunit, *) parm_bf(cut_b_offset)
-        endif
         if (norda_bf.gt.0) then
-            read(iunit, *) (parm_bf(cut_a_offset + i - 1), i=1,nctype)
+            read(iunit, '(A)') bf_cutoff_line
+            if (index(bf_cutoff_line, 'cutoff-a') .eq. 0) then
+                call fatal_error('Expected cutoff-a line in backflow file')
+            endif
+            read(bf_cutoff_line, *) (parm_bf(cutoff_a_offset + i - 1), i=1,nctype)
+        endif
+        if (nordb_bf.gt.0) then
+            read(iunit, '(A)') bf_cutoff_line
+            if (index(bf_cutoff_line, 'cutoff-b') .eq. 0) then
+                call fatal_error('Expected cutoff-b line in backflow file')
+            endif
+            read(bf_cutoff_line, *) parm_bf(cutoff_b_offset)
         endif
         if (nordc_bf.gt.0) then
-            read(iunit, *) (parm_bf(cut_c_offset + i - 1), i=1,nctype)
+            read(iunit, '(A)') bf_cutoff_line
+            if (index(bf_cutoff_line, 'cutoff-c') .eq. 0) then
+                call fatal_error('Expected cutoff-c line in backflow file')
+            endif
+            read(bf_cutoff_line, *) (parm_bf(cutoff_c_offset + i - 1), i=1,nctype)
         endif
 
         do ict = 1, nctype
-            read(iunit, *) (parm_bf(offset_en + (ict-1)*(norda_bf+1)*multa + i), i=1,norda_bf+1)
+            read(iunit, *) (parm_bf(en_coeff_offset + (ict-1)*(norda_bf+1)*en_coeff_active + i), i=1,norda_bf+1)
         end do
-        read(iunit, *) (parm_bf(offset_ee + i), i=1, nordb_bf+1)
+        read(iunit, *) (parm_bf(ee_coeff_offset + i), i=1, nordb_bf+1)
         if (nordb_bf.gt.0 .and. nspin_bf_ee.eq.2) then
             if (nspin_file.eq.2) then
-                read(iunit, *) (parm_bf(offset_ee + ee_coeff_block + i), i=1, nordb_bf+1)
+                read(iunit, *) (parm_bf(ee_coeff_offset + ee_coeff_block_size + i), i=1, nordb_bf+1)
             else
                 do i = 1, nordb_bf+1
-                    parm_bf(offset_ee + ee_coeff_block + i) = parm_bf(offset_ee + i)
+                    parm_bf(ee_coeff_offset + ee_coeff_block_size + i) = parm_bf(ee_coeff_offset + i)
                 end do
             endif
         endif
         if (nordc_bf .gt. 0) then
             do ee_spin = 1, nspin_bf_ee
-                c_offset = offset_een + (ee_spin-1)*c_block_size
+                c_offset = een_coeff_offset + (ee_spin-1)*een_component_block_size
                 do ict = 1, nctype
                     read(iunit, *) (parm_bf(c_offset + (ict-1)*ncparm_bf + i), i=1,ncparm_bf)
                 end do
             end do
             do ee_spin = 1, nspin_bf_ee
-                c_offset = offset_een + (ee_spin-1)*c_block_size
+                c_offset = een_coeff_offset + nspin_bf_ee*een_component_block_size + (ee_spin-1)*een_component_block_size
                 do ict = 1, nctype
-                    read(iunit, *) (parm_bf(c_offset + nctype*ncparm_bf + (ict-1)*ncparm_bf + i), i=1,ncparm_bf)
+                    read(iunit, *) (parm_bf(c_offset + (ict-1)*ncparm_bf + i), i=1,ncparm_bf)
                 end do
             end do
         endif
