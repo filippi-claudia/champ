@@ -143,6 +143,7 @@ contains
       integer :: i, i0, i1, iconf, istate
       integer :: k, n, nmparm_jasci, nparm_jasci
       real(dp) :: aux0, aux2, aux3, aux4
+      real(dp) :: aux_sum_loc, aux_sum_tot
       real(dp) :: hoz, oz, oz_orb, var
       real(dp) :: wts
       real(dp), dimension(*) :: z
@@ -175,11 +176,23 @@ contains
           do istate=1,nstates
             wts=weights(istate)
 
+            if(idtask.eq.0)then
+              aux0=ddot(n,z,1,obs_tot(jfj,istate),1)
+              tmp(1:n)=obs_tot(jfj:jfj+n-1,istate)
+            endif
+            call MPI_BCAST(aux0,1,MPI_REAL8,0,MPI_COMM_WORLD,i)
+            call MPI_BCAST(tmp,n,MPI_REAL8,0,MPI_COMM_WORLD,i)
+
             i0=nparm_jasci+(istate-1)*norbterm+1
+            aux_sum_loc=0.d0
             do iconf=1,nconf_n
               oz_orb=ddot(norbterm,z(nparm_jasci+1),1,sr_o(i0,iconf,1),1)
-              aux(iconf)=(oz_jasci(iconf)+oz_orb)*wtg(iconf,istate)
+              aux(iconf)=(oz_jasci(iconf)+oz_orb-aux0)*wtg(iconf,istate)
+              aux_sum_loc=aux_sum_loc+aux(iconf)
             enddo
+            call MPI_REDUCE(aux_sum_loc,aux_sum_tot,1,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
+
+            rloc(1:n)=0.d0
 
 !       Following three lines commented and replaced by dgemv after profiling
 !        do i=1,nparm_jasci
@@ -202,9 +215,8 @@ contains
             call MPI_REDUCE(rloc,r_s,n,MPI_REAL8,MPI_SUM,0,MPI_COMM_WORLD,i)
 
             if(idtask.eq.0)then
-              aux0=ddot(n,z,1,obs_tot(jfj,istate),1)
               do i=1,n
-                r(i)=r(i)+wts*(r_s(i)/obs_tot(1,istate)-obs_tot(jfj+i-1,istate)*aux0+s_diag(i,istate)*z(i))
+                r(i)=r(i)+wts*((r_s(i)-tmp(i)*aux_sum_tot)/obs_tot(1,istate)+s_diag(i,istate)*z(i))
               enddo
             endif
 
@@ -293,3 +305,4 @@ contains
       end
 
 end module
+

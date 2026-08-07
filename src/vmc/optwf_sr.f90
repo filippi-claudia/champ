@@ -646,7 +646,12 @@ contains
 
         endif
         
-        if (method .eq. 'sr_n' .and. i_sr_rescale .eq. 0 .and. izvzb .eq. 0 .and. ifunc_omega .eq. 0) return
+        if (method .eq. 'sr_n' .and. i_sr_rescale .eq. 0 .and. izvzb .eq. 0 .and. ifunc_omega .eq. 0) then
+            deallocate (obs_wtg)
+            deallocate (obs_wtg_tot)
+            deallocate (obs)
+            return
+        endif
         
         if (method .ne. 'sr_n') then
             s_diag(1, 1) = sr_adiag !!!
@@ -1211,3 +1216,4 @@ contains
     end subroutine print_gradients
 
 end module optwf_sr_mod
+
