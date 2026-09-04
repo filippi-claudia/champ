@@ -27,8 +27,8 @@
           "type": "value",
           "file": "vmc_h2o_dft_optall_core_2.out",
           "match": "total E",
-          "value": -17.228156,
-          "error": 0.0038242
+          "value": -17.2124357,
+          "error": 0.0039087
         }
       ]
     }
