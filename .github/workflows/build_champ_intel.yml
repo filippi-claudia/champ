@@ -70,7 +70,7 @@ jobs:
             -DENABLE_TREXIO=OFF \
             -DENABLE_QMCKL=OFF
 
-          cmake --build build -- -j2
+          cmake --build build -- -j$(nproc)
 
       - name: Run all tests
         run: |

@@ -69,7 +69,7 @@ jobs:
         cmake --version
         cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 \
                           -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DUNIT_TESTS=on
-        cmake --build build -- vmc_Tests -j2
+        cmake --build build -- vmc_Tests -j$(nproc)
         ulimit -s unlimited
 
     - name: "run vmc testing suite"
