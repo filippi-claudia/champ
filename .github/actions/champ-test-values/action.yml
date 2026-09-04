@@ -35,6 +35,7 @@ runs:
     # The same numbers shaped as manifest "checks" blocks, for the day the
     # references are rebased on a run of this toolchain.
     - name: Reference values this run would imply
+      id: values
       shell: bash
       run: |
         python3 tests/CI_test/champ_test_runner.py collect \
@@ -43,8 +44,18 @@ runs:
         cat champ-suggested-references.txt
         mkdir -p champ-reports
         cp "${{ inputs.reports }}"/*.report.json champ-reports/ 2>/dev/null || true
+        # No reports means no case ran (the build failed, or every test was
+        # filtered out); an artifact of two "nothing measured" files would
+        # only be noise, so say so and skip the upload.
+        if [ -n "$(ls -A champ-reports 2>/dev/null)" ]; then
+          echo "measured=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "measured=false" >> "$GITHUB_OUTPUT"
+          echo "no case reported values; nothing to upload"
+        fi
 
     - name: Upload the measured values
+      if: steps.values.outputs.measured == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.artifact-name }}
