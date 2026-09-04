@@ -83,3 +83,6 @@ docs/site/
 
 # CI test scratch area (champ_test_runner.py interactive runs)
 tests/CI_test/scratch/
+
+# CI test reports of obtained values (champ_test_runner.py --report-dir)
+tests/CI_test/reports/

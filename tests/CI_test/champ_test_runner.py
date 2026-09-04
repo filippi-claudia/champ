@@ -24,7 +24,11 @@ uses the plumbing subcommands:
   list     enumerate and validate manifests at configure time; prints one
            tab-separated registration line per enabled case
   run      execute a single case inside a given scratch directory
-           (used as the ctest COMMAND)
+           (used as the ctest COMMAND); ``--report FILE`` additionally
+           dumps every obtained value as JSON
+  collect  aggregate those JSON reports into one table of obtained vs
+           reference values and, with ``--update-manifests``, write the
+           obtained values back into the test.json files
   suggest  after a run, print a ready-to-paste "checks" JSON snippet
            with the values measured in the scratch directory
   selftest exercise the parsing/comparison logic without CHAMP binaries
@@ -63,6 +67,13 @@ PROGRAMS = ("vmc", "dmc")
 DEFAULT_TIMEOUT = 1500          # seconds, mirrors the ctest default
 DEFAULT_NSIGMA = 2.0
 DEFAULT_ERROR_FILE = "error"
+
+# src/module/m_error.f90 writes this prefix to BOTH the output and the error
+# unit and then calls mpi_abort(..., 0, ...) -- an aborted run therefore exits
+# with status 0 and is indistinguishable from a successful one by exit code
+# alone.  Without this marker the runner would compare whatever partial
+# numbers the dead run had already printed.
+FATAL_MARKER = "Fatal error:"
 
 TOP_KEYS = {
     "description": str,
@@ -416,11 +427,14 @@ def read_forces_table(path):
 # ----------------------------------------------------------------------
 
 class CheckResult(object):
-    def __init__(self, title, passed, details, policy="fail"):
+    def __init__(self, title, passed, details, policy="fail", record=None):
         self.title = title
         self.passed = passed
         self.details = details          # list of printable lines
         self.policy = policy
+        # Structured record of what was measured: goes into the JSON
+        # report written by `run --report` and read back by `collect`.
+        self.record = record or {}
 
     @property
     def verdict(self):
@@ -431,6 +445,19 @@ class CheckResult(object):
 
 def _fmt(x):
     return "%.7f" % x
+
+
+def _round(x):
+    """Round to the 7 decimals CHAMP prints, so a suggested reference is
+    written into a manifest exactly as the run reported it."""
+    return round(float(x), 7)
+
+
+def _sigma_field(sigmas):
+    """JSON-safe sigma distance (nan/inf are not valid JSON numbers)."""
+    if sigmas != sigmas or sigmas in (float("inf"), float("-inf")):
+        return None
+    return round(sigmas, 3)
 
 
 def check_value(scratch, check):
@@ -444,7 +471,12 @@ def check_value(scratch, check):
         value, error = extract_from_file(
             os.path.join(scratch, check["file"]), check["match"], occurrence)
     except ExtractionError as exc:
-        return CheckResult(title, False, ["extraction failed: %s" % exc], policy)
+        return CheckResult(title, False, ["extraction failed: %s" % exc], policy,
+                           {"match": check["match"], "file": check["file"],
+                            "occurrence": occurrence,
+                            "reference": _round(ref_value),
+                            "reference_error": _round(ref_error),
+                            "extraction_error": str(exc)})
     combined = math.sqrt(ref_error * ref_error + error * error)
     allowed = nsigma * combined
     diff = abs(value - ref_value)
@@ -456,7 +488,15 @@ def check_value(scratch, check):
         "|diff| = %s  allowed = %s (%.1f sigma combined)  -> %.2f sigma"
         % (_fmt(diff), _fmt(allowed), nsigma, sigmas),
     ]
-    return CheckResult(title, passed, details, policy)
+    record = {
+        "match": check["match"], "file": check["file"],
+        "occurrence": occurrence,
+        "obtained": _round(value), "obtained_error": _round(error),
+        "reference": _round(ref_value), "reference_error": _round(ref_error),
+        "sigma": _sigma_field(sigmas), "allowed": _round(allowed),
+        "suggest": {"value": _round(value), "error": _round(error)},
+    }
+    return CheckResult(title, passed, details, policy, record)
 
 
 def check_difference(scratch, check):
@@ -476,7 +516,13 @@ def check_difference(scratch, check):
         va, ea = extract_from_file(path, check["match"], check["minuend"])
         vb, eb = extract_from_file(path, check["match"], check["subtrahend"])
     except ExtractionError as exc:
-        return CheckResult(title, False, ["extraction failed: %s" % exc], policy)
+        return CheckResult(title, False, ["extraction failed: %s" % exc], policy,
+                           {"match": check["match"], "file": check["file"],
+                            "minuend": check["minuend"],
+                            "subtrahend": check["subtrahend"],
+                            "reference": _round(ref_value),
+                            "reference_error": _round(ref_error),
+                            "extraction_error": str(exc)})
     value = (va - vb) * scale
     error = math.sqrt(ea * ea + eb * eb) * abs(scale)
     combined = math.sqrt(ref_error * ref_error + error * error)
@@ -492,7 +538,17 @@ def check_difference(scratch, check):
         "|diff| = %s  allowed = %s (%.1f sigma combined)  -> %.2f sigma"
         % (_fmt(diff), _fmt(allowed), nsigma, sigmas),
     ]
-    return CheckResult(title, passed, details, policy)
+    record = {
+        "match": check["match"], "file": check["file"],
+        "minuend": check["minuend"], "subtrahend": check["subtrahend"],
+        "scale": scale,
+        "terms": [_round(va), _round(vb)],
+        "obtained": _round(value), "obtained_error": _round(error),
+        "reference": _round(ref_value), "reference_error": _round(ref_error),
+        "sigma": _sigma_field(sigmas), "allowed": _round(allowed),
+        "suggest": {"value": _round(value), "error": _round(error)},
+    }
+    return CheckResult(title, passed, details, policy, record)
 
 
 def check_forces(scratch, check):
@@ -503,11 +559,15 @@ def check_forces(scratch, check):
         obtained = read_forces_table(os.path.join(scratch, check["file"]))
         reference = read_forces_table(os.path.join(scratch, check["reference"]))
     except ExtractionError as exc:
-        return CheckResult(title, False, [str(exc)], policy)
+        return CheckResult(title, False, [str(exc)], policy,
+                           {"file": check["file"],
+                            "extraction_error": str(exc)})
     if len(obtained) != len(reference):
         return CheckResult(title, False,
                            ["row count differs: obtained %d, reference %d"
-                            % (len(obtained), len(reference))], policy)
+                            % (len(obtained), len(reference))], policy,
+                           {"file": check["file"],
+                            "extraction_error": "row count differs"})
     worst = (-1.0, None)            # (sigma distance, description)
     failures = 0
     for atom, ((vals, sigs), (rvals, rsigs)) in enumerate(zip(obtained, reference), 1):
@@ -527,7 +587,17 @@ def check_forces(scratch, check):
                % (components - failures, components, nsigma)]
     if worst[1]:
         details.append("largest deviation: %s (%.2f sigma)" % (worst[1], worst[0]))
-    return CheckResult(title, failures == 0, details, policy)
+    record = {
+        "file": check["file"], "reference_file": check["reference"],
+        "components": components, "failed_components": failures,
+        "sigma": _sigma_field(worst[0]) if worst[1] else None,
+        "worst_component": worst[1],
+        # The reference of a forces check is a committed file, not a
+        # number in the manifest, so there is nothing to suggest here:
+        # refresh it by copying the run's force table over it.
+        "obtained_file": os.path.join(scratch, check["file"]),
+    }
+    return CheckResult(title, failures == 0, details, policy, record)
 
 
 def check_file_exists(scratch, check):
@@ -535,9 +605,12 @@ def check_file_exists(scratch, check):
     path = os.path.join(scratch, check["file"])
     title = "file exists: %s" % check["file"]
     if os.path.isfile(path):
-        return CheckResult(title, True,
-                           ["found (%d bytes)" % os.path.getsize(path)], policy)
-    return CheckResult(title, False, ["file was not produced"], policy)
+        size = os.path.getsize(path)
+        return CheckResult(title, True, ["found (%d bytes)" % size], policy,
+                           {"file": check["file"], "exists": True,
+                            "size_bytes": size})
+    return CheckResult(title, False, ["file was not produced"], policy,
+                       {"file": check["file"], "exists": False})
 
 
 def check_values_equal(scratch, check):
@@ -549,10 +622,22 @@ def check_values_equal(scratch, check):
         v1, e1 = extract_from_file(os.path.join(scratch, f1), check["match"], occurrence)
         v2, e2 = extract_from_file(os.path.join(scratch, f2), check["match"], occurrence)
     except ExtractionError as exc:
-        return CheckResult(title, False, ["extraction failed: %s" % exc], policy)
+        return CheckResult(title, False, ["extraction failed: %s" % exc], policy,
+                           {"match": check["match"], "file": f1,
+                            "occurrence": occurrence,
+                            "extraction_error": str(exc)})
     details = ["%s : %s +- %s" % (f1, _fmt(v1), _fmt(e1)),
                "%s : %s +- %s" % (f2, _fmt(v2), _fmt(e2))]
-    return CheckResult(title, v1 == v2, details, policy)
+    # Both files must agree exactly; there is no manifest-side reference
+    # value to refresh, so the second file plays the role of "reference".
+    record = {
+        "match": check["match"], "file": f1, "occurrence": occurrence,
+        "obtained": _round(v1), "obtained_error": _round(e1),
+        "reference": _round(v2), "reference_error": _round(e2),
+        "reference_file": f2,
+        "sigma": 0.0 if v1 == v2 else None,
+    }
+    return CheckResult(title, v1 == v2, details, policy, record)
 
 
 CHECKERS = {
@@ -753,8 +838,262 @@ def expand_test_tokens(tokens, base=None):
 
 
 # ----------------------------------------------------------------------
+# Reports (obtained values, machine-readable and as a table)
+# ----------------------------------------------------------------------
+
+REPORT_SUFFIX = ".report.json"
+
+
+def report_filename(folder, case_name):
+    """One file per ctest case; ctest -j writes them concurrently."""
+    safe = "%s__%s" % (folder, case_name)
+    for bad in "/\\ ":
+        safe = safe.replace(bad, "_")
+    return safe + REPORT_SUFFIX
+
+
+def write_report(path, report):
+    if not path:
+        return
+    directory = os.path.dirname(os.path.abspath(path))
+    if directory and not os.path.isdir(directory):
+        try:
+            os.makedirs(directory)
+        except OSError:
+            pass
+    try:
+        with open(path, "w") as fh:
+            json.dump(report, fh, indent=2, sort_keys=False)
+            fh.write("\n")
+    except OSError as exc:
+        print("warning: could not write report '%s': %s" % (path, exc))
+        return
+    print("report written: %s" % path)
+
+
+def load_reports(directory):
+    """Read every *.report.json in `directory`, sorted by test/case."""
+    paths = sorted(globmod.glob(os.path.join(directory, "*" + REPORT_SUFFIX)))
+    reports = []
+    for path in paths:
+        try:
+            with open(path) as fh:
+                reports.append(json.load(fh))
+        except (OSError, ValueError) as exc:
+            print("warning: skipping unreadable report '%s': %s" % (path, exc),
+                  file=sys.stderr)
+    reports.sort(key=lambda r: (r.get("test", ""), r.get("case", "")))
+    return reports
+
+
+def _pair(value, error):
+    if value is None:
+        return "-"
+    if error is None:
+        return _fmt(value)
+    return "%s +- %s" % (_fmt(value), _fmt(error))
+
+
+def _check_label(entry):
+    name = entry.get("match") or entry.get("file") or entry.get("type", "?")
+    occurrence = entry.get("occurrence", "last")
+    if occurrence != "last":
+        name = "%s [%s]" % (name, occurrence)
+    if entry.get("type") == "difference":
+        name = "%s (occ %s - %s)" % (name, entry.get("minuend"),
+                                     entry.get("subtrahend"))
+    return name
+
+
+def report_rows(reports):
+    """Flatten reports into table rows: case, check, obtained, reference,
+    sigma, verdict."""
+    rows = []
+    for rep in reports:
+        label = "%s/%s" % (rep.get("test", "?"), rep.get("case", "?"))
+        if not rep.get("checks"):
+            rows.append([label, rep.get("error", "no checks evaluated"),
+                         "-", "-", "-", rep.get("result", "ERROR")])
+            continue
+        for entry in rep["checks"]:
+            note = _check_label(entry)
+            if entry.get("extraction_error"):
+                note = "%s (%s)" % (note, entry["extraction_error"])
+            sigma = entry.get("sigma")
+            rows.append([
+                label, note,
+                _pair(entry.get("obtained"), entry.get("obtained_error")),
+                _pair(entry.get("reference"), entry.get("reference_error")),
+                "%.2f" % sigma if sigma is not None else "-",
+                entry.get("verdict", "?"),
+            ])
+    return rows
+
+
+def format_table(rows, headers):
+    widths = [len(h) for h in headers]
+    for row in rows:
+        for i, cell in enumerate(row):
+            widths[i] = max(widths[i], len(cell))
+    # the last column is not padded, so lines do not end in blanks
+    def line(cells):
+        out = [cells[i].ljust(widths[i]) for i in range(len(cells) - 1)]
+        out.append(cells[-1])
+        return "  ".join(out).rstrip()
+    text = [line(headers), line(["-" * w for w in widths])]
+    text.extend(line(row) for row in rows)
+    return "\n".join(text)
+
+
+REPORT_HEADERS = ["test/case", "check", "obtained", "reference",
+                  "sigma", "verdict"]
+
+
+def render_reports(reports, title="OBTAINED VALUES"):
+    rows = report_rows(reports)
+    out = ["=" * 72, title, "=" * 72]
+    if rows:
+        out.append(format_table(rows, REPORT_HEADERS))
+    else:
+        out.append("(no checks were evaluated)")
+    verdicts = [row[-1] for row in rows]
+    out.append("")
+    out.append("%d checks: %d PASS, %d WARN, %d FAIL/ERROR"
+               % (len(verdicts), verdicts.count("PASS"), verdicts.count("WARN"),
+                  sum(1 for v in verdicts if v not in ("PASS", "WARN"))))
+    deviations = []
+    for rep in reports:
+        for entry in rep.get("checks", []):
+            if entry.get("sigma") is not None:
+                deviations.append((entry["sigma"],
+                                   "%s/%s  %s" % (rep.get("test"), rep.get("case"),
+                                                  _check_label(entry))))
+    deviations.sort(reverse=True)
+    if deviations and deviations[0][0] > 0:
+        out.append("")
+        out.append("largest deviations from the stored references:")
+        for sigma, where in deviations[:10]:
+            out.append("    %6.2f sigma   %s" % (sigma, where))
+    return "\n".join(out)
+
+
+def manifest_label(manifest_path):
+    """Readable manifest path: relative to the cwd when that stays inside
+    the tree (interactive use), else the repository-style path (ctest runs
+    from the build directory, whose relpath is a stack of '..')."""
+    rel = os.path.relpath(manifest_path)
+    if not rel.startswith(os.pardir):
+        return rel
+    folder = os.path.basename(os.path.dirname(os.path.abspath(manifest_path)))
+    return "/".join(["tests", "CI_test", folder, MANIFEST_NAME])
+
+
+def suggested_checks(report):
+    """The case's checks with the obtained numbers substituted, ready to
+    paste into the manifest."""
+    out = []
+    for entry in report.get("checks", []):
+        suggest = entry.get("suggest")
+        if not suggest:
+            continue
+        out.append(dict(entry.get("check", {}), **suggest))
+    return out
+
+
+def update_manifests(reports, base=None, dry_run=False):
+    """Write the obtained values back into the test.json manifests.
+
+    Only `value`/`error` of checks whose type and match still agree with
+    what the run measured are touched; everything else in the manifest
+    (comments, policies, key order, formatting) is preserved."""
+    base = base or os.path.dirname(os.path.abspath(__file__))
+    by_manifest = {}
+    for rep in reports:
+        path = rep.get("manifest") or ""
+        if not os.path.isfile(path):
+            # reports produced on another machine (a downloaded CI
+            # artifact): fall back to the test folder name
+            path = os.path.join(base, rep.get("test", ""), MANIFEST_NAME)
+        by_manifest.setdefault(os.path.abspath(path), []).append(rep)
+
+    changed, skipped = [], []
+    for path, reps in sorted(by_manifest.items()):
+        if not os.path.isfile(path):
+            skipped.append("%s: manifest not found" % path)
+            continue
+        with open(path) as fh:
+            data = json.load(fh)
+        cases = dict((c.get("name"), c) for c in data.get("cases", []))
+        edits = 0
+        for rep in reps:
+            case = cases.get(rep.get("case"))
+            if case is None:
+                skipped.append("%s: no case '%s'" % (path, rep.get("case")))
+                continue
+            checks = case.get("checks", [])
+            for entry in rep.get("checks", []):
+                suggest = entry.get("suggest")
+                index = entry.get("index", 0) - 1
+                if not suggest or not 0 <= index < len(checks):
+                    continue
+                check = checks[index]
+                if (check.get("type") != entry.get("type")
+                        or check.get("match") != entry.get("match")):
+                    skipped.append("%s/%s check %d: manifest changed since "
+                                   "the run, not updated"
+                                   % (rep.get("test"), rep.get("case"), index + 1))
+                    continue
+                if (check.get("value") == suggest["value"]
+                        and check.get("error") == suggest["error"]):
+                    continue
+                check["value"] = suggest["value"]
+                check["error"] = suggest["error"]
+                edits += 1
+        if edits and not dry_run:
+            with open(path, "w") as fh:
+                json.dump(data, fh, indent=2)
+                fh.write("\n")
+        if edits:
+            changed.append((path, edits))
+    return changed, skipped
+
+
+# ----------------------------------------------------------------------
 # Running
 # ----------------------------------------------------------------------
+
+def scan_fatal(path):
+    """First 'Fatal error:' line in `path`, or None.
+
+    CHAMP aborts with MPI code 0 (see m_error.f90), so a run that died
+    mid-calculation still reports exit status 0.  The output it leaves
+    behind is partial: the last 'total E' is some intermediate
+    optimisation step, not a result, and comparing it against a reference
+    yields a meaningless sigma deviation instead of an error."""
+    try:
+        with open(path, "r", errors="replace") as fh:
+            for raw in fh:
+                if FATAL_MARKER in raw:
+                    return raw.strip()
+    except OSError:
+        pass
+    return None
+
+
+def abort_is_fatal(case):
+    """Whether a run that died should fail the suite for this case.
+
+    Covers both ways a run can die: a non-zero exit status, and an abort
+    that still exits 0 (CHAMP's fatal_error calls mpi_abort with code 0).
+
+    A case whose every check is policy "warn" is the manifest equivalent
+    of the historical --no_assert: the maintainer has declared that this
+    test must not fail the suite.  The death is still reported -- loudly,
+    and in the JSON report -- but it does not turn the job red.  Any check
+    that can fail makes it a hard failure."""
+    policies = [c.get("policy", "fail") for c in case.get("checks", [])]
+    return not (policies and all(p == "warn" for p in policies))
+
 
 def _tail(path, n=40):
     try:
@@ -805,6 +1144,17 @@ def run_case(args):
     print("scratch dir : %s" % scratch)
     print("=" * 72)
 
+    report = {
+        "test": os.path.basename(source),
+        "case": case["name"],
+        "manifest": manifest_path,
+        "scratch": scratch,
+        "result": "ERROR",
+        "runs": [],
+        "checks": [],
+    }
+    report_path = getattr(args, "report", None)
+
     stage(source, scratch)
 
     for i, run in enumerate(case["runs"], 1):
@@ -813,8 +1163,17 @@ def run_case(args):
         if not os.path.isfile(input_path):
             print("[run %d/%d] FAILED: input file '%s' not present in scratch dir"
                   % (i, len(case["runs"]), run["input"]))
+            report["error"] = ("input file '%s' not present in scratch dir"
+                               % run["input"])
+            write_report(report_path, report)
             return 1
-        cmd = build_command(run, args)
+        try:
+            cmd = build_command(run, args)
+        except RuntimeError as exc:
+            print("[run %d/%d] FAILED: %s" % (i, len(case["runs"]), exc))
+            report["error"] = str(exc)
+            write_report(report_path, report)
+            return 1
         print("[run %d/%d] %s" % (i, len(case["runs"]), " ".join(cmd)))
         sys.stdout.flush()
         # Sub-second runs can hit the still-held HDF5 file lock of the
@@ -827,20 +1186,58 @@ def run_case(args):
             proc = subprocess.run(cmd, cwd=scratch, env=env)
         except OSError as exc:
             print("[run %d/%d] FAILED to launch: %s" % (i, len(case["runs"]), exc))
+            report["error"] = "failed to launch: %s" % exc
+            write_report(report_path, report)
             return 1
         elapsed = time.time() - t0
+        err_name = run.get("error_output", DEFAULT_ERROR_FILE)
+        report["runs"].append({
+            "program": run["program"], "input": run["input"],
+            "output": run["output"], "nproc": run["nproc"],
+            "returncode": proc.returncode, "seconds": round(elapsed, 1)})
         print("[run %d/%d] exit code %d after %.1f s"
               % (i, len(case["runs"]), proc.returncode, elapsed))
+        # An aborted run exits 0, so the marker -- not the status -- is what
+        # tells us the numbers in the output file are not a result.
+        fatal = (scan_fatal(os.path.join(scratch, run["output"]))
+                 or scan_fatal(os.path.join(scratch, err_name)))
+        if proc.returncode == 0 and fatal:
+            hard = abort_is_fatal(case)
+            print("[run %d/%d] the program aborted despite exit code 0:"
+                  % (i, len(case["runs"])))
+            print("    %s" % fatal)
+            print("    its output is partial, so no value from it is compared")
+            if not hard:
+                print("    every check here is policy 'warn' (--no_assert), so "
+                      "this is reported without failing the suite")
+            for name in (run["output"], err_name):
+                print("---- tail of %s ----" % name)
+                for line in _tail(os.path.join(scratch, name), 20):
+                    print("  " + line)
+            report["runs"][-1]["fatal"] = fatal
+            report["error"] = fatal
+            report["result"] = "FAIL" if hard else "WARN"
+            print("RESULT: %s (%s)" % (report["result"], fatal))
+            write_report(report_path, report)
+            return 1 if hard else 0
         if proc.returncode != 0:
+            hard = abort_is_fatal(case)
+            if not hard:
+                print("[run %d/%d] every check here is policy 'warn' "
+                      "(--no_assert), so this is reported without failing "
+                      "the suite" % (i, len(case["runs"])))
             print("---- tail of %s ----" % run["output"])
             for line in _tail(os.path.join(scratch, run["output"])):
                 print("  " + line)
-            err_name = run.get("error_output", DEFAULT_ERROR_FILE)
             print("---- tail of %s ----" % err_name)
             for line in _tail(os.path.join(scratch, err_name)):
                 print("  " + line)
-            print("RESULT: FAIL (program exited with %d)" % proc.returncode)
-            return 1
+            report["error"] = "program exited with %d" % proc.returncode
+            report["result"] = "FAIL" if hard else "WARN"
+            print("RESULT: %s (program exited with %d)"
+                  % (report["result"], proc.returncode))
+            write_report(report_path, report)
+            return 1 if hard else 0
         apply_ops(scratch, run.get("after", []), "after")
 
     print("-" * 72)
@@ -854,6 +1251,15 @@ def run_case(args):
         for line in result.details:
             print("    " + line)
         print("    %s" % result.verdict)
+        entry = {"index": i, "type": check["type"], "title": result.title,
+                 "policy": result.policy, "verdict": result.verdict}
+        if check.get("comment"):
+            entry["comment"] = check["comment"]
+        entry.update(result.record)
+        # the manifest check itself, so `collect` can rebuild a paste-ready
+        # block without re-reading the manifest
+        entry["check"] = check
+        report["checks"].append(entry)
 
     hard_failures = [r for r in results if not r.passed and r.policy == "fail"]
     warnings = [r for r in results if not r.passed and r.policy == "warn"]
@@ -862,6 +1268,25 @@ def run_case(args):
           % ("FAIL" if hard_failures else "PASS",
              len(results) - len(hard_failures) - len(warnings), len(results),
              ", %d warn-only" % len(warnings) if warnings else ""))
+
+    report["result"] = "FAIL" if hard_failures else "PASS"
+    report["warnings"] = len(warnings)
+    # Always echo the numbers: with `ctest --output-on-failure` this block
+    # is what a failing job shows, and `collect` reproduces it for the
+    # cases that passed.
+    print(render_reports([report],
+                         title="OBTAINED VALUES  %s / %s"
+                               % (report["test"], report["case"])))
+    # A case whose every check passed needs no new reference, so only the
+    # table is printed for it; `collect --suggest` prints the blocks of a
+    # whole run when references are being rebased deliberately.
+    snippet = suggested_checks(report) if (hard_failures or warnings) else []
+    if snippet:
+        print("")
+        print("checks block with the values measured by this run "
+              "(paste into %s):" % manifest_label(manifest_path))
+        print(json.dumps({"checks": snippet}, indent=2))
+    write_report(report_path, report)
     return 1 if hard_failures else 0
 
 
@@ -923,6 +1348,71 @@ def suggest(args):
             new["comment"] = "SUGGEST FAILED: %s" % exc
         suggestion.append(new)
     print(json.dumps({"checks": suggestion}, indent=2))
+    return 0
+
+
+# ----------------------------------------------------------------------
+# collect mode (aggregate the reports of a whole ctest run)
+# ----------------------------------------------------------------------
+
+def collect(args):
+    """Turn the per-case reports of a ctest run into one table of
+    obtained vs reference values -- for every case, not only the failing
+    ones -- and optionally write the obtained values into the manifests."""
+    if not os.path.isdir(args.reports):
+        print("no report directory '%s': no test ran, or the build predates "
+              "--report" % args.reports)
+        return 0
+    reports = load_reports(args.reports)
+    if not reports:
+        print("no *%s files in '%s': no test ran" % (REPORT_SUFFIX, args.reports))
+        return 0
+
+    if args.format == "json":
+        print(json.dumps(reports, indent=2))
+    elif not args.no_table:
+        print(render_reports(reports))
+        print("")
+        print("%d case(s): %s" % (len(reports), ", ".join(
+            "%d %s" % (sum(1 for r in reports if r.get("result") == v), v)
+            for v in ("PASS", "FAIL", "ERROR")
+            if any(r.get("result") == v for r in reports))))
+        print("refresh the stored references with:  %s collect --reports %s "
+              "--update-manifests" % (os.path.basename(sys.argv[0]), args.reports))
+
+    if args.suggest:
+        print("")
+        print("=" * 72)
+        print("CHECKS BLOCKS WITH THE MEASURED VALUES")
+        print("=" * 72)
+        for rep in reports:
+            snippet = suggested_checks(rep)
+            if not snippet:
+                continue
+            print("")
+            print("# %s / %s  ->  %s"
+                  % (rep.get("test"), rep.get("case"),
+                     manifest_label(rep.get("manifest")
+                                    or os.path.join(rep.get("test", ""),
+                                                    MANIFEST_NAME))))
+            print(json.dumps({"checks": snippet}, indent=2))
+
+    if args.update_manifests:
+        changed, skipped = update_manifests(reports, base=args.base,
+                                            dry_run=args.dry_run)
+        print("")
+        print("=" * 72)
+        print("REFERENCE VALUES %s"
+              % ("THAT WOULD BE WRITTEN (dry run)" if args.dry_run
+                 else "WRITTEN INTO THE MANIFESTS"))
+        print("=" * 72)
+        for path, edits in changed:
+            print("    %-60s %d value(s)" % (os.path.relpath(path, args.base
+                                                             or os.getcwd()), edits))
+        if not changed:
+            print("    (none: the stored references already match this run)")
+        for note in skipped:
+            print("    skipped: %s" % note)
     return 0
 
 
@@ -1062,6 +1552,158 @@ def selftest(_args):
                 self.assertEqual(fh.read(), "mc_configs_new1\nmc_configs_new2\n")
             self.assertEqual(globmod.glob(os.path.join(self.dir, "mc_configs_new*")), [])
 
+    class FatalAbort(unittest.TestCase):
+        """CHAMP aborts with mpi_abort(...,0,...), so exit status alone
+        cannot distinguish a dead run from a finished one."""
+
+        def setUp(self):
+            self.dir = tempfile.mkdtemp()
+
+        def tearDown(self):
+            shutil.rmtree(self.dir)
+
+        def _write(self, name, text):
+            path = os.path.join(self.dir, name)
+            with open(path, "w") as fh:
+                fh.write(text)
+            return path
+
+        def test_marker_found_in_partial_output(self):
+            path = self._write("o.out", VMC_SAMPLE +
+                               "MATINV: u(k,k)=0 with k=    10\n"
+                               "Fatal error: MATINV: info ne 0 in dgetrf\n")
+            self.assertEqual(scan_fatal(path),
+                             "Fatal error: MATINV: info ne 0 in dgetrf")
+
+        def test_clean_output_and_warnings_are_not_fatal(self):
+            self.assertIsNone(scan_fatal(self._write("clean.out", VMC_SAMPLE)))
+            # a successful run's error file carries warnings, not failures
+            self.assertIsNone(scan_fatal(self._write(
+                "error", "Warning:: No information about orbital symmetries\n"
+                         "INPUT: multideterminant bloc MISSING\n")))
+
+        def test_missing_file_is_not_fatal(self):
+            self.assertIsNone(scan_fatal(os.path.join(self.dir, "absent")))
+
+        def test_partial_output_still_parses_a_value(self):
+            # the reason the marker matters: extraction happily returns the
+            # last intermediate energy from a dead run
+            path = self._write("o.out", VMC_SAMPLE +
+                               "Fatal error: MATINV: info ne 0 in dgetrf\n")
+            value, _ = extract_from_file(path, "total E")
+            self.assertEqual(value, -1.0046458)
+            self.assertIsNotNone(scan_fatal(path))
+
+    class AbortPolicy(unittest.TestCase):
+        """An abort respects the case's declared tolerance."""
+
+        def _case(self, *policies):
+            return {"name": "np1", "checks":
+                    [{"type": "value", "policy": p} if p else {"type": "value"}
+                     for p in policies]}
+
+        def test_all_warn_is_not_fatal(self):
+            self.assertFalse(abort_is_fatal(self._case("warn")))
+            self.assertFalse(abort_is_fatal(self._case("warn", "warn")))
+
+        def test_any_failing_check_makes_it_fatal(self):
+            self.assertTrue(abort_is_fatal(self._case(None)))
+            self.assertTrue(abort_is_fatal(self._case("warn", None)))
+            self.assertTrue(abort_is_fatal(self._case("fail", "warn")))
+
+        def test_case_without_checks_is_fatal(self):
+            self.assertTrue(abort_is_fatal({"name": "np1", "checks": []}))
+
+    class Reporting(unittest.TestCase):
+        """The report -> table -> manifest path used to refresh references."""
+
+        def setUp(self):
+            self.dir = tempfile.mkdtemp()
+            with open(os.path.join(self.dir, "o.out"), "w") as fh:
+                fh.write(VMC_SAMPLE)
+            self.manifest = {
+                "description": "x", "labels": ["VMC"],
+                "cases": [{"name": "np1",
+                           "runs": [{"program": "vmc", "input": "a.inp",
+                                     "output": "o.out", "nproc": 1}],
+                           "checks": [{"type": "value", "file": "o.out",
+                                       "match": "total E", "value": -2.0,
+                                       "error": 0.01, "comment": "keep me"}]}],
+            }
+            folder = os.path.join(self.dir, "VMC-Fake")
+            os.makedirs(folder)
+            self.path = os.path.join(folder, MANIFEST_NAME)
+            with open(self.path, "w") as fh:
+                json.dump(self.manifest, fh, indent=2)
+
+        def tearDown(self):
+            shutil.rmtree(self.dir)
+
+        def _report(self):
+            check = self.manifest["cases"][0]["checks"][0]
+            result = check_value(self.dir, check)
+            entry = {"index": 1, "type": check["type"], "title": result.title,
+                     "policy": result.policy, "verdict": result.verdict}
+            entry.update(result.record)
+            entry["check"] = check
+            return {"test": "VMC-Fake", "case": "np1", "manifest": self.path,
+                    "result": "FAIL", "runs": [], "checks": [entry]}
+
+        def test_record_carries_the_obtained_value(self):
+            entry = self._report()["checks"][0]
+            self.assertEqual(entry["obtained"], -1.0046458)
+            self.assertEqual(entry["obtained_error"], 0.0084583)
+            self.assertEqual(entry["suggest"],
+                             {"value": -1.0046458, "error": 0.0084583})
+
+        def test_table_shows_obtained_and_reference(self):
+            text = render_reports([self._report()])
+            self.assertIn("total E", text)
+            self.assertIn("-1.0046458", text)      # obtained
+            self.assertIn("-2.0000000", text)      # reference
+            self.assertIn("FAIL", text)
+
+        def test_report_round_trip(self):
+            path = os.path.join(self.dir, report_filename("VMC-Fake", "np1"))
+            write_report(path, self._report())
+            back = load_reports(self.dir)
+            self.assertEqual(len(back), 1)
+            self.assertEqual(back[0]["case"], "np1")
+            self.assertEqual(back[0]["checks"][0]["obtained"], -1.0046458)
+
+        def test_update_manifest_replaces_only_the_numbers(self):
+            changed, skipped = update_manifests([self._report()])
+            self.assertEqual([edits for _, edits in changed], [1])
+            self.assertEqual(skipped, [])
+            with open(self.path) as fh:
+                check = json.load(fh)["cases"][0]["checks"][0]
+            self.assertEqual(check["value"], -1.0046458)
+            self.assertEqual(check["error"], 0.0084583)
+            self.assertEqual(check["comment"], "keep me")
+            self.assertEqual(check["type"], "value")
+            # already up to date: nothing more to write
+            self.assertEqual(update_manifests([self._report()])[0], [])
+
+        def test_update_is_skipped_when_the_manifest_moved_on(self):
+            report = self._report()
+            report["checks"][0]["match"] = "some other quantity"
+            changed, skipped = update_manifests([report])
+            self.assertEqual(changed, [])
+            self.assertTrue(skipped)
+
+        def test_dry_run_does_not_write(self):
+            changed, _ = update_manifests([self._report()], dry_run=True)
+            self.assertEqual([edits for _, edits in changed], [1])
+            with open(self.path) as fh:
+                self.assertEqual(json.load(fh)["cases"][0]["checks"][0]["value"],
+                                 -2.0)
+
+        def test_suggested_checks_keep_the_manifest_keys(self):
+            snippet = suggested_checks(self._report())
+            self.assertEqual(snippet[0]["comment"], "keep me")
+            self.assertEqual(snippet[0]["value"], -1.0046458)
+            self.assertEqual(snippet[0]["match"], "total E")
+
     class Schema(unittest.TestCase):
         def _load(self, payload):
             tmp = tempfile.mkdtemp()
@@ -1155,7 +1797,8 @@ def selftest(_args):
 
     suite = unittest.TestSuite()
     loader = unittest.TestLoader()
-    for cls in (Extraction, ValueCheck, ForcesCheck, Ops, Schema,
+    for cls in (Extraction, ValueCheck, ForcesCheck, Ops, FatalAbort,
+                AbortPolicy, Reporting, Schema,
                 InteractiveDefaults):
         suite.addTests(loader.loadTestsFromTestCase(cls))
     runner = unittest.TextTestRunner(verbosity=2)
@@ -1224,7 +1867,10 @@ def run_tests(args):
                 dmc=args.dmc or default_binary("dmc"),
                 mpiexec=mpiexec,
                 numproc_flag=args.numproc_flag,
-                mpiexec_preflags=args.mpiexec_preflags.split())
+                mpiexec_preflags=args.mpiexec_preflags.split(),
+                report=os.path.join(args.report_dir,
+                                    report_filename(folder, case_name))
+                       if args.report_dir else None)
             status = run_case(run_args)
             results.append((folder, case_name, status == 0))
             if status != 0:
@@ -1248,6 +1894,9 @@ def run_tests(args):
                                     "PASS" if ok else "FAIL"))
         npass = sum(1 for r in results if r[2])
         print("    %d/%d cases passed" % (npass, len(results)))
+    if args.report_dir:
+        print("    reports in %s (aggregate them with: %s collect --reports %s)"
+              % (args.report_dir, os.path.basename(sys.argv[0]), args.report_dir))
     return 0 if all(r[2] for r in results) else 1
 
 
@@ -1270,7 +1919,13 @@ Defaults (each can be overridden by a flag or environment variable):
                        (--mpiexec, $CHAMP_MPIRUN)
 
 Subcommands (each has its own --help; ctest uses `run`):
-    list / run / suggest / selftest
+    list / run / collect / suggest / selftest
+
+Collecting the numbers of a whole run (e.g. to refresh references after
+an algorithm change):
+
+    %(prog)s all --report-dir reports
+    %(prog)s collect --reports reports --update-manifests
 """
 
 
@@ -1302,6 +1957,9 @@ def build_cli():
                         help="launcher flag for the rank count (default -n)")
     p_test.add_argument("--mpiexec-preflags", default="",
                         help="extra launcher flags, e.g. --oversubscribe")
+    p_test.add_argument("--report-dir", default=None, metavar="DIR",
+                        help="also write one JSON report of obtained values "
+                             "per case into DIR (read back by `collect`)")
 
     p_list = sub.add_parser("list", help="validate manifests and list cases")
     p_list.add_argument("manifests", nargs="+")
@@ -1317,6 +1975,9 @@ def build_cli():
     p_run.add_argument("--numproc-flag", default="-n")
     p_run.add_argument("--mpiexec-preflags", default="",
                        help="extra launcher flags (space separated)")
+    p_run.add_argument("--report", default=None, metavar="FILE",
+                       help="write a JSON report of every obtained value "
+                            "(read back by `collect`)")
 
     p_sug = sub.add_parser("suggest",
                            help="print checks filled with measured values")
@@ -1326,6 +1987,29 @@ def build_cli():
                        help="scratch dir of the run to read (default: the "
                             "interactive default for this test/case)")
 
+    p_col = sub.add_parser(
+        "collect",
+        help="aggregate run reports: obtained vs reference values")
+    p_col.add_argument("--reports", required=True, metavar="DIR",
+                       help="directory holding the *%s files" % REPORT_SUFFIX)
+    p_col.add_argument("--format", choices=("table", "json"), default="table",
+                       help="table (default) or the raw merged JSON")
+    p_col.add_argument("--no-table", action="store_true",
+                       help="suppress the table (e.g. when only the "
+                            "paste-ready blocks are wanted)")
+    p_col.add_argument("--suggest", action="store_true",
+                       help="also print a paste-ready 'checks' block per case")
+    p_col.add_argument("--update-manifests", action="store_true",
+                       help="write the obtained values into the test.json "
+                            "files as the new reference values")
+    p_col.add_argument("--dry-run", action="store_true",
+                       help="with --update-manifests: report what would "
+                            "change without writing")
+    p_col.add_argument("--base", default=None, metavar="DIR",
+                       help="tests/CI_test directory to update (default: the "
+                            "one this script lives in); used when the reports "
+                            "come from another machine")
+
     sub.add_parser("selftest", help="run the runner's own unit tests")
     return parser
 
@@ -1334,7 +2018,7 @@ def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     # Anything that is not a recognised subcommand means "run tests":
     # `champ_test_runner.py VMC-H2` works without ceremony.
-    known = ("test", "list", "run", "suggest", "selftest")
+    known = ("test", "list", "run", "collect", "suggest", "selftest")
     if not argv or (argv[0] not in known
                     and argv[0] not in ("-h", "--help")):
         argv.insert(0, "test")
@@ -1354,6 +2038,8 @@ def main(argv=None):
             return list_cases(args)
         if args.mode == "run":
             return run_case(args)
+        if args.mode == "collect":
+            return collect(args)
         if args.mode == "suggest":
             return suggest(args)
         if args.mode == "selftest":

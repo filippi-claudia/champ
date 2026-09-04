@@ -90,5 +90,18 @@ jobs:
             -DQMCKL_LIBRARY=$HOME/lib/libqmckl.so
 
           cmake --build build -- -j$(nproc)
+
+      - name: Run the QMCKL tests
+        run: |
+          export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           cd build
           ctest --output-on-failure --no-tests=error -j "$(nproc)" -L "QMCKL"
+
+      # Runs whether or not ctest passed: its purpose is to show, for every
+      # case, the value this runner produced next to the reference it was
+      # compared against.  Reporting only -- the manifests are not touched.
+      - name: Report the obtained values and the references they imply
+        if: always()
+        uses: ./.github/actions/champ-test-values
+        with:
+          artifact-name: champ-reference-values-qmckl

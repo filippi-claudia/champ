@@ -1,0 +1,66 @@
+name: CHAMP CI test values
+description: >-
+  Publish the value every CI check obtained next to the reference it was
+  compared against -- for the cases that passed as well as the ones that
+  failed. Reports only: the manifests in the checkout are never touched.
+  Refreshing the references is a separate, deliberate step, done once from
+  the reports of a chosen run (see tests/CI_test/README.md).
+
+inputs:
+  reports:
+    description: Directory holding the per-case *.report.json files
+    required: false
+    default: build/tests/CI_test/reports
+  artifact-name:
+    description: Name of the artifact carrying the measured values
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Obtained values of every check
+      shell: bash
+      run: |
+        set -o pipefail
+        python3 tests/CI_test/champ_test_runner.py collect \
+          --reports "${{ inputs.reports }}" | tee champ-obtained-values.txt
+        {
+          echo "### CHAMP CI &mdash; obtained values (${{ inputs.artifact-name }})"
+          echo ""
+          echo '```'
+          cat champ-obtained-values.txt
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+
+    # The same numbers shaped as manifest "checks" blocks, for the day the
+    # references are rebased on a run of this toolchain.
+    - name: Reference values this run would imply
+      id: values
+      shell: bash
+      run: |
+        python3 tests/CI_test/champ_test_runner.py collect \
+          --reports "${{ inputs.reports }}" --no-table --suggest \
+          > champ-suggested-references.txt
+        cat champ-suggested-references.txt
+        mkdir -p champ-reports
+        cp "${{ inputs.reports }}"/*.report.json champ-reports/ 2>/dev/null || true
+        # No reports means no case ran (the build failed, or every test was
+        # filtered out); an artifact of two "nothing measured" files would
+        # only be noise, so say so and skip the upload.
+        if [ -n "$(ls -A champ-reports 2>/dev/null)" ]; then
+          echo "measured=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "measured=false" >> "$GITHUB_OUTPUT"
+          echo "no case reported values; nothing to upload"
+        fi
+
+    - name: Upload the measured values
+      if: steps.values.outputs.measured == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        if-no-files-found: warn
+        path: |
+          champ-obtained-values.txt
+          champ-suggested-references.txt
+          champ-reports/

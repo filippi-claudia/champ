@@ -97,6 +97,118 @@ compiler, different flags or a different rank count samples differently.
 This is why every reference carries an error bar and why per-rank-count
 cases (`np1`, `np2`) have separate references.
 
+## Seeing the numbers of a run
+
+Every case writes a JSON report of what it measured -- obtained value,
+error bar, the reference it was compared against and the deviation in
+sigma -- for the checks that passed as well as the ones that failed.
+ctest writes them to `build/tests/CI_test/reports/`; `collect` turns the
+whole run into one table:
+
+```bash
+ctest --test-dir build --output-on-failure --no-tests=error -j "$(nproc)"
+tests/CI_test/champ_test_runner.py collect --reports build/tests/CI_test/reports
+```
+
+```
+test/case               check           obtained                 reference                sigma  verdict
+----------------------  --------------  -----------------------  -----------------------  -----  -------
+VMC-H2/energy-np1       total E         -1.0046458 +- 0.0084583  -1.0046458 +- 0.0084583  0.00   PASS
+VMC-H2/corsamp-np1      total E         -0.9781120 +- 0.0102988  -0.9923642 +- 0.0102988  0.98   PASS
+```
+
+Interactive runs collect the same reports with `--report-dir`:
+
+```bash
+tests/CI_test/champ_test_runner.py all --report-dir reports
+tests/CI_test/champ_test_runner.py collect --reports reports
+```
+
+### From a GitHub Actions run
+
+ctest prints a test's output only when it fails, so a green run -- or a
+`policy: "warn"` check that drifted without failing -- would otherwise
+show no numbers at all. Every workflow that runs the CI tests therefore
+calls `.github/actions/champ-test-values` after ctest with
+`if: always()`. It **reports only**; it never edits the manifests. The
+table appears in the job summary, and the job uploads an artifact
+`champ-reference-values-<toolchain>`:
+
+| file | contents |
+| ---- | -------- |
+| `champ-obtained-values.txt` | the table above |
+| `champ-suggested-references.txt` | the same numbers as paste-ready `checks` blocks, per case |
+| `champ-reports/*.report.json` | the raw per-case reports |
+
+### Runs that abort
+
+`fatal_error` (`src/module/m_error.f90`) writes `Fatal error: <msg>` to the
+output and error files and then calls `mpi_abort(..., 0, ...)` -- **with
+abort code 0**. An aborted run therefore exits with status 0 and cannot be
+told apart from a successful one by exit code alone, while the output file
+it leaves behind is partial: the last `total E` is an intermediate
+optimisation step, not a result.
+
+The runner scans both files for that marker after every run. When it is
+present the case reports the abort message and the tails of both files,
+and **no value from the run is compared** -- otherwise a dead calculation
+is reported as a plausible-looking sigma deviation against the reference,
+which sends you looking for a physics change that is not there.
+
+Whether a dead run fails the suite follows the case's own declaration,
+and this applies to both ways a run can die -- a non-zero exit status and
+an abort that still exits 0. A case whose every check is `policy: "warn"`
+(the manifest equivalent of the historical `--no_assert`) reports
+`RESULT: WARN` and does not turn the job red, exactly as it would for a
+value deviation; the failure is still printed and recorded in the JSON
+report. A case with any check that can fail treats it as a hard failure.
+
+## Refreshing the references
+
+The references are the numbers a converged run produces; an algorithm
+change (a different SR update, a new sampling scheme) moves them, and
+they then have to be rebased **once**, deliberately, by hand -- not by
+CI, which would otherwise silently re-baseline whatever it measured on
+whichever runner ran last.
+
+Do it from the reports of one chosen run. Those may come from a GitHub
+Actions job, which is the case when the tests pass locally but not on the
+runners:
+
+```bash
+gh run download <run-id> -n champ-reference-values-intel -D ci-values
+tests/CI_test/champ_test_runner.py collect --reports ci-values/champ-reports \
+    --update-manifests --dry-run       # what would change
+tests/CI_test/champ_test_runner.py collect --reports ci-values/champ-reports \
+    --update-manifests                 # write it
+git diff tests/CI_test                 # review before committing
+```
+
+or from a local run:
+
+```bash
+tests/CI_test/champ_test_runner.py all --report-dir reports
+tests/CI_test/champ_test_runner.py collect --reports reports --update-manifests
+```
+
+Only the `value` and `error` of each check are rewritten; comments,
+policies, key order and formatting stay as they are, so the diff is
+exactly the numbers that moved. A check whose `match` or `type` no longer
+agrees with what the run measured is reported and left alone. Reports
+carry the absolute manifest path of the machine that produced them and
+fall back to the test folder name in this checkout (or in `--base DIR`),
+so reports downloaded from a runner update the right files.
+
+To transcribe values by hand instead, `--suggest` prints the paste-ready
+`checks` blocks (this is what `champ-suggested-references.txt` holds).
+
+Two things to weigh before committing a rebase: references are
+toolchain-dependent samples, so adopting one runner's values can push
+another toolchain outside the 2-sigma window -- check the other jobs'
+tables. And a test-length run has a wide error bar; a reference from a
+long, well-converged run is worth more. Checks that are genuinely noisy
+belong under `policy: "warn"` rather than in a repeated rebase.
+
 ## Adding a new test
 
 1. Create a folder with the CHAMP input files (`.inp`, wave function,
@@ -246,3 +358,14 @@ tests/CI_test/champ_test_runner.py list tests/CI_test/*/test.json
 The runner's own logic is covered by `ctest -R runner-selftest`
 (equivalently `champ_test_runner.py selftest`); no CHAMP binaries
 needed.
+
+## Subcommands
+
+| subcommand | purpose |
+| ---------- | ------- |
+| *(none)* | run test folders interactively (`champ_test_runner.py VMC-H2`) |
+| `list` | validate manifests and enumerate cases (used by CMake) |
+| `run` | run one case in a given scratch dir (used by ctest); `--report FILE` dumps the obtained values |
+| `collect` | aggregate reports into a table; `--update-manifests` rebases the references on them (a manual step, never run by CI) |
+| `suggest` | paste-ready `checks` block for one case from its scratch dir |
+| `selftest` | the runner's own unit tests |

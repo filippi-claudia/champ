@@ -24,8 +24,8 @@
           "type": "value",
           "file": "vmc_optimization_5000_core_1.out",
           "match": "total E",
-          "value": -26.2325355,
-          "error": 0.020055
+          "value": -26.2482433,
+          "error": 0.022257
         }
       ]
     },
@@ -44,8 +44,8 @@
           "type": "value",
           "file": "vmc_optimization_5000_core_2.out",
           "match": "total E",
-          "value": -26.2078087,
-          "error": 0.0143435
+          "value": -26.2239534,
+          "error": 0.0150689
         }
       ]
     }
