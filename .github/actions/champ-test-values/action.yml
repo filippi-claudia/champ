@@ -1,9 +1,10 @@
 name: CHAMP CI test values
 description: >-
-  Print the value every CI check obtained next to the reference it was
+  Publish the value every CI check obtained next to the reference it was
   compared against -- for the cases that passed as well as the ones that
-  failed -- and publish the obtained values as ready-to-commit test.json
-  manifests, so references can be refreshed straight from a CI run.
+  failed. Reports only: the manifests in the checkout are never touched.
+  Refreshing the references is a separate, deliberate step, done once from
+  the reports of a chosen run (see tests/CI_test/README.md).
 
 inputs:
   reports:
@@ -11,7 +12,7 @@ inputs:
     required: false
     default: build/tests/CI_test/reports
   artifact-name:
-    description: Name of the artifact carrying the updated references
+    description: Name of the artifact carrying the measured values
     required: true
 
 runs:
@@ -31,25 +32,19 @@ runs:
           echo '```'
         } >> "$GITHUB_STEP_SUMMARY"
 
-    # Writes the obtained values into tests/CI_test/*/test.json and turns the
-    # result into a patch: `git apply champ-reference-updates.patch` adopts
-    # exactly the numbers this runner produced.
-    - name: Reference values measured by this run
+    # The same numbers shaped as manifest "checks" blocks, for the day the
+    # references are rebased on a run of this toolchain.
+    - name: Reference values this run would imply
       shell: bash
       run: |
         python3 tests/CI_test/champ_test_runner.py collect \
           --reports "${{ inputs.reports }}" --no-table --suggest \
-          --update-manifests > champ-suggested-references.txt
+          > champ-suggested-references.txt
         cat champ-suggested-references.txt
-        git diff -- tests/CI_test > champ-reference-updates.patch || true
-        if [ -s champ-reference-updates.patch ]; then
-          echo "::notice::CI values differ from the stored references; the '${{ inputs.artifact-name }}' artifact carries the updated test.json files and a patch"
-          cat champ-reference-updates.patch
-        else
-          echo "the stored references already match this run"
-        fi
+        mkdir -p champ-reports
+        cp "${{ inputs.reports }}"/*.report.json champ-reports/ 2>/dev/null || true
 
-    - name: Upload the updated references
+    - name: Upload the measured values
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.artifact-name }}
@@ -57,6 +52,4 @@ runs:
         path: |
           champ-obtained-values.txt
           champ-suggested-references.txt
-          champ-reference-updates.patch
-          tests/CI_test/*/test.json
-          ${{ inputs.reports }}
+          champ-reports/

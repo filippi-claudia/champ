@@ -97,7 +97,7 @@ compiler, different flags or a different rank count samples differently.
 This is why every reference carries an error bar and why per-rank-count
 cases (`np1`, `np2`) have separate references.
 
-## Seeing the numbers, and refreshing the references
+## Seeing the numbers of a run
 
 Every case writes a JSON report of what it measured -- obtained value,
 error bar, the reference it was compared against and the deviation in
@@ -124,52 +124,67 @@ tests/CI_test/champ_test_runner.py all --report-dir reports
 tests/CI_test/champ_test_runner.py collect --reports reports
 ```
 
-When an algorithm change moves the results (a different SR update, a new
-sampling scheme), the obtained values *are* the new references. Write
-them into the manifests with
-
-```bash
-tests/CI_test/champ_test_runner.py collect --reports reports \
-    --update-manifests        # add --dry-run to see what would change
-```
-
-Only the `value` and `error` of each check are rewritten; comments,
-policies and formatting stay as they are, so `git diff tests/CI_test`
-shows exactly which numbers moved. A check whose `match` or `type` no
-longer agrees with what the run measured is reported and left alone.
-`--suggest` prints the same numbers as paste-ready `checks` blocks
-instead, one per case.
-
 ### From a GitHub Actions run
 
-The workflows run this after ctest, whether or not the tests passed
-(`.github/actions/champ-test-values`), so a red run tells you what the
-runner actually produced. The table appears in the job summary, and each
-job uploads an artifact `champ-reference-values-<toolchain>` containing
+ctest prints a test's output only when it fails, so a green run -- or a
+`policy: "warn"` check that drifted without failing -- would otherwise
+show no numbers at all. Every workflow that runs the CI tests therefore
+calls `.github/actions/champ-test-values` after ctest with
+`if: always()`. It **reports only**; it never edits the manifests. The
+table appears in the job summary, and the job uploads an artifact
+`champ-reference-values-<toolchain>`:
 
 | file | contents |
 | ---- | -------- |
 | `champ-obtained-values.txt` | the table above |
-| `champ-suggested-references.txt` | paste-ready `checks` blocks per case |
-| `champ-reference-updates.patch` | the manifest diff, apply with `git apply` |
-| `tests/CI_test/*/test.json` | the manifests with the CI values already in |
-| `reports/*.report.json` | the raw per-case reports |
+| `champ-suggested-references.txt` | the same numbers as paste-ready `checks` blocks, per case |
+| `champ-reports/*.report.json` | the raw per-case reports |
 
-To adopt the values of a CI run, download the artifact and
+## Refreshing the references
+
+The references are the numbers a converged run produces; an algorithm
+change (a different SR update, a new sampling scheme) moves them, and
+they then have to be rebased **once**, deliberately, by hand -- not by
+CI, which would otherwise silently re-baseline whatever it measured on
+whichever runner ran last.
+
+Do it from the reports of one chosen run. Those may come from a GitHub
+Actions job, which is the case when the tests pass locally but not on the
+runners:
 
 ```bash
-git apply champ-reference-updates.patch
+gh run download <run-id> -n champ-reference-values-intel -D ci-values
+tests/CI_test/champ_test_runner.py collect --reports ci-values/champ-reports \
+    --update-manifests --dry-run       # what would change
+tests/CI_test/champ_test_runner.py collect --reports ci-values/champ-reports \
+    --update-manifests                 # write it
+git diff tests/CI_test                 # review before committing
 ```
 
-or re-run `collect --update-manifests` locally against the downloaded
-`reports/` directory: reports carry the absolute manifest path of the
-machine that produced them, and `collect` falls back to the test folder
-name in this checkout (or in `--base DIR`) when that path does not exist.
+or from a local run:
 
-References remain toolchain-dependent samples: adopting the values of one
-runner can push another toolchain outside the 2-sigma window. Prefer
-references from a long, well-converged run, and mark genuinely noisy
-checks `policy: "warn"`.
+```bash
+tests/CI_test/champ_test_runner.py all --report-dir reports
+tests/CI_test/champ_test_runner.py collect --reports reports --update-manifests
+```
+
+Only the `value` and `error` of each check are rewritten; comments,
+policies, key order and formatting stay as they are, so the diff is
+exactly the numbers that moved. A check whose `match` or `type` no longer
+agrees with what the run measured is reported and left alone. Reports
+carry the absolute manifest path of the machine that produced them and
+fall back to the test folder name in this checkout (or in `--base DIR`),
+so reports downloaded from a runner update the right files.
+
+To transcribe values by hand instead, `--suggest` prints the paste-ready
+`checks` blocks (this is what `champ-suggested-references.txt` holds).
+
+Two things to weigh before committing a rebase: references are
+toolchain-dependent samples, so adopting one runner's values can push
+another toolchain outside the 2-sigma window -- check the other jobs'
+tables. And a test-length run has a wide error bar; a reference from a
+long, well-converged run is worth more. Checks that are genuinely noisy
+belong under `policy: "warn"` rather than in a repeated rebase.
 
 ## Adding a new test
 
@@ -328,6 +343,6 @@ needed.
 | *(none)* | run test folders interactively (`champ_test_runner.py VMC-H2`) |
 | `list` | validate manifests and enumerate cases (used by CMake) |
 | `run` | run one case in a given scratch dir (used by ctest); `--report FILE` dumps the obtained values |
-| `collect` | aggregate reports into a table, and `--update-manifests` writes the obtained values back as references |
+| `collect` | aggregate reports into a table; `--update-manifests` rebases the references on them (a manual step, never run by CI) |
 | `suggest` | paste-ready `checks` block for one case from its scratch dir |
 | `selftest` | the runner's own unit tests |
