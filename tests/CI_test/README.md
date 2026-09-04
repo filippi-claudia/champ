@@ -155,11 +155,13 @@ and **no value from the run is compared** -- otherwise a dead calculation
 is reported as a plausible-looking sigma deviation against the reference,
 which sends you looking for a physics change that is not there.
 
-Whether that fails the suite follows the case's own declaration: a case
-whose every check is `policy: "warn"` (the manifest equivalent of the
-historical `--no_assert`) reports `RESULT: WARN` and does not turn the job
-red, exactly as it would for a value deviation. A case with any check that
-can fail treats an abort as a hard failure.
+Whether a dead run fails the suite follows the case's own declaration,
+and this applies to both ways a run can die -- a non-zero exit status and
+an abort that still exits 0. A case whose every check is `policy: "warn"`
+(the manifest equivalent of the historical `--no_assert`) reports
+`RESULT: WARN` and does not turn the job red, exactly as it would for a
+value deviation; the failure is still printed and recorded in the JSON
+report. A case with any check that can fail treats it as a hard failure.
 
 ## Refreshing the references
 

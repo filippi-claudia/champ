@@ -1081,13 +1081,16 @@ def scan_fatal(path):
 
 
 def abort_is_fatal(case):
-    """Whether an aborted run should fail the suite for this case.
+    """Whether a run that died should fail the suite for this case.
+
+    Covers both ways a run can die: a non-zero exit status, and an abort
+    that still exits 0 (CHAMP's fatal_error calls mpi_abort with code 0).
 
     A case whose every check is policy "warn" is the manifest equivalent
     of the historical --no_assert: the maintainer has declared that this
-    test must not fail the suite.  An abort is still reported -- loudly,
+    test must not fail the suite.  The death is still reported -- loudly,
     and in the JSON report -- but it does not turn the job red.  Any check
-    that can fail makes an abort a hard failure."""
+    that can fail makes it a hard failure."""
     policies = [c.get("policy", "fail") for c in case.get("checks", [])]
     return not (policies and all(p == "warn" for p in policies))
 
@@ -1218,16 +1221,23 @@ def run_case(args):
             write_report(report_path, report)
             return 1 if hard else 0
         if proc.returncode != 0:
+            hard = abort_is_fatal(case)
+            if not hard:
+                print("[run %d/%d] every check here is policy 'warn' "
+                      "(--no_assert), so this is reported without failing "
+                      "the suite" % (i, len(case["runs"])))
             print("---- tail of %s ----" % run["output"])
             for line in _tail(os.path.join(scratch, run["output"])):
                 print("  " + line)
             print("---- tail of %s ----" % err_name)
             for line in _tail(os.path.join(scratch, err_name)):
                 print("  " + line)
-            print("RESULT: FAIL (program exited with %d)" % proc.returncode)
             report["error"] = "program exited with %d" % proc.returncode
+            report["result"] = "FAIL" if hard else "WARN"
+            print("RESULT: %s (program exited with %d)"
+                  % (report["result"], proc.returncode))
             write_report(report_path, report)
-            return 1
+            return 1 if hard else 0
         apply_ops(scratch, run.get("after", []), "after")
 
     print("-" * 72)
