@@ -150,10 +150,16 @@ it leaves behind is partial: the last `total E` is an intermediate
 optimisation step, not a result.
 
 The runner scans both files for that marker after every run. When it is
-present the case fails with the abort message and the tails of both files,
+present the case reports the abort message and the tails of both files,
 and **no value from the run is compared** -- otherwise a dead calculation
 is reported as a plausible-looking sigma deviation against the reference,
 which sends you looking for a physics change that is not there.
+
+Whether that fails the suite follows the case's own declaration: a case
+whose every check is `policy: "warn"` (the manifest equivalent of the
+historical `--no_assert`) reports `RESULT: WARN` and does not turn the job
+red, exactly as it would for a value deviation. A case with any check that
+can fail treats an abort as a hard failure.
 
 ## Refreshing the references
 

@@ -1080,6 +1080,18 @@ def scan_fatal(path):
     return None
 
 
+def abort_is_fatal(case):
+    """Whether an aborted run should fail the suite for this case.
+
+    A case whose every check is policy "warn" is the manifest equivalent
+    of the historical --no_assert: the maintainer has declared that this
+    test must not fail the suite.  An abort is still reported -- loudly,
+    and in the JSON report -- but it does not turn the job red.  Any check
+    that can fail makes an abort a hard failure."""
+    policies = [c.get("policy", "fail") for c in case.get("checks", [])]
+    return not (policies and all(p == "warn" for p in policies))
+
+
 def _tail(path, n=40):
     try:
         with open(path, "r", errors="replace") as fh:
@@ -1187,19 +1199,24 @@ def run_case(args):
         fatal = (scan_fatal(os.path.join(scratch, run["output"]))
                  or scan_fatal(os.path.join(scratch, err_name)))
         if proc.returncode == 0 and fatal:
+            hard = abort_is_fatal(case)
             print("[run %d/%d] the program aborted despite exit code 0:"
                   % (i, len(case["runs"])))
             print("    %s" % fatal)
             print("    its output is partial, so no value from it is compared")
+            if not hard:
+                print("    every check here is policy 'warn' (--no_assert), so "
+                      "this is reported without failing the suite")
             for name in (run["output"], err_name):
                 print("---- tail of %s ----" % name)
                 for line in _tail(os.path.join(scratch, name), 20):
                     print("  " + line)
             report["runs"][-1]["fatal"] = fatal
             report["error"] = fatal
-            print("RESULT: FAIL (%s)" % fatal)
+            report["result"] = "FAIL" if hard else "WARN"
+            print("RESULT: %s (%s)" % (report["result"], fatal))
             write_report(report_path, report)
-            return 1
+            return 1 if hard else 0
         if proc.returncode != 0:
             print("---- tail of %s ----" % run["output"])
             for line in _tail(os.path.join(scratch, run["output"])):
@@ -1567,6 +1584,26 @@ def selftest(_args):
             self.assertEqual(value, -1.0046458)
             self.assertIsNotNone(scan_fatal(path))
 
+    class AbortPolicy(unittest.TestCase):
+        """An abort respects the case's declared tolerance."""
+
+        def _case(self, *policies):
+            return {"name": "np1", "checks":
+                    [{"type": "value", "policy": p} if p else {"type": "value"}
+                     for p in policies]}
+
+        def test_all_warn_is_not_fatal(self):
+            self.assertFalse(abort_is_fatal(self._case("warn")))
+            self.assertFalse(abort_is_fatal(self._case("warn", "warn")))
+
+        def test_any_failing_check_makes_it_fatal(self):
+            self.assertTrue(abort_is_fatal(self._case(None)))
+            self.assertTrue(abort_is_fatal(self._case("warn", None)))
+            self.assertTrue(abort_is_fatal(self._case("fail", "warn")))
+
+        def test_case_without_checks_is_fatal(self):
+            self.assertTrue(abort_is_fatal({"name": "np1", "checks": []}))
+
     class Reporting(unittest.TestCase):
         """The report -> table -> manifest path used to refresh references."""
 
@@ -1751,7 +1788,7 @@ def selftest(_args):
     suite = unittest.TestSuite()
     loader = unittest.TestLoader()
     for cls in (Extraction, ValueCheck, ForcesCheck, Ops, FatalAbort,
-                Reporting, Schema,
+                AbortPolicy, Reporting, Schema,
                 InteractiveDefaults):
         suite.addTests(loader.loadTestsFromTestCase(cls))
     runner = unittest.TextTestRunner(verbosity=2)
