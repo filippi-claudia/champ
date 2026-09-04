@@ -119,6 +119,15 @@ jobs:
         ctest --test-dir build --output-on-failure --no-tests=error -j "$(nproc)" \
           -L "${{ github.event.inputs.tags || 'quick' }}"
 
+    # Runs whether or not ctest passed: its purpose is to show, for every
+    # case, the value the run produced next to the reference it was
+    # compared against, and to publish those values as updated manifests.
+    - name: Report the obtained values and the references they imply
+      if: always()
+      uses: ./.github/actions/champ-test-values
+      with:
+        artifact-name: champ-reference-values-${{ matrix.toolchain }}-${{ matrix.mode }}
+
 
 
 

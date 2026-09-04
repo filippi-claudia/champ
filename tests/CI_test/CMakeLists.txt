@@ -30,6 +30,13 @@ set(CHAMP_TEST_VMC_BINARY "$<TARGET_FILE:vmc.mov1>" CACHE STRING
 set(CHAMP_TEST_DMC_BINARY "$<TARGET_FILE:dmc.mov1>" CACHE STRING
     "dmc.mov1 binary exercised by the CI tests (default: this build's)")
 
+# Every case writes a JSON report of the values it obtained, whether it
+# passes or fails; `champ_test_runner.py collect --reports <dir>` turns the
+# lot into one table and can write the obtained values back into the
+# manifests as new references (see README.md, "Refreshing the references").
+set(CHAMP_TEST_REPORT_DIR "${CMAKE_CURRENT_BINARY_DIR}/reports" CACHE PATH
+    "Directory collecting the per-case reports of obtained values")
+
 # A quick sanity test of the runner itself (no CHAMP binaries needed).
 add_test(NAME runner-selftest
          COMMAND ${Python3_EXECUTABLE} ${CHAMP_TEST_RUNNER} selftest)
@@ -103,6 +110,7 @@ foreach(_line IN LISTS _champ_case_lines)
                    --manifest "${_manifest}"
                    --case "${_case}"
                    --scratch "${CMAKE_CURRENT_BINARY_DIR}/scratch/${_folder}/${_case}"
+                   --report "${CHAMP_TEST_REPORT_DIR}/${_folder}__${_case}.report.json"
                    --vmc "${CHAMP_TEST_VMC_BINARY}"
                    --dmc "${CHAMP_TEST_DMC_BINARY}"
                    --mpiexec "${CHAMP_TEST_MPIEXEC}"
@@ -126,6 +134,7 @@ foreach(_line IN LISTS _champ_note_lines)
 endforeach()
 
 message(STATUS "CHAMP CI tests                   :: ${_n_added} cases registered")
+message(STATUS "CHAMP CI test reports            :: ${CHAMP_TEST_REPORT_DIR}")
 if(_n_skipped GREATER 0)
   message(STATUS "CHAMP CI tests skipped           :: ${_n_skipped} (missing features in this build)")
   foreach(_entry IN LISTS _skipped)

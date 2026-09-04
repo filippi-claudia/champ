@@ -97,6 +97,80 @@ compiler, different flags or a different rank count samples differently.
 This is why every reference carries an error bar and why per-rank-count
 cases (`np1`, `np2`) have separate references.
 
+## Seeing the numbers, and refreshing the references
+
+Every case writes a JSON report of what it measured -- obtained value,
+error bar, the reference it was compared against and the deviation in
+sigma -- for the checks that passed as well as the ones that failed.
+ctest writes them to `build/tests/CI_test/reports/`; `collect` turns the
+whole run into one table:
+
+```bash
+ctest --test-dir build --output-on-failure --no-tests=error -j "$(nproc)"
+tests/CI_test/champ_test_runner.py collect --reports build/tests/CI_test/reports
+```
+
+```
+test/case               check           obtained                 reference                sigma  verdict
+----------------------  --------------  -----------------------  -----------------------  -----  -------
+VMC-H2/energy-np1       total E         -1.0046458 +- 0.0084583  -1.0046458 +- 0.0084583  0.00   PASS
+VMC-H2/corsamp-np1      total E         -0.9781120 +- 0.0102988  -0.9923642 +- 0.0102988  0.98   PASS
+```
+
+Interactive runs collect the same reports with `--report-dir`:
+
+```bash
+tests/CI_test/champ_test_runner.py all --report-dir reports
+tests/CI_test/champ_test_runner.py collect --reports reports
+```
+
+When an algorithm change moves the results (a different SR update, a new
+sampling scheme), the obtained values *are* the new references. Write
+them into the manifests with
+
+```bash
+tests/CI_test/champ_test_runner.py collect --reports reports \
+    --update-manifests        # add --dry-run to see what would change
+```
+
+Only the `value` and `error` of each check are rewritten; comments,
+policies and formatting stay as they are, so `git diff tests/CI_test`
+shows exactly which numbers moved. A check whose `match` or `type` no
+longer agrees with what the run measured is reported and left alone.
+`--suggest` prints the same numbers as paste-ready `checks` blocks
+instead, one per case.
+
+### From a GitHub Actions run
+
+The workflows run this after ctest, whether or not the tests passed
+(`.github/actions/champ-test-values`), so a red run tells you what the
+runner actually produced. The table appears in the job summary, and each
+job uploads an artifact `champ-reference-values-<toolchain>` containing
+
+| file | contents |
+| ---- | -------- |
+| `champ-obtained-values.txt` | the table above |
+| `champ-suggested-references.txt` | paste-ready `checks` blocks per case |
+| `champ-reference-updates.patch` | the manifest diff, apply with `git apply` |
+| `tests/CI_test/*/test.json` | the manifests with the CI values already in |
+| `reports/*.report.json` | the raw per-case reports |
+
+To adopt the values of a CI run, download the artifact and
+
+```bash
+git apply champ-reference-updates.patch
+```
+
+or re-run `collect --update-manifests` locally against the downloaded
+`reports/` directory: reports carry the absolute manifest path of the
+machine that produced them, and `collect` falls back to the test folder
+name in this checkout (or in `--base DIR`) when that path does not exist.
+
+References remain toolchain-dependent samples: adopting the values of one
+runner can push another toolchain outside the 2-sigma window. Prefer
+references from a long, well-converged run, and mark genuinely noisy
+checks `policy: "warn"`.
+
 ## Adding a new test
 
 1. Create a folder with the CHAMP input files (`.inp`, wave function,
@@ -246,3 +320,14 @@ tests/CI_test/champ_test_runner.py list tests/CI_test/*/test.json
 The runner's own logic is covered by `ctest -R runner-selftest`
 (equivalently `champ_test_runner.py selftest`); no CHAMP binaries
 needed.
+
+## Subcommands
+
+| subcommand | purpose |
+| ---------- | ------- |
+| *(none)* | run test folders interactively (`champ_test_runner.py VMC-H2`) |
+| `list` | validate manifests and enumerate cases (used by CMake) |
+| `run` | run one case in a given scratch dir (used by ctest); `--report FILE` dumps the obtained values |
+| `collect` | aggregate reports into a table, and `--update-manifests` writes the obtained values back as references |
+| `suggest` | paste-ready `checks` block for one case from its scratch dir |
+| `selftest` | the runner's own unit tests |

@@ -54,7 +54,7 @@ jobs:
           which python
           python --version
 
-      - name: Compile the CHAMP code using Intel and run all tests
+      - name: Compile the CHAMP code using Intel
         run: |
           source /opt/intel/oneapi/setvars.sh
           set -e
@@ -71,6 +71,20 @@ jobs:
             -DENABLE_QMCKL=OFF
 
           cmake --build build -- -j2
+
+      - name: Run all tests
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          set -e
           cd build
           export PATH="/usr/bin:$PATH"
           ctest --output-on-failure --no-tests=error -j "$(nproc)" -LE "(TREXIO|QMCKL)"
+
+      # Runs whether or not ctest passed: its purpose is to show, for every
+      # case, the value the run produced next to the reference it was
+      # compared against, and to publish those values as updated manifests.
+      - name: Report the obtained values and the references they imply
+        if: always()
+        uses: ./.github/actions/champ-test-values
+        with:
+          artifact-name: champ-reference-values-intel

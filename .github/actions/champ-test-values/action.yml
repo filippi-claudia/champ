@@ -1,0 +1,62 @@
+name: CHAMP CI test values
+description: >-
+  Print the value every CI check obtained next to the reference it was
+  compared against -- for the cases that passed as well as the ones that
+  failed -- and publish the obtained values as ready-to-commit test.json
+  manifests, so references can be refreshed straight from a CI run.
+
+inputs:
+  reports:
+    description: Directory holding the per-case *.report.json files
+    required: false
+    default: build/tests/CI_test/reports
+  artifact-name:
+    description: Name of the artifact carrying the updated references
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Obtained values of every check
+      shell: bash
+      run: |
+        set -o pipefail
+        python3 tests/CI_test/champ_test_runner.py collect \
+          --reports "${{ inputs.reports }}" | tee champ-obtained-values.txt
+        {
+          echo "### CHAMP CI &mdash; obtained values (${{ inputs.artifact-name }})"
+          echo ""
+          echo '```'
+          cat champ-obtained-values.txt
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+
+    # Writes the obtained values into tests/CI_test/*/test.json and turns the
+    # result into a patch: `git apply champ-reference-updates.patch` adopts
+    # exactly the numbers this runner produced.
+    - name: Reference values measured by this run
+      shell: bash
+      run: |
+        python3 tests/CI_test/champ_test_runner.py collect \
+          --reports "${{ inputs.reports }}" --no-table --suggest \
+          --update-manifests > champ-suggested-references.txt
+        cat champ-suggested-references.txt
+        git diff -- tests/CI_test > champ-reference-updates.patch || true
+        if [ -s champ-reference-updates.patch ]; then
+          echo "::notice::CI values differ from the stored references; the '${{ inputs.artifact-name }}' artifact carries the updated test.json files and a patch"
+          cat champ-reference-updates.patch
+        else
+          echo "the stored references already match this run"
+        fi
+
+    - name: Upload the updated references
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        if-no-files-found: warn
+        path: |
+          champ-obtained-values.txt
+          champ-suggested-references.txt
+          champ-reference-updates.patch
+          tests/CI_test/*/test.json
+          ${{ inputs.reports }}
