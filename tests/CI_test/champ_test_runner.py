@@ -68,6 +68,13 @@ DEFAULT_TIMEOUT = 1500          # seconds, mirrors the ctest default
 DEFAULT_NSIGMA = 2.0
 DEFAULT_ERROR_FILE = "error"
 
+# src/module/m_error.f90 writes this prefix to BOTH the output and the error
+# unit and then calls mpi_abort(..., 0, ...) -- an aborted run therefore exits
+# with status 0 and is indistinguishable from a successful one by exit code
+# alone.  Without this marker the runner would compare whatever partial
+# numbers the dead run had already printed.
+FATAL_MARKER = "Fatal error:"
+
 TOP_KEYS = {
     "description": str,
     "labels": list,
@@ -1055,6 +1062,24 @@ def update_manifests(reports, base=None, dry_run=False):
 # Running
 # ----------------------------------------------------------------------
 
+def scan_fatal(path):
+    """First 'Fatal error:' line in `path`, or None.
+
+    CHAMP aborts with MPI code 0 (see m_error.f90), so a run that died
+    mid-calculation still reports exit status 0.  The output it leaves
+    behind is partial: the last 'total E' is some intermediate
+    optimisation step, not a result, and comparing it against a reference
+    yields a meaningless sigma deviation instead of an error."""
+    try:
+        with open(path, "r", errors="replace") as fh:
+            for raw in fh:
+                if FATAL_MARKER in raw:
+                    return raw.strip()
+    except OSError:
+        pass
+    return None
+
+
 def _tail(path, n=40):
     try:
         with open(path, "r", errors="replace") as fh:
@@ -1150,17 +1175,35 @@ def run_case(args):
             write_report(report_path, report)
             return 1
         elapsed = time.time() - t0
+        err_name = run.get("error_output", DEFAULT_ERROR_FILE)
         report["runs"].append({
             "program": run["program"], "input": run["input"],
             "output": run["output"], "nproc": run["nproc"],
             "returncode": proc.returncode, "seconds": round(elapsed, 1)})
         print("[run %d/%d] exit code %d after %.1f s"
               % (i, len(case["runs"]), proc.returncode, elapsed))
+        # An aborted run exits 0, so the marker -- not the status -- is what
+        # tells us the numbers in the output file are not a result.
+        fatal = (scan_fatal(os.path.join(scratch, run["output"]))
+                 or scan_fatal(os.path.join(scratch, err_name)))
+        if proc.returncode == 0 and fatal:
+            print("[run %d/%d] the program aborted despite exit code 0:"
+                  % (i, len(case["runs"])))
+            print("    %s" % fatal)
+            print("    its output is partial, so no value from it is compared")
+            for name in (run["output"], err_name):
+                print("---- tail of %s ----" % name)
+                for line in _tail(os.path.join(scratch, name), 20):
+                    print("  " + line)
+            report["runs"][-1]["fatal"] = fatal
+            report["error"] = fatal
+            print("RESULT: FAIL (%s)" % fatal)
+            write_report(report_path, report)
+            return 1
         if proc.returncode != 0:
             print("---- tail of %s ----" % run["output"])
             for line in _tail(os.path.join(scratch, run["output"])):
                 print("  " + line)
-            err_name = run.get("error_output", DEFAULT_ERROR_FILE)
             print("---- tail of %s ----" % err_name)
             for line in _tail(os.path.join(scratch, err_name)):
                 print("  " + line)
@@ -1482,6 +1525,48 @@ def selftest(_args):
                 self.assertEqual(fh.read(), "mc_configs_new1\nmc_configs_new2\n")
             self.assertEqual(globmod.glob(os.path.join(self.dir, "mc_configs_new*")), [])
 
+    class FatalAbort(unittest.TestCase):
+        """CHAMP aborts with mpi_abort(...,0,...), so exit status alone
+        cannot distinguish a dead run from a finished one."""
+
+        def setUp(self):
+            self.dir = tempfile.mkdtemp()
+
+        def tearDown(self):
+            shutil.rmtree(self.dir)
+
+        def _write(self, name, text):
+            path = os.path.join(self.dir, name)
+            with open(path, "w") as fh:
+                fh.write(text)
+            return path
+
+        def test_marker_found_in_partial_output(self):
+            path = self._write("o.out", VMC_SAMPLE +
+                               "MATINV: u(k,k)=0 with k=    10\n"
+                               "Fatal error: MATINV: info ne 0 in dgetrf\n")
+            self.assertEqual(scan_fatal(path),
+                             "Fatal error: MATINV: info ne 0 in dgetrf")
+
+        def test_clean_output_and_warnings_are_not_fatal(self):
+            self.assertIsNone(scan_fatal(self._write("clean.out", VMC_SAMPLE)))
+            # a successful run's error file carries warnings, not failures
+            self.assertIsNone(scan_fatal(self._write(
+                "error", "Warning:: No information about orbital symmetries\n"
+                         "INPUT: multideterminant bloc MISSING\n")))
+
+        def test_missing_file_is_not_fatal(self):
+            self.assertIsNone(scan_fatal(os.path.join(self.dir, "absent")))
+
+        def test_partial_output_still_parses_a_value(self):
+            # the reason the marker matters: extraction happily returns the
+            # last intermediate energy from a dead run
+            path = self._write("o.out", VMC_SAMPLE +
+                               "Fatal error: MATINV: info ne 0 in dgetrf\n")
+            value, _ = extract_from_file(path, "total E")
+            self.assertEqual(value, -1.0046458)
+            self.assertIsNotNone(scan_fatal(path))
+
     class Reporting(unittest.TestCase):
         """The report -> table -> manifest path used to refresh references."""
 
@@ -1665,7 +1750,8 @@ def selftest(_args):
 
     suite = unittest.TestSuite()
     loader = unittest.TestLoader()
-    for cls in (Extraction, ValueCheck, ForcesCheck, Ops, Reporting, Schema,
+    for cls in (Extraction, ValueCheck, ForcesCheck, Ops, FatalAbort,
+                Reporting, Schema,
                 InteractiveDefaults):
         suite.addTests(loader.loadTestsFromTestCase(cls))
     runner = unittest.TextTestRunner(verbosity=2)

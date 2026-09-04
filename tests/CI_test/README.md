@@ -140,6 +140,21 @@ table appears in the job summary, and the job uploads an artifact
 | `champ-suggested-references.txt` | the same numbers as paste-ready `checks` blocks, per case |
 | `champ-reports/*.report.json` | the raw per-case reports |
 
+### Runs that abort
+
+`fatal_error` (`src/module/m_error.f90`) writes `Fatal error: <msg>` to the
+output and error files and then calls `mpi_abort(..., 0, ...)` -- **with
+abort code 0**. An aborted run therefore exits with status 0 and cannot be
+told apart from a successful one by exit code alone, while the output file
+it leaves behind is partial: the last `total E` is an intermediate
+optimisation step, not a result.
+
+The runner scans both files for that marker after every run. When it is
+present the case fails with the abort message and the tails of both files,
+and **no value from the run is compared** -- otherwise a dead calculation
+is reported as a plausible-looking sigma deviation against the reference,
+which sends you looking for a physics change that is not there.
+
 ## Refreshing the references
 
 The references are the numbers a converged run produces; an algorithm
