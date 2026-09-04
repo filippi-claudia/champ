@@ -755,10 +755,10 @@ module trexio_read_data
 
         ! The following to be used to store the information
         use numbas_mod,         only: MRWF, MRWF_PTS
-        use system,               only: znuc, nctype, nctype_tot, ncent_tot
-        use system,               only: symbol, atomtyp
+        use system,             only: znuc, nctype, nctype_tot, ncent_tot
+        use system,             only: symbol, atomtyp
         use vmc_mod,            only: NCOEF
-        use system,          only: newghostype
+        use system,             only: newghostype
         use control,            only: ipr
         use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
         use numbas,             only: allocate_numbas
@@ -766,11 +766,14 @@ module trexio_read_data
         use numexp,             only: ae, ce, allocate_numexp
         use pseudo,             only: nloc
         use general,            only: filename, filenames_bas_num
+        use periodic,           only: cutr,n_images,n_images0
+        use read_bas_num_mod,   only: smooth
 
         ! For processing the stored information
         use system,             only: atomtyp
         use general,            only: pooldir, bas_id
         use contrl_file,        only: ounit, errunit
+        use contrl_per,         only: iperiodic
         use spline2_mod,        only: spline2
         use fitting_methods,    only: exp_fit
 
@@ -834,10 +837,10 @@ module trexio_read_data
         integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
         integer         :: iwf = 1
         integer         :: info
-        real(dp)        :: val, dwf1, wfm, dwfn, dwfm, temp
+        real(dp)        :: r_cutoff, val, dwf1, wfm, dwfn, dwfm, temp
 
         ! rmax cutoff
-        real(dp)                            :: cutoff_rmax = 1.0d-12
+        real(dp)        :: wf_cutoff_rmax = 1.0d-12
 
         trex_basis_file = 0
 
@@ -1142,7 +1145,7 @@ module trexio_read_data
         ! Update the rmax at the point where rwf goes below cutoff (scanning from right to left)
                 rmaxwf(irb, ic) = x(nr(ic))
                 rloop: do ir=nr(ic),1,-1
-                  if (dabs(rwf(ir,irb,ic,iwf)) .gt. cutoff_rmax ) then
+                  if (dabs(rwf(ir,irb,ic,iwf)) .gt. wf_cutoff_rmax ) then
                     rmaxwf(irb, ic) = x(ir)
                     exit rloop
                   endif
@@ -1155,7 +1158,7 @@ module trexio_read_data
                     call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
                     if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
-                    rmaxwf(irb,ic)=-dlog(cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
+                    rmaxwf(irb,ic)=-dlog(wf_cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
 
                     if (wid) then
                         write(45,'(a)') 'check the large radius expansion'
@@ -1174,6 +1177,19 @@ module trexio_read_data
                 else
                     dwfn=0.d0
                 endif
+
+                if(iperiodic.ne.0) then
+                  r_cutoff=2*cutr*(0.5+n_images0)
+                  if ((rmaxwf(irb,ic) < r_cutoff) .and. (dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10)) then
+                    r_cutoff = rmaxwf(irb,ic)
+                  end if
+        
+                  if(wid) write(45,*)'L/2 ',cutr,' cutr ',r_cutoff,' n_images0 ',n_images0
+                  call smooth(x(:),rwf(:,irb,ic,iwf),nr(ic),r_cutoff,dwfn,rmaxwf(irb, ic))
+
+                  dwfn=0.d0
+                endif
+
                 if (wid) write(45,*) 'dwf1,dwfn',dwf1,dwfn
 
                 call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
