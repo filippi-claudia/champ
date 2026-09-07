@@ -1,5 +1,5 @@
 %module general
-    title           'COH2 Formaldehyde VMC excited state - HDF5 restart test (restore phase)'
+    title           'COH2 Formaldehyde VMC excited state - HDF5 restart test (uninterrupted reference)'
     pool            './pool/'
     mode            'vmc_one_mpi'
     ipr -1
@@ -16,10 +16,9 @@ load jastrow_der     jastrow.der
 %endmodule
 
 %module blocking_vmc
-    vmc_irstar    1
     vmc_idump     0
     vmc_nstep     20
-    vmc_nblk      500
-    vmc_nblkeq    0
+    vmc_nblk      10
+    vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule
