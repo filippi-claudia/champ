@@ -153,7 +153,14 @@ module dmc_restore_hdf5_mod
         integer :: nghostcentx, nprock, nproco, nq_id, num
         integer :: nupx, nwalk_id
         character(len=20) :: s
-        integer, dimension(4, 0:nproc) :: irn_tmp
+        integer, dimension(8, 0:nproc-1) :: irn_tmp
+        integer, dimension(MPI_STATUS_SIZE) :: istatus
+        character(len=32) :: cnum
+        integer :: nwalk_send, ioldest_send, ioldestmx_send
+        real(dp) :: fprod_send, eigv_send, eest_send, wdsumo_send
+        real(dp), allocatable :: xold_dmc_send(:,:,:,:)
+        real(dp), allocatable :: wt_send(:), ff_send(:), fratio_send(:,:)
+        integer, allocatable :: iage_send(:)
         integer, dimension(nctype)      :: nsx,npx,ndx,nfx,ngx
         real(dp) :: different, eest_id
         real(dp) :: eigv_id, ff_id, fmt, fprod_id
@@ -169,6 +176,8 @@ module dmc_restore_hdf5_mod
         real(dp), parameter :: zero = 0.d0
         real(dp), parameter :: one = 1.d0
         real(dp), parameter :: small = 1.e-6
+        real(dp) :: egave_rstrt, peave_rstrt, tpbave_rstrt
+        real(dp) :: egerr_rstrt, peerr_rstrt, tpberr_rstrt, rn_eff
 
         character*13 filename
 
@@ -270,7 +279,6 @@ module dmc_restore_hdf5_mod
 
         call hdf5_group_open(file_id, "States", group_id)
         call hdf5_read(file_id, group_id, "Number of States", nstates)
-        call hdf5_read(file_id, group_id, "iguiding", iguiding)
         call hdf5_group_close(group_id)
         write(ounit, *) " HDF5 Group read :: States "
 
@@ -284,8 +292,12 @@ module dmc_restore_hdf5_mod
 
         call hdf5_group_open(file_id, "QMC", group_id)
         call hdf5_read(file_id, group_id, "Mode", mode)
-        call hdf5_read(file_id, group_id, "Number of Processors", nproc)
-        call hdf5_read(file_id, group_id, "Random Numbers Each Processor", irn_tmp(1:4,0:nproc-1))
+        call hdf5_read(file_id, group_id, "Number of Processors", nproco)
+        if(nproco.ne.nproc) then
+          write(ounit, '(a)' )          "Warning: different number of processors in the restart file"
+          write(ounit, '(a,i4,a,i4,a)') "Number of processors from restart file = ", nproco, ", Current number of processors = ", nproc
+        endif
+        call hdf5_read(file_id, group_id, "Random Numbers Each Processor", irn_tmp(1:8,0:nproc-1))
         call hdf5_group_close(group_id)
         write(ounit, *) " HDF5 Group read :: QMC "
 
@@ -295,39 +307,59 @@ module dmc_restore_hdf5_mod
         call hdf5_read(file_id, group_id, "Number of DMC Configurations ", dmc_nconf)
         call hdf5_read(file_id, group_id, "Number of Processors", nproco)
 
+        allocate(xold_dmc_send(3, nelec, MWALK, nforce))
+        allocate(wt_send(MWALK))
+        allocate(ff_send(0:nfprod))
+        allocate(fratio_send(MWALK, nforce))
+        allocate(iage_send(MWALK))
+
         do id=0, nproco-1
             write (unit=s,fmt="(i0)") id
-            call hdf5_read(file_id, group_id, "Number of Walkers proc_"//trim(s), nwalk_id)
-            call hdf5_read(file_id, group_id, "xold_dmc_proc_"//trim(s), xold_dmc)
-            call hdf5_read(file_id, group_id, "nfprod_proc_"//trim(s), nfprod)
-            call hdf5_read(file_id, group_id, "ff_proc_"//trim(s), ff)
-            call hdf5_read(file_id, group_id, "wt_proc_"//trim(s), wt)
-            call hdf5_read(file_id, group_id, "fprod_proc_"//trim(s), fprod)
-            call hdf5_read(file_id, group_id, "eigv_proc_"//trim(s), eigv)
-            call hdf5_read(file_id, group_id, "eest_proc_"//trim(s), eest)
-            call hdf5_read(file_id, group_id, "wdsumo_proc_"//trim(s), wdsumo)
-            call hdf5_read(file_id, group_id, "iage_proc_"//trim(s), iage)
-            call hdf5_read(file_id, group_id, "ioldest_proc_"//trim(s), ioldest)
-            call hdf5_read(file_id, group_id, "ioldestmx_proc_"//trim(s), ioldestmx)
-            call hdf5_read(file_id, group_id, "fratio_proc_"//trim(s), fratio)
-            
-            if (id .gt. 0 .and. id .lt. nproc) then
-                call mpi_send(nwalk_id,1,mpi_integer,id,1,MPI_COMM_WORLD,ierr)
-                call mpi_send(xold_dmc,3*nelec*MWALK*nforce,mpi_double_precision,id,2,MPI_COMM_WORLD,ierr)
-                call mpi_send(wt,MWALK,mpi_double_precision,id,3,MPI_COMM_WORLD,ierr)
-                call mpi_send(ff(0),1+nfprod,mpi_double_precision,id,4,MPI_COMM_WORLD,ierr)
-                call mpi_send(fprod,1,mpi_double_precision,id,5,MPI_COMM_WORLD,ierr)
-                call mpi_send(fratio,MWALK*nforce,mpi_double_precision,id,6,MPI_COMM_WORLD,ierr)
-                call mpi_send(eigv,1,mpi_double_precision,id,7,MPI_COMM_WORLD,ierr)
-                call mpi_send(eest,1,mpi_double_precision,id,8,MPI_COMM_WORLD,ierr)
-                call mpi_send(wdsumo,1,mpi_double_precision,id,9,MPI_COMM_WORLD,ierr)
-                call mpi_send(iage,MWALK,mpi_integer,id,10,MPI_COMM_WORLD,ierr)
-                call mpi_send(ioldest,1,mpi_integer,id,11,MPI_COMM_WORLD,ierr)
-                call mpi_send(ioldestmx,1,mpi_integer,id,12,MPI_COMM_WORLD,ierr)
-            else if (id .eq. 0) then
-                nwalk = nwalk_id
+            if (id .eq. 0) then
+                call hdf5_read(file_id, group_id, "Number of Walkers proc_"//trim(s), nwalk)
+                call hdf5_read(file_id, group_id, "xold_dmc_proc_"//trim(s), xold_dmc)
+                call hdf5_read(file_id, group_id, "nfprod_proc_"//trim(s), nfprod)
+                call hdf5_read(file_id, group_id, "ff_proc_"//trim(s), ff)
+                call hdf5_read(file_id, group_id, "wt_proc_"//trim(s), wt)
+                call hdf5_read(file_id, group_id, "fprod_proc_"//trim(s), fprod)
+                call hdf5_read(file_id, group_id, "eigv_proc_"//trim(s), eigv)
+                call hdf5_read(file_id, group_id, "eest_proc_"//trim(s), eest)
+                call hdf5_read(file_id, group_id, "wdsumo_proc_"//trim(s), wdsumo)
+                call hdf5_read(file_id, group_id, "iage_proc_"//trim(s), iage)
+                call hdf5_read(file_id, group_id, "ioldest_proc_"//trim(s), ioldest)
+                call hdf5_read(file_id, group_id, "ioldestmx_proc_"//trim(s), ioldestmx)
+                call hdf5_read(file_id, group_id, "fratio_proc_"//trim(s), fratio)
+            else
+                call hdf5_read(file_id, group_id, "Number of Walkers proc_"//trim(s), nwalk_send)
+                call hdf5_read(file_id, group_id, "xold_dmc_proc_"//trim(s), xold_dmc_send)
+                call hdf5_read(file_id, group_id, "nfprod_proc_"//trim(s), nfprod)
+                call hdf5_read(file_id, group_id, "ff_proc_"//trim(s), ff_send)
+                call hdf5_read(file_id, group_id, "wt_proc_"//trim(s), wt_send)
+                call hdf5_read(file_id, group_id, "fprod_proc_"//trim(s), fprod_send)
+                call hdf5_read(file_id, group_id, "eigv_proc_"//trim(s), eigv_send)
+                call hdf5_read(file_id, group_id, "eest_proc_"//trim(s), eest_send)
+                call hdf5_read(file_id, group_id, "wdsumo_proc_"//trim(s), wdsumo_send)
+                call hdf5_read(file_id, group_id, "iage_proc_"//trim(s), iage_send)
+                call hdf5_read(file_id, group_id, "ioldest_proc_"//trim(s), ioldest_send)
+                call hdf5_read(file_id, group_id, "ioldestmx_proc_"//trim(s), ioldestmx_send)
+                call hdf5_read(file_id, group_id, "fratio_proc_"//trim(s), fratio_send)
+                if (id .lt. nproc) then
+                    call mpi_send(nwalk_send,1,mpi_integer,id,1,MPI_COMM_WORLD,ierr)
+                    call mpi_send(xold_dmc_send,3*nelec*MWALK*nforce,mpi_double_precision,id,2,MPI_COMM_WORLD,ierr)
+                    call mpi_send(wt_send,MWALK,mpi_double_precision,id,3,MPI_COMM_WORLD,ierr)
+                    call mpi_send(ff_send(0),1+nfprod,mpi_double_precision,id,4,MPI_COMM_WORLD,ierr)
+                    call mpi_send(fprod_send,1,mpi_double_precision,id,5,MPI_COMM_WORLD,ierr)
+                    call mpi_send(fratio_send,MWALK*nforce,mpi_double_precision,id,6,MPI_COMM_WORLD,ierr)
+                    call mpi_send(eigv_send,1,mpi_double_precision,id,7,MPI_COMM_WORLD,ierr)
+                    call mpi_send(eest_send,1,mpi_double_precision,id,8,MPI_COMM_WORLD,ierr)
+                    call mpi_send(wdsumo_send,1,mpi_double_precision,id,9,MPI_COMM_WORLD,ierr)
+                    call mpi_send(iage_send,MWALK,mpi_integer,id,10,MPI_COMM_WORLD,ierr)
+                    call mpi_send(ioldest_send,1,mpi_integer,id,11,MPI_COMM_WORLD,ierr)
+                    call mpi_send(ioldestmx_send,1,mpi_integer,id,12,MPI_COMM_WORLD,ierr)
+                endif
             endif
         enddo
+        deallocate(xold_dmc_send, wt_send, ff_send, fratio_send, iage_send)
         call hdf5_read(file_id, group_id, "nforce", nforce)
 
         call hdf5_read(file_id, group_id, "wgcum", wgcum(1:nforce))
@@ -424,9 +456,160 @@ module dmc_restore_hdf5_mod
         call hdf5_file_close(file_id)
         ! Close the HDF5 file
 
+        write(ounit, *) ' HDF5 file read successfully :: ', restart_filename
+        if (nforce.gt.1) then
+          write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32 &
+            &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66 &
+            &,''fgave'',t79,''(fgerr)'',t93,''npass'',t102,''wgsum'',t112   &
+            &,''ioldest'')')
+        else
+          write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32&
+            &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t67&
+            &,''npass'',t77,''wgsum'',t85,''ioldest'')')
+        endif
 
-      write(ounit,'(t5,''egnow'',t15,''egave'',t21 ,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55 &
-                        ,''(tpberr)'' ,t66,''npass'',t77,''wgsum'',t88 ,''ioldest'')')
+        egave_rstrt = egcum(1)/wgcum(1)
+        peave_rstrt = pecum_dmc(1)/wgcum(1)
+        tpbave_rstrt = tpbcum_dmc(1)/wgcum(1)
+        rn_eff = wgcum(1)**2 / wgcm2(1)
+        if (rn_eff .gt. 1.d0) then
+            egerr_rstrt = dsqrt(max((egcm2(1)/wgcum(1) - egave_rstrt**2)/(rn_eff-1.d0), 0.d0))
+            peerr_rstrt = dsqrt(max((pecm2_dmc(1)/wgcum(1) - peave_rstrt**2)/(rn_eff-1.d0), 0.d0))
+            tpberr_rstrt = dsqrt(max((tpbcm2_dmc(1)/wgcum(1) - tpbave_rstrt**2)/(rn_eff-1.d0), 0.d0))
+        else
+            egerr_rstrt = 0.d0
+            peerr_rstrt = 0.d0
+            tpberr_rstrt = 0.d0
+        endif
+        if (nforce.gt.1) then
+          write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),62x,3i10)') &
+              egave_rstrt, egave_rstrt, nint(100000*egerr_rstrt), peave_rstrt, nint(100000*peerr_rstrt), &
+              tpbave_rstrt, nint(100000*tpberr_rstrt), iblk_proc*dmc_nstep, nint(wgcum(1)/nproc), ioldest
+        else
+          write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),3i10)') &
+              egave_rstrt, egave_rstrt, nint(100000*egerr_rstrt), peave_rstrt, nint(100000*peerr_rstrt), &
+              tpbave_rstrt, nint(100000*tpberr_rstrt), iblk_proc*dmc_nstep, nint(wgcum(1)/nproc), ioldest
+        endif
+
+        endif ! master thread (wid)
+
+        if (.not. wid) then
+          if (idtask .lt. nproc) then
+            call mpi_recv(nwalk,1,mpi_integer,0,1,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(xold_dmc,3*nelec*MWALK*nforce,mpi_double_precision,0,2,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(wt,MWALK,mpi_double_precision,0,3,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(ff(0),1+nfprod,mpi_double_precision,0,4,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(fprod,1,mpi_double_precision,0,5,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(fratio,MWALK*nforce,mpi_double_precision,0,6,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(eigv,1,mpi_double_precision,0,7,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(eest,1,mpi_double_precision,0,8,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(wdsumo,1,mpi_double_precision,0,9,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(iage,MWALK,mpi_integer,0,10,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(ioldest,1,mpi_integer,0,11,MPI_COMM_WORLD,istatus,ierr)
+            call mpi_recv(ioldestmx,1,mpi_integer,0,12,MPI_COMM_WORLD,istatus,ierr)
+          endif
+        endif
+
+        call bcast(nforce)
+        call bcast(nproco)
+        call bcast(dmc_nblk)
+        call bcast(dmc_nstep)
+        call bcast(dmc_nconf)
+
+        call bcast(wgcum(1:nforce))
+        call bcast(egcum(1:nforce))
+        call bcast(pecum_dmc(1:nforce))
+        call bcast(tpbcum_dmc(1:nforce))
+        call bcast(taucum(1:nforce))
+        call bcast(wgcm2(1:nforce))
+        call bcast(egcm2(1:nforce))
+        call bcast(pecm2_dmc(1:nforce))
+        call bcast(tpbcm2_dmc(1:nforce))
+        call bcast(wgcum1(1:nforce))
+        call bcast(egcum1(1:nforce))
+        call bcast(wgcm21(1:nforce))
+        call bcast(egcm21(1:nforce))
+        call bcast(fgcum(1:nforce))
+        call bcast(fgcm2(1:nforce))
+
+        call bcast(ipass)
+        call bcast(iblk)
+        call bcast(iblk_proc)
+
+        call bcast(tau)
+        call bcast(rttau)
+        call bcast(idmc)
+        call bcast(wtgen(0:nfprod))
+        call bcast(wgdsumo)
+
+        call bcast(wcum_dmc)
+        call bcast(wfcum)
+        call bcast(wdcum)
+        call bcast(wgdcum)
+        call bcast(wcum1)
+        call bcast(wfcum1)
+        call bcast(wdcum1)
+        call bcast(ecum_dmc)
+        call bcast(efcum)
+        call bcast(ecum1_dmc)
+        call bcast(efcum1)
+        call bcast(ei1cum)
+        call bcast(ei2cum)
+        call bcast(ei3cum)
+        call bcast(r2cum_dmc)
+        call bcast(ricum)
+
+        call bcast(wcm2)
+        call bcast(wfcm2)
+        call bcast(wdcm2)
+        call bcast(wgdcm2)
+        call bcast(wdcm21)
+        call bcast(ecm2_dmc)
+        call bcast(efcm2)
+        call bcast(wcm21)
+        call bcast(wfcm21)
+        call bcast(ecm21_dmc)
+        call bcast(efcm21)
+        call bcast(ei1cm2)
+        call bcast(ei2cm2)
+        call bcast(ei3cm2)
+        call bcast(r2cm2_dmc)
+        call bcast(ricm2)
+
+        call bcast(derivcum)
+        call bcast(derivcm2)
+
+        call bcast(dfus2ac)
+        call bcast(dfus2un)
+        call bcast(dr2ac)
+        call bcast(dr2un)
+        call bcast(acc)
+        call bcast(trymove)
+        call bcast(nacc)
+        call bcast(nbrnch)
+        call bcast(nodecr)
+        if (.not. wid) then
+          acc = zero
+          nacc = 0
+          trymove = 0
+          nodecr = 0
+        endif
+
+        call bcast(pecent)
+        if (nloc .gt. 0) then
+          call bcast(xq(1:nquad))
+          call bcast(yq(1:nquad))
+          call bcast(zq(1:nquad))
+          call bcast(wq(1:nquad))
+        endif
+
+        if (iprop .ne. 0) then
+          call bcast(vprop_cum(1:nprop))
+          call bcast(vprop_cm2(1:nprop))
+        endif
+
+        call MPI_Bcast(irn_tmp, 8*nproc, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+        if (idtask .le. nproc-1) call setrn(irn_tmp(1, idtask))
 
       do iw=1,nwalk
         if(istrech.eq.0) then
@@ -506,16 +689,9 @@ module dmc_restore_hdf5_mod
         do i=1,2000000000
           read(11,fmt=*,end=100)
         enddo
+  100   backspace 11
+        backspace 11
       endif
-  100 backspace 11
-      backspace 11
-
-
-        
-        call bcast(irn_tmp)
-        ! etc wait, we handle BCASTs manually like before?
-
-        endif ! master thread (wid)
 
         end subroutine dmc_restore_hdf5
 end module dmc_restore_hdf5_mod

@@ -46,6 +46,9 @@ contains
       implicit none
 
       integer :: i, j, irun, lpass, ifrag, ierr
+#if defined(HDF5_FOUND)
+      integer :: hdf5_restart_funit, hdf5_restart_ios
+#endif
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: four = 4.d0
       real(dp) :: etrialcollect
@@ -118,12 +121,18 @@ contains
       call elapsed_time("DMC : all CP : ")
 
       if (dmc_idump.eq.1) then
-        call dumper
 #if defined(HDF5_FOUND)
         if (wid) call date_and_time(date=date, time=time)
         call bcast(date)
         call bcast(time)
         call dmc_store_hdf5("restart_dmc_"//date(1:4)//'-'//date(5:6)//'-'//date(7:8)//"-"//time(1:6)//".hdf5")
+        if (wid) then
+          open(newunit=hdf5_restart_funit, file='restart_dmc.hdf5', status='old', iostat=hdf5_restart_ios)
+          if (hdf5_restart_ios == 0) close(hdf5_restart_funit, status='delete')
+        endif
+        call dmc_store_hdf5("restart_dmc.hdf5")
+#else
+        call dumper
 #endif
       endif
       close (unit=9)

@@ -78,9 +78,14 @@
         integer :: ifr, irequest, iw, j
         integer :: k, nscounts
         character(len=20) :: s
-        integer, dimension(4, 0:nproc) :: irn
+        integer, dimension(8, 0:nproc-1) :: irn
         integer, dimension(MPI_STATUS_SIZE) :: istatus
-        integer, dimension(4, 0:nproc) :: irn_tmp
+        integer, dimension(8, 0:nproc-1) :: irn_tmp
+        integer :: nwalk_recv, ioldest_recv, ioldestmx_recv
+        real(dp) :: fprod_recv, eigv_recv, eest_recv, wdsumo_recv
+        real(dp), allocatable :: xold_dmc_recv(:,:,:,:)
+        real(dp), allocatable :: wt_recv(:), ff_recv(:), fratio_recv(:,:)
+        integer, allocatable :: iage_recv(:)
 
         real(dp), parameter             :: zero = 0.0d0
         real(dp), parameter             :: one  = 1.0d0
@@ -90,7 +95,7 @@
 
         call savern(irn(1,idtask))
 
-        nscounts=4
+        nscounts=8
         call mpi_gather(irn(1,idtask),nscounts,mpi_integer,irn_tmp,nscounts,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
         ! MPI sending logic instead of bcast
@@ -241,7 +246,7 @@
         call hdf5_group_open(file_id, "QMC", group_id)
         call hdf5_write(file_id, group_id, "Mode", mode)
         call hdf5_write(file_id, group_id, "Number of Processors", nproc)
-        call hdf5_write(file_id, group_id, "Random Numbers Each Processor", irn_tmp(1:4,0:nproc-1))
+        call hdf5_write(file_id, group_id, "Random Numbers Each Processor", irn_tmp(1:8,0:nproc-1))
         call hdf5_group_close(group_id)
         write(ounit, *) " HDF5 Group saved :: QMC "
 
@@ -252,36 +257,58 @@
         call hdf5_write(file_id, group_id, "Number of DMC Configurations ", dmc_nconf)
         call hdf5_write(file_id, group_id, "Number of Processors", nproc)
 
-        do id=0, nproc-1
-            if (id .gt. 0) then
-                call mpi_recv(nwalk,1,mpi_integer,id,1,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(xold_dmc,3*nelec*MWALK*nforce,mpi_double_precision,id,2,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(wt,MWALK,mpi_double_precision,id,3,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(ff(0),1+nfprod,mpi_double_precision,id,4,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(fprod,1,mpi_double_precision,id,5,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(fratio,MWALK*nforce,mpi_double_precision,id,6,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(eigv,1,mpi_double_precision,id,7,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(eest,1,mpi_double_precision,id,8,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(wdsumo,1,mpi_double_precision,id,9,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(iage,MWALK,mpi_integer,id,10,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(ioldest,1,mpi_integer,id,11,MPI_COMM_WORLD,istatus,ierr)
-                call mpi_recv(ioldestmx,1,mpi_integer,id,12,MPI_COMM_WORLD,istatus,ierr)
-            endif
-            write (unit=s,fmt="(i0)") id
-            call hdf5_write(file_id, group_id, "Number of Walkers proc_"//trim(s), nwalk)
-            call hdf5_write(file_id, group_id, "xold_dmc_proc_"//trim(s), xold_dmc)
-            call hdf5_write(file_id, group_id, "nfprod_proc_"//trim(s), nfprod)
-            call hdf5_write(file_id, group_id, "ff_proc_"//trim(s), ff)
-            call hdf5_write(file_id, group_id, "wt_proc_"//trim(s), wt)
-            call hdf5_write(file_id, group_id, "fprod_proc_"//trim(s), fprod)
-            call hdf5_write(file_id, group_id, "eigv_proc_"//trim(s), eigv)
-            call hdf5_write(file_id, group_id, "eest_proc_"//trim(s), eest)
-            call hdf5_write(file_id, group_id, "wdsumo_proc_"//trim(s), wdsumo)
-            call hdf5_write(file_id, group_id, "iage_proc_"//trim(s), iage)
-            call hdf5_write(file_id, group_id, "ioldest_proc_"//trim(s), ioldest)
-            call hdf5_write(file_id, group_id, "ioldestmx_proc_"//trim(s), ioldestmx)
-            call hdf5_write(file_id, group_id, "fratio_proc_"//trim(s), fratio)
-        enddo
+        write (unit=s,fmt="(i0)") 0
+        call hdf5_write(file_id, group_id, "Number of Walkers proc_"//trim(s), nwalk)
+        call hdf5_write(file_id, group_id, "xold_dmc_proc_"//trim(s), xold_dmc)
+        call hdf5_write(file_id, group_id, "nfprod_proc_"//trim(s), nfprod)
+        call hdf5_write(file_id, group_id, "ff_proc_"//trim(s), ff)
+        call hdf5_write(file_id, group_id, "wt_proc_"//trim(s), wt)
+        call hdf5_write(file_id, group_id, "fprod_proc_"//trim(s), fprod)
+        call hdf5_write(file_id, group_id, "eigv_proc_"//trim(s), eigv)
+        call hdf5_write(file_id, group_id, "eest_proc_"//trim(s), eest)
+        call hdf5_write(file_id, group_id, "wdsumo_proc_"//trim(s), wdsumo)
+        call hdf5_write(file_id, group_id, "iage_proc_"//trim(s), iage)
+        call hdf5_write(file_id, group_id, "ioldest_proc_"//trim(s), ioldest)
+        call hdf5_write(file_id, group_id, "ioldestmx_proc_"//trim(s), ioldestmx)
+        call hdf5_write(file_id, group_id, "fratio_proc_"//trim(s), fratio)
+
+        if (nproc .gt. 1) then
+            allocate(xold_dmc_recv(3, nelec, MWALK, nforce))
+            allocate(wt_recv(MWALK))
+            allocate(ff_recv(0:nfprod))
+            allocate(fratio_recv(MWALK, nforce))
+            allocate(iage_recv(MWALK))
+            do id=1, nproc-1
+                call mpi_recv(nwalk_recv,1,mpi_integer,id,1,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(xold_dmc_recv,3*nelec*MWALK*nforce,mpi_double_precision,id,2,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(wt_recv,MWALK,mpi_double_precision,id,3,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(ff_recv(0),1+nfprod,mpi_double_precision,id,4,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(fprod_recv,1,mpi_double_precision,id,5,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(fratio_recv,MWALK*nforce,mpi_double_precision,id,6,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(eigv_recv,1,mpi_double_precision,id,7,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(eest_recv,1,mpi_double_precision,id,8,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(wdsumo_recv,1,mpi_double_precision,id,9,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(iage_recv,MWALK,mpi_integer,id,10,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(ioldest_recv,1,mpi_integer,id,11,MPI_COMM_WORLD,istatus,ierr)
+                call mpi_recv(ioldestmx_recv,1,mpi_integer,id,12,MPI_COMM_WORLD,istatus,ierr)
+
+                write (unit=s,fmt="(i0)") id
+                call hdf5_write(file_id, group_id, "Number of Walkers proc_"//trim(s), nwalk_recv)
+                call hdf5_write(file_id, group_id, "xold_dmc_proc_"//trim(s), xold_dmc_recv)
+                call hdf5_write(file_id, group_id, "nfprod_proc_"//trim(s), nfprod)
+                call hdf5_write(file_id, group_id, "ff_proc_"//trim(s), ff_recv)
+                call hdf5_write(file_id, group_id, "wt_proc_"//trim(s), wt_recv)
+                call hdf5_write(file_id, group_id, "fprod_proc_"//trim(s), fprod_recv)
+                call hdf5_write(file_id, group_id, "eigv_proc_"//trim(s), eigv_recv)
+                call hdf5_write(file_id, group_id, "eest_proc_"//trim(s), eest_recv)
+                call hdf5_write(file_id, group_id, "wdsumo_proc_"//trim(s), wdsumo_recv)
+                call hdf5_write(file_id, group_id, "iage_proc_"//trim(s), iage_recv)
+                call hdf5_write(file_id, group_id, "ioldest_proc_"//trim(s), ioldest_recv)
+                call hdf5_write(file_id, group_id, "ioldestmx_proc_"//trim(s), ioldestmx_recv)
+                call hdf5_write(file_id, group_id, "fratio_proc_"//trim(s), fratio_recv)
+            enddo
+            deallocate(xold_dmc_recv, wt_recv, ff_recv, fratio_recv, iage_recv)
+        endif
         call hdf5_write(file_id, group_id, "nforce", nforce)
                 call hdf5_write(file_id, group_id, "wgcum", wgcum(1:nforce))
         call hdf5_write(file_id, group_id, "egcum", egcum(1:nforce))
