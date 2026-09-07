@@ -87,6 +87,12 @@ module hdf5_utils
         character(len=*), intent(in)        :: filename
         integer(hid_t), intent(out)         :: file_id
         integer                             :: ierr
+        integer                             :: funit, ios
+
+        ! Delete existing file via Fortran I/O to bypass HDF5 truncation issues
+        ! when other HDF5 handles are active in the same process
+        open(newunit=funit, file=trim(filename), status='old', iostat=ios)
+        if (ios == 0) close(funit, status='delete')
 
         ! Initialize HDF5 Fortran module (initializes predefined type constants)
         call h5open_f(ierr)
