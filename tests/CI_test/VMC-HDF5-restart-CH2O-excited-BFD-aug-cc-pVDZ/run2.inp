@@ -18,7 +18,7 @@ load jastrow_der     jastrow.der
 %module blocking_vmc
     vmc_idump     1
     vmc_nstep     20
-    vmc_nblk      500
+    vmc_nblk      5
     vmc_nblkeq    1
     vmc_nconf_new 0
 %endmodule

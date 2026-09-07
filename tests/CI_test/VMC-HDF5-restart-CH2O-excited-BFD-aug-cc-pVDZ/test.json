@@ -1,5 +1,5 @@
 {
-  "description": "HDF5 checkpoint/restart for VMC: step1 runs 500 blocks and dumps the full state, step2 restores and runs 500 more; the cumulative energy over all 1000 blocks must match the reference",
+  "description": "HDF5 checkpoint/restart for VMC: run1 is an uninterrupted 10-block run; run2 covers the first 5 blocks from scratch and dumps the state, run3 restores it and runs the remaining 5. Both paths must produce exactly the same cumulative energy -- the absolute value is irrelevant, only that a restart reproduces the uninterrupted run bit for bit.",
   "labels": [
     "VMC",
     "HDF5",
@@ -13,35 +13,62 @@
   "cases": [
     {
       "name": "np2",
+      "comment": "run1 and run2 must start from exactly the same walker configuration, so the mc_configs_start each run leaves behind is removed before both of them; only run3 is allowed to inherit state, and only through the HDF5 checkpoint.",
       "runs": [
         {
           "program": "vmc",
-          "input": "step1.inp",
-          "output": "step1_core_2.out",
+          "input": "run1.inp",
+          "output": "run1_core_2.out",
           "nproc": 2,
-          "error_output": "error_step1"
+          "error_output": "error_run1",
+          "before": [
+            {
+              "op": "remove",
+              "paths": [
+                "mc_configs_start",
+                "restart_vmc*"
+              ]
+            }
+          ]
         },
         {
           "program": "vmc",
-          "input": "step2.inp",
-          "output": "step2_core_2.out",
+          "input": "run2.inp",
+          "output": "run2_core_2.out",
           "nproc": 2,
-          "error_output": "error_step2"
+          "error_output": "error_run2",
+          "before": [
+            {
+              "op": "remove",
+              "paths": [
+                "mc_configs_start",
+                "restart_vmc*"
+              ]
+            }
+          ]
+        },
+        {
+          "program": "vmc",
+          "input": "run3.inp",
+          "output": "run3_core_2.out",
+          "nproc": 2,
+          "error_output": "error_run3"
         }
       ],
       "checks": [
         {
           "type": "file_exists",
           "file": "restart_vmc.hdf5",
-          "comment": "checkpoint written by step1"
+          "comment": "checkpoint written by run2"
         },
         {
-          "type": "value",
-          "file": "step2_core_2.out",
+          "type": "values_equal",
+          "files": [
+            "run3_core_2.out",
+            "run1_core_2.out"
+          ],
           "match": "total E",
-          "value": -22.6202928,
-          "error": 0.0058981,
-          "comment": "cumulative energy over 1000 blocks"
+          "comment": "5 blocks + restart + 5 blocks must reproduce the uninterrupted 10 blocks exactly"
         }
       ]
     }
