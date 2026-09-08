@@ -1447,6 +1447,7 @@ module hdf5_utils
         integer(hid_t), intent(in)              :: group_id
         integer(hid_t)                          :: dataset_id
         integer(hid_t)                          :: dataspace_id
+        integer(hid_t)                          :: type_id
         integer(HSIZE_T)                        :: data_dims
         integer(HSIZE_T)                        :: data_shape(1)
         integer                                 :: ierr
@@ -1465,12 +1466,24 @@ module hdf5_utils
             stop
         end if
 
+        ! memory type must carry the length of the receiving Fortran string,
+        ! otherwise HDF5 converts to a 1-byte string and the buffer is left corrupt
+        call h5tcopy_f(H5T_FORTRAN_S1, type_id, ierr)
+        call h5tset_size_f(type_id, len(data, SIZE_T), ierr)
+        if (ierr /= 0) then
+            write(errunit,*) "Error: HDF5 could not set the size of a string."
+            stop
+        end if
+
         ! read data
-        call h5dread_f(dataset_id, H5T_C_S1, data, [0_HSIZE_T], ierr)
+        data = ''
+        call h5dread_f(dataset_id, type_id, data, [0_HSIZE_T], ierr)
         if (ierr /= 0) then
             write(errunit,*) "Error: HDF5 dataset could not be read."
             stop
         end if
+
+        call h5tclose_f(type_id, ierr)
 
         ! close dataset
         call h5dclose_f(dataset_id, ierr)

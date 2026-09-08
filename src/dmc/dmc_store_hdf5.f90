@@ -24,6 +24,12 @@
         use custom_broadcast, only: bcast
         use denupdn, only: rprobdn,rprobup
         use derivest, only: derivcm2,derivcum,derivtotave_num_old
+        use da_energy_sumcum, only: da_energy_cm2,da_energy_cum,da_psi_cum
+        use force_pth, only: PTH
+        use m_force_analytic, only: iforce_analy
+        use multiple_geo, only: nwprod
+        use pathak_mod, only: ipathak,pold
+        use vd_mod, only: da_branch_cum,deriv_eold,dmc_ivd,ehist,esnake
         use dmc_mod, only: MWALK
         use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
         use est2cm,  only: ei1cm2,ei2cm2,ei3cm2,pecm2_dmc,r2cm2_dmc,ricm2
@@ -86,6 +92,10 @@
         real(dp), allocatable :: xold_dmc_recv(:,:,:,:)
         real(dp), allocatable :: wt_recv(:), ff_recv(:), fratio_recv(:,:)
         integer, allocatable :: iage_recv(:)
+        integer :: iph
+        integer, dimension(0:nproc-1) :: nwalk_all
+        real(dp), allocatable :: deriv_eold_recv(:,:,:), esnake_recv(:,:,:,:)
+        real(dp), allocatable :: ehist_recv(:,:,:,:,:), pold_recv(:,:)
 
         real(dp), parameter             :: zero = 0.0d0
         real(dp), parameter             :: one  = 1.0d0
@@ -112,6 +122,16 @@
           call mpi_send(iage,MWALK,mpi_integer,0,10,MPI_COMM_WORLD,ierr)
           call mpi_send(ioldest,1,mpi_integer,0,11,MPI_COMM_WORLD,ierr)
           call mpi_send(ioldestmx,1,mpi_integer,0,12,MPI_COMM_WORLD,ierr)
+          if (iforce_analy.ne.0 .and. dmc_ivd.gt.0) then
+            call mpi_send(deriv_eold(1:3,1:ncent,1:nwalk),3*ncent*nwalk, &
+                          mpi_double_precision,0,13,MPI_COMM_WORLD,ierr)
+            call mpi_send(esnake(1:3,1:ncent,1:nwalk,1:PTH),3*ncent*nwalk*PTH, &
+                          mpi_double_precision,0,14,MPI_COMM_WORLD,ierr)
+            call mpi_send(ehist(1:3,1:ncent,1:nwalk,0:nwprod-1,1:PTH),3*ncent*nwalk*nwprod*PTH, &
+                          mpi_double_precision,0,15,MPI_COMM_WORLD,ierr)
+            if (ipathak.gt.0) &
+              call mpi_send(pold(1:nwalk,1:PTH),nwalk*PTH,mpi_double_precision,0,16,MPI_COMM_WORLD,ierr)
+          endif
         else
 
         ! Open the HDF5 file
@@ -257,6 +277,7 @@
         call hdf5_write(file_id, group_id, "Number of DMC Configurations ", dmc_nconf)
         call hdf5_write(file_id, group_id, "Number of Processors", nproc)
 
+        nwalk_all(0) = nwalk
         write (unit=s,fmt="(i0)") 0
         call hdf5_write(file_id, group_id, "Number of Walkers proc_"//trim(s), nwalk)
         call hdf5_write(file_id, group_id, "xold_dmc_proc_"//trim(s), xold_dmc)
@@ -292,6 +313,7 @@
                 call mpi_recv(ioldest_recv,1,mpi_integer,id,11,MPI_COMM_WORLD,istatus,ierr)
                 call mpi_recv(ioldestmx_recv,1,mpi_integer,id,12,MPI_COMM_WORLD,istatus,ierr)
 
+                nwalk_all(id) = nwalk_recv
                 write (unit=s,fmt="(i0)") id
                 call hdf5_write(file_id, group_id, "Number of Walkers proc_"//trim(s), nwalk_recv)
                 call hdf5_write(file_id, group_id, "xold_dmc_proc_"//trim(s), xold_dmc_recv)
@@ -315,6 +337,10 @@
         call hdf5_write(file_id, group_id, "pecum_dmc", pecum_dmc(1:nforce))
         call hdf5_write(file_id, group_id, "tpbcum_dmc", tpbcum_dmc(1:nforce))
         call hdf5_write(file_id, group_id, "taucum", taucum(1:nforce))
+        call hdf5_write(file_id, group_id, "wgcm2", wgcm2(1:nforce))
+        call hdf5_write(file_id, group_id, "egcm2", egcm2(1:nforce))
+        call hdf5_write(file_id, group_id, "pecm2_dmc", pecm2_dmc(1:nforce))
+        call hdf5_write(file_id, group_id, "tpbcm2_dmc", tpbcm2_dmc(1:nforce))
 
         call hdf5_write(file_id, group_id, "ipass", ipass)
         call hdf5_write(file_id, group_id, "iblk", iblk)
@@ -389,6 +415,67 @@
 
         call hdf5_group_close(group_id)
         write(ounit, *) " HDF5 Group saved :: DMC "
+
+        ! analytical forces (same content as force_analy_dump)
+        if (iforce_analy.ne.0) then
+            call hdf5_group_create(file_id, "Force Analytical", group_id)
+            call hdf5_group_open(file_id, "Force Analytical", group_id)
+            call hdf5_write(file_id, group_id, "da_energy_cum", da_energy_cum)
+            call hdf5_write(file_id, group_id, "da_psi_cum", da_psi_cum)
+            call hdf5_write(file_id, group_id, "da_energy_cm2", da_energy_cm2)
+            if (dmc_ivd.gt.0) then
+                call hdf5_write(file_id, group_id, "da_branch_cum", da_branch_cum)
+                call hdf5_write(file_id, group_id, "nwprod", nwprod)
+                call hdf5_write(file_id, group_id, "ipathak", ipathak)
+
+                write (unit=s,fmt="(i0)") 0
+                call hdf5_write(file_id, group_id, "deriv_eold_proc_"//trim(s), deriv_eold(1:3,1:ncent,1:nwalk))
+                call hdf5_write(file_id, group_id, "esnake_proc_"//trim(s), esnake(1:3,1:ncent,1:nwalk,1:PTH))
+                if (ipathak.gt.0) &
+                    call hdf5_write(file_id, group_id, "pold_proc_"//trim(s), pold(1:nwalk,1:PTH))
+                do iph=1,PTH
+                    write (unit=s,fmt="(i0,a,i0)") 0, "_", iph
+                    call hdf5_write(file_id, group_id, "ehist_proc_"//trim(s), &
+                                    ehist(1:3,1:ncent,1:nwalk,0:nwprod-1,iph))
+                enddo
+
+                if (nproc .gt. 1) then
+                    allocate(deriv_eold_recv(3, ncent, MWALK))
+                    allocate(esnake_recv(3, ncent, MWALK, PTH))
+                    allocate(ehist_recv(3, ncent, MWALK, 0:nwprod-1, PTH))
+                    allocate(pold_recv(MWALK, PTH))
+                    do id=1, nproc-1
+                        nwalk_recv = nwalk_all(id)
+                        call mpi_recv(deriv_eold_recv(1:3,1:ncent,1:nwalk_recv),3*ncent*nwalk_recv, &
+                                      mpi_double_precision,id,13,MPI_COMM_WORLD,istatus,ierr)
+                        call mpi_recv(esnake_recv(1:3,1:ncent,1:nwalk_recv,1:PTH),3*ncent*nwalk_recv*PTH, &
+                                      mpi_double_precision,id,14,MPI_COMM_WORLD,istatus,ierr)
+                        call mpi_recv(ehist_recv(1:3,1:ncent,1:nwalk_recv,0:nwprod-1,1:PTH), &
+                                      3*ncent*nwalk_recv*nwprod*PTH, &
+                                      mpi_double_precision,id,15,MPI_COMM_WORLD,istatus,ierr)
+                        if (ipathak.gt.0) &
+                            call mpi_recv(pold_recv(1:nwalk_recv,1:PTH),nwalk_recv*PTH, &
+                                          mpi_double_precision,id,16,MPI_COMM_WORLD,istatus,ierr)
+
+                        write (unit=s,fmt="(i0)") id
+                        call hdf5_write(file_id, group_id, "deriv_eold_proc_"//trim(s), &
+                                        deriv_eold_recv(1:3,1:ncent,1:nwalk_recv))
+                        call hdf5_write(file_id, group_id, "esnake_proc_"//trim(s), &
+                                        esnake_recv(1:3,1:ncent,1:nwalk_recv,1:PTH))
+                        if (ipathak.gt.0) &
+                            call hdf5_write(file_id, group_id, "pold_proc_"//trim(s), pold_recv(1:nwalk_recv,1:PTH))
+                        do iph=1,PTH
+                            write (unit=s,fmt="(i0,a,i0)") id, "_", iph
+                            call hdf5_write(file_id, group_id, "ehist_proc_"//trim(s), &
+                                            ehist_recv(1:3,1:ncent,1:nwalk_recv,0:nwprod-1,iph))
+                        enddo
+                    enddo
+                    deallocate(deriv_eold_recv, esnake_recv, ehist_recv, pold_recv)
+                endif
+            endif
+            call hdf5_group_close(group_id)
+            write(ounit, *) " HDF5 Group saved :: Force Analytical "
+        endif
 
         ! properties
         if (iprop.ne.0) then

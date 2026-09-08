@@ -22,6 +22,12 @@ module dmc_restore_hdf5_mod
         use control_dmc, only: dmc_nconf
         use denupdn, only: rprobdn,rprobup
         use derivest, only: derivcm2,derivcum,derivsum,derivtotave_num_old
+        use da_energy_sumcum, only: da_energy_cm2,da_energy_cum,da_psi_cum
+        use force_pth, only: PTH
+        use m_force_analytic, only: iforce_analy
+        use multiple_geo, only: nwprod
+        use pathak_mod, only: ipathak,pold
+        use vd_mod, only: da_branch_cum,deriv_eold,dmc_ivd,ehist,esnake
         use determinante_mod, only: compute_determinante_grad
         use error,   only: fatal_error
         use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
@@ -34,6 +40,7 @@ module dmc_restore_hdf5_mod
         use estcum,  only: wcum1,wcum_dmc,wdcum,wdcum1,wfcum,wfcum1,wgcum
         use estcum,  only: wgcum1,wgdcum
         use estsum,  only: efsum,egsum,ei1sum,ei2sum,esum_dmc,pesum_dmc
+        use estsum,  only: wsum1
         use estsum,  only: r2sum,risum,tausum,tpbsum_dmc,wdsum
         use estsum,  only: wfsum,wgdsum,wgsum,wsum_dmc
         use general, only: write_walkalize
@@ -156,6 +163,14 @@ module dmc_restore_hdf5_mod
         integer, dimension(8, 0:nproc-1) :: irn_tmp
         integer, dimension(MPI_STATUS_SIZE) :: istatus
         character(len=32) :: cnum
+        character(len=12) :: mode_stored
+        integer :: iph, nwprod_stored, ipathak_stored
+        integer :: nblk_stored, nstep_stored, nconf_stored
+        integer :: nelec_input, nforce_input, nquad_input
+        real(dp) :: tau_input, hb_input
+        integer, dimension(0:nproc-1) :: nwalk_all
+        real(dp), allocatable :: deriv_eold_send(:,:,:), esnake_send(:,:,:,:)
+        real(dp), allocatable :: ehist_send(:,:,:,:,:), pold_send(:,:)
         integer :: nwalk_send, ioldest_send, ioldestmx_send
         real(dp) :: fprod_send, eigv_send, eest_send, wdsumo_send
         real(dp), allocatable :: xold_dmc_send(:,:,:,:)
@@ -180,6 +195,14 @@ module dmc_restore_hdf5_mod
         real(dp) :: egerr_rstrt, peerr_rstrt, tpberr_rstrt, rn_eff
 
         character*13 filename
+
+        ! Remember the values coming from the restart input before any of them is
+        ! overwritten by a dataset, so the two sets can be reported side by side.
+        nelec_input  = nelec
+        nforce_input = nforce
+        nquad_input  = nquad
+        tau_input    = tau
+        hb_input     = hb
 
         ! Only the master process will read the data to the HDF5 file
         if (wid) then
@@ -291,21 +314,46 @@ module dmc_restore_hdf5_mod
         write(ounit, *) " HDF5 Group read :: Periodic "
 
         call hdf5_group_open(file_id, "QMC", group_id)
-        call hdf5_read(file_id, group_id, "Mode", mode)
+        call hdf5_read(file_id, group_id, "Mode", mode_stored)
+        if (mode_stored .ne. mode) &
+          write(ounit, '(a,a,a,a,a)') "Warning: HDF5 restart mode '", trim(mode_stored), &
+              "' differs from current mode '", trim(mode), "' -- using current mode"
         call hdf5_read(file_id, group_id, "Number of Processors", nproco)
         if(nproco.ne.nproc) then
-          write(ounit, '(a)' )          "Warning: different number of processors in the restart file"
+          write(ounit, '(a)' )          "Error: different number of processors in the restart file"
           write(ounit, '(a,i4,a,i4,a)') "Number of processors from restart file = ", nproco, ", Current number of processors = ", nproc
+          call fatal_error('DMC_RESTORE_HDF5: different num procs')
         endif
         call hdf5_read(file_id, group_id, "Random Numbers Each Processor", irn_tmp(1:8,0:nproc-1))
         call hdf5_group_close(group_id)
         write(ounit, *) " HDF5 Group read :: QMC "
 
         call hdf5_group_open(file_id, "DMC", group_id)
-        call hdf5_read(file_id, group_id, "Number of DMC Blocks", dmc_nblk)
-        call hdf5_read(file_id, group_id, "Number of DMC Steps per Block", dmc_nstep)
-        call hdf5_read(file_id, group_id, "Number of DMC Configurations ", dmc_nconf)
+        call hdf5_read(file_id, group_id, "Number of DMC Blocks", nblk_stored)
+        call hdf5_read(file_id, group_id, "Number of DMC Steps per Block", nstep_stored)
+        call hdf5_read(file_id, group_id, "Number of DMC Configurations ", nconf_stored)
         call hdf5_read(file_id, group_id, "Number of Processors", nproco)
+        call hdf5_read(file_id, group_id, "tau", taux)
+
+        ! Report the control parameters found in the checkpoint next to the ones
+        ! parsed from the restart input, and say which of the two is used.
+        write(ounit,'(/,a)') " DMC restart :: control parameters"
+        write(ounit,'(a)')   " parameter        checkpoint        input       used"
+        write(ounit,'(a,i12,i12,4x,a)') " dmc_nblk    ", nblk_stored,  dmc_nblk,  "input"
+        write(ounit,'(a,i12,i12,4x,a)') " dmc_nstep   ", nstep_stored, dmc_nstep, "input"
+        write(ounit,'(a,i12,i12,4x,a)') " dmc_nconf   ", nconf_stored, dmc_nconf, "checkpoint"
+        write(ounit,'(a,i12,i12,4x,a)') " nproc       ", nproco,       nproc,     "input"
+        write(ounit,'(a,i12,i12,4x,a)') " nelec       ", nelec,  nelec_input,  "checkpoint"
+        write(ounit,'(a,i12,i12,4x,a)') " nforce      ", nforce, nforce_input, "checkpoint"
+        write(ounit,'(a,i12,i12,4x,a)') " nquad       ", nquad,  nquad_input,  "checkpoint"
+        write(ounit,'(a,f12.6,f12.6,4x,a)')   " hb          ", hbx,  hb_input,  "input"
+        write(ounit,'(a,f12.6,f12.6,4x,a,/)') " tau         ", taux, tau_input, "checkpoint"
+
+        ! dmc_nconf is part of the branching state (it is the target population that
+        ! produced the dumped weights), so it is taken from the checkpoint, exactly as
+        ! the legacy binary startr does. The block/step counts govern how long *this*
+        ! run lasts and are therefore taken from the restart input, as in VMC.
+        dmc_nconf = nconf_stored
 
         allocate(xold_dmc_send(3, nelec, MWALK, nforce))
         allocate(wt_send(MWALK))
@@ -317,6 +365,7 @@ module dmc_restore_hdf5_mod
             write (unit=s,fmt="(i0)") id
             if (id .eq. 0) then
                 call hdf5_read(file_id, group_id, "Number of Walkers proc_"//trim(s), nwalk)
+                nwalk_all(id) = nwalk
                 call hdf5_read(file_id, group_id, "xold_dmc_proc_"//trim(s), xold_dmc)
                 call hdf5_read(file_id, group_id, "nfprod_proc_"//trim(s), nfprod)
                 call hdf5_read(file_id, group_id, "ff_proc_"//trim(s), ff)
@@ -331,6 +380,7 @@ module dmc_restore_hdf5_mod
                 call hdf5_read(file_id, group_id, "fratio_proc_"//trim(s), fratio)
             else
                 call hdf5_read(file_id, group_id, "Number of Walkers proc_"//trim(s), nwalk_send)
+                nwalk_all(id) = nwalk_send
                 call hdf5_read(file_id, group_id, "xold_dmc_proc_"//trim(s), xold_dmc_send)
                 call hdf5_read(file_id, group_id, "nfprod_proc_"//trim(s), nfprod)
                 call hdf5_read(file_id, group_id, "ff_proc_"//trim(s), ff_send)
@@ -367,12 +417,16 @@ module dmc_restore_hdf5_mod
         call hdf5_read(file_id, group_id, "pecum_dmc", pecum_dmc(1:nforce))
         call hdf5_read(file_id, group_id, "tpbcum_dmc", tpbcum_dmc(1:nforce))
         call hdf5_read(file_id, group_id, "taucum", taucum(1:nforce))
+        call hdf5_read(file_id, group_id, "wgcm2", wgcm2(1:nforce))
+        call hdf5_read(file_id, group_id, "egcm2", egcm2(1:nforce))
+        call hdf5_read(file_id, group_id, "pecm2_dmc", pecm2_dmc(1:nforce))
+        call hdf5_read(file_id, group_id, "tpbcm2_dmc", tpbcm2_dmc(1:nforce))
 
         call hdf5_read(file_id, group_id, "ipass", ipass)
         call hdf5_read(file_id, group_id, "iblk", iblk)
         call hdf5_read(file_id, group_id, "iblk_proc", iblk_proc)
 
-        call hdf5_read(file_id, group_id, "tau", tau)
+        tau = taux
         call hdf5_read(file_id, group_id, "rttau", rttau)
         call hdf5_read(file_id, group_id, "idmc", idmc)
         call hdf5_read(file_id, group_id, "wtgen", wtgen(0:nfprod))
@@ -453,6 +507,70 @@ module dmc_restore_hdf5_mod
         endif
 
 
+        ! analytical forces (same content as force_analy_rstrt)
+        if (iforce_analy.ne.0) then
+            call hdf5_group_open(file_id, "Force Analytical", group_id)
+            call hdf5_read(file_id, group_id, "da_energy_cum", da_energy_cum)
+            call hdf5_read(file_id, group_id, "da_psi_cum", da_psi_cum)
+            call hdf5_read(file_id, group_id, "da_energy_cm2", da_energy_cm2)
+            if (dmc_ivd.gt.0) then
+                call hdf5_read(file_id, group_id, "da_branch_cum", da_branch_cum)
+                call hdf5_read(file_id, group_id, "nwprod", nwprod_stored)
+                call hdf5_read(file_id, group_id, "ipathak", ipathak_stored)
+                if (nwprod_stored.ne.nwprod) &
+                    call fatal_error('DMC_RESTORE_HDF5: nwprod differs from the checkpoint')
+                if (ipathak_stored.ne.ipathak) &
+                    call fatal_error('DMC_RESTORE_HDF5: ipathak differs from the checkpoint')
+
+                write (unit=s,fmt="(i0)") 0
+                call hdf5_read(file_id, group_id, "deriv_eold_proc_"//trim(s), deriv_eold(1:3,1:ncent,1:nwalk))
+                call hdf5_read(file_id, group_id, "esnake_proc_"//trim(s), esnake(1:3,1:ncent,1:nwalk,1:PTH))
+                if (ipathak.gt.0) &
+                    call hdf5_read(file_id, group_id, "pold_proc_"//trim(s), pold(1:nwalk,1:PTH))
+                do iph=1,PTH
+                    write (unit=s,fmt="(i0,a,i0)") 0, "_", iph
+                    call hdf5_read(file_id, group_id, "ehist_proc_"//trim(s), &
+                                   ehist(1:3,1:ncent,1:nwalk,0:nwprod-1,iph))
+                enddo
+
+                if (nproc .gt. 1) then
+                    allocate(deriv_eold_send(3, ncent, MWALK))
+                    allocate(esnake_send(3, ncent, MWALK, PTH))
+                    allocate(ehist_send(3, ncent, MWALK, 0:nwprod-1, PTH))
+                    allocate(pold_send(MWALK, PTH))
+                    do id=1, nproc-1
+                        nwalk_send = nwalk_all(id)
+                        write (unit=s,fmt="(i0)") id
+                        call hdf5_read(file_id, group_id, "deriv_eold_proc_"//trim(s), &
+                                       deriv_eold_send(1:3,1:ncent,1:nwalk_send))
+                        call hdf5_read(file_id, group_id, "esnake_proc_"//trim(s), &
+                                       esnake_send(1:3,1:ncent,1:nwalk_send,1:PTH))
+                        if (ipathak.gt.0) &
+                            call hdf5_read(file_id, group_id, "pold_proc_"//trim(s), pold_send(1:nwalk_send,1:PTH))
+                        do iph=1,PTH
+                            write (unit=s,fmt="(i0,a,i0)") id, "_", iph
+                            call hdf5_read(file_id, group_id, "ehist_proc_"//trim(s), &
+                                           ehist_send(1:3,1:ncent,1:nwalk_send,0:nwprod-1,iph))
+                        enddo
+
+                        call mpi_send(deriv_eold_send(1:3,1:ncent,1:nwalk_send),3*ncent*nwalk_send, &
+                                      mpi_double_precision,id,13,MPI_COMM_WORLD,ierr)
+                        call mpi_send(esnake_send(1:3,1:ncent,1:nwalk_send,1:PTH),3*ncent*nwalk_send*PTH, &
+                                      mpi_double_precision,id,14,MPI_COMM_WORLD,ierr)
+                        call mpi_send(ehist_send(1:3,1:ncent,1:nwalk_send,0:nwprod-1,1:PTH), &
+                                      3*ncent*nwalk_send*nwprod*PTH, &
+                                      mpi_double_precision,id,15,MPI_COMM_WORLD,ierr)
+                        if (ipathak.gt.0) &
+                            call mpi_send(pold_send(1:nwalk_send,1:PTH),nwalk_send*PTH, &
+                                          mpi_double_precision,id,16,MPI_COMM_WORLD,ierr)
+                    enddo
+                    deallocate(deriv_eold_send, esnake_send, ehist_send, pold_send)
+                endif
+            endif
+            call hdf5_group_close(group_id)
+            write(ounit, *) " HDF5 Group read :: Force Analytical "
+        endif
+
         call hdf5_file_close(file_id)
         ! Close the HDF5 file
 
@@ -507,6 +625,16 @@ module dmc_restore_hdf5_mod
             call mpi_recv(iage,MWALK,mpi_integer,0,10,MPI_COMM_WORLD,istatus,ierr)
             call mpi_recv(ioldest,1,mpi_integer,0,11,MPI_COMM_WORLD,istatus,ierr)
             call mpi_recv(ioldestmx,1,mpi_integer,0,12,MPI_COMM_WORLD,istatus,ierr)
+            if (iforce_analy.ne.0 .and. dmc_ivd.gt.0) then
+              call mpi_recv(deriv_eold(1:3,1:ncent,1:nwalk),3*ncent*nwalk, &
+                            mpi_double_precision,0,13,MPI_COMM_WORLD,istatus,ierr)
+              call mpi_recv(esnake(1:3,1:ncent,1:nwalk,1:PTH),3*ncent*nwalk*PTH, &
+                            mpi_double_precision,0,14,MPI_COMM_WORLD,istatus,ierr)
+              call mpi_recv(ehist(1:3,1:ncent,1:nwalk,0:nwprod-1,1:PTH),3*ncent*nwalk*nwprod*PTH, &
+                            mpi_double_precision,0,15,MPI_COMM_WORLD,istatus,ierr)
+              if (ipathak.gt.0) &
+                call mpi_recv(pold(1:nwalk,1:PTH),nwalk*PTH,mpi_double_precision,0,16,MPI_COMM_WORLD,istatus,ierr)
+            endif
           endif
         endif
 
@@ -668,6 +796,7 @@ module dmc_restore_hdf5_mod
         pesum_dmc(ifr)=zero
         tpbsum_dmc(ifr)=zero
         tausum(ifr)=zero
+        wsum1(ifr)=zero
         derivsum(:,:,:,ifr)=zero
       enddo
 

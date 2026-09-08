@@ -96,6 +96,7 @@ module vmc_store_hdf5_mod
 
         ! force analytic
         use da_energy_sumcum, only: da_energy_cm2,da_energy_cum,da_psi_cum
+        use derivest, only: derivcm2,derivcum
         use m_force_analytic, only: iforce_analy
 
         ! Jastrow optimization
@@ -473,6 +474,8 @@ module vmc_store_hdf5_mod
                 call hdf5_write(file_id, group_id, "da_energy_cum", da_energy_cum)
                 call hdf5_write(file_id, group_id, "da_psi_cum", da_psi_cum)
                 call hdf5_write(file_id, group_id, "da_energy_cm2", da_energy_cm2)
+                call hdf5_write(file_id, group_id, "derivcum", derivcum)
+                call hdf5_write(file_id, group_id, "derivcm2", derivcm2)
                 call hdf5_group_close(group_id)
                 write(ounit, *) " HDF5 Group saved :: Force Analytical "
         endif
