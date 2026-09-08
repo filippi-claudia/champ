@@ -196,6 +196,7 @@
 
         call walkstrdet(iw)
         call walkstrjas(iw)
+        if (ibackflow.gt.0) call backflow(xold_dmc(:,:,iw,1))
 
         ! Sample Green function for forward move
         dfus2ac=zero
@@ -209,9 +210,6 @@
         endif
 
         if(icasula.ge.3) then
-          if (ibackflow .gt. 0) then
-            call backflow(xold_dmc(:,:,iw,1))
-          endif
           imove_up=0
           imove_dn=0
           do i=1,nelec

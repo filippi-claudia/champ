@@ -128,11 +128,11 @@ contains
             pwt(iw2,ifr)=pwt(iw,ifr)
             fratio(iw2,ifr)=fratio(iw,ifr)
             
-            if (nfrag.gt.1) then
+            if (icut_e.lt.0) then
               eloco_i(:,iw2,ifr)=eloco_i(:,iw,ifr)
               fratio_i(:,iw2,ifr)=fratio_i(:,iw,ifr)
             endif
-            if (icut_e.lt.0) then
+            if (nfrag.gt.1) then
               elocofrag(:,iw2,ifr)=elocofrag(:,iw,ifr)
               fratiofrag(:,iw2,ifr)=fratiofrag(:,iw,ifr)
             endif
@@ -167,6 +167,7 @@ contains
         if(iforce_analy.eq.1) then
           if(dmc_ivd.gt.0) then
             do iph=1,PTH
+              pold(iw2,iph)=pold(iw,iph)
               do ic=1,ncent
                 do k=1,3
                   esnake(k,ic,iw2,iph)=esnake(k,ic,iw,iph)
