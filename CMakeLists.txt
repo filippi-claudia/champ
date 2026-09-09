@@ -277,11 +277,28 @@ endif()
 
 # List of Fortran flags for GNU compiler begins here
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-  if(APPLE AND CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64")
-    list(APPEND Fortran_FLAGS "-O2" "-cpp" "-ffree-line-length-none")
+  list(APPEND Fortran_FLAGS "-O2" "-cpp" "-ffree-line-length-none")
+
+  # The large code model lifts the 2 GB limit on static data that the default
+  # (small) model imposes on x86-64.  It is not portable: AArch64 gfortran
+  # either rejects it outright ("code model 'large' not supported yet" on
+  # macOS/arm64) or refuses to combine it with position independent code,
+  # which distributions such as Ubuntu enable by default and which CHAMP needs
+  # for its shared libraries.  Probe the compiler with -fPIC in effect instead
+  # of hard-coding a platform list, so the flag is used wherever it works and
+  # silently dropped where it does not (see issue #288).
+  include(CheckFortranCompilerFlag)
+  set(CMAKE_REQUIRED_FLAGS_SAVED "${CMAKE_REQUIRED_FLAGS}")
+  set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fPIC")
+  check_fortran_compiler_flag("-mcmodel=large" CHAMP_Fortran_HAS_MCMODEL_LARGE)
+  set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS_SAVED}")
+  unset(CMAKE_REQUIRED_FLAGS_SAVED)
+  if(CHAMP_Fortran_HAS_MCMODEL_LARGE)
+    list(APPEND Fortran_FLAGS "-mcmodel=large")
   else()
-    list(APPEND Fortran_FLAGS "-O2" "-cpp" "-mcmodel=large" "-ffree-line-length-none")
+    message(STATUS "-mcmodel=large is not supported together with -fPIC :: using the default code model")
   endif()
+
   if(CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
     list(APPEND Fortran_FLAGS "-fcheck=all" "-fbacktrace"
         "-g" "-Wall" "-Wextra" "-fPIC"

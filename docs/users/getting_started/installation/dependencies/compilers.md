@@ -40,7 +40,10 @@ brew install gcc
 
 - `-O2` - Optimization level 2
 - `-cpp` - Enable preprocessor
-- `-mcmodel=large` - Large memory model support
+- `-mcmodel=large` - Large memory model support, added only when the compiler
+  accepts it together with `-fPIC`. On AArch64 (ARM64) targets, including Apple
+  Silicon and ARM Linux, gfortran rejects that combination, so CHAMP configures
+  the default code model instead
 - `-ffree-line-length-none` - No limit on free-form line length
 - `-D_MPI_` and `-DCLUSTER` - MPI and cluster support
 
