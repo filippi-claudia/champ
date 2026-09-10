@@ -52,6 +52,7 @@ set(SHARED_MODULES
     m_allocation.f90
     m_state_avrg.f90
     m_error.f90
+    m_outputs.f90
     m_qmckl.F90
     ${CMAKE_PARSER_DIR}/fdf.F90
     ${CMAKE_PARSER_DIR}/io_fdf.F90
