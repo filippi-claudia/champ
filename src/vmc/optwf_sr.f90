@@ -12,7 +12,7 @@
 
 module optwf_sr_mod
 
-    use control_vmc, only: vmc_nblk_max
+    use control_vmc, only: vmc_nblk_max, vmc_idump, vmc_irstar
     use contrl_file, only: ounit
     use error, only: fatal_error
     use mpitimer, only: elapsed_time
@@ -93,7 +93,7 @@ contains
         integer :: i, iefficiency_sav, iforce_analy_sav, iflag, ioptjas_sav, ioptorb_sav, ioptci_sav
         integer :: iter, miter, nbjx_sav, nwftypeorb_sav, nwftypejas_sav, node_cutoff_sav, istate, jstate
         integer :: stoo_sav, stoj_sav, stobjx_sav, bjxtoo_sav, bjxtoj_sav
-        integer :: iflagin, nadorb_sav, nblk_sav, nstates_sav
+        integer :: iflagin, nadorb_sav, nblk_sav, nstates_sav, vmc_idump_sav, vmc_irstar_sav
 
         if (method .ne. 'sr_n') return
 
@@ -194,6 +194,7 @@ contains
                 endif
 
                 call qmc
+                vmc_irstar = 0
 
                 write (ounit, '(/,''Completed sampling'')')
 
@@ -351,7 +352,19 @@ contains
 
         call set_nparms
 
+        vmc_idump_sav = vmc_idump
+        vmc_idump = 0
+        vmc_irstar_sav = vmc_irstar
+        vmc_irstar = 0
+
         call qmc
+
+        vmc_irstar = vmc_irstar_sav
+        vmc_idump = vmc_idump_sav
+        ioptjas = ioptjas_sav
+        ioptorb = ioptorb_sav
+        ioptci = ioptci_sav
+        call set_nparms
 
         nadorb_sav=nadorb
         call write_wf(1, -1)

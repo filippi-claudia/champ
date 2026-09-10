@@ -1,5 +1,5 @@
 {
-  "description": "HDF5 checkpoint/restart for VMC: run1 is an uninterrupted 10-block run; run2 covers the first 5 blocks from scratch and dumps the state, run3 restores it and runs the remaining 5. Both paths must produce exactly the same cumulative energy -- the absolute value is irrelevant, only that a restart reproduces the uninterrupted run bit for bit.",
+  "description": "HDF5 checkpoint/restart for VMC. run1 is an uninterrupted ten-block run. run2 takes the first five and dumps; run3 restores that checkpoint and takes the other five. run4 and run5 split the same five differently -- run4 restores, takes three and dumps again, run5 restores that second checkpoint and takes the last two -- so a checkpoint written by a restarted run is exercised as well as one written by a fresh one. Every path must reproduce run1 exactly; the absolute energy is irrelevant.",
   "labels": [
     "VMC",
     "HDF5",
@@ -13,7 +13,7 @@
   "cases": [
     {
       "name": "np2",
-      "comment": "run1 and run2 must start from exactly the same walker configuration, so the mc_configs_start each run leaves behind is removed before both of them; only run3 is allowed to inherit state, and only through the HDF5 checkpoint.",
+      "comment": "run1 and run2 must start from exactly the same walker configuration, so the mc_configs_start each run leaves behind is removed before both of them; the restarting runs are allowed to inherit state, and only through the HDF5 checkpoint. run3 dumps nothing, so run4 still restores the checkpoint run2 wrote; run4 then overwrites it for run5.",
       "runs": [
         {
           "program": "vmc",
@@ -53,6 +53,20 @@
           "output": "run3_core_2.out",
           "nproc": 2,
           "error_output": "error_run3"
+        },
+        {
+          "program": "vmc",
+          "input": "run4.inp",
+          "output": "run4_core_2.out",
+          "nproc": 2,
+          "error_output": "error_run4"
+        },
+        {
+          "program": "vmc",
+          "input": "run5.inp",
+          "output": "run5_core_2.out",
+          "nproc": 2,
+          "error_output": "error_run5"
         }
       ],
       "checks": [
@@ -69,6 +83,47 @@
           ],
           "match": "total E",
           "comment": "5 blocks + restart + 5 blocks must reproduce the uninterrupted 10 blocks exactly"
+        },
+        {
+          "type": "values_equal",
+          "files": [
+            "run3_core_2.out",
+            "run1_core_2.out"
+          ],
+          "match": "potential E"
+        },
+        {
+          "type": "values_equal",
+          "files": [
+            "run3_core_2.out",
+            "run1_core_2.out"
+          ],
+          "match": "pb kinetic E"
+        },
+        {
+          "type": "values_equal",
+          "files": [
+            "run5_core_2.out",
+            "run1_core_2.out"
+          ],
+          "match": "total E",
+          "comment": "restarting twice, the second time from a checkpoint that a restarted run wrote, must still reproduce the uninterrupted ten blocks"
+        },
+        {
+          "type": "values_equal",
+          "files": [
+            "run5_core_2.out",
+            "run1_core_2.out"
+          ],
+          "match": "potential E"
+        },
+        {
+          "type": "values_equal",
+          "files": [
+            "run5_core_2.out",
+            "run1_core_2.out"
+          ],
+          "match": "pb kinetic E"
         }
       ]
     }

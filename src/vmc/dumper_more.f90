@@ -2,10 +2,12 @@
     module dumper_more_mod
 
       use basis,   only: zex
+      use control, only: mode
       use constants, only: hb
       use control_vmc, only: vmc_nstep
       use contrl_file, only: errunit,ounit
       use csfs,    only: nstates
+      use mpiconf, only: wid
       use determinant_psig_mod, only: determinant_psig
       use determinante_mod, only: compute_determinante_grad
       use coefs, only: nbasis
@@ -141,6 +143,8 @@ contains
       real(dp), dimension(MSTATES) :: ekino
       real(dp), parameter :: half = 0.5d0
       real(dp), parameter :: small = 1.d-6
+      real(dp) :: eave_rstrt, peave_rstrt, tpbave_rstrt, accept_rstrt
+      real(dp) :: eerr_rstrt, peerr_rstrt, tpberr_rstrt
 
       read(10) deltax,deltarx,deltatx
       if (dabs(deltax-delta).gt.small) call fatal_error('STARTR: delta')
@@ -211,7 +215,37 @@ contains
       call optx_orb_ci_rstrt(10)
 
       write(ounit,'(1x,''succesful read from unit 10'')')
-      write(ounit,'(t5,''enow'',t15,''eave'',t25,''eerr'',t35,''peave'',t45,''peerr'',t55,''tpbave'',t65,''tpberr'',t75,''accept'',t85,''iter'')')
+      if (wid) then
+          if (nforce.gt.1) then
+              write(ounit,'(t5,''enow'',t15,''eave'',t21,''(eerr )'' &
+                  &,t32,''peave'',t38,''(peerr)'',t48,''tpbave'',t54,''(tpberr)'' &
+                  &,t66,''fave'',t80,''(ferr)'',t93,''accept'',t101,''iter'')')
+          else
+              write(ounit,'(t5,''enow'',t15,''eave'',t21,''(eerr )'' &
+                  &,t32,''peave'',t38,''(peerr)'',t48,''tpbave'',t54,''(tpberr)'' &
+                  &,t67,''accept'',t79,''iter'')')
+          endif
+          eave_rstrt = ecum(1,1)/wcum(1,1)
+          peave_rstrt = pecum(1)/wcum(1,1)
+          tpbave_rstrt = tpbcum(1)/wcum(1,1)
+          if (iblk .gt. 1) then
+              eerr_rstrt = dsqrt(dmax1(0.d0, ecm2(1,1)/wcum(1,1) - eave_rstrt**2) / dble(iblk))
+              peerr_rstrt = dsqrt(dmax1(0.d0, pecm2(1)/wcum(1,1) - peave_rstrt**2) / dble(iblk))
+              tpberr_rstrt = dsqrt(dmax1(0.d0, tpbcm2(1)/wcum(1,1) - tpbave_rstrt**2) / dble(iblk))
+          else
+              eerr_rstrt = 0.d0
+              peerr_rstrt = 0.d0
+              tpberr_rstrt = 0.d0
+          endif
+          if (index(mode,'one').eq.0) then
+              accept_rstrt = acc / dble(vmc_nstep*iblk)
+          else
+              accept_rstrt = acc / (dble(vmc_nstep*iblk)*nelec)
+          endif
+          write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),1x,f10.5,i10)') &
+              eave_rstrt, eave_rstrt, nint(100000*eerr_rstrt), peave_rstrt, nint(100000*peerr_rstrt), &
+              tpbave_rstrt, nint(100000*tpberr_rstrt), accept_rstrt, iblk*vmc_nstep
+      endif
 
       if(nforce.gt.1) then
         call setup_force
