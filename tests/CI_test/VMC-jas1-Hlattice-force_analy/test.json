@@ -33,6 +33,30 @@
           "comment": "analytic forces within 2 sigma of reference"
         }
       ]
+    },
+    {
+      "name": "np2-named-force-file",
+      "comment": "Same calculation with the force file renamed through %module outputs: the forces have to come out of force_vmc_named.dat instead of the default force_analytic, and be the same numbers.",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "vmc_named_force_file.inp",
+          "output": "vmc_named.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "file_exists",
+          "file": "force_vmc_named.dat"
+        },
+        {
+          "type": "forces",
+          "file": "force_vmc_named.dat",
+          "reference": "force_reference",
+          "comment": "analytic forces written to the user-named file"
+        }
+      ]
     }
   ]
 }
