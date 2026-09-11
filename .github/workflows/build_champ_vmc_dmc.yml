@@ -28,6 +28,7 @@ on:
 
 env:
   HDF5_VERSION: 1.14.2
+  TREXIO_VERSION: 2.6.1
 
 jobs:
   build_champ_vmc_dmc:
@@ -89,11 +90,12 @@ jobs:
           cp -a "$HOME/hdf5-install/." "$HOME/"
           head -n 25 "$HOME/lib/libhdf5.settings"
 
-      - name: Clone and Install TREXIO-v2.5.0
+      - name: Clone and Install TREXIO
         run: |
-          wget https://github.com/TREX-CoE/trexio/releases/download/v2.5.0/trexio-2.5.0.tar.gz
-          tar -xzf trexio-2.5.0.tar.gz
-          cd trexio-2.5.0
+          set -e
+          wget -q "https://github.com/TREX-CoE/trexio/releases/download/v${TREXIO_VERSION}/trexio-${TREXIO_VERSION}.tar.gz"
+          tar -xzf "trexio-${TREXIO_VERSION}.tar.gz"
+          cd "trexio-${TREXIO_VERSION}"
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           cmake -S. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpif90 \
