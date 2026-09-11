@@ -8,10 +8,6 @@ on:
     tags:
       - v2.*.*
       - v3.*.*
-    # Documentation and the Python tooling each have a workflow of their
-    # own; a change confined to them has nothing to build here.  Path
-    # filters are not evaluated for tag pushes, so a release is still
-    # built and tested in full.
     paths-ignore:
       - 'docs/**'
       - 'tools/trex_tools/**'
@@ -31,8 +27,6 @@ on:
   workflow_dispatch:
 
 env:
-  # The one HDF5 the source-building workflows share; bump it here and the
-  # cache key follows.
   HDF5_VERSION: 1.14.2
 
 jobs:
@@ -58,12 +52,6 @@ jobs:
           which python
           python --version
 
-      # HDF5 is by a wide margin the slowest thing in this job, and what it
-      # produces depends only on the version and on the compilers that build
-      # it, so the installed tree is cached.  Fortran .mod files are tied to
-      # the exact gfortran that wrote them, so the key carries the compiler
-      # versions: a new runner image invalidates the cache instead of
-      # handing the build modules it cannot read.
       - name: Identify the toolchain the HDF5 cache is keyed on
         id: toolchain
         run: |
@@ -76,9 +64,6 @@ jobs:
           cat toolchain.id
           echo "id=$(sha256sum toolchain.id | cut -c 1-12)" >> "$GITHUB_OUTPUT"
 
-      # Staged under a prefix of its own so the cache holds HDF5 and nothing
-      # else: TREXIO -- and, where it is built, QMCkl -- install into $HOME
-      # later in this job, and have versions of their own to track.
       - name: Restore the HDF5 build
         id: cache-hdf5
         uses: actions/cache@v6
@@ -98,7 +83,6 @@ jobs:
           make -j$(nproc)
           make install
 
-      # $HOME is the prefix every later step looks in, cached build or not.
       - name: Install HDF5 into the dependency prefix
         run: |
           set -e

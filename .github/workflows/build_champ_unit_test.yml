@@ -3,10 +3,6 @@ name: CHAMP-EU CI - Unit tests for CHAMP with GNU using FortUTF
 on:
   pull_request:
     branches: [main]
-    # Documentation and the Python tooling each have a workflow of their
-    # own; a change confined to them has nothing to build here.  Path
-    # filters are not evaluated for tag pushes, so a release is still
-    # built and tested in full.
     paths-ignore:
       - 'docs/**'
       - 'tools/trex_tools/**'

@@ -1,7 +1,4 @@
 name: User Documentation
-# The documentation is self-contained: it is built from docs/ alone, so it
-# is rebuilt only when that tree (or this workflow) changes.  Nothing here
-# compiles CHAMP, and no CHAMP build depends on these files.
 on:
   push:
     branches:

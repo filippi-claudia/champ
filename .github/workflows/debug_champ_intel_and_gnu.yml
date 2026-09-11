@@ -3,10 +3,6 @@ name: CHAMP-EU CI - Debug build - Intel oneAPI and GNU toolchain
 on:
   push:
     branches: [main, ci_hotfix]
-    # Documentation and the Python tooling each have a workflow of their
-    # own; a change confined to them has nothing to build here.  Path
-    # filters are not evaluated for tag pushes, so a release is still
-    # built and tested in full.
     paths-ignore:
       - 'docs/**'
       - 'tools/trex_tools/**'
@@ -43,7 +39,6 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
-    # The same Intel toolchain the release build installs, step for step.
     - name: Use Intel oneAPI GitHub Actions fast setup
       if: matrix.toolchain == 'intel'
       uses: neelravi/intel-oneapi-github-actions@latest
