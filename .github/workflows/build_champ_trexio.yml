@@ -30,6 +30,11 @@ on:
       - '.github/workflows/test_python.yml'
   workflow_dispatch:
 
+env:
+  # The one HDF5 the source-building workflows share; bump it here and the
+  # cache key follows.
+  HDF5_VERSION: 1.14.2
+
 jobs:
   build_champ_trexio:
     strategy:
@@ -53,14 +58,52 @@ jobs:
           which python
           python --version
 
-      - name: Build HDF5 from source
+      # HDF5 is by a wide margin the slowest thing in this job, and what it
+      # produces depends only on the version and on the compilers that build
+      # it, so the installed tree is cached.  Fortran .mod files are tied to
+      # the exact gfortran that wrote them, so the key carries the compiler
+      # versions: a new runner image invalidates the cache instead of
+      # handing the build modules it cannot read.
+      - name: Identify the toolchain the HDF5 cache is keyed on
+        id: toolchain
         run: |
-          wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_2.tar.gz
-          tar -xzf hdf5-1_14_2.tar.gz
-          cd hdf5-hdf5-1_14_2
-          ./configure FC=mpif90 CC=mpicc FCFLAGS=-O2 CFLAGS=-O2 CXX=mpic++ --enable-parallel --enable-static --enable-shared --enable-fortran --prefix=$HOME
+          set -e
+          {
+            gcc -dumpfullversion
+            gfortran -dumpfullversion
+            mpirun --version | head -n 1
+          } > toolchain.id
+          cat toolchain.id
+          echo "id=$(sha256sum toolchain.id | cut -c 1-12)" >> "$GITHUB_OUTPUT"
+
+      # Staged under a prefix of its own so the cache holds HDF5 and nothing
+      # else: TREXIO -- and, where it is built, QMCkl -- install into $HOME
+      # later in this job, and have versions of their own to track.
+      - name: Restore the HDF5 build
+        id: cache-hdf5
+        uses: actions/cache@v6
+        with:
+          path: ~/hdf5-install
+          key: hdf5-${{ env.HDF5_VERSION }}-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.id }}
+
+      - name: Build HDF5 from source
+        if: steps.cache-hdf5.outputs.cache-hit != 'true'
+        run: |
+          set -e
+          tag="hdf5-${HDF5_VERSION//./_}"
+          wget -q "https://github.com/HDFGroup/hdf5/archive/refs/tags/${tag}.tar.gz"
+          tar -xzf "${tag}.tar.gz"
+          cd "hdf5-${tag}"
+          ./configure FC=mpif90 CC=mpicc FCFLAGS=-O2 CFLAGS=-O2 CXX=mpic++ --enable-parallel --enable-static --enable-shared --enable-fortran --prefix=$HOME/hdf5-install
           make -j$(nproc)
           make install
+
+      # $HOME is the prefix every later step looks in, cached build or not.
+      - name: Install HDF5 into the dependency prefix
+        run: |
+          set -e
+          cp -a "$HOME/hdf5-install/." "$HOME/"
+          head -n 25 "$HOME/lib/libhdf5.settings"
 
       - name: Clone and Install TREXIO-v2.5.0
         run: |
