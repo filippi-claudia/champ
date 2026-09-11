@@ -8,11 +8,27 @@ on:
     tags:
       - v2.*.*
       - v3.*.*
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
   pull_request:
     branches:
       - 'releases/**'
       - main
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
   workflow_dispatch:
+
+env:
+  HDF5_VERSION: 1.14.2
+  TREXIO_VERSION: 2.6.1
 
 jobs:
   build_champ_vmc_dmc:
@@ -37,20 +53,49 @@ jobs:
           which python
           python --version
 
-      - name: Build HDF5 from source
+      - name: Identify the toolchain the HDF5 cache is keyed on
+        id: toolchain
         run: |
-          wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_14_2.tar.gz
-          tar -xzf hdf5-1_14_2.tar.gz
-          cd hdf5-hdf5-1_14_2
-          ./configure FC=mpif90 CC=mpicc FCFLAGS=-O2 CFLAGS=-O2 CXX=mpic++ --enable-parallel --enable-static --enable-shared --enable-fortran --prefix=$HOME
+          set -e
+          {
+            gcc -dumpfullversion
+            gfortran -dumpfullversion
+            mpirun --version | head -n 1
+          } > toolchain.id
+          cat toolchain.id
+          echo "id=$(sha256sum toolchain.id | cut -c 1-12)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the HDF5 build
+        id: cache-hdf5
+        uses: actions/cache@v6
+        with:
+          path: ~/hdf5-install
+          key: hdf5-${{ env.HDF5_VERSION }}-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.id }}
+
+      - name: Build HDF5 from source
+        if: steps.cache-hdf5.outputs.cache-hit != 'true'
+        run: |
+          set -e
+          tag="hdf5-${HDF5_VERSION//./_}"
+          wget -q "https://github.com/HDFGroup/hdf5/archive/refs/tags/${tag}.tar.gz"
+          tar -xzf "${tag}.tar.gz"
+          cd "hdf5-${tag}"
+          ./configure FC=mpif90 CC=mpicc FCFLAGS=-O2 CFLAGS=-O2 CXX=mpic++ --enable-parallel --enable-static --enable-shared --enable-fortran --prefix=$HOME/hdf5-install
           make -j$(nproc)
           make install
 
-      - name: Clone and Install TREXIO-v2.5.0
+      - name: Install HDF5 into the dependency prefix
         run: |
-          wget https://github.com/TREX-CoE/trexio/releases/download/v2.5.0/trexio-2.5.0.tar.gz
-          tar -xzf trexio-2.5.0.tar.gz
-          cd trexio-2.5.0
+          set -e
+          cp -a "$HOME/hdf5-install/." "$HOME/"
+          head -n 25 "$HOME/lib/libhdf5.settings"
+
+      - name: Clone and Install TREXIO
+        run: |
+          set -e
+          wget -q "https://github.com/TREX-CoE/trexio/releases/download/v${TREXIO_VERSION}/trexio-${TREXIO_VERSION}.tar.gz"
+          tar -xzf "trexio-${TREXIO_VERSION}.tar.gz"
+          cd "trexio-${TREXIO_VERSION}"
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           cmake -S. -Bbuild \
             -DCMAKE_Fortran_COMPILER=mpif90 \
@@ -62,7 +107,7 @@ jobs:
           make install
 
       - name: Clone the CHAMP code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Compile the CHAMP code with TREXIO using GNU compilers and run the VMC/DMC tests
         run: |

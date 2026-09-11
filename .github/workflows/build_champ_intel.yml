@@ -8,10 +8,22 @@ on:
     tags:
       - v2.*.*
       - v3.*.*
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
   pull_request:
     branches:
       - 'releases/**'
       - main
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
   workflow_dispatch:
 
 jobs:
@@ -20,7 +32,7 @@ jobs:
       matrix:
         toolchain: ['intel']
     name: Build CHAMP with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 300
     defaults:
       run:
@@ -44,7 +56,7 @@ jobs:
           sudo apt-get install -y intel-oneapi-compiler-fortran
 
       - name: Get the CHAMP code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install dependencies
         run: |

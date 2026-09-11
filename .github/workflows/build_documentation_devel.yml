@@ -5,10 +5,17 @@ on:
       - main
     tags:
       - '**'
+    paths:
+      - 'docs/**'
+      - '.github/workflows/build_documentation_devel.yml'
   pull_request:
+    paths:
+      - 'docs/**'
+      - '.github/workflows/build_documentation_devel.yml'
   release:
     types:
       - published
+  workflow_dispatch:
 permissions:
   contents: read
   pages: write
@@ -22,16 +29,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/configure-pages@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: 3.x
       - run: pip install zensical
       - run: |
           cd docs
           zensical build --clean
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: docs/site
 
@@ -45,7 +52,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
 # ---------------------------------------------------------------------
 # OLD DOXYGEN WORKFLOW (Commented out for future reference)
