@@ -62,7 +62,7 @@ jobs:
           make install
 
       - name: Clone the CHAMP code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Compile the CHAMP code with TREXIO using GNU compilers and run the TREXIO tests
         run: |

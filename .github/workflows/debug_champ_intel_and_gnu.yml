@@ -28,7 +28,7 @@ jobs:
       run:
         shell: bash --noprofile --norc {0}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7
     - name: Get Intel Key
       if: matrix.toolchain == 'intel'
       run: |
