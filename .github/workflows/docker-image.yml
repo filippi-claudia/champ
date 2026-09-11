@@ -3,8 +3,24 @@ name: CHAMP-EU CI - Docker image build and tagging for Docker Hub
 on:
   push:
     branches: [ "main" ]
+    # Documentation and the Python tooling each have a workflow of their
+    # own; a change confined to them has nothing to build here.  Path
+    # filters are not evaluated for tag pushes, so a release is still
+    # built and tested in full.
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
   workflow_dispatch:
 
 jobs:

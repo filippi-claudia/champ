@@ -1,10 +1,21 @@
 name: CHAMP-EU CI - Python tests for the TREXIO tools integration
 
+# These are pure-Python tests: the trex2champ converter under
+# tools/trex_tools and the self-test of the CI test runner.  They need no
+# CHAMP build, so they run only when that Python code changes.
 on:
   push:
     branches: [main, ci_hotfix]
+    paths:
+      - 'tools/trex_tools/**'
+      - 'tests/CI_test/champ_test_runner.py'
+      - '.github/workflows/test_python.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'tools/trex_tools/**'
+      - 'tests/CI_test/champ_test_runner.py'
+      - '.github/workflows/test_python.yml'
   workflow_dispatch:
 
 jobs:

@@ -1,14 +1,24 @@
 name: User Documentation
+# The documentation is self-contained: it is built from docs/ alone, so it
+# is rebuilt only when that tree (or this workflow) changes.  Nothing here
+# compiles CHAMP, and no CHAMP build depends on these files.
 on:
   push:
     branches:
       - main
     tags:
       - '**'
+    paths:
+      - 'docs/**'
+      - '.github/workflows/build_documentation_devel.yml'
   pull_request:
+    paths:
+      - 'docs/**'
+      - '.github/workflows/build_documentation_devel.yml'
   release:
     types:
       - published
+  workflow_dispatch:
 permissions:
   contents: read
   pages: write
