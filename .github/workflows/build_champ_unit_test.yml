@@ -17,7 +17,7 @@ env:
 jobs:
   debug_build_test_champ:
     name: unit test with ${{ matrix.toolchain }} ${{ matrix.mode }} mode
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     strategy:
       matrix:

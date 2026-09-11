@@ -36,7 +36,7 @@ jobs:
       matrix:
         toolchain: ['GNU']
     name: Build CHAMP/TREXIO/QMCkl with ${{ matrix.toolchain }} (QMCKL Tests)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 200
     defaults:
       run:

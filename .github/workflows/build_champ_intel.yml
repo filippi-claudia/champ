@@ -32,7 +32,7 @@ jobs:
       matrix:
         toolchain: ['intel']
     name: Build CHAMP with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 300
     defaults:
       run:
