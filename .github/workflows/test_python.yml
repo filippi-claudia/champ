@@ -21,7 +21,7 @@ on:
 jobs:
   build:
     name: TREXIO Github CI Python ${{ matrix.python-version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 200
     strategy:
       matrix:
