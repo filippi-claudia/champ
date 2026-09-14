@@ -9,23 +9,8 @@ on:
   schedule:
     - cron: '43 2 1 * *'
   push:
-    branches: [ "main" ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
-    paths-ignore:
-      - 'docs/**'
-      - 'tools/trex_tools/**'
-      - '**.md'
-      - '.github/workflows/build_documentation_devel.yml'
-      - '.github/workflows/test_python.yml'
-  pull_request:
-    branches: [ "main" ]
-    paths-ignore:
-      - 'docs/**'
-      - 'tools/trex_tools/**'
-      - '**.md'
-      - '.github/workflows/build_documentation_devel.yml'
-      - '.github/workflows/test_python.yml'
   workflow_dispatch:
 
 env:
@@ -82,6 +67,13 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ghcr.io/${{ github.repository }}
+          # A release tag (e.g. v3.1.0) also names the image after the
+          # version; every run keeps the champ-gnu-<sha> tag.
+          tags: |
+            type=ref,event=tag
+            type=raw,value=champ-gnu-${{ github.sha }}
+          flavor: |
+            latest=false
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -92,7 +84,7 @@ jobs:
           context: .
           file: docker/GNU/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/${{ github.repository }}:champ-gnu-${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
