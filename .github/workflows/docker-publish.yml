@@ -9,23 +9,8 @@ on:
   schedule:
     - cron: '43 2 1 * *'
   push:
-    branches: [ "main" ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
-    paths-ignore:
-      - 'docs/**'
-      - 'tools/trex_tools/**'
-      - '**.md'
-      - '.github/workflows/build_documentation_devel.yml'
-      - '.github/workflows/test_python.yml'
-  pull_request:
-    branches: [ "main" ]
-    paths-ignore:
-      - 'docs/**'
-      - 'tools/trex_tools/**'
-      - '**.md'
-      - '.github/workflows/build_documentation_devel.yml'
-      - '.github/workflows/test_python.yml'
   workflow_dispatch:
 
 env:
