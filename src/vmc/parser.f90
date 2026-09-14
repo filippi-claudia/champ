@@ -99,6 +99,7 @@ subroutine parser
       use optwf_handle_wf, only: set_nparms_tot
       use optwf_parms, only: nparmj
       use orbval,  only: nadorb
+      use outputs, only: file_force_analytic
       use mpi
       use pathak_mod, only: ipathak, eps_max, deps
       use pathak_mod, only: init_pathak, init_eps_pathak
@@ -330,6 +331,12 @@ subroutine parser
     alfgeo      = fdf_get('alfgeo', 1.0d0)
   endif
   iroot_geo   = fdf_get('iroot_geo', 0)
+
+! Output file names
+  file_force_analytic = adjustl(fdf_get('file_force_analytic', 'force_analytic'))
+  ! A keyword given without a value parses as an empty string; keep the default
+  ! rather than trying to open a file with no name.
+  if (len_trim(file_force_analytic) .eq. 0) file_force_analytic = 'force_analytic'
 
 ! Numerical gradient options
   delgrdxyz   = fdf_get('delgrdxyz', 0.001d0)
@@ -1498,6 +1505,11 @@ subroutine parser
       write(ounit,'(a,t36,f12.6)') " starting alfgeo = ", alfgeo
       if(nstates.gt.1) write(ounit,'(a,i3)' ) " Following state ",iroot_geo
     endif
+  endif
+
+  ! Name of the file the analytic forces are written to (vmc and dmc)
+  if(iforce_analy.gt.0) then
+    write(ounit, string_format) " Analytic forces written to ", trim(file_force_analytic)
   endif
 
   if (ipathak.gt.0) call init_eps_pathak()

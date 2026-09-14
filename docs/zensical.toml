@@ -80,7 +80,8 @@ nav = [
     ]},
     {"Input File Examples" = [
       {"Input Files Overview" = "preparation/input/index.md"},
-      {"General Keywords" = "preparation/input/general_keywords.md"}
+      {"General Keywords" = "preparation/input/general_keywords.md"},
+      {"Outputs Keywords" = "preparation/input/outputs_keywords.md"}
     ]}
   ]},  
   {"Calculations" = [

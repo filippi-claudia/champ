@@ -512,6 +512,7 @@ contains
       use m_force_analytic, only: da_energy_ave, iforce_analy
       use m_force_analytic, only: da_psi_block, wcum_block, da_energy_psi_block
       use m_force_analytic, only: wcum_block, f_analy_err
+      use outputs, only: file_force_analytic
       use precision_kinds, only: dp
       use system,  only: ncent
       use vd_mod, only: dmc_ivd, da_branch_cum
@@ -555,7 +556,7 @@ contains
         enddo
       endif
 
-      open(80,file='force_analytic',form='formatted',status='unknown')
+      open(80,file=trim(file_force_analytic),form='formatted',status='unknown')
       do iph=1,PTH
         do ic=1,ncent
           do k=1,3

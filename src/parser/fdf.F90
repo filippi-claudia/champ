@@ -123,15 +123,15 @@ module keywords
   !> @email r.l.shinde@utwente.nl
   !> @date October 15, 2022
   implicit none
-  integer                     :: num_modules  = 11   ! change this number after every adition/deletion
-  integer                     :: num_keywords = 190 ! change this number after every adition/deletion
+  integer                     :: num_modules  = 12   ! change this number after every adition/deletion
+  integer                     :: num_keywords = 191 ! change this number after every adition/deletion
 
   type :: string_t
     character(:), allocatable    :: keys
   end type string_t
 
-  type(string_t) allowed_modules(11)
-  type(string_t) allowed_keywords(190)       ! change this number after every adition/deletion
+  type(string_t) allowed_modules(12)
+  type(string_t) allowed_keywords(191)       ! change this number after every adition/deletion
 
 
   private
@@ -239,7 +239,8 @@ module keywords
     allowed_keywords(183)%keys = 'istrech';         allowed_keywords(184)%keys = 'alfastr'
     allowed_keywords(185)%keys = 'nfrag';           allowed_keywords(186)%keys = 'ibranching_cfrag'
     allowed_keywords(187)%keys = 'etrialfrag';      allowed_keywords(188)%keys = 'use_qmckl_jastrow'
-    allowed_keywords(189)%keys = 'use_qmckl_orbitals';allowed_keywords(190)%keys = 'f_analy_err';
+    allowed_keywords(189)%keys = 'use_qmckl_orbitals';allowed_keywords(190)%keys = 'f_analy_err'
+    allowed_keywords(191)%keys = 'file_force_analytic';
 
   end subroutine allocate_keywords
 
@@ -255,6 +256,7 @@ module keywords
       allowed_modules(9)%keys  = 'blocking_dmc'
       allowed_modules(10)%keys = 'mstates'
       allowed_modules(11)%keys = 'properties'
+      allowed_modules(12)%keys = 'outputs'
   end subroutine allocate_modulenames
 
 
@@ -378,7 +380,7 @@ MODULE fdf
   USE prec
   implicit none
 
-  character(len=40)  :: modulenames(10)
+  character(len=40)  :: modulenames(20)
   integer            :: number_of_modules = 0
 ! User callable routines in FDF library
 
