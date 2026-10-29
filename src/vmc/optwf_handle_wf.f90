@@ -31,7 +31,7 @@ contains
 
       implicit none
 
-      integer :: index, iter, iwf_fit
+      integer :: iter, iwf_fit
       character(len=80) filetype,wf,itn
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
@@ -96,7 +96,7 @@ contains
 
       implicit none
 
-      integer :: i, isp, ict, index, iwf_fit, mparmja, k
+      integer :: i, isp, ict, iwf_fit, mparmja, k
       integer :: mparmjb, mparmjc
       character(len=50) fmt, temp
       character(len=40) filename,filetype
@@ -216,7 +216,7 @@ contains
       use slater,  only: coef,norb
       implicit none
 
-      integer :: i, index, iwf_fit, j, k
+      integer :: i, iwf_fit, j, k
       character(len=40) filename,filetype, temp
 
       if(ioptorb.eq.0) return
@@ -253,7 +253,7 @@ contains
 
       implicit none
 
-      integer :: i, index, istate, iwf_fit, j
+      integer :: i, istate, iwf_fit, j
       integer :: k, nmap, nptr, nterm
       character(len=40) filename,filetype
 
