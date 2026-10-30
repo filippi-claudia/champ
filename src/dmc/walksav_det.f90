@@ -43,7 +43,7 @@ contains
       if(.not.allocated(wfmatw)) allocate(wfmatw(ndet,MEXCIT**2,mwalk,2))
       if(.not.allocated(ymatw)) allocate(ymatw(norb_tot,nelec,mwalk,2,MSTATES))
       if(.not.allocated(orbw)) allocate(orbw(nelec,norb_tot,mwalk))
-      if(.not.allocated(dorbw)) allocate(dorbw(3,nelec,norb_tot,mwalk))
+      if(.not.allocated(dorbw)) allocate(dorbw(norb,nelec,3,mwalk))
       if (ibackflow .gt. 0) then
         if(.not.allocated(dslmw)) allocate(dslmw(3, nmat_dim,2,mwalk))
       endif
