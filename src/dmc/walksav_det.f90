@@ -93,13 +93,7 @@ contains
        orbw(1:nelec,1:norb,iw)=orb(1:nelec,1:norb,1)
        dorbw(1:norb,1:nelec,1:3,iw)=dorb(1:norb,1:nelec,1:3,1)
         if (ibackflow .gt. 0) then
-          do iab = 1, 2
-            do i=1,nup*nup
-              do kk=1,3
-                dslmw(kk,i,iab,iw)=dslm(kk,i,iab,1)
-              enddo
-            enddo
-          enddo
+          dslmw(1:3,1:nup*nup,1:2,iw)=dslm(1:3,1:nup*nup,1:2,1)
         endif
 
       end subroutine walksav_det
@@ -150,13 +144,7 @@ contains
        orb(1:nelec,1:norb,1)=orbw(1:nelec,1:norb,iw)
        dorb(1:norb,1:nelec,1:3,1)=dorbw(1:norb,1:nelec,1:3,iw)
       if (ibackflow .gt. 0) then
-        do iab = 1, 2
-          do i=1,nup*nup
-            do kk=1,3
-              dslm(kk,i,iab,1)=dslmw(kk,i,iab,iw)
-            enddo
-          enddo
-        enddo
+        dslm(1:3,1:nup*nup,1:2,1)=dslmw(1:3,1:nup*nup,1:2,iw)
       endif
 
       end subroutine walkstrdet
@@ -207,13 +195,7 @@ contains
        orbw(1:nelec,1:norb,iw2)=orbw(1:nelec,1:norb,iw)
        dorbw(1:norb,1:nelec,1:3,iw2)=dorbw(1:norb,1:nelec,1:3,iw)
       if (ibackflow .gt. 0) then
-        do iab = 1, 2
-          do i=1,nup*nup
-            do kk=1,3
-              dslmw(kk,i,iab,iw2)=dslmw(kk,i,iab,iw)
-            enddo
-          enddo
-        enddo
+        dslmw(1:3,1:nup*nup,1:2,iw2)=dslmw(1:3,1:nup*nup,1:2,iw)
       endif
 
       end subroutine splitjdet
