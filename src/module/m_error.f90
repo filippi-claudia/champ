@@ -27,18 +27,38 @@ module error
       !> @param[in] msg Error message to be displayed before termination
       !>
       !> @note This subroutine does not return - it terminates the entire MPI job.
-      !> The MPI abort code is set to 0.
+      !> The MPI abort code is set to 1, so that mpirun reports the failure
+      !> in its exit status.
       subroutine fatal_error(msg)
       use contrl_file,    only: ounit, errunit
+      use mpiconf,        only: idtask, wid
       use mpi
+      use iso_fortran_env, only: error_unit
             implicit none
             integer  :: ierr
 
             character msg*(*)
 
-            write(ounit,'(''Fatal error: '',a)') msg
-            write(errunit,'(''Fatal error: '',a)') msg
-            call mpi_abort(MPI_COMM_WORLD,0,ierr)
+            if (wid) then
+                write(ounit,'(''Fatal error: '',a)') msg
+                write(errunit,'(''Fatal error: '',a)') msg
+                ! mpi_abort kills the processes without a normal program
+                ! termination, so the buffered writes above would be lost
+                ! and the error message would never reach the output or
+                ! error files.
+                flush(ounit)
+                flush(errunit)
+            else
+                ! worker ranks have ounit/errunit redirected to /dev/null
+                ! (see initialize in m_control.f90); report the fatal
+                ! error on the true stderr so it is not lost (i0 keeps
+                ! rank numbers >= 10000 from printing as ****)
+                write(error_unit,'(a,i0,a,a)') "Fatal error on rank ", idtask, ": ", msg
+                flush(error_unit)
+            endif
+            ! mpirun (Open MPI, Intel MPI) exits with this code; with 0 an
+            ! aborted run was indistinguishable from a successful one
+            call mpi_abort(MPI_COMM_WORLD,1,ierr)
 
       end
 
@@ -69,7 +89,9 @@ module error
       subroutine trexio_error(trexio_rc, check_rc, message, filename, line)
 
       use contrl_file,   only: ounit, errunit
+      use mpiconf,       only: idtask, wid
       use mpi,           only: mpi_abort, MPI_COMM_WORLD
+      use iso_fortran_env, only: error_unit
             implicit none
 
             integer, intent(in), value :: trexio_rc
@@ -80,9 +102,19 @@ module error
             integer :: ierr
 
             if (trexio_rc /= check_rc) then
-                  write(ounit,'(a)') "Error reading/writing data from trexio file :: ", trim(message)
-                  write(errunit,'(a)') "Error reading/writing data from trexio file :: ", trim(message)
-                  write(errunit,'(3a,i6)') "Debug source file :: ", trim(filename), " at line " , line
+                  if (wid) then
+                        write(ounit,'(a)') "Error reading/writing data from trexio file :: ", trim(message)
+                        write(errunit,'(a)') "Error reading/writing data from trexio file :: ", trim(message)
+                        write(errunit,'(3a,i6)') "Debug source file :: ", trim(filename), " at line " , line
+                        ! flush before aborting, see fatal_error
+                        flush(ounit)
+                        flush(errunit)
+                  else
+                        ! worker ranks have ounit/errunit redirected to
+                        ! /dev/null, report on the true stderr instead
+                        write(error_unit,'(a,i0,a,a)') "TREXIO error on rank ", idtask, " :: ", trim(message)
+                        flush(error_unit)
+                  endif
                   call mpi_abort(MPI_COMM_WORLD,-100,ierr)
             endif
 

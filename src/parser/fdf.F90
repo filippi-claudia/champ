@@ -2567,7 +2567,15 @@ endif ! (rank==0)
         call fdf_destroy(file_in)
         fdf_started = .FALSE.
 
-        call io_close(fdf_out)
+        ! fdf_out is connected only when fdf_output is set (see
+        ! fdf_setoutput). On MPI ranks /= 0 with the default fdf-output
+        ! level it is never assigned and holds 0, so closing it would
+        ! close unit 0 (stderr): with gfortran, later writes to stderr
+        ! on worker ranks (e.g. in fatal_error) then go to a file fort.0
+        if (fdf_output) then
+          call io_close(fdf_out)
+          fdf_output = .FALSE.
+        endif
       endif
 !$OMP END SINGLE
 
