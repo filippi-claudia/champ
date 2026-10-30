@@ -95,6 +95,12 @@ module hdf5_utils
         if (ios == 0) close(funit, status='delete')
 
         ! Initialize HDF5 Fortran module (initializes predefined type constants)
+        ! ierr must be set before the call: the HDF5 1.10 Fortran binding
+        ! leaves the INTENT(OUT) error argument of h5open_f untouched when
+        ! the library is already open (early return in H5_ff.F90), so an
+        ! uninitialized ierr reads stack garbage and can make the second
+        ! checkpoint store of a run fail spuriously.
+        ierr = 0
         call h5open_f(ierr)
         if (ierr /= 0) then
             write(errunit,*) "Error: HDF5 library could not be initialized."
@@ -123,6 +129,9 @@ module hdf5_utils
         integer                             :: ierr
 
         ! Initialize HDF5 Fortran module (initializes predefined type constants)
+        ! ierr must be set before the call: h5open_f leaves it untouched
+        ! when the library is already open (see hdf5_file_create).
+        ierr = 0
         call h5open_f(ierr)
         if (ierr /= 0) then
             write(errunit,*) "Error: HDF5 library could not be initialized."
