@@ -19,7 +19,7 @@ module optwf_sr_mod
     use m_force_analytic, only: iforce_analy
     use m_force_analytic, only: allocate_force_fin, deallocate_force_fin
     use optgeo_lib, only: write_geometry, compute_positions
-    use optwf_control, only: ioptci, ioptjas, ioptorb, iroot_geo
+    use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf, iroot_geo
     use optwf_control, only: energy_tol, nopt_iter, micro_iter_sr, dparm_norm_min
     use optwf_control, only: sr_tau , sr_adiag, sr_eps
     use optwf_handle_wf, only : set_nparms_tot, save_nparms, test_solution_parm
@@ -80,8 +80,9 @@ contains
         use mstates_mod, only: MSTATES
         use optwf_func, only: ifunc_omega, omega0, omega, n_omegaf, n_omegat, omega_hes
         use optwf_control, only: method, nparm
-        use optwf_control, only: ioptci, ioptjas, ioptorb
+        use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf
         use optwf_corsam, only: energy, energy_err, sigma
+        use orbval, only: nadorb
         use vmc_mod, only: stoo, stoj, stobjx, nbjx, nwftypeorb, nwftypejas, bjxtoo, bjxtoj
         use sr_mod, only: mparm
         use sr_mat_n, only: sr_lambda, h_sr, sr_state, ortho 

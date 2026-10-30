@@ -10,17 +10,71 @@ contains
       use slater, only: slmi, kref
       use slatn, only: slmin
       use system, only: ndn, nup, nelec, ncent_tot
-      use vmc_mod, only: nwftypeorb
+      use contrl_file, only: ounit
+      use vmc_mod, only: nwftypeorb, norb_tot
+      use m_backflow, only: ibackflow, rvec_en_bf, r_en_bf, quasi_x_new, dquasi_dx_new, d2quasi_dx2_new
+      use backflow_mod, only: single_backflow
+      use m_backflow, only: slmin_bf, orbn_bf, detn_bf, dslm_bf, dorbn_bf
+      use orbitals_no_qmckl_mod, only: orbitalse_no_qmckl_bf
+      use matinv_mod, only: matinv
+      use config, only: xold
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      use orbitals_qmckl_mod, only: orbitalse_qmckl_bf
+      use qmckl_data
+#endif
       implicit none
 
       integer :: i, iab, iel, iflag, ik
-      integer :: ikel, ish, j, nel, k
+      integer :: ikel, ish, j, nel, k, jk, jorb
       real(dp) :: ratio_kref, sum
       real(dp), dimension(3, *) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
+      integer, dimension(nelec):: indices
+    
 
+
+      if (ibackflow.gt.0) then
+        call single_backflow(iel, xold, x(:,iel), quasi_x_new, dquasi_dx_new, d2quasi_dx2_new, indices)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+      if (use_qmckl_orbitals) then
+        call orbitalse_qmckl_bf(quasi_x_new, indices, 0)
+      else
+#endif
+        call orbitalse_no_qmckl_bf(quasi_x_new, rvec_en_bf, r_en_bf, 0)
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      end if ! use_qmckl_orbitals
+#endif
+        do iab=1,2
+          if(iab.eq.1) then
+              ish=0
+              nel=nup
+          else
+              ish=nup
+              nel=ndn
+          endif
+
+
+         do k=1,nwftypeorb
+
+            jk=-nel
+            do j=1,nel
+              jorb=iworbd(j+ish,kref)
+              jk=jk+nel
+              call dcopy(nel,orbn_bf(1+ish,jorb,k),1,slmin_bf(1+jk,iab,k),1)
+              call dcopy(nel,dorbn_bf(jorb,1+ish,1,k),norb_tot,dslm_bf(1,1+jk,iab,k),3)
+              call dcopy(nel,dorbn_bf(jorb,1+ish,2,k),norb_tot,dslm_bf(2,1+jk,iab,k),3)
+              call dcopy(nel,dorbn_bf(jorb,1+ish,3,k),norb_tot,dslm_bf(3,1+jk,iab,k),3)
+            enddo
+
+            if(nel.gt.0) call matinv(slmin_bf(1,iab,k),nel,detn_bf(iab,k))
+          enddo
+        enddo
+
+      else
       call orbitalse(iel,x,rvec_en,r_en,iflag)
+
 
       if(iel.le.nup) then
         iab=1
@@ -62,6 +116,8 @@ contains
 
       enddo
 
+      endif
+
       return
       end
 !-----------------------------------------------------------------------
@@ -76,7 +132,7 @@ contains
       use multimatn, only: aan
       use multislater, only: detiab
       use multislatern, only: detn,dorbn
-      use orbval,  only: dorb
+      use orbval,  only: dorb, orb
       use precision_kinds, only: dp
       use slater, only: kref,norb,slmi
       use slatn, only: slmin
@@ -85,6 +141,9 @@ contains
       use vmc_mod, only: norb_tot,nwftypeorb,stoj,stoo
       use ycompact, only: ymat
       use ycompactn, only: ymatn
+      use m_backflow, only: ibackflow, detn_bf, dslm, slmin_bf, dslm_bf, dquasi_dx, dquasi_dx_new
+      use backflow_mod, only: backflow
+      use config,  only: xold
 
       implicit none
 
@@ -117,7 +176,6 @@ contains
 
 ! All old quantities are available.
       if(iflag_move.eq.1) then
-
         do istate=1,nstates
           isorb=stoo(istate)
           do kk=1,3
@@ -125,8 +183,11 @@ contains
               dorb_tmp(iorb,kk,isorb)=dorb(iorb,iel,kk,isorb)
             enddo
           enddo
-        
-          call determinante_ref_grad(iel,slmi(1,iab,isorb),dorb_tmp(1,1,isorb),norb,vref(1,isorb))
+          if (ibackflow.gt.0) then
+            call determinante_ref_grad_bf(iel,slmi(1,1,isorb),dslm(1,1,1,isorb),dquasi_dx,vref(1,isorb))
+          else
+            call determinante_ref_grad(iel,slmi(1,iab,isorb),dorb_tmp(1,1,isorb),norb,vref(1,isorb))
+          endif
         enddo
 
         if(iguiding.eq.0) then
@@ -165,7 +226,11 @@ contains
       elseif(iflag_move.eq.0) then
 
         do isorb=1,nwftypeorb
-          call determinante_ref_grad(iel,slmin(1,isorb),dorbn(1,1,isorb),norb_tot,vref(1,isorb))
+          if (ibackflow.gt.0) then
+            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),dquasi_dx_new,vref(1,isorb))
+          else
+            call determinante_ref_grad(iel,slmin(1,isorb),dorbn(1,1,isorb),norb_tot,vref(1,isorb))
+          endif
         enddo
 
         if(iguiding.eq.0) then
@@ -180,6 +245,10 @@ contains
           do kk=1,3
             vd(kk)=vd(kk)+vref(kk,1)+vjn(kk,iel,1)
           enddo
+
+          if (ibackflow.gt.0) then
+            detratio = detn_bf(1,1) * detn_bf(2,1) / psid(1)
+          endif
 
          else
 
@@ -219,6 +288,9 @@ contains
           enddo
         enddo
 
+! This branch uses the single-state/single-determinant path (index 1).
+        isorb=stoo(1)
+
 ! iel has same spin as electron moved
         if(iflag_move.eq.2) then
  
@@ -228,7 +300,12 @@ contains
             detratio=detiab(kref,1,1)*detn(kref,1)/psid(1)
           endif
 
-          call determinante_ref_grad(iel,slmin,dorb_tmp,norb,vref)
+
+          if (ibackflow.gt.0) then
+            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),dquasi_dx_new,vref(1,isorb))
+          else
+            call determinante_ref_grad(iel,slmin,dorb_tmp,norb,vref)
+          endif
 
           call multideterminante_grad(iel,dorb_tmp,norb,detratio,slmin,aan,ymatn,vd)
 
@@ -240,7 +317,11 @@ contains
             detratio=detn(kref,1)*detiab(kref,2,1)/psid(1)
           endif
 
-          call determinante_ref_grad(iel,slmi(1,iab,1),dorb_tmp,norb,vref)
+          if (ibackflow.gt.0) then
+            call determinante_ref_grad_bf(iel,slmin_bf(1,1,isorb),dslm_bf(1,1,1,isorb),dquasi_dx_new,vref(1,isorb))
+          else
+            call determinante_ref_grad(iel,slmi(1,iab,1),dorb_tmp,norb,vref)
+          endif
 
           if(iel.eq.1) call compute_ymat(1,detiab(1,1,1),detn,wfmat(1,1,1,1),ymat_tmp,1)
 
@@ -251,6 +332,10 @@ contains
         endif
 
         vd=vjn(1:3,iel,1)+vd+vref(1:3,1)
+
+        if (ibackflow.gt.0) then
+          detratio = detn_bf(1,1) * detn_bf(2,1) / psid(1)
+        endif
       endif
 
       return
@@ -295,6 +380,57 @@ contains
         ddx_ref(2)=ddx_ref(2)+slmi(j+ik)*dorb(iworbd(j+ish,kref),2)
         ddx_ref(3)=ddx_ref(3)+slmi(j+ik)*dorb(iworbd(j+ish,kref),3)
       enddo
+
+      return
+      end
+
+      subroutine determinante_ref_grad_bf(iel,slmi,dslm,dquasi_dx_in,ddx_ref)
+
+      use dorb_m,  only: iworbd
+      use precision_kinds, only: dp
+      use vmc_mod, only: norb_tot
+      use vmc_mod, only: nmat_dim
+      use system, only: ndn, nup
+      use slater, only: kref
+      use dorb_m, only: iworbd
+      use system, only: nelec
+      implicit none
+
+      integer :: iel, ik, ish, j, jel, norbs
+      integer :: nel, iab, i, l, kk, jj
+
+      real(dp), dimension(nmat_dim,2) :: slmi
+      real(dp), dimension(3, nmat_dim,2) :: dslm
+      real(dp), dimension(3, nelec, 3, nelec), intent(in) :: dquasi_dx_in
+      real(dp), dimension(3) :: ddx_ref
+
+
+      ddx_ref=0.0d0
+        
+      do iab=1,2
+
+         if(iab.eq.1) then
+            ish=0
+            nel=nup
+         else
+            ish=nup
+            nel=ndn
+         endif
+
+          do j=1,nel
+            do l=1,nel
+              do kk=1,3
+                do jj=1,3
+                  ddx_ref(kk)=ddx_ref(kk)+slmi((j-1)*nel + l,iab)&
+                  *dslm(jj,(l-1)*nel + j,iab) &
+                  * dquasi_dx_in(jj,j+ish,kk,iel)
+
+                enddo
+              enddo
+            enddo
+          enddo
+        enddo
+
 
       return
       end

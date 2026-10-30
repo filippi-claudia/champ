@@ -62,6 +62,8 @@ subroutine parser
       use jastrow, only: nspin1,nspin2,scalek
       use jastrow4_mod, only: nterms4
       use m_force_analytic, only: alfgeo,iforce_analy,iuse_zmat,f_analy_err
+      use m_backflow, only: ibackflow, nparm_bf, parm_bf
+      use backflow_mod, only: init_backflow
       use metropolis, only: imetro, vmc_tau
       use metropolis, only: delta,deltar,deltat,fbias
       use misc_grdnts, only: inpwrt_grdnts_cart,inpwrt_grdnts_zmat
@@ -89,7 +91,7 @@ subroutine parser
       use optwf_control, only: alin_adiag,alin_eps,dl_alg,dl_mom
       use optwf_control, only: dparm_norm_min,energy_tol,iapprox,ibeta
       use optwf_control, only: idl_flag,ilastvmc,ilbfgs_flag,ilbfgs_m
-      use optwf_control, only: ioptci,ioptjas,ioptorb,ioptwf,iroot_geo
+      use optwf_control, only: ioptci,ioptjas,ioptorb,ioptbf,ibf_opt_cutoff,ioptwf,iroot_geo
       use optwf_control, only: iuse_orbeigv,lin_jdav,method
       use optwf_control, only: micro_iter_sr,multiple_adiag,ncore
       use optwf_control, only: no_active,nopt_iter,nparm,nvec,nvecx
@@ -120,6 +122,7 @@ subroutine parser
       use parser_read_data, only: read_optorb_mixvirt_file
       use parser_read_data, only: read_orbitals_file,read_symmetry_file
       use parser_read_data, only: read_zmatrix_connection_file
+      use parser_read_data, only: read_backflow_file
       use periodic, only: ngvec
       use periodic_table, only: atom_t,element
       use pot,     only: pot_nn
@@ -224,6 +227,7 @@ subroutine parser
   character(:), allocatable  :: file_trexio
   character(:), allocatable  :: trex_backend
   character(:), allocatable  :: file_lattice
+  character(:), allocatable  :: file_backflow
 
 ! from process input subroutine
 
@@ -279,6 +283,7 @@ subroutine parser
   istrech     = fdf_get('istrech',0)
   alfstr      = fdf_get('alfstr',4.0d0)
   write_walkalize  = fdf_get('write_walkalize', .false.)
+  ibackflow     = fdf_get('backflow', 0)
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
   use_qmckl_jastrow = fdf_get('use_qmckl_jastrow', .true.)
@@ -424,10 +429,14 @@ subroutine parser
   ioptjas       = fdf_get('ioptjas', 0)
   ioptorb       = fdf_get('ioptorb', 0)
   ioptci        = fdf_get('ioptci', 0)
+  ioptbf        = fdf_get('ioptbf', 0)
+  ibf_opt_cutoff = fdf_get('ibf_opt_cutoff', .true.)
   nopt_iter     = fdf_get('nopt_iter',6)
   micro_iter_sr = fdf_get('micro_iter_sr', 1)
   isample_cmat  = fdf_get('isample_cmat', 1)
   energy_tol    = fdf_get('energy_tol', 1.d-3)
+
+
 
   if (fdf_defined("optwf")) then
     if ( method .eq. 'linear' ) then
@@ -563,6 +572,7 @@ subroutine parser
   file_zmatrix_connection  = fdf_load_filename('zmatrix_connection', 'default.zmcon')
   file_efield              = fdf_load_filename('efield', 'default.efield')
   file_lattice             = fdf_load_filename('lattice', 'lattice.txt')
+  file_backflow             = fdf_load_filename('backflow', 'default.bf')
 
   call header_printing()
 
@@ -1222,6 +1232,15 @@ subroutine parser
         '   -->', stobjx(istate), '   <--', bjxtoj(stobjx(istate)), bjxtoo(stobjx(istate))
   enddo
 
+
+  if ( fdf_load_defined('backflow') ) then
+    call read_backflow_file(file_backflow)
+  else
+    call init_backflow(0)
+  endif
+
+  call elapsed_time ("Reading Backflow file : ")
+
   ! Know the number of orbitals for optimization.
   if (ioptorb .ne. 0) call get_norbterm()
 
@@ -1280,6 +1299,7 @@ subroutine parser
   call compute_mat_size_new()
   call allocate_vmc()
   call allocate_dmc()
+
 
   ! read fragment indeces
   if ( (nfrag.gt.1).and.(ndet.gt.1) ) call fatal_error('READ_INPUT: Fragments not implemented for multideterminant wavefunctions')
@@ -1505,6 +1525,21 @@ subroutine parser
       write(ounit,'(a,t36,f12.6)') " starting alfgeo = ", alfgeo
       if(nstates.gt.1) write(ounit,'(a,i3)' ) " Following state ",iroot_geo
     endif
+  endif
+
+
+! (10) optorb_mixvirt information of orbitals (either block or from a file)
+
+  if ( fdf_load_defined('optorb_mixvirt') ) then
+    call read_optorb_mixvirt_file(file_optorb_mixvirt)
+  elseif ( fdf_block('optorb_mixvirt', bfdf)) then
+  ! call fdf_read_optorb_mixvirt_block(bfdf)
+    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
+    error stop
+  else
+    write(errunit,'(a)') "Warning:: No information about optorb_mixvirt provided in the block."
+    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
   endif
 
   ! Name of the file the analytic forces are written to (vmc and dmc)
@@ -1842,20 +1877,6 @@ subroutine parser
 ! Process parsed data and set defaults.
 
 
-! Orbital-optimization virtual mixing information
-
-  if ( fdf_load_defined('optorb_mixvirt') ) then
-    call read_optorb_mixvirt_file(file_optorb_mixvirt)
-  elseif ( fdf_block('optorb_mixvirt', bfdf)) then
-  ! call fdf_read_optorb_mixvirt_block(bfdf)
-    write(errunit,'(a)') "Error:: No information about optorb_mixvirt provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-    error stop
-  else
-    write(errunit,'(a)') "Warning:: No information about optorb_mixvirt provided in the block."
-    write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
-  endif
-
 
 ! Cavity-sphere input, currently disabled.
 
@@ -2078,8 +2099,10 @@ subroutine parser
           rc = qmckl_trexio_read(qmckl_ctx(ictx), file_trexio, 1_8*len(trim(file_trexio)))
           write(ounit, *) "Status QMCKl trexio read file_trexio_path", rc
           if (rc /= QMCKL_SUCCESS) call fatal_error('PARSER: QMCkl error: Unable to read TREXIO file')
-        enddo
-     endif
+        enddo     
+        file_trexio_path = file_trexio
+      endif
+
 
      ! get mo's number should correspond to norb_tot
      if (use_qmckl_jastrow) then

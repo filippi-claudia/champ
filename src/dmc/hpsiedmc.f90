@@ -9,7 +9,7 @@ contains
       use mstates_mod, only: MSTATES
       use precision_kinds, only: dp
       use system,  only: nelec
-
+      use config, only: xold
       implicit none
 
       integer :: i, ic, idum, iel, iflag
@@ -34,6 +34,8 @@ contains
         x(ic,i)=xold_dmc(ic,i,iw,1)
       enddo
       enddo
+      
+      xold(:,:)=xold_dmc(:,:,iw,1)
 
       idum=1
       call psie(iel,x,psid,psij,idum,iflag)

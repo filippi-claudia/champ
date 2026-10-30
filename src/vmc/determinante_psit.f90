@@ -10,6 +10,7 @@ contains
       use slater, only: ndet, cdet
       use system, only: nup
       use vmc_mod, only: stoo, nwftypeorb
+      use m_backflow, only: ibackflow, detn_bf
       implicit none
 
       integer :: iel, istate, iab_other, k, kcdet, o
@@ -27,9 +28,13 @@ contains
       endif
 
       determ=0.d0
-      do k=1,ndet
-         determ=determ+detn(k,o)*detiab(k,iab_other,o)*cdet(k,istate,kcdet)
-      enddo
+      if (ibackflow.gt.0) then
+         determ = detn_bf(1,o) * detn_bf(2,o) * cdet(1,istate,kcdet)
+      else
+         do k=1,ndet
+            determ=determ+detn(k,o)*detiab(k,iab_other,o)*cdet(k,istate,kcdet)
+         enddo
+      endif
 
       return
       end

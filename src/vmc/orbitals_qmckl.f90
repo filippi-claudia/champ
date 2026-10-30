@@ -8,6 +8,7 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
     use precision_kinds, only: dp
     use slater, only: norb
     use system, only: ncent_tot, nelec
+    use m_backflow, only: ibackflow, d2orb
 
     use const
     use qmckl_data
@@ -15,6 +16,7 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
     implicit none
 
     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+    real(dp), allocatable :: mo_hessian_qmckl(:,:,:,:)
     integer :: rc, ictx
     integer*8 :: n8
     real(dp), dimension(3,nelec) :: xqmckl
@@ -73,6 +75,24 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
             ddorb(  iorb,i,k) = mo_vgl_qmckl(iorb,5,i)
         end do
     end do
+
+
+    if (ibackflow.gt.0) then
+        allocate(mo_hessian_qmckl(n8, 3, nelec, 3))
+        rc = qmckl_get_mo_basis_mo_hessian(qmckl_ctx(ictx), mo_hessian_qmckl, n8*nelec*9_8)
+        k=1 ! until state specific orbitals can be used
+        do m=1,3
+            do i=1,nelec
+                do iorb=1,norb+nadorb
+                    d2orb(1,m,iorb,i,k) = mo_hessian_qmckl(iorb,1,i,m)
+                    d2orb(2,m,iorb,i,k) = mo_hessian_qmckl(iorb,2,i,m)
+                    d2orb(3,m,iorb,i,k) = mo_hessian_qmckl(iorb,3,i,m)
+                end do
+            end do
+        end do
+
+        deallocate(mo_hessian_qmckl)
+    endif
 
     deallocate(mo_vgl_qmckl)
 return
@@ -135,12 +155,6 @@ subroutine orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
 
     if(iflag.gt.0) then
         do iorb=1,norb
-!     orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
-!     dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
-!     dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
-!     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
-!     ddorbn(iorb)=mo_vgl_qmckl(iorb,5,1)
-
             orbn(iorb,k)=mo_vgl_qmckl(iorb,1)
             dorbn(iorb,1,k)=mo_vgl_qmckl(iorb,2)
             dorbn(iorb,2,k)=mo_vgl_qmckl(iorb,3)
@@ -149,20 +163,105 @@ subroutine orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
         enddo
     else
         do iorb=1,norb
-!     orbn(iorb)=mo_vgl_qmckl(iorb,1,1)
-!     dorbn(iorb,1)=mo_vgl_qmckl(iorb,2,1)
-!     dorbn(iorb,2)=mo_vgl_qmckl(iorb,3,1)
-!     dorbn(iorb,3)=mo_vgl_qmckl(iorb,4,1)
-
             orbn(iorb,k)=mo_vgl_qmckl(iorb,1)
             dorbn(iorb,1,k)=mo_vgl_qmckl(iorb,2)
             dorbn(iorb,2,k)=mo_vgl_qmckl(iorb,3)
             dorbn(iorb,3,k)=mo_vgl_qmckl(iorb,4)
-
         enddo
     endif
 
     deallocate(mo_vgl_qmckl)
+return
+end
+
+subroutine orbitalse_qmckl_bf(x,indices, iflag)
+
+    use precision_kinds, only: dp
+    use slater, only: norb
+    use system, only: ncent_tot, nelec
+    use m_backflow, only: orbn_bf, dorbn_bf
+    use orbval, only: orb, dorb
+    use qmckl_data
+
+
+    implicit none
+
+    integer :: iflag, iorb, ictx, k, i
+
+    real(dp), dimension(3,*) :: x
+
+    real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
+    integer, dimension(nelec) :: indices
+    real(dp), allocatable :: new_coords(:,:)
+    integer :: rc, points, idx
+    integer*8 :: n8
+    character*(1024) :: err_message = ''
+
+    if (iflag .eq. 0) then
+        ictx = 1
+    else
+        ictx = 2
+    end if
+
+    points = 0
+    do i = 1, nelec
+       if (indices(i) .gt. 0) points = points + 1
+    end do
+
+    allocate(new_coords(3,points))
+
+    idx = 0
+    do i = 1, nelec
+       if (indices(i) .gt. 0) then
+          idx = idx + 1
+          new_coords(:,idx) = x(:,i)
+       end if
+    end do
+
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'Error getting mo_num from QMCkl'
+        stop
+    end if
+
+    ! set one electron coordinates
+    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', points*1_8, new_coords, points*3_8)
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'Error setting electron coords orbitalse'
+        call qmckl_last_error(qmckl_ctx(ictx),err_message)
+        print *, trim(err_message)
+        call abort()
+    end if
+
+    allocate(mo_vgl_qmckl(n8, 5, points))
+
+    ! Compute the MOs
+    rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(ictx), mo_vgl_qmckl, points*n8*5_8)
+
+    k=1  ! until state-specific orbitals can use QMCKL
+
+    idx = 0
+    do i = 1, nelec
+       if (indices(i) .gt. 0) then
+          idx = idx + 1
+          do iorb=1,norb
+            orbn_bf(i,iorb,k) = mo_vgl_qmckl(iorb,1,idx)
+            dorbn_bf(iorb,i,1,k) = mo_vgl_qmckl(iorb,2,idx)
+            dorbn_bf(iorb,i,2,k) = mo_vgl_qmckl(iorb,3,idx)
+            dorbn_bf(iorb,i,3,k) = mo_vgl_qmckl(iorb,4,idx)
+          enddo
+       else
+          do iorb=1,norb
+            orbn_bf(i,iorb,k) = orb(i,iorb,k)
+            dorbn_bf(iorb,i,1,k) = dorb(iorb,i,1,k)
+            dorbn_bf(iorb,i,2,k) = dorb(iorb,i,2,k)
+            dorbn_bf(iorb,i,3,k) = dorb(iorb,i,3,k)
+          enddo
+       endif
+    end do
+
+    deallocate(mo_vgl_qmckl)
+    deallocate(new_coords)
 return
 end
 
@@ -279,6 +378,121 @@ subroutine orbitals_quad_qmckl(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_orbn,iwfo
     deallocate(mo_qmckl)
 
     nadorb = nadorb_sav
+return
+end
+
+subroutine orbitals_quad_bf_qmckl(nxquad,xquad,orbn,iwforb,indices)
+
+
+    use m_force_analytic, only: iforce_analy
+    use multiple_geo, only: iwf
+    use optwf_control, only: ioptorb
+    use optwf_control, only: method
+    use orbval,  only: nadorb
+    use phifun,  only: dphin,n0_ibasis,n0_ic,n0_nbasis,phin
+    use precision_kinds, only: dp
+    use qua,     only: nquad
+    use slater,  only: coef,norb
+    use sr_mod,  only: i_sr_rescale
+    use system,  only: iwctype,ncent,ncent_tot,nelec
+    use vmc_mod, only: norb_tot, nwftypeorb
+    use error,   only: fatal_error
+    use contrl_file, only: ounit
+    use backflow_mod, only: backflow
+    use orbval, only: orb
+
+    use qmckl_data
+
+    implicit none
+
+    integer :: ic, ider, iq, i, ictx, nxquad, idx, ii
+    integer :: iorb, k, m, m0, iwforb
+    integer :: nadorb_sav
+
+    real(dp), dimension(3,nxquad) :: xquad
+    real(dp), dimension(norb_tot, nxquad) :: orbn
+    integer, dimension(nxquad) :: indices
+    real(dp), allocatable :: mo_qmckl(:,:), new_coords(:,:)
+    integer :: rc, points
+    integer*8 :: n8
+    character*(1024) :: err_message = ''
+
+    nadorb_sav=nadorb
+
+    ictx = 2
+
+    if(ioptorb.eq.0.or.(method(1:3).ne.'lin'.and.i_sr_rescale.eq.0)) then
+       ictx=1
+       nadorb = 0
+    end if
+
+    points = 0
+    do i = 1, nxquad
+       if (indices(i) .gt. 0) points = points + 1
+    end do
+
+    allocate(new_coords(3,points))
+
+    idx = 0
+    do i = 1, nxquad
+       if (indices(i) .gt. 0) then
+          idx = idx + 1
+          new_coords(:,idx) = xquad(:,i)
+       end if
+    end do
+
+
+
+
+    ! Send electron coordinates to QMCkl to compute the MOs at these positions
+    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', points*1_8, new_coords, points*3_8)
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'orbitals quad Error setting electron coordinates in QMCkl'
+        stop
+    end if
+
+
+    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'orbitals quad Error getting mo_num from QMCkl'
+        print *, "n8", n8
+        stop
+    end if
+
+
+    allocate(mo_qmckl(n8, points))
+
+    ! Compute the MOs
+    rc = qmckl_get_mo_basis_mo_value_inplace(qmckl_ctx(ictx), mo_qmckl, points*n8)
+
+    if (rc /= QMCKL_SUCCESS) then
+        print *, 'Error orbitals quad getting MOs from QMCkl'
+        stop
+    end if
+
+    idx = 0
+    do i = 1, nxquad
+       if (indices(i) .gt. 0) then
+          idx = idx + 1
+          !orbn(1:norb+nadorb,i) = mo_qmckl(1:norb+nadorb,idx)
+            do iorb=1,norb
+                orbn(iorb,i) = mo_qmckl(iorb,idx)
+            end do
+       else
+          !orbn(1:norb+nadorb,i) = orb(modulo(i-1, nelec)+1,1:norb+nadorb,iwforb)
+            ii = modulo(i-1, nelec)+1
+            do iorb=1,norb
+                orbn(iorb,i) = orb(ii,iorb,iwforb)
+            end do
+       endif
+    end do
+
+
+    deallocate(mo_qmckl)
+    deallocate(new_coords)
+
+    nadorb = nadorb_sav
+
 return
 end
 
@@ -405,6 +619,9 @@ subroutine orbitals_init_qmckl(update_coef)
 
 return
 end
+
+
+
 
 
 end module

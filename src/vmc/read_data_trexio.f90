@@ -711,7 +711,7 @@ module trexio_read_data
     
         implicit none
 
-        integer                         :: rc
+        integer                         :: rc, ierr
         integer, intent(in)             :: ictx
 
         if(ioptjas.eq.0) return
