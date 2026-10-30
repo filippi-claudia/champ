@@ -198,7 +198,7 @@ contains
           pwt(iw2,ifr)=pwt(iw,ifr)
           fratio(iw2,ifr)=fratio(iw,ifr)
           
-          if (icut_e.lt.0) then
+          if (icut_e.lt.0.and.nfrag.eq.0) then
             eloco_i(:,iw2,ifr)=eloco_i(:,iw,ifr)
             fratio_i(:,iw2,ifr)=fratio_i(:,iw,ifr)
           endif
