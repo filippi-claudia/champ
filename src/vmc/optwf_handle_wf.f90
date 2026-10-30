@@ -46,6 +46,9 @@ contains
 #endif
 
       if(iter.lt.0) then
+!        wf is only filled in the else branch below; format it here too,
+!        otherwise the file name is built from uninitialized memory
+        write(wf,'(i1)') iwf_fit
         filetype='_optimal.'//wf(1:index(wf,' ')-1)
        else
         write(wf,'(i1)') iwf_fit
