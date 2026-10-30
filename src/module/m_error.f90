@@ -27,7 +27,8 @@ module error
       !> @param[in] msg Error message to be displayed before termination
       !>
       !> @note This subroutine does not return - it terminates the entire MPI job.
-      !> The MPI abort code is set to 0.
+      !> The MPI abort code is set to 1, so that mpirun reports the failure
+      !> in its exit status.
       subroutine fatal_error(msg)
       use contrl_file,    only: ounit, errunit
       use mpiconf,        only: idtask, wid
@@ -50,11 +51,14 @@ module error
             else
                 ! worker ranks have ounit/errunit redirected to /dev/null
                 ! (see initialize in m_control.f90); report the fatal
-                ! error on the true stderr so it is not lost
-                write(error_unit,'(a,i4,a,a)') "Fatal error on rank ", idtask, ": ", msg
+                ! error on the true stderr so it is not lost (i0 keeps
+                ! rank numbers >= 10000 from printing as ****)
+                write(error_unit,'(a,i0,a,a)') "Fatal error on rank ", idtask, ": ", msg
                 flush(error_unit)
             endif
-            call mpi_abort(MPI_COMM_WORLD,0,ierr)
+            ! mpirun (Open MPI, Intel MPI) exits with this code; with 0 an
+            ! aborted run was indistinguishable from a successful one
+            call mpi_abort(MPI_COMM_WORLD,1,ierr)
 
       end
 
@@ -108,7 +112,7 @@ module error
                   else
                         ! worker ranks have ounit/errunit redirected to
                         ! /dev/null, report on the true stderr instead
-                        write(error_unit,'(a,i4,a,a)') "TREXIO error on rank ", idtask, " :: ", trim(message)
+                        write(error_unit,'(a,i0,a,a)') "TREXIO error on rank ", idtask, " :: ", trim(message)
                         flush(error_unit)
                   endif
                   call mpi_abort(MPI_COMM_WORLD,-100,ierr)
