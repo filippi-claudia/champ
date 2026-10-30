@@ -1,0 +1,105 @@
+{
+  "description": "HDF5 checkpoint/restart across a wave function optimisation. Each case optimises for two iterations with vmc_idump on and then restarts from the checkpoint. The optimisers run one further sampling pass after the last iteration ('Check last iteration') with ioptjas/ioptorb/ioptci switched off; if that pass is allowed to dump, restart_vmc.hdf5 ends up holding a state with no optimisation groups in it and the restart aborts while reading them. The restart must also restore only once -- on the first sampling of the first iteration -- and not again on every later one.  The checkpoint only exists in an HDF5-enabled build, which in this project means a TREXIO-enabled one -- find_package(HDF5) sits inside if(ENABLE_TREXIO) -- so the case is declared as needing trexio, exactly as the other HDF5 restart tests are.",
+  "requires": [
+    "trexio"
+  ],
+  "labels": [
+    "VMC",
+    "HDF5",
+    "restart",
+    "optwf",
+    "H2",
+    "STO-CVB1"
+  ],
+  "cases": [
+    {
+      "name": "sr_n-np2",
+      "comment": "Stochastic reconfiguration driver (optwf_sr).",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "optwf_sr_dump.inp",
+          "output": "optwf_sr_dump_core_2.out",
+          "nproc": 2,
+          "error_output": "error_sr_dump",
+          "before": [
+            {
+              "op": "remove",
+              "paths": [
+                "mc_configs_start",
+                "restart_vmc*"
+              ]
+            }
+          ]
+        },
+        {
+          "program": "vmc",
+          "input": "optwf_sr_restore.inp",
+          "output": "optwf_sr_restore_core_2.out",
+          "nproc": 2,
+          "error_output": "error_sr_restore"
+        }
+      ],
+      "checks": [
+        {
+          "type": "file_exists",
+          "file": "restart_vmc.hdf5",
+          "comment": "checkpoint written by the optimisation, not by the check run that follows it"
+        },
+        {
+          "type": "value",
+          "file": "optwf_sr_restore_core_2.out",
+          "match": "total E",
+          "value": -1.0414258,
+          "error": 0.05,
+          "comment": "First sampling pass of the restarted optimisation, i.e. the one that consumes the checkpoint, rather than the energy the optimiser eventually reaches. What this check is really for is that the restarted run produced a result at all: an aborted restart leaves no 'total E' line and fails extraction outright, on any platform, whereas its exit code is 0 on Linux and 1 on macOS. The band is deliberately loose because the value sits downstream of an optimisation, and optimisation paths in this suite are known to move between compilers -- VMC-H2/lin is set to 'warn' for that reason.",
+          "occurrence": 1
+        }
+      ]
+    },
+    {
+      "name": "lin_d-np2",
+      "comment": "Davidson linear-method driver (optwf_lin_dav).",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "optwf_lin_dump.inp",
+          "output": "optwf_lin_dump_core_2.out",
+          "nproc": 2,
+          "error_output": "error_lin_dump",
+          "before": [
+            {
+              "op": "remove",
+              "paths": [
+                "mc_configs_start",
+                "restart_vmc*"
+              ]
+            }
+          ]
+        },
+        {
+          "program": "vmc",
+          "input": "optwf_lin_restore.inp",
+          "output": "optwf_lin_restore_core_2.out",
+          "nproc": 2,
+          "error_output": "error_lin_restore"
+        }
+      ],
+      "checks": [
+        {
+          "type": "file_exists",
+          "file": "restart_vmc.hdf5"
+        },
+        {
+          "type": "value",
+          "file": "optwf_lin_restore_core_2.out",
+          "match": "total E",
+          "value": -1.0569271,
+          "error": 0.05,
+          "occurrence": 1,
+          "comment": "First sampling pass of the restarted optimisation, i.e. the one that consumes the checkpoint, rather than the energy the optimiser eventually reaches. What this check is really for is that the restarted run produced a result at all: an aborted restart leaves no 'total E' line and fails extraction outright, on any platform, whereas its exit code is 0 on Linux and 1 on macOS. The band is deliberately loose because the value sits downstream of an optimisation, and optimisation paths in this suite are known to move between compilers -- VMC-H2/lin is set to 'warn' for that reason."
+        }
+      ]
+    }
+  ]
+}

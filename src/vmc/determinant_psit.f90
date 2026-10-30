@@ -9,17 +9,16 @@ contains
       use vmc_mod, only: stoo, nwftypeorb
       implicit none
 
-      integer :: istate, k, iwf_save, o
+      integer :: istate, k, kcdet, o
       real(dp) :: determ
 
       determ=0.0d0
-      iwf_save=iwf
       o=stoo(istate)
-      if(nwftypeorb.gt.1) iwf=1
+      kcdet=iwf
+      if(nwftypeorb.gt.1) kcdet=1
       do k=1,ndet
-        determ=determ+detiab(k,1,o)*detiab(k,2,o)*cdet(k,istate,iwf)
+        determ=determ+detiab(k,1,o)*detiab(k,2,o)*cdet(k,istate,kcdet)
       enddo
-      iwf=iwf_save
 
 
       return

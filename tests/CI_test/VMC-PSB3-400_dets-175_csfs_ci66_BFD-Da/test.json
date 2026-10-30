@@ -1,0 +1,93 @@
+{
+  "description": "PSB3 optimization with lin/regterg methods (parked: scripts were .inactive; revised_regterg.inp is not in the repository)",
+  "labels": [
+    "VMC",
+    "PSB3",
+    "ci66"
+  ],
+  "enabled": false,
+  "cases": [
+    {
+      "name": "lin-free-np1",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "revised_free.inp",
+          "output": "revised_free_core_1.out",
+          "nproc": 1
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "revised_free_core_1.out",
+          "match": "total E",
+          "value": -40.8932882,
+          "error": 0.0505664
+        }
+      ]
+    },
+    {
+      "name": "lin-free-np2",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "revised_free.inp",
+          "output": "revised_free_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "revised_free_core_2.out",
+          "match": "total E",
+          "value": -41.1767726,
+          "error": 0.0289563
+        }
+      ]
+    },
+    {
+      "name": "regterg-np1",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "revised_regterg.inp",
+          "output": "revised_regterg_core_1.out",
+          "nproc": 1
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "revised_regterg_core_1.out",
+          "match": "total E",
+          "value": -41.8227479,
+          "error": 0.046127,
+          "policy": "warn"
+        }
+      ]
+    },
+    {
+      "name": "regterg-np2",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "revised_regterg.inp",
+          "output": "revised_regterg_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "revised_regterg_core_2.out",
+          "match": "total E",
+          "value": -41.2310687,
+          "error": 0.0362162,
+          "policy": "warn"
+        }
+      ]
+    }
+  ]
+}

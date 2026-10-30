@@ -2,7 +2,6 @@
 file(GLOB DMC_SOURCE
   acues1_reduce.f90
   assignment.f90
-  averages.f90
   branching.f90
   dumper.f90
   main.f90
@@ -39,53 +38,54 @@ file(GLOB DMC_SOURCE
 
 # --------------------------------------------------------------------
 
-# executable dependencies
+# DMC executable
 add_executable(dmc.mov1
   $<TARGET_OBJECTS:shared_modules>
   $<TARGET_OBJECTS:shared_objects>
   $<TARGET_OBJECTS:rng>
-  # DMC source code
+  # DMC sources
   ${DMC_SOURCE})
 
-#  Add headers
+# if HDF5 is found compile with HDF5 support
+if(HDF5_FOUND)
+  target_sources(dmc.mov1 PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/dmc_store_hdf5.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/dmc_restore_hdf5.f90)
+
+  set_property(
+    SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/dmc_store_hdf5.f90
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    COMPILER=\"${CMAKE_Fortran_COMPILER}\"
+    COMPILER_VERSION=\"${CMAKE_Fortran_COMPILER_VERSION}\"
+    GIT_HEAD_BRANCH=\"${GIT_HEAD_BRANCH}\"
+    GIT_REVISION_HASH=\"${GIT_REVISION_HASH}\"
+    HDF5_VERSION=\"${HDF5_VERSION}\"
+  )
+
+  set_property(
+    SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/dmc.f90 ${CMAKE_CURRENT_SOURCE_DIR}/mc_configs.f90
+    APPEND
+    PROPERTY COMPILE_DEFINITIONS
+    HDF5_FOUND=\"${HDF5_FOUND}\"
+  )
+
+  set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/dmc_store_hdf5.f90
+    ${CMAKE_CURRENT_SOURCE_DIR}/dmc_restore_hdf5.f90
+    APPEND PROPERTY COMPILE_FLAGS "-lhdf5_fortran -lhdf5"
+  )
+endif()
+
+# Add headers
 target_include_directories(dmc.mov1
   PUBLIC
   ${CMAKE_BINARY_DIR}/src/vmc
   ${CMAKE_BINARY_DIR}/src/module
-  )
+)
 
-# compilation
-target_compile_options(dmc.mov1
-  PRIVATE
-  ${Fortran_FLAGS}
-  "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-  )
+# Compile options
+target_apply_champ_fortran_compile_options(dmc.mov1)
+target_apply_champ_fortran_link_options(dmc.mov1)
 
-  if(CMAKE_Fortran_COMPILER_ID MATCHES "NVHPC" OR CMAKE_Fortran_COMPILER_ID MATCHES "Fujitsu")
-  	target_link_options(dmc.mov1
-	  PRIVATE
-	  ${Fortran_FLAGS}
-	  "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>"
-	  )
-  endif()
-
-if (TREXIO_FOUND)
-  target_link_libraries(dmc.mov1
-    PRIVATE
-    pspline
-    parser
-    ${LINEAR_ALGEBRA}
-    ${TREXIO_LIBRARY}
-    MPI::MPI_Fortran)
-else()
-  target_link_libraries(dmc.mov1
-    PRIVATE
-    pspline
-    parser
-    ${LINEAR_ALGEBRA}
-    ${CUDA_LIBRARIES}
-    MPI::MPI_Fortran)
-endif()
-
-
-set(DMC_SOURCE ${DMC_SOURCE} CACHE INTERNAL "Path to the source of vmc f77")
+target_link_champ_runtime(dmc.mov1)

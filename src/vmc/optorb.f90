@@ -790,51 +790,6 @@ contains
 
       end
 !-----------------------------------------------------------------------
-      subroutine detratio_col(nel,orb,icol,sinvt,ratio,isltnew)
-
-      use precision_kinds, only: dp
-
-      implicit none
-
-      integer :: icol, ie, isltnew, jcol, je
-      integer :: nel
-      real(dp) :: ratio, sum
-      real(dp), dimension(nel) :: orb
-      real(dp), dimension(nel, nel) :: sinvt
-
-! values of new orbital
-! inverse transposed slater matrix (first index electron, 2nd orbital)
-! compute ratio of new and old determinant, if isltnew is
-! not zero, update inverse slater matrix as well
-! the new determinant differs from the old by replacing column icol
-! with the orbital values in orb
-
-      ratio=0.d0
-      do ie=1,nel
-       ratio=ratio+sinvt(icol,ie)*orb(ie)
-      enddo
-      if(isltnew.gt.0) then
-! matrix except replaced column
-       do jcol=1,nel
-        if(jcol.ne.icol) then
-         sum=0.d0
-         do je=1,nel
-          sum=sum+orb(je)*sinvt(jcol,je)
-         enddo
-         sum=sum/ratio
-         do je=1,nel
-          sinvt(jcol,je)=sinvt(jcol,je)-sum*sinvt(icol,je)
-         enddo
-        endif
-       enddo
-! replaced column
-       do ie=1,nel
-        sinvt(icol,ie)=sinvt(icol,ie)/ratio
-       enddo
-      endif
-
-      end
-!-----------------------------------------------------------------------
       subroutine optorb_define(iprint)
 
       use coefs,   only: next_max
@@ -858,6 +813,8 @@ contains
       integer :: iprint, io, iocc, iterm
       integer :: j, jo, k, n0
       integer :: n1, noporb
+      integer :: ip, iq, iorun, ispin, jstart, nstart
+      character(len=12) :: cvar, corb
       integer, dimension(2, ndet) :: iodet
       integer, dimension(2, ndet) :: iopos
       integer, dimension(2, norb_tot) :: iflag
@@ -1034,7 +991,6 @@ contains
             endif
           enddo
         enddo
-        if(iprint.eq.0) write(ounit,'(a16,i8,a8,i4,i5,a15,i4)') 'new variation: ',noporb,' pair ',io,jo,' spin ',ideriv_iab(noporb)
 
       50  continue
        enddo
@@ -1042,11 +998,43 @@ contains
       enddo
 
       norbterm=noporb
+
+! Print the orbital pair list compactly: consecutive variations that share the
+! same orbital and spin with contiguous targets are collapsed into one range.
+! The variation index and target are built as strings and right-justified in a
+! fixed width so every column stays aligned regardless of single/range entries.
+      if(iprint.eq.0) then
+        ip=1
+        do while(ip.le.norbterm)
+          iorun=ideriv(1,ip)
+          ispin=ideriv_iab(ip)
+          jstart=ideriv(2,ip)
+          nstart=ip
+          iq=ip
+          do while(iq.lt.norbterm)
+            if(ideriv(1,iq+1).ne.iorun) exit
+            if(ideriv_iab(iq+1).ne.ispin) exit
+            if(ideriv(2,iq+1).ne.ideriv(2,iq)+1) exit
+            iq=iq+1
+          enddo
+          if(iq.eq.ip) then
+            write(cvar,'(i0)')      nstart
+            write(corb,'(i0)')      jstart
+          else
+            write(cvar,'(i0,a,i0)') nstart, '-', iq
+            write(corb,'(i0,a,i0)') jstart, '-', ideriv(2,iq)
+          endif
+          write(ounit,'(1x,a,1x,a20,a,i4,a,a12,a,i3)') &
+            'new variation', adjustr(cvar), ' :  orbital', iorun, &
+            '  ->', adjustr(corb), '   spin', ispin
+          ip=iq+1
+        enddo
+      endif
+
       write(ounit,'(''number of orbital variations: '',2i8)') norbterm
 
 ! if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
       if(method.eq.'linear') then
-
         if(mxreduced.ne.norbterm) call fatal_error('READ_INPUT: mxreduced .ne. norbterm')
         nreduced=norbterm
        elseif(method.eq.'sr_n'.or.method.eq.'lin_d'.or.method.eq.'mix_n') then

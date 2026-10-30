@@ -389,7 +389,7 @@ contains
         write(ounit,'(1x,i3,3x,3(i2,2x),2x,1(f11.7,3x),2(f11.6,3x),i3)') ic,(izcmat(k,ic),k=1,3),(czint(k,ic),k=1,3),iwctype(ic)
       enddo
       write(ounit,'('' ----------------------------------------------------------------------'')')
-      write(ounit,'(''Internal coordiantes converted back into cartesian coordinates:'')')
+      write(ounit,'(''Internal coordinates converted back into cartesian coordinates:'')')
       write(ounit,'(1x,''Atom'',t12,''x'',t26,''y'',t40,''z'',t51,''iwctype'')')
       do ic=1,ncent
         write(ounit,'(1x,i3,3x,3(f11.7,3x),i3)') ic,(czcart(k,ic),k=1,3),iwctype(ic)

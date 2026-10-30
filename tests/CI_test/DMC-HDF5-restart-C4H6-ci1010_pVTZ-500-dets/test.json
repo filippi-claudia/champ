@@ -1,0 +1,258 @@
+{
+  "description": "HDF5 checkpoint/restart for DMC. Each case runs the same calculation twice: ten blocks in one go, and five blocks that dump a checkpoint followed by a restart that takes the remaining five. The restarted run must land on the uninterrupted one to within their combined error bars, and its own bookkeeping (weights, npass) must be that of a ten-block run rather than a five-block one. There was no DMC restart test before: the fixed-name restart_dmc.hdf5 that mc_configs restores from was never even written.  restart_dmc.hdf5 only exists in an HDF5-enabled build, which in this project means a TREXIO-enabled one, so the cases are declared as needing trexio even though nothing here reads a TREXIO file.",
+  "requires": [
+    "trexio"
+  ],
+  "labels": [
+    "DMC",
+    "HDF5",
+    "restart",
+    "C4H6",
+    "butadiene",
+    "ci1010",
+    "pVTZ"
+  ],
+  "cases": [
+    {
+      "name": "np1",
+      "comment": "A DMC restart is not bit reproducible the way the VMC one is: the walkers' determinants are rebuilt from scratch by hpsi rather than carried over from the incremental updates of the previous step, so the two paths separate at roughly 1e-5 and are compared statistically.",
+      "runs": [
+        {
+          "program": "dmc",
+          "input": "uninterrupted.inp",
+          "output": "uninterrupted_core_1.out",
+          "nproc": 1,
+          "error_output": "error_uninterrupted",
+          "before": [
+            {
+              "op": "remove",
+              "paths": [
+                "restart_dmc*"
+              ]
+            }
+          ]
+        },
+        {
+          "program": "dmc",
+          "input": "dump.inp",
+          "output": "dump_core_1.out",
+          "nproc": 1,
+          "error_output": "error_dump",
+          "before": [
+            {
+              "op": "remove",
+              "paths": [
+                "restart_dmc*"
+              ]
+            }
+          ]
+        },
+        {
+          "program": "dmc",
+          "input": "restore_continue.inp",
+          "output": "restore_continue_core_1.out",
+          "nproc": 1,
+          "error_output": "error_restore",
+          "after": [
+            {
+              "op": "concat",
+              "sources": [
+                "uninterrupted_core_1.out",
+                "restore_continue_core_1.out"
+              ],
+              "dest": "reference_and_restart_core_1.out"
+            }
+          ]
+        }
+      ],
+      "checks": [
+        {
+          "type": "file_exists",
+          "file": "restart_dmc.hdf5",
+          "comment": "the fixed-name checkpoint mc_configs restores from; it was not written at all before this branch"
+        },
+        {
+          "type": "difference",
+          "file": "reference_and_restart_core_1.out",
+          "match": "total energy ( 0)",
+          "minuend": -1,
+          "subtrahend": 1,
+          "value": 0.0,
+          "error": 0.0,
+          "comment": "restarted run minus uninterrupted run, both ten blocks: they must agree within their own combined error bars. No reference energy is hard coded here, so this check travels across compilers."
+        },
+        {
+          "type": "value",
+          "file": "restore_continue_core_1.out",
+          "match": "weights",
+          "value": 20.2348134,
+          "error": 0.2044886,
+          "comment": "wcum_dmc/pass_proc, so it has to come out near dmc_nconf. It is the sharpest probe of the block bookkeeping the restart has to carry over."
+        },
+        {
+          "type": "value",
+          "file": "restore_continue_core_1.out",
+          "match": "total energy ( 0)",
+          "value": -26.2135816,
+          "error": 0.0202343
+        },
+        {
+          "type": "value",
+          "file": "restore_continue_core_1.out",
+          "match": "total energy ( 100)",
+          "value": -26.2106154,
+          "error": 0.0203334,
+          "comment": "growth estimator; its error bar is what the wgcm2/egcm2/pecm2_dmc/tpbcm2_dmc datasets restore"
+        }
+      ]
+    },
+    {
+      "name": "np2",
+      "comment": "Two ranks additionally exercise the master/worker split of the walker data, and the per-processor block counters that the single-rank case cannot tell apart from the global ones.",
+      "runs": [
+        {
+          "program": "dmc",
+          "input": "uninterrupted.inp",
+          "output": "uninterrupted_core_2.out",
+          "nproc": 2,
+          "error_output": "error_uninterrupted",
+          "before": [
+            {
+              "op": "remove",
+              "paths": [
+                "restart_dmc*"
+              ]
+            }
+          ]
+        },
+        {
+          "program": "dmc",
+          "input": "dump.inp",
+          "output": "dump_core_2.out",
+          "nproc": 2,
+          "error_output": "error_dump",
+          "before": [
+            {
+              "op": "remove",
+              "paths": [
+                "restart_dmc*"
+              ]
+            }
+          ]
+        },
+        {
+          "program": "dmc",
+          "input": "restore_continue.inp",
+          "output": "restore_continue_core_2.out",
+          "nproc": 2,
+          "error_output": "error_restore",
+          "after": [
+            {
+              "op": "concat",
+              "sources": [
+                "uninterrupted_core_2.out",
+                "restore_continue_core_2.out"
+              ],
+              "dest": "reference_and_restart_core_2.out"
+            }
+          ]
+        }
+      ],
+      "checks": [
+        {
+          "type": "file_exists",
+          "file": "restart_dmc.hdf5",
+          "comment": "the fixed-name checkpoint mc_configs restores from; it was not written at all before this branch"
+        },
+        {
+          "type": "difference",
+          "file": "reference_and_restart_core_2.out",
+          "match": "total energy ( 0)",
+          "minuend": -1,
+          "subtrahend": 1,
+          "value": 0.0,
+          "error": 0.0,
+          "comment": "restarted run minus uninterrupted run, both ten blocks: they must agree within their own combined error bars. No reference energy is hard coded here, so this check travels across compilers."
+        },
+        {
+          "type": "value",
+          "file": "restore_continue_core_2.out",
+          "match": "weights",
+          "value": 19.7992969,
+          "error": 0.162123,
+          "comment": "wcum_dmc/pass_proc, so it has to come out near dmc_nconf. It is the sharpest probe of the block bookkeeping the restart has to carry over."
+        },
+        {
+          "type": "value",
+          "file": "restore_continue_core_2.out",
+          "match": "total energy ( 0)",
+          "value": -26.270914,
+          "error": 0.0167207
+        },
+        {
+          "type": "value",
+          "file": "restore_continue_core_2.out",
+          "match": "total energy ( 100)",
+          "value": -26.2691465,
+          "error": 0.0167872,
+          "comment": "growth estimator; its error bar is what the wgcm2/egcm2/pecm2_dmc/tpbcm2_dmc datasets restore"
+        }
+      ]
+    },
+    {
+      "name": "np2-force_analy",
+      "comment": "Same dump and restart with iforce_analy and dmc_ivd on, so the checkpoint has to carry the Force Analytical group: the da_* cumulants plus the per-walker deriv_eold, esnake and ehist that each have to find their way back to the rank they came from.",
+      "runs": [
+        {
+          "program": "dmc",
+          "input": "dump_force_analy.inp",
+          "output": "dump_fa_core_2.out",
+          "nproc": 2,
+          "error_output": "error_dump_fa",
+          "before": [
+            {
+              "op": "remove",
+              "paths": [
+                "restart_dmc*"
+              ]
+            }
+          ]
+        },
+        {
+          "program": "dmc",
+          "input": "restore_continue_force_analy.inp",
+          "output": "restore_continue_fa_core_2.out",
+          "nproc": 2,
+          "error_output": "error_restore_fa"
+        }
+      ],
+      "checks": [
+        {
+          "type": "file_exists",
+          "file": "restart_dmc.hdf5"
+        },
+        {
+          "type": "value",
+          "file": "restore_continue_fa_core_2.out",
+          "match": "weights",
+          "value": 19.7992969,
+          "error": 0.162123
+        },
+        {
+          "type": "value",
+          "file": "restore_continue_fa_core_2.out",
+          "match": "total energy ( 0)",
+          "value": -26.270914,
+          "error": 0.0167207
+        },
+        {
+          "type": "value",
+          "file": "restore_continue_fa_core_2.out",
+          "match": "total energy ( 100)",
+          "value": -26.2691465,
+          "error": 0.0167872
+        }
+      ]
+    }
+  ]
+}

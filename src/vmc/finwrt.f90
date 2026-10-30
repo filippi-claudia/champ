@@ -167,7 +167,7 @@ contains
 
       call efficiency_prt(passes)
 
-      call prop_fin(wcum(1,1),iblk,efin_p,eerr_p)
+      call prop_fin(iblk,efin_p,eerr_p)
 
       call finwrt_more
 

@@ -1,12 +1,9 @@
-if (MPI_Fortran_FOUND)
-
-  # --------------------------------------------------------------------
-  # Create two libraries to share objects between the two binaries,
-  # vmc.mov1 and dmc.mov1:
-  # - shared_modules: all .f90 modules that must be compiled first.
-  # - shared_objects: rest of shared objects (.f90/.f).
-  # --------------------------------------------------------------------
-  set(SHARED_MODULES
+# --------------------------------------------------------------------
+# Create object libraries shared by vmc.mov1 and dmc.mov1:
+# - shared_modules: all .f90 modules that must be compiled first.
+# - shared_objects: rest of shared objects (.f90/.f).
+# --------------------------------------------------------------------
+set(SHARED_MODULES
     m_kinds.f90
     m_metropolis.f90
     m_slater.f90
@@ -22,7 +19,6 @@ if (MPI_Fortran_FOUND)
     m_multiple_geo.f90
     m_force_pth.f90
     m_force_analytic.f90
-    m_slater.f90
     m_force.f90
     m_mstates.f90
     m_mpi.f90
@@ -30,8 +26,6 @@ if (MPI_Fortran_FOUND)
     m_pseudo.f90
     m_sampling.f90
     m_sr.f90
-    m_slater.f90
-    m_metropolis.f90
     m_dmc.f90
     m_vmc.f90
     m_vd.f90
@@ -51,11 +45,14 @@ if (MPI_Fortran_FOUND)
     m_estimators.f90
     m_deriv.f90
     m_mixderiv.f90
+    m_step.f90
+    m_denupdn.f90
     m_input.f90
     m_grdnt.f90
     m_allocation.f90
     m_state_avrg.f90
     m_error.f90
+    m_outputs.f90
     m_qmckl.F90
     m_backflow.f90
     ${CMAKE_PARSER_DIR}/fdf.F90
@@ -64,18 +61,21 @@ if (MPI_Fortran_FOUND)
     ${CMAKE_PARSER_DIR}/prec.F90
     ${CMAKE_PARSER_DIR}/utils.F90)
 
-    if (TREXIO_FOUND)
-      list(APPEND SHARED_MODULES m_trexio.F90)
-    endif()
+  if(HDF5_FOUND)
+    list(APPEND SHARED_MODULES utils_hdf5.f90)
+  endif()
 
-    #if (QMCKL_FOUND)
-    #   list(APPEND SHARED_MODULES m_qmckl.F90)
-    #endif()
+  if(TREXIO_FOUND)
+    list(APPEND SHARED_MODULES m_trexio.F90)
+  endif()
 
-    add_library(shared_modules OBJECT ${SHARED_MODULES})
-    target_compile_options(shared_modules
-      PRIVATE
-      ${Fortran_FLAGS}
-      "$<$<CONFIG:Debug>:${Fortan_FLAGS_DEBUG}>")
+  add_library(shared_modules OBJECT ${SHARED_MODULES})
+  target_compile_definitions(shared_modules
+    PRIVATE
+    CHAMP_VERSION="v${PROJECT_VERSION}")
+target_apply_champ_fortran_compile_options(shared_modules)
 
-endif()
+target_link_libraries(shared_modules
+  PUBLIC
+  MPI::MPI_Fortran)
+target_link_optional_libraries(shared_modules)

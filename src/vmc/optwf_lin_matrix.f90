@@ -22,7 +22,7 @@ module optwf_lin_matrix
       END SUBROUTINE
       end interface
 contains
-      subroutine setup_optimization(nparm,mparmx,MWORK,lwork,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
+      subroutine setup_optimization(nparm,mparmx,h,h_sav,s,s_sav,work,eig_vec,add_diag,iter)
 
       use ci000,   only: nciterm
       use contrl_file, only: ounit
@@ -38,9 +38,8 @@ contains
       integer :: i, i0, i1, i_ovr, idx
       integer :: ii, imag, ireal, is
       integer :: isort_ovr, iter, j, k
-      integer :: lwork, mparmx, nparm
+      integer :: mparmx, nparm
       integer, dimension(nparmall) :: isort
-      integer  :: MWORK
       real(dp) :: add_diag, anorm_orth, anorm_orth_min, bot
       real(dp) :: de_range, dmult, eig_min
       real(dp) :: emax, emin, scale
@@ -55,8 +54,6 @@ contains
       real(dp), dimension(nparmall,nparmall) :: hmod
       real(dp), dimension(*) :: work
       real(dp), parameter :: eps = 1.d-12
-
-
 
       save eig_min
 
@@ -98,7 +95,6 @@ contains
 ! do i=1,nparm+is
 !   write(ounit,*) 's =',(s(i,j),j=1,nparm+is)
 ! enddo
-
 
       if(add_diag.gt.0.and.iter.eq.1) then
 
@@ -223,21 +219,22 @@ contains
       real(dp), dimension(*) :: seig_valinv
       real(dp), dimension(nparmall,*) :: hmod
       real(dp), dimension(*) :: work
+      real(dp), allocatable :: work_local(:) 
       real(dp), parameter :: eps = 1.d-12
       real(dp), parameter :: eps_eigval = 1.d-14
-
-! parameter(MWORK=50*nparmall)
 
       call cpu_time(t0)
 ! call dsyev to determine lworks
       call dsyev('V','U',n,s,mparmx,seig_vals,work,-1,isdinfo)
       lworks=work(1)
-
-!     write(ounit,*) 'S diag opt lwork=',lworks
+      write(ounit,'(''S diag optimal lwork='',i10)') lworks
+      allocate(work_local(lworks))
 
 ! diagonalize s=S -> S_diag=U^T S U -> in output, s contains the unitary matrix U
-      call dsyev('V','U',n,s,mparmx,seig_vals,work,lworks,isdinfo)
+      call dsyev('V','U',n,s,mparmx,seig_vals,work_local,lworks,isdinfo)
+
       if (isdinfo.gt.0) call fatal_error('Eigenvalue issues in regularize_geneig')
+      deallocate(work_local)
 
 !     call cpu_time(t)
 !     t_sdiag=t
@@ -306,6 +303,7 @@ contains
 
       use gradhess_all, only: nparmall
       use precision_kinds, only: dp
+      use contrl_file, only: ounit
 
       implicit none
 
@@ -316,20 +314,18 @@ contains
       real(dp), dimension(mparmx,*) :: hmod
       real(dp), dimension(mparmx,*) :: s
       real(dp), dimension(nparmall,*) :: eig_vec
-      real(dp), dimension(nparmall,nparmall) :: eig_vecl
+      real(dp), dimension(nparmall,1) :: eig_vecl
       real(dp), dimension(*) :: work
       real(dp), dimension(nparmall) :: eig
       real(dp), dimension(nparmall) :: eigi
       real(dp), parameter :: eps = 1.d-12
-! parameter(MWORK=50*nparmall)
-! dimension eig_vecl(nparmall,1)
+      real(dp), allocatable :: work_local(:) 
 
 ! s_fordiag: a copy of S for diagonalization.
 ! hmod: the modified Hamiltonian matrix (in the end, S^-1*U*H*U^T)
 ! s: overlap matrix, h: hamiltonian, eigenvec: eigenvectors,
 
       call cpu_time(t0)
-
 
 ! MISSING
 ! hmod+adiag/s_diag
@@ -338,12 +334,17 @@ contains
       call dgeev('N','V',n,hmod,nparmall,eig,eigi,eig_vecl, &
               nparmall,eig_vec,nparmall,work,-1,isdinfo)
       ilwork=work(1)
-!     write(ounit,*) 'isdinfo, optimal lwork=',isdinfo,ilwork
+      write(ounit,'(''H optimal lwork='',i10)') ilwork
+      allocate(work_local(ilwork))
 
 ! Diagonalize
       call dgeev('N','V',n,hmod,nparmall,eig,eigi,eig_vecl, &
-              nparmall,eig_vec,nparmall,work,ilwork,isdinfo)
-!     write(ounit,*) 'isdinfo=',isdinfo
+              nparmall,eig_vec,nparmall,work_local,ilwork,isdinfo)
+
+      if (isdinfo.gt.0) call fatal_error('Eigenvalue issues in regularize_geneig')
+
+      deallocate(work_local)
+
 !     call cpu_time(t)
 !     t_hmdiag=t
 !     write(ounit,*) 'elapsed time to diagonalize Hmod:',t-t0
@@ -367,7 +368,7 @@ contains
       return
       end
 !-----------------------------------------------------------------------
-      subroutine compute_dparm(nparm,mparmx,lwork,dparm,h,h_sav,s,s_sav,work,eig_vec, &
+      subroutine compute_dparm(nparm,mparmx,dparm,h,h_sav,s,s_sav,work,eig_vec, &
                            add_diag,energy_sav,energy_err_sav)
 
       use ci000,   only: nciterm
@@ -386,7 +387,7 @@ contains
       integer :: i, i0, i_good, i_min, i_ovr
       integer :: idx, ii, imag, ireal
       integer :: is, j, jj, jsort
-      integer :: k, lwork, mparmx, no_real_found
+      integer :: k, mparmx, no_real_found
       integer :: nparm
       integer, dimension(nparmall) :: isort
       real(dp) :: add_diag, anorm_orth, anorm_orth_min, bot

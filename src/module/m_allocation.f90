@@ -1,8 +1,21 @@
-!> Contains subroutines to allocate/deallocate VMC and DMC calculations.
-!>@param allocate_vmc Allocates memory for VMC calculations.
-!>@param deallocate_vmc Deallocates memory for VMC calculations.
-!>@param allocate_dmc Allocates memory for DMC calculations.
-!>@param deallocate_dmc Deallocates memory for DMC calculations.
+!> @brief Module for centralized memory allocation and deallocation.
+!> @author CHAMP developers
+!> @date 2022
+!>
+!> @details This module provides unified interfaces for allocating and deallocating
+!> memory for all data structures used in VMC and DMC calculations. It orchestrates
+!> the memory management across multiple modules, ensuring proper initialization order
+!> and complete cleanup.
+!>
+!> The module contains:
+!> - allocate_vmc(): Allocates all VMC-related arrays
+!> - deallocate_vmc(): Deallocates all VMC-related arrays
+!> - allocate_dmc(): Allocates all DMC-specific arrays
+!> - deallocate_dmc(): Deallocates all DMC-specific arrays
+!>
+!> @note Memory allocation should be done after all input parameters are read and
+!> before any calculation begins. Deallocation should be done before program termination
+!> or when switching between different calculation modes.
 module allocation_mod
       use jastrow, only: allocate_m_jastrow,deallocate_m_jastrow
       use m_basis, only: allocate_m_basis,deallocate_m_basis
@@ -35,31 +48,38 @@ module allocation_mod
 implicit none
 public
 contains
-  !> Subroutines to allocate memory of specific VMC-related variables.
-  !>@param allocate_m_common()
-  !>@param allocate_m_basis
-  !>@param allocate_m_control
-  !>@param allocate_m_deriv
-  !>@param allocate_m_efield
-  !>@param allocate_m_estimators
-  !>@param allocate_m_force
-  !>@param allocate_m_gradhess
-  !>@param allocate_m_grdnt
-  !>@param allocate_m_grid
-  !>@param allocate_m_jastrow
-  !>@param allocate_m_mixderiv
-  !>@param allocate_m_mmpol
-  !>@param allocate_m_mstates
-  !>@param allocate_m_optci
-  !>@param allocate_m_optorb
-  !>@param allocate_m_optwf
-  !>@param allocate_m_pcm
-  !>@param allocate_m_prop
-  !>@param allocate_m_pseudo
-  !>@param allocate_m_sampling
-  !>@param allocate_m_sr
-  !>@param allocate_m_state_avrg
+  !> Allocates memory for all VMC calculation arrays and data structures.
+  !>
+  !> @details This subroutine systematically allocates memory by calling allocation
+  !> routines from 23 modules in the proper initialization order. It performs the following tasks:
+  !> - allocate_m_common(): Allocates common arrays (electron-electron/nucleus distances, orbital values, Slater matrices)
+  !> - allocate_m_basis: Allocates basis set coefficient and exponent arrays for atomic orbitals
+  !> - allocate_m_control: Allocates control parameter arrays for run settings
+  !> - allocate_m_deriv: Allocates derivative arrays needed for wavefunction optimization
+  !> - allocate_m_efield: Allocates electric field parameter arrays for external field calculations
+  !> - allocate_m_estimators: Allocates energy and property estimator accumulator arrays
+  !> - allocate_m_force: Allocates force calculation arrays for atomic forces
+  !> - allocate_m_gradhess: Allocates gradient and Hessian matrices for optimization
+  !> - allocate_m_grdnt: Allocates gradient arrays for energy and wavefunction derivatives
+  !> - allocate_m_grid: Allocates spatial grid arrays for density and orbital visualization
+  !> - allocate_m_jastrow: Allocates Jastrow factor coefficient and scaling parameter arrays
+  !> - allocate_m_mixderiv: Allocates mixed derivative term arrays for coupled optimizations
+  !> - allocate_m_mmpol: Allocates molecular mechanics polarization data structures
+  !> - allocate_m_mstates: Allocates multiple electronic state arrays for excited states
+  !> - allocate_m_optci: Allocates CI coefficient optimization arrays
+  !> - allocate_m_optorb: Allocates orbital coefficient optimization arrays
+  !> - allocate_m_optwf: Allocates wavefunction optimization control and history arrays
+  !> - allocate_m_pcm: Allocates PCM (Polarizable Continuum Model) cavity and surface charge arrays
+  !> - allocate_m_prop: Allocates property calculation arrays (dipole, quadrupole, etc.)
+  !> - allocate_m_pseudo: Allocates pseudopotential radial grid and coefficient arrays
+  !> - allocate_m_sampling: Allocates walker configuration, random number, and statistics arrays
+  !> - allocate_m_sr: Allocates Stochastic Reconfiguration overlap and Hamiltonian matrix arrays
+  !> - allocate_m_state_avrg: Allocates state-averaged calculation weight and energy arrays
+  !>
+  !> @note Called from vmc/main.f90 after reading input files and before VMC equilibration.
   subroutine allocate_vmc()
+    use denupdn, only: allocate_denupdn
+    use step,    only: allocate_step
     call allocate_m_common()
     call allocate_m_basis
     call allocate_m_control
@@ -83,35 +103,43 @@ contains
     call allocate_m_sampling
     call allocate_m_sr
     call allocate_m_state_avrg
-
+    call allocate_step()
+    call allocate_denupdn()
   end subroutine allocate_vmc
 
-  !> Subroutines to deallocate memory of specific VMC-related variables.
-  !>@param deallocate_m_common
-  !>@param deallocate_m_basis
-  !>@param deallocate_m_control
-  !>@param deallocate_m_deriv
-  !>@param deallocate_m_efield
-  !>@param deallocate_m_estimators
-  !>@param deallocate_m_ewald
-  !>@param deallocate_m_force
-  !>@param deallocate_m_gradhess
-  !>@param deallocate_m_grdnt
-  !>@param deallocate_m_grid
-  !>@param deallocate_m_jastrow
-  !>@param deallocate_m_mixderiv
-  !>@param deallocate_m_mmpol
-  !>@param deallocate_m_mstates
-  !>@param deallocate_m_optci
-  !>@param deallocate_m_optorb
-  !>@param deallocate_m_optwf
-  !>@param deallocate_m_pcm
-  !>@param deallocate_m_prop
-  !>@param deallocate_m_pseudo
-  !>@param deallocate_m_sampling
-  !>@param deallocate_m_sr
-  !>@param deallocate_m_state_avrg
+  !> Deallocates memory for all VMC calculation arrays and data structures.
+  !>
+  !> @details This subroutine systematically frees memory by calling deallocation
+  !> routines from 23 modules. It performs the following tasks:
+  !> - deallocate_m_common: Frees common arrays (distances, orbitals, Slater matrices)
+  !> - deallocate_m_basis: Releases basis set coefficient and exponent arrays
+  !> - deallocate_m_control: Frees control parameter arrays
+  !> - deallocate_m_deriv: Releases derivative arrays for optimization
+  !> - deallocate_m_efield: Frees electric field parameter arrays
+  !> - deallocate_m_estimators: Releases energy and property estimator arrays
+  !> - deallocate_m_ewald: Frees Ewald summation arrays (k-vectors, structure factors)
+  !> - deallocate_m_force: Releases force calculation arrays
+  !> - deallocate_m_gradhess: Frees gradient and Hessian matrices
+  !> - deallocate_m_grdnt: Releases gradient arrays for various quantities
+  !> - deallocate_m_grid: Frees spatial grid arrays
+  !> - deallocate_m_jastrow: Releases Jastrow factor coefficient and scaling arrays
+  !> - deallocate_m_mixderiv: Frees mixed derivative term arrays
+  !> - deallocate_m_mmpol: Releases molecular mechanics polarization data
+  !> - deallocate_m_mstates: Frees multiple electronic state arrays
+  !> - deallocate_m_optci: Releases CI coefficient optimization arrays
+  !> - deallocate_m_optorb: Frees orbital optimization arrays
+  !> - deallocate_m_optwf: Releases wavefunction optimization data structures
+  !> - deallocate_m_pcm: Frees PCM (Polarizable Continuum Model) cavity and charge arrays
+  !> - deallocate_m_prop: Releases property calculation arrays
+  !> - deallocate_m_pseudo: Frees pseudopotential radial grid and coefficient arrays
+  !> - deallocate_m_sampling: Releases walker configuration and statistics arrays
+  !> - deallocate_m_sr: Frees Stochastic Reconfiguration matrix arrays
+  !> - deallocate_m_state_avrg: Releases state-averaged calculation weight arrays
+  !>
+  !> @note Called at the end of VMC run in vmc/main.f90 or before switching to DMC mode.
   subroutine deallocate_vmc()
+    use denupdn, only: deallocate_denupdn
+    use step,    only: deallocate_step
     call deallocate_m_common
     call deallocate_m_basis
     call deallocate_m_control
@@ -137,23 +165,31 @@ contains
     call deallocate_m_sr
     call deallocate_m_state_avrg
     call deallocate_m_backflow
+    call deallocate_step()
+    call deallocate_denupdn()
   end subroutine deallocate_vmc
 
-  !> Subroutines to allocate memory of specific DMC-related variables.
-  !>@param allocate_iage()
-  !>@param allocate_contrldmc()
-  !>@param allocate_config_dmc()
-  !>@param allocate_estsum_dmc()
-  !>@param allocate_estcum_dmc()
-  !>@param allocate_est2cm_dmc()
-  !>@param allocate_derivest()
-  !>@param allocate_branch()
-  !>@param allocate_c_averages()
-  !>@param allocate_c_averages_index()
-  !>@param allocate_jacobsave()
-  !>@param allocate_velratio()
-  !>@param allocate_da_branch()
-  !>@param allocate_pathak()
+  !> Allocates memory for DMC (Diffusion Monte Carlo) calculation arrays and data structures.
+  !>
+  !> @details This subroutine prepares DMC-specific memory by calling 15 allocation
+  !> routines. It must be called after allocate_vmc() and performs the following tasks:
+  !> - allocate_iage(): Allocates walker age arrays for population control tracking
+  !> - allocate_contrldmc(): Allocates DMC control parameters (time step, target population)
+  !> - allocate_config_dmc(): Allocates DMC walker coordinate and weight arrays
+  !> - allocate_estsum_dmc(): Allocates block-averaged DMC estimator arrays
+  !> - allocate_estcum_dmc(): Allocates cumulative DMC estimator accumulators
+  !> - allocate_est2cm_dmc(): Allocates DMC second moment estimators for error analysis
+  !> - allocate_derivest(): Allocates derivative estimator arrays for force calculations
+  !> - allocate_branch(): Allocates branching factor and population control arrays
+  !> - allocate_c_averages(): Allocates core estimator average arrays (energy, variance)
+  !> - allocate_c_averages_index(): Allocates indexing arrays for core estimator access
+  !> - allocate_jacobsave(): Allocates Jacobian determinant storage for T-moves
+  !> - allocate_velratio(): Allocates velocity ratio arrays for T-move acceptance
+  !> - allocate_da_branch(): Allocates variational derivative arrays with branching weights
+  !> - allocate_pathak(): Allocates Pathak T-move correction arrays
+  !> - allocate_fragments(): Allocates molecular fragment tracking arrays (if nfrag > 0)
+  !>
+  !> @note Called from dmc/main.f90 after allocate_vmc() and before DMC equilibration.
   subroutine allocate_dmc()
     use age,     only: allocate_iage
     use branch,  only: allocate_branch
@@ -161,12 +197,14 @@ contains
     use c_averages_index, only: allocate_c_averages_index
     use config,  only: allocate_config_dmc
     use contrldmc, only: allocate_contrldmc
+    use denupdn, only: allocate_denupdn
     use derivest, only: allocate_derivest
     use est2cm,  only: allocate_est2cm_dmc
     use estcum,  only: allocate_estcum_dmc
     use estsum,  only: allocate_estsum_dmc
     use fragments, only: allocate_fragments, nfrag
     use jacobsave, only: allocate_jacobsave
+    use step,    only: allocate_step
     use velratio, only: allocate_velratio
     use vd_mod, only: allocate_da_branch
     use pathak_mod, only: allocate_pathak
@@ -180,6 +218,8 @@ contains
     call allocate_estcum_dmc()
     call allocate_est2cm_dmc()
     call allocate_derivest()
+    call allocate_step()
+    call allocate_denupdn()
     call allocate_branch()
     call allocate_c_averages()
     call allocate_c_averages_index()
@@ -190,22 +230,28 @@ contains
     call allocate_fragments()
   end subroutine allocate_dmc
 
-  !> Subroutines to deallocate memory of specific DMC-related variables.
-  !> Deallocation will ocurr before ending of dmc/main.f90.
-  !>@param deallocate_iage()
-  !>@param deallocate_contrldmc()
-  !>@param deallocate_config_dmc()
-  !>@param deallocate_estsum_dmc()
-  !>@param deallocate_estcum_dmc()
-  !>@param deallocate_est2cm_dmc()
-  !>@param deallocate_derivest()
-  !>@param deallocate_branch()
-  !>@param deallocate_c_averages()
-  !>@param deallocate_c_averages_index()
-  !>@param deallocate_jacobsave()
-  !>@param deallocate_velratio()
-  !>@param deallocate_da_branch()
-  !>@param deallocate_pathak()
+  !> Deallocates memory for all DMC calculation arrays and data structures.
+  !>
+  !> @details This subroutine systematically frees DMC-specific memory by calling
+  !> 15 deallocation routines. It performs the following cleanup tasks:
+  !> - deallocate_iage(): Frees walker age tracking arrays
+  !> - deallocate_contrldmc(): Releases DMC control parameter arrays
+  !> - deallocate_config_dmc(): Frees DMC walker configuration and weight arrays
+  !> - deallocate_estsum_dmc(): Releases block-averaged estimator arrays
+  !> - deallocate_estcum_dmc(): Frees cumulative estimator accumulator arrays
+  !> - deallocate_est2cm_dmc(): Releases second moment estimator arrays
+  !> - deallocate_derivest(): Frees derivative estimator arrays used for forces
+  !> - deallocate_branch(): Releases branching factor and population control arrays
+  !> - deallocate_c_averages(): Frees core estimator average arrays
+  !> - deallocate_c_averages_index(): Releases core estimator indexing arrays
+  !> - deallocate_jacobsave(): Frees Jacobian determinant storage arrays
+  !> - deallocate_velratio(): Releases velocity ratio arrays for T-moves
+  !> - deallocate_da_branch(): Frees variational derivative branching arrays
+  !> - deallocate_pathak(): Releases Pathak T-move correction arrays
+  !> - deallocate_fragments(): Frees molecular fragment arrays
+  !>
+  !> @note Called near the end of dmc/main.f90 to clean up DMC arrays before
+  !> program termination or before switching back to VMC mode.
   subroutine deallocate_dmc()
     use age,     only: deallocate_iage
     use branch,  only: deallocate_branch
@@ -213,12 +259,14 @@ contains
     use c_averages_index, only: deallocate_c_averages_index
     use config,  only: deallocate_config_dmc
     use contrldmc, only: deallocate_contrldmc
+    use denupdn, only: deallocate_denupdn
     use derivest, only: deallocate_derivest
     use est2cm,  only: deallocate_est2cm_dmc
     use estcum,  only: deallocate_estcum_dmc
     use estsum,  only: deallocate_estsum_dmc
     use fragments,  only: deallocate_fragments
     use jacobsave, only: deallocate_jacobsave
+    use step,    only: deallocate_step
     use velratio, only: deallocate_velratio
     use vd_mod, only: deallocate_da_branch
     use pathak_mod, only: deallocate_pathak
@@ -230,6 +278,8 @@ contains
     call deallocate_estcum_dmc()
     call deallocate_est2cm_dmc()
     call deallocate_derivest()
+    call deallocate_step()
+    call deallocate_denupdn()
     call deallocate_branch()
     call deallocate_c_averages()
     call deallocate_c_averages_index()

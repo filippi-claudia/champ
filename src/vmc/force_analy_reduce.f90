@@ -3,7 +3,7 @@ module force_analy_reduce_mod
       subroutine force_analy_reduce()
       use da_energy_sumcum, only: da_energy_cum,da_psi_cum,da_energy_cm2
       use m_force_analytic, only: iforce_analy, da_energy_psi_block
-      use m_force_analytic, only: wcum_block, da_psi_block
+      use m_force_analytic, only: wcum_block, da_psi_block, f_analy_err
       use force_pth, only: PTH
       use mpi
       use mpiconf, only: wid
@@ -15,7 +15,7 @@ module force_analy_reduce_mod
 
       implicit none
 
-      integer :: ic, ierr, ii, k, iph, iblk
+      integer :: ic, ierr, ii, k, iph, ib
 
       real(dp), dimension(3*ncent_tot*PTH) :: collect
       real(dp), dimension(vmc_nblk*3*ncent_tot*PTH) :: collect2
@@ -115,71 +115,74 @@ module force_analy_reduce_mod
          enddo
        endif
 
-       call mpi_reduce(da_energy_psi_block,collect2,vmc_nblk*3*ncent*PTH,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+       if( f_analy_err.gt.0) then
 
-       if(wid) then
-         ii=0
-         do iph=1,PTH
-           do ic=1,ncent
-             do k=1,3
-               do iblk=1,vmc_nblk
-                 ii=ii+1
-                 da_energy_psi_block(iblk,k,ic,iph)=collect2(ii)
-               enddo
-             enddo
-           enddo
-         enddo
-       else
-         do iph=1,PTH
-           do ic=1,ncent
-             do k=1,3
-               do iblk=1,vmc_nblk
-                 da_energy_psi_block(iblk,k,ic,iph)=0.d0
-               enddo
-             enddo
-           enddo
-         enddo
-       endif
+        call mpi_reduce(da_energy_psi_block,collect2,vmc_nblk*3*ncent*PTH,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-       call mpi_reduce(wcum_block,collect3,vmc_nblk,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        if(wid) then
+          ii=0
+          do iph=1,PTH
+            do ic=1,ncent
+              do k=1,3
+                do ib=1,vmc_nblk
+                  ii=ii+1
+                  da_energy_psi_block(ib,k,ic,iph)=collect2(ii)
+                enddo
+              enddo
+            enddo
+          enddo
+        else
+          do iph=1,PTH
+            do ic=1,ncent
+              do k=1,3
+                do ib=1,vmc_nblk
+                  da_energy_psi_block(ib,k,ic,iph)=0.d0
+                enddo
+              enddo
+            enddo
+          enddo
+        endif
 
-       if(wid) then
-         ii=0
-         do iblk=1,vmc_nblk
-           ii=ii+1
-           wcum_block(iblk)=collect3(ii)
-         enddo
-       else
-        do iblk=1,vmc_nblk
-          wcum_block(iblk)=0.d0
-        enddo
-       endif
+        call mpi_reduce(wcum_block,collect3,vmc_nblk,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-       call mpi_reduce(da_psi_block,collect2,3*ncent*vmc_nblk*PTH,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        if(wid) then
+          ii=0
+          do ib=1,vmc_nblk
+            ii=ii+1
+            wcum_block(ib)=collect3(ii)
+          enddo
+        else
+         do ib=1,vmc_nblk
+           wcum_block(ib)=0.d0
+         enddo
+        endif
 
-       if(wid) then
-         ii=0
-         do iph=1,PTH
-           do ic=1,ncent
-             do k=1,3
-               do iblk=1,vmc_nblk
-                 ii=ii+1
-                 da_psi_block(iblk,k,ic,iph)=collect2(ii)
-               enddo
-             enddo
-           enddo
-         enddo
-       else
-         do iph=1,PTH
-           do ic=1,ncent
-             do k=1,3
-               do iblk=1,vmc_nblk
-                 da_psi_block(iblk,k,ic,iph)=0.d0
-               enddo
-             enddo
-           enddo
-         enddo
-       endif
+        call mpi_reduce(da_psi_block,collect2,3*ncent*vmc_nblk*PTH,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+
+        if(wid) then
+          ii=0
+          do iph=1,PTH
+            do ic=1,ncent
+              do k=1,3
+                do ib=1,vmc_nblk
+                  ii=ii+1
+                  da_psi_block(ib,k,ic,iph)=collect2(ii)
+                enddo
+              enddo
+            enddo
+          enddo
+        else
+          do iph=1,PTH
+            do ic=1,ncent
+              do k=1,3
+                do ib=1,vmc_nblk
+                  da_psi_block(ib,k,ic,iph)=0.d0
+                enddo
+              enddo
+            enddo
+          enddo
+        endif
+      endif
 
       return
       end

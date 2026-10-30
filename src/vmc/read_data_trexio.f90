@@ -73,6 +73,9 @@ module trexio_read_data
         logical                         :: exist
         type(atom_t)                    :: atoms
         character(len=2), allocatable   :: unique(:)
+        real(dp), allocatable           :: nucleus_charge_trexio(:)
+        logical                         :: has_trexio_nuclear_charge
+        real(dp)                        :: znuc_from_periodic_table
 
         ! trexio
         integer(8)                      :: trex_molecule_file
@@ -87,6 +90,7 @@ module trexio_read_data
 
         !   External file reading
 
+        if (allocated(file_trexio_path)) deallocate(file_trexio_path)
         if((file_trexio(1:6) == '$pool/') .or. (file_trexio(1:6) == '$POOL/')) then
             file_trexio_path = pooldir // file_trexio(7:)
         else
@@ -121,30 +125,43 @@ module trexio_read_data
         if (.not. allocated(symbol))  allocate(symbol(ncent))
         if (.not. allocated(iwctype)) allocate(iwctype(ncent))
         if (.not. allocated(unique))  allocate(unique(ncent))
+        if (.not. allocated(nucleus_charge_trexio)) allocate(nucleus_charge_trexio(ncent))
+        has_trexio_nuclear_charge = .false.
 
         if (wid) then
         rc = trexio_read_nucleus_coord(trex_molecule_file, cent)
         call trexio_assert(rc, TREXIO_SUCCESS)
-        rc = trexio_read_nucleus_label(trex_molecule_file, symbol, 3)
+        rc = trexio_read_nucleus_label(trex_molecule_file, symbol, 2)
         call trexio_assert(rc, TREXIO_SUCCESS)
+
+        ! Try to read nuclear charges from the trexio file
+        if (trexio_has_nucleus_charge(trex_molecule_file) == 0) then
+            rc = trexio_read_nucleus_charge(trex_molecule_file, nucleus_charge_trexio)
+            if (rc == TREXIO_SUCCESS) then
+                has_trexio_nuclear_charge = .true.
+            endif
+        endif
+
         rc = trexio_close(trex_molecule_file)
         call trexio_assert(rc, TREXIO_SUCCESS)
         endif
         call bcast(cent)
         call bcast(symbol)
+        call bcast(has_trexio_nuclear_charge)
+        call bcast(nucleus_charge_trexio)
 
 
         write(ounit,fmt=int_format) " Number of atoms ::  ", ncent
         write(ounit,*)
 
         ! Count unique type of elements
-        nctype = 1
-        unique(1) = symbol(1)
-        do j= 2, ncent
-            if (any(unique == symbol(j) ))  cycle
-            nctype = nctype + 1
-            unique(nctype) = symbol(j)
-        enddo
+        nctype = 0
+        do j = 1, ncent
+            if (.not. any(symbol(1:j-1) == symbol(j))) then
+                nctype = nctype + 1
+                unique(nctype) = symbol(j)
+            end if
+        end do
 
         write(ounit,fmt=int_format) " Number of distinct types of elements (nctype) :: ", nctype
         write(ounit,*)
@@ -167,14 +184,44 @@ module trexio_read_data
         if (allocated(unique)) deallocate(unique)
 
         ! Get the znuc for each unique atom
-        do j = 1, nctype
-            atoms = element(atomtyp(j))
-            if (nloc == 0) then
-                znuc(j) = atoms%znuclear
-            else
-                znuc(j) = atoms%znuclear - atoms%core
-            endif
-        enddo
+        if (has_trexio_nuclear_charge) then
+            write(ounit,*) '-----------------------------------------------------------------------'
+            write(ounit,*) ' WARNING: Reading nuclear charges from the trexio file'
+            write(ounit,*) '-----------------------------------------------------------------------'
+
+            ! Assign znuc from the trexio charge of the first atom of each type
+            do j = 1, ncent
+                znuc(iwctype(j)) = nucleus_charge_trexio(j)
+            enddo
+
+            ! Cross-check against the periodic table values
+            write(ounit,*)
+            write(ounit,'(A4, 2x, A20, 2x, A20, 2x, A20)') 'Type', 'Trexio Nuclear Charge', 'Periodic Table Nuclear Charge', 'Difference'
+            write(ounit,*) '-----------------------------------------------------------------------'
+            do j = 1, nctype
+                atoms = element(atomtyp(j))
+                if (nloc == 0) then
+                    znuc_from_periodic_table = atoms%znuclear
+                else
+                    znuc_from_periodic_table = atoms%znuclear - atoms%core
+                endif
+                write(ounit,'(A4, 2x, F20.10, 2x, F20.10, 2x, F20.10)') &
+                    atomtyp(j), znuc(j), znuc_from_periodic_table, znuc(j) - znuc_from_periodic_table
+            enddo
+            write(ounit,*) '-----------------------------------------------------------------------'
+        else
+            ! Fallback: derive znuc from the periodic table
+            do j = 1, nctype
+                atoms = element(atomtyp(j))
+                if (nloc == 0) then
+                    znuc(j) = atoms%znuclear
+                else
+                    znuc(j) = atoms%znuclear - atoms%core
+                endif
+            enddo
+        endif
+
+        if (allocated(nucleus_charge_trexio)) deallocate(nucleus_charge_trexio)
 
         ncent_tot = ncent + nghostcent
         nctype_tot = nctype + newghostype
@@ -286,8 +333,10 @@ module trexio_read_data
         if (wid) then
             trex_orbitals_file = trexio_open(file_trexio_path, 'r', backend, rc)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
-            rc = trexio_read_mo_num(trex_orbitals_file, norb_tot)
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num', __FILE__, __LINE__)
+            if (.not. build_only_basis) then
+                rc = trexio_read_mo_num(trex_orbitals_file, norb_tot)
+                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_num', __FILE__, __LINE__)
+            endif
             rc = trexio_read_ao_num(trex_orbitals_file, nbasis)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_ao_num', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_num(trex_orbitals_file, basis_num_shell)
@@ -315,6 +364,7 @@ module trexio_read_data
                nstoo(i)=1
                otos(i,1)=i
             enddo
+            if(nwftypeorb.eq.1) extrao = 0
         else
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
         endif
@@ -339,10 +389,12 @@ module trexio_read_data
         endif
 
         ! Make a copy of orbital coeffs for multiple states
-        if( (method == 'sr_n') .and. (nstates .gt. 1)) then
-            do i=2,nstates
-              coef(:,:,i)=coef(:,:,1)
-            enddo
+        if (.not. build_only_basis) then
+            if( (method == 'sr_n') .and. (nstates .gt. 1)) then
+                do i=2,nstates
+                  coef(:,:,i)=coef(:,:,1)
+                enddo
+            endif
         endif
 
 !   Generate the basis information (which radial to be read for which Slm)
@@ -703,10 +755,10 @@ module trexio_read_data
 
         ! The following to be used to store the information
         use numbas_mod,         only: MRWF, MRWF_PTS
-        use system,               only: znuc, nctype, nctype_tot, ncent_tot
-        use system,               only: symbol, atomtyp
+        use system,             only: znuc, nctype, nctype_tot, ncent_tot
+        use system,             only: symbol, atomtyp
         use vmc_mod,            only: NCOEF
-        use system,          only: newghostype
+        use system,             only: newghostype
         use control,            only: ipr
         use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
         use numbas,             only: allocate_numbas
@@ -714,11 +766,14 @@ module trexio_read_data
         use numexp,             only: ae, ce, allocate_numexp
         use pseudo,             only: nloc
         use general,            only: filename, filenames_bas_num
+        use periodic,           only: cutr,n_images,n_images0
+        use read_bas_num_mod,   only: smooth
 
         ! For processing the stored information
         use system,             only: atomtyp
         use general,            only: pooldir, bas_id
         use contrl_file,        only: ounit, errunit
+        use contrl_per,         only: iperiodic
         use spline2_mod,        only: spline2
         use fitting_methods,    only: exp_fit
 
@@ -782,10 +837,10 @@ module trexio_read_data
         integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
         integer         :: iwf = 1
         integer         :: info
-        real(dp)        :: val, dwf1, wfm, dwfn, dwfm, temp
+        real(dp)        :: r_cutoff, val, dwf1, wfm, dwfn, dwfm, temp
 
         ! rmax cutoff
-        real(dp)                            :: cutoff_rmax = 1.0d-12
+        real(dp)        :: wf_cutoff_rmax = 1.0d-12
 
         trex_basis_file = 0
 
@@ -925,17 +980,15 @@ module trexio_read_data
         if (.not. allocated(unique_atom_index)) allocate(unique_atom_index(nctype_tot))
 
 
-        tcount1 = 1; tcount2 = 1
-        unique_atom_index(1) = 1
-        unique(1) = symbol(1)
-        do j= 2, ncent_tot
-            if (any(unique == symbol(j) ))  then
-                cycle
-            endif
-            tcount1 = tcount1 + 1
-            unique_atom_index(tcount1) = j
-            unique(tcount1) = symbol(j)
-        enddo
+        tcount1 = 0
+        tcount2 = 1
+        do j = 1, ncent_tot
+            if (.not. any(symbol(1:j-1) == symbol(j))) then
+                tcount1 = tcount1 + 1
+                unique_atom_index(tcount1) = j
+                unique(tcount1) = symbol(j)
+            end if
+        end do
 
         ! start putting in the information in the arrays and variables
         gridtype=3
@@ -1092,7 +1145,7 @@ module trexio_read_data
         ! Update the rmax at the point where rwf goes below cutoff (scanning from right to left)
                 rmaxwf(irb, ic) = x(nr(ic))
                 rloop: do ir=nr(ic),1,-1
-                  if (dabs(rwf(ir,irb,ic,iwf)) .gt. cutoff_rmax ) then
+                  if (dabs(rwf(ir,irb,ic,iwf)) .gt. wf_cutoff_rmax ) then
                     rmaxwf(irb, ic) = x(ir)
                     exit rloop
                   endif
@@ -1105,7 +1158,7 @@ module trexio_read_data
                     call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
                     if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
 
-                    rmaxwf(irb,ic)=-dlog(cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
+                    rmaxwf(irb,ic)=-dlog(wf_cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
 
                     if (wid) then
                         write(45,'(a)') 'check the large radius expansion'
@@ -1124,6 +1177,19 @@ module trexio_read_data
                 else
                     dwfn=0.d0
                 endif
+
+                if(iperiodic.ne.0) then
+                  r_cutoff=2*cutr*(0.5+n_images0)
+                  if ((rmaxwf(irb,ic) < r_cutoff) .and. (dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10)) then
+                    r_cutoff = rmaxwf(irb,ic)
+                  end if
+        
+                  if(wid) write(45,*)'L/2 ',cutr,' cutr ',r_cutoff,' n_images0 ',n_images0
+                  call smooth(x(:),rwf(:,irb,ic,iwf),nr(ic),r_cutoff,dwfn,rmaxwf(irb, ic))
+
+                  dwfn=0.d0
+                endif
+
                 if (wid) write(45,*) 'dwf1,dwfn',dwf1,dwfn
 
                 call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
@@ -1517,7 +1583,7 @@ module trexio_read_data
         call bcast(trexio_has_group_ecp)
         call bcast(ecp_num)
         allocate (flat_ecp_ang_mom(ecp_num))
-        allocate (idx_array(ecp_num))
+        ! idx_array removed as it is not used in the optimized loop
         allocate (flat_ecp_nucleus_index(ecp_num))
         allocate (flat_ecp_max_ang_mom_plus_1(ncent_tot))
         allocate (flat_ecp_power(ecp_num))
@@ -1554,17 +1620,14 @@ module trexio_read_data
         if (.not. allocated(unique_atom_index)) allocate(unique_atom_index(nctype_tot))
 
 
-        tcount1 = 1
-        unique_atom_index(1) = 1
-        unique(1) = symbol(1)
-        do j= 2, ncent_tot
-            if (any(unique == symbol(j) ))  then
-                cycle
-            endif
-            tcount1 = tcount1 + 1
-            unique_atom_index(tcount1) = j
-            unique(tcount1) = symbol(j)
-        enddo
+        tcount1 = 0
+        do j = 1, ncent_tot
+            if (.not. any(symbol(1:j-1) == symbol(j))) then
+                tcount1 = tcount1 + 1
+                unique_atom_index(tcount1) = j
+                unique(tcount1) = symbol(j)
+            end if
+        end do
 
         if (.not. allocated(lpot)) allocate (lpot(nctype_tot))
         call allocate_gauss_ecp()
@@ -1599,47 +1662,48 @@ module trexio_read_data
 
             if(lpot(ic).gt.MPS_L) call fatal_error('READPS_GAUSS: increase MPS_L')
 
-            if (.not. allocated(nterms_per_component)) allocate(nterms_per_component(lpot(ic)))
-            if (.not. allocated(term_index_component)) allocate(term_index_component(lpot(ic)))
-
-
-            count_term = 0
-            do i = lower_comp, upper_comp
-                if(flat_ecp_ang_mom(i) .eq. lpot(ic)-1) then
-                    idx_array(i) = lpot(ic)
-                    else
-                    count_term = count_term + 1
-                    idx_array(i) = count_term
-                endif
-            enddo
-
-
             counter_comp = 0;
             do l = 1, lpot(ic)
-                atom_index = 0
-                call unique_elements(components_per_atom(unique_atom_index(ic)), flat_ecp_ang_mom(lower_comp:upper_comp), atom_index, count, nterms_per_component, term_index_component)
+                ! Check bounds
+                if (lower_comp + counter_comp > upper_comp) then
+                     call fatal_error('READ_TREXIO_ECP_FILE: Not enough terms in ECP data')
+                endif
 
-                write(ounit,*) "nterms_per_component", nterms_per_component
+                ! Identify the angular momentum of the current block
+                j = flat_ecp_ang_mom(lower_comp + counter_comp)
+
+                ! Set target index based on ang_mom (L) found in file
+                ! CHAMP convention: idx = L + 1
+                ! (e.g. L=0 -> idx=1, L=1 -> idx=2, L=2(Local) -> idx=3)
+                idx = j + 1
+
+                ! Count terms in this block (consecutive entries with same ang mom)
+                count_term = 0
+                do i = lower_comp + counter_comp, upper_comp
+                    if (flat_ecp_ang_mom(i) == j) then
+                        count_term = count_term + 1
+                    else
+                        exit
+                    endif
+                enddo
+                necp_term(idx,ic) = count_term
 
                 write(ounit,*)
-                write(ounit,'(a,2i6)') '    component, #terms ', l, nterms_per_component(l)
+                write(ounit,'(a,2i6)') '    component, #terms ', l, necp_term(idx,ic)
 
-                do i=1,nterms_per_component(l)
-                    idx=idx_array(lower_comp+counter_comp)
-                    necp_term(idx,ic) = nterms_per_component(l)
-
+                do i=1,necp_term(idx,ic)
+                    
                     ecp_coef(i,idx,ic) = flat_ecp_coefficient(lower_comp + counter_comp)
                     necp_power(i,idx,ic) = flat_ecp_power(lower_comp + counter_comp) + 2
                     ecp_exponent(i,idx,ic) = flat_ecp_exponent(lower_comp + counter_comp)
-                    counter_comp = counter_comp + 1
-
+                    
                     write(ounit,'(a,f16.8,i2,f16.8)') '    coef, power, expo ', ecp_coef(i,idx,ic), &
                     necp_power(i,idx,ic), ecp_exponent(i,idx,ic)
 
+                    counter_comp = counter_comp + 1
                 enddo
             enddo  ! loop on l upto lpot(ic)
-            if (allocated(nterms_per_component)) deallocate(nterms_per_component)
-            if (allocated(term_index_component)) deallocate(term_index_component)
+
             write(ounit,*) '-----------------------------------------------------------------------'
             write(ounit,*)
         enddo

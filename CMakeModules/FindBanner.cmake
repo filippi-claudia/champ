@@ -1,7 +1,6 @@
 if(NOT WIN32)
   string(ASCII 27 Esc)
   set(ColorReset "${Esc}[m")
-  set(ColorBold  "${Esc}[1m")
   set(BoldYellow  "${Esc}[1;33m")
 endif()
 
@@ -29,4 +28,3 @@ banner( "                                                                    " )
 banner( "____________________________________________________________________" )
 banner(" ")
 banner(" ")
-

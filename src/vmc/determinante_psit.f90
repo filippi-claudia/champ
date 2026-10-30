@@ -13,29 +13,28 @@ contains
       use m_backflow, only: ibackflow, detn_bf
       implicit none
 
-      integer :: iel, istate, k, iwf_save, o
-      real(dp) :: det, determ
+      integer :: iel, istate, iab_other, k, kcdet, o
+      real(dp) :: determ
 
       o=stoo(istate)
-      iwf_save=iwf
 
-      if(nwftypeorb.gt.1) iwf=1
-      determ=0.d0
-      
-      if (ibackflow.gt.0) then
-         determ = detn_bf(1,iwf) * detn_bf(2,iwf)*cdet(1,istate,iwf)
+      kcdet=iwf
+      if(nwftypeorb.gt.1) kcdet=1
+
+      if(iel.le.nup) then
+        iab_other=2
       else
-         if(iel.le.nup) then
-         do k=1,ndet
-            determ=determ+detn(k,o)*detiab(k,2,o)*cdet(k,istate,iwf)
-         enddo
-         else
-            do k=1,ndet
-               determ=determ+detn(k,o)*detiab(k,1,o)*cdet(k,istate,iwf)
-            enddo
-         endif
+        iab_other=1
       endif
-      iwf=iwf_save
+
+      determ=0.d0
+      if (ibackflow.gt.0) then
+         determ = detn_bf(1,o) * detn_bf(2,o) * cdet(1,istate,kcdet)
+      else
+         do k=1,ndet
+            determ=determ+detn(k,o)*detiab(k,iab_other,o)*cdet(k,istate,kcdet)
+         enddo
+      endif
 
       return
       end

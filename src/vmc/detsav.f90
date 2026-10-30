@@ -1,21 +1,19 @@
 module detsav_mod
 contains
-      subroutine detsav(iel,iflag)
+      subroutine detsav(iel)
 ! Written by Claudia Filippi
 
       use csfs, only: nstates
-      use dorb_m, only: iworbd
       use multidet, only: ivirt, ndetiab, numrep_det, ndetsingle, ndetdouble
       use multimat, only: aa, wfmat
       use multimatn, only: aan, wfmatn
       use multislater, only: detiab
       use multislatern, only: detn, dorbn, orbn
       use orbval, only: dorb, orb
-      use precision_kinds, only: dp
       use slater, only: slmi
-      use slater, only: kref, ndet, norb
+      use slater, only: ndet, norb
       use slatn, only: slmin
-      use system, only: ndn, nup, nelec
+      use system, only: ndn, nup
       use ycompact, only: ymat
       use ycompactn, only: ymatn
       use vmc_mod, only: stoo
@@ -23,9 +21,9 @@ contains
 
       implicit none
 
-      integer :: i, iab, iel, iflag, ikel
+      integer :: i, iab, iel
       integer :: iorb, ish, istate, j
-      integer :: k, kk, ndim, nel, ndim2, kcum
+      integer :: k, ndim, nel, ndim2, kcum
 
 
 
@@ -39,7 +37,6 @@ contains
          ish=nup
       endif
 
-      ikel=nel*(iel-ish-1)
       do istate=1,nstates
         do j=1,nel*nel
           slmi(j,iab,stoo(istate))=slmin(j,stoo(istate))

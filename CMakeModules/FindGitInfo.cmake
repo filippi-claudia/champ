@@ -1,6 +1,6 @@
 function(gitinfo source)
 
-  # Check is source is a valid path
+  # Check if source is a valid path
   if(NOT EXISTS ${source})
     message(FATAL_ERROR "'${source}' is not a valid path")
   endif()
@@ -8,10 +8,9 @@ function(gitinfo source)
   # Define the possible location of the .git directory
   set(GIT_DIR "${source}/.git")
 
-  # Check if .git folder exist
+  # Check if .git folder exists
   if(EXISTS ${GIT_DIR})
 
-    #
     set(GIT_DIR "${GIT_DIR}" CACHE PATH "Project .git directory")
 
     # Check if git is installed
@@ -19,7 +18,7 @@ function(gitinfo source)
       find_package(Git QUIET)
     endif()
     if(NOT GIT_FOUND)
-      message(AUTHOR_WARNING "Git not found, cannot get git informations")
+      message(AUTHOR_WARNING "Git not found, cannot get git information")
       return()
     endif()
 
@@ -38,11 +37,11 @@ function(gitinfo source)
       set(GIT_IS_DIRTY OFF CACHE BOOL "Indicate if current branch is dirty")
     endif()
 
-    # name of the brack associated te HEAD
+    # name of the branch associated with HEAD
     execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
             WORKING_DIRECTORY ${source}
             OUTPUT_VARIABLE GIT_HEAD_BRANCH OUTPUT_STRIP_TRAILING_WHITESPACE)
-    set(GIT_HEAD_BRANCH "${GIT_HEAD_BRANCH}" CACHE INTERNAL "name of the brack associated te HEAD")
+    set(GIT_HEAD_BRANCH "${GIT_HEAD_BRANCH}" CACHE INTERNAL "name of the branch associated with HEAD")
 
     # git revision full hash
     execute_process(COMMAND ${GIT_EXECUTABLE} show -s "--format=%H" HEAD
@@ -50,17 +49,17 @@ function(gitinfo source)
             OUTPUT_VARIABLE GIT_REVISION_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(GIT_REVISION_HASH "${GIT_REVISION_HASH}" CACHE INTERNAL "git revision full hash")
 
-    # shorten version of git revision
+    # short version of git revision
     execute_process(COMMAND ${GIT_EXECUTABLE} show -s "--format=%h" HEAD
             WORKING_DIRECTORY ${source}
             OUTPUT_VARIABLE GIT_REVISION OUTPUT_STRIP_TRAILING_WHITESPACE)
-    set(GIT_REVISION "${GIT_REVISION}" CACHE INTERNAL "shorten version of git revision")
+    set(GIT_REVISION "${GIT_REVISION}" CACHE INTERNAL "short version of git revision")
 
-    # shorten version of git revision name
+    # short version of git revision name
     execute_process(COMMAND ${GIT_EXECUTABLE} show -s "--format=%s" HEAD
             WORKING_DIRECTORY ${source}
             OUTPUT_VARIABLE GIT_REVISION_NAME OUTPUT_STRIP_TRAILING_WHITESPACE)
-    set(GIT_REVISION_NAME "${GIT_REVISION_NAME}" CACHE INTERNAL "shorten version of git revision name")
+    set(GIT_REVISION_NAME "${GIT_REVISION_NAME}" CACHE INTERNAL "short version of git revision name")
 
     # author name
     execute_process(COMMAND ${GIT_EXECUTABLE} show -s "--format=%an" HEAD
@@ -122,11 +121,11 @@ function(gitinfo source)
             OUTPUT_VARIABLE GIT_LATEST_TAG_LONG OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(GIT_LATEST_TAG_LONG "${GIT_LATEST_TAG_LONG}" CACHE INTERNAL "git most recent tag of the current branch")
 
-    # most recent tagname of the current branch
+    # most recent tag name of the current branch
     execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags HEAD
             WORKING_DIRECTORY ${source}
             OUTPUT_VARIABLE GIT_LATEST_TAG OUTPUT_STRIP_TRAILING_WHITESPACE)
-    set(GIT_LATEST_TAG "${GIT_LATEST_TAG}" CACHE INTERNAL "git most recent tagname of the current branch")
+    set(GIT_LATEST_TAG "${GIT_LATEST_TAG}" CACHE INTERNAL "git most recent tag name of the current branch")
 
   ## Printing
   message("")

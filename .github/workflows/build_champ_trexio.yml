@@ -1,0 +1,138 @@
+name: CHAMP-EU CI - Release build - GNU with TREXIO (TREXIO Tests)
+
+on:
+  push:
+    branches:
+      - 'releases/**'
+      - main
+    tags:
+      - v2.*.*
+      - v3.*.*
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
+  pull_request:
+    branches:
+      - 'releases/**'
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
+  workflow_dispatch:
+
+env:
+  HDF5_VERSION: 1.14.2
+  TREXIO_VERSION: 2.6.1
+
+jobs:
+  build_champ_trexio:
+    strategy:
+      matrix:
+        toolchain: ['GNU']
+    name: Build CHAMP/TREXIO with ${{ matrix.toolchain }} (TREXIO Tests)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 200
+    defaults:
+      run:
+        shell: bash --noprofile --norc {0}
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y emacs cmake git wget gawk libtool autoconf automake gfortran gcc
+          sudo apt install -y openmpi-bin libopenmpi-dev libhdf5-openmpi-dev
+          sudo apt install -y libblas-dev liblapack-dev
+          sudo apt install -y python3
+          ln -sf /usr/bin/python3 /usr/bin/python
+          which python
+          python --version
+
+      - name: Identify the toolchain the HDF5 cache is keyed on
+        id: toolchain
+        run: |
+          set -e
+          {
+            gcc -dumpfullversion
+            gfortran -dumpfullversion
+            mpirun --version | head -n 1
+          } > toolchain.id
+          cat toolchain.id
+          echo "id=$(sha256sum toolchain.id | cut -c 1-12)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the HDF5 build
+        id: cache-hdf5
+        uses: actions/cache@v6
+        with:
+          path: ~/hdf5-install
+          key: hdf5-${{ env.HDF5_VERSION }}-${{ runner.os }}-${{ runner.arch }}-${{ steps.toolchain.outputs.id }}
+
+      - name: Build HDF5 from source
+        if: steps.cache-hdf5.outputs.cache-hit != 'true'
+        run: |
+          set -e
+          tag="hdf5-${HDF5_VERSION//./_}"
+          wget -q "https://github.com/HDFGroup/hdf5/archive/refs/tags/${tag}.tar.gz"
+          tar -xzf "${tag}.tar.gz"
+          cd "hdf5-${tag}"
+          ./configure FC=mpif90 CC=mpicc FCFLAGS=-O2 CFLAGS=-O2 CXX=mpic++ --enable-parallel --enable-static --enable-shared --enable-fortran --prefix=$HOME/hdf5-install
+          make -j$(nproc)
+          make install
+
+      - name: Install HDF5 into the dependency prefix
+        run: |
+          set -e
+          cp -a "$HOME/hdf5-install/." "$HOME/"
+          head -n 25 "$HOME/lib/libhdf5.settings"
+
+      - name: Clone and Install TREXIO
+        run: |
+          set -e
+          wget -q "https://github.com/TREX-CoE/trexio/releases/download/v${TREXIO_VERSION}/trexio-${TREXIO_VERSION}.tar.gz"
+          tar -xzf "trexio-${TREXIO_VERSION}.tar.gz"
+          cd "trexio-${TREXIO_VERSION}"
+          export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
+          cmake -S. -Bbuild \
+            -DCMAKE_Fortran_COMPILER=mpif90 \
+            -DCMAKE_C_COMPILER=mpicc \
+            -DCMAKE_INSTALL_PREFIX=$HOME
+          cmake --build build -- -j$(nproc)
+          cd build
+          ctest --output-on-failure
+          make install
+
+      - name: Clone the CHAMP code from GitHub
+        uses: actions/checkout@v7
+
+      - name: Compile the CHAMP code with TREXIO using GNU compilers and run the TREXIO tests
+        run: |
+          export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
+          cmake -H. -Bbuild \
+            -DCMAKE_Fortran_COMPILER=mpif90 \
+            -DVECTORIZED="portable-avx2" \
+            -DCMAKE_C_COMPILER=mpicc \
+            -DENABLE_TREXIO=ON \
+            -DTREXIO_INCLUDE_DIR=$HOME/include \
+            -DTREXIO_LIBRARY=$HOME/lib/libtrexio.so \
+            -DENABLE_QMCKL=OFF
+          cmake --build build -- -j$(nproc)
+
+      - name: Run the TREXIO tests
+        run: |
+          export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
+          cd build
+          ctest --output-on-failure --no-tests=error -j "$(nproc)" -L "H2O" -LE "(QMCKL)"
+
+      # Runs whether or not ctest passed: its purpose is to show, for every
+      # case, the value this runner produced next to the reference it was
+      # compared against.  Reporting only -- the manifests are not touched.
+      - name: Report the obtained values and the references they imply
+        if: always()
+        uses: ./.github/actions/champ-test-values
+        with:
+          artifact-name: champ-reference-values-trexio

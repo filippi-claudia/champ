@@ -28,9 +28,9 @@ contains
       use pcm_mod, only: pcm_init
       use pcm_reduce_mod, only: pcm_reduce
       use precision_kinds, only: dp
-      use prop_dmc, only: prop_prt_dmc
+      use prop_dmc, only: prop_cum_dmc, prop_prt_dmc
       use prop_reduce_mod, only: prop_reduce
-      use properties_mod, only: prop_cum,prop_init
+      use properties_mod, only: prop_init
 
       implicit none
 
@@ -143,7 +143,7 @@ contains
           endif
           egave1=egcum(1)/wgcum(1)
          else
-          call prop_cum(wgsum(ifr))
+          call prop_cum_dmc(wgsum(ifr))
           call pcm_cum(wgsum(ifr))
           call mmpol_cum(wgsum(ifr))
         endif
@@ -152,8 +152,8 @@ contains
 
         if (iblk.eq.1.and.ifr.eq.1) &
         write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32&
-         ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66&
-         ,''fgave'',t74,''(fgerr)'',t85,''npass'',t95,''wgsum'',t101,''ioldest'')')
+         &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66&
+         &,''fgave'',t74,''(fgerr)'',t85,''npass'',t95,''wgsum'',t101,''ioldest'')')
 
 ! write out current values of averages etc.
 

@@ -94,6 +94,8 @@ contains
 
       eval_eff=1.0
       evalf_eff=1.0
+      rteval_eff1=0.d0
+      rtevalf_eff1=0.d0
 
       if(idmc.gt.0) then
          eval_eff=dmc_nconf*dmc_nstep*rn_eff(wcum_dmc,wcm2)

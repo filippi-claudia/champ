@@ -10,7 +10,7 @@ contains
       use davidson_wrap_mod, only: davidson_wrap
       use mpi
       use mpiconf, only: idtask
-      use mpitimer, only: time,time_check1,time_check2,time_start
+      use mpitimer, only: mpi_time,time_check1,time_check2,time_start
       use mstates_mod, only: MSTATES
       use optwf_control, only: ioptjas,ioptorb,lin_jdav
       use optwf_corsam, only: energy
@@ -41,7 +41,7 @@ contains
 
 ! include 'mpif.h'
 
-      time_check1 = time()
+      time_check1 = mpi_time()
 
       write(ounit,*) 'LIN_D NPARM',nparm
 
@@ -89,7 +89,7 @@ contains
       write(ounit,'(''LIN_D: no. iterations'',i4)') idav_iter
       write(ounit,'(''LIN_D: no. not converged roots '',i4)') notcnv
 
-      time_check2 = time()
+      time_check2 = mpi_time()
       write(ounit, '(a,t40, f12.3, f12.3)') "END OF David, REAL TIME IS", time_check2 - time_start, time_check2 - time_check1
       time_check1 = time_check2
 

@@ -3,40 +3,50 @@ name: CHAMP-EU CI - Debug build - Intel oneAPI and GNU toolchain
 on:
   push:
     branches: [main, ci_hotfix]
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
   workflow_dispatch:
     inputs:
       tags:
-        description: 'Test tags (default: short)'
-        default: "short"
+        description: 'ctest label selector (-L), e.g. quick, VMC, H2O'
+        default: "quick"
+
+env:
+  TREXIO_VERSION: 2.6.1
 
 jobs:
   debug_build_test_champ:
     name: build and test with ${{ matrix.toolchain }} ${{ matrix.mode }} mode
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 200
     strategy:
       matrix:
         toolchain: ['intel','gnu']
         mode: ['RELEASE']
-        exclude:
-          - toolchain: 'intel'
-            mode: 'DEBUG'
       fail-fast: false
     defaults:
       run:
         shell: bash --noprofile --norc {0}
     steps:
-    - uses: actions/checkout@v2
-    - name: Get Intel Key
+    - uses: actions/checkout@v7
+
+    - name: Use Intel oneAPI GitHub Actions fast setup
       if: matrix.toolchain == 'intel'
-      run: |
-        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-        sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-        sudo apt-get update
+      uses: neelravi/intel-oneapi-github-actions@latest
+      with:
+        components: basekit, hpckit
 
     - name: Install Cmake and HDF5
       run: |
@@ -47,25 +57,38 @@ jobs:
     - name: Install GNU compilers and libraries
       if: matrix.toolchain == 'gnu'
       run: |
+           sudo apt-get update
            sudo apt install -y gfortran
            sudo apt install -y openmpi-bin
            sudo apt install -y libopenmpi-dev
            sudo apt install -y gawk
            sudo apt install -y liblapack-dev
            sudo apt install -y libblas-dev
+           sudo apt install -y gcc
            gawk --version
            mpirun --version
            gfortran --version
+           gcc --version
 
-    - name: install Intel oneapi components
+    # The fast setup provides the C/C++ toolchain only; without ifx the
+    # mpiifx wrapper fails ("ifx: command not found").
+    #
+    # Versions are PINNED: on 2026-10-29 Intel republished its apt repo
+    # with the 2026.2 toolkit, in which the Fortran compiler pulls in
+    # only the MPI *runtime* (mpirun) -- the mpiifx/mpiicx wrapper
+    # compilers moved to the -devel package, which nothing in the kits
+    # installs. Installing it explicitly (and pinned) restores them.
+    - name: Install the Intel oneAPI Fortran compiler and MPI
       if: matrix.toolchain == 'intel'
       run: |
-        sudo apt-get install -y intel-oneapi-common-vars
-        sudo apt-get install -y intel-oneapi-compiler-fortran-2021.3.0
-        sudo apt-get install -y intel-oneapi-mkl-2021.3.0
-        sudo apt-get install -y intel-oneapi-mkl-devel-2021.3.0
-        sudo apt-get install -y intel-oneapi-mpi-2021.3.0
-        sudo apt-get install -y intel-oneapi-mpi-devel-2021.3.0
+        set -e
+        wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+          | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/oneapi-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
+          | sudo tee /etc/apt/sources.list.d/oneAPI.list
+        sudo apt-get update
+        sudo apt-get install -y intel-oneapi-compiler-fortran=2026.2.0-863
+        sudo apt-get install -y intel-oneapi-mpi-devel-2021.19=2021.19.0-561
 
     - name: Install Trexio
       run: |
@@ -74,11 +97,12 @@ jobs:
         sudo apt-get install -y libhdf5-dev
         sudo apt-get install -y gfortran
         sudo apt-get install -y gcc
-        wget https://github.com/TREX-CoE/trexio/releases/download/v1.0/trexio-1.0.0.tar.gz
-        tar -xzf trexio-1.0.0.tar.gz
-        cd trexio-1.0.0/
+        set -e
+        wget -q "https://github.com/TREX-CoE/trexio/releases/download/v${TREXIO_VERSION}/trexio-${TREXIO_VERSION}.tar.gz"
+        tar -xzf "trexio-${TREXIO_VERSION}.tar.gz"
+        cd "trexio-${TREXIO_VERSION}/"
         ./configure FC=gfortran CC=gcc
-        make all
+        make all -j$(nproc)
         make check
         sudo make install
         sudo cp include/* /usr/local/include/
@@ -86,15 +110,20 @@ jobs:
     - name: Compile the CHAMP code with INTEL
       if: matrix.toolchain == 'intel'
       run: |
-        source /opt/intel/oneapi/setvars.sh
+        # --force: the fast-setup action already marked setvars as done,
+        # and the MPI wrappers were installed after that first run.
+        source /opt/intel/oneapi/setvars.sh --force
+        set -e
         printenv >> $GITHUB_ENV
-        which mpiifort
+        which mpiifx
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        # cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort -DCMAKE_BUILD_TYPE=DEBUG
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifort
-        cmake --build build -- -j2
+        ifx --version
+        icx --version
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpiifx \
+                          -DCMAKE_C_COMPILER=mpiicx
+        cmake --build build -- -j$(nproc)
         ulimit -s unlimited
 
     - name: Compile with GNU
@@ -105,89 +134,28 @@ jobs:
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
         cmake --version
-        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
-        cmake --build build -- -j2
+        cmake -H. -Bbuild -DCMAKE_Fortran_COMPILER=mpif90 \
+                          -DCMAKE_C_COMPILER=mpicc \
+                          -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
+        cmake --build build -- -j$(nproc)
         ulimit -s unlimited
 
-    - name: "Test 01 (H2) sto basis optimize jastrow sr_n method on 1 processor"
-      run: |
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_single.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0059842 +-  0.0070988) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_single.out "total E" -1.0059842   0.0070988
-
-    - name: "Test 02 (H2) sto basis optimize jastrow sr_n method on 2 processors"
+    # Tests labelled "quick" (defined in tests/CI_test/*/test.json) run
+    # against the binaries this matrix job built.
+    - name: Run the quick CI tests with ctest
       run: |
         ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
+        ctest --test-dir build --output-on-failure --no-tests=error -j "$(nproc)" \
+          -L "${{ github.event.inputs.tags || 'quick' }}"
 
-        echo "Running the optimization calculation"
-        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc.inp -o revised_vmc_double.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0108635 +-  0.0054667) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_double.out "total E" -1.0108635  0.0054667
-
-
-    - name: "Test 03 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20 on 1 processor"
-      continue-on-error: true
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_single.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0608157 +-  0.0026295) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_single.out "total E" -1.0608157  0.0026295
-
-    - name: "Test 04 (H2) sto basis optimize wf+jastrow using lin_d method nopt_iter=20  on 2 processors"
-      continue-on-error: true
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_lin.inp -o revised_vmc_lin_double.out -e error
-
-        echo "Comparing the energy with the reference one (total E = -1.0578796 +-  0.0018813) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_lin_double.out "total E" -1.0578796  0.0018813
-
-    - name: "Test 05 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 1 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 1  $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_single.out -e error
-
-        echo "Comparing the energy with the reference one (Current energy = -0.9926131 +- 0.0120065  ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current energy" -0.9926131 0.0120065
-
-        #echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0018"
-        #$HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_single.out "Current best energy + 2*error" -1.0018 0.0114836
-
-    - name: "Test 06 (H2) corsamp :: sto basis optimize wf+ci+jastrow using linear method nopt_iter=5 on 2 processor"
-      run: |
-        ulimit -s unlimited
-        echo "Running the tests using the new parser. H2 "
-        cd tests/CI_test/VMC-H2
-
-        echo "Running the optimization calculation"
-        mpirun -np 2 ${{ matrix.toolchain == 'gnu' && '--oversubscribe' || '' }} $HOME/work/champ/champ/bin/vmc.mov1 -i revised_vmc_corsamp.inp -o revised_vmc_corsamp_double.out -e error
-
-        echo "Comparing the energy with the reference one (Current energy = -1.0135052 +- 0.0069582 ) "
-        $HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current energy" -1.0135052 0.0069582
-
-        #echo "Comparing the energy with the reference one Current best energy + 2*error = -1.0008"
-        #$HOME/work/champ/champ/tools/compare_value.py revised_vmc_corsamp_double.out "Current best energy + 2*error" -1.0008 0.0085151
+    # Runs whether or not ctest passed: its purpose is to show, for every
+    # case, the value this runner produced next to the reference it was
+    # compared against.  Reporting only -- the manifests are not touched.
+    - name: Report the obtained values and the references they imply
+      if: always()
+      uses: ./.github/actions/champ-test-values
+      with:
+        artifact-name: champ-reference-values-${{ matrix.toolchain }}-${{ matrix.mode }}
 
 
 

@@ -1,6 +1,5 @@
 module walksav_det_mod
       use branch,  only: nwalk
-      use contrl_file, only: ounit
       use csfs,    only: nstates
       use dmc_mod, only: mwalk
       use mpi
@@ -17,11 +16,10 @@ module walksav_det_mod
       use m_backflow, only: dslm, ibackflow
       implicit none
 
-      integer, allocatable, save :: krefw(:)
+      integer,  allocatable, save :: krefw(:)
       real(dp), allocatable, save :: slmuiw(:, :)
       real(dp), allocatable, save :: slmdiw(:, :)
       real(dp), allocatable, save :: ddxw(:, :, :)
-      real(dp), allocatable, save :: d2dx2w(:, :)
       real(dp), allocatable, save :: detuw(:, :)
       real(dp), allocatable, save :: detdw(:, :)
       real(dp), allocatable, save :: aaw(:,:,:,:)
@@ -36,16 +34,12 @@ contains
 ! Written by Claudia Filippi
       implicit none
 
-      integer :: i, iab, ierr, iorb, irecv
-      integer :: irequest, irequest_array, isend, istate
-      integer :: istatus, itag, iw, iw2
-      integer :: j, k, kcum, kk
+      integer :: iab
+      integer :: iw
+      integer :: k, kcum
       integer :: ndim, nel, ndim2
 
-      dimension istatus(MPI_STATUS_SIZE)
-      dimension irequest_array(MPI_STATUS_SIZE)
-
-      if(.not.allocated(aaw)) allocate(aaw(nelec,norb_tot,mwalk,2))
+      if(.not.allocated(aaw))    allocate(aaw(nelec,norb_tot,mwalk,2))
       if(.not.allocated(wfmatw)) allocate(wfmatw(ndet,MEXCIT**2,mwalk,2))
       if(.not.allocated(ymatw)) allocate(ymatw(norb_tot,nelec,mwalk,2,MSTATES))
       if(.not.allocated(orbw)) allocate(orbw(nelec,norb_tot,mwalk))
@@ -54,55 +48,38 @@ contains
         if(.not.allocated(dslmw)) allocate(dslmw(3, nmat_dim,2,mwalk))
       endif
 
-      if(.not.allocated(krefw)) allocate(krefw(mwalk), source=0)
+      if(.not.allocated(krefw))  allocate(krefw(mwalk))
       if(.not.allocated(slmuiw)) allocate(slmuiw(nmat_dim,mwalk))
       if(.not.allocated(slmdiw)) allocate(slmdiw(nmat_dim,mwalk))
-      if(.not.allocated(ddxw)) allocate(ddxw(3, nelec,mwalk))
-      if(.not.allocated(d2dx2w)) allocate(d2dx2w(nelec,mwalk))
-      if(.not.allocated(detuw)) allocate(detuw(ndet,mwalk))
-      if(.not.allocated(detdw)) allocate(detdw(ndet,mwalk))
+      if(.not.allocated(ddxw))   allocate(ddxw(3, nelec,mwalk))
+      if(.not.allocated(detuw))  allocate(detuw(ndet,mwalk))
+      if(.not.allocated(detdw))  allocate(detdw(ndet,mwalk))
 
-       do k=1,ndet
-         detuw(k,iw)=detiab(k,1,1)
-         detdw(k,iw)=detiab(k,2,1)
-       enddo
+       detuw(1:ndet,iw)=detiab(1:ndet,1,1)
+       detdw(1:ndet,iw)=detiab(1:ndet,2,1)
 
        krefw(iw)=kref
-       do j=1,nup*nup
-         slmuiw(j,iw)=slmi(j,1,1)
-       enddo
-       do j=1,ndn*ndn
-         slmdiw(j,iw)=slmi(j,2,1)
-       enddo
-       do i=1,nelec
-         ddxw(1,i,iw)=ddx(1,i,1)
-         ddxw(2,i,iw)=ddx(2,i,1)
-         ddxw(3,i,iw)=ddx(3,i,1)
-       enddo
+       slmuiw(1:nup*nup,iw)=slmi(1:nup*nup,1,1)
+       slmdiw(1:ndn*ndn,iw)=slmi(1:ndn*ndn,2,1)
+       ddxw(1:3,1:nelec,iw)=ddx(1:3,1:nelec,1)
 
        do iab=1,2
          nel=nup
          if(iab.eq.2) nel=ndn
-         do j=ivirt(iab),norb
-          do i=1,nel
-            do istate=1,nstates
-              ymatw(j,i,iw,iab,istate)=ymat(j,i,iab,istate)
-            enddo
-            aaw(i,j,iw,iab)=aa(i,j,iab,1)
-          enddo
-         enddo
+         ymatw(ivirt(iab):norb,1:nel,iw,iab,1:nstates)= &
+             ymat(ivirt(iab):norb,1:nel,iab,1:nstates)
+         aaw(1:nel,ivirt(iab):norb,iw,iab)=aa(1:nel,ivirt(iab):norb,iab,1)
 
 ! loop over unique or unequivalent determinants
 ! single excitations
-        do k=1,ndetsingle(iab)
-          wfmatw(k,1,iw,iab)=wfmat(k,1,iab,1)
-        enddo
+        if(ndetsingle(iab).ge.1) &
+          wfmatw(1:ndetsingle(iab),1,iw,iab)=wfmat(1:ndetsingle(iab),1,iab,1)
 
 ! double excitations  
         kcum=ndetsingle(iab)+ndetdouble(iab)
-        do k=ndetsingle(iab)+1,kcum
-          wfmatw(k,1:4,iw,iab)=wfmat(k,1:4,iab,1)
-        enddo
+        if(ndetdouble(iab).ge.1) &
+          wfmatw(ndetsingle(iab)+1:kcum,1:4,iw,iab)= &
+              wfmat(ndetsingle(iab)+1:kcum,1:4,iab,1)
 
 ! multiple excitations
         do k=kcum+1,ndetiab(iab)
@@ -113,79 +90,53 @@ contains
 
        enddo
 
-       do i=1,nelec
-         do iorb=1,norb
-           orbw(i,iorb,iw)=orb(i,iorb,1)
-           do kk=1,3
-             dorbw(kk,i,iorb,iw)=dorb(iorb,i,kk,1)
-           enddo
-         enddo
-       enddo
-      if (ibackflow .gt. 0) then
-        do iab = 1, 2
-          do i=1,nup*nup
-            do kk=1,3
-              dslmw(kk,i,iab,iw)=dslm(kk,i,iab,1)
+       orbw(1:nelec,1:norb,iw)=orb(1:nelec,1:norb,1)
+       dorbw(1:norb,1:nelec,1:3,iw)=dorb(1:norb,1:nelec,1:3,1)
+        if (ibackflow .gt. 0) then
+          do iab = 1, 2
+            do i=1,nup*nup
+              do kk=1,3
+                dslmw(kk,i,iab,iw)=dslm(kk,i,iab,1)
+              enddo
             enddo
           enddo
-        enddo
-      endif
+        endif
 
-      end subroutine
+      end subroutine walksav_det
 
       subroutine walkstrdet(iw)
       implicit none
 
-      integer :: i, iab, ierr, iorb, irecv
-      integer :: irequest, irequest_array, isend, istate
-      integer :: istatus, itag, iw, iw2
-      integer :: j, k, kcum, kk
+      integer :: iab
+      integer :: iw
+      integer :: k, kcum
       integer :: ndim, nel, ndim2
 
-      dimension istatus(MPI_STATUS_SIZE)
-      dimension irequest_array(MPI_STATUS_SIZE)
-
-      do k=1,ndet
-        detiab(k,1,1)=detuw(k,iw)
-        detiab(k,2,1)=detdw(k,iw)
-      enddo
+      detiab(1:ndet,1,1)=detuw(1:ndet,iw)
+      detiab(1:ndet,2,1)=detdw(1:ndet,iw)
 
       kref=krefw(iw)
-      do j=1,nup*nup
-        slmi(j,1,1)=slmuiw(j,iw)
-      enddo
-      do j=1,ndn*ndn
-        slmi(j,2,1)=slmdiw(j,iw)
-      enddo
-      do i=1,nelec
-        ddx(1,i,1)=ddxw(1,i,iw)
-        ddx(2,i,1)=ddxw(2,i,iw)
-        ddx(3,i,1)=ddxw(3,i,iw)
-      enddo
+      slmi(1:nup*nup,1,1)=slmuiw(1:nup*nup,iw)
+      slmi(1:ndn*ndn,2,1)=slmdiw(1:ndn*ndn,iw)
+      ddx(1:3,1:nelec,1)=ddxw(1:3,1:nelec,iw)
 
        do iab=1,2
          nel=nup
          if(iab.eq.2) nel=ndn
-         do j=ivirt(iab),norb
-          do i=1,nel
-            do istate=1,nstates
-              ymat(j,i,iab,istate)=ymatw(j,i,iw,iab,istate)
-            enddo
-            aa(i,j,iab,1)=aaw(i,j,iw,iab)
-          enddo
-         enddo
+         ymat(ivirt(iab):norb,1:nel,iab,1:nstates)= &
+             ymatw(ivirt(iab):norb,1:nel,iw,iab,1:nstates)
+         aa(1:nel,ivirt(iab):norb,iab,1)=aaw(1:nel,ivirt(iab):norb,iw,iab)
 
 ! loop over unique or unequivalent determinants
 ! single excitations
-        do k=1,ndetsingle(iab)
-          wfmat(k,1,iab,1)=wfmatw(k,1,iw,iab)
-        enddo
+        if(ndetsingle(iab).ge.1) &
+          wfmat(1:ndetsingle(iab),1,iab,1)=wfmatw(1:ndetsingle(iab),1,iw,iab)
 
 ! double excitations
         kcum=ndetsingle(iab)+ndetdouble(iab)
-        do k=ndetsingle(iab)+1,kcum
-          wfmat(k,1:4,iab,1)=wfmatw(k,1:4,iw,iab)
-        enddo
+        if(ndetdouble(iab).ge.1) &
+          wfmat(ndetsingle(iab)+1:kcum,1:4,iab,1)= &
+              wfmatw(ndetsingle(iab)+1:kcum,1:4,iw,iab)
 
 ! multiple excitations
         do k=kcum+1,ndetiab(iab)
@@ -196,14 +147,8 @@ contains
 
        enddo
 
-       do i=1,nelec
-         do iorb=1,norb
-           orb(i,iorb,1)=orbw(i,iorb,iw)
-           do kk=1,3
-             dorb(iorb,i,kk,1)=dorbw(kk,i,iorb,iw)
-           enddo
-         enddo
-       enddo
+       orb(1:nelec,1:norb,1)=orbw(1:nelec,1:norb,iw)
+       dorb(1:norb,1:nelec,1:3,1)=dorbw(1:norb,1:nelec,1:3,iw)
       if (ibackflow .gt. 0) then
         do iab = 1, 2
           do i=1,nup*nup
@@ -214,99 +159,41 @@ contains
         enddo
       endif
 
-      end subroutine
-
-      subroutine walkcheckdet(iw)
-      implicit none
-
-      integer :: i, iab, ierr, iorb, irecv
-      integer :: irequest, irequest_array, isend, istate
-      integer :: istatus, itag, iw, iw2
-      integer :: j, k, kcum, kk
-      integer :: ndim, nel, ndim2
-
-      dimension istatus(MPI_STATUS_SIZE)
-      dimension irequest_array(MPI_STATUS_SIZE)
-
-      do k=1,ndet
-        write(ounit,*) 'detiab1',detiab(k,1,1)
-        write(ounit,*) 'detiab2',detiab(k,2,1)
-      enddo
-
-      !write(ounit,*) 'slm1'(slmi(j,1,1),j=1,nup*nup)
-
-       do iab=1,2
-         nel=nup
-         if(iab.eq.2) nel=ndn
-          write(ounit,*) 'aa iab',iab, ((aa(i,j,iab,1),i=1,nel),j=ivirt(iab),norb)
-          write(ounit,*) 'ymat iab',iab, ((ymat(j,i,iab,istate),j=ivirt(iab),norb),i=1,nel)
-       enddo
-
-       do iab=1,2
-         do k=2,ndet
-           ndim=numrep_det(k,iab)
-           ndim2=ndim*ndim
-           write(ounit,*) 'wfmat iab numrep_det',iab, numrep_det(k,iab),(wfmat(k,j,iab,1),j=1,ndim2)
-         enddo
-       enddo
-
-
-      end subroutine
+      end subroutine walkstrdet
 
       subroutine splitjdet(iw,iw2)
       implicit none
 
-      integer :: i, iab, ierr, iorb, irecv
-      integer :: irequest, irequest_array, isend, istate
-      integer :: istatus, itag, iw, iw2
-      integer :: j, k, kcum, kk
+      integer :: iab
+      integer :: iw, iw2
+      integer :: k, kcum
       integer :: ndim, nel, ndim2
 
-      dimension istatus(MPI_STATUS_SIZE)
-      dimension irequest_array(MPI_STATUS_SIZE)
-
-      do k=1,ndet
-        detuw(k,iw2)=detuw(k,iw)
-        detdw(k,iw2)=detdw(k,iw)
-      enddo
+      detuw(1:ndet,iw2)=detuw(1:ndet,iw)
+      detdw(1:ndet,iw2)=detdw(1:ndet,iw)
 
       krefw(iw2)=krefw(iw)
-      do j=1,nup*nup
-        slmuiw(j,iw2)=slmuiw(j,iw)
-      enddo
-      do j=1,ndn*ndn
-        slmdiw(j,iw2)=slmdiw(j,iw)
-
-      enddo
-      do i=1,nelec
-        ddxw(1,i,iw2)=ddxw(1,i,iw)
-        ddxw(2,i,iw2)=ddxw(2,i,iw)
-        ddxw(3,i,iw2)=ddxw(3,i,iw)
-      enddo
+      slmuiw(1:nup*nup,iw2)=slmuiw(1:nup*nup,iw)
+      slmdiw(1:ndn*ndn,iw2)=slmdiw(1:ndn*ndn,iw)
+      ddxw(1:3,1:nelec,iw2)=ddxw(1:3,1:nelec,iw)
 
        do iab=1,2
          nel=nup
          if(iab.eq.2) nel=ndn
-         do j=ivirt(iab),norb
-          do i=1,nel
-            do istate=1,nstates
-              ymatw(j,i,iw2,iab,istate)=ymatw(j,i,iw,iab,istate)
-            enddo
-            aaw(i,j,iw2,iab)=aaw(i,j,iw,iab)
-          enddo
-         enddo
+         ymatw(ivirt(iab):norb,1:nel,iw2,iab,1:nstates)= &
+             ymatw(ivirt(iab):norb,1:nel,iw,iab,1:nstates)
+         aaw(1:nel,ivirt(iab):norb,iw2,iab)=aaw(1:nel,ivirt(iab):norb,iw,iab)
 
 ! loop over unique or unequivalent determinants
 ! single excitations
-        do k=1,ndetsingle(iab)
-          wfmatw(k,1,iw2,iab)=wfmatw(k,1,iw,iab)
-        enddo
+        if(ndetsingle(iab).ge.1) &
+          wfmatw(1:ndetsingle(iab),1,iw2,iab)=wfmatw(1:ndetsingle(iab),1,iw,iab)
 
 ! double excitations
         kcum=ndetsingle(iab)+ndetdouble(iab)
-        do k=ndetsingle(iab)+1,kcum
-          wfmatw(k,1:4,iw2,iab)=wfmatw(k,1:4,iw,iab)
-        enddo
+        if(ndetdouble(iab).ge.1) &
+          wfmatw(ndetsingle(iab)+1:kcum,1:4,iw2,iab)= &
+              wfmatw(ndetsingle(iab)+1:kcum,1:4,iw,iab)
 
 ! multiple excitations
         do k=kcum+1,ndetiab(iab)
@@ -317,14 +204,8 @@ contains
 
        enddo
 
-       do i=1,nelec
-         do iorb=1,norb
-           orbw(i,iorb,iw2)=orbw(i,iorb,iw)
-           do kk=1,3
-             dorbw(kk,i,iorb,iw2)=dorbw(kk,i,iorb,iw)
-           enddo
-         enddo
-       enddo
+       orbw(1:nelec,1:norb,iw2)=orbw(1:nelec,1:norb,iw)
+       dorbw(1:norb,1:nelec,1:3,iw2)=dorbw(1:norb,1:nelec,1:3,iw)
       if (ibackflow .gt. 0) then
         do iab = 1, 2
           do i=1,nup*nup
@@ -335,19 +216,16 @@ contains
         enddo
       endif
 
-      end subroutine
+      end subroutine splitjdet
 
       subroutine send_det(irecv)
       implicit none
 
-      integer :: i, iab, ierr, iorb, irecv
-      integer :: irequest, irequest_array, isend, istate
-      integer :: istatus, itag, iw, iw2
-      integer :: j, k, kk
-      integer :: ndim, nel, ndim2
-
-      dimension istatus(MPI_STATUS_SIZE)
-      dimension irequest_array(MPI_STATUS_SIZE)
+      integer :: iab, ierr, irecv
+      integer :: irequest, istate
+      integer :: itag
+      integer :: k
+      integer :: ndim
 
       itag=0
       call mpi_isend(detuw(1,nwalk),ndet,mpi_double_precision,irecv &
@@ -359,12 +237,12 @@ contains
       call mpi_isend(slmuiw(1,nwalk),nup*nup,mpi_double_precision &
         ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(slmdiw(1,nwalk),ndn*ndn,mpi_double_precision &
-        ,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
+        ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(ddxw(1,1,nwalk),3*nelec,mpi_double_precision &
-        ,irecv,itag+5,MPI_COMM_WORLD,irequest,ierr)
+        ,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(krefw(nwalk),1,mpi_integer &
-        ,irecv,itag+6,MPI_COMM_WORLD,irequest,ierr)
-      itag=itag+6
+        ,irecv,itag+4,MPI_COMM_WORLD,irequest,ierr)
+      itag=itag+4
 
       call mpi_isend(aaw(1,1,nwalk,1),nelec*norb,mpi_double_precision &
        ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
@@ -402,19 +280,17 @@ contains
       endif
 
 
-      end subroutine
+      end subroutine send_det
 
       subroutine recv_det(isend)
       implicit none
 
-      integer :: i, iab, ierr, iorb, irecv
-      integer :: irequest, irequest_array, isend, istate
-      integer :: istatus, itag, iw, iw2
-      integer :: j, k, kk
-      integer :: ndim, nel, ndim2
+      integer :: iab, ierr, isend, istate
+      integer :: istatus, itag
+      integer :: k
+      integer :: ndim
 
       dimension istatus(MPI_STATUS_SIZE)
-      dimension irequest_array(MPI_STATUS_SIZE)
 
       itag=0
       call mpi_recv(detuw(1,nwalk),ndet,mpi_double_precision,isend &
@@ -426,12 +302,12 @@ contains
       call mpi_recv(slmuiw(1,nwalk),nup*nup,mpi_double_precision &
         ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(slmdiw(1,nwalk),ndn*ndn,mpi_double_precision &
-        ,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
+        ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(ddxw(1,1,nwalk),3*nelec,mpi_double_precision &
-        ,isend,itag+5,MPI_COMM_WORLD,istatus,ierr)
+        ,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(krefw(nwalk),1,mpi_integer &
-        ,isend,itag+6,MPI_COMM_WORLD,irequest_array,ierr)
-      itag=itag+6
+        ,isend,itag+4,MPI_COMM_WORLD,istatus,ierr)
+      itag=itag+4
 
       call mpi_recv(aaw(1,1,nwalk,1),nelec*norb,mpi_double_precision &
        ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
@@ -456,9 +332,9 @@ contains
         enddo
       enddo
 
-      call mpi_recv(orbw(1,1,nwalk),nelec*norb_tot,mpi_double_precision &
+      call mpi_recv(orbw(1,1,nwalk),nelec*norb,mpi_double_precision &
         ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(dorbw(1,1,1,nwalk),3*nelec*norb_tot,mpi_double_precision &
+      call mpi_recv(dorbw(1,1,1,nwalk),3*nelec*norb,mpi_double_precision &
         ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       if (ibackflow .gt. 0) then
         call mpi_recv(dslmw(1,1,1,nwalk),3*nmat_dim*2,mpi_double_precision &
@@ -468,6 +344,5 @@ contains
         itag=itag+2
       endif
 
-      return
-      end
-end module
+      end subroutine recv_det
+end module walksav_det_mod

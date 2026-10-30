@@ -50,6 +50,9 @@ module vmc_mod
     !> norb_tot :: total number of orbitals
     integer :: norb_tot
 
+    !> nrad :: number of radial grid points for step-size acceptance statistics
+    integer :: nrad
+
     !> Maximum of 3 and the total number of center types.
     integer :: nctyp3x
 
@@ -99,7 +102,7 @@ module vmc_mod
     integer, parameter :: MEXCIT = 10
 
     private
-    public :: norb_tot, nctyp3x
+    public :: norb_tot, nrad, nctyp3x
     public :: nmat_dim, nmat_dim2
 
     public :: mterms, nwftypejas, nwftypeorb, nstojmax, nstoomax, nbjx, nstoj_tot, nstoo_tot

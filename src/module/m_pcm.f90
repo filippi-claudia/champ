@@ -123,11 +123,11 @@ end module pcm_averages
 module pcm_cntrl
     !> Arguments: ichpol, ipcm, ipcmprt, icall, isurf
 
-    integer :: icall
-    integer :: ichpol
-    integer :: ipcm
-    integer :: ipcmprt
-    integer :: isurf
+    integer :: icall = 0
+    integer :: ichpol = 0
+    integer :: ipcm = 0
+    integer :: ipcmprt = 0
+    integer :: isurf = 0
 
     private
     public :: ichpol, ipcm, ipcmprt, icall, isurf

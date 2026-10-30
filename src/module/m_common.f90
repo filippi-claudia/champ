@@ -963,33 +963,6 @@ contains
 
 end module zmatrix
 
-module zmatrix_grad
-    !> never called
-    !> Arguments: transform_grd
-      use precision_kinds, only: dp
-      use system,  only: nelec
-
-    implicit none
-
-    real(dp), dimension(:, :), allocatable :: transform_grd !(MCENT3,MCENT3)
-
-    private
-    public :: transform_grd
-    public :: allocate_zmatrix_grad, deallocate_zmatrix_grad
-    save
-contains
-    subroutine allocate_zmatrix_grad()
-      use vmc_mod, only: ncent3
-
-        if (.not. allocated(transform_grd)) allocate (transform_grd(ncent3, ncent3))
-    end subroutine allocate_zmatrix_grad
-
-    subroutine deallocate_zmatrix_grad()
-        if (allocated(transform_grd)) deallocate (transform_grd)
-    end subroutine deallocate_zmatrix_grad
-
-end module zmatrix_grad
-
 module m_common
 contains
 subroutine allocate_m_common()
@@ -1022,7 +995,6 @@ subroutine allocate_m_common()
       use ycompactn, only: allocate_ycompactn
       use zcompact, only: allocate_zcompact
       use zmatrix, only: allocate_zmatrix
-      use zmatrix_grad, only: allocate_zmatrix_grad
     ! use coefs, only: allocate_coefs
     ! use dets, only: allocate_dets
     ! use multiple_geo, only: allocate_wfsec
@@ -1062,7 +1034,6 @@ subroutine allocate_m_common()
     call allocate_ycompactn()
     call allocate_zcompact()
     call allocate_zmatrix()
-    call allocate_zmatrix_grad()
 end subroutine allocate_m_common
 
 subroutine deallocate_m_common()
@@ -1095,7 +1066,6 @@ subroutine deallocate_m_common()
       use ycompactn, only: deallocate_ycompactn
       use zcompact, only: deallocate_zcompact
       use zmatrix, only: deallocate_zmatrix
-      use zmatrix_grad, only: deallocate_zmatrix_grad
       !use coefs, only: deallocate_coefs
       !use dets, only: deallocate_dets
       !use dets_equiv, only: deallocate_dets_equiv
@@ -1134,6 +1104,5 @@ subroutine deallocate_m_common()
     call deallocate_ycompactn()
     call deallocate_zcompact()
     call deallocate_zmatrix()
-    call deallocate_zmatrix_grad()
 end subroutine deallocate_m_common
 end module

@@ -161,10 +161,10 @@
                term1=(1.d0-xi)**3
                term2=(1.d0-xj)**3
                term=term1*term2
-               termi=-3*(1.d0-xi)**2*cutjas_eei(it,iwf)*term2
-               termii=6*(1.d0-xi)*cutjas_eei(it,iwf)*cutjas_eei(it,iwf)*term2
-               termj=-3*(1.d0-xj)**2*cutjas_eei(it,iwf)*term1
-               termjj=6*(1.d0-xj)*cutjas_eei(it,iwf)*cutjas_eei(it,iwf)*term1
+               termi=-3*(1.d0-xi)**2*cutjas_eni(it,iwf)*term2
+               termii=6*(1.d0-xi)*cutjas_eni(it,iwf)*cutjas_eni(it,iwf)*term2
+               termj=-3*(1.d0-xj)**2*cutjas_eni(it,iwf)*term1
+               termjj=6*(1.d0-xj)*cutjas_eni(it,iwf)*cutjas_eni(it,iwf)*term1
 
 
                fc=0
@@ -340,9 +340,7 @@
       ri=1.d0/r(1)
       ri2=ri*ri
 
-      ! can use iwf and loop over nwftypejas, since iwf is passed, this
-      ! will only be called with 1 jas I believe, using iwf's original
-      ! purpose
+      ! iwf is the active Jastrow/geometry index selected by the caller.
 
       do k=1,3
         ! d_alpha of jastrow

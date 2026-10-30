@@ -16,7 +16,6 @@ contains
       use backflow_mod, only: single_backflow
       use m_backflow, only: slmin_bf, orbn_bf, detn_bf, dslm_bf, dorbn_bf
       use orbitals_no_qmckl_mod, only: orbitalse_no_qmckl_bf
-      use dorb_m,  only: iworbd
       use matinv_mod, only: matinv
       use config, only: xold
 
@@ -122,9 +121,9 @@ contains
       return
       end
 !-----------------------------------------------------------------------
-      subroutine compute_determinante_grad(iel,psig,psid,psij,vd,iflag_move)
+      subroutine compute_determinante_grad(iel,psi2g,psid,psij,vd,iflag_move)
 
-      use csfs,    only: nstates
+      use csfs, only: anormo,nstates
       use mstates3, only: iweight_g,weights_g
       use mstates_ctrl, only: iguiding
       use multideterminant_mod, only: compute_ymat
@@ -135,27 +134,13 @@ contains
       use multislatern, only: detn,dorbn
       use orbval,  only: dorb, orb
       use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot, nwftypeorb, stoo, stoj
-      use csfs, only: nstates, anormo
-      use system, only: nup, nelec
+      use slater, only: kref,norb,slmi
       use slatn, only: slmin
+      use system, only: nup, nelec
+      use velocity_jastrow, only: vj,vjn
+      use vmc_mod, only: norb_tot,nwftypeorb,stoj,stoo
       use ycompact, only: ymat
       use ycompactn, only: ymatn
-      use slater, only: norb
-      use multimat, only: aa, wfmat
-      use multimatn, only: aan
-      use velocity_jastrow, only: vj, vjn
-      use mstates_ctrl, only: iguiding
-      use mstates3, only: iweight_g, weights_g
-      use multislatern, only: detn, dorbn
-      use contrl_file, only: ounit
-
-      use orbval, only: dorb
-      use slater, only: slmi, kref
-      use multislater, only: detiab
-      use multideterminante_mod, only: multideterminante_grad
-      use multideterminant_mod, only: compute_ymat
-      use system, only: ndn, nup
       use m_backflow, only: ibackflow, detn_bf, dslm, slmin_bf, dslm_bf, dquasi_dx, dquasi_dx_new
       use backflow_mod, only: backflow
       use config,  only: xold
@@ -163,8 +148,8 @@ contains
       implicit none
 
       integer :: i, iab, iel, iflag_move, iorb
-      integer :: istate, kk, k, isorb, isjas
-      real(dp) :: detratio, psi2g, psi2gi, psig
+      integer :: istate, kk, k, isorb, isjas, isjas1
+      real(dp) :: detratio, psi2g, psi2gi, ratio
       real(dp), dimension(*) :: psid
       real(dp), dimension(*) :: psij
       real(dp), dimension(3) :: vd
@@ -172,17 +157,14 @@ contains
       real(dp), dimension(3, nstates) :: vd_s
       real(dp), dimension(norb, 3, nstates) :: dorb_tmp
 
-! NR : ymat_tmp was not saved ....
-! it has the save keywoprd in the dev branch ...
+! ymat_tmp must persist between calls in the iflag_move=3 path.
 ! real(dp), dimension(norb_tot, nelec) :: ymat_tmp
 
       real(dp), allocatable, save :: ymat_tmp(:,:,:)
       if (.not. allocated(ymat_tmp)) then
-        ! CF : ymat_tmp(norb_tot,nelec) max value of # orb
+        ! ymat_tmp(norb_tot,nelec) max value of # orb
         allocate(ymat_tmp(norb_tot,nelec,nwftypeorb))
       endif
-
-! save ymat_tmp
 
       if(iel.le.nup) then
         iab=1
@@ -190,15 +172,9 @@ contains
         iab=2
       endif
 
-      psi2g=psig*psig
       psi2gi=1.d0/psi2g
 
-      ! print *, 'iel, iflag_move, ibackflow = ', iel, iflag_move, ibackflow
-      ! stop
-
-
-
-! All quantities saved (old) avaliable
+! All old quantities are available.
       if(iflag_move.eq.1) then
         do istate=1,nstates
           isorb=stoo(istate)
@@ -223,9 +199,8 @@ contains
             vd(kk)=vd(kk)+vref(kk,1)+vj(kk,iel,1)
           enddo
         else
-          do kk=1,3
-            vd(kk)=0.d0
-          enddo
+          isjas1=stoj(iweight_g(1))
+          vd=0.d0
           do i=1,nstates 
 
             istate=iweight_g(i)
@@ -238,13 +213,13 @@ contains
                aa(1,1,iab,isorb),ymat(1,1,iab,istate),vd_s(1,istate))
 
             do kk=1,3 
-              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(isjas)) &
-             *(vd_s(kk,istate)+vref(kk,isorb)+vj(kk,iel,isjas))/anormo(istate)
+              ratio=psid(istate)/psid(1)*exp(psij(isjas)-psij(isjas1))
+              vd(kk)=vd(kk)+weights_g(i)/anormo(istate)*ratio*ratio &
+              *(vd_s(kk,istate)+vref(kk,isorb)+vj(kk,iel,isjas))
+
             enddo
           enddo
-          vd(1)=vd(1)*psi2gi
-          vd(2)=vd(2)*psi2gi
-          vd(3)=vd(3)*psi2gi
+          vd=vd*psi2gi
         endif
 
 ! Within single-electron move - quantities of electron iel not saved
@@ -277,9 +252,8 @@ contains
 
          else
 
-          do kk=1,3
-            vd(kk)=0.d0
-          enddo
+          isjas1=stoj(iweight_g(1))
+          vd=0.d0
 
           do i=1,nstates
             istate=iweight_g(i)
@@ -296,14 +270,13 @@ contains
                         aan(1,1,isorb),ymatn(1,1,istate),vd_s(1,istate))
 
             do kk=1,3
-              vd(kk)=vd(kk)+weights_g(i)*psid(istate)*psid(istate)*exp(2*psij(isjas)) &
-            *(vd_s(kk,istate)+vref(kk,isorb)+vjn(kk,iel,isjas))/anormo(istate)
+              ratio=psid(istate)/psid(1)*exp(psij(isjas)-psij(isjas1))
+              vd(kk)=vd(kk)+weights_g(i)/anormo(istate)*ratio*ratio &
+              *(vd_s(kk,istate)+vref(kk,isorb)+vjn(kk,iel,isjas))
+
             enddo
           enddo
-          vd(1)=vd(1)*psi2gi
-          vd(2)=vd(2)*psi2gi
-          vd(3)=vd(3)*psi2gi
-
+          vd=vd*psi2gi
         endif
 
       else
@@ -358,9 +331,7 @@ contains
                     detratio,slmi(1,iab,1),aa(1,1,iab,1),ymat_tmp,vd)
         endif
 
-        vd(1)=vjn(1,iel,1)+vd(1)+vref(1,1)
-        vd(2)=vjn(2,iel,1)+vd(2)+vref(2,1)
-        vd(3)=vjn(3,iel,1)+vd(3)+vref(3,1)
+        vd=vjn(1:3,iel,1)+vd+vref(1:3,1)
 
         if (ibackflow.gt.0) then
           detratio = detn_bf(1,1) * detn_bf(2,1) / psid(1)
@@ -374,11 +345,9 @@ contains
 
       use dorb_m,  only: iworbd
       use precision_kinds, only: dp
-      use vmc_mod, only: norb_tot
       use vmc_mod, only: nmat_dim
       use system, only: ndn, nup
       use slater, only: kref
-      use dorb_m, only: iworbd
 
       implicit none
 

@@ -1,0 +1,50 @@
+%module general
+    title        'H2 lin_d optimisation - dump phase'
+    pool         './pool/'
+    basis        sto_cvb1
+    mode         'vmc_one_mpi'
+    nloc        0
+%endmodule
+
+load molecule        $pool/champ_v3_h2.xyz
+load basis_num_info  $pool/champ_v3_sto_cvb1_basis_pointers.bfinfo
+
+load determinants    rhf.det
+load orbitals        champ_v3_trexio_order_rhf.sto_cvb1.lcao
+load jastrow         jastrow.0
+load jastrow_der     jastrow.der
+
+%module electrons
+    nup           1
+    nelec         2
+%endmodule
+
+%module optwf
+    ioptwf        1
+    ioptci        0
+    ioptjas       1
+    ioptorb       0
+    method        'lin_d'
+    ncore         0
+    nextorb       280
+    nblk_max      200
+    no_active     1
+    nopt_iter     2
+    micro_iter_sr 1
+    sr_tau        0.05
+    sr_eps        0.001
+    sr_adiag      0.01
+    lin_nvec      5
+    lin_nvecx     20
+    lin_adiag     0.01
+    lin_eps       0.001
+%endmodule
+
+%module blocking_vmc
+    vmc_nstep     50
+    vmc_nblk      5
+    vmc_nblkeq    1
+    vmc_nconf_new 0
+    vmc_idump     1
+    vmc_irstar    0
+%endmodule

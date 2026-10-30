@@ -8,10 +8,22 @@ on:
     tags:
       - v2.*.*
       - v3.*.*
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
   pull_request:
     branches:
       - 'releases/**'
       - main
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/trex_tools/**'
+      - '**.md'
+      - '.github/workflows/build_documentation_devel.yml'
+      - '.github/workflows/test_python.yml'
   workflow_dispatch:
 
 jobs:
@@ -20,7 +32,7 @@ jobs:
       matrix:
         toolchain: ['intel']
     name: Build CHAMP with ${{ matrix.toolchain }} OneAPI GitHub-hosted runner
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 300
     defaults:
       run:
@@ -31,8 +43,27 @@ jobs:
         with:
           components: basekit, hpckit
 
+      # The fast setup provides the C/C++ toolchain only; without ifx the
+      # mpiifx wrapper fails ("ifx: command not found").
+      #
+      # Versions are PINNED: on 2026-10-29 Intel republished its apt repo
+      # with the 2026.2 toolkit, in which the Fortran compiler pulls in
+      # only the MPI *runtime* (mpirun) -- the mpiifx/mpiicx wrapper
+      # compilers moved to the -devel package, which nothing in the kits
+      # installs. Installing it explicitly (and pinned) restores them.
+      - name: Install the Intel oneAPI Fortran compiler and MPI
+        run: |
+          set -e
+          wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+            | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/oneapi-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
+            | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt-get update
+          sudo apt-get install -y intel-oneapi-compiler-fortran=2026.2.0-863
+          sudo apt-get install -y intel-oneapi-mpi-devel-2021.19=2021.19.0-561
+
       - name: Get the CHAMP code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install dependencies
         run: |
@@ -42,9 +73,12 @@ jobs:
           which python
           python --version
 
-      - name: Compile the CHAMP code using Intel and run all tests
+      - name: Compile the CHAMP code using Intel
         run: |
-          source /opt/intel/oneapi/setvars.sh
+          # --force: the fast-setup action already marked setvars as done,
+          # and the MPI wrappers were installed after that first run.
+          source /opt/intel/oneapi/setvars.sh --force
+          set -e
           cmake --version
           ifx --version
           icx --version
@@ -57,7 +91,22 @@ jobs:
             -DENABLE_TREXIO=OFF \
             -DENABLE_QMCKL=OFF
 
-          cmake --build build -- -j2
+          cmake --build build -- -j$(nproc)
+
+      - name: Run all tests
+        run: |
+          # --force: re-run setvars so the MPI bin dir (mpirun) is on PATH.
+          source /opt/intel/oneapi/setvars.sh --force
+          set -e
           cd build
           export PATH="/usr/bin:$PATH"
-          ctest --output-on-failure --verbose -LE "(TREXIO|QMCKL)"
+          ctest --output-on-failure --no-tests=error -j "$(nproc)" -LE "(TREXIO|QMCKL)"
+
+      # Runs whether or not ctest passed: its purpose is to show, for every
+      # case, the value this runner produced next to the reference it was
+      # compared against.  Reporting only -- the manifests are not touched.
+      - name: Report the obtained values and the references they imply
+        if: always()
+        uses: ./.github/actions/champ-test-values
+        with:
+          artifact-name: champ-reference-values-intel

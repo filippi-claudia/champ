@@ -32,9 +32,9 @@
 
  contains
      subroutine allocate_force_fin()
-      use system,  only: ncent_tot
-      use force_pth, only: PTH
       use control_vmc, only: vmc_nblk
+      use force_pth, only: PTH
+      use system,  only: ncent_tot
 
          if (.not. allocated(da_energy_ave)) allocate (da_energy_ave(3, ncent_tot, PTH))
          if (.not. allocated(da_energy_err)) allocate (da_energy_err(3))

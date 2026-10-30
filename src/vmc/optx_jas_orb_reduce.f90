@@ -12,13 +12,14 @@ contains
       use optwf_control, only: method
       use mpi
       use optorb_mod, only: mxreduced
+      use optorb_cblock, only: nreduced
       use optwf_control, only: ioptjas,ioptorb,method
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
 
       implicit none
 
-      integer :: i, ierr, istate, j, nreduced
+      integer :: i, ierr, istate, j
       real(dp), dimension(nparmj,mxreduced) :: collect
 
 

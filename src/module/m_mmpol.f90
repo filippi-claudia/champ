@@ -12,11 +12,11 @@ end module mmpol_mod
 module mmpol_cntrl
     !> Arguments: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol
 
-    integer :: icall_mm
-    integer :: ich_mmpol
-    integer :: immpol
-    integer :: immpolprt
-    integer :: isites_mmpol
+    integer :: icall_mm = 0
+    integer :: ich_mmpol = 0
+    integer :: immpol = 0
+    integer :: immpolprt = 0
+    integer :: isites_mmpol = 0
 
     private
     public :: isites_mmpol, immpolprt, icall_mm, ich_mmpol, immpol

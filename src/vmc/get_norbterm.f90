@@ -26,17 +26,17 @@ subroutine get_norbterm
 
     implicit none
 
-    integer :: i, iab, icount_orbdef, ie, iesave
+    integer :: i, iab, icount_orbdef, ie
     integer :: io, iocc, iprt, iterm
     integer :: j, jo, k, n0
     integer :: n1, noporb
     integer :: local_norb, local_norb_tot, local_nadorb, local_ndetorb, local_ncore, local_noporb, local_next_max
     integer :: local_norbopt, local_norbvirt, local_norbterm, local_nreduced
+    logical :: found, occ_io, occ_jo
     integer, dimension(2, ndet) :: iodet
     integer, dimension(2, ndet) :: iopos
     integer, dimension(2, norb_tot) :: iflag
     integer, dimension(2) :: ne
-    integer, dimension(2) :: m
     integer, dimension(norb_tot, norb_tot) :: local_iwmix_virt
 
 
@@ -85,12 +85,14 @@ subroutine get_norbterm
 1   format('Det ',i4,' column ',i4,' orb index ',i4,' norb ',i4)
 
 !   Number of external orbitals for orbital optimization
+!   write(ounit, '(a, t40, i0)') 'BEFORE nadorb', local_nadorb
+
     local_next_max  = local_norb  - local_ndetorb
-    if(nadorb.gt.next_max) local_nadorb = local_next_max
-    ! write(ounit, '(a, t40, i0)' ) 'norb', local_norb
-    ! write(ounit, '(a, t40, i0)') 'nadorb', local_nadorb
-    ! write(ounit, '(a, t40, i0)') 'ndet_orb', local_ndetorb
-    ! write(ounit, '(a, t40, i0)') 'next_max', local_next_max
+    if(nadorb.gt.local_next_max) local_nadorb = local_next_max
+    write(ounit, '(a, t40, i0)' ) 'norb', local_norb
+    write(ounit, '(a, t40, i0)') 'nadorb', local_nadorb
+    write(ounit, '(a, t40, i0)') 'ndet_orb', local_ndetorb
+    write(ounit, '(a, t40, i0)') 'next_max', local_next_max
 
     ! if(iprt.gt.0) then
     !  write(ounit,'(''Determinantal orbitals in orbital optimization: '',i0)') local_ndetorb
@@ -169,37 +171,51 @@ subroutine get_norbterm
       if(no_active.ne.0.and.iflag(1,io).ne.0.and.iflag(2,jo).ne.0) goto 50
 !   Omit if we only want to mix according to the table mixvirt
       if(iwmix_virt(io,jo).eq.0) goto 50
-!   Include: io is occupied in some determinant and jo not
-      do iab=1,2
-        n0=0
-        n1=nup
-        if(iab.eq.2) then
-          n0=nup
-          n1=ndn
-        endif
-        m(iab)=0
-        do k=1,ndet
-          do ie=1,n1
-            if(iworbd(ie+n0,k).eq.io) then
-              iesave=ie
-              goto 20
+!   Include only if the single excitation io -> jo is realizable: there must be
+!   at least one determinant (in either spin block) in which io is occupied and
+!   jo is not.
+!
+!   An external/virtual orbital (jo > local_ndetorb) never appears in any
+!   determinant, so every determinant that holds io already qualifies. Since io
+!   is occupied somewhere (iflag(2,io)=1, enforced above), such pairs are always
+!   realizable and need no determinant scan.
+      if(jo.le.local_ndetorb) then
+        found=.false.
+        spin_blocks: do iab=1,2
+          n0=0
+          n1=nup
+          if(iab.eq.2) then
+            n0=nup
+            n1=ndn
+          endif
+          do k=1,ndet
+!   is io occupied in this spin block of determinant k?
+            occ_io=.false.
+            do ie=1,n1
+              if(iworbd(ie+n0,k).eq.io) then
+                occ_io=.true.
+                exit
+              endif
+            enddo
+            if(.not.occ_io) cycle
+!   ... and is jo left empty there? then io -> jo is realizable, stop searching
+            occ_jo=.false.
+            do ie=1,n1
+              if(iworbd(ie+n0,k).eq.jo) then
+                occ_jo=.true.
+                exit
+              endif
+            enddo
+            if(.not.occ_jo) then
+              found=.true.
+              exit spin_blocks
             endif
           enddo
-          goto 30
-20         continue
-          do ie=1,n1
-             if(iworbd(ie+n0,k).eq.jo) goto 30
-          enddo
-          m(iab)=m(iab)+1
-30       continue
-        enddo
-      enddo
-      if(m(1)+m(2).eq.0) then
-!        if(iprt.gt.3) write(ounit,'(''no appropriate determinant for '',2i4)') io,jo
-        goto 50
+        enddo spin_blocks
+        if(.not.found) goto 50
       endif
 
-!   Define new operator (new variation) and its terms
+!   Define new operator (new variation)
       local_noporb=local_noporb+1
 
 
@@ -209,7 +225,6 @@ subroutine get_norbterm
     enddo
 
     local_norbterm=local_noporb
-!    write(ounit,'(''number of orbital variations: '',i0)') local_norbterm
 
 !   if mix_n, optorb_define called mutiple times with method=sr_n or lin_d
     if(method.eq.'linear') then

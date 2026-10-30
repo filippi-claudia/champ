@@ -597,7 +597,7 @@ contains
       use gradhessj, only: d2j,d2j_e,de,dj,dj_de,dj_dj,dj_dj_e,dj_e
       use gradjerr, only: grad_jas_bcm2,grad_jas_bcum
       use gradjerrb, only: ngrad_jas_bcum,ngrad_jas_blocks
-      use optwf_control, only: ibeta,ioptjas,method,ratio_j
+      use optwf_control, only: ibeta,ioptjas,method
       use optwf_parms, only: nparmj
       use precision_kinds, only: dp
       use sa_weights, only: weights
@@ -615,8 +615,6 @@ contains
       real(dp), dimension(nparmj) :: gerr
       real(dp), dimension(*) :: ecum
       real(dp), dimension(*) :: wcum
-
-
 
       if(ioptjas.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
 
@@ -661,7 +659,7 @@ contains
           topsum_j=topsum_j+hess2(i,j)
         enddo
       enddo
-      ratio_j=(topsum_j+botsum_j)/botsum_j
+      ratio=(topsum_j+botsum_j)/botsum_j
 
 ! Construct hessian
 ! Hessian h = hess1 + hess2 + hess3 (ratio=1, ibeta=1)

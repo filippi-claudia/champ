@@ -5,6 +5,7 @@ contains
 ! get spline_fit at r of basis fn irb of center ic and force iwf
 ! 1st and 2nd derivs also calculated if ider=1.
 
+      use error, only: fatal_error
       use numbas,  only: arg,d2rwf,igrid,nr,r0,rwf
       use numexp,  only: ae,ce
       use precision_kinds, only: dp
@@ -41,6 +42,9 @@ contains
         ref0=r0(ic)*arg(ic)**(jx-1)-r0(ic)
         ref1=(ref0+r0(ic))*arg(ic)-r0(ic)
         delh=ref1-ref0
+       else
+        call fatal_error('SPLFIT: invalid grid type')
+        return
       endif
 
       if(jx.lt.1) then

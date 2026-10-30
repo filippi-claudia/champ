@@ -1,20 +1,21 @@
       module pot_local_mod
       contains
-      subroutine pot_local(x, pe)
+      subroutine pot_local(x, pe, ifr)
       use fragments, only: eloc_i, elocfrag, ifragelec, ifragcent, nfrag
       use contrl_file, only: ounit
       use contrl_per, only: iperiodic
       use contrldmc, only: icut_e
       use control, only: ipr
       use distance_mod, only: r_ee,r_en
+      use ewald, only: cos_n_sum, sin_n_sum
+      use ewald_breakup, only: pot_ee_ewald,pot_en_ewald
       use multiple_geo, only: pecent
       use precision_kinds, only: dp
       use pseudo,  only: nloc
-      use ewald_breakup, only: pot_ee_ewald,pot_en_ewald
       use system,  only: iwctype,ncent,nelec,nghostcent,znuc
       implicit none
 
-      integer :: i, ic, ij, j
+      integer :: i, ic, ifr, ij, j
       real(dp) :: pe, pe_ee, pe_en
       real(dp) :: tmp
       real(dp), dimension(3,*) :: x
@@ -69,9 +70,10 @@
 
       else
 
+         call pot_en_ewald(x,pe_en,cos_n_sum(1,ifr),sin_n_sum(1,ifr))
          call pot_ee_ewald(x,pe_ee)
 
-         pe=pe+pe_ee
+         pe=pe+pe_en+pe_ee
       endif
       if(ipr.ge.3) write(ounit,'(''pe,pe_en(loc),pe_ee'',9f9.5)') pe,pe_en,pe_ee
       return

@@ -54,7 +54,6 @@ module acuest_mod
       use strech_mod, only: strech
       use system,  only: cent,iwctype,ncent,nelec,znuc,nup
       use vmc_mod, only: nwftypeorb, stoj
-      use pathak_mod, only: init_eps_pathak, ipathak
 
       implicit none
 
@@ -65,7 +64,7 @@ contains
 
       integer :: i, ic, ierr, ifr, istate, jel, k
       real(dp) :: ajacob, distance_node, eave
-      real(dp) :: psidg, rnorm_nodes
+      real(dp) :: psi2g, rnorm_nodes
       real(dp) :: penow, tpbnow
       real(dp), dimension(3,nelec) :: xstrech
 
@@ -105,12 +104,12 @@ contains
       enddo
 
 ! only called for ifr=1
+      call mmpol_cum(wsum(1,1))
       call optjas_cum(wsum(1,1),enow(1,1))
       call optorb_cum(wsum(1,1),esum(1,1))
       call optci_cum(wsum(1,1))
-      call prop_cum(wsum(1,1))
       call pcm_cum(wsum(1,1))
-      call mmpol_cum(wsum(1,1))
+      call prop_cum
 
       if(wid) eave=ecum(1,1)/wcum(1,1)
       call MPI_BCAST(eave,1,MPI_REAL8,0,MPI_COMM_WORLD,ierr)
@@ -251,7 +250,6 @@ contains
       call mmpol_init(0)
       call force_analy_init(0)
       call efficiency_init
-      if(ipathak.gt.0) call init_eps_pathak()
 
       do ifr=1,nforce
         do istate=1,nstates
@@ -283,6 +281,7 @@ contains
 ! primary config
 ! set n- and e-coords and n-n potentials before getting wavefn. etc.
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
+
       call hpsi(xold,psido,psijo,ekino,eold(1,1),0,1)
 
       ! Cusp check blocks (enable one at a time)
@@ -664,11 +663,11 @@ contains
       enddo
 
       if(iguiding.gt.0) then
-        call determinant_psig(psido,psijo,psidg)
+        call determinant_psig(psido,psijo,psi2g)
 ! rewrite psi2o if you are sampling guiding
-        psi2o(1,1)=2*(dlog(dabs(psidg)))
-!        psi2o(1,1)=2*(dlog(dabs(psidg))+psijo(1))
-        if(ipr.gt.1) write(ounit,'(''zerest after guiding: psig,psi2o='',2d12.4)') psidg/exp(psijo(1)),psi2o(1,1)
+        ijas1=stoj(1)
+        psi2o(1,1)=dlog(dabs(psi2g))+2*(dlog(dabs(psido(1)))+psijo(ijas1))
+        if(ipr.gt.1) write(ounit,'(''zerest after guiding: psi2g,psi2o='',2d12.4)') psi2g,psi2o(1,1)
       endif
 
       if(index(mode,'all').ne.0.or.node_cutoff.gt.0) then

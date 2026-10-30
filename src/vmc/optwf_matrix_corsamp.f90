@@ -37,19 +37,13 @@ contains
 
       integer :: i, iadd_diag_loop1, iadiag, iflag, increase_nblk
       integer :: ioptci_sav, ioptjas_sav, ioptorb_sav, nadorb_sav, iter
-      integer :: iwft, k, k_demax, k_demin
-      integer :: lwork, lwork_all_save, lwork_ci_save, nblk_sav
+      integer :: iwft, k, k_demax, k_demin, nblk_sav
       real(dp) :: add_diag_sav, de_worse1, de_worse2
       real(dp) :: de_worse3, de_worse_err1, de_worse_err2, de_worse_err3
       real(dp) :: denergy, denergy_err, denergy_max, denergy_min
       real(dp) :: dparm_norm, energy_err_sav, energy_plus_err, energy_plus_err_best
       real(dp) :: energy_sav
 
-
-! parameter(nparmall2=nparmall*(nparmall+1)/2)
-! parameter(MWORK=50*nparmall)
-! dimension grad_sav(nparmall),h_sav(nparmall,nparmall),s_sav(nparmall2)
-! dimension work(MWORK),work2(nparmall,nparmall)
 
       integer :: nparmall2
       integer :: MWORK
@@ -60,7 +54,8 @@ contains
       real(dp), DIMENSION(:, :), allocatable :: work2
 
       nparmall2 = nparmall*(nparmall+1)/2
-      MWORK=50*nparmall
+      MWORK=nparmall
+! parameter(MWORK=50*nparmall)
 
       allocate(grad_sav(nparmall))
       allocate(h_sav(nparmall,nparmall))
@@ -72,20 +67,22 @@ contains
       vmc_irstar=0
       vmc_idump=0
 
+      if(multiple_adiag.gt.0) then
 ! Set up basis functions for test run
-      do iwft=2,3
-        iwftype(iwft)=iwft
-      enddo
-      if(numr.gt.0) then
         do iwft=2,3
-          call copy_bas_num(iwft)
+          iwftype(iwft)=iwft
         enddo
-       else
-        do iwft=2,3
-          call copy_zex(iwft)
-        enddo
+        if(numr.gt.0) then
+          do iwft=2,3
+            call copy_bas_num(iwft)
+          enddo
+         else
+          do iwft=2,3
+            call copy_zex(iwft)
+          enddo
+        endif
+        call set_displace_zero(3)
       endif
-      call set_displace_zero(3)
 
 ! Number of iterations
       write(ounit,'(/,''Number of iterations'',i3)') nopt_iter
@@ -133,10 +130,10 @@ contains
 
         call save_wf
 
-        call setup_optimization(nparm,nparmall,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
+        call setup_optimization(nparm,nparmall,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
 
         write(ounit,'(/,''Compute CI parameters'',/)')
-        call compute_dparm(nparm,nparmall,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2, &
+        call compute_dparm(nparm,nparmall,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(1),energy(1),energy_err(1))
 
         call compute_parameters(grad,iflag,1)
@@ -181,8 +178,8 @@ contains
          write(ounit,'(''old energy'',2f12.5)') energy_sav,energy_err_sav
          write(ounit,'(''new energy'',2f12.5)') energy(1),energy_err(1)
          write(ounit,'(/,''Energy is worse, increase adiag to'',1pd11.4)') add_diag(1)
-         call restore_wf(1)
-         call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2, &
+         call restore_wf(1,1)
+         call compute_dparm(nparm,nparmall,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(1),energy_sav,energy_err_sav)
          call compute_parameters(grad,iflag,1)
 ! In case starting config is very bad, reset configuration by calling sites
@@ -211,12 +208,11 @@ contains
 
       call save_wf
 
-      call setup_optimization(nparm,nparmall,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
-      if(iter.eq.1) lwork_all_save=lwork
+      call setup_optimization(nparm,nparmall,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
 
 ! Compute corrections to parameters
       6 write(ounit,'(/,''Compute parameters 1'',/)')
-      call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2, &
+      call compute_dparm(nparm,nparmall,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(1),energy_sav,energy_err_sav)
 
       call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(1),iflag)
@@ -234,7 +230,7 @@ contains
       call compute_parameters(grad,iflag,1)
       if(iflag.ne.0) then
         write(ounit,'(''Warning: add_diag_1 has problems with a2 and/or b2'')')
-        call restore_wf(1)
+        call restore_wf(1,1)
         add_diag(1)=10*add_diag(1)
         write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
         go to 6
@@ -251,9 +247,9 @@ contains
 ! add_diag=add_diag*10
         add_diag(iadiag)=10**(iadiag-1)*add_diag(1)
 
-        call restore_wf(iadiag)
+        call restore_wf(iadiag,1)
         write(ounit,'(/,''Compute parameters '',i1,/)') iadiag
-      10   call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2, &
+      10   call compute_dparm(nparm,nparmall,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(iadiag),energy_sav,energy_err_sav)
 
         call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(iadiag),iflag)
@@ -316,7 +312,7 @@ contains
          write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
          write(ounit,'(''generate again parameters for correlated sampling'')')
 
-         call restore_wf(1)
+         call restore_wf(1,1)
 ! In case starting config is very bad, reset configuration by calling sites
          vmc_isite=1
          call reset_configs_start
@@ -354,7 +350,7 @@ contains
          write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
          write(ounit,'(''generate again parameters for correlated sampling'')')
 
-         call restore_wf(1)
+         call restore_wf(1,1)
 ! In case starting config is very bad, reset configuration by calling sites
          vmc_isite=1
          call reset_configs_start
@@ -367,9 +363,9 @@ contains
 ! Find optimal a_diag
        call quad_min
 
-       call restore_wf(1)
+       call restore_wf(1,1)
 
-      7  call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2, &
+      7  call compute_dparm(nparm,nparmall,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(1),energy_sav,energy_err_sav)
 
        call test_solution_parm(nparm,grad,dparm_norm,dparm_norm_min,add_diag(1),iflag)
@@ -377,7 +373,7 @@ contains
         write(ounit,'(''Warning: adiag_optimal has dparm_norm>1'')')
         add_diag(1)=200*add_diag(1)
         write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
-        call restore_wf(1)
+        call restore_wf(1,1)
         go to 7
        endif
 
@@ -391,7 +387,7 @@ contains
          write(ounit,'(''Warning: adiag_optimal has problems'')')
          add_diag(1)=200*add_diag(1)
          write(ounit,'(''adiag_1 increased to '',g12.5)') add_diag(1)
-         call restore_wf(1)
+         call restore_wf(1,1)
          go to 7
        endif
 
@@ -402,6 +398,8 @@ contains
        add_diag(1)=0.1d0*add_diag(1)
       else
        call write_wf(1,iter)
+
+       call check_length_run(iter,increase_nblk,vmc_nblk,vmc_nblk_max,denergy,denergy_err,energy_err_sav,energy_tol)
 ! endif for multiple_adiag
       endif
 
@@ -453,8 +451,8 @@ contains
 
             call set_nparms
 
-            call restore_wf(1)
-            call compute_dparm(nparm,nparmall,lwork_all_save,grad,h,h_sav,s,s_sav,work,work2, &
+            call restore_wf(1,1)
+            call compute_dparm(nparm,nparmall,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(1),energy_sav,energy_err_sav)
             call compute_parameters(grad,iflag,1)
 ! In case starting config is very bad, reset configuration by calling sites
@@ -466,11 +464,10 @@ contains
           endif
         endif
 
-        call setup_optimization(nparm,nparmall,MWORK,lwork,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
-        if(iter.eq.1) lwork_ci_save=lwork
+        call setup_optimization(nparm,nparmall,h,h_sav,s,s_sav,work,work2,add_diag(1),iter)
 
         write(ounit,'(/,''Compute CI parameters'',/)')
-        call compute_dparm(nparm,nparmall,lwork_ci_save,grad,h,h_sav,s,s_sav,work,work2, &
+        call compute_dparm(nparm,nparmall,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(1),energy(1),energy_err(1))
 
         call compute_parameters(grad,iflag,1)
@@ -817,8 +814,14 @@ contains
 
       175  nparm=nparmj+nciterm+nreduced-i0
 
-       write(ounit,'(/,''number of parms: total, Jastrow, CI, orbitals= '',4i5)') &
-       nparm,nparmj,nciterm,nreduced
+       write(ounit,'(/,1x,a)')            'Number of parameters'
+       write(ounit,'(1x,a)')              '------------------------------'
+       write(ounit,'(3x,a,t18,a,i11)')    'Jastrow',  ':', nparmj
+       write(ounit,'(3x,a,t18,a,i11)')    'CI',       ':', nciterm
+       write(ounit,'(3x,a,t18,a,i11)')    'Orbitals', ':', nreduced
+       write(ounit,'(1x,a)')              '------------------------------'
+       write(ounit,'(3x,a,t18,a,i11)')    'Total',    ':', nparm
+       write(ounit,'(1x,a)')              '------------------------------'
 
 !      do 180 i=1,nparm+1
 ! 180    write(ounit,'(''h= '',1000d12.5)') (h(i,j),j=1,nparm+1)

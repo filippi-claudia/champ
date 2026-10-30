@@ -1,0 +1,37 @@
+{
+  "description": "Ethanol orbital optimization evaluated through QMCkl (TREXIO wave function)",
+  "labels": [
+    "VMC",
+    "TREXIO",
+    "QMCKL",
+    "C2H6O",
+    "ethanol",
+    "optimization"
+  ],
+  "requires": [
+    "trexio",
+    "qmckl"
+  ],
+  "cases": [
+    {
+      "name": "np2",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "vmc_ethanol_opt.inp",
+          "output": "vmc_ethanol_opt_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "vmc_ethanol_opt_core_2.out",
+          "match": "total E",
+          "value": -30.5921225,
+          "error": 0.0152373
+        }
+      ]
+    }
+  ]
+}

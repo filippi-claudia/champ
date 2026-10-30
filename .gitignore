@@ -33,8 +33,9 @@ CTestTestfile.cmake
 # build directory
 build
 
-# generated documentation for developers
+# generated documentation for developers and users
 docs/developers/
+docs/site/
 
 # output files
 *.out
@@ -68,8 +69,20 @@ config/
 #local testing of workflow
 .github/workflows/test_locally.yml
 
+# Generated documentation in html
+.DS_Store
+docs/.DS_Store
+docs/.python-version
+docs/site/
+
 #dont ignore source files
 !.f90$
 !.f$
 !hf_cc-VDZ.out
 !cas129_b3lyp_BFD-dan-normf0.out
+
+# CI test scratch area (champ_test_runner.py interactive runs)
+tests/CI_test/scratch/
+
+# CI test reports of obtained values (champ_test_runner.py --report-dir)
+tests/CI_test/reports/

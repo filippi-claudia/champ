@@ -1,0 +1,35 @@
+{
+  "description": "Formaldehyde ground-state energy, 1862 determinants (TREXIO, BFD/aug-cc-pVDZ) (parked: script was disabled as .debug)",
+  "labels": [
+    "VMC",
+    "TREXIO",
+    "CH2O",
+    "ground"
+  ],
+  "requires": [
+    "trexio"
+  ],
+  "enabled": true,
+  "cases": [
+    {
+      "name": "np2",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "trexio_vmc_COH2_gs.inp",
+          "output": "trexio_vmc_COH2_gs_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "trexio_vmc_COH2_gs_core_2.out",
+          "match": "total E",
+          "value": -22.5935253,
+          "error": 0.004318
+        }
+      ]
+    }
+  ]
+}

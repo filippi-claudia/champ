@@ -3,7 +3,7 @@ contains
       subroutine optwf_lin_d
 
       use contrl_file, only: ounit
-      use control_vmc, only: vmc_nblk,vmc_nblk_max
+      use control_vmc, only: vmc_nblk,vmc_nblk_max,vmc_idump,vmc_irstar
       use csfs,    only: nstates
       use error,   only: fatal_error
       use m_force_analytic, only: alfgeo,iforce_analy
@@ -32,6 +32,7 @@ contains
 
       integer :: iflag, iforce_analy_sav, inc_nblk, ioptci_sav, ioptjas_sav
       integer :: ioptorb_sav, iter, miter, nstates_sav,nadorb_sav
+      integer :: vmc_idump_sav, vmc_irstar_sav
       integer, dimension(5,MSTATES) :: index_more
       real(dp) :: adiag, alin_adiag_sav, alpha_omega, denergy, denergy_err
       real(dp) :: dparm_norm, energy_err_sav, energy_sav
@@ -50,6 +51,7 @@ contains
 
       if(ifunc_omega.gt.0) then
        if(n_omegaf+n_omegat.gt.nopt_iter) call fatal_error('OPTWF_LIN_D: n_omegaf+n_omegat > nopt_iter')
+       if(n_omegaf.lt.nopt_iter.and.n_omegat.le.0) call fatal_error('OPTWF_LIN_D: n_omegat must be positive')
        omega=omega0
        write(ounit,'(/,''LIN_D ifunc_omega: '',i3)') ifunc_omega
        write(ounit,'(''LIN_D omega: '',f10.5)') omega
@@ -77,6 +79,9 @@ contains
       ioptorb_sav=ioptorb
       ioptci_sav=ioptci
       call save_nparms
+      energy_sav=0.d0
+      energy_err_sav=0.d0
+      sigma_sav=0.d0
 
       call write_geometry(0)
 
@@ -109,6 +114,7 @@ contains
 !        efin_old = efin define efin_old as the energy before
 
           call qmc
+          vmc_irstar = 0
 
           write(ounit,'(/,''Completed sampling'')')
 
@@ -162,7 +168,6 @@ contains
         energy_sav=energy(1)
         energy_err_sav=energy_err(1)
         sigma_sav=sigma
-        ! sigma_sav=0 ! sigma is not initialized and never changed ...
       enddo
 ! enddo iteration
 
@@ -175,7 +180,19 @@ contains
 
       call set_nparms
 
+      vmc_idump_sav = vmc_idump
+      vmc_idump = 0
+      vmc_irstar_sav = vmc_irstar
+      vmc_irstar = 0
+
       call qmc
+
+      vmc_irstar = vmc_irstar_sav
+      vmc_idump = vmc_idump_sav
+      ioptjas = ioptjas_sav
+      ioptorb = ioptorb_sav
+      ioptci = ioptci_sav
+      call set_nparms
 
       nadorb_sav=nadorb
       call write_wf(1,-1)

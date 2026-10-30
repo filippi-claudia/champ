@@ -1,20 +1,30 @@
 #!/bin/bash
-# Install trexio with hdf5
-# Install qmckl linked to trexio
-# Set the library paths according to your installation
+# Compile CHAMP with Intel MPI Fortran compiler + TREXIO + QMCkl + HDF5
+#
+# Prerequisites: set these environment variables before running this script:
+#   TREXIO_DIR  - prefix where TREXIO is installed (headers in $TREXIO_DIR/include,
+#                 library in $TREXIO_DIR/lib)
+#   QMCKL_DIR   - prefix where QMCkl is installed  (same layout)
+#   HDF5_DIR    - prefix where HDF5 is installed    (same layout)
+#
+# Example:
+#   export TREXIO_DIR=/opt/trexio
+#   export QMCKL_DIR=/opt/qmckl
+#   export HDF5_DIR=/opt/hdf5
+#   ./compile-intel.qmckl
 
-compiler=''             # 'mpiifort' or 'mpiifx'
-trexio_dir=''           # Root directory of TREXIO library
-qmckl_dir=''            # Root directory of QMCkl library
+compiler='mpiifort'    # OR 'mpiifx' for Intel's LLVM-based compiler
+
+rm -rf build
 
 cmake -S. -Bbuild \
     -DCMAKE_Fortran_COMPILER=${compiler} \
     -DENABLE_TREXIO=ON \
-    -DTREXIO_INCLUDE_DIR=${trexio_dir}/include \
-    -DTREXIO_LIBRARY=${trexio_dir}/lib/libtrexio.so \
+    -DTREXIO_INCLUDE_DIR=${TREXIO_DIR}/include \
+    -DTREXIO_LIBRARY=${TREXIO_DIR}/lib/libtrexio.so \
     -DENABLE_QMCKL=ON \
-    -DQMCKL_INCLUDE_DIR=${qmckl_dir}/include \
-    -DQMCKL_LIBRARY=${qmckl_dir}/lib/libqmckl.so \
+    -DQMCKL_INCLUDE_DIR=${QMCKL_DIR}/include \
+    -DQMCKL_LIBRARY=${QMCKL_DIR}/lib/libqmckl.so \
+    -DHDF5_ROOT=${HDF5_DIR}
 
 cmake --build build -j
-

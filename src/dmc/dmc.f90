@@ -11,7 +11,6 @@ contains
       use acuest_mod, only: acuest
       use branch, only: eest
       use const, only: etrial
-      ! use averages, only: average,average_write,init_averages_index
       use constants, only: pi
       use contrl_file, only: ounit
       use contrldmc, only: idmc
@@ -27,9 +26,14 @@ contains
       use init_mod, only: init
       use mc_configs_mod, only: mc_configs,mc_configs_write
       use mpitimer, only: elapsed_time
-      use mpiconf, only: nproc
+      use mpiconf, only: nproc, wid
+      use custom_broadcast, only: bcast
       use mpi
       use multiple_geo, only: iwftype,nforce,nwftype,nwprod
+
+#if defined(HDF5_FOUND)
+      use dmc_store_hdf5_mod, only: dmc_store_hdf5
+#endif
       use m_force_analytic, only: iforce_analy
       use precision_kinds, only: dp
       use pseudo,  only: nloc
@@ -42,10 +46,15 @@ contains
       implicit none
 
       integer :: i, j, irun, lpass, ifrag, ierr
+#if defined(HDF5_FOUND)
+      integer :: hdf5_restart_funit, hdf5_restart_ios
+#endif
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: four = 4.d0
       real(dp) :: etrialcollect
       real(dp), dimension(:), allocatable :: etrialfragcollect
+      character(len=8)  :: date
+      character(len=10) :: time
 
       if(nforce.gt.1) then
         call setup_force
@@ -65,9 +74,7 @@ contains
       call elapsed_time("DMC : Reading initial walker configuration : ")
 
 ! initialize sums and averages
-      ! call init_averages_index
       if(dmc_irstar.ne.1) call init
-      ! if(dmc_irstar.ne.1) call average(0)
 
 ! forces implemented only for certain dmc control options
       if(nforce.gt.1) write(ounit,'(''Possible Warning: force implemented for certain dmc control options'')')
@@ -82,7 +89,6 @@ contains
           call elapsed_time("DMC : equilibrium CP : ")
 
           call zerest
-          ! call average(0)
           call elapsed_time("DMC : zero out estimators and averages : ")
         endif
         do j=1,dmc_nstep
@@ -106,8 +112,6 @@ contains
           call mc_configs_write(i,ipass)
           call acues1
         enddo
-        ! call average(2)
-        ! call average_write
         call acuest
       enddo
 
@@ -116,7 +120,21 @@ contains
       call finwrt
       call elapsed_time("DMC : all CP : ")
 
-      if (dmc_idump.eq.1) call dumper
+      if (dmc_idump.eq.1) then
+#if defined(HDF5_FOUND)
+        if (wid) call date_and_time(date=date, time=time)
+        call bcast(date)
+        call bcast(time)
+        call dmc_store_hdf5("restart_dmc_"//date(1:4)//'-'//date(5:6)//'-'//date(7:8)//"-"//time(1:6)//".hdf5")
+        if (wid) then
+          open(newunit=hdf5_restart_funit, file='restart_dmc.hdf5', status='old', iostat=hdf5_restart_ios)
+          if (hdf5_restart_ios == 0) close(hdf5_restart_funit, status='delete')
+        endif
+        call dmc_store_hdf5("restart_dmc.hdf5")
+#else
+        call dumper
+#endif
+      endif
       close (unit=9)
       if (dmc_nconf.ne.0) close (unit=7)
       call elapsed_time("dumping restart files : ")

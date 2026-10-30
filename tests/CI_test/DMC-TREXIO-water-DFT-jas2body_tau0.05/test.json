@@ -1,0 +1,65 @@
+{
+  "description": "Water DMC (tau=0.05, 2-body Jastrow) on a VMC-generated walker population, TREXIO wave function",
+  "labels": [
+    "DMC",
+    "TREXIO",
+    "H2O",
+    "water",
+    "DFT"
+  ],
+  "requires": [
+    "trexio"
+  ],
+  "cases": [
+    {
+      "name": "np2",
+      "comment": "VMC run generates mc_configs for the subsequent DMC run",
+      "runs": [
+        {
+          "program": "vmc",
+          "input": "vmc_h2o_dft_jas2body.inp",
+          "output": "vmc_h2o_dft_jas2body_core_2.out",
+          "nproc": 2,
+          "before": [
+            {
+              "op": "remove",
+              "paths": [
+                "mc_configs"
+              ]
+            }
+          ],
+          "after": [
+            {
+              "op": "concat",
+              "sources": [
+                "mc_configs_new*"
+              ],
+              "dest": "mc_configs"
+            },
+            {
+              "op": "remove",
+              "paths": [
+                "mc_configs_new*"
+              ]
+            }
+          ]
+        },
+        {
+          "program": "dmc",
+          "input": "dmc_h2o_dft_jas2body_tau0.05.inp",
+          "output": "dmc_h2o_dft_jas2body_tau0.05_core_2.out",
+          "nproc": 2
+        }
+      ],
+      "checks": [
+        {
+          "type": "value",
+          "file": "dmc_h2o_dft_jas2body_tau0.05_core_2.out",
+          "match": "total energy ( 100)",
+          "value": -17.2660264,
+          "error": 0.0015784
+        }
+      ]
+    }
+  ]
+}

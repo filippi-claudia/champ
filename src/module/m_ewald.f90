@@ -42,7 +42,7 @@ module ewald_mod
      integer :: isrange, ncoef_per
      integer :: ngnorm, ngnorm_big, ngvec, ngvec_big
      integer :: np_coul, np_jas, npoly
-     integer :: n_images
+     integer :: n_images, n_images0
      real(dp), dimension(:, :), allocatable :: rlatt !(3,3)
      real(dp), dimension(:, :), allocatable :: rlatt_inv !(3,3)
      real(dp), dimension(:, :), allocatable :: ell !(3,n_images)
@@ -59,7 +59,7 @@ module ewald_mod
      public :: np_coul, np_jas, npoly
      public :: rlatt, rlatt_inv, vcell, znuc2_sum, znuc_sum
      public :: allocate_periodic, deallocate_periodic
-     public :: alattice, n_images, ell
+     public :: alattice, n_images, n_images0, ell
      save
  contains
      subroutine allocate_periodic()

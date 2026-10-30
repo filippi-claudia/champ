@@ -9,10 +9,9 @@ contains
 
       use acuest_mod, only: acuest,zerest
       use config,  only: eold,psido,psijo,xold
-      use contrl_file, only: ounit
       use control, only: mode
       use control_vmc, only: vmc_idump,vmc_irstar,vmc_nblk,vmc_nblkeq
-      use control_vmc, only: vmc_nconf,vmc_nconf_new,vmc_nstep
+      use control_vmc, only: vmc_nconf_new,vmc_nstep
       use dumper_mod, only: dumper,startr
       use error, only: fatal_error
       use finwrt_mod, only: finwrt
@@ -24,18 +23,26 @@ contains
       use metropolis, only: imetro
       use mpitimer, only: elapsed_time
       use multiple_geo, only: iwftype,nforce,nwftype
-      use precision_kinds, only: dp
       use pseudo,  only: nloc
       use rotqua_mod, only: rotqua
       use strech_mod, only: setup_force
       use system,  only: nelec
       use m_force_analytic, only: current_block
+      use custom_broadcast, only: bcast
+      use mpiconf, only: wid
+
+#if defined(HDF5_FOUND)
+      use vmc_store_hdf5_mod, only: vmc_store_hdf5
+      use vmc_restore_hdf5_mod, only: vmc_restore_hdf5
+#endif
 
       implicit none
 
       integer :: i, ii, j, jj, l
       integer :: ngfmc
-      real(dp) ::err
+      character(len=8)  :: date
+      character(len=10) :: time
+      integer           :: hdf5_restart_funit, hdf5_restart_ios
 
       character(len=25) fmt
 
@@ -64,6 +71,9 @@ contains
 
 ! check if restart flag is on. If so then read input from dumped data to restart
       if (vmc_irstar.eq.1) then
+#if defined(HDF5_FOUND)
+        call vmc_restore_hdf5("restart_vmc.hdf5")
+#else
         open(10,err=401,form='unformatted',file='restart_vmc')
         goto 402
       401   call fatal_error('VMC: restart_vmc empty, not able to restart')
@@ -71,6 +81,7 @@ contains
         call startr
         close(10)
         call elapsed_time("VMC : reading restart files : ")
+#endif
       endif
 
 ! if there are equilibrium steps to take, do them here
@@ -109,7 +120,6 @@ contains
         current_block = current_block + 1
         do j=1,vmc_nstep
           l=l+1
-!   write(ounit, *) i, nblk, j, nstep
           if (nloc.gt.0) call rotqua
           if(imetro.eq.1) then
             if(mode.eq.'vmc_one_mpi') call metrop1(l,1)
@@ -121,9 +131,9 @@ contains
 ! write out configuration for optimization/dmc/gfmc here
           if (mod(l,ngfmc).eq.0 .or. ngfmc.eq.1) then
             if(3*nelec.lt.100) then
-              write(fmt,'(a1,i2,a21)')'(',3*nelec,'f13.8,i3,d12.4,f12.5)'
+              write(fmt,'(a1,i2,a21)')'(',3*nelec,'e18.8,i3,d12.4,f12.5)'
             else
-              write(fmt,'(a1,i3,a21)')'(',3*nelec,'f13.8,i3,d12.4,f12.5)'
+              write(fmt,'(a1,i3,a21)')'(',3*nelec,'e18.8,i3,d12.4,f12.5)'
             endif
             write(7,fmt) ((xold(ii,jj),ii=1,3),jj=1,nelec), &
             int(sign(1.d0,psido(1))),log(dabs(psido(1)))+psijo,eold(1,1)
@@ -147,11 +157,26 @@ contains
 
 ! if dump flag is on then dump out data for a restart
       if (vmc_idump.eq.1) then
+#if defined(HDF5_FOUND)
+        if (wid) call date_and_time(date=date, time=time)
+        call bcast(date)
+        call bcast(time)
+        call vmc_store_hdf5("restart_vmc_"//date(1:4)//'-'//date(5:6)//'-'//date(7:8)//"-"//time(1:6)//".hdf5")
+        ! Delete then recreate the fixed-name file so vmc_restore_hdf5 always finds the latest restart.
+        ! HDF5 cannot truncate a previously-written filename while other HDF5 files are open,
+        ! so we delete it via Fortran I/O first to bypass HDF5's name-tracking.
+        if (wid) then
+          open(newunit=hdf5_restart_funit, file='restart_vmc.hdf5', status='old', iostat=hdf5_restart_ios)
+          if (hdf5_restart_ios == 0) close(hdf5_restart_funit, status='delete')
+        endif
+        call vmc_store_hdf5("restart_vmc.hdf5")
+#else
         open(10,form='unformatted',file='restart_vmc')
         rewind 10
         call dumper
         close(10)
         call elapsed_time("dumping restart files : ")
+#endif
       endif
       if(vmc_nconf_new.ne.0) close(7)
 

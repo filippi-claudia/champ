@@ -13,7 +13,7 @@ contains
       use contrl_file, only: ounit
       use contrldmc, only: idmc,nfprod,rttau,tau
       use control, only: ipr,mode
-      use control_dmc, only: dmc_nconf
+      use control_dmc, only: dmc_nconf, dmc_nstep
       use determinante_mod, only: compute_determinante_grad
       use error,   only: fatal_error
       use est2cm,  only: ecm21_dmc,ecm2_dmc,efcm2,efcm21,egcm2,egcm21
@@ -68,7 +68,7 @@ contains
       integer :: n2_id, nbasx, ncentx, nctypex
       integer :: ndetx, ndnx, nelecx, newghostypex
       integer :: nghostcentx, nprock, nq_id, num
-      integer :: nupx, nwalk_id
+      integer :: nupx, nwalk_id, nforcex
       integer, dimension(8, 0:nproc) :: irn
       integer, dimension(nctype)      :: nsx,npx,ndx,nfx,ngx
       real(dp) :: different, eest_id
@@ -85,8 +85,11 @@ contains
       real(dp), parameter :: zero = 0.d0
       real(dp), parameter :: one = 1.d0
       real(dp), parameter :: small = 1.e-6
+      real(dp) :: egave_rstrt, peave_rstrt, tpbave_rstrt
+      real(dp) :: egerr_rstrt, peerr_rstrt, tpberr_rstrt, rn_eff
 
-      character(len=13) filename
+      character(len=64) filename
+      character(len=32) :: cnum
 
       if(mode.eq.'dmc_one_mpi2') then
         call startr_gpop
@@ -126,6 +129,9 @@ contains
 !     if(nforce.gt.1) read(10) nwprod
 !    &,((pwt(i,j),i=1,nwalk),j=1,nforce)
 !    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
+
+      call force_analy_rstrt(10)
+
       read(10) (wgcum(i),egcum(i),pecum_dmc(i),tpbcum_dmc(i), &
       wgcm2(i),egcm2(i),pecm2_dmc(i),tpbcm2_dmc(i),taucum(i), &
       i=1,nforce)
@@ -133,10 +139,11 @@ contains
       call setrn(irn(1,idtask))
       read(10) hbx
       read(10) taux,rttau,idmc
-      read(10) nelecx,dmc_nconf
+      read(10) nelecx,dmc_nconf,nforcex
       if (dabs(hbx-hb).gt.small) call fatal_error('STARTR: hb')
       if (dabs(taux-tau).gt.small) call fatal_error('STARTR: tau')
       if (nelecx.ne.nelec) call fatal_error('STARTR: nelec')
+      if (nforcex.ne.nforce) call fatal_error('STARTR: nforce')
       read(10) (wtgen(i),i=0,nfprod),wgdsumo
       read(10) wcum_dmc,wfcum,wcum1,wfcum1,(wgcum1(i),i=1,nforce),ecum_dmc,efcum, &
                ecum1_dmc,efcum1,(egcum1(i),i=1,nforce)
@@ -154,7 +161,6 @@ contains
       call prop_rstrt(10)
       call pcm_rstrt(10)
       call mmpol_rstrt(10)
-      call force_analy_rstrt(10)
       read(10) ((coefx(ib,i),ib=1,nbasis),i=1,norb)
       read(10) nbasx
       do j=1,norb
@@ -203,10 +209,41 @@ contains
       if (nupx.ne.nup) call fatal_error('STARTR: nup')
       if (ndnx.ne.ndn) call fatal_error('STARTR: ndn')
       write(ounit,'(1x,''succesful read from unit 10'')')
-      write(ounit,'(t5,''egnow'',t15,''egave'',t21&
-      &,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55&
-      &,''(tpberr)'' ,t66,''npass'',t77&
-      &,''wgsum'',t88 ,''ioldest'')')
+      if (wid) then
+        if (nforce.gt.1) then
+          write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32 &
+            &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66 &
+            &,''fgave'',t79,''(fgerr)'',t93,''npass'',t102,''wgsum'',t112   &
+            &,''ioldest'')')
+        else
+          write(ounit,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32&
+            &,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t67&
+            &,''npass'',t77,''wgsum'',t85,''ioldest'')')
+        endif
+
+        egave_rstrt = egcum(1)/wgcum(1)
+        peave_rstrt = pecum_dmc(1)/wgcum(1)
+        tpbave_rstrt = tpbcum_dmc(1)/wgcum(1)
+        rn_eff = wgcum(1)**2 / wgcm2(1)
+        if (rn_eff .gt. 1.d0) then
+            egerr_rstrt = dsqrt(max((egcm2(1)/wgcum(1) - egave_rstrt**2)/(rn_eff-1.d0), 0.d0))
+            peerr_rstrt = dsqrt(max((pecm2_dmc(1)/wgcum(1) - peave_rstrt**2)/(rn_eff-1.d0), 0.d0))
+            tpberr_rstrt = dsqrt(max((tpbcm2_dmc(1)/wgcum(1) - tpbave_rstrt**2)/(rn_eff-1.d0), 0.d0))
+        else
+            egerr_rstrt = 0.d0
+            peerr_rstrt = 0.d0
+            tpberr_rstrt = 0.d0
+        endif
+        if (nforce.gt.1) then
+          write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),62x,3i10)') &
+              egave_rstrt, egave_rstrt, nint(100000*egerr_rstrt), peave_rstrt, nint(100000*peerr_rstrt), &
+              tpbave_rstrt, nint(100000*tpberr_rstrt), iblk_proc*dmc_nstep, nint(wgcum(1)/nproc), ioldest
+        else
+          write(ounit,'(f10.5,3(f10.5,''('',i5,'')''),3i10)') &
+              egave_rstrt, egave_rstrt, nint(100000*egerr_rstrt), peave_rstrt, nint(100000*peerr_rstrt), &
+              tpbave_rstrt, nint(100000*tpberr_rstrt), iblk_proc*dmc_nstep, nint(wgcum(1)/nproc), ioldest
+        endif
+      endif
 
       do iw=1,nwalk
         if(istrech.eq.0) then
@@ -268,22 +305,15 @@ contains
       call mmpol_init(1)
 
       if(write_walkalize) then
-        if(idtask.le.9) then
-          write(filename,'(''walkalize.'',i1)') idtask
-         elseif(idtask.le.99) then
-          write(filename,'(''walkalize.'',i2)') idtask
-         elseif(idtask.le.999) then
-          write(filename,'(''walkalize.'',i3)') idtask
-         else
-          call fatal_error('STARTR: idtask > 999')
-        endif
+        write(cnum,*) idtask
+        filename='walkalize.'//trim(adjustl(cnum))
         open(unit=11,file=filename,status='old')
         do i=1,2000000000
           read(11,fmt=*,end=100)
         enddo
+  100   backspace 11
+        backspace 11
       endif
-      100 backspace 11
-      backspace 11
 
       return
       end

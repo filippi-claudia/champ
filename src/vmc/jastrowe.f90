@@ -26,7 +26,7 @@ contains
 
       implicit none
 
-      integer :: i, iel, iflag
+      integer :: i, iel, iflag, jwf
       real(dp), dimension(*) :: d2j
       real(dp), dimension(*) :: psij
       real(dp), dimension(3, *) :: x
@@ -43,7 +43,8 @@ contains
       
          if(iperiodic.eq.1.and.ijas_lr.eq.1) call jastrow_longrange(iel,x,psij_per,d2_per,v_per,0)
 
-         do iwf=1,nwftypejas
+         do jwf=1,nwftypejas
+            iwf=jwf
             call jastrow1e(iel,x,fjn(1,1,iwf),d2n(iwf),fsumn(iwf),fsn(1,1,iwf),fijn(1,1,1,iwf),d2ijn(1,1,iwf), &
                  fjo(1,1,iwf),d2o(iwf),fsumo(iwf),fso(1,1,iwf),fijo(1,1,1,iwf),d2ijo(1,1,iwf),iflag)
             do i=1,nelec
@@ -55,7 +56,8 @@ contains
             d2j(iwf)=d2n(iwf)+d2_per
         enddo
       else
-         do iwf=1,nwftypejas
+         do jwf=1,nwftypejas
+            iwf=jwf
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
          if (use_qmckl_jastrow) then
 

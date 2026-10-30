@@ -5,7 +5,6 @@
 
       use age,     only: iage,ioldest,ioldestmx
       use assignment_mod, only: assign_elecs
-      use averages, only: average
       use branch,  only: eest,esigma,eigv,eold,ff,fprod,nwalk,pwt,wdsumo
       use branch,  only: wgdsumo,wt,wthist
       use branching, only: calculate_fratio, calculate_reweight
@@ -538,7 +537,7 @@
             psido_dmc(iw,1)=psidn(1)
             psijo_dmc(iw,1)=psijn(1)
             call jassav(i,0)
-            call detsav(i,0)
+            call detsav(i)
 
            else
             if(ipq.le.0) p=zero
