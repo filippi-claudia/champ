@@ -63,6 +63,8 @@ contains
       use mpitimer, only: elapsed_time
       use mpi
       use optwf_control, only: ioptjas
+      use m_backflow, only: ibackflow
+      use backflow_mod, only: backflow_accept
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
@@ -595,6 +597,9 @@ contains
           rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
         endif
 #endif
+        if (ibackflow.gt.0) then
+          call backflow_accept(i)
+        endif
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
         psi2o(1,1)=psi2n(1)

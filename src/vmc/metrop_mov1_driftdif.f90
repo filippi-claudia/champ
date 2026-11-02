@@ -52,6 +52,8 @@
       use system,  only: nelec,nup
       use tmpnode, only: distance_node_sum
       use vmc_mod, only: nwftypejas, stoj
+      use m_backflow, only: ibackflow
+      use backflow_mod, only: backflow_accept
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
@@ -207,6 +209,9 @@
           rc = qmckl_get_jastrow_champ_single_accept(qmckl_ctx(qmckl_no_ctx))
         endif
 #endif
+        if (ibackflow.gt.0) then
+          call backflow_accept(i)
+        endif
         psi2o(1,1)=psi2n(1)
         do ic=1,3
           xold(ic,i)=xnew(ic,i)

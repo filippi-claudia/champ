@@ -71,6 +71,7 @@ contains
       call write_lcao(iwf_fit,filetype)
       call write_jastrow(iwf_fit,filetype)
       call write_ci(iwf_fit,filetype)
+      call write_bf(iwf_fit,filetype)
 
       return
       end
@@ -303,6 +304,100 @@ contains
         write(2,'(''end'')')
       endif
 
+      close(2)
+
+      return
+      end
+
+      subroutine write_bf(iwf_fit,filetype)
+
+
+      use optwf_control, only: ioptbf
+      use vmc_mod, only: nwftypeorb
+      use m_backflow, only: ibackflow, nparm_bf, parm_bf, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, cutoff_scale, ncparm_bf, cutoff_b_offset, cutoff_a_offset, cutoff_c_offset, ee_coeff_offset, en_coeff_offset, een_coeff_offset, ee_coeff_block_size, en_coeff_block_size, een_component_block_size
+      use system, only: nctype
+      implicit none
+
+      integer :: i, index, iwf_fit, j, k, ict, l, m, n
+      integer :: ee_spin, c_offset
+      character(len=40) filename,filetype, temp
+      character(len=50) fmt
+
+      if(ioptbf.eq.0) return
+
+      filename='backflow'//filetype(1:index(filetype,' ')-1)
+      open(2,file=filename,status='unknown')
+
+      write(2,'(''backflow'',i4)') ibackflow
+      write(2,'(5i5,a39)') norda_bf,nordb_bf,nordc_bf,nparm_bf,nspin_bf_ee, ' norda,nordb,nordc,nparm,nspin_bf_ee'
+      write(2,'(1i3,a10)') cutoff_scale,' C'
+
+      if (norda_bf.gt.0) then
+        write(fmt,'(''('',i5,''f13.8,a10)'')') nctype
+        write(2,fmt) (parm_bf(cutoff_a_offset + i - 1),i=1,nctype),' cutoff-a'
+      endif
+      if (nordb_bf.gt.0) then
+        write(2,'(f13.8,a10)') parm_bf(cutoff_b_offset),' cutoff-b'
+      endif
+      if (nordc_bf.gt.0) then
+        write(fmt,'(''('',i5,''f13.8,a10)'')') nctype
+        write(2,fmt) (parm_bf(cutoff_c_offset + i - 1),i=1,nctype),' cutoff-c'
+      endif
+
+
+      if(norda_bf.gt.0) then
+        write(fmt,'(''('',i2,''f13.8,a10)'')') norda_bf+1
+      else
+        write(fmt,'(''(a10)'')')
+      endif
+      do ict=1,nctype
+        write(2,fmt) (parm_bf(en_coeff_offset + (ict-1)*(norda_bf+1)+i),i=1,norda_bf+1),' e-n'
+      enddo 
+
+      if(nordb_bf.gt.0) then
+        write(fmt,'(''('',i2,''f13.8,a10)'')') nordb_bf+1
+      else
+        write(fmt,'(''(a10)'')')
+      endif
+      write(2,fmt) (parm_bf(ee_coeff_offset+i),i=1,nordb_bf+1),' e-e(par)'
+      if (nspin_bf_ee.eq.2) then
+        write(2,fmt) (parm_bf(ee_coeff_offset+ee_coeff_block_size+i),i=1,nordb_bf+1),' e-e(anti)'
+      endif
+
+      if (nordc_bf.gt.0) then
+        write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf
+      else
+        write(fmt,'(''(a10)'')')
+      endif
+      do ee_spin = 1, nspin_bf_ee
+        c_offset = een_coeff_offset + (ee_spin-1)*een_component_block_size
+        do ict=1,nctype
+          if (nspin_bf_ee.eq.2 .and. ee_spin.eq.1) then
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' E-e-n(par)'
+          elseif (nspin_bf_ee.eq.2 .and. ee_spin.eq.2) then
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' E-e-n(anti)'
+          else
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' E-e-n'
+          endif
+        enddo
+      enddo
+      if (nordc_bf.gt.0) then
+        write(fmt,'(''('',i5,''f13.8,a10)'')') ncparm_bf
+      endif
+      do ee_spin = 1, nspin_bf_ee
+        c_offset = een_coeff_offset + nspin_bf_ee*een_component_block_size + (ee_spin-1)*een_component_block_size
+        do ict=1,nctype
+          if (nspin_bf_ee.eq.2 .and. ee_spin.eq.1) then
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(par)'
+          elseif (nspin_bf_ee.eq.2 .and. ee_spin.eq.2) then
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N(anti)'
+          else
+            write(2,fmt) (parm_bf(c_offset + (ict-1)*ncparm_bf + i),i=1,ncparm_bf),' e-e-N'
+          endif
+        enddo
+      enddo
+
+      write(2,'(''end'')')
       close(2)
 
       return
@@ -1054,6 +1149,7 @@ contains
 
       call compute_lcao(dparm,iadiag)
       call compute_ci(dparm,iadiag)
+      call compute_bf(dparm,iadiag)
 
       return
       end
@@ -1292,6 +1388,33 @@ contains
 
       return
       end
+
+
+      subroutine compute_bf(dparm,iadiag)
+        use m_backflow, only: ibackflow, nparm_bf, parm_bf, cutoff_count
+        use backflow_mod, only: fix_cusp, init_cusp
+        use optwf_control, only: ioptbf, ibf_opt_cutoff
+        use precision_kinds, only: dp
+        use optorb_cblock, only: norbterm
+         use optwf_parms, only: nparmj, nparmd
+        implicit none
+        integer :: i, iadiag, bf_first
+        real(dp), dimension(*) :: dparm
+
+        if(ioptbf.eq.0) return
+
+        bf_first = 1
+        if (.not. ibf_opt_cutoff) bf_first = cutoff_count + 1
+        do i=bf_first,nparm_bf
+          parm_bf(i)=parm_bf(i)-dparm(i-bf_first+1+nparmj+nparmd+norbterm)
+        enddo
+
+        ! Rebuild cusp constraint matrix since cutoff may have changed
+        call init_cusp()
+        call fix_cusp()
+        return
+      end
+
 !-----------------------------------------------------------------------
       subroutine check_parms_jas(k,iflag)
 
@@ -1434,12 +1557,13 @@ contains
 !-----------------------------------------------------------------------
       subroutine set_nparms_tot
 
-      use optwf_control, only: ioptci, ioptjas, ioptorb, nparm
+      use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf, nparm
       use optwf_parms, only: nparmd, nparmj
       use optorb_cblock, only: norbterm
       use ci000, only: nciterm
       use optwf_control, only: method
       use contrl_file,    only: ounit
+      use m_backflow, only: nparm_bf_opt
       implicit none
 
       integer :: i0
@@ -1449,7 +1573,7 @@ contains
       if(method.eq.'sr_n') then
 
         nparmd=max(nciterm-1,0)
-        nparm=nparmj+nparmd+norbterm
+        nparm=nparmj+nparmd+norbterm+nparm_bf_opt
 
       elseif(method.eq.'linear'.or.method.eq.'lin_d' .or. method.eq.'mix_n') then
 
@@ -1471,6 +1595,7 @@ contains
       write(ounit,'(3x,a,t18,a,i11)')    'Jastrow',  ':', nparmj
       write(ounit,'(3x,a,t18,a,i11)')    'CI',       ':', nciterm
       write(ounit,'(3x,a,t18,a,i11)')    'Orbitals', ':', norbterm
+      write(ounit,'(3x,a,t18,a,i11)')    'Backflow', ':', nparm_bf_opt
       write(ounit,'(1x,a)')              '------------------------------'
       write(ounit,'(3x,a,t18,a,i11)')    'Total',    ':', nparm
       write(ounit,'(1x,a)')              '------------------------------'
@@ -1485,7 +1610,7 @@ contains
       use optwf_parms, only: nparmj
       use csfs, only: maxcsf,nstates
       use derivjas, only: gvalue
-      use optwf_control, only: ioptci, ioptjas, ioptorb
+      use optwf_control, only: ioptci, ioptjas, ioptorb, ioptbf, ibf_opt_cutoff
       use optwf_func, only: ifunc_omega
       use optwf_parms, only: nparmj
       use sr_mat_n, only: elocal, nconf_n, sr_ho, ortho
@@ -1504,6 +1629,7 @@ contains
       use vmc_mod, only: nwftypeorb, nwftypejas, stoj, stoo
       use contrl_file, only: ounit
       use control_vmc, only: vmc_nstep, vmc_nblk_max
+      use m_backflow, only: nparm_bf_opt, cutoff_count, deriv_parm_bf
 
       implicit none
 
@@ -1517,7 +1643,7 @@ contains
 
       if(iforce_analy.gt.0.and.izvzb.eq.1) call force_store(l)
 
-      if((method.ne.'sr_n').and.(method.ne.'lin_d').or.(ioptjas+ioptorb+ioptci.eq.0))return
+      if((method.ne.'sr_n').and.(method.ne.'lin_d').or.(ioptjas+ioptorb+ioptci+ioptbf.eq.0))return
 
       i0=1
       if(method.eq.'lin_d'.and.ioptjas+ioptorb.eq.0) i0=0
@@ -1546,8 +1672,19 @@ contains
           wtg(l,istate)=wt(istate)
 
           ii=ijasci+norbterm
+          if (nparm_bf_opt /= 0) then
+            if (ibf_opt_cutoff) then
+              call dcopy(nparm_bf_opt,deriv_parm_bf(1),1,sr_o(ii+1,l,istate),1)
+            else
+              call dcopy(nparm_bf_opt,deriv_parm_bf(cutoff_count+1),1,sr_o(ii+1,l,istate),1)
+            endif
+          endif
+
+          ii=ijasci+norbterm+nparm_bf_opt
           sr_o(ii+1,l,istate)=psid(istate)
           sr_o(ii+2,l,istate)=wt_sqrt(istate)
+
+
         enddo
       else !for lin_d or sr_n (in mix_n)
         if(nparmj /= 0) call dcopy(nparmj,gvalue(1,1),1,sr_o(1,l,1),1)

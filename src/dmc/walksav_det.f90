@@ -13,6 +13,7 @@ module walksav_det_mod
       use system,  only: ndn,nelec,nup
       use vmc_mod, only: MEXCIT,nmat_dim,norb_tot
       use ycompact, only: ymat
+      use m_backflow, only: dslm, ibackflow
       implicit none
 
       integer,  allocatable, save :: krefw(:)
@@ -26,6 +27,7 @@ module walksav_det_mod
       real(dp), allocatable, save :: ymatw(:,:,:,:,:)
       real(dp), allocatable, save :: orbw(:,:,:)
       real(dp), allocatable, save :: dorbw(:,:,:,:)
+      real(dp), allocatable, save :: dslmw(:,:,:,:)
 
 contains
       subroutine walksav_det(iw)
@@ -39,9 +41,12 @@ contains
 
       if(.not.allocated(aaw))    allocate(aaw(nelec,norb_tot,mwalk,2))
       if(.not.allocated(wfmatw)) allocate(wfmatw(ndet,MEXCIT**2,mwalk,2))
-      if(.not.allocated(ymatw))  allocate(ymatw(norb_tot,nelec,mwalk,2,MSTATES))
-      if(.not.allocated(orbw))   allocate(orbw(nelec,norb_tot,mwalk))
-      if(.not.allocated(dorbw))  allocate(dorbw(norb,nelec,3,mwalk))
+      if(.not.allocated(ymatw)) allocate(ymatw(norb_tot,nelec,mwalk,2,MSTATES))
+      if(.not.allocated(orbw)) allocate(orbw(nelec,norb_tot,mwalk))
+      if(.not.allocated(dorbw)) allocate(dorbw(norb,nelec,3,mwalk))
+      if (ibackflow .gt. 0) then
+        if(.not.allocated(dslmw)) allocate(dslmw(3, nmat_dim,2,mwalk))
+      endif
 
       if(.not.allocated(krefw))  allocate(krefw(mwalk))
       if(.not.allocated(slmuiw)) allocate(slmuiw(nmat_dim,mwalk))
@@ -87,6 +92,9 @@ contains
 
        orbw(1:nelec,1:norb,iw)=orb(1:nelec,1:norb,1)
        dorbw(1:norb,1:nelec,1:3,iw)=dorb(1:norb,1:nelec,1:3,1)
+        if (ibackflow .gt. 0) then
+          dslmw(1:3,1:nup*nup,1:2,iw)=dslm(1:3,1:nup*nup,1:2,1)
+        endif
 
       end subroutine walksav_det
 
@@ -135,6 +143,9 @@ contains
 
        orb(1:nelec,1:norb,1)=orbw(1:nelec,1:norb,iw)
        dorb(1:norb,1:nelec,1:3,1)=dorbw(1:norb,1:nelec,1:3,iw)
+      if (ibackflow .gt. 0) then
+        dslm(1:3,1:nup*nup,1:2,1)=dslmw(1:3,1:nup*nup,1:2,iw)
+      endif
 
       end subroutine walkstrdet
 
@@ -183,6 +194,9 @@ contains
 
        orbw(1:nelec,1:norb,iw2)=orbw(1:nelec,1:norb,iw)
        dorbw(1:norb,1:nelec,1:3,iw2)=dorbw(1:norb,1:nelec,1:3,iw)
+      if (ibackflow .gt. 0) then
+        dslmw(1:3,1:nup*nup,1:2,iw2)=dslmw(1:3,1:nup*nup,1:2,iw)
+      endif
 
       end subroutine splitjdet
 
@@ -239,6 +253,14 @@ contains
         ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
       call mpi_isend(dorbw(1,1,1,nwalk),3*nelec*norb,mpi_double_precision &
         ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
+      if (ibackflow .gt. 0) then
+        call mpi_isend(dslmw(1,1,1,nwalk),3*nmat_dim*2,mpi_double_precision &
+          ,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
+        itag=itag+3
+      else
+        itag=itag+2
+      endif
+
 
       end subroutine send_det
 
@@ -296,6 +318,13 @@ contains
         ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(dorbw(1,1,1,nwalk),3*nelec*norb,mpi_double_precision &
         ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
+      if (ibackflow .gt. 0) then
+        call mpi_recv(dslmw(1,1,1,nwalk),3*nmat_dim*2,mpi_double_precision &
+          ,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
+        itag=itag+3
+      else
+        itag=itag+2
+      endif
 
       end subroutine recv_det
 end module walksav_det_mod

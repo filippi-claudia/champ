@@ -919,6 +919,140 @@ subroutine read_jastrow_file(file_jastrow)
 
 end subroutine read_jastrow_file
 
+!> This subroutine reads backflow parameters from a text file.
+!>@author Emiel Slootman
+subroutine read_backflow_file(file_backflow)
+    use m_backflow, only: ibackflow, norda_bf, nordb_bf, nspin_bf_ee, nordc_bf, nparm_bf, cutoff_scale, parm_bf, ncparm_bf, cutoff_b_offset, cutoff_a_offset, cutoff_c_offset, ee_coeff_offset, en_coeff_offset, een_coeff_offset, ee_coeff_block_size, en_coeff_block_size, een_component_block_size, en_coeff_active
+      use contrl_file, only: errunit,ounit
+      use custom_broadcast, only: bcast
+      use mpiconf, only: wid
+      use precision_kinds, only: dp
+      use backflow_mod, only: init_backflow, init_cusp, fix_cusp
+      use system, only: nctype
+
+    implicit none
+
+    !   local use
+    character(len=72), intent(in)   :: file_backflow
+    character(len=40)               :: temp1
+    character(len=256)              :: bf_order_line
+    character(len=256)              :: bf_cutoff_line
+    integer                         :: iunit, iostat, i, ict, l, m, n
+    integer                         :: nspin_file, nparm_file, ee_spin
+    integer                         :: c_offset
+    logical                         :: exist
+
+    !   Formatting
+    character(len=100)               :: string_format  = '(A, T60, A)'
+
+    !   External file reading
+    write(ounit,*) '---------------------------------------------------------------------------'
+    write(ounit,string_format)  " Reading backflow parameters from the file :: ",  trim(file_backflow)
+    write(ounit,*) '---------------------------------------------------------------------------'
+
+    if (wid) then
+        inquire(file=file_backflow, exist=exist)
+        if (exist) then
+            open (newunit=iunit,file=file_backflow, iostat=iostat, action='read' )
+            if (iostat .ne. 0) call fatal_error("Problem in opening the backflow file")
+        else
+            call fatal_error (" Backflow file "// trim(file_backflow) // " does not exist.")
+        endif
+    endif
+
+    if (wid) then
+        read (iunit, *) temp1, ibackflow
+        read (iunit, '(A)') bf_order_line
+        nspin_file = 1
+        nparm_file = 0
+        read (bf_order_line, *, iostat=iostat) norda_bf, nordb_bf, nordc_bf, nparm_file, nspin_file
+        if (iostat /= 0) then
+            read (bf_order_line, *, iostat=iostat) norda_bf, nordb_bf, nordc_bf, nparm_file
+            if (iostat /= 0) then
+                read (bf_order_line, *) norda_bf, nordb_bf, nordc_bf
+            endif
+        endif
+        if (nspin_file /= 2) nspin_file = 1
+        read (iunit, *) cutoff_scale
+    endif
+    call bcast(ibackflow)
+    call bcast(norda_bf)
+    call bcast(nordb_bf)
+    call bcast(nordc_bf)
+    call bcast(nspin_file)
+    call bcast(cutoff_scale)
+
+    if (nordb_bf.gt.0) then
+        nspin_bf_ee = nspin_file
+    else
+        nspin_bf_ee = 1
+    endif
+
+    write(ounit,'(A,i2,A,i2,A,i2,A)') " Found ", norda_bf, " a order, ", nordb_bf, " b order, ", nordc_bf, " c order for backflow. "
+
+    call init_backflow(1)
+
+    if (wid) then
+        if (norda_bf.gt.0) then
+            read(iunit, '(A)') bf_cutoff_line
+            if (index(bf_cutoff_line, 'cutoff-a') .eq. 0) then
+                call fatal_error('Expected cutoff-a line in backflow file')
+            endif
+            read(bf_cutoff_line, *) (parm_bf(cutoff_a_offset + i - 1), i=1,nctype)
+        endif
+        if (nordb_bf.gt.0) then
+            read(iunit, '(A)') bf_cutoff_line
+            if (index(bf_cutoff_line, 'cutoff-b') .eq. 0) then
+                call fatal_error('Expected cutoff-b line in backflow file')
+            endif
+            read(bf_cutoff_line, *) parm_bf(cutoff_b_offset)
+        endif
+        if (nordc_bf.gt.0) then
+            read(iunit, '(A)') bf_cutoff_line
+            if (index(bf_cutoff_line, 'cutoff-c') .eq. 0) then
+                call fatal_error('Expected cutoff-c line in backflow file')
+            endif
+            read(bf_cutoff_line, *) (parm_bf(cutoff_c_offset + i - 1), i=1,nctype)
+        endif
+
+        do ict = 1, nctype
+            read(iunit, *) (parm_bf(en_coeff_offset + (ict-1)*(norda_bf+1)*en_coeff_active + i), i=1,norda_bf+1)
+        end do
+        read(iunit, *) (parm_bf(ee_coeff_offset + i), i=1, nordb_bf+1)
+        if (nordb_bf.gt.0 .and. nspin_bf_ee.eq.2) then
+            if (nspin_file.eq.2) then
+                read(iunit, *) (parm_bf(ee_coeff_offset + ee_coeff_block_size + i), i=1, nordb_bf+1)
+            else
+                do i = 1, nordb_bf+1
+                    parm_bf(ee_coeff_offset + ee_coeff_block_size + i) = parm_bf(ee_coeff_offset + i)
+                end do
+            endif
+        endif
+        if (nordc_bf .gt. 0) then
+            do ee_spin = 1, nspin_bf_ee
+                c_offset = een_coeff_offset + (ee_spin-1)*een_component_block_size
+                do ict = 1, nctype
+                    read(iunit, *) (parm_bf(c_offset + (ict-1)*ncparm_bf + i), i=1,ncparm_bf)
+                end do
+            end do
+            do ee_spin = 1, nspin_bf_ee
+                c_offset = een_coeff_offset + nspin_bf_ee*een_component_block_size + (ee_spin-1)*een_component_block_size
+                do ict = 1, nctype
+                    read(iunit, *) (parm_bf(c_offset + (ict-1)*ncparm_bf + i), i=1,ncparm_bf)
+                end do
+            end do
+        endif
+
+    endif
+    call bcast(parm_bf)
+
+    call init_cusp()
+    call fix_cusp()
+
+    if (wid) close(iunit)
+
+end subroutine read_backflow_file
+
 !> This subroutine reads the LCAO orbitals from a text file.
 !> @author Ravindra Shinde
 !> @author Stu Shepard
@@ -1104,6 +1238,7 @@ subroutine read_orbitals_file(file_orbitals)
         endif
       else
         otos(1,1)=1
+        read (iunit, *, iostat=iostat) temp1
       endif
       do iorb = 1, norb
         !if (wid) then

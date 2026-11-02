@@ -17,7 +17,7 @@ contains
       use multidet, only: kchange,kref_fixed
       use multislater, only: allocate_multislater,detiab
       use optorb_f_mod, only: optorb_define
-      use optwf_control, only: ioptorb
+      use optwf_control, only: ioptorb, ioptbf
       use optwf_handle_wf, only: dcopy
       use orbitals_mod, only: orbitals
       use orbval,  only: ddorb,dorb,nadorb,orb
@@ -26,78 +26,226 @@ contains
       use slater,  only: d2dx2,ddx,kref,ndet,norb,slmi
       use system,  only: ncent_tot,ndn,nelec,nup
       use vmc_mod, only: nmat_dim, norb_tot, nwftypeorb
+      use m_backflow, only: quasi_x, dquasi_dx, d2quasi_dx2, ibackflow, rvec_en_bf, r_en_bf
+      use m_backflow, only: dslm, d2slm, d2orb, deriv_parm_bf, nparm_bf, dquasi_dp
+      use backflow_mod, only: backflow
 
       implicit none
 
       integer, parameter :: max_ref_checks = 10
-      integer :: i, iab, icheck, ii, ik
-      integer :: index, ipass, ish, j, k
+      integer :: i, iab, icheck, ii, ik, p
+      integer :: index, ipass, ish, j, k, l, kk, jj, m, n
       integer :: jk, jorb, nel, spin_to_change
-      real(dp), dimension(3, *) :: x
+      real(dp) :: tmp
+      real(dp), dimension(3, nelec) :: x
       real(dp), dimension(3, nelec, ncent_tot) :: rvec_en
       real(dp), dimension(nelec, ncent_tot) :: r_en
       real(dp), dimension(3, nmat_dim, 2, nwftypeorb) :: fp
       real(dp), dimension(nmat_dim, 2, nwftypeorb) :: fpp
+      real(dp), allocatable :: tmp1(:,:,:), tmp2_diag(:,:,:)
 
 ! Compute orbital values and derivatives.
-      call orbitals(x,rvec_en,r_en)
+      if (ibackflow .gt. 0) then
+          call backflow(x)
+          call orbitals(quasi_x, rvec_en_bf, r_en_bf)
+          ddx = 0.0d0
+          d2dx2 = 0.0d0
+          if (ioptbf.gt.0) then
+            deriv_parm_bf = 0.0d0
+          endif
+      else
+          call orbitals(x,rvec_en,r_en)
+      endif
 
       kchange=0
       icheck=0
       10 continue
       call allocate_multislater()
 
+
+
+  if (ibackflow.gt.0) then
+
+
       do iab=1,2
 
-         if(iab.eq.1) then
-            ish=0
-            nel=nup
-         else
-            ish=nup
-            nel=ndn
-         endif
+        if(iab.eq.1) then
+          ish=0
+          nel=nup
+        else
+          ish=nup
+          nel=ndn
+        endif
 
-         do k=1,nwftypeorb
-           detiab(kref,iab,k)=1.d0
+        allocate(tmp1(nel, nel,3))
+        allocate(tmp2_diag(nel,3,3))
+        
 
-           jk=-nel
-           do j=1,nel
-             jorb=iworbd(j+ish,kref)
-
-             jk=jk+nel
-
+        do k=1,nwftypeorb
+          detiab(kref,iab,k)=1.d0
+          jk=-nel
+          do j=1,nel
+            jorb=iworbd(j+ish,kref)
+            jk=jk+nel
 ! Build the reference Slater matrix and derivative buffers.
-             call dcopy(nel,orb(1+ish,jorb,k),1,slmi(1+jk,iab,k),1)
-             call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,fp(1,j,iab,k),nel*3)
-             call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,fp(2,j,iab,k),nel*3)
-             call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,fp(3,j,iab,k),nel*3)
-             call dcopy(nel,ddorb(jorb,1+ish,k),norb_tot,fpp(j,iab,k),nel)
-           enddo
+            call dcopy(nel,orb(1+ish,jorb,k),1,slmi(1+jk,iab,k),1)
+            call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,dslm(1,1+jk,iab,k),3)
+            call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,dslm(2,1+jk,iab,k),3)
+            call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,dslm(3,1+jk,iab,k),3)
+            do kk=1,3
+              do jj=1,3
+                call dcopy(nel,d2orb(kk,jj,jorb,1+ish,k),3*3*norb_tot,d2slm (kk,jj,1+jk,iab,k),3*3)
+              enddo 
+            enddo
+          enddo
 
 ! Invert the reference Slater matrix in place and save its determinant.
 ! After matinv, slmi holds the inverse matrix for this spin/orbital set.
-           if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
+          if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
+
+
+          tmp1=0.0d0
+          tmp2_diag=0.0d0
+          do kk = 1,3
+            do l = 1, nel
+              do j = 1, nel
+                do m = 1, nel
+                  ! B7 in Kwon
+                  tmp1(j,m,kk) = tmp1(j,m,kk) + slmi((j-1)*nel+l,iab,k) * dslm(kk,(l-1)*nel+m,iab,k) 
+                enddo
+              enddo
+            enddo
+          enddo
+          do jj = 1,3
+            do kk = 1,3
+              do l = 1, nel
+                do j = 1, nel
+                  ! Only the diagonal tmp2(j,j,kk,jj) contributes downstream
+                  tmp2_diag(j,kk,jj) = tmp2_diag(j,kk,jj) + slmi((j-1)*nel+l,iab,k) * d2slm(kk,jj,(l-1)*nel+j,iab,k)
+                enddo
+              enddo
+            enddo
+          enddo
+
+          if (ioptbf.gt.0) then
+            do p =1,nparm_bf
+              do j=1,nel
+                do kk=1,3
+                  deriv_parm_bf(p)=deriv_parm_bf(p) + tmp1(j,j,kk) * dquasi_dp(kk,j+ish,p)
+                enddo
+              enddo
+            enddo
+          endif
+
+          do i=1,nelec
+            do j=1,nel
+              do kk=1,3
+                do jj=1,3
+                  ddx(kk,i,k)=ddx(kk,i,k)+tmp1(j,j,jj)*dquasi_dx(jj,j+ish,kk,i)
+                enddo
+              enddo
+            enddo
+          enddo
+
+
+          do i = 1, nelec
+            do ii = 1,3
+              do kk = 1,3
+                do jj = 1,3
+                  do m = 1, nel
+                    do j = 1, nel
+                      d2dx2(i,k) = d2dx2(i,k) - tmp1(j,m,kk) * tmp1(m,j,jj) * dquasi_dx(kk,m+ish,ii,i) * dquasi_dx(jj,j+ish,ii,i)
+                    enddo
+                  enddo
+                end do
+              end do
+            end do
+          end do
+          do i=1,nelec
+            do j=1,nel
+              do kk=1,3
+                do ii=1,3
+                  do jj=1,3
+                    d2dx2(i,k)=d2dx2(i,k) + tmp2_diag(j,ii,jj) * dquasi_dx(ii,j+ish,kk,i) * dquasi_dx(jj,j+ish,kk,i)
+                  enddo
+                enddo
+              enddo
+            enddo
+          enddo
+          do i=1,nelec
+            do j=1,nel
+              do kk=1,3
+                d2dx2(i,k) = d2dx2(i,k) + tmp1(j,j,kk) * d2quasi_dx2(kk,j+ish,i)
+              enddo
+            enddo
+          enddo
+        enddo
+        deallocate(tmp1,tmp2_diag)
+      enddo
+
+
+
+      do k=1,nwftypeorb
+        do i=1,nelec
+          d2dx2(i,k)=d2dx2(i,k)+&
+          ddx(1,i,k)*ddx(1,i,k)+&
+          ddx(2,i,k)*ddx(2,i,k)+&
+          ddx(3,i,k)*ddx(3,i,k)
+        enddo
+      enddo
+
+
+
+  else
+      do iab=1,2
+
+        if(iab.eq.1) then
+          ish=0
+          nel=nup
+        else
+          ish=nup
+          nel=ndn
+        endif
+
+        call allocate_multislater() ! properly accessing array elements
+
+        do k=1,nwftypeorb
+          detiab(kref,iab,k)=1.d0
+
+          jk=-nel
+          do j=1,nel
+            jorb=iworbd(j+ish,kref)
+
+            jk=jk+nel
+! Build the reference Slater matrix and derivative buffers.
+            call dcopy(nel,orb(1+ish,jorb,k),1,slmi(1+jk,iab,k),1)
+            call dcopy(nel,dorb(jorb,1+ish,1,k),norb_tot,fp(1,j,iab,k),nel*3)
+            call dcopy(nel,dorb(jorb,1+ish,2,k),norb_tot,fp(2,j,iab,k),nel*3)
+            call dcopy(nel,dorb(jorb,1+ish,3,k),norb_tot,fp(3,j,iab,k),nel*3)
+            call dcopy(nel,ddorb (jorb,1+ish,k),norb_tot,fpp(j,iab,k),nel)
+          enddo
+
+! Invert the reference Slater matrix in place and save its determinant.
+! After matinv, slmi holds the inverse matrix for this spin/orbital set.
+          if(nel.gt.0) call matinv(slmi(1,iab,k),nel,detiab(kref,iab,k))
 
 ! Contract the inverse matrix with the orbital derivative buffers to get
 ! grad(det)/det and laplacian(det)/det for each electron.
-           ik=-nel
-           do i=1,nel
-             ik=ik+nel
-             ddx(1,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(1,1+ik,iab,k),3)
-             ddx(2,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(2,1+ik,iab,k),3)
-             ddx(3,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(3,1+ik,iab,k),3)
-             d2dx2(i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fpp(1+ik,iab,k),1)
-           enddo
-
-           if(ipr.ge.4) then
-             ik=-nel
-             do i=1,nel
-               ik=ik+nel
-               write(ounit,*) 'slmi',iab,'M',(slmi(ii+ik,iab,k),ii=1,nel)
-             enddo
-           endif
-         enddo
+          ik=-nel
+          do i=1,nel
+            ik=ik+nel
+            ddx(1,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(1,1+ik,iab,k),3)
+            ddx(2,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(2,1+ik,iab,k),3)
+            ddx(3,i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fp(3,1+ik,iab,k),3)
+            d2dx2(i+ish,k)=ddot(nel,slmi(1+ik,iab,k),1,fpp(1+ik,iab,k),1)
+          enddo
+        enddo
       enddo
+
+  endif
+
+          
+
 
       if(ipr.ge.4) then
         do k=1,nwftypeorb

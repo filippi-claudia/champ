@@ -22,6 +22,7 @@ contains
       use system, only: nelec
       use velocity_jastrow, only: vjn
       use vmc_mod, only: nwftypejas, stoo
+      use m_backflow, only: ibackflow
 
       implicit none
 
@@ -45,14 +46,16 @@ contains
 
       call determinante(iel,coord,rvec_en,r_en,iflag)
 
-      icheck=0
-      do istate=1,nstates
-        if(detn(kref,stoo(istate)).eq.0.d0) then
-          psid(istate)=0.d0
-          icheck=1
-        endif
-      enddo
-      if(icheck.eq.1) return
+      if (ibackflow.eq.0) then
+        icheck=0
+        do istate=1,nstates
+          if(detn(kref,stoo(istate)).eq.0.d0) then
+            psid(istate)=0.d0
+            icheck=1
+          endif
+        enddo
+        if(icheck.eq.1) return
+      endif
 
       call multideterminante(iel)
 
