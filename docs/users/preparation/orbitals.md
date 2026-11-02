@@ -37,6 +37,7 @@ Molecular orbital files (`.lcao` or `.orb` extension) are stored in the `pool/` 
 
 ```python
 lcao  226 200  1
+orbitals_to_states 1  1
  -5.234567e-01  4.123456e-02  1.987654e-03  ... (226 coefficients for MO 1)
   3.456789e-02 -2.345678e-01  5.678901e-02  ... (226 coefficients for MO 2)
   ... (remaining 198 rows of coefficients)

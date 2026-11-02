@@ -1239,6 +1239,15 @@ subroutine parser
     call init_backflow(0)
   endif
 
+  if (ibackflow.gt.0) then
+    if (iforce_analy.gt.0 .or. nforce.gt.1) &
+      call fatal_error('Backflow is not implemented for force calculations.')
+    if (nstates.gt.1) &
+      call fatal_error('Backflow is not implemented for multiple states.')
+    if (ndet.gt.1) &
+      call fatal_error('Backflow is not implemented for multiple Slater determinants.')
+  endif
+
   call elapsed_time ("Reading Backflow file : ")
 
   ! Know the number of orbitals for optimization.

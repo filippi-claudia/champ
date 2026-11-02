@@ -71,6 +71,7 @@ nav = [
       {"Effective Core Potentials" = "preparation/ecp.md"},
       {"Jastrow Factors" = "preparation/jastrow.md"},
       {"Jastrow Derivatives" = "preparation/jastrow_derivatives.md"},
+      {"Backflow Transformations" = "preparation/backflow.md"},
       {"Basis Sets" = "preparation/basis.md"},
       {"Basis Set Pointers" = "preparation/basis_pointers.md"},
       {"Molecular Orbitals" = "preparation/orbitals.md"},
