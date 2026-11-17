@@ -12,17 +12,13 @@ module optwf_handle_wf
       end interface
 contains
 !-----------------------------------------------------------------------
-      subroutine write_wf(iwf_fit,iter)
+!> Pass the current orbital and Jastrow parameters to the QMCkl contexts.
+!> Must be called whenever the parameters change before a new sampling.
+      subroutine update_qmckl_wf
 
-      use mpi
-      use mpiconf, only: idtask
-      use contrl_file, only: ounit
       use optwf_control,      only: ioptorb, ioptjas
-#if defined(HDF5_FOUND)
-      use vmc_store_hdf5_mod, only: vmc_store_hdf5
-#endif
 
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
       use trexio_read_data, only: update_trexio_orbitals, jastrow_update_qmckl
       use orbitals_qmckl_mod, only: orbitals_init_qmckl
@@ -31,10 +27,7 @@ contains
 
       implicit none
 
-      integer :: iter, iwf_fit
-      character(len=80) filetype,wf,itn
-
-#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       if(ioptorb.ne.0.and.use_qmckl_orbitals) then
         call update_trexio_orbitals
         call orbitals_init_qmckl(.False.)
@@ -44,6 +37,25 @@ contains
         call jastrow_init_qmckl(qmckl_no_ctx)
       endif
 #endif
+
+      return
+      end
+!-----------------------------------------------------------------------
+      subroutine write_wf(iwf_fit,iter)
+
+      use mpi
+      use mpiconf, only: idtask
+      use contrl_file, only: ounit
+#if defined(HDF5_FOUND)
+      use vmc_store_hdf5_mod, only: vmc_store_hdf5
+#endif
+
+      implicit none
+
+      integer :: iter, iwf_fit
+      character(len=80) filetype,wf,itn
+
+      call update_qmckl_wf
 
       if(iter.lt.0) then
 !        wf is only filled in the else branch below; format it here too,
