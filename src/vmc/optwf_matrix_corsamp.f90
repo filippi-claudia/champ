@@ -30,6 +30,9 @@ contains
       use precision_kinds, only: dp
       use read_bas_num_mod, only: read_bas_num
       use set_input_data, only: set_displace_zero
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      use orbitals_qmckl_mod, only: orbitals_qmckl_corsamp_sync
+#endif
 
 !     use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
 
@@ -278,6 +281,11 @@ contains
        nblk_sav=vmc_nblk
        vmc_nblk=max(2,vmc_nblk/2)
 !      vmc_nblk=max(2,vmc_nblk/10)
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+! QMCkl orbital contexts must hold the trial orbitals coef(:,:,1:3) and their cusp fits
+       if(ioptorb_sav.ne.0) call orbitals_qmckl_corsamp_sync(nwftype)
+#endif
 
        call qmc
 

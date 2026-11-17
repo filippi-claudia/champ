@@ -9,6 +9,7 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
     use slater, only: norb
     use system, only: ncent_tot, nelec
     use m_backflow, only: ibackflow, d2orb
+    use multiple_geo, only: iwf, nforce
 
     use const
     use qmckl_data
@@ -18,6 +19,7 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
     real(dp), allocatable :: mo_vgl_qmckl(:,:,:)
     real(dp), allocatable :: mo_hessian_qmckl(:,:,:,:)
     integer :: rc, ictx
+    integer(qmckl_context) :: ctx
     integer*8 :: n8
     real(dp), dimension(3,nelec) :: xqmckl
     real(dp), dimension(3,nelec) :: xelec
@@ -39,10 +41,13 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
     else
         ictx = qmckl_no_ctx
     end if
+    ctx = qmckl_ctx(ictx)
 
-    
+    ! Trial wave functions of the correlated-sampling test run have their own contexts
+    if (use_qmckl_orbitals_corsamp.and.nforce.gt.1.and.iwf.gt.1) ctx = qmckl_ctx_wf(iwf)
+
     ! get number MO's
-    rc = qmckl_get_mo_basis_mo_num(qmckl_ctx(ictx), n8)
+    rc = qmckl_get_mo_basis_mo_num(ctx, n8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting mo_num from QMCkl'
         stop
@@ -50,14 +55,14 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
 
     allocate(mo_vgl_qmckl(n8, 5, nelec))
     ! Send electron coordinates to QMCkl to compute the MOs at these positions
-    rc = qmckl_set_point(qmckl_ctx(ictx), 'N', nelec*1_8, x, nelec*3_8)
+    rc = qmckl_set_point(ctx, 'N', nelec*1_8, x, nelec*3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error setting electron coordinates in QMCkl'
         stop
     end if
 
     ! Compute the MOs
-    rc = qmckl_get_mo_basis_mo_vgl_inplace(qmckl_ctx(ictx), mo_vgl_qmckl, n8*nelec*5_8)
+    rc = qmckl_get_mo_basis_mo_vgl_inplace(ctx, mo_vgl_qmckl, n8*nelec*5_8)
 
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error getting MOs from QMCkl'
@@ -79,7 +84,7 @@ subroutine orbitals_qmckl(x,rvec_en,r_en)
 
     if (ibackflow.gt.0) then
         allocate(mo_hessian_qmckl(n8, 3, nelec, 3))
-        rc = qmckl_get_mo_basis_mo_hessian(qmckl_ctx(ictx), mo_hessian_qmckl, n8*nelec*9_8)
+        rc = qmckl_get_mo_basis_mo_hessian(ctx, mo_hessian_qmckl, n8*nelec*9_8)
         k=1 ! until state specific orbitals can be used
         do m=1,3
             do i=1,nelec
@@ -521,8 +526,6 @@ subroutine orbitals_init_qmckl(update_coef)
   
     logical                    :: do_nucl_fitcusp
     real(dp), allocatable      :: nucl_fitcusp_radius(:)
-    real(dp), parameter        :: a_cusp = 1.74891d0
-    real(dp), parameter        :: b_cusp = 0.126057d0
     character(len=100)         :: int_format     = '(A, T40, ":: ", T50, I0)'
     character(len=100)         :: array_format   = '(A, "(",I0,")", T40, ":: ", T42, F25.16)'
     logical                    :: update_coef
@@ -595,16 +598,9 @@ subroutine orbitals_init_qmckl(update_coef)
       if(.not. do_nucl_fitcusp) then
          nucl_fitcusp_radius = 0.d0
        else
+        call qmckl_fitcusp_radii(nucl_fitcusp_radius)
         do k=1,ncent
-          nucl_fitcusp_radius(k) = 1.d0/(a_cusp*znuc(iwctype(k))+b_cusp)
           write(ounit, array_format) "Radius fit cusps for atom", k, nucl_fitcusp_radius(k)
-        enddo
-
-        ! Avoid dummy atoms
-        do k=1,ncent
-         if (znuc(iwctype(k)) < 5.d-1) then
-           nucl_fitcusp_radius(k) = 0.d0
-         endif
         enddo
 
         do ictx=1,ictx_lim
@@ -619,9 +615,136 @@ subroutine orbitals_init_qmckl(update_coef)
 
 return
 end
+!------------------------------------------------------------------------------------
+!> Radii of the QMCkl MO nuclear-cusp fit, one per atom; zero for dummy atoms.
+subroutine qmckl_fitcusp_radii(radius)
 
+    use precision_kinds, only: dp
+    use system,  only: ncent, znuc, iwctype
 
+    implicit none
 
+    real(dp), intent(out) :: radius(ncent)
+    real(dp), parameter   :: a_cusp = 1.74891d0
+    real(dp), parameter   :: b_cusp = 0.126057d0
+    integer               :: k
 
+    do k=1,ncent
+      radius(k) = 1.d0/(a_cusp*znuc(iwctype(k))+b_cusp)
+      ! Avoid dummy atoms
+      if (znuc(iwctype(k)) < 5.d-1) radius(k) = 0.d0
+    enddo
+
+return
+end
+!------------------------------------------------------------------------------------
+!> Create one orbital context per trial wave function 2..qmckl_no_wf_corsamp of the
+!> correlated-sampling test run of the linear method (multiple_adiag). Each is a deep
+!> copy of the context used for full orbital evaluations (same MO selection and
+!> cusp radii); its coefficients are set by orbitals_qmckl_corsamp_sync.
+subroutine orbitals_qmckl_corsamp_init
+
+    use contrl_file, only: ounit
+    use error,   only: fatal_error
+    use qmckl_data
+
+    implicit none
+
+    integer :: ictx, k
+
+    if (use_qmckl_jastrow) then
+        ictx = qmckl_no_ctx-1
+    else
+        ictx = qmckl_no_ctx
+    end if
+
+    do k=2,qmckl_no_wf_corsamp
+      qmckl_ctx_wf(k) = qmckl_context_copy(qmckl_ctx(ictx))
+      if (qmckl_ctx_wf(k) == QMCKL_NULL_CONTEXT) &
+        call fatal_error('INPUT: QMCkl error: Unable to copy orbital context for correlated sampling')
+      write(ounit,'(a,i2,a,i20)') " QMCkl orbital context for correlated-sampling wave function", k, " : ", qmckl_ctx_wf(k)
+    enddo
+
+return
+end
+!------------------------------------------------------------------------------------
+!> Load MO coefficients coef(:,:,iwf_coef) into QMCkl context ctx and refit the
+!> nuclear cusp for them. The context keeps its MO selection (the first mo_num MOs).
+subroutine orbitals_qmckl_set_coef(ctx, iwf_coef)
+
+    use coefs,   only: nbasis
+    use error,   only: fatal_error
+    use inputflags, only: scalecoef
+    use precision_kinds, only: dp
+    use pseudo,  only: nloc
+    use slater,  only: coef
+    use system,  only: ncent
+    use qmckl_data
+
+    implicit none
+
+    integer(qmckl_context), intent(in) :: ctx
+    integer, intent(in)                :: iwf_coef
+
+    integer(qmckl_exit_code) :: rc
+    integer*8                :: n8
+    real(dp), allocatable    :: coef_qmckl(:,:)
+    real(dp), allocatable    :: radius(:)
+
+    rc = qmckl_get_mo_basis_mo_num(ctx, n8)
+    if (rc /= QMCKL_SUCCESS) call fatal_error('QMCkl error: getting mo_num for coefficient update')
+
+    ! QMCkl holds the unscaled coefficients of the selected MOs, as in update_trexio_orbitals
+    allocate(coef_qmckl(nbasis, n8))
+    coef_qmckl(:,:) = coef(1:nbasis, 1:n8, iwf_coef)/scalecoef
+    rc = qmckl_set_mo_basis_coefficient(ctx, coef_qmckl, nbasis*n8)
+    if (rc /= QMCKL_SUCCESS) call fatal_error('QMCkl error: setting MO coefficients')
+    deallocate(coef_qmckl)
+
+    ! The cusp-fit parameters depend on the coefficients: setting the radii recomputes them
+    if (nloc.eq.0) then
+      allocate(radius(ncent))
+      call qmckl_fitcusp_radii(radius)
+      rc = qmckl_set_mo_basis_r_cusp(ctx, radius, int(ncent,8))
+      if (rc /= QMCKL_SUCCESS) call fatal_error('QMCkl error: refitting MO cusp parameters')
+      deallocate(radius)
+    endif
+
+return
+end
+!------------------------------------------------------------------------------------
+!> Make the QMCkl orbital contexts hold the current coefficients of wave functions
+!> 1..nwf: coef(:,:,1) in the regular orbital contexts, coef(:,:,k) in qmckl_ctx_wf(k).
+!> Call whenever the coefficients changed without update_trexio_orbitals, before sampling.
+subroutine orbitals_qmckl_corsamp_sync(nwf)
+
+    use error,   only: fatal_error
+    use qmckl_data
+
+    implicit none
+
+    integer, intent(in) :: nwf
+    integer             :: ictx, ictx_lim, k
+
+    if (.not.use_qmckl_orbitals) return
+    if (nwf.gt.1.and..not.use_qmckl_orbitals_corsamp) &
+      call fatal_error('QMCkl error: no orbital contexts for correlated-sampling wave functions')
+    if (nwf.gt.qmckl_no_wf_corsamp) call fatal_error('QMCkl error: too many correlated-sampling wave functions')
+
+    if (use_qmckl_jastrow) then
+        ictx_lim = qmckl_no_ctx-1
+    else
+        ictx_lim = qmckl_no_ctx
+    end if
+
+    do ictx=1,ictx_lim
+      call orbitals_qmckl_set_coef(qmckl_ctx(ictx), 1)
+    enddo
+    do k=2,nwf
+      call orbitals_qmckl_set_coef(qmckl_ctx_wf(k), k)
+    enddo
+
+return
+end
 
 end module
