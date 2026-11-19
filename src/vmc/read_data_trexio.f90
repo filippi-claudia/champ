@@ -13,6 +13,10 @@ module trexio_read_data
 
     character(:), allocatable  :: file_trexio_new, file_trexio_path
 
+#if defined(TREXIO_FOUND)
+    real(dp), allocatable :: trexio_ao_scale(:)
+#endif
+
     private
     public :: dp
 
@@ -31,6 +35,7 @@ module trexio_read_data
     public :: read_trexio_symmetry_file
     public :: read_trexio_orbitals_file
     public :: read_trexio_basis_file
+    public :: normalize_trexio_mo_coefficients
     public :: update_trexio_orbitals
     public :: jastrow_update_qmckl
     public :: read_trexio_determinant_file
@@ -286,7 +291,7 @@ module trexio_read_data
 
     !   local use
         character(len=72), intent(in)   :: file_trexio
-        logical, intent(in), optional   :: build_only_basis
+        logical, intent(in)             :: build_only_basis
         character(len=40)               :: temp1, temp2
         character(len=120)              :: temp3, file_trexio_path
         integer                         :: iunit, iostat, iwft
@@ -369,6 +374,32 @@ module trexio_read_data
             if (.not. allocated(coef)) allocate (coef(nbasis, norb_tot, nwftype))
         endif
 
+        if (.not. build_only_basis) then
+            if (wid) then
+                trexio_has_group_orbitals = trexio_has_mo(trex_orbitals_file) == TREXIO_SUCCESS
+                rc = trexio_read_mo_coefficient(trex_orbitals_file, coef(:,:,1))
+                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_coeffs', __FILE__, __LINE__)
+                rc = trexio_close(trex_orbitals_file)
+                call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close', __FILE__, __LINE__)
+            endif
+            call bcast(trexio_has_group_orbitals)
+            call bcast(coef(:,:,1))
+            if (method == 'sr_n') then
+                do i=2,nstates
+                    coef(:,:,i)=coef(:,:,1)
+                enddo
+            endif
+
+            write(ounit,int_format) " Number of basis functions ", nbasis
+            write(ounit,int_format) " Number of lcao orbitals ", norb
+            write(ounit,int_format) " Type of wave functions ", iwft
+            write(ounit,*) "Orbital coefficients are written to the output.log file"
+            write(ounit,*)
+            ilcao = ilcao + 1
+            write(ounit,*) "----------------------------------------------------------"
+            return
+        endif
+
         ! Do the allocations based on the number of shells and primitives
         if (.not. allocated(basis_nucleus_index))    allocate(basis_nucleus_index(basis_num_shell))
         if (.not. allocated(basis_shell_ang_mom))    allocate(basis_shell_ang_mom(basis_num_shell))
@@ -376,26 +407,6 @@ module trexio_read_data
         if (.not. allocated(index_slm))              allocate(index_slm(nbasis))
         if (.not. allocated(num_rad_per_cent))       allocate(num_rad_per_cent(ncent_tot))
         if (.not. allocated(num_ao_per_cent))        allocate(num_ao_per_cent(ncent_tot))
-
-        if (.not. build_only_basis) then
-        ! Read the orbitals
-        if (wid) then
-            if (trexio_has_mo(trex_orbitals_file) == 0) trexio_has_group_orbitals = .true.
-            rc = trexio_read_mo_coefficient(trex_orbitals_file, coef(:,:,1))
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_mo_coeffs', __FILE__, __LINE__)
-        endif
-        call bcast(trexio_has_group_orbitals)
-        call bcast(coef(:,:,1))
-        endif
-
-        ! Make a copy of orbital coeffs for multiple states
-        if (.not. build_only_basis) then
-            if( (method == 'sr_n') .and. (nstates .gt. 1)) then
-                do i=2,nstates
-                  coef(:,:,i)=coef(:,:,1)
-                enddo
-            endif
-        endif
 
 !   Generate the basis information (which radial to be read for which Slm)
         if (wid) then
@@ -406,14 +417,6 @@ module trexio_read_data
         endif
         call bcast(basis_shell_ang_mom)
         call bcast(basis_nucleus_index)
-
-!         if (wid) then
-! #if defined(TREXIO_FOUND)
-!             rc = trexio_close(trex_orbitals_file)
-!             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close trex_orbital_file', __FILE__, __LINE__)
-! #endif
-!         endif
-
 
         numr = 1            ! Debug Check this statement. Not sure how to store multiple bfinfo files in single trexio
 
@@ -528,18 +531,9 @@ module trexio_read_data
         if (allocated(unique_index)) deallocate(unique_index)
         if (allocated(res)) deallocate(res)
 
-        if (.not. build_only_basis) then
-        write(ounit,int_format) " Number of basis functions ", nbasis
-        write(ounit,int_format) " Number of lcao orbitals ", norb
-        write(ounit,int_format) " Type of wave functions ", iwft
-        write(ounit,*) "Orbital coefficients are written to the output.log file"
-
-
-
-
-        write(ounit,*)
-        ilcao = ilcao + 1
-        write(ounit,*) "----------------------------------------------------------"
+        if (wid) then
+            rc = trexio_close(trex_orbitals_file)
+            call trexio_error(rc, TREXIO_SUCCESS, 'trexio_close', __FILE__, __LINE__)
         endif
 
     end subroutine read_trexio_orbitals_file
@@ -741,46 +735,35 @@ module trexio_read_data
     end subroutine
 
 
-    subroutine read_trexio_basis_file(file_trexio)
+    subroutine read_trexio_basis_file(file_trexio, layout_only, use_input_layout)
         !> This subroutine reads the .hdf5 trexio generated file/folder.
         !! It reads the exponents, coefficients, number of basis functions,
         !! shell angular momentum, and number of shells.
         !! @author Ravindra Shinde (r.l.shinde@utwente.nl)
         !! @date 23 May 2022
-        use custom_broadcast,   only: bcast
-        use mpiconf,            only: wid
-        use periodic_table,     only: atom_t, element
-        use contrl_file,        only: ounit, errunit
-        use general,            only: pooldir
-
-        ! The following to be used to store the information
-        use numbas_mod,         only: MRWF, MRWF_PTS
-        use system,             only: znuc, nctype, nctype_tot, ncent_tot
-        use system,             only: symbol, atomtyp
-        use vmc_mod,            only: NCOEF
-        use system,             only: newghostype
-        use control,            only: ipr
-        use numbas,             only: arg, d2rwf, igrid, nr, nrbas, r0, rwf, rmaxwf
-        use numbas,             only: allocate_numbas
+        use basis,              only: ns, np, nd, nf, ng
         use coefs,              only: nbasis
-        use numexp,             only: ae, ce, allocate_numexp
-        use pseudo,             only: nloc
-        use general,            only: filename, filenames_bas_num
-        use periodic,           only: cutr,n_images,n_images0
-        use read_bas_num_mod,   only: smooth
-
-        ! For processing the stored information
-        use system,             only: atomtyp
-        use general,            only: pooldir, bas_id
-        use contrl_file,        only: ounit, errunit
+        use contrl_file,        only: backend, ounit
         use contrl_per,         only: iperiodic
-        use spline2_mod,        only: spline2
-        use fitting_methods,    only: exp_fit
-
-        use trexio
-        use contrl_file,        only: backend
+        use custom_broadcast,   only: bcast
         use error,              only: trexio_error
-        use m_trexio_basis,     only: gnorm
+        use fitting_methods,    only: exp_fit
+        use general,            only: pooldir
+        use inputflags,         only: ibasis_num
+        use m_trexio_basis,     only: slm_per_l
+        use mpiconf,            only: wid
+        use numbas,             only: allocate_numbas, arg, d2rwf, igrid, iwrwf, nr, nrbas, numr, r0, rmaxwf, rwf
+        use numbas1,            only: iwlbas, nbastyp
+        use numbas_mod,         only: MRWF, MRWF_PTS, basis_type_by_center, basis_type_count
+        use numexp,             only: ae, ce, allocate_numexp
+        use periodic,           only: cutr, n_images0
+        use pseudo,             only: nloc
+        use read_bas_num_mod,   only: smooth
+        use slm_mod,            only: slm
+        use spline2_mod,        only: spline2
+        use system,             only: iwctype, ncent_tot, nctype_tot, symbol, znuc
+        use trexio
+        use vmc_mod,            only: NCOEF
 
         implicit none
 
@@ -801,9 +784,10 @@ module trexio_read_data
 
         ! for local use.
         character(len=72), intent(in)   :: file_trexio
+        logical, intent(in)             :: layout_only
+        logical, intent(in), optional   :: use_input_layout
         character(len=128)              :: file_trexio_path
-        integer                         :: i, j, k, tcount1, tcount2, tcount3, tcount4
-        integer                         :: counter, counter_shell, lower_shell, upper_shell, lower_prim, upper_prim
+        integer                         :: i, j, k, center, prim, counter_shell
 
         ! trexio
         integer(8)                      :: trex_basis_file
@@ -819,25 +803,24 @@ module trexio_read_data
         real(dp)                        :: gridr0=20.0d0
         real(dp)                        :: gridr0_save = 20.0d0
         real(kind=dp), dimension(2000)  :: rgrid  ! Grid points
-        integer, dimension(nctype_tot)  :: icusp
         real(dp)                        :: r, r2
 
-        integer, dimension(:), allocatable :: atom_index(:), shell_index_atom(:), nshells_per_atom(:)
-        integer, dimension(:), allocatable :: prim_index_atom(:), nprims_per_atom(:)
-        integer, dimension(:), allocatable :: unique_atom_index(:), shell_prim_correspondence(:)
-        integer                         :: count
-        character(len=2), allocatable   :: unique(:) ! unique symbols of atoms
+        integer :: shell_start(ncent_tot+1), representative(nctype_tot+ncent_tot)
+        integer :: icusp
+        real(dp) :: l(nbasis)
+        integer, allocatable :: prim_start(:), prim_indices(:), next_prim(:)
+        integer, allocatable :: component_count(:), ao_start(:)
+        logical :: input_layout
 
         ! needed for spline
         real(dp), dimension(MRWF_PTS)       ::  x, work
         real(dp), dimension(ncoef)          ::  y
         real(dp), dimension(ncoef*ncoef)    ::  dmatr
-        real(dp), dimension(nbasis)         ::  l
         integer, dimension(ncoef)           :: ipiv
         integer         :: ic, ir, irb, ii, jj, ll, icoef, iff
         integer         :: iwf = 1
         integer         :: info
-        real(dp)        :: r_cutoff, val, dwf1, wfm, dwfn, dwfm, temp
+        real(dp)        :: r_cutoff, val, dwf1, dwfn, temp
 
         ! rmax cutoff
         real(dp)        :: wf_cutoff_rmax = 1.0d-12
@@ -885,8 +868,6 @@ module trexio_read_data
         if (.not. allocated(ao_normalization))       allocate(ao_normalization(ao_num))
 
         if (wid) then
-            trex_basis_file = trexio_open(file_trexio_path, 'r', backend, rc)
-            call trexio_error(rc, TREXIO_SUCCESS, 'trexio file open error', __FILE__, __LINE__)
             rc = trexio_read_basis_nucleus_index(trex_basis_file, basis_nucleus_index)
             call trexio_error(rc, TREXIO_SUCCESS, 'trexio_read_basis_nucleus_index', __FILE__, __LINE__)
             rc = trexio_read_basis_shell_index(trex_basis_file, basis_shell_index)
@@ -928,67 +909,63 @@ module trexio_read_data
         write(ounit,*) '-----------------------------------------------------------------------'
         write(ounit,*)
 
-        ! Processing the basis set information to get the numerican grid
-        gridr0_save = gridr0
+        if (ao_num /= nbasis) call fatal_error('TREXIO basis read: AO count differs from the orbital basis size')
+        if (any(basis_shell_ang_mom < 0) .or. any(basis_shell_ang_mom >= size(slm_per_l))) then
+            call fatal_error('TREXIO basis read: angular momentum outside the supported Cartesian range')
+        endif
+        if (any(basis_nucleus_index < 1) .or. any(basis_nucleus_index > ncent_tot)) then
+            call fatal_error('TREXIO basis read: shell nucleus index out of range')
+        endif
+        if (any(basis_shell_index < 1) .or. any(basis_shell_index > basis_num_shell) .or. &
+            any(ao_shell < 1) .or. any(ao_shell > basis_num_shell)) then
+            call fatal_error('TREXIO basis read: shell index out of range')
+        endif
 
-
-        ! Get the number of shells per atom (information needed to reshuffle AOs)
-
-        allocate(atom_index(basis_num_shell))
-        allocate(nshells_per_atom(basis_num_shell), source=0)
-        allocate(shell_index_atom(basis_num_shell))
-
-        call unique_elements(basis_num_shell, basis_nucleus_index, atom_index, count, nshells_per_atom, shell_index_atom)
-
-        ! count                     :: "Number of unique elements"
-        ! atom_index(1:count)       :: "Unique elements index (not used here)"
-        ! nshells_per_atom(1:count) :: "frequency or count of shells per atom"
-        ! shell_index_atom(1:count) :: "index number of the shell for each atom"
-        ! The shells per atom can be obtained by accessing the shell_index_atom
-        ! for a given atom index by the slice of size frequency.
-
-
-        ! Now get the number of primitives per atom and their indices
-        ! also obtain the number of primitives per shell for all the atoms
-        allocate(nprims_per_atom(ncent_tot), source=0)
-        allocate(prim_index_atom(ncent_tot))
-        allocate(shell_prim_correspondence(basis_num_shell))
-
-        prim_index_atom(1) = 1
-        nprims_per_atom(1) = 0
-        tcount4 = 0; tcount2 = 0
-        do i = 1, ncent_tot
-            tcount3 = 0
-            do j = 1, nshells_per_atom(i)   ! frequency
-                tcount4 = tcount4 + 1
-                tcount3 = tcount3 + 1
-                tcount1 = 0
-                do k = 1, basis_num_prim
-                    if (tcount4 == basis_shell_index(k)) then
-                        tcount1 = tcount1 + 1
-                        shell_prim_correspondence(tcount4) = tcount1
-                    endif
-                enddo
-
-                nprims_per_atom(i) = nprims_per_atom(i) + shell_prim_correspondence(tcount4)
-            enddo
-            if (i .ne. ncent_tot) prim_index_atom(i+1) = prim_index_atom(i) + nprims_per_atom(i)
+        shell_start = 0
+        shell_start(1) = 1
+        do j = 1, basis_num_shell
+            center = basis_nucleus_index(j)
+            shell_start(center+1) = shell_start(center+1) + 1
+        enddo
+        do center = 1, ncent_tot
+            shell_start(center+1) = shell_start(center+1) + shell_start(center)
+            if (any(basis_nucleus_index(shell_start(center):shell_start(center+1)-1) /= center)) then
+                call fatal_error('TREXIO basis read: shells must be grouped by center')
+            endif
         enddo
 
-        ! Obtain the number of unique types of atoms stored in the hdf5 file.
-        if (.not. allocated(unique)) allocate(unique(nctype_tot))
-        if (.not. allocated(unique_atom_index)) allocate(unique_atom_index(nctype_tot))
+        ! Keep the recorded order of primitives within each shell.
+        allocate(prim_start(basis_num_shell+1), source=0)
+        prim_start(1) = 1
+        do k = 1, basis_num_prim
+            j = basis_shell_index(k)
+            prim_start(j+1) = prim_start(j+1) + 1
+        enddo
+        do j = 1, basis_num_shell
+            prim_start(j+1) = prim_start(j+1) + prim_start(j)
+        enddo
+        allocate(prim_indices(basis_num_prim), next_prim(basis_num_shell))
+        next_prim = prim_start(:basis_num_shell)
+        do k = 1, basis_num_prim
+            j = basis_shell_index(k)
+            prim_indices(next_prim(j)) = k
+            next_prim(j) = next_prim(j) + 1
+        enddo
 
+        representative = 0
+        if (layout_only) then
+            input_layout = .false.
+            if (present(use_input_layout)) input_layout = use_input_layout
+            call prepare_basis_layout(input_layout)
+            return
+        endif
 
-        tcount1 = 0
-        tcount2 = 1
-        do j = 1, ncent_tot
-            if (.not. any(symbol(1:j-1) == symbol(j))) then
-                tcount1 = tcount1 + 1
-                unique_atom_index(tcount1) = j
-                unique(tcount1) = symbol(j)
-            end if
-        end do
+        do center = 1, ncent_tot
+            ic = basis_type_by_center(center)
+            if (representative(ic) == 0) representative(ic) = center
+        enddo
+
+        if (trexio_has_group_orbitals) call get_ao_normalization_scale()
 
         ! start putting in the information in the arrays and variables
         gridtype=3
@@ -1016,72 +993,49 @@ module trexio_read_data
         enddo
 
 
-        do ic = 1, nctype + newghostype            ! loop over all the unique atoms
+        do ic = 1, basis_type_count()
+            center = representative(ic)
+            if (center == 0) cycle
 
-            nrbas(ic)   = nshells_per_atom(unique_atom_index(ic))
-            igrid(ic)   = gridtype       ! grid type default is 3
-            nr(ic)      = gridpoints     ! number of grid points default is 2000
-            arg(ic)     = gridarg        ! grid spacing default is 1.003
-            r0(ic)      = gridr0         ! grid origin default is 20.0
-            icusp(ic)   = 0              ! default is 0
+            igrid(ic) = gridtype
+            nr(ic)    = gridpoints
+            arg(ic)   = gridarg
+            r0(ic)    = gridr0
+            icusp     = 0
+            if (nloc == 0) l(:nrbas(ic)) = 0
 
             write(ounit,*)
-            write(ounit,'(A, T60,  A)')     " For Nucleus           ::  ", unique(ic)
-            write(ounit,'(A, T60, I0)')     " Number of Shells      ::  ", nrbas(ic)
-            write(ounit,'(A, T60, I0)')     " Grid type             ::  ", igrid(ic)
-            write(ounit,'(A, T60, I0)')     " Number of Grid Points ::  ", nr(ic)
-            write(ounit,'(A, T56, F10.6)')  " Grid spacing          ::  ", arg(ic)
-            write(ounit,'(A, T56, F10.6)')  " Grid origin           ::  ", r0(ic)
-            write(ounit,'(A, T60, I0)')     " Icusp                 ::  ", icusp(ic)
+            write(ounit,'(A, T60, A)')     " For Nucleus           ::  ", symbol(center)
+            write(ounit,'(A, T60, I0)')    " Number of Shells      ::  ", nrbas(ic)
+            write(ounit,'(A, T60, I0)')    " Grid type             ::  ", igrid(ic)
+            write(ounit,'(A, T60, I0)')    " Number of Grid Points ::  ", nr(ic)
+            write(ounit,'(A, T56, F10.6)') " Grid spacing          ::  ", arg(ic)
+            write(ounit,'(A, T56, F10.6)') " Grid origin           ::  ", r0(ic)
+            write(ounit,'(A, T60, I0)')    " Icusp                 ::  ", icusp
             write(ounit,*)
 
-            ! All electron case when nloc equals zero.
-            ! Make sure that the input file has nloc=0.
-            if(nloc.eq.0) then
-                do irb = 1, nrbas(ic)
-                    l(irb) = 0
-                enddo
-            endif
-
-
-            ! loop over all the primitives for the unique atom
-            ! The lower and upper indices of primitive indices
-            lower_shell = shell_index_atom(unique_atom_index(ic))
-            upper_shell = shell_index_atom(unique_atom_index(ic)) + nshells_per_atom(unique_atom_index(ic)) - 1
-
-            lower_prim = prim_index_atom(unique_atom_index(ic))
-            upper_prim = prim_index_atom(unique_atom_index(ic)) + nprims_per_atom(unique_atom_index(ic)) - 1
-
-
-            ! select the shells corresponding to the unique atoms only
-            ! j is the running shell index for the unique atom i
             do i = 1, nr(ic)
                 r = rgrid(i)
                 r2 = r*r
-
-                counter = lower_prim
-                counter_shell = 1
-                do j = lower_shell, upper_shell
-                    ! loop on primitives in the given shell
+                do j = shell_start(center), shell_start(center+1)-1
                     val = 0.0d0
-                    do k = counter, counter + shell_prim_correspondence(j) -1
-                        val = val + gnorm(basis_exponent(k), basis_shell_ang_mom(j)) &
-                                  * basis_coefficient(k) * dexp(-basis_exponent(k)*r2)
+                    do k = prim_start(j), prim_start(j+1)-1
+                        prim = prim_indices(k)
+                        val = val + basis_prim_factor(prim) &
+                                  * basis_coefficient(prim) * dexp(-basis_exponent(prim)*r2)
                     enddo
-                    counter = counter + shell_prim_correspondence(j)
-                    rwf(i,counter_shell,ic,1) = val
-                    counter_shell = counter_shell + 1
+                    counter_shell = j - shell_start(center) + 1
+                    rwf(i,counter_shell,ic,1) = val * basis_shell_factor(j)
                 enddo
-
             enddo
 
             do irb=1,nrbas(ic)
 
-                if(nloc.eq.0.and.l(irb).eq.0.and.icusp(ic).eq.1) then
+                if(nloc.eq.0.and.l(irb).eq.0.and.icusp.eq.1) then
 
         ! c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
                 do ii=1,NCOEF-1
-                    dmatr(ii)=1.d0-znuc(ic)*x(ii)
+                    dmatr(ii)=1.d0-znuc(iwctype(center))*x(ii)
                 enddo
                 y(1)=rwf(1,irb,ic,iwf)
                 ll=NCOEF-1
@@ -1095,7 +1049,7 @@ module trexio_read_data
 
                 call dgesv(NCOEF-1,1,dmatr,NCOEF-1,ipiv,y,NCOEF,info)
                 ce(1,irb,ic,iwf)=y(1)
-                ce(2,irb,ic,iwf)=-znuc(ic)*ce(1,irb,ic,iwf)
+                ce(2,irb,ic,iwf)=-znuc(iwctype(center))*ce(1,irb,ic,iwf)
                 ce(3,irb,ic,iwf)=y(2)
                 ce(4,irb,ic,iwf)=y(3)
                 ce(5,irb,ic,iwf)=y(4)
@@ -1195,31 +1149,201 @@ module trexio_read_data
                 call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn, d2rwf(1,irb,ic,iwf), work)
 
             enddo ! loop on irb : number of radial shells
-        enddo ! loop on ic : the unique atom types
+        enddo ! loop over distinct numerical bases
 
-        ! Do the deallocations of local arrays
-        if (allocated(unique)) deallocate(unique)
-        if (allocated(unique_atom_index)) deallocate(unique_atom_index)
+    contains
 
-        if (allocated(nprims_per_atom)) deallocate(nprims_per_atom)
-        if (allocated(prim_index_atom)) deallocate(prim_index_atom)
-        if (allocated(shell_prim_correspondence)) deallocate(shell_prim_correspondence)
+        subroutine get_ao_normalization_scale()
+            integer :: lm, iao, shell
+            integer :: ao_count(basis_num_shell)
+            real(dp) :: angular_norm(sum(slm_per_l))
+            real(dp) :: point(3), gradient(3), hessian(3,3), laplacian, laplacian_grad(3)
 
-        if (allocated(atom_index)) deallocate(atom_index)
-        if (allocated(nshells_per_atom)) deallocate(nshells_per_atom)
-        if (allocated(shell_index_atom)) deallocate(shell_index_atom)
+            ! Every Cartesian monomial equals one at (1, 1, 1).
+            point = 1.0_dp
+            do lm = 1, size(angular_norm)
+                call slm(lm, point, 3.0_dp, angular_norm(lm), gradient, hessian, laplacian, laplacian_grad, 0)
+            enddo
 
-        if (allocated(basis_nucleus_index))    deallocate(basis_nucleus_index)
-        if (allocated(basis_shell_index))      deallocate(basis_shell_index)
-        if (allocated(basis_shell_ang_mom))    deallocate(basis_shell_ang_mom)
-        if (allocated(basis_shell_factor))     deallocate(basis_shell_factor)
-        if (allocated(basis_exponent))         deallocate(basis_exponent)
-        if (allocated(basis_coefficient))      deallocate(basis_coefficient)
-        if (allocated(basis_prim_factor))      deallocate(basis_prim_factor)
-        if (allocated(ao_shell))               deallocate(ao_shell)
-        if (allocated(ao_normalization))       deallocate(ao_normalization)
+            allocate(trexio_ao_scale(ao_num))
+            ao_count = 0
+            do iao = 1, ao_num
+                shell = ao_shell(iao)
+                ao_count(shell) = ao_count(shell) + 1
+                lm = sum(slm_per_l(:basis_shell_ang_mom(shell))) + ao_count(shell)
+                trexio_ao_scale(iao) = ao_normalization(iao) / angular_norm(lm)
+            enddo
+        end subroutine get_ao_normalization_scale
+
+        subroutine prepare_basis_layout(keep_input_layout)
+            logical, intent(in) :: keep_input_layout
+            integer :: center, basis_type, candidate, ntypes, shell, l, iao, last_center, local_ao, nao
+            integer, allocatable :: source_type(:)
+
+            ! MO coefficient rows are grouped by center. Record the AO ordering
+            ! as well as the shell data before deciding which tables can be shared.
+            allocate(component_count(basis_num_shell), ao_start(ncent_tot+1))
+            component_count = 0
+            ao_start = 0
+            ao_start(1) = 1
+            last_center = 0
+            do iao = 1, ao_num
+                shell = ao_shell(iao)
+                center = basis_nucleus_index(shell)
+                if (center < last_center) call fatal_error('TREXIO basis read: AOs must be grouped by center')
+                last_center = center
+                component_count(shell) = component_count(shell) + 1
+                ao_start(center+1) = ao_start(center+1) + 1
+            enddo
+            if (any(component_count /= slm_per_l(basis_shell_ang_mom+1))) then
+                call fatal_error('TREXIO basis read: expected a Cartesian set of AOs on every shell')
+            endif
+            do center = 1, ncent_tot
+                ao_start(center+1) = ao_start(center+1) + ao_start(center)
+            enddo
+
+            allocate(basis_type_by_center(ncent_tot))
+            ntypes = nctype_tot
+            do center = 1, ncent_tot
+                basis_type = iwctype(center)
+                if (representative(basis_type) /= 0) then
+                    if (.not. same_basis(center, representative(basis_type))) then
+                        do candidate = nctype_tot+1, ntypes
+                            if (iwctype(representative(candidate)) /= iwctype(center)) cycle
+                            if (same_basis(center, representative(candidate))) exit
+                        enddo
+                        ntypes = max(ntypes, candidate)
+                        basis_type = candidate
+                    endif
+                endif
+                if (representative(basis_type) == 0) representative(basis_type) = center
+                basis_type_by_center(center) = basis_type
+            enddo
+
+            if (keep_input_layout .and. ntypes > nctype_tot) then
+                ! Explicit basis_num_info remains indexed by the original atom types on input.
+                allocate(source_type(ntypes))
+                source_type(:nctype_tot) = [(basis_type, basis_type=1,nctype_tot)]
+                do basis_type = nctype_tot+1, ntypes
+                    source_type(basis_type) = iwctype(representative(basis_type))
+                enddo
+                ns = ns(source_type)
+                np = np(source_type)
+                nd = nd(source_type)
+                nf = nf(source_type)
+                ng = ng(source_type)
+                nbastyp = nbastyp(source_type)
+                iwlbas = iwlbas(:,source_type)
+                iwrwf = iwrwf(:,source_type)
+                nrbas = nrbas(source_type)
+            elseif (.not. keep_input_layout) then
+                allocate(ns(ntypes), np(ntypes), nd(ntypes), nf(ntypes), ng(ntypes))
+                ns = 0
+                np = 0
+                nd = 0
+                nf = 0
+                ng = 0
+                allocate(nbastyp(ntypes), nrbas(ntypes), iwlbas(nbasis,ntypes), iwrwf(nbasis,ntypes))
+                nbastyp = 0
+                nrbas = 0
+                iwlbas = 0
+                iwrwf = 0
+                numr = 1
+                ibasis_num = 1
+            endif
+
+            component_count = 0
+            do basis_type = 1, ntypes
+                center = representative(basis_type)
+                if (center == 0) cycle
+                nao = ao_start(center+1) - ao_start(center)
+                if (keep_input_layout) then
+                    if (nbastyp(basis_type) /= nao) then
+                        call fatal_error('TREXIO basis read: basis_num_info AO count differs from TREXIO')
+                    endif
+                else
+                    nbastyp(basis_type) = nao
+                    do iao = ao_start(center), ao_start(center+1)-1
+                        shell = ao_shell(iao)
+                        l = basis_shell_ang_mom(shell)
+                        local_ao = iao - ao_start(center) + 1
+                        component_count(shell) = component_count(shell) + 1
+                        iwlbas(local_ao,basis_type) = sum(slm_per_l(:l)) + component_count(shell)
+                        iwrwf(local_ao,basis_type) = shell - shell_start(center) + 1
+                    enddo
+                    associate (angular_momenta => basis_shell_ang_mom(shell_start(center):shell_start(center+1)-1))
+                        ns(basis_type) = count(angular_momenta == 0)
+                        np(basis_type) = count(angular_momenta == 1)
+                        nd(basis_type) = count(angular_momenta == 2)
+                        nf(basis_type) = count(angular_momenta == 3)
+                        ng(basis_type) = count(angular_momenta == 4)
+                    end associate
+                endif
+                nrbas(basis_type) = shell_start(center+1) - shell_start(center)
+                if (nrbas(basis_type) > MRWF) call fatal_error('TREXIO basis read: too many radial functions')
+                if (any(iwrwf(:nbastyp(basis_type),basis_type) < 1) .or. &
+                    any(iwrwf(:nbastyp(basis_type),basis_type) > nrbas(basis_type))) then
+                    call fatal_error('TREXIO basis read: AO radial index out of range')
+                endif
+            enddo
+            write(ounit,fmt=int_format) " Number of numerical basis types :: ", ntypes
+        end subroutine prepare_basis_layout
+
+        logical function same_basis(center, other) result(matches)
+            integer, intent(in) :: center, other
+            integer :: shell, other_shell
+            integer :: first_prim, other_first_prim, nprims
+
+            matches = .false.
+            if (shell_start(center+1) - shell_start(center) /= shell_start(other+1) - shell_start(other)) return
+            do shell = shell_start(center), shell_start(center+1)-1
+                other_shell = shell - shell_start(center) + shell_start(other)
+                if (basis_shell_ang_mom(shell) /= basis_shell_ang_mom(other_shell)) return
+                if (basis_shell_factor(shell) /= basis_shell_factor(other_shell)) return
+                first_prim = prim_start(shell)
+                other_first_prim = prim_start(other_shell)
+                nprims = prim_start(shell+1) - first_prim
+                if (nprims /= prim_start(other_shell+1) - other_first_prim) return
+                associate (prims => prim_indices(first_prim:first_prim+nprims-1), &
+                           other_prims => prim_indices(other_first_prim:other_first_prim+nprims-1))
+                    if (any(basis_exponent(prims) /= basis_exponent(other_prims))) return
+                    if (any(basis_coefficient(prims) /= basis_coefficient(other_prims))) return
+                    if (any(basis_prim_factor(prims) /= basis_prim_factor(other_prims))) return
+                end associate
+            enddo
+            if (any(ao_shell(ao_start(center):ao_start(center+1)-1) - shell_start(center) /= &
+                    ao_shell(ao_start(other):ao_start(other+1)-1) - shell_start(other))) return
+            matches = .true.
+        end function same_basis
 
     end subroutine read_trexio_basis_file
+
+    subroutine normalize_trexio_mo_coefficients()
+        use contrl_file,   only: ounit
+        use csfs,          only: nstates
+        use optwf_control, only: method
+        use qmckl_data,   only: use_qmckl_orbitals
+        use slater,       only: coef
+
+        integer :: iorb, iwf, num_orbital_sets
+
+        if (.not. allocated(trexio_ao_scale)) return
+
+        ! Native angular factors differ from TREXIO; the radial splines already
+        ! include TREXIO's shell and primitive factors. QMCkl reads the raw MOs.
+        if (.not. use_qmckl_orbitals) then
+            num_orbital_sets = 1
+            if (method == 'sr_n') num_orbital_sets = nstates
+            do iwf = 1, num_orbital_sets
+                do iorb = 1, size(coef,2)
+                    coef(:,iorb,iwf) = coef(:,iorb,iwf) * trexio_ao_scale
+                enddo
+            enddo
+            write(ounit,*) 'Converted TREXIO MO coefficients to the native AO normalization'
+        endif
+        deallocate(trexio_ao_scale)
+    end subroutine normalize_trexio_mo_coefficients
+
 
 
 

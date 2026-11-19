@@ -99,9 +99,31 @@ module numbas_mod
     !> Maximum number of radial basis functions (shells) per center type
     integer, parameter :: MRWF = 200
 
+    ! TREXIO centers can have different numerical bases for the same element.
+    integer, allocatable :: basis_type_by_center(:)
+
     private
-    public :: MRWF, MRWF_PTS
+    public :: MRWF, MRWF_PTS, basis_type_by_center, basis_type_count, basis_type_for_center
     save
+
+contains
+    integer function basis_type_count() result(count)
+        use system, only: nctype_tot
+
+        count = nctype_tot
+        if (allocated(basis_type_by_center)) count = max(count, maxval(basis_type_by_center))
+    end function basis_type_count
+
+    integer function basis_type_for_center(center) result(basis_type)
+        use system, only: iwctype
+        integer, intent(in) :: center
+
+        if (allocated(basis_type_by_center)) then
+            basis_type = basis_type_by_center(center)
+        else
+            basis_type = iwctype(center)
+        endif
+    end function basis_type_for_center
 
 end module numbas_mod
 
@@ -150,10 +172,13 @@ contains
     subroutine allocate_numexp()
       use multiple_geo, only: MFORCE
       use numbas_mod, only: MRWF
-      use system,  only: nctype_tot
+      use numbas_mod, only: basis_type_count
       use vmc_mod, only: NCOEF
-        if (.not. allocated(ae)) allocate (ae(2, MRWF, nctype_tot, MFORCE))
-        if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, nctype_tot, MFORCE))
+        integer :: ntypes
+
+        ntypes = basis_type_count()
+        if (.not. allocated(ae)) allocate (ae(2, MRWF, ntypes, MFORCE))
+        if (.not. allocated(ce)) allocate (ce(NCOEF, MRWF, ntypes, MFORCE))
     end subroutine allocate_numexp
 
     !> Deallocates memory for numerical basis function coefficient arrays.
@@ -242,22 +267,28 @@ contains
       use coefs,   only: nbasis
       use multiple_geo, only: nwftype
       use numbas_mod, only: MRWF,MRWF_PTS
-      use system,  only: nctype_tot
-        if (.not. allocated(arg)) allocate (arg(nctype_tot))
-        if (.not. allocated(d2rwf)) allocate (d2rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
-        if (.not. allocated(igrid)) allocate (igrid(nctype_tot), source=0)
-        if (.not. allocated(iwrwf)) allocate (iwrwf(nbasis, nctype_tot), source=0)
-        if (.not. allocated(nr)) allocate (nr(nctype_tot), source=0)
-        if (.not. allocated(nrbas)) allocate (nrbas(nctype_tot), source=0)
-        if (.not. allocated(r0)) allocate (r0(nctype_tot))
-        if (.not. allocated(rmaxwf)) allocate (rmaxwf(MRWF,nctype_tot), source=0.0d0)
-        if (.not. allocated(rwf)) allocate (rwf(MRWF_PTS, MRWF, nctype_tot, nwftype))
+      use numbas_mod, only: basis_type_count
+        integer :: ntypes
+
+        ntypes = basis_type_count()
+        if (.not. allocated(arg)) allocate (arg(ntypes))
+        if (.not. allocated(d2rwf)) allocate (d2rwf(MRWF_PTS, MRWF, ntypes, nwftype))
+        if (.not. allocated(igrid)) allocate (igrid(ntypes), source=0)
+        if (.not. allocated(iwrwf)) allocate (iwrwf(nbasis, ntypes), source=0)
+        if (.not. allocated(nr)) allocate (nr(ntypes), source=0)
+        if (.not. allocated(nrbas)) allocate (nrbas(ntypes), source=0)
+        if (.not. allocated(r0)) allocate (r0(ntypes))
+        if (.not. allocated(rmaxwf)) allocate (rmaxwf(MRWF,ntypes), source=0.0d0)
+        if (.not. allocated(rwf)) allocate (rwf(MRWF_PTS, MRWF, ntypes, nwftype))
     end subroutine allocate_numbas
 
     !> Deallocates memory for numerical radial basis function arrays.
     !>
     !> @details Frees all arrays used for numerical radial basis function storage.
     subroutine deallocate_numbas()
+        use numbas_mod, only: basis_type_by_center
+
+        if (allocated(basis_type_by_center)) deallocate (basis_type_by_center)
         if (allocated(rmaxwf)) deallocate (rmaxwf)
         if (allocated(rwf)) deallocate (rwf)
         if (allocated(r0)) deallocate (r0)
@@ -308,9 +339,12 @@ contains
     !> @note nbastyp allocation is commented out and handled elsewhere.
     subroutine allocate_numbas1()
       use coefs,   only: nbasis
-      use system,  only: nctype_tot
-        if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, nctype_tot), source=0)
-        ! if (.not. allocated(nbastyp)) allocate (nbastyp(nctype_tot))
+      use numbas_mod, only: basis_type_count
+        integer :: ntypes
+
+        ntypes = basis_type_count()
+        if (.not. allocated(iwlbas)) allocate (iwlbas(nbasis, ntypes), source=0)
+        ! if (.not. allocated(nbastyp)) allocate (nbastyp(ntypes))
     end subroutine allocate_numbas1
 
     !> Deallocates memory for angular momentum indexing arrays.

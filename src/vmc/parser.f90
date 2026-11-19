@@ -78,6 +78,7 @@ subroutine parser
       use multiple_geo, only: MFORCE,MWF,delc,itausec,iwftype,nforce
       use multiple_geo, only: nwftype,nwprod,pecent
       use numbas,  only: numr
+      use numbas_mod, only: basis_type_for_center
       use numbas1, only: nbastyp
       use numbas2, only: ibas0,ibas1
       use optci,   only: mxciterm
@@ -154,7 +155,7 @@ subroutine parser
       use vmc_mod, only: nbjx,stobjx,bjxtoj,bjxtoo,nstoj_tot,nstoo_tot
       use zmatrix, only: izmatrix
 #if defined(TREXIO_FOUND)
-      use trexio_read_data, only: read_trexio_basis_file
+      use trexio_read_data, only: read_trexio_basis_file, normalize_trexio_mo_coefficients
       use trexio_read_data, only: read_trexio_determinant_file
       use trexio_read_data, only: read_trexio_ecp_file
       use trexio_read_data, only: read_trexio_molecule_file
@@ -902,7 +903,7 @@ subroutine parser
     call read_basis_num_info_file(file_basis_num_info)
   elseif ( fdf_load_defined('trexio') ) then
 #if defined(TREXIO_FOUND)
-    call write_trexio_basis_num_info_file(file_trexio)
+    if (fdf_defined('basis')) call write_trexio_basis_num_info_file(file_trexio)
 #endif
   elseif (.not. fdf_block('basis_num_info', bfdf)) then
   ! call fdf_read_eigenvalues_block(bfdf)
@@ -914,6 +915,12 @@ subroutine parser
     !write(errunit,'(3a,i6)') "Stats for nerds :: in file ",__FILE__, " at line ", __LINE__
     error stop
   endif
+
+#if defined(TREXIO_FOUND)
+  if (ibasis == 1 .and. fdf_load_defined('trexio') .and. .not. fdf_defined('basis')) then
+    call read_trexio_basis_file(file_trexio, layout_only=.true., use_input_layout=fdf_load_defined('basis_num_info'))
+  endif
+#endif
 
   call elapsed_time ("Reading basis information file : ")
 
@@ -1460,14 +1467,14 @@ subroutine parser
     !   call fdf_read_basis_block(bfdf)
 #if defined(TREXIO_FOUND)
     elseif ( fdf_load_defined('trexio') ) then
-      call read_trexio_basis_file(file_trexio)
+      call read_trexio_basis_file(file_trexio, layout_only=.false.)
       if (.not. allocated(ibas0)) allocate (ibas0(ncent_tot))
       if (.not. allocated(ibas1)) allocate (ibas1(ncent_tot))
       ibas0(1)=1
-      ibas1(1)=nbastyp(iwctype(1))
+      ibas1(1)=nbastyp(basis_type_for_center(1))
       do ic=2,ncent
         ibas0(ic)=ibas1(ic-1)+1
-        ibas1(ic)=ibas1(ic-1)+nbastyp(iwctype(ic))
+        ibas1(ic)=ibas1(ic-1)+nbastyp(basis_type_for_center(ic))
       enddo
 #endif
     else
@@ -2124,6 +2131,10 @@ subroutine parser
   else
      qmckl_no_ctx = 0
   endif
+#endif
+
+#if defined(TREXIO_FOUND)
+  call normalize_trexio_mo_coefficients()
 #endif
 
   !----------------------------------------------------------------------------END

@@ -796,7 +796,6 @@ contains
 !-----------------------------------------------------------------------
       subroutine copy_bas_num(ito)
 
-      use system,  only: nctype,newghostype
       use numbas,  only: rwf, d2rwf,nr,nrbas
       use numexp,  only: ae,ce
 
@@ -804,7 +803,7 @@ contains
 
       integer :: i, iadiag, ito, ifrom, ic, irb
 
-      do ic=1,nctype+newghostype
+      do ic=1,size(nrbas)
         do irb=1,nrbas(ic)
           rwf(1:nr(ic),irb,ic,ito)=rwf(1:nr(ic),irb,ic,1)
           d2rwf(1:nr(ic),irb,ic,ito)=d2rwf(1:nr(ic),irb,ic,1)

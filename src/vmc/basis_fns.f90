@@ -10,12 +10,12 @@ contains
       use multiple_geo, only: iwf
       use numbas,  only: iwrwf,nrbas,rmaxwf
       use numbas1, only: iwlbas,nbastyp
-      use numbas_mod, only: MRWF
+      use numbas_mod, only: MRWF,basis_type_for_center
       use phifun,  only: d2phin,d2phin_all,d3phin,dphin,n0_nbasis,phin
       use precision_kinds, only: dp
       use slm_mod, only: slm
       use splfit_mod, only: splfit
-      use system,  only: iwctype,ncent,ncent_tot,nelec,nghostcent
+      use system,  only: ncent,ncent_tot,nelec,nghostcent
       use contrl_file, only: ounit
       use contrl_per, only: iperiodic
       use periodic, only : n_images, ell
@@ -58,9 +58,10 @@ contains
 
 ! loop through centers
       do ic=1,ncent+nghostcent
-         it=iwctype(ic)
+         it=basis_type_for_center(ic)
          nrbasit   = nrbas(it)
          nbastypit = nbastyp(it)
+         if (nbastypit == 0) cycle
 
          uilm=uilm+nbastypit
 
