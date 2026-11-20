@@ -24,12 +24,15 @@ contains
       use optwf_handle_wf, only: compute_parameters,copy_bas_num,copy_zex,restore_wf
       use optwf_handle_wf, only: save_nparms,save_wf,save_wf_best
       use optwf_handle_wf, only: set_nparms,setup_wf,test_solution_parm
-      use optwf_handle_wf, only: write_wf,write_wf_best
+      use optwf_handle_wf, only: update_qmckl_wf,write_wf,write_wf_best
       use optwf_lin_matrix, only: compute_dparm,setup_optimization
       use orbval,  only: nadorb
       use precision_kinds, only: dp
       use read_bas_num_mod, only: read_bas_num
       use set_input_data, only: set_displace_zero
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+      use orbitals_qmckl_mod, only: orbitals_qmckl_corsamp_sync
+#endif
 
 !     use contrl, only: idump, irstar, isite, nblk, nblk_max, nblk_ci
 
@@ -182,6 +185,8 @@ contains
          call compute_dparm(nparm,nparmall,grad,h,h_sav,s,s_sav,work,work2, &
                            add_diag(1),energy_sav,energy_err_sav)
          call compute_parameters(grad,iflag,1)
+! Resampling follows without write_wf: pass the new parameters to QMCkl
+         call update_qmckl_wf
 ! In case starting config is very bad, reset configuration by calling sites
          vmc_isite=1
          call reset_configs_start
@@ -276,6 +281,11 @@ contains
        nblk_sav=vmc_nblk
        vmc_nblk=max(2,vmc_nblk/2)
 !      vmc_nblk=max(2,vmc_nblk/10)
+
+#if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
+! QMCkl orbital contexts must hold the trial orbitals coef(:,:,1:3) and their cusp fits
+       if(ioptorb_sav.ne.0) call orbitals_qmckl_corsamp_sync(nwftype)
+#endif
 
        call qmc
 

@@ -169,7 +169,7 @@ subroutine parser
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND)
       use qmckl_data
       use jastrow_qmckl_mod, only: jastrow_init_qmckl
-      use orbitals_qmckl_mod, only: orbitals_init_qmckl
+      use orbitals_qmckl_mod, only: orbitals_init_qmckl, orbitals_qmckl_corsamp_init
 #endif
 
   !! Allocate_periodic
@@ -2048,8 +2048,17 @@ subroutine parser
           write(errunit,'(a)') "Warning: QMCKL does not support opt with correlated sampling, QMCkl will not be used for Jastrow"
         endif
         if(ioptorb.gt.0) then
-          use_qmckl_orbitals = .false.
-          write(errunit,'(a)') "Warning: QMCKL does not support opt with correlated sampling, QMCkl will not be used for orbitals"
+          ! The only correlated sampling with orbital optimization is the test run of
+          ! the linear method with multiple_adiag. For all-electron, non-periodic,
+          ! non-backflow wave functions, keep QMCkl orbitals (and their nuclear cusp
+          ! fitting) by giving trial wave functions 2,3 their own orbital contexts.
+          if(method.eq.'linear'.and.multiple_adiag.gt.0.and.nforce.eq.qmckl_no_wf_corsamp &
+             .and.nloc.eq.0.and.iperiodic.eq.0.and.ibackflow.eq.0) then
+            use_qmckl_orbitals_corsamp = use_qmckl_orbitals
+          else
+            use_qmckl_orbitals = .false.
+            write(errunit,'(a)') "Warning: QMCKL does not support opt with correlated sampling, QMCkl will not be used for orbitals"
+          endif
         endif
      end if
      if (nstates.gt.1) then
@@ -2057,7 +2066,8 @@ subroutine parser
         use_qmckl_jastrow = .false.
         use_qmckl_orbitals = .false.
      end if
-     
+     use_qmckl_orbitals_corsamp = use_qmckl_orbitals_corsamp.and.use_qmckl_orbitals
+
      qmckl_no_ctx = 0
      if (use_qmckl_jastrow) qmckl_no_ctx = qmckl_no_ctx + 1
      if (use_qmckl_orbitals) qmckl_no_ctx = qmckl_no_ctx + 1
@@ -2119,6 +2129,9 @@ subroutine parser
      end if
      if (use_qmckl_orbitals) then
        call orbitals_init_qmckl(.True.)
+     end if
+     if (use_qmckl_orbitals_corsamp) then
+       call orbitals_qmckl_corsamp_init
      end if
 
   else

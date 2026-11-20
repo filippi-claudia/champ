@@ -58,7 +58,20 @@ module qmckl_data
   !> Flag to enable QMCkl-based Jastrow factor calculations.
   logical                :: use_qmckl_jastrow = .True.
 
+  !> Number of wave functions in the correlated-sampling test run of the
+  !> linear method with multiple_adiag (nforce = nwftype = 3).
+  integer, parameter     :: qmckl_no_wf_corsamp = 3
+
+  !> Orbital contexts for the trial wave functions 2..qmckl_no_wf_corsamp of
+  !> that test run. Wave function 1 uses the regular orbital contexts.
+  integer(qmckl_context) :: qmckl_ctx_wf(2:qmckl_no_wf_corsamp)
+
+  !> True when QMCkl orbitals are kept for the correlated-sampling test run,
+  !> i.e. qmckl_ctx_wf holds valid contexts.
+  logical                :: use_qmckl_orbitals_corsamp = .False.
+
   public :: qmckl_no_ctx_max, qmckl_no_ctx, qmckl_ctx, use_qmckl_orbitals, use_qmckl_jastrow
+  public :: qmckl_no_wf_corsamp, qmckl_ctx_wf, use_qmckl_orbitals_corsamp
   save
 
 #else
@@ -83,7 +96,11 @@ module qmckl_data
   !> Flag indicating QMCkl Jastrow is disabled (library not available).
   logical :: use_qmckl_jastrow = .False.
 
+  !> QMCkl orbitals in the correlated-sampling test run (library not available).
+  logical :: use_qmckl_orbitals_corsamp = .False.
+
   public :: qmckl_no_ctx_max, qmckl_no_ctx, qmckl_ctx, use_qmckl_orbitals, use_qmckl_jastrow, QMCKL_SUCCESS
+  public :: use_qmckl_orbitals_corsamp
   save
 
 #endif
