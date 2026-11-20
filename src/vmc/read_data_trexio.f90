@@ -1156,11 +1156,22 @@ module trexio_read_data
 ! Nonzero basis at the boundary : Do exponential fitting.
                 if(dabs(rmaxwf(irb,ic)-x(nr(ic))).lt.1.0d-10) then
                     call exp_fit(x(nr(ic)-9:nr(ic)),rwf(nr(ic)-9:nr(ic),irb,ic,iwf), 10, ae(1,irb,ic,iwf), ae(2,irb,ic,iwf))
-                    if(ae(2,irb,ic,iwf).lt.0) call fatal_error ('BASIS_READ_NUM: ak<0')
+                    if(ae(2,irb,ic,iwf).lt.0) then
+! Tail changes sign: cut the radial function at the outermost sign change.
+                      do ir=nr(ic)-1,1,-1
+                        if(rwf(ir,irb,ic,iwf)*rwf(ir+1,irb,ic,iwf).lt.0) then
+                          rwf(ir+1:nr(ic),irb,ic,iwf)=0.d0
+                          rmaxwf(irb,ic)=x(ir)
+                          exit
+                        endif
+                      enddo
+                      dwfn=0.d0
+                      write(ounit,'(a,i0,a,i0,a,g0)') ' WARNING: BASIS_READ_NUM: ak<0 for center type ',ic, &
+                        ' basis ',irb,'; radial function cut at r = ',rmaxwf(irb,ic)
+                    else
+                      rmaxwf(irb,ic)=-dlog(wf_cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
 
-                    rmaxwf(irb,ic)=-dlog(wf_cutoff_rmax/dabs(ae(1,irb,ic,iwf)))/ae(2,irb,ic,iwf)
-
-                    if (wid) then
+                      if (wid) then
                         write(45,'(a)') 'check the large radius expansion'
                         write(45,'(a,g0,2x,g0)') 'Exponential fitting parameters : ', ae(1,irb,ic,iwf), ae(2,irb,ic,iwf)
 
@@ -1170,9 +1181,10 @@ module trexio_read_data
                         temp = ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
                         write(45,'(i3,2x,1p4e22.14)') ir,x(nr(ic)-ir),rwf(nr(ic)-ir,irb,ic,iwf), temp
                         enddo
-                    endif
+                      endif
 
-                    dwfn=-ae(2,irb,ic,iwf)*ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)))
+                      dwfn=-ae(2,irb,ic,iwf)*ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)))
+                    endif
 
                 else
                     dwfn=0.d0
