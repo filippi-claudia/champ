@@ -65,13 +65,14 @@ contains
       use optwf_control, only: ioptjas
       use m_backflow, only: ibackflow
       use backflow_mod, only: backflow_accept
+      use error,   only: fatal_error
 
 #if defined(TREXIO_FOUND) && defined(QMCKL_FOUND) 
       use qmckl_data
 #endif
       implicit none 
 
-      integer :: i, iab, ic, iel, ijas1, iflag_dn, rc
+      integer :: i, iab, ic, iel, ijas1, iflag_dn, rc, ntry
       integer :: iflag_up, iflagb, iflagt, iflagz
       integer :: ifr, igeometrical, ii, ipass
       integer :: irun, istate, ierr
@@ -236,11 +237,14 @@ contains
 
 !   Sample sqrt(r_f)*abs(1+co*r_f)*exp(-zeta*r_f) by rejection
         bot=sqrt(rmino(i))*abs(one+co*rmino(i))*dexp(-zeta*rmino(i))
+        ntry=0
       40   rtry=((deltar-deltri)*random_dp()+deltri)*rmino(i)
           top=sqrt(rtry)*abs(one+co*rtry)*dexp(-zeta*rtry)
           ratio=top/fmax
           rejmax=max(rejmax,ratio)
           if(ratio.gt.random_dp()) goto 50
+          ntry=ntry+1
+          if(ntry.gt.100000000) call fatal_error('METROP6: radial rejection sampling does not terminate')
         goto 40
       50   fxop=fxop*top/bot
 
@@ -300,11 +304,14 @@ contains
         term=dmin1(voldp*raver*sintht,one)
 !lim    term=voldp*raver*sintht
         fmax=one+term
+        ntry=0
       60   phitry=pi*random_dp()
           cosphi=dcos(phitry)
           top=one+term*cosphi
 !lim      top=abs(one+term*cosphi)
           if(top.gt.random_dp()*fmax) goto 70
+          ntry=ntry+1
+          if(ntry.gt.100000000) call fatal_error('METROP6: angular rejection sampling does not terminate')
         goto 60
       70   fxop=fxop*top
 
@@ -394,7 +401,7 @@ contains
         call determinant_psig(psidn,psijn,psi2g)
       endif
 
-      if(psi2g.eq.0.d0) then
+      if(psi2g.eq.0.d0 .or. psidn(1).eq.0.d0) then
         p=zero
         q=one
         goto 208

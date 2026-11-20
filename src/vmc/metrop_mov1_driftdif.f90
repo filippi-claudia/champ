@@ -129,7 +129,7 @@
           call determinant_psig(psidn,psijn,psi2g)
         endif
 
-        if(psi2g.eq.0.d0) then
+        if(psi2g.eq.0.d0 .or. psidn(1).eq.0.d0) then
           p=zero
           q=one
           goto 208

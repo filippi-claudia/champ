@@ -25,7 +25,7 @@
       use system,  only: nelec
       implicit none
 
-      integer :: i, info, nsub
+      integer :: i, info, nsub, k
       integer, dimension(nsub) :: ipvt
       real(dp) :: aux, determinant, deti
       real(dp) :: ten
@@ -69,16 +69,18 @@
           if (ipvt(i) .ne. i) det(1) = -det(1)
           det(1) = a(i,i)*det(1)
           if (det(1) .eq. 0.0d0) exit
-          do
+          do k = 1, 400
             if (dabs(det(1)) .ge. 1.0d0) exit
             det(1) = ten*det(1)
             det(2) = det(2) - 1.0d0
           end do
-          do
+          if (k .gt. 400) call fatal_error('MATINV: non-finite determinant')
+          do k = 1, 400
             if (dabs(det(1)) .lt. ten) exit
             det(1) = det(1)/ten
             det(2) = det(2) + 1.0d0
           end do
+          if (k .gt. 400) call fatal_error('MATINV: non-finite determinant')
         enddo
 
         determinant = det(1)*10.0**det(2)

@@ -358,7 +358,7 @@
           ! Check for node crossings
           if(psidn(1)*psido_dmc(iw,1).le.zero) then
             nodecr=nodecr+1
-            if(icross.le.0) then
+            if(icross.le.0 .or. psidn(1).eq.zero) then
               p=zero
               goto 160
             endif
