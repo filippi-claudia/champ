@@ -34,6 +34,7 @@
 
       real(dp), dimension(2) :: det
       real(dp), parameter :: eps = 10.d0**(-40)
+      integer, parameter :: max_rescale = 400
       integer :: ii,jj
 ! routine to calculate inverse and determinant of matrix a
 ! assumed to be dimensioned a(nsub,nsub).
@@ -69,18 +70,18 @@
           if (ipvt(i) .ne. i) det(1) = -det(1)
           det(1) = a(i,i)*det(1)
           if (det(1) .eq. 0.0d0) exit
-          do k = 1, 400
+          do k = 1, max_rescale
             if (dabs(det(1)) .ge. 1.0d0) exit
             det(1) = ten*det(1)
             det(2) = det(2) - 1.0d0
           end do
-          if (k .gt. 400) call fatal_error('MATINV: non-finite determinant')
-          do k = 1, 400
+          if (k .gt. max_rescale) call fatal_error('MATINV: non-finite determinant')
+          do k = 1, max_rescale
             if (dabs(det(1)) .lt. ten) exit
             det(1) = det(1)/ten
             det(2) = det(2) + 1.0d0
           end do
-          if (k .gt. 400) call fatal_error('MATINV: non-finite determinant')
+          if (k .gt. max_rescale) call fatal_error('MATINV: non-finite determinant')
         enddo
 
         determinant = det(1)*10.0**det(2)
