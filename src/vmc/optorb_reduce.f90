@@ -20,9 +20,14 @@ contains
 
       integer :: i, ierr, istate
       integer :: matdim, norb_f_bcum, norb_f_collect
-      real(dp), dimension(norbterm+nmatdim) :: collect
+! collect has norbterm+nmatdim ~ norbterm**2 elements: keep it on the heap,
+! since compilers that place automatic arrays on the stack (ifx/ifort)
+! overflow the default stack limit for large orbital spaces.
+      real(dp), dimension(:), allocatable :: collect
 
       if(ioptorb.eq.0.or.method.eq.'sr_n'.or.method.eq.'lin_d') return
+
+      allocate(collect(norbterm+nmatdim))
 
       call mpi_reduce(norb_f_bcum,norb_f_collect,1 &
            ,mpi_integer,mpi_sum,0,MPI_COMM_WORLD,ierr)
