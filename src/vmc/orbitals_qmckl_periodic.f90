@@ -101,7 +101,7 @@ subroutine orbitals_qmckl_periodic(x,rvec_en,r_en)
             rc = qmckl_set_point(qmckl_ctx(qmckl_no_ctx-1), 'N', 1_8*nelec, xqmckl, 3_8*nelec)
             if (rc /= QMCKL_SUCCESS) then
                 print *, 'Error setting electron coords orbitalse'
-                call champ_qmckl_last_error(qmckl_ctx(qmckl_no_ctx-1),err_message)
+                call qmckl_last_error(qmckl_ctx(qmckl_no_ctx-1),err_message)
                 print *, trim(err_message)
                 call abort()
             end if
@@ -351,7 +351,7 @@ subroutine orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
     rc = qmckl_set_point(qmckl_ctx(ictx), 'N', 1_8, xiel, 3_8)
     if (rc /= QMCKL_SUCCESS) then
        print *, 'Error setting electron coords orbitalse'
-       call champ_qmckl_last_error(qmckl_ctx(ictx),err_message)
+       call qmckl_last_error(qmckl_ctx(ictx),err_message)
        print *, trim(err_message)
        call abort()
     end if
@@ -379,7 +379,7 @@ subroutine orbitalse_qmckl_periodic(iel,x,rvec_en,r_en,iflag)
         rc = qmckl_set_point(qmckl_ctx(ictx), 'N', 1_8*n_images, xqmckl, 3_8*n_images)
         if (rc /= QMCKL_SUCCESS) then
             print *, 'Error setting electron coords orbitalse'
-            call champ_qmckl_last_error(qmckl_ctx(ictx),err_message)
+            call qmckl_last_error(qmckl_ctx(ictx),err_message)
             print *, trim(err_message)
             call abort()
         end if
@@ -609,7 +609,7 @@ subroutine orbitals_quad_qmckl_periodic(nxquad,xquad,rvec_en,r_en,orbn,dorbn,da_
             rc = qmckl_set_point(qmckl_ctx(1), 'N', 1_8*nxquad, xqmckl_i, 3_8*nxquad)
             if (rc /= QMCKL_SUCCESS) then
                 print *, 'Error electron coords orbitals quad'
-                call champ_qmckl_last_error(qmckl_ctx(1),err_message)
+                call qmckl_last_error(qmckl_ctx(1),err_message)
                 print *, trim(err_message)
                 call abort()
             end if
