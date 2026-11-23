@@ -125,14 +125,18 @@
 
         if(iguiding.eq.0) then
           psi2g=1.d0
+          if(psidn(1).eq.0.d0) then
+            p=zero
+            q=one
+            goto 208
+          endif
         else
           call determinant_psig(psidn,psijn,psi2g)
-        endif
-
-        if(psi2g.eq.0.d0) then
-          p=zero
-          q=one
-          goto 208
+          if(psi2g.eq.0.d0) then
+            p=zero
+            q=one
+            goto 208
+          endif
         endif
 
         call compute_determinante_grad(iel,psi2g,psidn,psijn,vnew(1,iel),0)
