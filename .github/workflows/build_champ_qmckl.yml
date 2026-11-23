@@ -29,6 +29,9 @@ on:
 env:
   HDF5_VERSION: 1.14.2
   TREXIO_VERSION: 2.6.1
+  # QMCkl master that CHAMP main was last tested against. Newer master
+  # (from 20f9c62822) adds a size argument to qmckl_last_error.
+  QMCKL_COMMIT: 41c1933d550f654e65caf2dbca39f948bba6a9dc
 
 jobs:
   build_champ_qmckl:
@@ -110,6 +113,8 @@ jobs:
         run: |
           git clone https://github.com/TREX-CoE/qmckl.git
           cd qmckl
+          git checkout "${QMCKL_COMMIT}" || exit 1
+          git log --oneline -1
           export LD_LIBRARY_PATH=$HOME/lib:$LD_LIBRARY_PATH
           ./autogen.sh
           ./configure CC=gcc CFLAGS="-g -O2 -march=native  -flto -fno-trapping-math -fno-math-errno -ftree-vectorize" \
