@@ -141,7 +141,7 @@ subroutine orbitalse_qmckl(iel,x,rvec_en,r_en,iflag)
     rc = qmckl_set_point(qmckl_ctx(ictx), 'N', 1_8, x(1:3,iel), 3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error setting electron coords orbitalse'
-        call qmckl_last_error(qmckl_ctx(ictx),err_message)
+        call champ_qmckl_last_error(qmckl_ctx(ictx),err_message)
         print *, trim(err_message)
         call abort()
     end if
@@ -228,7 +228,7 @@ subroutine orbitalse_qmckl_bf(x,indices, iflag)
     rc = qmckl_set_point(qmckl_ctx(ictx), 'N', points*1_8, new_coords, points*3_8)
     if (rc /= QMCKL_SUCCESS) then
         print *, 'Error setting electron coords orbitalse'
-        call qmckl_last_error(qmckl_ctx(ictx),err_message)
+        call champ_qmckl_last_error(qmckl_ctx(ictx),err_message)
         print *, trim(err_message)
         call abort()
     end if

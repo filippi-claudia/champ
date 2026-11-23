@@ -127,6 +127,32 @@ if(QMCKL_FOUND)
   message(STATUS "QMCkl include dirs               :: " ${QMCKL_INCLUDE_DIR})
   message(STATUS "QMCkl library                    :: " ${QMCKL_LIBRARY})
   message("                                    ")
+
+  # QMCkl after 1.1.0 added a size argument to qmckl_last_error.
+  # The check is re-run on every configure as QMCkl may be updated in place.
+  function(check_qmckl_last_error_size)
+    include(CheckFortranSourceCompiles)
+    # Same search order as target_link_optional_libraries.
+    set(CMAKE_REQUIRED_INCLUDES ${TREXIO_INCLUDE_DIRS} ${QMCKL_INCLUDE_DIRS})
+    set(CMAKE_REQUIRED_FLAGS "")
+    if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
+      set(CMAKE_REQUIRED_FLAGS "-ffree-line-length-none")
+    endif()
+    set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+    unset(QMCKL_LAST_ERROR_HAS_SIZE CACHE)
+    check_fortran_source_compiles("
+#include \"qmckl_f.F90\"
+subroutine champ_check_qmckl_last_error(context)
+  use, intrinsic :: iso_c_binding, only: c_int64_t
+  use qmckl
+  implicit none
+  integer(qmckl_context), intent(in) :: context
+  character(len=64) :: message
+  call qmckl_last_error(context, message, int(len(message), c_int64_t))
+end subroutine
+" QMCKL_LAST_ERROR_HAS_SIZE SRC_EXT F90)
+  endfunction()
+  check_qmckl_last_error_size()
 endif()
 
 function(target_link_optional_libraries target)
@@ -146,6 +172,11 @@ function(target_link_optional_libraries target)
     target_compile_definitions(${target}
       PRIVATE
       QMCKL_FOUND="${QMCKL_FOUND}")
+    if(QMCKL_LAST_ERROR_HAS_SIZE)
+      target_compile_definitions(${target}
+        PRIVATE
+        QMCKL_LAST_ERROR_HAS_SIZE)
+    endif()
     target_include_directories(${target}
       PRIVATE
       ${QMCKL_INCLUDE_DIRS})

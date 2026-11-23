@@ -59,7 +59,31 @@ module qmckl_data
   logical                :: use_qmckl_jastrow = .True.
 
   public :: qmckl_no_ctx_max, qmckl_no_ctx, qmckl_ctx, use_qmckl_orbitals, use_qmckl_jastrow
+  public :: champ_qmckl_last_error
   save
+
+contains
+
+  !> Last error message of a QMCkl context, for QMCkl versions with and
+  !> without the size argument of qmckl_last_error.
+  subroutine champ_qmckl_last_error(context, message)
+    use, intrinsic :: iso_c_binding, only: c_int64_t, c_null_char
+    integer(qmckl_context), intent(in) :: context
+    character(len=*), intent(out) :: message
+    ! Long enough for the longest message QMCkl writes when it takes no size.
+    character(len=2048) :: buffer
+    integer :: n
+
+    buffer = ''
+#ifdef QMCKL_LAST_ERROR_HAS_SIZE
+    call qmckl_last_error(context, buffer, int(len(buffer), c_int64_t))
+#else
+    call qmckl_last_error(context, buffer)
+#endif
+    n = index(buffer, c_null_char)
+    if (n > 0) buffer(n:) = ''
+    message = buffer
+  end subroutine champ_qmckl_last_error
 
 #else
 
