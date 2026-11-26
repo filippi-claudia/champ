@@ -109,7 +109,7 @@ source /opt/intel/oneapi/setvars.sh
 cmake -S. -Bbuild \
   -DCMAKE_Fortran_COMPILER=mpiifx \
   -DCMAKE_C_COMPILER=mpiicx \
-  -DBLAS_LIBRARIES="-qmkl=parallel
+  -DBLAS_LIBRARIES="-qmkl=parallel"
 
 cmake --build build -j$(nproc)
 ```
