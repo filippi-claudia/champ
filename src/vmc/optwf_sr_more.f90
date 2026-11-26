@@ -148,14 +148,18 @@ contains
       real(dp) :: wts
       real(dp), dimension(*) :: z
       real(dp), dimension(*) :: r
-      real(dp), dimension(0:mconf) :: aux
-      real(dp), dimension(0:mconf) :: aux1
+! aux and oz_jasci scale with mconf=vmc_nstep*vmc_nblk_max: keep them on the
+! heap, since compilers that place automatic arrays on the stack (ifx/ifort)
+! overflow the default stack limit here.
+      real(dp), dimension(:), allocatable :: aux
       real(dp), dimension(mparm) :: rloc
       real(dp), dimension(mparm) :: r_s
-      real(dp), dimension(mconf) :: oz_jasci
+      real(dp), dimension(:), allocatable :: oz_jasci
       real(dp), dimension(mparm) :: tmp
       real(dp), dimension(mparm) :: tmp2
 
+      allocate(aux(0:mconf))
+      allocate(oz_jasci(mconf))
 
       call MPI_BCAST(z,n,MPI_REAL8,0,MPI_COMM_WORLD,i)
 
@@ -300,6 +304,9 @@ contains
         endif
 
       endif !end ortho if
+
+      deallocate(oz_jasci)
+      deallocate(aux)
 
       return
       end

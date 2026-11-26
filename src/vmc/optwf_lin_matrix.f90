@@ -51,11 +51,16 @@ contains
       real(dp), dimension(nparmall) :: eigi
       real(dp), dimension(nparmall) :: seig_inv
       real(dp), dimension(nparmall,*) :: eig_vec
-      real(dp), dimension(nparmall,nparmall) :: hmod
+! hmod is nparmall**2: keep it on the heap, since compilers that place
+! automatic arrays on the stack (ifx/ifort) overflow the default stack limit
+! for large parameter sets.
+      real(dp), dimension(:,:), allocatable :: hmod
       real(dp), dimension(*) :: work
       real(dp), parameter :: eps = 1.d-12
 
       save eig_min
+
+      allocate(hmod(nparmall,nparmall))
 
       write(ounit,'(/,''Setup starting adiag'',/)')
       eig_min=0
@@ -404,11 +409,16 @@ contains
       real(dp), dimension(nparmall) :: eigi
       real(dp), dimension(nparmall) :: seig_inv
       real(dp), dimension(nparmall,*) :: eig_vec
-      real(dp), dimension(nparmall,nparmall) :: hmod
+! hmod is nparmall**2: keep it on the heap, since compilers that place
+! automatic arrays on the stack (ifx/ifort) overflow the default stack limit
+! for large parameter sets.
+      real(dp), dimension(:,:), allocatable :: hmod
       real(dp), dimension(ncimatdim) :: s_norm
       real(dp), dimension(nparmall) :: cdelta
       real(dp), dimension(mxciterm) :: overlap
       real(dp), parameter :: eps = 1.d-12
+
+      allocate(hmod(nparmall,nparmall))
 
       if(method.eq.'linear') then
 
