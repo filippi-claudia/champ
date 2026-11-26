@@ -308,7 +308,7 @@ contains
                 write(ounit, '(''DAV: resd'',1000d12.5)') (errors(j), j=1, parameters%lowest)
 
                 not_cnv = count(.not. has_converged(:))
-                write(ounit, '(''DAV: Root not yet converged     : '', I10)') not_cnv
+                write(ounit, '(''DAV: Root not yet converged     : '', I10)') count(.not. has_converged(:parameters%lowest))
 
                 ! Append correction vectors
                 if (parameters%basis_size + size_update <= nvecx) then
@@ -348,7 +348,7 @@ contains
             ! Check for convergence
             ! all the procs need to know when to exit
             call MPI_BCAST(has_converged, parameters%lowest, MPI_LOGICAL, 0, MPI_COMM_WORLD, ier)
-            if (all(has_converged)) then
+            if (all(has_converged(:parameters%lowest))) then
                 iters = i
                 if (idtask == 0) then
                     write(ounit, '(''DAV: roots are converged'')')
